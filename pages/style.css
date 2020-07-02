@@ -1,0 +1,82 @@
+.card{
+    margin: 0 auto;
+}
+.urltxt{
+    font-size: 14pt !important;
+    margin-right: 70px;
+    display: block;
+    word-break: break-word;
+}
+@media (max-width:2560px){
+    .main{
+    height:100vh !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+}
+
+@media (max-width:773px){
+    .media-link{
+	width: 239.43pt !important;
+    }
+	 .main{
+    height:100vh !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+}
+
+@media (max-width:767px){
+	.card{
+     width:60% !important;
+     height:100% !important;
+	}
+	.react-player{
+		margin: 0 auto;
+	    width: 300px !important;
+    }
+    .applink{
+        margin-top: 40% !important;
+    }
+ .main{
+    height:100vh !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+}
+
+@media (max-width:550px){
+    .card{width:80% !important}
+     .main{
+    height:100% !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+}
+@media (max-width:408px){
+	.card{width:100% !important}
+    .react-player{width: 290px !important;}
+     .main{
+    height:100% !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+}
+@media (max-width:400px){
+	.media-link{
+	width: 100% !important;display: inline-block;word-break: break-all;height: auto !important;
+    }
+    .main{
+    height:100% !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+}
