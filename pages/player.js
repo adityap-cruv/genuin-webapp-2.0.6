@@ -12,7 +12,7 @@ import Microlink from '@microlink/react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faTimes, faPlay, faPause, faCommentDots, faEye, faEyeDropper } from "@fortawesome/free-solid-svg-icons";
-import { faFacebook, faInstagram, faWhatsapp, faTwitter } from "@fortawesome/free-brands-svg-icons";
+import { faFacebookF, faInstagram, faWhatsapp, faTwitter } from "@fortawesome/free-brands-svg-icons";
 import Error from 'next/error';
 import custom from './custom.scss';
 
@@ -67,30 +67,30 @@ class Player extends React.Component {
     const currentUrl=process.env.hostname+this.props.asPath;
     // console.log("path",currentUrl);
     return (
-      <Layout title="Genuine" content={this.props.videoThumbnail} description={this.props.description} currentUrl={currentUrl} keyword='genuine'>
-        <Card style={{ width: '50rem', height: '45rem', borderRadius: '10px' }}>
+      <Layout title="Genuin" content={this.props.videoThumbnail} description={this.props.description} currentUrl={currentUrl} keyword='genuine'>
+        <Card style={{ width: '50rem', height: '99%', borderRadius: '10px' }}>
           <Card.Body >
             <Container fluid="md">
               <Row>
                 <Col md={6}>
                   <span style={{
                     position: 'absolute', top: '4%', left: '20%', zIndex: '1', fontFamily: 'AvenirNext-DemiBold',
-                    color: '#FFFFFF',
+                    // color: '#FFFFFF',
                     fontSize: '20pt'
                   }}>{this.state.playedSeconds.toFixed(0)} Sec</span>
-                  <FontAwesomeIcon icon={this.state.playing ? faPause : faPlay} onClick={this.handlePlayPause} style={{ width: '14%', cursor: 'pointer', right: '44%', zIndex: '999999', position: 'absolute', top: '39%', display: this.state.buttonVisible }} />
-                  <FontAwesomeIcon icon={faCommentDots} style={{ width: '5%', color: 'white', right: '78%', zIndex: '999999', position: 'absolute', top: '94%' }} />
-                  <span style={{ width: '5%', color: 'white', right: '72%', zIndex: '999999', position: 'absolute', top: '93%' }}>{this.props.noOfConversation}replies</span>
-                  <FontAwesomeIcon icon={faEye} style={{ width: '5%', color: 'white', right: '50%', zIndex: '999999', position: 'absolute', top: '94%' }} />
-                  <span style={{ width: '5%', color: 'white', right: '44%', zIndex: '999999', position: 'absolute', top: '93%' }}>{this.props.noOfViews}views</span>
+                  <FontAwesomeIcon icon={this.state.playing ? faPause : faPlay} className="playbtn" onClick={this.handlePlayPause} style={{ width: '14%', cursor: 'pointer', right: '44%', zIndex: '999999', position: 'absolute', top: '39%', display: this.state.buttonVisible }} />
+                  <FontAwesomeIcon className="commentIcon" icon={faCommentDots} style={{ width: '5%', color: 'white', right: '78%', zIndex: '999999', position: 'absolute', top: '94%' }} />
+                  <span className="commentxt" style={{ width: '5%', color: 'white', right: '72%', zIndex: '999999', position: 'absolute', top: '93%' }}>{this.props.noOfConversation}replies</span> &nbsp;
+                  <FontAwesomeIcon className="eyeIcon" icon={faEye} style={{ width: '5%', color: 'white', right: '50%', zIndex: '999999', position: 'absolute', top: '94%' }} />
+                  <span className="viewtxt" style={{ width: '5%', color: 'white', right: '44%', zIndex: '999999', position: 'absolute', top: '93%' }}>{this.props.noOfViews}views</span>
                   <ReactPlayer
                     className='react-player fixed-bottom'
                     url={this.props.videoUrl}
                     playing={this.state.playing}
                     width='350px'
-                    height='528px'
+                    height='620px'
                     style={{
-                      marginTop: '4%', borderRadius: '22px', overflow: 'hidden', cursor: 'pointer'
+                      marginTop: '-3%', borderRadius: '22px', overflow: 'hidden', cursor: 'pointer'
                     }}
                     controls={false}
                     // light={true}
@@ -114,23 +114,23 @@ class Player extends React.Component {
                   </Link> to reply and make genuin connection</div>
                   <div className="sociallink" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '13.9pt', marginTop: '3%', direction: 'rtl' }}>
                     <Link href="/">
-                      <a><FontAwesomeIcon icon={faWhatsapp} style={{ width: '5%', height: '5%' }} /></a>
-                    </Link>&nbsp;&nbsp;&nbsp;
+                    <a id="whatsappIcon"><FontAwesomeIcon icon={faWhatsapp} style={{ width: '5%', height: '5%' }} /></a>
+                    </Link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                 <Link href="/">
-                      <a><FontAwesomeIcon icon={faInstagram} style={{ width: '5%', height: '5%' }} /></a>
-                    </Link>&nbsp;&nbsp;&nbsp;
+                                <a id="instaIcon"><FontAwesomeIcon icon={faInstagram} style={{ width: '5%', height: '5%' }} /></a>
+                    </Link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                     <Link href="/">
-                      <a><FontAwesomeIcon icon={faTwitter} style={{ width: '5%', height: '5%' }} /></a>
-                    </Link>&nbsp;&nbsp;&nbsp;
+                                    <a id="twitterIcon"><FontAwesomeIcon icon={faTwitter} style={{ width: '6%', height: '5%' }} /></a>
+                    </Link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                     <Link href="/">
-                      <a><FontAwesomeIcon icon={faFacebook} style={{ width: '5%', height: '5%' }} /></a>
-                    </Link>&nbsp;&nbsp;
+                                    <a id="facebookIcon"><FontAwesomeIcon icon={faFacebookF} style={{ width: '4%', height: '5%' }} /></a>
+                    </Link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                 </div>
                   <div className="media-link" style={{ width: '100%', height: '29pt', border: '1px #0094D0 solid', borderRadius: '9px', padding: '4px', }}>
-                    <span className="urltxt" style={{ fontSize: '7pt', fontFamily: 'AvenirNext-DemiBold', fontWeight: 'bold', cursor: 'default' }}>
+                    <span className="urltxt" style={{ fontSize: '15pt', fontFamily: 'AvenirNext-DemiBold', fontWeight: 'bold', cursor: 'default', display:'inline-block',marginTop:'-10px' }}>
                       {this.props.link}
                     </span>&nbsp;&nbsp;
-                      <span style={{ color: '#FF0000', fontFamily: 'AvenirNext-Bold', textAlign: 'right', fontSize: '23pt', cursor: 'pointer','display': 'inline-block','float': 'right','marginTop': '-39px' }} onClick={this.handleCopy}>
+                      <span class="copytxt" style={{ color: '#FF0000', fontFamily: 'AvenirNext-Bold', textAlign: 'right', fontSize: '15pt', cursor: 'pointer','display': 'inline-block','float': 'right','marginTop': '-4px' }} onClick={this.handleCopy}>
                       {this.state.copyText}
                     </span>
                   </div>
@@ -138,9 +138,9 @@ class Player extends React.Component {
               </Row>
               <Row>
                 <Col md={12}>
-                  <div className='linkPreview' style={{ marginTop: '18px' }}>
+                  <div className='linkPreview' style={{ marginTop: '7px' }}>
                     {/* <FontAwesomeIcon icon={faTimes} style={{ width: '1%', height: '6%', zIndex: '99999999',position: 'fixed',right: '13%' }} /> */}
-                    <Microlink url={this.props.link} style={{ maxWidth: '783px', backgroundColor: 'lightgrey', height: '158px' }} />
+                    <Microlink url="https://www.iconflux.com" style={{ maxWidth: '783px',    height: '100px', backgroundColor: 'lightgrey' }} />
                   </div>
                 </Col>
               </Row>
