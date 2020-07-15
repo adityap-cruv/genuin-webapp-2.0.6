@@ -119,7 +119,7 @@ body .overlay {
 }
 @media (max-width:1440px){
     .main{
-        height:100vh !important;
+        /* height:100vh !important; */
         display: flex;
         align-items: center;
         justify-content: center;
@@ -131,10 +131,9 @@ body .overlay {
         word-break: break-word;
     }    
 }
-
 @media (max-width:773px){
     .media-link{
-	width: 231.43pt !important;
+	width: 100% !important;
     }
 	 .main{
     height:100vh !important;
