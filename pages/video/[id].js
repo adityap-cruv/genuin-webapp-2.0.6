@@ -9,7 +9,7 @@ const Page = (props) => {
 }
 Page.getInitialProps = async ({ query: { id } }) => {
 
-  return axios.post(process.env.node_api+ "/api/v3/users/video/meta_data/" + id)
+  return axios.post(process.env.apiurl+ "/api/v3/users/video/meta_data/" + id)
     .then(response => {
       return Promise.resolve({ data: response.data.data })
     })
