@@ -5,8 +5,8 @@ module.exports = withImages(withCSS({
     env: {
         // hostname:'http://localhost:3000'
         hostname: 'http://134.209.152.229:4000',
-        node_api: 'http://134.209.152.229:9092',
-        genuin_url: 'http://begenuine.com/',
+        apiurl: 'http://134.209.152.229:9092',
+        genuinurl: 'http://begenuine.com/',
     }
 }));
 // module.exports = withCSS({
