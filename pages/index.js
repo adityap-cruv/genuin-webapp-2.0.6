@@ -11,7 +11,7 @@ export default class Home extends React.Component {
     componentDidMount() {
         const { pathname } = Router
         if (pathname == '/') {
-            window.location.href = "http://begenuine.com/"
+            window.location.href = process.env.genuinurl
         }
     }
 
