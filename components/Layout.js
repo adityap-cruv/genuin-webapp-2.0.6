@@ -8,7 +8,6 @@ const Layout = ({ children, title, content, description, currentUrl, keyword }) 
     <NextSeo
       title={title}
       description={description}
-      // canonical="https://www.canonical.ie/"
       openGraph={{
         url: currentUrl,
         title: 'Genuin',

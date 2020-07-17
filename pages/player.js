@@ -64,7 +64,7 @@ class Player extends React.Component {
   render() {
     if (this.props.videoUrl == undefined || this.props.videoUrl == null || this.props.videoUrl == '') return <Error statusCode="404" />;
     const hashtags = this.props.description.match(/#\w+/g) || [];
-    const currentUrl=process.env.hostname+this.props.asPath;
+    const currentUrl = process.env.hostname + this.props.asPath;
     // console.log("path",currentUrl);
     return (
       <Layout title="Genuin" content={this.props.videoThumbnail} description={this.props.description} currentUrl={currentUrl} keyword='genuine'>
@@ -114,23 +114,23 @@ class Player extends React.Component {
                   </Link> to reply and make genuin connection</div>
                   <div className="sociallink" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '13.9pt', marginTop: '3%', direction: 'rtl' }}>
                     <Link href="/">
-                    <a id="whatsappIcon"><FontAwesomeIcon icon={faWhatsapp} style={{ width: '5%', height: '5%' }} /></a>
+                      <a id="whatsappIcon"><FontAwesomeIcon icon={faWhatsapp} style={{ width: '5%', height: '5%' }} /></a>
                     </Link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                 <Link href="/">
-                                <a id="instaIcon"><FontAwesomeIcon icon={faInstagram} style={{ width: '5%', height: '5%' }} /></a>
+                      <a id="instaIcon"><FontAwesomeIcon icon={faInstagram} style={{ width: '5%', height: '5%' }} /></a>
                     </Link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                     <Link href="/">
-                                    <a id="twitterIcon"><FontAwesomeIcon icon={faTwitter} style={{ width: '6%', height: '5%' }} /></a>
+                      <a id="twitterIcon"><FontAwesomeIcon icon={faTwitter} style={{ width: '6%', height: '5%' }} /></a>
                     </Link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                     <Link href="/">
-                                    <a id="facebookIcon"><FontAwesomeIcon icon={faFacebookF} style={{ width: '4%', height: '5%' }} /></a>
+                      <a id="facebookIcon"><FontAwesomeIcon icon={faFacebookF} style={{ width: '4%', height: '5%' }} /></a>
                     </Link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                 </div>
                   <div className="media-link" style={{ width: '100%', height: '29pt', border: '1px #0094D0 solid', borderRadius: '9px', padding: '4px', }}>
-                    <span className="urltxt" style={{ fontSize: '15pt', fontFamily: 'AvenirNext-DemiBold', fontWeight: 'bold', cursor: 'default', display:'inline-block',marginTop:'-10px' }}>
+                    <span className="urltxt" style={{ fontSize: '15pt', fontFamily: 'AvenirNext-DemiBold', fontWeight: 'bold', cursor: 'default', display: 'inline-block', marginTop: '-10px' }}>
                       {this.props.link}
                     </span>&nbsp;&nbsp;
-                      <span class="copytxt" style={{ color: '#FF0000', fontFamily: 'AvenirNext-Bold', textAlign: 'right', fontSize: '15pt', cursor: 'pointer','display': 'inline-block','float': 'right','marginTop': '-4px' }} onClick={this.handleCopy}>
+                      <span class="copytxt" style={{ color: '#FF0000', fontFamily: 'AvenirNext-Bold', textAlign: 'right', fontSize: '15pt', cursor: 'pointer', 'display': 'inline-block', 'float': 'right', 'marginTop': '-4px' }} onClick={this.handleCopy}>
                       {this.state.copyText}
                     </span>
                   </div>
@@ -140,7 +140,7 @@ class Player extends React.Component {
                 <Col md={12}>
                   <div className='linkPreview' style={{ marginTop: '7px' }}>
                     {/* <FontAwesomeIcon icon={faTimes} style={{ width: '1%', height: '6%', zIndex: '99999999',position: 'fixed',right: '13%' }} /> */}
-                    <Microlink url="https://www.iconflux.com" style={{ maxWidth: '783px',    height: '100px', backgroundColor: 'lightgrey' }} />
+                    <Microlink url={this.props.link} style={{ maxWidth: '783px', height: '100px', backgroundColor: 'lightgrey' }} />
                   </div>
                 </Col>
               </Row>
