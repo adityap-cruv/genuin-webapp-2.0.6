@@ -2,6 +2,7 @@
     font-family: 'Avenir Next';
     src: url('/font/Avenir Next.ttc');
 }
+html {overflow-y: hidden}
 .card{
     margin: 0 auto;
 }

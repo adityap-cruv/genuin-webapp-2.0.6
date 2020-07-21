@@ -6,9 +6,9 @@
   "scripts": {
     "dev": "next",
     "build": "next build && next export",
-    "start_prod" : "export NODE_ENV=production && pm2 start server.js -i 1 --name 'genuin-web-react'",
-    "restart_prod" : "export NODE_ENV=production && pm2 restart server.js -i 1 --name 'genuin-web-react'",
-    "stop_prod" : "pm2 stop genuin-web-react"
+    "start_prod": "export NODE_ENV=production && pm2 start server.js -i 1 --name 'genuin-web-react'",
+    "restart_prod": "export NODE_ENV=production && pm2 restart server.js -i 1 --name 'genuin-web-react'",
+    "stop_prod": "pm2 stop genuin-web-react"
   },
   "keywords": [],
   "author": "",
