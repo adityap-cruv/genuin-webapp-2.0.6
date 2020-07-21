@@ -74,7 +74,7 @@ class Player extends React.Component {
               <Row>
                 <Col md={6}>
                   <span style={{
-                    position: 'absolute', top: '4%', left: '20%', zIndex: '1', fontFamily: 'AvenirNext-DemiBold',
+                    position: 'absolute', top: '4%', left: '20%', zIndex: '1', fontFamily: 'Avenir Next',
                     // color: '#FFFFFF',
                     fontSize: '20pt'
                   }}>{this.state.playedSeconds.toFixed(0)} Sec</span>
@@ -101,7 +101,7 @@ class Player extends React.Component {
                   />
                 </Col>
                 <Col md={6}>
-                  <div className="content" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '26.9pt', marginTop: '15px' }}>
+                  <div className="content" style={{ fontFamily: 'Avenir Next', fontSize: '26.9pt', marginTop: '15px' }}>
                     <Highlighter
                       highlightStyle={{ backgroundColor: '#bfe4f3' }}
                       highlightClassName="match"
@@ -109,10 +109,10 @@ class Player extends React.Component {
                       textToHighlight={this.props.description}
                     />
                   </div>
-                  <div className="applink" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '13.9pt', marginTop: '69%' }}>        <Link href="/">
+                  <div className="applink" style={{ fontFamily: 'Avenir Next', fontSize: '13.9pt', marginTop: '69%' }}>        <Link href="/">
                     <a>Get the App</a>
                   </Link> to reply and make genuin connection</div>
-                  <div className="sociallink" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '13.9pt', marginTop: '3%', direction: 'rtl' }}>
+                  <div className="sociallink" style={{ fontFamily: 'Avenir Next', fontSize: '13.9pt', marginTop: '3%', direction: 'rtl' }}>
                     <Link href="/">
                       <a id="whatsappIcon"><FontAwesomeIcon icon={faWhatsapp} style={{ width: '5%', height: '5%' }} /></a>
                     </Link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -127,10 +127,10 @@ class Player extends React.Component {
                     </Link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                 </div>
                   <div className="media-link" style={{ width: '100%', height: '29pt', border: '1px #0094D0 solid', borderRadius: '9px', padding: '4px', }}>
-                    <span className="urltxt" style={{ fontSize: '15pt', fontFamily: 'AvenirNext-DemiBold', fontWeight: 'bold', cursor: 'default', display: 'inline-block', marginTop: '-10px' }}>
+                    <span className="urltxt" style={{ fontSize: '15pt', fontFamily: 'Avenir Next', fontWeight: 'bold', cursor: 'default', display: 'inline-block', marginTop: '-10px' }}>
                       {this.props.link}
                     </span>&nbsp;&nbsp;
-                      <span class="copytxt" style={{ color: '#FF0000', fontFamily: 'AvenirNext-Bold', textAlign: 'right', fontSize: '15pt', cursor: 'pointer', 'display': 'inline-block', 'float': 'right', 'marginTop': '-4px' }} onClick={this.handleCopy}>
+                      <span class="copytxt" style={{ color: '#FF0000', fontFamily: 'Avenir Next', textAlign: 'right', fontSize: '15pt', cursor: 'pointer', 'display': 'inline-block', 'float': 'right', 'marginTop': '-4px' }} onClick={this.handleCopy}>
                       {this.state.copyText}
                     </span>
                   </div>

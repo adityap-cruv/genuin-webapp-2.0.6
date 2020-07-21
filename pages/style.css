@@ -1,3 +1,7 @@
+@font-face {
+    font-family: 'Avenir Next';
+    src: url('/font/Avenir Next.ttc');
+}
 .card{
     margin: 0 auto;
 }
@@ -13,6 +17,14 @@ body .overlay {
 }
 #whatsappIcon, #facebookIcon, #twitterIcon, #instaIcon{
     color:#4a4a4a
+}
+@media (max-width:2880px){
+    .main{
+        height:100vh !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 }
 @media (min-width:2880px){
     .main{
@@ -119,7 +131,7 @@ body .overlay {
 }
 @media (max-width:1440px){
     .main{
-        /* height:100vh !important; */
+        height:100vh !important;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -129,7 +141,10 @@ body .overlay {
         margin-right: 70px;
         display: block;
         word-break: break-word;
-    }    
+    } 
+    .card{
+        height: auto !important;
+    }   
 }
 @media (max-width:773px){
     .media-link{
