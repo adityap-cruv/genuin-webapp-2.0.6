@@ -3,7 +3,7 @@ import Player from '../player';
 import axios from 'axios';
 const Page = (props) => {
   return (
-    <Player {...props.data} {...props.url} />
+    <Player {...props.data} />
   )
 }
 Page.getInitialProps = async ({ query: { id } }) => {

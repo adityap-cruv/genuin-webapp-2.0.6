@@ -1,18 +1,12 @@
 
 @font-face {
-    font-family: 'Dementor';
-    font-style: normal;
-    font-weight: 400;
-    font-display: swap;
-    src: local('Dementor'), url(/pages/fonts/Dementor.ttf) format('ttf');
-  }
-/* @font-face {
     font-family: 'AvenirNext';
-    src: url('/pages/fonts/Dementor.ttf');
-} */
+    src: url(/fonts/AvenirNext.ttc);
+  }
 body{
-    font-family: 'Dementor';
+    font-family: 'AvenirNext';
 }
+html {overflow-y: hidden}
 .card{
     margin: 0 auto;
 }
