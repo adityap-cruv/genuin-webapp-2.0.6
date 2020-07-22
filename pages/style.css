@@ -1,7 +1,3 @@
-@font-face {
-    font-family: 'AvenirNext';
-    src: url('/font/AvenirNext-DemiBold.ttf');
-}
 html {overflow-y: hidden}
 .card{
     margin: 0 auto;
@@ -69,7 +65,7 @@ body .overlay {
      }
 }
 
-@media (min-width:2560px){
+@media (min-width:2880px){
     .main{
         height:100vh !important;
         display: flex;
