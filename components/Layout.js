@@ -5,6 +5,26 @@ import '../pages/style.css'
 
 const Layout = ({ children, title, content, description, currentUrl, keyword }) => (
   <div>
+    <style jsx>{`
+    @font-face {
+      font-family: 'AvenirNext';
+      src: url('/fonts/AvenirNext-Bold-01.ttf');
+      src: url('/fonts/AvenirNext-BoldItalic-02.ttf');
+      src: url('/fonts/AvenirNext-DemiBold-03.ttf');
+      src: url('/fonts/AvenirNext-DemiBoldItalic-04.ttf');
+      src: url('/fonts/AvenirNext-Heavy-09.ttf');
+      src: url('/fonts/AvenirNext-HeavyItalic-10.ttf');
+      src: url('/fonts/AvenirNext-Italic-05.ttf');
+      src: url('/fonts/AvenirNext-Medium-06.ttf');
+      src: url('/fonts/AvenirNext-MediumItalic-07.ttf');
+      src: url('/fonts/AvenirNext-Regular-08.ttf');
+      src: url('/fonts/AvenirNext-UltraLight-11.ttf');
+      src: url('/fonts/AvenirNext-UltraLightItalic-12.ttf');
+    }
+    .main {
+      font-family: 'AvenirNext';
+    }
+      `}</style>
     <NextSeo
       title={title}
       description={description}
@@ -34,7 +54,7 @@ const Layout = ({ children, title, content, description, currentUrl, keyword }) 
      <NextHead>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css" /> 
     </NextHead>
-    <div class="overlay"></div>
+    <div className="overlay"></div>
     <div className="main" style={{ backgroundImage: `url(${content})`, backgroundRepeat: 'no-repeat', backgroundSize: 'cover', backgroundPosition: 'center', height: '754px' }}>
       {children}
     </div>
