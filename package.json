@@ -5,10 +5,10 @@
   "main": "index.js",
   "scripts": {
     "dev": "next",
-    "build": "next build && next export",
-    "start_prod" : "export NODE_ENV=production && pm2 start server.js -i 1 --name 'genuin-web-react'",
-    "restart_prod" : "export NODE_ENV=production && pm2 restart server.js -i 1 --name 'genuin-web-react'",
-    "stop_prod" : "pm2 stop genuin-web-react"
+    "build": "next build",
+    "start_prod": "export NODE_ENV=production && pm2 start server.js -i 1 --name 'genuin-web-react'",
+    "restart_prod": "export NODE_ENV=production && pm2 restart server.js -i 1 --name 'genuin-web-react'",
+    "stop_prod": "pm2 stop genuin-web-react"
   },
   "keywords": [],
   "author": "",
@@ -27,6 +27,7 @@
     "express": "^4.17.1",
     "isomorphic-fetch": "^2.2.1",
     "next": "^9.4.4",
+    "next-fonts": "^1.4.0",
     "next-images": "^1.4.0",
     "next-seo": "^4.5.0",
     "node-sass": "^4.14.1",
