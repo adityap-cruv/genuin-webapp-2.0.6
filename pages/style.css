@@ -1,11 +1,3 @@
-
-@font-face {
-    font-family: 'AvenirNext';
-    src: url(/fonts/AvenirNext.ttc);
-  }
-body{
-    font-family: 'AvenirNext';
-}
 html {overflow-y: hidden}
 .card{
     margin: 0 auto;
