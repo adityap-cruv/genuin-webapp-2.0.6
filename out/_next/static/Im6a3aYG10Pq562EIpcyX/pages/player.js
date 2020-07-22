@@ -1,1 +1,0 @@
-(window.webpackJsonp=window.webpackJsonp||[]).push([[12],{XU8Z:function(n,w,o){(window.__NEXT_P=window.__NEXT_P||[]).push(["/player",function(){return o("XZjT")}])}},[["XU8Z",0,2,5,4,1,3,6]]]);
