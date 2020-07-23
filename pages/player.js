@@ -76,9 +76,9 @@ class Player extends React.Component {
                   <span className="d-none" style={{
                     position: 'absolute', top: '4%', left: '16%', zIndex: '1', fontFamily: 'AvenirNext-DemiBold',
                     // color: '#FFFFFF',
-                    fontSize: '20pt'
+                    fontSize: '16pt'
                   }}>{this.state.playedSeconds.toFixed(0)} Sec</span>
-                  <FontAwesomeIcon icon={this.state.playing ? faPause : faPlay} className="playbtn" onClick={this.handlePlayPause} style={{ width: '14%', cursor: 'pointer', right: '44%', zIndex: '999999', position: 'absolute', top: '44%', display: this.state.buttonVisible }} />
+                  <FontAwesomeIcon icon={this.state.playing ? faPause : faPlay} className="playbtn" onClick={this.handlePlayPause} style={{color: 'rgb(255 255 255 / 0.4)', width: '14%', cursor: 'pointer', right: '44%', zIndex: '999999', position: 'absolute', top: '44%', display: this.state.buttonVisible }} />
 
                   <div className="d-none">
                     <div style={{ marginTop: '30px',width: '50%'}}>
@@ -92,7 +92,7 @@ class Player extends React.Component {
                   <sub style={{position: 'relative', fontSize: '10pt', bottom: '6px', left: '2px' }}>views</sub></span>
                   </div>
                   </div>
-                  <div className="content tag" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '16pt', margin: '0px',minHeight: 'auto',overflow: 'inherit', background: '#000', borderRadius: '0px'}}>
+                  <div className="content tag" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '16pt',height: 'auto',marginBottom: '0',overflow: 'inherit', background: '#000', borderRadius: '0px'}}>
                     <Highlighter
                       highlightStyle={{ backgroundColor: '#bfe4f3' }}
                       highlightClassName="match"
@@ -116,6 +116,9 @@ class Player extends React.Component {
                     onPause={this.handlePause}
                     onProgress={this.handleProgress}
                   />
+                  <div className="my app-download">
+                  <img src="https://imgur.com/URiFQhg.png" alt="imges" style={{position: 'absolute', bottom: '0px', padding: '0 20px', maxWidth: '100%', left: '50%', transform: 'translate(-50%, -50%)'}}/>
+                  </div>
                 </Col>
                 <Col md={6} className="d-none" style={{paddingLeft: '0px', paddingRight: '30px'}}>
                   <div className="content" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '28pt', marginTop: '15px',marginBottom: '10px',height: '476px',overflowX: 'hidden'}}>
