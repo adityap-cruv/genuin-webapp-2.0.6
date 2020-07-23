@@ -2,9 +2,8 @@ import { useRouter } from 'next/router';
 import Player from '../player';
 import axios from 'axios';
 const Page = (props) => {
-  console.log("response", props);
   return (
-    <Player {...props.data} {...props.url} />
+    <Player {...props.data} />
   )
 }
 Page.getInitialProps = async ({ query: { id } }) => {

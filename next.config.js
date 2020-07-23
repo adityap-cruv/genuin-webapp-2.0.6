@@ -13,6 +13,7 @@ module.exports = withImages(withCSS(withFonts({
         genuinurl: 'http://begenuine.com/',
     }
 })));
+
 // module.exports = withCSS({
 //   cssLoaderOptions: {
 //     url: true
