@@ -136,16 +136,28 @@ class Player extends React.Component {
                   </Link> to reply and make genuin connection</div>
                   <div className="sociallink" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '13.9pt', margin: '2% 0', direction: 'rtl' }}>
                     <Link href="/">
-                      <a id="whatsappIcon"><FontAwesomeIcon icon={faWhatsapp} style={{ width: '5%', height: '5%' }} /></a>
+                      <a id="whatsappIcon">
+                        
+                        <img src={require('../images/ic_whatsapp.png')} />
+                        </a>
                     </Link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                 <Link href="/">
-                      <a id="instaIcon"><FontAwesomeIcon icon={faInstagram} style={{ width: '5%', height: '5%' }} /></a>
+                      <a id="instaIcon">
+                        
+                        <img src={require('../images/ic_insta.png')} />
+                        </a>
                     </Link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                     <Link href="/">
-                      <a id="twitterIcon"><FontAwesomeIcon icon={faTwitter} style={{ width: '6%', height: '5%' }} /></a>
+                      <a id="twitterIcon">
+                        
+                        <img src={require('../images/ic_twitter.png')} />
+                        </a>
                     </Link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                     <Link href="/">
-                      <a id="facebookIcon"><FontAwesomeIcon icon={faFacebookF} style={{ width: '4%', height: '5%' }} /></a>
+                      <a id="facebookIcon">
+                        
+                        <img src={require('../images/ic_facebook.png')} />
+                        </a>
                     </Link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                 </div>
                   <div className="media-link padding-0" style={{ width: '100%', height: '29pt', border: '1px #0094D0 solid', borderRadius: '9px', padding: '4px', color: ' #333333' }}>
