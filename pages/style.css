@@ -29,11 +29,13 @@ body .overlay {
     .react-player{height: 94vh !important;width: 100% !important;margin-top: 0 !important;border-radius:0px !important}
     .card{width: 100% !important;}
     .content.tag{
-        width: 167%;
-    margin-left: -128px;
+        width: 100%;
     }
     .my img{
-        max-width: 53% !important;
+        max-width: 30% !important;
+    }
+    .fa-play{
+        width: 7% !important;
     }
  }
 @media (max-width:3000px){
@@ -184,7 +186,7 @@ body .overlay {
 
 @media (max-width:767px){
 	.card{
-     width:60% !important;
+     width:60%;
      height:100% !important;
 	}
 	.react-player{
