@@ -16,7 +16,27 @@ body .overlay {
 #whatsappIcon, #facebookIcon, #twitterIcon, #instaIcon{
     color:#000000;
 }
-@media (max-width:2880px){
+@media screen and (orientation:landscape) and (max-width: 1024px) and (min-width: 320px)  {
+    body{line-height: 0;}
+    html {overflow-y: hidden;}
+    .w-100{max-width: 100% !important;flex: 0 0 100% !important;width: 100% !important;}
+    .padding-0{padding: 0 !important;}
+    .main{background-image: none !important;}
+    .card {background-color: transparent;box-shadow: none;height: 100% !important;}
+    .d-block,.content.tag,.app-download{display: block !important;font-size: 12pt !important;}
+    .tag .match{display: inline-block !important;background-color:transparent !important;color: #FFFFFF;}
+    .match,.content,.d-none{display: none !important;}
+    .react-player{height: 94vh !important;width: 100% !important;margin-top: 0 !important;border-radius:0px !important}
+    .card{width: 100% !important;}
+    .content.tag{
+        width: 167%;
+    margin-left: -128px;
+    }
+    .my img{
+        max-width: 53% !important;
+    }
+ }
+@media (max-width:3000px){
     .main{
         height:100vh !important;
         display: flex;
@@ -24,7 +44,7 @@ body .overlay {
         justify-content: center;
     }
 }
-@media (min-width:2880px){
+@media (min-width:3000px){
     .main{
         height:100vh !important;
         display: flex;
@@ -66,7 +86,7 @@ body .overlay {
      }
 }
 
-@media (min-width:2880px){
+@media (min-width:3000px){
     .main{
         height:100vh !important;
         display: flex;
@@ -242,7 +262,7 @@ body .overlay {
 }
 .tag .match,.content.tag,.app-download{display: none}
 .content.tag{white-space: normal !important;}
-@media only screen and (max-width: 1024px) and (min-width: 320px)  {
+@media only screen and (orientation:portrait) and (max-width: 1024px) and (min-width: 320px)  {
     body{line-height: 0;}
     html {overflow-y: auto;}
     .w-100{max-width: 100% !important;flex: 0 0 100% !important;width: 100% !important;}
