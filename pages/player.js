@@ -85,12 +85,12 @@ class Player extends React.Component {
 
                   <div className="d-none">
                     <div style={{ marginTop: '30px', width: '50%' }}>
-                      <FontAwesomeIcon className="commentIcon" icon={faCommentDots} style={{ width: '6%', color: 'white', right: '79%', zIndex: '999999', position: 'absolute', top: '93.2%' }} />
+                      <img src={require('../images/ic_replies.png')} alt="" style={{ width: '6%', color: 'white', right: '79%', zIndex: '999999', position: 'absolute', top: '93.2%' }}/>
                       <span className="commentxt" style={{ lineHeight: '28px', width: '6%', color: 'white', right: '72%', zIndex: '999999', position: 'absolute', top: '93%', fontSize: '16pt', fontFamily: 'AvenirNext-DemiBold' }}>{this.props.noOfConversation}
                         <sub style={{ position: 'relative', fontSize: '10pt', bottom: '6px' }}>replies</sub></span>
                     </div>
-                    <div style={{ width: '50%' }}>
-                      <FontAwesomeIcon className="eyeIcon" icon={faEye} style={{ width: '6%', color: 'white', right: '51%', zIndex: '999999', position: 'absolute', top: '93.2%' }} />
+                    <div style={{ width: '50%' }}>                      
+                      <img src={require('../images/ic_views.png')} alt="" style={{ width: '6%', color: 'white', right: '51%', zIndex: '999999', position: 'absolute', top: '93%' }}/>
                       <span className="viewtxt" style={{ lineHeight: '28px', width: '9%', color: 'white', right: '40%', zIndex: '999999', position: 'absolute', top: '93%', fontSize: '16pt', fontFamily: 'AvenirNext-DemiBold' }}>{this.props.noOfViews}
                         <sub style={{ position: 'relative', fontSize: '10pt', bottom: '6px', left: '2px' }}>views</sub></span>
                     </div>
@@ -137,16 +137,28 @@ class Player extends React.Component {
                   </Link> to reply and make genuin connection</div>
                   <div className="sociallink" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '13.9pt', margin: '2% 0', direction: 'rtl' }}>
                     <Link href="/">
-                      <a id="whatsappIcon"><FontAwesomeIcon icon={faWhatsapp} style={{ width: '5%', height: '5%' }} /></a>
+                      <a id="whatsappIcon">
+                        
+                        <img src={require('../images/ic_whatsapp.png')} />
+                        </a>
                     </Link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                 <Link href="/">
-                      <a id="instaIcon"><FontAwesomeIcon icon={faInstagram} style={{ width: '5%', height: '5%' }} /></a>
+                      <a id="instaIcon">
+                        
+                        <img src={require('../images/ic_insta.png')} />
+                        </a>
                     </Link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                     <Link href="/">
-                      <a id="twitterIcon"><FontAwesomeIcon icon={faTwitter} style={{ width: '6%', height: '5%' }} /></a>
+                      <a id="twitterIcon">
+                        
+                        <img src={require('../images/ic_twitter.png')} />
+                        </a>
                     </Link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                     <Link href="/">
-                      <a id="facebookIcon"><FontAwesomeIcon icon={faFacebookF} style={{ width: '4%', height: '5%' }} /></a>
+                      <a id="facebookIcon">
+                        
+                        <img src={require('../images/ic_facebook.png')} />
+                        </a>
                     </Link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                 </div>
                   <div className="media-link padding-0" style={{ width: '100%', height: '29pt', border: '1px #0094D0 solid', borderRadius: '9px', padding: '4px', color: ' #333333' }}>
