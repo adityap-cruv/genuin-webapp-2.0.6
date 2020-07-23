@@ -84,12 +84,12 @@ class Player extends React.Component {
 
                   <div className="d-none">
                     <div style={{ marginTop: '30px', width: '50%' }}>
-                      <FontAwesomeIcon className="commentIcon" icon={faCommentDots} style={{ width: '6%', color: 'white', right: '79%', zIndex: '999999', position: 'absolute', top: '93.2%' }} />
+                      <img src={require('../images/ic_replies.png')} alt="" style={{ width: '6%', color: 'white', right: '79%', zIndex: '999999', position: 'absolute', top: '93.2%' }}/>
                       <span className="commentxt" style={{ lineHeight: '28px', width: '6%', color: 'white', right: '72%', zIndex: '999999', position: 'absolute', top: '93%', fontSize: '16pt', fontFamily: 'AvenirNext-DemiBold' }}>{this.props.noOfConversation}
                         <sub style={{ position: 'relative', fontSize: '10pt', bottom: '6px' }}>replies</sub></span>
                     </div>
-                    <div style={{ width: '50%' }}>
-                      <FontAwesomeIcon className="eyeIcon" icon={faEye} style={{ width: '6%', color: 'white', right: '51%', zIndex: '999999', position: 'absolute', top: '93.2%' }} />
+                    <div style={{ width: '50%' }}>                      
+                      <img src={require('../images/ic_views.png')} alt="" style={{ width: '6%', color: 'white', right: '51%', zIndex: '999999', position: 'absolute', top: '93%' }}/>
                       <span className="viewtxt" style={{ lineHeight: '28px', width: '9%', color: 'white', right: '40%', zIndex: '999999', position: 'absolute', top: '93%', fontSize: '16pt', fontFamily: 'AvenirNext-DemiBold' }}>{this.props.noOfViews}
                         <sub style={{ position: 'relative', fontSize: '10pt', bottom: '6px', left: '2px' }}>views</sub></span>
                     </div>
