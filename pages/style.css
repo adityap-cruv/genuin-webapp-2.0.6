@@ -2,6 +2,13 @@ html {overflow-y: hidden}
 .card{
     margin: 0 auto;
 }
+.urltxt{
+    max-width: 270px;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 body .overlay {
     height: 100%;
     width: 100%;

@@ -2,7 +2,6 @@ import React from 'react';
 import NextHead from 'next/head';
 import { NextSeo } from 'next-seo';
 import '../pages/style.css'
-
 const Layout = ({ children, title, content, description, currentUrl, keyword }) => (
   <div>
     <style jsx>{`

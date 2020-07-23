@@ -9,8 +9,7 @@ import Highlighter from "react-highlight-words";
 import Link from 'next/link';
 import Microlink from '@microlink/react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes, faPlay, faPause, faCommentDots, faEye, faEyeDropper } from "@fortawesome/free-solid-svg-icons";
-import { faFacebookF, faInstagram, faWhatsapp, faTwitter } from "@fortawesome/free-brands-svg-icons";
+import { faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
 import Error from 'next/error';
 
 class Player extends React.Component {
@@ -21,7 +20,8 @@ class Player extends React.Component {
       playedSeconds: 0,
       loaded: 0,
       playing: false,
-      buttonVisible: 'block'
+      buttonVisible: 'block',
+      baseUrl: ''
     };
     if (typeof window === 'undefined') {
       global.window = {}
@@ -29,31 +29,27 @@ class Player extends React.Component {
   }
 
   handleCopy = state => {
-    copy(this.props.link);
+    copy(this.state.baseUrl);
     this.setState({ copyText: "Copied!" });
   }
 
   handlePlay = () => {
-    console.log('onPlay')
     this.setState({ playing: true })
     this.setState({ buttonVisible: 'none' })
   }
 
   handlePause = () => {
-    console.log('onPause')
     this.setState({ playing: false })
     this.setState({ buttonVisible: 'block' })
   }
 
   handleProgress = state => {
-    console.log('onProgress', state)
     // We only want to update time slider if we are not currently seeking
     if (!this.state.seeking) {
       this.setState(state)
     }
   }
   handlePlayPause = () => {
-    console.log(this.state.playing)
     this.setState({ playing: !this.state.playing })
   }
 
@@ -61,7 +57,7 @@ class Player extends React.Component {
   render() {
     if (this.props.videoUrl == undefined || this.props.videoUrl == null || this.props.videoUrl == '') return <Error statusCode="404" />;
     const hashtags = this.props.description.match(/#\w+/g) || [];
-    const currentUrl = process.env.hostname + this.props.asPath;
+    this.state.baseUrl = process.env.hostname + this.props.asPath;
     let preview = '';
     if (this.props.link == '' || this.props.link == undefined || this.props.link == null) {
       preview = '';
@@ -69,7 +65,7 @@ class Player extends React.Component {
       preview = <Microlink url={this.props.link} style={{ maxWidth: '783px', height: '100px', backgroundColor: 'lightgrey' }} />
     }
     return (
-      <Layout title="Genuin" content={this.props.videoThumbnail} description={this.props.description} currentUrl={currentUrl} keyword='genuine'>
+      <Layout title="Genuin" content={this.props.videoThumbnail} description={this.props.description} currentUrl={this.state.baseUrl} keyword='genuine'>
         <Card style={{ width: '50rem', height: '99%', borderRadius: '10px' }}>
           <Card.Body >
             <Container fluid="md">
@@ -84,13 +80,13 @@ class Player extends React.Component {
 
                   <div className="d-none">
                     <div style={{ marginTop: '30px', width: '50%' }}>
-                      <FontAwesomeIcon className="commentIcon" icon={faCommentDots} style={{ width: '6%', color: 'white', right: '79%', zIndex: '999999', position: 'absolute', top: '93.2%' }} />
-                      <span className="commentxt" style={{ lineHeight: '28px', width: '6%', color: 'white', right: '72%', zIndex: '999999', position: 'absolute', top: '93%', fontSize: '16pt', fontFamily: 'AvenirNext-DemiBold' }}>{this.props.noOfConversation}
+                      <img src={require('../images/ic_replies.png')} alt="" style={{ width: '6%', color: 'white', right: '79%', zIndex: '999999', position: 'absolute', top: '91%' }} />
+                      <span className="commentxt" style={{ lineHeight: '28px', width: '6%', color: 'white', right: '72%', zIndex: '999999', position: 'absolute', top: '91%', fontSize: '16pt', fontFamily: 'AvenirNext-DemiBold' }}>{this.props.noOfConversation}
                         <sub style={{ position: 'relative', fontSize: '10pt', bottom: '6px' }}>replies</sub></span>
                     </div>
                     <div style={{ width: '50%' }}>
-                      <FontAwesomeIcon className="eyeIcon" icon={faEye} style={{ width: '6%', color: 'white', right: '51%', zIndex: '999999', position: 'absolute', top: '93.2%' }} />
-                      <span className="viewtxt" style={{ lineHeight: '28px', width: '9%', color: 'white', right: '40%', zIndex: '999999', position: 'absolute', top: '93%', fontSize: '16pt', fontFamily: 'AvenirNext-DemiBold' }}>{this.props.noOfViews}
+                      <img src={require('../images/ic_views.png')} alt="" style={{ width: '6%', color: 'white', right: '51%', zIndex: '999999', position: 'absolute', top: '91%' }} />
+                      <span className="viewtxt" style={{ lineHeight: '28px', width: '9%', color: 'white', right: '40%', zIndex: '999999', position: 'absolute', top: '91%', fontSize: '16pt', fontFamily: 'AvenirNext-DemiBold' }}>{this.props.noOfViews}
                         <sub style={{ position: 'relative', fontSize: '10pt', bottom: '6px', left: '2px' }}>views</sub></span>
                     </div>
                   </div>
@@ -131,40 +127,53 @@ class Player extends React.Component {
                       textToHighlight={this.props.description}
                     />
                   </div>
-                  <div className="applink" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '13.9pt', marginTop: '0%', color: ' #333333' }}>        <Link href="/">
-                    <a style={{ color: '#0645FF' }}>Get the App</a>
-                  </Link> to reply and make genuin connection</div>
+                  <div className="applink" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '13.9pt', marginTop: '0%', color: ' #333333' }}>
+                    <Link href={this.props.asPath}>
+                      <a style={{ color: '#0645FF' }}>Get the App</a>
+                    </Link> to reply and make genuin connection</div>
                   <div className="sociallink" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '13.9pt', margin: '2% 0', direction: 'rtl' }}>
-                    <Link href="/">
-                      <a id="whatsappIcon"><FontAwesomeIcon icon={faWhatsapp} style={{ width: '5%', height: '5%' }} /></a>
+                    <Link href={this.props.asPath}>
+                      <a id="whatsappIcon">
+
+                        <img src={require('../images/ic_whatsapp.png')} />
+                      </a>
                     </Link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                <Link href="/">
-                      <a id="instaIcon"><FontAwesomeIcon icon={faInstagram} style={{ width: '5%', height: '5%' }} /></a>
+                                <Link href={this.props.asPath}>
+                      <a id="instaIcon">
+
+                        <img src={require('../images/ic_insta.png')} />
+                      </a>
                     </Link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                    <Link href="/">
-                      <a id="twitterIcon"><FontAwesomeIcon icon={faTwitter} style={{ width: '6%', height: '5%' }} /></a>
+                                    <Link href={this.props.asPath}>
+                      <a id="twitterIcon">
+
+                        <img src={require('../images/ic_twitter.png')} />
+                      </a>
                     </Link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                    <Link href="/">
-                      <a id="facebookIcon"><FontAwesomeIcon icon={faFacebookF} style={{ width: '4%', height: '5%' }} /></a>
+                                    <Link href={this.props.asPath}>
+                      <a id="facebookIcon">
+
+                        <img src={require('../images/ic_facebook.png')} />
+                      </a>
                     </Link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                 </div>
                   <div className="media-link padding-0" style={{ width: '100%', height: '29pt', border: '1px #0094D0 solid', borderRadius: '9px', padding: '4px', color: ' #333333' }}>
-                    <span className="urltxt" style={{ fontSize: '12pt', fontFamily: 'AvenirNext-DemiBold', fontWeight: 'bold', cursor: 'default', display: 'inline-block', margin: '2px 0 0 6px' }}>
-                      {this.props.link}
+                    <span className="urltxt" style={{ fontSize: '12pt', fontFamily: 'AvenirNext-DemiBold', fontWeight: 'bold', cursor: 'default', display: '-webkit-box', margin: '2px 0 0 6px' }}>
+                      {this.state.baseUrl}
                     </span>&nbsp;&nbsp;
-                      <span class="copytxt" style={{ color: '#FF0000', fontFamily: 'AvenirNext-Bold', textTransform: 'uppercase', margin: '7px 6px 0 0', textAlign: 'right', fontSize: '10pt', cursor: 'pointer', 'display': 'inline-block', 'float': 'right' }} onClick={this.handleCopy}>
-                      {this.state.copyText}
-                    </span>
+                      <span class="copytxt" style={{ color: '#FF0000', fontFamily: 'AvenirNext-Bold', textTransform: 'uppercase', margin: '7px 6px 0 0', textAlign: 'right', fontSize: '10pt', cursor: 'pointer', 'display': 'inline-block', 'float': 'right', 'position': 'relative', 'top': '-28px' }} onClick={this.handleCopy}>
+                    {this.state.copyText}
+                  </span>
                   </div>
                 </Col>
               </Row>
-              <Row className="d-none">
-                <Col md={12}>
-                  <div className='linkPreview' style={{ marginTop: '7px' }}>
-                    {preview}
-                  </div>
-                </Col>
-              </Row>
+            <Row className="d-none">
+              <Col md={12}>
+                <div className='linkPreview' style={{ marginTop: '7px' }}>
+                  {preview}
+                </div>
+              </Col>
+            </Row>
             </Container>
           </Card.Body>
         </Card>
