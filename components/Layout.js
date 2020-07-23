@@ -20,9 +20,14 @@ const Layout = ({ children, title, content, description, currentUrl, keyword }) 
       src: url('/fonts/AvenirNext-Regular-08.ttf');
       src: url('/fonts/AvenirNext-UltraLight-11.ttf');
       src: url('/fonts/AvenirNext-UltraLightItalic-12.ttf');
+    }  
+    @font-face {
+      font-family: 'AvenirNext-DemiBold';
+      src: url('/fonts/AvenirNext-DemiBold-03.ttf');
     }
-    .main {
-      font-family: 'AvenirNext';
+    @font-face {
+      font-family: 'AvenirNext-Bold';
+      src: url('/fonts/AvenirNext-Bold-01.ttf');
     }
       `}</style>
     <NextSeo

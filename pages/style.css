@@ -13,7 +13,7 @@ body .overlay {
     opacity: 0.4;
 }
 #whatsappIcon, #facebookIcon, #twitterIcon, #instaIcon{
-    color:#4a4a4a
+    color:#000000;
 }
 @media (max-width:2880px){
     .main{
@@ -65,7 +65,7 @@ body .overlay {
      }
 }
 
-@media (min-width:2560px){
+@media (min-width:2880px){
     .main{
         height:100vh !important;
         display: flex;
@@ -139,9 +139,9 @@ body .overlay {
         display: block;
         word-break: break-word;
     } 
-    .card{
+    /* .card{
         height: auto !important;
-    }   
+    }    */
 }
 @media (max-width:773px){
     .media-link{
@@ -168,8 +168,8 @@ body .overlay {
 	}
 	.react-player{
         margin: 0 auto;
-        height: 528px !important;
-	    width: 300px !important;
+        height: 528px ;
+	    width: 300px ;
     }
     .applink{
         margin-top: 0 !important;
@@ -238,4 +238,18 @@ body .overlay {
     display: block;
     word-break: break-word;
 }
+}
+.tag .match,.content.tag{display: none}
+@media only screen and (max-width: 1024px) and (min-width: 320px)  {
+    body{line-height: 0;}
+    html {overflow-y: auto;}
+    .w-100{max-width: 100% !important;flex: 0 0 100% !important;width: 100% !important;}
+    .padding-0{padding: 0 !important;}
+    .main{background-image: none !important;}
+    .card {background-color: transparent;box-shadow: none;height: 100% !important;}
+    .d-block,.content.tag{display: block !important;}
+    .tag .match{display: inline-block !important;background-color:transparent !important;color: #FFFFFF;}
+    .match,.content,.d-none{display: none !important;}
+    .react-player{height: 100% !important;width: 100% !important;margin-top: 0 !important;border-radius:0px !important}
+    .card{width: 100% !important;}
 }
