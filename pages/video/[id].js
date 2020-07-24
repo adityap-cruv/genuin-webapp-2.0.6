@@ -2,7 +2,7 @@ import { useRouter } from 'next/router';
 import Player from '../player';
 import axios from 'axios';
 const Page = (props) => {
-  console.log("response", props);
+  console.log(props);
   return (
     <Player {...props.data} {...props.url} />
   )
