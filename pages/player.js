@@ -62,7 +62,7 @@ class Player extends React.Component {
     if (this.props.link == '' || this.props.link == undefined || this.props.link == null) {
       preview = '';
     } else {
-      preview = <Microlink url="https://www.iconflux.com" style={{ maxWidth: '783px', height: '100px', backgroundColor: 'lightgrey' }} />
+      preview = <Microlink url={this.props.link} style={{ maxWidth: '783px', height: '100px', backgroundColor: 'lightgrey' }} />
     }
     return (
       <Layout title="Genuin" content={this.props.videoThumbnail} description={this.props.description} currentUrl={this.state.baseUrl} keyword='genuine'>
