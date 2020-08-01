@@ -8,8 +8,8 @@ module.exports = withImages(withCSS(withFonts({
     },
     env: {
         // hostname:'http://localhost:3000'
-        hostname: 'http://134.209.152.229:4000',
-        apiurl: 'http://134.209.152.229:9092',
+        hostname: 'https://app.begenuin.com',
+        apiurl: 'http://172.31.47.136:9092',
         genuinurl: 'http://begenuine.com/',
     }
 })));
