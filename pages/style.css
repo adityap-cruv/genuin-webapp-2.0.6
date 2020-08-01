@@ -159,7 +159,7 @@ body .overlay {
      }
 }
 
-.react-player{display: inline-block;width: auto !important;height: 568px !important;background: rgb(0 0 0 / 44%);height:calc(100vh - 142px) !important;}
+.react-player{display: inline-block;width: auto !important;height: 568px !important;background: black;height:calc(100vh - 142px) !important;}
 .content{height: calc(100% - 174px) !important;}
 .url-block{position: absolute;bottom: -12px;padding-right: 15px;}
 .padding-0{padding: 0;}
