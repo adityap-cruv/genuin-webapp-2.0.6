@@ -62,29 +62,30 @@ class Player extends React.Component {
     if (this.props.link == '' || this.props.link == undefined || this.props.link == null) {
       preview = '';
     } else {
-      preview = <Microlink url={this.props.link} style={{ maxWidth: '783px', height: '100px', backgroundColor: 'lightgrey' }} />
+      preview = <Microlink url="https://www.iconflux.com" style={{ maxWidth: '783px', height: '100px', backgroundColor: 'lightgrey' }} />
     }
     return (
       <Layout title="Genuin" content={this.props.videoThumbnail} description={this.props.description} currentUrl={this.state.baseUrl} keyword='genuine'>
-        <Card style={{ width: '50rem', height: '99%', borderRadius: '10px' }}>
+        <Card style={{ width: '50rem', borderRadius: '10px' }}>
+          <div className="main-meddle">
           <Card.Body >
             <Container fluid="md">
-              <Row className="d-block">
+              <Row className="d-block bg-white">
                 <Col md={6} className="padding-0 w-100">
                   <span className="d-none" style={{
                     position: 'absolute', top: '4%', left: '16%', zIndex: '1', fontFamily: 'AvenirNext-DemiBold',
-                    // color: '#FFFFFF',
+                     color: '#FFFFFF',
                     fontSize: '16pt'
                   }}>{this.state.playedSeconds.toFixed(0)} Sec</span>
                   <FontAwesomeIcon icon={this.state.playing ? faPause : faPlay} className="playbtn" onClick={this.handlePlayPause} style={{ color: 'rgb(255 255 255 / 0.4)', width: '14%', cursor: 'pointer', right: '44%', zIndex: '999999', position: 'absolute', top: '44%', display: this.state.buttonVisible }} />
 
                   <div className="d-none">
-                    <div style={{ marginTop: '30px', width: '50%' }}>
+                    <div className="icon-position" style={{ marginTop: '30px', width: '50%' }}>
                       <img src={require('../images/ic_replies.png')} alt="" style={{ width: '6%', color: 'white', right: '79%', zIndex: '999999', position: 'absolute', top: '91%' }} />
                       <span className="commentxt" style={{ lineHeight: '28px', width: '6%', color: 'white', right: '72%', zIndex: '999999', position: 'absolute', top: '91%', fontSize: '16pt', fontFamily: 'AvenirNext-DemiBold' }}>{this.props.noOfConversation}
                         <sub style={{ position: 'relative', fontSize: '10pt', bottom: '6px' }}>replies</sub></span>
                     </div>
-                    <div style={{ width: '50%' }}>
+                    <div className="icon-position" style={{ width: '50%' }}>
                       <img src={require('../images/ic_views.png')} alt="" style={{ width: '6%', color: 'white', right: '51%', zIndex: '999999', position: 'absolute', top: '91%' }} />
                       <span className="viewtxt" style={{ lineHeight: '28px', width: '9%', color: 'white', right: '40%', zIndex: '999999', position: 'absolute', top: '91%', fontSize: '16pt', fontFamily: 'AvenirNext-DemiBold' }}>{this.props.noOfViews}
                         <sub style={{ position: 'relative', fontSize: '10pt', bottom: '6px', left: '2px' }}>views</sub></span>
@@ -102,10 +103,10 @@ class Player extends React.Component {
                     className='react-player fixed-bottom'
                     url={this.props.videoUrl}
                     playing={this.state.playing}
-                    width='350px'
-                    height='620px'
+                    display='inline-block'
+                  
                     style={{
-                      marginTop: '-3%', borderRadius: '22px', overflow: 'hidden', cursor: 'pointer'
+                      marginTop: '-4%', borderRadius: '20px', overflow: 'hidden', cursor: 'pointer'
                     }}
                     controls={false}
                     // light={true}
@@ -118,8 +119,8 @@ class Player extends React.Component {
                     <img src="https://imgur.com/URiFQhg.png" alt="imges" style={{ position: 'absolute', bottom: '0px', padding: '0 20px', maxWidth: '100%', left: '50%', transform: 'translate(-50%, -50%)' }} />
                   </div>
                 </Col>
-                <Col md={6} className="d-none" style={{ paddingLeft: '0px', paddingRight: '30px' }}>
-                  <div className="content" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '28pt', marginTop: '15px', marginBottom: '10px', height: '476px', overflowX: 'hidden' }}>
+                <Col md={6} className="d-none" style={{ paddingLeft: '0px', paddingRight: '15px' }}>
+                  <div className="content" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '28pt', marginTop: '15px', marginBottom: '10px', height: '408px', overflowX: 'hidden' }}>
                     <Highlighter
                       highlightStyle={{ backgroundColor: '#bfe4f3' }}
                       highlightClassName="match"
@@ -127,6 +128,7 @@ class Player extends React.Component {
                       textToHighlight={this.props.description}
                     />
                   </div>
+                  <div className="url-block">
                   <div className="applink" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '13.9pt', marginTop: '0%', color: ' #333333' }}>
                     <Link href={this.props.asPath}>
                       <a style={{ color: '#0645FF' }}>Get the App</a>
@@ -157,6 +159,7 @@ class Player extends React.Component {
                       </a>
                     </Link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                 </div>
+                                
                   <div className="media-link padding-0" style={{ width: '100%', height: '29pt', border: '1px #0094D0 solid', borderRadius: '9px', padding: '4px', color: ' #333333' }}>
                     <span className="urltxt" style={{ fontSize: '12pt', fontFamily: 'AvenirNext-DemiBold', fontWeight: 'bold', cursor: 'default', display: '-webkit-box', margin: '2px 0 0 6px' }}>
                       {this.state.baseUrl}
@@ -165,17 +168,19 @@ class Player extends React.Component {
                     {this.state.copyText}
                   </span>
                   </div>
+                  </div>
                 </Col>
-              </Row>
-            <Row className="d-none">
-              <Col md={12}>
-                <div className='linkPreview' style={{ marginTop: '7px' }}>
+
+                <Col md={12} className="bg-white padding-0">
+                <div className='linkPreview d-none' style={{ marginTop: '7px' }}>
                   {preview}
                 </div>
               </Col>
-            </Row>
+              </Row>
+             
             </Container>
           </Card.Body>
+          </div>
         </Card>
       </Layout >
     );
