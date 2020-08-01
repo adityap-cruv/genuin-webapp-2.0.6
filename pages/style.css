@@ -17,7 +17,7 @@ body .overlay {
     left: 0px;
     z-index: 0;
     background: #000000;
-    opacity: 0.4;
+    opacity: 0.7;
 }
 .my{margin-right: auto;margin-left: auto;}
 #whatsappIcon, #facebookIcon, #twitterIcon, #instaIcon{
@@ -44,6 +44,8 @@ body .overlay {
     .fa-play{
         width: 7% !important;
     }
+    .main-meddle,.bg-white{display: block !important;background-color: transparent !important;}
+    .react-player.fixed-bottom{height: 94vh !important;display: block !important;}
  }
 @media (max-width:3000px){
     .main{
@@ -156,6 +158,18 @@ body .overlay {
         margin-top: 117% !important;
      }
 }
+
+.react-player{display: inline-block;width: auto !important;height: 568px !important;background: black;height:calc(100vh - 142px) !important;}
+.content{height: calc(100% - 174px) !important;}
+.url-block{position: absolute;bottom: -12px;padding-right: 15px;}
+.padding-0{padding: 0;}
+/*.main-meddle{display: flex;align-items: center;justify-content: center;height: 100%;background: #000000;}
+.bg-white{background: #fff;}
+video{height: 612px !important;}
+ @media (min-width: 1240px) and (max-width: 1440px){
+    .react-player{height: 580px !important;}
+    .icon-position img,.icon-position .commentxt, .icon-position .viewtxt{top: 84% !important;}
+} */
 @media (max-width:1440px){
     .main{
         height:100vh !important;
@@ -283,4 +297,6 @@ body .overlay {
     .match,.content,.d-none{display: none !important;}
     .react-player{height: 100% !important;width: 100% !important;margin-top: 0 !important;border-radius:0px !important}
     .card{width: 100% !important;}
+
+    .main-meddle {display: block;}    
 }
