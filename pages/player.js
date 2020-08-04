@@ -71,7 +71,9 @@ class Player extends React.Component {
     if (this.props.link == '' || this.props.link == undefined || this.props.link == null) {
       preview = '';
     } else {
-      preview = <Microlink url="https://www.iconflux.com" style={{ maxWidth: '783px', height: '100px', backgroundColor: 'lightgrey', borderRadius:'5px' }} />
+      var metaLink = this.props.link;
+      metaLink = (metaLink.indexOf('://') === -1) ? 'http://' + metaLink : metaLink;
+      preview = <Microlink media='logo' url={metaLink} style={{ maxWidth: '783px', height: '100px', backgroundColor: 'lightgrey', borderRadius:'5px' }} />
     }
     return (
       <Layout title="Genuin" content={this.props.videoThumbnail} description={this.props.description} currentUrl={this.state.baseUrl} keyword='genuine'>
@@ -210,7 +212,7 @@ class Player extends React.Component {
                     <span className="urltxt" style={{ fontSize: '12pt', fontFamily: 'AvenirNext-DemiBold', fontWeight: 'bold', cursor: 'default', display: '-webkit-box', margin: '2px 0 0 6px' }}>
                       {this.state.baseUrl}
                     </span>&nbsp;&nbsp;
-                      <span class="copytxt" style={{ color: '#FF0000', fontFamily: 'AvenirNext-Bold', textTransform: 'uppercase', margin: '7px 6px 0 0', textAlign: 'right', fontSize: '10pt', cursor: 'pointer', 'display': 'inline-block', 'float': 'right', 'position': 'relative', 'top': '-28px' }} onClick={this.handleCopy}>
+                      <span className="copytxt" style={{ color: '#FF0000', fontFamily: 'AvenirNext-Bold', textTransform: 'uppercase', margin: '7px 6px 0 0', textAlign: 'right', fontSize: '10pt', cursor: 'pointer', 'display': 'inline-block', 'float': 'right', 'position': 'relative', 'top': '-28px' }} onClick={this.handleCopy}>
                     {this.state.copyText}
                   </span>
                   </div>
