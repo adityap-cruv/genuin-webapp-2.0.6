@@ -147,6 +147,7 @@ class Player extends React.Component {
                         </div>
 
                         <div className="btn-width">
+                          {this.props.installLink}
                         <Link href={this.props.installLink}>
                           <a target="_blank">Install</a>
                         </Link>
