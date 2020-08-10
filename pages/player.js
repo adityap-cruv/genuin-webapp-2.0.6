@@ -147,7 +147,9 @@ class Player extends React.Component {
                         </div>
 
                         <div className="btn-width">
-                        <a href={this.props.installLink} target="_blank">Install</a>
+                        <Link href={this.props.installLink}>
+                          <a target="_blank">Install</a>
+                        </Link>
                       </div>
                     </div>
                     </a>
@@ -166,8 +168,8 @@ class Player extends React.Component {
                   </div>
                   <div className="url-block">
                   <div className="applink" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '13.9pt', marginTop: '0%', color: ' #333333' }}>
-                    <Link href={this.props.asPath}>
-                      <a href={this.props.installDesktopLink} style={{ color: '#0645FF' }}>Get the App</a>
+                    <Link href={this.props.installDesktopLink}>
+                      <a target="_blank" style={{ color: '#0645FF' }}>Get the App</a>
                     </Link> to reply and make genuin connection</div>
                   <div className="sociallink" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '13.9pt', margin: '2% 0', direction: 'rtl' }}>
                     <WhatsappShareButton url={this.state.baseUrl} >
