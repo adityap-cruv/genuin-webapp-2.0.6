@@ -127,35 +127,29 @@ class Player extends React.Component {
                   />
                   <div className="my app-download">
                     {/* <img src="https://imgur.com/URiFQhg.png" alt="imges" style={{ position: 'absolute', bottom: '0px', padding: '0 20px', maxWidth: '100%', left: '50%', transform: 'translate(-50%, -50%)' }} /> */}
-                    <a href="https://www.begenuin.com/" target="_blank">
-                    <div className="mobile-app-download-btn">
-                        <div className="inner-block">
-                        <Media>
-                          <img
-                            width={42}
-                            height={42}
-                            className="mr-3"
-                            src={require('../images/genuin_app_icon.png')} alt="Generic"
-                          />
-                          <Media.Body>
-                            <h5>Genuin App</h5>
-                            <p>
-                            Connect with real people
-                            </p>
-                          </Media.Body>
-                        </Media>
-                        </div>
-
-                        <div className="btn-width">
-                          {this.props.installLink}
-                        <Link href={this.props.installLink}>
-                          <a target="_blank">Install</a>
-                        </Link>
+                    {/* <a href="https://www.begenuin.com/" target="_blank"> */}
+                      <div className="mobile-app-download-btn">
+                          <div className="inner-block">
+                            <Media>
+                              <img
+                                width={42}
+                                height={42}
+                                className="mr-3"
+                                src={require('../images/genuin_app_icon.png')} alt="Generic"
+                              />
+                              <Media.Body>
+                                <h5>Genuin App</h5>
+                                <p>
+                                Connect with real people
+                                </p>
+                              </Media.Body>
+                            </Media>
+                          </div>
+                          <div className="btn-width">
+                              <a href="https://www.begenuin.com/" target="_blank">Install</a>
+                          </div>
                       </div>
-                    </div>
-                    </a>
-
-                 
+                    {/* </a> */}
                   </div>
                 </Col>
                 <Col md={6} className="d-none" style={{ paddingLeft: '0px', paddingRight: '15px' }}>
@@ -169,7 +163,7 @@ class Player extends React.Component {
                   </div>
                   <div className="url-block">
                   <div className="applink" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '13.9pt', marginTop: '0%', color: ' #333333' }}>
-                    <Link href={this.props.installDesktopLink}>
+                    <Link href={this.props.asPath}>
                       <a target="_blank" style={{ color: '#0645FF' }}>Get the App</a>
                     </Link> to reply and make genuin connection</div>
                   <div className="sociallink" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '13.9pt', margin: '2% 0', direction: 'rtl' }}>
