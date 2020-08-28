@@ -171,7 +171,7 @@ class Player extends React.Component {
                   </div>
                   <div className="url-block">
                   <div className="applink" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '13.9pt', marginTop: '0%', color: ' #333333' }}>
-                    <Link href={this.props.asPath}>
+                    <Link href={process.env.genuinurl}>
                       <a target="_blank" style={{ color: '#0645FF' }}>Get the App</a>
                     </Link> to reply and make genuin connection</div>
                   <div className="sociallink" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '13.9pt', margin: '2% 0', direction: 'rtl' }}>
