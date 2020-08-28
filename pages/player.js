@@ -154,7 +154,7 @@ class Player extends React.Component {
                             </Media>
                           </div>
                           <div className="btn-width">
-                              <a href="https://www.begenuin.com/" target="_blank">Install</a>
+                              <a href={this.props.installUrl} target="_blank">Install</a>
                           </div>
                       </div>
                     {/* </a> */}
