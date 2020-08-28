@@ -2,7 +2,7 @@ import React from 'react';
 import NextHead from 'next/head';
 import { NextSeo } from 'next-seo';
 import '../pages/style.css'
-const Layout = ({ children, title, metaImage, content, description, currentUrl, keyword }) => (
+const Layout = ({ children, title, metaImage, metaImageWidth, metaImageHeight, content, description, currentUrl, keyword }) => (
   <div>
     <style jsx>{`
     @font-face {
@@ -39,16 +39,10 @@ const Layout = ({ children, title, metaImage, content, description, currentUrl, 
         images: [
           {
             url: metaImage,
-            width: 300,
-            height: 200,
+            width: metaImageWidth,
+            height: metaImageHeight,
             alt: 'Genuin',
-          },
-          {
-            url: content,
-            width: 800,
-            height: 600,
-            alt: 'Genuin',
-          },
+          }
         ],
         site_name: 'Genuin',
       }}
