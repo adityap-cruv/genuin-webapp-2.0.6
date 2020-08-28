@@ -8,7 +8,7 @@ module.exports = withImages(withCSS(withFonts({
     },
     env: {
         // hostname:'http://localhost:3000'
-        hostname: 'http://159.89.201.211:4000',
+        hostname: 'http://app.qa.begenuin.com',
         apiurl: 'http://159.89.201.211:9092',
         genuinurl: 'https://begenuin.com/',
     }
