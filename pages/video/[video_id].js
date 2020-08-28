@@ -3,12 +3,6 @@ import Player from '../player';
 import axios from 'axios';
 const Page = (props) => {
   console.log(props);
-  const router = useRouter();
-  const { video_id } = router.query
-  // console.log('video_id', video_id);
-  // if(query.video_id !== undefined && query.video_id !== null && query.video_id !== ''){
-  //     window.location.href = `${process.env.hostname}/video/${query.video_id}`
-  // }
   return (
     <Player {...props.data} {...props.url} />
   )
