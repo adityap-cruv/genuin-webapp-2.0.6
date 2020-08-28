@@ -7,9 +7,9 @@ const Page = (props) => {
     <Player {...props.data} {...props.url} />
   )
 }
-Page.getInitialProps = async ({ query: { id } }) => {
+Page.getInitialProps = async ({ query: { video_id } }) => {
 
-  return axios.post(process.env.apiurl+ "/api/v3/users/video/meta_data/" + id)
+  return axios.post(process.env.apiurl+ "/api/v3/users/video/meta_data/" + video_id)
     .then(response => {
       return Promise.resolve({ data: response.data.data })
     })
