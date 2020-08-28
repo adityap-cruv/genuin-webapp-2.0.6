@@ -79,8 +79,8 @@ class Player extends React.Component {
     let metaImageHeight = 200;
     if (this.props.videoShareImage != '' && this.props.videoShareImage != undefined && this.props.videoShareImage != null) {
       metaImage = this.props.videoShareImage;
-      metaImageWidth = 800;
-      metaImageHeight = 600;
+      metaImageWidth = 1200;
+      metaImageHeight = 628;
     }
     return (
       <Layout title="Genuin" metaImageWidth={metaImageWidth} metaImageHeight={metaImageHeight} metaImage={metaImage} content={this.props.videoThumbnail} description={this.props.description} currentUrl={this.state.baseUrl} keyword='genuine'>
