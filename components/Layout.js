@@ -42,6 +42,12 @@ const Layout = ({ children, title, metaImage, metaImageWidth, metaImageHeight, c
             width: metaImageWidth,
             height: metaImageHeight,
             alt: 'Genuin',
+          },
+          {
+            url: content,
+            width: 300,
+            height: 200,
+            alt: 'Genuin',
           }
         ],
         site_name: 'Genuin',
