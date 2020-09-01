@@ -7,7 +7,7 @@ const Page = (props) => {
   const { video_id } = router.query
   // console.log('video_id', video_id)
   return (
-    <Player {...props.data} {...props.url} installUrl={'https://install.begenuin.com/86sn?pid=Genuin&video_id='+video_id} />
+    <Player {...props.data} {...props.url} installUrl={process.env.installurl+video_id} />
   )
 }
 Page.getInitialProps = async ({ query: { video_id } }) => {
