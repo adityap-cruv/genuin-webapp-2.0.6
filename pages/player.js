@@ -74,8 +74,16 @@ class Player extends React.Component {
       metaLink = (metaLink.indexOf('://') === -1) ? 'http://' + metaLink : metaLink;
       preview = <Microlink media='logo' url={metaLink} style={{ maxWidth: '783px', height: '100px', backgroundColor: 'lightgrey', borderRadius:'5px' }} />
     }
+    let metaImage = this.props.videoThumbnail;
+    let metaImageWidth = 300;
+    let metaImageHeight = 200;
+    if (this.props.videoShareImage != '' && this.props.videoShareImage != undefined && this.props.videoShareImage != null) {
+      metaImage = this.props.videoShareImage;
+      metaImageWidth = 1200;
+      metaImageHeight = 628;
+    }
     return (
-      <Layout title="Genuin" content={this.props.videoThumbnail} description={this.props.description} currentUrl={this.state.baseUrl} keyword='genuine'>
+      <Layout title="Genuin" metaImageWidth={metaImageWidth} metaImageHeight={metaImageHeight} metaImage={metaImage} content={this.props.videoThumbnail} description={this.props.description} currentUrl={this.state.baseUrl} keyword='genuine'>
         <Card style={{ width: '50rem', borderRadius: '10px' }}>
           <div className="main-meddle">
           <Card.Body >
@@ -127,32 +135,29 @@ class Player extends React.Component {
                   />
                   <div className="my app-download">
                     {/* <img src="https://imgur.com/URiFQhg.png" alt="imges" style={{ position: 'absolute', bottom: '0px', padding: '0 20px', maxWidth: '100%', left: '50%', transform: 'translate(-50%, -50%)' }} /> */}
-                    <a href="https://www.begenuin.com/" target="_blank">
-                    <div className="mobile-app-download-btn">
-                        <div className="inner-block">
-                        <Media>
-                          <img
-                            width={42}
-                            height={42}
-                            className="mr-3"
-                            src={require('../images/genuin_app_icon.png')} alt="Generic"
-                          />
-                          <Media.Body>
-                            <h5>Genuin App</h5>
-                            <p>
-                            Connect with real people
-                            </p>
-                          </Media.Body>
-                        </Media>
-                        </div>
-
-                        <div className="btn-width">
-                        <a href="https://www.begenuin.com/" target="_blank">Install</a>
+                    {/* <a href="https://www.begenuin.com/" target="_blank"> */}
+                      <div className="mobile-app-download-btn">
+                          <div className="inner-block">
+                            <Media>
+                              <img
+                                width={42}
+                                height={42}
+                                className="mr-3"
+                                src={require('../images/genuin_app_icon.png')} alt="Generic"
+                              />
+                              <Media.Body>
+                                <h5>Genuin App</h5>
+                                <p>
+                                Connect with real people
+                                </p>
+                              </Media.Body>
+                            </Media>
+                          </div>
+                          <div className="btn-width">
+                              <a href={this.props.installUrl} target="_blank">Install</a>
+                          </div>
                       </div>
-                    </div>
-                    </a>
-
-                 
+                    {/* </a> */}
                   </div>
                 </Col>
                 <Col md={6} className="d-none" style={{ paddingLeft: '0px', paddingRight: '15px' }}>
@@ -166,8 +171,8 @@ class Player extends React.Component {
                   </div>
                   <div className="url-block">
                   <div className="applink" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '13.9pt', marginTop: '0%', color: ' #333333' }}>
-                    <Link href={this.props.asPath}>
-                      <a style={{ color: '#0645FF' }}>Get the App</a>
+                    <Link href={process.env.genuinurl}>
+                      <a target="_blank" style={{ color: '#0645FF' }}>Get the App</a>
                     </Link> to reply and make genuin connection</div>
                   <div className="sociallink" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '13.9pt', margin: '2% 0', direction: 'rtl' }}>
                     <WhatsappShareButton url={this.state.baseUrl} >

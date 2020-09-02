@@ -9,7 +9,7 @@ export default class Home extends React.Component {
     }
 
     componentDidMount() {
-        const { pathname } = Router
+        const { pathname, query } = Router
         if (pathname == '/') {
             window.location.href = process.env.genuinurl
         }
