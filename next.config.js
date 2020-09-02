@@ -10,7 +10,8 @@ module.exports = withImages(withCSS(withFonts({
         // hostname:'http://localhost:3000'
         hostname: 'https://app.begenuin.com',
         apiurl: 'http://172.31.47.136:9092',
-        genuinurl: 'http://begenuine.com/',
+        genuinurl: 'https://begenuin.com/',
+        installurl: 'https://install.begenuin.com/86sn?pid=Genuin&af_ios_url=https%3A%2F%2Fapps.apple.com%2Fus%2Fapp%2Fitunes-connect%2Fid376771144&is_retargeting=true&af_dp=genuinapp%3A%2F%2Fmainactivity&video_id='
     }
 })));
 
