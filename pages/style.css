@@ -323,3 +323,9 @@ video{height: 612px !important;}
     .react-player::after{background: transparent !important;height: 0;}
     .content span,.content mark{color:#FFFFFF !important}
 }
+
+.react-share__ShareButton {
+    margin-left: 24px !important;
+    padding: 3px !important;
+    outline-color: white !important;
+}
