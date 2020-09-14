@@ -7,11 +7,9 @@ const VideoIndex = (props) => {
     const { video_id } = router.query
     console.log('video_id', video_id);
     if(video_id !== undefined && video_id !== null && video_id !== ''){
-        if(redirect){
-            setTimeout(function(){ 
-                window.location.href = `${process.env.hostname}/video/${video_id}`
-            }, 300);
-        }
+        setTimeout(function(){ 
+            window.location.href = `${process.env.hostname}/video/${video_id}`
+        }, 300);
         return <NextSeo
         title="Genuin"
         description="#mac again #thumbs"
