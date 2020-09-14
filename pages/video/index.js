@@ -5,8 +5,8 @@ import { NextSeo } from 'next-seo';
 const VideoIndex = (props) => {
     const router = useRouter();
     const { video_id } = router.query
-    console.log('video_id', video_id);
-    if(video_id !== undefined && video_id !== null && video_id !== ''){
+    // console.log('video_id', video_id);
+    // if(video_id !== undefined && video_id !== null && video_id !== ''){
         // setTimeout(function(){ 
         //     window.location.href = `${process.env.hostname}/video/${video_id}`
         // }, 300);
@@ -47,7 +47,7 @@ const VideoIndex = (props) => {
                 <p>Redirecting...</p>
             </div>
         );
-    }
+    // }
     /*else{
         // return <Error statusCode="404" />;
         // return(<p>check</p>); 
