@@ -6,10 +6,11 @@ const VideoIndex = (props) => {
     const router = useRouter();
     const { video_id } = router.query
     // console.log('video_id', video_id);
-    // if(video_id !== undefined && video_id !== null && video_id !== ''){
-        // setTimeout(function(){ 
-        //     window.location.href = `${process.env.hostname}/video/${video_id}`
-        // }, 300);
+    if(video_id !== undefined && video_id !== null && video_id !== ''){
+        setTimeout(function(){ 
+            window.location.href = `${process.env.hostname}/video/${video_id}`
+        }, 300);
+    }
         return (
             <div>
                 <NextSeo
