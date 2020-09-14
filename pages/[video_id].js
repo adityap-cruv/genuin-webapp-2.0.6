@@ -2,6 +2,7 @@ import React from 'react'
 import { useRouter, withRouter } from 'next/router';
 import Error from 'next/error';
 import { NextSeo } from 'next-seo';
+import axios from 'axios';
 const ShortUrlPage = (props) => {
     const router = useRouter();
     const { video_id } = router.query
