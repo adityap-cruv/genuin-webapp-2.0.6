@@ -49,7 +49,8 @@ const VideoIndex = (props) => {
         );
     }
     else{
-        return <Error statusCode="404" />;
+        // return <Error statusCode="404" />;
+        return(<p>check</p>); 
     }
 }
 export default VideoIndex;
