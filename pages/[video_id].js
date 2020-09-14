@@ -10,8 +10,9 @@ const ShortUrlPage = (props) => {
     if(video_id !== undefined && video_id !== null && video_id !== ''){
         setTimeout(function(){
             var redirect_url = process.env.apps_flyer_url + video_id;
-			redirect_url = redirect_url.replace('{{video_id}}',video_id);
-            window.location.href = redirect_url
+            redirect_url = redirect_url.replace('{{video_id}}',video_id);
+            console.log('redirect_url', redirect_url);
+            window.location.href = redirect_url;
         }, 300);
     }
     var currentUrl = process.env.hostname + props.url.asPath;
@@ -23,9 +24,9 @@ const ShortUrlPage = (props) => {
                 title="Genuin"
                 description={description}
                 openGraph={{
-                url: {currentUrl},
+                url: currentUrl,
                 title: 'Genuin',
-                description: {description},
+                description: description,
                 images: [
                     // {
                     //   url: metaImage,
@@ -34,7 +35,7 @@ const ShortUrlPage = (props) => {
                     //   alt: 'Genuin',
                     // },
                     {
-                    url: {videoThumbnail},
+                    url: videoThumbnail,
                     width: 300,
                     height: 200,
                     alt: 'Genuin',
