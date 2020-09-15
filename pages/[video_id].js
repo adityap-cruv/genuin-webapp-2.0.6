@@ -30,9 +30,9 @@ export default class ShortUrlPage extends React.Component {
         });
     }
     render() {
-        var currentUrl = process.env.hostname + props.url.asPath;
-        var description = props.data.description;
-        var videoThumbnail = props.data.videoThumbnail;
+        var currentUrl = process.env.hostname + this.props.url.asPath;
+        var description = this.props.data.description;
+        var videoThumbnail = this.props.data.videoThumbnail;
         return (
             <div>
                 <NextSeo
