@@ -7,7 +7,7 @@ const ShortUrlPage = (props) => {
     const router = useRouter();
     const { video_id } = router.query
     // console.log('video_id', video_id);
-    if(window && video_id !== undefined && video_id !== null && video_id !== ''){
+    if(window !== undefined && video_id !== undefined && video_id !== null && video_id !== ''){
         // setTimeout(function(){
             var redirect_url = process.env.apps_flyer_url + video_id;
             redirect_url = redirect_url.replace('{{video_id}}',video_id);
