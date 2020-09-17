@@ -171,9 +171,10 @@ class Player extends React.Component {
                   </div>
                   <div className="url-block">
                   <div className="applink" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '13.9pt', marginTop: '0%', color: ' #333333' }}>
-                    <Link href={process.env.genuinurl}>
-                      <a target="_blank" style={{ color: '#0645FF' }}>Get the App</a>
-                    </Link> to reply and make genuin connection</div>
+                    {/* <Link href={process.env.genuinurl}> */}
+                      <a href={process.env.genuinurl} target="_blank" style={{ color: '#0645FF' }}>Get the App</a>
+                    {/* </Link> */}
+                    &nbsp;to reply and make genuin connection</div>
                   <div className="sociallink" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '13.9pt', margin: '2% 0', direction: 'rtl' }}>
                     <WhatsappShareButton url={this.state.baseUrl} >
                       <Link href={this.props.asPath}>
@@ -181,7 +182,7 @@ class Player extends React.Component {
                           <img src={require('../images/ic_whatsapp.png')} />
                         </a> */}
                         <FontAwesomeIcon icon={faWhatsapp}  style={{color:'#333333',height: '24px'}}/>
-                      </Link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                      </Link>
                     </WhatsappShareButton>
                     <LinkedinShareButton url={this.state.baseUrl} >
                       <Link href={this.props.asPath}>
@@ -190,7 +191,7 @@ class Player extends React.Component {
                           <img src={require('../images/ic_insta.png')} />
                         </a> */}
                         <FontAwesomeIcon icon={faLinkedinIn}  style={{color:'#333333',height: '24px'}}/>
-                      </Link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                      </Link>
                     </LinkedinShareButton>
                     <TwitterShareButton url={this.state.baseUrl} >
                       <Link href={this.props.asPath}>
@@ -199,7 +200,7 @@ class Player extends React.Component {
                           <img src={require('../images/ic_twitter.png')} />
                         </a> */}
                         <FontAwesomeIcon icon={faTwitter}  style={{color:'#333333',height: '24px'}}/>
-                      </Link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                      </Link>
                     </TwitterShareButton>
                     <FacebookShareButton url={this.state.baseUrl} >
                       <Link href={this.props.asPath}>
@@ -208,7 +209,7 @@ class Player extends React.Component {
                           <img src={require('../images/ic_facebook.png')} />
                         </a> */}
                         <FontAwesomeIcon icon={faFacebookF}  style={{color:'#333333',height: '24px'}}/>
-                      </Link>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                      </Link>
                     </FacebookShareButton>
                  </div>
                                 
