@@ -1,15 +1,23 @@
-import React from 'react'
 import { useRouter, withRouter } from 'next/router';
-import Error from 'next/error';
+import Player from '../player';
+import axios from 'axios';
 const VideoIndex = (props) => {
-    const router = useRouter();
-    const { video_id } = router.query
-    console.log('video_id', video_id);
-    if(video_id !== undefined && video_id !== null && video_id !== ''){
-        window.location.href = `${process.env.hostname}/video/${video_id}`
-    }
-    else{
-        return <Error statusCode="404" />;
-    }
+  console.log(props);
+  const router = useRouter()
+  const { video_id } = router.query
+  // console.log('video_id', video_id)
+  return (
+    <Player {...props.data} {...props.url} installUrl={process.env.installurl+video_id} />
+  )
+}
+VideoIndex.getInitialProps = async ({ query: { video_id } }) => {
+
+  return axios.post(process.env.apiurl+ "/api/v3/users/video/meta_data/" + video_id)
+    .then(response => {
+      return Promise.resolve({ data: response.data.data })
+    })
+    .catch((err) => {
+      return Promise.resolve({ data: {} })
+    });
 }
 export default VideoIndex;
