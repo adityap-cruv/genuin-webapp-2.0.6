@@ -83,8 +83,8 @@ class Player extends React.Component {
     //   metaImageHeight = 650;
     // }
     let metaImage2 = this.props.videoPreviewImage2;
-    let metaImageWidth2 = 350;
-    let metaImageHeight2 = 650;
+    let metaImageWidth2 = 900;
+    let metaImageHeight2 = 600;
     return (
       <Layout title="Genuin" videoUrl={this.props.videoUrl} metaImageWidth={metaImageWidth} metaImageHeight={metaImageHeight} metaImage={metaImage} metaImageWidth2={metaImageWidth2} metaImageHeight2={metaImageHeight2} metaImage2={metaImage2} content={this.props.videoThumbnail} description={this.props.description} currentUrl={this.state.baseUrl} keyword='genuine'>
         <Card style={{ width: '50rem', borderRadius: '10px' }}>
