@@ -20,7 +20,7 @@ const ShortUrlPage = (props) => {
     var currentUrl = process.env.hostname + props.url.asPath;
     var description = props.data.description;
     // var videoThumbnail = props.data.videoThumbnail;
-    let metaImage = props.data.videoThumbnail;
+    let metaImage = props.data.videoPreviewImage;
     let metaImageWidth = 350;
     let metaImageHeight = 650;
     // if (props.data.videoShareImage != '' && props.data.videoShareImage != undefined && props.data.videoShareImage != null) {
