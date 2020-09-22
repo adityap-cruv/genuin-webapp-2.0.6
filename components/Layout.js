@@ -2,7 +2,7 @@ import React from 'react';
 import NextHead from 'next/head';
 import { NextSeo } from 'next-seo';
 import '../pages/style.css'
-const Layout = ({ children, title, metaImage, metaImageWidth, metaImageHeight, content, description, currentUrl, keyword }) => (
+const Layout = ({ children, title, metaImage, metaImageWidth, metaImageHeight, metaImage2, metaImageWidth2, metaImageHeight2, content, description, currentUrl, keyword }) => (
   <div>
     <style jsx>{`
     @font-face {
