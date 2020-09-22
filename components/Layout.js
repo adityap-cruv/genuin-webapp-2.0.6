@@ -33,7 +33,7 @@ const Layout = ({ children, title, metaImage, metaImageWidth, metaImageHeight, c
       title={title}
       description={description}
       openGraph={{
-        type: 'website',
+        type: 'video.movie',
         url: currentUrl,
         title: 'Genuin',
         description: description,
@@ -51,6 +51,9 @@ const Layout = ({ children, title, metaImage, metaImageWidth, metaImageHeight, c
           //   alt: 'Genuin',
           // }
         ],
+        videos: [{
+          url: videoUrl
+        }],
         site_name: 'Genuin',
       }}
       facebook={{
