@@ -33,7 +33,7 @@ const Layout = ({ children, title, metaImage, metaImageWidth, metaImageHeight, c
       title={title}
       description={description}
       openGraph={{
-        type: 'video.other',
+        type: 'website',
         url: currentUrl,
         title: 'Genuin',
         description: description,
@@ -51,9 +51,6 @@ const Layout = ({ children, title, metaImage, metaImageWidth, metaImageHeight, c
           //   alt: 'Genuin',
           // }
         ],
-        videos: [{
-          url: videoUrl
-        }],
         site_name: 'Genuin',
       }}
       facebook={{
@@ -62,7 +59,7 @@ const Layout = ({ children, title, metaImage, metaImageWidth, metaImageHeight, c
       twitter={{
         handle: '@handle',
         site: '@site',
-        // cardType: 'summary',
+        cardType: 'summary_large_image',
       }}
     />
      <NextHead>
