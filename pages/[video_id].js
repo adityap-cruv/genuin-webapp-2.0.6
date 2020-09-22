@@ -37,9 +37,10 @@ const ShortUrlPage = (props) => {
                     //   alt: 'Genuin',
                     // },
                     {
-                    url: videoThumbnail,
-                    width: 300,
-                    height: 200,
+                    // url: videoThumbnail,
+                    url : 'https://dummyimage.com/350x650/000/fff',
+                    width: 350,
+                    height: 650,
                     alt: 'Genuin',
                     }
                 ],

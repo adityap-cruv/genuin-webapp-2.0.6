@@ -33,6 +33,7 @@ const Layout = ({ children, title, metaImage, metaImageWidth, metaImageHeight, c
       title={title}
       description={description}
       openGraph={{
+        type: 'website',
         url: currentUrl,
         title: 'Genuin',
         description: description,
@@ -44,9 +45,10 @@ const Layout = ({ children, title, metaImage, metaImageWidth, metaImageHeight, c
           //   alt: 'Genuin',
           // },
           {
-            url: content,
-            width: 300,
-            height: 200,
+            // url: content,
+            url : 'https://dummyimage.com/350x650/000/fff',
+            width: 350,
+            height: 650,
             alt: 'Genuin',
           }
         ],
