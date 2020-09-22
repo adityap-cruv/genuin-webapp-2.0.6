@@ -75,13 +75,13 @@ class Player extends React.Component {
       preview = <Microlink media='logo' url={metaLink} style={{ maxWidth: '783px', height: '100px', backgroundColor: 'lightgrey', borderRadius:'5px' }} />
     }
     let metaImage = this.props.videoThumbnail;
-    let metaImageWidth = 300;
-    let metaImageHeight = 200;
-    if (this.props.videoShareImage != '' && this.props.videoShareImage != undefined && this.props.videoShareImage != null) {
-      metaImage = this.props.videoShareImage;
-      metaImageWidth = 350;
-      metaImageHeight = 650;
-    }
+    let metaImageWidth = 350;
+    let metaImageHeight = 650;
+    // if (this.props.videoShareImage != '' && this.props.videoShareImage != undefined && this.props.videoShareImage != null) {
+    //   metaImage = this.props.videoShareImage;
+    //   metaImageWidth = 350;
+    //   metaImageHeight = 650;
+    // }
     return (
       <Layout title="Genuin" metaImageWidth={metaImageWidth} metaImageHeight={metaImageHeight} metaImage={metaImage} content={this.props.videoThumbnail} description={this.props.description} currentUrl={this.state.baseUrl} keyword='genuine'>
         <Card style={{ width: '50rem', borderRadius: '10px' }}>
