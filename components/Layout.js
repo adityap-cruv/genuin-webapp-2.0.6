@@ -33,7 +33,7 @@ const Layout = ({ children, title, metaImage, metaImageWidth, metaImageHeight, c
       title={title}
       description={description}
       openGraph={{
-        type: 'video.movie',
+        type: 'video.other',
         url: currentUrl,
         title: 'Genuin',
         description: description,

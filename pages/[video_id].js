@@ -35,7 +35,7 @@ const ShortUrlPage = (props) => {
                 title="Genuin"
                 description={description}
                 openGraph={{
-                type: 'website',
+                type: 'video.other',
                 url: currentUrl,
                 title: 'Genuin',
                 description: description,
