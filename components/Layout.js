@@ -59,7 +59,7 @@ const Layout = ({ children, title, metaImage, metaImageWidth, metaImageHeight, c
       twitter={{
         handle: '@handle',
         site: '@site',
-        cardType: 'summary_large_image',
+        cardType: 'summary',
       }}
     />
      <NextHead>
