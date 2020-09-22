@@ -28,14 +28,13 @@ const ShortUrlPage = (props) => {
     //   metaImageWidth = 350;
     //   metaImageHeight = 650;
     // }
-    var videoUrl = props.data.videoUrl;
     return (
         <div>
             <NextSeo
                 title="Genuin"
                 description={description}
                 openGraph={{
-                type: 'video.other',
+                type: 'website',
                 url: currentUrl,
                 title: 'Genuin',
                 description: description,
@@ -53,9 +52,6 @@ const ShortUrlPage = (props) => {
                     // alt: 'Genuin',
                     // }
                 ],
-                videos: [{
-                    url: videoUrl
-                }],
                 site_name: 'Genuin',
                 }}
                 facebook={{
@@ -64,7 +60,7 @@ const ShortUrlPage = (props) => {
                 twitter={{
                 handle: '@handle',
                 site: '@site',
-                // cardType: 'summary',
+                cardType: 'summary_large_image',
                 }}
             />
             <p>Redirecting...</p>
