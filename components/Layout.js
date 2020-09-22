@@ -45,8 +45,7 @@ const Layout = ({ children, title, metaImage, metaImageWidth, metaImageHeight, c
           //   alt: 'Genuin',
           // },
           {
-            // url: content,
-            url : 'https://dummyimage.com/350x650/000/fff',
+            url: content,
             width: 350,
             height: 650,
             alt: 'Genuin',
