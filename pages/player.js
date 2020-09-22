@@ -74,7 +74,7 @@ class Player extends React.Component {
       metaLink = (metaLink.indexOf('://') === -1) ? 'http://' + metaLink : metaLink;
       preview = <Microlink media='logo' url={metaLink} style={{ maxWidth: '783px', height: '100px', backgroundColor: 'lightgrey', borderRadius:'5px' }} />
     }
-    let metaImage = this.props.videoThumbnail;
+    let metaImage = this.props.videoPreviewImage;
     let metaImageWidth = 350;
     let metaImageHeight = 650;
     // if (this.props.videoShareImage != '' && this.props.videoShareImage != undefined && this.props.videoShareImage != null) {
