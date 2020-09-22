@@ -38,18 +38,18 @@ const Layout = ({ children, title, metaImage, metaImageWidth, metaImageHeight, c
         title: 'Genuin',
         description: description,
         images: [
-          // {
-          //   url: metaImage,
-          //   width: metaImageWidth,
-          //   height: metaImageHeight,
-          //   alt: 'Genuin',
-          // },
           {
-            url: content,
-            width: 350,
-            height: 650,
+            url: metaImage,
+            width: metaImageWidth,
+            height: metaImageHeight,
             alt: 'Genuin',
-          }
+          },
+          // {
+          //   url: content,
+          //   width: 350,
+          //   height: 650,
+          //   alt: 'Genuin',
+          // }
         ],
         site_name: 'Genuin',
       }}
