@@ -26,6 +26,7 @@ const ShortUrlPage = (props) => {
                 title="Genuin"
                 description={description}
                 openGraph={{
+                type: 'website',
                 url: currentUrl,
                 title: 'Genuin',
                 description: description,
