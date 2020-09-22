@@ -60,7 +60,7 @@ const ShortUrlPage = (props) => {
                 twitter={{
                 handle: '@handle',
                 site: '@site',
-                cardType: 'summary',
+                // cardType: 'summary',
                 }}
             />
             <p>Redirecting...</p>
