@@ -38,12 +38,12 @@ const Layout = ({ children, title, metaImage, metaImageWidth, metaImageHeight, m
         title: 'Genuin',
         description: description,
         images: [
-          {
-            url: metaImage,
-            width: metaImageWidth,
-            height: metaImageHeight,
-            alt: 'Genuin',
-          },
+          // {
+          //   url: metaImage,
+          //   width: metaImageWidth,
+          //   height: metaImageHeight,
+          //   alt: 'Genuin',
+          // },
           {
             url: metaImage2,
             width: metaImageWidth2,
