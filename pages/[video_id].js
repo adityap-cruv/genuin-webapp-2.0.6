@@ -42,12 +42,12 @@ const ShortUrlPage = (props) => {
                 title: 'Genuin',
                 description: description,
                 images: [
-                    {
-                      url: metaImage,
-                      width: metaImageWidth,
-                      height: metaImageHeight,
-                      alt: 'Genuin',
-                    },
+                    // {
+                    //   url: metaImage,
+                    //   width: metaImageWidth,
+                    //   height: metaImageHeight,
+                    //   alt: 'Genuin',
+                    // },
                     {
                         url: metaImage2,
                         width: metaImageWidth2,
