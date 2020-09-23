@@ -1,7 +1,7 @@
 import React from 'react'
 import Router from 'next/router';
 import Link from 'next/link';
-
+import { Alert } from 'react-bootstrap';
 export default class Home extends React.Component {
     constructor(props) {
         super(props);
@@ -10,14 +10,16 @@ export default class Home extends React.Component {
 
     componentDidMount() {
         const { pathname, query } = Router
-        if (pathname == '/') {
-            window.location.href = process.env.genuinurl
-        }
+        // if (pathname == '/') {
+        //     window.location.href = process.env.genuinurl
+        // }
     }
 
     render() {
         return (
-            <div>Welcome</div>
+            <Alert variant='primary'>
+                This is a primary alert—check it out!
+            </Alert>
         );
     }
 }
