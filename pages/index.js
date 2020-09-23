@@ -2,6 +2,7 @@ import React from 'react'
 import Router from 'next/router';
 import Link from 'next/link';
 import { Alert } from 'react-bootstrap';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css'
 export default class Home extends React.Component {
     constructor(props) {
