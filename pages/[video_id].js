@@ -29,8 +29,8 @@ const ShortUrlPage = (props) => {
     //   metaImageHeight = 650;
     // }
     let metaImage2 = props.data.videoPreviewImage2;
-    let metaImageWidth2 = 180;
-    let metaImageHeight2 = 180;
+    let metaImageWidth2 = 320;
+    let metaImageHeight2 = 250;
     return (
         <div>
             <NextSeo
