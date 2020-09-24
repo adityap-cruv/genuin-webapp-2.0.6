@@ -75,8 +75,8 @@ class Player extends React.Component {
       preview = <Microlink media='logo' url={metaLink} style={{ maxWidth: '783px', height: '100px', backgroundColor: 'lightgrey', borderRadius:'5px' }} />
     }
     let metaImage = this.props.videoPreviewImage;
-    let metaImageWidth = 350;
-    let metaImageHeight = 650;
+    let metaImageWidth = 1200;
+    let metaImageHeight = 630;
     // if (this.props.videoShareImage != '' && this.props.videoShareImage != undefined && this.props.videoShareImage != null) {
     //   metaImage = this.props.videoShareImage;
     //   metaImageWidth = 350;
