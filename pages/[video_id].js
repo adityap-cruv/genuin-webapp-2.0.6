@@ -28,9 +28,6 @@ const ShortUrlPage = (props) => {
     //   metaImageWidth = 350;
     //   metaImageHeight = 650;
     // }
-    let metaImage2 = props.data.videoPreviewImage2;
-    let metaImageWidth2 = 320;
-    let metaImageHeight2 = 250;
     return (
         <div>
             <NextSeo
@@ -42,17 +39,11 @@ const ShortUrlPage = (props) => {
                 title: 'Genuin',
                 description: description,
                 images: [
-                    // {
-                    //   url: metaImage,
-                    //   width: metaImageWidth,
-                    //   height: metaImageHeight,
-                    //   alt: 'Genuin',
-                    // },
                     {
-                        url: metaImage2,
-                        width: metaImageWidth2,
-                        height: metaImageHeight2,
-                        alt: 'Genuin',
+                      url: metaImage,
+                      width: metaImageWidth,
+                      height: metaImageHeight,
+                      alt: 'Genuin',
                     },
                     // {
                     // url: videoThumbnail,
