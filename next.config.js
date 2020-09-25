@@ -1,14 +1,23 @@
 const withCSS = require('@zeit/next-css')
 const withImages = require('next-images')
 const withFonts = require('next-fonts')
+const webpack = require('webpack')
+const withSass = require('@zeit/next-sass')
 // module.exports = withImages()
-module.exports = withImages(withCSS(withFonts({
+module.exports = withImages(withFonts(withCSS({
     webpack(config, options) {
+        config.plugins.push(
+            new webpack.ProvidePlugin({
+            '$': 'jquery',
+            'jQuery': 'jquery',
+            'window.jQuery': 'jquery',
+            })
+        )
         return config;
     },
     env: {
-        // hostname:'http://localhost:3000',
-        hostname: 'http://app.qa.begenuin.com',
+        hostname:'http://localhost:3000',
+        //hostname: 'http://app.qa.begenuin.com',
         apiurl: 'http://159.89.201.211:9092',
         // apiurl: 'http://localhost:9092',
         genuinurl: 'https://begenuin.com/',

@@ -1,11 +1,33 @@
 import React from 'react'
+import $ from 'jquery';
 import Router from 'next/router';
 import Link from 'next/link';
-import { Alert } from 'react-bootstrap';
+// import OwlCarousel from 'react-owl-carousel';
+// import 'owl.carousel/dist/assets/owl.carousel.css';
+// import 'owl.carousel/dist/assets/owl.theme.default.css';
+// import Styles from '!style-loader!css-loader?modules!./styles.css';
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+// import "slick-carousel/slick/slick-theme.css";
+import 'bootstrap/dist/css/bootstrap.min.css';
+// import 'bootstrap/scss/bootstrap.scss';
+// import 'bootstrap/scss/_variables.scss';
+// import 'bootstrap/scss/_nav.scss';
+// import 'bootstrap/scss/_navbar.scss';
+// import 'bootstrap/scss/_forms.scss';
+// import 'bootstrap/scss/_buttons.scss';
+// import 'bootstrap/scss/_grid.scss';
+import { Nav, Navbar, Form, Button, FormControl, Container, Row, Col } from 'react-bootstrap';
+// import bootstrapStyles from './index.scss'
 import './index.css'
+
 export default class Home extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {
+            nav1: null,
+            nav2: null
+        };
 
     }
 
@@ -14,13 +36,194 @@ export default class Home extends React.Component {
         // if (pathname == '/') {
         //     window.location.href = process.env.genuinurl
         // }
+        $(document).ready(function () {
+            $('.nav-button').click(function () {
+                $('body').toggleClass('nav-open');
+            });
+        });
+
+        this.setState({
+            nav1: this.slider1,
+            nav2: this.slider2
+        });
     }
 
     render() {
+        var settings = {
+            dots: false,
+            arrows: false,
+            fade: true,
+            autoplay: true,
+            infinite: true,
+            speed: 500,
+            slidesToShow: 1,
+            slidesToScroll: 1
+        };
+        var settingsone = {
+            dots: true,     
+            arrows: false,
+            fade: true,
+            autoplay: true,
+            infinite: true,
+            speed: 500,
+            slidesToShow: 1,
+            slidesToScroll: 1
+        };
         return (
-            <Alert variant='primary'>
-                This is a primary alert—check it out!
-            </Alert>
+            <div className="mobile-m-p">
+                <Container className="sticky-top">
+                    <Row>
+                        <Col xl={12}>
+                            <Navbar bg="transparent p-0 pt-4 pb-4 " expand="sm">
+                                {/* <Navbar.Brand href="#home" className="p-0">genuin</Navbar.Brand> */}
+
+                                <Navbar.Brand href="#home" className="p-0">
+                                    <img src={require('../images/logo_header.png')} alt="logo_header" />
+                                </Navbar.Brand>
+
+                                {/* <Navbar.Toggle aria-controls="basic-navbar-nav" /> */}
+
+                                <a className="nav-button ml-auto d-sm-none"><span id="nav-icon3"><span></span><span></span><span></span><span></span></span></a>
+
+                                <div className="fixed-top main-menu">
+                                    <div className="flex-top p-5 mt-5">
+                                        <ul className="nav flex-column w-100">
+                                            <li className="nav-item delay-1 pt-4"><a className="nav-link pt-5" href="#">Download App</a></li>
+                                            <li className="nav-item delay-2"><a className="nav-link" href="#">Invest in Genuin</a></li>
+                                            <li className="nav-item delay-3"><a className="nav-link" href="#">About</a></li>
+                                            <li className="nav-item delay-4"><a className="nav-link" href="#">Terms of Service </a></li>
+                                            <li className="nav-item delay-5"><a className="nav-link" href="#">Privacy Policy</a></li>
+                                        </ul>
+
+                                        <ul className="copy-right">
+                                            <li className="nav-item delay-5"><a className="nav-link" href="#">© 2020 Genuin Inc.</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <Navbar.Collapse id="basic-navbar-nav" className="collapse navbar-collapse">
+                                    <Nav className="mr-auto">
+                                        {/* <div className="d-sm-none">
+                            <Nav.Link href="#home" className="animated fadeInDown">Download App</Nav.Link>
+                            <Nav.Link href="#link" className="animated fadeInDown">Invest in Genuin</Nav.Link>
+                            <Nav.Link href="#link" className="animated fadeInDown">About </Nav.Link>
+                            <Nav.Link href="#link" className="animated fadeInDown">Terms of Service </Nav.Link>
+                            <Nav.Link href="#link" className="animated fadeInDown">Privacy Policy</Nav.Link>                                    
+                            </div> */}
+                                    </Nav>
+                                    <Form inline className="d-none d-sm-block d-md-block d-lg-block">
+                                        {/* <FormControl type="text" placeholder="Search" className="mr-sm-2" /> */}
+                                        <Button variant="primary">Invest in Genuin</Button>
+                                    </Form>
+                                </Navbar.Collapse>
+                            </Navbar>
+                        </Col>
+                    </Row>
+                </Container>
+
+                <Container>
+                    <Row className="mt-5 justify-content-center align-items-center">
+                        {/* <Col xl={{ span: 5, offset: 1 }} lg={6} md={6} sm={12}> */}
+                        <Col xl={6} lg={6} md={6} sm={12}>
+                            <div className="slider-img">
+                                <Slider asNavFor={this.state.nav2}ref={slider => (this.slider1 = slider)} {...settings}>
+                                    <div>
+                                        <img src={require('../images/image_feature_1.png')} alt="image_feature_1" className="img-fluid mx-auto d-block" />
+                                    </div>
+                                    <div>
+                                        <img src={require('../images/image_feature_2.png')} alt="image_feature_2" className="img-fluid mx-auto d-block" />
+                                    </div>
+                                    <div>
+                                        <img src={require('../images/image_feature_3.png')} alt="image_feature_3" className="img-fluid mx-auto d-block" />
+                                    </div>
+                                    <div>
+                                        <img src={require('../images/image_feature_4.png')} alt="image_feature_4" className="img-fluid mx-auto d-block" />
+                                    </div>
+                                    <div>
+                                        <img src={require('../images/image_feature_5.png')} alt="image_feature_5" className="img-fluid mx-auto d-block" />
+                                    </div>
+                                </Slider>
+
+                            </div>
+                        </Col>
+                        <Col xl={6} lg={6} md={6} sm={12} className="slider-text-center text-slider">
+                            <div>
+                                <Slider asNavFor={this.state.nav1} ref={slider => (this.slider2 = slider)} {...settingsone}>
+                                    <div>
+                                        <h1>Showcase <br />Yourself</h1>
+                                        <Button variant="primary" className="mt-5 mb-4 d-none d-sm-block d-md-block d-lg-block">Watch Now</Button>                                        
+                                    </div>
+
+                                    <div>
+                                        <h1>Get <br /> Discovered</h1>
+                                        <Button variant="primary" className="mt-5 mb-4 d-none d-sm-block d-md-block d-lg-block">Watch Now</Button>                                        
+                                    </div>
+
+                                    <div>
+                                        <h1>Make <br />Connections</h1>
+                                        <Button variant="primary" className="mt-5 mb-4 d-none d-sm-block d-md-block d-lg-block">Watch Now</Button>                                        
+                                    </div>
+
+                                    <div>
+                                        <h1>Search <br />People</h1>
+                                        <Button variant="primary" className="mt-5 mb-4 d-none d-sm-block d-md-block d-lg-block">Watch Now</Button>
+                                    </div>
+
+                                    <div>
+                                        <h1>Initiate <br />Conversations</h1>
+                                        <Button variant="primary" className="mt-5 mb-4 d-none d-sm-block d-md-block d-lg-block">Watch Now</Button>                                        
+                                    </div>
+                                </Slider>
+                                <div className="mt-4 d-sm-none"></div>
+                                <Button variant="primary" className="mt-5 d-sm-none">Download App</Button>
+                            </div>
+
+                            <Nav defaultActiveKey="/home" as="ul" className="appstore-googleplay d-block slider-text-center mt-4 pt-4 d-none d-sm-block d-md-block d-lg-block">
+                                <Nav.Item as="li">
+                                    <Nav.Link href="" className="pl-0 pr-2">
+                                        <img src={require('../images/badge_appstore.png')} alt="badge_appstore" className="img-fluid" />
+                                    </Nav.Link>
+                                    <Nav.Link href="" className="pr-0">
+                                        <img src={require('../images/badge_playstore.png')} alt="badge_playstore" className="img-fluid" />
+                                    </Nav.Link>
+                                </Nav.Item>
+                            </Nav>
+                        </Col>
+                    </Row>
+                    <Row className="pb-5">
+                        <Col xl={12}>
+
+                        </Col>
+                    </Row>
+                </Container>
+
+
+                <Container className="footer-links d-none d-sm-block d-md-block d-lg-block">
+                    <Row className="pt-3 pb-3">
+                        <Col xl={8} lg={8} md={8} sm={8}>
+                            <Nav defaultActiveKey="/home" as="ul">
+                                <Nav.Item as="li">
+                                    <Nav.Link href="" className="pl-0">About</Nav.Link>
+                                </Nav.Item>
+                                <Nav.Item as="li">
+                                    <Nav.Link eventKey="link-1">Terms of Service</Nav.Link>
+                                </Nav.Item>
+                                <Nav.Item as="li">
+                                    <Nav.Link eventKey="link-2">Privacy Policy</Nav.Link>
+                                </Nav.Item>
+                            </Nav>
+                        </Col>
+                        <Col xl={4} lg={4} md={4} sm={4}>
+                            <Nav className="justify-content-end" defaultActiveKey="/home" as="ul">
+                                <Nav.Item as="li">
+                                    <Nav.Link href="" className="pr-0">© 2020 Genuin Inc.</Nav.Link>
+                                </Nav.Item>
+                            </Nav>
+                        </Col>
+                    </Row>
+                </Container>
+
+            </div>
         );
     }
 }
