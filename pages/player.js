@@ -75,18 +75,15 @@ class Player extends React.Component {
       preview = <Microlink media='logo' url={metaLink} style={{ maxWidth: '783px', height: '100px', backgroundColor: 'lightgrey', borderRadius:'5px' }} />
     }
     let metaImage = this.props.videoPreviewImage;
-    let metaImageWidth = 350;
-    let metaImageHeight = 650;
+    let metaImageWidth = 1200;
+    let metaImageHeight = 630;
     // if (this.props.videoShareImage != '' && this.props.videoShareImage != undefined && this.props.videoShareImage != null) {
     //   metaImage = this.props.videoShareImage;
     //   metaImageWidth = 350;
     //   metaImageHeight = 650;
     // }
-    let metaImage2 = this.props.videoPreviewImage2;
-    let metaImageWidth2 = 1200;
-    let metaImageHeight2 = 630;
     return (
-      <Layout title="Genuin" videoUrl={this.props.videoUrl} metaImageWidth={metaImageWidth} metaImageHeight={metaImageHeight} metaImage={metaImage} metaImageWidth2={metaImageWidth2} metaImageHeight2={metaImageHeight2} metaImage2={metaImage2} content={this.props.videoThumbnail} description={this.props.description} currentUrl={this.state.baseUrl} keyword='genuine'>
+      <Layout title="Genuin" videoUrl={this.props.videoUrl} metaImageWidth={metaImageWidth} metaImageHeight={metaImageHeight} metaImage={metaImage} content={this.props.videoThumbnail} description={this.props.description} currentUrl={this.state.baseUrl} keyword='genuine'>
         <Card style={{ width: '50rem', borderRadius: '10px' }}>
           <div className="main-meddle">
           <Card.Body >
