@@ -84,11 +84,11 @@ class Player extends React.Component {
     // }
     return (
       <Layout title="Genuin" videoUrl={this.props.videoUrl} metaImageWidth={metaImageWidth} metaImageHeight={metaImageHeight} metaImage={metaImage} content={this.props.videoThumbnail} description={this.props.description} currentUrl={this.state.baseUrl} keyword='genuine'>
-        <Card style={{ width: '50rem' }}>
+        <Card style={{ width: '50rem', borderRadius: '10px'}}>
           <div className="main-meddle">
           <Card.Body className="p-0">
             <Container fluid="md">
-              <Row className="bg-white d-flex-video">
+              <Row className="bg-white d-flex-video" style={{borderRadius: "10px",overflow: "hidden"}}>
                 <Col md={6} className="padding-0 w-100">
                   <span className="d-none-v" style={{
                     position: 'absolute', top: '4%', left: '16%', zIndex: '9', fontFamily: 'AvenirNext-DemiBold',
