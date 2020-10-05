@@ -84,29 +84,29 @@ class Player extends React.Component {
     // }
     return (
       <Layout title="Genuin" videoUrl={this.props.videoUrl} metaImageWidth={metaImageWidth} metaImageHeight={metaImageHeight} metaImage={metaImage} content={this.props.videoThumbnail} description={this.props.description} currentUrl={this.state.baseUrl} keyword='genuine'>
-        <Card style={{ width: '50rem', borderRadius: '10px' }}>
+        <Card style={{ width: '50rem' }}>
           <div className="main-meddle">
-          <Card.Body >
+          <Card.Body className="p-0">
             <Container fluid="md">
-              <Row className="d-block bg-white">
+              <Row className="bg-white d-flex-video">
                 <Col md={6} className="padding-0 w-100">
-                  <span className="d-none" style={{
+                  <span className="d-none-v" style={{
                     position: 'absolute', top: '4%', left: '16%', zIndex: '9', fontFamily: 'AvenirNext-DemiBold',
                      color: '#FFFFFF',
                     fontSize: '16pt'
                   }}>{this.state.playedSeconds.toFixed(0)} Sec</span>
                   <FontAwesomeIcon icon={this.state.playing ? faPause : faPlay} className="playbtn" onClick={this.handlePlayPause} style={{ color: 'rgb(255 255 255 / 0.4)', width: '14%', cursor: 'pointer', right: '44%', zIndex: '999999', position: 'absolute', top: '44%', display: this.state.buttonVisible }} />
 
-                  <div className="d-none">
+                  <div className="d-none-v">
                     <div className="icon-position" style={{ marginTop: '30px', width: '50%' }}>
                       <img src={require('../images/ic_replies.png')} alt="" style={{ width: '6%', color: 'white', right: '79%', zIndex: '999999', position: 'absolute', top: '91%' }} />
-                      <span className="commentxt" style={{ lineHeight: '28px', width: '6%', color: 'white', right: '72%', zIndex: '999999', position: 'absolute', top: '91%', fontSize: '16pt', fontFamily: 'AvenirNext-DemiBold' }}>{this.props.noOfConversation}
-                        <sub style={{ position: 'relative', fontSize: '10pt', bottom: '6px' }}>replies</sub></span>
+                      <span className="commentxt" style={{ lineHeight: '28px', width: 'auto', color: 'white', right: '64%', zIndex: '999999', position: 'absolute', top: '91%', fontSize: '16pt', fontFamily: 'AvenirNext-DemiBold' }}>{this.props.noOfConversation}
+                        <sub style={{ position: 'relative', fontSize: '10pt', bottom: '0px' }}>replies</sub></span>
                     </div>
                     <div className="icon-position" style={{ width: '50%' }}>
                       <img src={require('../images/ic_views.png')} alt="" style={{ width: '6%', color: 'white', right: '51%', zIndex: '999999', position: 'absolute', top: '91%' }} />
-                      <span className="viewtxt" style={{ lineHeight: '28px', width: '9%', color: 'white', right: '40%', zIndex: '999999', position: 'absolute', top: '91%', fontSize: '16pt', fontFamily: 'AvenirNext-DemiBold' }}>{this.props.noOfViews}
-                        <sub style={{ position: 'relative', fontSize: '10pt', bottom: '6px', left: '2px' }}>views</sub></span>
+                      <span className="viewtxt" style={{ lineHeight: '28px', width: 'auto', color: 'white', right: '31%', zIndex: '999999', position: 'absolute', top: '91%', fontSize: '16pt', fontFamily: 'AvenirNext-DemiBold' }}>{this.props.noOfViews}
+                        <sub style={{ position: 'relative', fontSize: '10pt', bottom: '0px', left: '2px' }}>views</sub></span>
                     </div>
                   </div>
                   <div className="content tag" style={{ color:'white', fontFamily: 'AvenirNext-DemiBold', fontSize: '16pt', height: 'auto', marginBottom: '0', overflow: 'inherit', background: '#000', borderRadius: '0px' }}>
@@ -118,7 +118,7 @@ class Player extends React.Component {
                     />
                   </div>
                   <ReactPlayer
-                    className='react-player fixed-bottom'
+                    className='react-player fixed-bottom-video'
                     url={this.props.videoUrl}
                     playing={this.state.playing}
                     display='inline-block'
@@ -142,7 +142,7 @@ class Player extends React.Component {
                               <img
                                 width={42}
                                 height={42}
-                                className="mr-3"
+                                className="mr-2"
                                 src={require('../images/genuin_app_icon.png')} alt="Generic"
                               />
                               <Media.Body>
@@ -160,7 +160,7 @@ class Player extends React.Component {
                     {/* </a> */}
                   </div>
                 </Col>
-                <Col md={6} className="d-none" style={{ paddingLeft: '0px', paddingRight: '15px' }}>
+                <Col md={6} className="d-none-v" style={{ paddingLeft: '0px', paddingRight: '15px' }}>
                   <div className="content" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '28pt', marginTop: '15px', marginBottom: '10px', height: '408px', overflowX: 'hidden' }}>
                     <Highlighter
                       highlightStyle={{ backgroundColor: '#bfe4f3' }}
@@ -175,7 +175,7 @@ class Player extends React.Component {
                       <a href={process.env.genuinurl} target="_blank" style={{ color: '#0645FF' }}>Get the App</a>
                     {/* </Link> */}
                     &nbsp;to reply and make genuin connection</div>
-                  <div className="sociallink" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '13.9pt', margin: '2% 0', direction: 'rtl' }}>
+                  <div className="sociallink" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '13.9pt', margin: '2% 0', direction: 'rtl', textAlign: 'right'}}>
                     <WhatsappShareButton url={this.state.baseUrl} >
                       <Link href={this.props.asPath}>
                         {/* <a id="whatsappIcon">
@@ -225,7 +225,7 @@ class Player extends React.Component {
                 </Col>
 
                 <Col md={12} className="bg-white padding-0" >
-                <div className='linkPreview d-none' style={{ marginTop: '7px' }}>
+                <div className='linkPreview d-none-v' style={{ marginTop: '7px' }}>
                   {preview}
                 </div>
               </Col>
