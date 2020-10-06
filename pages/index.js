@@ -31,6 +31,30 @@ export default class Home extends React.Component {
 
     }
 
+    handleHireLinkClick = () => {
+       // console.log('this is:', this);
+        window.open("https://www.linkedin.com/company/begenuin/jobs/");
+
+      }
+
+      handleAndroidInstallClick = () => {
+        // console.log('this is:', this);
+         window.open("https://play.google.com/store/apps/details?id=com.begenuin.begenuin");
+ 
+       }
+
+ 
+       handleIosInstallClick = () => {
+        // console.log('this is:', this);
+         window.open("https://apps.apple.com/us/app/id1511177838"); 
+       }
+
+       handleInstallAppClick = () => {
+        // console.log('this is:', this);
+         window.open("https://install.begenuin.com/86sn?pid=Genuin&is_retargeting=true&af_dp=genuinapp%3A%2F%2Fmainactivity&video_id=bd01955b-1c50-4aa4-9c59-0922f4a14bbd"); 
+       }
+
+
     componentDidMount() {
         const { pathname, query } = Router
         // if (pathname == '/') {
@@ -88,7 +112,7 @@ export default class Home extends React.Component {
                                 <div className="fixed-top main-menu">
                                     <div className="flex-top p-5 mt-5">
                                         <ul className="nav flex-column w-100">
-                                            <li className="nav-item delay-1 pt-4"><a className="nav-link pt-5" href="#">Download App</a></li>
+                                            <li className="nav-item delay-1 pt-4"><a onClick={this.handleInstallAppClick} className="nav-link pt-5" href="#">Download App</a></li>
                                             <li className="nav-item delay-2"><a className="nav-link" href="#">Invest in Genuin</a></li>
                                             <li className="nav-item delay-3"><a className="nav-link" href="#">About</a></li>
                                             <li className="nav-item delay-4"><a className="nav-link" href="#">Terms of Service </a></li>
@@ -151,40 +175,40 @@ export default class Home extends React.Component {
                                 <Slider asNavFor={this.state.nav1} ref={slider => (this.slider2 = slider)} {...settingsone}>
                                     <div>
                                         <h1>Showcase <br />Yourself</h1>
-                                        <Button variant="primary" className="mt-5 mb-4 d-none d-sm-block d-md-block d-lg-block">Watch Now</Button>                                        
+                                        <Button variant="primary" onClick={this.handleHireLinkClick} className="mt-5 mb-4 d-none d-sm-block d-md-block d-lg-block">We are Hiring </Button>                                        
                                     </div>
 
                                     <div>
                                         <h1>Get <br /> Discovered</h1>
-                                        <Button variant="primary" className="mt-5 mb-4 d-none d-sm-block d-md-block d-lg-block">Watch Now</Button>                                        
+                                        <Button variant="primary" onClick={this.handleHireLinkClick} className="mt-5 mb-4 d-none d-sm-block d-md-block d-lg-block">We are Hiring </Button>                                        
                                     </div>
 
                                     <div>
                                         <h1>Make <br />Connections</h1>
-                                        <Button variant="primary" className="mt-5 mb-4 d-none d-sm-block d-md-block d-lg-block">Watch Now</Button>                                        
+                                        <Button variant="primary" onClick={this.handleHireLinkClick} className="mt-5 mb-4 d-none d-sm-block d-md-block d-lg-block">We are Hiring </Button>                                        
                                     </div>
 
                                     <div>
                                         <h1>Search <br />People</h1>
-                                        <Button variant="primary" className="mt-5 mb-4 d-none d-sm-block d-md-block d-lg-block">Watch Now</Button>
+                                        <Button variant="primary" onClick={this.handleHireLinkClick} className="mt-5 mb-4 d-none d-sm-block d-md-block d-lg-block">We are Hiring </Button>
                                     </div>
 
                                     <div>
                                         <h1>Initiate <br />Conversations</h1>
-                                        <Button variant="primary" className="mt-5 mb-4 d-none d-sm-block d-md-block d-lg-block">Watch Now</Button>                                        
+                                        <Button variant="primary" onClick={this.handleHireLinkClick} className="mt-5 mb-4 d-none d-sm-block d-md-block d-lg-block">We are Hiring </Button>                                        
                                     </div>
                                 </Slider>
                                 <div className="mt-4 d-sm-none"></div>
-                                <Button variant="primary" className="mt-5 d-sm-none">Download App</Button>
+                                <Button variant="primary" onClick={this.handleInstallAppClick} className="mt-5 d-sm-none">Download App</Button>
                             </div>
 
                             <Nav defaultActiveKey="/home" as="ul" className="appstore-googleplay d-block slider-text-center mt-4 pt-4 d-none d-sm-block d-md-block d-lg-block">
                                 <Nav.Item as="li">
                                     <Nav.Link href="" className="pl-0 pr-2">
-                                        <img src={require('../images/badge_appstore.png')} alt="badge_appstore" className="img-fluid" />
+                                        <img src={require('../images/badge_appstore.png')} onClick={this.handleIosInstallClick} alt="badge_appstore" className="img-fluid" />
                                     </Nav.Link>
                                     <Nav.Link href="" className="pr-0">
-                                        <img src={require('../images/badge_playstore.png')} alt="badge_playstore" className="img-fluid" />
+                                        <img src={require('../images/badge_playstore.png')} onClick={this.handleAndroidInstallClick} alt="badge_playstore" className="img-fluid" />
                                     </Nav.Link>
                                 </Nav.Item>
                             </Nav>
