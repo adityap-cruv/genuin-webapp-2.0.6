@@ -1,7 +1,9 @@
 html {overflow-y: hidden}
 .card{
     margin: 0 auto;
+    border: 0;
 }
+.card-body{border: 0;}
 .urltxt{
     max-width: 270px;
     -webkit-line-clamp: 1;
@@ -24,6 +26,8 @@ body .overlay {
 #whatsappIcon, #facebookIcon, #twitterIcon, #instaIcon{
     color:#000000;
 }
+.main-meddle mark {padding: unset;}
+.d-flex-video{display: flex;}
 @media screen and (orientation:landscape) and (max-width: 1024px) and (min-width: 320px)  {
     body{line-height: 0;}
     html {overflow-y: hidden;}
@@ -33,7 +37,7 @@ body .overlay {
     .card {background-color: transparent;box-shadow: none;height: 100% !important;}
     .d-block,.content.tag,.app-download{display: block !important;font-size: 12pt !important;}
     .tag .match{display: inline-block !important;background-color:transparent !important;color: #FFFFFF;}
-    .match,.content,.d-none{display: none !important;}
+    .match,.content,.main-meddle .d-none-v{display: none !important;}
     .react-player{height: 94vh !important;width: 100% !important;margin-top: 0 !important;border-radius:0px !important}
     .card{width: 100% !important;}
     .content.tag{
@@ -46,10 +50,11 @@ body .overlay {
         width: 7% !important;
     }
     .main-meddle,.bg-white{display: block !important;background-color: transparent !important;}
-    .react-player.fixed-bottom{height: 94vh !important;display: block !important;}
+    .react-player.fixed-bottom-video{height: 94vh !important;display: block !important;}
     .react-player::before{background: transparent !important;height: 0;}
     .react-player::after{background: transparent !important;height: 0;}
     .content span,.content mark{color:#FFFFFF !important}
+    .d-flex-video{display: block !important;}
  }
 @media (max-width:3000px){
     .main{
@@ -175,10 +180,10 @@ video{width: 100vw !important;height: 100%;object-fit: cover;}
 }
 .mobile-app-download-btn img{margin-top: 4px;}
 .inner-block{display: inline-block;line-height: normal;width: 70%;}
-.inner-block h5{font-family: 'AvenirNext-Bold';font-size: 17px;color: #333333;margin-top: 3px;}
-.inner-block p{font-family: 'AvenirNext-DemiBold';font-size: 14px;color: #333333;}
+.inner-block h5{font-family: 'AvenirNext-Bold';font-size: 17px;color: #333333;margin-top: 3px;margin-bottom: 0px;}
+.inner-block p{font-family: 'AvenirNext-DemiBold';font-size: 14px;color: #333333;padding: 0;margin: 0;}
 .btn-width{width: 30%;display: inline-block;}
-.btn-width a{font-family: 'AvenirNext-Bold';background: #0645FF;color: #fff;padding: 6px;position: relative;top: -16px;right: -2px;border-radius: 5px;display: inline-block;font-size: 15px;width: 90px;height: 28px;text-align: center;padding: 14px 0;}
+.btn-width a{font-family: 'AvenirNext-Bold';background: #0645FF;color: #fff;position: relative;line-height: 26px;top: -17px;right: -2px;border-radius: 5px;display: inline-block;font-size: 15px;width: 90px;height: 28px;text-align: center;}
 .inner-block .media .mr-3{margin-right: 0.3rem;}
 .content span,.content mark{color:#333333}
 /* .inner-block .media {align-items: center;} */
@@ -229,6 +234,8 @@ video{height: 612px !important;}
 	.card{
      width:60%;
      height:100% !important;
+     background-color: transparent !important;
+     border: 0 !important;
 	}
 	.react-player{
         margin: 0 auto;
@@ -314,7 +321,7 @@ video{height: 612px !important;}
     .card {background-color: transparent;box-shadow: none;height: 100% !important;}
     .d-block,.content.tag,.app-download{display: block !important;font-size: 17px !important;}
     .tag .match{display: inline-block !important;background-color:transparent !important;color: #FFFFFF;}
-    .match,.content,.d-none{display: none !important;}
+    .match,.content,.main-meddle .d-none-v{display: none !important;}
     .react-player{height: 100% !important;width: 100% !important;margin-top: 0 !important;border-radius:0px !important}
     .card{width: 100% !important;}
 
@@ -322,6 +329,7 @@ video{height: 612px !important;}
     .react-player::before{background: transparent !important;height: 0;}
     .react-player::after{background: transparent !important;height: 0;}
     .content span,.content mark{color:#FFFFFF !important}
+    .d-flex-video{display: block !important;}
 }
 
 .react-share__ShareButton {

@@ -64,6 +64,7 @@ const Layout = ({ children, title, metaImage, metaImageWidth, metaImageHeight, c
     />
      <NextHead>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css" /> 
+    <script src="https:code.jquery.com/jquery-3.4.1min.js"></script>
     </NextHead>
     <div className="overlay"></div>
     <div className="main" style={{ backgroundImage: `url(${content})`, backgroundRepeat: 'no-repeat', backgroundSize: 'cover', backgroundPosition: 'center', height: '754px' }}>
