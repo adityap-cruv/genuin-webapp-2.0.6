@@ -1,3 +1,5 @@
+render()
+{
 return (
 
     <div className="mobile-m-p">                
@@ -138,4 +140,4 @@ return (
         </Container>
 
     </div>
-);
+)};
