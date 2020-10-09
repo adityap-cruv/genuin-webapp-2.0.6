@@ -45,6 +45,12 @@ const ShortUrlPage = (props) => {
                       height: metaImageHeight,
                       alt: 'Genuin',
                     },
+                    {
+                        url: metaImage,
+                        width: 300,
+                        height: 200,
+                        alt: 'Genuinw',
+                      },
                     // {
                     // url: videoThumbnail,
                     // width: 350,
