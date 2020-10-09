@@ -21,8 +21,8 @@ const ShortUrlPage = (props) => {
     var description = props.data.description;
     // var videoThumbnail = props.data.videoThumbnail;
     let metaImage = props.data.videoPreviewImage;
-    let metaImageWidth = 1200;
-    let metaImageHeight = 630;
+    let metaImageWidth = 280;
+    let metaImageHeight = 534;
     // if (props.data.videoShareImage != '' && props.data.videoShareImage != undefined && props.data.videoShareImage != null) {
     //   metaImage = props.data.videoShareImage;
     //   metaImageWidth = 350;
