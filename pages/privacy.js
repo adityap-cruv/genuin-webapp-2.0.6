@@ -87,7 +87,7 @@ export default class Home extends React.Component {
 
                                 <a className="nav-button ml-auto d-sm-none"><span id="nav-icon3"><span></span><span></span><span></span><span></span></span></a>
 
-                                <div className="fixed-top main-menu">
+                                {/* <div className="fixed-top main-menu">
                                     <div className="flex-top p-5 mt-5">
                                         <ul className="nav flex-column w-100">
                                             <li className="nav-item delay-1 pt-4"><a onClick={this.handleInstallAppClick} className="nav-link pt-5" href="#">Download App</a></li>
@@ -101,7 +101,7 @@ export default class Home extends React.Component {
                                             <li className="nav-item delay-5"><a className="nav-link" href="#">© 2020 Genuin Inc.</a></li>
                                         </ul>
                                     </div>
-                                </div>
+                                </div> */}
 
                                 <Navbar.Collapse id="basic-navbar-nav" className="collapse navbar-collapse">
                                     <Nav className="mr-auto">
