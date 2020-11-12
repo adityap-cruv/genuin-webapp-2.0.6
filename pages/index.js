@@ -222,7 +222,7 @@ export default class Home extends React.Component {
                 </Container>
 
 
-                <Container className="footer-links d-none d-sm-block d-md-block d-lg-block">
+                <Container className="footer-links">
                     <Row className="pt-3 pb-3">
                         <Col xl={8} lg={8} md={8} sm={8}>
                             <Nav defaultActiveKey="/home" as="ul">
@@ -237,7 +237,7 @@ export default class Home extends React.Component {
                                 </Nav.Item>
                             </Nav>
                         </Col>
-                        <Col xl={4} lg={4} md={4} sm={4}>
+                        <Col xl={4} lg={4} md={4} sm={4} className="text-m-center">
                             <Nav className="justify-content-end" defaultActiveKey="/home" as="ul">
                                 <Nav.Item as="li">
                                     <Nav.Link href="" className="pr-0">© 2020 Genuin Inc.</Nav.Link>
