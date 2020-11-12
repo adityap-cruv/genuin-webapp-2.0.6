@@ -67,6 +67,11 @@ export default class Home extends React.Component {
     render() {
         return (
             <div className="content-page">
+              <style jsx global>{`
+                body {
+                background: white;
+                }
+                `}</style>
               <div className="header-bg">
                 <Container className="sticky-top">
                     <Row>
