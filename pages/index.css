@@ -44,6 +44,7 @@ a,a:hover{color: #ffffff;font-weight: 600;}
     .footer-links .nav-link{font-size: 14px;}
     .btn-primary{margin: 0 auto;}
     .text-slider .slick-dots{text-align: center !important;}
+    .text-m-center .justify-content-end{justify-content: center !important;}
 }
 @media (max-width:576px){
     h1 {font-size: 42px;margin-bottom: 30px;}

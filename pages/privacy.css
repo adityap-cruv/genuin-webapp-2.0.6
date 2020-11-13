@@ -1,0 +1,24 @@
+.navbar-padding{padding: 37px 0 !important;}
+.header-bg{background: #000000;position: fixed;width: 100%;z-index: 9;}
+.content-block h1{font-size: 50px;color: #0D44FB;text-shadow: none;}
+.content-block h3{font-size: 24px;color: #000000;text-align: justify;font-weight: 1000;margin-bottom: 2rem;line-height: 1.3;}
+.content-block p{font-size: 18px;color: #000000;text-align: justify;font-weight: 700;margin-bottom: 2rem;line-height: 1.3;}
+div.form-inline .nav-link{font-size: 24px;font-weight: 700;}
+.content-page .footer-links a{font-size: 16px;color: #000000;font-weight: 700;}
+
+@media (min-width: 768px) and (max-width: 1199px){
+    .navbar-padding{padding: 24px 0 !important;}
+    div.form-inline .nav-link {font-size: 20px;}
+}
+@media (max-width:767px){
+    .content-page .flex-top.p-5{margin: 0 !important;}
+    .navbar-padding{padding: 24px 0 !important;}
+    .mobile-p{padding: 0 !important;}
+    .content-block h1 {font-size: 40px;}
+    .content-block p {font-size: 14px;}
+    .content-page .footer-links a{font-size: 14px}
+}
+@media (min-width: 576px) and (max-width: 767px){
+    .content-page .navbar-light .navbar-brand{text-align: left;width: auto !important;}
+    div.form-inline .nav-link {font-size: 18px;}
+}

@@ -23,6 +23,9 @@ const ShortUrlPage = (props) => {
     let metaImage = props.data.videoPreviewImage;
     let metaImageWidth = 280;
     let metaImageHeight = 534;
+    let metaImage2=props.data.videoPreview1200;
+    let metaImage2Width = 280;
+    let metaImage2Height = 534;
     // if (props.data.videoShareImage != '' && props.data.videoShareImage != undefined && props.data.videoShareImage != null) {
     //   metaImage = props.data.videoShareImage;
     //   metaImageWidth = 350;
@@ -46,10 +49,10 @@ const ShortUrlPage = (props) => {
                       alt: 'Genuin',
                     },
                     {
-                        url: metaImage,
-                        width: 300,
-                        height: 200,
-                        alt: 'Genuinw',
+                        url: metaImage2,
+                        width: metaImage2Width,
+                        height: metaImage2Height,
+                        alt: 'Genuin large image',
                       },
                     // {
                     // url: videoThumbnail,

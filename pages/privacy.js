@@ -6,8 +6,6 @@ import Link from 'next/link';
 // import 'owl.carousel/dist/assets/owl.carousel.css';
 // import 'owl.carousel/dist/assets/owl.theme.default.css';
 // import Styles from '!style-loader!css-loader?modules!./styles.css';
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
 // import "slick-carousel/slick/slick-theme.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 // import 'bootstrap/scss/bootstrap.scss';
@@ -19,7 +17,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 // import 'bootstrap/scss/_grid.scss';
 import { Nav, Navbar, Form, Button, FormControl, Container, Row, Col } from 'react-bootstrap';
 // import bootstrapStyles from './index.scss'
-import './index.css'
+import './privacy.css'
 
 export default class Home extends React.Component {
     constructor(props) {
@@ -30,12 +28,10 @@ export default class Home extends React.Component {
         };
 
     }
-    handleInvestClick = () => {
-        window.open("https://www.linkedin.com/company/begenuin/");
-    }
+
     handleHireLinkClick = () => {
        // console.log('this is:', this);
-        window.open("https://angel.co/company/begenuin");
+        window.open("https://www.linkedin.com/company/begenuin/jobs/");
 
       }
 
@@ -56,8 +52,7 @@ export default class Home extends React.Component {
          window.open("https://install.begenuin.com/86sn?pid=Genuin&is_retargeting=true&af_dp=genuinapp%3A%2F%2Fmainactivity&video_id=bd01955b-1c50-4aa4-9c59-0922f4a14bbd"); 
        }
 
-
-    componentDidMount() {
+       componentDidMount() {
         const { pathname, query } = Router
         // if (pathname == '/') {
         //     window.location.href = process.env.genuinurl
@@ -67,40 +62,21 @@ export default class Home extends React.Component {
                 $('body').toggleClass('nav-open');
             });
         });
-
-        this.setState({
-            nav1: this.slider1,
-            nav2: this.slider2
-        });
     }
 
     render() {
-        var settings = {
-            dots: false,
-            arrows: false,
-            fade: true,
-            autoplay: true,
-            infinite: true,
-            speed: 500,
-            slidesToShow: 1,
-            slidesToScroll: 1
-        };
-        var settingsone = {
-            dots: true,     
-            arrows: false,
-            fade: true,
-            autoplay: true,
-            infinite: true,
-            speed: 500,
-            slidesToShow: 1,
-            slidesToScroll: 1
-        };
         return (
-            <div className="mobile-m-p">
+            <div className="content-page">
+              <style jsx global>{`
+                body {
+                background: white;
+                }
+                `}</style>
+              <div className="header-bg">
                 <Container className="sticky-top">
                     <Row>
                         <Col xl={12}>
-                            <Navbar bg="transparent p-0 pt-4 pb-4 " expand="sm">
+                            <Navbar bg="transparent navbar-padding" expand="sm">
                                 {/* <Navbar.Brand href="#home" className="p-0">genuin</Navbar.Brand> */}
 
                                 <Navbar.Brand href="/" className="p-0">
@@ -111,7 +87,7 @@ export default class Home extends React.Component {
 
                                 <a className="nav-button ml-auto d-sm-none"><span id="nav-icon3"><span></span><span></span><span></span><span></span></span></a>
 
-                                <div className="fixed-top main-menu">
+                                {/* <div className="fixed-top main-menu">
                                     <div className="flex-top p-5 mt-5">
                                         <ul className="nav flex-column w-100">
                                             <li className="nav-item delay-1 pt-4"><a onClick={this.handleInstallAppClick} className="nav-link pt-5" href="#">Download App</a></li>
@@ -125,7 +101,7 @@ export default class Home extends React.Component {
                                             <li className="nav-item delay-5"><a className="nav-link" href="#">© 2020 Genuin Inc.</a></li>
                                         </ul>
                                     </div>
-                                </div>
+                                </div> */}
 
                                 <Navbar.Collapse id="basic-navbar-nav" className="collapse navbar-collapse">
                                     <Nav className="mr-auto">
@@ -137,90 +113,53 @@ export default class Home extends React.Component {
                             <Nav.Link href="#link" className="animated fadeInDown">Privacy Policy</Nav.Link>                                    
                             </div> */}
                                     </Nav>
-                                    <Form inline className="d-none d-sm-block d-md-block d-lg-block">
-                                        {/* <FormControl type="text" placeholder="Search" className="mr-sm-2" /> */}
-                                        <Button onClick={this.handleInvestClick} variant="primary">Invest in Genuin</Button>
-                                    </Form>
+                                    <div className="d-none d-sm-block d-md-block d-lg-block">
+                                    <div className="form-inline">
+                                    <Nav.Item>
+                                      <Nav.Link href="https://www.linkedin.com/company/begenuin/">Invest in Genuin</Nav.Link>
+                                    </Nav.Item>
+                                    <Nav.Item>
+                                      <Nav.Link href="https://play.google.com/store/apps/details?id=com.begenuin.begenuin" eventKey="link-1">Download App</Nav.Link>
+                                    </Nav.Item>
+                                    </div>
+                                    </div>
                                 </Navbar.Collapse>
                             </Navbar>
                         </Col>
                     </Row>
                 </Container>
+                </div>
 
                 <Container>
-                    <Row className="mt-5 justify-content-center align-items-center">
+                    <Row>
                         {/* <Col xl={{ span: 5, offset: 1 }} lg={6} md={6} sm={12}> */}
-                        <Col xl={6} lg={6} md={6} sm={12}>
-                            <div className="slider-img">
-                                <Slider asNavFor={this.state.nav2}ref={slider => (this.slider1 = slider)} {...settings}>
-                                    <div>
-                                        <img src={require('../images/image_feature_1.png')} alt="image_feature_1" className="img-fluid mx-auto d-block" />
-                                    </div>
-                                    <div>
-                                        <img src={require('../images/image_feature_2.png')} alt="image_feature_2" className="img-fluid mx-auto d-block" />
-                                    </div>
-                                    <div>
-                                        <img src={require('../images/image_feature_3.png')} alt="image_feature_3" className="img-fluid mx-auto d-block" />
-                                    </div>
-                                    <div>
-                                        <img src={require('../images/image_feature_4.png')} alt="image_feature_4" className="img-fluid mx-auto d-block" />
-                                    </div>
-                                    <div>
-                                        <img src={require('../images/image_feature_5.png')} alt="image_feature_5" className="img-fluid mx-auto d-block" />
-                                    </div>
-                                </Slider>
+                        <Col xl={{ span: 8, offset: 2 }} lg={{ span: 8, offset: 2 }} md={{ span: 10, offset: 1 }} sm={12}>
+                          <div className="content-block pt-5"></div>
+                            <div className="content-block mobile-p mt-5 pt-5">
+                               
+                            <h1 className="mb-4">Privacy Policy </h1>
+                                                        
+                            <p>Your privacy is important to us. It is Genuin Inc.’s policy to respect your privacy regarding any information we may collect from you through our app, Genuin. </p>
+                              
+                              
+                            <p>We only ask for personal information when we truly need it to provide a service to you. We collect it by fair and lawful means, with your knowledge and consent. We also let you know why we’re collecting it and how it will be used.</p>
+                              
+                            <p>We only retain collected information for as long as necessary to provide you with your requested service. What data we store, we’ll protect within commercially acceptable means to prevent loss and theft, as well as unauthorized access, disclosure, copying, use or modification.</p>
+                               
+                            <p> We don’t share any personally identifying information publicly or with third-parties, except when required to by law. </p>
+                                
+                            <p> Our app may link to external sites that are not operated by us. Please be aware that we have no control over the content and practices of these sites, and cannot accept responsibility or liability for their respective privacy policies. </p>
+                                
+                            <p> You are free to refuse our request for your personal information, with the understanding that we may be unable to provide you with some of your desired services. </p>
+                                
+                            <p> Your continued use of our app will be regarded as acceptance of our practices around privacy and personal information. If you have any questions about how we handle user data and personal information, feel free to contact us. </p>
+                                
+                            <p> This policy is effective as of 1 November 2020.</p>
 
                             </div>
-                        </Col>
-                        <Col xl={6} lg={6} md={6} sm={12} className="slider-text-center text-slider">
-                            <div>
-                                <Slider asNavFor={this.state.nav1} ref={slider => (this.slider2 = slider)} {...settingsone}>
-                                    <div>
-                                        <h1>Showcase <br />Yourself</h1>
-                                        <Button variant="primary" onClick={this.handleHireLinkClick} className="mt-5 mb-4 d-none d-sm-block d-md-block d-lg-block">We are Hiring </Button>                                        
-                                    </div>
-
-                                    <div>
-                                        <h1>Get <br /> Discovered</h1>
-                                        <Button variant="primary" onClick={this.handleHireLinkClick} className="mt-5 mb-4 d-none d-sm-block d-md-block d-lg-block">We are Hiring </Button>                                        
-                                    </div>
-
-                                    <div>
-                                        <h1>Make <br />Connections</h1>
-                                        <Button variant="primary" onClick={this.handleHireLinkClick} className="mt-5 mb-4 d-none d-sm-block d-md-block d-lg-block">We are Hiring </Button>                                        
-                                    </div>
-
-                                    <div>
-                                        <h1>Search <br />People</h1>
-                                        <Button variant="primary" onClick={this.handleHireLinkClick} className="mt-5 mb-4 d-none d-sm-block d-md-block d-lg-block">We are Hiring </Button>
-                                    </div>
-
-                                    <div>
-                                        <h1>Initiate <br />Conversations</h1>
-                                        <Button variant="primary" onClick={this.handleHireLinkClick} className="mt-5 mb-4 d-none d-sm-block d-md-block d-lg-block">We are Hiring </Button>                                        
-                                    </div>
-                                </Slider>
-                                <div className="mt-4 d-sm-none"></div>
-                                <Button variant="primary" onClick={this.handleInstallAppClick} className="mt-5 d-sm-none">Download App</Button>
-                            </div>
-
-                            <Nav defaultActiveKey="/home" as="ul" className="appstore-googleplay d-block slider-text-center mt-4 pt-4 d-none d-sm-block d-md-block d-lg-block">
-                                <Nav.Item as="li">
-                                    <Nav.Link href="" className="pl-0 pr-2">
-                                        <img src={require('../images/badge_appstore.png')} onClick={this.handleIosInstallClick} alt="badge_appstore" className="img-fluid" />
-                                    </Nav.Link>
-                                    <Nav.Link href="" className="pr-0">
-                                        <img src={require('../images/badge_playstore.png')} onClick={this.handleAndroidInstallClick} alt="badge_playstore" className="img-fluid" />
-                                    </Nav.Link>
-                                </Nav.Item>
-                            </Nav>
-                        </Col>
+                        </Col>                    
                     </Row>
-                    <Row className="pb-5">
-                        <Col xl={12}>
-
-                        </Col>
-                    </Row>
+                   
                 </Container>
 
 
