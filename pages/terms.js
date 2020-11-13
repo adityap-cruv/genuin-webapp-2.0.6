@@ -69,7 +69,10 @@ export default class Home extends React.Component {
             <div className="content-page">
               <style jsx global>{`
                 body {
-                background: white;
+                    background: white;
+                }
+                html {
+                    overflow-y: auto;
                 }
                 `}</style>
               <div className="header-bg">
