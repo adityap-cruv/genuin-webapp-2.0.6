@@ -109,7 +109,7 @@ export default class Home extends React.Component {
                     bottom: 0px;
                 }
                 .slider-container {
-                    height: 80vh;
+                    height: 85vh;
                 }
                 .slider-container > div {
                     height: 100%;
@@ -133,14 +133,14 @@ export default class Home extends React.Component {
                                     <div className="flex-top p-5 mt-5">
                                         <ul className="nav flex-column w-100">
                                             <li className="nav-item delay-1 pt-4"><a onClick={this.handleInstallAppClick} className="nav-link pt-5" href="#">Download App</a></li>
-                                            <li className="nav-item delay-2"><a className="nav-link" href="#">Invest in Genuin</a></li>
-                                            <li className="nav-item delay-3"><a className="nav-link" href="#">About</a></li>
-                                            <li className="nav-item delay-4"><a className="nav-link" href="#">Terms of Service </a></li>
-                                            <li className="nav-item delay-5"><a className="nav-link" href="#">Privacy Policy</a></li>
+                                            <li className="nav-item delay-2"><a onClick={this.handleInvestClick} className="nav-link" href="#">Invest in Genuin</a></li>
+                                            {/* <li className="nav-item delay-3"><a className="nav-link" href="#">About</a></li> */}
+                                            <li className="nav-item delay-4"><a className="nav-link" href="/terms">Terms of Service </a></li>
+                                            <li className="nav-item delay-5"><a className="nav-link" href="/privacy">Privacy Policy</a></li>
                                         </ul>
 
                                         <ul className="copy-right">
-                                            <li className="nav-item delay-5"><a className="nav-link" href="#">© 2020 Genuin Inc.</a></li>
+                                            <li className="nav-item delay-5"><a className="nav-link" href="/">© 2020 Genuin Inc.</a></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -168,7 +168,7 @@ export default class Home extends React.Component {
                 <Container className="slider-container">
                     <Row className="justify-content-center align-items-center">
                         {/* <Col xl={{ span: 5, offset: 1 }} lg={6} md={6} sm={12}> */}
-                        <Col xl={6} lg={6} md={6} sm={12}>
+                        <Col xl={6} lg={6} md={6} sm={12} className="img-slider">
                             <div className="slider-img">
                                 <Slider asNavFor={this.state.nav2}ref={slider => (this.slider1 = slider)} {...settings}>
                                     <div>

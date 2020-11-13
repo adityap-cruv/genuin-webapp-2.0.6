@@ -23,6 +23,9 @@ a,a:hover{color: #ffffff;font-weight: 600;}
 .appstore-googleplay .nav-item img{width: 150px;}
 /* .slider-img img{height: 30rem;} */
 .slider-img img{max-height: 80vh;}
+.slider-container > div {
+    margin-top: -3%;
+}
 @media (min-width:992px){
     body{height: 100vh;}
 }
@@ -32,9 +35,129 @@ a,a:hover{color: #ffffff;font-weight: 600;}
 @media (min-width: 992px) and (max-width: 1199px){
     h1{font-size: 66px;}
 }
-@media (min-width: 320px) and (max-width: 991px){
-    h1 {font-size: 48px;}
-    .slider-img img {height: auto;}
+@media (min-width: 768px) and (max-width: 1199px){
+    .slider-container .text-slider h1 {
+        font-size: 50px;
+    }
+}
+@media (min-width: 320px) and (max-width: 767px) and (orientation: portrait){
+    .slider-container .img-slider {
+        margin-top: -20%;
+    }
+    .slider-container .text-slider {
+        margin-top: -50%;
+    }
+    .slider-container {
+        height: 75vh;
+    }
+    .slider-img img {
+        height: auto;
+        max-height: 45vh;
+    }
+    .footer-links .nav-item {
+        margin:auto;
+    }
+}
+@media (min-width: 320px) and (max-width: 991px) and (orientation: landscape) {
+    .slider-container .text-slider h1 {
+        font-size: 25px !important;
+        margin-bottom:20px !important; 
+    }
+    .slider-container .text-slider button {
+        margin: 2rem 0rem !important;
+    }
+    .appstore-googleplay {
+        margin-top: 0px !important;
+    }
+    .slider-container > div {
+        margin-top: -8%;
+    }
+    .slider-img img {
+        height: auto;
+        max-height: 65vh;
+    }
+}
+/* Galaxy Fold */
+@media (min-width: 280px) and (max-width: 319px) and (orientation: portrait) {
+    .slider-container {
+        height: 75vh;
+    }
+    .footer-links .nav-item {
+        margin:auto;
+    }
+    .slider-container .text-slider h1 {
+        font-size: 25px !important;
+        margin-bottom:20px !important; 
+    }
+    .slider-img img {
+        height: auto;
+        max-height: 35vh;
+    }
+    .slider-container .img-slider {
+        margin-top: -30%;
+    }
+    .slider-container .text-slider {
+        margin-top: -70%;
+    }
+}
+/* Surface Duo */
+@media (min-width: 540px) and (max-width: 720px) and (orientation: portrait) {
+    .slider-container .img-slider {
+        margin-top: -15%;
+    }
+    .slider-container .text-slider {
+        margin-top: -30%;
+    }
+}
+@media (min-width: 540px) and (max-width: 720px) and (orientation: landscape) {
+    .slider-container .img-slider,
+    .slider-container .text-slider{
+        -ms-flex: 0 0 50%;
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+    .appstore-googleplay {
+        margin-top: 0px !important;
+    }
+    .appstore-googleplay > li > a {
+        width: 50%;
+    }
+    .slider-container .text-slider h1 {
+        font-size: 40px !important;
+        margin-bottom:20px !important; 
+    }
+    .slider-img img {
+        height: auto;
+        max-height: 65vh;
+    }
+    .slider-container .text-slider button {
+        margin: 2rem 0rem !important;
+    }
+    .slider-container > div {
+        margin-top: -8%;
+    }
+}
+@media (min-width: 280px) and (max-width: 653px) and (orientation: landscape) {
+    #basic-navbar-nav button {
+        font-size: 18px !important;
+    }
+    .slider-container .text-slider h1 {
+        font-size: 30px !important;
+        margin-bottom: 20px !important;
+    }
+    .slider-container .text-slider button {
+        margin: 1rem auto !important;
+        font-size: 18px !important;
+    }
+    .sticky-top .navbar {
+        padding: 1rem 0 !important;
+    }
+    .footer-links > .row {
+        padding: 0px !important;
+    }
+    .appstore-googleplay {
+        display: none !important;
+    }
 }
 @media (min-width: 768px){
     .mobile-m-p .d-md-block,.mobile-m-p .d-sm-block {display: block!important;}    
