@@ -30,10 +30,12 @@ export default class Home extends React.Component {
         };
 
     }
-
+    handleInvestClick = () => {
+        window.open("https://www.linkedin.com/company/begenuin/");
+    }
     handleHireLinkClick = () => {
        // console.log('this is:', this);
-        window.open("https://www.linkedin.com/company/begenuin/jobs/");
+        window.open("https://angel.co/company/begenuin");
 
       }
 
@@ -95,13 +97,31 @@ export default class Home extends React.Component {
         };
         return (
             <div className="mobile-m-p">
+                <style jsx global>{`
+                html {
+                    overflow-y: auto;
+                }
+                #__next > div {
+                    height: 100vh;
+                }
+                .footer-links {
+                    position: absolute;
+                    bottom: 0px;
+                }
+                .slider-container {
+                    height: 85vh;
+                }
+                .slider-container > div {
+                    height: 100%;
+                }
+                `}</style>
                 <Container className="sticky-top">
                     <Row>
                         <Col xl={12}>
                             <Navbar bg="transparent p-0 pt-4 pb-4 " expand="sm">
                                 {/* <Navbar.Brand href="#home" className="p-0">genuin</Navbar.Brand> */}
 
-                                <Navbar.Brand href="#home" className="p-0">
+                                <Navbar.Brand href="/" className="p-0">
                                     <img src={require('../images/logo_header.png')} alt="logo_header" />
                                 </Navbar.Brand>
 
@@ -113,14 +133,14 @@ export default class Home extends React.Component {
                                     <div className="flex-top p-5 mt-5">
                                         <ul className="nav flex-column w-100">
                                             <li className="nav-item delay-1 pt-4"><a onClick={this.handleInstallAppClick} className="nav-link pt-5" href="#">Download App</a></li>
-                                            <li className="nav-item delay-2"><a className="nav-link" href="#">Invest in Genuin</a></li>
-                                            <li className="nav-item delay-3"><a className="nav-link" href="#">About</a></li>
-                                            <li className="nav-item delay-4"><a className="nav-link" href="#">Terms of Service </a></li>
-                                            <li className="nav-item delay-5"><a className="nav-link" href="#">Privacy Policy</a></li>
+                                            <li className="nav-item delay-2"><a onClick={this.handleInvestClick} className="nav-link" href="#">Invest in Genuin</a></li>
+                                            {/* <li className="nav-item delay-3"><a className="nav-link" href="#">About</a></li> */}
+                                            <li className="nav-item delay-4"><a className="nav-link" href="/terms">Terms of Service </a></li>
+                                            <li className="nav-item delay-5"><a className="nav-link" href="/privacy">Privacy Policy</a></li>
                                         </ul>
 
                                         <ul className="copy-right">
-                                            <li className="nav-item delay-5"><a className="nav-link" href="#">© 2020 Genuin Inc.</a></li>
+                                            <li className="nav-item delay-5"><a className="nav-link" href="/">© 2020 Genuin Inc.</a></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -137,7 +157,7 @@ export default class Home extends React.Component {
                                     </Nav>
                                     <Form inline className="d-none d-sm-block d-md-block d-lg-block">
                                         {/* <FormControl type="text" placeholder="Search" className="mr-sm-2" /> */}
-                                        <Button variant="primary">Invest in Genuin</Button>
+                                        <Button onClick={this.handleInvestClick} variant="primary">Invest in Genuin</Button>
                                     </Form>
                                 </Navbar.Collapse>
                             </Navbar>
@@ -145,10 +165,10 @@ export default class Home extends React.Component {
                     </Row>
                 </Container>
 
-                <Container>
-                    <Row className="mt-5 justify-content-center align-items-center">
+                <Container className="slider-container">
+                    <Row className="justify-content-center align-items-center">
                         {/* <Col xl={{ span: 5, offset: 1 }} lg={6} md={6} sm={12}> */}
-                        <Col xl={6} lg={6} md={6} sm={12}>
+                        <Col xl={6} lg={6} md={6} sm={12} className="img-slider">
                             <div className="slider-img">
                                 <Slider asNavFor={this.state.nav2}ref={slider => (this.slider1 = slider)} {...settings}>
                                     <div>
@@ -214,33 +234,28 @@ export default class Home extends React.Component {
                             </Nav>
                         </Col>
                     </Row>
-                    <Row className="pb-5">
-                        <Col xl={12}>
-
-                        </Col>
-                    </Row>
                 </Container>
 
 
-                <Container className="footer-links d-none d-sm-block d-md-block d-lg-block">
+                <Container className="footer-links">
                     <Row className="pt-3 pb-3">
                         <Col xl={8} lg={8} md={8} sm={8}>
                             <Nav defaultActiveKey="/home" as="ul">
+                                {/* <Nav.Item as="li">
+                                    <Nav.Link href="/about" className="pl-0">About</Nav.Link>
+                                </Nav.Item> */}
                                 <Nav.Item as="li">
-                                    <Nav.Link href="" className="pl-0">About</Nav.Link>
+                                    <Nav.Link href="/terms" eventKey="link-1">Terms of Service</Nav.Link>
                                 </Nav.Item>
                                 <Nav.Item as="li">
-                                    <Nav.Link eventKey="link-1">Terms of Service</Nav.Link>
-                                </Nav.Item>
-                                <Nav.Item as="li">
-                                    <Nav.Link eventKey="link-2">Privacy Policy</Nav.Link>
+                                    <Nav.Link href="/privacy" eventKey="link-2">Privacy Policy</Nav.Link>
                                 </Nav.Item>
                             </Nav>
                         </Col>
-                        <Col xl={4} lg={4} md={4} sm={4}>
+                        <Col xl={4} lg={4} md={4} sm={4} className="text-m-center">
                             <Nav className="justify-content-end" defaultActiveKey="/home" as="ul">
                                 <Nav.Item as="li">
-                                    <Nav.Link href="" className="pr-0">© 2020 Genuin Inc.</Nav.Link>
+                                    <Nav.Link href="/" className="pr-0">© 2020 Genuin Inc.</Nav.Link>
                                 </Nav.Item>
                             </Nav>
                         </Col>
