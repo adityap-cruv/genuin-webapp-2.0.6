@@ -30,10 +30,12 @@ export default class Home extends React.Component {
         };
 
     }
-
+    handleInvestClick = () => {
+        window.open("https://www.linkedin.com/company/begenuin/");
+    }
     handleHireLinkClick = () => {
        // console.log('this is:', this);
-        window.open("https://www.linkedin.com/company/begenuin/jobs/");
+        window.open("https://angel.co/company/begenuin");
 
       }
 
@@ -101,7 +103,7 @@ export default class Home extends React.Component {
                             <Navbar bg="transparent p-0 pt-4 pb-4 " expand="sm">
                                 {/* <Navbar.Brand href="#home" className="p-0">genuin</Navbar.Brand> */}
 
-                                <Navbar.Brand href="#home" className="p-0">
+                                <Navbar.Brand href="/" className="p-0">
                                     <img src={require('../images/logo_header.png')} alt="logo_header" />
                                 </Navbar.Brand>
 
@@ -137,7 +139,7 @@ export default class Home extends React.Component {
                                     </Nav>
                                     <Form inline className="d-none d-sm-block d-md-block d-lg-block">
                                         {/* <FormControl type="text" placeholder="Search" className="mr-sm-2" /> */}
-                                        <Button variant="primary">Invest in Genuin</Button>
+                                        <Button onClick={this.handleInvestClick} variant="primary">Invest in Genuin</Button>
                                     </Form>
                                 </Navbar.Collapse>
                             </Navbar>
@@ -226,21 +228,21 @@ export default class Home extends React.Component {
                     <Row className="pt-3 pb-3">
                         <Col xl={8} lg={8} md={8} sm={8}>
                             <Nav defaultActiveKey="/home" as="ul">
+                                {/* <Nav.Item as="li">
+                                    <Nav.Link href="/about" className="pl-0">About</Nav.Link>
+                                </Nav.Item> */}
                                 <Nav.Item as="li">
-                                    <Nav.Link href="" className="pl-0">About</Nav.Link>
+                                    <Nav.Link href="/terms" eventKey="link-1">Terms of Service</Nav.Link>
                                 </Nav.Item>
                                 <Nav.Item as="li">
-                                    <Nav.Link eventKey="link-1">Terms of Service</Nav.Link>
-                                </Nav.Item>
-                                <Nav.Item as="li">
-                                    <Nav.Link eventKey="link-2">Privacy Policy</Nav.Link>
+                                    <Nav.Link href="/privacy" eventKey="link-2">Privacy Policy</Nav.Link>
                                 </Nav.Item>
                             </Nav>
                         </Col>
                         <Col xl={4} lg={4} md={4} sm={4} className="text-m-center">
                             <Nav className="justify-content-end" defaultActiveKey="/home" as="ul">
                                 <Nav.Item as="li">
-                                    <Nav.Link href="" className="pr-0">© 2020 Genuin Inc.</Nav.Link>
+                                    <Nav.Link href="/" className="pr-0">© 2020 Genuin Inc.</Nav.Link>
                                 </Nav.Item>
                             </Nav>
                         </Col>
