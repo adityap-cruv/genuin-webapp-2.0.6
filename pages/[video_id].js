@@ -19,29 +19,44 @@ const ShortUrlPage = (props) => {
     });
     var currentUrl = process.env.hostname + props.url.asPath;
     var description = props.data.description;
-    var videoThumbnail = props.data.videoThumbnail;
+    // var videoThumbnail = props.data.videoThumbnail;
+    let metaImage = props.data.videoPreviewImage;
+    let metaImageWidth = 280;
+    let metaImageHeight = 534;
+    // if (props.data.videoShareImage != '' && props.data.videoShareImage != undefined && props.data.videoShareImage != null) {
+    //   metaImage = props.data.videoShareImage;
+    //   metaImageWidth = 350;
+    //   metaImageHeight = 650;
+    // }
     return (
         <div>
             <NextSeo
                 title="Genuin"
                 description={description}
                 openGraph={{
+                type: 'website',
                 url: currentUrl,
                 title: 'Genuin',
                 description: description,
                 images: [
-                    // {
-                    //   url: metaImage,
-                    //   width: metaImageWidth,
-                    //   height: metaImageHeight,
-                    //   alt: 'Genuin',
-                    // },
                     {
-                    url: videoThumbnail,
-                    width: 300,
-                    height: 200,
-                    alt: 'Genuin',
-                    }
+                      url: metaImage,
+                      width: metaImageWidth,
+                      height: metaImageHeight,
+                      alt: 'Genuin',
+                    },
+                    {
+                        url: metaImage,
+                        width: 300,
+                        height: 200,
+                        alt: 'Genuinw',
+                      },
+                    // {
+                    // url: videoThumbnail,
+                    // width: 350,
+                    // height: 650,
+                    // alt: 'Genuin',
+                    // }
                 ],
                 site_name: 'Genuin',
                 }}
