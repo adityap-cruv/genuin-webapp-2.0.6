@@ -21,8 +21,8 @@ a,a:hover{color: #ffffff;font-weight: 600;}
 .btn-primary {color: #fff;background-color: #0645FF;border-color: #0645FF;font-weight: 700;font-size: 22px !important;padding: .275rem 2rem;border-radius: .40rem;}
 .appstore-googleplay .nav-link{display: inline-block;}
 .appstore-googleplay .nav-item img{width: 150px;}
-.slider-img img{height: 650px;}
-
+/* .slider-img img{height: 30rem;} */
+.slider-img img{max-height: 80vh;}
 @media (min-width:992px){
     body{height: 100vh;}
 }
@@ -34,7 +34,7 @@ a,a:hover{color: #ffffff;font-weight: 600;}
 }
 @media (min-width: 320px) and (max-width: 991px){
     h1 {font-size: 48px;}
-    .slider-img img {height: auto;width: 250px;}
+    .slider-img img {height: auto;}
 }
 @media (min-width: 768px){
     .mobile-m-p .d-md-block,.mobile-m-p .d-sm-block {display: block!important;}    

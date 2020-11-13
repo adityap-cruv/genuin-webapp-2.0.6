@@ -97,6 +97,24 @@ export default class Home extends React.Component {
         };
         return (
             <div className="mobile-m-p">
+                <style jsx global>{`
+                html {
+                    overflow-y: auto;
+                }
+                #__next > div {
+                    height: 100vh;
+                }
+                .footer-links {
+                    position: absolute;
+                    bottom: 0px;
+                }
+                .slider-container {
+                    height: 80vh;
+                }
+                .slider-container > div {
+                    height: 100%;
+                }
+                `}</style>
                 <Container className="sticky-top">
                     <Row>
                         <Col xl={12}>
@@ -147,8 +165,8 @@ export default class Home extends React.Component {
                     </Row>
                 </Container>
 
-                <Container>
-                    <Row className="mt-5 justify-content-center align-items-center">
+                <Container className="slider-container">
+                    <Row className="justify-content-center align-items-center">
                         {/* <Col xl={{ span: 5, offset: 1 }} lg={6} md={6} sm={12}> */}
                         <Col xl={6} lg={6} md={6} sm={12}>
                             <div className="slider-img">
@@ -214,11 +232,6 @@ export default class Home extends React.Component {
                                     </Nav.Link>
                                 </Nav.Item>
                             </Nav>
-                        </Col>
-                    </Row>
-                    <Row className="pb-5">
-                        <Col xl={12}>
-
                         </Col>
                     </Row>
                 </Container>
