@@ -78,7 +78,7 @@ export default class Home extends React.Component {
         var settings = {
             dots: false,
             arrows: false,
-            fade: true,
+            fade: false,
             autoplay: true,
             infinite: true,
             speed: 500,
@@ -88,7 +88,7 @@ export default class Home extends React.Component {
         var settingsone = {
             dots: true,     
             arrows: false,
-            fade: true,
+            fade: false,
             autoplay: true,
             infinite: true,
             speed: 500,
