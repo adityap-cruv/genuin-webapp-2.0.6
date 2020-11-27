@@ -81,19 +81,21 @@ export default class Home extends React.Component {
             fade: true,
             autoplay: true,
             infinite: true,
-            speed: 500,
+            speed: 800,
             slidesToShow: 1,
-            slidesToScroll: 1
+            slidesToScroll: 1,
+            autoplaySpeed: 3000
         };
         var settingsone = {
             dots: true,     
             arrows: false,
-            fade: true,
+            fade: false,
             autoplay: true,
             infinite: true,
-            speed: 500,
+            speed: 800,
             slidesToShow: 1,
-            slidesToScroll: 1
+            slidesToScroll: 1,
+            autoplaySpeed: 3000
         };
         return (
             <div className="mobile-m-p">
@@ -237,7 +239,7 @@ export default class Home extends React.Component {
                 </Container>
 
 
-                <Container className="footer-links">
+                <Container className="footer-m-none">
                     <Row className="pt-3 pb-3">
                         <Col xl={8} lg={8} md={8} sm={8}>
                             <Nav defaultActiveKey="/home" as="ul">

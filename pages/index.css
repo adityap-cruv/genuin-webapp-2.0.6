@@ -41,12 +41,13 @@ a,a:hover{color: #ffffff;font-weight: 600;}
     }
 }
 @media (min-width: 320px) and (max-width: 767px) and (orientation: portrait){
-    .slider-container .img-slider {
+    /* Removing resolve this issue */
+    /* .slider-container .img-slider {
         margin-top: -20%;
     }
     .slider-container .text-slider {
         margin-top: -50%;
-    }
+    } */
     .slider-container {
         height: 75vh;
     }
@@ -162,12 +163,13 @@ a,a:hover{color: #ffffff;font-weight: 600;}
 @media (min-width: 768px){
     .mobile-m-p .d-md-block,.mobile-m-p .d-sm-block {display: block!important;}    
 }
-@media (max-width:767px){
+@media (max-width:767px){    
     .slider-text-center{text-align: center;}        
     .footer-links .nav-link{font-size: 14px;}
     .btn-primary{margin: 0 auto;}
     .text-slider .slick-dots{text-align: center !important;}
     .text-m-center .justify-content-end{justify-content: center !important;}
+    .footer-m-none{display: none;}
 }
 @media (max-width:576px){
     h1 {font-size: 42px;margin-bottom: 30px;}
