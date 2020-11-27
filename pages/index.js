@@ -78,12 +78,13 @@ export default class Home extends React.Component {
         var settings = {
             dots: false,
             arrows: false,
-            fade: false,
+            fade: true,
             autoplay: true,
             infinite: true,
-            speed: 500,
+            speed: 800,
             slidesToShow: 1,
-            slidesToScroll: 1
+            slidesToScroll: 1,
+            autoplaySpeed: 3000
         };
         var settingsone = {
             dots: true,     
@@ -91,9 +92,10 @@ export default class Home extends React.Component {
             fade: false,
             autoplay: true,
             infinite: true,
-            speed: 500,
+            speed: 800,
             slidesToShow: 1,
-            slidesToScroll: 1
+            slidesToScroll: 1,
+            autoplaySpeed: 3000
         };
         return (
             <div className="mobile-m-p">
