@@ -237,7 +237,7 @@ export default class Home extends React.Component {
                 </Container>
 
 
-                <Container className="footer-links">
+                <Container className="footer-m-none">
                     <Row className="pt-3 pb-3">
                         <Col xl={8} lg={8} md={8} sm={8}>
                             <Nav defaultActiveKey="/home" as="ul">
