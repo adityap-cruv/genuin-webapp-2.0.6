@@ -174,19 +174,19 @@ export default class Home extends React.Component {
                             <div className="slider-img">
                                 <Slider asNavFor={this.state.nav2}ref={slider => (this.slider1 = slider)} {...settings}>
                                     <div>
-                                        <img src={require('../images/image_feature_1.png')} alt="image_feature_1" className="img-fluid mx-auto d-block" />
+                                        <img src={require('../images/image_onboarding_showcase.png')} alt="Showcase Yourself" className="img-fluid mx-auto d-block" />
                                     </div>
                                     <div>
-                                        <img src={require('../images/image_feature_2.png')} alt="image_feature_2" className="img-fluid mx-auto d-block" />
+                                        <img src={require('../images/image_onboarding_swipe.png')} alt="Get Discovered" className="img-fluid mx-auto d-block" />
                                     </div>
                                     <div>
-                                        <img src={require('../images/image_feature_3.png')} alt="image_feature_3" className="img-fluid mx-auto d-block" />
+                                        <img src={require('../images/image_feature_3.png')} alt="Make Connections" className="img-fluid mx-auto d-block" />
                                     </div>
                                     <div>
-                                        <img src={require('../images/image_feature_4.png')} alt="image_feature_4" className="img-fluid mx-auto d-block" />
+                                        <img src={require('../images/image_onboarding_search.png')} alt="Search People" className="img-fluid mx-auto d-block" />
                                     </div>
                                     <div>
-                                        <img src={require('../images/image_feature_5.png')} alt="image_feature_5" className="img-fluid mx-auto d-block" />
+                                        <img src={require('../images/image_onboarding_reply.png')} alt="Initiate Conversations" className="img-fluid mx-auto d-block" />
                                     </div>
                                 </Slider>
 
@@ -197,29 +197,25 @@ export default class Home extends React.Component {
                                 <Slider asNavFor={this.state.nav1} ref={slider => (this.slider2 = slider)} {...settingsone}>
                                     <div>
                                         <h1>Showcase <br />Yourself</h1>
-                                        <Button variant="primary" onClick={this.handleHireLinkClick} className="mt-5 mb-4 d-none d-sm-block d-md-block d-lg-block">We are Hiring </Button>                                        
                                     </div>
 
                                     <div>
                                         <h1>Get <br /> Discovered</h1>
-                                        <Button variant="primary" onClick={this.handleHireLinkClick} className="mt-5 mb-4 d-none d-sm-block d-md-block d-lg-block">We are Hiring </Button>                                        
                                     </div>
 
                                     <div>
                                         <h1>Make <br />Connections</h1>
-                                        <Button variant="primary" onClick={this.handleHireLinkClick} className="mt-5 mb-4 d-none d-sm-block d-md-block d-lg-block">We are Hiring </Button>                                        
                                     </div>
 
                                     <div>
                                         <h1>Search <br />People</h1>
-                                        <Button variant="primary" onClick={this.handleHireLinkClick} className="mt-5 mb-4 d-none d-sm-block d-md-block d-lg-block">We are Hiring </Button>
                                     </div>
 
                                     <div>
                                         <h1>Initiate <br />Conversations</h1>
-                                        <Button variant="primary" onClick={this.handleHireLinkClick} className="mt-5 mb-4 d-none d-sm-block d-md-block d-lg-block">We are Hiring </Button>                                        
                                     </div>
                                 </Slider>
+                                <Button variant="primary" onClick={this.handleHireLinkClick} className="mt-5 mb-4 d-none d-sm-block d-md-block d-lg-block">We are Hiring </Button>
                                 <div className="mt-4 d-sm-none"></div>
                                 <Button variant="primary" onClick={this.handleInstallAppClick} className="mt-5 d-sm-none">Download App</Button>
                             </div>
