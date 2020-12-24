@@ -17,7 +17,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 // import 'bootstrap/scss/_forms.scss';
 // import 'bootstrap/scss/_buttons.scss';
 // import 'bootstrap/scss/_grid.scss';
-import Layout from "../components/Layout";
+
 
 import { Nav, Navbar, Form, Button, FormControl, Container, Row, Col } from 'react-bootstrap';
 // import bootstrapStyles from './index.scss'
@@ -115,7 +115,7 @@ export default class Home extends React.Component {
 
         return (
             
-            <Layout title="Genuin" videoUrl={videoUrl} metaImageWidth={metaImageWidth} metaImageHeight={metaImageHeight} metaImage={metaImage} content={content} description={description} currentUrl={currentUrl} keyword={keyword}>
+            <Layout title="Genuin" videoUrl={currentUrl} metaImageWidth={metaImageWidth} metaImageHeight={metaImageHeight} metaImage={metaImage} content={content} description={description} currentUrl={currentUrl} keyword={keyword}>
             <div className="mobile-m-p">
                 <style jsx global>{`
                 html {
