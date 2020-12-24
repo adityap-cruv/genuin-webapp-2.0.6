@@ -17,9 +17,12 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 // import 'bootstrap/scss/_forms.scss';
 // import 'bootstrap/scss/_buttons.scss';
 // import 'bootstrap/scss/_grid.scss';
+
+
 import { Nav, Navbar, Form, Button, FormControl, Container, Row, Col } from 'react-bootstrap';
 // import bootstrapStyles from './index.scss'
 import './index.css'
+import Layout from '../components/Layout';
 
 export default class Home extends React.Component {
     constructor(props) {
@@ -97,7 +100,22 @@ export default class Home extends React.Component {
             slidesToScroll: 1,
             autoplaySpeed: 3000
         };
+
+    
+    let children='Genuin';
+    let  title='Genuin';
+     let metaImage=require('../images/genuin_app_icon.png');
+     let metaImageWidth='48';
+     let metaImageHeight='48';
+     let content='';
+     let description='For individuals that want to showcase, discover and connect with new people online like in real life, Genuin is a video chatting discovery platform that allows you to engage with whom you want and when you want, exchanging short-form videos, to have a conversation of your choice, face to face, as you do in reality.';
+     let currentUrl='https://begenuin.com';
+     let keyword='Genuin,Showcase Yourself. Get Discovered. Make Connections, video Communication';
+
+
         return (
+            
+            <Layout title="Genuin" videoUrl={currentUrl} metaImageWidth={metaImageWidth} metaImageHeight={metaImageHeight} metaImage={metaImage} content={content} description={description} currentUrl={currentUrl} keyword={keyword}>
             <div className="mobile-m-p">
                 <style jsx global>{`
                 html {
@@ -174,19 +192,19 @@ export default class Home extends React.Component {
                             <div className="slider-img">
                                 <Slider asNavFor={this.state.nav2}ref={slider => (this.slider1 = slider)} {...settings}>
                                     <div>
-                                        <img src={require('../images/image_onboarding_showcase.png')} alt="Showcase Yourself" className="img-fluid mx-auto d-block" />
+                                        <img src={require('../images/1_Showcase.png')} alt="Showcase Yourself" className="img-fluid mx-auto d-block" />
                                     </div>
                                     <div>
-                                        <img src={require('../images/image_onboarding_swipe.png')} alt="Get Discovered" className="img-fluid mx-auto d-block" />
+                                        <img src={require('../images/2_Get Discovered.png')} alt="Get Discovered" className="img-fluid mx-auto d-block" />
                                     </div>
                                     <div>
-                                        <img src={require('../images/image_feature_3.png')} alt="Make Connections" className="img-fluid mx-auto d-block" />
+                                        <img src={require('../images/3_Make Connections.png')} alt="Make Connections" className="img-fluid mx-auto d-block" />
                                     </div>
                                     <div>
-                                        <img src={require('../images/image_onboarding_search.png')} alt="Search People" className="img-fluid mx-auto d-block" />
+                                        <img src={require('../images/4_Search People.png')} alt="Search People" className="img-fluid mx-auto d-block" />
                                     </div>
                                     <div>
-                                        <img src={require('../images/image_onboarding_reply.png')} alt="Initiate Conversations" className="img-fluid mx-auto d-block" />
+                                        <img src={require('../images/5_Initiate Conversations.png')} alt="Initiate Conversations" className="img-fluid mx-auto d-block" />
                                     </div>
                                 </Slider>
 
@@ -261,6 +279,7 @@ export default class Home extends React.Component {
                 </Container>
 
             </div>
+        </Layout>
         );
     }
 }
