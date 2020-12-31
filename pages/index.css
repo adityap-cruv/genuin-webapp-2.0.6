@@ -162,7 +162,7 @@ a,a:hover{color: #ffffff;font-weight: 600;}
 }
 @media (min-width: 768px) and (max-width: 991px){
     .slider-container .text-slider h1 {font-size: 50px !important;}
-    .slider-container .text-slider button{margin: 0 !important;}
+    .slider-container .text-slider .slick-dots{margin: 0px !important;bottom: -44px;}
 }
 @media (min-width: 768px){
     .mobile-m-p .d-md-block,.mobile-m-p .d-sm-block {display: block!important;}    
