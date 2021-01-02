@@ -160,6 +160,10 @@ a,a:hover{color: #ffffff;font-weight: 600;}
         display: none !important;
     }
 }
+@media (min-width: 768px) and (max-width: 991px){
+    .slider-container .text-slider h1 {font-size: 50px !important;}
+    .slider-container .text-slider .slick-dots{margin: 0px !important;bottom: -44px;}
+}
 @media (min-width: 768px){
     .mobile-m-p .d-md-block,.mobile-m-p .d-sm-block {display: block!important;}    
 }
@@ -179,6 +183,11 @@ a,a:hover{color: #ffffff;font-weight: 600;}
     .mt-5.d-sm-none{margin-top: 2rem!important;}
     .navbar-brand{text-align: center;width: 100%!important;margin-right: 0;}
     .navbar-light .navbar-brand img {width: 100px;}    
+}
+@media (max-width:340px){
+    h1{margin-bottom: 10px;}
+    .mt-5.d-sm-none{margin-top: 1rem!important;}
+    .pb-4, .py-4 {padding-bottom: 0.5rem!important;}
 }
 
 body.nav-open{overflow: hidden;}

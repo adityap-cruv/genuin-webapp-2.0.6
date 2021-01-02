@@ -22,7 +22,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Nav, Navbar, Form, Button, FormControl, Container, Row, Col } from 'react-bootstrap';
 // import bootstrapStyles from './index.scss'
 import './index.css'
-import Layout from '../components/Layout';
+import Metalayout from '../components/Metalayout';
 
 export default class Home extends React.Component {
     constructor(props) {
@@ -115,7 +115,7 @@ export default class Home extends React.Component {
 
         return (
             
-            <Layout title="Genuin" videoUrl={currentUrl} metaImageWidth={metaImageWidth} metaImageHeight={metaImageHeight} metaImage={metaImage} content={content} description={description} currentUrl={currentUrl} keyword={keyword}>
+            <Metalayout title="Genuin" videoUrl={currentUrl} metaImageWidth={metaImageWidth} metaImageHeight={metaImageHeight} metaImage={metaImage} content={content} description={description} currentUrl={currentUrl} keyword={keyword}>
             <div className="mobile-m-p">
                 <style jsx global>{`
                 html {
@@ -147,7 +147,7 @@ export default class Home extends React.Component {
 
                                 {/* <Navbar.Toggle aria-controls="basic-navbar-nav" /> */}
 
-                                <a className="nav-button ml-auto d-sm-none"><span id="nav-icon3"><span></span><span></span><span></span><span></span></span></a>
+                                <a className="nav-button ml-auto d-sm-none p-0"><span id="nav-icon3"><span></span><span></span><span></span><span></span></span></a>
 
                                 <div className="fixed-top main-menu">
                                     <div className="flex-top p-5 mt-5">
@@ -279,7 +279,7 @@ export default class Home extends React.Component {
                 </Container>
 
             </div>
-        </Layout>
+        </Metalayout>
         );
     }
 }
