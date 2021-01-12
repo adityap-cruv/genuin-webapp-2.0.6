@@ -192,19 +192,19 @@ export default class Home extends React.Component {
                             <div className="slider-img">
                                 <Slider asNavFor={this.state.nav2}ref={slider => (this.slider1 = slider)} {...settings}>
                                     <div>
-                                        <img src={require('../images/1_Showcase.png')} alt="Showcase Yourself" className="img-fluid mx-auto d-block" />
+                                        <img src={require('../images/1_showcase.png')} alt="Showcase Yourself" className="img-fluid mx-auto d-block" />
                                     </div>
                                     <div>
-                                        <img src={require('../images/2_Get Discovered.png')} alt="Get Discovered" className="img-fluid mx-auto d-block" />
+                                        <img src={require('../images/2_getdiscovered.png')} alt="Get Discovered" className="img-fluid mx-auto d-block" />
                                     </div>
                                     <div>
-                                        <img src={require('../images/3_Make Connections.png')} alt="Make Connections" className="img-fluid mx-auto d-block" />
+                                        <img src={require('../images/3_makeconnections.png')} alt="Make Connections" className="img-fluid mx-auto d-block" />
                                     </div>
                                     <div>
-                                        <img src={require('../images/4_Search People.png')} alt="Search People" className="img-fluid mx-auto d-block" />
+                                        <img src={require('../images/4_searchpeople.png')} alt="Search People" className="img-fluid mx-auto d-block" />
                                     </div>
                                     <div>
-                                        <img src={require('../images/5_Initiate Conversations.png')} alt="Initiate Conversations" className="img-fluid mx-auto d-block" />
+                                        <img src={require('../images/5_initiateconversations.png')} alt="Initiate Conversations" className="img-fluid mx-auto d-block" />
                                     </div>
                                 </Slider>
 
