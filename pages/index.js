@@ -192,7 +192,7 @@ export default class Home extends React.Component {
                             <div className="slider-img">
                                 <Slider asNavFor={this.state.nav2}ref={slider => (this.slider1 = slider)} {...settings}>
                                     <div>
-                                        <img src={require('../images/showcase.png')} alt="Showcase Yourself" className="img-fluid mx-auto d-block" />
+                                        <img src={require('../images/1_showcase.png')} alt="Showcase Yourself" className="img-fluid mx-auto d-block" />
                                     </div>
                                     <div>
                                         <img src={require('../images/2_getdiscovered.png')} alt="Get Discovered" className="img-fluid mx-auto d-block" />
