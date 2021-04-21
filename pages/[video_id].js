@@ -23,6 +23,7 @@ const ShortUrlPage = (props) => {
     let metaImage = props.data.videoPreviewImage;
     let metaImageWidth = 280;
     let metaImageHeight = 534;
+    let nickName = props.data.userNickname
     // let metaImage2=props.data.videoPreview1200;
     // let metaImage2Width = 280;
     // let metaImage2Height = 534;
@@ -39,7 +40,7 @@ const ShortUrlPage = (props) => {
                 openGraph={{
                 type: 'website',
                 url: currentUrl,
-                title: 'Genuin',
+                title: `${nickName}@Genuin`,
                 description: description,
                 images: [
                     {

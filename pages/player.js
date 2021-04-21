@@ -82,16 +82,23 @@ class Player extends React.Component {
     //   metaImageWidth = 350;
     //   metaImageHeight = 650;
     // }
+
+    var descMax160 = this.props.description.length > 160 ? `${this.props.description.substring(0,157)}...` : this.props.description;
+
     return (
       <Layout title="Genuin" videoUrl={this.props.videoUrl} metaImageWidth={metaImageWidth} metaImageHeight={metaImageHeight} metaImage={metaImage} content={this.props.videoThumbnail} description={this.props.description} currentUrl={this.state.baseUrl} keyword='genuine'>
-        <Card style={{ width: '50rem', borderRadius: '10px'}}>
+        <Card style={{ width: '52rem', borderRadius: '10px'}}>
           <div className="main-meddle">
           <Card.Body className="p-0">
             <Container fluid="md">
               <Row className="bg-white d-flex-video" style={{borderRadius: "10px",overflow: "hidden"}}>
-                <Col md={6} className="padding-0 w-100">
+                <Col md={6} className="padding-0 w-100" style={{
+                  width: '40%',
+                  maxWidth: '40%',
+                  flexBasis: '40%'
+                }}>
                   <span className="d-none-v" style={{
-                    position: 'absolute', top: '4%', left: '16%', zIndex: '9', fontFamily: 'AvenirNext-DemiBold',
+                    position: 'absolute', top: '4%', left: '9%', zIndex: '9', fontFamily: 'AvenirNext-DemiBold',
                      color: '#FFFFFF',
                     fontSize: '16pt'
                   }}>{this.state.playedSeconds.toFixed(0)} Sec</span>
@@ -99,14 +106,14 @@ class Player extends React.Component {
 
                   <div className="d-none-v">
                     <div className="icon-position" style={{ marginTop: '30px', width: '50%' }}>
-                      <img src={require('../images/ic_replies.png')} alt="" style={{ width: '6%', color: 'white', right: '79%', zIndex: '999999', position: 'absolute', top: '91%' }} />
-                      <span className="commentxt" style={{ lineHeight: '28px', width: 'auto', color: 'white', right: '64%', zIndex: '999999', position: 'absolute', top: '91%', fontSize: '16pt', fontFamily: 'AvenirNext-DemiBold' }}>{this.props.noOfConversation}
-                        <sub style={{ position: 'relative', fontSize: '10pt', bottom: '0px' }}>replies</sub></span>
+                      <img src={require('../images/ic_replies.png')} alt="" style={{ width: '6%', color: 'white', right: '85%', zIndex: '999999', position: 'absolute', top: '92%' }} />
+                      <span className="commentxt" style={{ lineHeight: '28px', width: 'auto', color: 'white', right: '67%', zIndex: '999999', position: 'absolute', top: '91.5%', fontSize: '16pt', fontFamily: 'AvenirNext-DemiBold' }}>{this.props.noOfConversation}
+                        <sub style={{ position: 'relative', fontSize: '10pt', bottom: '5px' }}>replies</sub></span>
                     </div>
                     <div className="icon-position" style={{ width: '50%' }}>
-                      <img src={require('../images/ic_views.png')} alt="" style={{ width: '6%', color: 'white', right: '51%', zIndex: '999999', position: 'absolute', top: '91%' }} />
-                      <span className="viewtxt" style={{ lineHeight: '28px', width: 'auto', color: 'white', right: '31%', zIndex: '999999', position: 'absolute', top: '91%', fontSize: '16pt', fontFamily: 'AvenirNext-DemiBold' }}>{this.props.noOfViews}
-                        <sub style={{ position: 'relative', fontSize: '10pt', bottom: '0px', left: '2px' }}>views</sub></span>
+                      <img src={require('../images/ic_views.png')} alt="" style={{ width: '6%', color: 'white', right: '51%', zIndex: '999999', position: 'absolute', top: '92%' }} />
+                      <span className="viewtxt" style={{ lineHeight: '28px', width: 'auto', color: 'white', right: '27%', zIndex: '999999', position: 'absolute', top: '91.5%', fontSize: '16pt', fontFamily: 'AvenirNext-DemiBold' }}>{this.props.noOfViews}
+                        <sub style={{ position: 'relative', fontSize: '10pt', bottom: '5px', left: '2px' }}>views</sub></span>
                     </div>
                   </div>
                   <div className="content tag" style={{ color:'white', fontFamily: 'AvenirNext-DemiBold', fontSize: '16pt', height: 'auto', marginBottom: '0', overflow: 'inherit', background: '#000', borderRadius: '0px' }}>
@@ -160,17 +167,17 @@ class Player extends React.Component {
                     {/* </a> */}
                   </div>
                 </Col>
-                <Col md={6} className="d-none-v" style={{ paddingLeft: '0px', paddingRight: '15px' }}>
-                  <div className="content" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '28pt', marginTop: '15px', marginBottom: '10px', height: '408px', overflowX: 'hidden' }}>
+                <Col md={6} className="d-none-v" style={{ paddingLeft: '0px', paddingRight: '15px', width: '60%', maxWidth: '60%', flexBasis: '60%' }}>
+                  <div className="content" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '24pt', marginTop: '15px', marginBottom: '10px', height: '408px', overflowX: 'hidden' }}>
                     <Highlighter
                       highlightStyle={{ backgroundColor: '#bfe4f3' }}
                       highlightClassName="match"
                       searchWords={hashtags}
-                      textToHighlight={this.props.description}
+                      textToHighlight={descMax160}
                     />
                   </div>
                   <div className="url-block">
-                  <div className="applink" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '13.9pt', marginTop: '0%', color: ' #333333' }}>
+                  <div className="applink" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '13.9pt', marginTop: '0%', color: ' #333333', textAlign: 'center' }}>
                     {/* <Link href={process.env.genuinurl}> */}
                       <a href={process.env.genuinurl} target="_blank" style={{ color: '#0645FF' }}>Get the App</a>
                     {/* </Link> */}
