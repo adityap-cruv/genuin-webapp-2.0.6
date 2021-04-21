@@ -104,15 +104,20 @@ class Player extends React.Component {
                   }}>{this.state.playedSeconds.toFixed(0)} Sec</span>
                   <FontAwesomeIcon icon={this.state.playing ? faPause : faPlay} className="playbtn" onClick={this.handlePlayPause} style={{ color: 'rgb(255 255 255 / 0.4)', width: '14%', cursor: 'pointer', right: '44%', zIndex: '999999', position: 'absolute', top: '44%', display: this.state.buttonVisible }} />
 
-                  <div className="d-none-v">
-                    <div className="icon-position" style={{ marginTop: '30px', width: '50%' }}>
-                      <img src={require('../images/ic_replies.png')} alt="" style={{ width: '6%', color: 'white', right: '85%', zIndex: '999999', position: 'absolute', top: '92%' }} />
-                      <span className="commentxt" style={{ lineHeight: '28px', width: 'auto', color: 'white', right: '67%', zIndex: '999999', position: 'absolute', top: '91.5%', fontSize: '16pt', fontFamily: 'AvenirNext-DemiBold' }}>{this.props.noOfConversation}
+                  <div className="d-none-v" style={{
+                    zIndex: '999999',
+                    top: '92%',
+                    position: 'absolute',
+                    width: '100%'
+                  }}>
+                    <div className="icon-position" style={{ width: '50%', display: 'inline-block' }}>
+                      <img src={require('../images/ic_replies.png')} alt="" style={{ width: '15%', color: 'white' }} />
+                      <span className="commentxt" style={{ lineHeight: '28px', width: 'auto', color: 'white', fontSize: '16pt', fontFamily: 'AvenirNext-DemiBold' }}>{this.props.noOfConversation}
                         <sub style={{ position: 'relative', fontSize: '10pt', bottom: '5px' }}>replies</sub></span>
                     </div>
-                    <div className="icon-position" style={{ width: '50%' }}>
-                      <img src={require('../images/ic_views.png')} alt="" style={{ width: '6%', color: 'white', right: '51%', zIndex: '999999', position: 'absolute', top: '92%' }} />
-                      <span className="viewtxt" style={{ lineHeight: '28px', width: 'auto', color: 'white', right: '27%', zIndex: '999999', position: 'absolute', top: '91.5%', fontSize: '16pt', fontFamily: 'AvenirNext-DemiBold' }}>{this.props.noOfViews}
+                    <div className="icon-position" style={{ width: '50%', display: 'inline-block' }}>
+                      <img src={require('../images/ic_views.png')} alt="" style={{ width: '15%', color: 'white' }} />
+                      <span className="viewtxt" style={{ lineHeight: '28px', width: 'auto', color: 'white', fontSize: '16pt', fontFamily: 'AvenirNext-DemiBold' }}>{this.props.noOfViews}
                         <sub style={{ position: 'relative', fontSize: '10pt', bottom: '5px', left: '2px' }}>views</sub></span>
                     </div>
                   </div>
