@@ -176,7 +176,7 @@ class Player extends React.Component {
                       textToHighlight={descMax160}
                     />
                   </div>
-                  <div className="url-block">
+                  <div className="url-block" style={{width: '100%'}}>
                   <div className="applink" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '13.9pt', marginTop: '0%', color: ' #333333', textAlign: 'center' }}>
                     {/* <Link href={process.env.genuinurl}> */}
                       <a href={process.env.genuinurl} target="_blank" style={{ color: '#0645FF' }}>Get the App</a>
