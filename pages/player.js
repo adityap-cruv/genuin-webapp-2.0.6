@@ -126,7 +126,7 @@ class Player extends React.Component {
                       highlightStyle={{ backgroundColor: '#bfe4f3' }}
                       highlightClassName="match"
                       searchWords={hashtags}
-                      textToHighlight={this.props.description}
+                      textToHighlight={descMax160}
                     />
                   </div>
                   <ReactPlayer
