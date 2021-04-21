@@ -98,9 +98,9 @@ class Player extends React.Component {
                   flexBasis: '40%'
                 }}>
                   <span className="d-none-v" style={{
-                    position: 'absolute', top: '4%', left: '9%', zIndex: '9', fontFamily: 'AvenirNext-DemiBold',
+                    position: 'absolute', top: '6%', left: '9%', zIndex: '9', fontFamily: 'AvenirNext-DemiBold',
                      color: '#FFFFFF',
-                    fontSize: '16pt'
+                    fontSize: '18pt'
                   }}>{this.state.playedSeconds.toFixed(0)} Sec</span>
                   <FontAwesomeIcon icon={this.state.playing ? faPause : faPlay} className="playbtn" onClick={this.handlePlayPause} style={{ color: 'rgb(255 255 255 / 0.4)', width: '14%', cursor: 'pointer', right: '44%', zIndex: '999999', position: 'absolute', top: '44%', display: this.state.buttonVisible }} />
 
@@ -110,15 +110,15 @@ class Player extends React.Component {
                     position: 'absolute',
                     width: '100%'
                   }}>
-                    <div className="icon-position" style={{ width: '50%', display: 'inline-block' }}>
-                      <img src={require('../images/ic_replies.png')} alt="" style={{ width: '15%', color: 'white' }} />
-                      <span className="commentxt" style={{ lineHeight: '28px', width: 'auto', color: 'white', fontSize: '16pt', fontFamily: 'AvenirNext-DemiBold' }}>{this.props.noOfConversation}
-                        <sub style={{ position: 'relative', fontSize: '10pt', bottom: '5px' }}>replies</sub></span>
+                    <div className="icon-position" style={{ width: '50%', display: 'inline-block', paddingLeft:'15px' }}>
+                      <img src={require('../images/ic_replies.png')} alt="" style={{ width: '15%', color: 'white', verticalAlign:'sub' }} />
+                      <span className="commentxt" style={{ lineHeight: '28px', width: 'auto', color: 'white', fontSize: '20pt', fontFamily: 'AvenirNext-DemiBold', paddingLeft:'4px', verticalAlign:'top' }}>{this.props.noOfConversation}
+                        <sub style={{ position: 'relative', fontSize: '12pt', bottom: '6px', left: '2px' }}>replies</sub></span>
                     </div>
                     <div className="icon-position" style={{ width: '50%', display: 'inline-block' }}>
-                      <img src={require('../images/ic_views.png')} alt="" style={{ width: '15%', color: 'white' }} />
-                      <span className="viewtxt" style={{ lineHeight: '28px', width: 'auto', color: 'white', fontSize: '16pt', fontFamily: 'AvenirNext-DemiBold' }}>{this.props.noOfViews}
-                        <sub style={{ position: 'relative', fontSize: '10pt', bottom: '5px', left: '2px' }}>views</sub></span>
+                      <img src={require('../images/ic_views.png')} alt="" style={{ width: '15%', color: 'white', verticalAlign:'sub' }} />
+                      <span className="viewtxt" style={{ lineHeight: '28px', width: 'auto', color: 'white', fontSize: '20pt', fontFamily: 'AvenirNext-DemiBold', paddingLeft:'4px', verticalAlign:'top' }}>{this.props.noOfViews}
+                        <sub style={{ position: 'relative', fontSize: '12pt', bottom: '6px', left: '2px' }}>views</sub></span>
                     </div>
                   </div>
                   <div className="content tag" style={{ color:'white', fontFamily: 'AvenirNext-DemiBold', fontSize: '16pt', height: 'auto', marginBottom: '0', overflow: 'inherit', background: '#000', borderRadius: '0px' }}>
@@ -136,7 +136,7 @@ class Player extends React.Component {
                     display='inline-block'
                   
                     style={{
-                      marginTop: '-4%', borderRadius: '20px', overflow: 'hidden', cursor: 'pointer'
+                      marginTop: '6%', borderRadius: '20px', overflow: 'hidden', cursor: 'pointer'
                     }}
                     controls={false}
                     // light={true}
