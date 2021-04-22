@@ -57,6 +57,9 @@ class Player extends React.Component {
       this.setState(state)
     }
   }
+  handleDuration = (totalDuration) => {
+    console.log('totalDuration', totalDuration);
+  }
   handlePlayPause = () => {
     this.setState({ playing: !this.state.playing })
   }
@@ -101,7 +104,7 @@ class Player extends React.Component {
                     position: 'absolute', top: '6%', left: '9%', zIndex: '9', fontFamily: 'AvenirNext-DemiBold',
                      color: '#FFFFFF',
                     fontSize: '18pt'
-                  }}>{this.state.playedSeconds.toFixed(0)} Sec</span>
+                  }}>{this.state.playedSeconds.toFixed(0)}</span>
                   <FontAwesomeIcon icon={this.state.playing ? faPause : faPlay} className="playbtn" onClick={this.handlePlayPause} style={{ color: 'rgb(255 255 255 / 0.4)', width: '14%', cursor: 'pointer', right: '44%', zIndex: '999999', position: 'absolute', top: '44%', display: this.state.buttonVisible }} />
 
                   <div className="d-none-v" style={{
@@ -113,22 +116,27 @@ class Player extends React.Component {
                     <div className="icon-position" style={{ width: '50%', display: 'inline-block', paddingLeft:'15px' }}>
                       <img src={require('../images/ic_replies.png')} alt="" style={{ width: '15%', color: 'white', verticalAlign:'sub' }} />
                       <span className="commentxt" style={{ lineHeight: '28px', width: 'auto', color: 'white', fontSize: '20pt', fontFamily: 'AvenirNext-DemiBold', paddingLeft:'4px', verticalAlign:'top' }}>{this.props.noOfConversation}
-                        <sub style={{ position: 'relative', fontSize: '12pt', bottom: '6px', left: '2px' }}>replies</sub></span>
+                        <sub style={{ position: 'relative', fontSize: '12pt', bottom: '6px', left: '4px' }}>replies</sub></span>
                     </div>
                     <div className="icon-position" style={{ width: '50%', display: 'inline-block' }}>
                       <img src={require('../images/ic_views.png')} alt="" style={{ width: '15%', color: 'white', verticalAlign:'sub' }} />
                       <span className="viewtxt" style={{ lineHeight: '28px', width: 'auto', color: 'white', fontSize: '20pt', fontFamily: 'AvenirNext-DemiBold', paddingLeft:'4px', verticalAlign:'top' }}>{this.props.noOfViews}
-                        <sub style={{ position: 'relative', fontSize: '12pt', bottom: '6px', left: '2px' }}>views</sub></span>
+                        <sub style={{ position: 'relative', fontSize: '12pt', bottom: '6px', left: '4px' }}>views</sub></span>
                     </div>
                   </div>
                   <div className="content tag" style={{ color:'white', fontFamily: 'AvenirNext-DemiBold', fontSize: '16pt', height: 'auto', marginBottom: '0', overflow: 'inherit', background: '#000', borderRadius: '0px' }}>
                     <Highlighter
-                      highlightStyle={{ backgroundColor: '#bfe4f3' }}
+                      highlightStyle={{ backgroundColor: '#cddaff' }}
                       highlightClassName="match"
                       searchWords={hashtags}
                       textToHighlight={descMax160}
                     />
                   </div>
+                  <span className="d-block-v" style={{
+                    position: 'relative', top: '25px', left: '18px', zIndex: '9', fontFamily: 'AvenirNext-DemiBold',
+                    color: '#FFFFFF',
+                    fontSize: '18pt'
+                  }}>{this.state.playedSeconds.toFixed(0)}</span>
                   <ReactPlayer
                     className='react-player fixed-bottom-video'
                     url={this.props.videoUrl}
@@ -136,7 +144,7 @@ class Player extends React.Component {
                     display='inline-block'
                   
                     style={{
-                      marginTop: '6%', borderRadius: '20px', overflow: 'hidden', cursor: 'pointer'
+                      marginTop: '6%', borderRadius: '10px', overflow: 'hidden', cursor: 'pointer'
                     }}
                     controls={false}
                     // light={true}
@@ -144,6 +152,7 @@ class Player extends React.Component {
                     onPlay={this.handlePlay}
                     onPause={this.handlePause}
                     onProgress={this.handleProgress}
+                    onDuration={this.handleDuration}
                   />
                   <div className="my app-download">
                     {/* <img src="https://imgur.com/URiFQhg.png" alt="imges" style={{ position: 'absolute', bottom: '0px', padding: '0 20px', maxWidth: '100%', left: '50%', transform: 'translate(-50%, -50%)' }} /> */}
@@ -173,9 +182,9 @@ class Player extends React.Component {
                   </div>
                 </Col>
                 <Col md={6} className="d-none-v" style={{ paddingLeft: '0px', paddingRight: '15px', width: '60%', maxWidth: '60%', flexBasis: '60%' }}>
-                  <div className="content" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '24pt', marginTop: '15px', marginBottom: '10px', height: '408px', overflowX: 'hidden' }}>
+                  <div className="content" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '22pt', marginTop: '15px', marginBottom: '10px', height: '408px', overflowX: 'hidden' }}>
                     <Highlighter
-                      highlightStyle={{ backgroundColor: '#bfe4f3' }}
+                      highlightStyle={{ backgroundColor: '#cddaff' }}
                       highlightClassName="match"
                       searchWords={hashtags}
                       textToHighlight={descMax160}
@@ -225,11 +234,11 @@ class Player extends React.Component {
                     </FacebookShareButton>
                  </div>
                                 
-                  <div className="media-link padding-0" style={{ width: '100%', height: '29pt', border: '1px #0094D0 solid', borderRadius: '10px', padding: '4px', color: ' #333333' }}>
+                  <div className="media-link padding-0" style={{ width: '100%', height: '29pt', border: '1px #0645FF solid', borderRadius: '10px', padding: '4px', color: ' #333333' }}>
                     <span className="urltxt" style={{ fontSize: '12pt', fontFamily: 'AvenirNext-DemiBold', fontWeight: 'bold', cursor: 'default', display: '-webkit-box', margin: '2px 0 0 6px' }}>
                       {this.state.baseUrl}
                     </span>&nbsp;&nbsp;
-                      <span className="copytxt" style={{ color: '#FF0000', fontFamily: 'AvenirNext-Bold', textTransform: 'uppercase', margin: '7px 6px 0 0', textAlign: 'right', fontSize: '10pt', cursor: 'pointer', 'display': 'inline-block', 'float': 'right', 'position': 'relative', 'top': '-28px' }} onClick={this.handleCopy}>
+                      <span className="copytxt" style={{ color: '#0645FF', backgroundColor: '#FFFFFF', paddingLeft: '6px', fontFamily: 'AvenirNext-Bold', textTransform: 'uppercase', margin: '7px 6px 0 0', textAlign: 'right', fontSize: '10pt', cursor: 'pointer', 'display': 'inline-block', 'float': 'right', 'position': 'relative', 'top': '-28px' }} onClick={this.handleCopy}>
                     {this.state.copyText}
                   </span>
                   </div>
