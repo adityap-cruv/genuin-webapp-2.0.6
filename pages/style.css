@@ -363,8 +363,13 @@ video{height: 612px !important;}
     .d-flex-video{display: block !important;}
 }
 
-.react-share__ShareButton {
+.sociallink .react-share__ShareButton {
     margin-left: 24px !important;
     padding: 3px !important;
+    outline-color: white !important;
+}
+
+.d-block-v .react-share__ShareButton {
+    padding: 10px 5px !important;
     outline-color: white !important;
 }
