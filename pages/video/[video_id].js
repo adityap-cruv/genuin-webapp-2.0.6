@@ -14,7 +14,11 @@ Page.getInitialProps = async ({ query: { video_id } }) => {
 
   return axios.post(process.env.apiurl+ "/api/v3/users/video/meta_data/" + video_id)
     .then(response => {
-      return Promise.resolve({ data: response.data.data })
+      var resObj = response.data.data;
+      Object.assign(resObj,{
+        video_id: video_id
+      })
+      return Promise.resolve({ data: resObj})
     })
     .catch((err) => {
       return Promise.resolve({ data: {} })
