@@ -370,6 +370,7 @@ video{height: 612px !important;}
 }
 
 .d-block-v .react-share__ShareButton {
+    margin-left: 0px !important;
     padding: 10px 5px !important;
     outline-color: white !important;
 }
