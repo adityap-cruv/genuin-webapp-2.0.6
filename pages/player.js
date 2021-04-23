@@ -26,10 +26,12 @@ class Player extends React.Component {
     this.state = {
       copyText: 'copy',
       playedSeconds: 0,
+      totalDuration: 0,
       loaded: 0,
       playing: false,
       buttonVisible: 'block',
-      baseUrl: ''
+      baseUrl: '',
+      urlToCopy: ''
     };
     if (typeof window === 'undefined') {
       global.window = {}
@@ -37,7 +39,7 @@ class Player extends React.Component {
   }
 
   handleCopy = state => {
-    copy(this.state.baseUrl);
+    copy(this.state.urlToCopy);
     this.setState({ copyText: "Copied!" });
   }
 
@@ -58,7 +60,8 @@ class Player extends React.Component {
     }
   }
   handleDuration = (totalDuration) => {
-    console.log('totalDuration', totalDuration);
+    // console.log('totalDuration', Math.round(totalDuration));
+    this.setState({ totalDuration: Math.round(totalDuration) })
   }
   handlePlayPause = () => {
     this.setState({ playing: !this.state.playing })
@@ -69,6 +72,7 @@ class Player extends React.Component {
     if (this.props.videoUrl == undefined || this.props.videoUrl == null || this.props.videoUrl == '') return <Error statusCode="404" />;
     const hashtags = this.props.description.match(/#\w+/g) || [];
     this.state.baseUrl = process.env.hostname + this.props.asPath;
+    this.state.urlToCopy = process.env.hostname+"/"+this.props.uuid;
     let preview = '';
     if (this.props.link == '' || this.props.link == undefined || this.props.link == null) {
       preview = '';
@@ -87,7 +91,9 @@ class Player extends React.Component {
     // }
 
     var descMax160 = this.props.description.length > 160 ? `${this.props.description.substring(0,157)}...` : this.props.description;
-
+    var currentTotalSeconds = parseInt(totalDuration - this.state.playedSeconds.toFixed(0)) >= 0?parseInt(totalDuration - this.state.playedSeconds.toFixed(0)):0;
+    var currentDisplayMinutes = currentTotalSeconds == 0?0:Math.floor(currentTotalSeconds/60);
+    var currentDisplaySeconds = parseInt(currentTotalSeconds-(currentDisplayMinutes*60));
     return (
       <Layout title="Genuin" videoUrl={this.props.videoUrl} metaImageWidth={metaImageWidth} metaImageHeight={metaImageHeight} metaImage={metaImage} content={this.props.videoThumbnail} description={this.props.description} currentUrl={this.state.baseUrl} keyword='genuine'>
         <Card style={{ width: '52rem', borderRadius: '10px'}}>
@@ -104,7 +110,7 @@ class Player extends React.Component {
                     position: 'absolute', top: '6%', left: '9%', zIndex: '9', fontFamily: 'AvenirNext-DemiBold',
                      color: '#FFFFFF',
                     fontSize: '18pt'
-                  }}>{this.state.playedSeconds.toFixed(0)}</span>
+                  }}>{currentDisplayMinutes}:{currentDisplaySeconds}</span>
                   <FontAwesomeIcon icon={this.state.playing ? faPause : faPlay} className="playbtn" onClick={this.handlePlayPause} style={{ color: 'rgb(255 255 255 / 0.4)', width: '14%', cursor: 'pointer', right: '44%', zIndex: '999999', position: 'absolute', top: '44%', display: this.state.buttonVisible }} />
 
                   <div className="d-none-v" style={{
@@ -136,7 +142,7 @@ class Player extends React.Component {
                     position: 'relative', top: '25px', left: '18px', zIndex: '9', fontFamily: 'AvenirNext-DemiBold',
                     color: '#FFFFFF',
                     fontSize: '18pt'
-                  }}>{this.state.playedSeconds.toFixed(0)}</span>
+                  }}>{currentDisplayMinutes}:{currentDisplaySeconds}</span>
                   <ReactPlayer
                     className='react-player fixed-bottom-video'
                     url={this.props.videoUrl}
@@ -236,7 +242,7 @@ class Player extends React.Component {
                                 
                   <div className="media-link padding-0" style={{ width: '100%', height: '29pt', border: '1px #0645FF solid', borderRadius: '10px', padding: '4px', color: ' #333333' }}>
                     <span className="urltxt" style={{ fontSize: '12pt', fontFamily: 'AvenirNext-DemiBold', fontWeight: 'bold', cursor: 'default', display: '-webkit-box', margin: '2px 0 0 6px' }}>
-                      {this.state.baseUrl}
+                      {this.state.urlToCopy}
                     </span>&nbsp;&nbsp;
                       <span className="copytxt" style={{ color: '#0645FF', backgroundColor: '#FFFFFF', paddingLeft: '6px', fontFamily: 'AvenirNext-Bold', textTransform: 'uppercase', margin: '7px 6px 0 0', textAlign: 'right', fontSize: '10pt', cursor: 'pointer', 'display': 'inline-block', 'float': 'right', 'position': 'relative', 'top': '-28px' }} onClick={this.handleCopy}>
                     {this.state.copyText}
