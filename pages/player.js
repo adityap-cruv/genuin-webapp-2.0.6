@@ -95,7 +95,7 @@ class Player extends React.Component {
     var currentDisplayMinutes = currentTotalSeconds == 0?0:Math.floor(currentTotalSeconds/60);
     var currentDisplaySeconds = parseInt(currentTotalSeconds-(currentDisplayMinutes*60));
     return (
-      <Layout title="Genuin" videoUrl={this.props.videoUrl} metaImageWidth={metaImageWidth} metaImageHeight={metaImageHeight} metaImage={metaImage} content={this.props.videoThumbnail} description={this.props.description} currentUrl={this.state.baseUrl} keyword='genuine'>
+      <Layout title="Genuin" videoUrl={this.props.videoUrl} metaImageWidth={metaImageWidth} metaImageHeight={metaImageHeight} metaImage={metaImage} content={this.props.videoThumbnail} description={this.props.description} currentUrl={this.state.urlToCopy} keyword='genuine'>
         <Card style={{ width: '52rem', borderRadius: '10px'}}>
           <div className="main-meddle">
           <Card.Body className="p-0">
@@ -160,6 +160,43 @@ class Player extends React.Component {
                     onProgress={this.handleProgress}
                     onDuration={this.handleDuration}
                   />
+                  <div className="sociallink d-block-v" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '13.9pt', margin: '2% 0', width: '10%', position: 'absolute', top: '57%', right: '4%'}}>
+                    <WhatsappShareButton url={this.state.urlToCopy} >
+                      <Link href={this.props.asPath}>
+                        {/* <a id="whatsappIcon">
+                          <img src={require('../images/ic_whatsapp.png')} />
+                        </a> */}
+                        <FontAwesomeIcon icon={faWhatsapp}  style={{color:'#ffffff',height: '30px'}}/>
+                      </Link>
+                    </WhatsappShareButton>
+                    <LinkedinShareButton url={this.state.urlToCopy} >
+                      <Link href={this.props.asPath}>
+                        {/* <a id="instaIcon">
+
+                          <img src={require('../images/ic_insta.png')} />
+                        </a> */}
+                        <FontAwesomeIcon icon={faLinkedinIn}  style={{color:'#ffffff',height: '30px'}}/>
+                      </Link>
+                    </LinkedinShareButton>
+                    <TwitterShareButton url={this.state.urlToCopy} >
+                      <Link href={this.props.asPath}>
+                        {/* <a id="twitterIcon">
+
+                          <img src={require('../images/ic_twitter.png')} />
+                        </a> */}
+                        <FontAwesomeIcon icon={faTwitter}  style={{color:'#ffffff',height: '30px'}}/>
+                      </Link>
+                    </TwitterShareButton>
+                    <FacebookShareButton url={this.state.urlToCopy} >
+                      <Link href={this.props.asPath}>
+                        {/* <a id="facebookIcon">
+
+                          <img src={require('../images/ic_facebook.png')} />
+                        </a> */}
+                        <FontAwesomeIcon icon={faFacebookF}  style={{color:'#ffffff',height: '30px'}}/>
+                      </Link>
+                    </FacebookShareButton>
+                  </div>
                   <div className="my app-download">
                     {/* <img src="https://imgur.com/URiFQhg.png" alt="imges" style={{ position: 'absolute', bottom: '0px', padding: '0 20px', maxWidth: '100%', left: '50%', transform: 'translate(-50%, -50%)' }} /> */}
                     {/* <a href="https://www.begenuin.com/" target="_blank"> */}
@@ -203,7 +240,7 @@ class Player extends React.Component {
                     {/* </Link> */}
                     &nbsp;to reply and make genuin connection</div>
                   <div className="sociallink" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '13.9pt', margin: '2% 0', direction: 'rtl', textAlign: 'right'}}>
-                    <WhatsappShareButton url={this.state.baseUrl} >
+                    <WhatsappShareButton url={this.state.urlToCopy} >
                       <Link href={this.props.asPath}>
                         {/* <a id="whatsappIcon">
                           <img src={require('../images/ic_whatsapp.png')} />
@@ -211,7 +248,7 @@ class Player extends React.Component {
                         <FontAwesomeIcon icon={faWhatsapp}  style={{color:'#333333',height: '24px'}}/>
                       </Link>
                     </WhatsappShareButton>
-                    <LinkedinShareButton url={this.state.baseUrl} >
+                    <LinkedinShareButton url={this.state.urlToCopy} >
                       <Link href={this.props.asPath}>
                         {/* <a id="instaIcon">
 
@@ -220,7 +257,7 @@ class Player extends React.Component {
                         <FontAwesomeIcon icon={faLinkedinIn}  style={{color:'#333333',height: '24px'}}/>
                       </Link>
                     </LinkedinShareButton>
-                    <TwitterShareButton url={this.state.baseUrl} >
+                    <TwitterShareButton url={this.state.urlToCopy} >
                       <Link href={this.props.asPath}>
                         {/* <a id="twitterIcon">
 
@@ -229,7 +266,7 @@ class Player extends React.Component {
                         <FontAwesomeIcon icon={faTwitter}  style={{color:'#333333',height: '24px'}}/>
                       </Link>
                     </TwitterShareButton>
-                    <FacebookShareButton url={this.state.baseUrl} >
+                    <FacebookShareButton url={this.state.urlToCopy} >
                       <Link href={this.props.asPath}>
                         {/* <a id="facebookIcon">
 
