@@ -160,7 +160,7 @@ class Player extends React.Component {
                     onProgress={this.handleProgress}
                     onDuration={this.handleDuration}
                   />
-                  <div className="sociallink d-block-v" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '13.9pt', margin: '2% 0', width: '10%', position: 'absolute', top: '57%', right: '4%'}}>
+                  <div className="d-block-v" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '13.9pt', margin: '2% 0', width: '10%', position: 'absolute', top: '57%', right: '4%'}}>
                     <WhatsappShareButton url={this.state.urlToCopy} >
                       <Link href={this.props.asPath}>
                         {/* <a id="whatsappIcon">
