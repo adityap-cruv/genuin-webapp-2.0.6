@@ -72,7 +72,7 @@ class Player extends React.Component {
     if (this.props.videoUrl == undefined || this.props.videoUrl == null || this.props.videoUrl == '') return <Error statusCode="404" />;
     const hashtags = this.props.description.match(/#\w+/g) || [];
     this.state.baseUrl = process.env.hostname + this.props.asPath;
-    this.state.urlToCopy = process.env.hostname+"/"+this.props.uuid;
+    this.state.urlToCopy = process.env.hostname+"/"+this.props.video_id;
     let preview = '';
     if (this.props.link == '' || this.props.link == undefined || this.props.link == null) {
       preview = '';
