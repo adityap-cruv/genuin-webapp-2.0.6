@@ -363,7 +363,7 @@ video{height: 612px !important;}
     .d-flex-video{display: block !important;}
 }
 
-.sociallink .react-share__ShareButton:not {
+.sociallink .react-share__ShareButton {
     margin-left: 24px !important;
     padding: 3px !important;
     outline-color: white !important;
