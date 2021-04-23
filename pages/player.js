@@ -91,7 +91,7 @@ class Player extends React.Component {
     // }
 
     var descMax160 = this.props.description.length > 160 ? `${this.props.description.substring(0,157)}...` : this.props.description;
-    var currentTotalSeconds = parseInt(totalDuration - this.state.playedSeconds.toFixed(0)) >= 0?parseInt(totalDuration - this.state.playedSeconds.toFixed(0)):0;
+    var currentTotalSeconds = parseInt(this.state.totalDuration - this.state.playedSeconds.toFixed(0)) >= 0?parseInt(this.state.totalDuration - this.state.playedSeconds.toFixed(0)):0;
     var currentDisplayMinutes = currentTotalSeconds == 0?0:Math.floor(currentTotalSeconds/60);
     var currentDisplaySeconds = parseInt(currentTotalSeconds-(currentDisplayMinutes*60));
     return (
