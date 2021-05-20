@@ -16,13 +16,11 @@ module.exports = withImages(withFonts(withCSS({
         return config;
     },
     env: {
-        // hostname:'http://localhost:3000',
-        hostname: 'https://app.begenuin.com',
-        apiurl: 'http://172.31.47.136:9092',
-        // apiurl: 'http://localhost:9092',
-        genuinurl: 'https://begenuin.com/',
-        apps_flyer_url:"https://video.begenuin.com/86sn?pid=Genuin&af_web_dp=https%3A%2F%2Fapp.begenuin.com%2Fvideo%2F{{video_id}}&af_android_url=https%3A%2F%2Fapp.begenuin.com%2Fvideo&af_ios_url=https%3A%2F%2Fapp.begenuin.com%2Fvideo&is_retargeting=true&af_dp=genuinapp%3A%2F%2Fmainactivity&video_id=",
-        installurl: 'https://install.begenuin.com/86sn?pid=Genuin&is_retargeting=true&af_dp=genuinapp%3A%2F%2Fmainactivity&video_id='
+        hostname: process.env.hostname,
+        apiurl: process.env.apiurl,
+        genuinurl: process.env.genuinurl,
+        apps_flyer_url:process.env.apps_flyer_url,
+        installurl: process.env.installurl
     }
 })));
 
