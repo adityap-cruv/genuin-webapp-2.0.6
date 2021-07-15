@@ -104,8 +104,8 @@ class Player extends React.Component {
     var tmpCurrentDisplayMinutes = currentTotalSeconds == 0?0:Math.floor(currentTotalSeconds/60);
     var tmpCurrentDisplaySeconds = parseInt(currentTotalSeconds-(tmpCurrentDisplayMinutes*60));
 
-    this.setState({ currentDisplayMinutes: tmpCurrentDisplayMinutes });
-    this.setState({ currentDisplaySeconds: tmpCurrentDisplaySeconds });
+    // this.setState({ currentDisplayMinutes: tmpCurrentDisplayMinutes });
+    // this.setState({ currentDisplaySeconds: tmpCurrentDisplaySeconds });
     return (
       <Layout title="Genuin" videoUrl={this.props.videoUrl} metaImageWidth={metaImageWidth} metaImageHeight={metaImageHeight} metaImage={metaImage} content={this.props.videoThumbnail} description={this.props.description} currentUrl={this.state.urlToCopy} keyword='genuine'>
         <Card style={{ width: '52rem', borderRadius: '10px'}}>
