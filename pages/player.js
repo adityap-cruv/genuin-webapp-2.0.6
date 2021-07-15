@@ -28,6 +28,8 @@ class Player extends React.Component {
       playedSeconds: 0,
       totalDuration: 0,
       loaded: 0,
+      currentDisplayMinutes:0,
+      currentDisplaySeconds:0,
       playing: false,
       buttonVisible: 'block',
       baseUrl: '',
@@ -58,9 +60,16 @@ class Player extends React.Component {
     if (!this.state.seeking) {
       this.setState(state)
     }
+    console.log('handleProgress', state);
+    var currentTotalSeconds = parseInt(this.state.totalDuration - state.playedSeconds.toFixed(0)) >= 0?parseInt(this.state.totalDuration - state.playedSeconds.toFixed(0)):0;
+    var tmpCurrentDisplayMinutes = currentTotalSeconds == 0?0:Math.floor(currentTotalSeconds/60);
+    var tmpCurrentDisplaySeconds = parseInt(currentTotalSeconds-(tmpCurrentDisplayMinutes*60));
+
+    this.setState({ currentDisplayMinutes: tmpCurrentDisplayMinutes });
+    this.setState({ currentDisplaySeconds: tmpCurrentDisplaySeconds });
   }
   handleDuration = (totalDuration) => {
-    // console.log('totalDuration', Math.round(totalDuration));
+    console.log('totalDuration', Math.round(totalDuration));
     this.setState({ totalDuration: Math.round(totalDuration) })
   }
   handlePlayPause = () => {
@@ -92,8 +101,11 @@ class Player extends React.Component {
 
     var descMax160 = this.props.description.length > 160 ? `${this.props.description.substring(0,157)}...` : this.props.description;
     var currentTotalSeconds = parseInt(this.state.totalDuration - this.state.playedSeconds.toFixed(0)) >= 0?parseInt(this.state.totalDuration - this.state.playedSeconds.toFixed(0)):0;
-    var currentDisplayMinutes = currentTotalSeconds == 0?0:Math.floor(currentTotalSeconds/60);
-    var currentDisplaySeconds = parseInt(currentTotalSeconds-(currentDisplayMinutes*60));
+    var tmpCurrentDisplayMinutes = currentTotalSeconds == 0?0:Math.floor(currentTotalSeconds/60);
+    var tmpCurrentDisplaySeconds = parseInt(currentTotalSeconds-(tmpCurrentDisplayMinutes*60));
+
+    this.setState({ currentDisplayMinutes: tmpCurrentDisplayMinutes });
+    this.setState({ currentDisplaySeconds: tmpCurrentDisplaySeconds });
     return (
       <Layout title="Genuin" videoUrl={this.props.videoUrl} metaImageWidth={metaImageWidth} metaImageHeight={metaImageHeight} metaImage={metaImage} content={this.props.videoThumbnail} description={this.props.description} currentUrl={this.state.urlToCopy} keyword='genuine'>
         <Card style={{ width: '52rem', borderRadius: '10px'}}>
@@ -110,7 +122,7 @@ class Player extends React.Component {
                     position: 'absolute', top: '6%', left: '9%', zIndex: '9', fontFamily: 'AvenirNext-DemiBold',
                      color: '#FFFFFF',
                     fontSize: '18pt'
-                  }}>{currentDisplayMinutes}:{currentDisplaySeconds}</span>
+                  }}>{this.state.currentDisplayMinutes}:{this.state.currentDisplaySeconds}</span>
                   <FontAwesomeIcon icon={this.state.playing ? faPause : faPlay} className="playbtn" onClick={this.handlePlayPause} style={{ color: 'rgb(255 255 255 / 0.4)', width: '14%', cursor: 'pointer', right: '44%', zIndex: '999999', position: 'absolute', top: '44%', display: this.state.buttonVisible }} />
 
                   <div className="d-none-v" style={{
@@ -142,7 +154,7 @@ class Player extends React.Component {
                     position: 'relative', top: '25px', left: '18px', zIndex: '9', fontFamily: 'AvenirNext-DemiBold',
                     color: '#FFFFFF',
                     fontSize: '18pt'
-                  }}>{currentDisplayMinutes}:{currentDisplaySeconds}</span>
+                  }}>{this.state.currentDisplayMinutes}:{this.state.currentDisplaySeconds}</span>
                   <ReactPlayer
                     className='react-player fixed-bottom-video'
                     url={this.props.videoUrl}
@@ -153,6 +165,7 @@ class Player extends React.Component {
                       marginTop: '6%', borderRadius: '10px', overflow: 'hidden', cursor: 'pointer'
                     }}
                     controls={false}
+                    playsinline={true}
                     // light={true}
                     onClick={this.handlePlayPause}
                     onPlay={this.handlePlay}
