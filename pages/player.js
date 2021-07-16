@@ -61,7 +61,7 @@ class Player extends React.Component {
       this.setState(state)
     }
     console.log('handleProgress', state);
-    var currentTotalSeconds = parseInt(state.totalDuration - state.playedSeconds.toFixed(0)) >= 0?parseInt(state.totalDuration - state.playedSeconds.toFixed(0)):0;
+    var currentTotalSeconds = parseInt(this.state.totalDuration - state.playedSeconds.toFixed(0)) >= 0?parseInt(this.state.totalDuration - state.playedSeconds.toFixed(0)):0;
     var tmpCurrentDisplayMinutes = currentTotalSeconds == 0?0:Math.floor(currentTotalSeconds/60);
     var tmpCurrentDisplaySeconds = parseInt(currentTotalSeconds-(tmpCurrentDisplayMinutes*60));
 
@@ -71,13 +71,6 @@ class Player extends React.Component {
   handleDuration = (totalDuration) => {
     console.log('totalDuration', Math.round(totalDuration));
     this.setState({ totalDuration: Math.round(totalDuration) })
-
-    var currentTotalSeconds = parseInt(Math.round(totalDuration) - state.playedSeconds.toFixed(0)) >= 0?parseInt(Math.round(totalDuration) - state.playedSeconds.toFixed(0)):0;
-    var tmpCurrentDisplayMinutes = currentTotalSeconds == 0?0:Math.floor(currentTotalSeconds/60);
-    var tmpCurrentDisplaySeconds = parseInt(currentTotalSeconds-(tmpCurrentDisplayMinutes*60));
-
-    this.setState({ currentDisplayMinutes: tmpCurrentDisplayMinutes });
-    this.setState({ currentDisplaySeconds: tmpCurrentDisplaySeconds });
   }
   handlePlayPause = () => {
     this.setState({ playing: !this.state.playing })
