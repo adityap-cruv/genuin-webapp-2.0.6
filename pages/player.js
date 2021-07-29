@@ -13,6 +13,7 @@ import { faPlay, faPause, faUser } from "@fortawesome/free-solid-svg-icons";
 import { faFacebookF, faTwitter, faLinkedinIn, faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 import Error from 'next/error';
 
+import { increaseVideoViewCount } from '../actions/postActions';
 import {
  TwitterShareButton,
  WhatsappShareButton,
@@ -56,6 +57,10 @@ class Player extends React.Component {
   }
 
   handleProgress = state => {
+    if(state.playedSeconds !== undefined && state.playedSeconds !== null && state.playedSeconds.toFixed(0) >= 4 && this.state.playedSeconds.toFixed(0) < 4){
+      // console.log('view count increased');
+      increaseVideoViewCount(this.props.video_id);
+    }
     // We only want to update time slider if we are not currently seeking
     if (!this.state.seeking) {
       this.setState(state)
