@@ -78,7 +78,7 @@ const ShortUrlPage = (props) => {
     );
 }
 ShortUrlPage.getInitialProps = async ({ query: { video_id } }) => {
-    return axios.post(process.env.apiurl+ "/api/v3/users/video/meta_data/" + video_id)
+    return axios.get(process.env.apiurl+ "/api/v3/users/video/meta_data/" + video_id)
     .then(response => {
         return Promise.resolve({ data: response.data.data })
     })

@@ -12,7 +12,7 @@ const Page = (props) => {
 }
 Page.getInitialProps = async ({ query: { video_id } }) => {
 
-  return axios.post(process.env.apiurl+ "/api/v3/users/video/meta_data/" + video_id)
+  return axios.get(process.env.apiurl+ "/api/v3/users/video/meta_data/" + video_id)
     .then(response => {
       var resObj = response.data.data;
       Object.assign(resObj,{
