@@ -7,7 +7,6 @@
 /* eslint-disable camelcase */
 /* eslint-disable no-param-reassign */
 
-import Cookies from "js-cookie";
 import axios from "axios";
 
 export function increaseVideoViewCount(video_id) {
