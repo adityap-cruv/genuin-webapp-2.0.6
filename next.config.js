@@ -20,7 +20,8 @@ module.exports = withImages(withFonts(withCSS({
         apiurl: process.env.apiurl,
         genuinurl: process.env.genuinurl,
         apps_flyer_url:process.env.apps_flyer_url,
-        installurl: process.env.installurl
+        rt_apps_flyer_url: process.env.rt_apps_flyer_url,
+        installurl: process.env.installurl        
     }
 })));
 
