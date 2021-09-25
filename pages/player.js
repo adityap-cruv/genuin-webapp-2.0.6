@@ -59,7 +59,7 @@ class Player extends React.Component {
   handleProgress = state => {
     if(state.playedSeconds !== undefined && state.playedSeconds !== null && state.playedSeconds.toFixed(0) >= 4 && this.state.playedSeconds.toFixed(0) < 4){
       // console.log('view count increased');
-      increaseVideoViewCount(this.props.video_id);
+      increaseVideoViewCount(this.props.video_id_to_use);
     }
     // We only want to update time slider if we are not currently seeking
     if (!this.state.seeking) {
@@ -86,7 +86,7 @@ class Player extends React.Component {
     if (this.props.videoUrl == undefined || this.props.videoUrl == null || this.props.videoUrl == '') return <Error statusCode="404" />;
     const hashtags = this.props.description.match(/#\w+/g) || [];
     this.state.baseUrl = process.env.hostname + this.props.asPath;
-    this.state.urlToCopy = process.env.hostname+"/"+this.props.video_id;
+    this.state.urlToCopy = process.env.hostname+"/"+this.props.video_id_to_use;
     let preview = '';
     if (this.props.link == '' || this.props.link == undefined || this.props.link == null) {
       preview = '';

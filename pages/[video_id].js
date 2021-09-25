@@ -10,8 +10,9 @@ const ShortUrlPage = (props) => {
     useEffect(() => {
         if(video_id !== undefined && video_id !== null && video_id !== ''){
             // setTimeout(function(){
-                var redirect_url = process.env.apps_flyer_url + video_id;
-                redirect_url = redirect_url.replace('{{video_id}}',video_id);
+                var video_id_to_use = (props.data.video_uuid !== undefined && props.data.video_uuid !== null)?props.data.video_uuid:video_id;
+                var redirect_url = process.env.apps_flyer_url + video_id_to_use;
+                redirect_url = redirect_url.replace('{{video_id}}',video_id_to_use);
                 console.log('redirect_url', redirect_url);
                 window.location.href = redirect_url;
             // }, 300);
