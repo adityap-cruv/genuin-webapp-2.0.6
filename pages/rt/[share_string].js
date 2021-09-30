@@ -12,7 +12,7 @@ const RTShortUrlPage = (props) => {
         if(share_string !== undefined && share_string !== null && share_string !== ''){
             // console.log('props', props);
             // setTimeout(function(){
-                var chat_id_to_use = (props.data.chat_id !== undefined && props.data.chat_id !== null)?props.data.chat_id:share_string;
+                var chat_id_to_use = (props.data.chat_id !== undefined && props.data.chat_id !== null)?props.data.chat_id:'';
                 var redirect_url = process.env.rt_apps_flyer_url + chat_id_to_use;
                 redirect_url = redirect_url.replace('{{chat_id}}',chat_id_to_use);
                 if(start_at !== undefined && start_at !== null){
