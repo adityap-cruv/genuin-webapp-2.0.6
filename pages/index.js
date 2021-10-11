@@ -142,7 +142,7 @@ export default class Home extends React.Component {
                                 {/* <Navbar.Brand href="#home" className="p-0">genuin</Navbar.Brand> */}
 
                                 <Navbar.Brand href="/" className="p-0">
-                                    <img src={require('../images/logo_header.png')} alt="logo_header" />
+                                    <img src={require('../images/logo_header.png')} alt="Genuin" />
                                 </Navbar.Brand>
 
                                 {/* <Navbar.Toggle aria-controls="basic-navbar-nav" /> */}
@@ -160,7 +160,7 @@ export default class Home extends React.Component {
                                         </ul>
 
                                         <ul className="copy-right">
-                                            <li className="nav-item delay-5"><a className="nav-link" href="/">© 2020 Genuin Inc.</a></li>
+                                            <li className="nav-item delay-5"><a className="nav-link" href="/">© 2021 Genuin Inc.</a></li>
                                         </ul>
                                     </div>
                                 </div>

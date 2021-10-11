@@ -5,18 +5,22 @@ import { NextSeo } from 'next-seo';
 import axios from 'axios';
 const RTShortUrlPage = (props) => {
     const router = useRouter();
-    const { share_string, start_at } = router.query
+    const { share_string, v } = router.query
     // console.log('share_string', share_string);
-    // console.log('start_at', start_at);
+    // console.log('v', v);
     useEffect(() => {
         if(share_string !== undefined && share_string !== null && share_string !== ''){
             // console.log('props', props);
             // setTimeout(function(){
-                var chat_id_to_use = (props.data.chat_id !== undefined && props.data.chat_id !== null)?props.data.chat_id:share_string;
+                var chat_id_to_use = (props.data.chat_id !== undefined && props.data.chat_id !== null)?props.data.chat_id:'';
+                var video_id_to_use = '';
+                if(props.data.chats !== undefined && props.data.chats !== null && props.data.chats.length > 0){
+                    video_id_to_use = props.data.chats[0].conversation_id;
+                }
                 var redirect_url = process.env.rt_apps_flyer_url + chat_id_to_use;
                 redirect_url = redirect_url.replace('{{chat_id}}',chat_id_to_use);
-                if(start_at !== undefined && start_at !== null){
-                    redirect_url = `${redirect_url}&start_at=${start_at}`;
+                if(video_id_to_use !== ''){
+                    redirect_url = `${redirect_url}&video_id=${video_id_to_use}`;
                 }
                 console.log('redirect_url', redirect_url);
                 window.location.href = redirect_url;
@@ -67,8 +71,12 @@ const RTShortUrlPage = (props) => {
         </div>
     );
 }
-RTShortUrlPage.getInitialProps = async ({ query: { share_string } }) => {
-    return axios.get(process.env.apiurl+ "/api/v3/rt/web?chat_id=" + share_string)
+RTShortUrlPage.getInitialProps = async ({ query: { share_string, v } }) => {
+    var url_to_use = `${process.env.apiurl}/api/v3/rt/web?chat_id=${share_string}`;
+    if(v !== undefined && v !== null){
+        url_to_use = `${url_to_use}&video_id=${v}`
+    }
+    return axios.get(url_to_use)
     .then(response => {
         return Promise.resolve({ data: response.data.data })
     })
