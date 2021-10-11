@@ -113,7 +113,7 @@ class Player extends React.Component {
     // this.setState({ currentDisplaySeconds: tmpCurrentDisplaySeconds });
     return (
       <Layout title="Genuin" videoUrl={this.props.videoUrl} metaImageWidth={metaImageWidth} metaImageHeight={metaImageHeight} metaImage={metaImage} content={this.props.videoThumbnail} description={this.props.description} currentUrl={this.state.urlToCopy} keyword='genuine'>
-        <Card style={{ width: 'auto', maxWidth: '60%', borderRadius: '10px'}}>
+        <Card style={{ width: 'auto', borderRadius: '10px'}}>
           <div className="main-meddle">
           <Card.Body className="p-0">
             <Container fluid="md">
