@@ -1,5 +1,6 @@
 import React from 'react'
 import { NextSeo } from 'next-seo';
+import Link from 'next/link';
 class RTIndexPage extends React.Component {
     constructor(props) {
         super(props);
@@ -28,6 +29,33 @@ class RTIndexPage extends React.Component {
         return (
             <div className="main_rt_index">
             <style>{`
+                @font-face {
+                    font-family: 'AvenirNext';
+                    src: url('/fonts/AvenirNext-Bold-01.ttf');
+                    src: url('/fonts/AvenirNext-BoldItalic-02.ttf');
+                    src: url('/fonts/AvenirNext-DemiBold-03.ttf');
+                    src: url('/fonts/AvenirNext-DemiBoldItalic-04.ttf');
+                    src: url('/fonts/AvenirNext-Heavy-09.ttf');
+                    src: url('/fonts/AvenirNext-HeavyItalic-10.ttf');
+                    src: url('/fonts/AvenirNext-Italic-05.ttf');
+                    src: url('/fonts/AvenirNext-Medium-06.ttf');
+                    src: url('/fonts/AvenirNext-MediumItalic-07.ttf');
+                    src: url('/fonts/AvenirNext-Regular-08.ttf');
+                    src: url('/fonts/AvenirNext-UltraLight-11.ttf');
+                    src: url('/fonts/AvenirNext-UltraLightItalic-12.ttf');
+                }  
+                @font-face {
+                    font-family: 'AvenirNext-DemiBold';
+                    src: url('/fonts/AvenirNext-DemiBold-03.ttf');
+                }
+                @font-face {
+                    font-family: 'AvenirNext-Bold';
+                    src: url('/fonts/AvenirNext-Bold-01.ttf');
+                }
+                @font-face {
+                    font-family: 'AvenirNext-Medium';
+                    src: url('/fonts/AvenirNext-Medium-06.ttf');
+                }
                 body {
                     margin: 0px;
                 }
@@ -36,16 +64,7 @@ class RTIndexPage extends React.Component {
                     width: 100vw;
                     height: 100vh;
                     opacity: 1;
-                    postion: relative;
-                }
-                .preview_image {
-                    opacity: 1;
-                    width: 76.96%;
-                    height: auto;
                     position: relative;
-                    margin-top: 4.5%;
-                    margin-left: 11.52%;
-                    border-radius: 20px;
                 }
                 .app_store_buttons {
                     opacity: 1;
@@ -76,13 +95,13 @@ class RTIndexPage extends React.Component {
                     // description: description,
                     images: [
                         {
-                          url: this.props.preview_image,
+                          url: preview_image,
                           width: 1084,
                           height: 546,
                           alt: 'Genuin',
                         },
                         {
-                            url: this.props.preview_image,
+                            url: preview_image,
                             width: 300,
                             height: 200,
                             alt: 'Genuin',
@@ -100,7 +119,72 @@ class RTIndexPage extends React.Component {
                     cardType: 'summary_large_image',
                 }}
             />
-            <img className="preview_image" src={preview_image} />
+            {
+                this.props.chat_id !== undefined && this.props.chat_id !== null && this.props.chat_id !== ''?
+                <React.Fragment>
+                    <style>{`
+                    .preview_image {
+                        opacity: 1;
+                        width: 76.96%;
+                        height: auto;
+                        position: relative;
+                        margin-top: 4.5%;
+                        margin-left: 11.52%;
+                        border-radius: 20px;
+                    }
+                    `}</style>
+                    <img className="preview_image" src={preview_image} />
+                </React.Fragment>
+                :
+                <React.Fragment>
+                    <style>{`
+                    .chat_not_found {
+                        opacity: 1;
+                        width: 53.47%;
+                        height: auto;
+                        position: relative;
+                        padding: 17.8% 0px 14.8% 0px;
+                        margin-left: 23.26%;
+                        text-align:center;
+                    }
+                    .chat_not_found h3 {
+                        color: #ffffff;
+                        font-family: 'AvenirNext-Bold';
+                        font-size: 36px;
+                        letter-spacing: 0px;
+                    }
+                    .chat_not_found p {
+                        color: #ffffff;
+                        font-family: 'AvenirNext-Medium';
+                        font-size: 28px;
+                        letter-spacing: 0px;
+                    }
+                    .chat_not_found a {
+                        text-decoration: none;
+                        color: #0645FF;
+                    }
+                    .not_found_page_logo {
+                        position: absolute;
+                        top: 4%;
+                        left: 5%;
+                    }
+                    .not_found_page_logo img {
+                        width: 180px;
+                        cursor: pointer;
+                    }
+                    `}</style>
+                    <div className="not_found_page_logo">
+                        <Link href={process.env.genuinurl}>
+                            <img src={require('../images/logo_header.png')} alt="Genuin" />
+                        </Link>
+                    </div>
+                    <div className="chat_not_found">
+                        <h3>Sorry, this page isn’t available.</h3>
+                        <p>The link you followed may be broken, or the page may have been removed. Go to <Link href={process.env.genuinurl}><a>Genuin homepage.</a></Link>
+                        </p>
+                    </div>
+                </React.Fragment>
+            }
             <div className="app_store_buttons">
                 <div className="ios">
                     <img src={require('../images/badge_appstore.png')} onClick={this.handleIosInstallClick} alt="badge_appstore" />
