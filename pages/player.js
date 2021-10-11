@@ -113,15 +113,15 @@ class Player extends React.Component {
     // this.setState({ currentDisplaySeconds: tmpCurrentDisplaySeconds });
     return (
       <Layout title="Genuin" videoUrl={this.props.videoUrl} metaImageWidth={metaImageWidth} metaImageHeight={metaImageHeight} metaImage={metaImage} content={this.props.videoThumbnail} description={this.props.description} currentUrl={this.state.urlToCopy} keyword='genuine'>
-        <Card style={{ width: '52rem', borderRadius: '10px'}}>
+        <Card style={{ width: 'auto', maxWidth: '60%', borderRadius: '10px'}}>
           <div className="main-meddle">
           <Card.Body className="p-0">
             <Container fluid="md">
               <Row className="bg-white d-flex-video" style={{borderRadius: "10px",overflow: "hidden"}}>
                 <Col md={6} className="padding-0 w-100" style={{
-                  width: '40%',
+                  width: 'auto',
                   maxWidth: '40%',
-                  flexBasis: '40%'
+                  flexBasis: 'auto'
                 }}>
                   <span className="d-none-v" style={{
                     position: 'absolute', top: '6%', left: '9%', zIndex: '9', fontFamily: 'AvenirNext-DemiBold',
@@ -134,14 +134,14 @@ class Player extends React.Component {
                     zIndex: '999999',
                     top: '92%',
                     position: 'absolute',
-                    width: '100%'
+                    width: '91%'
                   }}>
                     <div className="icon-position" style={{ width: '50%', display: 'inline-block', paddingLeft:'15px' }}>
                       <img src={require('../images/ic_replies.png')} alt="" style={{ width: '15%', color: 'white', verticalAlign:'sub' }} />
                       <span className="commentxt" style={{ lineHeight: '28px', width: 'auto', color: 'white', fontSize: '20pt', fontFamily: 'AvenirNext-DemiBold', paddingLeft:'4px', verticalAlign:'top' }}>{this.props.noOfConversation}
                         <sub style={{ position: 'relative', fontSize: '12pt', bottom: '6px', left: '4px' }}>replies</sub></span>
                     </div>
-                    <div className="icon-position" style={{ width: '50%', display: 'inline-block' }}>
+                    <div className="icon-position" style={{ width: '50%', display: 'inline-block', paddingRight:'15px', textAlign: 'right' }}>
                       <img src={require('../images/ic_views.png')} alt="" style={{ width: '15%', color: 'white', verticalAlign:'sub' }} />
                       <span className="viewtxt" style={{ lineHeight: '28px', width: 'auto', color: 'white', fontSize: '20pt', fontFamily: 'AvenirNext-DemiBold', paddingLeft:'4px', verticalAlign:'top' }}>{this.props.noOfViews}
                         <sub style={{ position: 'relative', fontSize: '12pt', bottom: '6px', left: '4px' }}>views</sub></span>
