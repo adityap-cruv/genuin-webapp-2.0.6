@@ -123,11 +123,11 @@ class Player extends React.Component {
                   maxWidth: '40%',
                   flexBasis: 'auto'
                 }}>
-                  <span className="d-none-v" style={{
+                  {/* <span className="d-none-v" style={{
                     position: 'absolute', top: '6%', left: '9%', zIndex: '9', fontFamily: 'AvenirNext-DemiBold',
                      color: '#FFFFFF',
                     fontSize: '18pt'
-                  }}>{this.state.currentDisplayMinutes}:{this.state.currentDisplaySeconds}</span>
+                  }}>{this.state.currentDisplayMinutes}:{this.state.currentDisplaySeconds}</span> */}
                   <FontAwesomeIcon icon={this.state.playing ? faPause : faPlay} className="playbtn" onClick={this.handlePlayPause} style={{ color: 'rgb(255 255 255 / 0.4)', width: '14%', cursor: 'pointer', right: '44%', zIndex: '999999', position: 'absolute', top: '44%', display: this.state.buttonVisible }} />
 
                   <div className="d-none-v" style={{
@@ -155,11 +155,11 @@ class Player extends React.Component {
                       textToHighlight={descMax160}
                     />
                   </div>
-                  <span className="d-block-v" style={{
+                  {/* <span className="d-block-v" style={{
                     position: 'relative', top: '25px', left: '18px', zIndex: '9', fontFamily: 'AvenirNext-DemiBold',
                     color: '#FFFFFF',
                     fontSize: '18pt'
-                  }}>{this.state.currentDisplayMinutes}:{this.state.currentDisplaySeconds}</span>
+                  }}>{this.state.currentDisplayMinutes}:{this.state.currentDisplaySeconds}</span> */}
                   <ReactPlayer
                     className='react-player fixed-bottom-video'
                     url={this.props.videoUrl}
