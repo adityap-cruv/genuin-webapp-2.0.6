@@ -31,6 +31,7 @@ const Layout = ({ children, title, videoUrl, metaImage, metaImageWidth, metaImag
       `}</style>
       <meta property="og:video:url" content={videoUrl} />
       <meta property="og:video:secure_url" content={videoUrl} />
+      <meta property="og:video:type" content="video/mp4" />
     <NextSeo
       title={title}
       description={description}
