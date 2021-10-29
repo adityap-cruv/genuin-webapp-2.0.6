@@ -21,6 +21,7 @@ const ShortUrlPage = (props) => {
     var currentUrl = process.env.hostname + props.url.asPath;
     var description = props.data.description;
     // var videoThumbnail = props.data.videoThumbnail;
+    let metaVideo = props.data.videoUrl;
     let metaImage = props.data.videoPreviewImage;
     let metaImageWidth = 280;
     let metaImageHeight = 534;
@@ -43,6 +44,14 @@ const ShortUrlPage = (props) => {
                 url: currentUrl,
                 title: `${nickName}@Genuin`,
                 description: description,
+                videos:[{
+                    url: metaVideo,
+                    secure_url: metaVideo,
+                    type: "video/mp4",
+                    width: "720",
+                    height: "1280",
+                    alt: 'Genuin'
+                }],
                 images: [
                     {
                       url: metaImage,
