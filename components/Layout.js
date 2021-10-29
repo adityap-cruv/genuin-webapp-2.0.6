@@ -29,6 +29,8 @@ const Layout = ({ children, title, videoUrl, metaImage, metaImageWidth, metaImag
       src: url('/fonts/AvenirNext-Bold-01.ttf');
     }
       `}</style>
+      <meta property="og:video:url" content={videoUrl} />
+      <meta property="og:video:secure_url" content={videoUrl} />
     <NextSeo
       title={title}
       description={description}
