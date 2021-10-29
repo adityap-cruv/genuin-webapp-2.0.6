@@ -2,7 +2,7 @@ import React from 'react';
 import NextHead from 'next/head';
 import { NextSeo } from 'next-seo';
 import '../pages/style.css'
-const Layout = ({ children, title, metaImage, metaImageWidth, metaImageHeight, content, description, currentUrl, keyword }) => (
+const Layout = ({ children, title, videoUrl, metaImage, metaImageWidth, metaImageHeight, content, description, currentUrl, keyword }) => (
   <div>
     <style jsx>{`
     @font-face {
@@ -37,6 +37,11 @@ const Layout = ({ children, title, metaImage, metaImageWidth, metaImageHeight, c
         url: currentUrl,
         title: 'Genuin',
         description: description,
+        videos: [
+            {
+              url: videoUrl
+            }
+        ],
         images: [
           {
             url: metaImage,

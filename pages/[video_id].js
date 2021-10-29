@@ -21,6 +21,7 @@ const ShortUrlPage = (props) => {
     var currentUrl = process.env.hostname + props.url.asPath;
     var description = props.data.description;
     // var videoThumbnail = props.data.videoThumbnail;
+    let metaVideo = props.data.videoUrl;
     let metaImage = props.data.videoPreviewImage;
     let metaImageWidth = 280;
     let metaImageHeight = 534;
@@ -43,6 +44,39 @@ const ShortUrlPage = (props) => {
                 url: currentUrl,
                 title: `${nickName}@Genuin`,
                 description: description,
+                videos: [
+                    {
+                      url: metaVideo
+                    }
+                ],
+                /*
+                video: {
+                    // Multiple Open Graph actors is only available in version `7.0.2-canary.35`+ of next
+                    actors: [
+                      {
+                        profile: 'https://www.example.com/actors/@firstnameA-lastnameA',
+                        role: 'Protagonist',
+                      },
+                      {
+                        profile: 'https://www.example.com/actors/@firstnameB-lastnameB',
+                        role: 'Antagonist',
+                      },
+                    ],
+                    // Multiple Open Graph directors is only available in version `7.0.2-canary.35`+ of next
+                    directors: [
+                      'https://www.example.com/directors/@firstnameA-lastnameA',
+                      'https://www.example.com/directors/@firstnameB-lastnameB',
+                    ],
+                    // Multiple Open Graph writers is only available in version `7.0.2-canary.35`+ of next
+                    writers: [
+                      'https://www.example.com/writers/@firstnameA-lastnameA',
+                      'https://www.example.com/writers/@firstnameB-lastnameB',
+                    ],
+                    duration: 680000,
+                    releaseDate: '2022-12-21T22:04:11Z',
+                    // Multiple Open Graph tags is only available in version `7.0.2-canary.35`+ of next
+                    tags: ['Tag A', 'Tag B', 'Tag C'],
+                },*/
                 images: [
                     {
                       url: metaImage,
