@@ -42,6 +42,7 @@ const Layout = ({ children, title, videoUrl, metaImage, metaImageWidth, metaImag
               url: videoUrl
             }
         ],
+        /*
         images: [
           {
             url: metaImage,
@@ -56,6 +57,7 @@ const Layout = ({ children, title, videoUrl, metaImage, metaImageWidth, metaImag
           //   alt: 'Genuin',
           // }
         ],
+        */
         site_name: 'Genuin',
       }}
       facebook={{

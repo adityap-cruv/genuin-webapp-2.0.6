@@ -77,6 +77,7 @@ const ShortUrlPage = (props) => {
                     // Multiple Open Graph tags is only available in version `7.0.2-canary.35`+ of next
                     tags: ['Tag A', 'Tag B', 'Tag C'],
                 },*/
+                /*
                 images: [
                     {
                       url: metaImage,
@@ -97,6 +98,7 @@ const ShortUrlPage = (props) => {
                     // alt: 'Genuin',
                     // }
                 ],
+                */
                 site_name: 'Genuin',
                 }}
                 facebook={{
