@@ -36,6 +36,8 @@ const ShortUrlPage = (props) => {
     // }
     return (
         <div>
+            <meta property="og:video:url" content={videoUrl} />
+            <meta property="og:video:secure_url" content={videoUrl} />
             <NextSeo
                 title="Genuin"
                 description={description}
