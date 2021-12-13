@@ -108,6 +108,7 @@ class Player extends React.Component {
     var currentTotalSeconds = parseInt(this.state.totalDuration - this.state.playedSeconds.toFixed(0)) >= 0?parseInt(this.state.totalDuration - this.state.playedSeconds.toFixed(0)):0;
     var tmpCurrentDisplayMinutes = currentTotalSeconds == 0?0:Math.floor(currentTotalSeconds/60);
     var tmpCurrentDisplaySeconds = parseInt(currentTotalSeconds-(tmpCurrentDisplayMinutes*60));
+    var tmpHeight = this.props.link.length > 0 ? 130 : 15;
 
     // this.setState({ currentDisplayMinutes: tmpCurrentDisplayMinutes });
     // this.setState({ currentDisplaySeconds: tmpCurrentDisplaySeconds });
@@ -117,11 +118,12 @@ class Player extends React.Component {
           <div className="main-meddle">
           <Card.Body className="p-0">
             <Container fluid="md">
-              <Row className="bg-white d-flex-video" style={{borderRadius: "10px",overflow: "hidden"}}>
+              <Row className="bg-white d-flex-video" style={{borderRadius: "10px",overflow: "hidden", height: "100vh"}}>
                 <Col md={6} className="padding-0 w-100" style={{
                   width: 'auto',
                   maxWidth: '40%',
-                  flexBasis: 'auto'
+                  flexBasis: 'auto',
+                  height: `calc(100% - ${tmpHeight+14}px)`
                 }}>
                   {/* <span className="d-none-v" style={{
                     position: 'absolute', top: '6%', left: '9%', zIndex: '9', fontFamily: 'AvenirNext-DemiBold',
@@ -132,7 +134,7 @@ class Player extends React.Component {
 
                   <div className="d-none-v" style={{
                     zIndex: '999999',
-                    top: '92%',
+                    top: '95%',
                     position: 'absolute',
                     width: '91%'
                   }}>
@@ -167,7 +169,7 @@ class Player extends React.Component {
                     display='inline-block'
                   
                     style={{
-                      marginTop: '6%', borderRadius: '10px', overflow: 'hidden', cursor: 'pointer'
+                      marginTop: '15px', borderRadius: '10px', overflow: 'hidden', cursor: 'pointer'
                     }}
                     controls={false}
                     playsinline={true}
@@ -242,7 +244,7 @@ class Player extends React.Component {
                     {/* </a> */}
                   </div>
                 </Col>
-                <Col md={6} className="d-none-v" style={{ paddingLeft: '0px', paddingRight: '15px', width: '60%', maxWidth: '60%', flexBasis: '60%' }}>
+                <Col md={6} className="d-none-v" style={{ paddingLeft: '0px', paddingRight: '15px', width: '60%', maxWidth: '60%', flexBasis: '60%', height: `calc(100% - ${tmpHeight}px) !important` }}>
                   <div className="content" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '22pt', marginTop: '15px', marginBottom: '10px', height: '408px', overflowX: 'hidden' }}>
                     <Highlighter
                       highlightStyle={{ backgroundColor: '#cddaff' }}
@@ -306,7 +308,7 @@ class Player extends React.Component {
                   </div>
                 </Col>
 
-                <Col md={12} className="bg-white padding-0" >
+                <Col md={12} className="bg-white padding-0" style={{height: '103px'}} >
                 <div className='linkPreview d-none-v' style={{ marginTop: '7px' }}>
                   {preview}
                 </div>
