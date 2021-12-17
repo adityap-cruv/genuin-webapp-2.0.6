@@ -9,6 +9,7 @@ import Highlighter from "react-highlight-words";
 import Link from 'next/link';
 import Microlink from '@microlink/react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {config} from '@fortawesome/fontawesome-svg-core';
 import { faPlay, faPause, faUser } from "@fortawesome/free-solid-svg-icons";
 import { faFacebookF, faTwitter, faLinkedinIn, faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 import Error from 'next/error';
@@ -19,7 +20,9 @@ import {
  WhatsappShareButton,
  FacebookShareButton,
  LinkedinShareButton
-  } from "react-share";
+} from "react-share";
+
+config.autoAddCss = false;
 
 class Player extends React.Component {
   constructor(props) {
