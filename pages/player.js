@@ -121,8 +121,8 @@ class Player extends React.Component {
           <div className="main-meddle">
           <Card.Body className="p-0">
             <Container fluid="md">
-              <Row className="bg-white d-flex-video" style={{borderRadius: "10px",overflow: "hidden", height: "100vh"}}>
-                <Col md={6} className="padding-0 w-100" style={{
+              <Row className="bg-white d-flex-video desktop_white_video_flex_card" style={{borderRadius: "10px",overflow: "hidden", height: "100vh"}}>
+                <Col md={6} className="adjust_height_for_link_preview padding-0 w-100" style={{
                   width: 'auto',
                   maxWidth: '40%',
                   flexBasis: 'auto',
@@ -183,7 +183,7 @@ class Player extends React.Component {
                     onProgress={this.handleProgress}
                     onDuration={this.handleDuration}
                   />
-                  <div className="d-block-v" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '13.9pt', margin: '2% 0', width: '10%', position: 'absolute', top: '57%', right: '4%'}}>
+                  <div className="d-block-v" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '13.9pt', margin: '2% 0', width: '2.3rem', position: 'absolute', top: 'calc(100vh - 41%)', right: '4%'}}>
                     <WhatsappShareButton url={this.state.urlToCopy} >
                       <Link href={this.props.asPath}>
                         {/* <a id="whatsappIcon">
@@ -311,7 +311,7 @@ class Player extends React.Component {
                   </div>
                 </Col>
 
-                <Col md={12} className="bg-white padding-0" style={{height: '103px'}} >
+                <Col md={12} className="d-none-v bg-white padding-0" style={{height: '103px'}} >
                 <div className='linkPreview d-none-v' style={{ marginTop: '7px' }}>
                   {preview}
                 </div>
