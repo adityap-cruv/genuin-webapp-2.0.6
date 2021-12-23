@@ -65,7 +65,7 @@ const Layout = ({ children, title, metaImage, metaImageWidth, metaImageHeight, c
      <NextHead>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css" />
     <link rel="shortcut icon" href={require('../images/favicon.ico')} type="image/x-icon" /> 
-    <script src="https:code.jquery.com/jquery-3.4.1min.js"></script>
+    <script src="https:code.jquery.com/jquery-3.4.1.min.js"></script>
     </NextHead>    
     <div>
       {children}
