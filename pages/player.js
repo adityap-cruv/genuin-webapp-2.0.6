@@ -9,6 +9,7 @@ import Highlighter from "react-highlight-words";
 import Link from 'next/link';
 import Microlink from '@microlink/react';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {config} from '@fortawesome/fontawesome-svg-core';
 import { faPlay, faPause, faUser } from "@fortawesome/free-solid-svg-icons";
 import { faFacebookF, faTwitter, faLinkedinIn, faWhatsapp } from "@fortawesome/free-brands-svg-icons";
 import Error from 'next/error';
@@ -19,7 +20,9 @@ import {
  WhatsappShareButton,
  FacebookShareButton,
  LinkedinShareButton
-  } from "react-share";
+} from "react-share";
+
+config.autoAddCss = false;
 
 class Player extends React.Component {
   constructor(props) {
@@ -108,6 +111,7 @@ class Player extends React.Component {
     var currentTotalSeconds = parseInt(this.state.totalDuration - this.state.playedSeconds.toFixed(0)) >= 0?parseInt(this.state.totalDuration - this.state.playedSeconds.toFixed(0)):0;
     var tmpCurrentDisplayMinutes = currentTotalSeconds == 0?0:Math.floor(currentTotalSeconds/60);
     var tmpCurrentDisplaySeconds = parseInt(currentTotalSeconds-(tmpCurrentDisplayMinutes*60));
+    var tmpHeight = this.props.link.length > 0 ? 130 : 15;
 
     // this.setState({ currentDisplayMinutes: tmpCurrentDisplayMinutes });
     // this.setState({ currentDisplaySeconds: tmpCurrentDisplaySeconds });
@@ -117,22 +121,23 @@ class Player extends React.Component {
           <div className="main-meddle">
           <Card.Body className="p-0">
             <Container fluid="md">
-              <Row className="bg-white d-flex-video" style={{borderRadius: "10px",overflow: "hidden"}}>
-                <Col md={6} className="padding-0 w-100" style={{
+              <Row className="bg-white d-flex-video desktop_white_video_flex_card" style={{borderRadius: "10px",overflow: "hidden", height: "100vh"}}>
+                <Col md={6} className="adjust_height_for_link_preview padding-0 w-100" style={{
                   width: 'auto',
                   maxWidth: '40%',
-                  flexBasis: 'auto'
+                  flexBasis: 'auto',
+                  height: `calc(100% - ${tmpHeight+14}px)`
                 }}>
-                  <span className="d-none-v" style={{
+                  {/* <span className="d-none-v" style={{
                     position: 'absolute', top: '6%', left: '9%', zIndex: '9', fontFamily: 'AvenirNext-DemiBold',
                      color: '#FFFFFF',
                     fontSize: '18pt'
-                  }}>{this.state.currentDisplayMinutes}:{this.state.currentDisplaySeconds}</span>
+                  }}>{this.state.currentDisplayMinutes}:{this.state.currentDisplaySeconds}</span> */}
                   <FontAwesomeIcon icon={this.state.playing ? faPause : faPlay} className="playbtn" onClick={this.handlePlayPause} style={{ color: 'rgb(255 255 255 / 0.4)', width: '14%', cursor: 'pointer', right: '44%', zIndex: '999999', position: 'absolute', top: '44%', display: this.state.buttonVisible }} />
 
                   <div className="d-none-v" style={{
                     zIndex: '999999',
-                    top: '92%',
+                    top: '95%',
                     position: 'absolute',
                     width: '91%'
                   }}>
@@ -155,11 +160,11 @@ class Player extends React.Component {
                       textToHighlight={descMax160}
                     />
                   </div>
-                  <span className="d-block-v" style={{
+                  {/* <span className="d-block-v" style={{
                     position: 'relative', top: '25px', left: '18px', zIndex: '9', fontFamily: 'AvenirNext-DemiBold',
                     color: '#FFFFFF',
                     fontSize: '18pt'
-                  }}>{this.state.currentDisplayMinutes}:{this.state.currentDisplaySeconds}</span>
+                  }}>{this.state.currentDisplayMinutes}:{this.state.currentDisplaySeconds}</span> */}
                   <ReactPlayer
                     className='react-player fixed-bottom-video'
                     url={this.props.videoUrl}
@@ -167,7 +172,7 @@ class Player extends React.Component {
                     display='inline-block'
                   
                     style={{
-                      marginTop: '6%', borderRadius: '10px', overflow: 'hidden', cursor: 'pointer'
+                      marginTop: '15px', borderRadius: '10px', overflow: 'hidden', cursor: 'pointer'
                     }}
                     controls={false}
                     playsinline={true}
@@ -178,7 +183,7 @@ class Player extends React.Component {
                     onProgress={this.handleProgress}
                     onDuration={this.handleDuration}
                   />
-                  <div className="d-block-v" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '13.9pt', margin: '2% 0', width: '10%', position: 'absolute', top: '57%', right: '4%'}}>
+                  <div className="d-block-v" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '13.9pt', margin: '2% 0', width: '2.3rem', position: 'absolute', top: 'calc(100vh - 41%)', right: '4%'}}>
                     <WhatsappShareButton url={this.state.urlToCopy} >
                       <Link href={this.props.asPath}>
                         {/* <a id="whatsappIcon">
@@ -242,7 +247,7 @@ class Player extends React.Component {
                     {/* </a> */}
                   </div>
                 </Col>
-                <Col md={6} className="d-none-v" style={{ paddingLeft: '0px', paddingRight: '15px', width: '60%', maxWidth: '60%', flexBasis: '60%' }}>
+                <Col md={6} className="d-none-v" style={{ paddingLeft: '0px', paddingRight: '15px', width: '60%', maxWidth: '60%', flexBasis: '60%', height: `calc(100% - ${tmpHeight}px) !important` }}>
                   <div className="content" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '22pt', marginTop: '15px', marginBottom: '10px', height: '408px', overflowX: 'hidden' }}>
                     <Highlighter
                       highlightStyle={{ backgroundColor: '#cddaff' }}
@@ -306,7 +311,7 @@ class Player extends React.Component {
                   </div>
                 </Col>
 
-                <Col md={12} className="bg-white padding-0" >
+                <Col md={12} className="d-none-v bg-white padding-0" style={{height: '103px'}} >
                 <div className='linkPreview d-none-v' style={{ marginTop: '7px' }}>
                   {preview}
                 </div>

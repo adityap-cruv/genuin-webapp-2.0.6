@@ -37,6 +37,8 @@ body .overlay {
 @media screen and (orientation:landscape) and (max-width: 1024px) and (min-width: 320px)  {
     body{line-height: 0;}
     html {overflow-y: hidden;}
+    .adjust_height_for_link_preview { height: auto !important; }
+    .desktop_white_video_flex_card { border-radius: 0px !important; }
     .w-100{max-width: 100% !important;flex: 0 0 100% !important;width: 100% !important;}
     .padding-0{padding: 0 !important;}
     .main{background-image: none !important;}
@@ -45,7 +47,7 @@ body .overlay {
     .tag .match{display: inline-block !important;background-color:transparent !important;color: #FFFFFF;}
     .match,.content,.main-meddle .d-none-v{display: none !important;}
     .main-meddle .d-block-v{display: block !important;}
-    .react-player{height: 94vh !important;width: 100% !important;margin-top: 0 !important;border-radius:0px !important}
+    .react-player{height: 94vh !important;width: 100% !important;margin-top: 0 !important;border-radius:0px !important; text-align: center;}
     .card{width: 100% !important;}
     .content.tag{
         width: 100%;
@@ -63,7 +65,7 @@ body .overlay {
     .content span,.content mark{color:#FFFFFF !important}
     .d-flex-video{display: block !important;}
  }
-@media (max-width:3000px){
+/*@media (max-width:3000px){
     .main{
         height:100vh !important;
         display: flex;
@@ -173,19 +175,19 @@ body .overlay {
         font-size: xxx-large !important;
         margin-top: 117% !important;
      }
-}
-/* video{width: 100vw !important;height: 100%;object-fit: cover;} */
-video{width: auto !important;height: auto !important;}
-.card {height: auto; max-height: 99vh;}
+}*/
+/* video{width: 100vw !important;height: 100vh !important;object-fit: cover;} */
+video{width: auto !important;height: 100% !important;object-fit: cover;}
+.card {height: 100vh !important; max-height: 100vh;}
 @media only screen and (min-width: 1025px){
     .card {
-        max-width: 60%;
+        max-width: 65%;
     }
 }
-.react-player{display: inline-block;width: auto !important;background: #000000;height:auto !important;position: relative;}
+.react-player{display: inline-block;width: auto !important;background: #000000;height:100% !important;position: relative;}
 .react-player::before{content:"";position: absolute;height: 13%;right:0;left:0;bottom:0;z-index:1;background:linear-gradient(180deg, rgb(255 255 255 / 0%) 0%, rgb(0 0 0 / 100%) 100%)}
 .react-player::after{content:"";position: absolute;height: 13%;top:0;right:0;left:0;bottom:0;z-index:1;background:linear-gradient(180deg, rgb(0 0 0 / 100%) 0%, rgb(255 255 255/ 0%) 100%)}
-.content{height: calc(100% - 174px) !important;}
+/* .content{height: calc(100% - 174px) !important;} */
 .url-block{position: absolute;bottom: -12px;padding-right: 15px;}
 .padding-0{padding: 0;}
 
@@ -200,7 +202,7 @@ video{width: auto !important;height: auto !important;}
     /* max-width: 320px; */
     height: 50px;
     position: absolute;
-    bottom: 10px;
+    top: calc(100vh - 40px);
     width: 100%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -351,6 +353,8 @@ video{height: 612px !important;}
 @media only screen and (orientation:portrait) and (max-width: 1024px) and (min-width: 320px)  {
     body{line-height: 0;}
     html {overflow-y: auto;}
+    .adjust_height_for_link_preview { height: auto !important; }
+    .desktop_white_video_flex_card { border-radius: 0px !important; }
     .w-100{max-width: 100% !important;flex: 0 0 100% !important;width: 100% !important;}
     .padding-0{padding: 0 !important;}
     .main{background-image: none !important;}
@@ -360,7 +364,7 @@ video{height: 612px !important;}
     .tag .match{display: inline-block !important;background-color:transparent !important;color: #FFFFFF;}
     .match,.content,.main-meddle .d-none-v{display: none !important;}
     .main-meddle .d-block-v{display: block !important;}
-    .react-player{height: 100% !important;width: 100% !important;margin-top: 0 !important;border-radius:0px !important}
+    .react-player{height: 100% !important;width: 100% !important;margin-top: 0 !important;border-radius:0px !important;text-align: center;}
     .card{width: 100% !important;}
 
     .main-meddle {display: block;} 
