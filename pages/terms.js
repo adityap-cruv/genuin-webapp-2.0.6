@@ -49,7 +49,7 @@ export default class Home extends React.Component {
 
        handleInstallAppClick = () => {
         // console.log('this is:', this);
-         window.open("https://install.begenuin.com/86sn?pid=Genuin&is_retargeting=true&af_dp=genuinapp%3A%2F%2Fmainactivity&video_id=bd01955b-1c50-4aa4-9c59-0922f4a14bbd"); 
+         window.open("https://install.begenuin.com/86sn/cgs"); 
        }
 
        componentDidMount() {
@@ -101,7 +101,7 @@ export default class Home extends React.Component {
                                         </ul>
 
                                         <ul className="copy-right">
-                                            <li className="nav-item delay-5"><a className="nav-link" href="#">© 2020 Genuin Inc.</a></li>
+                                            <li className="nav-item delay-5"><a className="nav-link" href="#">© 2022 Genuin Inc.</a></li>
                                         </ul>
                                     </div>
                                 </div> */}
@@ -122,7 +122,7 @@ export default class Home extends React.Component {
                                       <Nav.Link href="https://www.linkedin.com/company/begenuin/">Invest in Genuin</Nav.Link>
                                     </Nav.Item>
                                     <Nav.Item>
-                                      <Nav.Link href="https://play.google.com/store/apps/details?id=com.begenuin.begenuin" eventKey="link-1">Download App</Nav.Link>
+                                      <Nav.Link href="https://install.begenuin.com/86sn/cgs" eventKey="link-1">Download App</Nav.Link>
                                     </Nav.Item>
                                     </div>
                                     </div>
@@ -210,7 +210,7 @@ export default class Home extends React.Component {
                         <Col xl={4} lg={4} md={4} sm={4} className="text-m-center">
                             <Nav className="justify-content-end" defaultActiveKey="/home" as="ul">
                                 <Nav.Item as="li">
-                                    <Nav.Link href="/" className="pr-0">© 2020 Genuin Inc.</Nav.Link>
+                                    <Nav.Link href="/" className="pr-0">© 2022 Genuin Inc.</Nav.Link>
                                 </Nav.Item>
                             </Nav>
                         </Col>
