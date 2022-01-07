@@ -13,12 +13,12 @@ class RTIndexPage extends React.Component {
 
     handleAndroidInstallClick = () => {
         // console.log('this is:', this);
-        window.open("https://play.google.com/store/apps/details?id=com.begenuin.begenuin");
+        window.open("https://install.begenuin.com/86sn/cgs");
 
     }
     handleIosInstallClick = () => {
         // console.log('this is:', this);
-        window.open("https://apps.apple.com/us/app/id1511177838"); 
+        window.open("https://install.begenuin.com/86sn/cgs"); 
     }
     render() {
         // console.log('this.props', this.props);
@@ -81,8 +81,10 @@ class RTIndexPage extends React.Component {
                 .app_store_buttons .ios img, .app_store_buttons .android img {
                     width: 100%;
                 }
-                .app_store_buttons .android {
-                    margin-left: 1.5rem;
+                @media (min-width:432px){
+                    .app_store_buttons .android {
+                        margin-left: 1.5rem;
+                    }
                 }
             `}</style>
             <NextSeo
