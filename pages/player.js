@@ -133,7 +133,7 @@ class Player extends React.Component {
                      color: '#FFFFFF',
                     fontSize: '18pt'
                   }}>{this.state.currentDisplayMinutes}:{this.state.currentDisplaySeconds}</span> */}
-                  <FontAwesomeIcon icon={this.state.playing ? faPause : faPlay} className="playbtn" onClick={this.handlePlayPause} style={{ color: 'rgb(255 255 255 / 0.4)', width: '14%', cursor: 'pointer', right: '44%', zIndex: '999999', position: 'absolute', top: '44%', display: this.state.buttonVisible }} />
+                  <FontAwesomeIcon icon={this.state.playing ? faPause : faPlay} className="playbtn" onClick={this.handlePlayPause} style={{ color: 'rgb(255 255 255 / 0.4)', width: '14%', cursor: 'pointer', right: '44%', zIndex: '999999', position: 'absolute', top: '20rem', display: this.state.buttonVisible }} />
 
                   <div className="d-none-v" style={{
                     zIndex: '999999',
@@ -183,7 +183,7 @@ class Player extends React.Component {
                     onProgress={this.handleProgress}
                     onDuration={this.handleDuration}
                   />
-                  <div className="d-block-v" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '13.9pt', margin: '2% 0', width: '2.3rem', position: 'absolute', top: 'calc(100vh - 41%)', right: '4%'}}>
+                  <div className="d-block-v" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '13.9pt', margin: '2% 0', width: '2.3rem', position: 'absolute', top: 'calc(100vh - 20rem)', right: '4%'}}>
                     <WhatsappShareButton url={this.state.urlToCopy} >
                       <Link href={this.props.asPath}>
                         {/* <a id="whatsappIcon">
