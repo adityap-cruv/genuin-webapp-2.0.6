@@ -21,6 +21,7 @@ module.exports = withImages(withFonts(withCSS({
         genuinurl: process.env.genuinurl,
         apps_flyer_url:process.env.apps_flyer_url,
         rt_apps_flyer_url: process.env.rt_apps_flyer_url,
+        qt_apps_flyer_url: process.env.qt_apps_flyer_url,
         installurl: process.env.installurl        
     }
 })));
