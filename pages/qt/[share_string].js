@@ -5,7 +5,7 @@ import { NextSeo } from 'next-seo';
 import axios from 'axios';
 const RTShortUrlPage = (props) => {
     const router = useRouter();
-    const { share_string, v } = router.query
+    const { share_string } = router.query
     // console.log('share_string', share_string);
     // console.log('v', v);
     useEffect(() => {
