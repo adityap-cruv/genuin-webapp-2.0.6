@@ -21,28 +21,25 @@ const RTShortUrlPage = (props) => {
         }
     });
     var currentUrl = process.env.hostname + props.url.asPath;
-    var question = props.data.question ? props.data.question : '';
+    var question = props.data.question ? 'Question on Genuin: '+props.data.question : '';
     return (
         <div>
             <NextSeo
-                title="Genuin"
-                description={question}
+                title={question}
+                description=""
                 openGraph={{
                     type: 'object',
                     url: currentUrl,
                     title: `${question}`,
-                    // description: question,
                     images: [
                         {
-                        //   url: props.data.preview_image,
-                          url: "https://media.qa.begenuin.com/uploads/rt/preview/127606f4ba00140f.png",
+                          url: props.data.preview_image,
                           width: 1084,
                           height: 546,
                           alt: 'Genuin',
                         },
                         {
-                            // url: props.data.preview_image,
-                            url: "https://media.qa.begenuin.com/uploads/rt/preview/127606f4ba00140f.png",
+                            url: props.data.preview_image,
                             width: 300,
                             height: 200,
                             alt: 'Genuin',
