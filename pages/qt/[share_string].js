@@ -22,11 +22,16 @@ const RTShortUrlPage = (props) => {
     });
     var currentUrl = process.env.hostname + props.url.asPath;
     var question = props.data.question ? 'Question on Genuin: '+props.data.question : '';
+    var asked_by = '';
+    if(props.data.owner !== undefined && props.data.owner !== null && props.data.owner.nickname !== undefined && props.data.owner.nickname !== null){
+        asked_by = ` asked by @${props.data.owner.nickname}`;
+    }
+    var description = `Answer this trending question on Genuin${asked_by}`;
     return (
         <div>
             <NextSeo
                 title={question}
-                description=""
+                description={description}
                 openGraph={{
                     type: 'object',
                     url: currentUrl,

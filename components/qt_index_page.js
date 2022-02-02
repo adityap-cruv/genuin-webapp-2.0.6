@@ -25,6 +25,11 @@ class QTIndexPage extends React.Component {
         var preview_image = (this.props.preview_image !== undefined && this.props.preview_image !== null)?this.props.preview_image:'';
         var currentUrl = process.env.hostname + this.props.asPath;
         var question = this.props.question ? 'Question on Genuin: '+this.props.question : '';
+        var asked_by = '';
+        if(this.props.owner !== undefined && this.props.owner !== null && this.props.owner.nickname !== undefined && this.props.owner.nickname !== null){
+            asked_by = ` asked by @${this.props.owner.nickname}`;
+        }
+        var description = `Answer this trending question on Genuin${asked_by}`;
         return (
             <div className="main_rt_index">
             <style>{`
@@ -88,7 +93,7 @@ class QTIndexPage extends React.Component {
             `}</style>
             <NextSeo
                 title= {question}
-                description=""
+                description={description}
                 openGraph={{
                     type: 'object',
                     url: currentUrl,
