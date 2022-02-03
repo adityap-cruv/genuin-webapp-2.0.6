@@ -134,6 +134,11 @@ export default class Home extends React.Component {
                 .slider-container > div {
                     height: 100%;
                 }
+                @media (min-width: 1200px) {
+                    .container, .container-sm, .container-md, .container-lg, .container-xl {
+                        max-width: 1310px !important;
+                    }
+                }
                 `}</style>
                 <Container className="sticky-top">
                     <Row>
