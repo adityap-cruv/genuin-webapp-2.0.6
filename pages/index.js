@@ -238,7 +238,7 @@ export default class Home extends React.Component {
                                         <h1>Initiate<br />Discussions</h1>
                                     </div>
                                 </Slider>
-                                <Button variant="primary" onClick={this.handleHireLinkClick} className="mt-5 mb-4 d-none d-sm-block d-md-block d-lg-block">We are Hiring </Button>
+                                <Button variant="primary" onClick={this.handleHireLinkClick} className="mt-5 mb-4 d-none d-sm-block d-md-block d-lg-block">Watch Now</Button>
                                 <div className="mt-4 d-sm-none"></div>
                                 <Button variant="primary" onClick={this.handleInstallAppClick} className="mt-5 d-sm-none">Download App</Button>
                             </div>
