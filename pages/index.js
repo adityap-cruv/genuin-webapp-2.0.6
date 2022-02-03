@@ -192,19 +192,19 @@ export default class Home extends React.Component {
                             <div className="slider-img">
                                 <Slider asNavFor={this.state.nav2}ref={slider => (this.slider1 = slider)} {...settings}>
                                     <div>
-                                        <img src={require('../images/1_showcase.png')} alt="Showcase Yourself" className="img-fluid mx-auto d-block" />
+                                        <img src={require('../images/1_hiring_small.png')} alt="Find your dream candidate" className="img-fluid mx-auto d-block" />
                                     </div>
                                     <div>
-                                        <img src={require('../images/2_getdiscovered.png')} alt="Get Discovered" className="img-fluid mx-auto d-block" />
+                                        <img src={require('../images/2_investors_small.png')} alt="Find Investors for your Startup" className="img-fluid mx-auto d-block" />
                                     </div>
                                     <div>
-                                        <img src={require('../images/3_makeconnections.png')} alt="Make Connections" className="img-fluid mx-auto d-block" />
+                                        <img src={require('../images/3_inspired_small.png')} alt="Get Inspired" className="img-fluid mx-auto d-block" />
                                     </div>
                                     <div>
-                                        <img src={require('../images/4_searchpeople.png')} alt="Search People" className="img-fluid mx-auto d-block" />
+                                        <img src={require('../images/4_community_small.png')} alt="Engage with community" className="img-fluid mx-auto d-block" />
                                     </div>
                                     <div>
-                                        <img src={require('../images/5_initiateconversations.png')} alt="Initiate Conversations" className="img-fluid mx-auto d-block" />
+                                        <img src={require('../images/5_discussions_small.png')} alt="Initiate Discussions" className="img-fluid mx-auto d-block" />
                                     </div>
                                 </Slider>
 
@@ -214,23 +214,23 @@ export default class Home extends React.Component {
                             <div>
                                 <Slider asNavFor={this.state.nav1} ref={slider => (this.slider2 = slider)} {...settingsone}>
                                     <div>
-                                        <h1>Showcase <br />Yourself</h1>
+                                        <h1>Find your<br />dream candidate</h1>
                                     </div>
 
                                     <div>
-                                        <h1>Get <br /> Discovered</h1>
+                                        <h1>Find Investors<br />for your Startup</h1>
                                     </div>
 
                                     <div>
-                                        <h1>Make <br />Connections</h1>
+                                        <h1>Get<br />Inspired</h1>
                                     </div>
 
                                     <div>
-                                        <h1>Search <br />People</h1>
+                                        <h1>Engage with <br />community</h1>
                                     </div>
 
                                     <div>
-                                        <h1>Initiate <br />Conversations</h1>
+                                        <h1>Initiate<br />Discussions</h1>
                                     </div>
                                 </Slider>
                                 <Button variant="primary" onClick={this.handleHireLinkClick} className="mt-5 mb-4 d-none d-sm-block d-md-block d-lg-block">We are Hiring </Button>
