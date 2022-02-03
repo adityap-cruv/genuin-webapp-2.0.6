@@ -1,7 +1,7 @@
 import { useRouter, withRouter } from 'next/router';
 import axios from 'axios';
 import React, { useState, useEffect } from 'react'
-// import ProfileIndexPage from '../../components/profile_index_page';
+import ProfileIndexPage from '../../components/profile_index_page';
 const ProfileIndex = (props) => {
     const router = useRouter()
     const { user_id } = router.query
