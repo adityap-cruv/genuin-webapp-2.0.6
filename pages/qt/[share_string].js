@@ -68,11 +68,14 @@ const RTShortUrlPage = (props) => {
 }
 RTShortUrlPage.getInitialProps = async ({ query: { share_string } }) => {
     var url_to_use = `${process.env.apiurl}/api/v3/qt/web?question_id=${share_string}`;
+    console.log('api url', url_to_use);
     return axios.get(url_to_use)
     .then(response => {
+        console.log('api response', response);
         return Promise.resolve({ data: response.data.data })
     })
     .catch((err) => {
+        console.log('api err', err);
         return Promise.resolve({ data: {} })
     });
 }
