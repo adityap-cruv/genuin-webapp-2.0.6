@@ -121,7 +121,7 @@ class ProfileIndexPage extends React.Component {
                 }}
             />
             {
-                this.props.question_id !== undefined && this.props.question_id !== null && this.props.question_id !== ''?
+                this.props.user_id !== undefined && this.props.user_id !== null && this.props.user_id !== ''?
                 <React.Fragment>
                     <style>{`
                     .preview_image {
