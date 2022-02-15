@@ -6,7 +6,7 @@ const ProfileIndex = (props) => {
     const router = useRouter()
     const { user_id } = router.query
   return (
-        <ProfileIndexPage {...props.data} {...props.url} />
+        <ProfileIndexPage {...props.data} {...{url:props.url}} />
   )
 }
 ProfileIndex.getInitialProps = async ({ query: { user_id } }) => {

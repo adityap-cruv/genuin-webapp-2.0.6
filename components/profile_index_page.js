@@ -1,13 +1,17 @@
 import React from 'react'
 import { NextSeo } from 'next-seo';
 import Link from 'next/link';
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import Player from '../pages/player';
 class ProfileIndexPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+
         };
         if (typeof window === 'undefined') {
-        global.window = {}
+            global.window = {}
         }
     }
 
@@ -21,11 +25,22 @@ class ProfileIndexPage extends React.Component {
         window.open("https://install.begenuin.com/86sn/cgs"); 
     }
     render() {
-        // console.log('this.props', this.props);
+        console.log('this.props', this.props);
         var preview_image = (this.props.preview_image !== undefined && this.props.preview_image !== null)?this.props.preview_image:'';
-        var currentUrl = process.env.hostname + this.props.asPath;
+        var currentUrl = process.env.hostname + this.props.url.asPath;
         var name = this.props.name !== undefined && this.props.name !== null && this.props.name !== '' ? this.props.name+' is on Genuin' : '';
         var bio = this.props.bio !== undefined && this.props.bio !== null && this.props.bio !== '' ? this.props.bio : '';
+        var settings = {
+            dots: false,
+            arrows: true,
+            fade: true,
+            autoplay: false,
+            infinite: true,
+            speed: 800,
+            slidesToShow: 1,
+            slidesToScroll: 1,
+            // autoplaySpeed: 3000
+        };
         return (
             <div className="main_rt_index">
             <style>{`
@@ -86,6 +101,102 @@ class ProfileIndexPage extends React.Component {
                         margin-left: 1.5rem;
                     }
                 }
+                .slick-prev,
+                .slick-next
+                {
+                    font-size: 0;
+                    line-height: 0;
+
+                    position: absolute;
+                    top: 50%;
+
+                    display: block;
+
+                    width: 20px;
+                    height: 20px;
+                    padding: 0;
+                    -webkit-transform: translate(0, -50%);
+                    -ms-transform: translate(0, -50%);
+                    transform: translate(0, -50%);
+
+                    cursor: pointer;
+
+                    color: transparent;
+                    border: none;
+                    outline: none;
+                    background: transparent;
+                }
+                .slick-prev:hover,
+                .slick-prev:focus,
+                .slick-next:hover,
+                .slick-next:focus
+                {
+                    color: transparent;
+                    outline: none;
+                    background: transparent;
+                }
+                .slick-prev:hover:before,
+                .slick-prev:focus:before,
+                .slick-next:hover:before,
+                .slick-next:focus:before
+                {
+                    opacity: 1;
+                }
+                .slick-prev.slick-disabled:before,
+                .slick-next.slick-disabled:before
+                {
+                    opacity: .25;
+                }
+
+                .slick-prev:before,
+                .slick-next:before
+                {
+                    font-family: Arial, Helvetica, sans-serif;
+                    font-size: 20px;
+                    line-height: 1;
+
+                    opacity: .75;
+                    color: white;
+
+                    -webkit-font-smoothing: antialiased;
+                    -moz-osx-font-smoothing: grayscale;
+                }
+
+                .slick-prev
+                {
+                    left: -25px;
+                }
+                [dir='rtl'] .slick-prev
+                {
+                    right: -25px;
+                    left: auto;
+                }
+                .slick-prev:before
+                {
+                    content: '←';
+                }
+                [dir='rtl'] .slick-prev:before
+                {
+                    content: '→';
+                }
+
+                .slick-next
+                {
+                    right: -25px;
+                }
+                [dir='rtl'] .slick-next
+                {
+                    right: auto;
+                    left: -25px;
+                }
+                .slick-next:before
+                {
+                    content: '→';
+                }
+                [dir='rtl'] .slick-next:before
+                {
+                    content: '←';
+                }
             `}</style>
             <NextSeo
                 title= {name}
@@ -123,18 +234,11 @@ class ProfileIndexPage extends React.Component {
             {
                 this.props.user_id !== undefined && this.props.user_id !== null && this.props.user_id !== ''?
                 <React.Fragment>
-                    <style>{`
-                    .preview_image {
-                        opacity: 1;
-                        width: 76.96%;
-                        height: auto;
-                        position: relative;
-                        margin-top: 4.5%;
-                        margin-left: 11.52%;
-                        border-radius: 20px;
-                    }
-                    `}</style>
-                    <img className="preview_image" src={preview_image} />
+                    <Slider {...settings}>
+                        {
+                            this.props.videos.map((video) => <Player {...{video_id_to_use:video.video_uuid, ...video}} {...this.props.url} installUrl={process.env.installurl+video.video_uuid} />)
+                        }
+                    </Slider>
                 </React.Fragment>
                 :
                 <React.Fragment>
@@ -184,16 +288,16 @@ class ProfileIndexPage extends React.Component {
                         <p>The link you followed may be broken, or the page may have been removed. Go to <Link href={process.env.genuinurl}><a>Genuin homepage.</a></Link>
                         </p>
                     </div>
+                    <div className="app_store_buttons">
+                        <div className="ios">
+                            <img src={require('../images/badge_appstore.png')} onClick={this.handleIosInstallClick} alt="badge_appstore" />
+                        </div>
+                        <div className="android">
+                            <img src={require('../images/badge_playstore.png')} onClick={this.handleAndroidInstallClick} alt="badge_playstore" />
+                        </div>
+                    </div>
                 </React.Fragment>
             }
-            <div className="app_store_buttons">
-                <div className="ios">
-                    <img src={require('../images/badge_appstore.png')} onClick={this.handleIosInstallClick} alt="badge_appstore" />
-                </div>
-                <div className="android">
-                    <img src={require('../images/badge_playstore.png')} onClick={this.handleAndroidInstallClick} alt="badge_playstore" />
-                </div>
-            </div>
         </div>
         );
     }
