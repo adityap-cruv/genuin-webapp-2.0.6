@@ -107,7 +107,7 @@ class ProfileIndexPage extends React.Component {
             beforeChange: this.beforeChange,
             afterChange: this.afterChange
         };
-        console.log('this.state.videos', this.state.videos);
+        // console.log('this.state.videos', this.state.videos);
         return (
             <div className="main_rt_index">
             <style>{`
