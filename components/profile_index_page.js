@@ -224,6 +224,16 @@ class ProfileIndexPage extends React.Component {
                     outline: none;
                     opacity: 1;
                 }
+                .slick-prev:hover,
+                .slick-prev:focus
+                {
+                    background: no-repeat url(https://media.begenuin.com/backend_assets/slider_navigate_up.png) !important;
+                }
+                .slick-next:hover,
+                .slick-next:focus
+                {
+                    background: no-repeat url(https://media.begenuin.com/backend_assets/slider_navigate_down.png) !important;
+                }
                 .slick-prev.slick-disabled,
                 .slick-next.slick-disabled
                 {
