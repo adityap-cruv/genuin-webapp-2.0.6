@@ -251,6 +251,9 @@ class ProfileIndexPage extends React.Component {
                     right: auto;
                     left: -25px;
                 }*/
+                .slick-prev:before, .slick-next:before, [dir='rtl'] .slick-prev:before, [dir='rtl'] .slick-next:before {
+                    content: none !important;
+                }
                 .slick-slide:not(.slick-current) {
                     visibility: hidden;
                 }
