@@ -4,17 +4,46 @@ import Link from 'next/link';
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import Player from '../pages/player';
+import { fetchVideos } from "../actions/postActions";
 class ProfileIndexPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-
+            playerRefs: [],
+            nav: null,
+            start: 0,
+            rows: 10,
+            videos: [],
+            loading: false,
+            lastVideoNum: 0
         };
         if (typeof window === 'undefined') {
             global.window = {}
         }
     }
-
+    componentWillMount() {
+        // this.fetchVideos();
+        this.setState({
+            videos: this.props.videos,
+        });
+    }
+    componentDidMount() {
+        this.setState({
+          nav: this.slider,
+        });
+    }
+    fetchVideos = async () => {
+        this.setState({
+          loading: true
+        })
+        var request_string = `?user_id=${this.props.user_id}&start=${this.state.start}&rows=${this.state.rows}`
+        let response = await fetchVideos(request_string, this.state.videos);
+        this.setState({
+          videos: await response,
+          start: parseInt(this.state.start) + parseInt(this.state.rows),
+          loading: false
+        });
+    };
     handleAndroidInstallClick = () => {
         // console.log('this is:', this);
         window.open("https://install.begenuin.com/86sn/cgs");
@@ -24,8 +53,31 @@ class ProfileIndexPage extends React.Component {
         // console.log('this is:', this);
         window.open("https://install.begenuin.com/86sn/cgs"); 
     }
+    beforeChange = (prev, next) => {
+        this.state.playerRefs[prev].handlePause();
+    }
+    afterChange = (slide) => {
+        // console.log('slide', slide)
+        // console.log('this.state.lastVideoNum', this.state.lastVideoNum)
+        if (slide > this.state.lastVideoNum) {
+            this.state.lastVideoNum = slide;
+            if (this.state.videos.length - 5 === this.state.lastVideoNum) {
+                this.fetchVideos();
+            }
+        }
+    };
+    // next = () => {
+    //     this.slider.slickNext();
+    // };
+    
+    // previous = () => {
+    //     this.slider.slickPrev();
+    // };
     render() {
-        console.log('this.props', this.props);
+        // console.log('this.props', this.props);
+        if(this.props.user_id !== undefined && this.props.user_id !== null && this.props.user_id !== '' && this.props.videos !== undefined && this.props.videos !== null && this.props.videos.length == 0){
+            window.location.href = "https://begenuin.com";
+        }
         var preview_image = (this.props.preview_image !== undefined && this.props.preview_image !== null)?this.props.preview_image:'';
         var currentUrl = process.env.hostname + this.props.url.asPath;
         var name = this.props.name !== undefined && this.props.name !== null && this.props.name !== '' ? this.props.name+' is on Genuin' : '';
@@ -39,8 +91,11 @@ class ProfileIndexPage extends React.Component {
             speed: 800,
             slidesToShow: 1,
             slidesToScroll: 1,
-            // autoplaySpeed: 3000
+            // autoplaySpeed: 3000,
+            beforeChange: this.beforeChange,
+            afterChange: this.afterChange
         };
+        console.log('this.state.videos', this.state.videos);
         return (
             <div className="main_rt_index">
             <style>{`
@@ -101,30 +156,52 @@ class ProfileIndexPage extends React.Component {
                         margin-left: 1.5rem;
                     }
                 }
+
+                .icon-position img {
+                    display: inline;
+                }
+                .grey_logo {
+                    position: absolute;
+                    left: calc(82.5% + 32.61px);
+                    top: 7.33%;
+                    mix-blend-mode: overlay;
+                    /* background: white; */
+                    display: block;
+                    width: 46px;
+                    height: 64px;
+                    padding: 0;
+                    z-index: 1;
+                    opacity: 1;
+                }
+
+                .slick-slider, .slick-list {
+                    width: 100vw;
+                    height: 100vh;
+                    opacity: 1;
+                    position: relative;
+                }
+                .slick-track {
+                    height: 100vh;
+                }
                 .slick-prev,
                 .slick-next
                 {
                     font-size: 0;
                     line-height: 0;
-
                     position: absolute;
-                    top: 50%;
-
                     display: block;
-
-                    width: 20px;
-                    height: 20px;
+                    width: 68px;
+                    height: 68px;
                     padding: 0;
                     -webkit-transform: translate(0, -50%);
                     -ms-transform: translate(0, -50%);
                     transform: translate(0, -50%);
-
                     cursor: pointer;
-
                     color: transparent;
                     border: none;
                     outline: none;
-                    background: transparent;
+                    z-index: 1;
+                    opacity: .75;
                 }
                 .slick-prev:hover,
                 .slick-prev:focus,
@@ -133,69 +210,53 @@ class ProfileIndexPage extends React.Component {
                 {
                     color: transparent;
                     outline: none;
-                    background: transparent;
-                }
-                .slick-prev:hover:before,
-                .slick-prev:focus:before,
-                .slick-next:hover:before,
-                .slick-next:focus:before
-                {
                     opacity: 1;
                 }
-                .slick-prev.slick-disabled:before,
-                .slick-next.slick-disabled:before
+                .slick-prev.slick-disabled,
+                .slick-next.slick-disabled
                 {
                     opacity: .25;
                 }
-
-                .slick-prev:before,
-                .slick-next:before
-                {
-                    font-family: Arial, Helvetica, sans-serif;
-                    font-size: 20px;
-                    line-height: 1;
-
-                    opacity: .75;
-                    color: white;
-
-                    -webkit-font-smoothing: antialiased;
-                    -moz-osx-font-smoothing: grayscale;
-                }
-
                 .slick-prev
                 {
-                    left: -25px;
+                    left: calc(82.5% + 32.61px);
+                    top: 45.81%;
+                    background: no-repeat url(https://media.begenuin.com/backend_assets/slider_navigate_up.png);
                 }
-                [dir='rtl'] .slick-prev
+                /*[dir='rtl'] .slick-prev
                 {
                     right: -25px;
                     left: auto;
-                }
-                .slick-prev:before
-                {
-                    content: '←';
-                }
-                [dir='rtl'] .slick-prev:before
-                {
-                    content: '→';
-                }
-
+                }*/
                 .slick-next
                 {
-                    right: -25px;
+                    left: calc(82.5% + 32.61px);
+                    top: 54.5%;
+                    background: no-repeat url(https://media.begenuin.com/backend_assets/slider_navigate_down.png);
                 }
-                [dir='rtl'] .slick-next
+                /*[dir='rtl'] .slick-next
                 {
                     right: auto;
                     left: -25px;
+                }*/
+                .slick-slide:not(.slick-current) {
+                    visibility: hidden;
                 }
-                .slick-next:before
-                {
-                    content: '→';
-                }
-                [dir='rtl'] .slick-next:before
-                {
-                    content: '←';
+                .div-spinner {
+                    display: flex;
+                    flex-direction: row;
+                    width: 100%;
+                    justify-content: center;
+                    margin: 15% 0%;
+                }  
+                .loader-spin {
+                    border: 16px solid #f3f3f3 !important;
+                    border-radius: 50% !important;
+                    border-top: 16px solid #3498db !important;
+                    width: 120px !important;
+                    height: 120px !important;
+                    -webkit-animation: spin 2s linear infinite !important; /* Safari */
+                    animation: spin 2s linear infinite !important;
                 }
             `}</style>
             <NextSeo
@@ -234,10 +295,26 @@ class ProfileIndexPage extends React.Component {
             {
                 this.props.user_id !== undefined && this.props.user_id !== null && this.props.user_id !== ''?
                 <React.Fragment>
-                    <Slider {...settings}>
-                        {
-                            this.props.videos.map((video) => <Player {...{video_id_to_use:video.video_uuid, ...video}} {...this.props.url} installUrl={process.env.installurl+video.video_uuid} />)
-                        }
+                    <a href="/" className="grey_logo">
+                        <img src="https://media.begenuin.com/backend_assets/logo_grey.png" alt="Genuin" />
+                    </a>
+                    <Slider ref={(slider) => (this.slider = slider)} {...settings}>
+                        {this.state.videos.map((video) => {
+                            return <Player 
+                                key={video.video_uuid} 
+                                loading={this.state.loading}
+                                {...{video_id_to_use:video.video_uuid, ...video}} 
+                                {...this.props.url} 
+                                installUrl={process.env.installurl+video.video_uuid} 
+                                ref={(ref) => {
+                                    var playerRefs = this.state.playerRefs;
+                                    if(ref !== null){
+                                        playerRefs.push(ref);
+                                    }
+                                    this.state.playerRefs = playerRefs;
+                                }}
+                            />
+                        })}
                     </Slider>
                 </React.Fragment>
                 :

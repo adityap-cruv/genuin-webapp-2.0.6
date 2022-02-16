@@ -21,7 +21,7 @@ const ProfileShortUrlPage = (props) => {
         }
     });
     var currentUrl = process.env.hostname + props.url.asPath;
-    var name = props.data.name !== undefined && props.data.name !== null && props.data.name !== '' ? props.data.name+' is on Genuin' : '';
+    var name = props.data.name !== undefined && props.data.name !== null && props.data.name !== '' ? props.data.name+' is on Genuin. Connect with him.' : props.data.nickname+' is on Genuin. Connect with him.';
     var bio = props.data.bio !== undefined && props.data.bio !== null && props.data.bio !== '' ? props.data.bio : '';
     var preview_image = (props.data.preview_image !== undefined && props.data.preview_image !== null)?props.data.preview_image:'';
     return (

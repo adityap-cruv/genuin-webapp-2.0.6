@@ -181,7 +181,7 @@ video{width: auto !important;height: 100% !important;object-fit: cover;}
 .card {height: 100vh !important; max-height: 100vh;}
 @media only screen and (min-width: 1025px){
     .card {
-        max-width: 65%;
+        max-width: 65% !important;
     }
 }
 .react-player{display: inline-block;width: auto !important;background: #000000;height:100% !important;position: relative;}

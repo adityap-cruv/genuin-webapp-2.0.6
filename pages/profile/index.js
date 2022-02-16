@@ -11,10 +11,10 @@ const ProfileIndex = (props) => {
 }
 ProfileIndex.getInitialProps = async ({ query: { user_id } }) => {
     if(user_id !== undefined && user_id !== null && user_id !== ''){
-        var url_to_use = `${process.env.apiurl}/api/v3/p/web?user_id=${user_id}`;
+        var url_to_use = `${process.env.apiurl}/api/v3/p/web?user_id=${user_id}&start=0&rows=10`;
         return axios.get(url_to_use)
         .then(response => {
-            // console.log('response', response);
+            console.log('response', response.data.data);
             return Promise.resolve({ data: response.data.data })
         })
         .catch((err) => {
