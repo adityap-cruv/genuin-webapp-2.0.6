@@ -20,7 +20,7 @@ const ProfileShortUrlPage = (props) => {
             // }, 300);
         }
     });
-    abbreviateNumber = (value) => {
+    const abbreviateNumber = (value) => {
         var newValue = value;
         if (value >= 1000) {
             var suffixes = ["", "k", "m", "b","t"];
@@ -38,7 +38,7 @@ const ProfileShortUrlPage = (props) => {
     }
     var currentUrl = process.env.hostname + props.url.asPath;
     var name_nickname = props.data.name !== undefined && props.data.name !== null && props.data.name !== '' ? props.data.name : props.data.nickname;
-    var views_formatted = this.abbreviateNumber(props.data.no_of_views);
+    var views_formatted = abbreviateNumber(props.data.no_of_views);
     var meta_title = name_nickname+' is on Genuin. Connect with him.';
     var meta_description = `${name_nickname}, ${props.data.no_of_videos} Videos, ${views_formatted} Views, ${props.data.no_of_replies} Replies`;
     var preview_image = (props.data.preview_image !== undefined && props.data.preview_image !== null)?props.data.preview_image:'';
