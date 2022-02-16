@@ -66,13 +66,22 @@ class ProfileIndexPage extends React.Component {
             }
         }
     };
-    // next = () => {
-    //     this.slider.slickNext();
-    // };
-    
-    // previous = () => {
-    //     this.slider.slickPrev();
-    // };
+    abbreviateNumber = (value) => {
+        var newValue = value;
+        if (value >= 1000) {
+            var suffixes = ["", "k", "m", "b","t"];
+            var suffixNum = Math.floor( (""+value).length/3 );
+            var shortValue = '';
+            for (var precision = 2; precision >= 1; precision--) {
+                shortValue = parseFloat( (suffixNum != 0 ? (value / Math.pow(1000,suffixNum) ) : value).toPrecision(precision));
+                var dotLessShortValue = (shortValue + '').replace(/[^a-zA-Z 0-9]+/g,'');
+                if (dotLessShortValue.length <= 2) { break; }
+            }
+            if (shortValue % 1 != 0)  shortValue = shortValue.toFixed(1);
+            newValue = shortValue+suffixes[suffixNum];
+        }
+        return newValue;
+    }
     render() {
         // console.log('this.props', this.props);
         if(this.props.user_id !== undefined && this.props.user_id !== null && this.props.user_id !== '' && this.props.videos !== undefined && this.props.videos !== null && this.props.videos.length == 0){
@@ -80,8 +89,11 @@ class ProfileIndexPage extends React.Component {
         }
         var preview_image = (this.props.preview_image !== undefined && this.props.preview_image !== null)?this.props.preview_image:'';
         var currentUrl = process.env.hostname + this.props.url.asPath;
-        var name = this.props.name !== undefined && this.props.name !== null && this.props.name !== '' ? this.props.name+' is on Genuin' : '';
-        var bio = this.props.bio !== undefined && this.props.bio !== null && this.props.bio !== '' ? this.props.bio : '';
+        var name_nickname = this.props.name !== undefined && this.props.name !== null && this.props.name !== '' ? this.props.name : this.props.nickname;
+        var views_formatted = this.abbreviateNumber(this.props.no_of_views);
+        // console.log('views_formatted', views_formatted);
+        var meta_title = name_nickname+' is on Genuin. Connect with him.';
+        var meta_description = `${name_nickname}, ${this.props.no_of_videos} Videos, ${views_formatted} Views, ${this.props.no_of_replies} Replies`;
         var settings = {
             dots: false,
             arrows: true,
@@ -260,12 +272,12 @@ class ProfileIndexPage extends React.Component {
                 }
             `}</style>
             <NextSeo
-                title= {name}
-                description={bio}
+                title= {meta_title}
+                description={meta_description}
                 openGraph={{
                     type: 'object',
                     url: currentUrl,
-                    title: `${name}`,
+                    title: `${meta_title}`,
                     images: [
                         {
                           url: preview_image,
