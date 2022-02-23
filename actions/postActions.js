@@ -20,3 +20,21 @@ export function increaseVideoViewCount(video_id) {
 		});
 	});
 }
+
+export function fetchVideos(request, state) {
+	let videoList;
+	return new Promise((resolve, reject) => {
+	  axios.get(`${process.env.apiurl}/api/v3/p/web${request}`)
+		.then((response) => {
+		  	videoList = state;
+			  console.log('response', response);
+		  	if (response.data !== undefined && response.data.data !== undefined && response.data.data.videos !== undefined) {
+				response.data.data.videos.forEach((el) => {
+					videoList.push(el);
+				});
+		  	}
+		  	resolve(videoList);
+		})
+		.catch((err) => reject(err));
+	});
+  }
