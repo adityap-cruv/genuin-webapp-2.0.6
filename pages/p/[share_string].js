@@ -20,19 +20,37 @@ const ProfileShortUrlPage = (props) => {
             // }, 300);
         }
     });
+    const abbreviateNumber = (value) => {
+        var newValue = value;
+        if (value >= 1000) {
+            var suffixes = ["", "k", "m", "b","t"];
+            var suffixNum = Math.floor( (""+value).length/3 );
+            var shortValue = '';
+            for (var precision = 2; precision >= 1; precision--) {
+                shortValue = parseFloat( (suffixNum != 0 ? (value / Math.pow(1000,suffixNum) ) : value).toPrecision(precision));
+                var dotLessShortValue = (shortValue + '').replace(/[^a-zA-Z 0-9]+/g,'');
+                if (dotLessShortValue.length <= 2) { break; }
+            }
+            if (shortValue % 1 != 0)  shortValue = shortValue.toFixed(1);
+            newValue = shortValue+suffixes[suffixNum];
+        }
+        return newValue;
+    }
     var currentUrl = process.env.hostname + props.url.asPath;
-    var name = props.data.name !== undefined && props.data.name !== null && props.data.name !== '' ? props.data.name+' is on Genuin' : '';
-    var bio = props.data.bio !== undefined && props.data.bio !== null && props.data.bio !== '' ? props.data.bio : '';
+    var name_nickname = props.data.name !== undefined && props.data.name !== null && props.data.name !== '' ? props.data.name : props.data.nickname;
+    var views_formatted = abbreviateNumber(props.data.no_of_views);
+    var meta_title = name_nickname+' is on Genuin. Connect with him.';
+    var meta_description = `${name_nickname}, ${props.data.no_of_videos} Videos, ${views_formatted} Views, ${props.data.no_of_replies} Replies`;
     var preview_image = (props.data.preview_image !== undefined && props.data.preview_image !== null)?props.data.preview_image:'';
     return (
         <div>
             <NextSeo
-                title={name}
-                description={bio}
+                title={meta_title}
+                description={meta_description}
                 openGraph={{
                     type: 'object',
                     url: currentUrl,
-                    title: `${name}`,
+                    title: `${meta_title}`,
                     images: [
                         {
                           url: preview_image,
@@ -64,7 +82,7 @@ const ProfileShortUrlPage = (props) => {
     );
 }
 ProfileShortUrlPage.getInitialProps = async ({ query: { share_string } }) => {
-    var url_to_use = `${process.env.apiurl}/api/v3/p/web?username=${share_string}`;
+    var url_to_use = `${process.env.apiurl}/api/v3/p/web?username=${share_string}&start=0&rows=10`;
     return axios.get(url_to_use)
     .then(response => {
         return Promise.resolve({ data: response.data.data })
