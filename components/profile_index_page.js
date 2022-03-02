@@ -92,7 +92,7 @@ class ProfileIndexPage extends React.Component {
         var name_nickname = this.props.name !== undefined && this.props.name !== null && this.props.name !== '' ? this.props.name : this.props.nickname;
         var views_formatted = this.abbreviateNumber(this.props.no_of_views);
         // console.log('views_formatted', views_formatted);
-        var meta_title = name_nickname+' is on Genuin. Connect with him.';
+        var meta_title = name_nickname+' is on Genuin. Connect confidently.';
         var meta_description = `${name_nickname}, ${this.props.no_of_videos} Videos, ${views_formatted} Views, ${this.props.no_of_replies} Replies`;
         var settings = {
             dots: false,
