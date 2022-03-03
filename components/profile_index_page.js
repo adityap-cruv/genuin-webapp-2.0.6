@@ -84,15 +84,15 @@ class ProfileIndexPage extends React.Component {
     }
     render() {
         // console.log('this.props', this.props);
-        if(this.props.user_id !== undefined && this.props.user_id !== null && this.props.user_id !== '' && this.props.videos !== undefined && this.props.videos !== null && this.props.videos.length == 0){
-            window.location.href = "https://begenuin.com";
-        }
+        // if(this.props.user_id !== undefined && this.props.user_id !== null && this.props.user_id !== '' && this.props.videos !== undefined && this.props.videos !== null && this.props.videos.length == 0){
+        //     window.location.href = "https://begenuin.com";
+        // }
         var preview_image = (this.props.preview_image !== undefined && this.props.preview_image !== null)?this.props.preview_image:'';
         var currentUrl = process.env.hostname + this.props.url.asPath;
         var name_nickname = this.props.name !== undefined && this.props.name !== null && this.props.name !== '' ? this.props.name : this.props.nickname;
         var views_formatted = this.abbreviateNumber(this.props.no_of_views);
         // console.log('views_formatted', views_formatted);
-        var meta_title = name_nickname+' is on Genuin. Connect with him.';
+        var meta_title = name_nickname+' is on Genuin. Connect confidently.';
         var meta_description = `${name_nickname}, ${this.props.no_of_videos} Videos, ${views_formatted} Views, ${this.props.no_of_replies} Replies`;
         var settings = {
             dots: false,
