@@ -113,6 +113,8 @@ class Player extends React.Component {
     var tmpCurrentDisplaySeconds = parseInt(currentTotalSeconds-(tmpCurrentDisplayMinutes*60));
     var tmpHeight = this.props.link.length > 0 ? 130 : 15;
 
+    let metaVideoM3u8 = this.props.video_url_m3u8 !== undefined && this.props.video_url_m3u8 !== null?this.props.video_url_m3u8:this.props.videoUrl;
+
     // this.setState({ currentDisplayMinutes: tmpCurrentDisplayMinutes });
     // this.setState({ currentDisplaySeconds: tmpCurrentDisplaySeconds });
     return (
@@ -126,7 +128,7 @@ class Player extends React.Component {
             </div>
           </div>
         </div> : 
-        <Layout title="Genuin" videoUrl={this.props.videoUrl} metaImageWidth={metaImageWidth} metaImageHeight={metaImageHeight} metaImage={metaImage} content={this.props.videoThumbnail} description={this.props.description} currentUrl={this.state.urlToCopy} keyword='genuine'>
+        <Layout title="Genuin" videoUrlM3u8={metaVideoM3u8} videoUrl={this.props.videoUrl} metaImageWidth={metaImageWidth} metaImageHeight={metaImageHeight} metaImage={metaImage} content={this.props.videoThumbnail} description={this.props.description} currentUrl={this.state.urlToCopy} keyword='genuine'>
           <Card style={{ width: 'auto', borderRadius: '10px'}}>
             <div className="main-meddle">
             <Card.Body className="p-0">
