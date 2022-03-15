@@ -108,7 +108,7 @@ export default class Home extends React.Component {
      let metaImageWidth='48';
      let metaImageHeight='48';
      let content='';
-     let description='For individuals that want to showcase, discover and connect with new people online like in real life, Genuin is a video chatting discovery platform that allows you to engage with whom you want and when you want, exchanging short-form videos, to have a conversation of your choice, face to face, as you do in reality.';
+     let description='Genuin is a video-first professional networking platform that allows you to showcase your expertise and connect with other professionals and businesses. Whether you are searching for a job, seeking investment, hiring candidates, or any other networking, Genuin helps you stand out';
      let currentUrl='https://begenuin.com';
      let keyword='Genuin,Showcase Yourself. Get Discovered. Make Connections, video Communication';
 
