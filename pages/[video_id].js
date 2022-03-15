@@ -22,7 +22,6 @@ const ShortUrlPage = (props) => {
     var description = props.data.description;
     // var videoThumbnail = props.data.videoThumbnail;
     let metaVideo = props.data.videoUrl;
-    let metaVideoM3u8 = props.data.video_url_m3u8 !== undefined && props.data.video_url_m3u8 !== null?props.data.video_url_m3u8:metaVideo;
     let metaImage = props.data.videoPreviewImage;
     let metaImageWidth = 280;
     let metaImageHeight = 534;
@@ -37,9 +36,9 @@ const ShortUrlPage = (props) => {
     // }
     return (
         <div>
-            <meta property="og:video:url" content={metaVideoM3u8} />
-            <meta property="og:video:secure_url" content={metaVideoM3u8} />
-            <meta property="og:video:type" content="application/x-mpegURL" />
+            <meta property="og:video:url" content={metaVideo} />
+            <meta property="og:video:secure_url" content={metaVideo} />
+            <meta property="og:video:type" content="video/mp4" />
             <NextSeo
                 title="Genuin"
                 description={description}
