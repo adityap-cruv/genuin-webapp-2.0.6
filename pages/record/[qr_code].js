@@ -31,7 +31,7 @@ const QRShortUrlPage = (props) => {
     }
     var currentUrl = process.env.hostname + props.url.asPath;
     var name_nickname = props.data.owner.name !== undefined && props.data.owner.name !== null && props.data.owner.name !== '' ? props.data.owner.name : `@${props.data.owner.nickname}`;
-    var views_formatted = abbreviateNumber(props.data.no_of_views);
+    var views_formatted = abbreviateNumber(props.data.owner.no_of_views);
     var meta_title = `Record and publish videos for ${name_nickname}`;
     var meta_description = `${name_nickname}, ${props.data.owner.no_of_videos} Videos, ${views_formatted} Views, ${props.data.owner.no_of_replies} Replies`;
     var preview_image = (props.data.preview_image !== undefined && props.data.preview_image !== null)?props.data.preview_image:'';
