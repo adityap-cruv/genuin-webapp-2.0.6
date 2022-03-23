@@ -23,6 +23,7 @@ module.exports = withImages(withFonts(withCSS({
         rt_apps_flyer_url: process.env.rt_apps_flyer_url,
         qt_apps_flyer_url: process.env.qt_apps_flyer_url,
         profile_apps_flyer_url: process.env.profile_apps_flyer_url,
+        record_apps_flyer_url: process.env.record_apps_flyer_url,
         installurl: process.env.installurl        
     }
 })));
