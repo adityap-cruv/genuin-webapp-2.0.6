@@ -8,8 +8,11 @@ const QRShortUrlPage = (props) => {
     useEffect(() => {
         if(qr_code !== undefined && qr_code !== null && qr_code !== ''){
             var qr_code_to_use = (props.data.qr_code !== undefined && props.data.qr_code !== null)?props.data.qr_code:'';
+            var user_id_to_use = (props.data.owner.member_id !== undefined && props.data.owner.member_id !== null)?props.data.owner.member_id:'';
             var redirect_url = process.env.record_apps_flyer_url + qr_code_to_use;
             redirect_url = redirect_url.replace('{{qr_code}}',qr_code_to_use);
+            redirect_url = redirect_url.replace('{{user_id}}',user_id_to_use);
+            // console.log('redirect_url', redirect_url);
             window.location.href = redirect_url;
         }
     });
