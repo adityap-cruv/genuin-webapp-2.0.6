@@ -1,23 +1,19 @@
 import React, { useState, useEffect } from 'react'
 import { useRouter, withRouter } from 'next/router';
-import Error from 'next/error';
 import { NextSeo } from 'next-seo';
 import axios from 'axios';
-const ProfileShortUrlPage = (props) => {
+const QRShortUrlPage = (props) => {
     const router = useRouter();
-    const { share_string } = router.query
-    // console.log('share_string', share_string);
-    // console.log('v', v);
+    const { qr_code } = router.query
     useEffect(() => {
-        if(share_string !== undefined && share_string !== null && share_string !== ''){
-            // console.log('props', props);
-            // setTimeout(function(){
-                var user_id_to_use = (props.data.user_id !== undefined && props.data.user_id !== null)?props.data.user_id:'';
-                var redirect_url = process.env.profile_apps_flyer_url + user_id_to_use;
-                redirect_url = redirect_url.replace('{{user_id}}',user_id_to_use);
-                // console.log('redirect_url', redirect_url);
-                window.location.href = redirect_url;
-            // }, 300);
+        if(qr_code !== undefined && qr_code !== null && qr_code !== ''){
+            var qr_code_to_use = (props.data.qr_code !== undefined && props.data.qr_code !== null)?props.data.qr_code:'';
+            var user_id_to_use = (props.data.owner.member_id !== undefined && props.data.owner.member_id !== null)?props.data.owner.member_id:'';
+            var redirect_url = process.env.record_apps_flyer_url + qr_code_to_use;
+            redirect_url = redirect_url.replace('{{qr_code}}',qr_code_to_use);
+            redirect_url = redirect_url.replace('{{user_id}}',user_id_to_use);
+            // console.log('redirect_url', redirect_url);
+            window.location.href = redirect_url;
         }
     });
     const abbreviateNumber = (value) => {
@@ -37,10 +33,10 @@ const ProfileShortUrlPage = (props) => {
         return newValue;
     }
     var currentUrl = process.env.hostname + props.url.asPath;
-    var name_nickname = props.data.name !== undefined && props.data.name !== null && props.data.name !== '' ? props.data.name : `@${props.data.nickname}`;
-    var views_formatted = abbreviateNumber(props.data.no_of_views);
-    var meta_title = name_nickname+' is on Genuin. Connect confidently.';
-    var meta_description = `${name_nickname}, ${props.data.no_of_videos} Videos, ${views_formatted} Views, ${props.data.no_of_replies} Replies`;
+    var name_nickname = props.data.owner.name !== undefined && props.data.owner.name !== null && props.data.owner.name !== '' ? props.data.owner.name : `@${props.data.owner.nickname}`;
+    var views_formatted = abbreviateNumber(props.data.owner.no_of_views);
+    var meta_title = `Record and publish videos for ${name_nickname}`;
+    var meta_description = `${name_nickname}, ${props.data.owner.no_of_videos} Videos, ${views_formatted} Views, ${props.data.owner.no_of_replies} Replies`;
     var preview_image = (props.data.preview_image !== undefined && props.data.preview_image !== null)?props.data.preview_image:'';
     return (
         <div>
@@ -81,14 +77,17 @@ const ProfileShortUrlPage = (props) => {
         </div>
     );
 }
-ProfileShortUrlPage.getInitialProps = async ({ query: { share_string } }) => {
-    var url_to_use = `${process.env.apiurl}/api/v3/p/web?username=${share_string}&start=0&rows=10`;
+QRShortUrlPage.getInitialProps = async ({ query: { qr_code } }) => {
+    var url_to_use = `${process.env.apiurl}/api/v3/qr/web?qr_code=${qr_code}`;
+    // console.log('api url', url_to_use);
     return axios.get(url_to_use)
     .then(response => {
+        // console.log('api response', response);
         return Promise.resolve({ data: response.data.data })
     })
     .catch((err) => {
+        console.log('api err', err);
         return Promise.resolve({ data: {} })
     });
 }
-export default ProfileShortUrlPage;
+export default QRShortUrlPage;

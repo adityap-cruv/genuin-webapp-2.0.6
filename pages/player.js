@@ -182,11 +182,13 @@ class Player extends React.Component {
                       display='inline-block'
                     
                       style={{
-                        marginTop: '15px', borderRadius: '10px', overflow: 'hidden', cursor: 'pointer'
+                        marginTop: '15px', borderRadius: '10px', overflow: 'hidden', cursor: 'pointer' 
                       }}
                       controls={false}
                       playsinline={true}
+                      // light='https://media.qa.begenuin.com/uploads/thumbnails/34616c81-cbe1-491a-9630-f4a5dc683264_1622203937482.png'
                       // light={true}
+                      config={ { file: { attributes: { preload: 'auto', poster: this.props.videoThumbnail } } } }
                       onClick={this.handlePlayPause}
                       onPlay={this.handlePlay}
                       onPause={this.handlePause}
