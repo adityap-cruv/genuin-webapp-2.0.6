@@ -37,7 +37,8 @@ class Player extends React.Component {
       playing: false,
       buttonVisible: 'block',
       baseUrl: '',
-      urlToCopy: ''
+      urlToCopy: '',
+      videoUrl: props.videoUrl
     };
     if (typeof window === 'undefined') {
       global.window = {}
@@ -82,6 +83,11 @@ class Player extends React.Component {
   }
   handlePlayPause = () => {
     this.setState({ playing: !this.state.playing })
+  }
+  handleEnded= (ele) => {
+    // console.log('ele', ele);
+    this.setState({ videoUrl: '' })
+    this.setState({ videoUrl: this.state.videoUrl })
   }
 
 
@@ -176,6 +182,7 @@ class Player extends React.Component {
                       fontSize: '18pt'
                     }}>{this.state.currentDisplayMinutes}:{this.state.currentDisplaySeconds}</span> */}
                     <ReactPlayer
+                      key={this.state.videoUrl}
                       className='react-player fixed-bottom-video'
                       url={this.props.videoUrl}
                       playing={this.state.playing}
@@ -188,12 +195,13 @@ class Player extends React.Component {
                       playsinline={true}
                       // light='https://media.qa.begenuin.com/uploads/thumbnails/34616c81-cbe1-491a-9630-f4a5dc683264_1622203937482.png'
                       // light={true}
-                      config={ { file: { attributes: { preload: 'auto', poster: this.props.videoThumbnail } } } }
+                      config={ { file: { attributes: { poster: this.props.videoThumbnail } } } }
                       onClick={this.handlePlayPause}
                       onPlay={this.handlePlay}
                       onPause={this.handlePause}
                       onProgress={this.handleProgress}
                       onDuration={this.handleDuration}
+                      onEnded={this.handleEnded}
                     />
                     <div className="d-block-v" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '13.9pt', margin: '2% 0', width: '2.3rem', position: 'absolute', top: 'calc(100vh - 20rem)', right: '4%'}}>
                       <WhatsappShareButton url={this.state.urlToCopy} >
