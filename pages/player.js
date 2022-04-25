@@ -37,7 +37,8 @@ class Player extends React.Component {
       playing: false,
       buttonVisible: 'block',
       baseUrl: '',
-      urlToCopy: ''
+      urlToCopy: '',
+      videoUrl: props.videoUrl
     };
     if (typeof window === 'undefined') {
       global.window = {}
@@ -83,7 +84,11 @@ class Player extends React.Component {
   handlePlayPause = () => {
     this.setState({ playing: !this.state.playing })
   }
-
+  handleEnded= (ele) => {
+    // console.log('ele', ele);
+    this.setState({ videoUrl: '' })
+    this.setState({ videoUrl: this.state.videoUrl })
+  }
 
   render() {
     if (this.props.videoUrl == undefined || this.props.videoUrl == null || this.props.videoUrl == '') return <Error statusCode="404" />;
@@ -176,6 +181,7 @@ class Player extends React.Component {
                       fontSize: '18pt'
                     }}>{this.state.currentDisplayMinutes}:{this.state.currentDisplaySeconds}</span> */}
                     <ReactPlayer
+                      key={this.state.videoUrl}
                       className='react-player fixed-bottom-video'
                       url={this.props.videoUrl}
                       playing={this.state.playing}
@@ -187,11 +193,13 @@ class Player extends React.Component {
                       controls={false}
                       playsinline={true}
                       // light={true}
+                      config={ { file: { attributes: { poster: this.props.videoThumbnail } } } }
                       onClick={this.handlePlayPause}
                       onPlay={this.handlePlay}
                       onPause={this.handlePause}
                       onProgress={this.handleProgress}
                       onDuration={this.handleDuration}
+		      onEnded={this.handleEnded}
                     />
                     <div className="d-block-v" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '13.9pt', margin: '2% 0', width: '2.3rem', position: 'absolute', top: 'calc(100vh - 20rem)', right: '4%'}}>
                       <WhatsappShareButton url={this.state.urlToCopy} >
@@ -240,7 +248,7 @@ class Player extends React.Component {
                                   width={42}
                                   height={42}
                                   className="mr-2"
-                                  src={require('../images/genuin_app_icon.png')} alt="Generic"
+                                  src={require('../images/Genuin_icon_48_new.png')} alt="Generic"
                                 />
                                 <Media.Body>
                                   <h5>Genuin App</h5>
