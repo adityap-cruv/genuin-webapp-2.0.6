@@ -3,7 +3,7 @@ import { useRouter, withRouter } from 'next/router';
 import Error from 'next/error';
 import { NextSeo } from 'next-seo';
 import axios from 'axios';
-const QTShortUrlPage = (props) => {
+const RTShortUrlPage = (props) => {
     const router = useRouter();
     const { share_string } = router.query
     // console.log('share_string', share_string);
@@ -66,7 +66,7 @@ const QTShortUrlPage = (props) => {
         </div>
     );
 }
-QTShortUrlPage.getInitialProps = async ({ query: { share_string } }) => {
+RTShortUrlPage.getInitialProps = async ({ query: { share_string } }) => {
     var url_to_use = `${process.env.apiurl}/api/v3/qt/web?question_id=${share_string}`;
     console.log('api url', url_to_use);
     return axios.get(url_to_use)
@@ -79,4 +79,4 @@ QTShortUrlPage.getInitialProps = async ({ query: { share_string } }) => {
         return Promise.resolve({ data: {} })
     });
 }
-export default QTShortUrlPage;
+export default RTShortUrlPage;

@@ -90,7 +90,6 @@ class Player extends React.Component {
     this.setState({ videoUrl: this.state.videoUrl })
   }
 
-
   render() {
     if (this.props.videoUrl == undefined || this.props.videoUrl == null || this.props.videoUrl == '') return <Error statusCode="404" />;
     const hashtags = this.props.description.match(/#\w+/g) || [];
@@ -189,11 +188,10 @@ class Player extends React.Component {
                       display='inline-block'
                     
                       style={{
-                        marginTop: '15px', borderRadius: '10px', overflow: 'hidden', cursor: 'pointer' 
+                        marginTop: '15px', borderRadius: '10px', overflow: 'hidden', cursor: 'pointer'
                       }}
                       controls={false}
                       playsinline={true}
-                      // light='https://media.qa.begenuin.com/uploads/thumbnails/34616c81-cbe1-491a-9630-f4a5dc683264_1622203937482.png'
                       // light={true}
                       config={ { file: { attributes: { poster: this.props.videoThumbnail } } } }
                       onClick={this.handlePlayPause}
@@ -201,7 +199,7 @@ class Player extends React.Component {
                       onPause={this.handlePause}
                       onProgress={this.handleProgress}
                       onDuration={this.handleDuration}
-                      onEnded={this.handleEnded}
+		      onEnded={this.handleEnded}
                     />
                     <div className="d-block-v" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '13.9pt', margin: '2% 0', width: '2.3rem', position: 'absolute', top: 'calc(100vh - 20rem)', right: '4%'}}>
                       <WhatsappShareButton url={this.state.urlToCopy} >

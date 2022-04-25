@@ -83,7 +83,7 @@ export default class Home extends React.Component {
                                 {/* <Navbar.Brand href="#home" className="p-0">genuin</Navbar.Brand> */}
 
                                 <Navbar.Brand href="/" className="p-0">
-                                    <img src={require('../images/logo_header_new.png')} alt="logo_header" />
+                                    <img src={require('../images/logo_header.png')} alt="logo_header" />
                                 </Navbar.Brand>
 
                                 {/* <Navbar.Toggle aria-controls="basic-navbar-nav" /> */}

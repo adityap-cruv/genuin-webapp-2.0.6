@@ -37,7 +37,7 @@ const ProfileShortUrlPage = (props) => {
         return newValue;
     }
     var currentUrl = process.env.hostname + props.url.asPath;
-    var name_nickname = props.data.name !== undefined && props.data.name !== null && props.data.name !== '' ? props.data.name : `@${props.data.nickname}`;
+    var name_nickname = props.data.name !== undefined && props.data.name !== null && props.data.name !== '' ? props.data.name : props.data.nickname;
     var views_formatted = abbreviateNumber(props.data.no_of_views);
     var meta_title = name_nickname+' is on Genuin. Connect confidently.';
     var meta_description = `${name_nickname}, ${props.data.no_of_videos} Videos, ${views_formatted} Views, ${props.data.no_of_replies} Replies`;
