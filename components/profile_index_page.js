@@ -321,7 +321,7 @@ class ProfileIndexPage extends React.Component {
                 this.props.user_id !== undefined && this.props.user_id !== null && this.props.user_id !== ''?
                 <React.Fragment>
                     <a href="/" className="grey_logo">
-                        <img src="https://media.begenuin.com/backend_assets/logo_grey.png" alt="Genuin" />
+                        <img src="https://media.begenuin.com/backend_assets/logo_grey_new.png" alt="Genuin" />
                     </a>
                     <Slider ref={(slider) => (this.slider = slider)} {...settings}>
                         {this.state.videos.map((video) => {
@@ -382,7 +382,7 @@ class ProfileIndexPage extends React.Component {
                     `}</style>
                     <div className="not_found_page_logo">
                         <Link href="/">
-                            <img src={require('../images/logo_header.png')} alt="Genuin" />
+                            <img src={require('../images/logo_header_new.png')} alt="Genuin" />
                         </Link>
                     </div>
                     <div className="chat_not_found">
