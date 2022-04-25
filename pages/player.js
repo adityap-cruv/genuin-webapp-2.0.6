@@ -250,7 +250,7 @@ class Player extends React.Component {
                                   width={42}
                                   height={42}
                                   className="mr-2"
-                                  src={require('../images/genuin_app_icon.png')} alt="Generic"
+                                  src={require('../images/Genuin_icon_48_new.png')} alt="Generic"
                                 />
                                 <Media.Body>
                                   <h5>Genuin App</h5>

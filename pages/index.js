@@ -104,7 +104,7 @@ export default class Home extends React.Component {
     
     let children='Genuin';
     let  title='Genuin';
-     let metaImage=require('../images/genuin_app_icon.png');
+     let metaImage=require('../images/Genuin_icon_48_new.png');
      let metaImageWidth='48';
      let metaImageHeight='48';
      let content='';
