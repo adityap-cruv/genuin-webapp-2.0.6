@@ -180,7 +180,7 @@ class QTIndexPage extends React.Component {
                     `}</style>
                     <div className="not_found_page_logo">
                         <Link href={process.env.genuinurl}>
-                            <img src={require('../images/logo_header.png')} alt="Genuin" />
+                            <img src={require('../images/logo_header_new.png')} alt="Genuin" />
                         </Link>
                     </div>
                     <div className="chat_not_found">
