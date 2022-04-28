@@ -23,6 +23,9 @@ a,a:hover{color: #ffffff;font-weight: 600;}
 .appstore-googleplay .nav-item img{width: 150px;}
 /* .slider-img img{height: 30rem;} */
 .slider-img img{max-height: 80vh;}
+.slider-container > div {
+    margin-top: 1.5%;
+}
 @media (min-width:992px){
     body{height: 100vh;}
 }
