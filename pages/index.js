@@ -59,6 +59,10 @@ export default class Home extends React.Component {
                 this.setState({early_access_error_hidden: false})
                 this.setState({early_access_error_text: `Invalid Email`})
             }
+            else if(this.state.early_access_email.length > 320){
+                this.setState({early_access_error_hidden: false})
+                this.setState({early_access_error_text: `Email can not be more than 320 characters`})
+            }
             else{
                 this.setState({early_access_error_hidden: true})
                 this.setState({early_access_error_text: ``})
@@ -75,7 +79,7 @@ export default class Home extends React.Component {
                     this.setState({
                         early_access_email_loader: false,
                         early_access_error_hidden: false,
-                        early_access_error_text: response.message
+                        early_access_error_text: `Something Went Wrong, Please Try Again`
                     });
                 }
             }
