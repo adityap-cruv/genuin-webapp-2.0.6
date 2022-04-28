@@ -86,8 +86,9 @@ export default class Home extends React.Component {
         }
     }
     earlyAccessEmailChanged = (e) => {
+        var new_email = e.target.value.replace(/ /g, '');
         this.setState({early_access_success_hidden: true})
-        this.setState({early_access_email: e.target.value})
+        this.setState({early_access_email: new_email})
     }
     validateEmail = (email) => {
         const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -345,7 +346,7 @@ export default class Home extends React.Component {
                                 </Slider>
                                 <h2 className="early_access mt-4 mb-2">Get an early access</h2>
                                 <InputGroup className="early_access_div mb-1">
-                                    <FormControl onChange={this.earlyAccessEmailChanged} placeholder="Email" aria-label="Email" aria-describedby="early_access_email"/>
+                                    <FormControl onChange={this.earlyAccessEmailChanged} value={this.state.early_access_email} placeholder="Email" aria-label="Email" aria-describedby="early_access_email"/>
                                     <Button onClick={this.earlyAccessSubmitHandler} variant="outline-secondary" id="early_access_email">
                                         {this.state.early_access_email_loader?<FontAwesomeIcon icon={faSpinner} className="fa-spin" />:`Notify Me`}
                                     </Button>
