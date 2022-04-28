@@ -280,8 +280,8 @@ export default class Home extends React.Component {
                                 <div className="fixed-top main-menu">
                                     <div className="flex-top p-5 mt-5">
                                         <ul className="nav flex-column w-100">
-                                            <li className="nav-item delay-2"><a onClick={this.handleInvestClick} className="nav-link" href="#">Invest in Genuin</a></li>
-                                            {/* <li className="nav-item delay-3"><a className="nav-link" href="#">About</a></li> */}
+                                            <li className="nav-item delay-2"><a className="nav-link" onClick={this.handleInvestClick} href="#">Invest in Genuin</a></li>
+                                            <li className="nav-item delay-3"><a className="nav-link" onClick={this.handleHireLinkClick} href="#">Join us</a></li>
                                             <li className="nav-item delay-4"><a className="nav-link" href="/terms">Terms of Service </a></li>
                                             <li className="nav-item delay-5"><a className="nav-link" href="/privacy">Privacy Policy</a></li>
                                         </ul>
@@ -390,13 +390,19 @@ export default class Home extends React.Component {
                                     <Nav.Link href="/about" className="pl-0">About</Nav.Link>
                                 </Nav.Item> */}
                                 <Nav.Item as="li">
-                                    <Nav.Link style={{opacity: 0.5}} href="/terms" eventKey="link-1">Terms of Service</Nav.Link>
+                                    <Nav.Link style={{opacity: 0.5}} href="#" eventKey="link-1" onClick={this.handleHireLinkClick}>Join us</Nav.Link>
                                 </Nav.Item>
                                 <Nav.Item as="li">
-                                    <Nav.Link style={{opacity: 0.5, paddingLeft: "0px", paddingRight: "0px"}} href={void(0)} eventKey="link-1">|</Nav.Link>
+                                    <Nav.Link style={{opacity: 0.5, paddingLeft: "0px", paddingRight: "0px"}} href={void(0)} eventKey="link-2">|</Nav.Link>
                                 </Nav.Item>
                                 <Nav.Item as="li">
-                                    <Nav.Link style={{opacity: 0.5}} href="/privacy" eventKey="link-2">Privacy Policy</Nav.Link>
+                                    <Nav.Link style={{opacity: 0.5}} href="/terms" eventKey="link-3">Terms of Service</Nav.Link>
+                                </Nav.Item>
+                                <Nav.Item as="li">
+                                    <Nav.Link style={{opacity: 0.5, paddingLeft: "0px", paddingRight: "0px"}} href={void(0)} eventKey="link-4">|</Nav.Link>
+                                </Nav.Item>
+                                <Nav.Item as="li">
+                                    <Nav.Link style={{opacity: 0.5}} href="/privacy" eventKey="link-5">Privacy Policy</Nav.Link>
                                 </Nav.Item>
                             </Nav>
                         </Col>
