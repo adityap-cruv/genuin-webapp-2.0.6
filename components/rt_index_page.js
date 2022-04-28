@@ -10,16 +10,6 @@ class RTIndexPage extends React.Component {
         global.window = {}
         }
     }
-
-    handleAndroidInstallClick = () => {
-        // console.log('this is:', this);
-        window.open("https://install.begenuin.com/86sn/cgs");
-
-    }
-    handleIosInstallClick = () => {
-        // console.log('this is:', this);
-        window.open("https://install.begenuin.com/86sn/cgs"); 
-    }
     render() {
         // console.log('this.props', this.props);
         var preview_image = (this.props.preview_image !== undefined && this.props.preview_image !== null)?this.props.preview_image:'';
@@ -65,26 +55,6 @@ class RTIndexPage extends React.Component {
                     height: 100vh;
                     opacity: 1;
                     position: relative;
-                }
-                .app_store_buttons {
-                    opacity: 1;
-                    width: 100%;
-                    height: auto;
-                    position: relative;
-                    margin-top: 3%;
-                    text-align: center;
-                }
-                .app_store_buttons .ios, .app_store_buttons .android {
-                    display: inline-block;
-                    cursor: pointer;
-                }
-                .app_store_buttons .ios img, .app_store_buttons .android img {
-                    width: 100%;
-                }
-                @media (min-width:432px){
-                    .app_store_buttons .android {
-                        margin-left: 1.5rem;
-                    }
                 }
             `}</style>
             <NextSeo
@@ -187,14 +157,6 @@ class RTIndexPage extends React.Component {
                     </div>
                 </React.Fragment>
             }
-            <div className="app_store_buttons">
-                <div className="ios">
-                    <img src={require('../images/badge_appstore.png')} onClick={this.handleIosInstallClick} alt="badge_appstore" />
-                </div>
-                <div className="android">
-                    <img src={require('../images/badge_playstore.png')} onClick={this.handleAndroidInstallClick} alt="badge_playstore" />
-                </div>
-            </div>
         </div>
         );
     }

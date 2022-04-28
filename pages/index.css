@@ -374,7 +374,7 @@ body.nav-open{overflow: hidden;}
 .slick-dots
 {
     position: absolute;
-    bottom: -25px;
+    bottom: -10px;
 
     display: block;
 
