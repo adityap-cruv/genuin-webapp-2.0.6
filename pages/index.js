@@ -163,7 +163,7 @@ export default class Home extends React.Component {
                     bottom: 0px;
                 }
                 .slider-container {
-                    height: 85vh;
+                    height: 80vh;
                 }
                 .slider-container > div {
                     height: 100%;
@@ -222,12 +222,12 @@ export default class Home extends React.Component {
                     display:none;
                 }
                 @media (max-width: 576px) {
-                    .img-slider {
+                    /*.img-slider {
                         margin-top: -8%;
                     }
                     .text-slider .slick-slider {
                         margin-top: -10%;
-                    }
+                    }*/
                 }
                 @media (max-width: 767px) {
                     /*.img-slider {
@@ -249,8 +249,8 @@ export default class Home extends React.Component {
                 `}</style>
                 <Container className="sticky-top">
                     <Row>
-                        <Col xl={12}>
-                            <Navbar bg="transparent p-0 pt-4 pb-4 " expand="sm">
+                        <Col xl={12} style={{backgroundColor: 'black'}}>
+                            <Navbar bg="transparent p-0 pt-4" expand="sm">
                                 {/* <Navbar.Brand href="#home" className="p-0">genuin</Navbar.Brand> */}
 
                                 <Navbar.Brand href="/" className="p-0">
