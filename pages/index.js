@@ -263,7 +263,7 @@ export default class Home extends React.Component {
 
                                 {/* <Navbar.Toggle aria-controls="basic-navbar-nav" /> */}
 
-                                <a style={{height:}} className="nav-button ml-auto d-sm-none p-0"><span id="nav-icon3"><span></span><span></span><span></span><span></span></span></a>
+                                <a className="nav-button ml-auto d-sm-none p-0"><span id="nav-icon3"><span></span><span></span><span></span><span></span></span></a>
 
                                 <div className="fixed-top main-menu">
                                     <div className="flex-top p-5 mt-5">
