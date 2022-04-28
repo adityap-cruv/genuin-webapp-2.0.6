@@ -221,10 +221,22 @@ export default class Home extends React.Component {
                 .early_access_error.hide, .early_access_success.hide {
                     display:none;
                 }
+                .text-slider .slick-slider {
+                    margin-top: -10%;
+                }
                 @media (max-width: 576px) {
                     .nav-button {
                         height:auto !important;
                         top:2rem !important;
+                    }
+                    .slider-container > div {
+                        margin-top: 5%;
+                    }
+                    .slick-dots {
+                        bottom: -10px;
+                    }
+                    .text-slider .slick-slider {
+                        margin-top: 0%;
                     }
                     /*.img-slider {
                         margin-top: -8%;

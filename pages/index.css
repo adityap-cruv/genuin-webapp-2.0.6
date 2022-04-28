@@ -23,9 +23,6 @@ a,a:hover{color: #ffffff;font-weight: 600;}
 .appstore-googleplay .nav-item img{width: 150px;}
 /* .slider-img img{height: 30rem;} */
 .slider-img img{max-height: 80vh;}
-.slider-container > div {
-    margin-top: 5%;
-}
 @media (min-width:992px){
     body{height: 100vh;}
 }
@@ -374,7 +371,7 @@ body.nav-open{overflow: hidden;}
 .slick-dots
 {
     position: absolute;
-    bottom: -10px;
+    bottom: -20px;
 
     display: block;
 
