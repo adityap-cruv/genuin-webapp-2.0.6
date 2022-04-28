@@ -68,7 +68,7 @@ export default class Home extends React.Component {
                 this.setState({early_access_error_text: ``})
                 this.setState({early_access_email_loader: true})
                 let response = await postEarlyAccess({email: this.state.early_access_email});
-                if(response && response.code && response.code == 200){
+                if(response && response.data && response.data.code && response.data.code == 200){
                     this.setState({
                         early_access_email_loader: false,
                         early_access_success_hidden: false,
