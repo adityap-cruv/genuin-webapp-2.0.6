@@ -44,15 +44,6 @@ class ProfileIndexPage extends React.Component {
           loading: false
         });
     };
-    handleAndroidInstallClick = () => {
-        // console.log('this is:', this);
-        window.open("https://install.begenuin.com/86sn/cgs");
-
-    }
-    handleIosInstallClick = () => {
-        // console.log('this is:', this);
-        window.open("https://install.begenuin.com/86sn/cgs"); 
-    }
     beforeChange = (prev, next) => {
         this.state.playerRefs[prev].handlePause();
     }
@@ -147,26 +138,6 @@ class ProfileIndexPage extends React.Component {
                     height: 100vh;
                     opacity: 1;
                     position: relative;
-                }
-                .app_store_buttons {
-                    opacity: 1;
-                    width: 100%;
-                    height: auto;
-                    position: relative;
-                    margin-top: 3%;
-                    text-align: center;
-                }
-                .app_store_buttons .ios, .app_store_buttons .android {
-                    display: inline-block;
-                    cursor: pointer;
-                }
-                .app_store_buttons .ios img, .app_store_buttons .android img {
-                    width: 100%;
-                }
-                @media (min-width:432px){
-                    .app_store_buttons .android {
-                        margin-left: 1.5rem;
-                    }
                 }
 
                 .icon-position img {
@@ -389,14 +360,6 @@ class ProfileIndexPage extends React.Component {
                         <h3>Sorry, this page isn’t available.</h3>
                         <p>The link you followed may be broken, or the page may have been removed. Go to <Link href="/"><a>Genuin homepage.</a></Link>
                         </p>
-                    </div>
-                    <div className="app_store_buttons">
-                        <div className="ios">
-                            <img src={require('../images/badge_appstore.png')} onClick={this.handleIosInstallClick} alt="badge_appstore" />
-                        </div>
-                        <div className="android">
-                            <img src={require('../images/badge_playstore.png')} onClick={this.handleAndroidInstallClick} alt="badge_playstore" />
-                        </div>
                     </div>
                 </React.Fragment>
             }

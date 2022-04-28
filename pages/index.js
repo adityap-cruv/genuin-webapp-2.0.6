@@ -18,8 +18,10 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 // import 'bootstrap/scss/_buttons.scss';
 // import 'bootstrap/scss/_grid.scss';
 
-
-import { Nav, Navbar, Form, Button, FormControl, Container, Row, Col } from 'react-bootstrap';
+import { postEarlyAccess } from "../actions/postActions";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { Nav, Navbar, Form, Button, FormControl, Container, Row, Col, InputGroup } from 'react-bootstrap';
 // import bootstrapStyles from './index.scss'
 import './index.css'
 import Metalayout from '../components/Metalayout';
@@ -29,9 +31,15 @@ export default class Home extends React.Component {
         super(props);
         this.state = {
             nav1: null,
-            nav2: null
+            nav2: null,
+            early_access_email: '',
+            early_access_error_text: `This is a required field *`,
+            early_access_error_hidden: true,
+            early_access_success_hidden: true,
+            early_access_email_loader: false
         };
-
+        this.earlyAccessSubmitHandler = this.earlyAccessSubmitHandler.bind(this);
+        this.earlyAccessEmailChanged = this.earlyAccessEmailChanged.bind(this);
     }
     handleInvestClick = () => {
         window.open("https://www.linkedin.com/company/begenuin/");
@@ -39,27 +47,52 @@ export default class Home extends React.Component {
     handleHireLinkClick = () => {
        // console.log('this is:', this);
         window.open("https://angel.co/company/begenuin");
-
-      }
-
-      handleAndroidInstallClick = () => {
-        // console.log('this is:', this);
-         window.open("https://play.google.com/store/apps/details?id=com.begenuin.begenuin");
- 
-       }
-
- 
-       handleIosInstallClick = () => {
-        // console.log('this is:', this);
-         window.open("https://apps.apple.com/us/app/id1511177838"); 
-       }
-
-       handleInstallAppClick = () => {
-        // console.log('this is:', this);
-         window.open("https://install.begenuin.com/86sn/cgs"); 
-       }
-
-
+    }
+    earlyAccessSubmitHandler = async () => {
+        if(!this.state.early_access_email_loader){
+            this.setState({early_access_success_hidden: true})
+            if(this.state.early_access_email == null || this.state.early_access_email == ""){
+                this.setState({early_access_error_hidden: false})
+                this.setState({early_access_error_text: `This is a required field *`})
+            }
+            else if(!this.validateEmail(this.state.early_access_email)){
+                this.setState({early_access_error_hidden: false})
+                this.setState({early_access_error_text: `Invalid Email`})
+            }
+            else if(this.state.early_access_email.length > 320){
+                this.setState({early_access_error_hidden: false})
+                this.setState({early_access_error_text: `Email can not be more than 320 characters`})
+            }
+            else{
+                this.setState({early_access_error_hidden: true})
+                this.setState({early_access_error_text: ``})
+                this.setState({early_access_email_loader: true})
+                let response = await postEarlyAccess({email: this.state.early_access_email});
+                if(response && response.code && response.code == 200){
+                    this.setState({
+                        early_access_email_loader: false,
+                        early_access_success_hidden: false,
+                        early_access_email: ''
+                    });
+                }
+                else{
+                    this.setState({
+                        early_access_email_loader: false,
+                        early_access_error_hidden: false,
+                        early_access_error_text: `Something Went Wrong, Please Try Again`
+                    });
+                }
+            }
+        }
+    }
+    earlyAccessEmailChanged = (e) => {
+        this.setState({early_access_success_hidden: true})
+        this.setState({early_access_email: e.target.value})
+    }
+    validateEmail = (email) => {
+        const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(String(email).toLowerCase());
+    }
     componentDidMount() {
         const { pathname, query } = Router
         // if (pathname == '/') {
@@ -134,6 +167,79 @@ export default class Home extends React.Component {
                 .slider-container > div {
                     height: 100%;
                 }
+                .early_access {
+                    font-weight: 700;
+                    font-size: 2rem;
+                    line-height: 3rem;
+                    display: block;
+                }
+                .early_access_div {
+                    border: 1px solid #0645FF;
+                    border-radius: 5px;
+                    height: 3rem;
+                }
+                .early_access_div input {
+                    height: 100%;
+                    background-color: transparent;
+                    color: white;
+                    font-weight: 600;
+                    font-size: 1.2rem;
+                    line-height: 1.5rem;
+                    border: none;
+                }
+                .early_access_div input:hover, .early_access_div input:focus {
+                    background-color: transparent;
+                    color: white;
+                    border: none;
+                    box-shadow: none;
+                }
+                .early_access_div input::placeholder, .early_access_div input:-ms-input-placeholder {
+                    color: white;
+                    opacity: 0.5;
+                }
+                #early_access_email {
+                    background-color: #0645FF;
+                    color: white;
+                    font-weight: 700;
+                    font-size: 1.2rem;
+                    line-height: 1.5rem;
+                    border: 1px solid #0645FF;
+                }
+                .early_access_error {
+                    color: #F2545B;
+                    font-weight: 600;
+                    font-size: 1rem;
+                    line-height: 1.2rem;
+                }
+                .early_access_success {
+                    color: #0645FF;
+                    font-weight: 600;
+                    font-size: 1rem;
+                    line-height: 1.2rem;
+                }
+                .early_access_error.hide, .early_access_success.hide {
+                    display:none;
+                }
+                @media (max-width: 576px) {
+                    .img-slider {
+                        margin-top: -8%;
+                    }
+                    .text-slider .slick-slider {
+                        margin-top: -10%;
+                    }
+                }
+                @media (max-width: 767px) {
+                    /*.img-slider {
+                        margin-top: -8%;
+                    }
+                    .text-slider .slick-slider {
+                        margin-top: -10%;
+                    }*/
+                    .early_access {
+                        font-size: 1.5rem;
+                        line-height: 2rem;
+                    }
+                }
                 @media (min-width: 1200px) {
                     .container, .container-sm, .container-md, .container-lg, .container-xl {
                         max-width: 1310px !important;
@@ -157,7 +263,6 @@ export default class Home extends React.Component {
                                 <div className="fixed-top main-menu">
                                     <div className="flex-top p-5 mt-5">
                                         <ul className="nav flex-column w-100">
-                                            <li className="nav-item delay-1 pt-4"><a onClick={this.handleInstallAppClick} className="nav-link pt-5" href="#">Download App</a></li>
                                             <li className="nav-item delay-2"><a onClick={this.handleInvestClick} className="nav-link" href="#">Invest in Genuin</a></li>
                                             {/* <li className="nav-item delay-3"><a className="nav-link" href="#">About</a></li> */}
                                             <li className="nav-item delay-4"><a className="nav-link" href="/terms">Terms of Service </a></li>
@@ -193,7 +298,7 @@ export default class Home extends React.Component {
                 <Container className="slider-container">
                     <Row className="justify-content-center align-items-center">
                         {/* <Col xl={{ span: 5, offset: 1 }} lg={6} md={6} sm={12}> */}
-                        <Col xl={6} lg={6} md={6} sm={12} className="img-slider">
+                        <Col xl={6} lg={6} md={6} sm={12} className="img-slider" >
                             <div className="slider-img">
                                 <Slider asNavFor={this.state.nav2}ref={slider => (this.slider1 = slider)} {...settings}>
                                     <div>
@@ -238,21 +343,16 @@ export default class Home extends React.Component {
                                         <h1>Initiate<br />Discussions</h1>
                                     </div>
                                 </Slider>
-                                <Button variant="primary" onClick={this.handleHireLinkClick} className="mt-5 mb-4 d-none d-sm-block d-md-block d-lg-block">Join us</Button>
-                                <div className="mt-4 d-sm-none"></div>
-                                <Button variant="primary" onClick={this.handleInstallAppClick} className="mt-5 d-sm-none">Download App</Button>
+                                <h2 className="early_access mt-4 mb-2">Get an early access</h2>
+                                <InputGroup className="early_access_div mb-1">
+                                    <FormControl onChange={this.earlyAccessEmailChanged} placeholder="Email" aria-label="Email" aria-describedby="early_access_email"/>
+                                    <Button onClick={this.earlyAccessSubmitHandler} variant="outline-secondary" id="early_access_email">
+                                        {this.state.early_access_email_loader?<FontAwesomeIcon icon={faSpinner} className="fa-spin" />:`Notify Me`}
+                                    </Button>
+                                </InputGroup>
+                                <span className={this.state.early_access_error_hidden ? 'early_access_error hide' : 'early_access_error'}>{this.state.early_access_error_text}</span>
+                                <span className={this.state.early_access_success_hidden ? 'early_access_success hide' : 'early_access_success'}>Thanks for subscribing!</span>
                             </div>
-
-                            <Nav defaultActiveKey="/home" as="ul" className="appstore-googleplay d-block slider-text-center mt-4 pt-4 d-none d-sm-block d-md-block d-lg-block">
-                                <Nav.Item as="li">
-                                    <Nav.Link href="" className="pl-0 pr-2">
-                                        <img src={require('../images/badge_appstore.png')} onClick={this.handleIosInstallClick} alt="badge_appstore" className="img-fluid" />
-                                    </Nav.Link>
-                                    <Nav.Link href="" className="pr-0">
-                                        <img src={require('../images/badge_playstore.png')} onClick={this.handleAndroidInstallClick} alt="badge_playstore" className="img-fluid" />
-                                    </Nav.Link>
-                                </Nav.Item>
-                            </Nav>
                         </Col>
                     </Row>
                 </Container>
@@ -260,23 +360,26 @@ export default class Home extends React.Component {
 
                 <Container className="footer-m-none">
                     <Row className="pt-3 pb-3">
-                        <Col xl={8} lg={8} md={8} sm={8}>
+                        <Col xl={4} lg={4} md={4} sm={4} className="text-m-center">
                             <Nav defaultActiveKey="/home" as="ul">
+                                <Nav.Item as="li">
+                                    <Nav.Link style={{opacity: 0.5}} href="/" className="pr-0">© 2022 Genuin Inc.</Nav.Link>
+                                </Nav.Item>
+                            </Nav>
+                        </Col>
+                        <Col xl={8} lg={8} md={8} sm={8}>
+                            <Nav className="justify-content-end" defaultActiveKey="/home" as="ul">
                                 {/* <Nav.Item as="li">
                                     <Nav.Link href="/about" className="pl-0">About</Nav.Link>
                                 </Nav.Item> */}
                                 <Nav.Item as="li">
-                                    <Nav.Link href="/terms" eventKey="link-1">Terms of Service</Nav.Link>
+                                    <Nav.Link style={{opacity: 0.5}} href="/terms" eventKey="link-1">Terms of Service</Nav.Link>
                                 </Nav.Item>
                                 <Nav.Item as="li">
-                                    <Nav.Link href="/privacy" eventKey="link-2">Privacy Policy</Nav.Link>
+                                    <Nav.Link style={{opacity: 0.5, paddingLeft: "0px", paddingRight: "0px"}} href={void(0)} eventKey="link-1">|</Nav.Link>
                                 </Nav.Item>
-                            </Nav>
-                        </Col>
-                        <Col xl={4} lg={4} md={4} sm={4} className="text-m-center">
-                            <Nav className="justify-content-end" defaultActiveKey="/home" as="ul">
                                 <Nav.Item as="li">
-                                    <Nav.Link href="/" className="pr-0">© 2022 Genuin Inc.</Nav.Link>
+                                    <Nav.Link style={{opacity: 0.5}} href="/privacy" eventKey="link-2">Privacy Policy</Nav.Link>
                                 </Nav.Item>
                             </Nav>
                         </Col>
