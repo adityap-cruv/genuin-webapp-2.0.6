@@ -164,13 +164,14 @@ export default class Home extends React.Component {
                 }
                 .slider-container {
                     height: 80vh;
+                    margin-bottom: 2vh;
                 }
                 .slider-container > div {
                     height: 100%;
                 }
                 .early_access {
                     font-weight: 700;
-                    font-size: 2rem;
+                    font-size: 2.54rem;
                     line-height: 3rem;
                     display: block;
                 }
@@ -178,6 +179,7 @@ export default class Home extends React.Component {
                     border: 1px solid #0645FF;
                     border-radius: 5px;
                     height: 3rem;
+                    width: 29rem;
                 }
                 .early_access_div input {
                     height: 100%;
@@ -205,6 +207,9 @@ export default class Home extends React.Component {
                     font-size: 1.2rem;
                     line-height: 1.5rem;
                     border: 1px solid #0645FF;
+                    border-radius: 5px;
+                    margin-top: -1px;
+                    margin-right: -1px;
                 }
                 .early_access_error {
                     color: #F2545B;
@@ -252,9 +257,17 @@ export default class Home extends React.Component {
                     .text-slider .slick-slider {
                         margin-top: -10%;
                     }*/
+                    .slick-list h1 {
+                        font-size: 42px;
+                    }
                     .early_access {
                         font-size: 1.5rem;
                         line-height: 2rem;
+                    }
+                }
+                @media (max-width: 991px) {
+                    .early_access_div {
+                        width: 100%;
                     }
                 }
                 @media (min-width: 1200px) {

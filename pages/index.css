@@ -39,6 +39,12 @@ a,a:hover{color: #ffffff;font-weight: 600;}
     .slider-container .text-slider h1 {
         font-size: 50px;
     }
+    .early_access {
+        font-size: 1.65rem;
+    }
+    .early_access_div {
+        width: 18.5rem;
+    }
 }
 @media (min-width: 320px) and (max-width: 767px) and (orientation: portrait){
     /* Removing resolve this issue */
@@ -64,9 +70,9 @@ a,a:hover{color: #ffffff;font-weight: 600;}
         font-size: 25px !important;
         margin-bottom:20px !important; 
     }
-    .slider-container .text-slider button {
+    /* .slider-container .text-slider button {
         margin: 2rem 0rem !important;
-    }
+    } */
     .appstore-googleplay {
         margin-top: 0px !important;
     }
@@ -131,9 +137,9 @@ a,a:hover{color: #ffffff;font-weight: 600;}
         height: auto;
         max-height: 65vh;
     }
-    .slider-container .text-slider button {
+    /* .slider-container .text-slider button {
         margin: 2rem 0rem !important;
-    }
+    } */
     .slider-container > div {
         margin-top: -8%;
     }
@@ -146,10 +152,10 @@ a,a:hover{color: #ffffff;font-weight: 600;}
         font-size: 30px !important;
         margin-bottom: 20px !important;
     }
-    .slider-container .text-slider button {
+    /* .slider-container .text-slider button {
         margin: 1rem auto !important;
         font-size: 18px !important;
-    }
+    } */
     .sticky-top .navbar {
         padding: 1rem 0 !important;
     }
@@ -162,7 +168,7 @@ a,a:hover{color: #ffffff;font-weight: 600;}
 }
 @media (min-width: 768px) and (max-width: 991px){
     .slider-container .text-slider h1 {font-size: 50px !important;}
-    .slider-container .text-slider .slick-dots{margin: 0px !important;bottom: -44px;}
+    .slider-container .text-slider .slick-dots{margin: 0px !important;bottom: -15px;}
 }
 @media (min-width: 768px){
     .mobile-m-p .d-md-block,.mobile-m-p .d-sm-block {display: block!important;}    
