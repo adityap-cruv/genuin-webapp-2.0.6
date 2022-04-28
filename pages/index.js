@@ -222,6 +222,10 @@ export default class Home extends React.Component {
                     display:none;
                 }
                 @media (max-width: 576px) {
+                    .nav-button {
+                        height:auto !important;
+                        top:2rem !important;
+                    }
                     /*.img-slider {
                         margin-top: -8%;
                     }
@@ -253,13 +257,13 @@ export default class Home extends React.Component {
                             <Navbar bg="transparent p-0 pt-4" expand="sm">
                                 {/* <Navbar.Brand href="#home" className="p-0">genuin</Navbar.Brand> */}
 
-                                <Navbar.Brand href="/" className="p-0">
+                                <Navbar.Brand href="/" className="p-0 pb-1" style={{minHeight: '2.2rem'}}>
                                     <img src={require('../images/logo_header_new.png')} alt="Genuin" />
                                 </Navbar.Brand>
 
                                 {/* <Navbar.Toggle aria-controls="basic-navbar-nav" /> */}
 
-                                <a className="nav-button ml-auto d-sm-none p-0"><span id="nav-icon3"><span></span><span></span><span></span><span></span></span></a>
+                                <a style={{height:}} className="nav-button ml-auto d-sm-none p-0"><span id="nav-icon3"><span></span><span></span><span></span><span></span></span></a>
 
                                 <div className="fixed-top main-menu">
                                     <div className="flex-top p-5 mt-5">
