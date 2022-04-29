@@ -158,6 +158,9 @@ export default class Home extends React.Component {
                 #__next > div {
                     height: 100vh;
                 }
+                body {
+                    font-family: 'AvenirNext-DemiBold';
+                }
                 .footer-links {
                     position: absolute;
                     bottom: 0px;
@@ -171,15 +174,16 @@ export default class Home extends React.Component {
                 }
                 .early_access {
                     font-weight: 700;
-                    font-size: 2.54rem;
+                    font-size: 2.36rem;
                     line-height: 3rem;
                     display: block;
+                    font-family: 'AvenirNext-Bold';
                 }
                 .early_access_div {
                     border: 1px solid #0645FF;
                     border-radius: 5px;
                     height: 3rem;
-                    width: 29rem;
+                    width: 26.5rem;
                 }
                 .early_access_div input {
                     height: 100%;
@@ -210,6 +214,7 @@ export default class Home extends React.Component {
                     border-radius: 5px;
                     margin-top: -1px;
                     margin-right: -1px;
+                    font-family: 'AvenirNext-Bold';
                 }
                 .early_access_error {
                     color: #F2545B;
@@ -229,19 +234,25 @@ export default class Home extends React.Component {
                 .text-slider .slick-slider {
                     margin-top: -10%;
                 }
+                .slick-list h1 {
+                    font-family: 'AvenirNext-Bold';
+                }
+                .genuin_footer .nav-item {
+                    font-family: 'AvenirNext-DemiBold';
+                }
                 @media (max-width: 576px) {
                     .nav-button {
                         height:auto !important;
                         top:2rem !important;
                     }
                     .slider-container > div {
-                        margin-top: 5%;
+                        margin-top: 2%;
                     }
                     .slick-dots {
                         bottom: -10px;
                     }
                     .text-slider .slick-slider {
-                        margin-top: 0%;
+                        margin-top: 0;
                     }
                     /*.img-slider {
                         margin-top: -8%;
@@ -373,7 +384,7 @@ export default class Home extends React.Component {
                                         <h1>Initiate<br />Discussions</h1>
                                     </div>
                                 </Slider>
-                                <h2 className="early_access mt-4 mb-2">Get an early access</h2>
+                                <h2 className="early_access mt-5 mb-2">Get an early access</h2>
                                 <InputGroup className="early_access_div mb-1">
                                     <FormControl onChange={this.earlyAccessEmailChanged} value={this.state.early_access_email} placeholder="Email" aria-label="Email" aria-describedby="early_access_email"/>
                                     <Button onClick={this.earlyAccessSubmitHandler} variant="outline-secondary" id="early_access_email">
@@ -388,7 +399,7 @@ export default class Home extends React.Component {
                 </Container>
 
 
-                <Container className="footer-m-none">
+                <Container className="footer-m-none genuin_footer">
                     <Row className="pt-3 pb-3">
                         <Col xl={4} lg={4} md={4} sm={4} className="text-m-center">
                             <Nav defaultActiveKey="/home" as="ul">
