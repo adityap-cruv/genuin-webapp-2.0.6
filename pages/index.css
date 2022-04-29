@@ -12,7 +12,7 @@ body {
     background: transparent radial-gradient(closest-side at 50% 50%, #00189f 0%, #000000 100%) 0% 0% no-repeat
         padding-box;        
 }
-h1 {color: #ffffff;text-shadow: 0px 9px 0px #0645ff;font-size: 78px;font-weight: 700;}
+h1 {color: #ffffff;text-shadow: 0px 9px 0px #0645ff;font-size: 75px;font-weight: 700;}
 
 .navbar-light .navbar-toggler,.navbar-toggler:hover {color: rgba(0,0,0,.5);border-color: #fff;background:#fff !important;}
 /* .navbar-light .navbar-brand,.navbar-light .navbar-brand:focus, .navbar-light .navbar-brand:hover{color: #ffffff;font-size: 30px;font-weight: 700;} */
@@ -185,7 +185,7 @@ a,a:hover{color: #ffffff;font-weight: 600;}
     h1 {font-size: 42px;margin-bottom: 30px;}
     .appstore-googleplay .nav-item img{width: 130px;}
     .mobile-m-p .d-sm-block {display: none !important;}
-    .mobile-m-p .mt-5{margin-top: 0rem!important;}
+    .mobile-m-p .mt-5{margin-top: 2rem!important;}
     .mt-5.d-sm-none{margin-top: 2rem!important;}
     .navbar-brand{text-align: center;width: 100%!important;margin-right: 0;}
     .navbar-light .navbar-brand img {width: 150px;}    
@@ -380,7 +380,7 @@ body.nav-open{overflow: hidden;}
 .slick-dots
 {
     position: absolute;
-    bottom: -20px;
+    bottom: -28px;
 
     display: block;
 
