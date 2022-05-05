@@ -36,10 +36,13 @@ export default class Home extends React.Component {
             early_access_error_text: `This is a required field *`,
             early_access_error_hidden: true,
             early_access_success_hidden: true,
-            early_access_email_loader: false
+            early_access_email_loader: false,
+            customParentContainerHeight: '100vh'
         };
         this.earlyAccessSubmitHandler = this.earlyAccessSubmitHandler.bind(this);
         this.earlyAccessEmailChanged = this.earlyAccessEmailChanged.bind(this);
+        this.earlyAccessEmailOnFocus = this.earlyAccessEmailOnFocus.bind(this);
+        this.earlyAccessEmailOnBlur = this.earlyAccessEmailOnBlur.bind(this);
     }
     handleInvestClick = () => {
         window.open("https://www.linkedin.com/company/begenuin/");
@@ -84,6 +87,18 @@ export default class Home extends React.Component {
                 }
             }
         }
+    }
+    earlyAccessEmailOnFocus = () => {
+        if(window !== undefined && window !== null && window.innerWidth < 768){
+            this.setState({customParentContainerHeight: '120vh'})
+        }
+        // console.log('focus', window.innerWidth)
+    }
+    earlyAccessEmailOnBlur = () => {
+        if(window !== undefined && window !== null && window.innerWidth < 768){
+            this.setState({customParentContainerHeight: '100vh'})
+        }
+        // console.log('blur')
     }
     earlyAccessEmailChanged = (e) => {
         var new_email = e.target.value.replace(/ /g, '');
@@ -149,14 +164,11 @@ export default class Home extends React.Component {
 
         return (
             
-            <Metalayout title="Genuin" videoUrl={currentUrl} metaImageWidth={metaImageWidth} metaImageHeight={metaImageHeight} metaImage={metaImage} content={content} description={description} currentUrl={currentUrl} keyword={keyword}>
+            <Metalayout title="Genuin" customParentContainerHeight={this.state.customParentContainerHeight} videoUrl={currentUrl} metaImageWidth={metaImageWidth} metaImageHeight={metaImageHeight} metaImage={metaImage} content={content} description={description} currentUrl={currentUrl} keyword={keyword}>
             <div className="mobile-m-p">
                 <style jsx global>{`
                 html {
                     overflow-y: auto;
-                }
-                #__next > div {
-                    height: 100vh;
                 }
                 body {
                     font-family: 'AvenirNext-DemiBold';
@@ -221,12 +233,14 @@ export default class Home extends React.Component {
                     font-weight: 600;
                     font-size: 1rem;
                     line-height: 1.2rem;
+                    float: left;
                 }
                 .early_access_success {
                     color: #0645FF;
                     font-weight: 600;
                     font-size: 1rem;
                     line-height: 1.2rem;
+                    float: left;
                 }
                 .early_access_error.hide, .early_access_success.hide {
                     display:none;
@@ -386,7 +400,7 @@ export default class Home extends React.Component {
                                 </Slider>
                                 <h2 className="early_access mt-5 mb-2">Get an early access</h2>
                                 <InputGroup className="early_access_div mb-1">
-                                    <FormControl onChange={this.earlyAccessEmailChanged} value={this.state.early_access_email} placeholder="Email" aria-label="Email" aria-describedby="early_access_email"/>
+                                    <FormControl onChange={this.earlyAccessEmailChanged} onFocus={ this.earlyAccessEmailOnFocus } onBlur={ this.earlyAccessEmailOnBlur } value={this.state.early_access_email} placeholder="Email" aria-label="Email" aria-describedby="early_access_email"/>
                                     <Button onClick={this.earlyAccessSubmitHandler} variant="outline-secondary" id="early_access_email">
                                         {this.state.early_access_email_loader?<FontAwesomeIcon icon={faSpinner} className="fa-spin" />:`Notify Me`}
                                     </Button>
