@@ -227,6 +227,7 @@ export default class Home extends React.Component {
                     margin-top: -1px;
                     margin-right: -1px;
                     font-family: 'AvenirNext-Bold';
+                    width: 7.45rem;
                 }
                 .early_access_error {
                     color: #F2545B;
@@ -401,7 +402,7 @@ export default class Home extends React.Component {
                                 <h2 className="early_access mt-5 mb-2">Get an early access</h2>
                                 <InputGroup className="early_access_div mb-1">
                                     <FormControl onChange={this.earlyAccessEmailChanged} onFocus={ this.earlyAccessEmailOnFocus } onBlur={ this.earlyAccessEmailOnBlur } value={this.state.early_access_email} placeholder="Email" aria-label="Email" aria-describedby="early_access_email"/>
-                                    <Button onClick={this.earlyAccessSubmitHandler} variant="outline-secondary" id="early_access_email">
+                                    <Button onClick={this.earlyAccessSubmitHandler} variant="outline-secondary" id="early_access_email" style={{backgroundColor:this.state.early_access_email_loader?'#CDDAFF':'#0645FF'}}>
                                         {this.state.early_access_email_loader?<FontAwesomeIcon icon={faSpinner} className="fa-spin" />:`Notify Me`}
                                     </Button>
                                 </InputGroup>
