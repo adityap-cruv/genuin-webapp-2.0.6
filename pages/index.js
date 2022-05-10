@@ -26,6 +26,8 @@ import { Nav, Navbar, Form, Button, FormControl, Container, Row, Col, InputGroup
 import './index.css'
 import Metalayout from '../components/Metalayout';
 
+import '@fortawesome/fontawesome-svg-core/styles.css';
+
 export default class Home extends React.Component {
     constructor(props) {
         super(props);
@@ -269,20 +271,8 @@ export default class Home extends React.Component {
                     .text-slider .slick-slider {
                         margin-top: 0;
                     }
-                    /*.img-slider {
-                        margin-top: -8%;
-                    }
-                    .text-slider .slick-slider {
-                        margin-top: -10%;
-                    }*/
                 }
                 @media (max-width: 767px) {
-                    /*.img-slider {
-                        margin-top: -8%;
-                    }
-                    .text-slider .slick-slider {
-                        margin-top: -10%;
-                    }*/
                     .slick-list h1 {
                         font-size: 42px;
                     }

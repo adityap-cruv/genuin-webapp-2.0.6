@@ -77,11 +77,22 @@ a,a:hover{color: #ffffff;font-weight: 600;}
         margin-top: 0px !important;
     }
     .slider-container > div {
-        margin-top: -8%;
+        margin-top: -4%;
     }
     .slider-img img {
         height: auto;
         max-height: 65vh;
+    }
+    .early_access {
+        font-size: 1.18rem !important;
+        line-height: 1.5rem !important;
+        margin-top: 1.5rem !important;
+    }
+    .text-slider .slick-slider {
+        margin-top: 5% !important;
+    }
+    .genuin_footer > .row {
+        padding: 0px !important;
     }
 }
 /* Galaxy Fold */
@@ -141,7 +152,7 @@ a,a:hover{color: #ffffff;font-weight: 600;}
         margin: 2rem 0rem !important;
     } */
     .slider-container > div {
-        margin-top: -8%;
+        margin-top: -4%;
     }
 }
 @media (min-width: 280px) and (max-width: 653px) and (orientation: landscape) {
@@ -167,7 +178,7 @@ a,a:hover{color: #ffffff;font-weight: 600;}
     }
 }
 @media (min-width: 768px) and (max-width: 991px){
-    .slider-container .text-slider h1 {font-size: 50px !important;}
+    .slider-container .text-slider h1 {font-size: 50px;}
     .slider-container .text-slider .slick-dots{margin: 0px !important;bottom: -15px;}
 }
 @media (min-width: 768px){
