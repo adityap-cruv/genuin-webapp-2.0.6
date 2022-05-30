@@ -1,8 +1,10 @@
 FROM node:14 AS deps
 
 WORKDIR /genuin-webapp
+
 COPY package*.json ./
 RUN npm install
+
 
 FROM node:14 as build
 
@@ -11,6 +13,7 @@ WORKDIR /genuin-webapp
 COPY --from=deps /genuin-webapp/node_modules ./node_modules
 COPY . .
 RUN npm run build
+
 
 FROM node:14 
 
