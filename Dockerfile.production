@@ -1,8 +1,14 @@
-FROM node:14 AS build
+FROM node:14 AS deps
 
 WORKDIR /genuin-webapp
 COPY package*.json ./
 RUN npm install
+
+FROM node:14 as build
+
+WORKDIR /genuin-webapp
+
+COPY --from=deps /genuin-webapp/node_modules ./node_modules
 COPY . .
 RUN npm run build
 
@@ -13,6 +19,7 @@ WORKDIR /genuin-webapp-prod
 COPY --from=build /genuin-webapp/package*.json ./
 COPY --from=build /genuin-webapp/.next ./.next
 COPY --from=build /genuin-webapp/node_modules ./node_modules
+COPY --from=build /genuin-webapp/public ./public
 
 EXPOSE 4000
 
