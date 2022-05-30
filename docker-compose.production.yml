@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  app:
+    image: genuin-webapp-prod
+    build: 
+      context: .
+      dockerfile: Dockerfile.production
+    ports:
+      - 4000:4000
+    env_file:
+      - ./.env.production
+      - ./.env.production.local
