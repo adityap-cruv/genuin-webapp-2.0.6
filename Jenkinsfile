@@ -1,27 +1,16 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'node:14'
+            args '-p 4000:4000'
+        }
+    }
 
     stages {
-
-        stage ('Dependencies') {
+        stage ('Build') {
             steps {
-                nodejs('node 14')
-                sh 'pwd'
-                sh 'ls'
                 sh 'npm install'
             }
         }
-
-        stage ('Build') {
-            steps {
-                sh 'npm run build'
-            }
-        }
-
-        // stage ('Deploy') {
-        //     steps {
-        //         
-        //     }
-        // }
     }
 }
