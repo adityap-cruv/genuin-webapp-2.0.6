@@ -8,15 +8,21 @@ Pipeline {
     stages {
 
         stage ('Dependencies') {
-            sh 'npm install'
+            steps {
+                sh 'npm install'
+            }
         }
 
         stage ('Build') {
-            sh 'npm run build'
+            steps {
+                sh 'npm run build'
+            }
         }
 
         stage ('Deploy') {
-            sh 'npm start'
+            steps {
+                sh 'npm start'
+            }
         }
     }
 }
