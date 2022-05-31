@@ -1,14 +1,11 @@
 pipeline {
     agent any
 
-    tools {
-        nodejs 'node 14'
-    }  
-
     stages {
 
         stage ('Dependencies') {
             steps {
+                nodejs('node 14')
                 sh 'pwd'
                 sh 'ls'
                 sh 'npm install'
