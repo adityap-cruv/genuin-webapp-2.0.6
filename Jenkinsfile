@@ -9,6 +9,7 @@ pipeline {
 
         stage ('Dependencies') {
             steps {
+                sh 'cd genuin-webapp'
                 sh 'npm install'
             }
         }
@@ -19,10 +20,10 @@ pipeline {
             }
         }
 
-        stage ('Deploy') {
-            steps {
-                sh 'npm start'
-            }
-        }
+        // stage ('Deploy') {
+        //     steps {
+        //         sh 'npm start'
+        //     }
+        // }
     }
 }
