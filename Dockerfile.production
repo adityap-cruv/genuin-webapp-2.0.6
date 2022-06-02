@@ -15,9 +15,11 @@ COPY . .
 RUN npm run build
 
 
-FROM node:14 
+FROM node:14-slim
 
 WORKDIR /genuin-webapp-prod
+
+
 
 COPY --from=build /genuin-webapp/package*.json ./
 COPY --from=build /genuin-webapp/.next ./.next
