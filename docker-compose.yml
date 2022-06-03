@@ -1,11 +1,9 @@
 version: '3.8'
 
 services:
-  app:
-    image: genuin-webapp
+  genuin-webapp-build:
+    image: genuin-webapp-build
     build: .
-    ports:
-      - 4000:4000
     env_file:
-      - ./.env.development
-      - ./.env.development.local
+      - ./.env.production
+      - ./.env.production.local

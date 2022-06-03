@@ -1,9 +1,3 @@
-# production files
-.next
-
-# dependencies
-node_modules
-
 # enviroment variables
 .env*
 

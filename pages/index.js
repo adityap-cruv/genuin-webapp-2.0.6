@@ -30,7 +30,7 @@ import '@fortawesome/fontawesome-svg-core/styles.css';
 
 export default class Home extends React.Component {
     constructor(props) {
-        console.log(process.env.hostname)
+
         super(props);
         this.state = {
             nav1: null,

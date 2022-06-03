@@ -1,6 +1,6 @@
-FROM node:14
+FROM node:14-slim
 
-WORKDIR /app
+WORKDIR /genuin-webapp
 
 COPY package*.json ./
 
@@ -8,6 +8,4 @@ RUN npm install
 
 COPY . .
 
-EXPOSE 4000
-
-CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "build"]

@@ -1,15 +1,9 @@
 pipeline {
     agent any
-    
+
     stages {
 
-        // stage('checkout') {
-        //     steps {
-        //         git branch: 'Jenkins', url: 'https://darshansavaliya:f94EXUfYgKLjfKDBtGMr@bitbucket.org/genuindev/genuin-webapp.git'
-        //     }
-        // }
-        
-        stage ('Add enviroment variables') {
+        stage('Add enviroment variables') {
             steps {
                 writeFile file: '.env.production.local', text: '''hostname=https://app.qa.begenuin.com
 apiurl=https://nodejs.qa.begenuin.com
@@ -24,22 +18,28 @@ installurl=https://install.begenuin.com/9YGw?pid=Genuin&is_retargeting=true&af_d
 productionAppUrl=https://admin.begenuin.com/''' 
             }
         }
-        
-        stage ('Install Dependencies') {
-            steps {
-                nodejs('Node') {
-                    sh 'npm install'
-                }
+
+        stage('Docker build') {
+            steps{
+                sh '''
+                    docker-compose build 
+                    docker-compose -f docker-compose.production.yml build
+                    docker image rm genuin-webapp-build
+                '''
             }
         }
-        
-        stage ('Build') {
-            steps {
-                nodejs('Node') {
-                    sh 'npm run build'
-                }
-            }
-        }
-        
+
+        // stage('Push image') {
+        //     steps{
+        //         // Add ECR push
+        //     }
+        // }
     }
+
+    post {
+        success {
+            sh 'docker image rm genuin-webapp-prod'
+        }
+    }
+
 }
