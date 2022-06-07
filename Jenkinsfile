@@ -1,45 +1,84 @@
+/**
+* Make sure Docker is installed on your system and Jenkins can execute docker commands
+* 
+* # Necessary Plugins and Credentials for using this Jenkinsfile 
+*
+* -- AWS credentials -- 
+* - Create AWS credentials with following fields (Pipeline AWS Steps Plugin)
+* @ID - ECR credentials
+* @Access Key ID
+* @Secret Access Key
+* ## Will be used in withAWS(){} block
+* ## Make sure user has necessary IAM role -- ECR registry Full Access
+*
+* -- Config files for .env.production.local --
+* - Path -> Manage Jenkins - Managed files (Config File Provider Plugin)
+* !IDs
+* @qa_env
+* @prod_env
+* ## One of these files are used during build process
+*
+*/
+
 pipeline {
     agent any
-
+    
+    parameters {
+        string(name: 'VERSION', defaultValue: '1.0.0', description: 'Version of application')
+        choice(name: 'ENVIRONMENT', choices: ['qa', 'prod'], description: 'Environment for build')
+    }
+    
+    environment {
+        AWS_ACCOUNT_ID="685016229870"
+        AWS_DEFAULT_REGION="us-east-2"
+        IMAGE_REPO_NAME="genuin-webapp-${ENVIRONMENT}"
+        IMAGE_TAG="latest"
+        REPOSITORY_URI = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_REPO_NAME}"
+    }
+   
     stages {
-
-        stage('Add enviroment variables') {
+        
+        // Using aws CLI to get ECR access
+        stage('Logging into AWS ECR') {
             steps {
-                writeFile file: '.env.production.local', text: '''hostname=https://app.qa.begenuin.com
-apiurl=https://nodejs.qa.begenuin.com
-flask_api_url=https://python.qa.begenuin.com
-genuinurl=https://begenuin.com/
-apps_flyer_url=https://video.begenuin.com/9YGw?pid=Genuin&af_web_dp=https%3A%2F%2Fapp.qa.begenuin.com%2Fvideo&af_dp=genuinappqa%3A%2F%2F&af_android_url=https%3A%2F%2Fapp.qa.begenuin.com%2Fvideo&af_ios_url=https%3A%2F%2Fapp.qa.begenuin.com%2Fvideo&video_id=
-rt_apps_flyer_url=https://video.begenuin.com/9YGw?pid=Genuin&af_web_dp=https://app.qa.begenuin.com/roundtable&af_dp=genuinappqa://&af_android_url=https://app.qa.begenuin.com/roundtable&af_ios_url=https://app.qa.begenuin.com/roundtable&chat_id=
-qt_apps_flyer_url=https://video.begenuin.com/9YGw?pid=Genuin&af_web_dp=https://app.qa.begenuin.com/question&af_dp=genuinappqa://&af_android_url=https://app.qa.begenuin.com/question&af_ios_url=https://app.qa.begenuin.com/question&question_id=
-profile_apps_flyer_url=https://video.begenuin.com/9YGw?pid=Genuin&af_web_dp=https://app.qa.begenuin.com/profile&af_dp=genuinappqa://&user_id=
-record_apps_flyer_url=https://video.begenuin.com/9YGw?pid=Genuin&af_web_dp=https://app.qa.begenuin.com/profile?user_id={{user_id}}&af_dp=genuinappqa://&af_android_url=https://app.qa.begenuin.com/qr_code&af_ios_url=https://app.qa.begenuin.com/qr_code&qr_code=
-installurl=https://install.begenuin.com/9YGw?pid=Genuin&is_retargeting=true&af_dp=genuinappqa%3A%2F%2F&video_id=
-productionAppUrl=https://admin.begenuin.com/''' 
+                withAWS(credentials: 'ECR credentials') {
+                    sh "aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
+                }
             }
         }
-
+  
+        // Building Docker images
         stage('Docker build') {
             steps{
-                sh '''
-                    docker-compose build 
-                    docker-compose -f docker-compose.production.yml build
-                    docker image rm genuin-webapp-build
-                '''
+                configFileProvider([configFile(fileId: "${ENVIRONMENT}_env", targetLocation: '.env.production.local')]) {
+                    sh 'docker-compose build '
+                }
+                sh 'docker-compose -f docker-compose.production.yml build'
             }
         }
-
-        // stage('Push image') {
-        //     steps{
-        //         // Add ECR push
-        //     }
-        // }
-    }
-
-    post {
-        success {
-            sh 'docker image rm genuin-webapp-prod'
+   
+        // Uploading Docker images into AWS ECR
+        stage('Pushing to ECR') {
+            steps{  
+                script {
+                    // Image with tag latest
+                    sh "docker tag ${IMAGE_REPO_NAME}:${IMAGE_TAG} ${REPOSITORY_URI}:${IMAGE_TAG}"
+                    sh "docker push ${REPOSITORY_URI}:${IMAGE_TAG}"
+                    // Image with tag version
+                    sh "docker tag ${IMAGE_REPO_NAME}:${IMAGE_TAG} ${REPOSITORY_URI}:${VERSION}"
+                    sh "docker push ${REPOSITORY_URI}:${VERSION}"
+                }
+            }
+        }
+        
+        // Removing all the images from host machine
+        stage('Remove Images') {
+            steps {
+                sh 'docker image rm genuin-webapp-build'
+                sh 'docker image rm ${IMAGE_REPO_NAME}:${IMAGE_TAG}'
+                sh 'docker image rm ${REPOSITORY_URI}:${IMAGE_TAG}'
+                sh 'docker image rm ${REPOSITORY_URI}:${VERSION}'
+            }
         }
     }
-
 }
