@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   genuin-webapp-production:
-    image: genuin-webapp-prod
+    image: genuin-webapp-qa:latest
     build: 
       context: .
       dockerfile: Dockerfile.production
