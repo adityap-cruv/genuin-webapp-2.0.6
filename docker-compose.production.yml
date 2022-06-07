@@ -1,3 +1,5 @@
+# Used for final copy of required files to start the server
+
 version: '3.8'
 
 services:
