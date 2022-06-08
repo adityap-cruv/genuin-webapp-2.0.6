@@ -39,12 +39,6 @@ pipeline {
     }
    
     stages {
-        
-        stage('Checkout') {
-            steps {
-                checkout changelog: false, poll: false, scm: [$class: 'GitSCM', branches: [[name: '*/feature/GV-2693']], extensions: [], userRemoteConfigs: [[credentialsId: 'Bitbucket', url: 'https://darshansavaliya@bitbucket.org/genuindev/genuin-webapp.git']]]
-            }
-        }
 
         // Using aws CLI to get ECR access
         stage('Logging into AWS ECR') {
