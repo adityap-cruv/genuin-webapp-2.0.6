@@ -65,7 +65,7 @@ pipeline {
             steps {
                 script{
                     // Build Image
-                    def image = docker.build("${REPOSITORY_URI}/${IMAGE_REPO_NAME}:${VERSION}", "-f Dockerfile .")
+                    def image = docker.build("${REPOSITORY_URI}/${IMAGE_REPO_NAME}:${VERSION}", "-f Dockerfile.qa .")
                     // Push the container to the custom Registry
                     image.push()
                 }
