@@ -1,0 +1,102 @@
+/**
+* Make sure Docker and Dokcer plugin are installed on your system and Jenkins can execute docker commands
+* 
+* # Necessary Plugins and Credentials for using this Jenkinsfile 
+*
+* -- Node JS -- 
+* - Install Node js plugin and create Node 14 installation
+*
+* -- AWS credentials -- 
+* - Create AWS credentials with following fields (Pipeline AWS Steps Plugin)
+* @ID - darshan_AWS
+* @Access Key ID
+* @Secret Access Key
+* ## Will be used in withAWS(){} block and in docker.withRegistry() {} block
+* ## Make sure user has necessary IAM role -- ECR registry Full Access
+*
+* -- Config files for .env.production.local --
+* - Path -> Manage Jenkins - Managed files (Config File Provider Plugin)
+* !IDs
+* @qa_env_webapp
+* @prod_env_webapp
+* ## One of these files are used during build process
+*
+* -- git Branch and Credentials -- 
+* If using checkout, make sure to have a branch named qa or change the branch name in this file.
+* - Create Bitbucket credentials
+* @ID - Bitbucket
+* @Username - Bitbucket_Jenkins
+* @Password - App access token created in bitbucket
+*
+*/
+
+pipeline {
+    agent any
+        
+    parameters {
+        string(name: 'VERSION', defaultValue: '1.0.0', description: 'Version of application')\
+        choice( name: 'ENV', choices: ['qa', 'prod'], description: 'The environment to build the image.')
+    }
+    
+    environment {
+        AWS_ACCOUNT_ID="685016229870"
+        AWS_DEFAULT_REGION="us-west-2"
+        IMAGE_REPO_NAME="genuin-webapp-qa"
+    }
+   
+    stages {
+       
+        // Use only if not using directly from SCM
+        // stage('Checkout') {
+        //     steps {
+        //         checkout changelog: false, poll: false, scm: [$class: 'GitSCM', branches: [[name: '*/qa']], extensions: [], userRemoteConfigs: [[credentialsId: 'Bitbucket', url: 'https://darshansavaliya@bitbucket.org/genuindev/genuin-webapp.git']]]
+        //     }
+        // }
+        
+        // Setting up Environment Variables and environment files
+        stage('Setting up the Environment') {
+            steps { 
+                configFileProvider([configFile(fileId: "${ENV}_env_webapp", targetLocation: '.env.production.local')]) {}
+                script {
+                    if(ENV == 'prod') {
+                        AWS_DEFAULT_REGION='us-east-1'
+                        IMAGE_REPO_NAME='webapp-prod'
+                    }
+                    REPOSITORY_URI = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
+                }
+            }
+            
+        }
+  
+        // Building Docker images
+        stage('Build') {
+            steps{
+                nodejs('Node'){
+                    sh 'npm ci --production'
+                    sh 'npm run build'
+                }
+            }
+        }
+        
+        // Build and push Docker Image
+        stage('Create Docker Image') {
+            steps {
+                script{
+                    docker.withRegistry("https://${REPOSITORY_URI}", "ecr:${AWS_DEFAULT_REGION}:darshan_AWS") {
+                        def image = docker.build("${IMAGE_REPO_NAME}")
+                        image.push("${VERSION}")
+                    }
+                }
+            }
+        }
+    }
+    
+    post {
+        // Clean up steps
+        always {
+            sh 'docker system prune -af'
+            cleanWs()
+        }
+    }
+      
+}

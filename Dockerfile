@@ -1,11 +1,14 @@
+## Only use this dockerfile after npm run build command.
+
 FROM node:14-slim
 
-WORKDIR /genuin-webapp
+WORKDIR /genuin-webapp-qa
 
-COPY package*.json ./
+COPY  package*.json ./
+COPY  .next ./.next
+COPY  node_modules ./node_modules
+COPY  public ./public
 
-RUN npm install
+EXPOSE 4000
 
-COPY . .
-
-RUN npm run build
+CMD [ "npm", "start" ]

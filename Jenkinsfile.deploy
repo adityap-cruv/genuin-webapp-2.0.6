@@ -1,0 +1,110 @@
+/**
+* Make sure Docker and Dokcer plugin are installed on your system and Jenkins can execute docker commands
+* 
+* # Necessary Plugins and Credentials for using this Jenkinsfile 
+*
+* -- AWS credentials -- 
+* - Create AWS credentials with following fields (Pipeline AWS Steps Plugin)
+* @ID - darshan_AWS
+* @Access Key ID
+* @Secret Access Key
+* ## Will be used in withAWS(){} block and in docker.withRegistry() {} block
+* ## Make sure user has necessary IAM role -- ECR registry Full Access
+*
+*/
+
+pipeline {
+    agent any
+    
+    parameters {
+        choice( name: 'ENV', choices: ['qa', 'prod'], description: 'The environment to build the image.')
+    }
+    
+    environment {
+        AWS_ACCOUNT_ID="685016229870"
+        AWS_DEFAULT_REGION="us-west-2"
+        ECS_CLUSTER = "webapp-cluster"
+        IMAGE_REPO_NAME="genuin-webapp-qa"
+        IMAGE_TAG="QA"
+        SERVICE="qa-deployment"
+    }
+   
+    stages {
+
+        // Setting up Environment Variables and environment files
+        stage('Setting up the Environment') {
+            steps { 
+                script {
+                    if(ENV == 'prod') {
+                        AWS_DEFAULT_REGION='us-east-1'
+                        ECS_CLUSTER='webapp-prod-cluster'
+                        IMAGE_REPO_NAME='webapp-prod'
+                        IMAGE_TAG='PROD'
+                        SERVICE='prod-deployment'
+                    }
+                    REPOSITORY_URI = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
+                }
+            }
+        }
+        
+        // Selection of version to be deployed
+        stage('Tag Selection'){
+            steps{
+                script{
+                    def choices = [];
+                    withAWS(endpointUrl:"${REPOSITORY_URI}", credentials: 'darshan_AWS'){
+                        tag_list = sh(script: "aws ecr list-images --repository-name ${IMAGE_REPO_NAME} --region ${AWS_DEFAULT_REGION} --output json --filter tagStatus=TAGGED --query 'reverse(sort_by(imageIds[], &imageTag))'", returnStdout: true)
+
+                        for( String value : tag_list.split('\n')) {
+                            if(value.contains("imageTag") && value.contains(".")){
+                                choices.add(value.split(':')[1].replaceAll('"', '').trim())
+                            }
+                        }   
+                    }
+                    choices = choices.join('\n')
+                    VERSION = input( 
+                        message: 'Version to deploy', 
+                        ok: 'Deploy', 
+                        parameters: [choice(name: 'Version', choices: choices, description: "Select version to use for ${IMAGE_TAG} deployment")]
+                    )
+                }
+            }
+        }
+        
+        // Marking the image as QA or PROD
+        stage('Docker Image Tag') {
+            steps {
+                script{
+                    docker.withRegistry("https://${REPOSITORY_URI}", "ecr:${AWS_DEFAULT_REGION}:darshan_AWS") {
+                        def dockerImage = docker.image("${REPOSITORY_URI}/${IMAGE_REPO_NAME}:${VERSION}")
+                        dockerImage.pull()
+                        dockerImage.push("${IMAGE_TAG}")
+                    }
+                }
+            }
+        }
+        
+        stage('Kill task already running in cluster') {
+            steps {
+                script {
+                    withAWS(credentials: 'darshan_AWS') {
+                        task_list = sh(script: "aws ecs list-tasks --region ${AWS_DEFAULT_REGION} --cluster ${ECS_CLUSTER} --service ${SERVICE} --query 'taskArns[*]'", returnStdout: true).trim()
+                        task_list = Eval.me(task_list)
+                        for(def task: task_list) {
+                            sh "aws ecs stop-task --region us-west-2 --cluster ${ECS_CLUSTER} --task ${task}"
+                        }
+                    }
+                }
+            }
+        }
+        
+    }
+    
+    post {
+        always {
+            sh 'docker system prune -af'
+            cleanWs()
+        }
+    }
+      
+}
