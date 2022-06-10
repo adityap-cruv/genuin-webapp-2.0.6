@@ -26,7 +26,7 @@ pipeline {
         ECS_CLUSTER = "webapp-cluster"
         IMAGE_REPO_NAME="genuin-webapp-qa"
         IMAGE_TAG="QA"
-        SERVICE="qa-deployment"
+        SERVICE="webapp-qa"
     }
    
     stages {
@@ -40,7 +40,7 @@ pipeline {
                         ECS_CLUSTER='webapp-prod-cluster'
                         IMAGE_REPO_NAME='webapp-prod'
                         IMAGE_TAG='PROD'
-                        SERVICE='prod-deployment'
+                        SERVICE='webapp-prod'
                     }
                     REPOSITORY_URI = "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
                 }
