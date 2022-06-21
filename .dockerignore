@@ -1,0 +1,13 @@
+# enviroment variables
+.env*
+
+# ignore files
+.dockerignore
+.gitignore
+
+# Jenkins pipeline
+Jenkinsfile*
+
+# Docker configuration files
+Dockerfile*
+docker-compose*.yml
