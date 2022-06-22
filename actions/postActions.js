@@ -9,18 +9,6 @@
 
 import axios from "axios";
 
-export function postEarlyAccess(post_data) {
-	return new Promise((resolve, reject) => {
-		axios.post(process.env.apiurl + "/api/v3/early_access",post_data)
-		.then(response => {
-			resolve(response);
-		})
-		.catch((err) => {
-			reject(err)
-		});
-	});
-}
-
 export function increaseVideoViewCount(video_id) {
 	return new Promise((resolve, reject) => {
 		axios.post(process.env.apiurl + "/api/v3/users/video/view/" + video_id)

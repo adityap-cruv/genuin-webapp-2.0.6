@@ -46,7 +46,10 @@ export default class Home extends React.Component {
         // console.log('this is:', this);
          window.open("https://apps.apple.com/us/app/id1511177838"); 
        }
-
+       handleInstallAppClick = () => {
+         // console.log('this is:', this);
+          window.open("https://install.begenuin.com/86sn/cgs"); 
+        }
        componentDidMount() {
         const { pathname, query } = Router
         // if (pathname == '/') {
@@ -88,6 +91,7 @@ export default class Home extends React.Component {
                                 {/* <div className="fixed-top main-menu">
                                     <div className="flex-top p-5 mt-5">
                                         <ul className="nav flex-column w-100">
+                                            <li className="nav-item delay-1 pt-4"><a onClick={this.handleInstallAppClick} className="nav-link pt-5" href="#">Download App</a></li>
                                             <li className="nav-item delay-2"><a className="nav-link" href="#">Invest in Genuin</a></li>
                                             <li className="nav-item delay-3"><a className="nav-link" href="#">About</a></li>
                                             <li className="nav-item delay-4"><a className="nav-link" href="#">Terms of Service </a></li>
@@ -114,6 +118,9 @@ export default class Home extends React.Component {
                                     <div className="form-inline">
                                     <Nav.Item>
                                       <Nav.Link href="https://www.linkedin.com/company/begenuin/">Invest in Genuin</Nav.Link>
+                                    </Nav.Item>
+                                    <Nav.Item>
+                                        <Nav.Link href="https://install.begenuin.com/86sn/cgs" eventKey="link-1">Download App</Nav.Link>
                                     </Nav.Item>
                                     </div>
                                     </div>

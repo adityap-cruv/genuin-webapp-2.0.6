@@ -18,15 +18,10 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 // import 'bootstrap/scss/_buttons.scss';
 // import 'bootstrap/scss/_grid.scss';
 
-import { postEarlyAccess } from "../actions/postActions";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSpinner } from "@fortawesome/free-solid-svg-icons";
-import { Nav, Navbar, Form, Button, FormControl, Container, Row, Col, InputGroup } from 'react-bootstrap';
+import { Nav, Navbar, Form, Button, FormControl, Container, Row, Col } from 'react-bootstrap';
 // import bootstrapStyles from './index.scss'
 import './index.css'
 import Metalayout from '../components/Metalayout';
-
-import '@fortawesome/fontawesome-svg-core/styles.css';
 
 export default class Home extends React.Component {
     constructor(props) {
@@ -34,18 +29,8 @@ export default class Home extends React.Component {
         super(props);
         this.state = {
             nav1: null,
-            nav2: null,
-            early_access_email: '',
-            early_access_error_text: `This is a required field *`,
-            early_access_error_hidden: true,
-            early_access_success_hidden: true,
-            early_access_email_loader: false,
-            customParentContainerHeight: '100vh'
+            nav2: null
         };
-        this.earlyAccessSubmitHandler = this.earlyAccessSubmitHandler.bind(this);
-        this.earlyAccessEmailChanged = this.earlyAccessEmailChanged.bind(this);
-        this.earlyAccessEmailOnFocus = this.earlyAccessEmailOnFocus.bind(this);
-        this.earlyAccessEmailOnBlur = this.earlyAccessEmailOnBlur.bind(this);
     }
     handleInvestClick = () => {
         window.open("https://www.linkedin.com/company/begenuin/");
@@ -54,63 +39,17 @@ export default class Home extends React.Component {
        // console.log('this is:', this);
         window.open("https://angel.co/company/begenuin");
     }
-    earlyAccessSubmitHandler = async () => {
-        if(!this.state.early_access_email_loader){
-            this.setState({early_access_success_hidden: true})
-            if(this.state.early_access_email == null || this.state.early_access_email == ""){
-                this.setState({early_access_error_hidden: false})
-                this.setState({early_access_error_text: `This is a required field *`})
-            }
-            else if(!this.validateEmail(this.state.early_access_email)){
-                this.setState({early_access_error_hidden: false})
-                this.setState({early_access_error_text: `Invalid Email`})
-            }
-            else if(this.state.early_access_email.length > 320){
-                this.setState({early_access_error_hidden: false})
-                this.setState({early_access_error_text: `Email can not be more than 320 characters`})
-            }
-            else{
-                this.setState({early_access_error_hidden: true})
-                this.setState({early_access_error_text: ``})
-                this.setState({early_access_email_loader: true})
-                let response = await postEarlyAccess({email: this.state.early_access_email});
-                if(response && response.data && response.data.code && response.data.code == 200){
-                    this.setState({
-                        early_access_email_loader: false,
-                        early_access_success_hidden: false,
-                        early_access_email: ''
-                    });
-                }
-                else{
-                    this.setState({
-                        early_access_email_loader: false,
-                        early_access_error_hidden: false,
-                        early_access_error_text: `Something Went Wrong, Please Try Again`
-                    });
-                }
-            }
-        }
+    handleAndroidInstallClick = () => {
+        // console.log('this is:', this);
+        window.open("https://play.google.com/store/apps/details?id=com.begenuin.begenuin");
     }
-    earlyAccessEmailOnFocus = () => {
-        if(window !== undefined && window !== null && window.innerWidth < 768){
-            this.setState({customParentContainerHeight: '120vh'})
-        }
-        // console.log('focus', window.innerWidth)
+    handleIosInstallClick = () => {
+        // console.log('this is:', this);
+        window.open("https://apps.apple.com/us/app/id1511177838"); 
     }
-    earlyAccessEmailOnBlur = () => {
-        if(window !== undefined && window !== null && window.innerWidth < 768){
-            this.setState({customParentContainerHeight: '100vh'})
-        }
-        // console.log('blur')
-    }
-    earlyAccessEmailChanged = (e) => {
-        var new_email = e.target.value.replace(/ /g, '');
-        this.setState({early_access_success_hidden: true})
-        this.setState({early_access_email: new_email})
-    }
-    validateEmail = (email) => {
-        const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        return re.test(String(email).toLowerCase());
+    handleInstallAppClick = () => {
+        // console.log('this is:', this);
+        window.open("https://install.begenuin.com/86sn/cgs"); 
     }
     componentDidMount() {
         const { pathname, query } = Router
@@ -167,7 +106,7 @@ export default class Home extends React.Component {
 
         return (
             
-            <Metalayout title="Genuin" customParentContainerHeight={this.state.customParentContainerHeight} videoUrl={currentUrl} metaImageWidth={metaImageWidth} metaImageHeight={metaImageHeight} metaImage={metaImage} content={content} description={description} currentUrl={currentUrl} keyword={keyword}>
+            <Metalayout title="Genuin" videoUrl={currentUrl} metaImageWidth={metaImageWidth} metaImageHeight={metaImageHeight} metaImage={metaImage} content={content} description={description} currentUrl={currentUrl} keyword={keyword}>
             <div className="mobile-m-p">
                 <style jsx global>{`
                 html {
@@ -181,111 +120,16 @@ export default class Home extends React.Component {
                     bottom: 0px;
                 }
                 .slider-container {
-                    height: 80vh;
-                    margin-bottom: 2vh;
+                    height: 85vh;
                 }
                 .slider-container > div {
                     height: 100%;
-                }
-                .early_access {
-                    font-weight: 700;
-                    font-size: 2.36rem;
-                    line-height: 3rem;
-                    display: block;
-                    font-family: 'AvenirNext-Bold';
-                }
-                .early_access_div {
-                    border: 1px solid #0645FF;
-                    border-radius: 5px;
-                    height: 3rem;
-                    width: 26.5rem;
-                }
-                .early_access_div input {
-                    height: 100%;
-                    background-color: transparent;
-                    color: white;
-                    font-weight: 600;
-                    font-size: 1.2rem;
-                    line-height: 1.5rem;
-                    border: none;
-                }
-                .early_access_div input:hover, .early_access_div input:focus {
-                    background-color: transparent;
-                    color: white;
-                    border: none;
-                    box-shadow: none;
-                }
-                .early_access_div input::placeholder, .early_access_div input:-ms-input-placeholder {
-                    color: white;
-                    opacity: 0.5;
-                }
-                #early_access_email {
-                    background-color: #0645FF;
-                    color: white;
-                    font-weight: 700;
-                    font-size: 1.2rem;
-                    line-height: 1.5rem;
-                    border: 1px solid #0645FF;
-                    border-radius: 5px;
-                    margin-top: -1px;
-                    margin-right: -1px;
-                    font-family: 'AvenirNext-Bold';
-                    width: 7.45rem;
-                }
-                .early_access_error {
-                    color: #F2545B;
-                    font-weight: 600;
-                    font-size: 1rem;
-                    line-height: 1.2rem;
-                    float: left;
-                }
-                .early_access_success {
-                    color: #0645FF;
-                    font-weight: 600;
-                    font-size: 1rem;
-                    line-height: 1.2rem;
-                    float: left;
-                }
-                .early_access_error.hide, .early_access_success.hide {
-                    display:none;
-                }
-                .text-slider .slick-slider {
-                    margin-top: -10%;
                 }
                 .slick-list h1 {
                     font-family: 'AvenirNext-Bold';
                 }
                 .genuin_footer .nav-item {
                     font-family: 'AvenirNext-DemiBold';
-                }
-                @media (max-width: 576px) {
-                    .nav-button {
-                        height:auto !important;
-                        top:2rem !important;
-                    }
-                    .slider-container > div {
-                        margin-top: 2%;
-                    }
-                    .slick-dots {
-                        bottom: -10px;
-                    }
-                    .text-slider .slick-slider {
-                        margin-top: 0;
-                    }
-                }
-                @media (max-width: 767px) {
-                    .slick-list h1 {
-                        font-size: 42px;
-                    }
-                    .early_access {
-                        font-size: 1.5rem;
-                        line-height: 2rem;
-                    }
-                }
-                @media (max-width: 991px) {
-                    .early_access_div {
-                        width: 100%;
-                    }
                 }
                 @media (min-width: 1200px) {
                     .container, .container-sm, .container-md, .container-lg, .container-xl {
@@ -295,11 +139,11 @@ export default class Home extends React.Component {
                 `}</style>
                 <Container className="sticky-top">
                     <Row>
-                        <Col xl={12} style={{backgroundColor: 'black'}}>
+                        <Col xl={12}>
                             <Navbar bg="transparent p-0 pt-4" expand="sm">
                                 {/* <Navbar.Brand href="#home" className="p-0">genuin</Navbar.Brand> */}
 
-                                <Navbar.Brand href="/" className="p-0 pb-1" style={{minHeight: '2.2rem'}}>
+                                <Navbar.Brand href="/" className="p-0">
                                     <img src={require('../images/logo_header_new.png')} alt="Genuin" />
                                 </Navbar.Brand>
 
@@ -310,6 +154,7 @@ export default class Home extends React.Component {
                                 <div className="fixed-top main-menu">
                                     <div className="flex-top p-5 mt-5">
                                         <ul className="nav flex-column w-100">
+                                            <li className="nav-item delay-1 pt-4"><a onClick={this.handleInstallAppClick} className="nav-link pt-5" href="#">Download App</a></li>
                                             <li className="nav-item delay-2"><a className="nav-link" onClick={this.handleInvestClick} href="#">Invest in Genuin</a></li>
                                             <li className="nav-item delay-3"><a className="nav-link" onClick={this.handleHireLinkClick} href="#">Join us</a></li>
                                             <li className="nav-item delay-4"><a className="nav-link" href="/terms">Terms of Service </a></li>
@@ -390,16 +235,20 @@ export default class Home extends React.Component {
                                         <h1>Initiate<br />Discussions</h1>
                                     </div>
                                 </Slider>
-                                <h2 className="early_access mt-5 mb-2">Get an early access</h2>
-                                <InputGroup className="early_access_div mb-1">
-                                    <FormControl onChange={this.earlyAccessEmailChanged} onFocus={ this.earlyAccessEmailOnFocus } onBlur={ this.earlyAccessEmailOnBlur } value={this.state.early_access_email} placeholder="Email" aria-label="Email" aria-describedby="early_access_email"/>
-                                    <Button onClick={this.earlyAccessSubmitHandler} variant="outline-secondary" id="early_access_email" style={{backgroundColor:this.state.early_access_email_loader?'#CDDAFF':'#0645FF'}}>
-                                        {this.state.early_access_email_loader?<FontAwesomeIcon icon={faSpinner} className="fa-spin" />:`Notify Me`}
-                                    </Button>
-                                </InputGroup>
-                                <span className={this.state.early_access_error_hidden ? 'early_access_error hide' : 'early_access_error'}>{this.state.early_access_error_text}</span>
-                                <span className={this.state.early_access_success_hidden ? 'early_access_success hide' : 'early_access_success'}>Thanks for subscribing!</span>
+                                <Button variant="primary" onClick={this.handleHireLinkClick} className="mt-5 mb-4 d-none d-sm-block d-md-block d-lg-block">Join us</Button>
+                                <div className="mt-4 d-sm-none"></div>
+                                <Button variant="primary" onClick={this.handleInstallAppClick} className="mt-5 d-sm-none">Download App</Button>
                             </div>
+                            <Nav defaultActiveKey="/home" as="ul" className="appstore-googleplay d-block slider-text-center mt-4 d-none d-sm-block d-md-block d-lg-block">
+                                <Nav.Item as="li">
+                                    <Nav.Link href="" className="pl-0 pr-2">
+                                        <img src={require('../images/badge_appstore.png')} onClick={this.handleIosInstallClick} alt="badge_appstore" className="img-fluid" />
+                                    </Nav.Link>
+                                    <Nav.Link href="" className="pr-0">
+                                        <img src={require('../images/badge_playstore.png')} onClick={this.handleAndroidInstallClick} alt="badge_playstore" className="img-fluid" />
+                                    </Nav.Link>
+                                </Nav.Item>
+                            </Nav>
                         </Col>
                     </Row>
                 </Container>

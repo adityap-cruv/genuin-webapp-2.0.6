@@ -2,8 +2,8 @@ import React from 'react';
 import NextHead from 'next/head';
 import { NextSeo } from 'next-seo';
 import '../pages/style.css'
-const Layout = ({ children, title, customParentContainerHeight, metaImage, metaImageWidth, metaImageHeight, content, description, currentUrl, keyword }) => (
-  <div className="customParentContainer" style={{height:customParentContainerHeight}}>
+const Layout = ({ children, title, metaImage, metaImageWidth, metaImageHeight, content, description, currentUrl, keyword }) => (
+  <div>
     <style jsx>{`
     @font-face {
       font-family: 'AvenirNext';
