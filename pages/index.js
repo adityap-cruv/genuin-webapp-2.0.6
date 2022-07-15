@@ -179,7 +179,7 @@ export default class Home extends React.Component {
                                     </Nav>
                                     <Form inline className="d-none d-sm-block d-md-block d-lg-block">
                                         {/* <FormControl type="text" placeholder="Search" className="mr-sm-2" /> */}
-                                        <Button onClick={this.handleInvestClick} variant="primary">Invest in Genuin</Button>
+                                        <Button onClick={this.handleHireLinkClick} variant="primary">Join us</Button>
                                     </Form>
                                 </Navbar.Collapse>
                             </Navbar>
@@ -235,7 +235,7 @@ export default class Home extends React.Component {
                                         <h1>Initiate<br />Discussions</h1>
                                     </div>
                                 </Slider>
-                                <Button variant="primary" onClick={this.handleHireLinkClick} className="mt-5 mb-4 d-none d-sm-block d-md-block d-lg-block">Join us</Button>
+                                {/* <Button variant="primary" onClick={this.handleHireLinkClick} className="mt-5 mb-4 d-none d-sm-block d-md-block d-lg-block">Join us</Button> */}
                                 <div className="mt-4 d-sm-none"></div>
                                 <Button variant="primary" onClick={this.handleInstallAppClick} className="mt-5 d-sm-none">Download App</Button>
                             </div>
@@ -269,7 +269,7 @@ export default class Home extends React.Component {
                                     <Nav.Link href="/about" className="pl-0">About</Nav.Link>
                                 </Nav.Item> */}
                                 <Nav.Item as="li">
-                                    <Nav.Link style={{opacity: 0.5}} href="#" eventKey="link-1" onClick={this.handleHireLinkClick}>Join us</Nav.Link>
+                                    <Nav.Link style={{opacity: 0.5}} href="#" eventKey="link-1" onClick={this.handleInvestClick}>Invest in Genuin</Nav.Link>
                                 </Nav.Item>
                                 <Nav.Item as="li">
                                     <Nav.Link style={{opacity: 0.5, paddingLeft: "0px", paddingRight: "0px"}} href={void(0)} eventKey="link-2">|</Nav.Link>
