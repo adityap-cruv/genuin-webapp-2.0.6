@@ -40,7 +40,7 @@ a,a:hover{color: #ffffff;font-weight: 600;}
     }
 }
 @media (min-width: 320px) and (max-width: 1199px){
-    body { height: auto;}
+    /* body { height: auto;} */
 }
 @media (min-width: 992px) and (max-width: 1199px){
     h1{font-size: 66px;}
