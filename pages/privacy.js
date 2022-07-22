@@ -31,7 +31,7 @@ export default class Home extends React.Component {
 
     handleHireLinkClick = () => {
        // console.log('this is:', this);
-        window.open("https://www.linkedin.com/company/begenuin/jobs/");
+        window.open("https://angel.co/company/begenuin");
 
       }
 
