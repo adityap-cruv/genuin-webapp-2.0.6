@@ -63,7 +63,7 @@ export default class Home extends React.Component {
         });
         const appHeight = () => {
             const doc = document.documentElement
-            doc.style.setProperty('—app-height', `${window.innerHeight}px`)
+            doc.style.setProperty('--app-height', `${window.innerHeight}px`)
         }
         window.addEventListener('resize', appHeight)
         appHeight()
@@ -127,7 +127,7 @@ export default class Home extends React.Component {
                 }
                 .slider-container {
                     height: 85vh;
-                    height: calc(var(—app-height) * 0.85);
+                    height: calc(var(--app-height) * 0.85);
                 }
                 .slider-container > div {
                     height: 100%;

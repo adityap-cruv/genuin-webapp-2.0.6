@@ -1,5 +1,5 @@
 :root {
-    —app-height: 100%;
+    --app-height: 100%;
 }
 body {
     color: #ffffff;
@@ -8,7 +8,7 @@ body {
     background: transparent radial-gradient(closest-side at 50% 50%, #00189f 0%, #000000 100%) 0% 0% no-repeat
         padding-box;
         height: 100vh;
-        height: var(—app-height);
+        height: var(--app-height);
 }
 .mobile-m-p{
     background: transparent radial-gradient(closest-side at 50% 50%, #00189f 0%, #000000 100%) 0% 0% no-repeat
@@ -28,7 +28,7 @@ a,a:hover{color: #ffffff;font-weight: 600;}
 /* .slider-img img{height: 30rem;} */
 .slider-img img{
     max-height: 80vh;
-    max-height: calc(var(—app-height) * 0.8);
+    max-height: calc(var(--app-height) * 0.8);
 }
 .slider-container > div {
     margin-top: -3%;
@@ -36,7 +36,7 @@ a,a:hover{color: #ffffff;font-weight: 600;}
 @media (min-width:992px){
     body{
         height: 100vh;
-        height: var(—app-height);
+        height: var(--app-height);
     }
 }
 @media (min-width: 320px) and (max-width: 1199px){
@@ -66,12 +66,12 @@ a,a:hover{color: #ffffff;font-weight: 600;}
     } */
     .slider-container {
         height: 75vh;
-        height: calc(var(—app-height) * 0.75);
+        height: calc(var(--app-height) * 0.75);
     }
     .slider-img img {
         height: auto;
         max-height: 45vh;
-        max-height: calc(var(—app-height) * 0.45);
+        max-height: calc(var(--app-height) * 0.45);
     }
     .footer-links .nav-item {
         margin:auto;
@@ -94,7 +94,7 @@ a,a:hover{color: #ffffff;font-weight: 600;}
     .slider-img img {
         height: auto;
         max-height: 65vh;
-        max-height: calc(var(—app-height) * 0.65);
+        max-height: calc(var(--app-height) * 0.65);
     }
     .genuin_footer > .row {
         padding: 0px !important;
@@ -104,7 +104,7 @@ a,a:hover{color: #ffffff;font-weight: 600;}
 @media (min-width: 280px) and (max-width: 319px) and (orientation: portrait) {
     .slider-container {
         height: 75vh;
-        height: calc(var(—app-height) * 0.75);
+        height: calc(var(--app-height) * 0.75);
     }
     .footer-links .nav-item {
         margin:auto;
@@ -116,7 +116,7 @@ a,a:hover{color: #ffffff;font-weight: 600;}
     .slider-img img {
         height: auto;
         max-height: 35vh;
-        max-height: calc(var(—app-height) * 0.35);
+        max-height: calc(var(--app-height) * 0.35);
     }
     .slider-container .img-slider {
         margin-top: -30%;
@@ -154,7 +154,7 @@ a,a:hover{color: #ffffff;font-weight: 600;}
     .slider-img img {
         height: auto;
         max-height: 65vh;
-        max-height: calc(var(—app-height) * 0.65);
+        max-height: calc(var(--app-height) * 0.65);
     }
     .slider-container .text-slider button {
         margin: 2rem 0rem !important;
