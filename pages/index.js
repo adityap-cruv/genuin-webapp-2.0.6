@@ -61,6 +61,12 @@ export default class Home extends React.Component {
                 $('body').toggleClass('nav-open');
             });
         });
+        const appHeight = () => {
+            const doc = document.documentElement
+            doc.style.setProperty('—app-height', `${window.innerHeight}px`)
+        }
+        window.addEventListener('resize', appHeight)
+        appHeight()
 
         this.setState({
             nav1: this.slider1,
@@ -92,7 +98,6 @@ export default class Home extends React.Component {
             autoplaySpeed: 4000,
             adaptiveHeight: true
         };
-
     
     let children='Genuin';
     let  title='Genuin';
@@ -122,6 +127,7 @@ export default class Home extends React.Component {
                 }
                 .slider-container {
                     height: 85vh;
+                    height: calc(var(—app-height) * 0.85);
                 }
                 .slider-container > div {
                     height: 100%;
