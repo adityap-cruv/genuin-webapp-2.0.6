@@ -96,7 +96,7 @@ export default class Home extends React.Component {
             slidesToShow: 1,
             slidesToScroll: 1,
             autoplaySpeed: 4000,
-            adaptiveHeight: true
+            // adaptiveHeight: true
         };
     
     let children='Genuin';
