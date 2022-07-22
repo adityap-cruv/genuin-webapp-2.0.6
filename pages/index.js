@@ -89,7 +89,8 @@ export default class Home extends React.Component {
             speed: 800,
             slidesToShow: 1,
             slidesToScroll: 1,
-            autoplaySpeed: 4000
+            autoplaySpeed: 4000,
+            adaptiveHeight: true
         };
 
     
