@@ -102,8 +102,8 @@ export default class Home extends React.Component {
     let children='Genuin';
     let  title='Genuin';
      let metaImage=require('../images/preview.png');
-     let metaImageWidth=2400;
-     let metaImageHeight=1260;
+     let metaImageWidth=1200;
+     let metaImageHeight=630;
      let content='';
      let description='Genuin is a video-first professional networking platform that allows you to showcase your expertise and connect with other professionals and businesses. Whether you are searching for a job, seeking investment, hiring candidates, or any other networking, Genuin helps you stand out';
      let currentUrl='https://begenuin.com';
