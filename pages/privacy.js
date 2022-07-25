@@ -93,7 +93,7 @@ export default class Home extends React.Component {
                                 <div className="fixed-top main-menu">
                                     <div className="flex-top p-5 mt-5">
                                         <ul className="nav flex-column w-100">
-                                            <li className="nav-item delay-1 pt-4"><a onClick={this.handleInstallAppClick} className="nav-link pt-5" href="#">Download App</a></li>
+                                            <li className="nav-item delay-1 pt-4"><a onClick={this.handleInstallAppClick} className="nav-link pt-5" href="#">Get App</a></li>
                                             <li className="nav-item delay-2"><a className="nav-link" onClick={this.handleInvestClick} href="#">Invest in Genuin</a></li>
                                             <li className="nav-item delay-3"><a className="nav-link" onClick={this.handleHireLinkClick} href="#">Join us</a></li>
                                             <li className="nav-item delay-4"><a className="nav-link" href="/terms">Terms of Service </a></li>
@@ -108,7 +108,7 @@ export default class Home extends React.Component {
                                 <Navbar.Collapse id="basic-navbar-nav" className="collapse navbar-collapse">
                                     <Nav className="mr-auto">
                                         {/* <div className="d-sm-none">
-                            <Nav.Link href="#home" className="animated fadeInDown">Download App</Nav.Link>
+                            <Nav.Link href="#home" className="animated fadeInDown">Get App</Nav.Link>
                             <Nav.Link href="#link" className="animated fadeInDown">Invest in Genuin</Nav.Link>
                             <Nav.Link href="#link" className="animated fadeInDown">About </Nav.Link>
                             <Nav.Link href="#link" className="animated fadeInDown">Terms of Service </Nav.Link>
@@ -121,7 +121,7 @@ export default class Home extends React.Component {
                                       <Nav.Link href="https://www.linkedin.com/company/begenuin/">Invest in Genuin</Nav.Link>
                                     </Nav.Item>
                                     <Nav.Item>
-                                        <Nav.Link href="https://install.begenuin.com/86sn/cgs" eventKey="link-1">Download App</Nav.Link>
+                                        <Nav.Link href="https://install.begenuin.com/86sn/cgs" eventKey="link-1">Get App</Nav.Link>
                                     </Nav.Item>
                                     </div>
                                     </div>
