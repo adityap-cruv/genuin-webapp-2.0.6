@@ -101,7 +101,7 @@ export default class Home extends React.Component {
     
     let children='Genuin';
     let  title='Genuin';
-     let metaImage=require('../images/preview.png');
+     let metaImage='https://media.begenuin.com/backend_assets/preview.png';
      let metaImageWidth=1200;
      let metaImageHeight=630;
      let content='';
