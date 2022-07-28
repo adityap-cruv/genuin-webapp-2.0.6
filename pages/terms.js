@@ -93,11 +93,10 @@ export default class Home extends React.Component {
                                 <div className="fixed-top main-menu">
                                     <div className="flex-top p-5 mt-5">
                                         <ul className="nav flex-column w-100">
-                                            <li className="nav-item delay-1 pt-4"><a onClick={this.handleInstallAppClick} className="nav-link pt-5" href="#">Get App</a></li>
-                                            <li className="nav-item delay-2"><a className="nav-link" onClick={this.handleInvestClick} href="#">Invest in Genuin</a></li>
-                                            <li className="nav-item delay-3"><a className="nav-link" onClick={this.handleHireLinkClick} href="#">Join us</a></li>
-                                            <li className="nav-item delay-4"><a className="nav-link" href="/terms">Terms of Service </a></li>
-                                            <li className="nav-item delay-5"><a className="nav-link" href="/privacy">Privacy Policy</a></li>
+                                            <li className="nav-item delay-1 pt-4"><a className="nav-link pt-5" onClick={this.handleInvestClick} href="#">Invest in Genuin</a></li>
+                                            <li className="nav-item delay-2"><a className="nav-link" onClick={this.handleHireLinkClick} href="#">Join us</a></li>
+                                            <li className="nav-item delay-3"><a className="nav-link" href="/terms">Terms of Service </a></li>
+                                            <li className="nav-item delay-4"><a className="nav-link" href="/privacy">Privacy Policy</a></li>
                                         </ul>
                                         <ul className="copy-right">
                                             <li className="nav-item delay-5"><a className="nav-link" href="/">© 2022 Genuin Inc.</a></li>
