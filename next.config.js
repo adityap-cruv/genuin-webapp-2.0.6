@@ -27,6 +27,16 @@ module.exports = withImages(withFonts(withCSS({
         installurl: process.env.installurl,
         ios_app_association: process.env.ios_app_association,
         android_app_association: process.env.android_app_association        
+    },
+    experimental: {
+        headers() {
+          return [
+            {
+              source: "/.well-known/apple-app-site-association",
+              headers: [{ key: "content-type", value: "application/json" }]
+            }
+          ];
+        }
     }
 })));
 
