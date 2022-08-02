@@ -1,4 +1,3 @@
-const assetlinks = [{"target":{"package_name":"com.begenuin.begenuin","sha256_cert_fingerprints":["C0:1A:CF:E7:74:05:A7:98:42:E2:10:19:FE:1C:A4:13:48:A5:04:C7:D2:99:C8:F7:6F:E3:64:01:90:7F:AC:44","55:BA:16:B2:F5:EF:B1:DD:04:BE:A0:29:C9:47:7F:DD:82:1C:6A:96:49:12:57:41:0C:64:D1:18:B9:24:0A:43"],"namespace":"android_app"},"relation":["delegate_permission/common.handle_all_urls"]},{"target":{"package_name":"com.begenuin.begenuin.qa","sha256_cert_fingerprints":["C0:1A:CF:E7:74:05:A7:98:42:E2:10:19:FE:1C:A4:13:48:A5:04:C7:D2:99:C8:F7:6F:E3:64:01:90:7F:AC:44","55:BA:16:B2:F5:EF:B1:DD:04:BE:A0:29:C9:47:7F:DD:82:1C:6A:96:49:12:57:41:0C:64:D1:18:B9:24:0A:43"],"namespace":"android_app"},"relation":["delegate_permission/common.handle_all_urls"]}]
 export default function Assetlinks() {
-    return JSON.stringify(assetlinks)
+    return JSON.stringify(process.env.android_app_association)
 }
