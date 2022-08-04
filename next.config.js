@@ -24,9 +24,7 @@ module.exports = withImages(withFonts(withCSS({
         qt_apps_flyer_url: process.env.qt_apps_flyer_url,
         profile_apps_flyer_url: process.env.profile_apps_flyer_url,
         record_apps_flyer_url: process.env.record_apps_flyer_url,
-        installurl: process.env.installurl,
-        ios_app_association: process.env.ios_app_association,
-        android_app_association: process.env.android_app_association        
+        installurl: process.env.installurl
     },
     experimental: {
         headers() {
