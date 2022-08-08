@@ -86,13 +86,23 @@ class ProfileIndexPage extends React.Component {
         // if(this.props.user_id !== undefined && this.props.user_id !== null && this.props.user_id !== '' && this.props.videos !== undefined && this.props.videos !== null && this.props.videos.length == 0){
         //     window.location.href = "https://begenuin.com";
         // }
+        console.log('props', this.props);
         var preview_image = (this.props.preview_image !== undefined && this.props.preview_image !== null)?this.props.preview_image:'';
         var currentUrl = process.env.hostname + this.props.url.asPath;
-        var name_nickname = this.props.name !== undefined && this.props.name !== null && this.props.name !== '' ? this.props.name : this.props.nickname;
-        var views_formatted = this.abbreviateNumber(this.props.no_of_views);
+        
         // console.log('views_formatted', views_formatted);
-        var meta_title = name_nickname+' is on Genuin. Connect confidently.';
-        var meta_description = `${name_nickname}, ${this.props.no_of_videos} Videos, ${views_formatted} Views, ${this.props.no_of_replies} Replies`;
+        if(this.props.is_record !== undefined && this.props.is_record !== null && this.props.is_record){
+            var name_nickname = this.props.owner.name !== undefined && this.props.owner.name !== null && this.props.owner.name !== '' ? this.props.owner.name : `@${this.props.owner.nickname}`;
+            var views_formatted = this.abbreviateNumber(this.props.owner.no_of_views);
+            var meta_title = `Record and publish videos for ${name_nickname}`;
+            var meta_description = `${name_nickname}, ${this.props.owner.no_of_videos} Videos, ${views_formatted} Views, ${this.props.owner.no_of_replies} Replies`;
+        }
+        else{
+            var name_nickname = this.props.name !== undefined && this.props.name !== null && this.props.name !== '' ? this.props.name : `@${this.props.nickname}`;
+            var views_formatted = this.abbreviateNumber(this.props.no_of_views);
+            var meta_title = name_nickname+' is on Genuin. Connect confidently.';
+            var meta_description = `${name_nickname}, ${this.props.no_of_videos} Videos, ${views_formatted} Views, ${this.props.no_of_replies} Replies`;
+        }
         var settings = {
             dots: false,
             arrows: true,
