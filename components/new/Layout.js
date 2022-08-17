@@ -1,7 +1,8 @@
 import React from "react";
 import NextHead from "next/head";
 import { NextSeo } from "next-seo";
-import "../pages/style.css";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "./style.css";
 const Layout = ({
   children,
   title,
@@ -87,21 +88,23 @@ const Layout = ({
       }}
     />
     <NextHead>
-      <link
+      {/* <link
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css"
-      />
-      <script src="https:code.jquery.com/jquery-3.4.1.min.js"></script>
+      /> */}
+      {/* <script src="https:code.jquery.com/jquery-3.4.1.min.js"></script> */}
     </NextHead>
     <div className="overlay"></div>
     <div
       className="main"
       style={{
-        backgroundImage: `url(${content})`,
+        // backgroundImage: `url(${content})`,
+        backgroundImage: `url(
+          "https://images.unsplash.com/photo-1616578492900-ea5a8fc6c341?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=654&q=80"
+        )`,
         backgroundRepeat: "no-repeat",
         backgroundSize: "cover",
         backgroundPosition: "center",
-        height: "754px",
       }}
     >
       {children}

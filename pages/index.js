@@ -112,7 +112,7 @@ export default class Home extends React.Component {
 
         return (
             
-            <Metalayout title="Genuin" videoUrl={currentUrl} metaImageWidth={metaImageWidth} metaImageHeight={metaImageHeight} metaImage={metaImage} content={content} description={description} currentUrl={currentUrl} keyword={keyword}>
+            // <Metalayout title="Genuin" videoUrl={currentUrl} metaImageWidth={metaImageWidth} metaImageHeight={metaImageHeight} metaImage={metaImage} content={content} description={description} currentUrl={currentUrl} keyword={keyword}>
             <div className="mobile-m-p">
                 <style jsx global>{`
                 html {
