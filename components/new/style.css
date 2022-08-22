@@ -20,9 +20,13 @@ body .overlay {
   -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
 }
-main {
+.main {
   height: 100vh !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
 .navbar {
   position: absolute;
   top: 0;
@@ -217,6 +221,8 @@ main {
 .video-more-option ul > li:hover {
   background: rgba(255, 255, 255, 0.3);
 }
-
+.react-player__shadow {
+  display: none !important;
+}
 @media (max-width: 576px) {
 }
