@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 // import ReactPlayer from 'react-player'
 import { Container } from "react-grid-system";
 import {
@@ -11,6 +11,7 @@ import {
   Offcanvas,
   Button,
   ProgressBar,
+  Modal,
 } from "react-bootstrap";
 import Layout from "../../components/new/Layout";
 import ReactPlayer from "react-player";
@@ -39,6 +40,22 @@ import {
 
 config.autoAddCss = false;
 
+// const Player2 = () => {
+//   const [copyText, setCopyText] = useState("copy");
+//   const [playedSeconds, setPlayedSeconds] = useState(0);
+//   const [totalDuration, setTotalDuration] = useState(0);
+//   const [loaded, setLoaded] = useState(0);
+//   const [currentDisplayMinutes, setCurrentDisplayMinutes] = useState(0);
+//   const [currentDisplaySeconds, setCurrentDisplaySeconds] = useState(0);
+//   const [playing, setPlaying] = useState(false);
+//   const [buttonVisible, setButtonVisible] = useState("block");
+//   const [baseUrl, setBaseUrl] = useState("");
+//   const [urlToCopy, setUrlToCopy] = useState("");
+//   const [videoUrl, setVideoUrl] = useState(props.videoUrl);
+//   if (typeof window === "undefined") {
+//     global.window = {};
+//   }
+// };
 class Player extends React.Component {
   constructor(props) {
     super(props);
