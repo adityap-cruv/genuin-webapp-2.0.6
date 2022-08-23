@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from 'react';
 import Microlink from '@microlink/react';
-import { useClipboard } from './useClipboard';
 import { Layout } from './layout';
 import { TopNav } from './topNav';
 import { ReactPlayerWrapper } from './reactPlayerWrapper';
@@ -17,7 +16,6 @@ export const Player = ({
 }) => {
   const [progress, setProgress] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const { copy, isCopied } = useClipboard();
   if (typeof window === 'undefined') {
     global.window = {};
   }
@@ -36,26 +34,15 @@ export const Player = ({
     [link]
   );
 
-  const handleCopy = () => {
-    copy(urlToCopy);
-  };
-
   const handleToggleIsPlaying = () => {
     setIsPlaying((old) => !old);
   };
-  const handleDuration = (totalDuration) => {
-    // setTotalDurationInSeconds(Math.round(totalDuration));
-  };
-  const handleEnd = () => {};
 
   const metaImageWidth = 1200;
   const metaImageHeight = 630;
 
   const handleProgress = (event) => {
-    const playedSeconds = Number.parseInt(event.playedSeconds, 10);
     const playedProgress = Math.round(Number.parseFloat(event.played) * 100);
-    const loadedSeconds = Number.parseInt(event.playedSeconds, 10);
-    const loadedProgress = Math.round(Number.parseFloat(event.loaded) * 100);
     setProgress(playedProgress);
   };
 
@@ -93,8 +80,6 @@ export const Player = ({
           isPlaying={isPlaying}
           handleToggleIsPlaying={handleToggleIsPlaying}
           onProgress={handleProgress}
-          onDuration={handleDuration}
-          onEnded={handleEnd}
           progress={progress}
           videoThumbnail={videoThumbnail}
           userName={userName}

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Image, Navbar, Nav, Button } from 'react-bootstrap';
+import { Image, Navbar, Nav, Button, Offcanvas } from 'react-bootstrap';
 
 const logo = require('../../../images/logo_header_new.svg');
 
@@ -20,23 +20,23 @@ export const TopNav = () => {
             <Nav.Link href='#pricing'>Pricing</Nav.Link>
           </Nav>
         </Navbar.Collapse>
-        {/* <Navbar.Offcanvas
-                  id="navbarMoreOptionDrawer"
-                  aria-labelledby="navbarMoreOptionDrawerTitle"
-                  placement="end"
-                >
-                  <Offcanvas.Header closeButton>
-                    <Offcanvas.Title id="navbarMoreOptionDrawerTitle">
-                      Offcanvas
-                    </Offcanvas.Title>
-                  </Offcanvas.Header>
-                  <Offcanvas.Body>
-                    <Nav className="justify-content-end flex-grow-1 pe-3">
-                      <Nav.Link href="#action1">Home</Nav.Link>
-                      <Nav.Link href="#action2">Link</Nav.Link>
-                    </Nav>
-                  </Offcanvas.Body>
-                </Navbar.Offcanvas> */}
+        <Offcanvas
+          id='navbarMoreOptionDrawer'
+          aria-labelledby='navbarMoreOptionDrawerTitle'
+          placement='end'
+        >
+          <Offcanvas.Header closeButton>
+            <Offcanvas.Title id='navbarMoreOptionDrawerTitle'>
+              Offcanvas
+            </Offcanvas.Title>
+          </Offcanvas.Header>
+          <Offcanvas.Body>
+            <Nav className='justify-content-end flex-grow-1 pe-3'>
+              <Nav.Link href='#action1'>Home</Nav.Link>
+              <Nav.Link href='#action2'>Link</Nav.Link>
+            </Nav>
+          </Offcanvas.Body>
+        </Offcanvas>
       </div>
     </Navbar>
   );
