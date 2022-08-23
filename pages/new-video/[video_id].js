@@ -4,7 +4,6 @@ import axios from 'axios';
 import { Player } from '../../components/new/player';
 
 const ShortUrlPage = (props) => {
-  console.log(props);
   return (
     <Player
       {...props.data}

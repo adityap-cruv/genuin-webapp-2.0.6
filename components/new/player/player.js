@@ -1,8 +1,9 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Microlink from '@microlink/react';
 import { Layout } from './layout';
 import { TopNav } from './topNav';
 import { ReactPlayerWrapper } from './reactPlayerWrapper';
+import { increaseVideoViewCount } from '../../../actions/postActions';
 
 export const Player = ({
   video_id_to_use,
@@ -13,8 +14,10 @@ export const Player = ({
   videoThumbnail,
   videoPreviewImage,
   userName,
+  installUrl,
 }) => {
   const [progress, setProgress] = useState(0);
+  const [triggerPlayCount, setTriggetPlayCount] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   if (typeof window === 'undefined') {
     global.window = {};
@@ -44,20 +47,16 @@ export const Player = ({
   const handleProgress = (event) => {
     const playedProgress = Math.round(Number.parseFloat(event.played) * 100);
     setProgress(playedProgress);
+    if (playedProgress > 10 && !triggerPlayCount) {
+      setTriggetPlayCount(true);
+    }
   };
 
-  const preview = (
-    <Microlink
-      media='logo'
-      url={metaLink}
-      style={{
-        maxWidth: '100%',
-        height: '96px',
-        backgroundColor: 'lightgrey',
-        borderRadius: '5px',
-      }}
-    />
-  );
+  useEffect(() => {
+    if (triggerPlayCount) {
+      increaseVideoViewCount(video_id_to_use);
+    }
+  }, [video_id_to_use, triggerPlayCount]);
 
   return !Boolean(videoUrl) ? (
     <Error statusCode='404' />
