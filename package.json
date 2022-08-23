@@ -45,7 +45,8 @@
     "react-share": "^4.2.1",
     "react-slick": "^0.27.11",
     "slick-carousel": "^1.8.1",
-    "styled-components": "^5.1.1"
+    "styled-components": "^5.1.1",
+    "use-debounce": "^8.0.3"
   },
   "devDependencies": {
     "css-loader": "^4.3.0",

@@ -1,13 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { useRouter, withRouter } from "next/router";
-import axios from "axios";
-import Player from "../../components/new/player";
+import React, { useState, useEffect } from 'react';
+import { useRouter, withRouter } from 'next/router';
+import axios from 'axios';
+import { Player } from '../../components/new/player';
 
 const ShortUrlPage = (props) => {
   console.log(props);
-  const router = useRouter();
-  const { video_id } = router.query;
-  console.log("video_id", video_id);
   return (
     <Player
       {...props.data}
@@ -18,7 +15,7 @@ const ShortUrlPage = (props) => {
 };
 ShortUrlPage.getInitialProps = async ({ query: { video_id } }) => {
   return axios
-    .get(process.env.apiurl + "/api/v3/users/video/meta_data/" + video_id)
+    .get(process.env.apiurl + '/api/v3/users/video/meta_data/' + video_id)
     .then((response) => {
       var resObj = response.data.data;
       var video_id_to_use =
