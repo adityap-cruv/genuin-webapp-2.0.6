@@ -29,50 +29,54 @@ const Layout = ({ children, title, videoUrl, metaImage, metaImageWidth, metaImag
       src: url('/fonts/AvenirNext-Bold-01.ttf');
     }
       `}</style>
-      <meta property="og:video:url" content={videoUrl} />
-      <meta property="og:video:secure_url" content={videoUrl} />
-      <meta property="og:video:type" content="video/mp4" />
-    <NextSeo
-      title={title}
-      description={description}
-      openGraph={{
-        type: 'website',
-        url: currentUrl,
-        title: 'Genuin',
-        description: description,
-        videos:[{
-          url: videoUrl,
-          secure_url: videoUrl,
-          type: "video/mp4",
-          width: "720",
-          height: "1280",
-          alt: 'Genuin'
-        }],
-        images: [
-          {
-            url: metaImage,
-            width: metaImageWidth,
-            height: metaImageHeight,
-            alt: 'Genuin',
-          },
-          // {
-          //   url: content,
-          //   width: 350,
-          //   height: 650,
-          //   alt: 'Genuin',
-          // }
-        ],
-        site_name: 'Genuin',
-      }}
-      facebook={{
-        appId: 1234567890,
-      }}
-      twitter={{
-        handle: '@handle',
-        site: '@site',
-        cardType: 'summary_large_image',
-      }}
-    />
+      {this.props.meta_tags !== undefined && this.props.meta_tags !== null && this.props.meta_tags == true ?
+      <React.Fragment>
+        <meta property="og:video:url" content={videoUrl} />
+        <meta property="og:video:secure_url" content={videoUrl} />
+        <meta property="og:video:type" content="video/mp4" />
+        <NextSeo
+          title={title}
+          description={description}
+          openGraph={{
+            type: 'website',
+            url: currentUrl,
+            title: 'Genuin',
+            description: description,
+            videos:[{
+              url: videoUrl,
+              secure_url: videoUrl,
+              type: "video/mp4",
+              width: "720",
+              height: "1280",
+              alt: 'Genuin'
+            }],
+            images: [
+              {
+                url: metaImage,
+                width: metaImageWidth,
+                height: metaImageHeight,
+                alt: 'Genuin',
+              },
+              // {
+              //   url: content,
+              //   width: 350,
+              //   height: 650,
+              //   alt: 'Genuin',
+              // }
+            ],
+            site_name: 'Genuin',
+          }}
+          facebook={{
+            appId: 1234567890,
+          }}
+          twitter={{
+            handle: '@handle',
+            site: '@site',
+            cardType: 'summary_large_image',
+          }}
+        />
+    </React.Fragment>
+    : <React.Fragment></React.Fragment>}
      <NextHead>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css" /> 
     <script src="https:code.jquery.com/jquery-3.4.1.min.js"></script>

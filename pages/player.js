@@ -131,7 +131,7 @@ class Player extends React.Component {
             </div>
           </div>
         </div> : 
-        <Layout title="Genuin" videoUrl={this.props.videoUrl} metaImageWidth={metaImageWidth} metaImageHeight={metaImageHeight} metaImage={metaImage} content={this.props.videoThumbnail} description={this.props.description} currentUrl={this.state.urlToCopy} keyword='genuine'>
+        <Layout title="Genuin" meta_tags={this.props.meta_tags} videoUrl={this.props.videoUrl} metaImageWidth={metaImageWidth} metaImageHeight={metaImageHeight} metaImage={metaImage} content={this.props.videoThumbnail} description={this.props.description} currentUrl={this.state.urlToCopy} keyword='genuine'>
           <Card style={{ width: 'auto', borderRadius: '10px'}}>
             <div className="main-meddle">
             <Card.Body className="p-0">
@@ -199,7 +199,7 @@ class Player extends React.Component {
                       onPause={this.handlePause}
                       onProgress={this.handleProgress}
                       onDuration={this.handleDuration}
-		      onEnded={this.handleEnded}
+		                  onEnded={this.handleEnded}
                     />
                     <div className="d-block-v" style={{ fontFamily: 'AvenirNext-DemiBold', fontSize: '13.9pt', margin: '2% 0', width: '2.3rem', position: 'absolute', top: 'calc(100vh - 20rem)', right: '4%'}}>
                       <WhatsappShareButton url={this.state.urlToCopy} >

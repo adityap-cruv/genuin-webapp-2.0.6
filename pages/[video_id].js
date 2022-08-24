@@ -9,7 +9,7 @@ const ShortUrlPage = (props) => {
     const { video_id } = router.query
     console.log('video_id', video_id)
     return (
-        <Player {...props.data} {...props.url} installUrl={process.env.installurl+props.data.video_id_to_use} />
+        <Player meta_tags={true} {...props.data} {...props.url} installUrl={process.env.installurl+props.data.video_id_to_use} />
     )
 }
 ShortUrlPage.getInitialProps = async ({ query: { video_id } }) => {

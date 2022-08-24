@@ -334,6 +334,7 @@ class ProfileIndexPage extends React.Component {
                     <Slider ref={(slider) => (this.slider = slider)} {...settings}>
                         {this.state.videos.map((video) => {
                             return <Player 
+                                meta_tags={false} 
                                 key={video.video_uuid} 
                                 loading={this.state.loading}
                                 {...{video_id_to_use:video.video_uuid, ...video}} 
