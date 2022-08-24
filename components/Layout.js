@@ -2,7 +2,7 @@ import React from 'react';
 import NextHead from 'next/head';
 import { NextSeo } from 'next-seo';
 import '../pages/style.css'
-const Layout = ({ children, title, videoUrl, metaImage, metaImageWidth, metaImageHeight, content, description, currentUrl, keyword }) => (
+const Layout = ({ children, meta_tags, title, videoUrl, metaImage, metaImageWidth, metaImageHeight, content, description, currentUrl, keyword }) => (
   <div>
     <style jsx>{`
     @font-face {
@@ -29,7 +29,7 @@ const Layout = ({ children, title, videoUrl, metaImage, metaImageWidth, metaImag
       src: url('/fonts/AvenirNext-Bold-01.ttf');
     }
       `}</style>
-      {this.props.meta_tags !== undefined && this.props.meta_tags !== null && this.props.meta_tags == true ?
+      {meta_tags !== undefined && meta_tags !== null && meta_tags == true ?
       <React.Fragment>
         <meta property="og:video:url" content={videoUrl} />
         <meta property="og:video:secure_url" content={videoUrl} />
