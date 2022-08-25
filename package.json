@@ -9,7 +9,12 @@
     "start": "next start -p 4000",
     "start_prod": "export NODE_ENV=production && pm2 start server.js -i 1 --name 'genuin-web-react'",
     "restart_prod": "export NODE_ENV=production && pm2 restart server.js -i 1 --name 'genuin-web-react'",
-    "stop_prod": "pm2 stop genuin-web-react"
+    "stop_prod": "pm2 stop genuin-web-react",
+    "start:heroku": "next start -p $PORT"
+  },
+  "engines": {
+    "node": "14.18.1",
+    "npm": "6.14.15"
   },
   "keywords": [],
   "author": "",
