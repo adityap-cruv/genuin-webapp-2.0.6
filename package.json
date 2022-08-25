@@ -6,11 +6,10 @@
   "scripts": {
     "dev": "next dev -p 4000",
     "build": "next build",
-    "start": "next start -p 4000",
+    "start": "next start -p $PORT",
     "start_prod": "export NODE_ENV=production && pm2 start server.js -i 1 --name 'genuin-web-react'",
     "restart_prod": "export NODE_ENV=production && pm2 restart server.js -i 1 --name 'genuin-web-react'",
-    "stop_prod": "pm2 stop genuin-web-react",
-    "start:heroku": "next start -p $PORT"
+    "stop_prod": "pm2 stop genuin-web-react"
   },
   "engines": {
     "node": "14.18.1",
