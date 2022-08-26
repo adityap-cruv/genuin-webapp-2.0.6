@@ -28,12 +28,12 @@ body .overlay {
 }
 
 .navbar {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: auto;
-  z-index: 999;
+  z-index: 99999;
 }
 .navbar-brand {
   display: flex;
@@ -49,6 +49,7 @@ body .overlay {
   border: 0;
   outline: none;
   padding: 0;
+  box-shadow: none;
 }
 .navbar-toggler:focus,
 .navbar-toggler:hover {
@@ -58,6 +59,56 @@ body .overlay {
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
   width: 2rem;
   height: 2rem;
+}
+.navbar-collapse {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 100%;
+  width: 100%;
+  height: 100vh;
+  transition: all 0.4s ease;
+  z-index: 9999;
+  background: rgb(0 0 0 / 80%);
+  display: flex !important;
+  justify-content: end;
+}
+.navbar-collapse.show {
+  left: 0;
+}
+.navbar-light .navbar-collapse .navbar-toggler {
+  display: flex;
+  width: auto;
+  margin-left: auto;
+}
+.navbar-light .navbar-collapse .navbar-toggler-icon {
+  /* background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' fill='%23ffffff' viewBox='0 0 16 16'%3E%3Cpath d='M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E"); */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' fill='%23ffffff' viewBox='0 0 16 16'%3E%3Cpath d='M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z'/%3E%3C/svg%3E");
+}
+
+.navbar-collapse .navbar-nav {
+  width: 100%;
+  height: 100%;
+  text-align: right;
+}
+.navbar-collapse .navbar-nav a {
+  color: #fff !important;
+  font-weight: 700;
+  font-size: 1.5rem;
+  line-height: 1.56;
+}
+.navbar-collapse .navbar-nav a.text-primary {
+  font-size: 1rem;
+}
+.text-primary,
+.navbar-collapse .navbar-nav a.text-primary {
+  color: #0645ff !important;
+}
+.navbar-collapse .navbar-nav {
+  padding: 1.2rem 1rem;
+}
+.navbar-collapse .navbar-nav a:hover {
+  opacity: 0.8;
 }
 .bg-gradient {
   background: linear-gradient(
@@ -136,11 +187,12 @@ body .overlay {
 .btn-play {
   color: rgb(255 255 255 / 0.5);
   width: 4rem !important;
+  height: 4em;
   cursor: pointer;
   position: absolute;
   top: 50%;
   left: 50%;
-  z-index: 999999;
+  z-index: 999;
   transform: translate(-50%, -50%);
   pointer-events: none;
 }
@@ -148,7 +200,7 @@ body .overlay {
   position: absolute;
   bottom: 0px;
   left: 0;
-  z-index: 9;
+  z-index: 999;
   width: 100%;
   min-height: 5rem;
   display: flex;
@@ -167,6 +219,7 @@ body .overlay {
 .progress-bar {
   background-color: #0645ff;
 }
+
 .video-auther {
   display: flex;
   align-items: center;
@@ -224,5 +277,20 @@ body .overlay {
 .react-player__shadow {
   display: none !important;
 }
+.modal-app-download .modal-content {
+  border-radius: 10px;
+}
+.modal-app-download .btn-get-app {
+  max-width: 320px;
+  width: 100%;
+}
 @media (max-width: 576px) {
+  .modal-app-download .modal-content {
+    border-radius: 40px 40px 0 0;
+  }
+  .modal-app-download .modal-dialog-centered {
+    align-items: end;
+    margin: 0;
+    min-height: 100%;
+  }
 }
