@@ -37,9 +37,9 @@ h1 {
 .navbar-brand {
   min-height: fit-content;
 }
-.navbar-light .navbar-brand img {
+/* .navbar-light .navbar-brand img {
   width: 130px;
-}
+} */
 a,
 a:hover {
   color: #ffffff;
@@ -279,9 +279,9 @@ a:hover {
     /* width: 100% !important; */
     margin-right: 0;
   }
-  .navbar-light .navbar-brand img {
+  /* .navbar-light .navbar-brand img {
     width: 100px;
-  }
+  } */
 }
 @media (max-width: 340px) {
   h1 {
