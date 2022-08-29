@@ -1,19 +1,20 @@
-import React from "react";
-import axios from "axios";
-import { Player } from "../components/new/player";
+import React from 'react';
+import axios from 'axios';
+import { Player } from '../components/new/player';
+import { Layout } from '../components/new/layout/layout';
+import { TopNav } from '../components/new/topNav';
 
 const ShortUrlPage = (props) => {
   return (
-    <Player
-      {...props.data}
-      {...props.url}
-      installUrl={process.env.installurl + props.data.video_id_to_use}
-    />
+    <Layout>
+      <TopNav />
+      <Player {...props.data} {...props.url} />
+    </Layout>
   );
 };
 ShortUrlPage.getInitialProps = async ({ query: { video_id } }) => {
   return axios
-    .get(process.env.apiurl + "/api/v3/users/video/meta_data/" + video_id)
+    .get(process.env.apiurl + '/api/v3/users/video/meta_data/' + video_id)
     .then((response) => {
       var resObj = response.data.data;
       var video_id_to_use =
