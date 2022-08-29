@@ -1,14 +1,40 @@
-import React from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
+import { Image } from 'react-bootstrap';
 import { Player } from '../components/new/player';
-import { Layout } from '../components/new/layout/layout';
+import { Layout } from '../components/new/layout';
 import { TopNav } from '../components/new/topNav';
+import { GetAppModal } from '../components/new/getAppModal';
+import { WelcomeModal } from '../components/new/welcomeModal';
+
+const linkIcon = require('../images/video-more-options/ic-link.svg');
+const bookmark = require('../images/video-more-options/ic-bookmark.svg');
+const share = require('../images/video-more-options/ic-share.svg');
+const replay = require('../images/video-more-options/ic-replay.svg');
 
 const ShortUrlPage = (props) => {
+  const [showModalWelcome, setShowModalWelcome] = useState(true);
+  const handleCloseWelcome = () => setShowModalWelcome(false);
+
+  const [showModalAppDownload, setShowModalAppDownload] = useState(false);
+  const handleCloseAppDownload = () => setShowModalAppDownload(false);
+  const handleShowModalAppDownload = () => setShowModalAppDownload(true);
+
   return (
     <Layout>
-      <TopNav />
-      <Player {...props.data} {...props.url} />
+      <TopNav showGetAppModal={handleShowModalAppDownload} />
+      <Player
+        {...props.data}
+        {...props.url}
+        showGetAppModal={handleShowModalAppDownload}
+      >
+        <ShareControls showGetAppModal={handleShowModalAppDownload} />
+      </Player>
+      <GetAppModal
+        show={showModalAppDownload}
+        onClose={handleCloseAppDownload}
+      />
+      <WelcomeModal show={showModalWelcome} onClose={handleCloseWelcome} />
     </Layout>
   );
 };
@@ -32,3 +58,48 @@ ShortUrlPage.getInitialProps = async ({ query: { video_id } }) => {
     });
 };
 export default ShortUrlPage;
+
+const ShareControls = ({ showGetAppModal }) => (
+  <ul>
+    <li>
+      <Image
+        src={linkIcon}
+        width='24'
+        height='24'
+        alt='Link'
+        title='Link'
+        onClick={showGetAppModal}
+      />
+    </li>
+    <li>
+      <Image
+        src={bookmark}
+        width='24'
+        height='24'
+        alt='Bookmark'
+        title='Bookmark'
+        onClick={showGetAppModal}
+      />
+    </li>
+    <li>
+      <Image
+        src={share}
+        width='24'
+        height='24'
+        alt='Share'
+        title='Share'
+        onClick={showGetAppModal}
+      />
+    </li>
+    <li>
+      <Image
+        src={replay}
+        width='24'
+        height='24'
+        alt='Replay'
+        title='Replay'
+        onClick={showGetAppModal}
+      />
+    </li>
+  </ul>
+);

@@ -5,11 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlay, faPause } from '@fortawesome/free-solid-svg-icons';
 import { Image, ProgressBar } from 'react-bootstrap';
 
-const linkIcon = require('../../../images/video-more-options/ic-link.svg');
 const profileIcon = require('../../../images/img-profile-demo.jpg');
-const bookmark = require('../../../images/video-more-options/ic-bookmark.svg');
-const share = require('../../../images/video-more-options/ic-share.svg');
-const replay = require('../../../images/video-more-options/ic-replay.svg');
 
 export const ReactPlayerWrapper = ({
   videoUrl,
@@ -22,6 +18,7 @@ export const ReactPlayerWrapper = ({
   videoThumbnail,
   description,
   userName,
+  children,
 }) => {
   const [isPlayingDebounced] = useDebounce(isPlaying, 65);
   return (
@@ -49,7 +46,6 @@ export const ReactPlayerWrapper = ({
         onEnded={onEnded}
         progressInterval={500}
       />
-
       <FontAwesomeIcon
         icon={isPlaying ? faPause : faPlay}
         style={{
@@ -74,44 +70,7 @@ export const ReactPlayerWrapper = ({
             <p className='mb-0'>{description}</p>
           </div>
           <div className='flex-shrink-0 position-relative video-more-option'>
-            <ul>
-              <li>
-                <Image
-                  src={linkIcon}
-                  width='24'
-                  height='24'
-                  alt='Link'
-                  title='Link'
-                />
-              </li>
-              <li>
-                <Image
-                  src={bookmark}
-                  width='24'
-                  height='24'
-                  alt='Bookmark'
-                  title='Bookmark'
-                />
-              </li>
-              <li>
-                <Image
-                  src={share}
-                  width='24'
-                  height='24'
-                  alt='Share'
-                  title='Share'
-                />
-              </li>
-              <li>
-                <Image
-                  src={replay}
-                  width='24'
-                  height='24'
-                  alt='Replay'
-                  title='Replay'
-                />
-              </li>
-            </ul>
+            {children}
           </div>
         </div>
         <ProgressBar now={progress} />

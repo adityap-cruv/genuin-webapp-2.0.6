@@ -13,6 +13,8 @@ export const Player = ({
   videoThumbnail,
   videoPreviewImage,
   userName,
+  showGetAppModal,
+  children,
 }) => {
   const [progress, setProgress] = useState(0);
   const [triggerPlayCount, setTriggetPlayCount] = useState(false);
@@ -123,7 +125,9 @@ export const Player = ({
           progress={progress}
           videoThumbnail={videoThumbnail}
           userName={userName}
-        />
+        >
+          {children}
+        </ReactPlayerWrapper>
       </div>
     </>
   );
