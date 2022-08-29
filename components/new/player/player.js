@@ -1,9 +1,9 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import Microlink from '@microlink/react';
-import { Layout } from './layout';
-import { TopNav } from './topNav';
-import { ReactPlayerWrapper } from './reactPlayerWrapper';
-import { increaseVideoViewCount } from '../../../actions/postActions';
+import React, { useState, useMemo, useEffect } from "react";
+import Microlink from "@microlink/react";
+import { Layout } from "./layout";
+import { TopNav } from "./topNav";
+import { ReactPlayerWrapper } from "./reactPlayerWrapper";
+import { increaseVideoViewCount } from "../../../actions/postActions";
 
 export const Player = ({
   video_id_to_use,
@@ -19,11 +19,11 @@ export const Player = ({
   const [progress, setProgress] = useState(0);
   const [triggerPlayCount, setTriggetPlayCount] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  if (typeof window === 'undefined') {
+  if (typeof window === "undefined") {
     global.window = {};
   }
   const urlToCopy = useMemo(
-    () => process.env.hostname + '/' + video_id_to_use,
+    () => process.env.hostname + "/" + video_id_to_use,
     [video_id_to_use]
   );
   const hashtags = useMemo(
@@ -33,7 +33,7 @@ export const Player = ({
   const baseUrl = useMemo(() => process.env.hostname + asPath, [asPath]);
 
   const metaLink = useMemo(
-    () => (link.indexOf('://') === -1 ? 'http://' + link : link),
+    () => (link.indexOf("://") === -1 ? "http://" + link : link),
     [link]
   );
 
@@ -59,11 +59,11 @@ export const Player = ({
   }, [video_id_to_use, triggerPlayCount]);
 
   return !Boolean(videoUrl) ? (
-    <Error statusCode='404' />
+    <Error statusCode="404" />
   ) : (
     <>
       <Layout
-        title='Genuin'
+        title="Genuin"
         videoUrl={videoUrl}
         metaImageWidth={metaImageWidth}
         metaImageHeight={metaImageHeight}
@@ -71,7 +71,8 @@ export const Player = ({
         content={videoThumbnail}
         description={description}
         currentUrl={urlToCopy}
-        keyword='genuine'
+        keyword="genuine"
+        className="next-seo"
       >
         <TopNav />
         <ReactPlayerWrapper

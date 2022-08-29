@@ -1,7 +1,11 @@
 html {
+  width: 100%;
+  height: 100%;
   overflow-y: hidden;
 }
 body {
+  width: 100%;
+  height: 100%;
   font-family: "Avenir", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
@@ -10,8 +14,8 @@ body {
   font-style: normal;
 }
 body .overlay {
-  height: 100%;
   width: 100%;
+  height: 100%;
   position: fixed;
   top: 0px;
   left: 0px;
@@ -20,20 +24,19 @@ body .overlay {
   -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
 }
-.main {
-  height: 100vh !important;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+#__next,
+.layout {
+  width: 100%;
+  height: 100%;
 }
-
+.main {
+  width: 100%;
+  height: 100% !important;
+}
+/* Top Navigation */
 .navbar {
-  position: fixed;
-  top: 0;
-  left: 0;
   width: 100%;
   height: auto;
-  z-index: 99999;
 }
 .navbar-brand {
   display: flex;
@@ -42,7 +45,7 @@ body .overlay {
   width: 115px;
   height: auto;
 }
-.navbar-light .navbar-toggler,
+.navbar-toggler,
 .navbar-toggler:focus,
 .navbar-toggler:hover {
   color: #ffffff;
@@ -50,25 +53,26 @@ body .overlay {
   outline: none;
   padding: 0;
   box-shadow: none;
+  background: transparent;
+  border-color: transparent;
 }
 .navbar-toggler:focus,
 .navbar-toggler:hover {
   opacity: 0.5;
 }
-.navbar-light .navbar-toggler-icon {
+.navbar .navbar-toggler-icon {
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
   width: 2rem;
   height: 2rem;
 }
 .navbar-collapse {
-  position: absolute;
+  position: fixed;
   top: 0;
   bottom: 0;
   left: 100%;
   width: 100%;
-  height: 100vh;
+  height: 100%;
   transition: all 0.4s ease;
-  z-index: 9999;
   background: rgb(0 0 0 / 80%);
   display: flex !important;
   justify-content: end;
@@ -76,13 +80,12 @@ body .overlay {
 .navbar-collapse.show {
   left: 0;
 }
-.navbar-light .navbar-collapse .navbar-toggler {
+.navbar .navbar-collapse .navbar-toggler {
   display: flex;
   width: auto;
   margin-left: auto;
 }
-.navbar-light .navbar-collapse .navbar-toggler-icon {
-  /* background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' fill='%23ffffff' viewBox='0 0 16 16'%3E%3Cpath d='M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E"); */
+.navbar .navbar-collapse .navbar-toggler-icon {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' fill='%23ffffff' viewBox='0 0 16 16'%3E%3Cpath d='M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854Z'/%3E%3C/svg%3E");
 }
 
@@ -171,7 +174,7 @@ body .overlay {
 .video-container {
   position: relative;
   width: auto;
-  height: 100vh;
+  height: 100%;
   overflow: hidden;
   cursor: pointer;
   aspect-ratio: 9 / 16;
@@ -192,7 +195,7 @@ body .overlay {
   position: absolute;
   top: 50%;
   left: 50%;
-  z-index: 999;
+  z-index: 1000;
   transform: translate(-50%, -50%);
   pointer-events: none;
 }
@@ -200,7 +203,7 @@ body .overlay {
   position: absolute;
   bottom: 0px;
   left: 0;
-  z-index: 999;
+  z-index: 1000;
   width: 100%;
   min-height: 5rem;
   display: flex;
@@ -252,9 +255,6 @@ body .overlay {
   width: 3rem;
 }
 .video-more-option ul {
-  position: absolute;
-  bottom: 0;
-  right: 0;
   list-style: none;
   padding: 0;
   margin: 0;
@@ -284,6 +284,9 @@ body .overlay {
   max-width: 320px;
   width: 100%;
 }
+.btn-close:focus {
+  box-shadow: none;
+}
 @media (max-width: 576px) {
   .modal-app-download .modal-content {
     border-radius: 40px 40px 0 0;
@@ -293,4 +296,51 @@ body .overlay {
     margin: 0;
     min-height: 100%;
   }
+}
+.modal-welcome .modal-dialog {
+  max-width: 320px;
+  margin: auto;
+}
+.modal-welcome .modal-content {
+  background: #000;
+  background: transparent
+    radial-gradient(closest-side at 50% 50%, #00189f 0%, #000000 100%) 0% 0%
+    no-repeat padding-box;
+  border-radius: 20px;
+  /* margin: 100px auto; */
+}
+.modal-welcome .btn-close {
+  color: #fff;
+  background: transparent
+    url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ffffff'%3e%3cpath d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/%3e%3c/svg%3e")
+    center/1em auto no-repeat;
+}
+.modal-welcome .carousel .carousel-item img {
+  max-width: 160px;
+}
+.modal-welcome .carousel .carousel-item h1 {
+  color: #ffffff;
+  text-shadow: 0px 8px 0px #0645ff;
+  font-size: 40px;
+  font-weight: 700;
+  height: 150px;
+  margin-bottom: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.modal-welcome .carousel .carousel-indicators {
+  bottom: -5px;
+}
+.modal-welcome .carousel .carousel-indicators [data-bs-target] {
+  background-color: #0645ff;
+  width: 8px;
+  height: 8px;
+  border-radius: 8px;
+  border: 0;
+  background-clip: unset;
+}
+.modal-welcome .carousel .carousel-indicators .active {
+  width: 40px;
 }

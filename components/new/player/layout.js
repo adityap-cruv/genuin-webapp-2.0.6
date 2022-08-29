@@ -1,8 +1,8 @@
-import React from 'react';
-import NextHead from 'next/head';
-import { NextSeo } from 'next-seo';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './style.css';
+import React from "react";
+import NextHead from "next/head";
+import { NextSeo } from "next-seo";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "./style.css";
 
 export const Layout = ({
   children,
@@ -16,51 +16,51 @@ export const Layout = ({
   currentUrl,
   keyword,
 }) => (
-  <div>
+  <div className="layout">
     <style jsx>{`
       @font-face {
-        font-family: 'AvenirNext';
-        src: url('/fonts/AvenirNext-Bold-01.ttf');
-        src: url('/fonts/AvenirNext-BoldItalic-02.ttf');
-        src: url('/fonts/AvenirNext-DemiBold-03.ttf');
-        src: url('/fonts/AvenirNext-DemiBoldItalic-04.ttf');
-        src: url('/fonts/AvenirNext-Heavy-09.ttf');
-        src: url('/fonts/AvenirNext-HeavyItalic-10.ttf');
-        src: url('/fonts/AvenirNext-Italic-05.ttf');
-        src: url('/fonts/AvenirNext-Medium-06.ttf');
-        src: url('/fonts/AvenirNext-MediumItalic-07.ttf');
-        src: url('/fonts/AvenirNext-Regular-08.ttf');
-        src: url('/fonts/AvenirNext-UltraLight-11.ttf');
-        src: url('/fonts/AvenirNext-UltraLightItalic-12.ttf');
+        font-family: "AvenirNext";
+        src: url("/fonts/AvenirNext-Bold-01.ttf");
+        src: url("/fonts/AvenirNext-BoldItalic-02.ttf");
+        src: url("/fonts/AvenirNext-DemiBold-03.ttf");
+        src: url("/fonts/AvenirNext-DemiBoldItalic-04.ttf");
+        src: url("/fonts/AvenirNext-Heavy-09.ttf");
+        src: url("/fonts/AvenirNext-HeavyItalic-10.ttf");
+        src: url("/fonts/AvenirNext-Italic-05.ttf");
+        src: url("/fonts/AvenirNext-Medium-06.ttf");
+        src: url("/fonts/AvenirNext-MediumItalic-07.ttf");
+        src: url("/fonts/AvenirNext-Regular-08.ttf");
+        src: url("/fonts/AvenirNext-UltraLight-11.ttf");
+        src: url("/fonts/AvenirNext-UltraLightItalic-12.ttf");
       }
       @font-face {
-        font-family: 'AvenirNext-DemiBold';
-        src: url('/fonts/AvenirNext-DemiBold-03.ttf');
+        font-family: "AvenirNext-DemiBold";
+        src: url("/fonts/AvenirNext-DemiBold-03.ttf");
       }
       @font-face {
-        font-family: 'AvenirNext-Bold';
-        src: url('/fonts/AvenirNext-Bold-01.ttf');
+        font-family: "AvenirNext-Bold";
+        src: url("/fonts/AvenirNext-Bold-01.ttf");
       }
     `}</style>
-    <meta property='og:video:url' content={videoUrl} />
-    <meta property='og:video:secure_url' content={videoUrl} />
-    <meta property='og:video:type' content='video/mp4' />
+    <meta property="og:video:url" content={videoUrl} />
+    <meta property="og:video:secure_url" content={videoUrl} />
+    <meta property="og:video:type" content="video/mp4" />
     <NextSeo
       title={title}
       description={description}
       openGraph={{
-        type: 'website',
+        type: "website",
         url: currentUrl,
-        title: 'Genuin',
+        title: "Genuin",
         description: description,
         videos: [
           {
             url: videoUrl,
             secure_url: videoUrl,
-            type: 'video/mp4',
-            width: '720',
-            height: '1280',
-            alt: 'Genuin',
+            type: "video/mp4",
+            width: "720",
+            height: "1280",
+            alt: "Genuin",
           },
         ],
         images: [
@@ -68,7 +68,7 @@ export const Layout = ({
             url: metaImage,
             width: metaImageWidth,
             height: metaImageHeight,
-            alt: 'Genuin',
+            alt: "Genuin",
           },
           // {
           //   url: content,
@@ -77,15 +77,15 @@ export const Layout = ({
           //   alt: 'Genuin',
           // }
         ],
-        site_name: 'Genuin',
+        site_name: "Genuin",
       }}
       facebook={{
         appId: 1234567890,
       }}
       twitter={{
-        handle: '@handle',
-        site: '@site',
-        cardType: 'summary_large_image',
+        handle: "@handle",
+        site: "@site",
+        cardType: "summary_large_image",
       }}
     />
     <NextHead>
@@ -95,14 +95,14 @@ export const Layout = ({
       /> */}
       {/* <script src="https:code.jquery.com/jquery-3.4.1.min.js"></script> */}
     </NextHead>
-    <div className='overlay'></div>
+    <div className="overlay"></div>
     <div
-      className='main'
+      className="main d-flex align-items-center justify-content-center"
       style={{
         backgroundImage: `url(${content})`,
-        backgroundRepeat: 'no-repeat',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
+        backgroundRepeat: "no-repeat",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
       }}
     >
       {children}

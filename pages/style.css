@@ -387,7 +387,7 @@ video{height: 612px !important;}
 } */
 @media (max-width: 1440px) {
   .main {
-    height: 100vh !important;
+    /* height: 100vh !important; */
     display: flex;
     align-items: center;
     justify-content: center;
