@@ -1,17 +1,16 @@
 import React from 'react';
-
 import axios from 'axios';
 import { Question } from '../../components/new/question';
 import { Layout } from '../../components/new/layout';
 
-const QTIndex2 = ({ data, url, genuinurl, host }) => {
+const QuestionWrapper = ({ data, url, genuinurl, host }) => {
   return (
     <Layout>
       <Question {...data} {...url} genuinurl={genuinurl} host={host} />
     </Layout>
   );
 };
-QTIndex2.getInitialProps = async ({ query: { share_string } }) => {
+QuestionWrapper.getInitialProps = async ({ query: { share_string } }) => {
   if (
     share_string !== undefined &&
     share_string !== null &&
@@ -34,4 +33,4 @@ QTIndex2.getInitialProps = async ({ query: { share_string } }) => {
     return Promise.resolve({ data: {}, genuinurl: process.env.genuinurl });
   }
 };
-export default QTIndex2;
+export default QuestionWrapper;

@@ -15,10 +15,9 @@ const replay = require('../images/video-more-options/ic-replay.svg');
 const comments = require('../images/video-more-options/ic-comments.svg');
 const subsribePlus = require('../images/video-more-options/ic-subsribe-plus.svg');
 
-const ShortUrlPage = (props) => {
+const Video = (props) => {
   const [showModalWelcome, setShowModalWelcome] = useState(true);
   const handleCloseWelcome = () => setShowModalWelcome(false);
-
   const [showModalAppDownload, setShowModalAppDownload] = useState(false);
   const handleCloseAppDownload = () => setShowModalAppDownload(false);
   const handleShowModalAppDownload = () => setShowModalAppDownload(true);
@@ -43,7 +42,7 @@ const ShortUrlPage = (props) => {
     </Layout>
   );
 };
-ShortUrlPage.getInitialProps = async ({ query: { video_id } }) => {
+Video.getInitialProps = async ({ query: { video_id } }) => {
   return axios
     .get(process.env.apiurl + '/api/v3/users/video/meta_data/' + video_id)
     .then((response) => {
@@ -62,7 +61,7 @@ ShortUrlPage.getInitialProps = async ({ query: { video_id } }) => {
       return Promise.resolve({ data: {} });
     });
 };
-export default ShortUrlPage;
+export default Video;
 
 const ShareControls = ({ showGetAppModal }) => (
   <ul>
