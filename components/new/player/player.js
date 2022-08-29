@@ -13,7 +13,6 @@ export const Player = ({
   videoThumbnail,
   videoPreviewImage,
   userName,
-  showGetAppModal,
   children,
 }) => {
   const [progress, setProgress] = useState(0);
@@ -28,14 +27,14 @@ export const Player = ({
     [video_id_to_use]
   );
   const hashtags = useMemo(
-    () => description.match(/#\w+/g) || [],
+    () => description?.match(/#\w+/g) || [],
     [description]
   );
   const baseUrl = useMemo(() => process.env.hostname + asPath, [asPath]);
   const title = 'Genuin';
 
   const metaLink = useMemo(
-    () => (link.indexOf('://') === -1 ? 'http://' + link : link),
+    () => (link?.indexOf('://') === -1 ? 'http://' + link : link),
     [link]
   );
 
@@ -60,9 +59,7 @@ export const Player = ({
     }
   }, [video_id_to_use, triggerPlayCount]);
 
-  return !Boolean(videoUrl) ? (
-    <Error statusCode='404' />
-  ) : (
+  return (
     <>
       <NextHead>
         <meta property='og:video:url' content={videoUrl} />

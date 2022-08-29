@@ -13,7 +13,7 @@ export const TopNav = ({ showGetAppModal }) => {
             Get App
           </Button>
           <Navbar.Toggle aria-controls='navbarMoreOptionDrawer' />
-          <Navbar.Collapse collapse id='navbarMoreOptionDrawer'>
+          <Navbar.Collapse appear id='navbarMoreOptionDrawer'>
             <Nav>
               <Navbar.Toggle aria-controls='navbarMoreOptionDrawer' />
               <Nav.Link href='#InvestInGenuin'>Invest in Genuin</Nav.Link>
