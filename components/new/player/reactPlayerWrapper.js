@@ -59,7 +59,7 @@ export const ReactPlayerWrapper = ({
       />
       {Boolean(getNextVideo) && Boolean(getPrevVideo) ? (
         <div className='btn-arrow-controler d-none d-md-flex flex-column align-items-center justify-content-center'>
-          <Button className='btn-arrow'>
+          <button className='btn-arrow'>
             <Image
               src={icArrowUp}
               width='24'
@@ -68,8 +68,8 @@ export const ReactPlayerWrapper = ({
               title='Arrow Up'
               onClick={getPrevVideo}
             />
-          </Button>
-          <Button className='btn-arrow'>
+          </button>
+          <button className='btn-arrow'>
             <Image
               src={icArrowDown}
               width='24'
@@ -78,7 +78,7 @@ export const ReactPlayerWrapper = ({
               title='Arrow Down'
               onClick={getNextVideo}
             />
-          </Button>
+          </button>
         </div>
       ) : null}
       <div className='video-footer bg-gradient-180'>
