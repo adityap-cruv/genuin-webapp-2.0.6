@@ -6,10 +6,14 @@
   "scripts": {
     "dev": "next dev -p 4000",
     "build": "next build",
-    "start": "next start -p 4000",
+    "start": "next start -p $PORT",
     "start_prod": "export NODE_ENV=production && pm2 start server.js -i 1 --name 'genuin-web-react'",
     "restart_prod": "export NODE_ENV=production && pm2 restart server.js -i 1 --name 'genuin-web-react'",
     "stop_prod": "pm2 stop genuin-web-react"
+  },
+  "engines": {
+    "node": "14.18.1",
+    "npm": "6.14.15"
   },
   "keywords": [],
   "author": "",
@@ -24,7 +28,7 @@
     "@zeit/next-css": "^1.0.1",
     "@zeit/next-sass": "^1.0.1",
     "axios": "^0.19.2",
-    "bootstrap": "^4.5.0",
+    "bootstrap": "~5.1.0",
     "copy-to-clipboard": "^3.3.1",
     "express": "^4.17.1",
     "isomorphic-fetch": "^2.2.1",
@@ -34,10 +38,10 @@
     "next-images": "^1.4.0",
     "next-seo": "^4.5.0",
     "node-sass": "^4.14.1",
-    "react": "^16.13.1",
-    "react-bootstrap": "^1.0.1",
+    "react": "^17.0.2",
+    "react-bootstrap": "~2.4.0",
     "react-device-detect": "^1.13.1",
-    "react-dom": "^16.13.1",
+    "react-dom": "^17.0.2",
     "react-grid-system": "^7.0.2",
     "react-highlight-words": "^0.16.0",
     "react-owl-carousel": "^2.3.1",
@@ -45,7 +49,8 @@
     "react-share": "^4.2.1",
     "react-slick": "^0.27.11",
     "slick-carousel": "^1.8.1",
-    "styled-components": "^5.1.1"
+    "styled-components": "^5.1.1",
+    "use-debounce": "^8.0.3"
   },
   "devDependencies": {
     "css-loader": "^4.3.0",

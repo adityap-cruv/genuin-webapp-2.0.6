@@ -1,30 +1,136 @@
-import React, { useState, useEffect } from 'react'
-import { useRouter, withRouter } from 'next/router';
+import React, { useState } from 'react';
 import axios from 'axios';
-import Player from './player';
+import { Image } from 'react-bootstrap';
+import Error from 'next/error';
+import { Player } from '../components/new/player';
+import { Layout } from '../components/new/layout';
+import { TopNav } from '../components/new/topNav';
+import { GetAppModal } from '../components/new/getAppModal';
+import { WelcomeModal } from '../components/new/welcomeModal';
 
-const ShortUrlPage = (props) => {
-    console.log(props);
-    const router = useRouter()
-    const { video_id } = router.query
-    console.log('video_id', video_id)
-    return (
-        <Player meta_tags={true} {...props.data} {...props.url} installUrl={process.env.installurl+props.data.video_id_to_use} />
-    )
-}
-ShortUrlPage.getInitialProps = async ({ query: { video_id } }) => {
-    return axios.get(process.env.apiurl+ "/api/v3/users/video/meta_data/" + video_id)
-      .then(response => {
-        var resObj = response.data.data;
-        var video_id_to_use = (resObj.video_uuid !== undefined && resObj.video_uuid !== null)?resObj.video_uuid : video_id;
-        Object.assign(resObj,{
-          video_id: video_id,
-          video_id_to_use: video_id_to_use
-        })
-        return Promise.resolve({ data: resObj})
-      })
-      .catch((err) => {
-        return Promise.resolve({ data: {} })
+const linkIcon = require('../images/video-more-options/ic-link.svg');
+const bookmark = require('../images/video-more-options/ic-bookmark.svg');
+const share = require('../images/video-more-options/ic-share.svg');
+const replay = require('../images/video-more-options/ic-replay.svg');
+const comments = require('../images/video-more-options/ic-comments.svg');
+const subsribePlus = require('../images/video-more-options/ic-subsribe-plus.svg');
+
+const Video = (props) => {
+  const [showModalWelcome, setShowModalWelcome] = useState(true);
+  const handleCloseWelcome = () => setShowModalWelcome(false);
+  const [showModalAppDownload, setShowModalAppDownload] = useState(false);
+  const handleCloseAppDownload = () => setShowModalAppDownload(false);
+  const handleShowModalAppDownload = () => setShowModalAppDownload(true);
+
+  return !Boolean(props.data.videoUrl) ? (
+    <Error statusCode='404' />
+  ) : (
+    <Layout>
+      <TopNav showGetAppModal={handleShowModalAppDownload} />
+      <Player
+        video_id_to_use={props.data.video_id_to_use}
+        description={props.data.description}
+        videoUrl={props.data.videoUrl}
+        asPath={props.data.asPath}
+        link={props.data.link}
+        videoThumbnail={props.data.videoThumbnail}
+        videoPreviewImage={props.data.videoPreviewImage}
+        userName={props.data.userName}
+        userProfileImage={props.data.userProfileImage}
+        showGetAppModal={handleShowModalAppDownload}
+      >
+        <ShareControls showGetAppModal={handleShowModalAppDownload} />
+      </Player>
+      <GetAppModal
+        show={showModalAppDownload}
+        onClose={handleCloseAppDownload}
+      />
+      <WelcomeModal show={showModalWelcome} onClose={handleCloseWelcome} />
+    </Layout>
+  );
+};
+Video.getInitialProps = async ({ query: { video_id } }) => {
+  return axios
+    .get(process.env.apiurl + '/api/v3/users/video/meta_data/' + video_id)
+    .then((response) => {
+      var resObj = response.data.data;
+      var video_id_to_use =
+        resObj.video_uuid !== undefined && resObj.video_uuid !== null
+          ? resObj.video_uuid
+          : video_id;
+      Object.assign(resObj, {
+        video_id: video_id,
+        video_id_to_use: video_id_to_use,
       });
-}
-export default ShortUrlPage;
+      return Promise.resolve({ data: resObj });
+    })
+    .catch((err) => {
+      return Promise.resolve({ data: {} });
+    });
+};
+export default Video;
+
+const ShareControls = ({ showGetAppModal }) => (
+  <ul>
+    <li>
+      <Image
+        src={linkIcon}
+        width='24'
+        height='24'
+        alt='Link'
+        title='Link'
+        onClick={showGetAppModal}
+      />
+    </li>
+    <li>
+      <Image
+        src={bookmark}
+        width='24'
+        height='24'
+        alt='Bookmark'
+        title='Bookmark'
+        onClick={showGetAppModal}
+      />
+    </li>
+    <li>
+      <Image
+        src={share}
+        width='24'
+        height='24'
+        alt='Share'
+        title='Share'
+        onClick={showGetAppModal}
+      />
+    </li>
+    <li>
+      <Image
+        src={replay}
+        width='24'
+        height='24'
+        alt='Replay'
+        title='Replay'
+        onClick={showGetAppModal}
+      />
+    </li>
+    <li>
+      <Image
+        src={comments}
+        width='24'
+        height='24'
+        alt='Comments'
+        title='Comments'
+        onClick={showGetAppModal}
+      />
+    </li>
+    <li>
+      <Image
+        src={subsribePlus}
+        width='24'
+        height='24'
+        alt='Subsribe Plus'
+        title='Subsribe Plus'
+        onClick={showGetAppModal}
+      />
+    </li>
+  </ul>
+);

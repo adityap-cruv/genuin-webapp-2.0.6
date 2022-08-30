@@ -1,38 +1,48 @@
-import React from 'react'
+import React from 'react';
 import { NextSeo } from 'next-seo';
 import Link from 'next/link';
 class QTIndexPage extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-        };
-        if (typeof window === 'undefined') {
-        global.window = {}
-        }
+  constructor(props) {
+    super(props);
+    this.state = {};
+    if (typeof window === 'undefined') {
+      global.window = {};
     }
-    handleAndroidInstallClick = () => {
-        // console.log('this is:', this);
-        window.open("https://install.begenuin.com/86sn/cgs");
+  }
+  handleAndroidInstallClick = () => {
+    // console.log('this is:', this);
+    window.open('https://install.begenuin.com/86sn/cgs');
+  };
+  handleIosInstallClick = () => {
+    // console.log('this is:', this);
+    window.open('https://install.begenuin.com/86sn/cgs');
+  };
+  render() {
+    // console.log('this.props', this.props);
+    var preview_image =
+      this.props.preview_image !== undefined &&
+      this.props.preview_image !== null
+        ? this.props.preview_image
+        : '';
+    var currentUrl = process.env.hostname + this.props.asPath;
+    var question = this.props.question
+      ? 'Question on Genuin: ' + this.props.question
+      : '';
+    var asked_by = '';
+    if (
+      this.props.owner !== undefined &&
+      this.props.owner !== null &&
+      this.props.owner.nickname !== undefined &&
+      this.props.owner.nickname !== null
+    ) {
+      asked_by = ` asked by @${this.props.owner.nickname}`;
     }
-    handleIosInstallClick = () => {
-        // console.log('this is:', this);
-        window.open("https://install.begenuin.com/86sn/cgs"); 
-    }
-    render() {
-        // console.log('this.props', this.props);
-        var preview_image = (this.props.preview_image !== undefined && this.props.preview_image !== null)?this.props.preview_image:'';
-        var currentUrl = process.env.hostname + this.props.asPath;
-        var question = this.props.question ? 'Question on Genuin: '+this.props.question : '';
-        var asked_by = '';
-        if(this.props.owner !== undefined && this.props.owner !== null && this.props.owner.nickname !== undefined && this.props.owner.nickname !== null){
-            asked_by = ` asked by @${this.props.owner.nickname}`;
-        }
-        var description = `Answer this trending question on Genuin${asked_by}`;
-        return (
-            <div className="main_rt_index">
-            <style>{`
+    var description = `Answer this trending question on Genuin${asked_by}`;
+    return (
+      <div className='main_rt_index'>
+        <style>{`
                 @font-face {
-                    font-family: 'AvenirNext';
+                     font-family: 'AvenirNext';
                     src: url('/fonts/AvenirNext-Bold-01.ttf');
                     src: url('/fonts/AvenirNext-BoldItalic-02.ttf');
                     src: url('/fonts/AvenirNext-DemiBold-03.ttf');
@@ -89,43 +99,44 @@ class QTIndexPage extends React.Component {
                     }
                 }
             `}</style>
-            <NextSeo
-                title= {question}
-                description={description}
-                openGraph={{
-                    type: 'object',
-                    url: currentUrl,
-                    title: `${question}`,
-                    images: [
-                        {
-                          url: preview_image,
-                          width: 1084,
-                          height: 546,
-                          alt: 'Genuin',
-                        },
-                        {
-                            url: preview_image,
-                            width: 300,
-                            height: 200,
-                            alt: 'Genuin',
-                            // type:'image/png'
-                        }
-                    ],
-                    site_name: 'Genuin',
-                }}
-                facebook={{
-                    appId: 1234567890,
-                }}
-                twitter={{
-                    handle: '@handle',
-                    site: '@site',
-                    cardType: 'summary_large_image',
-                }}
-            />
-            {
-                this.props.question_id !== undefined && this.props.question_id !== null && this.props.question_id !== ''?
-                <React.Fragment>
-                    <style>{`
+        <NextSeo
+          title={question}
+          description={description}
+          openGraph={{
+            type: 'object',
+            url: currentUrl,
+            title: `${question}`,
+            images: [
+              {
+                url: preview_image,
+                width: 1084,
+                height: 546,
+                alt: 'Genuin',
+              },
+              {
+                url: preview_image,
+                width: 300,
+                height: 200,
+                alt: 'Genuin',
+                // type:'image/png'
+              },
+            ],
+            site_name: 'Genuin',
+          }}
+          facebook={{
+            appId: 1234567890,
+          }}
+          twitter={{
+            handle: '@handle',
+            site: '@site',
+            cardType: 'summary_large_image',
+          }}
+        />
+        {this.props.question_id !== undefined &&
+        this.props.question_id !== null &&
+        this.props.question_id !== '' ? (
+          <React.Fragment>
+            <style>{`
                     .preview_image {
                         opacity: 1;
                         width: 76.96%;
@@ -136,11 +147,11 @@ class QTIndexPage extends React.Component {
                         border-radius: 20px;
                     }
                     `}</style>
-                    <img className="preview_image" src={preview_image} />
-                </React.Fragment>
-                :
-                <React.Fragment>
-                    <style>{`
+            <img className='preview_image' src={preview_image} />
+          </React.Fragment>
+        ) : (
+          <React.Fragment>
+            <style>{`
                     .chat_not_found {
                         opacity: 1;
                         width: 53.47%;
@@ -176,29 +187,45 @@ class QTIndexPage extends React.Component {
                         cursor: pointer;
                     }
                     `}</style>
-                    <div className="not_found_page_logo">
-                        <Link href={process.env.genuinurl}>
-                            <img src={require('../images/logo_header_new.png')} alt="Genuin" />
-                        </Link>
-                    </div>
-                    <div className="chat_not_found">
-                        <h3>Sorry, this page isn’t available.</h3>
-                        <p>The link you followed may be broken, or the page may have been removed. Go to <Link href={process.env.genuinurl}><a>Genuin homepage.</a></Link>
-                        </p>
-                    </div>
-                </React.Fragment>
-            }
-            <div className="app_store_buttons">
-                <div className="ios">
-                    <img src={require('../images/badge_appstore.png')} onClick={this.handleIosInstallClick} alt="badge_appstore" />
-                </div>
-                <div className="android">
-                    <img src={require('../images/badge_playstore.png')} onClick={this.handleAndroidInstallClick} alt="badge_playstore" />
-                </div>
+            <div className='not_found_page_logo'>
+              <Link href={process.env.genuinurl}>
+                <img
+                  src={require('../images/logo_header_new.png')}
+                  alt='Genuin'
+                />
+              </Link>
             </div>
+            <div className='chat_not_found'>
+              <h3>Sorry, this page isn’t available.</h3>
+              <p>
+                The link you followed may be broken, or the page may have been
+                removed. Go to{' '}
+                <Link href={process.env.genuinurl}>
+                  <a>Genuin homepage.</a>
+                </Link>
+              </p>
+            </div>
+          </React.Fragment>
+        )}
+        <div className='app_store_buttons'>
+          <div className='ios'>
+            <img
+              src={require('../images/badge_appstore.png')}
+              onClick={this.handleIosInstallClick}
+              alt='badge_appstore'
+            />
+          </div>
+          <div className='android'>
+            <img
+              src={require('../images/badge_playstore.png')}
+              onClick={this.handleAndroidInstallClick}
+              alt='badge_playstore'
+            />
+          </div>
         </div>
-        );
-    }
+      </div>
+    );
+  }
 }
 
 export default QTIndexPage;
