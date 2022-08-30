@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import ReactPlayer from 'react-player/lazy';
 import { useDebounce } from 'use-debounce';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -25,6 +25,32 @@ export const ReactPlayerWrapper = ({
   getPrevVideo,
 }) => {
   const [isPlayingDebounced] = useDebounce(isPlaying, 65);
+  const ts = useRef(0);
+  const prevRef = useRef(getPrevVideo);
+  prevRef.current = getPrevVideo;
+  const nextRef = useRef(getNextVideo);
+  nextRef.current = getNextVideo;
+
+  useEffect(() => {
+    const touchStart = (e) => {
+      ts.current = e.changedTouches[0].clientY;
+    };
+    const touchEnd = (e) => {
+      const te = e.changedTouches[0].clientY;
+      if (ts.current > te + 5) {
+        nextRef?.current?.();
+      } else if (ts.current < te - 5) {
+        prevRef?.current?.();
+      }
+    };
+    window.addEventListener('touchstart', touchStart);
+    window.addEventListener('touchend', touchEnd);
+    return () => {
+      window.removeEventListener('touchstart', touchStart);
+      window.removeEventListener('touchend', touchEnd);
+    };
+  }, []);
+
   return (
     <div className='video-container'>
       <ReactPlayer
@@ -33,7 +59,6 @@ export const ReactPlayerWrapper = ({
         playing={isPlaying}
         controls={false}
         playsinline={true}
-        // light={videoThumbnail}
         config={{
           file: {
             attributes: { poster: videoThumbnail },
@@ -43,8 +68,6 @@ export const ReactPlayerWrapper = ({
         className='video-wrapper'
         width='auto'
         height='100%'
-        // fluid
-        // aspectRatio='9:16'
         onProgress={onProgress}
         onDuration={onDuration}
         onEnded={onEnded}
