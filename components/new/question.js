@@ -1,9 +1,10 @@
-import React, { useMemo } from 'react';
-import { NextSeo } from 'next-seo';
+import React, { useMemo } from "react";
+import { Container, Row, Col, Image } from "react-bootstrap";
+import { NextSeo } from "next-seo";
+import { TopNav } from "../../components/new/topNav";
 
-const logo = require('../../images/logo_header_new.png');
-const ios = require('../../images/badge_appstore.png');
-const android = require('../../images/badge_playstore.png');
+const ios = require("../../images/badge_appstore.png");
+const android = require("../../images/badge_playstore.png");
 
 export const Question = ({
   preview_image,
@@ -15,14 +16,14 @@ export const Question = ({
   host,
 }) => {
   const handleAndroidInstallClick = () => {
-    window.open('https://install.begenuin.com/86sn/cgs');
+    window.open("https://install.begenuin.com/86sn/cgs");
   };
   const handleIosInstallClick = () => {
-    window.open('https://install.begenuin.com/86sn/cgs');
+    window.open("https://install.begenuin.com/86sn/cgs");
   };
   var currentUrl = useMemo(() => host + asPath, [asPath]);
   const _question = useMemo(() =>
-    Boolean(question) ? 'Question on Genuin: ' + question : question
+    Boolean(question) ? "Question on Genuin: " + question : question
   );
   const askedBy = useMemo(() =>
     Boolean(owner?.nickname) ? `asked by @${owner.nickname}` : owner?.nickname
@@ -38,7 +39,7 @@ export const Question = ({
         title={_question}
         description={description}
         openGraph={{
-          type: 'object',
+          type: "object",
           url: currentUrl,
           title: `${_question}`,
           images: [
@@ -46,105 +47,136 @@ export const Question = ({
               url: preview_image,
               width: 1084,
               height: 546,
-              alt: 'Genuin',
+              alt: "Genuin",
             },
             {
               url: preview_image,
               width: 300,
               height: 200,
-              alt: 'Genuin',
+              alt: "Genuin",
               // type:'image/png'
             },
           ],
-          site_name: 'Genuin',
+          site_name: "Genuin",
         }}
         facebook={{
           appId: 1234567890,
         }}
         twitter={{
-          handle: '@handle',
-          site: '@site',
-          cardType: 'summary_large_image',
+          handle: "@handle",
+          site: "@site",
+          cardType: "summary_large_image",
         }}
       />
       {Boolean(question_id) ? (
         <>
-          <style>{`
-      .preview_image {
-          opacity: 1;
-          width: 76.96%;
-          height: auto;
-          position: relative;
-          margin-top: 4.5%;
-          margin-left: 11.52%;
-          border-radius: 20px;
-      }
-      `}</style>
-          <img className='preview_image' src={preview_image} />
+          <section className="w-100 h-100 bg-gradient-blue d-flex align-items-center">
+            <Container>
+              <Row className="mb-5">
+                <Col
+                  xs={12}
+                  lg={10}
+                  className="d-flex align-items-center justify-content-center mx-auto"
+                >
+                  <Image
+                    src={preview_image}
+                    width={1084}
+                    height={546}
+                    alt="Question"
+                    title="Question"
+                    fluid
+                    className="rounded-5"
+                  />
+                </Col>
+              </Row>
+              <Row xs={2} className="justify-content-center">
+                <Col
+                  sm="auto"
+                  className="d-flex align-items-center justify-content-end ps-4 ps-sm-0"
+                >
+                  <Image
+                    src={ios}
+                    onClick={handleIosInstallClick}
+                    width={204}
+                    height={60}
+                    alt="iOs App Store"
+                    title="iOs App Store"
+                    fluid
+                  />
+                </Col>
+                <Col
+                  sm="auto"
+                  className="d-flex align-items-center justify-content-start  pe-4 ps-em-0"
+                >
+                  <Image
+                    src={android}
+                    width={204}
+                    height={60}
+                    onClick={handleAndroidInstallClick}
+                    alt="Android Play Store"
+                    title="Android Play Store"
+                    fluid
+                  />
+                </Col>
+              </Row>
+            </Container>
+          </section>
         </>
       ) : (
         <>
-          <style>{`
-                    .chat_not_found {
-                        opacity: 1;
-                        width: 53.47%;
-                        height: auto;
-                        position: relative;
-                        padding: 17.8% 0px 14.8% 0px;
-                        margin-left: 23.26%;
-                        text-align:center;
-                    }
-                    .chat_not_found h3 {
-                        color: #ffffff;
-                        font-family: 'AvenirNext-Bold';
-                        font-size: 36px;
-                        letter-spacing: 0px;
-                    }
-                    .chat_not_found p {
-                        color: #ffffff;
-                        font-family: 'AvenirNext-Medium';
-                        font-size: 28px;
-                        letter-spacing: 0px;
-                    }
-                    .chat_not_found a {
-                        text-decoration: none;
-                        color: #0645FF;
-                    }
-                    .not_found_page_logo {
-                        position: absolute;
-                        top: 4%;
-                        left: 5%;
-                    }
-                    .not_found_page_logo img {
-                        width: 180px;
-                        cursor: pointer;
-                    }
-                    `}</style>
-          <div className='not_found_page_logo'>
-            <img src={logo} alt='Genuin' href={genuinurl ?? ''} />
-          </div>
-          <div className='chat_not_found'>
-            <h3>Sorry, this page isn’t available.</h3>
-            <p>
-              The link you followed may be broken, or the page may have been
-              removed. Go to <a href={genuinurl ?? ''}>Genuin homepage.</a>
-            </p>
-          </div>
+          <section className="w-100 h-100 bg-gradient-blue d-flex align-items-center">
+            <TopNav />
+            <Container>
+              <Row className="mb-5">
+                <Col
+                  xs={12}
+                  lg={10}
+                  className="d-flex align-items-center justify-content-center mx-auto text-center text-white flex-column"
+                >
+                  <h1 className="fw-bold mb-4">
+                    Sorry, this page isn't available.
+                  </h1>
+                  <p className="fs-3">
+                    The link you followed may be broken, or the page may have
+                    been removed. Go to{" "}
+                    <a href={genuinurl ?? ""}>Genuin Home Page.</a>
+                  </p>
+                </Col>
+              </Row>
+              <Row xs={2} className="justify-content-center">
+                <Col
+                  sm="auto"
+                  className="d-flex align-items-center justify-content-end ps-4 ps-sm-0"
+                >
+                  <Image
+                    src={ios}
+                    onClick={handleIosInstallClick}
+                    width={204}
+                    height={60}
+                    alt="iOs App Store"
+                    title="iOs App Store"
+                    fluid
+                  />
+                </Col>
+                <Col
+                  sm="auto"
+                  className="d-flex align-items-center justify-content-start  pe-4 ps-em-0"
+                >
+                  <Image
+                    src={android}
+                    width={204}
+                    height={60}
+                    onClick={handleAndroidInstallClick}
+                    alt="Android Play Store"
+                    title="Android Play Store"
+                    fluid
+                  />
+                </Col>
+              </Row>
+            </Container>
+          </section>
         </>
       )}
-
-      <div className='app_store_buttons'>
-        <div className='ios'>
-          <img src={ios} onClick={handleIosInstallClick} alt='badge_appstore' />
-        </div>
-        <div className='android'>
-          <img
-            src={android}
-            onClick={handleAndroidInstallClick}
-            alt='badge_playstore'
-          />
-        </div>
-      </div>
     </>
   );
 };

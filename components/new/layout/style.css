@@ -386,3 +386,6 @@ body .overlay {
     radial-gradient(closest-side at 50% 50%, #00189f 0%, #000000 100%) 0% 0%
     no-repeat padding-box;
 }
+.rounded-5 {
+  border-radius: 20px;
+}
