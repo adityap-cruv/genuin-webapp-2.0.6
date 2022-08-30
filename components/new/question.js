@@ -133,9 +133,9 @@ export const Question = ({
                   lg={10}
                   className="d-flex align-items-center justify-content-center mx-auto text-center text-white flex-column"
                 >
-                  <h1 className="fw-bold mb-4">
+                  <h2 className="fw-bold mb-4 h1">
                     Sorry, this page isn't available.
-                  </h1>
+                  </h2>
                   <p className="fs-3">
                     The link you followed may be broken, or the page may have
                     been removed. Go to{" "}

@@ -78,7 +78,7 @@ export const ReactPlayerWrapper = ({
       <div className="video-footer bg-gradient-180">
         <div className="d-flex align-items-end justify-content-between">
           <div className="d-flex flex-column">
-            <Badge pill bg="dark" className="mb-2">
+            <Badge pill bg="dark" className="mb-2 align-self-start">
               @pusateri added
             </Badge>
             <div className="video-auther mb-2">

@@ -399,6 +399,7 @@ body .overlay {
 .modal-welcome .carousel .carousel-indicators {
   bottom: -5px;
 }
+.carousel .carousel-indicators [data-bs-target],
 .modal-welcome .carousel .carousel-indicators [data-bs-target] {
   background-color: #0645ff;
   width: 8px;
@@ -407,6 +408,7 @@ body .overlay {
   border: 0;
   background-clip: unset;
 }
+.carousel .carousel-indicators .active,
 .modal-welcome .carousel .carousel-indicators .active {
   width: 40px;
 }
