@@ -7,13 +7,13 @@ import { increaseVideoViewCount } from '../../../actions/postActions';
 export const Player = ({
   video_id_to_use,
   description,
-  videoUrl,
+  videoUrl = '',
   asPath,
   link,
   videoThumbnail,
-  videoPreviewImage,
+  videoPreviewImage = '',
   userName,
-  userProfileImage,
+  userProfileImage = '',
   children,
 }) => {
   const [progress, setProgress] = useState(0);
@@ -27,7 +27,7 @@ export const Player = ({
     [video_id_to_use]
   );
   const shortDescription = useMemo(() => {
-    if (description.length > 50) {
+    if (description?.length > 50) {
       return `${description.slice(0, 50)}...`;
     }
     return description;
