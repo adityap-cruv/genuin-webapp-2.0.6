@@ -16,7 +16,6 @@ const comments = require('../../images/video-more-options/ic-comments.svg');
 const subsribePlus = require('../../images/video-more-options/ic-subsribe-plus.svg');
 
 const RoundTable = (props) => {
-  console.log(props);
   const [showModalWelcome, setShowModalWelcome] = useState(true);
   const handleCloseWelcome = () => setShowModalWelcome(false);
 

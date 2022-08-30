@@ -13,6 +13,7 @@ export const Player = ({
   videoThumbnail,
   videoPreviewImage,
   userName,
+  userProfileImage,
   children,
 }) => {
   const [progress, setProgress] = useState(0);
@@ -21,11 +22,17 @@ export const Player = ({
   if (typeof window === 'undefined') {
     global.window = {};
   }
-  const installURL = process.env.installurl + video_id_to_use;
   const urlToCopy = useMemo(
     () => process.env.hostname + '/' + video_id_to_use,
     [video_id_to_use]
   );
+  const shortDescription = useMemo(() => {
+    if (description.length > 50) {
+      return `${description.slice(0, 50)}...`;
+    }
+    return description;
+  }, [description]);
+
   const hashtags = useMemo(
     () => description?.match(/#\w+/g) || [],
     [description]
@@ -37,6 +44,16 @@ export const Player = ({
     () => (link?.indexOf('://') === -1 ? 'http://' + link : link),
     [link]
   );
+  const installURL = process.env.installurl + video_id_to_use;
+
+  const profilePic = useMemo(() => {
+    if (Boolean(userProfileImage)) {
+      return isValidHttpUrl(userProfileImage)
+        ? userProfileImage
+        : `https://media.qa.begenuin.com/backend_assets/lottie/${userProfileImage}.png`;
+    }
+    return 'https://media.qa.begenuin.com/backend_assets/lottie/snowman.png';
+  }, [userProfileImage]);
 
   const handleToggleIsPlaying = () => {
     setIsPlaying((old) => !old);
@@ -122,6 +139,8 @@ export const Player = ({
           progress={progress}
           videoThumbnail={videoThumbnail}
           userName={userName}
+          description={shortDescription}
+          profilePic={profilePic}
         >
           {children}
         </ReactPlayerWrapper>
@@ -129,3 +148,14 @@ export const Player = ({
     </>
   );
 };
+
+function isValidHttpUrl(string) {
+  let url;
+  try {
+    url = new URL(string);
+  } catch (_) {
+    return false;
+  }
+
+  return url.protocol === 'http:' || url.protocol === 'https:';
+}

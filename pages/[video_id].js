@@ -28,8 +28,15 @@ const Video = (props) => {
     <Layout>
       <TopNav showGetAppModal={handleShowModalAppDownload} />
       <Player
-        {...props.data}
-        {...props.url}
+        video_id_to_use={props.data.video_id_to_use}
+        description={props.data.description}
+        videoUrl={props.data.videoUrl}
+        asPath={props.data.asPath}
+        link={props.data.link}
+        videoThumbnail={props.data.videoThumbnail}
+        videoPreviewImage={props.data.videoPreviewImage}
+        userName={props.data.userName}
+        userProfileImage={props.data.userProfileImage}
         showGetAppModal={handleShowModalAppDownload}
       >
         <ShareControls showGetAppModal={handleShowModalAppDownload} />
