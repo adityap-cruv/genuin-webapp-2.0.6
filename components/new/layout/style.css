@@ -1,3 +1,4 @@
+/* Generic CSS */
 html {
   width: 100%;
   height: 100%;
@@ -33,7 +34,33 @@ body .overlay {
   width: 100%;
   height: 100% !important;
 }
-/* Top Navigation */
+.text-primary,
+.navbar-collapse .navbar-nav a.text-primary {
+  color: #0645ff !important;
+}
+.bg-gradient {
+  background: linear-gradient(
+    0deg,
+    rgba(17, 17, 17, 0) 0%,
+    rgba(17, 17, 17, 0.7) 100%
+  );
+}
+.bg-gradient-180 {
+  background: linear-gradient(
+    180deg,
+    rgba(17, 17, 17, 0) 0%,
+    rgba(17, 17, 17, 0.7) 100%
+  );
+}
+.bg-gradient-blue {
+  background: transparent
+    radial-gradient(closest-side at 50% 50%, #00189f 0%, #000000 100%) 0% 0%
+    no-repeat padding-box;
+}
+.rounded-5 {
+  border-radius: 20px;
+}
+/* Top Navigation CSS */
 .navbar {
   width: 100%;
   height: auto;
@@ -103,30 +130,13 @@ body .overlay {
 .navbar-collapse .navbar-nav a.text-primary {
   font-size: 1rem;
 }
-.text-primary,
-.navbar-collapse .navbar-nav a.text-primary {
-  color: #0645ff !important;
-}
 .navbar-collapse .navbar-nav {
   padding: 1.2rem 1rem;
 }
 .navbar-collapse .navbar-nav a:hover {
   opacity: 0.8;
 }
-.bg-gradient {
-  background: linear-gradient(
-    0deg,
-    rgba(17, 17, 17, 0) 0%,
-    rgba(17, 17, 17, 0.7) 100%
-  );
-}
-.bg-gradient-180 {
-  background: linear-gradient(
-    180deg,
-    rgba(17, 17, 17, 0) 0%,
-    rgba(17, 17, 17, 0.7) 100%
-  );
-}
+/* Buttons CSS */
 .btn {
   border-radius: 0.25rem;
   font-weight: 700;
@@ -201,18 +211,16 @@ body .overlay {
   background-color: transparent;
   border-color: #f8f9fa;
 }
-
+/* Video Player CSS */
 .video-container {
   position: relative;
   width: auto;
   height: 100%;
-  overflow: hidden;
   cursor: pointer;
   aspect-ratio: 9 / 16;
   background: #333333;
 }
 .video-wrapper {
-  overflow: hidden;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -298,9 +306,11 @@ body .overlay {
   display: flex;
   flex-direction: column;
 }
+.btn-arrow,
 .video-more-option ul > li {
   width: 3rem;
   height: 3rem;
+  border: none;
   border-radius: 100%;
   display: flex;
   align-items: center;
@@ -308,12 +318,30 @@ body .overlay {
   background: rgba(255, 255, 255, 0.1);
   margin-top: 1rem;
 }
+.btn-arrow:hover,
 .video-more-option ul > li:hover {
   background: rgba(255, 255, 255, 0.3);
+}
+.btn-arrow:first-child {
+  margin-top: 0;
+}
+/* Next and Previous Video Controler CSS */
+.btn-arrow-controler {
+  position: absolute;
+  top: 50%;
+  right: -4rem;
+  transform: translateY(-50%);
 }
 .react-player__shadow {
   display: none !important;
 }
+@media (max-width: 768px) {
+  .video-container,
+  .video-wrapper {
+    overflow: hidden;
+  }
+}
+/* Modal App Download CSS */
 .modal-app-download .modal-content {
   border-radius: 10px;
 }
@@ -334,6 +362,7 @@ body .overlay {
     min-height: 100%;
   }
 }
+/* Modal Welcome CSS */
 .modal-welcome .modal-dialog {
   max-width: 320px;
   margin: auto;
@@ -380,12 +409,4 @@ body .overlay {
 }
 .modal-welcome .carousel .carousel-indicators .active {
   width: 40px;
-}
-.bg-gradient-blue {
-  background: transparent
-    radial-gradient(closest-side at 50% 50%, #00189f 0%, #000000 100%) 0% 0%
-    no-repeat padding-box;
-}
-.rounded-5 {
-  border-radius: 20px;
 }

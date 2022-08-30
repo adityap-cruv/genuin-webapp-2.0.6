@@ -1,9 +1,12 @@
-import React from 'react';
-import ReactPlayer from 'react-player/lazy';
-import { useDebounce } from 'use-debounce';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlay, faPause } from '@fortawesome/free-solid-svg-icons';
-import { Image, ProgressBar, Badge, Button } from 'react-bootstrap';
+import React from "react";
+import ReactPlayer from "react-player/lazy";
+import { useDebounce } from "use-debounce";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
+import { Image, ProgressBar, Badge, Button } from "react-bootstrap";
+
+const icArrowDown = require("../../../images/video-more-options/ic-arrow-down.svg");
+const icArrowUp = require("../../../images/video-more-options/ic-arrow-up.svg");
 
 export const ReactPlayerWrapper = ({
   videoUrl,
@@ -21,7 +24,7 @@ export const ReactPlayerWrapper = ({
 }) => {
   const [isPlayingDebounced] = useDebounce(isPlaying, 65);
   return (
-    <div className='video-container'>
+    <div className="video-container">
       <ReactPlayer
         key={videoUrl}
         url={[videoUrl]}
@@ -35,9 +38,9 @@ export const ReactPlayerWrapper = ({
           },
         }}
         onClick={handleToggleIsPlaying}
-        className='video-wrapper'
-        width='auto'
-        height='100%'
+        className="video-wrapper"
+        width="auto"
+        height="100%"
         // fluid
         // aspectRatio='9:16'
         onProgress={onProgress}
@@ -48,35 +51,55 @@ export const ReactPlayerWrapper = ({
       <FontAwesomeIcon
         icon={isPlaying ? faPause : faPlay}
         style={{
-          display: isPlayingDebounced ? 'none' : 'block',
+          display: isPlayingDebounced ? "none" : "block",
         }}
-        className='btn-play'
+        className="btn-play"
       />
-      <div className='video-footer bg-gradient-180'>
-        <div className='d-flex align-items-end justify-content-between'>
-          <div className='d-flex flex-column'>
-            <Badge pill bg='dark' className='mb-2'>
+      <div className="btn-arrow-controler d-none d-md-flex flex-column align-items-center justify-content-center">
+        <Button className="btn-arrow">
+          <Image
+            src={icArrowUp}
+            width="24"
+            height="24"
+            alt="Arrow Up"
+            title="Arrow Up"
+          />
+        </Button>
+        <Button className="btn-arrow">
+          <Image
+            src={icArrowDown}
+            width="24"
+            height="24"
+            alt="Arrow Down"
+            title="Arrow Down"
+          />
+        </Button>
+      </div>
+      <div className="video-footer bg-gradient-180">
+        <div className="d-flex align-items-end justify-content-between">
+          <div className="d-flex flex-column">
+            <Badge pill bg="dark" className="mb-2">
               @pusateri added
             </Badge>
-            <div className='video-auther mb-2'>
+            <div className="video-auther mb-2">
               <Image
                 src={profilePic}
-                width='36'
-                height='36'
-                alt='@pusateri'
-                title='@pusateri'
-                className='img-auther-pic'
+                width="36"
+                height="36"
+                alt="@pusateri"
+                title="@pusateri"
+                className="img-auther-pic"
               />
-              <h5 className='mb-0'>
+              <h5 className="mb-0">
                 {userName}
-                <Button variant='outline-light' className='me-3'>
+                <Button variant="outline-light" className="me-3">
                   Watch
                 </Button>
               </h5>
             </div>
-            <p className='mb-0'>{description}</p>
+            <p className="mb-0">{description}</p>
           </div>
-          <div className='flex-shrink-0 position-relative video-more-option'>
+          <div className="flex-shrink-0 position-relative video-more-option">
             {children}
           </div>
         </div>
