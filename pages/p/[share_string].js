@@ -15,12 +15,42 @@ const replay = require('../../images/video-more-options/ic-replay.svg');
 const comments = require('../../images/video-more-options/ic-comments.svg');
 const subsribePlus = require('../../images/video-more-options/ic-subsribe-plus.svg');
 
+/*
+ video_id_to_use={props.data.video_id_to_use}
+        description={props.data.description}
+        videoUrl={props.data.videoUrl}
+        asPath={props.data.asPath}
+        link={props.data.link}
+        videoThumbnail={props.data.videoThumbnail}
+        videoPreviewImage={props.data.videoPreviewImage}
+        userName={props.data.userName}
+        userProfileImage={props.data.userProfileImage}
+        showGetAppModal={handleShowModalAppDownload}
+*/
+
 const Profile = (props) => {
   const [showModalWelcome, setShowModalWelcome] = useState(true);
   const handleCloseWelcome = () => setShowModalWelcome(false);
   const [showModalAppDownload, setShowModalAppDownload] = useState(false);
   const handleCloseAppDownload = () => setShowModalAppDownload(false);
   const handleShowModalAppDownload = () => setShowModalAppDownload(true);
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+  const totalVideos = props?.data?.videos?.length ?? 0;
+
+  const getNextVideo = () => {
+    if (currentVideoIndex < totalVideos - 1) {
+      setCurrentVideoIndex((old) => old + 1);
+    } else {
+      setCurrentVideoIndex(0);
+    }
+  };
+  const getPrevVideo = () => {
+    if (currentVideoIndex > 0) {
+      setCurrentVideoIndex((old) => old - 1);
+    } else {
+      setCurrentVideoIndex(totalVideos - 1);
+    }
+  };
 
   return !Boolean(props.data.user_id) ? (
     <Error statusCode='404' />
@@ -28,12 +58,22 @@ const Profile = (props) => {
     <Layout>
       <TopNav showGetAppModal={handleShowModalAppDownload} />
       <Player
-        {...props.data}
-        {...props.url}
+        userName={props.data.name}
+        userProfileImage={props.data.profile_image}
+        videoThumbnail={props.data.videos[currentVideoIndex]?.videoThumbnail}
+        videoPreviewImage={
+          props.data.videos[currentVideoIndex]?.videoPreviewImage
+        }
+        description={props.data.videos[currentVideoIndex]?.description}
+        link={props.data.videos[currentVideoIndex]?.link}
+        videoUrl={props.data.videos[currentVideoIndex]?.videoUrl}
         showGetAppModal={handleShowModalAppDownload}
       >
         <ShareControls showGetAppModal={handleShowModalAppDownload} />
+        <button onClick={getNextVideo}>Next</button>
+        <button onClick={getPrevVideo}>Prev</button>
       </Player>
+
       <GetAppModal
         show={showModalAppDownload}
         onClose={handleCloseAppDownload}
