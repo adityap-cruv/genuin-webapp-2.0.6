@@ -14,6 +14,8 @@ export const Player = ({
   videoPreviewImage = '',
   userName,
   userProfileImage = '',
+  getNextVideo,
+  getPrevVideo,
   children,
 }) => {
   const [progress, setProgress] = useState(0);
@@ -141,6 +143,8 @@ export const Player = ({
           userName={userName}
           description={shortDescription}
           profilePic={profilePic}
+          getNextVideo={getNextVideo}
+          getPrevVideo={getPrevVideo}
         >
           {children}
         </ReactPlayerWrapper>

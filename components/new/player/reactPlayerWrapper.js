@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import ReactPlayer from "react-player/lazy";
 import { useDebounce } from "use-debounce";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -21,8 +21,36 @@ export const ReactPlayerWrapper = ({
   children,
   onDuration,
   onEnded,
+  getNextVideo,
+  getPrevVideo,
 }) => {
   const [isPlayingDebounced] = useDebounce(isPlaying, 65);
+  const ts = useRef(0);
+  const prevRef = useRef(getPrevVideo);
+  prevRef.current = getPrevVideo;
+  const nextRef = useRef(getNextVideo);
+  nextRef.current = getNextVideo;
+
+  useEffect(() => {
+    const touchStart = (e) => {
+      ts.current = e.changedTouches[0].clientY;
+    };
+    const touchEnd = (e) => {
+      const te = e.changedTouches[0].clientY;
+      if (ts.current > te + 5) {
+        nextRef?.current?.();
+      } else if (ts.current < te - 5) {
+        prevRef?.current?.();
+      }
+    };
+    window.addEventListener("touchstart", touchStart);
+    window.addEventListener("touchend", touchEnd);
+    return () => {
+      window.removeEventListener("touchstart", touchStart);
+      window.removeEventListener("touchend", touchEnd);
+    };
+  }, []);
+
   return (
     <div className="video-container">
       <ReactPlayer
@@ -31,7 +59,6 @@ export const ReactPlayerWrapper = ({
         playing={isPlaying}
         controls={false}
         playsinline={true}
-        // light={videoThumbnail}
         config={{
           file: {
             attributes: { poster: videoThumbnail },
@@ -41,8 +68,6 @@ export const ReactPlayerWrapper = ({
         className="video-wrapper"
         width="auto"
         height="100%"
-        // fluid
-        // aspectRatio='9:16'
         onProgress={onProgress}
         onDuration={onDuration}
         onEnded={onEnded}
@@ -55,26 +80,30 @@ export const ReactPlayerWrapper = ({
         }}
         className="btn-play"
       />
-      <div className="btn-arrow-controler d-none d-md-flex flex-column align-items-center justify-content-center">
-        <Button className="btn-arrow">
-          <Image
-            src={icArrowUp}
-            width="24"
-            height="24"
-            alt="Arrow Up"
-            title="Arrow Up"
-          />
-        </Button>
-        <Button className="btn-arrow">
-          <Image
-            src={icArrowDown}
-            width="24"
-            height="24"
-            alt="Arrow Down"
-            title="Arrow Down"
-          />
-        </Button>
-      </div>
+      {Boolean(getNextVideo) && Boolean(getPrevVideo) ? (
+        <div className="btn-arrow-controler d-none d-md-flex flex-column align-items-center justify-content-center">
+          <button className="btn-arrow">
+            <Image
+              src={icArrowUp}
+              width="24"
+              height="24"
+              alt="Arrow Up"
+              title="Arrow Up"
+              onClick={getPrevVideo}
+            />
+          </button>
+          <button className="btn-arrow">
+            <Image
+              src={icArrowDown}
+              width="24"
+              height="24"
+              alt="Arrow Down"
+              title="Arrow Down"
+              onClick={getNextVideo}
+            />
+          </button>
+        </div>
+      ) : null}
       <div className="video-footer bg-gradient-180">
         <div className="d-flex align-items-end justify-content-between">
           <div className="d-flex flex-column">
