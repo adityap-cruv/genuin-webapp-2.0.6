@@ -134,7 +134,10 @@ export const ReactPlayerWrapper = ({
           </button>
         </div>
       ) : null}
-      <div className='video-footer bg-gradient-180'>
+      <div
+        className='video-footer bg-gradient-180'
+        style={{ pointerEvents: 'none' }}
+      >
         <div className='d-flex align-items-end justify-content-between'>
           <div className='d-flex flex-column'>
             {Boolean(roundTableMode) && (
@@ -154,7 +157,11 @@ export const ReactPlayerWrapper = ({
               <h5 className='mb-0'>
                 {userName}
                 {Boolean(roundTableMode) && (
-                  <Button variant='outline-light' className='me-3'>
+                  <Button
+                    variant='outline-light'
+                    className='me-3'
+                    style={{ pointerEvents: 'all' }}
+                  >
                     Watch
                   </Button>
                 )}
@@ -162,7 +169,10 @@ export const ReactPlayerWrapper = ({
             </div>
             <p className='mb-0'>{description}</p>
           </div>
-          <div className='flex-shrink-0 position-relative video-more-option'>
+          <div
+            className='flex-shrink-0 position-relative video-more-option'
+            style={{ pointerEvents: 'all' }}
+          >
             {children}
           </div>
         </div>
