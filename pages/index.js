@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState } from 'react';
 import NextHead from 'next/head';
 import { NextSeo } from 'next-seo';
 import { Layout } from '../components/layout';
@@ -40,6 +40,8 @@ const Home = () => {
   const handleIosInstallClick = () =>
     window.open('https://apps.apple.com/us/app/id1511177838');
 
+  const [activeIndex, setActiveIndex] = useState(0);
+
   return (
     <>
       <NextSeo
@@ -79,7 +81,12 @@ const Home = () => {
           <Container className='content-container'>
             <Row className='justify-content-center align-items-center'>
               <Col sm={12} md={6} lg={6} xl={6}>
-                <Carousel controls={false} indicators={false} fade>
+                <Carousel
+                  controls={false}
+                  indicators={false}
+                  fade
+                  activeIndex={activeIndex}
+                >
                   <Carousel.Item>
                     <img
                       src={imgCarousel1.src}
@@ -133,7 +140,11 @@ const Home = () => {
                 </Carousel>
               </Col>
               <Col sm={12} md={6} lg={6} xl={6}>
-                <Carousel controls={false}>
+                <Carousel
+                  controls={false}
+                  interval={2000}
+                  onSelect={(selectedIndex) => setActiveIndex(selectedIndex)}
+                >
                   <Carousel.Item>
                     <h1>
                       Find your

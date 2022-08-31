@@ -1,13 +1,8 @@
 import React from 'react';
 import { Nav, Navbar, Container, Row, Col } from 'react-bootstrap';
+import { handleHireLinkClick, handleInvestClick } from '../actions/appInstall';
 
 const Privacy = () => {
-  const handleHireLinkClick = () =>
-    window.open('https://angel.co/company/begenuin');
-
-  const handleInvestClick = () =>
-    window.open('https://www.linkedin.com/company/begenuin/');
-
   return (
     <div className='content-page'>
       <style jsx global>{`

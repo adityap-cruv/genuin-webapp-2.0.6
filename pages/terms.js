@@ -1,14 +1,10 @@
 import React from 'react';
 import { Nav, Navbar, Container, Row, Col } from 'react-bootstrap';
+import { handleInvestClick, handleHireLinkClick } from '../actions/appInstall';
 import './privacyAndTerms.module.css';
+import logo from '../images/logo_header_new.png';
 
 const Terms = () => {
-  const handleHireLinkClick = () =>
-    window.open('https://angel.co/company/begenuin');
-
-  const handleInvestClick = () =>
-    window.open('https://www.linkedin.com/company/begenuin/');
-
   return (
     <div className='content-page'>
       <style jsx global>{`
@@ -25,10 +21,7 @@ const Terms = () => {
             <Col xl={12}>
               <Navbar bg='transparent navbar-padding' expand='sm'>
                 <Navbar.Brand href='/' className='p-0'>
-                  <img
-                    src={require('../images/logo_header_new.png')}
-                    alt='logo_header'
-                  />
+                  <img src={logo.src} alt='logo_header' />
                 </Navbar.Brand>
 
                 <a className='nav-button ml-auto d-sm-none'>
