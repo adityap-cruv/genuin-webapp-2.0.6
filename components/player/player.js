@@ -18,6 +18,8 @@ export const Player = ({
   getPrevVideo,
   roundTableMode,
   children,
+  autoplay,
+  autoJumpToNextVideo,
 }) => {
   const [triggerPlayCount, setTriggetPlayCount] = useState(false);
 
@@ -135,6 +137,8 @@ export const Player = ({
           getNextVideo={getNextVideo}
           getPrevVideo={getPrevVideo}
           roundTableMode={roundTableMode}
+          autoplay={autoplay}
+          autoJumpToNextVideo={autoJumpToNextVideo}
         >
           {children}
         </ReactPlayerWrapper>

@@ -21,9 +21,11 @@ export const ReactPlayerWrapper = ({
   getNextVideo,
   getPrevVideo,
   roundTableMode = false,
+  autoplay = false,
+  autoJumpToNextVideo = false,
 }) => {
   const [progress, setProgress] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(autoplay);
   const [isPlayingDebounced] = useDebounce(isPlaying, 65);
   const handleToggleIsPlaying = useCallback(() => {
     setIsPlaying((old) => !old);
@@ -34,9 +36,10 @@ export const ReactPlayerWrapper = ({
   getprevVideoRef.current = getPrevVideo;
   const getNextVideoRef = useRef(getNextVideo);
   getNextVideoRef.current = getNextVideo;
-
   const onProgressRef = useRef(onProgress);
   onProgressRef.current = onProgress;
+  const onEndedRef = useRef(onEnded);
+  onEndedRef.current = onEnded;
 
   const setProgressWrapper = useCallback(
     (event) => {
@@ -67,6 +70,16 @@ export const ReactPlayerWrapper = ({
     };
   }, []);
 
+  const onEndedWrapper = useCallback(
+    (e) => {
+      onEndedRef?.current?.(e);
+      if (autoJumpToNextVideo) {
+        getNextVideoRef?.current?.();
+      }
+    },
+    [autoJumpToNextVideo]
+  );
+
   return (
     <div className='video-container'>
       <ReactPlayer
@@ -86,7 +99,7 @@ export const ReactPlayerWrapper = ({
         height='100%'
         onProgress={setProgressWrapper}
         onDuration={onDuration}
-        onEnded={onEnded}
+        onEnded={onEndedWrapper}
         progressInterval={200}
       />
       <FontAwesomeIcon

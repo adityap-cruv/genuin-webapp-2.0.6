@@ -58,6 +58,8 @@ const Profile = (props) => {
         showGetAppModal={handleShowModalAppDownload}
         getNextVideo={getNextVideo}
         getPrevVideo={getPrevVideo}
+        autoJumpToNextVideo
+        autoplay
       >
         <ShareControls showGetAppModal={handleShowModalAppDownload} />
       </Player>
