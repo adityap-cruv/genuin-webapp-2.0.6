@@ -1,7 +1,6 @@
-import React from 'react';
 import axios from 'axios';
-import { Question } from '../../components/new/question';
-import { Layout } from '../../components/new/layout';
+import { Question } from '../../components/question';
+import { Layout } from '../../components/layout';
 
 const QuestionWrapper = ({ data, url, genuinurl, host }) => {
   return (

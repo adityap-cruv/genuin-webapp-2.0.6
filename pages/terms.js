@@ -1,7 +1,6 @@
 import React from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import { Nav, Navbar, Container, Row, Col } from 'react-bootstrap';
-import './privacy.css';
+import './privacyAndTerms.module.css';
 
 const Terms = () => {
   const handleHireLinkClick = () =>

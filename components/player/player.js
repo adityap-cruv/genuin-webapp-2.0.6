@@ -1,8 +1,8 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { NextSeo } from 'next-seo';
 import NextHead from 'next/head';
 import { ReactPlayerWrapper } from './reactPlayerWrapper';
-import { increaseVideoViewCount } from '../../../actions/postActions';
+import { increaseVideoViewCount } from '../../actions/postActions';
 
 export const Player = ({
   video_id_to_use,
@@ -21,9 +21,7 @@ export const Player = ({
   const [progress, setProgress] = useState(0);
   const [triggerPlayCount, setTriggetPlayCount] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
-  if (typeof window === 'undefined') {
-    global.window = {};
-  }
+
   const urlToCopy = useMemo(
     () => process.env.hostname + '/' + video_id_to_use,
     [video_id_to_use]

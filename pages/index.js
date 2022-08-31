@@ -1,59 +1,44 @@
-import React, { useRef } from "react";
-import NextHead from "next/head";
-import { NextSeo } from "next-seo";
-import "bootstrap/dist/css/bootstrap.min.css";
-import { Layout } from "../components/new/layout";
-import { TopNav } from "../components/new/topNav";
-import {
-  Nav,
-  Button,
-  Container,
-  Row,
-  Col,
-  Carousel,
-  Image,
-} from "react-bootstrap";
-// import "./index.css";
-const imgCarousel1 = require("../images/1_hiring_small.png");
-const imgCarousel2 = require("../images/2_investors_small.png");
-const imgCarousel3 = require("../images/3_inspired_small.png");
-const imgCarousel4 = require("../images/4_community_small.png");
-const imgCarousel5 = require("../images/5_discussions_small.png");
-const ios = require("../images/badge_appstore.png");
-const android = require("../images/badge_playstore.png");
+import React from 'react';
+import NextHead from 'next/head';
+import { NextSeo } from 'next-seo';
+import { Layout } from '../components/layout';
+import { TopNav } from '../components/topNav';
+import { Nav, Container, Row, Col, Carousel, Image } from 'react-bootstrap';
 
-let title = "Genuin";
-let metaImage = "https://media.begenuin.com/backend_assets/preview.png";
+import ios from '../images/badge_appstore.png';
+import android from '../images/badge_playstore.png';
+
+import imgCarousel1 from '../images/1_hiring_small.png';
+import imgCarousel2 from '../images/2_investors_small.png';
+import imgCarousel3 from '../images/3_inspired_small.png';
+import imgCarousel4 from '../images/4_community_small.png';
+import imgCarousel5 from '../images/5_discussions_small.png';
+
+import favicon from '../images/favicon.ico';
+
+let title = 'Genuin';
+let metaImage = 'https://media.begenuin.com/backend_assets/preview.png';
 let metaImageWidth = 1200;
 let metaImageHeight = 630;
 let description =
-  "Genuin is a video-first professional networking platform that allows you to showcase your expertise and connect with other professionals and businesses. Whether you are searching for a job, seeking investment, hiring candidates, or any other networking, Genuin helps you stand out";
-let currentUrl = "https://begenuin.com";
+  'Genuin is a video-first professional networking platform that allows you to showcase your expertise and connect with other professionals and businesses. Whether you are searching for a job, seeking investment, hiring candidates, or any other networking, Genuin helps you stand out';
+let currentUrl = 'https://begenuin.com';
 let keyword =
-  "Genuin,Showcase Yourself. Get Discovered. Make Connections, video Communication";
+  'Genuin,Showcase Yourself. Get Discovered. Make Connections, video Communication';
 
-const Home2 = () => {
+const Home = () => {
   const handleInvestClick = () =>
-    window.open("https://www.linkedin.com/company/begenuin/");
+    window.open('https://www.linkedin.com/company/begenuin/');
 
   const handleHireLinkClick = () =>
-    window.open("https://angel.co/company/begenuin");
+    window.open('https://angel.co/company/begenuin');
 
   const handleAndroidInstallClick = () =>
     window.open(
-      "https://play.google.com/store/apps/details?id=com.begenuin.begenuin"
+      'https://play.google.com/store/apps/details?id=com.begenuin.begenuin'
     );
   const handleIosInstallClick = () =>
-    window.open("https://apps.apple.com/us/app/id1511177838");
-  // const handleAndroidInstallClick = () => {
-  //   window.open("https://install.begenuin.com/86sn/cgs");
-  // };
-  // const handleIosInstallClick = () => {
-  //   window.open("https://install.begenuin.com/86sn/cgs");
-  // };
-
-  const handleInstallAppClick = () =>
-    window.open("https://install.begenuin.com/86sn/cgs");
+    window.open('https://apps.apple.com/us/app/id1511177838');
 
   return (
     <>
@@ -61,92 +46,88 @@ const Home2 = () => {
         title={title}
         description={description}
         openGraph={{
-          type: "website",
+          type: 'website',
           url: currentUrl,
-          title: "Genuin",
+          title: 'Genuin',
           description: description,
           images: [
             {
               url: metaImage,
               width: metaImageWidth,
               height: metaImageHeight,
-              alt: "Genuin",
+              alt: 'Genuin',
             },
           ],
-          site_name: "Genuin",
+          site_name: 'Genuin',
         }}
         facebook={{
           appId: 1234567890,
         }}
         twitter={{
-          handle: "@handle",
-          site: "@site",
-          cardType: "summary_large_image",
+          handle: '@handle',
+          site: '@site',
+          cardType: 'summary_large_image',
         }}
       />
       <NextHead>
-        <link
-          rel="shortcut icon"
-          href={require("../images/favicon.ico")}
-          type="image/x-icon"
-        />
+        <link rel='shortcut icon' href={favicon.src} type='image/x-icon' />
       </NextHead>
       <Layout>
         <TopNav />
-        <section className="bg-gradient-blue section-content d-flex flex-column h-100 justify-content-center justify-content-md-between">
-          <Container className="container-false d-none d-md-block"></Container>
-          <Container className="content-container">
-            <Row className="justify-content-center align-items-center">
+        <section className='bg-gradient-blue section-content d-flex flex-column h-100 justify-content-center justify-content-md-between'>
+          <Container className='container-false d-none d-md-block'></Container>
+          <Container className='content-container'>
+            <Row className='justify-content-center align-items-center'>
               <Col sm={12} md={6} lg={6} xl={6}>
                 <Carousel controls={false} indicators={false} fade>
                   <Carousel.Item>
                     <img
-                      src={imgCarousel1}
+                      src={imgCarousel1.src}
                       width={380}
                       height={770}
-                      alt="Find your dream candidate"
-                      title="Find your dream candidate"
-                      className="img-carousel mx-auto d-block"
+                      alt='Find your dream candidate'
+                      title='Find your dream candidate'
+                      className='img-carousel mx-auto d-block'
                     />
                   </Carousel.Item>
                   <Carousel.Item>
                     <img
-                      src={imgCarousel2}
+                      src={imgCarousel2.src}
                       width={380}
                       height={770}
-                      alt="Find Investors for your Startup"
-                      title="Find Investors for your Startup"
-                      className="img-carousel mx-auto d-block"
+                      alt='Find Investors for your Startup'
+                      title='Find Investors for your Startup'
+                      className='img-carousel mx-auto d-block'
                     />
                   </Carousel.Item>
                   <Carousel.Item>
                     <img
-                      src={imgCarousel3}
+                      src={imgCarousel3.src}
                       width={380}
                       height={770}
-                      alt="Get Inspired"
-                      title="Get Inspired"
-                      className="img-carousel mx-auto d-block"
+                      alt='Get Inspired'
+                      title='Get Inspired'
+                      className='img-carousel mx-auto d-block'
                     />
                   </Carousel.Item>
                   <Carousel.Item>
                     <img
-                      src={imgCarousel4}
+                      src={imgCarousel4.src}
                       width={380}
                       height={770}
-                      alt="Engage with community"
-                      title="Engage with community"
-                      className="img-carousel mx-auto d-block"
+                      alt='Engage with community'
+                      title='Engage with community'
+                      className='img-carousel mx-auto d-block'
                     />
                   </Carousel.Item>
                   <Carousel.Item>
                     <img
-                      src={imgCarousel5}
+                      src={imgCarousel5.src}
                       width={380}
                       height={770}
-                      alt="Initiate Discussions"
-                      title="Initiate Discussions"
-                      className="img-carousel mx-auto d-block"
+                      alt='Initiate Discussions'
+                      title='Initiate Discussions'
+                      className='img-carousel mx-auto d-block'
                     />
                   </Carousel.Item>
                 </Carousel>
@@ -190,35 +171,35 @@ const Home2 = () => {
                 </Carousel>
                 <Row
                   xs={2}
-                  className="justify-content-center justify-content-md-start mt-5 pt-3"
+                  className='justify-content-center justify-content-md-start mt-5 pt-3'
                 >
                   <Col
-                    xs="6"
-                    lg="auto"
-                    className="d-flex align-items-center justify-content-end"
+                    xs='6'
+                    lg='auto'
+                    className='d-flex align-items-center justify-content-end'
                   >
                     <Image
-                      src={ios}
+                      src={ios.src}
                       onClick={handleIosInstallClick}
                       width={204}
                       height={60}
-                      alt="iOs App Store"
-                      title="iOs App Store"
+                      alt='iOs App Store'
+                      title='iOs App Store'
                       fluid
                     />
                   </Col>
                   <Col
-                    xs="6"
-                    lg="auto"
-                    className="d-flex align-items-center justify-content-start"
+                    xs='6'
+                    lg='auto'
+                    className='d-flex align-items-center justify-content-start'
                   >
                     <Image
-                      src={android}
+                      src={android.src}
                       width={204}
                       height={60}
                       onClick={handleAndroidInstallClick}
-                      alt="Android Play Store"
-                      title="Android Play Store"
+                      alt='Android Play Store'
+                      title='Android Play Store'
                       fluid
                     />
                   </Col>
@@ -227,15 +208,15 @@ const Home2 = () => {
             </Row>
           </Container>
 
-          <Container className="d-none d-md-block container-footer">
-            <Row className="py-3">
+          <Container className='d-none d-md-block container-footer'>
+            <Row className='py-3'>
               <Col xl={4} lg={4} md={4} sm={12}>
-                <Nav as="ul">
-                  <Nav.Item as="li">
+                <Nav as='ul'>
+                  <Nav.Item as='li'>
                     <Nav.Link
                       style={{ opacity: 0.5 }}
-                      href="/"
-                      className="pr-0"
+                      href='/'
+                      className='pr-0'
                     >
                       © 2022 Genuin Inc.
                     </Nav.Link>
@@ -244,50 +225,50 @@ const Home2 = () => {
               </Col>
               <Col xl={8} lg={8} md={8} sm={12}>
                 <Nav
-                  className="justify-content-start justify-content-md-end"
-                  as="ul"
+                  className='justify-content-start justify-content-md-end'
+                  as='ul'
                 >
-                  <Nav.Item as="li">
+                  <Nav.Item as='li'>
                     <Nav.Link
                       style={{ opacity: 0.5 }}
-                      href="#"
+                      href='#'
                       onClick={handleInvestClick}
                     >
                       Invest in Genuin
                     </Nav.Link>
                   </Nav.Item>
-                  <Nav.Item as="li">
+                  <Nav.Item as='li'>
                     <Nav.Link
                       style={{
                         opacity: 0.5,
-                        paddingLeft: "0px",
-                        paddingRight: "0px",
+                        paddingLeft: '0px',
+                        paddingRight: '0px',
                       }}
                       href={void 0}
-                      eventKey="link-2"
+                      eventKey='link-2'
                     >
                       |
                     </Nav.Link>
                   </Nav.Item>
-                  <Nav.Item as="li">
-                    <Nav.Link style={{ opacity: 0.5 }} href="/terms">
+                  <Nav.Item as='li'>
+                    <Nav.Link style={{ opacity: 0.5 }} href='/terms'>
                       Terms of Service
                     </Nav.Link>
                   </Nav.Item>
-                  <Nav.Item as="li">
+                  <Nav.Item as='li'>
                     <Nav.Link
                       style={{
                         opacity: 0.5,
-                        paddingLeft: "0px",
-                        paddingRight: "0px",
+                        paddingLeft: '0px',
+                        paddingRight: '0px',
                       }}
                       href={void 0}
                     >
                       |
                     </Nav.Link>
                   </Nav.Item>
-                  <Nav.Item as="li">
-                    <Nav.Link style={{ opacity: 0.5 }} href="/privacy">
+                  <Nav.Item as='li'>
+                    <Nav.Link style={{ opacity: 0.5 }} href='/privacy'>
                       Privacy Policy
                     </Nav.Link>
                   </Nav.Item>
@@ -301,4 +282,4 @@ const Home2 = () => {
   );
 };
 
-export default Home2;
+export default Home;
