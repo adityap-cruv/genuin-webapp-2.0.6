@@ -47,6 +47,7 @@ const RoundTable = (props) => {
     <Layout>
       <TopNav showGetAppModal={handleShowModalAppDownload} />
       <Player
+        key={currentVideoIndex}
         video_id_to_use={props.data.video_id_to_use}
         description={props.data.group.group_description}
         videoUrl={props.data.chats?.[currentVideoIndex]?.video_url}
@@ -56,6 +57,7 @@ const RoundTable = (props) => {
         videoPreviewImage={props.data.chats?.[currentVideoIndex]?.thumbnail_url}
         userName={props.data.group.group_name}
         userProfileImage={props.data.userProfileImage}
+        roundTableMode
         showGetAppModal={handleShowModalAppDownload}
       >
         <ShareControls showGetAppModal={handleShowModalAppDownload} />

@@ -16,11 +16,10 @@ export const Player = ({
   userProfileImage = '',
   getNextVideo,
   getPrevVideo,
+  roundTableMode,
   children,
 }) => {
-  const [progress, setProgress] = useState(0);
   const [triggerPlayCount, setTriggetPlayCount] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
 
   const urlToCopy = useMemo(
     () => process.env.hostname + '/' + video_id_to_use,
@@ -55,16 +54,11 @@ export const Player = ({
     return 'https://media.qa.begenuin.com/backend_assets/lottie/snowman.png';
   }, [userProfileImage]);
 
-  const handleToggleIsPlaying = () => {
-    setIsPlaying((old) => !old);
-  };
-
   const metaImageWidth = 1200;
   const metaImageHeight = 630;
 
   const handleProgress = (event) => {
     const playedProgress = Math.round(Number.parseFloat(event.played) * 100);
-    setProgress(playedProgress);
     if (playedProgress > 10 && !triggerPlayCount) {
       setTriggetPlayCount(true);
     }
@@ -133,16 +127,14 @@ export const Player = ({
       >
         <ReactPlayerWrapper
           videoUrl={videoUrl}
-          isPlaying={isPlaying}
-          handleToggleIsPlaying={handleToggleIsPlaying}
           onProgress={handleProgress}
-          progress={progress}
           videoThumbnail={videoThumbnail}
           userName={userName}
           description={shortDescription}
           profilePic={profilePic}
           getNextVideo={getNextVideo}
           getPrevVideo={getPrevVideo}
+          roundTableMode={roundTableMode}
         >
           {children}
         </ReactPlayerWrapper>
