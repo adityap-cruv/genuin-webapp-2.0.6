@@ -103,36 +103,6 @@ const ShareControls = ({ showGetAppModal }) => (
     </li>
     <li>
       <Image
-        src={bookmark.src}
-        width='24'
-        height='24'
-        alt='Bookmark'
-        title='Bookmark'
-        onClick={showGetAppModal}
-      />
-    </li>
-    <li>
-      <Image
-        src={share.src}
-        width='24'
-        height='24'
-        alt='Share'
-        title='Share'
-        onClick={showGetAppModal}
-      />
-    </li>
-    <li>
-      <Image
-        src={replay.src}
-        width='24'
-        height='24'
-        alt='Replay'
-        title='Replay'
-        onClick={showGetAppModal}
-      />
-    </li>
-    <li>
-      <Image
         src={comments.src}
         width='24'
         height='24'
@@ -148,6 +118,16 @@ const ShareControls = ({ showGetAppModal }) => (
         height='24'
         alt='Subsribe Plus'
         title='Subsribe Plus'
+        onClick={showGetAppModal}
+      />
+    </li>
+    <li>
+      <Image
+        src={share.src}
+        width='24'
+        height='24'
+        alt='Share'
+        title='Share'
         onClick={showGetAppModal}
       />
     </li>

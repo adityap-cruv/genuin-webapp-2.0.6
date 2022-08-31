@@ -275,6 +275,7 @@ body .overlay {
   padding: 1rem;
   color: #fff;
   line-height: 1.56;
+  padding-bottom: 0;
 }
 .video-footer .badge {
   font-size: 1rem;

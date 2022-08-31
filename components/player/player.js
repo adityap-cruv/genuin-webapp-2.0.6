@@ -121,7 +121,7 @@ export const Player = ({
         }}
       />
 
-      <div className='overlay'></div>
+      <div className='overlay' />
       <div
         className='main d-flex align-items-center justify-content-center'
         style={{
