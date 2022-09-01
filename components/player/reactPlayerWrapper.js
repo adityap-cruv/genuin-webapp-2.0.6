@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import ReactPlayer from "react-player/lazy";
 import { useDebounce } from "use-debounce";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -10,10 +10,7 @@ import icArrowUp from "../../images/video-more-options/ic-arrow-up.svg";
 
 export const ReactPlayerWrapper = ({
   videoUrl,
-  isPlaying,
-  handleToggleIsPlaying,
   onProgress,
-  progress,
   videoThumbnail,
   userName,
   description,
@@ -23,24 +20,46 @@ export const ReactPlayerWrapper = ({
   onEnded,
   getNextVideo,
   getPrevVideo,
+  roundTableMode = false,
+  autoplay = false,
+  autoJumpToNextVideo = false,
 }) => {
+  const [progress, setProgress] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(autoplay);
   const [isPlayingDebounced] = useDebounce(isPlaying, 65);
-  const ts = useRef(0);
-  const prevRef = useRef(getPrevVideo);
-  prevRef.current = getPrevVideo;
-  const nextRef = useRef(getNextVideo);
-  nextRef.current = getNextVideo;
+  const handleToggleIsPlaying = useCallback(() => {
+    setIsPlaying((old) => !old);
+  }, [setIsPlaying]);
+
+  const touchStartYRef = useRef(0);
+  const getprevVideoRef = useRef(getPrevVideo);
+  getprevVideoRef.current = getPrevVideo;
+  const getNextVideoRef = useRef(getNextVideo);
+  getNextVideoRef.current = getNextVideo;
+  const onProgressRef = useRef(onProgress);
+  onProgressRef.current = onProgress;
+  const onEndedRef = useRef(onEnded);
+  onEndedRef.current = onEnded;
+
+  const setProgressWrapper = useCallback(
+    (event) => {
+      const playedProgress = Math.round(Number.parseFloat(event.played) * 100);
+      setProgress(playedProgress);
+      onProgressRef?.current?.(event);
+    },
+    [setProgress]
+  );
 
   useEffect(() => {
     const touchStart = (e) => {
-      ts.current = e.changedTouches[0].clientY;
+      touchStartYRef.current = e.changedTouches[0].clientY;
     };
     const touchEnd = (e) => {
-      const te = e.changedTouches[0].clientY;
-      if (ts.current > te + 5) {
-        nextRef?.current?.();
-      } else if (ts.current < te - 5) {
-        prevRef?.current?.();
+      const touchEndY = e.changedTouches[0].clientY;
+      if (touchStartYRef.current > touchEndY + 5) {
+        getNextVideoRef?.current?.();
+      } else if (touchStartYRef.current < touchEndY - 5) {
+        getprevVideoRef?.current?.();
       }
     };
     window.addEventListener("touchstart", touchStart);
@@ -50,6 +69,16 @@ export const ReactPlayerWrapper = ({
       window.removeEventListener("touchend", touchEnd);
     };
   }, []);
+
+  const onEndedWrapper = useCallback(
+    (e) => {
+      onEndedRef?.current?.(e);
+      if (autoJumpToNextVideo) {
+        getNextVideoRef?.current?.();
+      }
+    },
+    [autoJumpToNextVideo]
+  );
 
   return (
     <div className="video-container">
@@ -68,15 +97,16 @@ export const ReactPlayerWrapper = ({
         className="video-wrapper"
         width="auto"
         height="100%"
-        onProgress={onProgress}
+        onProgress={setProgressWrapper}
         onDuration={onDuration}
-        onEnded={onEnded}
-        progressInterval={500}
+        onEnded={onEndedWrapper}
+        progressInterval={200}
       />
       <FontAwesomeIcon
         icon={isPlaying ? faPause : faPlay}
         style={{
           display: isPlayingDebounced ? "none" : "block",
+          pointerEvents: "none",
         }}
         className="btn-play"
       />
@@ -104,12 +134,17 @@ export const ReactPlayerWrapper = ({
           </button>
         </div>
       ) : null}
-      <div className="video-footer bg-gradient-180">
+      <div
+        className="video-footer bg-gradient-180"
+        style={{ pointerEvents: "none" }}
+      >
         <div className="d-flex align-items-end justify-content-between">
           <div className="d-flex flex-column">
-            <Badge pill bg="dark" className="mb-2 align-self-start">
-              @pusateri added
-            </Badge>
+            {Boolean(roundTableMode) && (
+              <Badge pill bg="dark" className="mb-2 align-self-start">
+                @pusateri added
+              </Badge>
+            )}
             <div className="video-auther mb-2">
               <Image
                 src={profilePic}
@@ -121,14 +156,23 @@ export const ReactPlayerWrapper = ({
               />
               <h5 className="mb-0">
                 {userName}
-                <Button variant="outline-light" className="ms-3">
-                  Watch
-                </Button>
+                {Boolean(roundTableMode) && (
+                  <Button
+                    variant="outline-light"
+                    className="me-3"
+                    style={{ pointerEvents: "all" }}
+                  >
+                    Watch
+                  </Button>
+                )}
               </h5>
             </div>
             <p className="mb-0">{description}</p>
           </div>
-          <div className="flex-shrink-0 position-relative video-more-option">
+          <div
+            className="flex-shrink-0 position-relative video-more-option"
+            style={{ pointerEvents: "all" }}
+          >
             {children}
           </div>
         </div>

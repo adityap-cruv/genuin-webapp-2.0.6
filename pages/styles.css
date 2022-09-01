@@ -250,6 +250,7 @@ body .overlay {
   cursor: pointer;
   aspect-ratio: 9 / 16;
   background: #333333;
+  isolation: isolate;
 }
 .video-wrapper {
   cursor: pointer;

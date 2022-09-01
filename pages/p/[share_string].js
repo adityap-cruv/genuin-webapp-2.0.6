@@ -45,6 +45,7 @@ const Profile = (props) => {
     <Layout>
       <TopNav showGetAppModal={handleShowModalAppDownload} />
       <Player
+        key={currentVideoIndex}
         userName={props.data.name}
         userProfileImage={props.data.profile_image}
         videoThumbnail={props.data.videos[currentVideoIndex]?.videoThumbnail}
@@ -57,6 +58,8 @@ const Profile = (props) => {
         showGetAppModal={handleShowModalAppDownload}
         getNextVideo={getNextVideo}
         getPrevVideo={getPrevVideo}
+        autoJumpToNextVideo
+        autoplay
       >
         <ShareControls showGetAppModal={handleShowModalAppDownload} />
       </Player>

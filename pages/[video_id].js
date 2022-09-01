@@ -26,6 +26,7 @@ const Video = (props) => {
     <Layout>
       <TopNav showGetAppModal={handleShowModalAppDownload} />
       <Player
+        key={props?.data?.video_id_to_use ?? `${Math.random()}`}
         video_id_to_use={props.data.video_id_to_use}
         description={props.data.description}
         videoUrl={props.data.videoUrl}

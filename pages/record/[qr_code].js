@@ -44,6 +44,7 @@ const Record = (props) => {
     <Layout>
       <TopNav showGetAppModal={handleShowModalAppDownload} />
       <Player
+        key={currentVideoIndex}
         userName={
           Boolean(props.data.name) ? props.data.name : props.data.nickname
         }
