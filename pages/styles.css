@@ -1,25 +1,28 @@
-@font-face {
-  font-family: "AvenirNext";
-  src: url("/fonts/AvenirNext-Bold-01.ttf");
-  src: url("/fonts/AvenirNext-BoldItalic-02.ttf");
-  src: url("/fonts/AvenirNext-DemiBold-03.ttf");
-  src: url("/fonts/AvenirNext-DemiBoldItalic-04.ttf");
-  src: url("/fonts/AvenirNext-Heavy-09.ttf");
-  src: url("/fonts/AvenirNext-HeavyItalic-10.ttf");
-  src: url("/fonts/AvenirNext-Italic-05.ttf");
-  src: url("/fonts/AvenirNext-Medium-06.ttf");
-  src: url("/fonts/AvenirNext-MediumItalic-07.ttf");
-  src: url("/fonts/AvenirNext-Regular-08.ttf");
-  src: url("/fonts/AvenirNext-UltraLight-11.ttf");
-  src: url("/fonts/AvenirNext-UltraLightItalic-12.ttf");
+:root {
+  --h-top-navbar: 70px;
 }
 @font-face {
-  font-family: "AvenirNext-DemiBold";
-  src: url("/fonts/AvenirNext-DemiBold-03.ttf");
+  font-family: 'AvenirNext';
+  src: url('/fonts/AvenirNext-Bold-01.ttf');
+  src: url('/fonts/AvenirNext-BoldItalic-02.ttf');
+  src: url('/fonts/AvenirNext-DemiBold-03.ttf');
+  src: url('/fonts/AvenirNext-DemiBoldItalic-04.ttf');
+  src: url('/fonts/AvenirNext-Heavy-09.ttf');
+  src: url('/fonts/AvenirNext-HeavyItalic-10.ttf');
+  src: url('/fonts/AvenirNext-Italic-05.ttf');
+  src: url('/fonts/AvenirNext-Medium-06.ttf');
+  src: url('/fonts/AvenirNext-MediumItalic-07.ttf');
+  src: url('/fonts/AvenirNext-Regular-08.ttf');
+  src: url('/fonts/AvenirNext-UltraLight-11.ttf');
+  src: url('/fonts/AvenirNext-UltraLightItalic-12.ttf');
 }
 @font-face {
-  font-family: "AvenirNext-Bold";
-  src: url("/fonts/AvenirNext-Bold-01.ttf");
+  font-family: 'AvenirNext-DemiBold';
+  src: url('/fonts/AvenirNext-DemiBold-03.ttf');
+}
+@font-face {
+  font-family: 'AvenirNext-Bold';
+  src: url('/fonts/AvenirNext-Bold-01.ttf');
 }
 
 html {
@@ -30,9 +33,9 @@ html {
 body {
   width: 100%;
   height: 100%;
-  font-family: "Avenir", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
-    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-family: 'Avenir', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   padding: 0;
   margin: 0;
   font-style: normal;
@@ -86,8 +89,11 @@ body .overlay {
 }
 
 /* Top Navigation CSS */
-.bg-black .navbar.bg-gradient {
+.bg-black {
   background: #000;
+}
+.h-top-navbar {
+  height: var(--h-top-navbar);
 }
 .navbar {
   width: 100%;
@@ -257,6 +263,7 @@ body .overlay {
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 .btn-play {
   color: rgb(255 255 255 / 0.5);
@@ -377,8 +384,7 @@ body .overlay {
   display: none !important;
 }
 @media (max-width: 768px) {
-  .video-container,
-  .video-wrapper {
+  .video-container {
     overflow: hidden;
   }
 }
@@ -517,4 +523,10 @@ body .overlay {
     margin-top: 1.5rem;
     font-size: 2rem;
   }
+}
+/* Section Privacy */
+.section-privacy {
+  height: calc(100% - var(--h-top-navbar));
+  display: flex;
+  flex-direction: column;
 }

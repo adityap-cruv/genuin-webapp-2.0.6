@@ -1,28 +1,32 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import axios from 'axios';
 import { Image } from 'react-bootstrap';
-import Error from 'next/error';
 import { Player } from '../../components/player';
 import { Layout } from '../../components/layout';
 import { TopNav } from '../../components/topNav';
 import { GetAppModal } from '../../components/getAppModal';
 import { WelcomeModal } from '../../components/welcomeModal';
-
+import { Error } from '../../components/error';
+import { SEO } from '../../components/seo';
 import linkIcon from '../../images/video-more-options/ic-link.svg';
-import bookmark from '../../images/video-more-options/ic-bookmark.svg';
 import share from '../../images/video-more-options/ic-share.svg';
-import replay from '../../images/video-more-options/ic-replay.svg';
 import comments from '../../images/video-more-options/ic-comments.svg';
 import subsribePlus from '../../images/video-more-options/ic-subsribe-plus.svg';
 
-const Profile = (props) => {
+const Profile = ({
+  user_id,
+  preview_image,
+  name,
+  profile_image,
+  videos = [],
+}) => {
   const [showModalWelcome, setShowModalWelcome] = useState(true);
   const handleCloseWelcome = () => setShowModalWelcome(false);
   const [showModalAppDownload, setShowModalAppDownload] = useState(false);
   const handleCloseAppDownload = () => setShowModalAppDownload(false);
   const handleShowModalAppDownload = () => setShowModalAppDownload(true);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
-  const totalVideos = props?.data?.videos?.length ?? 0;
+  const totalVideos = videos?.length ?? 0;
 
   const getNextVideo = () => {
     if (currentVideoIndex < totalVideos - 1) {
@@ -39,27 +43,27 @@ const Profile = (props) => {
     }
   };
 
-  return !Boolean(props.data.user_id) ? (
-    <Error statusCode='404' />
+  return !Boolean(user_id) ? (
+    <Error />
   ) : (
     <Layout>
+      <SEO
+        videoPreviewImage={preview_image}
+        videoUrl={videos[currentVideoIndex]?.videoUrl}
+        description={videos[currentVideoIndex]?.description}
+      />
       <TopNav showGetAppModal={handleShowModalAppDownload} />
       <Player
         key={currentVideoIndex}
-        userName={props.data.name}
-        userProfileImage={props.data.profile_image}
-        videoThumbnail={props.data.videos[currentVideoIndex]?.videoThumbnail}
-        videoPreviewImage={
-          props.data.videos[currentVideoIndex]?.videoPreviewImage
-        }
-        description={props.data.videos[currentVideoIndex]?.description}
-        link={props.data.videos[currentVideoIndex]?.link}
-        videoUrl={props.data.videos[currentVideoIndex]?.videoUrl}
+        userName={name}
+        userProfileImage={profile_image}
+        videoThumbnail={videos[currentVideoIndex]?.videoThumbnail}
+        description={videos[currentVideoIndex]?.description}
+        videoUrl={videos[currentVideoIndex]?.videoUrl}
         showGetAppModal={handleShowModalAppDownload}
         getNextVideo={getNextVideo}
         getPrevVideo={getPrevVideo}
-        autoJumpToNextVideo
-        autoplay
+        onEnded={() => handleShowModalAppDownload()}
       >
         <ShareControls showGetAppModal={handleShowModalAppDownload} />
       </Player>
@@ -81,13 +85,13 @@ Profile.getInitialProps = async ({ query: { share_string } }) => {
     return axios
       .get(url_to_use)
       .then((response) => {
-        return Promise.resolve({ data: response.data.data });
+        return Promise.resolve(response?.data?.data ?? {});
       })
       .catch((err) => {
-        return Promise.resolve({ data: {} });
+        return Promise.resolve({});
       });
   } else {
-    return Promise.resolve({ data: {} });
+    return Promise.resolve({});
   }
 };
 export default Profile;

@@ -59,7 +59,7 @@ export const TopNav = ({
               <Navbar.Collapse
                 style={{ left: 0, visibility: isOpen ? 'visible' : 'hidden' }}
               >
-                <Nav>
+                <Nav {...(isContiner ? { className: 'container' } : {})}>
                   <Navbar.Toggle aria-controls='navbarMoreOptionDrawer' />
                   <Trail open={isOpen}>
                     <Nav.Link href='https://www.linkedin.com/company/begenuin/'>

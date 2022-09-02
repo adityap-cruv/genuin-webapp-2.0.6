@@ -1,18 +1,22 @@
-import React from "react";
-import { Nav, Navbar, Container, Row, Col } from "react-bootstrap";
-import { Layout } from "../components/layout";
-import { TopNav } from "../components/topNav";
+import { useState } from 'react';
+import { Nav, Container, Row, Col } from 'react-bootstrap';
+import { Layout } from '../components/layout';
+import { TopNav } from '../components/topNav';
+import { GetAppModal } from '../components/getAppModal';
 
 const Privacy = () => {
   const handleInvestClick = () =>
-    window.open("https://www.linkedin.com/company/begenuin/");
+    window.open('https://www.linkedin.com/company/begenuin/');
+  const [showModalAppDownload, setShowModalAppDownload] = useState(false);
+  const handleCloseAppDownload = () => setShowModalAppDownload(false);
+  const handleShowModalAppDownload = () => setShowModalAppDownload(true);
   return (
-    <Layout>
-      <section className="bg-black">
-        <TopNav />
+    <Layout className='overflow-auto'>
+      <section className='bg-black h-top-navbar position-sticky top-0'>
+        <TopNav showGetAppModal={handleShowModalAppDownload} isContiner />
       </section>
-      <section className="bg-body h-100 overflow-auto">
-        <Container className="pt-5 mt-5">
+      <section className='bg-body section-privacy'>
+        <Container className='mt-3'>
           <Row>
             <Col
               xl={{ span: 8, offset: 2 }}
@@ -20,7 +24,7 @@ const Privacy = () => {
               md={{ span: 10, offset: 1 }}
               sm={12}
             >
-              <h1 className="mb-4 text-primary fw-bold">Privacy Policy</h1>
+              <h1 className='mb-4 text-primary fw-bold'>Privacy Policy</h1>
 
               <p>
                 Your privacy is important to us. It is Genuin Inc.'s policy to
@@ -73,12 +77,12 @@ const Privacy = () => {
           </Row>
         </Container>
 
-        <Container className="container-footer text-black mt-auto">
-          <Row className="py-3">
+        <Container className='container-footer text-black mt-auto'>
+          <Row className='py-3'>
             <Col xl={4} lg={4} md={4} sm={12}>
-              <Nav as="ul">
-                <Nav.Item as="li">
-                  <Nav.Link style={{ opacity: 0.5 }} href="/" className="pr-0">
+              <Nav as='ul'>
+                <Nav.Item as='li'>
+                  <Nav.Link style={{ opacity: 0.5 }} href='/' className='pr-0'>
                     © 2022 Genuin Inc.
                   </Nav.Link>
                 </Nav.Item>
@@ -86,50 +90,50 @@ const Privacy = () => {
             </Col>
             <Col xl={8} lg={8} md={8} sm={12}>
               <Nav
-                className="justify-content-start justify-content-md-end"
-                as="ul"
+                className='justify-content-start justify-content-md-end'
+                as='ul'
               >
-                <Nav.Item as="li">
+                <Nav.Item as='li'>
                   <Nav.Link
                     style={{ opacity: 0.5 }}
-                    href="#"
+                    href='#'
                     onClick={handleInvestClick}
                   >
                     Invest in Genuin
                   </Nav.Link>
                 </Nav.Item>
-                <Nav.Item as="li">
+                <Nav.Item as='li'>
                   <Nav.Link
                     style={{
                       opacity: 0.5,
-                      paddingLeft: "0px",
-                      paddingRight: "0px",
+                      paddingLeft: '0px',
+                      paddingRight: '0px',
                     }}
                     href={void 0}
-                    eventKey="link-2"
+                    eventKey='link-2'
                   >
                     |
                   </Nav.Link>
                 </Nav.Item>
-                <Nav.Item as="li">
-                  <Nav.Link style={{ opacity: 0.5 }} href="/terms">
+                <Nav.Item as='li'>
+                  <Nav.Link style={{ opacity: 0.5 }} href='/terms'>
                     Terms of Service
                   </Nav.Link>
                 </Nav.Item>
-                <Nav.Item as="li">
+                <Nav.Item as='li'>
                   <Nav.Link
                     style={{
                       opacity: 0.5,
-                      paddingLeft: "0px",
-                      paddingRight: "0px",
+                      paddingLeft: '0px',
+                      paddingRight: '0px',
                     }}
                     href={void 0}
                   >
                     |
                   </Nav.Link>
                 </Nav.Item>
-                <Nav.Item as="li">
-                  <Nav.Link style={{ opacity: 0.5 }} href="/privacy">
+                <Nav.Item as='li'>
+                  <Nav.Link style={{ opacity: 0.5 }} href='/privacy'>
                     Privacy Policy
                   </Nav.Link>
                 </Nav.Item>
@@ -138,6 +142,10 @@ const Privacy = () => {
           </Row>
         </Container>
       </section>
+      <GetAppModal
+        show={showModalAppDownload}
+        onClose={handleCloseAppDownload}
+      />
     </Layout>
   );
 };

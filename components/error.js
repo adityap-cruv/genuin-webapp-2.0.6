@@ -1,5 +1,6 @@
 import { Container, Row, Col, Image } from 'react-bootstrap';
 import { TopNav } from './topNav';
+import { Layout } from './layout';
 import {
   handleAndroidInstallClick,
   handleIosInstallClick,
@@ -7,10 +8,10 @@ import {
 import ios from '../images/badge_appstore.png';
 import android from '../images/badge_playstore.png';
 
-export const Error = ({ homePageUrl }) => (
-  <>
+export const Error = ({ homePageUrl = '/' }) => (
+  <Layout>
     <section className='w-100 h-100 bg-gradient-blue d-flex align-items-center'>
-      <TopNav />
+      <TopNav isContiner />
       <Container>
         <Row className='mb-5'>
           <Col
@@ -59,5 +60,5 @@ export const Error = ({ homePageUrl }) => (
         </Row>
       </Container>
     </section>
-  </>
+  </Layout>
 );

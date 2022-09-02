@@ -1,6 +1,4 @@
 import { useState, useMemo, useEffect } from 'react';
-import { NextSeo } from 'next-seo';
-import NextHead from 'next/head';
 import { ReactPlayerWrapper } from './reactPlayerWrapper';
 import { increaseVideoViewCount } from '../../actions/postActions';
 
@@ -8,10 +6,7 @@ export const Player = ({
   video_id_to_use,
   description,
   videoUrl = '',
-  asPath,
-  link,
   videoThumbnail,
-  videoPreviewImage = '',
   userName,
   userProfileImage = '',
   getNextVideo,
@@ -20,32 +15,16 @@ export const Player = ({
   children,
   autoplay,
   autoJumpToNextVideo,
+  onEnded,
 }) => {
   const [triggerPlayCount, setTriggetPlayCount] = useState(false);
 
-  const urlToCopy = useMemo(
-    () => process.env.hostname + '/' + video_id_to_use,
-    [video_id_to_use]
-  );
   const shortDescription = useMemo(() => {
     if (description?.length > 50) {
       return `${description.slice(0, 50)}...`;
     }
     return description;
   }, [description]);
-
-  const hashtags = useMemo(
-    () => description?.match(/#\w+/g) || [],
-    [description]
-  );
-  const baseUrl = useMemo(() => process.env.hostname + asPath, [asPath]);
-  const title = 'Genuin';
-
-  const metaLink = useMemo(
-    () => (link?.indexOf('://') === -1 ? 'http://' + link : link),
-    [link]
-  );
-  const installURL = process.env.installurl + video_id_to_use;
 
   const profilePic = useMemo(() => {
     if (Boolean(userProfileImage)) {
@@ -55,9 +34,6 @@ export const Player = ({
     }
     return 'https://media.qa.begenuin.com/backend_assets/lottie/snowman.png';
   }, [userProfileImage]);
-
-  const metaImageWidth = 1200;
-  const metaImageHeight = 630;
 
   const handleProgress = (event) => {
     const playedProgress = Math.round(Number.parseFloat(event.played) * 100);
@@ -74,49 +50,6 @@ export const Player = ({
 
   return (
     <>
-      <NextHead>
-        <meta property='og:video:url' content={videoUrl} />
-        <meta property='og:video:secure_url' content={videoUrl} />
-        <meta property='og:video:type' content='video/mp4' />
-      </NextHead>
-      <NextSeo
-        title={title}
-        description={description}
-        openGraph={{
-          type: 'website',
-          url: urlToCopy,
-          title: 'Genuin',
-          description: description,
-          videos: [
-            {
-              url: videoUrl,
-              secure_url: videoUrl,
-              type: 'video/mp4',
-              width: '720',
-              height: '1280',
-              alt: 'Genuin',
-            },
-          ],
-          images: [
-            {
-              url: videoPreviewImage,
-              width: metaImageWidth,
-              height: metaImageHeight,
-              alt: 'Genuin',
-            },
-          ],
-          site_name: 'Genuin',
-        }}
-        facebook={{
-          appId: 1234567890,
-        }}
-        twitter={{
-          handle: '@handle',
-          site: '@site',
-          cardType: 'summary_large_image',
-        }}
-      />
-
       <div className='overlay' />
       <div
         className='main d-flex align-items-center justify-content-center'
@@ -139,6 +72,7 @@ export const Player = ({
           roundTableMode={roundTableMode}
           autoplay={autoplay}
           autoJumpToNextVideo={autoJumpToNextVideo}
+          onEnded={onEnded}
         >
           {children}
         </ReactPlayerWrapper>
@@ -157,3 +91,23 @@ function isValidHttpUrl(string) {
 
   return url.protocol === 'http:' || url.protocol === 'https:';
 }
+
+/*
+  const hashtags = useMemo(
+    () => description?.match(/#\w+/g) || [],
+    [description]
+  );
+   const baseUrl = useMemo(() => process.env.hostname + asPath, [asPath]);
+
+   const metaLink = useMemo(
+     () => (link?.indexOf('://') === -1 ? 'http://' + link : link),
+     [link]
+   );
+   const installURL = process.env.installurl + video_id_to_use;
+
+    const urlToCopy = useMemo(
+    () => process.env.hostname + '/' + video_id_to_use,
+    [video_id_to_use]
+  );
+
+*/
