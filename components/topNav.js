@@ -27,17 +27,18 @@ export const TopNav = ({
   showGetAppModal,
   hideGetAppButton = false,
   hideBurgerMenu = false,
+  isContiner = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <Navbar
-      bg='gradient'
+      {...(isContiner
+        ? { className: 'p-3 container' }
+        : { className: 'p-3', bg: 'gradient' })}
       expand={false}
       fixed='top'
-      className='p-3'
       onToggle={(isOpen) => setIsOpen(isOpen)}
-      // className="p-3 container"
     >
       <Navbar.Brand href='/' className='p-0'>
         <Image src={logo.src} alt='Genuin' title='Genuin' />
@@ -50,7 +51,11 @@ export const TopNav = ({
         )}
         {!hideBurgerMenu && (
           <>
-            <Navbar.Toggle aria-controls='navbarMoreOptionDrawer' />
+            <Navbar.Toggle
+              aria-controls='navbarMoreOptionDrawer'
+              style={{ visibility: isOpen ? 'hidden' : 'revert' }}
+            />
+
             <Fade in={isOpen}>
               <Navbar.Collapse
                 style={{ left: 0, visibility: isOpen ? 'visible' : 'hidden' }}
