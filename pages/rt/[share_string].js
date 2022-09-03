@@ -1,36 +1,62 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
 import { Image } from 'react-bootstrap';
-import Error from 'next/error';
-import { Player } from '../../components/new/player';
-import { Layout } from '../../components/new/layout';
-import { TopNav } from '../../components/new/topNav';
-import { GetAppModal } from '../../components/new/getAppModal';
-import { WelcomeModal } from '../../components/new/welcomeModal';
+import { Error } from '../../components/error';
+import { Player } from '../../components/player';
+import { Layout } from '../../components/layout';
+import { TopNav } from '../../components/topNav';
+import { GetAppModal } from '../../components/getAppModal';
+import { WelcomeModal } from '../../components/welcomeModal';
+import { SEO } from '../../components/seo';
+import linkIcon from '../../images/video-more-options/ic-link.svg';
+import share from '../../images/video-more-options/ic-share.svg';
+import comments from '../../images/video-more-options/ic-comments.svg';
+import subsribePlus from '../../images/video-more-options/ic-subsribe-plus.svg';
 
-const linkIcon = require('../../images/video-more-options/ic-link.svg');
-const bookmark = require('../../images/video-more-options/ic-bookmark.svg');
-const share = require('../../images/video-more-options/ic-share.svg');
-const replay = require('../../images/video-more-options/ic-replay.svg');
-const comments = require('../../images/video-more-options/ic-comments.svg');
-const subsribePlus = require('../../images/video-more-options/ic-subsribe-plus.svg');
-
-const RoundTable = (props) => {
+const RoundTable = ({ group, preview_image, chats = [] }) => {
   const [showModalWelcome, setShowModalWelcome] = useState(true);
   const handleCloseWelcome = () => setShowModalWelcome(false);
-
   const [showModalAppDownload, setShowModalAppDownload] = useState(false);
   const handleCloseAppDownload = () => setShowModalAppDownload(false);
   const handleShowModalAppDownload = () => setShowModalAppDownload(true);
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
 
-  return !Boolean(props.data.videoUrl) ? (
-    <Error statusCode='404' />
+  // uncomment when there are multiple vides passed in chats
+  // const totalVideos = videos?.length ?? 0;
+  // const getNextVideo = () => {
+  //   if (currentVideoIndex < totalVideos - 1) {
+  //     setCurrentVideoIndex((old) => old + 1);
+  //   } else {
+  //     setCurrentVideoIndex(0);
+  //   }
+  // };
+  // const getPrevVideo = () => {
+  //   if (currentVideoIndex > 0) {
+  //     setCurrentVideoIndex((old) => old - 1);
+  //   } else {
+  //     setCurrentVideoIndex(totalVideos - 1);
+  //   }
+  // };
+
+  return !Boolean(group?.group_id) ? (
+    <Error />
   ) : (
     <Layout>
+      <SEO
+        videoPreviewImage={preview_image}
+        videoUrl={chats?.[currentVideoIndex]?.video_url}
+        description={group.group_description}
+      />
       <TopNav showGetAppModal={handleShowModalAppDownload} />
       <Player
-        {...props.data}
-        {...props.url}
+        key={currentVideoIndex}
+        video_id_to_use={chats?.[currentVideoIndex]?.conversation_id}
+        description={group?.group_description}
+        videoUrl={chats?.[currentVideoIndex]?.video_url}
+        videoThumbnail={chats?.[currentVideoIndex]?.thumbnail_url}
+        userName={chats?.[currentVideoIndex]?.owner?.name}
+        userProfileImage={chats?.[currentVideoIndex]?.owner?.profile_image}
+        roundTableMode
         showGetAppModal={handleShowModalAppDownload}
       >
         <ShareControls showGetAppModal={handleShowModalAppDownload} />
@@ -57,14 +83,14 @@ RoundTable.getInitialProps = async ({ query: { share_string, v } }) => {
     return axios
       .get(url_to_use)
       .then((response) => {
-        // console.log('response', response);
-        return Promise.resolve({ data: response.data.data });
+        console.log(response?.data?.data);
+        return Promise.resolve(response?.data?.data ?? {});
       })
       .catch((err) => {
-        return Promise.resolve({ data: {} });
+        return Promise.resolve({});
       });
   } else {
-    return Promise.resolve({ data: {} });
+    return Promise.resolve({});
   }
 };
 export default RoundTable;
@@ -73,7 +99,7 @@ const ShareControls = ({ showGetAppModal }) => (
   <ul>
     <li>
       <Image
-        src={linkIcon}
+        src={linkIcon.src}
         width='24'
         height='24'
         alt='Link'
@@ -83,37 +109,7 @@ const ShareControls = ({ showGetAppModal }) => (
     </li>
     <li>
       <Image
-        src={bookmark}
-        width='24'
-        height='24'
-        alt='Bookmark'
-        title='Bookmark'
-        onClick={showGetAppModal}
-      />
-    </li>
-    <li>
-      <Image
-        src={share}
-        width='24'
-        height='24'
-        alt='Share'
-        title='Share'
-        onClick={showGetAppModal}
-      />
-    </li>
-    <li>
-      <Image
-        src={replay}
-        width='24'
-        height='24'
-        alt='Replay'
-        title='Replay'
-        onClick={showGetAppModal}
-      />
-    </li>
-    <li>
-      <Image
-        src={comments}
+        src={comments.src}
         width='24'
         height='24'
         alt='Comments'
@@ -123,11 +119,21 @@ const ShareControls = ({ showGetAppModal }) => (
     </li>
     <li>
       <Image
-        src={subsribePlus}
+        src={subsribePlus.src}
         width='24'
         height='24'
         alt='Subsribe Plus'
         title='Subsribe Plus'
+        onClick={showGetAppModal}
+      />
+    </li>
+    <li>
+      <Image
+        src={share.src}
+        width='24'
+        height='24'
+        alt='Share'
+        title='Share'
         onClick={showGetAppModal}
       />
     </li>

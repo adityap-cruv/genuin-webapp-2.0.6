@@ -1,291 +1,124 @@
-import React, { useRef } from "react";
-import Slider from "react-slick";
-import NextHead from "next/head";
-import { NextSeo } from "next-seo";
-import "slick-carousel/slick/slick.css";
-import "bootstrap/dist/css/bootstrap.min.css";
-import { Layout } from "../components/new/layout";
-import { TopNav } from "../components/new/topNav";
-import { Nav, Button, Container, Row, Col, Carousel } from "react-bootstrap";
-import "./index.css";
-const imgCarousel1 = require("../images/1_hiring_small.png");
-const imgCarousel2 = require("../images/2_investors_small.png");
-const imgCarousel3 = require("../images/3_inspired_small.png");
-const imgCarousel4 = require("../images/4_community_small.png");
-const imgCarousel5 = require("../images/5_discussions_small.png");
+import { useState } from 'react';
+import NextHead from 'next/head';
+import { Layout } from '../components/layout';
+import { TopNav } from '../components/topNav';
+import { GetAppModal } from '../components/getAppModal';
+import { SEO } from '../components/seo';
+import {
+  handleIosInstallClick,
+  handleAndroidInstallClick,
+  handleInvestClick,
+} from '../actions/appInstall';
+import { Nav, Container, Row, Col, Carousel, Image } from 'react-bootstrap';
 
-var settings = {
-  dots: false,
-  arrows: false,
-  fade: true,
-  autoplay: true,
-  infinite: true,
-  speed: 800,
-  slidesToShow: 1,
-  slidesToScroll: 1,
-  autoplaySpeed: 4000,
-};
-var settingsone = {
-  dots: true,
-  arrows: false,
-  fade: false,
-  autoplay: true,
-  infinite: true,
-  speed: 800,
-  slidesToShow: 1,
-  slidesToScroll: 1,
-  autoplaySpeed: 4000,
-  // adaptiveHeight: true
-};
+import ios from '../images/badge_appstore.png';
+import android from '../images/badge_playstore.png';
 
-let title = "Genuin";
-let metaImage = "https://media.begenuin.com/backend_assets/preview.png";
-let metaImageWidth = 1200;
-let metaImageHeight = 630;
+import imgCarousel1 from '../images/1_hiring_small.png';
+import imgCarousel2 from '../images/2_investors_small.png';
+import imgCarousel3 from '../images/3_inspired_small.png';
+import imgCarousel4 from '../images/4_community_small.png';
+import imgCarousel5 from '../images/5_discussions_small.png';
+
+import favicon from '../images/favicon.ico';
+
+let title = 'Genuin';
+let metaImage = 'https://media.begenuin.com/backend_assets/preview.png';
 let description =
-  "Genuin is a video-first professional networking platform that allows you to showcase your expertise and connect with other professionals and businesses. Whether you are searching for a job, seeking investment, hiring candidates, or any other networking, Genuin helps you stand out";
-let currentUrl = "https://begenuin.com";
+  'Genuin is a video-first professional networking platform that allows you to showcase your expertise and connect with other professionals and businesses. Whether you are searching for a job, seeking investment, hiring candidates, or any other networking, Genuin helps you stand out';
+let currentUrl = 'https://begenuin.com';
 let keyword =
-  "Genuin,Showcase Yourself. Get Discovered. Make Connections, video Communication";
+  'Genuin,Showcase Yourself. Get Discovered. Make Connections, video Communication';
 
-const Home2 = () => {
-  const handleInvestClick = () =>
-    window.open("https://www.linkedin.com/company/begenuin/");
-
-  const handleHireLinkClick = () =>
-    window.open("https://angel.co/company/begenuin");
-
-  const handleAndroidInstallClick = () =>
-    window.open(
-      "https://play.google.com/store/apps/details?id=com.begenuin.begenuin"
-    );
-  const handleIosInstallClick = () =>
-    window.open("https://apps.apple.com/us/app/id1511177838");
-
-  const handleInstallAppClick = () =>
-    window.open("https://install.begenuin.com/86sn/cgs");
-
-  const slider1Ref = useRef();
-  const slider2Ref = useRef();
+const Home = () => {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [showModalAppDownload, setShowModalAppDownload] = useState(false);
+  const handleCloseAppDownload = () => setShowModalAppDownload(false);
+  const handleShowModalAppDownload = () => setShowModalAppDownload(true);
 
   return (
     <>
-      <NextSeo
+      <SEO
         title={title}
         description={description}
-        openGraph={{
-          type: "website",
-          url: currentUrl,
-          title: "Genuin",
-          description: description,
-          images: [
-            {
-              url: metaImage,
-              width: metaImageWidth,
-              height: metaImageHeight,
-              alt: "Genuin",
-            },
-          ],
-          site_name: "Genuin",
-        }}
-        facebook={{
-          appId: 1234567890,
-        }}
-        twitter={{
-          handle: "@handle",
-          site: "@site",
-          cardType: "summary_large_image",
-        }}
+        urlToCopy={currentUrl}
+        videoPreviewImage={metaImage}
+        includeHead={false}
       />
       <NextHead>
-        {/* <link
-          rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.6.2/css/bulma.min.css"
-        /> */}
-        <link
-          rel="shortcut icon"
-          href={require("../images/favicon.ico")}
-          type="image/x-icon"
-        />
-        <script src="https:code.jquery.com/jquery-3.4.1.min.js"></script>
+        <link rel='shortcut icon' href={favicon.src} type='image/x-icon' />
       </NextHead>
       <Layout>
-        <TopNav />
-        <div className="mobile-m-p">
-          {/* 
-          <style jsx global>{`
-            html {
-              overflow-y: auto;
-            }
-            body {
-              font-family: 'AvenirNext-DemiBold';
-            }
-            .footer-links {
-              position: absolute;
-              bottom: 0px;
-            }
-            .slider-container {
-              height: 85vh;
-              height: calc(var(--app-height) * 0.85);
-            }
-            .slider-container > div {
-              height: 100%;
-            }
-            .slick-list h1 {
-              font-family: 'AvenirNext-Bold';
-            }
-            .genuin_footer .nav-item {
-              font-family: 'AvenirNext-DemiBold';
-            }
-            @media (min-width: 1200px) {
-              .container,
-              .container-sm,
-              .container-md,
-              .container-lg,
-              .container-xl {
-                max-width: 1310px !important;
-              }
-            }
-          `}</style> */}
-          {/* <Container className='sticky-top'>
-            <Row>
-              <Col xl={12}>
-                <Navbar bg='transparent p-0 pt-4' expand='sm'>
-                  <Navbar.Brand href='/' className='p-0'>
-                    <img
-                      src={require('../images/logo_header_new.png')}
-                      alt='Genuin'
-                    />
-                  </Navbar.Brand>
-
-                  <a className='nav-button ml-auto d-sm-none p-0'>
-                    <span id='nav-icon3'>
-                      <span></span>
-                      <span></span>
-                      <span></span>
-                      <span></span>
-                    </span>
-                  </a>
-
-                  <div className='fixed-top main-menu'>
-                    <div className='flex-top p-5 mt-5'>
-                      <ul className='nav flex-column w-100'>
-                        <li className='nav-item delay-1 pt-4'>
-                          <a
-                            className='nav-link pt-5'
-                            onClick={handleInvestClick}
-                            href='#'
-                          >
-                            Invest in Genuin
-                          </a>
-                        </li>
-                        <li className='nav-item delay-2'>
-                          <a
-                            className='nav-link'
-                            onClick={handleHireLinkClick}
-                            href='#'
-                          >
-                            Join us
-                          </a>
-                        </li>
-                        <li className='nav-item delay-3'>
-                          <a className='nav-link' href='/terms'>
-                            Terms of Service{' '}
-                          </a>
-                        </li>
-                        <li className='nav-item delay-4'>
-                          <a className='nav-link' href='/privacy'>
-                            Privacy Policy
-                          </a>
-                        </li>
-                      </ul>
-
-                      <ul className='copy-right'>
-                        <li className='nav-item delay-5'>
-                          <a className='nav-link' href='/'>
-                            © 2022 Genuin Inc.
-                          </a>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-
-                  <Navbar.Collapse
-                    id='basic-navbar-nav'
-                    className='collapse navbar-collapse'
-                  >
-                    <Nav className='mr-auto'></Nav>
-                    <Form
-                      inline
-                      className='d-none d-sm-block d-md-block d-lg-block'
-                    >
-                      <Button onClick={handleHireLinkClick} variant='primary'>
-                        Join us
-                      </Button>
-                    </Form>
-                  </Navbar.Collapse>
-                </Navbar>
-              </Col>
-            </Row>
-          </Container> */}
-          <Container>
-            <Row className="justify-content-center align-items-center">
+        <TopNav showGetAppModal={handleShowModalAppDownload} isContiner />
+        <section className='bg-gradient-blue section-content d-flex flex-column h-100 justify-content-center justify-content-md-between'>
+          <Container className='container-false d-none d-md-block'></Container>
+          <Container className='content-container'>
+            <Row className='justify-content-center align-items-center'>
               <Col sm={12} md={6} lg={6} xl={6}>
-                <Carousel controls={false} indicators={false} fade>
+                <Carousel
+                  controls={false}
+                  indicators={false}
+                  fade
+                  activeIndex={activeIndex}
+                >
                   <Carousel.Item>
                     <img
-                      src={imgCarousel1}
+                      src={imgCarousel1.src}
                       width={380}
                       height={770}
-                      alt="Find your dream candidate"
-                      title="Find your dream candidate"
-                      className="img-fluid mx-auto d-block"
+                      alt='Find your dream candidate'
+                      title='Find your dream candidate'
+                      className='img-carousel mx-auto d-block'
                     />
                   </Carousel.Item>
                   <Carousel.Item>
                     <img
-                      src={imgCarousel2}
+                      src={imgCarousel2.src}
                       width={380}
                       height={770}
-                      alt="Find Investors for your Startup"
-                      title="Find Investors for your Startup"
-                      className="img-fluid mx-auto d-block"
+                      alt='Find Investors for your Startup'
+                      title='Find Investors for your Startup'
+                      className='img-carousel mx-auto d-block'
                     />
                   </Carousel.Item>
                   <Carousel.Item>
                     <img
-                      src={imgCarousel3}
+                      src={imgCarousel3.src}
                       width={380}
                       height={770}
-                      alt="Get Inspired"
-                      title="Get Inspired"
-                      className="img-fluid mx-auto d-block"
+                      alt='Get Inspired'
+                      title='Get Inspired'
+                      className='img-carousel mx-auto d-block'
                     />
                   </Carousel.Item>
                   <Carousel.Item>
                     <img
-                      src={imgCarousel4}
+                      src={imgCarousel4.src}
                       width={380}
                       height={770}
-                      alt="Engage with community"
-                      title="Engage with community"
-                      className="img-fluid mx-auto d-block"
+                      alt='Engage with community'
+                      title='Engage with community'
+                      className='img-carousel mx-auto d-block'
                     />
                   </Carousel.Item>
                   <Carousel.Item>
                     <img
-                      src={imgCarousel5}
+                      src={imgCarousel5.src}
                       width={380}
                       height={770}
-                      alt="Initiate Discussions"
-                      title="Initiate Discussions"
-                      className="img-fluid mx-auto d-block"
+                      alt='Initiate Discussions'
+                      title='Initiate Discussions'
+                      className='img-carousel mx-auto d-block'
                     />
                   </Carousel.Item>
                 </Carousel>
               </Col>
               <Col sm={12} md={6} lg={6} xl={6}>
-                <Carousel controls={false}>
+                <Carousel
+                  controls={false}
+                  interval={2000}
+                  onSelect={(selectedIndex) => setActiveIndex(selectedIndex)}
+                >
                   <Carousel.Item>
                     <h1>
                       Find your
@@ -321,82 +154,106 @@ const Home2 = () => {
                     </h1>
                   </Carousel.Item>
                 </Carousel>
+                <Row
+                  xs={2}
+                  className='justify-content-center justify-content-md-start mt-5 pt-3'
+                >
+                  <Col
+                    xs='6'
+                    lg='auto'
+                    className='d-flex align-items-center justify-content-end ps-4 ps-sm-0'
+                  >
+                    <Image
+                      src={ios.src}
+                      onClick={handleIosInstallClick}
+                      width={204}
+                      height={60}
+                      alt='iOs App Store'
+                      title='iOs App Store'
+                      fluid
+                    />
+                  </Col>
+                  <Col
+                    xs='6'
+                    lg='auto'
+                    className='d-flex align-items-center justify-content-start pe-4 ps-em-0'
+                  >
+                    <Image
+                      src={android.src}
+                      width={204}
+                      height={60}
+                      onClick={handleAndroidInstallClick}
+                      alt='Android Play Store'
+                      title='Android Play Store'
+                      fluid
+                    />
+                  </Col>
+                </Row>
               </Col>
             </Row>
           </Container>
 
-          <Container className="footer-m-none genuin_footer">
-            <Row className="pt-3 pb-3">
-              <Col xl={4} lg={4} md={4} sm={4} className="text-m-center">
-                <Nav defaultActiveKey="/home" as="ul">
-                  <Nav.Item as="li">
+          <Container className='d-none d-md-block container-footer'>
+            <Row className='py-3'>
+              <Col xl={4} lg={4} md={4} sm={12}>
+                <Nav as='ul'>
+                  <Nav.Item as='li'>
                     <Nav.Link
                       style={{ opacity: 0.5 }}
-                      href="/"
-                      className="pr-0"
+                      href='/'
+                      className='pr-0'
                     >
                       © 2022 Genuin Inc.
                     </Nav.Link>
                   </Nav.Item>
                 </Nav>
               </Col>
-              <Col xl={8} lg={8} md={8} sm={8}>
+              <Col xl={8} lg={8} md={8} sm={12}>
                 <Nav
-                  className="justify-content-end"
-                  defaultActiveKey="/home"
-                  as="ul"
+                  className='justify-content-start justify-content-md-end'
+                  as='ul'
                 >
-                  <Nav.Item as="li">
+                  <Nav.Item as='li'>
                     <Nav.Link
                       style={{ opacity: 0.5 }}
-                      href="#"
-                      eventKey="link-1"
+                      href='#'
                       onClick={handleInvestClick}
                     >
                       Invest in Genuin
                     </Nav.Link>
                   </Nav.Item>
-                  <Nav.Item as="li">
+                  <Nav.Item as='li'>
                     <Nav.Link
                       style={{
                         opacity: 0.5,
-                        paddingLeft: "0px",
-                        paddingRight: "0px",
+                        paddingLeft: '0px',
+                        paddingRight: '0px',
                       }}
                       href={void 0}
-                      eventKey="link-2"
+                      eventKey='link-2'
                     >
                       |
                     </Nav.Link>
                   </Nav.Item>
-                  <Nav.Item as="li">
-                    <Nav.Link
-                      style={{ opacity: 0.5 }}
-                      href="/terms"
-                      eventKey="link-3"
-                    >
+                  <Nav.Item as='li'>
+                    <Nav.Link style={{ opacity: 0.5 }} href='/terms'>
                       Terms of Service
                     </Nav.Link>
                   </Nav.Item>
-                  <Nav.Item as="li">
+                  <Nav.Item as='li'>
                     <Nav.Link
                       style={{
                         opacity: 0.5,
-                        paddingLeft: "0px",
-                        paddingRight: "0px",
+                        paddingLeft: '0px',
+                        paddingRight: '0px',
                       }}
                       href={void 0}
-                      eventKey="link-4"
                     >
                       |
                     </Nav.Link>
                   </Nav.Item>
-                  <Nav.Item as="li">
-                    <Nav.Link
-                      style={{ opacity: 0.5 }}
-                      href="/privacy"
-                      eventKey="link-5"
-                    >
+                  <Nav.Item as='li'>
+                    <Nav.Link style={{ opacity: 0.5 }} href='/privacy'>
                       Privacy Policy
                     </Nav.Link>
                   </Nav.Item>
@@ -404,10 +261,14 @@ const Home2 = () => {
               </Col>
             </Row>
           </Container>
-        </div>
+        </section>
+        <GetAppModal
+          show={showModalAppDownload}
+          onClose={handleCloseAppDownload}
+        />
       </Layout>
     </>
   );
 };
 
-export default Home2;
+export default Home;

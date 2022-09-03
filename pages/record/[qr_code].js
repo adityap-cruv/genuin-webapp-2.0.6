@@ -1,28 +1,36 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
-import Error from 'next/error';
 import { Image } from 'react-bootstrap';
-import { Player } from '../../components/new/player';
-import { Layout } from '../../components/new/layout';
-import { TopNav } from '../../components/new/topNav';
-import { GetAppModal } from '../../components/new/getAppModal';
-import { WelcomeModal } from '../../components/new/welcomeModal';
-
-const linkIcon = require('../../images/video-more-options/ic-link.svg');
-const bookmark = require('../../images/video-more-options/ic-bookmark.svg');
-const share = require('../../images/video-more-options/ic-share.svg');
-const replay = require('../../images/video-more-options/ic-replay.svg');
-const comments = require('../../images/video-more-options/ic-comments.svg');
-const subsribePlus = require('../../images/video-more-options/ic-subsribe-plus.svg');
+import { Player } from '../../components/player';
+import { Layout } from '../../components/layout';
+import { TopNav } from '../../components/topNav';
+import { GetAppModal } from '../../components/getAppModal';
+import { WelcomeModal } from '../../components/welcomeModal';
+import { SEO } from '../../components/seo';
+import { Error } from '../../components/error';
+import linkIcon from '../../images/video-more-options/ic-link.svg';
+import bookmark from '../../images/video-more-options/ic-bookmark.svg';
+import share from '../../images/video-more-options/ic-share.svg';
+import replay from '../../images/video-more-options/ic-replay.svg';
+import comments from '../../images/video-more-options/ic-comments.svg';
+import subsribePlus from '../../images/video-more-options/ic-subsribe-plus.svg';
 
 const Record = (props) => {
+  const {
+    videos = [],
+    user_id,
+    preview_image,
+    name,
+    nickname,
+    profile_image,
+  } = props;
   const [showModalWelcome, setShowModalWelcome] = useState(true);
   const handleCloseWelcome = () => setShowModalWelcome(false);
   const [showModalAppDownload, setShowModalAppDownload] = useState(false);
   const handleCloseAppDownload = () => setShowModalAppDownload(false);
   const handleShowModalAppDownload = () => setShowModalAppDownload(true);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
-  const totalVideos = props?.data?.videos?.length ?? 0;
+  const totalVideos = videos?.length ?? 0;
 
   const getNextVideo = () => {
     if (currentVideoIndex < totalVideos - 1) {
@@ -38,26 +46,28 @@ const Record = (props) => {
       setCurrentVideoIndex(totalVideos - 1);
     }
   };
-  return !Boolean(props.data.user_id) ? (
-    <Error statusCode='404' />
+  return !Boolean(user_id) ? (
+    <Error />
   ) : (
     <Layout>
+      <SEO
+        videoUrl={videos[currentVideoIndex]?.videoUrl}
+        videoPreviewImage={preview_image}
+        description={videos[currentVideoIndex]?.description}
+      />
       <TopNav showGetAppModal={handleShowModalAppDownload} />
       <Player
-        userName={
-          Boolean(props.data.name) ? props.data.name : props.data.nickname
-        }
-        userProfileImage={props.data.profile_image}
-        videoThumbnail={props.data.videos[currentVideoIndex]?.videoThumbnail}
-        videoPreviewImage={
-          props.data.videos[currentVideoIndex]?.videoPreviewImage
-        }
-        description={props.data.videos[currentVideoIndex]?.description}
-        link={props.data.videos[currentVideoIndex]?.link}
-        videoUrl={props.data.videos[currentVideoIndex]?.videoUrl}
+        key={currentVideoIndex}
+        userName={Boolean(name) ? name : nickname}
+        userProfileImage={profile_image}
+        videoThumbnail={videos[currentVideoIndex]?.videoThumbnail}
+        description={videos[currentVideoIndex]?.description}
+        link={videos[currentVideoIndex]?.link}
+        videoUrl={videos[currentVideoIndex]?.videoUrl}
         showGetAppModal={handleShowModalAppDownload}
         getNextVideo={getNextVideo}
         getPrevVideo={getPrevVideo}
+        onEnded={() => handleShowModalAppDownload()}
       >
         <ShareControls showGetAppModal={handleShowModalAppDownload} />
       </Player>
@@ -85,20 +95,20 @@ Record.getInitialProps = async ({ query: { qr_code } }) => {
           axios
             .get(url_to_use2)
             .then((response2) => {
-              var final_response = response2.data.data;
+              var final_response = response2?.data?.data;
               final_response['is_record'] = true;
-              final_response['owner'] = response.data.data.owner;
-              resolve({ data: final_response });
+              final_response['owner'] = response?.data?.data?.owner ?? {};
+              resolve(final_response);
             })
             .catch((err) => {
-              resolve({ data: {} });
+              resolve({});
             });
         } else {
-          resolve({ data: {} });
+          resolve({});
         }
       })
       .catch((err) => {
-        resolve({ data: {} });
+        resolve({});
       });
   });
 };
@@ -108,7 +118,7 @@ const ShareControls = ({ showGetAppModal }) => (
   <ul>
     <li>
       <Image
-        src={linkIcon}
+        src={linkIcon.src}
         width='24'
         height='24'
         alt='Link'
@@ -118,7 +128,7 @@ const ShareControls = ({ showGetAppModal }) => (
     </li>
     <li>
       <Image
-        src={bookmark}
+        src={bookmark.src}
         width='24'
         height='24'
         alt='Bookmark'
@@ -128,7 +138,7 @@ const ShareControls = ({ showGetAppModal }) => (
     </li>
     <li>
       <Image
-        src={share}
+        src={share.src}
         width='24'
         height='24'
         alt='Share'
@@ -138,7 +148,7 @@ const ShareControls = ({ showGetAppModal }) => (
     </li>
     <li>
       <Image
-        src={replay}
+        src={replay.src}
         width='24'
         height='24'
         alt='Replay'
@@ -148,7 +158,7 @@ const ShareControls = ({ showGetAppModal }) => (
     </li>
     <li>
       <Image
-        src={comments}
+        src={comments.src}
         width='24'
         height='24'
         alt='Comments'
@@ -158,7 +168,7 @@ const ShareControls = ({ showGetAppModal }) => (
     </li>
     <li>
       <Image
-        src={subsribePlus}
+        src={subsribePlus.src}
         width='24'
         height='24'
         alt='Subsribe Plus'

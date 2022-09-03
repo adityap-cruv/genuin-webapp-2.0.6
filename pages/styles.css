@@ -1,4 +1,30 @@
-/* Generic CSS */
+:root {
+  --h-top-navbar: 70px;
+}
+@font-face {
+  font-family: 'AvenirNext';
+  src: url('/fonts/AvenirNext-Bold-01.ttf');
+  src: url('/fonts/AvenirNext-BoldItalic-02.ttf');
+  src: url('/fonts/AvenirNext-DemiBold-03.ttf');
+  src: url('/fonts/AvenirNext-DemiBoldItalic-04.ttf');
+  src: url('/fonts/AvenirNext-Heavy-09.ttf');
+  src: url('/fonts/AvenirNext-HeavyItalic-10.ttf');
+  src: url('/fonts/AvenirNext-Italic-05.ttf');
+  src: url('/fonts/AvenirNext-Medium-06.ttf');
+  src: url('/fonts/AvenirNext-MediumItalic-07.ttf');
+  src: url('/fonts/AvenirNext-Regular-08.ttf');
+  src: url('/fonts/AvenirNext-UltraLight-11.ttf');
+  src: url('/fonts/AvenirNext-UltraLightItalic-12.ttf');
+}
+@font-face {
+  font-family: 'AvenirNext-DemiBold';
+  src: url('/fonts/AvenirNext-DemiBold-03.ttf');
+}
+@font-face {
+  font-family: 'AvenirNext-Bold';
+  src: url('/fonts/AvenirNext-Bold-01.ttf');
+}
+
 html {
   width: 100%;
   height: 100%;
@@ -7,13 +33,14 @@ html {
 body {
   width: 100%;
   height: 100%;
-  font-family: "Avenir", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
-    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-family: 'Avenir', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji',
+    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   padding: 0;
   margin: 0;
   font-style: normal;
 }
+/* Generic CSS */
 body .overlay {
   width: 100%;
   height: 100%;
@@ -60,7 +87,14 @@ body .overlay {
 .rounded-5 {
   border-radius: 20px;
 }
+
 /* Top Navigation CSS */
+.bg-black {
+  background: #000;
+}
+.h-top-navbar {
+  height: var(--h-top-navbar);
+}
 .navbar {
   width: 100%;
   height: auto;
@@ -102,7 +136,7 @@ body .overlay {
   transition: all 0.4s ease;
   background: rgb(0 0 0 / 80%);
   display: flex !important;
-  justify-content: end;
+  justify-content: flex-end;
 }
 .navbar-collapse.show {
   left: 0;
@@ -140,6 +174,9 @@ body .overlay {
 .btn {
   border-radius: 0.25rem;
   font-weight: 700;
+}
+.btn-cta {
+  display: inline-flex;
 }
 .btn-primary {
   color: #fff;
@@ -219,12 +256,14 @@ body .overlay {
   cursor: pointer;
   aspect-ratio: 9 / 16;
   background: #333333;
+  isolation: isolate;
 }
 .video-wrapper {
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 .btn-play {
   color: rgb(255 255 255 / 0.5);
@@ -250,6 +289,7 @@ body .overlay {
   padding: 1rem;
   color: #fff;
   line-height: 1.56;
+  padding-bottom: 0;
 }
 .video-footer .badge {
   font-size: 1rem;
@@ -322,6 +362,14 @@ body .overlay {
 .video-more-option ul > li:hover {
   background: rgba(255, 255, 255, 0.3);
 }
+.btn-arrow:focus,
+.btn-arrow:focus-visible,
+.video-more-option ul > li:focus,
+.video-more-option ul > li:focus-visible {
+  outline: none;
+  border: none;
+  box-shadow: none;
+}
 .btn-arrow:first-child {
   margin-top: 0;
 }
@@ -336,8 +384,7 @@ body .overlay {
   display: none !important;
 }
 @media (max-width: 768px) {
-  .video-container,
-  .video-wrapper {
+  .video-container {
     overflow: hidden;
   }
 }
@@ -357,7 +404,7 @@ body .overlay {
     border-radius: 40px 40px 0 0;
   }
   .modal-app-download .modal-dialog-centered {
-    align-items: end;
+    align-items: flex-end;
     margin: 0;
     min-height: 100%;
   }
@@ -411,4 +458,75 @@ body .overlay {
 .carousel .carousel-indicators .active,
 .modal-welcome .carousel .carousel-indicators .active {
   width: 40px;
+}
+/* Content Section */
+
+.section-content .container-false {
+  height: 70px;
+}
+.section-content .carousel .carousel-indicators {
+  right: auto;
+  justify-content: start;
+  margin-right: 0;
+  margin-left: 0;
+  bottom: -50px;
+}
+
+.section-content h1 {
+  color: #ffffff;
+  text-shadow: 0px 9px 0px #0645ff;
+  font-size: 4.5rem;
+  font-weight: 700;
+}
+.img-carousel {
+  width: 100%;
+  height: auto;
+  max-height: 600px;
+  max-width: 400px;
+  object-fit: contain;
+}
+.container-footer a {
+  color: #ffffff;
+  font-weight: 600;
+}
+.container-footer a:hover {
+  color: #ffffff;
+  opacity: 0.5;
+}
+.container-footer.text-black a,
+.container-footer.text-black a:hover {
+  color: #000000;
+}
+@media (max-width: 768px) {
+  .section-content h1 {
+    margin-top: 2rem;
+    font-size: 2.5rem;
+    text-align: center;
+  }
+  .img-carousel {
+    max-height: 400px;
+    max-width: 250px;
+  }
+  .section-content .carousel .carousel-indicators {
+    right: 0;
+    justify-content: center;
+    margin-right: 15%;
+    margin-left: 15%;
+  }
+}
+@media (max-width: 576px) {
+  .img-carousel {
+    max-height: 300px;
+    max-width: 150px;
+  }
+  .section-content h1 {
+    margin-top: 1.5rem;
+    font-size: 2rem;
+  }
+}
+/* Section Privacy */
+.section-privacy {
+  height: calc(100% - var(--h-top-navbar));
+  display: flex;
+  flex-direction: column;
 }
