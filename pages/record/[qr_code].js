@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { Image } from 'react-bootstrap';
 import { Player } from '../../components/player';
 import { Layout } from '../../components/layout';
 import { TopNav } from '../../components/topNav';
@@ -8,12 +7,8 @@ import { GetAppModal } from '../../components/getAppModal';
 import { WelcomeModal } from '../../components/welcomeModal';
 import { SEO } from '../../components/seo';
 import { Error } from '../../components/error';
-import linkIcon from '../../images/video-more-options/ic-link.svg';
-import bookmark from '../../images/video-more-options/ic-bookmark.svg';
-import share from '../../images/video-more-options/ic-share.svg';
-import replay from '../../images/video-more-options/ic-replay.svg';
-import comments from '../../images/video-more-options/ic-comments.svg';
-import subsribePlus from '../../images/video-more-options/ic-subsribe-plus.svg';
+import { AppActions } from '../../components/appActions';
+import { appStoreLink } from '../../config';
 
 const Record = (props) => {
   const {
@@ -27,9 +22,17 @@ const Record = (props) => {
   const [showModalWelcome, setShowModalWelcome] = useState(true);
   const handleCloseWelcome = () => setShowModalWelcome(false);
   const [showModalAppDownload, setShowModalAppDownload] = useState(false);
-  const handleCloseAppDownload = () => setShowModalAppDownload(false);
-  const handleShowModalAppDownload = () => setShowModalAppDownload(true);
+  const getAppComponentRef = useRef(() => null);
+  const handleCloseAppDownload = () => {
+    setShowModalAppDownload(false);
+    getAppComponentRef.current = () => null;
+  };
+  const handleShowModalAppDownload = (message = () => null) => {
+    setShowModalAppDownload(true);
+    getAppComponentRef.current = message;
+  };
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+
   const totalVideos = videos?.length ?? 0;
 
   const getNextVideo = () => {
@@ -69,11 +72,12 @@ const Record = (props) => {
         getPrevVideo={getPrevVideo}
         onEnded={() => handleShowModalAppDownload()}
       >
-        <ShareControls showGetAppModal={handleShowModalAppDownload} />
+        <AppActions showGetAppModal={handleShowModalAppDownload} />
       </Player>
       <GetAppModal
         show={showModalAppDownload}
         onClose={handleCloseAppDownload}
+        getAppLink={appStoreLink}
       />
       <WelcomeModal show={showModalWelcome} onClose={handleCloseWelcome} />
     </Layout>
@@ -113,68 +117,3 @@ Record.getInitialProps = async ({ query: { qr_code } }) => {
   });
 };
 export default Record;
-
-const ShareControls = ({ showGetAppModal }) => (
-  <ul>
-    <li>
-      <Image
-        src={linkIcon.src}
-        width='24'
-        height='24'
-        alt='Link'
-        title='Link'
-        onClick={showGetAppModal}
-      />
-    </li>
-    <li>
-      <Image
-        src={bookmark.src}
-        width='24'
-        height='24'
-        alt='Bookmark'
-        title='Bookmark'
-        onClick={showGetAppModal}
-      />
-    </li>
-    <li>
-      <Image
-        src={share.src}
-        width='24'
-        height='24'
-        alt='Share'
-        title='Share'
-        onClick={showGetAppModal}
-      />
-    </li>
-    <li>
-      <Image
-        src={replay.src}
-        width='24'
-        height='24'
-        alt='Replay'
-        title='Replay'
-        onClick={showGetAppModal}
-      />
-    </li>
-    <li>
-      <Image
-        src={comments.src}
-        width='24'
-        height='24'
-        alt='Comments'
-        title='Comments'
-        onClick={showGetAppModal}
-      />
-    </li>
-    <li>
-      <Image
-        src={subsribePlus.src}
-        width='24'
-        height='24'
-        alt='Subsribe Plus'
-        title='Subsribe Plus'
-        onClick={showGetAppModal}
-      />
-    </li>
-  </ul>
-);
