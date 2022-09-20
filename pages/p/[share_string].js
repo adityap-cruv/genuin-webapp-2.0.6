@@ -48,6 +48,9 @@ const Profile = ({
     }
   };
 
+  const showGetAppToViewDialog = () =>
+    handleShowModalAppDownload(() => <>Get the app to view this video</>);
+
   return !Boolean(user_id) ? (
     <Error />
   ) : (
@@ -57,7 +60,7 @@ const Profile = ({
         videoUrl={videos[currentVideoIndex]?.videoUrl}
         description={videos[currentVideoIndex]?.description}
       />
-      <TopNav showGetAppModal={handleShowModalAppDownload} />
+      <TopNav showGetAppModal={showGetAppToViewDialog} />
       <Player
         key={currentVideoIndex}
         userName={name}
@@ -68,9 +71,7 @@ const Profile = ({
         showGetAppModal={handleShowModalAppDownload}
         getNextVideo={getNextVideo}
         getPrevVideo={getPrevVideo}
-        onEnded={() =>
-          handleShowModalAppDownload(() => <>Get the app to view this video</>)
-        }
+        onEnded={showGetAppToViewDialog}
       >
         <AppActions
           showGetAppModal={handleShowModalAppDownload}
