@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import axios from 'axios';
 import { Player } from '../../components/player';
 import { Layout } from '../../components/layout';
@@ -49,6 +49,10 @@ const Record = (props) => {
       setCurrentVideoIndex(totalVideos - 1);
     }
   };
+
+  const showGetAppToViewDialog = () =>
+    handleShowModalAppDownload(() => <>Get the app to view this video</>);
+
   return !Boolean(user_id) ? (
     <Error />
   ) : (
@@ -58,7 +62,7 @@ const Record = (props) => {
         videoPreviewImage={preview_image}
         description={videos[currentVideoIndex]?.description}
       />
-      <TopNav showGetAppModal={handleShowModalAppDownload} />
+      <TopNav showGetAppModal={() => showGetAppToViewDialog()} />
       <Player
         key={currentVideoIndex}
         userName={Boolean(name) ? name : nickname}
@@ -70,7 +74,7 @@ const Record = (props) => {
         showGetAppModal={handleShowModalAppDownload}
         getNextVideo={getNextVideo}
         getPrevVideo={getPrevVideo}
-        onEnded={() => handleShowModalAppDownload()}
+        onEnded={showGetAppToViewDialog}
       >
         <AppActions
           showGetAppModal={handleShowModalAppDownload}
@@ -83,6 +87,7 @@ const Record = (props) => {
       <GetAppModal
         show={showModalAppDownload}
         onClose={handleCloseAppDownload}
+        TextNode={getAppComponentRef.current}
         getAppLink={appStoreLink}
       />
       <WelcomeModal show={showModalWelcome} onClose={handleCloseWelcome} />

@@ -33,6 +33,9 @@ const Video = (props) => {
     setShowModalAppDownload(true);
   };
 
+  const showGetAppToViewDialog = () =>
+    handleShowModalAppDownload(() => <>Get the app to view this video</>);
+
   return !Boolean(videoUrl) ? (
     <Error />
   ) : (
@@ -43,7 +46,7 @@ const Video = (props) => {
         description={description}
         urlToCopy={process?.env?.hostname + '/' + video_id_to_use}
       />
-      <TopNav showGetAppModal={handleShowModalAppDownload} />
+      <TopNav showGetAppModal={showGetAppToViewDialog} />
       <Player
         key={video_id_to_use ?? `${Math.random()}`}
         video_id_to_use={video_id_to_use}
@@ -53,7 +56,7 @@ const Video = (props) => {
         userName={userName}
         userProfileImage={userProfileImage}
         showGetAppModal={handleShowModalAppDownload}
-        onEnded={() => handleShowModalAppDownload()}
+        onEnded={showGetAppToViewDialog}
       >
         <AppActions
           showGetAppModal={handleShowModalAppDownload}

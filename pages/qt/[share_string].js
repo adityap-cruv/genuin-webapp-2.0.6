@@ -1,10 +1,12 @@
-import { useMemo } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import axios from 'axios';
 import { Question } from '../../components/question';
 import { Layout } from '../../components/layout';
 import { Error } from '../../components/error';
 import { SEO } from '../../components/seo';
+import { GetAppModal } from '../../components/getAppModal';
 import { TopNav } from '../../components/topNav';
+import { appStoreLink } from '../../config';
 
 const QuestionWrapper = ({
   question_id,
@@ -13,6 +15,17 @@ const QuestionWrapper = ({
   share_url,
   owner,
 }) => {
+  const [showModalAppDownload, setShowModalAppDownload] = useState(false);
+  const getAppComponentRef = useRef(() => null);
+  const handleCloseAppDownload = () => {
+    getAppComponentRef.current = () => null;
+    setShowModalAppDownload(false);
+  };
+  const handleShowModalAppDownload = (message = () => null) => {
+    getAppComponentRef.current = message;
+    setShowModalAppDownload(true);
+  };
+
   const _question = useMemo(() => {
     return Boolean(question) ? 'Question on Genuin: ' + question : question;
   }, [question]);
@@ -31,6 +44,10 @@ const QuestionWrapper = ({
         : `Answer this trending question on Genuin`,
     [askedBy]
   );
+
+  const showGetAppToViewDialog = () =>
+    handleShowModalAppDownload(() => <>Get the app to view this video</>);
+
   return Boolean(question_id) ? (
     <Layout>
       <SEO
@@ -43,8 +60,14 @@ const QuestionWrapper = ({
         urlToCopy={share_url}
         videoPreviewImage={preview_image}
       />
-      <TopNav />
+      <TopNav showGetAppModal={showGetAppToViewDialog} />
       <Question previewImage={preview_image} />
+      <GetAppModal
+        show={showModalAppDownload}
+        onClose={handleCloseAppDownload}
+        TextNode={getAppComponentRef.current}
+        getAppLink={appStoreLink}
+      />
     </Layout>
   ) : (
     <Error />

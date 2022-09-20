@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import axios from 'axios';
 import { Error } from '../../components/error';
 import { Player } from '../../components/player';
@@ -23,7 +23,7 @@ const RoundTable = ({ group, preview_image, chats = [] }) => {
     getAppComponentRef.current = message;
     setShowModalAppDownload(true);
   };
-  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+  const [currentVideoIndex] = useState(0);
 
   // uncomment when there are multiple vides passed in chats
   // const totalVideos = videos?.length ?? 0;
@@ -42,6 +42,9 @@ const RoundTable = ({ group, preview_image, chats = [] }) => {
   //   }
   // };
 
+  const showGetAppToViewDialog = () =>
+    handleShowModalAppDownload(() => <>Get the app to view this video</>);
+
   return !Boolean(group?.group_id) ? (
     <Error />
   ) : (
@@ -51,7 +54,7 @@ const RoundTable = ({ group, preview_image, chats = [] }) => {
         videoUrl={chats?.[currentVideoIndex]?.video_url}
         description={group.group_description}
       />
-      <TopNav showGetAppModal={handleShowModalAppDownload} />
+      <TopNav showGetAppModal={showGetAppToViewDialog} />
       <Player
         key={currentVideoIndex}
         video_id_to_use={chats?.[currentVideoIndex]?.conversation_id}
@@ -61,8 +64,9 @@ const RoundTable = ({ group, preview_image, chats = [] }) => {
         userName={chats?.[currentVideoIndex]?.owner?.name}
         userProfileImage={chats?.[currentVideoIndex]?.owner?.profile_image}
         roundTableMode
-        roundTableName=''
+        roundTableName={group?.group_name}
         showGetAppModal={handleShowModalAppDownload}
+        onEnded={showGetAppToViewDialog}
       >
         <AppActions
           showGetAppModal={handleShowModalAppDownload}
@@ -90,14 +94,12 @@ RoundTable.getInitialProps = async ({ query: { share_string, v } }) => {
     share_string !== ''
   ) {
     var url_to_use = `${process.env.apiurl}/api/v3/rt/web?chat_id=${share_string}`;
-    console.log(url_to_use);
     if (v !== undefined && v !== null) {
       url_to_use = `${url_to_use}&video_id=${v}`;
     }
     return axios
       .get(url_to_use)
       .then((response) => {
-        console.log(response?.data?.data);
         return Promise.resolve(response?.data?.data ?? {});
       })
       .catch((err) => {

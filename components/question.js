@@ -1,9 +1,6 @@
-import { useMemo } from 'react';
 import { Container, Row, Col, Image } from 'react-bootstrap';
-import {
-  handleAndroidInstallClick,
-  handleIosInstallClick,
-} from '../actions/appInstall';
+import { handleLink } from '../actions/appInstall';
+import { appleAppStoreLink, googlePlayStoreLink } from '../config';
 import ios from '../images/badge_appstore.png';
 import android from '../images/badge_playstore.png';
 
@@ -34,7 +31,7 @@ export const Question = ({ previewImage }) => (
         >
           <Image
             src={ios.src}
-            onClick={handleIosInstallClick}
+            onClick={handleLink(appleAppStoreLink)}
             width={204}
             height={60}
             alt='iOs App Store'
@@ -50,7 +47,7 @@ export const Question = ({ previewImage }) => (
             src={android.src}
             width={204}
             height={60}
-            onClick={handleAndroidInstallClick}
+            onClick={handleLink(googlePlayStoreLink)}
             alt='Android Play Store'
             title='Android Play Store'
             fluid

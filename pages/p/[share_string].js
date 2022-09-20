@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import axios from 'axios';
 import { Player } from '../../components/player';
 import { Layout } from '../../components/layout';
 import { TopNav } from '../../components/topNav';
 import { GetAppModal } from '../../components/getAppModal';
+import { AppActions } from '../../components/appActions';
 import { WelcomeModal } from '../../components/welcomeModal';
 import { Error } from '../../components/error';
 import { SEO } from '../../components/seo';
@@ -67,7 +68,9 @@ const Profile = ({
         showGetAppModal={handleShowModalAppDownload}
         getNextVideo={getNextVideo}
         getPrevVideo={getPrevVideo}
-        onEnded={() => handleShowModalAppDownload()}
+        onEnded={() =>
+          handleShowModalAppDownload(() => <>Get the app to view this video</>)
+        }
       >
         <AppActions
           showGetAppModal={handleShowModalAppDownload}
@@ -80,7 +83,7 @@ const Profile = ({
       <GetAppModal
         show={showModalAppDownload}
         onClose={handleCloseAppDownload}
-        message={getAppModelMessage}
+        TextNode={getAppComponentRef.current}
         getAppLink={appStoreLink}
       />
       <WelcomeModal show={showModalWelcome} onClose={handleCloseWelcome} />
