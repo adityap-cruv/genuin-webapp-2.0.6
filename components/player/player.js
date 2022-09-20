@@ -16,6 +16,8 @@ export const Player = ({
   autoplay,
   autoJumpToNextVideo,
   onEnded,
+  showGetAppModal,
+  roundTableName,
 }) => {
   const [triggerPlayCount, setTriggetPlayCount] = useState(false);
 
@@ -73,6 +75,8 @@ export const Player = ({
           autoplay={autoplay}
           autoJumpToNextVideo={autoJumpToNextVideo}
           onEnded={onEnded}
+          showGetAppModal={showGetAppModal}
+          roundTableName={roundTableName}
         >
           {children}
         </ReactPlayerWrapper>
@@ -91,23 +95,3 @@ function isValidHttpUrl(string) {
 
   return url.protocol === 'http:' || url.protocol === 'https:';
 }
-
-/*
-  const hashtags = useMemo(
-    () => description?.match(/#\w+/g) || [],
-    [description]
-  );
-   const baseUrl = useMemo(() => process.env.hostname + asPath, [asPath]);
-
-   const metaLink = useMemo(
-     () => (link?.indexOf('://') === -1 ? 'http://' + link : link),
-     [link]
-   );
-   const installURL = process.env.installurl + video_id_to_use;
-
-    const urlToCopy = useMemo(
-    () => process.env.hostname + '/' + video_id_to_use,
-    [video_id_to_use]
-  );
-
-*/

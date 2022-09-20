@@ -1,6 +1,5 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import axios from 'axios';
-import { Image } from 'react-bootstrap';
 import { Error } from '../../components/error';
 import { Player } from '../../components/player';
 import { Layout } from '../../components/layout';
@@ -8,18 +7,23 @@ import { TopNav } from '../../components/topNav';
 import { GetAppModal } from '../../components/getAppModal';
 import { WelcomeModal } from '../../components/welcomeModal';
 import { SEO } from '../../components/seo';
-import linkIcon from '../../images/video-more-options/ic-link.svg';
-import share from '../../images/video-more-options/ic-share.svg';
-import comments from '../../images/video-more-options/ic-comments.svg';
-import subsribePlus from '../../images/video-more-options/ic-subsribe-plus.svg';
+import { AppActions } from '../../components/appActions';
+import { appStoreLink } from '../../config';
 
 const RoundTable = ({ group, preview_image, chats = [] }) => {
   const [showModalWelcome, setShowModalWelcome] = useState(true);
   const handleCloseWelcome = () => setShowModalWelcome(false);
   const [showModalAppDownload, setShowModalAppDownload] = useState(false);
-  const handleCloseAppDownload = () => setShowModalAppDownload(false);
-  const handleShowModalAppDownload = () => setShowModalAppDownload(true);
-  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+  const getAppComponentRef = useRef(() => null);
+  const handleCloseAppDownload = () => {
+    getAppComponentRef.current = () => null;
+    setShowModalAppDownload(false);
+  };
+  const handleShowModalAppDownload = (message = () => null) => {
+    getAppComponentRef.current = message;
+    setShowModalAppDownload(true);
+  };
+  const [currentVideoIndex] = useState(0);
 
   // uncomment when there are multiple vides passed in chats
   // const totalVideos = videos?.length ?? 0;
@@ -38,6 +42,9 @@ const RoundTable = ({ group, preview_image, chats = [] }) => {
   //   }
   // };
 
+  const showGetAppToViewDialog = () =>
+    handleShowModalAppDownload(() => <>Get the app to view this video</>);
+
   return !Boolean(group?.group_id) ? (
     <Error />
   ) : (
@@ -47,7 +54,7 @@ const RoundTable = ({ group, preview_image, chats = [] }) => {
         videoUrl={chats?.[currentVideoIndex]?.video_url}
         description={group.group_description}
       />
-      <TopNav showGetAppModal={handleShowModalAppDownload} />
+      <TopNav showGetAppModal={showGetAppToViewDialog} />
       <Player
         key={currentVideoIndex}
         video_id_to_use={chats?.[currentVideoIndex]?.conversation_id}
@@ -57,13 +64,24 @@ const RoundTable = ({ group, preview_image, chats = [] }) => {
         userName={chats?.[currentVideoIndex]?.owner?.name}
         userProfileImage={chats?.[currentVideoIndex]?.owner?.profile_image}
         roundTableMode
+        roundTableName={group?.group_name}
         showGetAppModal={handleShowModalAppDownload}
+        onEnded={showGetAppToViewDialog}
       >
-        <ShareControls showGetAppModal={handleShowModalAppDownload} />
+        <AppActions
+          showGetAppModal={handleShowModalAppDownload}
+          roundTable
+          roundTableName={'sdffsd'}
+          videoUrl={globalThis?.location?.href}
+          videoDescription={group?.group_descriptio}
+          videoTitle='Genuin'
+        />
       </Player>
       <GetAppModal
         show={showModalAppDownload}
         onClose={handleCloseAppDownload}
+        TextNode={getAppComponentRef.current}
+        getAppLink={appStoreLink}
       />
       <WelcomeModal show={showModalWelcome} onClose={handleCloseWelcome} />
     </Layout>
@@ -76,14 +94,12 @@ RoundTable.getInitialProps = async ({ query: { share_string, v } }) => {
     share_string !== ''
   ) {
     var url_to_use = `${process.env.apiurl}/api/v3/rt/web?chat_id=${share_string}`;
-    console.log(url_to_use);
     if (v !== undefined && v !== null) {
       url_to_use = `${url_to_use}&video_id=${v}`;
     }
     return axios
       .get(url_to_use)
       .then((response) => {
-        console.log(response?.data?.data);
         return Promise.resolve(response?.data?.data ?? {});
       })
       .catch((err) => {
@@ -94,48 +110,3 @@ RoundTable.getInitialProps = async ({ query: { share_string, v } }) => {
   }
 };
 export default RoundTable;
-
-const ShareControls = ({ showGetAppModal }) => (
-  <ul>
-    <li>
-      <Image
-        src={linkIcon.src}
-        width='24'
-        height='24'
-        alt='Link'
-        title='Link'
-        onClick={showGetAppModal}
-      />
-    </li>
-    <li>
-      <Image
-        src={comments.src}
-        width='24'
-        height='24'
-        alt='Comments'
-        title='Comments'
-        onClick={showGetAppModal}
-      />
-    </li>
-    <li>
-      <Image
-        src={subsribePlus.src}
-        width='24'
-        height='24'
-        alt='Subsribe Plus'
-        title='Subsribe Plus'
-        onClick={showGetAppModal}
-      />
-    </li>
-    <li>
-      <Image
-        src={share.src}
-        width='24'
-        height='24'
-        alt='Share'
-        title='Share'
-        onClick={showGetAppModal}
-      />
-    </li>
-  </ul>
-);

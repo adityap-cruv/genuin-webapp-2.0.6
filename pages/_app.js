@@ -1,8 +1,20 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles.css';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.min.css';
 
 function MyApp({ Component, pageProps }) {
-  return <Component {...pageProps} />;
+  return (
+    <>
+      <Component {...pageProps} />
+      <ToastContainer
+        position='bottom-left'
+        draggable={false}
+        limit={1}
+        theme={'dark'}
+      />
+    </>
+  );
 }
 
 // Only uncomment this method if you have blocking data requirements for

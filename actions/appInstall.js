@@ -1,12 +1,13 @@
-export const handleAndroidInstallClick = () => {
-  window.open('https://install.begenuin.com/86sn/cgs');
-};
-export const handleIosInstallClick = () => {
-  window.open('https://install.begenuin.com/86sn/cgs');
+import { appStoreLink, hireLink, investLink } from '../config';
+
+export const handleLink = (link, target) => () => {
+  window.open(link, target);
 };
 
-export const handleHireLinkClick = () =>
-  window.open('https://angel.co/company/begenuin');
+export const handleAndroidInstallClick = handleLink(appStoreLink);
 
-export const handleInvestClick = () =>
-  window.open('https://www.linkedin.com/company/begenuin/');
+export const handleIosInstallClick = handleLink(appStoreLink);
+
+export const handleHireLinkClick = () => window.open(hireLink);
+
+export const handleInvestClick = () => window.open(investLink);

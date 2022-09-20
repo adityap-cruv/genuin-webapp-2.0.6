@@ -3,10 +3,9 @@ import { Nav, Container, Row, Col } from 'react-bootstrap';
 import { Layout } from '../components/layout';
 import { TopNav } from '../components/topNav';
 import { GetAppModal } from '../components/getAppModal';
+import { handleInvestClick } from '../actions/appInstall';
 
 const Privacy = () => {
-  const handleInvestClick = () =>
-    window.open('https://www.linkedin.com/company/begenuin/');
   const [showModalAppDownload, setShowModalAppDownload] = useState(false);
   const handleCloseAppDownload = () => setShowModalAppDownload(false);
   const handleShowModalAppDownload = () => setShowModalAppDownload(true);

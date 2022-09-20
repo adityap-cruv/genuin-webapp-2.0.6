@@ -1,17 +1,14 @@
-import { useState, useMemo } from 'react';
+import { useState, useRef } from 'react';
 import axios from 'axios';
-import { Image } from 'react-bootstrap';
 import { Player } from '../../components/player';
 import { Layout } from '../../components/layout';
 import { TopNav } from '../../components/topNav';
 import { GetAppModal } from '../../components/getAppModal';
+import { AppActions } from '../../components/appActions';
 import { WelcomeModal } from '../../components/welcomeModal';
 import { Error } from '../../components/error';
 import { SEO } from '../../components/seo';
-import linkIcon from '../../images/video-more-options/ic-link.svg';
-import share from '../../images/video-more-options/ic-share.svg';
-import comments from '../../images/video-more-options/ic-comments.svg';
-import subsribePlus from '../../images/video-more-options/ic-subsribe-plus.svg';
+import { appStoreLink } from '../../config';
 
 const Profile = ({
   user_id,
@@ -23,8 +20,16 @@ const Profile = ({
   const [showModalWelcome, setShowModalWelcome] = useState(true);
   const handleCloseWelcome = () => setShowModalWelcome(false);
   const [showModalAppDownload, setShowModalAppDownload] = useState(false);
-  const handleCloseAppDownload = () => setShowModalAppDownload(false);
-  const handleShowModalAppDownload = () => setShowModalAppDownload(true);
+  const getAppComponentRef = useRef(() => null);
+  const handleCloseAppDownload = () => {
+    getAppComponentRef.current = () => null;
+    setShowModalAppDownload(false);
+  };
+  const handleShowModalAppDownload = (message = () => null) => {
+    getAppComponentRef.current = message;
+    setShowModalAppDownload(true);
+  };
+
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const totalVideos = videos?.length ?? 0;
 
@@ -43,6 +48,9 @@ const Profile = ({
     }
   };
 
+  const showGetAppToViewDialog = () =>
+    handleShowModalAppDownload(() => <>Get the app to view this video</>);
+
   return !Boolean(user_id) ? (
     <Error />
   ) : (
@@ -52,7 +60,7 @@ const Profile = ({
         videoUrl={videos[currentVideoIndex]?.videoUrl}
         description={videos[currentVideoIndex]?.description}
       />
-      <TopNav showGetAppModal={handleShowModalAppDownload} />
+      <TopNav showGetAppModal={showGetAppToViewDialog} />
       <Player
         key={currentVideoIndex}
         userName={name}
@@ -63,13 +71,21 @@ const Profile = ({
         showGetAppModal={handleShowModalAppDownload}
         getNextVideo={getNextVideo}
         getPrevVideo={getPrevVideo}
-        onEnded={() => handleShowModalAppDownload()}
+        onEnded={showGetAppToViewDialog}
       >
-        <ShareControls showGetAppModal={handleShowModalAppDownload} />
+        <AppActions
+          showGetAppModal={handleShowModalAppDownload}
+          userName={name}
+          videoUrl={globalThis?.location?.href}
+          videoDescription={videos[currentVideoIndex]?.description}
+          videoTitle='Genuin'
+        />
       </Player>
       <GetAppModal
         show={showModalAppDownload}
         onClose={handleCloseAppDownload}
+        TextNode={getAppComponentRef.current}
+        getAppLink={appStoreLink}
       />
       <WelcomeModal show={showModalWelcome} onClose={handleCloseWelcome} />
     </Layout>
@@ -95,48 +111,3 @@ Profile.getInitialProps = async ({ query: { share_string } }) => {
   }
 };
 export default Profile;
-
-const ShareControls = ({ showGetAppModal }) => (
-  <ul>
-    <li>
-      <Image
-        src={linkIcon.src}
-        width='24'
-        height='24'
-        alt='Link'
-        title='Link'
-        onClick={showGetAppModal}
-      />
-    </li>
-    <li>
-      <Image
-        src={comments.src}
-        width='24'
-        height='24'
-        alt='Comments'
-        title='Comments'
-        onClick={showGetAppModal}
-      />
-    </li>
-    <li>
-      <Image
-        src={subsribePlus.src}
-        width='24'
-        height='24'
-        alt='Subsribe Plus'
-        title='Subsribe Plus'
-        onClick={showGetAppModal}
-      />
-    </li>
-    <li>
-      <Image
-        src={share.src}
-        width='24'
-        height='24'
-        alt='Share'
-        title='Share'
-        onClick={showGetAppModal}
-      />
-    </li>
-  </ul>
-);

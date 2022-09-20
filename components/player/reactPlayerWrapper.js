@@ -21,8 +21,10 @@ export const ReactPlayerWrapper = ({
   getNextVideo,
   getPrevVideo,
   roundTableMode = false,
+  roundTableName = '',
   autoplay = false,
   autoJumpToNextVideo = false,
+  showGetAppModal,
 }) => {
   const [progress, setProgress] = useState(0);
   const [isPlaying, setIsPlaying] = useState(autoplay);
@@ -142,7 +144,7 @@ export const ReactPlayerWrapper = ({
           <div className='d-flex flex-column'>
             {Boolean(roundTableMode) && (
               <Badge pill bg='dark' className='mb-2 align-self-start'>
-                @pusateri added
+                @{roundTableName} added
               </Badge>
             )}
             <div className='video-auther mb-2'>
@@ -161,6 +163,9 @@ export const ReactPlayerWrapper = ({
                     variant='outline-light'
                     className='ms-3'
                     style={{ pointerEvents: 'all' }}
+                    onClick={() =>
+                      showGetAppModal(() => <>Get the app to watch whole RT</>)
+                    }
                   >
                     Watch
                   </Button>

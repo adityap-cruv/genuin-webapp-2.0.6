@@ -4,11 +4,8 @@ import { Layout } from '../components/layout';
 import { TopNav } from '../components/topNav';
 import { GetAppModal } from '../components/getAppModal';
 import { SEO } from '../components/seo';
-import {
-  handleIosInstallClick,
-  handleAndroidInstallClick,
-  handleInvestClick,
-} from '../actions/appInstall';
+import { handleLink, handleInvestClick } from '../actions/appInstall';
+import { appleAppStoreLink, googlePlayStoreLink } from '../config';
 import { Nav, Container, Row, Col, Carousel, Image } from 'react-bootstrap';
 
 import ios from '../images/badge_appstore.png';
@@ -165,7 +162,7 @@ const Home = () => {
                   >
                     <Image
                       src={ios.src}
-                      onClick={handleIosInstallClick}
+                      onClick={handleLink(appleAppStoreLink)}
                       width={204}
                       height={60}
                       alt='iOs App Store'
@@ -182,7 +179,7 @@ const Home = () => {
                       src={android.src}
                       width={204}
                       height={60}
-                      onClick={handleAndroidInstallClick}
+                      onClick={handleLink(googlePlayStoreLink)}
                       alt='Android Play Store'
                       title='Android Play Store'
                       fluid

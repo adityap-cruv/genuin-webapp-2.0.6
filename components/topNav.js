@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Image, Navbar, Nav, Button, Fade } from 'react-bootstrap';
 import { useTrail, a } from 'react-spring';
 import logo from '../images/logo_header_new.svg';
+import { hireLink, investLink } from '../config';
 
 const Trail = ({ children, open }) => {
   const items = React.Children.toArray(children);
@@ -62,12 +63,8 @@ export const TopNav = ({
                 <Nav {...(isContiner ? { className: 'container' } : {})}>
                   <Navbar.Toggle aria-controls='navbarMoreOptionDrawer' />
                   <Trail open={isOpen}>
-                    <Nav.Link href='https://www.linkedin.com/company/begenuin/'>
-                      Invest in Genuin
-                    </Nav.Link>
-                    <Nav.Link href='https://angel.co/company/begenuin'>
-                      Join us
-                    </Nav.Link>
+                    <Nav.Link href={investLink}>Invest in Genuin</Nav.Link>
+                    <Nav.Link href={hireLink}>Join us</Nav.Link>
                     <Nav.Link href='/terms'>Terms of Service</Nav.Link>
                     <Nav.Link href='/privacy'>Privacy Policy</Nav.Link>
                   </Trail>
