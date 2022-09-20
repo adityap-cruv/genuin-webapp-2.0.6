@@ -59,6 +59,9 @@ const Video = (props) => {
           showGetAppModal={handleShowModalAppDownload}
           userName={userName}
           link={link}
+          videoUrl={globalThis?.location?.href}
+          videoDescription={description}
+          videoTitle='Genuin'
         />
       </Player>
       <GetAppModal
@@ -85,7 +88,6 @@ Video.getInitialProps = async ({ query: { video_id } }) => {
         video_id: video_id,
         video_id_to_use: video_id_to_use,
       });
-      console.log(resObj);
       return Promise.resolve(resObj);
     })
     .catch((err) => {

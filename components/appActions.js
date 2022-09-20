@@ -1,7 +1,7 @@
 import { Image } from 'react-bootstrap';
+import { ShareComponent } from '../components/share';
 import linkIcon from '../images/video-more-options/ic-link.svg';
 import bookmark from '../images/video-more-options/ic-bookmark.svg';
-import share from '../images/video-more-options/ic-share.svg';
 import replay from '../images/video-more-options/ic-replay.svg';
 import comments from '../images/video-more-options/ic-comments.svg';
 import subsribePlus from '../images/video-more-options/ic-subsribe-plus.svg';
@@ -12,6 +12,9 @@ export const AppActions = ({
   link,
   roundTableName,
   roundTable = false,
+  videoUrl = '',
+  videoDescription = '',
+  videoTitle = '',
 }) => {
   return (
     <ul>
@@ -100,13 +103,10 @@ export const AppActions = ({
         </>
       ) : null}
       <li>
-        <Image
-          src={share.src}
-          width='24'
-          height='24'
-          alt='Share'
-          title='Share'
-          onClick={() => console.log('share')}
+        <ShareComponent
+          url={videoUrl}
+          description={videoDescription}
+          title={videoTitle}
         />
       </li>
     </ul>

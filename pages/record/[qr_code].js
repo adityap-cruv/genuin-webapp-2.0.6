@@ -72,7 +72,13 @@ const Record = (props) => {
         getPrevVideo={getPrevVideo}
         onEnded={() => handleShowModalAppDownload()}
       >
-        <AppActions showGetAppModal={handleShowModalAppDownload} />
+        <AppActions
+          showGetAppModal={handleShowModalAppDownload}
+          userName={Boolean(name) ? name : nickname}
+          videoUrl={globalThis?.location?.href}
+          videoDescription={videos[currentVideoIndex]?.description}
+          videoTitle='Genuin'
+        />
       </Player>
       <GetAppModal
         show={showModalAppDownload}

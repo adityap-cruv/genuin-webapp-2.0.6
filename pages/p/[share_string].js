@@ -69,17 +69,19 @@ const Profile = ({
         getPrevVideo={getPrevVideo}
         onEnded={() => handleShowModalAppDownload()}
       >
-        <GetAppModal
-          show={showModalAppDownload}
-          onClose={handleCloseAppDownload}
-          TextNode={getAppComponentRef.current}
-          getAppLink={appStoreLink}
+        <AppActions
+          showGetAppModal={handleShowModalAppDownload}
+          userName={name}
+          videoUrl={globalThis?.location?.href}
+          videoDescription={videos[currentVideoIndex]?.description}
+          videoTitle='Genuin'
         />
       </Player>
       <GetAppModal
         show={showModalAppDownload}
         onClose={handleCloseAppDownload}
         message={getAppModelMessage}
+        getAppLink={appStoreLink}
       />
       <WelcomeModal show={showModalWelcome} onClose={handleCloseWelcome} />
     </Layout>

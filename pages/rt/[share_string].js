@@ -68,6 +68,9 @@ const RoundTable = ({ group, preview_image, chats = [] }) => {
           showGetAppModal={handleShowModalAppDownload}
           roundTable
           roundTableName={'sdffsd'}
+          videoUrl={globalThis?.location?.href}
+          videoDescription={group?.group_descriptio}
+          videoTitle='Genuin'
         />
       </Player>
       <GetAppModal

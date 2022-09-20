@@ -18,7 +18,7 @@ function shareContent(onSuccess, onError) {
   };
 }
 
-function useWebShare(onSuccess = () => {}, onError = () => {}) {
+export const useWebShare = (onSuccess = () => {}, onError = () => {}) => {
   const [loading, setLoading] = useState(true);
   const [isSupported, setSupport] = useState(false);
 
@@ -36,6 +36,4 @@ function useWebShare(onSuccess = () => {}, onError = () => {}) {
     isSupported,
     share: shareContent(onSuccess, onError),
   };
-}
-
-export default useWebShare;
+};

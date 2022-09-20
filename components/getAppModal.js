@@ -7,6 +7,10 @@ export const GetAppModal = ({
   TextNode = () => null,
   getAppLink,
 }) => {
+  const onCloseWrapper = () => {
+    window.open(getAppLink, '_blank');
+    onClose();
+  };
   return (
     <Modal
       key='app'
@@ -25,7 +29,7 @@ export const GetAppModal = ({
       <Modal.Footer className='justify-content-center border-0'>
         <Button
           variant='primary'
-          onClick={onClose}
+          onClick={onCloseWrapper}
           className='border-0 btn-get-app'
         >
           Get App
