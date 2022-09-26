@@ -59,7 +59,7 @@ export const AppActions = ({
               onClick={() =>
                 showGetAppModal(() => (
                   <>
-                    Get the app to reply to <b>@{userName}</b>
+                    Get the app to reply to <b>{userName}</b>
                   </>
                 ))
               }

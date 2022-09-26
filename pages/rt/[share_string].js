@@ -61,7 +61,7 @@ const RoundTable = ({ group, preview_image, chats = [] }) => {
         description={group?.group_description}
         videoUrl={chats?.[currentVideoIndex]?.video_url}
         videoThumbnail={chats?.[currentVideoIndex]?.thumbnail_url}
-        userName={chats?.[currentVideoIndex]?.owner?.name}
+        userName={`@${chats?.[currentVideoIndex]?.owner?.nickname} added`}
         userProfileImage={chats?.[currentVideoIndex]?.owner?.profile_image}
         roundTableMode
         roundTableName={group?.group_name}
@@ -71,7 +71,8 @@ const RoundTable = ({ group, preview_image, chats = [] }) => {
         <AppActions
           showGetAppModal={handleShowModalAppDownload}
           roundTable
-          roundTableName={'sdffsd'}
+          roundTableName={group?.group_name}
+          link={chats?.[currentVideoIndex]?.link}
           videoUrl={globalThis?.location?.href}
           videoDescription={group?.group_descriptio}
           videoTitle='Genuin'

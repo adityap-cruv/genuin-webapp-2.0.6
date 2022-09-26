@@ -16,7 +16,7 @@ const Video = (props) => {
     description,
     video_id_to_use,
     videoThumbnail,
-    userName,
+    userNickname,
     userProfileImage,
     link,
   } = props;
@@ -53,14 +53,14 @@ const Video = (props) => {
         description={description}
         videoUrl={videoUrl}
         videoThumbnail={videoThumbnail}
-        userName={userName}
+        userName={`@${userNickname}`}
         userProfileImage={userProfileImage}
         showGetAppModal={handleShowModalAppDownload}
         onEnded={showGetAppToViewDialog}
       >
         <AppActions
           showGetAppModal={handleShowModalAppDownload}
-          userName={userName}
+          userName={`@${userNickname}`}
           link={link}
           videoUrl={globalThis?.location?.href}
           videoDescription={description}

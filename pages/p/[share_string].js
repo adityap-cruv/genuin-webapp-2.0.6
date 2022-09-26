@@ -13,7 +13,7 @@ import { appStoreLink } from '../../config';
 const Profile = ({
   user_id,
   preview_image,
-  name,
+  nickname,
   profile_image,
   videos = [],
 }) => {
@@ -63,7 +63,7 @@ const Profile = ({
       <TopNav showGetAppModal={showGetAppToViewDialog} />
       <Player
         key={currentVideoIndex}
-        userName={name}
+        userName={`@${nickname}`}
         userProfileImage={profile_image}
         videoThumbnail={videos[currentVideoIndex]?.videoThumbnail}
         description={videos[currentVideoIndex]?.description}
@@ -75,7 +75,7 @@ const Profile = ({
       >
         <AppActions
           showGetAppModal={handleShowModalAppDownload}
-          userName={name}
+          userName={`@${nickname}`}
           videoUrl={globalThis?.location?.href}
           videoDescription={videos[currentVideoIndex]?.description}
           videoTitle='Genuin'
