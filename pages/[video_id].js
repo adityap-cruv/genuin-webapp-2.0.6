@@ -34,7 +34,7 @@ const Video = (props) => {
   };
 
   const showGetAppToViewDialog = () =>
-    handleShowModalAppDownload(() => <>Get the app to view this video</>);
+    handleShowModalAppDownload(() => <>Get the app to view this video.</>);
 
   return !Boolean(videoUrl) ? (
     <Error />

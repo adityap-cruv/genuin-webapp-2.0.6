@@ -49,7 +49,7 @@ const Profile = ({
   };
 
   const showGetAppToViewDialog = () =>
-    handleShowModalAppDownload(() => <>Get the app to view this video</>);
+    handleShowModalAppDownload(() => <>Get the app to view this video.</>);
 
   return !Boolean(user_id) ? (
     <Error />

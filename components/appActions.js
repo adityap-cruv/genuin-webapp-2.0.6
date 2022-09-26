@@ -43,7 +43,7 @@ export const AppActions = ({
               onClick={() =>
                 showGetAppModal(() => (
                   <>
-                    Get the app to <b>bookmark</b> this video
+                    Get the app to <b>bookmark</b> this video.
                   </>
                 ))
               }
@@ -78,7 +78,7 @@ export const AppActions = ({
               title='Comments'
               onClick={() =>
                 showGetAppModal(() => (
-                  <>Get the app to watch the comments on this video</>
+                  <>Get the app to watch the comments on this video.</>
                 ))
               }
             />
@@ -94,7 +94,7 @@ export const AppActions = ({
                 showGetAppModal(() => (
                   <>
                     Get the app to subscribe to <b>{roundTableName ?? ''}</b>{' '}
-                    roundtable
+                    roundtable.
                   </>
                 ))
               }

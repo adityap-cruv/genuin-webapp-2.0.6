@@ -164,7 +164,9 @@ export const ReactPlayerWrapper = ({
                     className='ms-3'
                     style={{ pointerEvents: 'all' }}
                     onClick={() =>
-                      showGetAppModal(() => <>Get the app to watch whole RT</>)
+                      showGetAppModal(() => (
+                        <>Get the app to watch whole roundtable.</>
+                      ))
                     }
                   >
                     Watch

@@ -43,7 +43,7 @@ const RoundTable = ({ group, preview_image, chats = [] }) => {
   // };
 
   const showGetAppToViewDialog = () =>
-    handleShowModalAppDownload(() => <>Get the app to view this video</>);
+    handleShowModalAppDownload(() => <>Get the app to view this video.</>);
 
   return !Boolean(group?.group_id) ? (
     <Error />
