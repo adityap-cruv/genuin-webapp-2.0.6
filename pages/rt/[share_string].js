@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useMemo, useState, useRef } from 'react';
 import axios from 'axios';
 import { Error } from '../../components/error';
 import { Player } from '../../components/player';
@@ -10,7 +10,7 @@ import { SEO } from '../../components/seo';
 import { AppActions } from '../../components/appActions';
 import { appStoreLink } from '../../config';
 
-const RoundTable = ({ group, preview_image, chats = [] }) => {
+const RoundTable = ({ group, preview_image, share_url, chats = [] }) => {
   const [showModalWelcome, setShowModalWelcome] = useState(true);
   const handleCloseWelcome = () => setShowModalWelcome(false);
   const [showModalAppDownload, setShowModalAppDownload] = useState(false);
@@ -45,14 +45,21 @@ const RoundTable = ({ group, preview_image, chats = [] }) => {
   const showGetAppToViewDialog = () =>
     handleShowModalAppDownload(() => <>Get the app to view this video.</>);
 
+  const _group_name = useMemo(() => {
+    return Boolean(group) && Boolean(group.group_name) ? `${group.group_name} Roundtable on Genuin` : '';
+  }, [group]);
+
   return !Boolean(group?.group_id) ? (
     <Error />
   ) : (
     <Layout>
       <SEO
+        title={_group_name}
+        openGraphTitle={_group_name}
+        urlToCopy={share_url}
         videoPreviewImage={preview_image}
         videoUrl={chats?.[currentVideoIndex]?.video_url}
-        description={group.group_description}
+        description={group?.group_description}
       />
       <TopNav showGetAppModal={showGetAppToViewDialog} />
       <Player

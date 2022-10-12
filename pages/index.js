@@ -37,6 +37,7 @@ const Home = () => {
     <>
       <SEO
         title={title}
+        openGraphTitle={title}
         description={description}
         urlToCopy={currentUrl}
         videoPreviewImage={metaImage}

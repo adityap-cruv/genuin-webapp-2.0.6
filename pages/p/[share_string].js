@@ -14,6 +14,11 @@ const Profile = ({
   user_id,
   preview_image,
   nickname,
+  name,
+  share_url,
+  no_of_views,
+  no_of_videos,
+  no_of_replies,
   profile_image,
   videos = [],
 }) => {
@@ -50,15 +55,35 @@ const Profile = ({
 
   const showGetAppToViewDialog = () =>
     handleShowModalAppDownload(() => <>Get the app to view this video.</>);
+  
+  const abbreviateNumber = (value) => {
+      var newValue = value;
+      if (value >= 1000) {
+          var suffixes = ["", "k", "m", "b","t"];
+          var suffixNum = Math.floor( (""+value).length/3 );
+          var shortValue = '';
+          for (var precision = 2; precision >= 1; precision--) {
+              shortValue = parseFloat( (suffixNum != 0 ? (value / Math.pow(1000,suffixNum) ) : value).toPrecision(precision));
+              var dotLessShortValue = (shortValue + '').replace(/[^a-zA-Z 0-9]+/g,'');
+              if (dotLessShortValue.length <= 2) { break; }
+          }
+          if (shortValue % 1 != 0)  shortValue = shortValue.toFixed(1);
+          newValue = shortValue+suffixes[suffixNum];
+      }
+      return newValue;
+  }
 
   return !Boolean(user_id) ? (
     <Error />
   ) : (
     <Layout>
       <SEO
+        title={`${Boolean(name) ? name : `@${nickname}`} is on Genuin. Connect confidently.`}
+        openGraphTitle={`${Boolean(name) ? name : `@${nickname}`} is on Genuin. Connect confidently.`}
         videoPreviewImage={preview_image}
+        urlToCopy={share_url}
         videoUrl={videos[currentVideoIndex]?.videoUrl}
-        description={videos[currentVideoIndex]?.description}
+        description={`${Boolean(name) ? name : `@${nickname}`}, ${no_of_videos} Videos, ${abbreviateNumber(no_of_views)} Views, ${no_of_replies} Replies`}
       />
       <TopNav showGetAppModal={showGetAppToViewDialog} />
       <Player

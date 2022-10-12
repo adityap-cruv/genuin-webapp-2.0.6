@@ -33,7 +33,7 @@ const QuestionWrapper = ({
   const askedBy = useMemo(
     () =>
       Boolean(owner?.nickname)
-        ? `asked by @${owner?.nickname}`
+        ? ` asked by @${owner?.nickname}`
         : owner?.nickname,
     [owner?.nickname]
   );
