@@ -41,6 +41,8 @@ const Video = (props) => {
   ) : (
     <Layout>
       <SEO
+        title={`${userNickname} @ Genuin`}
+        openGraphTitle={`${userNickname} @ Genuin`}
         videoUrl={videoUrl}
         videoPreviewImage={videoPreviewImage}
         description={description}
