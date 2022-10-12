@@ -12,7 +12,7 @@ export const ShareComponent = ({ title, description, url }) => {
   useEffect(() => {
     if (isCopied) {
       let key;
-      key = toast('link copied!', {
+      key = toast('Link copied!', {
         autoClose: false,
         hideProgressBar: true,
       });

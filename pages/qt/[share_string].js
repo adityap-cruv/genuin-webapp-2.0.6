@@ -46,7 +46,7 @@ const QuestionWrapper = ({
   );
 
   const showGetAppToViewDialog = () =>
-    handleShowModalAppDownload(() => <>Get the app to view this video</>);
+    handleShowModalAppDownload(() => <>Get the app to view this video.</>);
 
   return Boolean(question_id) ? (
     <Layout>
