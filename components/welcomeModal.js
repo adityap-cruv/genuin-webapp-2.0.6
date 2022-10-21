@@ -1,10 +1,9 @@
 import { useCallback, useRef } from 'react';
 import { Modal, Carousel } from 'react-bootstrap';
-import imgCarousel1 from '../images/1_hiring_small.png';
-import imgCarousel2 from '../images/2_investors_small.png';
-import imgCarousel3 from '../images/3_inspired_small.png';
-import imgCarousel4 from '../images/4_community_small.png';
-import imgCarousel5 from '../images/5_discussions_small.png';
+import imgCarousel1 from '../images/web3/learn_web3_via_bite-sized_content.png';
+import imgCarousel2 from '../images/web3/connect_people_in_the_web3_business.png';
+import imgCarousel3 from '../images/web3/feed_page_public_video.png';
+import imgCarousel4 from '../images/web3/initiate_conversation_about_web3.png';
 
 const WELCOME_DIALOG_SHOWN = 'WELCOME_DIALOG_SHOWN';
 
@@ -39,55 +38,44 @@ export const WelcomeModal = ({ show, onClose, ignoreLocalStorage = false }) => {
               src={imgCarousel1.src}
               width={380}
               height={770}
-              alt='Find your dream candidate'
-              title='Find your dream candidate'
+              alt='Learn Web3 via bite-sized content'
+              title='Learn Web3 via bite-sized content'
               className='img-fluid mx-auto d-block'
             />
-            <h1>Find your dream candidate</h1>
+            <h1>Learn Web3 via bite-sized content</h1>
           </Carousel.Item>
           <Carousel.Item>
             <img
               src={imgCarousel2.src}
               width={380}
               height={770}
-              alt='Find Investors for your Startup'
-              title='Find Investors for your Startup'
+              alt='Connect people in the Web3 business'
+              title='Connect people in the Web3 business'
               className='img-fluid mx-auto d-block'
             />
-            <h1>Find Investors for your Startup</h1>
+            <h1>Connect people in the Web3 business</h1>
           </Carousel.Item>
           <Carousel.Item>
             <img
               src={imgCarousel3.src}
               width={380}
               height={770}
-              alt='Get Inspired'
-              title='Get Inspired'
+              alt='Showcase your Web3 knowledge'
+              title='Showcase your Web3 knowledge'
               className='img-fluid mx-auto d-block'
             />
-            <h1>Get Inspired</h1>
+            <h1>Showcase your Web3 knowledge</h1>
           </Carousel.Item>
           <Carousel.Item>
             <img
               src={imgCarousel4.src}
               width={380}
               height={770}
-              alt='Engage with community'
-              title='Engage with community'
+              alt='Initiate conversation about Web3'
+              title='Initiate conversation about Web3'
               className='img-fluid mx-auto d-block'
             />
-            <h1>Engage with community</h1>
-          </Carousel.Item>
-          <Carousel.Item>
-            <img
-              src={imgCarousel5.src}
-              width={380}
-              height={770}
-              alt='Initiate Discussions'
-              title='Initiate Discussions'
-              className='img-fluid mx-auto d-block'
-            />
-            <h1>Initiate Discussions</h1>
+            <h1>Initiate conversation about Web3</h1>
           </Carousel.Item>
         </Carousel>
       </Modal.Body>

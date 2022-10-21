@@ -11,11 +11,10 @@ import { Nav, Container, Row, Col, Carousel, Image } from 'react-bootstrap';
 import ios from '../images/badge_appstore.png';
 import android from '../images/badge_playstore.png';
 
-import imgCarousel1 from '../images/1_hiring_small.png';
-import imgCarousel2 from '../images/2_investors_small.png';
-import imgCarousel3 from '../images/3_inspired_small.png';
-import imgCarousel4 from '../images/4_community_small.png';
-import imgCarousel5 from '../images/5_discussions_small.png';
+import imgCarousel1 from '../images/web3/learn_web3_via_bite-sized_content.png';
+import imgCarousel2 from '../images/web3/connect_people_in_the_web3_business.png';
+import imgCarousel3 from '../images/web3/feed_page_public_video.png';
+import imgCarousel4 from '../images/web3/initiate_conversation_about_web3.png';
 
 import favicon from '../images/favicon.ico';
 
@@ -24,8 +23,6 @@ let metaImage = 'https://media.begenuin.com/backend_assets/preview.png';
 let description =
   'Genuin is a video-first professional networking platform that allows you to showcase your expertise and connect with other professionals and businesses. Whether you are searching for a job, seeking investment, hiring candidates, or any other networking, Genuin helps you stand out';
 let currentUrl = 'https://begenuin.com';
-let keyword =
-  'Genuin,Showcase Yourself. Get Discovered. Make Connections, video Communication';
 
 const Home = () => {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -64,8 +61,8 @@ const Home = () => {
                       src={imgCarousel1.src}
                       width={380}
                       height={770}
-                      alt='Find your dream candidate'
-                      title='Find your dream candidate'
+                      alt='Learn Web3 via bite-sized content'
+                      title='Learn Web3 via bite-sized content'
                       className='img-carousel mx-auto d-block'
                     />
                   </Carousel.Item>
@@ -74,8 +71,8 @@ const Home = () => {
                       src={imgCarousel2.src}
                       width={380}
                       height={770}
-                      alt='Find Investors for your Startup'
-                      title='Find Investors for your Startup'
+                      alt='Connect people in the Web3 business'
+                      title='Connect people in the Web3 business'
                       className='img-carousel mx-auto d-block'
                     />
                   </Carousel.Item>
@@ -84,8 +81,8 @@ const Home = () => {
                       src={imgCarousel3.src}
                       width={380}
                       height={770}
-                      alt='Get Inspired'
-                      title='Get Inspired'
+                      alt='Showcase your Web3 knowledge'
+                      title='Showcase your Web3 knowledge'
                       className='img-carousel mx-auto d-block'
                     />
                   </Carousel.Item>
@@ -94,18 +91,8 @@ const Home = () => {
                       src={imgCarousel4.src}
                       width={380}
                       height={770}
-                      alt='Engage with community'
-                      title='Engage with community'
-                      className='img-carousel mx-auto d-block'
-                    />
-                  </Carousel.Item>
-                  <Carousel.Item>
-                    <img
-                      src={imgCarousel5.src}
-                      width={380}
-                      height={770}
-                      alt='Initiate Discussions'
-                      title='Initiate Discussions'
+                      alt='Initiate conversation about Web3'
+                      title='Initiate conversation about Web3'
                       className='img-carousel mx-auto d-block'
                     />
                   </Carousel.Item>
@@ -119,36 +106,29 @@ const Home = () => {
                 >
                   <Carousel.Item>
                     <h1>
-                      Find your
+                      Learn Web3 via
                       <br />
-                      dream candidate
+                      bite-sized content
                     </h1>
                   </Carousel.Item>
                   <Carousel.Item>
                     <h1>
-                      Find Investors
+                      Connect people in the
                       <br />
-                      for your Startup
+                      Web3 business
                     </h1>
                   </Carousel.Item>
                   <Carousel.Item>
                     <h1>
-                      Get
+                      Showcase your Web3
                       <br />
-                      Inspired
+                      knowledge
                     </h1>
                   </Carousel.Item>
                   <Carousel.Item>
                     <h1>
-                      Engage with <br />
-                      community
-                    </h1>
-                  </Carousel.Item>
-                  <Carousel.Item>
-                    <h1>
-                      Initiate
-                      <br />
-                      Discussions
+                      Initiate conversation <br />
+                      about Web3
                     </h1>
                   </Carousel.Item>
                 </Carousel>
