@@ -113,22 +113,17 @@ const Home = () => {
                   </Carousel.Item>
                   <Carousel.Item>
                     <h1>
-                      Connect people in the
-                      <br />
-                      Web3 business
+                      Connect people in the Web3 business
                     </h1>
                   </Carousel.Item>
                   <Carousel.Item>
                     <h1>
-                      Showcase your Web3
-                      <br />
-                      knowledge
+                      Showcase your Web3 knowledge
                     </h1>
                   </Carousel.Item>
                   <Carousel.Item>
                     <h1>
-                      Initiate conversation <br />
-                      about Web3
+                      Initiate conversation about Web3
                     </h1>
                   </Carousel.Item>
                 </Carousel>
