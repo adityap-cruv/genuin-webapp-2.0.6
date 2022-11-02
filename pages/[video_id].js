@@ -16,7 +16,7 @@ const Video = (props) => {
     description,
     video_id_to_use,
     videoThumbnail,
-    userName,
+    userNickname,
     userProfileImage,
     link,
   } = props;
@@ -34,16 +34,20 @@ const Video = (props) => {
   };
 
   const showGetAppToViewDialog = () =>
-    handleShowModalAppDownload(() => <>Get the app to view this video</>);
+    handleShowModalAppDownload(() => <>Get the app to view this video.</>);
 
   return !Boolean(videoUrl) ? (
     <Error />
   ) : (
     <Layout>
       <SEO
+        title={`${userNickname} @ Genuin`}
+        openGraphTitle={`${userNickname} @ Genuin`}
         videoUrl={videoUrl}
         videoPreviewImage={videoPreviewImage}
         description={description}
+        metaImageWidth={1200}
+        metaImageHeight={630}
         urlToCopy={process?.env?.hostname + '/' + video_id_to_use}
       />
       <TopNav showGetAppModal={showGetAppToViewDialog} />
@@ -53,14 +57,14 @@ const Video = (props) => {
         description={description}
         videoUrl={videoUrl}
         videoThumbnail={videoThumbnail}
-        userName={userName}
+        userName={`@${userNickname}`}
         userProfileImage={userProfileImage}
         showGetAppModal={handleShowModalAppDownload}
         onEnded={showGetAppToViewDialog}
       >
         <AppActions
           showGetAppModal={handleShowModalAppDownload}
-          userName={userName}
+          userName={`@${userNickname}`}
           link={link}
           videoUrl={globalThis?.location?.href}
           videoDescription={description}

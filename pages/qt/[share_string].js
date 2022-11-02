@@ -33,7 +33,7 @@ const QuestionWrapper = ({
   const askedBy = useMemo(
     () =>
       Boolean(owner?.nickname)
-        ? `asked by @${owner?.nickname}`
+        ? ` asked by @${owner?.nickname}`
         : owner?.nickname,
     [owner?.nickname]
   );
@@ -46,7 +46,7 @@ const QuestionWrapper = ({
   );
 
   const showGetAppToViewDialog = () =>
-    handleShowModalAppDownload(() => <>Get the app to view this video</>);
+    handleShowModalAppDownload(() => <>Get the app to view this video.</>);
 
   return Boolean(question_id) ? (
     <Layout>

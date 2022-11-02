@@ -144,7 +144,7 @@ export const ReactPlayerWrapper = ({
           <div className='d-flex flex-column'>
             {Boolean(roundTableMode) && (
               <Badge pill bg='dark' className='mb-2 align-self-start'>
-                @{roundTableName} added
+                {userName}
               </Badge>
             )}
             <div className='video-auther mb-2'>
@@ -152,23 +152,29 @@ export const ReactPlayerWrapper = ({
                 src={profilePic}
                 width='36'
                 height='36'
-                alt='@pusateri'
-                title='@pusateri'
+                alt={userName}
+                title={userName}
                 className='img-auther-pic'
               />
               <h5 className='mb-0'>
-                {userName}
-                {Boolean(roundTableMode) && (
-                  <Button
-                    variant='outline-light'
-                    className='ms-3'
-                    style={{ pointerEvents: 'all' }}
-                    onClick={() =>
-                      showGetAppModal(() => <>Get the app to watch whole RT</>)
-                    }
-                  >
-                    Watch
-                  </Button>
+                {Boolean(roundTableMode) ? (
+                  <>
+                    {roundTableName}
+                    <Button
+                      variant='outline-light'
+                      className='ms-3'
+                      style={{ pointerEvents: 'all' }}
+                      onClick={() =>
+                        showGetAppModal(() => (
+                          <>Get the app to watch whole roundtable.</>
+                        ))
+                      }
+                    >
+                      Watch
+                    </Button>
+                  </>
+                ) : (
+                  userName
                 )}
               </h5>
             </div>
