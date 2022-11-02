@@ -73,6 +73,7 @@ const QuestionWrapper = ({
     <Error />
   );
 };
+
 QuestionWrapper.getInitialProps = async ({ query: { share_string } }) => {
   if (
     share_string !== undefined &&
@@ -92,4 +93,5 @@ QuestionWrapper.getInitialProps = async ({ query: { share_string } }) => {
     return Promise.resolve({});
   }
 };
+
 export default QuestionWrapper;

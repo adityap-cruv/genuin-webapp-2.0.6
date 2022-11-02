@@ -43,14 +43,14 @@ const Home = () => {
         includeHead={false}
       />
       <NextHead>
-        <link rel='shortcut icon' href={favicon.src} type='image/x-icon' />
+        <link rel="shortcut icon" href={favicon.src} type="image/x-icon" />
       </NextHead>
       <Layout>
         <TopNav showGetAppModal={handleShowModalAppDownload} isContiner />
-        <section className='bg-gradient-blue section-content d-flex flex-column h-100 justify-content-center justify-content-md-between'>
-          <Container className='container-false d-none d-md-block'></Container>
-          <Container className='content-container'>
-            <Row className='justify-content-center align-items-center'>
+        <section className="bg-gradient-blue section-content d-flex flex-column h-100 justify-content-center justify-content-md-between">
+          <Container className="container-false d-none d-md-block"></Container>
+          <Container className="content-container">
+            <Row className="justify-content-center align-items-center">
               <Col sm={12} md={6} lg={6} xl={6}>
                 <Carousel
                   controls={false}
@@ -63,9 +63,9 @@ const Home = () => {
                       src={imgCarousel1.src}
                       width={380}
                       height={770}
-                      alt='Find your dream candidate'
-                      title='Find your dream candidate'
-                      className='img-carousel mx-auto d-block'
+                      alt="Find your dream candidate"
+                      title="Find your dream candidate"
+                      className="img-carousel mx-auto d-block"
                     />
                   </Carousel.Item>
                   <Carousel.Item>
@@ -73,9 +73,9 @@ const Home = () => {
                       src={imgCarousel2.src}
                       width={380}
                       height={770}
-                      alt='Find Investors for your Startup'
-                      title='Find Investors for your Startup'
-                      className='img-carousel mx-auto d-block'
+                      alt="Find Investors for your Startup"
+                      title="Find Investors for your Startup"
+                      className="img-carousel mx-auto d-block"
                     />
                   </Carousel.Item>
                   <Carousel.Item>
@@ -83,9 +83,9 @@ const Home = () => {
                       src={imgCarousel3.src}
                       width={380}
                       height={770}
-                      alt='Get Inspired'
-                      title='Get Inspired'
-                      className='img-carousel mx-auto d-block'
+                      alt="Get Inspired"
+                      title="Get Inspired"
+                      className="img-carousel mx-auto d-block"
                     />
                   </Carousel.Item>
                   <Carousel.Item>
@@ -93,9 +93,9 @@ const Home = () => {
                       src={imgCarousel4.src}
                       width={380}
                       height={770}
-                      alt='Engage with community'
-                      title='Engage with community'
-                      className='img-carousel mx-auto d-block'
+                      alt="Engage with community"
+                      title="Engage with community"
+                      className="img-carousel mx-auto d-block"
                     />
                   </Carousel.Item>
                   <Carousel.Item>
@@ -103,9 +103,9 @@ const Home = () => {
                       src={imgCarousel5.src}
                       width={380}
                       height={770}
-                      alt='Initiate Discussions'
-                      title='Initiate Discussions'
-                      className='img-carousel mx-auto d-block'
+                      alt="Initiate Discussions"
+                      title="Initiate Discussions"
+                      className="img-carousel mx-auto d-block"
                     />
                   </Carousel.Item>
                 </Carousel>
@@ -153,35 +153,35 @@ const Home = () => {
                 </Carousel>
                 <Row
                   xs={2}
-                  className='justify-content-center justify-content-md-start mt-5 pt-3'
+                  className="justify-content-center justify-content-md-start mt-5 pt-3"
                 >
                   <Col
-                    xs='6'
-                    lg='auto'
-                    className='d-flex align-items-center justify-content-end ps-4 ps-sm-0'
+                    xs="6"
+                    lg="auto"
+                    className="d-flex align-items-center justify-content-end ps-4 ps-sm-0"
                   >
                     <Image
                       src={ios.src}
                       onClick={handleLink(appleAppStoreLink)}
                       width={204}
                       height={60}
-                      alt='iOs App Store'
-                      title='iOs App Store'
+                      alt="iOs App Store"
+                      title="iOs App Store"
                       fluid
                     />
                   </Col>
                   <Col
-                    xs='6'
-                    lg='auto'
-                    className='d-flex align-items-center justify-content-start pe-4 ps-em-0'
+                    xs="6"
+                    lg="auto"
+                    className="d-flex align-items-center justify-content-start pe-4 ps-em-0"
                   >
                     <Image
                       src={android.src}
                       width={204}
                       height={60}
                       onClick={handleLink(googlePlayStoreLink)}
-                      alt='Android Play Store'
-                      title='Android Play Store'
+                      alt="Android Play Store"
+                      title="Android Play Store"
                       fluid
                     />
                   </Col>
@@ -190,15 +190,15 @@ const Home = () => {
             </Row>
           </Container>
 
-          <Container className='d-none d-md-block container-footer'>
-            <Row className='py-3'>
+          <Container className="d-none d-md-block container-footer">
+            <Row className="py-3">
               <Col xl={4} lg={4} md={4} sm={12}>
-                <Nav as='ul'>
-                  <Nav.Item as='li'>
+                <Nav as="ul">
+                  <Nav.Item as="li">
                     <Nav.Link
                       style={{ opacity: 0.5 }}
-                      href='/'
-                      className='pr-0'
+                      href="/"
+                      className="pr-0"
                     >
                       © 2022 Genuin Inc.
                     </Nav.Link>
@@ -207,50 +207,50 @@ const Home = () => {
               </Col>
               <Col xl={8} lg={8} md={8} sm={12}>
                 <Nav
-                  className='justify-content-start justify-content-md-end'
-                  as='ul'
+                  className="justify-content-start justify-content-md-end"
+                  as="ul"
                 >
-                  <Nav.Item as='li'>
+                  <Nav.Item as="li">
                     <Nav.Link
                       style={{ opacity: 0.5 }}
-                      href='#'
+                      href="#"
                       onClick={handleInvestClick}
                     >
                       Invest in Genuin
                     </Nav.Link>
                   </Nav.Item>
-                  <Nav.Item as='li'>
+                  <Nav.Item as="li">
                     <Nav.Link
                       style={{
                         opacity: 0.5,
-                        paddingLeft: '0px',
-                        paddingRight: '0px',
+                        paddingLeft: "0px",
+                        paddingRight: "0px",
                       }}
                       href={void 0}
-                      eventKey='link-2'
+                      eventKey="link-2"
                     >
                       |
                     </Nav.Link>
                   </Nav.Item>
-                  <Nav.Item as='li'>
-                    <Nav.Link style={{ opacity: 0.5 }} href='/terms'>
+                  <Nav.Item as="li">
+                    <Nav.Link style={{ opacity: 0.5 }} href="/terms">
                       Terms of Service
                     </Nav.Link>
                   </Nav.Item>
-                  <Nav.Item as='li'>
+                  <Nav.Item as="li">
                     <Nav.Link
                       style={{
                         opacity: 0.5,
-                        paddingLeft: '0px',
-                        paddingRight: '0px',
+                        paddingLeft: "0px",
+                        paddingRight: "0px",
                       }}
                       href={void 0}
                     >
                       |
                     </Nav.Link>
                   </Nav.Item>
-                  <Nav.Item as='li'>
-                    <Nav.Link style={{ opacity: 0.5 }} href='/privacy'>
+                  <Nav.Item as="li">
+                    <Nav.Link style={{ opacity: 0.5 }} href="/privacy">
                       Privacy Policy
                     </Nav.Link>
                   </Nav.Item>

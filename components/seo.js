@@ -6,22 +6,22 @@ export const SEO = ({
   description,
   videoPreviewImage,
   urlToCopy,
-  title = 'Genuin',
+  title = "Genuin",
   metaImageWidth = 1200,
   metaImageHeight = 630,
   metaVideoHeight = 1280,
   metaVideoWidth = 720,
-  openGraphTitle = 'Genuin',
-  videoType = 'video/mp4',
-  openGraphType = 'website',
+  openGraphTitle = "Genuin",
+  videoType = "video/mp4",
+  openGraphType = "website",
   includeHead = true,
 }) => (
   <>
     {includeHead && (
       <NextHead>
-        <meta property='og:video:url' content={videoUrl} />
-        <meta property='og:video:secure_url' content={videoUrl} />
-        <meta property='og:video:type' content={videoType} />
+        <meta property="og:video:url" content={videoUrl} />
+        <meta property="og:video:secure_url" content={videoUrl} />
+        <meta property="og:video:type" content={videoType} />
       </NextHead>
     )}
     <NextSeo
@@ -39,7 +39,7 @@ export const SEO = ({
             type: videoType,
             width: metaVideoWidth,
             height: metaVideoHeight,
-            alt: 'Genuin',
+            alt: "Genuin",
           },
         ],
         images: [
@@ -47,18 +47,18 @@ export const SEO = ({
             url: videoPreviewImage,
             width: metaImageWidth,
             height: metaImageHeight,
-            alt: 'Genuin',
+            alt: "Genuin",
           },
         ],
-        site_name: 'Genuin',
+        site_name: "Genuin",
       }}
       facebook={{
         appId: 1234567890,
       }}
       twitter={{
-        handle: '@handle',
-        site: '@site',
-        cardType: 'summary_large_image',
+        handle: "@handle",
+        site: "@site",
+        cardType: "summary_large_image",
       }}
     />
   </>
