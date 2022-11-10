@@ -1,14 +1,14 @@
-import { useState, useMemo, useEffect } from 'react';
-import { ReactPlayerWrapper } from './reactPlayerWrapper';
-import { increaseVideoViewCount } from '../../actions/postActions';
+import { useState, useMemo, useEffect } from "react";
+import { ReactPlayerWrapper } from "./reactPlayerWrapper";
+import { increaseVideoViewCount } from "../../actions/postActions";
 
 export const Player = ({
   video_id_to_use,
   description,
-  videoUrl = '',
+  videoUrl = "",
   videoThumbnail,
   userName,
-  userProfileImage = '',
+  userProfileImage = "",
   getNextVideo,
   getPrevVideo,
   roundTableMode,
@@ -34,7 +34,7 @@ export const Player = ({
         ? userProfileImage
         : `https://media.qa.begenuin.com/backend_assets/lottie/${userProfileImage}.png`;
     }
-    return 'https://media.qa.begenuin.com/backend_assets/lottie/snowman.png';
+    return "https://media.qa.begenuin.com/backend_assets/lottie/snowman.png";
   }, [userProfileImage]);
 
   const handleProgress = (event) => {
@@ -52,14 +52,14 @@ export const Player = ({
 
   return (
     <>
-      <div className='overlay' />
+      {/* <div className='overlay' /> */}
       <div
         className='main d-flex align-items-center justify-content-center'
         style={{
           backgroundImage: `url(${videoThumbnail})`,
-          backgroundRepeat: 'no-repeat',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
         }}
       >
         <ReactPlayerWrapper
@@ -93,5 +93,5 @@ function isValidHttpUrl(string) {
     return false;
   }
 
-  return url.protocol === 'http:' || url.protocol === 'https:';
+  return url.protocol === "http:" || url.protocol === "https:";
 }
