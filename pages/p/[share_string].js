@@ -1,19 +1,18 @@
 import { useState, useRef } from "react";
 import axios from "axios";
-// import { Image } from "react-bootstrap";
 import { Player } from "../../components/player";
 import { Layout } from "../../components/layout";
 import { TopNav } from "../../components/topNav";
 import { GetAppModal } from "../../components/getAppModal";
-import { VideoThumbnail } from "../../components/VideoThumbnail";
 import { AppActions } from "../../components/appActions";
 import { WelcomeModal } from "../../components/welcomeModal";
 import { Error } from "../../components/error";
 import { SEO } from "../../components/seo";
 import { appStoreLink } from "../../config";
-import sample_avatar from "../../images/sample_avatar.png";
-import logo_header_new from "../../images/logo_header_new.png";
 import { Col, Container, Row } from "react-bootstrap";
+import views from "../../images/views.svg";
+import comments from "../../images/comments.svg";
+import Modal from "react-bootstrap/Modal";
 
 const Profile = ({
   user_id,
@@ -27,7 +26,6 @@ const Profile = ({
   profile_image,
   videos = [],
 }) => {
-  console.log("videos", videos);
   const [showModalWelcome, setShowModalWelcome] = useState(true);
   const handleCloseWelcome = () => setShowModalWelcome(false);
   const [showModalAppDownload, setShowModalAppDownload] = useState(false);
@@ -41,6 +39,9 @@ const Profile = ({
     setShowModalAppDownload(true);
   };
 
+  const [show, setShow] = useState(false);
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const totalVideos = videos?.length ?? 0;
 
@@ -123,57 +124,61 @@ const Profile = ({
             </Col>
             <Col>
               <div className='video-gallery'>
-                {videos.map((video) => (
-                  <VideoThumbnail
-                    video={video}
-                    userName={nickname}
-                    profileImage={profile_image}
-                    showGetAppModal={handleShowModalAppDownload}
-                    onEnded={showGetAppToViewDialog}
-                    getNextVideo={getNextVideo}
-                    getPrevVideo={getPrevVideo}
-                  />
+                {videos.map((video, index) => (
+                  <div className='video-thumbnail-wrapper'>
+                    <img
+                      src={video.videoThumbnail}
+                      className='video-thumbnail'
+                      onClick={() => {
+                        handleShow();
+                        setCurrentVideoIndex(index);
+                      }}
+                    />
+                    <div className='video-thumbnail-icons'>
+                      <div>
+                        <img src={comments.src} style={{ paddingRight: 2 }} />{" "}
+                        {video.noOfConversation}
+                      </div>
+                      <div>
+                        <img src={views.src} style={{ paddingRight: 3 }} />
+                        {video.noOfViews}
+                      </div>
+                    </div>
+                  </div>
                 ))}
               </div>
             </Col>
           </Row>
         </Container>
-
-        {/* <div className='profile-container'>
-          <div className='info'>
-            <img className='profile-image-avatar' src={profile_image} />
-            <div>@{nickname}</div>
-            <div>Views: {no_of_views}</div>
-            <div>Videos: {no_of_videos}</div>
-            <div>Replies: {no_of_replies}</div>
-            <div></div>
-          </div>
-          <div className='video-gallery'>
-            {videos.map((video) => (
-              <div>lol</div>
-            ))}
-          </div>
-        </div> */}
-        {/* <Player
-        key={currentVideoIndex}
-        userName={`@${nickname}`}
-        userProfileImage={profile_image}
-        videoThumbnail={videos[currentVideoIndex]?.videoThumbnail}
-        description={videos[currentVideoIndex]?.description}
-        videoUrl={videos[currentVideoIndex]?.videoUrl}
-        showGetAppModal={handleShowModalAppDownload}
-        getNextVideo={getNextVideo}
-        getPrevVideo={getPrevVideo}
-        onEnded={showGetAppToViewDialog}
-      >
-        <AppActions
-          showGetAppModal={handleShowModalAppDownload}
-          userName={`@${nickname}`}
-          videoUrl={globalThis?.location?.href}
-          videoDescription={videos[currentVideoIndex]?.description}
-          videoTitle="Genuin"
-        />
-      </Player> */}
+        <Modal
+          show={show}
+          onHide={handleClose}
+          centered
+          className='modal-app-download'
+        >
+          <button onClick={handleClose}>close</button>
+          <Player
+            videoThumbnail={videos[currentVideoIndex]?.videoThumbnail}
+            description={videos[currentVideoIndex]?.description}
+            link={videos[currentVideoIndex]?.link}
+            videoUrl={videos[currentVideoIndex]?.videoUrl}
+            userName={`@${nickname}`}
+            userProfileImage={profile_image}
+            showGetAppModal={showGetAppToViewDialog}
+            onEnded={showGetAppToViewDialog}
+            getNextVideo={getNextVideo}
+            getPrevVideo={getPrevVideo}
+          >
+            <AppActions
+              showGetAppModal={showGetAppToViewDialog}
+              userName={`@${nickname}`}
+              link={videos[currentVideoIndex].link}
+              videoUrl={globalThis?.location?.href}
+              videoDescription={videos[currentVideoIndex].description}
+              videoTitle='Genuin'
+            />
+          </Player>
+        </Modal>
       </section>
       <GetAppModal
         show={showModalAppDownload}
