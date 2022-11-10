@@ -540,9 +540,6 @@ body .overlay {
   display: flex;
 }
 
-.profile-container .info {
-}
-
 .video-gallery {
   margin: 0 auto;
   display: grid;
@@ -550,6 +547,9 @@ body .overlay {
   grid-auto-rows: 1fr;
   grid-column-gap: 30px;
   grid-row-gap: 30px;
+  max-height: calc(100vh - 70px);
+  overflow-y: scroll;
+  padding-bottom: 40px;
 }
 
 .video-thumbnail-wrapper {
@@ -573,9 +573,74 @@ body .overlay {
   font-weight: bold;
 }
 
+.profile-info {
+  color: #111111;
+}
+
 .profile-image-avatar {
   vertical-align: middle;
-  width: 50px;
-  height: 50px;
+  width: 88px;
+  height: 88px;
   border-radius: 50%;
+  background-color: #0645ff29;
+  margin-bottom: 8px;
+}
+.profile-nickname {
+  font-weight: 700;
+  font-size: 17px;
+  line-height: 24px;
+  margin-bottom: 6px;
+}
+.profile-bio {
+  font-weight: 600;
+  font-size: 15px;
+  margin-bottom: 6px;
+}
+.profile-stats {
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 32px;
+  text-align: center;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 20px;
+  margin-bottom: 25px;
+  max-width: 300px;
+}
+.profile-stats-label {
+  font-family: "Avenir Next";
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 16px;
+  text-align: center;
+  color: #949494;
+}
+
+.modal-profile-video .modal-dialog {
+  /* width: 400px; */
+  height: 100% !important;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.modal-profile-video .modal-content {
+  height: 80%;
+  background-color: transparent;
+  border: 0;
+}
+
+.profile-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.profile-actions-button {
+  color: #0645ff;
+  height: 32px;
+  background-color: transparent;
+  font-weight: 700;
+  font-size: 15px;
+  padding: 0 10px;
+  /* line-height: 24px; */
+  color: #0645ff;
 }

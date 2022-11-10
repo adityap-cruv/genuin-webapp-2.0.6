@@ -1,6 +1,6 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import axios from "axios";
-import { Player } from "../../components/player";
+import { isValidHttpUrl, Player } from "../../components/player";
 import { Layout } from "../../components/layout";
 import { TopNav } from "../../components/topNav";
 import { GetAppModal } from "../../components/getAppModal";
@@ -9,10 +9,11 @@ import { WelcomeModal } from "../../components/welcomeModal";
 import { Error } from "../../components/error";
 import { SEO } from "../../components/seo";
 import { appStoreLink } from "../../config";
-import { Col, Container, Row } from "react-bootstrap";
+import { Col, Container, Row, Modal, Image, Button } from "react-bootstrap";
 import views from "../../images/views.svg";
 import comments from "../../images/comments.svg";
-import Modal from "react-bootstrap/Modal";
+import shareImg from "../../images/video-more-options/ic-share-blue.svg";
+import directMessage from "../../images/direct_message.svg";
 
 const Profile = ({
   user_id,
@@ -25,7 +26,17 @@ const Profile = ({
   no_of_replies,
   profile_image,
   videos = [],
+  bio,
 }) => {
+  const profilePic = useMemo(() => {
+    if (Boolean(profile_image)) {
+      return isValidHttpUrl(profile_image)
+        ? profile_image
+        : `https://media.qa.begenuin.com/backend_assets/lottie/${profile_image}.png`;
+    }
+    return "https://media.qa.begenuin.com/backend_assets/lottie/snowman.png";
+  }, [profile_image]);
+
   const [showModalWelcome, setShowModalWelcome] = useState(true);
   const handleCloseWelcome = () => setShowModalWelcome(false);
   const [showModalAppDownload, setShowModalAppDownload] = useState(false);
@@ -115,12 +126,53 @@ const Profile = ({
         <Container className='container-false d-none d-md-block'></Container>
         <Container>
           <Row>
-            <Col>
-              <img className='profile-image-avatar' src={profile_image.src} />
-              <div>@{nickname}</div>
-              <div>Views: {no_of_views}</div>
-              <div>Videos: {no_of_videos}</div>
-              <div>Replies: {no_of_replies}</div>
+            <Col className='profile-info'>
+              <Image
+                src={profilePic}
+                className='profile-image-avatar'
+                alt={`@${nickname}`}
+                title={`@${nickname}`}
+              />
+              <div className='profile-nickname'>@{nickname}</div>
+              <div className='profile-bio'>{bio || "No bio yet"}</div>
+              <div className='profile-stats'>
+                <div>
+                  <div>{no_of_views}</div>
+                  <div className='profile-stats-label'>Views</div>
+                </div>
+                <div>
+                  <div>{no_of_videos}</div>
+                  <div className='profile-stats-label'>Videos</div>
+                </div>
+                <div>
+                  <div>{no_of_replies}</div>
+                  <div className='profile-stats-label'>Replies</div>
+                </div>
+              </div>
+              <div className='profile-actions'>
+                <Button className='profile-actions-button'>
+                  <Image
+                    src={directMessage.src}
+                    width='20'
+                    height='20'
+                    style={{
+                      paddingRight: 6,
+                    }}
+                    alt='Share'
+                    title='Share Profile'
+                  />
+                  Direct Message
+                </Button>
+                <Button className='profile-actions-button'>
+                  <Image
+                    src={shareImg.src}
+                    width='20'
+                    height='20'
+                    alt='Share'
+                    title='Share Profile'
+                  />
+                </Button>
+              </div>
             </Col>
             <Col>
               <div className='video-gallery'>
@@ -154,9 +206,8 @@ const Profile = ({
           show={show}
           onHide={handleClose}
           centered
-          className='modal-app-download'
+          className='modal-profile-video'
         >
-          <button onClick={handleClose}>close</button>
           <Player
             videoThumbnail={videos[currentVideoIndex]?.videoThumbnail}
             description={videos[currentVideoIndex]?.description}

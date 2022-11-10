@@ -1,9 +1,9 @@
-import { useEffect } from 'react';
-import { toast } from 'react-toastify';
-import { Image } from 'react-bootstrap';
-import { useWebShare } from './hooks/useWebShare';
-import { useClipboard } from './hooks/useClipboard';
-import shareImg from '../images/video-more-options/ic-share.svg';
+import { useEffect } from "react";
+import { toast } from "react-toastify";
+import { Image } from "react-bootstrap";
+import { useWebShare } from "./hooks/useWebShare";
+import { useClipboard } from "./hooks/useClipboard";
+import shareImg from "../images/video-more-options/ic-share.svg";
 
 export const ShareComponent = ({ title, description, url }) => {
   const { isSupported, loading, share } = useWebShare();
@@ -12,7 +12,7 @@ export const ShareComponent = ({ title, description, url }) => {
   useEffect(() => {
     if (isCopied) {
       let key;
-      key = toast('Link copied!', {
+      key = toast("Link copied!", {
         autoClose: false,
         hideProgressBar: true,
       });

@@ -55,12 +55,14 @@ export const Player = ({
       {/* <div className='overlay' /> */}
       <div
         className='main d-flex align-items-center justify-content-center'
-        style={{
-          backgroundImage: `url(${videoThumbnail})`,
-          backgroundRepeat: "no-repeat",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
+        style={
+          {
+            // backgroundImage: `url(${videoThumbnail})`,
+            // backgroundRepeat: "no-repeat",
+            // backgroundSize: "cover",
+            // backgroundPosition: "center",
+          }
+        }
       >
         <ReactPlayerWrapper
           videoUrl={videoUrl}
@@ -85,7 +87,7 @@ export const Player = ({
   );
 };
 
-function isValidHttpUrl(string) {
+export function isValidHttpUrl(string) {
   let url;
   try {
     url = new URL(string);
