@@ -20,7 +20,6 @@ export const ShareComponent = ({ title, description, url }) => {
         toast.dismiss(key);
       };
     }
-    return null;
   }, [isCopied]);
 
   return (

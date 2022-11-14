@@ -1,12 +1,12 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import ReactPlayer from 'react-player/lazy';
-import { useDebounce } from 'use-debounce';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlay, faPause } from '@fortawesome/free-solid-svg-icons';
-import { Image, ProgressBar, Badge, Button } from 'react-bootstrap';
+import { useCallback, useEffect, useRef, useState } from "react";
+import ReactPlayer from "react-player/lazy";
+import { useDebounce } from "use-debounce";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
+import { Image, ProgressBar, Badge, Button } from "react-bootstrap";
 
-import icArrowDown from '../../images/video-more-options/ic-arrow-down.svg';
-import icArrowUp from '../../images/video-more-options/ic-arrow-up.svg';
+import icArrowDown from "../../images/video-more-options/ic-arrow-down.svg";
+import icArrowUp from "../../images/video-more-options/ic-arrow-up.svg";
 
 export const ReactPlayerWrapper = ({
   videoUrl,
@@ -21,7 +21,7 @@ export const ReactPlayerWrapper = ({
   getNextVideo,
   getPrevVideo,
   roundTableMode = false,
-  roundTableName = '',
+  roundTableName = "",
   autoplay = false,
   autoJumpToNextVideo = false,
   showGetAppModal,
@@ -64,11 +64,11 @@ export const ReactPlayerWrapper = ({
         getprevVideoRef?.current?.();
       }
     };
-    window.addEventListener('touchstart', touchStart);
-    window.addEventListener('touchend', touchEnd);
+    window.addEventListener("touchstart", touchStart);
+    window.addEventListener("touchend", touchEnd);
     return () => {
-      window.removeEventListener('touchstart', touchStart);
-      window.removeEventListener('touchend', touchEnd);
+      window.removeEventListener("touchstart", touchStart);
+      window.removeEventListener("touchend", touchEnd);
     };
   }, []);
 
@@ -107,8 +107,8 @@ export const ReactPlayerWrapper = ({
       <FontAwesomeIcon
         icon={isPlaying ? faPause : faPlay}
         style={{
-          display: isPlayingDebounced ? 'none' : 'block',
-          pointerEvents: 'none',
+          display: isPlayingDebounced ? "none" : "block",
+          pointerEvents: "none",
         }}
         className='btn-play'
       />
@@ -138,7 +138,7 @@ export const ReactPlayerWrapper = ({
       ) : null}
       <div
         className='video-footer bg-gradient-180'
-        style={{ pointerEvents: 'none' }}
+        style={{ pointerEvents: "none" }}
       >
         <div className='d-flex align-items-end justify-content-between'>
           <div className='d-flex flex-column'>
@@ -163,7 +163,7 @@ export const ReactPlayerWrapper = ({
                     <Button
                       variant='outline-light'
                       className='ms-3'
-                      style={{ pointerEvents: 'all' }}
+                      style={{ pointerEvents: "all" }}
                       onClick={() =>
                         showGetAppModal(() => (
                           <>Get the app to watch whole roundtable.</>
@@ -182,7 +182,7 @@ export const ReactPlayerWrapper = ({
           </div>
           <div
             className='flex-shrink-0 position-relative video-more-option'
-            style={{ pointerEvents: 'all' }}
+            style={{ pointerEvents: "all" }}
           >
             {children}
           </div>

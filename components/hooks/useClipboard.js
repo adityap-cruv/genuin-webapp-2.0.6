@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import copyToClipboard from 'copy-to-clipboard';
+import { useEffect, useRef, useState } from "react";
+import copyToClipboard from "copy-to-clipboard";
 
 const defaultOptions = {
   successDuration: 2000,

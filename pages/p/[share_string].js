@@ -9,11 +9,24 @@ import { WelcomeModal } from "../../components/welcomeModal";
 import { Error } from "../../components/error";
 import { SEO } from "../../components/seo";
 import { appStoreLink } from "../../config";
-import { Col, Container, Row, Modal, Image, Button } from "react-bootstrap";
+import { Container } from "react-bootstrap";
 import views from "../../images/views.svg";
 import comments from "../../images/comments.svg";
 import shareImg from "../../images/video-more-options/ic-share-blue.svg";
 import directMessage from "../../images/direct_message.svg";
+import {
+  Box,
+  Image,
+  Button,
+  Flex,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
+  useDisclosure,
+  Grid,
+} from "@chakra-ui/react";
 
 const Profile = ({
   user_id,
@@ -50,9 +63,8 @@ const Profile = ({
     setShowModalAppDownload(true);
   };
 
-  const [show, setShow] = useState(false);
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const totalVideos = videos?.length ?? 0;
 
@@ -125,110 +137,142 @@ const Profile = ({
       <section className='section-content d-flex flex-column h-100'>
         <Container className='container-false d-none d-md-block'></Container>
         <Container>
-          <Row>
-            <Col className='profile-info'>
+          <Flex
+            flexDir={{
+              base: "column",
+              sm: "row",
+            }}
+            gap={114}
+            justifyContent='space-between'
+          >
+            <Flex color='#111111' flexDir='column'>
               <Image
                 src={profilePic}
                 className='profile-image-avatar'
                 alt={`@${nickname}`}
                 title={`@${nickname}`}
               />
-              <div className='profile-nickname'>@{nickname}</div>
-              <div className='profile-bio'>{bio || "No bio yet"}</div>
-              <div className='profile-stats'>
-                <div>
-                  <div>{no_of_views}</div>
-                  <div className='profile-stats-label'>Views</div>
-                </div>
-                <div>
-                  <div>{no_of_videos}</div>
-                  <div className='profile-stats-label'>Videos</div>
-                </div>
-                <div>
-                  <div>{no_of_replies}</div>
-                  <div className='profile-stats-label'>Replies</div>
-                </div>
-              </div>
-              <div className='profile-actions'>
-                <Button className='profile-actions-button'>
+              <Box className='profile-nickname'>@{nickname}</Box>
+              <Box className='profile-bio'>{bio || "No bio yet"}</Box>
+              <Box className='profile-stats'>
+                <Box>
+                  <Box>{no_of_views}</Box>
+                  <Box className='profile-stats-label'>Views</Box>
+                </Box>
+                <Box>
+                  <Box>{no_of_videos}</Box>
+                  <Box className='profile-stats-label'>Videos</Box>
+                </Box>
+                <Box>
+                  <Box>{no_of_replies}</Box>
+                  <Box className='profile-stats-label'>Replies</Box>
+                </Box>
+              </Box>
+              <Box className='profile-actions'>
+                <Button
+                  color='#0645ff'
+                  bgColor='transparent'
+                  border='1px solid #0645FF'
+                >
                   <Image
                     src={directMessage.src}
-                    width='20'
-                    height='20'
-                    style={{
-                      paddingRight: 6,
-                    }}
+                    size={8}
+                    pr={3}
                     alt='Share'
                     title='Share Profile'
                   />
                   Direct Message
                 </Button>
-                <Button className='profile-actions-button'>
+                <Button
+                  color='#0645ff'
+                  bgColor='transparent'
+                  border='1px solid #0645FF'
+                  p='0'
+                >
                   <Image
                     src={shareImg.src}
-                    width='20'
-                    height='20'
+                    size={8}
                     alt='Share'
                     title='Share Profile'
                   />
                 </Button>
-              </div>
-            </Col>
-            <Col>
-              <div className='video-gallery'>
+              </Box>
+            </Flex>
+            <Flex>
+              <Grid
+                templateColumns={[
+                  "auto",
+                  "1fr 1fr",
+                  "1fr 1fr 1fr",
+                  "1fr 1fr 1fr 1fr",
+                ]}
+                maxHeight='calc(100vh - 70px)'
+                overflowY='scroll'
+                pb={16}
+                gap={6}
+              >
                 {videos.map((video, index) => (
-                  <div className='video-thumbnail-wrapper'>
-                    <img
+                  <Box
+                    className='video-thumbnail-wrapper'
+                    cursor='pointer'
+                    transition='transform .2s'
+                    _hover={{
+                      transform: "scale(0.97)",
+                    }}
+                    key={video.video_uuid}
+                  >
+                    <Image
                       src={video.videoThumbnail}
                       className='video-thumbnail'
                       onClick={() => {
-                        handleShow();
+                        onOpen();
                         setCurrentVideoIndex(index);
                       }}
                     />
-                    <div className='video-thumbnail-icons'>
-                      <div>
-                        <img src={comments.src} style={{ paddingRight: 2 }} />{" "}
+                    <Box className='video-thumbnail-icons'>
+                      <Box>
+                        <Image src={comments.src} style={{ paddingRight: 2 }} />{" "}
                         {video.noOfConversation}
-                      </div>
-                      <div>
-                        <img src={views.src} style={{ paddingRight: 3 }} />
+                      </Box>
+                      <Box>
+                        <Image src={views.src} style={{ paddingRight: 3 }} />
                         {video.noOfViews}
-                      </div>
-                    </div>
-                  </div>
+                      </Box>
+                    </Box>
+                  </Box>
                 ))}
-              </div>
-            </Col>
-          </Row>
+              </Grid>
+            </Flex>
+          </Flex>
         </Container>
-        <Modal
-          show={show}
-          onHide={handleClose}
-          centered
-          className='modal-profile-video'
-        >
-          <Player
-            videoThumbnail={videos[currentVideoIndex]?.videoThumbnail}
-            description={videos[currentVideoIndex]?.description}
-            link={videos[currentVideoIndex]?.link}
-            videoUrl={videos[currentVideoIndex]?.videoUrl}
-            userName={`@${nickname}`}
-            userProfileImage={profile_image}
-            showGetAppModal={showGetAppToViewDialog}
-            onEnded={showGetAppToViewDialog}
-            getNextVideo={getNextVideo}
-            getPrevVideo={getPrevVideo}
-          >
-            <AppActions
-              showGetAppModal={showGetAppToViewDialog}
-              userName={`@${nickname}`}
-              link={videos[currentVideoIndex].link}
-              videoUrl={globalThis?.location?.href}
-              videoDescription={videos[currentVideoIndex].description}
-              videoTitle='Genuin'
-            />
-          </Player>
+
+        <Modal isOpen={isOpen} onClose={onClose} scrollBehavior='inside'>
+          <ModalOverlay />
+          <ModalContent maxW='44rem' h='full'>
+            <ModalBody py={2} m={4} height='full'>
+              <Player
+                videoThumbnail={videos[currentVideoIndex]?.videoThumbnail}
+                description={videos[currentVideoIndex]?.description}
+                link={videos[currentVideoIndex]?.link}
+                videoUrl={videos[currentVideoIndex]?.videoUrl}
+                userName={`@${nickname}`}
+                userProfileImage={profile_image}
+                showGetAppModal={showGetAppToViewDialog}
+                onEnded={showGetAppToViewDialog}
+                getNextVideo={getNextVideo}
+                getPrevVideo={getPrevVideo}
+              >
+                <AppActions
+                  showGetAppModal={showGetAppToViewDialog}
+                  userName={`@${nickname}`}
+                  link={videos[currentVideoIndex].link}
+                  videoUrl={globalThis?.location?.href}
+                  videoDescription={videos[currentVideoIndex].description}
+                  videoTitle='Genuin'
+                />
+              </Player>
+            </ModalBody>
+          </ModalContent>
         </Modal>
       </section>
       <GetAppModal
