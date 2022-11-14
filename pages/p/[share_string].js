@@ -143,6 +143,7 @@ const Profile = ({
               sm: "row",
             }}
             gap={114}
+            mt={16}
             justifyContent='space-between'
           >
             <Flex color='#111111' flexDir='column'>
@@ -202,7 +203,8 @@ const Profile = ({
               <Grid
                 templateColumns={[
                   "auto",
-                  "1fr 1fr",
+                  "1fr",
+                  "1fr 1fr ",
                   "1fr 1fr 1fr",
                   "1fr 1fr 1fr 1fr",
                 ]}
