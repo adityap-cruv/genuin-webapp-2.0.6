@@ -25,6 +25,7 @@ import {
   Avatar,
   ModalOverlay,
   useDisclosure,
+  useBreakpointValue,
   Grid,
 } from "@chakra-ui/react";
 
@@ -64,6 +65,7 @@ const Profile = ({
   };
 
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const mobile = useBreakpointValue({ base: true, sm: false });
 
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const totalVideos = videos?.length ?? 0;
@@ -142,7 +144,8 @@ const Profile = ({
               base: "column",
               sm: "row",
             }}
-            gap={114}
+            maxH='calc(100vh - 70px)'
+            gap={{ base: 4, sm: 114 }}
             mt={16}
             justifyContent='space-between'
           >
@@ -209,18 +212,15 @@ const Profile = ({
                 </Button>
               </Flex>
             </Flex>
-            <Flex>
+            <Box overflowY='scroll' pb={16}>
               <Grid
                 templateColumns={[
-                  "auto",
+                  "1fr 1fr 1fr",
                   "1fr",
                   "1fr 1fr ",
                   "1fr 1fr 1fr",
                   "1fr 1fr 1fr 1fr",
                 ]}
-                maxHeight='calc(100vh - 70px)'
-                overflowY='scroll'
-                pb={16}
                 gap={6}
               >
                 {videos.map((video, index) => (
@@ -245,6 +245,7 @@ const Profile = ({
                       _groupHover={{
                         opacity: 1,
                       }}
+                      opacity={0}
                       gap={3}
                       bottom={3}
                       left={2}
@@ -264,7 +265,7 @@ const Profile = ({
                   </Box>
                 ))}
               </Grid>
-            </Flex>
+            </Box>
           </Flex>
         </Container>
 
