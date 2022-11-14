@@ -22,7 +22,7 @@ import {
   Modal,
   ModalBody,
   ModalContent,
-  ModalHeader,
+  Avatar,
   ModalOverlay,
   useDisclosure,
   Grid,
@@ -147,29 +147,39 @@ const Profile = ({
             justifyContent='space-between'
           >
             <Flex color='#111111' flexDir='column'>
-              <Image
+              <Avatar
+                name={`@${nickname}`}
                 src={profilePic}
-                className='profile-image-avatar'
-                alt={`@${nickname}`}
-                title={`@${nickname}`}
+                size='xl'
+                background='#A4E6DA'
               />
-              <Box className='profile-nickname'>@{nickname}</Box>
-              <Box className='profile-bio'>{bio || "No bio yet"}</Box>
-              <Box className='profile-stats'>
-                <Box>
-                  <Box>{no_of_views}</Box>
-                  <Box className='profile-stats-label'>Views</Box>
-                </Box>
-                <Box>
-                  <Box>{no_of_videos}</Box>
-                  <Box className='profile-stats-label'>Videos</Box>
-                </Box>
-                <Box>
-                  <Box>{no_of_replies}</Box>
-                  <Box className='profile-stats-label'>Replies</Box>
-                </Box>
+              <Box fontWeight='700' fontSize={17}>
+                @{nickname}
               </Box>
-              <Box className='profile-actions'>
+              <Box fontWeight='600' fontSize={15}>
+                {bio || "No bio yet"}
+              </Box>
+              <Flex justifyContent={"space-between"} textAlign='center' my={4}>
+                <Box>
+                  <Box fontWeight='bold'>{no_of_views}</Box>
+                  <Box fontWeight={600} fontSize={12} color='#949494'>
+                    Views
+                  </Box>
+                </Box>
+                <Box>
+                  <Box fontWeight='bold'>{no_of_videos}</Box>
+                  <Box fontWeight={600} fontSize={12} color='#949494'>
+                    Videos
+                  </Box>
+                </Box>
+                <Box>
+                  <Box fontWeight='bold'>{no_of_replies}</Box>
+                  <Box fontWeight={600} fontSize={12} color='#949494'>
+                    Replies
+                  </Box>
+                </Box>
+              </Flex>
+              <Flex gap={4}>
                 <Button
                   color='#0645ff'
                   bgColor='transparent'
@@ -197,7 +207,7 @@ const Profile = ({
                     title='Share Profile'
                   />
                 </Button>
-              </Box>
+              </Flex>
             </Flex>
             <Flex>
               <Grid
@@ -215,32 +225,42 @@ const Profile = ({
               >
                 {videos.map((video, index) => (
                   <Box
-                    className='video-thumbnail-wrapper'
                     cursor='pointer'
                     transition='transform .2s'
                     _hover={{
                       transform: "scale(0.97)",
                     }}
                     key={video.video_uuid}
+                    role='group'
                   >
                     <Image
                       src={video.videoThumbnail}
-                      className='video-thumbnail'
                       onClick={() => {
                         onOpen();
                         setCurrentVideoIndex(index);
                       }}
                     />
-                    <Box className='video-thumbnail-icons'>
-                      <Box>
-                        <Image src={comments.src} style={{ paddingRight: 2 }} />{" "}
+                    <Flex
+                      position='absolute'
+                      _groupHover={{
+                        opacity: 1,
+                      }}
+                      gap={3}
+                      bottom={3}
+                      left={2}
+                      color='white'
+                      fontSize='15px'
+                      fontWeight='bold'
+                    >
+                      <Flex>
+                        <Image mr={2} src={comments.src} h={5} mt={1} />
                         {video.noOfConversation}
-                      </Box>
-                      <Box>
-                        <Image src={views.src} style={{ paddingRight: 3 }} />
+                      </Flex>
+                      <Flex>
+                        <Image src={views.src} mr={1} mt={1} />
                         {video.noOfViews}
-                      </Box>
-                    </Box>
+                      </Flex>
+                    </Flex>
                   </Box>
                 ))}
               </Grid>
