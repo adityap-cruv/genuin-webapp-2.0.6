@@ -23,6 +23,7 @@ import {
   ModalBody,
   ModalContent,
   Avatar,
+  Divider,
   ModalOverlay,
   useDisclosure,
   useBreakpointValue,
@@ -146,43 +147,84 @@ const Profile = ({
             }}
             maxH='calc(100vh - 70px)'
             gap={{ base: 4, sm: 114 }}
-            mt={16}
+            mt={{ base: 16, sm: 0 }}
             justifyContent='space-between'
           >
+            {mobile && <Divider opacity={0.1} mt={2} />}
             <Flex color='#111111' flexDir='column'>
-              <Avatar
-                name={`@${nickname}`}
-                src={profilePic}
-                size='xl'
-                background='#A4E6DA'
-              />
+              <Flex justifyContent={"space-between"}>
+                <Avatar
+                  name={`@${nickname}`}
+                  src={profilePic}
+                  size='xl'
+                  background='#A4E6DA'
+                  mb={2}
+                />
+                {mobile && (
+                  <Flex
+                    textAlign='center'
+                    alignItems='center'
+                    justifyContent={"space-between"}
+                    w='full'
+                    mx={6}
+                  >
+                    <Box>
+                      <Box fontWeight='bold'>{no_of_views}</Box>
+                      <Box fontWeight={600} fontSize={12} color='#949494'>
+                        Views
+                      </Box>
+                    </Box>
+                    <Box>
+                      <Box fontWeight='bold'>{no_of_videos}</Box>
+                      <Box fontWeight={600} fontSize={12} color='#949494'>
+                        Videos
+                      </Box>
+                    </Box>
+                    <Box>
+                      <Box fontWeight='bold'>{no_of_replies}</Box>
+                      <Box fontWeight={600} fontSize={12} color='#949494'>
+                        Replies
+                      </Box>
+                    </Box>
+                  </Flex>
+                )}
+              </Flex>
               <Box fontWeight='700' fontSize={17}>
                 @{nickname}
               </Box>
               <Box fontWeight='600' fontSize={15}>
                 {bio || "No bio yet"}
               </Box>
-              <Flex justifyContent={"space-between"} textAlign='center' my={4}>
-                <Box>
-                  <Box fontWeight='bold'>{no_of_views}</Box>
-                  <Box fontWeight={600} fontSize={12} color='#949494'>
-                    Views
+              {!mobile && (
+                <Flex
+                  justifyContent={{
+                    base: "space-around",
+                    sm: "space-between",
+                  }}
+                  textAlign='center'
+                  my={4}
+                >
+                  <Box>
+                    <Box fontWeight='bold'>{no_of_views}</Box>
+                    <Box fontWeight={600} fontSize={12} color='#949494'>
+                      Views
+                    </Box>
                   </Box>
-                </Box>
-                <Box>
-                  <Box fontWeight='bold'>{no_of_videos}</Box>
-                  <Box fontWeight={600} fontSize={12} color='#949494'>
-                    Videos
+                  <Box>
+                    <Box fontWeight='bold'>{no_of_videos}</Box>
+                    <Box fontWeight={600} fontSize={12} color='#949494'>
+                      Videos
+                    </Box>
                   </Box>
-                </Box>
-                <Box>
-                  <Box fontWeight='bold'>{no_of_replies}</Box>
-                  <Box fontWeight={600} fontSize={12} color='#949494'>
-                    Replies
+                  <Box>
+                    <Box fontWeight='bold'>{no_of_replies}</Box>
+                    <Box fontWeight={600} fontSize={12} color='#949494'>
+                      Replies
+                    </Box>
                   </Box>
-                </Box>
-              </Flex>
-              <Flex gap={4}>
+                </Flex>
+              )}
+              <Flex gap={4} mt={2}>
                 <Button
                   color='#0645ff'
                   bgColor='transparent'
@@ -212,7 +254,7 @@ const Profile = ({
                 </Button>
               </Flex>
             </Flex>
-            <Box overflowY='scroll' pb={16}>
+            <Box overflowY='scroll' pb={8}>
               <Grid
                 templateColumns={[
                   "1fr 1fr 1fr",
