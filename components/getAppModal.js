@@ -1,5 +1,6 @@
-import { Modal, Image, Button } from 'react-bootstrap';
-import logo from '../images/Genuin_icon_vector.svg';
+import { Flex, VStack } from "@chakra-ui/react";
+import { Modal, Image, Button } from "react-bootstrap";
+import logo from "../images/Genuin_icon_vector.svg";
 
 export const GetAppModal = ({
   show,
@@ -8,7 +9,7 @@ export const GetAppModal = ({
   getAppLink,
 }) => {
   const onCloseWrapper = () => {
-    window.open(getAppLink, '_blank');
+    window.open(getAppLink, "_blank");
     onClose();
   };
   return (
@@ -18,13 +19,18 @@ export const GetAppModal = ({
       onHide={onClose}
       centered
       className='modal-app-download'
+      style={{
+        zIndex: 10000,
+      }}
     >
       <Modal.Header closeButton className='border-0'></Modal.Header>
       <Modal.Body className='text-center py-0'>
-        <Image src={logo.src} alt='Genuin' title='Genuin' className='mb-4' />
-        <h5 className='mb-0'>
-          {typeof TextNode === 'function' ? <TextNode /> : null}
-        </h5>
+        <VStack>
+          <Image src={logo.src} alt='Genuin' title='Genuin' className='mb-4' />
+          <h5 className='mb-0'>
+            {typeof TextNode === "function" ? <TextNode /> : null}
+          </h5>
+        </VStack>
       </Modal.Body>
       <Modal.Footer className='justify-content-center border-0'>
         <Button
