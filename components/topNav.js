@@ -42,6 +42,9 @@ export const TopNav = ({
       expand={false}
       fixed='top'
       onToggle={(isOpen) => setIsOpen(isOpen)}
+      style={{
+        zIndex: 10000000,
+      }}
     >
       <Navbar.Brand href='/' className='p-0'>
         <Image

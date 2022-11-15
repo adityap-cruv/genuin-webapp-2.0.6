@@ -312,9 +312,24 @@ const Profile = ({
         </Container>
 
         <Modal isOpen={isOpen} onClose={onClose} scrollBehavior='inside'>
-          <ModalOverlay />
-          <ModalContent maxW='44rem' h='full'>
-            <ModalBody py={2} m={4} height='full'>
+          <ModalOverlay
+            bgColor='red'
+            backgroundImage={`url(${videos[currentVideoIndex]?.videoThumbnail})`}
+            backgroundRepeat='no-repeat'
+            backgroundSize='cover'
+            backgroundPosition='center'
+            width='100%'
+            opacity={0.4}
+            filter='blur(25px)'
+          />
+          <ModalContent
+            h='full'
+            marginTop={0}
+            maxH='full'
+            maxW='full'
+            bg='transparent'
+          >
+            <ModalBody p={0} height='full' w='full'>
               <Player
                 videoThumbnail={videos[currentVideoIndex]?.videoThumbnail}
                 description={videos[currentVideoIndex]?.description}
