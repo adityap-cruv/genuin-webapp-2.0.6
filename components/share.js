@@ -1,12 +1,10 @@
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 import { Image } from "react-bootstrap";
-import { useWebShare } from "./hooks/useWebShare";
 import { useClipboard } from "./hooks/useClipboard";
-import shareImg from "../images/video-more-options/ic-share.svg";
+import CopyLink from "../images/video-actions/CopyLink.svg";
 
 export const ShareComponent = ({ title, description, url }) => {
-  const { isSupported, loading, share } = useWebShare();
   const [isCopied, copy] = useClipboard(url, { successDuration: 1000 });
 
   useEffect(() => {
@@ -24,16 +22,12 @@ export const ShareComponent = ({ title, description, url }) => {
 
   return (
     <Image
-      src={shareImg.src}
-      width='24'
-      height='24'
+      src={CopyLink.src}
+      width={48}
+      height={48}
       alt='Share'
       title='Share'
-      onClick={() =>
-        isSupported && !loading
-          ? share({ url: url, title: title, text: description })
-          : copy()
-      }
+      onClick={copy}
     />
   );
 };
