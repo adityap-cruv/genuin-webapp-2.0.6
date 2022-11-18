@@ -79,11 +79,11 @@ const Profile = ({
     "@type": "ProfilePage",
     "id": `${share_url}`,
     "url": `${share_url}`,
-    "name": `@${nickname} on Genuin &vert; Connect with @${nickname} with a video reply`,
+    "name": `${Boolean(name) ? `${name} (@${nickname})` : `@${nickname}`} on Genuin &vert; Connect with @${nickname} with a video reply`,
     "isPartOf": "https://begenuin.com/#website",
     "image": `${share_url}/#primaryimage`,
     "thumbnailUrl": `${preview_image}`,
-    "description": `@${nickname} on Genuin &vert; ${abbreviateNumber(no_of_views)} Views. ${no_of_videos} Videos. ${no_of_replies} Replies. ${bio.replace(/\s+/g, ' ')}`,
+    "description": `${Boolean(name) ? `[${name}] (@${nickname})` : `@${nickname}`} on Genuin &vert; ${abbreviateNumber(no_of_views)} Views. ${no_of_videos} Videos. ${no_of_replies} Replies. ${bio.replace(/\s+/g, ' ')}`,
     "inLanguage": "en-US",
 
     "potentialAction": [
@@ -100,9 +100,9 @@ const Profile = ({
     <Layout>
       <SEO
         openGraphType="profile"
-        title={`${Boolean(name) ? `@${nickname}` : `${name} (@${nickname})`} is on Genuin. &vert; Connect with @${nickname} with a video reply`}
-        openGraphTitle={`${Boolean(name) ? `@${nickname}` : `${name} (@${nickname})`} is on Genuin. &vert; Connect with @${nickname} with a video reply`}
-        description={`${Boolean(name) ? `@${nickname}` : `[${name}] (@${nickname})`} on Genuin. &vert; ${abbreviateNumber(no_of_views)} Views. ${no_of_videos} Videos. ${no_of_replies} Replies. ${bio.replace(/\s+/g, ' ')}`}
+        title={`${Boolean(name) ? `${name} (@${nickname})` : `@${nickname}`} is on Genuin. &vert; Connect with @${nickname} with a video reply`}
+        openGraphTitle={`${Boolean(name) ? `${name} (@${nickname})` : `@${nickname}`} is on Genuin. &vert; Connect with @${nickname} with a video reply`}
+        description={`${Boolean(name) ? `[${name}] (@${nickname})` : `@${nickname}`} on Genuin. &vert; ${abbreviateNumber(no_of_views)} Views. ${no_of_videos} Videos. ${no_of_replies} Replies. ${bio.replace(/\s+/g, ' ')}`}
         urlToCopy={share_url}
         videoPreviewImage={preview_image}
         videoUrl={videos[currentVideoIndex]?.videoUrl}
