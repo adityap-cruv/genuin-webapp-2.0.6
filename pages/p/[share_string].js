@@ -14,6 +14,7 @@ const Profile = ({
   user_id,
   preview_image,
   nickname,
+  bio,
   name,
   share_url,
   no_of_views,
@@ -73,18 +74,31 @@ const Profile = ({
       return newValue;
   }
 
+  const ORG_SCHEMA = JSON.stringify({
+    "@context": "http://schema.org",
+    "@type": "ProfilePage",
+    "id": `${share_url}`,
+    "url": `${share_url}`,
+    "name": `@${nickname} on Genuin &vert; Connect with @${nickname} with a video reply`,
+    "isPartOf": "https://begenuin.com/#website",
+    "image": `${share_url}/#primaryimage`,
+    "thumbnailUrl": `${preview_image}`,
+    "description": `@${nickname} on Genuin &vert; ${abbreviateNumber(no_of_views)} Views. ${no_of_videos} Videos. ${no_of_replies} Replies. ${bio.replace(/\s+/g, ' ')}`,
+    "inLanguage": "en-US",
+
+    "potentialAction": [
+        {
+          "@type" : "ReadAction",
+          "target" : `${share_url}`
+        }
+    ]
+  })
+
   return !Boolean(user_id) ? (
     <Error />
   ) : (
     <Layout>
-      <SEO
-        title={`${Boolean(name) ? name : `@${nickname}`} is on Genuin. Connect confidently.`}
-        openGraphTitle={`${Boolean(name) ? name : `@${nickname}`} is on Genuin. Connect confidently.`}
-        videoPreviewImage={preview_image}
-        urlToCopy={share_url}
-        videoUrl={videos[currentVideoIndex]?.videoUrl}
-        description={`${Boolean(name) ? name : `@${nickname}`}, ${no_of_videos} Videos, ${abbreviateNumber(no_of_views)} Views, ${no_of_replies} Replies`}
-      />
+      <script type='application/ld+json' dangerouslySetInnerHTML={ { __html: ORG_SCHEMA} } />
       <TopNav showGetAppModal={showGetAppToViewDialog} />
       <Player
         key={currentVideoIndex}
