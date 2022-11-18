@@ -98,6 +98,15 @@ const Profile = ({
     <Error />
   ) : (
     <Layout>
+      <SEO
+        openGraphType="profile"
+        title={`${Boolean(name) ? `@${nickname}` : `${name} (@${nickname})`} is on Genuin. &vert; Connect with @${nickname} with a video reply`}
+        openGraphTitle={`${Boolean(name) ? `@${nickname}` : `${name} (@${nickname})`} is on Genuin. &vert; Connect with @${nickname} with a video reply`}
+        description={`${Boolean(name) ? `@${nickname}` : `[${name}] (@${nickname})`} on Genuin. &vert; ${abbreviateNumber(no_of_views)} Views. ${no_of_videos} Videos. ${no_of_replies} Replies. ${bio.replace(/\s+/g, ' ')}`}
+        urlToCopy={share_url}
+        videoPreviewImage={preview_image}
+        videoUrl={videos[currentVideoIndex]?.videoUrl}
+      />
       <script type='application/ld+json' dangerouslySetInnerHTML={ { __html: ORG_SCHEMA} } />
       <TopNav showGetAppModal={showGetAppToViewDialog} />
       <Player
