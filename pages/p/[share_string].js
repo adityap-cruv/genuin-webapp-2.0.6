@@ -22,6 +22,7 @@ const Profile = ({
   no_of_replies,
   profile_image,
   videos = [],
+  hashtags = []
 }) => {
   const [showModalWelcome, setShowModalWelcome] = useState(true);
   const handleCloseWelcome = () => setShowModalWelcome(false);
@@ -73,7 +74,7 @@ const Profile = ({
       }
       return newValue;
   }
-
+  hashtags = hashtags || hashtags==[]?["entreprenuer", "business", "leadership", "startups"]:hashtags
   const ORG_SCHEMA = JSON.stringify({
     "@context": "http://schema.org",
     "@type": "ProfilePage",
@@ -83,9 +84,8 @@ const Profile = ({
     "isPartOf": "https://begenuin.com/#website",
     "image": `${share_url}/#primaryimage`,
     "thumbnailUrl": `${preview_image}`,
-    "description": `${Boolean(name) ? `[${name}] (@${nickname})` : `@${nickname}`} on Genuin | ${abbreviateNumber(no_of_views)} Views. ${no_of_videos} Videos. ${no_of_replies} Replies. ${bio?bio.replace(/\n+/g, ' ') : ''}`,
+    "description": `${Boolean(name) ? `[${name}] (@${nickname})` : `@${nickname}`} on Genuin | ${abbreviateNumber(no_of_views)} Views. ${no_of_videos} Videos. ${no_of_replies} Replies. ${bio?bio.replace(/\n+/g, ' ') : ''} ${hashtags && hashtags!=[] && hashtags.length>0?hashtags.map(tag => "#"+tag).join(" "):''}`,
     "inLanguage": "en-US",
-
     "potentialAction": [
         {
           "@type" : "ReadAction",
@@ -103,7 +103,7 @@ const Profile = ({
         title={`${Boolean(name) ? `${name} (@${nickname})` : `@${nickname}`} is on Genuin. | Connect with @${nickname} with a video reply`}
         openGraphTitle={`${Boolean(name) ? name : `@${nickname}`} is on Genuin. Connect confidently.`}
         // openGraphTitle={`${Boolean(name) ? `${name} (@${nickname})` : `@${nickname}`} is on Genuin. | Connect with @${nickname} with a video reply`}
-        description={`${Boolean(name) ? `[${name}] (@${nickname})` : `@${nickname}`} on Genuin. | ${abbreviateNumber(no_of_views)} Views. ${no_of_videos} Videos. ${no_of_replies} Replies. ${bio?bio.replace(/\n+/g, ' ') : ''}`}
+        description={`${Boolean(name) ? `[${name}] (@${nickname})` : `@${nickname}`} on Genuin. | ${abbreviateNumber(no_of_views)} Views. ${no_of_videos} Videos. ${no_of_replies} Replies. ${bio?bio.replace(/\n+/g, ' ') : ''} ${hashtags && hashtags!=[] && hashtags.length>0?hashtags.map(tag => "#"+tag).join(" "):''}`}
         openGraphDescription={`${Boolean(name) ? name : `@${nickname}`}, ${no_of_videos} Videos, ${abbreviateNumber(no_of_views)} Views, ${no_of_replies} Replies`}
         urlToCopy={share_url}
         videoPreviewImage={preview_image}
