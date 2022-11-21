@@ -60,6 +60,7 @@ const RoundTable = ({ group, preview_image, share_url, chats = [] }) => {
         videoPreviewImage={preview_image}
         videoUrl={chats?.[currentVideoIndex]?.video_url}
         description={group?.group_description}
+        openGraphDescription={group?.group_description}
       />
       <TopNav showGetAppModal={showGetAppToViewDialog} />
       <Player

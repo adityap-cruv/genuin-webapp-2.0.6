@@ -36,6 +36,7 @@ const Home = () => {
         title={title}
         openGraphTitle={title}
         description={description}
+        openGraphDescription={description}
         urlToCopy={currentUrl}
         videoPreviewImage={metaImage}
         includeHead={false}

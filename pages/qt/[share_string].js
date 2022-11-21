@@ -52,6 +52,7 @@ const QuestionWrapper = ({
     <Layout>
       <SEO
         description={description}
+        openGraphDescription={description}
         title={_question}
         openGraphType='object'
         openGraphTitle={_question}
