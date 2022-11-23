@@ -14,6 +14,7 @@ import imgCarousel4 from "../images/web3/initiate_conversation_about_web3.png";
 
 import favicon from "../images/favicon.ico";
 import { Text, Link } from "@chakra-ui/react";
+import { appStoreLink } from "../config";
 
 let title = "Genuin";
 let metaImage = "https://media.begenuin.com/backend_assets/preview.png";
@@ -124,7 +125,7 @@ const Home = () => {
                   className='justify-content-center justify-content-md-start mt-5 pt-3'
                 >
                   <Button>
-                    <Link href='https://install.begenuin.com/86sn/cgs'>
+                    <Link href={appStoreLink}>
                       <Text fontSize={24} fontWeight='bold'>
                         Download App
                       </Text>
