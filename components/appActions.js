@@ -5,8 +5,12 @@ import bookmark from "../images/video-more-options/ic-bookmark.svg";
 import replay from "../images/video-more-options/ic-replay.svg";
 import comments from "../images/video-more-options/ic-comments.svg";
 import subscribePlus from "../images/video-more-options/ic-subscribe-plus.svg";
-import { Menu, MenuButton, MenuList } from "@chakra-ui/react";
-import CopyLink from "../images/video-actions/CopyLink.svg";
+import {
+  Menu,
+  MenuButton,
+  MenuList,
+  useBreakpointValue,
+} from "@chakra-ui/react";
 import Email from "../images/video-actions/Email.svg";
 import Facebook from "../images/video-actions/Facebook.svg";
 import LinkedIN from "../images/video-actions/LinkedIN.svg";
@@ -20,6 +24,7 @@ import {
   LinkedinShareButton,
   EmailShareButton,
 } from "react-share";
+import { useWebShare } from "./hooks/useWebShare";
 
 export const AppActions = ({
   showGetAppModal,
@@ -31,7 +36,8 @@ export const AppActions = ({
   videoDescription = "",
   videoTitle = "",
 }) => {
-  console.log("link", link);
+  const mobile = useBreakpointValue({ base: true, sm: false });
+
   return (
     <ul>
       {link ? (
@@ -66,11 +72,19 @@ export const AppActions = ({
             />
           </li>
           <li>
-            <ShareButton
-              videoUrl={videoUrl}
-              videoDescription={videoDescription}
-              videoTitle={videoTitle}
-            />
+            {mobile ? (
+              <MobileShareButton
+                videoUrl={videoUrl}
+                videoDescription={videoDescription}
+                videoTitle={videoTitle}
+              />
+            ) : (
+              <ShareButton
+                videoUrl={videoUrl}
+                videoDescription={videoDescription}
+                videoTitle={videoTitle}
+              />
+            )}
           </li>
           <li>
             <Image
@@ -107,11 +121,19 @@ export const AppActions = ({
             />
           </li>
           <li>
-            <ShareButton
-              videoUrl={videoUrl}
-              videoDescription={videoDescription}
-              videoTitle={videoTitle}
-            />
+            {mobile ? (
+              <MobileShareButton
+                videoUrl={videoUrl}
+                videoDescription={videoDescription}
+                videoTitle={videoTitle}
+              />
+            ) : (
+              <ShareButton
+                videoUrl={videoUrl}
+                videoDescription={videoDescription}
+                videoTitle={videoTitle}
+              />
+            )}
           </li>
           <li>
             <Image
@@ -179,5 +201,23 @@ const ShareButton = ({ videoUrl, videoDescription, videoTitle }) => {
         </MenuList>
       </>
     </Menu>
+  );
+};
+
+const MobileShareButton = ({ videoTitle, videoDescription, videoUrl }) => {
+  const { isSupported, loading, share } = useWebShare();
+
+  return (
+    <Image
+      src={shareImg.src}
+      width='24'
+      height='24'
+      alt='Share'
+      title='Share'
+      onClick={() => {
+        if (isSupported && !loading)
+          share({ url: videoUrl, title: videoTitle, text: videoDescription });
+      }}
+    />
   );
 };
