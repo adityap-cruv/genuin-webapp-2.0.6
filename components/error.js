@@ -1,14 +1,10 @@
-import { Container, Row, Col, Image } from 'react-bootstrap';
-import { TopNav } from './topNav';
-import { Layout } from './layout';
-import {
-  handleAndroidInstallClick,
-  handleIosInstallClick,
-} from '../actions/appInstall';
-import ios from '../images/badge_appstore.png';
-import android from '../images/badge_playstore.png';
+import { Container, Row, Col, Button } from "react-bootstrap";
+import { Text, Link } from "@chakra-ui/react";
+import { appStoreLink } from "../config";
+import { TopNav } from "./topNav";
+import { Layout } from "./layout";
 
-export const Error = ({ homePageUrl = '/' }) => (
+export const Error = ({ homePageUrl = "/" }) => (
   <Layout>
     <section className='w-100 h-100 bg-gradient-blue d-flex align-items-center'>
       <TopNav isContiner />
@@ -24,39 +20,18 @@ export const Error = ({ homePageUrl = '/' }) => (
             </h2>
             <p className='fs-3'>
               The link you followed may be broken, or the page may have been
-              removed. Go to <a href={homePageUrl ?? ''}>Genuin Home Page.</a>
+              removed. Go to <a href={homePageUrl ?? ""}>Genuin Home Page.</a>
             </p>
           </Col>
         </Row>
         <Row xs={2} className='justify-content-center'>
-          <Col
-            sm='auto'
-            className='d-flex align-items-center justify-content-end ps-4 ps-sm-0'
-          >
-            <Image
-              src={ios.src}
-              onClick={handleIosInstallClick}
-              width={204}
-              height={60}
-              alt='iOs App Store'
-              title='iOs App Store'
-              fluid
-            />
-          </Col>
-          <Col
-            sm='auto'
-            className='d-flex align-items-center justify-content-start  pe-4 ps-em-0'
-          >
-            <Image
-              src={android.src}
-              width={204}
-              height={60}
-              onClick={handleAndroidInstallClick}
-              alt='Android Play Store'
-              title='Android Play Store'
-              fluid
-            />
-          </Col>
+          <Button>
+            <Link href={appStoreLink}>
+              <Text fontSize={24} fontWeight='bold'>
+                Download App
+              </Text>
+            </Link>
+          </Button>
         </Row>
       </Container>
     </section>
