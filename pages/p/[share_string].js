@@ -196,7 +196,12 @@ const Profile = ({
         type='application/ld+json'
         dangerouslySetInnerHTML={{ __html: ORG_SCHEMA }}
       />
-      <TopNav showGetAppModal={showGetAppToViewDialog} isContiner isBlue />
+      <TopNav
+        showGetAppModal={showGetAppToViewDialog}
+        isContiner
+        isBlue
+        isError={!Boolean(user_id)}
+      />
       <section className='section-content d-flex flex-column h-100'>
         <Container className='container-false d-none d-md-block'></Container>
         <Container>
@@ -338,7 +343,7 @@ const Profile = ({
                 </Tab>
               </TabList>
 
-              <TabPanels overflow='scroll' maxH='full' pb={10}>
+              <TabPanels overflow='scroll' maxH='full' pb={mobile ? 10 : 18}>
                 <TabPanel p={0} pt={1}>
                   <Videos
                     videos={videos}
@@ -424,7 +429,7 @@ const Profile = ({
 };
 
 const Videos = ({ videos, onOpen, setCurrentVideoIndex }) => (
-  <Box overflowY='scroll' pb={8}>
+  <Box overflowY='scroll'>
     <Grid
       templateColumns={[
         "1fr 1fr 1fr",

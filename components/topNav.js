@@ -31,6 +31,7 @@ export const TopNav = ({
   hideBurgerMenu = false,
   isContiner = false,
   isBlue = false,
+  isError = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [pathname, setPathname] = useState("");
@@ -46,7 +47,7 @@ export const TopNav = ({
       fixed='top'
       onToggle={(isOpen) => setIsOpen(isOpen)}
       style={{
-        background: pathname === "/" ? "transparent" : "white",
+        background: pathname === "/" || isError ? "transparent" : "white",
       }}
     >
       <Navbar.Brand href='/' className='p-0'>

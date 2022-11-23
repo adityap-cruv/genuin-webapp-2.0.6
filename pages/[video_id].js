@@ -1,14 +1,14 @@
-import React, { useRef, useState } from 'react';
-import axios from 'axios';
-import { Player } from '../components/player';
-import { Layout } from '../components/layout';
-import { TopNav } from '../components/topNav';
-import { GetAppModal } from '../components/getAppModal';
-import { WelcomeModal } from '../components/welcomeModal';
-import { Error } from '../components/error';
-import { SEO } from '../components/seo';
-import { AppActions } from '../components/appActions';
-import { appStoreLink } from '../config';
+import React, { useRef, useState } from "react";
+import axios from "axios";
+import { Player } from "../components/player";
+import { Layout } from "../components/layout";
+import { TopNav } from "../components/topNav";
+import { GetAppModal } from "../components/getAppModal";
+import { WelcomeModal } from "../components/welcomeModal";
+import { Error } from "../components/error";
+import { SEO } from "../components/seo";
+import { AppActions } from "../components/appActions";
+import { appStoreLink } from "../config";
 const Video = (props) => {
   const {
     videoUrl,
@@ -49,9 +49,12 @@ const Video = (props) => {
         openGraphDescription={description}
         metaImageWidth={1200}
         metaImageHeight={630}
-        urlToCopy={process?.env?.hostname + '/' + video_id_to_use}
+        urlToCopy={process?.env?.hostname + "/" + video_id_to_use}
       />
-      <TopNav showGetAppModal={showGetAppToViewDialog} />
+      <TopNav
+        showGetAppModal={showGetAppToViewDialog}
+        isError={!Boolean(videoUrl)}
+      />
       <Player
         key={video_id_to_use ?? `${Math.random()}`}
         video_id_to_use={video_id_to_use}
@@ -83,7 +86,7 @@ const Video = (props) => {
   );
 };
 Video.getInitialProps = async ({ query: { video_id } }) => {
-  const url = process.env.apiurl + '/api/v3/users/video/meta_data/' + video_id;
+  const url = process.env.apiurl + "/api/v3/users/video/meta_data/" + video_id;
   return axios
     .get(url)
     .then((response) => {
