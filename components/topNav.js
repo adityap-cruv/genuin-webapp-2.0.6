@@ -36,14 +36,12 @@ export const TopNav = ({
 
   return (
     <Navbar
-      {...(isContiner
-        ? { className: "p-3 container" }
-        : { className: "p-3", bg: "gradient" })}
+      {...(isContiner ? { className: "p-3 container" } : { className: "p-3" })}
       expand={false}
       fixed='top'
       onToggle={(isOpen) => setIsOpen(isOpen)}
       style={{
-        zIndex: 10000000,
+        background: "white",
       }}
     >
       <Navbar.Brand href='/' className='p-0'>

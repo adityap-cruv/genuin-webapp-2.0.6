@@ -209,6 +209,7 @@ const Profile = ({
             gap={{ base: 4, sm: 114 }}
             mt={{ base: 16, sm: 0 }}
             justifyContent='space-between'
+            overflowY={{ base: "scroll", sm: "hidden" }}
           >
             {mobile && <Divider opacity={0.1} mt={2} />}
             <Flex color='#111111' flexDir='column'>
@@ -371,7 +372,10 @@ const Profile = ({
             backgroundRepeat='no-repeat'
             backgroundSize='cover'
             backgroundPosition='center'
-            width='100%'
+            width='110%'
+            h='110%'
+            left={-10}
+            top={-10}
             opacity={0.4}
             filter='blur(25px)'
           />
