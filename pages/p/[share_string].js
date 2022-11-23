@@ -337,7 +337,7 @@ const Profile = ({
                 </Tab>
               </TabList>
 
-              <TabPanels>
+              <TabPanels overflow='scroll' maxH='full' pb={10}>
                 <TabPanel p={0} pt={1}>
                   <Videos
                     videos={videos}
