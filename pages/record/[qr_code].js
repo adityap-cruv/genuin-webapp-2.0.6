@@ -109,10 +109,7 @@ const Record = (props) => {
           no_of_views
         )} Views, ${no_of_replies} Replies`}
       />
-      <TopNav
-        showGetAppModal={() => showGetAppToViewDialog()}
-        isError={!Boolean(user_id)}
-      />
+      <TopNav showGetAppModal={() => showGetAppToViewDialog()} />
       <Player
         key={currentVideoIndex}
         userName={Boolean(name) ? name : nickname}

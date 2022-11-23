@@ -196,12 +196,7 @@ const Profile = ({
         type='application/ld+json'
         dangerouslySetInnerHTML={{ __html: ORG_SCHEMA }}
       />
-      <TopNav
-        showGetAppModal={showGetAppToViewDialog}
-        isContiner
-        isBlue
-        isError={!Boolean(user_id)}
-      />
+      <TopNav showGetAppModal={showGetAppToViewDialog} isContiner isBlue />
       <section className='section-content d-flex flex-column h-100'>
         <Container className='container-false d-none d-md-block'></Container>
         <Container>

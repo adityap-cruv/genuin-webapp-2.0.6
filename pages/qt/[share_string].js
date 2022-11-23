@@ -61,10 +61,7 @@ const QuestionWrapper = ({
         urlToCopy={share_url}
         videoPreviewImage={preview_image}
       />
-      <TopNav
-        showGetAppModal={showGetAppToViewDialog}
-        isError={!Boolean(question_id)}
-      />
+      <TopNav showGetAppModal={showGetAppToViewDialog} />
       <Question previewImage={preview_image} />
       <GetAppModal
         show={showModalAppDownload}

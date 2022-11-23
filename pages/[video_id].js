@@ -51,10 +51,7 @@ const Video = (props) => {
         metaImageHeight={630}
         urlToCopy={process?.env?.hostname + "/" + video_id_to_use}
       />
-      <TopNav
-        showGetAppModal={showGetAppToViewDialog}
-        isError={!Boolean(videoUrl)}
-      />
+      <TopNav showGetAppModal={showGetAppToViewDialog} />
       <Player
         key={video_id_to_use ?? `${Math.random()}`}
         video_id_to_use={video_id_to_use}
