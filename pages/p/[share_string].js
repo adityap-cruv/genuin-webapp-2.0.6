@@ -36,7 +36,9 @@ import {
   TabPanel,
   Icon,
   Text,
+  Link,
 } from "@chakra-ui/react";
+import { useRouter } from "next/router";
 
 const Profile = ({
   user_id,
@@ -60,6 +62,9 @@ const Profile = ({
     }
     return "https://media.qa.begenuin.com/backend_assets/lottie/snowman.png";
   }, [profile_image]);
+
+  const router = useRouter();
+  console.log("router", router);
 
   const [showModalWelcome, setShowModalWelcome] = useState(true);
   const handleCloseWelcome = () => setShowModalWelcome(false);
@@ -350,6 +355,7 @@ const Profile = ({
               <TabPanels overflow='scroll' maxH='full' pb={mobile ? 10 : 18}>
                 <TabPanel p={0} pt={1}>
                   <Videos
+                    mobile={mobile}
                     videos={videos}
                     onOpen={onOpen}
                     setCurrentVideoIndex={setCurrentVideoIndex}
@@ -357,6 +363,7 @@ const Profile = ({
                 </TabPanel>
                 <TabPanel p={0} pt={1}>
                   <Videos
+                    mobile={mobile}
                     videos={videos}
                     onOpen={onOpen}
                     setCurrentVideoIndex={setCurrentVideoIndex}
@@ -364,6 +371,7 @@ const Profile = ({
                 </TabPanel>
                 <TabPanel p={0} pt={1}>
                   <Videos
+                    mobile={mobile}
                     videos={videos}
                     onOpen={onOpen}
                     setCurrentVideoIndex={setCurrentVideoIndex}
@@ -432,7 +440,7 @@ const Profile = ({
   );
 };
 
-const Videos = ({ videos, onOpen, setCurrentVideoIndex }) => (
+const Videos = ({ videos, onOpen, setCurrentVideoIndex, mobile }) => (
   <Box overflowY='scroll'>
     <Grid
       templateColumns={[
@@ -454,13 +462,21 @@ const Videos = ({ videos, onOpen, setCurrentVideoIndex }) => (
           key={video.video_uuid}
           role='group'
         >
-          <Image
-            src={video.videoThumbnail}
-            onClick={() => {
-              onOpen();
-              setCurrentVideoIndex(index);
-            }}
-          />
+          {!mobile && (
+            <Image
+              src={video.videoThumbnail}
+              onClick={() => {
+                onOpen();
+                setCurrentVideoIndex(index);
+              }}
+            />
+          )}
+          {mobile && (
+            <Link href={`/${video.share_string}`}>
+              <Image src={video.videoThumbnail} />
+            </Link>
+          )}
+
           <Flex
             position='absolute'
             _groupHover={{
