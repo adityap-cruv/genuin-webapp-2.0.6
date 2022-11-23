@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { Image, Navbar, Nav, Button, Fade } from 'react-bootstrap';
-import { useTrail, a } from 'react-spring';
-import logo from '../images/logo_header_new.svg';
-import { hireLink, investLink } from '../config';
+import React, { useState } from "react";
+import { Image, Navbar, Nav, Button, Fade } from "react-bootstrap";
+import { useTrail, a } from "react-spring";
+import logo from "../images/logo_header_new.svg";
+import logoBlue from "../images/logo_header_new_blue.svg";
+import { hireLink, investLink } from "../config";
 
 const Trail = ({ children, open }) => {
   const items = React.Children.toArray(children);
@@ -29,20 +30,28 @@ export const TopNav = ({
   hideGetAppButton = false,
   hideBurgerMenu = false,
   isContiner = false,
+  isBlue = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
     <Navbar
       {...(isContiner
-        ? { className: 'p-3 container' }
-        : { className: 'p-3', bg: 'gradient' })}
+        ? { className: "p-3 container" }
+        : { className: "p-3", bg: "gradient" })}
       expand={false}
       fixed='top'
       onToggle={(isOpen) => setIsOpen(isOpen)}
+      style={{
+        zIndex: 10000000,
+      }}
     >
       <Navbar.Brand href='/' className='p-0'>
-        <Image src={logo.src} alt='Genuin' title='Genuin' />
+        <Image
+          src={isBlue ? logoBlue.src : logo.src}
+          alt='Genuin'
+          title='Genuin'
+        />
       </Navbar.Brand>
       <div className='d-flex align-items-center justify-content-center'>
         {!hideGetAppButton && (
@@ -54,13 +63,16 @@ export const TopNav = ({
           <>
             <Navbar.Toggle
               aria-controls='navbarMoreOptionDrawer'
-              style={{ visibility: isOpen ? 'hidden' : 'revert' }}
+              style={{
+                visibility: isOpen ? "hidden" : "revert",
+                background: isBlue ? "#0645ff" : "transparent",
+              }}
             />
             <Fade in={isOpen}>
               <Navbar.Collapse
-                style={{ left: 0, visibility: isOpen ? 'visible' : 'hidden' }}
+                style={{ left: 0, visibility: isOpen ? "visible" : "hidden" }}
               >
-                <Nav {...(isContiner ? { className: 'container' } : {})}>
+                <Nav {...(isContiner ? { className: "container" } : {})}>
                   <Navbar.Toggle aria-controls='navbarMoreOptionDrawer' />
                   <Trail open={isOpen}>
                     <Nav.Link href={investLink}>Invest in Genuin</Nav.Link>
