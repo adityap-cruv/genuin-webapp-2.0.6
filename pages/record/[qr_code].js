@@ -85,6 +85,7 @@ const Record = (props) => {
         videoPreviewImage={preview_image}
         urlToCopy={share_url}
         description={`${Boolean(name) ? name : `@${nickname}`}, ${no_of_videos} Videos, ${abbreviateNumber(no_of_views)} Views, ${no_of_replies} Replies`}
+        openGraphDescription={`${Boolean(name) ? name : `@${nickname}`}, ${no_of_videos} Videos, ${abbreviateNumber(no_of_views)} Views, ${no_of_replies} Replies`}
       />
       <TopNav showGetAppModal={() => showGetAppToViewDialog()} />
       <Player

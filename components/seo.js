@@ -12,6 +12,7 @@ export const SEO = ({
   metaVideoHeight = 1280,
   metaVideoWidth = 720,
   openGraphTitle = 'Genuin',
+  openGraphDescription,
   videoType = 'video/mp4',
   openGraphType = 'website',
   includeHead = true,
@@ -31,7 +32,7 @@ export const SEO = ({
         type: openGraphType,
         url: urlToCopy,
         title: openGraphTitle,
-        description: description,
+        description: openGraphDescription,
         videos: [
           {
             url: videoUrl,

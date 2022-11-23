@@ -41,6 +41,7 @@ const Profile = ({
   user_id,
   preview_image,
   nickname,
+  bio,
   name,
   share_url,
   no_of_views,
@@ -48,7 +49,7 @@ const Profile = ({
   no_of_replies,
   profile_image,
   videos = [],
-  bio,
+  hashtags = []
 }) => {
   const profilePic = useMemo(() => {
     if (Boolean(profile_image)) {
@@ -123,27 +124,42 @@ const Profile = ({
     }
     return newValue;
   };
+  hashtags = hashtags || hashtags==[]?["entreprenuer", "business", "leadership", "startups"]:hashtags
+  const ORG_SCHEMA = JSON.stringify({
+    "@context": "http://schema.org",
+    "@type": "ProfilePage",
+    "id": `${share_url}`,
+    "url": `${share_url}`,
+    "name": `${Boolean(name) ? `${name} (@${nickname})` : `@${nickname}`} on Genuin | Connect with @${nickname} with a video reply`,
+    "isPartOf": "https://begenuin.com/#website",
+    "image": `${share_url}/#primaryimage`,
+    "thumbnailUrl": `${preview_image}`,
+    "description": `${Boolean(name) ? `[${name}] (@${nickname})` : `@${nickname}`} on Genuin | ${abbreviateNumber(no_of_views)} Views. ${no_of_videos} Videos. ${no_of_replies} Replies. ${bio?bio.replace(/\n+/g, ' ') : ''} ${hashtags && hashtags!=[] && hashtags.length>0?hashtags.map(tag => "#"+tag).join(" "):''}`,
+    "inLanguage": "en-US",
+    "potentialAction": [
+        {
+          "@type" : "ReadAction",
+          "target" : `${share_url}`
+        }
+    ]
+  })
 
   return !Boolean(user_id) ? (
     <Error />
   ) : (
     <Layout>
       <SEO
-        title={`${
-          Boolean(name) ? name : `@${nickname}`
-        } is on Genuin. Connect confidently.`}
-        openGraphTitle={`${
-          Boolean(name) ? name : `@${nickname}`
-        } is on Genuin. Connect confidently.`}
-        videoPreviewImage={preview_image}
+        openGraphType="profile"
+        title={`${Boolean(name) ? `${name} (@${nickname})` : `@${nickname}`} is on Genuin. | Connect with @${nickname} with a video reply`}
+        openGraphTitle={`${Boolean(name) ? name : `@${nickname}`} is on Genuin. Connect confidently.`}
+        // openGraphTitle={`${Boolean(name) ? `${name} (@${nickname})` : `@${nickname}`} is on Genuin. | Connect with @${nickname} with a video reply`}
+        description={`${Boolean(name) ? `[${name}] (@${nickname})` : `@${nickname}`} on Genuin. | ${abbreviateNumber(no_of_views)} Views. ${no_of_videos} Videos. ${no_of_replies} Replies. ${bio?bio.replace(/\n+/g, ' ') : ''} ${hashtags && hashtags!=[] && hashtags.length>0?hashtags.map(tag => "#"+tag).join(" "):''}`}
+        openGraphDescription={`${Boolean(name) ? name : `@${nickname}`}, ${no_of_videos} Videos, ${abbreviateNumber(no_of_views)} Views, ${no_of_replies} Replies`}
         urlToCopy={share_url}
+        videoPreviewImage={preview_image}
         videoUrl={videos[currentVideoIndex]?.videoUrl}
-        description={`${
-          Boolean(name) ? name : `@${nickname}`
-        }, ${no_of_videos} Videos, ${abbreviateNumber(
-          no_of_views
-        )} Views, ${no_of_replies} Replies`}
       />
+      <script type='application/ld+json' dangerouslySetInnerHTML={ { __html: ORG_SCHEMA} } />
       <TopNav showGetAppModal={showGetAppToViewDialog} isContiner isBlue />
       <section className='section-content d-flex flex-column h-100'>
         <Container className='container-false d-none d-md-block'></Container>

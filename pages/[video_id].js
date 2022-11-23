@@ -46,6 +46,7 @@ const Video = (props) => {
         videoUrl={videoUrl}
         videoPreviewImage={videoPreviewImage}
         description={description}
+        openGraphDescription={description}
         metaImageWidth={1200}
         metaImageHeight={630}
         urlToCopy={process?.env?.hostname + '/' + video_id_to_use}
