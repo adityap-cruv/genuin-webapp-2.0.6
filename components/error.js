@@ -7,7 +7,7 @@ import { Layout } from "./layout";
 export const Error = ({ homePageUrl = "/" }) => (
   <Layout>
     <section className='w-100 h-100 bg-gradient-blue d-flex align-items-center'>
-      <TopNav isContiner isError />
+      <TopNav isContiner isError variant='light' />
       <Container>
         <Row className='mb-5'>
           <Col

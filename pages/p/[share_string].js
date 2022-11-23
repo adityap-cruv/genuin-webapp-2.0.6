@@ -35,6 +35,7 @@ import {
   Tab,
   TabPanel,
   Icon,
+  Text,
 } from "@chakra-ui/react";
 
 const Profile = ({
@@ -205,11 +206,10 @@ const Profile = ({
               base: "column",
               sm: "row",
             }}
-            maxH='calc(100vh - 70px)'
+            maxH='calc(100vh - 140px)'
             gap={{ base: 4, sm: 114 }}
             mt={{ base: 16, sm: 0 }}
             justifyContent='space-between'
-            overflowY={{ base: "scroll", sm: "hidden" }}
           >
             {mobile && <Divider opacity={0.1} mt={2} />}
             <Flex color='#111111' flexDir='column'>
@@ -290,6 +290,9 @@ const Profile = ({
                   color='#0645ff'
                   bgColor='transparent'
                   border='1px solid #0645FF'
+                  fontWeight='bold'
+                  h={8}
+                  px={5}
                 >
                   <Image
                     src={directMessage.src}
@@ -298,17 +301,19 @@ const Profile = ({
                     alt='Share'
                     title='Share Profile'
                   />
-                  Direct Message
+                  <Text>Direct Message</Text>
                 </Button>
                 <Button
                   color='#0645ff'
                   bgColor='transparent'
                   border='1px solid #0645FF'
-                  p='0'
+                  p={0}
+                  minW={8}
+                  h={8}
                 >
                   <Image
                     src={shareImg.src}
-                    size={8}
+                    size={4}
                     alt='Share'
                     title='Share Profile'
                   />
@@ -316,8 +321,12 @@ const Profile = ({
               </Flex>
             </Flex>
 
-            <Tabs onChange={(index) => setTabIndex(index)} colorScheme='black'>
-              <TabList borderBottom={0}>
+            <Tabs
+              onChange={(index) => setTabIndex(index)}
+              colorScheme='black'
+              display={{ base: "contents", sm: "block" }}
+            >
+              <TabList borderBottom={0} mb='2px'>
                 <Tab flexGrow={1}>
                   <AllIcon
                     boxSize={8}

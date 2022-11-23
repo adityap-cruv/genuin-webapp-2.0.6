@@ -4,6 +4,7 @@ import { useTrail, a } from "react-spring";
 import logo from "../images/logo_header_new.svg";
 import logoBlue from "../images/logo_header_new_blue.svg";
 import { hireLink, investLink } from "../config";
+import { useBreakpointValue } from "@chakra-ui/react";
 
 const Trail = ({ children, open }) => {
   const items = React.Children.toArray(children);
@@ -32,9 +33,11 @@ export const TopNav = ({
   isContiner = false,
   isBlue = false,
   isError = false,
+  variant = "dark",
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [pathname, setPathname] = useState("");
+  const mobile = useBreakpointValue({ base: true, sm: false });
 
   useEffect(() => {
     setPathname(window?.location?.pathname);
@@ -49,6 +52,7 @@ export const TopNav = ({
       style={{
         background: pathname === "/" || isError ? "transparent" : "white",
       }}
+      variant={variant}
     >
       <Navbar.Brand href='/' className='p-0'>
         <Image
@@ -59,7 +63,17 @@ export const TopNav = ({
       </Navbar.Brand>
       <div className='d-flex align-items-center justify-content-center'>
         {!hideGetAppButton && (
-          <Button variant='primary' className='me-3' onClick={showGetAppModal}>
+          <Button
+            variant='primary'
+            className='me-3'
+            onClick={showGetAppModal}
+            style={{
+              height: 32,
+              padding: "4px 16px",
+              fontSize: 15,
+              fontWeight: "bold",
+            }}
+          >
             Get App
           </Button>
         )}
@@ -69,7 +83,6 @@ export const TopNav = ({
               aria-controls='navbarMoreOptionDrawer'
               style={{
                 visibility: isOpen ? "hidden" : "revert",
-                background: isBlue ? "#0645ff" : "transparent",
               }}
             />
             <Fade in={isOpen}>
@@ -96,7 +109,3 @@ export const TopNav = ({
     </Navbar>
   );
 };
-
-/*
-  
-*/
