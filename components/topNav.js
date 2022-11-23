@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Image, Navbar, Nav, Button, Fade } from "react-bootstrap";
 import { useTrail, a } from "react-spring";
 import logo from "../images/logo_header_new.svg";
@@ -33,6 +33,11 @@ export const TopNav = ({
   isBlue = false,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [pathname, setPathname] = useState("");
+
+  useEffect(() => {
+    setPathname(window?.location?.pathname);
+  }, []);
 
   return (
     <Navbar
@@ -41,7 +46,7 @@ export const TopNav = ({
       fixed='top'
       onToggle={(isOpen) => setIsOpen(isOpen)}
       style={{
-        background: "white",
+        background: pathname === "/" ? "transparent" : "white",
       }}
     >
       <Navbar.Brand href='/' className='p-0'>
