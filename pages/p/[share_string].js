@@ -102,6 +102,11 @@ const Profile = ({
   const showGetAppToViewDialog = () =>
     handleShowModalAppDownload(() => <>Get the app to view this video.</>);
 
+  const showGetAppToSendMessage = () =>
+    handleShowModalAppDownload(() => (
+      <>Get the Genuin app to send a direct message to @{nickname}.</>
+    ));
+
   const abbreviateNumber = (value) => {
     var newValue = value;
     if (value >= 1000) {
@@ -237,24 +242,24 @@ const Profile = ({
                     w='full'
                     mx={6}
                   >
-                    <Box>
+                    <Flex flexGrow={1} flexDir='column'>
                       <Box fontWeight='bold'>{no_of_views}</Box>
                       <Box fontWeight={600} fontSize={12} color='#949494'>
                         Views
                       </Box>
-                    </Box>
-                    <Box>
+                    </Flex>
+                    <Flex flexGrow={1} flexDir='column'>
                       <Box fontWeight='bold'>{no_of_videos}</Box>
                       <Box fontWeight={600} fontSize={12} color='#949494'>
                         Videos
                       </Box>
-                    </Box>
-                    <Box>
+                    </Flex>
+                    <Flex flexGrow={1} flexDir='column'>
                       <Box fontWeight='bold'>{no_of_replies}</Box>
                       <Box fontWeight={600} fontSize={12} color='#949494'>
                         Replies
                       </Box>
-                    </Box>
+                    </Flex>
                   </Flex>
                 )}
               </Flex>
@@ -273,24 +278,24 @@ const Profile = ({
                   textAlign='center'
                   my={4}
                 >
-                  <Box>
+                  <Flex flexGrow={1} flexDir='column'>
                     <Box fontWeight='bold'>{no_of_views}</Box>
                     <Box fontWeight={600} fontSize={12} color='#949494'>
                       Views
                     </Box>
-                  </Box>
-                  <Box>
+                  </Flex>
+                  <Flex flexGrow={1} flexDir='column'>
                     <Box fontWeight='bold'>{no_of_videos}</Box>
                     <Box fontWeight={600} fontSize={12} color='#949494'>
                       Videos
                     </Box>
-                  </Box>
-                  <Box>
+                  </Flex>
+                  <Flex flexGrow={1} flexDir='column'>
                     <Box fontWeight='bold'>{no_of_replies}</Box>
                     <Box fontWeight={600} fontSize={12} color='#949494'>
                       Replies
                     </Box>
-                  </Box>
+                  </Flex>
                 </Flex>
               )}
               <Flex gap={4} mt={2}>
@@ -301,6 +306,7 @@ const Profile = ({
                   fontWeight='bold'
                   h={8}
                   px={5}
+                  onClick={showGetAppToSendMessage}
                 >
                   <Image
                     src={directMessage.src}

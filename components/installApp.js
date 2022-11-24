@@ -1,5 +1,5 @@
-import { Col, Button, Image } from "react-bootstrap";
-import { Text, Link } from "@chakra-ui/react";
+import { Col, Button } from "react-bootstrap";
+import { Text, Link, Image } from "@chakra-ui/react";
 import {
   appleAppStoreLink,
   appStoreLink,
@@ -11,7 +11,7 @@ import ios from "../images/badge_appstore.png";
 import android from "../images/badge_playstore.png";
 import { handleLink } from "../actions/appInstall";
 
-export const InstallApp = () => {
+export const InstallApp = ({ small = false }) => {
   const mobile = useBreakpointValue({ base: true, sm: false });
 
   return (
@@ -38,12 +38,11 @@ export const InstallApp = () => {
               onClick={handleLink(appleAppStoreLink)}
               style={{
                 cursor: "pointer",
+                paddingRight: "11px",
               }}
-              width={204}
-              height={60}
+              height={small ? 10 : 16}
               alt='iOs App Store'
               title='iOs App Store'
-              fluid
             />
           </Col>
           <Col
@@ -57,11 +56,9 @@ export const InstallApp = () => {
               style={{
                 cursor: "pointer",
               }}
-              width={204}
-              height={60}
+              height={small ? 10 : 16}
               alt='Android Play Store'
               title='Android Play Store'
-              fluid
             />
           </Col>
         </>
