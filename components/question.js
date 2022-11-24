@@ -1,6 +1,5 @@
-import { Container, Row, Col, Image, Button } from "react-bootstrap";
-import { appStoreLink } from "../config";
-import { Text, Link } from "@chakra-ui/react";
+import { Container, Row, Col, Image } from "react-bootstrap";
+import { InstallApp } from "./installApp";
 
 export const Question = ({ previewImage }) => (
   <section className='w-100 h-100 bg-gradient-blue d-flex align-items-center'>
@@ -23,13 +22,7 @@ export const Question = ({ previewImage }) => (
         </Col>
       </Row>
       <Row xs={2} className='justify-content-center mt-5 pt-3'>
-        <Button>
-          <Link href={appStoreLink}>
-            <Text fontSize={24} fontWeight='bold'>
-              Download App
-            </Text>
-          </Link>
-        </Button>
+        <InstallApp />
       </Row>
     </Container>
   </section>
