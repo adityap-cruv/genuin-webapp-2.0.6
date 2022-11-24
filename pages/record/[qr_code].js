@@ -135,7 +135,6 @@ const Record = (props) => {
         show={showModalAppDownload}
         onClose={handleCloseAppDownload}
         TextNode={getAppComponentRef.current}
-        getAppLink={appStoreLink}
       />
       <WelcomeModal show={showModalWelcome} onClose={handleCloseWelcome} />
     </Layout>

@@ -347,6 +347,7 @@ const Profile = ({
               display={{ base: "contents", sm: "block" }}
               w='full'
             >
+              <Divider opacity={0.2} />
               <TabList borderBottom={0} mb='2px'>
                 <Tab flexGrow={1}>
                   <AllIcon
@@ -449,7 +450,6 @@ const Profile = ({
         show={showModalAppDownload}
         onClose={handleCloseAppDownload}
         TextNode={getAppComponentRef.current}
-        getAppLink={appStoreLink}
       />
       <WelcomeModal show={showModalWelcome} onClose={handleCloseWelcome} />
     </Layout>

@@ -11,14 +11,14 @@ import ios from "../images/badge_appstore.png";
 import android from "../images/badge_playstore.png";
 import { handleLink } from "../actions/appInstall";
 
-export const InstallApp = ({ small = false }) => {
+export const InstallApp = ({ small = false, onClick = () => {} }) => {
   const mobile = useBreakpointValue({ base: true, sm: false });
 
   return (
     <>
       {mobile && (
-        <Button>
-          <Link href={appStoreLink}>
+        <Button onClick={onClick}>
+          <Link href={appStoreLink} isExternal>
             <Text fontSize={24} fontWeight='bold'>
               Download App
             </Text>
@@ -35,7 +35,10 @@ export const InstallApp = ({ small = false }) => {
           >
             <Image
               src={ios.src}
-              onClick={handleLink(appleAppStoreLink)}
+              onClick={() => {
+                onClick();
+                handleLink(appleAppStoreLink);
+              }}
               style={{
                 cursor: "pointer",
                 paddingRight: "11px",
@@ -52,7 +55,10 @@ export const InstallApp = ({ small = false }) => {
           >
             <Image
               src={android.src}
-              onClick={handleLink(googlePlayStoreLink)}
+              onClick={() => {
+                onClick();
+                handleLink(googlePlayStoreLink);
+              }}
               style={{
                 cursor: "pointer",
               }}

@@ -67,7 +67,6 @@ const QuestionWrapper = ({
         show={showModalAppDownload}
         onClose={handleCloseAppDownload}
         TextNode={getAppComponentRef.current}
-        getAppLink={appStoreLink}
       />
     </Layout>
   ) : (
