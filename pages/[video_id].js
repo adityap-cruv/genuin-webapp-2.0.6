@@ -9,6 +9,7 @@ import { Error } from "../components/error";
 import { SEO } from "../components/seo";
 import { AppActions } from "../components/appActions";
 import { appStoreLink } from "../config";
+import { Box } from "@chakra-ui/react";
 const Video = (props) => {
   const {
     videoUrl,
@@ -51,7 +52,6 @@ const Video = (props) => {
         metaImageHeight={630}
         urlToCopy={process?.env?.hostname + "/" + video_id_to_use}
       />
-      <TopNav showGetAppModal={showGetAppToViewDialog} />
       <Player
         key={video_id_to_use ?? `${Math.random()}`}
         video_id_to_use={video_id_to_use}

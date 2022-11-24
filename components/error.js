@@ -7,7 +7,7 @@ export const Error = ({ homePageUrl = "/" }) => {
   return (
     <Layout>
       <section className='w-100 h-100 bg-gradient-blue d-flex align-items-center'>
-        <TopNav isContiner isError variant='light' />
+        <TopNav isContiner variant='light' />
         <Container>
           <Row className='mb-5'>
             <Col

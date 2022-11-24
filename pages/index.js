@@ -44,7 +44,11 @@ const Home = () => {
         <link rel='shortcut icon' href={favicon.src} type='image/x-icon' />
       </NextHead>
       <Layout>
-        <TopNav showGetAppModal={handleShowModalAppDownload} isContiner />
+        <TopNav
+          showGetAppModal={handleShowModalAppDownload}
+          isContiner
+          variant='light'
+        />
         <section className='bg-gradient-blue section-content d-flex flex-column h-100 justify-content-center justify-content-md-between'>
           <Container className='container-false d-none d-md-block'></Container>
           <Container className='content-container'>

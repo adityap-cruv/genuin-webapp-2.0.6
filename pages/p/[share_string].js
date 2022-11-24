@@ -400,19 +400,6 @@ const Profile = ({
         </Container>
 
         <Modal isOpen={isOpen} onClose={onClose} scrollBehavior='inside'>
-          <ModalOverlay
-            bgColor='red'
-            backgroundImage={`url(${videos[currentVideoIndex]?.videoThumbnail})`}
-            backgroundRepeat='no-repeat'
-            backgroundSize='cover'
-            backgroundPosition='center'
-            width='110%'
-            h='110%'
-            left={-10}
-            top={-10}
-            opacity={0.4}
-            filter='blur(25px)'
-          />
           <ModalContent
             h='full'
             marginTop={0}
@@ -427,6 +414,7 @@ const Profile = ({
                 link={videos[currentVideoIndex]?.link}
                 videoUrl={videos[currentVideoIndex]?.videoUrl}
                 userName={`@${nickname}`}
+                onClickOutsideOfVideo={onClose}
                 userProfileImage={profile_image}
                 showGetAppModal={showGetAppToViewDialog}
                 onEnded={showGetAppToViewDialog}

@@ -32,16 +32,10 @@ export const TopNav = ({
   hideBurgerMenu = false,
   isContiner = false,
   isBlue = false,
-  isError = false,
   variant = "dark",
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [pathname, setPathname] = useState("");
   const mobile = useBreakpointValue({ base: true, sm: false });
-
-  useEffect(() => {
-    setPathname(window?.location?.pathname);
-  }, []);
 
   return (
     <Navbar
@@ -50,7 +44,7 @@ export const TopNav = ({
       fixed='top'
       onToggle={(isOpen) => setIsOpen(isOpen)}
       style={{
-        background: pathname === "/" || isError ? "transparent" : "white",
+        background: variant === "light" ? "transparent" : "white",
       }}
       variant={variant}
     >
