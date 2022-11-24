@@ -213,13 +213,18 @@ const Profile = ({
       <TopNav showGetAppModal={showGetAppToViewDialog} isContiner isBlue />
       <section className='section-content d-flex flex-column h-100'>
         <Container className='container-false d-none d-md-block'></Container>
-        <Container>
+        <Container
+          style={{
+            height: "calc(100% - 70px)",
+          }}
+        >
           <Flex
             flexDir={{
               base: "column",
               sm: "row",
             }}
             maxH='calc(100vh - 140px)'
+            h='full'
             gap={{ base: 4, sm: 114 }}
             mt={{ base: 16, sm: 0 }}
             justifyContent='space-between'
@@ -337,6 +342,7 @@ const Profile = ({
               onChange={(index) => setTabIndex(index)}
               colorScheme='black'
               display={{ base: "contents", sm: "block" }}
+              w='full'
             >
               <TabList borderBottom={0} mb='2px'>
                 <Tab flexGrow={1}>
@@ -359,8 +365,8 @@ const Profile = ({
                 </Tab>
               </TabList>
 
-              <TabPanels overflow='scroll' maxH='full' pb={mobile ? 10 : 18}>
-                <TabPanel p={0} pt={1}>
+              <TabPanels overflow='scroll' maxH='full' height='full'>
+                <TabPanel p={0} pt={1} h='full'>
                   <Videos
                     mobile={mobile}
                     videos={videos}
@@ -368,7 +374,7 @@ const Profile = ({
                     setCurrentVideoIndex={setCurrentVideoIndex}
                   />
                 </TabPanel>
-                <TabPanel p={0} pt={1}>
+                <TabPanel p={0} pt={1} h='full'>
                   <Videos
                     mobile={mobile}
                     videos={videos}
@@ -376,7 +382,7 @@ const Profile = ({
                     setCurrentVideoIndex={setCurrentVideoIndex}
                   />
                 </TabPanel>
-                <TabPanel p={0} pt={1}>
+                <TabPanel p={0} pt={1} h='full'>
                   <Videos
                     mobile={mobile}
                     videos={videos}
@@ -448,67 +454,82 @@ const Profile = ({
 };
 
 const Videos = ({ videos, onOpen, setCurrentVideoIndex, mobile }) => (
-  <Box overflowY='scroll'>
-    <Grid
-      templateColumns={[
-        "1fr 1fr 1fr",
-        "1fr",
-        "1fr 1fr ",
-        "1fr 1fr 1fr",
-        "1fr 1fr 1fr 1fr",
-      ]}
-      gap={6}
-    >
-      {videos.map((video, index) => (
-        <Box
-          cursor='pointer'
-          transition='transform .2s'
-          _hover={{
-            transform: "scale(0.97)",
-          }}
-          key={video.video_uuid}
-          role='group'
-        >
-          {!mobile && (
-            <Image
-              src={video.videoThumbnail}
-              onClick={() => {
-                onOpen();
-                setCurrentVideoIndex(index);
-              }}
-            />
-          )}
-          {mobile && (
-            <Link href={`/${video.share_string}`}>
-              <Image src={video.videoThumbnail} />
-            </Link>
-          )}
-
-          <Flex
-            position='absolute'
-            _groupHover={{
-              opacity: 1,
+  <Box overflowY='scroll' h='full'>
+    {!Boolean(videos.length) && (
+      <Flex
+        w='full'
+        h='full'
+        alignItems='center'
+        justifyContent='center'
+        fontWeight={700}
+        fontSize={20}
+        color='#949494'
+      >
+        No videos yet
+      </Flex>
+    )}
+    {Boolean(videos.length) && (
+      <Grid
+        templateColumns={[
+          "1fr 1fr 1fr",
+          "1fr",
+          "1fr 1fr ",
+          "1fr 1fr 1fr",
+          "1fr 1fr 1fr 1fr",
+        ]}
+        gap={6}
+      >
+        {videos.map((video, index) => (
+          <Box
+            cursor='pointer'
+            transition='transform .2s'
+            _hover={{
+              transform: "scale(0.97)",
             }}
-            opacity={0}
-            gap={3}
-            bottom={3}
-            left={2}
-            color='white'
-            fontSize='15px'
-            fontWeight='bold'
+            key={video.video_uuid}
+            role='group'
           >
-            <Flex>
-              <Image mr={2} src={comments.src} h={5} mt={1} />
-              {video.noOfConversation}
+            {!mobile && (
+              <Image
+                src={video.videoThumbnail}
+                onClick={() => {
+                  onOpen();
+                  setCurrentVideoIndex(index);
+                }}
+              />
+            )}
+            {mobile && (
+              <Link href={`/${video.share_string}`}>
+                <Image src={video.videoThumbnail} />
+              </Link>
+            )}
+
+            <Flex
+              position='absolute'
+              _groupHover={{
+                opacity: 1,
+              }}
+              opacity={0}
+              gap={3}
+              bottom={3}
+              left={2}
+              color='white'
+              fontSize='15px'
+              fontWeight='bold'
+            >
+              <Flex>
+                <Image mr={2} src={comments.src} h={5} mt={1} />
+                {video.noOfConversation}
+              </Flex>
+              <Flex>
+                <Image src={views.src} mr={1} mt={1} />
+                {video.noOfViews}
+              </Flex>
             </Flex>
-            <Flex>
-              <Image src={views.src} mr={1} mt={1} />
-              {video.noOfViews}
-            </Flex>
-          </Flex>
-        </Box>
-      ))}
-    </Grid>
+          </Box>
+        ))}
+      </Grid>
+    )}
   </Box>
 );
 
