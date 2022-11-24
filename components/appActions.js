@@ -1,4 +1,3 @@
-import { Image } from "react-bootstrap";
 import { ShareComponent } from "../components/share";
 import linkIcon from "../images/video-more-options/ic-link.svg";
 import bookmark from "../images/video-more-options/ic-bookmark.svg";
@@ -10,6 +9,7 @@ import {
   MenuButton,
   MenuList,
   useBreakpointValue,
+  Image,
 } from "@chakra-ui/react";
 import Email from "../images/video-actions/Email.svg";
 import Facebook from "../images/video-actions/Facebook.svg";
@@ -17,6 +17,7 @@ import LinkedIN from "../images/video-actions/LinkedIN.svg";
 import Twitter from "../images/video-actions/Twitter.svg";
 import WhatsApp from "../images/video-actions/WhatsApp.svg";
 import shareImg from "../images/video-more-options/ic-share.svg";
+import shareImgBlue from "../images/video-more-options/ic-share-blue.svg";
 import {
   WhatsappShareButton,
   TwitterShareButton,
@@ -43,13 +44,7 @@ export const AppActions = ({
       {link ? (
         <li>
           <a href={link} target='_blank'>
-            <Image
-              src={linkIcon.src}
-              width='24'
-              height='24'
-              alt='Link'
-              title='Link'
-            />
+            <Image src={linkIcon.src} size={6} alt='Link' title='Link' />
           </a>
         </li>
       ) : null}
@@ -58,8 +53,7 @@ export const AppActions = ({
           <li>
             <Image
               src={bookmark.src}
-              width='24'
-              height='24'
+              size={6}
               alt='Bookmark'
               title='Bookmark'
               onClick={() =>
@@ -74,23 +68,22 @@ export const AppActions = ({
           <li>
             {mobile ? (
               <MobileShareButton
-                videoUrl={videoUrl}
-                videoDescription={videoDescription}
-                videoTitle={videoTitle}
+                url={videoUrl}
+                description={videoDescription}
+                title={videoTitle}
               />
             ) : (
               <ShareButton
-                videoUrl={videoUrl}
-                videoDescription={videoDescription}
-                videoTitle={videoTitle}
+                url={videoUrl}
+                description={videoDescription}
+                title={videoTitle}
               />
             )}
           </li>
           <li>
             <Image
               src={replay.src}
-              width='24'
-              height='24'
+              size={6}
               alt='Replay'
               title='Replay'
               onClick={() =>
@@ -109,8 +102,7 @@ export const AppActions = ({
           <li>
             <Image
               src={comments.src}
-              width='24'
-              height='24'
+              size={6}
               alt='Comments'
               title='Comments'
               onClick={() =>
@@ -123,23 +115,22 @@ export const AppActions = ({
           <li>
             {mobile ? (
               <MobileShareButton
-                videoUrl={videoUrl}
-                videoDescription={videoDescription}
-                videoTitle={videoTitle}
+                url={videoUrl}
+                description={videoDescription}
+                title={videoTitle}
               />
             ) : (
               <ShareButton
-                videoUrl={videoUrl}
-                videoDescription={videoDescription}
-                videoTitle={videoTitle}
+                url={videoUrl}
+                description={videoDescription}
+                title={videoTitle}
               />
             )}
           </li>
           <li>
             <Image
               src={subscribePlus.src}
-              width='24'
-              height='24'
+              size={6}
               alt='Subscribe Plus'
               title='Subscribe Plus'
               onClick={() =>
@@ -158,12 +149,22 @@ export const AppActions = ({
   );
 };
 
-const ShareButton = ({ videoUrl, videoDescription, videoTitle }) => {
+export const ShareButton = ({
+  url,
+  description,
+  title,
+  variation = "white",
+  ...props
+}) => {
+  console.log("props", props);
   return (
     <Menu placement='right' preventOverflow gutter={40}>
       <>
-        <MenuButton pos='relative'>
-          <Image width={24} height={24} src={shareImg.src} />
+        <MenuButton pos='relative' {...props} textAlign='-webkit-center'>
+          <Image
+            size={6}
+            src={variation === "white" ? shareImg.src : shareImgBlue.src}
+          />
         </MenuButton>
         <MenuList
           minW='max-content'
@@ -173,50 +174,44 @@ const ShareButton = ({ videoUrl, videoDescription, videoTitle }) => {
           flexDir='column'
           mb={16}
         >
-          <WhatsappShareButton url={videoUrl} title={videoTitle}>
-            <Image width={48} height={48} src={WhatsApp.src} />
+          <WhatsappShareButton url={url} title={title}>
+            <Image size={12} src={WhatsApp.src} />
           </WhatsappShareButton>
-          <TwitterShareButton url={videoUrl} title={videoTitle}>
-            <Image width={48} height={48} src={Twitter.src} />
+          <TwitterShareButton url={url} title={title}>
+            <Image size={12} src={Twitter.src} />
           </TwitterShareButton>
-          <LinkedinShareButton url={videoUrl} title={videoTitle}>
-            <Image width={48} height={48} src={LinkedIN.src} />
+          <LinkedinShareButton url={url} title={title}>
+            <Image size={12} src={LinkedIN.src} />
           </LinkedinShareButton>
-          <FacebookShareButton url={videoUrl} title={videoTitle}>
-            <Image width={48} height={48} src={Facebook.src} />
+          <FacebookShareButton url={url} title={title}>
+            <Image size={12} src={Facebook.src} />
           </FacebookShareButton>
           <EmailShareButton
-            url={videoUrl}
-            title={videoTitle}
-            subject={videoTitle}
-            body={videoDescription}
+            url={url}
+            title={title}
+            subject={title}
+            body={description}
           >
-            <Image width={48} height={48} src={Email.src} />
+            <Image size={12} src={Email.src} />
           </EmailShareButton>
-          <ShareComponent
-            url={videoUrl}
-            description={videoDescription}
-            title={videoTitle}
-          />
+          <ShareComponent url={url} description={description} title={title} />
         </MenuList>
       </>
     </Menu>
   );
 };
 
-const MobileShareButton = ({ videoTitle, videoDescription, videoUrl }) => {
+const MobileShareButton = ({ title, description, url }) => {
   const { isSupported, loading, share } = useWebShare();
 
   return (
     <Image
       src={shareImg.src}
-      width='24'
-      height='24'
+      size={6}
       alt='Share'
       title='Share'
       onClick={() => {
-        if (isSupported && !loading)
-          share({ url: videoUrl, title: videoTitle, text: videoDescription });
+        if (isSupported && !loading) share({ url, title, text: description });
       }}
     />
   );

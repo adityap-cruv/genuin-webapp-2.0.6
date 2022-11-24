@@ -1,10 +1,10 @@
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import axios from "axios";
 import { isValidHttpUrl, Player } from "../../components/player";
 import { Layout } from "../../components/layout";
 import { TopNav } from "../../components/topNav";
 import { GetAppModal } from "../../components/getAppModal";
-import { AppActions } from "../../components/appActions";
+import { AppActions, ShareButton } from "../../components/appActions";
 import { WelcomeModal } from "../../components/welcomeModal";
 import { Error } from "../../components/error";
 import { SEO } from "../../components/seo";
@@ -12,7 +12,6 @@ import { appStoreLink } from "../../config";
 import { Container } from "react-bootstrap";
 import views from "../../images/views.svg";
 import comments from "../../images/comments.svg";
-import shareImg from "../../images/video-more-options/ic-share-blue.svg";
 import directMessage from "../../images/direct_message.svg";
 
 import {
@@ -64,7 +63,6 @@ const Profile = ({
   }, [profile_image]);
 
   const router = useRouter();
-  console.log("router", router);
 
   const [showModalWelcome, setShowModalWelcome] = useState(true);
   const handleCloseWelcome = () => setShowModalWelcome(false);
@@ -164,6 +162,11 @@ const Profile = ({
       },
     ],
   });
+
+  const [currentUrl, setCurrentUrl] = useState("");
+  useEffect(() => {
+    setCurrentUrl(window.location.href);
+  }, []);
 
   return !Boolean(user_id) ? (
     <Error />
@@ -308,21 +311,19 @@ const Profile = ({
                   />
                   <Text>Direct Message</Text>
                 </Button>
-                <Button
+                <ShareButton
+                  url={currentUrl}
+                  description='Hello, visit this profile!'
+                  title='Genuin on web'
                   color='#0645ff'
                   bgColor='transparent'
                   border='1px solid #0645FF'
                   p={0}
                   minW={8}
                   h={8}
-                >
-                  <Image
-                    src={shareImg.src}
-                    size={4}
-                    alt='Share'
-                    title='Share Profile'
-                  />
-                </Button>
+                  borderRadius='md'
+                  variation='blue'
+                />
               </Flex>
             </Flex>
 
