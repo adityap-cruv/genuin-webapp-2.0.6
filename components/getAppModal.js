@@ -26,7 +26,7 @@ export const GetAppModal = ({
     >
       <Modal.Header closeButton className='border-0'></Modal.Header>
       <Modal.Body className='text-center py-0'>
-        <VStack>
+        <VStack px={16}>
           <Image src={logo.src} alt='Genuin' title='Genuin' h={16} />
           <Text fontWeight={700} fontSize={40}>
             Download App

@@ -104,7 +104,10 @@ const Profile = ({
 
   const showGetAppToSendMessage = () =>
     handleShowModalAppDownload(() => (
-      <>Get the Genuin app to send a direct message to @{nickname}.</>
+      <Text fontWeight={600} lineHeight={8} fontSize={20}>
+        Get the Genuin app to send a direct message to{" "}
+        <strong>@{nickname}</strong>
+      </Text>
     ));
 
   const abbreviateNumber = (value) => {
