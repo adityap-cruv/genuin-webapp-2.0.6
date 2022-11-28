@@ -24,11 +24,18 @@ let description =
   'Genuin is a video-first professional networking platform that allows you to showcase your expertise and connect with other professionals and businesses. Whether you are searching for a job, seeking investment, hiring candidates, or any other networking, Genuin helps you stand out';
 let currentUrl = 'https://begenuin.com';
 
-const Home = () => {
+const Home = (props) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [showModalAppDownload, setShowModalAppDownload] = useState(false);
   const handleCloseAppDownload = () => setShowModalAppDownload(false);
   const handleShowModalAppDownload = () => setShowModalAppDownload(true);
+  var hideAndroid = false;
+  var hideIOS = false;
+
+  if (props.detectedOS != null) {
+    hideIOS = props.detectedOS == "Android" ? true : false;
+    hideAndroid = props.detectedOS == "iOS" ? true : false;
+  }
 
   return (
     <>
@@ -136,6 +143,11 @@ const Home = () => {
                     xs='6'
                     lg='auto'
                     className='d-flex align-items-center justify-content-end ps-4 ps-sm-0'
+                    ref={(element) => {
+                      if (element && hideIOS) {
+                        element.style.setProperty("display", "none", "important");
+                      }
+                    }}
                   >
                     <Image
                       src={ios.src}
@@ -151,6 +163,11 @@ const Home = () => {
                     xs='6'
                     lg='auto'
                     className='d-flex align-items-center justify-content-start pe-4 ps-em-0'
+                    ref={(element) => {
+                      if (element && hideAndroid) {
+                        element.style.setProperty("display", "none", "important");
+                      }
+                    }}
                   >
                     <Image
                       src={android.src}
