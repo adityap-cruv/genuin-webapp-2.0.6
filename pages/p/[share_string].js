@@ -8,10 +8,7 @@ import { AppActions, ShareButton } from "../../components/appActions";
 import { WelcomeModal } from "../../components/welcomeModal";
 import { Error } from "../../components/error";
 import { SEO } from "../../components/seo";
-import { appStoreLink } from "../../config";
 import { Container } from "react-bootstrap";
-import views from "../../images/views.svg";
-import comments from "../../images/comments.svg";
 import directMessage from "../../images/direct_message.svg";
 
 import {
@@ -24,7 +21,6 @@ import {
   ModalContent,
   Avatar,
   Divider,
-  ModalOverlay,
   useDisclosure,
   useBreakpointValue,
   Grid,
@@ -35,7 +31,6 @@ import {
   TabPanel,
   Icon,
   Text,
-  Link,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 
@@ -233,7 +228,7 @@ const Profile = ({
             justifyContent='space-between'
           >
             {mobile && <Divider opacity={0.1} mt={2} />}
-            <Flex color='#111111' flexDir='column'>
+            <Flex color='#111111' flexDir='column' maxW='22rem'>
               <Flex justifyContent={"space-between"}>
                 <Avatar
                   name={`@${nickname}`}
@@ -320,8 +315,8 @@ const Profile = ({
                     src={directMessage.src}
                     size={8}
                     pr={3}
-                    alt='Share'
-                    title='Share Profile'
+                    alt='Direct Message'
+                    title='Direct Message'
                   />
                   <Text>Direct Message</Text>
                 </Button>
@@ -479,45 +474,7 @@ const Videos = ({ videos, onOpen, setCurrentVideoIndex, mobile }) => (
             }}
             key={video.video_uuid}
             role='group'
-          >
-            {!mobile && (
-              <Image
-                src={video.videoThumbnail}
-                onClick={() => {
-                  onOpen();
-                  setCurrentVideoIndex(index);
-                }}
-              />
-            )}
-            {mobile && (
-              <Link href={`/${video.share_string}`}>
-                <Image src={video.videoThumbnail} />
-              </Link>
-            )}
-
-            <Flex
-              position='absolute'
-              _groupHover={{
-                opacity: 1,
-              }}
-              opacity={0}
-              gap={3}
-              bottom={3}
-              left={2}
-              color='white'
-              fontSize='15px'
-              fontWeight='bold'
-            >
-              <Flex>
-                <Image mr={2} src={comments.src} h={5} mt={1} />
-                {video.noOfConversation}
-              </Flex>
-              <Flex>
-                <Image src={views.src} mr={1} mt={1} />
-                {video.noOfViews}
-              </Flex>
-            </Flex>
-          </Box>
+          ></Box>
         ))}
       </Grid>
     )}

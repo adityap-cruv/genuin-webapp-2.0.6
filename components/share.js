@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { toast } from "react-toastify";
-import { Image } from "react-bootstrap";
 import { useClipboard } from "./hooks/useClipboard";
 import CopyLink from "../images/video-actions/CopyLink.svg";
+import { Image } from "@chakra-ui/react";
 
 export const ShareComponent = ({ title, description, url }) => {
   const [isCopied, copy] = useClipboard(url, { successDuration: 1000 });
@@ -22,9 +22,10 @@ export const ShareComponent = ({ title, description, url }) => {
 
   return (
     <Image
+      cursor='pointer'
       src={CopyLink.src}
-      width={48}
-      height={48}
+      width={12}
+      height={12}
       alt='Share'
       title='Share'
       onClick={copy}
