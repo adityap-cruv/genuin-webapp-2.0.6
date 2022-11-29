@@ -292,6 +292,50 @@ export const ReactPlayerWrapper = ({
           </button>
         </div>
       ) : null}
+      {Boolean(getNextVideo) &&
+        Boolean(getPrevVideo) &&
+        roundTableMode &&
+        watchRoundTable && (
+          <Button
+            className='btn-arrow'
+            style={{
+              position: "absolute",
+              top: "50%",
+              right: -60,
+            }}
+          >
+            <Image
+              src={icArrowRight.src}
+              width={6}
+              height={6}
+              alt='Arrow Right'
+              title='Arrow Right'
+              onClick={getNextVideo}
+            />
+          </Button>
+        )}
+      {Boolean(getNextVideo) &&
+        Boolean(getPrevVideo) &&
+        roundTableMode &&
+        watchRoundTable && (
+          <Button
+            className='btn-arrow'
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: -60,
+            }}
+          >
+            <Image
+              src={icArrowLeft.src}
+              width={6}
+              height={6}
+              alt='Arrow Left'
+              title='Arrow Left'
+              onClick={getPrevVideo}
+            />
+          </Button>
+        )}
       <div
         className='video-footer bg-gradient-180'
         style={{ pointerEvents: "none" }}
