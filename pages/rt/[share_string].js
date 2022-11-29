@@ -43,7 +43,7 @@ const RoundTable = ({
   },
 }) => {
   console.log("users", users);
-  console.log("details", details.chat_id);
+  console.log("details", details);
   console.log("videos", videos);
   const { group } = details;
   const [showModalWelcome, setShowModalWelcome] = useState(true);
@@ -121,6 +121,8 @@ const RoundTable = ({
         {router.query.v && (
           <Player
             key={currentVideoIndex}
+            videos={videos}
+            currentVideoIndex={currentVideoIndex}
             video_id_to_use={videos?.[currentVideoIndex]?.conversation_id}
             description={group?.group_description}
             videoUrl={videos?.[currentVideoIndex]?.video_url}
@@ -130,7 +132,6 @@ const RoundTable = ({
             roundTableMode
             roundTableName={group?.group_name}
             showGetAppModal={handleShowModalAppDownload}
-            onEnded={showGetAppToViewDialog}
             watchRoundTable={watchRoundTable}
             setWatchRoundtable={setWatchRoundtable}
           >
@@ -327,6 +328,8 @@ const RoundTable = ({
             <ModalBody p={0} height='full' w='full'>
               <Player
                 key={currentVideoIndex}
+                videos={videos}
+                currentVideoIndex={currentVideoIndex}
                 video_id_to_use={videos?.[currentVideoIndex]?.conversation_id}
                 description={group?.group_description}
                 videoUrl={videos?.[currentVideoIndex]?.video_url}
@@ -343,12 +346,12 @@ const RoundTable = ({
                 roundTableMode
                 roundTableName={group?.group_name}
                 showGetAppModal={handleShowModalAppDownload}
-                onEnded={showGetAppToViewDialog}
                 getNextVideo={getNextVideo}
                 getPrevVideo={getPrevVideo}
                 watchRoundTable={watchRoundTable}
                 setWatchRoundtable={setWatchRoundtable}
                 autoJumpToNextVideo
+                autoplay={watchRoundTable}
               >
                 <AppActions
                   showGetAppModal={handleShowModalAppDownload}

@@ -9,6 +9,8 @@ export const Player = ({
   description,
   videoUrl = "",
   videoThumbnail,
+  videos = [],
+  currentVideoIndex,
   userName,
   userProfileImage = "",
   userId,
@@ -82,6 +84,8 @@ export const Player = ({
         videoUrl={videoUrl}
         onProgress={handleProgress}
         videoThumbnail={videoThumbnail}
+        videos={videos}
+        currentVideoIndex={currentVideoIndex}
         userName={userName}
         userId={userId}
         description={shortDescription}

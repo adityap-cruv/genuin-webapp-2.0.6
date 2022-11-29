@@ -7,12 +7,14 @@ import { ProgressBar, Badge, Button } from "react-bootstrap";
 
 import icArrowDown from "../../images/video-more-options/ic-arrow-down.svg";
 import icArrowUp from "../../images/video-more-options/ic-arrow-up.svg";
-import { Image, Flex, Text, Link } from "@chakra-ui/react";
+import { Image, Flex, Text, Link, Progress, Box } from "@chakra-ui/react";
 
 export const ReactPlayerWrapper = ({
   videoUrl,
   onProgress,
   videoThumbnail,
+  videos,
+  currentVideoIndex,
   userName,
   userId,
   description,
@@ -30,6 +32,8 @@ export const ReactPlayerWrapper = ({
   watchRoundTable,
   setWatchRoundtable,
 }) => {
+  console.log("videos", videos);
+  console.log("videoUrl", videoUrl);
   console.log("userId", userId);
   const [progress, setProgress] = useState(0);
   const [isPlaying, setIsPlaying] = useState(autoplay);
@@ -114,9 +118,41 @@ export const ReactPlayerWrapper = ({
         onEnded={onEndedWrapper}
         progressInterval={200}
       />
-      {/* <Flex w='full' position='absolute' top='0'>
-        <Text position='absolute'>{roundTableName}</Text>
-      </Flex> */}
+      <Flex
+        w='full'
+        position='absolute'
+        top='0'
+        p={4}
+        direction='column'
+        background='whiteAlpha.500'
+      >
+        <Flex w='full' justifyContent='space-between'>
+          <Text>{roundTableName}</Text>
+        </Flex>
+        <Flex w='full' gap={1}>
+          {/* {JSON.stringify(videos)} */}
+          {Boolean(videos.length) &&
+            videos.map((video, index) => {
+              return (
+                <Progress
+                  isAnimated
+                  value={
+                    index < currentVideoIndex
+                      ? 100
+                      : index === currentVideoIndex
+                      ? progress
+                      : 0
+                  }
+                  borderRadius={10}
+                  colorScheme='blue'
+                  background='blackAlpha.400'
+                  w='full'
+                  h={1}
+                />
+              );
+            })}
+        </Flex>
+      </Flex>
 
       {/* don't show it if it's watchRoundTable  */}
       {(watchRoundTable || !roundTableMode) && (
@@ -192,11 +228,7 @@ export const ReactPlayerWrapper = ({
                         variant='outline-light'
                         className='ms-3'
                         style={{ pointerEvents: "all" }}
-                        onClick={() => {
-                          console.log("setWatchRoundtable", setWatchRoundtable);
-                          setWatchRoundtable(true);
-                          console.log("watchRoundTable", watchRoundTable);
-                        }}
+                        onClick={() => setWatchRoundtable(true)}
                       >
                         Watch
                       </Button>
