@@ -97,7 +97,6 @@ export const Player = ({
         autoplay={autoplay}
         autoJumpToNextVideo={autoJumpToNextVideo}
         onEnded={onEnded}
-        showGetAppModal={showGetAppModal}
         roundTableName={roundTableName}
         watchRoundTable={watchRoundTable}
         setWatchRoundtable={setWatchRoundtable}

@@ -36,7 +36,6 @@ export const ReactPlayerWrapper = ({
   roundTableName = "",
   autoplay = false,
   autoJumpToNextVideo = false,
-  showGetAppModal,
   watchRoundTable,
   setWatchRoundtable,
   onClose,
