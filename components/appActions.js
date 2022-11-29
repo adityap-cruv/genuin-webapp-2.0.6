@@ -106,10 +106,8 @@ export const AppActions = ({
 
       {roundTable ? (
         <>
-          <li>
-            <Link href='https://google.com' isExternal>
-              <Image src={network.src} size={6} alt='Network' title='Network' />
-            </Link>
+          <li onClick={() => window.open("https://www.google.com", "_blank")}>
+            <Image src={network.src} size={6} alt='Network' title='Network' />
           </li>
           <li>
             <Image
