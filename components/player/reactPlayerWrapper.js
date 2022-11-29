@@ -129,133 +129,134 @@ export const ReactPlayerWrapper = ({
         onEnded={onEndedWrapper}
         progressInterval={200}
       />
-      <Flex
-        w='full'
-        position='absolute'
-        top='0'
-        p={4}
-        direction='column'
-        background='whiteAlpha.500'
-        gap={2}
-      >
+      {(watchRoundTable || !roundTableMode) && (
         <Flex
           w='full'
-          justifyContent='space-between'
-          alignItems='center'
-          h={10}
+          position='absolute'
+          top='0'
+          p={4}
+          direction='column'
+          gap={2}
         >
-          <Text fontWeight='bold' fontSize={17}>
-            <ReactTimeAgo
-              date={Number(videos[currentVideoIndex].conversation_at)}
-              locale='en-US'
-            />
-          </Text>
-          <Link href={roundTableId} pointerEvents='all'>
-            <Flex
-              alignItems='center'
-              gap={3}
-              margin='0'
-              position='absolute'
-              left='50%'
-              transform='translate(-50%, -50%)'
-            >
-              <Text
-                background='rgba(17, 17, 17, 0.6)'
-                borderRadius='5px'
-                p={2}
-                fontWeight='bold'
-                fontSize={17}
+          <Flex
+            w='full'
+            justifyContent='space-between'
+            alignItems='center'
+            h={10}
+          >
+            <Text fontWeight='bold' fontSize={17}>
+              <ReactTimeAgo
+                date={Number(videos[currentVideoIndex].conversation_at)}
+                locale='en-US'
+              />
+            </Text>
+            <Link href={roundTableId} pointerEvents='all'>
+              <Flex
+                alignItems='center'
+                gap={3}
+                margin='0'
+                position='absolute'
+                left='50%'
+                transform='translate(-50%, -50%)'
               >
-                {roundTableName}
-              </Text>
+                <Text
+                  background='rgba(17, 17, 17, 0.6)'
+                  borderRadius='5px'
+                  p={2}
+                  fontWeight='bold'
+                  fontSize={17}
+                >
+                  {roundTableName}
+                </Text>
+                <Image
+                  src={earth.src}
+                  width={6}
+                  height={6}
+                  alt='Roundtable'
+                  title='Roundtable'
+                />
+              </Flex>
+            </Link>
+            <Image
+              src={icClose.src}
+              width={6}
+              height={6}
+              alt='Close'
+              title='Close'
+              onClick={onClose}
+              pointerEvents='all'
+            />
+          </Flex>
+          <Flex w='full' gap={1}>
+            {/* {JSON.stringify(videos)} */}
+            {Boolean(videos.length) &&
+              videos.map((video, index) => {
+                return (
+                  <Box h={1} w='full' borderRadius={10} background='white'>
+                    {direction === "forward" && (
+                      <Box
+                        backgroundColor='#0645FF'
+                        borderRadius={10}
+                        h={1}
+                        w={`${
+                          index < currentVideoIndex
+                            ? 100
+                            : index === currentVideoIndex
+                            ? progress
+                            : 0
+                        }%`}
+                      />
+                    )}
+                    {direction === "backward" && (
+                      <Box
+                        backgroundColor='#0645FF'
+                        borderRadius={10}
+                        h={1}
+                        float='right'
+                        w={`${
+                          index > currentVideoIndex
+                            ? 100
+                            : index === currentVideoIndex
+                            ? progress
+                            : 0
+                        }%`}
+                      />
+                    )}
+                  </Box>
+                );
+              })}
+          </Flex>
+          <Flex
+            w='full'
+            justifyContent='space-between'
+            alignItems='center'
+            pointerEvents='all'
+          >
+            <Text fontWeight={600} fontSize={17}>
+              {videos[currentVideoIndex].meta_data.duration}
+            </Text>
+            {direction === "forward" ? (
               <Image
-                src={earth.src}
+                src={icFlipRight.src}
                 width={6}
                 height={6}
-                alt='Roundtable'
-                title='Roundtable'
+                alt='Flip Right'
+                title='Flip Right'
+                onClick={() => setDirection("backward")}
               />
-            </Flex>
-          </Link>
-          <Image
-            src={icClose.src}
-            width={6}
-            height={6}
-            alt='Close'
-            title='Close'
-            onClick={onClose}
-            pointerEvents='all'
-          />
+            ) : (
+              <Image
+                src={icFlipLeft.src}
+                width={6}
+                height={6}
+                alt='Flip Left'
+                title='Flip Left'
+                onClick={() => setDirection("forward")}
+              />
+            )}
+          </Flex>
         </Flex>
-        <Flex w='full' gap={1}>
-          {/* {JSON.stringify(videos)} */}
-          {Boolean(videos.length) &&
-            videos.map((video, index) => {
-              return (
-                <Box h={1} w='full' borderRadius={10} background='white'>
-                  {direction === "forward" && (
-                    <Box
-                      backgroundColor='#0645FF'
-                      borderRadius={10}
-                      h={1}
-                      w={`${
-                        index < currentVideoIndex
-                          ? 100
-                          : index === currentVideoIndex
-                          ? progress
-                          : 0
-                      }%`}
-                    />
-                  )}
-                  {direction === "backward" && (
-                    <Box
-                      backgroundColor='#0645FF'
-                      borderRadius={10}
-                      h={1}
-                      float='right'
-                      w={`${
-                        index > currentVideoIndex
-                          ? 100
-                          : index === currentVideoIndex
-                          ? progress
-                          : 0
-                      }%`}
-                    />
-                  )}
-                </Box>
-              );
-            })}
-        </Flex>
-        <Flex
-          w='full'
-          justifyContent='space-between'
-          alignItems='center'
-          pointerEvents='all'
-        >
-          <Text fontWeight={600} fontSize={17}>
-            {videos[currentVideoIndex].meta_data.duration}
-          </Text>
-          {direction === "forward" ? (
-            <Image
-              src={icFlipRight.src}
-              width={6}
-              height={6}
-              alt='Flip Right'
-              title='Flip Right'
-              onClick={() => setDirection("backward")}
-            />
-          ) : (
-            <Image
-              src={icFlipLeft.src}
-              width={6}
-              height={6}
-              alt='Flip Left'
-              title='Flip Left'
-              onClick={() => setDirection("forward")}
-            />
-          )}
-        </Flex>
-      </Flex>
+      )}
 
       {/* don't show it if it's watchRoundTable  */}
       {(watchRoundTable || !roundTableMode) && (
