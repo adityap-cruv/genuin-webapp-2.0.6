@@ -232,7 +232,7 @@ const Profile = ({
             mt={{ base: 16, sm: 0 }}
             justifyContent='space-between'
           >
-            {mobile && <Divider opacity={0.1} mt={2} />}
+            {mobile && <Divider opacity={0.1} />}
             <Flex
               color='#111111'
               flexDir='column'
@@ -373,7 +373,7 @@ const Profile = ({
                 </Tab>
               </TabList>
 
-              <TabPanels overflow='scroll' maxH='full' height='full'>
+              <TabPanels overflow='auto' maxH='full' height='full'>
                 <TabPanel p={0} pt={1} h='full'>
                   <Videos
                     mobile={mobile}
@@ -449,7 +449,7 @@ const Profile = ({
 };
 
 const Videos = ({ videos, onOpen, setCurrentVideoIndex, mobile }) => (
-  <Box overflowY='scroll' h='full'>
+  <Box h='full'>
     {!Boolean(videos.length) && (
       <Flex
         w='full'
