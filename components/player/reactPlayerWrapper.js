@@ -14,8 +14,8 @@ import icFlipRight from "../../images/video-more-options/ic-flip-right.svg";
 import icClose from "../../images/video-more-options/ic-close.svg";
 import earth from "../../images/video-more-options/ic-earth.svg";
 import { Image, Flex, Text, Link, Box } from "@chakra-ui/react";
-import TimeAgo from "javascript-time-ago";
-import en from "javascript-time-ago/locale/en";
+import ReactTimeAgo from "react-time-ago";
+import en from "javascript-time-ago/locale/en.json";
 
 export const ReactPlayerWrapper = ({
   videoUrl,
@@ -34,26 +34,25 @@ export const ReactPlayerWrapper = ({
   getPrevVideo,
   roundTableMode = false,
   roundTableName = "",
+  roundTableId,
   autoplay = false,
   autoJumpToNextVideo = false,
   watchRoundTable,
   setWatchRoundtable,
   onClose,
+  direction,
+  setDirection,
 }) => {
-  console.log("videos", videos);
-  console.log("videoUrl", videoUrl);
-  console.log("userId", userId);
   const [progress, setProgress] = useState(0);
   const [isPlaying, setIsPlaying] = useState(autoplay);
   const [isPlayingDebounced] = useDebounce(isPlaying, 65);
   const handleToggleIsPlaying = useCallback(() => {
     setIsPlaying((old) => !old);
   }, [setIsPlaying]);
-  const [flip, setFlip] = useState("left");
 
   const touchStartYRef = useRef(0);
-  const getprevVideoRef = useRef(getPrevVideo);
-  getprevVideoRef.current = getPrevVideo;
+  const getPrevVideoRef = useRef(getPrevVideo);
+  getPrevVideoRef.current = getPrevVideo;
   const getNextVideoRef = useRef(getNextVideo);
   getNextVideoRef.current = getNextVideo;
   const onProgressRef = useRef(onProgress);
@@ -79,7 +78,7 @@ export const ReactPlayerWrapper = ({
       if (touchStartYRef.current > touchEndY + 5) {
         getNextVideoRef?.current?.();
       } else if (touchStartYRef.current < touchEndY - 5) {
-        getprevVideoRef?.current?.();
+        getPrevVideoRef?.current?.();
       }
     };
     window.addEventListener("touchstart", touchStart);
@@ -94,16 +93,12 @@ export const ReactPlayerWrapper = ({
     (e) => {
       onEndedRef?.current?.(e);
       if (autoJumpToNextVideo) {
-        getNextVideoRef?.current?.();
+        if (direction === "forward") getNextVideoRef?.current?.();
+        if (direction === "backward") getPrevVideoRef?.current?.();
       }
     },
-    [autoJumpToNextVideo]
+    [autoJumpToNextVideo, direction]
   );
-
-  TimeAgo.addDefaultLocale(en);
-  const timeAgo = new TimeAgo("en-US");
-  const ago = timeAgo.format(Number(videos[currentVideoIndex].conversation_at));
-  console.log("ago", ago);
 
   return (
     <div
@@ -111,6 +106,7 @@ export const ReactPlayerWrapper = ({
       style={{
         pointerEvents: watchRoundTable || !roundTableMode ? "all" : "none",
         color: "white",
+        zIndex: 1031,
       }}
     >
       <ReactPlayer
@@ -149,9 +145,12 @@ export const ReactPlayerWrapper = ({
           h={10}
         >
           <Text fontWeight='bold' fontSize={17}>
-            {ago}
+            <ReactTimeAgo
+              date={Number(videos[currentVideoIndex].conversation_at)}
+              locale='en-US'
+            />
           </Text>
-          <Link href={"roundtableURL"}>
+          <Link href={roundTableId} pointerEvents='all'>
             <Flex
               alignItems='center'
               gap={3}
@@ -173,9 +172,8 @@ export const ReactPlayerWrapper = ({
                 src={earth.src}
                 width={6}
                 height={6}
-                alt='Arrow Down'
-                title='Arrow Down'
-                onClick={getNextVideo}
+                alt='Roundtable'
+                title='Roundtable'
               />
             </Flex>
           </Link>
@@ -186,6 +184,7 @@ export const ReactPlayerWrapper = ({
             alt='Close'
             title='Close'
             onClick={onClose}
+            pointerEvents='all'
           />
         </Flex>
         <Flex w='full' gap={1}>
@@ -194,34 +193,56 @@ export const ReactPlayerWrapper = ({
             videos.map((video, index) => {
               return (
                 <Box h={1} w='full' borderRadius={10} background='white'>
-                  <Box
-                    backgroundColor='#0645FF'
-                    borderRadius={10}
-                    h={1}
-                    w={`${
-                      index < currentVideoIndex
-                        ? 100
-                        : index === currentVideoIndex
-                        ? progress
-                        : 0
-                    }%`}
-                  />
+                  {direction === "forward" && (
+                    <Box
+                      backgroundColor='#0645FF'
+                      borderRadius={10}
+                      h={1}
+                      w={`${
+                        index < currentVideoIndex
+                          ? 100
+                          : index === currentVideoIndex
+                          ? progress
+                          : 0
+                      }%`}
+                    />
+                  )}
+                  {direction === "backward" && (
+                    <Box
+                      backgroundColor='#0645FF'
+                      borderRadius={10}
+                      h={1}
+                      float='right'
+                      w={`${
+                        index > currentVideoIndex
+                          ? 100
+                          : index === currentVideoIndex
+                          ? progress
+                          : 0
+                      }%`}
+                    />
+                  )}
                 </Box>
               );
             })}
         </Flex>
-        <Flex w='full' justifyContent='space-between' alignItems='center'>
+        <Flex
+          w='full'
+          justifyContent='space-between'
+          alignItems='center'
+          pointerEvents='all'
+        >
           <Text fontWeight={600} fontSize={17}>
             {videos[currentVideoIndex].meta_data.duration}
           </Text>
-          {flip === "left" ? (
+          {direction === "forward" ? (
             <Image
               src={icFlipRight.src}
               width={6}
               height={6}
               alt='Flip Right'
               title='Flip Right'
-              onClick={() => setFlip("right")}
+              onClick={() => setDirection("backward")}
             />
           ) : (
             <Image
@@ -230,7 +251,7 @@ export const ReactPlayerWrapper = ({
               height={6}
               alt='Flip Left'
               title='Flip Left'
-              onClick={() => setFlip("left")}
+              onClick={() => setDirection("forward")}
             />
           )}
         </Flex>

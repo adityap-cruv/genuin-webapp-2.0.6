@@ -43,9 +43,6 @@ export const AppActions = ({
   videoTitle = "",
   details,
 }) => {
-  console.log("details", details);
-  console.log("roundTableId", roundTableId);
-  console.log("videoUrl", videoUrl);
   const mobile = useBreakpointValue({ base: true, sm: false });
 
   return (

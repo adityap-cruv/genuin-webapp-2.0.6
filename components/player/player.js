@@ -23,10 +23,13 @@ export const Player = ({
   onEnded,
   showGetAppModal,
   roundTableName,
+  roundTableId,
   onClickOutsideOfVideo,
   watchRoundTable = false,
   setWatchRoundtable = () => {},
   onClose = () => {},
+  direction,
+  setDirection,
 }) => {
   const [triggerPlayCount, setTriggetPlayCount] = useState(false);
 
@@ -98,9 +101,12 @@ export const Player = ({
         autoJumpToNextVideo={autoJumpToNextVideo}
         onEnded={onEnded}
         roundTableName={roundTableName}
+        roundTableId={roundTableId}
         watchRoundTable={watchRoundTable}
         setWatchRoundtable={setWatchRoundtable}
         onClose={onClose}
+        direction={direction}
+        setDirection={setDirection}
       >
         {children}
       </ReactPlayerWrapper>

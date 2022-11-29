@@ -42,9 +42,6 @@ const RoundTable = ({
     subscribers: [],
   },
 }) => {
-  console.log("users", users);
-  console.log("details", details);
-  console.log("videos", videos);
   const { group } = details;
   const [showModalWelcome, setShowModalWelcome] = useState(true);
   const handleCloseWelcome = () => setShowModalWelcome(false);
@@ -53,7 +50,11 @@ const RoundTable = ({
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [currentUrl, setCurrentUrl] = useState("");
   const [watchRoundTable, setWatchRoundtable] = useState(false);
-  console.log("setWatchRoundtable", setWatchRoundtable);
+  const [direction, setDirection] = useState("forward");
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const mobile = useBreakpointValue({ base: true, sm: false });
+  const router = useRouter();
 
   useEffect(() => {
     setCurrentUrl(window.location.href);
@@ -94,12 +95,6 @@ const RoundTable = ({
         roundtable.
       </>
     ));
-
-  const { isOpen, onOpen, onClose } = useDisclosure();
-
-  const mobile = useBreakpointValue({ base: true, sm: false });
-
-  const router = useRouter();
 
   return !Boolean(group?.group_id) ? (
     <Error />
@@ -353,6 +348,9 @@ const RoundTable = ({
                 autoJumpToNextVideo
                 autoplay={watchRoundTable}
                 onClose={onClose}
+                roundTableId={details.chat_id}
+                direction={direction}
+                setDirection={setDirection}
               >
                 <AppActions
                   showGetAppModal={handleShowModalAppDownload}
@@ -441,7 +439,6 @@ const Videos = ({ videos, onOpen, setCurrentVideoIndex, mobile }) => (
 );
 
 const Participants = ({ members, mobile }) => {
-  console.log("members", members);
   return (
     <Flex direction='column'>
       <Text
@@ -581,8 +578,8 @@ const Participants = ({ members, mobile }) => {
                   text-overflow='ellipsis'
                   display='-webkit-box'
                   css={{
-                    "-webkit-line-clamp": "3",
-                    "-webkit-box-orient": "vertical",
+                    WebkitLineClamp: "3",
+                    WebkitBoxOrient: "vertical",
                   }}
                   line-clamp='2'
                 >

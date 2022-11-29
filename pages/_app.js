@@ -3,8 +3,12 @@ import "./styles.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.min.css";
 import { ChakraProvider } from "@chakra-ui/react";
+import TimeAgo from "javascript-time-ago";
+
+import en from "javascript-time-ago/locale/en.json";
 
 function MyApp({ Component, pageProps }) {
+  TimeAgo.addDefaultLocale(en);
   return (
     <ChakraProvider>
       <Component {...pageProps} />
