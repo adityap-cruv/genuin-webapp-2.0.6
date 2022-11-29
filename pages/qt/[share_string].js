@@ -1,12 +1,12 @@
-import { useMemo, useRef, useState } from 'react';
-import axios from 'axios';
-import { Question } from '../../components/question';
-import { Layout } from '../../components/layout';
-import { Error } from '../../components/error';
-import { SEO } from '../../components/seo';
-import { GetAppModal } from '../../components/getAppModal';
-import { TopNav } from '../../components/topNav';
-import { appStoreLink } from '../../config';
+import { useMemo, useRef, useState } from "react";
+import axios from "axios";
+import { Question } from "../../components/question";
+import { Layout } from "../../components/layout";
+import { Error } from "../../components/error";
+import { SEO } from "../../components/seo";
+import { GetAppModal } from "../../components/getAppModal";
+import { TopNav } from "../../components/topNav";
+import { appStoreLink } from "../../config";
 
 const QuestionWrapper = ({
   question_id,
@@ -27,7 +27,7 @@ const QuestionWrapper = ({
   };
 
   const _question = useMemo(() => {
-    return Boolean(question) ? 'Question on Genuin: ' + question : question;
+    return Boolean(question) ? "Question on Genuin: " + question : question;
   }, [question]);
 
   const askedBy = useMemo(
@@ -67,7 +67,6 @@ const QuestionWrapper = ({
         show={showModalAppDownload}
         onClose={handleCloseAppDownload}
         TextNode={getAppComponentRef.current}
-        getAppLink={appStoreLink}
       />
     </Layout>
   ) : (
@@ -78,7 +77,7 @@ QuestionWrapper.getInitialProps = async ({ query: { share_string } }) => {
   if (
     share_string !== undefined &&
     share_string !== null &&
-    share_string !== ''
+    share_string !== ""
   ) {
     var url_to_use = `${process.env.apiurl}/api/v3/qt/web?question_id=${share_string}`;
     return axios

@@ -1,6 +1,6 @@
 import { hireLink, investLink } from "../config";
 
-export const handleLink = (link, target) => () => {
+export const handleLink = (link, target) => {
   window.open(link, target);
 };
 

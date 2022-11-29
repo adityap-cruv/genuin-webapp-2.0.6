@@ -1,10 +1,10 @@
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import axios from "axios";
 import { isValidHttpUrl, Player } from "../../components/player";
 import { Layout } from "../../components/layout";
 import { TopNav } from "../../components/topNav";
 import { GetAppModal } from "../../components/getAppModal";
-import { AppActions } from "../../components/appActions";
+import { AppActions, ShareButton } from "../../components/appActions";
 import { WelcomeModal } from "../../components/welcomeModal";
 import { Error } from "../../components/error";
 import { SEO } from "../../components/seo";
@@ -12,7 +12,6 @@ import { appStoreLink } from "../../config";
 import { Container } from "react-bootstrap";
 import views from "../../images/views.svg";
 import comments from "../../images/comments.svg";
-import shareImg from "../../images/video-more-options/ic-share-blue.svg";
 import directMessage from "../../images/direct_message.svg";
 
 import {
@@ -35,7 +34,10 @@ import {
   Tab,
   TabPanel,
   Icon,
+  Text,
+  Link,
 } from "@chakra-ui/react";
+import { useRouter } from "next/router";
 
 const Profile = ({
   user_id,
@@ -59,6 +61,8 @@ const Profile = ({
     }
     return "https://media.qa.begenuin.com/backend_assets/lottie/snowman.png";
   }, [profile_image]);
+
+  const router = useRouter();
 
   const [showModalWelcome, setShowModalWelcome] = useState(true);
   const handleCloseWelcome = () => setShowModalWelcome(false);
@@ -97,6 +101,14 @@ const Profile = ({
 
   const showGetAppToViewDialog = () =>
     handleShowModalAppDownload(() => <>Get the app to view this video.</>);
+
+  const showGetAppToSendMessage = () =>
+    handleShowModalAppDownload(() => (
+      <Text fontWeight={600} lineHeight={8} fontSize={20}>
+        Get the Genuin app to send a direct message to{" "}
+        <strong>@{nickname}</strong>
+      </Text>
+    ));
 
   const abbreviateNumber = (value) => {
     var newValue = value;
@@ -159,6 +171,11 @@ const Profile = ({
     ],
   });
 
+  const [currentUrl, setCurrentUrl] = useState("");
+  useEffect(() => {
+    setCurrentUrl(window.location.href);
+  }, []);
+
   return !Boolean(user_id) ? (
     <Error />
   ) : (
@@ -199,19 +216,28 @@ const Profile = ({
       <TopNav showGetAppModal={showGetAppToViewDialog} isContiner isBlue />
       <section className='section-content d-flex flex-column h-100'>
         <Container className='container-false d-none d-md-block'></Container>
-        <Container>
+        <Container
+          style={{
+            height: "calc(100% - 70px)",
+          }}
+        >
           <Flex
             flexDir={{
               base: "column",
               sm: "row",
             }}
-            maxH='calc(100vh - 70px)'
-            gap={{ base: 4, sm: 114 }}
+            maxH='calc(100vh - 140px)'
+            h='full'
+            gap={{ base: 4, sm: "calc(100% / 12)" }}
             mt={{ base: 16, sm: 0 }}
             justifyContent='space-between'
           >
-            {mobile && <Divider opacity={0.1} mt={2} />}
-            <Flex color='#111111' flexDir='column'>
+            {mobile && <Divider opacity={0.1} />}
+            <Flex
+              color='#111111'
+              flexDir='column'
+              w={{ base: "100%", sm: "calc(100% / 12 * 3)" }}
+            >
               <Flex justifyContent={"space-between"}>
                 <Avatar
                   name={`@${nickname}`}
@@ -228,24 +254,24 @@ const Profile = ({
                     w='full'
                     mx={6}
                   >
-                    <Box>
+                    <Flex flexGrow={1} flexDir='column'>
                       <Box fontWeight='bold'>{no_of_views}</Box>
                       <Box fontWeight={600} fontSize={12} color='#949494'>
                         Views
                       </Box>
-                    </Box>
-                    <Box>
+                    </Flex>
+                    <Flex flexGrow={1} flexDir='column'>
                       <Box fontWeight='bold'>{no_of_videos}</Box>
                       <Box fontWeight={600} fontSize={12} color='#949494'>
                         Videos
                       </Box>
-                    </Box>
-                    <Box>
+                    </Flex>
+                    <Flex flexGrow={1} flexDir='column'>
                       <Box fontWeight='bold'>{no_of_replies}</Box>
                       <Box fontWeight={600} fontSize={12} color='#949494'>
                         Replies
                       </Box>
-                    </Box>
+                    </Flex>
                   </Flex>
                 )}
               </Flex>
@@ -264,24 +290,24 @@ const Profile = ({
                   textAlign='center'
                   my={4}
                 >
-                  <Box>
+                  <Flex flexGrow={1} flexDir='column'>
                     <Box fontWeight='bold'>{no_of_views}</Box>
                     <Box fontWeight={600} fontSize={12} color='#949494'>
                       Views
                     </Box>
-                  </Box>
-                  <Box>
+                  </Flex>
+                  <Flex flexGrow={1} flexDir='column'>
                     <Box fontWeight='bold'>{no_of_videos}</Box>
                     <Box fontWeight={600} fontSize={12} color='#949494'>
                       Videos
                     </Box>
-                  </Box>
-                  <Box>
+                  </Flex>
+                  <Flex flexGrow={1} flexDir='column'>
                     <Box fontWeight='bold'>{no_of_replies}</Box>
                     <Box fontWeight={600} fontSize={12} color='#949494'>
                       Replies
                     </Box>
-                  </Box>
+                  </Flex>
                 </Flex>
               )}
               <Flex gap={4} mt={2}>
@@ -289,6 +315,10 @@ const Profile = ({
                   color='#0645ff'
                   bgColor='transparent'
                   border='1px solid #0645FF'
+                  fontWeight='bold'
+                  h={8}
+                  px={5}
+                  onClick={showGetAppToSendMessage}
                 >
                   <Image
                     src={directMessage.src}
@@ -297,26 +327,32 @@ const Profile = ({
                     alt='Share'
                     title='Share Profile'
                   />
-                  Direct Message
+                  <Text>Direct Message</Text>
                 </Button>
-                <Button
+                <ShareButton
+                  url={currentUrl}
+                  description='Hello, visit this profile!'
+                  title='Genuin on web'
                   color='#0645ff'
                   bgColor='transparent'
                   border='1px solid #0645FF'
-                  p='0'
-                >
-                  <Image
-                    src={shareImg.src}
-                    size={8}
-                    alt='Share'
-                    title='Share Profile'
-                  />
-                </Button>
+                  p={0}
+                  minW={8}
+                  h={8}
+                  borderRadius='md'
+                  variation='blue'
+                />
               </Flex>
             </Flex>
 
-            <Tabs onChange={(index) => setTabIndex(index)} colorScheme='black'>
-              <TabList borderBottom={0}>
+            <Tabs
+              onChange={(index) => setTabIndex(index)}
+              colorScheme='black'
+              display={{ base: "contents", sm: "block" }}
+              w='full'
+            >
+              <Divider opacity={0.2} />
+              <TabList borderBottom={0} mb='2px'>
                 <Tab flexGrow={1}>
                   <AllIcon
                     boxSize={8}
@@ -337,23 +373,26 @@ const Profile = ({
                 </Tab>
               </TabList>
 
-              <TabPanels overflow='scroll' maxH='full' pb={10}>
-                <TabPanel p={0} pt={1}>
+              <TabPanels overflow='auto' maxH='full' height='full'>
+                <TabPanel p={0} pt={1} h='full'>
                   <Videos
+                    mobile={mobile}
                     videos={videos}
                     onOpen={onOpen}
                     setCurrentVideoIndex={setCurrentVideoIndex}
                   />
                 </TabPanel>
-                <TabPanel p={0} pt={1}>
+                <TabPanel p={0} pt={1} h='full'>
                   <Videos
+                    mobile={mobile}
                     videos={videos}
                     onOpen={onOpen}
                     setCurrentVideoIndex={setCurrentVideoIndex}
                   />
                 </TabPanel>
-                <TabPanel p={0} pt={1}>
+                <TabPanel p={0} pt={1} h='full'>
                   <Videos
+                    mobile={mobile}
                     videos={videos}
                     onOpen={onOpen}
                     setCurrentVideoIndex={setCurrentVideoIndex}
@@ -365,16 +404,6 @@ const Profile = ({
         </Container>
 
         <Modal isOpen={isOpen} onClose={onClose} scrollBehavior='inside'>
-          <ModalOverlay
-            bgColor='red'
-            backgroundImage={`url(${videos[currentVideoIndex]?.videoThumbnail})`}
-            backgroundRepeat='no-repeat'
-            backgroundSize='cover'
-            backgroundPosition='center'
-            width='100%'
-            opacity={0.4}
-            filter='blur(25px)'
-          />
           <ModalContent
             h='full'
             marginTop={0}
@@ -389,6 +418,7 @@ const Profile = ({
                 link={videos[currentVideoIndex]?.link}
                 videoUrl={videos[currentVideoIndex]?.videoUrl}
                 userName={`@${nickname}`}
+                onClickOutsideOfVideo={onClose}
                 userProfileImage={profile_image}
                 showGetAppModal={showGetAppToViewDialog}
                 onEnded={showGetAppToViewDialog}
@@ -412,67 +442,89 @@ const Profile = ({
         show={showModalAppDownload}
         onClose={handleCloseAppDownload}
         TextNode={getAppComponentRef.current}
-        getAppLink={appStoreLink}
       />
       <WelcomeModal show={showModalWelcome} onClose={handleCloseWelcome} />
     </Layout>
   );
 };
 
-const Videos = ({ videos, onOpen, setCurrentVideoIndex }) => (
-  <Box overflowY='scroll' pb={8}>
-    <Grid
-      templateColumns={[
-        "1fr 1fr 1fr",
-        "1fr",
-        "1fr 1fr ",
-        "1fr 1fr 1fr",
-        "1fr 1fr 1fr 1fr",
-      ]}
-      gap={6}
-    >
-      {videos.map((video, index) => (
-        <Box
-          cursor='pointer'
-          transition='transform .2s'
-          _hover={{
-            transform: "scale(0.97)",
-          }}
-          key={video.video_uuid}
-          role='group'
-        >
-          <Image
-            src={video.videoThumbnail}
-            onClick={() => {
-              onOpen();
-              setCurrentVideoIndex(index);
+const Videos = ({ videos, onOpen, setCurrentVideoIndex, mobile }) => (
+  <Box h='full'>
+    {!Boolean(videos.length) && (
+      <Flex
+        w='full'
+        h='full'
+        alignItems='center'
+        justifyContent='center'
+        fontWeight={700}
+        fontSize={20}
+        color='#949494'
+      >
+        No videos yet
+      </Flex>
+    )}
+    {Boolean(videos.length) && (
+      <Grid
+        templateColumns={[
+          "1fr 1fr 1fr",
+          "1fr",
+          "1fr 1fr ",
+          "1fr 1fr 1fr",
+          "1fr 1fr 1fr 1fr",
+        ]}
+        gap={6}
+      >
+        {videos.map((video, index) => (
+          <Box
+            cursor='pointer'
+            transition='transform .2s'
+            _hover={{
+              transform: "scale(0.97)",
             }}
-          />
-          <Flex
-            position='absolute'
-            _groupHover={{
-              opacity: 1,
-            }}
-            opacity={0}
-            gap={3}
-            bottom={3}
-            left={2}
-            color='white'
-            fontSize='15px'
-            fontWeight='bold'
+            key={video.video_uuid}
+            role='group'
           >
-            <Flex>
-              <Image mr={2} src={comments.src} h={5} mt={1} />
-              {video.noOfConversation}
+            {!mobile && (
+              <Image
+                src={video.videoThumbnail}
+                onClick={() => {
+                  onOpen();
+                  setCurrentVideoIndex(index);
+                }}
+              />
+            )}
+            {mobile && (
+              <Link href={`/${video.share_string}`}>
+                <Image src={video.videoThumbnail} />
+              </Link>
+            )}
+
+            <Flex
+              position='absolute'
+              _groupHover={{
+                opacity: 1,
+              }}
+              opacity={0}
+              gap={3}
+              bottom={3}
+              left={2}
+              color='white'
+              fontSize='15px'
+              fontWeight='bold'
+            >
+              <Flex>
+                <Image mr={2} src={comments.src} h={5} mt={1} />
+                {video.noOfConversation}
+              </Flex>
+              <Flex>
+                <Image src={views.src} mr={1} mt={1} />
+                {video.noOfViews}
+              </Flex>
             </Flex>
-            <Flex>
-              <Image src={views.src} mr={1} mt={1} />
-              {video.noOfViews}
-            </Flex>
-          </Flex>
-        </Box>
-      ))}
-    </Grid>
+          </Box>
+        ))}
+      </Grid>
+    )}
   </Box>
 );
 

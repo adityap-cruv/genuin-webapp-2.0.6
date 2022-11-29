@@ -5,7 +5,7 @@ import { TopNav } from "../components/topNav";
 import { GetAppModal } from "../components/getAppModal";
 import { SEO } from "../components/seo";
 import { handleInvestClick } from "../actions/appInstall";
-import { Nav, Container, Row, Col, Carousel, Button } from "react-bootstrap";
+import { Nav, Container, Row, Col, Carousel } from "react-bootstrap";
 
 import imgCarousel1 from "../images/web3/learn_web3_via_bite-sized_content.png";
 import imgCarousel2 from "../images/web3/connect_people_in_the_web3_business.png";
@@ -13,8 +13,8 @@ import imgCarousel3 from "../images/web3/feed_page_public_video.png";
 import imgCarousel4 from "../images/web3/initiate_conversation_about_web3.png";
 
 import favicon from "../images/favicon.ico";
-import { Text, Link } from "@chakra-ui/react";
-import { appStoreLink } from "../config";
+import { useBreakpointValue } from "@chakra-ui/react";
+import { InstallApp } from "../components/installApp";
 
 let title = "Genuin";
 let metaImage = "https://media.begenuin.com/backend_assets/preview.png";
@@ -27,6 +27,7 @@ const Home = () => {
   const [showModalAppDownload, setShowModalAppDownload] = useState(false);
   const handleCloseAppDownload = () => setShowModalAppDownload(false);
   const handleShowModalAppDownload = () => setShowModalAppDownload(true);
+  const mobile = useBreakpointValue({ base: true, sm: false });
 
   return (
     <>
@@ -43,7 +44,11 @@ const Home = () => {
         <link rel='shortcut icon' href={favicon.src} type='image/x-icon' />
       </NextHead>
       <Layout>
-        <TopNav showGetAppModal={handleShowModalAppDownload} isContiner />
+        <TopNav
+          showGetAppModal={handleShowModalAppDownload}
+          isContiner
+          variant='light'
+        />
         <section className='bg-gradient-blue section-content d-flex flex-column h-100 justify-content-center justify-content-md-between'>
           <Container className='container-false d-none d-md-block'></Container>
           <Container className='content-container'>
@@ -124,13 +129,7 @@ const Home = () => {
                   xs={2}
                   className='justify-content-center justify-content-md-start mt-5 pt-3'
                 >
-                  <Button>
-                    <Link href={appStoreLink}>
-                      <Text fontSize={24} fontWeight='bold'>
-                        Download App
-                      </Text>
-                    </Link>
-                  </Button>
+                  <InstallApp />
                 </Row>
               </Col>
             </Row>
