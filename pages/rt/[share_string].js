@@ -284,6 +284,7 @@ const RoundTable = ({
                     videos={videos}
                     onOpen={onOpen}
                     setCurrentVideoIndex={setCurrentVideoIndex}
+                    setWatchRoundtable={setWatchRoundtable}
                   />
                   <Box
                     position='absolute'
@@ -378,7 +379,13 @@ const RoundTable = ({
   );
 };
 
-const Videos = ({ videos, onOpen, setCurrentVideoIndex, mobile }) => (
+const Videos = ({
+  videos,
+  onOpen,
+  setCurrentVideoIndex,
+  mobile,
+  setWatchRoundtable,
+}) => (
   <Box overflow='auto' whiteSpace='nowrap' pl={0}>
     {!Boolean(videos.length) && (
       <Flex
@@ -410,6 +417,7 @@ const Videos = ({ videos, onOpen, setCurrentVideoIndex, mobile }) => (
               src={video.thumbnail_url}
               onClick={() => {
                 onOpen();
+                setWatchRoundtable(false);
                 setCurrentVideoIndex(index);
               }}
               h='full'
