@@ -7,7 +7,15 @@ import { ProgressBar, Badge, Button } from "react-bootstrap";
 
 import icArrowDown from "../../images/video-more-options/ic-arrow-down.svg";
 import icArrowUp from "../../images/video-more-options/ic-arrow-up.svg";
-import { Image, Flex, Text, Link, Progress, Box } from "@chakra-ui/react";
+import icArrowLeft from "../../images/video-more-options/ic-arrow-left.svg";
+import icArrowRight from "../../images/video-more-options/ic-arrow-right.svg";
+import icFlipLeft from "../../images/video-more-options/ic-flip-left.svg";
+import icFlipRight from "../../images/video-more-options/ic-flip-right.svg";
+import icClose from "../../images/video-more-options/ic-close.svg";
+import earth from "../../images/video-more-options/ic-earth.svg";
+import { Image, Flex, Text, Link, Box } from "@chakra-ui/react";
+import TimeAgo from "javascript-time-ago";
+import en from "javascript-time-ago/locale/en";
 
 export const ReactPlayerWrapper = ({
   videoUrl,
@@ -31,6 +39,7 @@ export const ReactPlayerWrapper = ({
   showGetAppModal,
   watchRoundTable,
   setWatchRoundtable,
+  onClose,
 }) => {
   console.log("videos", videos);
   console.log("videoUrl", videoUrl);
@@ -41,6 +50,7 @@ export const ReactPlayerWrapper = ({
   const handleToggleIsPlaying = useCallback(() => {
     setIsPlaying((old) => !old);
   }, [setIsPlaying]);
+  const [flip, setFlip] = useState("left");
 
   const touchStartYRef = useRef(0);
   const getprevVideoRef = useRef(getPrevVideo);
@@ -91,11 +101,17 @@ export const ReactPlayerWrapper = ({
     [autoJumpToNextVideo]
   );
 
+  TimeAgo.addDefaultLocale(en);
+  const timeAgo = new TimeAgo("en-US");
+  const ago = timeAgo.format(Number(videos[currentVideoIndex].conversation_at));
+  console.log("ago", ago);
+
   return (
     <div
       className='video-container'
       style={{
         pointerEvents: watchRoundTable || !roundTableMode ? "all" : "none",
+        color: "white",
       }}
     >
       <ReactPlayer
@@ -125,32 +141,99 @@ export const ReactPlayerWrapper = ({
         p={4}
         direction='column'
         background='whiteAlpha.500'
+        gap={2}
       >
-        <Flex w='full' justifyContent='space-between'>
-          <Text>{roundTableName}</Text>
+        <Flex
+          w='full'
+          justifyContent='space-between'
+          alignItems='center'
+          h={10}
+        >
+          <Text fontWeight='bold' fontSize={17}>
+            {ago}
+          </Text>
+          <Link href={"roundtableURL"}>
+            <Flex
+              alignItems='center'
+              gap={3}
+              margin='0'
+              position='absolute'
+              left='50%'
+              transform='translate(-50%, -50%)'
+            >
+              <Text
+                background='rgba(17, 17, 17, 0.6)'
+                borderRadius='5px'
+                p={2}
+                fontWeight='bold'
+                fontSize={17}
+              >
+                {roundTableName}
+              </Text>
+              <Image
+                src={earth.src}
+                width={6}
+                height={6}
+                alt='Arrow Down'
+                title='Arrow Down'
+                onClick={getNextVideo}
+              />
+            </Flex>
+          </Link>
+          <Image
+            src={icClose.src}
+            width={6}
+            height={6}
+            alt='Close'
+            title='Close'
+            onClick={onClose}
+          />
         </Flex>
         <Flex w='full' gap={1}>
           {/* {JSON.stringify(videos)} */}
           {Boolean(videos.length) &&
             videos.map((video, index) => {
               return (
-                <Progress
-                  isAnimated
-                  value={
-                    index < currentVideoIndex
-                      ? 100
-                      : index === currentVideoIndex
-                      ? progress
-                      : 0
-                  }
-                  borderRadius={10}
-                  colorScheme='blue'
-                  background='blackAlpha.400'
-                  w='full'
-                  h={1}
-                />
+                <Box h={1} w='full' borderRadius={10} background='white'>
+                  <Box
+                    backgroundColor='#0645FF'
+                    borderRadius={10}
+                    h={1}
+                    w={`${
+                      index < currentVideoIndex
+                        ? 100
+                        : index === currentVideoIndex
+                        ? progress
+                        : 0
+                    }%`}
+                  />
+                </Box>
               );
             })}
+        </Flex>
+        <Flex w='full' justifyContent='space-between' alignItems='center'>
+          <Text fontWeight={600} fontSize={17}>
+            {videos[currentVideoIndex].meta_data.duration}
+          </Text>
+          {flip === "left" ? (
+            <Image
+              src={icFlipRight.src}
+              width={6}
+              height={6}
+              alt='Flip Right'
+              title='Flip Right'
+              onClick={() => setFlip("right")}
+            />
+          ) : (
+            <Image
+              src={icFlipLeft.src}
+              width={6}
+              height={6}
+              alt='Flip Left'
+              title='Flip Left'
+              onClick={() => setFlip("left")}
+            />
+          )}
         </Flex>
       </Flex>
 

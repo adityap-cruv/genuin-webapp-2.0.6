@@ -26,6 +26,7 @@ export const Player = ({
   onClickOutsideOfVideo,
   watchRoundTable = false,
   setWatchRoundtable = () => {},
+  onClose = () => {},
 }) => {
   const [triggerPlayCount, setTriggetPlayCount] = useState(false);
 
@@ -100,6 +101,7 @@ export const Player = ({
         roundTableName={roundTableName}
         watchRoundTable={watchRoundTable}
         setWatchRoundtable={setWatchRoundtable}
+        onClose={onClose}
       >
         {children}
       </ReactPlayerWrapper>

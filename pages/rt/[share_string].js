@@ -352,6 +352,7 @@ const RoundTable = ({
                 setWatchRoundtable={setWatchRoundtable}
                 autoJumpToNextVideo
                 autoplay={watchRoundTable}
+                onClose={onClose}
               >
                 <AppActions
                   showGetAppModal={handleShowModalAppDownload}
