@@ -3,16 +3,18 @@ import ReactPlayer from "react-player/lazy";
 import { useDebounce } from "use-debounce";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
-import { Image, ProgressBar, Badge, Button } from "react-bootstrap";
+import { ProgressBar, Badge, Button } from "react-bootstrap";
 
 import icArrowDown from "../../images/video-more-options/ic-arrow-down.svg";
 import icArrowUp from "../../images/video-more-options/ic-arrow-up.svg";
+import { Image, Flex, Text, Link } from "@chakra-ui/react";
 
 export const ReactPlayerWrapper = ({
   videoUrl,
   onProgress,
   videoThumbnail,
   userName,
+  userId,
   description,
   profilePic,
   children,
@@ -25,7 +27,10 @@ export const ReactPlayerWrapper = ({
   autoplay = false,
   autoJumpToNextVideo = false,
   showGetAppModal,
+  watchRoundTable,
+  setWatchRoundtable,
 }) => {
+  console.log("userId", userId);
   const [progress, setProgress] = useState(0);
   const [isPlaying, setIsPlaying] = useState(autoplay);
   const [isPlayingDebounced] = useDebounce(isPlaying, 65);
@@ -83,7 +88,12 @@ export const ReactPlayerWrapper = ({
   );
 
   return (
-    <div className='video-container'>
+    <div
+      className='video-container'
+      style={{
+        pointerEvents: watchRoundTable || !roundTableMode ? "all" : "none",
+      }}
+    >
       <ReactPlayer
         key={videoUrl}
         url={[videoUrl]}
@@ -104,21 +114,28 @@ export const ReactPlayerWrapper = ({
         onEnded={onEndedWrapper}
         progressInterval={200}
       />
-      <FontAwesomeIcon
-        icon={isPlaying ? faPause : faPlay}
-        style={{
-          display: isPlayingDebounced ? "none" : "block",
-          pointerEvents: "none",
-        }}
-        className='btn-play'
-      />
-      {Boolean(getNextVideo) && Boolean(getPrevVideo) ? (
+      {/* <Flex w='full' position='absolute' top='0'>
+        <Text position='absolute'>{roundTableName}</Text>
+      </Flex> */}
+
+      {/* don't show it if it's watchRoundTable  */}
+      {(watchRoundTable || !roundTableMode) && (
+        <FontAwesomeIcon
+          icon={isPlaying ? faPause : faPlay}
+          style={{
+            display: isPlayingDebounced ? "none" : "block",
+            pointerEvents: "none",
+          }}
+          className='btn-play'
+        />
+      )}
+      {Boolean(getNextVideo) && Boolean(getPrevVideo) && !roundTableMode ? (
         <div className='btn-arrow-controler d-none d-md-flex flex-column align-items-center justify-content-center'>
           <button className='btn-arrow'>
             <Image
               src={icArrowUp.src}
-              width='24'
-              height='24'
+              width={6}
+              height={6}
               alt='Arrow Up'
               title='Arrow Up'
               onClick={getPrevVideo}
@@ -127,8 +144,8 @@ export const ReactPlayerWrapper = ({
           <button className='btn-arrow'>
             <Image
               src={icArrowDown.src}
-              width='24'
-              height='24'
+              width={6}
+              height={6}
               alt='Arrow Down'
               title='Arrow Down'
               onClick={getNextVideo}
@@ -140,53 +157,86 @@ export const ReactPlayerWrapper = ({
         className='video-footer bg-gradient-180'
         style={{ pointerEvents: "none" }}
       >
-        <div className='d-flex align-items-end justify-content-between'>
-          <div className='d-flex flex-column'>
-            {Boolean(roundTableMode) && (
-              <Badge pill bg='dark' className='mb-2 align-self-start'>
-                {userName}
-              </Badge>
-            )}
-            <div className='video-auther mb-2'>
-              <Image
-                src={profilePic}
-                width='36'
-                height='36'
-                alt={userName}
-                title={userName}
-                className='img-auther-pic'
-              />
-              <h5 className='mb-0'>
-                {Boolean(roundTableMode) ? (
-                  <>
-                    {roundTableName}
-                    <Button
-                      variant='outline-light'
-                      className='ms-3'
-                      style={{ pointerEvents: "all" }}
-                      onClick={() =>
-                        showGetAppModal(() => (
-                          <>Get the app to watch whole roundtable.</>
-                        ))
-                      }
-                    >
-                      Watch
-                    </Button>
-                  </>
-                ) : (
-                  userName
-                )}
-              </h5>
-            </div>
-            <p className='mb-0'>{description}</p>
-          </div>
+        <Flex alignItems='end' justifyContent='space-between' mb={3}>
+          {/* this should not show if it's rountableMode && watchRoundTable  */}
+          {(!watchRoundTable || !roundTableMode) && (
+            <Flex direction='column'>
+              {Boolean(roundTableMode) && (
+                <Link
+                  key={userId}
+                  href={`/p/${userId}`}
+                  _hover={{
+                    textDecoration: "none",
+                  }}
+                  pointerEvents='all'
+                >
+                  <Badge pill bg='dark' className='mb-2 align-self-start'>
+                    @{userName} added
+                  </Badge>
+                </Link>
+              )}
+              <div className='video-auther mb-2'>
+                <Image
+                  src={profilePic}
+                  width={9}
+                  height={9}
+                  alt={userName}
+                  title={userName}
+                  className='img-auther-pic'
+                />
+                <h5 className='mb-0'>
+                  {Boolean(roundTableMode) ? (
+                    <>
+                      {roundTableName}
+                      <Button
+                        variant='outline-light'
+                        className='ms-3'
+                        style={{ pointerEvents: "all" }}
+                        onClick={() => {
+                          console.log("setWatchRoundtable", setWatchRoundtable);
+                          setWatchRoundtable(true);
+                          console.log("watchRoundTable", watchRoundTable);
+                        }}
+                      >
+                        Watch
+                      </Button>
+                    </>
+                  ) : (
+                    userName
+                  )}
+                </h5>
+              </div>
+              <p className='mb-0'>{description}</p>
+            </Flex>
+          )}
+          {watchRoundTable && roundTableMode && (
+            <Link
+              href={`/p/${userId}`}
+              _hover={{
+                textDecoration: "none",
+              }}
+              pointerEvents='all'
+            >
+              <Flex alignItems='center' gap={2} pointerEvents='all'>
+                <Image
+                  src={profilePic}
+                  width={9}
+                  height={9}
+                  alt={userName}
+                  title={userName}
+                  className='img-auther-pic'
+                />
+                <Text>{userName}</Text>
+              </Flex>
+            </Link>
+          )}
           <div
             className='flex-shrink-0 position-relative video-more-option'
             style={{ pointerEvents: "all" }}
           >
             {children}
           </div>
-        </div>
+        </Flex>
         <ProgressBar now={progress} />
       </div>
     </div>

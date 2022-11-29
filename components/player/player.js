@@ -11,6 +11,7 @@ export const Player = ({
   videoThumbnail,
   userName,
   userProfileImage = "",
+  userId,
   getNextVideo,
   getPrevVideo,
   roundTableMode,
@@ -21,6 +22,8 @@ export const Player = ({
   showGetAppModal,
   roundTableName,
   onClickOutsideOfVideo,
+  watchRoundTable = false,
+  setWatchRoundtable = () => {},
 }) => {
   const [triggerPlayCount, setTriggetPlayCount] = useState(false);
 
@@ -54,7 +57,13 @@ export const Player = ({
   }, [video_id_to_use, triggerPlayCount]);
 
   return (
-    <Flex w='100%' h='100%' justifyContent='center' alignItems='center'>
+    <Flex
+      w='100%'
+      h='100%'
+      justifyContent='center'
+      alignItems='center'
+      position='fixed'
+    >
       <Box
         backgroundImage={`url(${videoThumbnail})`}
         backgroundRepeat='no-repeat'
@@ -74,6 +83,7 @@ export const Player = ({
         onProgress={handleProgress}
         videoThumbnail={videoThumbnail}
         userName={userName}
+        userId={userId}
         description={shortDescription}
         profilePic={profilePic}
         getNextVideo={getNextVideo}
@@ -84,6 +94,8 @@ export const Player = ({
         onEnded={onEnded}
         showGetAppModal={showGetAppModal}
         roundTableName={roundTableName}
+        watchRoundTable={watchRoundTable}
+        setWatchRoundtable={setWatchRoundtable}
       >
         {children}
       </ReactPlayerWrapper>
