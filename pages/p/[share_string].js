@@ -43,8 +43,6 @@ import {
 import { useRouter } from "next/router";
 
 const Profile = ({ user = {}, videos = [] }) => {
-  console.log("user", user);
-  console.log("videos", videos);
   const rtVideos = videos
     .filter((video) => video.video_type === "rt")
     .reduce((res, { video: { chats, group } }) => {

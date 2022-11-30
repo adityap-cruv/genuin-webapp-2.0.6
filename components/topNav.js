@@ -37,7 +37,7 @@ export const TopNav = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const mobile = useBreakpointValue({ base: true, sm: false });
-  console.log("appStoreLink", appStoreLink);
+
   return (
     <Navbar
       {...(isContiner ? { className: "p-3 container" } : { className: "p-3" })}
