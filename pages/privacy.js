@@ -1,9 +1,9 @@
-import { useState } from 'react';
-import { Nav, Container, Row, Col } from 'react-bootstrap';
-import { Layout } from '../components/layout';
-import { TopNav } from '../components/topNav';
-import { GetAppModal } from '../components/getAppModal';
-import { handleInvestClick } from '../actions/appInstall';
+import { useState } from "react";
+import { Nav, Container, Row, Col } from "react-bootstrap";
+import { Layout } from "../components/layout";
+import { TopNav } from "../components/topNav";
+import { GetAppModal } from "../components/getAppModal";
+import { handleInvestClick } from "../actions/appInstall";
 
 const Privacy = () => {
   const [showModalAppDownload, setShowModalAppDownload] = useState(false);
@@ -12,7 +12,11 @@ const Privacy = () => {
   return (
     <Layout className='overflow-auto'>
       <section className='bg-black h-top-navbar position-sticky top-0'>
-        <TopNav showGetAppModal={handleShowModalAppDownload} isContiner />
+        <TopNav
+          showGetAppModal={handleShowModalAppDownload}
+          isContiner
+          variant='light'
+        />
       </section>
       <section className='bg-body section-privacy'>
         <Container className='mt-3'>
@@ -105,8 +109,8 @@ const Privacy = () => {
                   <Nav.Link
                     style={{
                       opacity: 0.5,
-                      paddingLeft: '0px',
-                      paddingRight: '0px',
+                      paddingLeft: "0px",
+                      paddingRight: "0px",
                     }}
                     href={void 0}
                     eventKey='link-2'
@@ -123,8 +127,8 @@ const Privacy = () => {
                   <Nav.Link
                     style={{
                       opacity: 0.5,
-                      paddingLeft: '0px',
-                      paddingRight: '0px',
+                      paddingLeft: "0px",
+                      paddingRight: "0px",
                     }}
                     href={void 0}
                   >

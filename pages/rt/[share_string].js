@@ -110,7 +110,11 @@ const RoundTable = ({
       {!router.query.v && (
         <TopNav showGetAppModal={showGetAppToViewDialog} isContiner isBlue />
       )}
-      <section className='section-content d-flex flex-column h-100'>
+      <Flex
+        className='section-content h-100'
+        direction='column'
+        position={mobile ? "fixed" : "initial"}
+      >
         <Container className='container-false d-none d-md-block'></Container>
         {/* if there is a specific video url */}
         {router.query.v && (
@@ -148,7 +152,7 @@ const RoundTable = ({
         {!router.query.v && (
           <Container
             style={{
-              height: "calc(100% - 70px)",
+              height: mobile ? "100%" : "calc(100% - 70px)",
             }}
           >
             <Flex
@@ -156,13 +160,13 @@ const RoundTable = ({
                 base: "column",
                 sm: "row",
               }}
-              maxH='calc(100vh - 140px)'
+              maxH={mobile ? "calc(100vh - 70px)" : "calc(100vh - 140px)"}
               h='full'
               gap={{ base: 4, sm: "calc(100% / 12)" }}
-              mt={{ base: 16, sm: 0 }}
+              mt={{ base: 16, md: 0 }}
               justifyContent='space-between'
             >
-              {mobile && <Divider opacity={0.1} />}
+              {mobile && <Divider opacity={0.2} w='120%' ml={-3} />}
 
               {/* profile info */}
               <Flex
@@ -277,6 +281,7 @@ const RoundTable = ({
                 pb={{ base: 0, sm: 8 }}
                 w='full'
                 h='full'
+                position='relative'
               >
                 <Flex position='relative'>
                   <Videos
@@ -305,7 +310,7 @@ const RoundTable = ({
                     top={0}
                   />
                 </Flex>
-                {mobile && <Divider opacity={0.1} />}
+                {mobile && <Divider opacity={0.8} />}
 
                 <Participants members={users.members} mobile={mobile} />
               </Flex>
@@ -368,7 +373,7 @@ const RoundTable = ({
             </ModalBody>
           </ModalContent>
         </Modal>
-      </section>
+      </Flex>
       <GetAppModal
         show={showModalAppDownload}
         onClose={handleCloseAppDownload}

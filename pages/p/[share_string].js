@@ -24,7 +24,6 @@ import {
   ModalContent,
   Avatar,
   Divider,
-  ModalOverlay,
   useDisclosure,
   useBreakpointValue,
   Grid,
@@ -214,11 +213,15 @@ const Profile = ({
         dangerouslySetInnerHTML={{ __html: ORG_SCHEMA }}
       />
       <TopNav showGetAppModal={showGetAppToViewDialog} isContiner isBlue />
-      <section className='section-content d-flex flex-column h-100'>
+      <Flex
+        className='section-content h-100'
+        direction='column'
+        position={mobile ? "fixed" : "initial"}
+      >
         <Container className='container-false d-none d-md-block'></Container>
         <Container
           style={{
-            height: "calc(100% - 70px)",
+            height: mobile ? "100%" : "calc(100% - 70px)",
           }}
         >
           <Flex
@@ -226,7 +229,7 @@ const Profile = ({
               base: "column",
               sm: "row",
             }}
-            maxH='calc(100vh - 140px)'
+            maxH={mobile ? "calc(100vh - 70px)" : "calc(100vh - 140px)"}
             h='full'
             gap={{ base: 4, sm: "calc(100% / 12)" }}
             mt={{ base: 16, sm: 0 }}
@@ -437,7 +440,7 @@ const Profile = ({
             </ModalBody>
           </ModalContent>
         </Modal>
-      </section>
+      </Flex>
       <GetAppModal
         show={showModalAppDownload}
         onClose={handleCloseAppDownload}

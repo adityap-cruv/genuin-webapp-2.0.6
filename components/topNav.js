@@ -45,10 +45,11 @@ export const TopNav = ({
       onToggle={(isOpen) => setIsOpen(isOpen)}
       style={{
         background: variant === "light" ? "transparent" : "white",
+        pointerEvents: "none",
       }}
       variant={variant}
     >
-      <Navbar.Brand href='/' className='p-0'>
+      <Navbar.Brand href='/' className='p-0' style={{ pointerEvents: "all" }}>
         <Image
           src={isBlue ? logoBlue.src : logo.src}
           alt='Genuin'
@@ -66,6 +67,7 @@ export const TopNav = ({
               padding: "4px 16px",
               fontSize: 15,
               fontWeight: "bold",
+              pointerEvents: "all",
             }}
           >
             Get App
@@ -77,11 +79,16 @@ export const TopNav = ({
               aria-controls='navbarMoreOptionDrawer'
               style={{
                 visibility: isOpen ? "hidden" : "revert",
+                pointerEvents: "all",
               }}
             />
             <Fade in={isOpen}>
               <Navbar.Collapse
-                style={{ left: 0, visibility: isOpen ? "visible" : "hidden" }}
+                style={{
+                  left: 0,
+                  visibility: isOpen ? "visible" : "hidden",
+                  pointerEvents: "all",
+                }}
               >
                 <Nav {...(isContiner ? { className: "container" } : {})}>
                   <Navbar.Toggle aria-controls='navbarMoreOptionDrawer' />

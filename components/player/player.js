@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import { ReactPlayerWrapper } from "./reactPlayerWrapper";
 import { increaseVideoViewCount } from "../../actions/postActions";
 import { TopNav } from "../topNav";
-import { Box, Flex } from "@chakra-ui/react";
+import { Box, Flex, useBreakpointValue } from "@chakra-ui/react";
 
 export const Player = ({
   video_id_to_use,
@@ -32,6 +32,7 @@ export const Player = ({
   setDirection,
 }) => {
   const [triggerPlayCount, setTriggetPlayCount] = useState(false);
+  const pad = useBreakpointValue({ base: true, md: false });
 
   const shortDescription = useMemo(() => {
     if (description?.length > 50) {
@@ -83,7 +84,10 @@ export const Player = ({
         filter='blur(25px) brightness(30%)'
         onClick={onClickOutsideOfVideo}
       />
-      <TopNav showGetAppModal={showGetAppModal} isContiner variant='light' />
+      {/* don't show if it's a pad & watch roundtable  */}
+      {(!watchRoundTable || !pad) && (
+        <TopNav showGetAppModal={showGetAppModal} variant='light' />
+      )}
       <ReactPlayerWrapper
         videoUrl={videoUrl}
         onProgress={handleProgress}

@@ -13,7 +13,14 @@ import icFlipLeft from "../../images/video-more-options/ic-flip-left.svg";
 import icFlipRight from "../../images/video-more-options/ic-flip-right.svg";
 import icClose from "../../images/video-more-options/ic-close.svg";
 import earth from "../../images/video-more-options/ic-earth.svg";
-import { Image, Flex, Text, Link, Box } from "@chakra-ui/react";
+import {
+  Image,
+  Flex,
+  Text,
+  Link,
+  Box,
+  useBreakpointValue,
+} from "@chakra-ui/react";
 import ReactTimeAgo from "react-time-ago";
 import en from "javascript-time-ago/locale/en.json";
 
@@ -46,6 +53,9 @@ export const ReactPlayerWrapper = ({
   const [progress, setProgress] = useState(0);
   const [isPlaying, setIsPlaying] = useState(autoplay);
   const [isPlayingDebounced] = useDebounce(isPlaying, 65);
+  const mobile = useBreakpointValue({ base: true, sm: false });
+  const pad = useBreakpointValue({ base: true, md: false });
+
   const handleToggleIsPlaying = useCallback(() => {
     setIsPlaying((old) => !old);
   }, [setIsPlaying]);
@@ -106,7 +116,7 @@ export const ReactPlayerWrapper = ({
       style={{
         pointerEvents: watchRoundTable || !roundTableMode ? "all" : "none",
         color: "white",
-        zIndex: 1031,
+        // zIndex: 1031,
       }}
     >
       <ReactPlayer
@@ -129,10 +139,13 @@ export const ReactPlayerWrapper = ({
         onEnded={onEndedWrapper}
         progressInterval={200}
       />
-      {(watchRoundTable || !roundTableMode) && (
+
+      {/* roundtable header */}
+      {watchRoundTable && (
         <Flex
           w='full'
           position='absolute'
+          pointerEvents='all'
           top='0'
           p={4}
           direction='column'

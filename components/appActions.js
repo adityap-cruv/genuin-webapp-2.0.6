@@ -41,7 +41,6 @@ export const AppActions = ({
   videoUrl = "",
   videoDescription = "",
   videoTitle = "",
-  details,
 }) => {
   const mobile = useBreakpointValue({ base: true, sm: false });
 
