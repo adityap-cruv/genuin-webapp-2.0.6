@@ -43,11 +43,19 @@ import {
 import { useRouter } from "next/router";
 
 const Profile = ({ user = {}, videos = [] }) => {
+  console.log("user", user);
+  console.log("videos", videos);
   const rtVideos = videos
     .filter((video) => video.video_type === "rt")
-    .reduce((res, { video: { chats } }) => {
+    .reduce((res, { video: { chats, group } }) => {
       return res.concat(
-        chats.map((chat) => ({ video_type: "rt", video: chat }))
+        chats.map((chat) => ({
+          video_type: "rt",
+          video: {
+            ...chat,
+            group_name: group.group_name,
+          },
+        }))
       );
     }, []);
 
@@ -593,7 +601,7 @@ const Videos = ({ videos = [], onOpen, setCurrentVideoIndex, mobile }) => {
                         WebkitBoxOrient: "vertical",
                       }}
                     >
-                      Roundtable Community Name
+                      {video.group_name}
                     </Text>
                   </Flex>
                 </Flex>
