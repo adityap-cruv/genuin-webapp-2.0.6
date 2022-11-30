@@ -15,6 +15,7 @@ import imgCarousel4 from "../images/web3/initiate_conversation_about_web3.png";
 import favicon from "../images/favicon.ico";
 import { useBreakpointValue } from "@chakra-ui/react";
 import { InstallApp } from "../components/installApp";
+import { HomeNav } from "../components/homeNav";
 
 let title = "Genuin";
 let metaImage = "https://media.begenuin.com/backend_assets/preview.png";
@@ -44,10 +45,9 @@ const Home = () => {
         <link rel='shortcut icon' href={favicon.src} type='image/x-icon' />
       </NextHead>
       <Layout>
-        <TopNav
-          showGetAppModal={handleShowModalAppDownload}
+        <HomeNav
+          variant="light"
           isContiner
-          variant='light'
         />
         <section className='bg-gradient-blue section-content d-flex flex-column h-100 justify-content-center justify-content-md-between'>
           <Container className='container-false d-none d-md-block'></Container>
