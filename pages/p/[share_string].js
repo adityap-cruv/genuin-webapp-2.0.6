@@ -12,7 +12,6 @@ import {
 import { WelcomeModal } from "../../components/welcomeModal";
 import { Error } from "../../components/error";
 import { SEO } from "../../components/seo";
-import { appStoreLink } from "../../config";
 import { Container } from "react-bootstrap";
 import views from "../../images/views.svg";
 import comments from "../../images/comments.svg";
@@ -51,12 +50,10 @@ const Profile = ({ user = {}, videos = [] }) => {
         chats.map((chat) => ({ video_type: "rt", video: chat }))
       );
     }, []);
-  console.log("rtVideos", rtVideos);
 
   const publicVideos = videos.filter(
     (video) => video.video_type === "public_video"
   );
-  console.log("publicVideos", publicVideos);
 
   // return <div>asdasd</div>;
   const {
@@ -70,7 +67,6 @@ const Profile = ({ user = {}, videos = [] }) => {
     replies,
     profile_image,
   } = user;
-  console.log("user", user);
 
   let { hashtags } = user;
 
@@ -491,7 +487,6 @@ const Profile = ({ user = {}, videos = [] }) => {
 };
 
 const Videos = ({ videos = [], onOpen, setCurrentVideoIndex, mobile }) => {
-  console.log("videos", videos);
   return (
     <Box h='full'>
       {!Boolean(videos.length) && (
@@ -536,7 +531,6 @@ const Videos = ({ videos = [], onOpen, setCurrentVideoIndex, mobile }) => {
                       : video.video_thumbnail
                   }
                   onClick={() => {
-                    console.log(video_type);
                     if (video_type === "rt")
                       window.location.href = video.share_url;
                     else {

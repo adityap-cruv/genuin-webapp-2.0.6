@@ -1,4 +1,4 @@
-import { useMemo, useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import { Error } from "../../components/error";
 import { Player } from "../../components/player";
@@ -7,12 +7,12 @@ import { TopNav } from "../../components/topNav";
 import { GetAppModal } from "../../components/getAppModal";
 import { WelcomeModal } from "../../components/welcomeModal";
 import { SEO } from "../../components/seo";
-import { AppActions, ShareButton } from "../../components/appActions";
-import { appStoreLink } from "../../config";
+import {
+  AppActions,
+  ShareButton,
+  MobileShareButton,
+} from "../../components/appActions";
 import { Container } from "react-bootstrap";
-import views from "../../images/views.svg";
-import comments from "../../images/comments.svg";
-import shareImg from "../../images/video-more-options/ic-share-blue.svg";
 import directMessage from "../../images/direct_message_grey.svg";
 import {
   Avatar,
@@ -43,7 +43,7 @@ const RoundTable = ({
   },
 }) => {
   const { group } = details;
-  console.log("details", details);
+
   const [showModalWelcome, setShowModalWelcome] = useState(true);
   const handleCloseWelcome = () => setShowModalWelcome(false);
   const [showModalAppDownload, setShowModalAppDownload] = useState(false);
