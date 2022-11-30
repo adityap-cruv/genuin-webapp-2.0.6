@@ -13,6 +13,7 @@ import { Container } from "react-bootstrap";
 import views from "../../images/views.svg";
 import comments from "../../images/comments.svg";
 import directMessage from "../../images/direct_message.svg";
+import roundtable from "../../images/video-more-options/ic-roundtable.svg";
 
 import {
   Box,
@@ -507,8 +508,8 @@ const Videos = ({ videos = [], onOpen, setCurrentVideoIndex, mobile }) => {
               _hover={{
                 transform: "scale(0.97)",
               }}
+              position='relative'
               key={video.video_uuid}
-              role='group'
             >
               {!mobile && (
                 <Image
@@ -518,6 +519,7 @@ const Videos = ({ videos = [], onOpen, setCurrentVideoIndex, mobile }) => {
                       : video.video_thumbnail
                   }
                   onClick={() => {
+                    console.log(video_type);
                     if (video_type === "rt")
                       window.location.href = video.share_url;
                     else {
@@ -539,28 +541,72 @@ const Videos = ({ videos = [], onOpen, setCurrentVideoIndex, mobile }) => {
                 </Link>
               )}
 
-              <Flex
-                position='absolute'
-                _groupHover={{
-                  opacity: 1,
-                }}
-                opacity={0}
-                gap={3}
-                bottom={3}
-                left={2}
-                color='white'
-                fontSize='15px'
-                fontWeight='bold'
-              >
-                <Flex>
-                  <Image mr={2} src={comments.src} h={5} mt={1} />
-                  {video.no_of_conversation}
+              {video_type === "rt" && (
+                <Flex
+                  position='absolute'
+                  w='full'
+                  h='full'
+                  top={0}
+                  direction='column'
+                  justifyContent='space-between'
+                  onClick={() => {
+                    window.location.href = video.share_url;
+                  }}
+                >
+                  <Flex
+                    justifyContent='space-between'
+                    top={3}
+                    w='full'
+                    color='white'
+                    fontSize='15px'
+                    fontWeight='bold'
+                    p={3}
+                  >
+                    <Flex>
+                      <Image src={views.src} mr={1} mt='3px' h={5} />
+                      {video.no_of_views}
+                    </Flex>
+                    <Flex>
+                      <Image src={roundtable.src} h={5} />
+                    </Flex>
+                  </Flex>
+                  <Flex p={3}>
+                    <Text
+                      fontWeight='bold'
+                      color='white'
+                      overflow='hidden'
+                      text-overflow='ellipsis'
+                      display='-webkit-box'
+                      css={{
+                        WebkitLineClamp: "2",
+                        WebkitBoxOrient: "vertical",
+                      }}
+                    >
+                      Roundtable Community Name
+                    </Text>
+                  </Flex>
                 </Flex>
-                <Flex>
-                  <Image src={views.src} mr={1} mt={1} />
-                  {video.no_of_views}
+              )}
+              {video_type === "public_video" && (
+                <Flex
+                  position='absolute'
+                  gap={3}
+                  bottom={3}
+                  left={2}
+                  color='white'
+                  fontSize='15px'
+                  fontWeight='bold'
+                >
+                  <Flex>
+                    <Image mr={2} src={comments.src} h={5} mt={1} />
+                    {video.no_of_conversation}
+                  </Flex>
+                  <Flex>
+                    <Image src={views.src} mr={1} mt={1} />
+                    {video.no_of_views}
+                  </Flex>
                 </Flex>
-              </Flex>
+              )}
             </Box>
           ))}
         </Grid>
