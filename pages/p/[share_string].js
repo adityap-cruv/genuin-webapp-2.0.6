@@ -235,7 +235,7 @@ const Profile = ({
             mt={{ base: 16, sm: 0 }}
             justifyContent='space-between'
           >
-            {mobile && <Divider opacity={0.1} />}
+            {mobile && <Divider opacity={0.2} w='120%' ml={-3} />}
             <Flex
               color='#111111'
               flexDir='column'
