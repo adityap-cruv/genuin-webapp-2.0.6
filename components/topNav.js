@@ -4,7 +4,9 @@ import { useTrail, a } from "react-spring";
 import logo from "../images/logo_header_new.svg";
 import logoBlue from "../images/logo_header_new_blue.svg";
 import { hireLink, investLink } from "../config";
-import { useBreakpointValue } from "@chakra-ui/react";
+import { useBreakpointValue, Link, Text } from "@chakra-ui/react";
+import { InstallApp } from "./installApp";
+import { appStoreLink } from "../config";
 
 const Trail = ({ children, open }) => {
   const items = React.Children.toArray(children);
@@ -28,7 +30,6 @@ const Trail = ({ children, open }) => {
 
 export const TopNav = ({
   showGetAppModal,
-  hideGetAppButton = false,
   hideBurgerMenu = false,
   isContiner = false,
   isBlue = false,
@@ -45,10 +46,11 @@ export const TopNav = ({
       onToggle={(isOpen) => setIsOpen(isOpen)}
       style={{
         background: variant === "light" ? "transparent" : "white",
+        pointerEvents: "none",
       }}
       variant={variant}
     >
-      <Navbar.Brand href='/' className='p-0'>
+      <Navbar.Brand href='/' className='p-0' style={{ pointerEvents: "all" }}>
         <Image
           src={isBlue ? logoBlue.src : logo.src}
           alt='Genuin'
@@ -56,7 +58,7 @@ export const TopNav = ({
         />
       </Navbar.Brand>
       <div className='d-flex align-items-center justify-content-center'>
-        {!hideGetAppButton && (
+        {!mobile && (
           <Button
             variant='primary'
             className='me-3'
@@ -66,10 +68,28 @@ export const TopNav = ({
               padding: "4px 16px",
               fontSize: 15,
               fontWeight: "bold",
+              pointerEvents: "all",
             }}
           >
             Get App
           </Button>
+        )}
+        {mobile && (
+          <Link href={appStoreLink} pointerEvents='all'>
+            <Button
+              variant='primary'
+              className='me-3'
+              style={{
+                height: 32,
+                padding: "4px 16px",
+                fontSize: 15,
+                fontWeight: "bold",
+                pointerEvents: "all",
+              }}
+            >
+              Get App
+            </Button>
+          </Link>
         )}
         {!hideBurgerMenu && (
           <>
@@ -77,11 +97,16 @@ export const TopNav = ({
               aria-controls='navbarMoreOptionDrawer'
               style={{
                 visibility: isOpen ? "hidden" : "revert",
+                pointerEvents: "all",
               }}
             />
             <Fade in={isOpen}>
               <Navbar.Collapse
-                style={{ left: 0, visibility: isOpen ? "visible" : "hidden" }}
+                style={{
+                  left: 0,
+                  visibility: isOpen ? "visible" : "hidden",
+                  pointerEvents: "all",
+                }}
               >
                 <Nav {...(isContiner ? { className: "container" } : {})}>
                   <Navbar.Toggle aria-controls='navbarMoreOptionDrawer' />

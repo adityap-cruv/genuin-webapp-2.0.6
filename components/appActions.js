@@ -4,12 +4,15 @@ import bookmark from "../images/video-more-options/ic-bookmark.svg";
 import replay from "../images/video-more-options/ic-replay.svg";
 import comments from "../images/video-more-options/ic-comments.svg";
 import subscribePlus from "../images/video-more-options/ic-subscribe-plus.svg";
+import network from "../images/video-more-options/ic-network.svg";
+import roundtable from "../images/video-more-options/ic-roundtable.svg";
 import {
   Menu,
   MenuButton,
   MenuList,
   useBreakpointValue,
   Image,
+  Link,
 } from "@chakra-ui/react";
 import Email from "../images/video-actions/Email.svg";
 import Facebook from "../images/video-actions/Facebook.svg";
@@ -32,7 +35,9 @@ export const AppActions = ({
   userName,
   link,
   roundTableName,
+  roundTableId = "",
   roundTable = false,
+  watchRoundTable = false,
   videoUrl = "",
   videoDescription = "",
   videoTitle = "",
@@ -97,8 +102,12 @@ export const AppActions = ({
           </li>
         </>
       ) : null}
+
       {roundTable ? (
         <>
+          <li onClick={() => window.open("https://www.google.com", "_blank")}>
+            <Image src={network.src} size={6} alt='Network' title='Network' />
+          </li>
           <li>
             <Image
               src={comments.src}
@@ -108,6 +117,22 @@ export const AppActions = ({
               onClick={() =>
                 showGetAppModal(() => (
                   <>Get the app to watch the comments on this video.</>
+                ))
+              }
+            />
+          </li>
+          <li>
+            <Image
+              src={subscribePlus.src}
+              size={6}
+              alt='Subscribe Plus'
+              title='Subscribe Plus'
+              onClick={() =>
+                showGetAppModal(() => (
+                  <>
+                    Get the app to subscribe to <b>{roundTableName ?? ""}</b>{" "}
+                    roundtable.
+                  </>
                 ))
               }
             />
@@ -127,22 +152,18 @@ export const AppActions = ({
               />
             )}
           </li>
-          <li>
-            <Image
-              src={subscribePlus.src}
-              size={6}
-              alt='Subscribe Plus'
-              title='Subscribe Plus'
-              onClick={() =>
-                showGetAppModal(() => (
-                  <>
-                    Get the app to subscribe to <b>{roundTableName ?? ""}</b>{" "}
-                    roundtable.
-                  </>
-                ))
-              }
-            />
-          </li>
+          {watchRoundTable && (
+            <li>
+              <Link href={roundTableId}>
+                <Image
+                  src={roundtable.src}
+                  size={6}
+                  alt='Roundtable'
+                  title='Roundtable'
+                />
+              </Link>
+            </li>
+          )}
         </>
       ) : null}
     </ul>
@@ -156,7 +177,6 @@ export const ShareButton = ({
   variation = "white",
   ...props
 }) => {
-  console.log("props", props);
   return (
     <Menu placement='right' preventOverflow gutter={40}>
       <>
@@ -201,7 +221,7 @@ export const ShareButton = ({
   );
 };
 
-const MobileShareButton = ({ title, description, url }) => {
+export const MobileShareButton = ({ title, description, url }) => {
   const { isSupported, loading, share } = useWebShare();
 
   return (

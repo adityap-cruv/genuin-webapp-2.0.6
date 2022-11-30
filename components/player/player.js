@@ -2,15 +2,18 @@ import { useState, useMemo, useEffect } from "react";
 import { ReactPlayerWrapper } from "./reactPlayerWrapper";
 import { increaseVideoViewCount } from "../../actions/postActions";
 import { TopNav } from "../topNav";
-import { Box, Flex } from "@chakra-ui/react";
+import { Box, Flex, useBreakpointValue } from "@chakra-ui/react";
 
 export const Player = ({
   video_id_to_use,
   description,
   videoUrl = "",
   videoThumbnail,
+  videos = [],
+  currentVideoIndex,
   userName,
   userProfileImage = "",
+  userId,
   getNextVideo,
   getPrevVideo,
   roundTableMode,
@@ -20,9 +23,16 @@ export const Player = ({
   onEnded,
   showGetAppModal,
   roundTableName,
+  roundTableId,
   onClickOutsideOfVideo,
+  watchRoundTable = false,
+  setWatchRoundtable = () => {},
+  onClose = () => {},
+  direction,
+  setDirection,
 }) => {
   const [triggerPlayCount, setTriggetPlayCount] = useState(false);
+  const pad = useBreakpointValue({ base: true, md: false });
 
   const shortDescription = useMemo(() => {
     if (description?.length > 50) {
@@ -54,7 +64,13 @@ export const Player = ({
   }, [video_id_to_use, triggerPlayCount]);
 
   return (
-    <Flex w='100%' h='100%' justifyContent='center' alignItems='center'>
+    <Flex
+      w='100%'
+      h='100%'
+      justifyContent='center'
+      alignItems='center'
+      position='fixed'
+    >
       <Box
         backgroundImage={`url(${videoThumbnail})`}
         backgroundRepeat='no-repeat'
@@ -68,12 +84,18 @@ export const Player = ({
         filter='blur(25px) brightness(30%)'
         onClick={onClickOutsideOfVideo}
       />
-      <TopNav showGetAppModal={showGetAppModal} isContiner variant='light' />
+      {/* don't show if it's a pad & watch roundtable  */}
+      {(!watchRoundTable || !pad) && (
+        <TopNav showGetAppModal={showGetAppModal} variant='light' />
+      )}
       <ReactPlayerWrapper
         videoUrl={videoUrl}
         onProgress={handleProgress}
         videoThumbnail={videoThumbnail}
+        videos={videos}
+        currentVideoIndex={currentVideoIndex}
         userName={userName}
+        userId={userId}
         description={shortDescription}
         profilePic={profilePic}
         getNextVideo={getNextVideo}
@@ -82,8 +104,13 @@ export const Player = ({
         autoplay={autoplay}
         autoJumpToNextVideo={autoJumpToNextVideo}
         onEnded={onEnded}
-        showGetAppModal={showGetAppModal}
         roundTableName={roundTableName}
+        roundTableId={roundTableId}
+        watchRoundTable={watchRoundTable}
+        setWatchRoundtable={setWatchRoundtable}
+        onClose={onClose}
+        direction={direction}
+        setDirection={setDirection}
       >
         {children}
       </ReactPlayerWrapper>
