@@ -1,13 +1,42 @@
-import { Image, Navbar, Button } from "react-bootstrap";
-import { handleHireLinkClick } from "../actions/appInstall";
+import React, { useState, useEffect } from "react";
+import { Image, Navbar, Nav, Button, Fade } from "react-bootstrap";
+import { useTrail, a } from "react-spring";
 import logo from "../images/logo_header_new.svg";
 import logoBlue from "../images/logo_header_new_blue.svg";
+import { hireLink, investLink } from "../config";
+import { useBreakpointValue } from "@chakra-ui/react";
+import { handleHireLinkClick } from "../actions/appInstall";
+
+const Trail = ({ children, open }) => {
+   const items = React.Children.toArray(children);
+   const trail = useTrail(items.length, {
+      config: { mass: 5, tension: 2000, friction: 200 },
+      opacity: open ? 1 : 0,
+      y: open ? 0 : 20,
+      height: open ? 20 : 0,
+      from: { opacity: 0, y: 20, height: 0 },
+   });
+   return (
+      <div>
+         {trail.map(({ height, ...style }, index) => (
+            <a.div key={index} style={style}>
+               {items[index]}
+            </a.div>
+         ))}
+      </div>
+   );
+};
 
 export const HomeNav = ({
+   showGetAppModal,
+   hideGetAppButton = false,
+   hideBurgerMenu = false,
    isContiner = false,
    isBlue = false,
    variant = "dark",
 }) => {
+   const [isOpen, setIsOpen] = useState(false);
+   const mobile = useBreakpointValue({ base: true, sm: false });
 
    return (
       <Navbar
@@ -28,16 +57,48 @@ export const HomeNav = ({
             />
          </Navbar.Brand>
          <div className='d-flex align-items-center justify-content-center'>
-            <Button
-               variant='primary'
-               className='me-3'
-               onClick={handleHireLinkClick}
-               style={{
-                  fontSize: 22,
-               }}
-            >
-               Join us
-            </Button>
+            {!mobile && (
+               <Button
+                  variant='primary'
+                  className='me-3'
+                  onClick={handleHireLinkClick}
+                  style={{
+                     fontSize: 22,
+                     padding: "0.275rem 2rem",
+                     borderRadius: "0.4rem",
+                  }}
+               >
+                  Join Us
+               </Button>
+            )}
+            {mobile && (
+               <>
+                  <Navbar.Toggle
+                     aria-controls='navbarMoreOptionDrawer'
+                     style={{
+                        visibility: isOpen ? "hidden" : "revert",
+                     }}
+                  />
+                  <Fade in={isOpen}>
+                     <Navbar.Collapse
+                        style={{ left: 0, visibility: isOpen ? "visible" : "hidden" }}
+                     >
+                        <Nav {...(isContiner ? { className: "container" } : {})}>
+                           <Navbar.Toggle aria-controls='navbarMoreOptionDrawer' />
+                           <Trail open={isOpen}>
+                              <Nav.Link href={investLink}>Invest in Genuin</Nav.Link>
+                              <Nav.Link href={hireLink}>Join us</Nav.Link>
+                              <Nav.Link href='/terms'>Terms of Service</Nav.Link>
+                              <Nav.Link href='/privacy'>Privacy Policy</Nav.Link>
+                           </Trail>
+                           <Nav.Link href='/' className='text-primary small mt-auto'>
+                              &copy; 2022 Genuin Inc.
+                           </Nav.Link>
+                        </Nav>
+                     </Navbar.Collapse>
+                  </Fade>
+               </>
+            )}
          </div>
       </Navbar>
    );
