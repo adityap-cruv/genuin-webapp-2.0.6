@@ -1,33 +1,43 @@
-import { useState } from "react";
-import NextHead from "next/head";
-import { Layout } from "../components/layout";
-import { TopNav } from "../components/topNav";
-import { GetAppModal } from "../components/getAppModal";
-import { SEO } from "../components/seo";
-import { handleInvestClick } from "../actions/appInstall";
-import { Nav, Container, Row, Col, Carousel } from "react-bootstrap";
+import { useState } from 'react';
+import NextHead from 'next/head';
+import { Layout } from '../components/layout';
+import { TopNav } from '../components/topNav';
+import { GetAppModal } from '../components/getAppModal';
+import { SEO } from '../components/seo';
+import { handleLink, handleInvestClick } from '../actions/appInstall';
+import { appleAppStoreLink, googlePlayStoreLink } from '../config';
+import { Nav, Container, Row, Col, Carousel, Image } from 'react-bootstrap';
 
-import imgCarousel1 from "../images/web3/learn_web3_via_bite-sized_content.png";
-import imgCarousel2 from "../images/web3/connect_people_in_the_web3_business.png";
-import imgCarousel3 from "../images/web3/feed_page_public_video.png";
-import imgCarousel4 from "../images/web3/initiate_conversation_about_web3.png";
+import ios from '../images/badge_appstore.png';
+import android from '../images/badge_playstore.png';
 
-import favicon from "../images/favicon.ico";
-import { useBreakpointValue } from "@chakra-ui/react";
-import { InstallApp } from "../components/installApp";
+import imgCarousel1 from '../images/web3/learn_web3_via_bite-sized_content.png';
+import imgCarousel2 from '../images/web3/connect_people_in_the_web3_business.png';
+import imgCarousel3 from '../images/web3/feed_page_public_video.png';
+import imgCarousel4 from '../images/web3/initiate_conversation_about_web3.png';
 
-let title = "Genuin";
-let metaImage = "https://media.begenuin.com/backend_assets/preview.png";
+import favicon from '../images/favicon.ico';
+import { HomeNav } from '../components/homeNav';
+import { InstallApp } from '../components/installApp';
+
+let title = 'Genuin';
+let metaImage = 'https://media.begenuin.com/backend_assets/preview.png';
 let description =
-  "Genuin is a video-first professional networking platform that allows you to showcase your expertise and connect with other professionals and businesses. Whether you are searching for a job, seeking investment, hiring candidates, or any other networking, Genuin helps you stand out";
-let currentUrl = "https://begenuin.com";
+  'Genuin is a video-first professional networking platform that allows you to showcase your expertise and connect with other professionals and businesses. Whether you are searching for a job, seeking investment, hiring candidates, or any other networking, Genuin helps you stand out';
+let currentUrl = 'https://begenuin.com';
 
-const Home = () => {
+const Home = (props) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [showModalAppDownload, setShowModalAppDownload] = useState(false);
   const handleCloseAppDownload = () => setShowModalAppDownload(false);
   const handleShowModalAppDownload = () => setShowModalAppDownload(true);
-  const mobile = useBreakpointValue({ base: true, sm: false });
+  var hideAndroid = false;
+  var hideIOS = false;
+
+  if (props.detectedOS != null) {
+    hideIOS = props.detectedOS == "Android" ? true : false;
+    hideAndroid = props.detectedOS == "iOS" ? true : false;
+  }
 
   return (
     <>
@@ -41,14 +51,11 @@ const Home = () => {
         includeHead={false}
       />
       <NextHead>
-        <link rel="shortcut icon" href={favicon.src} type="image/x-icon" />
+        <link rel='shortcut icon' href={favicon.src} type='image/x-icon' />
       </NextHead>
       <Layout>
-        <TopNav
-          showGetAppModal={handleShowModalAppDownload}
-          isContiner
-          variant='light'
-        />
+        {/* <TopNav showGetAppModal={handleShowModalAppDownload} isContiner variant="light" /> */}
+        <HomeNav isContiner variant='light'></HomeNav>
         <section className='bg-gradient-blue section-content d-flex flex-column h-100 justify-content-center justify-content-md-between'>
           <Container className='container-false d-none d-md-block'></Container>
           <Container className='content-container'>
@@ -116,18 +123,24 @@ const Home = () => {
                     </h1>
                   </Carousel.Item>
                   <Carousel.Item>
-                    <h1>Connect people in the Web3 business</h1>
+                    <h1>
+                      Connect people in the Web3 business
+                    </h1>
                   </Carousel.Item>
                   <Carousel.Item>
-                    <h1>Showcase your Web3 knowledge</h1>
+                    <h1>
+                      Showcase your Web3 knowledge
+                    </h1>
                   </Carousel.Item>
                   <Carousel.Item>
-                    <h1>Initiate conversation about Web3</h1>
+                    <h1>
+                      Initiate conversation about Web3
+                    </h1>
                   </Carousel.Item>
                 </Carousel>
                 <Row
                   xs={2}
-                  className="justify-content-center justify-content-md-start mt-5 pt-3"
+                  className='justify-content-center justify-content-md-start mt-5 pt-3'
                 >
                   <InstallApp />
                 </Row>
@@ -135,15 +148,15 @@ const Home = () => {
             </Row>
           </Container>
 
-          <Container className="d-none d-md-block container-footer">
-            <Row className="py-3">
+          <Container className='d-none d-md-block container-footer'>
+            <Row className='py-3'>
               <Col xl={4} lg={4} md={4} sm={12}>
-                <Nav as="ul">
-                  <Nav.Item as="li">
+                <Nav as='ul'>
+                  <Nav.Item as='li'>
                     <Nav.Link
                       style={{ opacity: 0.5 }}
-                      href="/"
-                      className="pr-0"
+                      href='/'
+                      className='pr-0'
                     >
                       © 2022 Genuin Inc.
                     </Nav.Link>
@@ -152,50 +165,50 @@ const Home = () => {
               </Col>
               <Col xl={8} lg={8} md={8} sm={12}>
                 <Nav
-                  className="justify-content-start justify-content-md-end"
-                  as="ul"
+                  className='justify-content-start justify-content-md-end'
+                  as='ul'
                 >
-                  <Nav.Item as="li">
+                  <Nav.Item as='li'>
                     <Nav.Link
                       style={{ opacity: 0.5 }}
-                      href="#"
+                      href='#'
                       onClick={handleInvestClick}
                     >
                       Invest in Genuin
                     </Nav.Link>
                   </Nav.Item>
-                  <Nav.Item as="li">
+                  <Nav.Item as='li'>
                     <Nav.Link
                       style={{
                         opacity: 0.5,
-                        paddingLeft: "0px",
-                        paddingRight: "0px",
+                        paddingLeft: '0px',
+                        paddingRight: '0px',
                       }}
                       href={void 0}
-                      eventKey="link-2"
+                      eventKey='link-2'
                     >
                       |
                     </Nav.Link>
                   </Nav.Item>
-                  <Nav.Item as="li">
-                    <Nav.Link style={{ opacity: 0.5 }} href="/terms">
+                  <Nav.Item as='li'>
+                    <Nav.Link style={{ opacity: 0.5 }} href='/terms'>
                       Terms of Service
                     </Nav.Link>
                   </Nav.Item>
-                  <Nav.Item as="li">
+                  <Nav.Item as='li'>
                     <Nav.Link
                       style={{
                         opacity: 0.5,
-                        paddingLeft: "0px",
-                        paddingRight: "0px",
+                        paddingLeft: '0px',
+                        paddingRight: '0px',
                       }}
                       href={void 0}
                     >
                       |
                     </Nav.Link>
                   </Nav.Item>
-                  <Nav.Item as="li">
-                    <Nav.Link style={{ opacity: 0.5 }} href="/privacy">
+                  <Nav.Item as='li'>
+                    <Nav.Link style={{ opacity: 0.5 }} href='/privacy'>
                       Privacy Policy
                     </Nav.Link>
                   </Nav.Item>

@@ -3,6 +3,7 @@ import "./styles.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.min.css";
 import { ChakraProvider } from "@chakra-ui/react";
+import { useState, useEffect } from "react";
 
 function MyApp({ Component, pageProps }) {
   return (
