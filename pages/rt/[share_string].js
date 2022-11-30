@@ -311,6 +311,7 @@ const RoundTable = ({
                     onOpen={onOpen}
                     setCurrentVideoIndex={setCurrentVideoIndex}
                     setWatchRoundtable={setWatchRoundtable}
+                    chatId={details.chat_id}
                   />
                   <Box
                     position='absolute'
@@ -331,7 +332,9 @@ const RoundTable = ({
                     top={0}
                   />
                 </Flex>
-                {mobile && <Divider opacity={0.8} />}
+                {mobile && (
+                  <Box p='0.3px' w='full' bgColor='black' opacity={0.1} />
+                )}
 
                 <Participants members={users.members} mobile={mobile} />
               </Flex>
@@ -411,6 +414,7 @@ const Videos = ({
   setCurrentVideoIndex,
   mobile,
   setWatchRoundtable,
+  chatId,
 }) => (
   <Box overflow='auto' whiteSpace='nowrap' pl={0}>
     {!Boolean(videos.length) && (
@@ -451,7 +455,7 @@ const Videos = ({
           )}
           {mobile && (
             // this needs to point to the same page but with &video_id=${v} at te end
-            <Link href={`/${video.share_string}`}>
+            <Link href={`${chatId}?v=${video.share_string}`}>
               <Image src={video.thumbnail_url} h='full' />
             </Link>
           )}
