@@ -270,19 +270,27 @@ const RoundTable = ({
                   >
                     <Text color='white'>Subscribe</Text>
                   </Button>
-                  <ShareButton
-                    url={currentUrl}
-                    description='Hello, visit this roundtable!'
-                    title='Genuin on web'
-                    color='#0645ff'
-                    bgColor='transparent'
-                    border='1px solid #0645FF'
-                    p={0}
-                    minW={8}
-                    h={8}
-                    borderRadius='md'
-                    variation='blue'
-                  />
+                  {mobile ? (
+                    <MobileShareButton
+                      url={currentUrl}
+                      description='Hello, visit this roundtable!'
+                      title='Genuin on web'
+                    />
+                  ) : (
+                    <ShareButton
+                      url={currentUrl}
+                      description='Hello, visit this roundtable!'
+                      title='Genuin on web'
+                      color='#0645ff'
+                      bgColor='transparent'
+                      border='1px solid #0645FF'
+                      p={0}
+                      minW={8}
+                      h={8}
+                      borderRadius='md'
+                      variation='blue'
+                    />
+                  )}
                 </Flex>
               </Flex>
 

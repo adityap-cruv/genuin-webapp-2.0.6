@@ -221,7 +221,7 @@ export const ShareButton = ({
   );
 };
 
-const MobileShareButton = ({ title, description, url }) => {
+export const MobileShareButton = ({ title, description, url }) => {
   const { isSupported, loading, share } = useWebShare();
 
   return (

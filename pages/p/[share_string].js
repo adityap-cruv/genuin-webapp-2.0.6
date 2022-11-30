@@ -4,7 +4,11 @@ import { isValidHttpUrl, Player } from "../../components/player";
 import { Layout } from "../../components/layout";
 import { TopNav } from "../../components/topNav";
 import { GetAppModal } from "../../components/getAppModal";
-import { AppActions, ShareButton } from "../../components/appActions";
+import {
+  AppActions,
+  MobileShareButton,
+  ShareButton,
+} from "../../components/appActions";
 import { WelcomeModal } from "../../components/welcomeModal";
 import { Error } from "../../components/error";
 import { SEO } from "../../components/seo";
@@ -350,19 +354,27 @@ const Profile = ({ user = {}, videos = [] }) => {
                   />
                   <Text>Message</Text>
                 </Button>
-                <ShareButton
-                  url={currentUrl}
-                  description='Hello, visit this profile!'
-                  title='Genuin on web'
-                  color='#0645ff'
-                  bgColor='transparent'
-                  border='1px solid #0645FF'
-                  p={0}
-                  minW={8}
-                  h={8}
-                  borderRadius='md'
-                  variation='blue'
-                />
+                {mobile ? (
+                  <MobileShareButton
+                    url={currentUrl}
+                    description='Hello, visit this profile!'
+                    title='Genuin on web'
+                  />
+                ) : (
+                  <ShareButton
+                    url={currentUrl}
+                    description='Hello, visit this profile!'
+                    title='Genuin on web'
+                    color='#0645ff'
+                    bgColor='transparent'
+                    border='1px solid #0645FF'
+                    p={0}
+                    minW={8}
+                    h={8}
+                    borderRadius='md'
+                    variation='blue'
+                  />
+                )}
               </Flex>
             </Flex>
 
@@ -394,7 +406,12 @@ const Profile = ({ user = {}, videos = [] }) => {
                 </Tab>
               </TabList>
 
-              <TabPanels overflow='auto' maxH='full' height='full'>
+              <TabPanels
+                overflow='auto'
+                maxH='full'
+                height='full'
+                mt={{ base: "-19px", sm: 0 }}
+              >
                 <TabPanel p={0} pt={1} h='full'>
                   <Videos
                     mobile={mobile}
