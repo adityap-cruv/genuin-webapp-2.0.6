@@ -35,7 +35,7 @@ import {
 import { useRouter } from "next/router";
 
 const RoundTable = ({
-  details,
+  details = {},
   videos = [],
   users = {
     members: [],
@@ -43,6 +43,7 @@ const RoundTable = ({
   },
 }) => {
   const { group } = details;
+  console.log("details", details);
   const [showModalWelcome, setShowModalWelcome] = useState(true);
   const handleCloseWelcome = () => setShowModalWelcome(false);
   const [showModalAppDownload, setShowModalAppDownload] = useState(false);
@@ -126,13 +127,25 @@ const RoundTable = ({
             description={group?.group_description}
             videoUrl={videos?.[currentVideoIndex]?.video_url}
             videoThumbnail={videos?.[currentVideoIndex]?.thumbnail_url}
-            userName={`@${videos?.[currentVideoIndex]?.owner?.nickname}`}
+            userName={videos?.[currentVideoIndex]?.owner?.nickname}
+            userId={videos?.[currentVideoIndex]?.owner?.member_id}
             userProfileImage={videos?.[currentVideoIndex]?.owner?.profile_image}
+            onClickOutsideOfVideo={() => {
+              window.location.href = details.chat_id;
+            }}
             roundTableMode
             roundTableName={group?.group_name}
             showGetAppModal={handleShowModalAppDownload}
+            getNextVideo={getNextVideo}
+            getPrevVideo={getPrevVideo}
             watchRoundTable={watchRoundTable}
             setWatchRoundtable={setWatchRoundtable}
+            autoJumpToNextVideo
+            autoplay={watchRoundTable}
+            onClose={onClose}
+            roundTableId={details.chat_id}
+            direction={direction}
+            setDirection={setDirection}
           >
             <AppActions
               showGetAppModal={handleShowModalAppDownload}
@@ -613,11 +626,6 @@ RoundTable.getInitialProps = async ({ query: { share_string, v } }) => {
     share_string !== null &&
     share_string !== ""
   ) {
-    var url_to_use = `${process.env.apiurl}/api/v3/rt/videos?chat_id=${share_string}`;
-    if (v !== undefined && v !== null) {
-      url_to_use = `${url_to_use}&video_id=${v}`;
-    }
-
     try {
       let videos = await axios.get(
         `${process.env.apiurl}/api/v3/rt/videos?chat_id=${share_string}`

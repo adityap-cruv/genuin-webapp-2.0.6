@@ -159,6 +159,7 @@ export const ReactPlayerWrapper = ({
           >
             <Text fontWeight='bold' fontSize={17}>
               <ReactTimeAgo
+                timeStyle='mini'
                 date={Number(videos[currentVideoIndex].conversation_at)}
                 locale='en-US'
               />
@@ -177,14 +178,14 @@ export const ReactPlayerWrapper = ({
                   borderRadius='5px'
                   p={2}
                   fontWeight='bold'
-                  fontSize={17}
+                  fontSize={{ base: 14, sm: 17 }}
                 >
                   {roundTableName}
                 </Text>
                 <Image
                   src={earth.src}
-                  width={6}
-                  height={6}
+                  width={{ base: 5, sm: 6 }}
+                  height={{ base: 5, sm: 6 }}
                   alt='Roundtable'
                   title='Roundtable'
                 />
