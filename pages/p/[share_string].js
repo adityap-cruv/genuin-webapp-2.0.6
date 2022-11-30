@@ -38,20 +38,37 @@ import {
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 
-const Profile = ({
-  user_id,
-  preview_image,
-  nickname,
-  bio,
-  name,
-  share_url,
-  no_of_views,
-  no_of_videos,
-  no_of_replies,
-  profile_image,
-  videos = [],
-  hashtags = [],
-}) => {
+const Profile = ({ user = {}, videos = [] }) => {
+  const rtVideos = videos
+    .filter((video) => video.video_type === "rt")
+    .reduce((res, { video: { chats } }) => {
+      return res.concat(
+        chats.map((chat) => ({ video_type: "rt", video: chat }))
+      );
+    }, []);
+  console.log("rtVideos", rtVideos);
+
+  const publicVideos = videos.filter(
+    (video) => video.video_type === "public_video"
+  );
+  console.log("publicVideos", publicVideos);
+
+  // return <div>asdasd</div>;
+  const {
+    user_id,
+    preview_image,
+    nickname,
+    bio,
+    name,
+    share_url,
+    views,
+    replies,
+    profile_image,
+  } = user;
+  console.log("user", user);
+
+  let { hashtags } = user;
+
   const profilePic = useMemo(() => {
     if (Boolean(profile_image)) {
       return isValidHttpUrl(profile_image)
@@ -153,8 +170,8 @@ const Profile = ({
     description: `${
       Boolean(name) ? `[${name}] (@${nickname})` : `@${nickname}`
     } on Genuin | ${abbreviateNumber(
-      no_of_views
-    )} Views. ${no_of_videos} Videos. ${no_of_replies} Replies. ${
+      views
+    )} Views. ${videos} Videos. ${replies} Replies. ${
       bio ? bio.replace(/\n+/g, " ") : ""
     } ${
       hashtags && hashtags != [] && hashtags.length > 0
@@ -191,8 +208,8 @@ const Profile = ({
         description={`${
           Boolean(name) ? `[${name}] (@${nickname})` : `@${nickname}`
         } on Genuin. | ${abbreviateNumber(
-          no_of_views
-        )} Views. ${no_of_videos} Videos. ${no_of_replies} Replies. ${
+          views
+        )} Views. ${videos} Videos. ${replies} Replies. ${
           bio ? bio.replace(/\n+/g, " ") : ""
         } ${
           hashtags && hashtags != [] && hashtags.length > 0
@@ -201,12 +218,12 @@ const Profile = ({
         }`}
         openGraphDescription={`${
           Boolean(name) ? name : `@${nickname}`
-        }, ${no_of_videos} Videos, ${abbreviateNumber(
-          no_of_views
-        )} Views, ${no_of_replies} Replies`}
+        }, ${videos} Videos, ${abbreviateNumber(
+          views
+        )} Views, ${replies} Replies`}
         urlToCopy={share_url}
         videoPreviewImage={preview_image}
-        videoUrl={videos[currentVideoIndex]?.videoUrl}
+        videoUrl={videos[currentVideoIndex]?.video?.video_url}
       />
       <script
         type='application/ld+json'
@@ -258,19 +275,19 @@ const Profile = ({
                     mx={6}
                   >
                     <Flex flexGrow={1} flexDir='column'>
-                      <Box fontWeight='bold'>{no_of_views}</Box>
+                      <Box fontWeight='bold'>{views}</Box>
                       <Box fontWeight={600} fontSize={12} color='#949494'>
                         Views
                       </Box>
                     </Flex>
                     <Flex flexGrow={1} flexDir='column'>
-                      <Box fontWeight='bold'>{no_of_videos}</Box>
+                      <Box fontWeight='bold'>{user.videos}</Box>
                       <Box fontWeight={600} fontSize={12} color='#949494'>
                         Videos
                       </Box>
                     </Flex>
                     <Flex flexGrow={1} flexDir='column'>
-                      <Box fontWeight='bold'>{no_of_replies}</Box>
+                      <Box fontWeight='bold'>{replies}</Box>
                       <Box fontWeight={600} fontSize={12} color='#949494'>
                         Replies
                       </Box>
@@ -294,19 +311,19 @@ const Profile = ({
                   my={4}
                 >
                   <Flex flexGrow={1} flexDir='column'>
-                    <Box fontWeight='bold'>{no_of_views}</Box>
+                    <Box fontWeight='bold'>{views}</Box>
                     <Box fontWeight={600} fontSize={12} color='#949494'>
                       Views
                     </Box>
                   </Flex>
                   <Flex flexGrow={1} flexDir='column'>
-                    <Box fontWeight='bold'>{no_of_videos}</Box>
+                    <Box fontWeight='bold'>{user.videos}</Box>
                     <Box fontWeight={600} fontSize={12} color='#949494'>
                       Videos
                     </Box>
                   </Flex>
                   <Flex flexGrow={1} flexDir='column'>
-                    <Box fontWeight='bold'>{no_of_replies}</Box>
+                    <Box fontWeight='bold'>{replies}</Box>
                     <Box fontWeight={600} fontSize={12} color='#949494'>
                       Replies
                     </Box>
@@ -330,7 +347,7 @@ const Profile = ({
                     alt='Share'
                     title='Share Profile'
                   />
-                  <Text>Direct Message</Text>
+                  <Text>Message</Text>
                 </Button>
                 <ShareButton
                   url={currentUrl}
@@ -380,7 +397,7 @@ const Profile = ({
                 <TabPanel p={0} pt={1} h='full'>
                   <Videos
                     mobile={mobile}
-                    videos={videos}
+                    videos={rtVideos.concat(publicVideos)}
                     onOpen={onOpen}
                     setCurrentVideoIndex={setCurrentVideoIndex}
                   />
@@ -388,7 +405,7 @@ const Profile = ({
                 <TabPanel p={0} pt={1} h='full'>
                   <Videos
                     mobile={mobile}
-                    videos={videos}
+                    videos={publicVideos}
                     onOpen={onOpen}
                     setCurrentVideoIndex={setCurrentVideoIndex}
                   />
@@ -396,7 +413,7 @@ const Profile = ({
                 <TabPanel p={0} pt={1} h='full'>
                   <Videos
                     mobile={mobile}
-                    videos={videos}
+                    videos={rtVideos}
                     onOpen={onOpen}
                     setCurrentVideoIndex={setCurrentVideoIndex}
                   />
@@ -416,10 +433,12 @@ const Profile = ({
           >
             <ModalBody p={0} height='full' w='full' overflow='hidden'>
               <Player
-                videoThumbnail={videos[currentVideoIndex]?.videoThumbnail}
-                description={videos[currentVideoIndex]?.description}
-                link={videos[currentVideoIndex]?.link}
-                videoUrl={videos[currentVideoIndex]?.videoUrl}
+                videoThumbnail={
+                  videos[currentVideoIndex]?.video?.video_thumbnail
+                }
+                description={videos[currentVideoIndex]?.video?.description}
+                link={videos[currentVideoIndex]?.video?.link}
+                videoUrl={videos[currentVideoIndex]?.video?.video_url}
                 userName={`@${nickname}`}
                 onClickOutsideOfVideo={onClose}
                 userProfileImage={profile_image}
@@ -431,9 +450,11 @@ const Profile = ({
                 <AppActions
                   showGetAppModal={showGetAppToViewDialog}
                   userName={`@${nickname}`}
-                  link={videos[currentVideoIndex].link}
+                  link={videos[currentVideoIndex]?.video?.link}
                   videoUrl={globalThis?.location?.href}
-                  videoDescription={videos[currentVideoIndex].description}
+                  videoDescription={
+                    videos[currentVideoIndex]?.video?.description
+                  }
                   videoTitle='Genuin'
                 />
               </Player>
@@ -451,85 +472,102 @@ const Profile = ({
   );
 };
 
-const Videos = ({ videos, onOpen, setCurrentVideoIndex, mobile }) => (
-  <Box h='full'>
-    {!Boolean(videos.length) && (
-      <Flex
-        w='full'
-        h='full'
-        alignItems='center'
-        justifyContent='center'
-        fontWeight={700}
-        fontSize={20}
-        color='#949494'
-      >
-        No videos yet
-      </Flex>
-    )}
-    {Boolean(videos.length) && (
-      <Grid
-        templateColumns={[
-          "1fr 1fr 1fr",
-          "1fr",
-          "1fr 1fr ",
-          "1fr 1fr 1fr",
-          "1fr 1fr 1fr 1fr",
-        ]}
-        gap={6}
-      >
-        {videos.map((video, index) => (
-          <Box
-            cursor='pointer'
-            transition='transform .2s'
-            _hover={{
-              transform: "scale(0.97)",
-            }}
-            key={video.video_uuid}
-            role='group'
-          >
-            {!mobile && (
-              <Image
-                src={video.videoThumbnail}
-                onClick={() => {
-                  onOpen();
-                  setCurrentVideoIndex(index);
-                }}
-              />
-            )}
-            {mobile && (
-              <Link href={`/${video.share_string}`}>
-                <Image src={video.videoThumbnail} />
-              </Link>
-            )}
-
-            <Flex
-              position='absolute'
-              _groupHover={{
-                opacity: 1,
+const Videos = ({ videos = [], onOpen, setCurrentVideoIndex, mobile }) => {
+  console.log("videos", videos);
+  return (
+    <Box h='full'>
+      {!Boolean(videos.length) && (
+        <Flex
+          w='full'
+          h='full'
+          alignItems='center'
+          justifyContent='center'
+          fontWeight={700}
+          fontSize={20}
+          color='#949494'
+        >
+          No videos yet
+        </Flex>
+      )}
+      {Boolean(videos.length) && (
+        <Grid
+          templateColumns={[
+            "1fr 1fr 1fr",
+            "1fr",
+            "1fr 1fr ",
+            "1fr 1fr 1fr",
+            "1fr 1fr 1fr 1fr",
+          ]}
+          gap={6}
+        >
+          {videos.map(({ video, video_type }, index) => (
+            <Box
+              cursor='pointer'
+              transition='transform .2s'
+              _hover={{
+                transform: "scale(0.97)",
               }}
-              opacity={0}
-              gap={3}
-              bottom={3}
-              left={2}
-              color='white'
-              fontSize='15px'
-              fontWeight='bold'
+              key={video.video_uuid}
+              role='group'
             >
-              <Flex>
-                <Image mr={2} src={comments.src} h={5} mt={1} />
-                {video.noOfConversation}
+              {!mobile && (
+                <Image
+                  src={
+                    video_type === "rt"
+                      ? video.thumbnail_url
+                      : video.video_thumbnail
+                  }
+                  onClick={() => {
+                    if (video_type === "rt")
+                      window.location.href = video.share_url;
+                    else {
+                      onOpen();
+                      setCurrentVideoIndex(index);
+                    }
+                  }}
+                />
+              )}
+              {mobile && (
+                <Link href={`/${video.share_url}`}>
+                  <Image
+                    src={
+                      video_type === "rt"
+                        ? video.thumbnail_url
+                        : video.video_thumbnail
+                    }
+                  />
+                </Link>
+              )}
+
+              <Flex
+                position='absolute'
+                _groupHover={{
+                  opacity: 1,
+                }}
+                opacity={0}
+                gap={3}
+                bottom={3}
+                left={2}
+                color='white'
+                fontSize='15px'
+                fontWeight='bold'
+              >
+                <Flex>
+                  <Image mr={2} src={comments.src} h={5} mt={1} />
+                  {video.no_of_conversation}
+                </Flex>
+                <Flex>
+                  <Image src={views.src} mr={1} mt={1} />
+                  {video.no_of_views}
+                </Flex>
               </Flex>
-              <Flex>
-                <Image src={views.src} mr={1} mt={1} />
-                {video.noOfViews}
-              </Flex>
-            </Flex>
-          </Box>
-        ))}
-      </Grid>
-    )}
-  </Box>
-);
+            </Box>
+          ))}
+        </Grid>
+      )}
+    </Box>
+  );
+};
 
 const RoundtableIcon = (props) => (
   <Icon viewBox='0 0 27 28' {...props}>
@@ -565,15 +603,21 @@ Profile.getInitialProps = async ({ query: { share_string } }) => {
     share_string !== null &&
     share_string !== ""
   ) {
-    var url_to_use = `${process.env.apiurl}/api/v3/p/web?username=${share_string}&start=0&rows=10`;
-    return axios
-      .get(url_to_use)
-      .then((response) => {
-        return Promise.resolve(response?.data?.data ?? {});
-      })
-      .catch((err) => {
-        return Promise.resolve({});
-      });
+    try {
+      const videos = await axios.get(
+        `${process.env.apiurl}/api/v3/user/profile_videos?user_id=${share_string}&video_types[]=public_video&video_types[]=rt`
+      );
+      const user = await axios.get(
+        `${process.env.apiurl}/api/v3/user/details?user_id=${share_string}`
+      );
+
+      return {
+        videos: videos?.data?.data?.videos,
+        user: user?.data?.data,
+      };
+    } catch (error) {
+      return {};
+    }
   } else {
     return Promise.resolve({});
   }

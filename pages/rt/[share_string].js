@@ -627,13 +627,13 @@ RoundTable.getInitialProps = async ({ query: { share_string, v } }) => {
     share_string !== ""
   ) {
     try {
-      let videos = await axios.get(
+      const videos = await axios.get(
         `${process.env.apiurl}/api/v3/rt/videos?chat_id=${share_string}`
       );
-      let users = await axios.get(
+      const users = await axios.get(
         `${process.env.apiurl}/api/v3/rt/users?chat_id=${share_string}`
       );
-      let details = await axios.get(
+      const details = await axios.get(
         `${process.env.apiurl}/api/v3/rt/details?chat_id=${share_string}`
       );
 
