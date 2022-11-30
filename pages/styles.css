@@ -2,27 +2,27 @@
   --h-top-navbar: 70px;
 }
 @font-face {
-  font-family: 'AvenirNext';
-  src: url('/fonts/AvenirNext-Bold-01.ttf');
-  src: url('/fonts/AvenirNext-BoldItalic-02.ttf');
-  src: url('/fonts/AvenirNext-DemiBold-03.ttf');
-  src: url('/fonts/AvenirNext-DemiBoldItalic-04.ttf');
-  src: url('/fonts/AvenirNext-Heavy-09.ttf');
-  src: url('/fonts/AvenirNext-HeavyItalic-10.ttf');
-  src: url('/fonts/AvenirNext-Italic-05.ttf');
-  src: url('/fonts/AvenirNext-Medium-06.ttf');
-  src: url('/fonts/AvenirNext-MediumItalic-07.ttf');
-  src: url('/fonts/AvenirNext-Regular-08.ttf');
-  src: url('/fonts/AvenirNext-UltraLight-11.ttf');
-  src: url('/fonts/AvenirNext-UltraLightItalic-12.ttf');
+  font-family: "AvenirNext";
+  src: url("/fonts/AvenirNext-Bold-01.ttf");
+  src: url("/fonts/AvenirNext-BoldItalic-02.ttf");
+  src: url("/fonts/AvenirNext-DemiBold-03.ttf");
+  src: url("/fonts/AvenirNext-DemiBoldItalic-04.ttf");
+  src: url("/fonts/AvenirNext-Heavy-09.ttf");
+  src: url("/fonts/AvenirNext-HeavyItalic-10.ttf");
+  src: url("/fonts/AvenirNext-Italic-05.ttf");
+  src: url("/fonts/AvenirNext-Medium-06.ttf");
+  src: url("/fonts/AvenirNext-MediumItalic-07.ttf");
+  src: url("/fonts/AvenirNext-Regular-08.ttf");
+  src: url("/fonts/AvenirNext-UltraLight-11.ttf");
+  src: url("/fonts/AvenirNext-UltraLightItalic-12.ttf");
 }
 @font-face {
-  font-family: 'AvenirNext-DemiBold';
-  src: url('/fonts/AvenirNext-DemiBold-03.ttf');
+  font-family: "AvenirNext-DemiBold";
+  src: url("/fonts/AvenirNext-DemiBold-03.ttf");
 }
 @font-face {
-  font-family: 'AvenirNext-Bold';
-  src: url('/fonts/AvenirNext-Bold-01.ttf');
+  font-family: "AvenirNext-Bold";
+  src: url("/fonts/AvenirNext-Bold-01.ttf");
 }
 
 html {
@@ -33,9 +33,9 @@ html {
 body {
   width: 100%;
   height: 100%;
-  font-family: 'Avenir', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-    'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji',
-    'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  font-family: "Avenir", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   padding: 0;
   margin: 0;
   font-style: normal;
@@ -126,6 +126,11 @@ body .overlay {
   width: 2rem;
   height: 2rem;
 }
+
+.navbar-dark .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='black' stroke-width='3' stroke-linecap='round' stroke-miterlimit='10' d='M4 8h24M4 16h24M4 24h24'/%3E%3C/svg%3E");
+}
+
 .navbar-collapse {
   position: fixed;
   top: 0;

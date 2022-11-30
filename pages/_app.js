@@ -1,12 +1,12 @@
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './styles.css';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.min.css';
-import NextHead from "next/head";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "./styles.css";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.min.css";
+import { ChakraProvider } from "@chakra-ui/react";
 
 function MyApp({ Component, pageProps }) {
   return (
-    <>
+    <ChakraProvider>
       <Component {...pageProps} />
       <ToastContainer
         position="bottom-left"
@@ -14,7 +14,7 @@ function MyApp({ Component, pageProps }) {
         limit={1}
         theme={"dark"}
       />
-    </>
+    </ChakraProvider>
   );
 }
 
@@ -24,7 +24,7 @@ function MyApp({ Component, pageProps }) {
 // be server-side rendered.
 //
 // MyApp.getInitialProps = async (appContext) => {
-  // calls page's `getInitialProps` and fills `appProps.pageProps`
+// calls page's `getInitialProps` and fills `appProps.pageProps`
 //   const appProps = await App.getInitialProps(appContext);
 //
 //   return { ...appProps }

@@ -1,10 +1,31 @@
-import { Image } from 'react-bootstrap';
-import { ShareComponent } from '../components/share';
-import linkIcon from '../images/video-more-options/ic-link.svg';
-import bookmark from '../images/video-more-options/ic-bookmark.svg';
-import replay from '../images/video-more-options/ic-replay.svg';
-import comments from '../images/video-more-options/ic-comments.svg';
-import subsribePlus from '../images/video-more-options/ic-subsribe-plus.svg';
+import { ShareComponent } from "../components/share";
+import linkIcon from "../images/video-more-options/ic-link.svg";
+import bookmark from "../images/video-more-options/ic-bookmark.svg";
+import replay from "../images/video-more-options/ic-replay.svg";
+import comments from "../images/video-more-options/ic-comments.svg";
+import subscribePlus from "../images/video-more-options/ic-subscribe-plus.svg";
+import {
+  Menu,
+  MenuButton,
+  MenuList,
+  useBreakpointValue,
+  Image,
+} from "@chakra-ui/react";
+import Email from "../images/video-actions/Email.svg";
+import Facebook from "../images/video-actions/Facebook.svg";
+import LinkedIN from "../images/video-actions/LinkedIN.svg";
+import Twitter from "../images/video-actions/Twitter.svg";
+import WhatsApp from "../images/video-actions/WhatsApp.svg";
+import shareImg from "../images/video-more-options/ic-share.svg";
+import shareImgBlue from "../images/video-more-options/ic-share-blue.svg";
+import {
+  WhatsappShareButton,
+  TwitterShareButton,
+  FacebookShareButton,
+  LinkedinShareButton,
+  EmailShareButton,
+} from "react-share";
+import { useWebShare } from "./hooks/useWebShare";
 
 export const AppActions = ({
   showGetAppModal,
@@ -12,22 +33,18 @@ export const AppActions = ({
   link,
   roundTableName,
   roundTable = false,
-  videoUrl = '',
-  videoDescription = '',
-  videoTitle = '',
+  videoUrl = "",
+  videoDescription = "",
+  videoTitle = "",
 }) => {
+  const mobile = useBreakpointValue({ base: true, sm: false });
+
   return (
     <ul>
       {link ? (
         <li>
           <a href={link} target='_blank'>
-            <Image
-              src={linkIcon.src}
-              width='24'
-              height='24'
-              alt='Link'
-              title='Link'
-            />
+            <Image src={linkIcon.src} size={6} alt='Link' title='Link' />
           </a>
         </li>
       ) : null}
@@ -36,8 +53,7 @@ export const AppActions = ({
           <li>
             <Image
               src={bookmark.src}
-              width='24'
-              height='24'
+              size={6}
               alt='Bookmark'
               title='Bookmark'
               onClick={() =>
@@ -50,10 +66,24 @@ export const AppActions = ({
             />
           </li>
           <li>
+            {mobile ? (
+              <MobileShareButton
+                url={videoUrl}
+                description={videoDescription}
+                title={videoTitle}
+              />
+            ) : (
+              <ShareButton
+                url={videoUrl}
+                description={videoDescription}
+                title={videoTitle}
+              />
+            )}
+          </li>
+          <li>
             <Image
               src={replay.src}
-              width='24'
-              height='24'
+              size={6}
               alt='Replay'
               title='Replay'
               onClick={() =>
@@ -72,8 +102,7 @@ export const AppActions = ({
           <li>
             <Image
               src={comments.src}
-              width='24'
-              height='24'
+              size={6}
               alt='Comments'
               title='Comments'
               onClick={() =>
@@ -84,16 +113,30 @@ export const AppActions = ({
             />
           </li>
           <li>
+            {mobile ? (
+              <MobileShareButton
+                url={videoUrl}
+                description={videoDescription}
+                title={videoTitle}
+              />
+            ) : (
+              <ShareButton
+                url={videoUrl}
+                description={videoDescription}
+                title={videoTitle}
+              />
+            )}
+          </li>
+          <li>
             <Image
-              src={subsribePlus.src}
-              width='24'
-              height='24'
-              alt='Subsribe Plus'
-              title='Subsribe Plus'
+              src={subscribePlus.src}
+              size={6}
+              alt='Subscribe Plus'
+              title='Subscribe Plus'
               onClick={() =>
                 showGetAppModal(() => (
                   <>
-                    Get the app to subscribe to <b>{roundTableName ?? ''}</b>{' '}
+                    Get the app to subscribe to <b>{roundTableName ?? ""}</b>{" "}
                     roundtable.
                   </>
                 ))
@@ -102,13 +145,74 @@ export const AppActions = ({
           </li>
         </>
       ) : null}
-      <li>
-        <ShareComponent
-          url={videoUrl}
-          description={videoDescription}
-          title={videoTitle}
-        />
-      </li>
     </ul>
+  );
+};
+
+export const ShareButton = ({
+  url,
+  description,
+  title,
+  variation = "white",
+  ...props
+}) => {
+  console.log("props", props);
+  return (
+    <Menu placement='right' preventOverflow gutter={40}>
+      <>
+        <MenuButton pos='relative' {...props} textAlign='-webkit-center'>
+          <Image
+            size={6}
+            src={variation === "white" ? shareImg.src : shareImgBlue.src}
+          />
+        </MenuButton>
+        <MenuList
+          minW='max-content'
+          p={3}
+          gap={3}
+          display='flex'
+          flexDir='column'
+          mb={16}
+        >
+          <WhatsappShareButton url={url} title={title}>
+            <Image size={12} src={WhatsApp.src} />
+          </WhatsappShareButton>
+          <TwitterShareButton url={url} title={title}>
+            <Image size={12} src={Twitter.src} />
+          </TwitterShareButton>
+          <LinkedinShareButton url={url} title={title}>
+            <Image size={12} src={LinkedIN.src} />
+          </LinkedinShareButton>
+          <FacebookShareButton url={url} title={title}>
+            <Image size={12} src={Facebook.src} />
+          </FacebookShareButton>
+          <EmailShareButton
+            url={url}
+            title={title}
+            subject={title}
+            body={description}
+          >
+            <Image size={12} src={Email.src} />
+          </EmailShareButton>
+          <ShareComponent url={url} description={description} title={title} />
+        </MenuList>
+      </>
+    </Menu>
+  );
+};
+
+const MobileShareButton = ({ title, description, url }) => {
+  const { isSupported, loading, share } = useWebShare();
+
+  return (
+    <Image
+      src={shareImg.src}
+      size={6}
+      alt='Share'
+      title='Share'
+      onClick={() => {
+        if (isSupported && !loading) share({ url, title, text: description });
+      }}
+    />
   );
 };

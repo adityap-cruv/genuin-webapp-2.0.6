@@ -1,34 +1,33 @@
-import { useState } from 'react';
-import NextHead from 'next/head';
-import { Layout } from '../components/layout';
-import { TopNav } from '../components/topNav';
-import { GetAppModal } from '../components/getAppModal';
-import { SEO } from '../components/seo';
-import { handleLink, handleInvestClick } from '../actions/appInstall';
-import { appleAppStoreLink, googlePlayStoreLink } from '../config';
-import { Nav, Container, Row, Col, Carousel, Image } from 'react-bootstrap';
+import { useState } from "react";
+import NextHead from "next/head";
+import { Layout } from "../components/layout";
+import { TopNav } from "../components/topNav";
+import { GetAppModal } from "../components/getAppModal";
+import { SEO } from "../components/seo";
+import { handleInvestClick } from "../actions/appInstall";
+import { Nav, Container, Row, Col, Carousel } from "react-bootstrap";
 
-import ios from '../images/badge_appstore.png';
-import android from '../images/badge_playstore.png';
+import imgCarousel1 from "../images/web3/learn_web3_via_bite-sized_content.png";
+import imgCarousel2 from "../images/web3/connect_people_in_the_web3_business.png";
+import imgCarousel3 from "../images/web3/feed_page_public_video.png";
+import imgCarousel4 from "../images/web3/initiate_conversation_about_web3.png";
 
-import imgCarousel1 from '../images/web3/learn_web3_via_bite-sized_content.png';
-import imgCarousel2 from '../images/web3/connect_people_in_the_web3_business.png';
-import imgCarousel3 from '../images/web3/feed_page_public_video.png';
-import imgCarousel4 from '../images/web3/initiate_conversation_about_web3.png';
+import favicon from "../images/favicon.ico";
+import { useBreakpointValue } from "@chakra-ui/react";
+import { InstallApp } from "../components/installApp";
 
-import favicon from '../images/favicon.ico';
-
-let title = 'Genuin';
-let metaImage = 'https://media.begenuin.com/backend_assets/preview.png';
+let title = "Genuin";
+let metaImage = "https://media.begenuin.com/backend_assets/preview.png";
 let description =
-  'Genuin is a video-first professional networking platform that allows you to showcase your expertise and connect with other professionals and businesses. Whether you are searching for a job, seeking investment, hiring candidates, or any other networking, Genuin helps you stand out';
-let currentUrl = 'https://begenuin.com';
+  "Genuin is a video-first professional networking platform that allows you to showcase your expertise and connect with other professionals and businesses. Whether you are searching for a job, seeking investment, hiring candidates, or any other networking, Genuin helps you stand out";
+let currentUrl = "https://begenuin.com";
 
 const Home = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [showModalAppDownload, setShowModalAppDownload] = useState(false);
   const handleCloseAppDownload = () => setShowModalAppDownload(false);
   const handleShowModalAppDownload = () => setShowModalAppDownload(true);
+  const mobile = useBreakpointValue({ base: true, sm: false });
 
   return (
     <>
@@ -36,6 +35,7 @@ const Home = () => {
         title={title}
         openGraphTitle={title}
         description={description}
+        openGraphDescription={description}
         urlToCopy={currentUrl}
         videoPreviewImage={metaImage}
         includeHead={false}
@@ -44,11 +44,15 @@ const Home = () => {
         <link rel="shortcut icon" href={favicon.src} type="image/x-icon" />
       </NextHead>
       <Layout>
-        <TopNav showGetAppModal={handleShowModalAppDownload} isContiner />
-        <section className="bg-gradient-blue section-content d-flex flex-column h-100 justify-content-center justify-content-md-between">
-          <Container className="container-false d-none d-md-block"></Container>
-          <Container className="content-container">
-            <Row className="justify-content-center align-items-center">
+        <TopNav
+          showGetAppModal={handleShowModalAppDownload}
+          isContiner
+          variant='light'
+        />
+        <section className='bg-gradient-blue section-content d-flex flex-column h-100 justify-content-center justify-content-md-between'>
+          <Container className='container-false d-none d-md-block'></Container>
+          <Container className='content-container'>
+            <Row className='justify-content-center align-items-center'>
               <Col sm={12} md={6} lg={6} xl={6}>
                 <Carousel
                   controls={false}
@@ -112,55 +116,20 @@ const Home = () => {
                     </h1>
                   </Carousel.Item>
                   <Carousel.Item>
-                    <h1>
-                      Connect people in the Web3 business
-                    </h1>
+                    <h1>Connect people in the Web3 business</h1>
                   </Carousel.Item>
                   <Carousel.Item>
-                    <h1>
-                      Showcase your Web3 knowledge
-                    </h1>
+                    <h1>Showcase your Web3 knowledge</h1>
                   </Carousel.Item>
                   <Carousel.Item>
-                    <h1>
-                      Initiate conversation about Web3
-                    </h1>
+                    <h1>Initiate conversation about Web3</h1>
                   </Carousel.Item>
                 </Carousel>
                 <Row
                   xs={2}
                   className="justify-content-center justify-content-md-start mt-5 pt-3"
                 >
-                  <Col
-                    xs="6"
-                    lg="auto"
-                    className="d-flex align-items-center justify-content-end ps-4 ps-sm-0"
-                  >
-                    <Image
-                      src={ios.src}
-                      onClick={handleLink(appleAppStoreLink)}
-                      width={204}
-                      height={60}
-                      alt="iOs App Store"
-                      title="iOs App Store"
-                      fluid
-                    />
-                  </Col>
-                  <Col
-                    xs="6"
-                    lg="auto"
-                    className="d-flex align-items-center justify-content-start pe-4 ps-em-0"
-                  >
-                    <Image
-                      src={android.src}
-                      width={204}
-                      height={60}
-                      onClick={handleLink(googlePlayStoreLink)}
-                      alt="Android Play Store"
-                      title="Android Play Store"
-                      fluid
-                    />
-                  </Col>
+                  <InstallApp />
                 </Row>
               </Col>
             </Row>

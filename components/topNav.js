@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
-import { Image, Navbar, Nav, Button, Fade } from 'react-bootstrap';
-import { useTrail, a } from 'react-spring';
-import logo from '../images/logo_header_new.svg';
-import { hireLink, investLink } from '../config';
+import React, { useState, useEffect } from "react";
+import { Image, Navbar, Nav, Button, Fade } from "react-bootstrap";
+import { useTrail, a } from "react-spring";
+import logo from "../images/logo_header_new.svg";
+import logoBlue from "../images/logo_header_new_blue.svg";
+import { hireLink, investLink } from "../config";
+import { useBreakpointValue } from "@chakra-ui/react";
 
 const Trail = ({ children, open }) => {
   const items = React.Children.toArray(children);
@@ -29,24 +31,43 @@ export const TopNav = ({
   hideGetAppButton = false,
   hideBurgerMenu = false,
   isContiner = false,
+  isBlue = false,
+  variant = "dark",
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const mobile = useBreakpointValue({ base: true, sm: false });
 
   return (
     <Navbar
-      {...(isContiner
-        ? { className: 'p-3 container' }
-        : { className: 'p-3', bg: 'gradient' })}
+      {...(isContiner ? { className: "p-3 container" } : { className: "p-3" })}
       expand={false}
       fixed='top'
       onToggle={(isOpen) => setIsOpen(isOpen)}
+      style={{
+        background: variant === "light" ? "transparent" : "white",
+      }}
+      variant={variant}
     >
       <Navbar.Brand href='/' className='p-0'>
-        <Image src={logo.src} alt='Genuin' title='Genuin' />
+        <Image
+          src={isBlue ? logoBlue.src : logo.src}
+          alt='Genuin'
+          title='Genuin'
+        />
       </Navbar.Brand>
       <div className='d-flex align-items-center justify-content-center'>
         {!hideGetAppButton && (
-          <Button variant='primary' className='me-3' onClick={showGetAppModal}>
+          <Button
+            variant='primary'
+            className='me-3'
+            onClick={showGetAppModal}
+            style={{
+              height: 32,
+              padding: "4px 16px",
+              fontSize: 15,
+              fontWeight: "bold",
+            }}
+          >
             Get App
           </Button>
         )}
@@ -54,13 +75,15 @@ export const TopNav = ({
           <>
             <Navbar.Toggle
               aria-controls='navbarMoreOptionDrawer'
-              style={{ visibility: isOpen ? 'hidden' : 'revert' }}
+              style={{
+                visibility: isOpen ? "hidden" : "revert",
+              }}
             />
             <Fade in={isOpen}>
               <Navbar.Collapse
-                style={{ left: 0, visibility: isOpen ? 'visible' : 'hidden' }}
+                style={{ left: 0, visibility: isOpen ? "visible" : "hidden" }}
               >
-                <Nav {...(isContiner ? { className: 'container' } : {})}>
+                <Nav {...(isContiner ? { className: "container" } : {})}>
                   <Navbar.Toggle aria-controls='navbarMoreOptionDrawer' />
                   <Trail open={isOpen}>
                     <Nav.Link href={investLink}>Invest in Genuin</Nav.Link>
@@ -80,7 +103,3 @@ export const TopNav = ({
     </Navbar>
   );
 };
-
-/*
-  
-*/

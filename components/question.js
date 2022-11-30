@@ -1,8 +1,5 @@
-import { Container, Row, Col, Image } from 'react-bootstrap';
-import { handleLink } from '../actions/appInstall';
-import { appleAppStoreLink, googlePlayStoreLink } from '../config';
-import ios from '../images/badge_appstore.png';
-import android from '../images/badge_playstore.png';
+import { Container, Row, Col, Image } from "react-bootstrap";
+import { InstallApp } from "./installApp";
 
 export const Question = ({ previewImage }) => (
   <section className='w-100 h-100 bg-gradient-blue d-flex align-items-center'>
@@ -24,35 +21,8 @@ export const Question = ({ previewImage }) => (
           />
         </Col>
       </Row>
-      <Row xs={2} className='justify-content-center'>
-        <Col
-          sm='auto'
-          className='d-flex align-items-center justify-content-end ps-4 ps-sm-0'
-        >
-          <Image
-            src={ios.src}
-            onClick={handleLink(appleAppStoreLink)}
-            width={204}
-            height={60}
-            alt='iOs App Store'
-            title='iOs App Store'
-            fluid
-          />
-        </Col>
-        <Col
-          sm='auto'
-          className='d-flex align-items-center justify-content-start pe-4 ps-em-0'
-        >
-          <Image
-            src={android.src}
-            width={204}
-            height={60}
-            onClick={handleLink(googlePlayStoreLink)}
-            alt='Android Play Store'
-            title='Android Play Store'
-            fluid
-          />
-        </Col>
+      <Row xs={2} className='justify-content-center mt-5 pt-3'>
+        <InstallApp />
       </Row>
     </Container>
   </section>
