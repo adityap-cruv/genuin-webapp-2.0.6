@@ -226,10 +226,15 @@ export const MobileShareButton = ({ title, description, url }) => {
 
   return (
     <Image
-      src={shareImg.src}
+      src={shareImgBlue.src}
       size={6}
       alt='Share'
       title='Share'
+      bgColor='transparent'
+      border='1px solid #0645FF'
+      borderRadius='md'
+      px={1}
+      minW={8}
       onClick={() => {
         if (isSupported && !loading) share({ url, title, text: description });
       }}

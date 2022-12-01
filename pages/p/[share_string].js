@@ -75,6 +75,7 @@ const Profile = ({ user = {}, videos = [] }) => {
   } = user;
 
   let { hashtags } = user;
+  console.log("user", user);
 
   const profilePic = useMemo(() => {
     if (Boolean(profile_image)) {
@@ -176,11 +177,9 @@ const Profile = ({ user = {}, videos = [] }) => {
     thumbnailUrl: `${preview_image}`,
     description: `${
       Boolean(name) ? `[${name}] (@${nickname})` : `@${nickname}`
-    } on Genuin | ${abbreviateNumber(
-      views
-    )} Views. ${videos} Videos. ${replies} Replies. ${
-      bio ? bio.replace(/\n+/g, " ") : ""
-    } ${
+    } on Genuin | ${abbreviateNumber(views)} Views. ${
+      user.videos
+    } Videos. ${replies} Replies. ${bio ? bio.replace(/\n+/g, " ") : ""} ${
       hashtags && hashtags != [] && hashtags.length > 0
         ? hashtags.map((tag) => "#" + tag).join(" ")
         : ""
@@ -240,6 +239,7 @@ const Profile = ({ user = {}, videos = [] }) => {
       <Flex
         className='section-content h-100'
         direction='column'
+        w='full'
         position={mobile ? "fixed" : "initial"}
       >
         <Container className='container-false d-none d-md-block'></Container>
