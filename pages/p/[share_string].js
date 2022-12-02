@@ -42,26 +42,21 @@ import {
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 
-const Profile = ({ user = {}, videos = [] }) => {
-  const rtVideos = videos
-    .filter((video) => video.video_type === "rt")
-    .reduce((res, { video: { chats, group } }) => {
-      return res.concat(
-        chats.map((chat) => ({
-          video_type: "rt",
-          video: {
-            ...chat,
-            group_name: group.group_name,
-          },
-        }))
-      );
-    }, []);
+const Profile = ({ user = {}, videosRT, videosPublic }) => {
+  const rtVideos = videosRT.reduce((res, { video: { chats, group } }) => {
+    return res.concat(
+      chats.map((chat) => ({
+        video_type: "rt",
+        video: {
+          ...chat,
+          group_name: group.group_name,
+        },
+      }))
+    );
+  }, []);
 
-  const publicVideos = videos.filter(
-    (video) => video.video_type === "public_video"
-  );
+  const videos = rtVideos.concat(videosPublic);
 
-  // return <div>asdasd</div>;
   const {
     user_id,
     preview_image,
@@ -75,7 +70,6 @@ const Profile = ({ user = {}, videos = [] }) => {
   } = user;
 
   let { hashtags } = user;
-  console.log("user", user);
 
   const profilePic = useMemo(() => {
     if (Boolean(profile_image)) {
@@ -85,8 +79,6 @@ const Profile = ({ user = {}, videos = [] }) => {
     }
     return "https://media.qa.begenuin.com/backend_assets/lottie/snowman.png";
   }, [profile_image]);
-
-  const router = useRouter();
 
   const [showModalWelcome, setShowModalWelcome] = useState(true);
   const handleCloseWelcome = () => setShowModalWelcome(false);
@@ -101,11 +93,22 @@ const Profile = ({ user = {}, videos = [] }) => {
     setShowModalAppDownload(true);
   };
 
+  const {
+    isOpen: isOpenPublic,
+    onOpen: onOpenPublic,
+    onClose: onClosePublic,
+  } = useDisclosure();
+  const {
+    isOpen: isOpenRT,
+    onOpen: onOpenRT,
+    onClose: onCloseRT,
+  } = useDisclosure();
   const { isOpen, onOpen, onClose } = useDisclosure();
+
   const mobile = useBreakpointValue({ base: true, sm: false });
 
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
-  const totalVideos = videos?.length ?? 0;
+  const totalVideos = user.videos ?? 0;
 
   const getNextVideo = () => {
     if (currentVideoIndex < totalVideos - 1) {
@@ -213,23 +216,19 @@ const Profile = ({ user = {}, videos = [] }) => {
         // openGraphTitle={`${Boolean(name) ? `${name} (@${nickname})` : `@${nickname}`} is on Genuin. | Connect with @${nickname} with a video reply`}
         description={`${
           Boolean(name) ? `[${name}] (@${nickname})` : `@${nickname}`
-        } on Genuin. | ${abbreviateNumber(
-          views
-        )} Views. ${videos} Videos. ${replies} Replies. ${
-          bio ? bio.replace(/\n+/g, " ") : ""
-        } ${
+        } on Genuin. | ${abbreviateNumber(views)} Views. ${
+          user.videos
+        } Videos. ${replies} Replies. ${bio ? bio.replace(/\n+/g, " ") : ""} ${
           hashtags && hashtags != [] && hashtags.length > 0
             ? hashtags.map((tag) => "#" + tag).join(" ")
             : ""
         }`}
-        openGraphDescription={`${
-          Boolean(name) ? name : `@${nickname}`
-        }, ${videos} Videos, ${abbreviateNumber(
-          views
-        )} Views, ${replies} Replies`}
+        openGraphDescription={`${Boolean(name) ? name : `@${nickname}`}, ${
+          user.videos
+        } Videos, ${abbreviateNumber(views)} Views, ${replies} Replies`}
         urlToCopy={share_url}
         videoPreviewImage={preview_image}
-        videoUrl={videos[currentVideoIndex]?.video?.video_url}
+        videoUrl={videosRT[currentVideoIndex]?.video?.video_url}
       />
       <script
         type='application/ld+json'
@@ -417,7 +416,7 @@ const Profile = ({ user = {}, videos = [] }) => {
                 <TabPanel p={0} pt={1} h='full'>
                   <Videos
                     mobile={mobile}
-                    videos={rtVideos.concat(publicVideos)}
+                    videos={videos}
                     onOpen={onOpen}
                     setCurrentVideoIndex={setCurrentVideoIndex}
                   />
@@ -425,8 +424,8 @@ const Profile = ({ user = {}, videos = [] }) => {
                 <TabPanel p={0} pt={1} h='full'>
                   <Videos
                     mobile={mobile}
-                    videos={publicVideos}
-                    onOpen={onOpen}
+                    videos={videosPublic}
+                    onOpen={onOpenPublic}
                     setCurrentVideoIndex={setCurrentVideoIndex}
                   />
                 </TabPanel>
@@ -434,7 +433,7 @@ const Profile = ({ user = {}, videos = [] }) => {
                   <Videos
                     mobile={mobile}
                     videos={rtVideos}
-                    onOpen={onOpen}
+                    onOpen={onOpenRT}
                     setCurrentVideoIndex={setCurrentVideoIndex}
                   />
                 </TabPanel>
@@ -442,6 +441,90 @@ const Profile = ({ user = {}, videos = [] }) => {
             </Tabs>
           </Flex>
         </Container>
+
+        <Modal isOpen={isOpenRT} onClose={onCloseRT} scrollBehavior='inside'>
+          <ModalContent
+            h='full'
+            marginTop={0}
+            maxH='full'
+            maxW='full'
+            bg='transparent'
+          >
+            <ModalBody p={0} height='full' w='full' overflow='hidden'>
+              <Player
+                videoThumbnail={
+                  videosRT[currentVideoIndex]?.video?.video_thumbnail
+                }
+                description={videosRT[currentVideoIndex]?.video?.description}
+                link={videosRT[currentVideoIndex]?.video?.link}
+                videoUrl={videosRT[currentVideoIndex]?.video?.video_url}
+                userName={`@${nickname}`}
+                onClickOutsideOfVideo={onCloseRT}
+                userProfileImage={profile_image}
+                showGetAppModal={showGetAppToViewDialog}
+                onEnded={showGetAppToViewDialog}
+                getNextVideo={getNextVideo}
+                getPrevVideo={getPrevVideo}
+              >
+                <AppActions
+                  showGetAppModal={showGetAppToViewDialog}
+                  userName={`@${nickname}`}
+                  link={videosRT[currentVideoIndex]?.video?.link}
+                  videoUrl={globalThis?.location?.href}
+                  videoDescription={
+                    videosRT[currentVideoIndex]?.video?.description
+                  }
+                  videoTitle='Genuin'
+                />
+              </Player>
+            </ModalBody>
+          </ModalContent>
+        </Modal>
+
+        <Modal
+          isOpen={isOpenPublic}
+          onClose={onClosePublic}
+          scrollBehavior='inside'
+        >
+          <ModalContent
+            h='full'
+            marginTop={0}
+            maxH='full'
+            maxW='full'
+            bg='transparent'
+          >
+            <ModalBody p={0} height='full' w='full' overflow='hidden'>
+              <Player
+                videoThumbnail={
+                  videosPublic[currentVideoIndex]?.video?.video_thumbnail
+                }
+                description={
+                  videosPublic[currentVideoIndex]?.video?.description
+                }
+                link={videosPublic[currentVideoIndex]?.video?.link}
+                videoUrl={videosPublic[currentVideoIndex]?.video?.video_url}
+                userName={`@${nickname}`}
+                onClickOutsideOfVideo={onClosePublic}
+                userProfileImage={profile_image}
+                showGetAppModal={showGetAppToViewDialog}
+                onEnded={showGetAppToViewDialog}
+                getNextVideo={getNextVideo}
+                getPrevVideo={getPrevVideo}
+              >
+                <AppActions
+                  showGetAppModal={showGetAppToViewDialog}
+                  userName={`@${nickname}`}
+                  link={videosPublic[currentVideoIndex]?.video?.link}
+                  videoUrl={globalThis?.location?.href}
+                  videoDescription={
+                    videosPublic[currentVideoIndex]?.video?.description
+                  }
+                  videoTitle='Genuin'
+                />
+              </Player>
+            </ModalBody>
+          </ModalContent>
+        </Modal>
 
         <Modal isOpen={isOpen} onClose={onClose} scrollBehavior='inside'>
           <ModalContent
@@ -540,8 +623,8 @@ const Videos = ({ videos = [], onOpen, setCurrentVideoIndex, mobile }) => {
                     if (video_type === "rt")
                       window.location.href = video.share_url;
                     else {
-                      onOpen();
                       setCurrentVideoIndex(index);
+                      onOpen();
                     }
                   }}
                 />
@@ -667,16 +750,20 @@ Profile.getInitialProps = async ({ query: { share_string } }) => {
     share_string !== ""
   ) {
     try {
-      const videos = await axios.get(
-        `${process.env.apiurl}/api/v3/user/profile_videos?user_id=${share_string}&video_types[]=public_video&video_types[]=rt`
+      const videosRT = await axios.get(
+        `${process.env.apiurl}/api/v3/user/profile_videos?user_id=${share_string}&video_types[]=rt`
+      );
+      const videosPublic = await axios.get(
+        `${process.env.apiurl}/api/v3/user/profile_videos?user_id=${share_string}&video_types[]=public_video`
       );
       const user = await axios.get(
         `${process.env.apiurl}/api/v3/user/details?user_id=${share_string}`
       );
 
       return {
-        videos: videos?.data?.data?.videos,
         user: user?.data?.data,
+        videosRT: videosRT?.data?.data?.videos,
+        videosPublic: videosPublic?.data?.data?.videos,
       };
     } catch (error) {
       return {};
