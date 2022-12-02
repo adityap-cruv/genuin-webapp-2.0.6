@@ -76,6 +76,7 @@ export const AppActions = ({
                 url={videoUrl}
                 description={videoDescription}
                 title={videoTitle}
+                white
               />
             ) : (
               <ShareButton
@@ -143,6 +144,7 @@ export const AppActions = ({
                 url={videoUrl}
                 description={videoDescription}
                 title={videoTitle}
+                white
               />
             ) : (
               <ShareButton
@@ -221,17 +223,22 @@ export const ShareButton = ({
   );
 };
 
-export const MobileShareButton = ({ title, description, url }) => {
+export const MobileShareButton = ({
+  title,
+  description,
+  url,
+  white = false,
+}) => {
   const { isSupported, loading, share } = useWebShare();
 
   return (
     <Image
-      src={shareImgBlue.src}
-      size={6}
+      src={white ? shareImg.src : shareImgBlue.src}
+      size={8}
       alt='Share'
       title='Share'
       bgColor='transparent'
-      border='1px solid #0645FF'
+      border={white ? "none" : "1px solid #0645FF"}
       borderRadius='md'
       px={1}
       minW={8}
