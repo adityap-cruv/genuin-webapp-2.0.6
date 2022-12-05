@@ -383,10 +383,15 @@ const Profile = ({ user = {}, videosRT, videosPublic }) => {
               onChange={(index) => setTabIndex(index)}
               colorScheme='black'
               display={{ base: "contents", sm: "block" }}
-              w='full'
+              width={mobile ? "calc(100% + 24px)" : "full"}
             >
               <Divider opacity={0.2} />
-              <TabList borderBottom={0} mb='2px'>
+              <TabList
+                borderBottom={0}
+                mb='2px'
+                w={mobile ? "calc(100% + 24px)" : "full"}
+                ml={mobile ? "-12px" : 0}
+              >
                 <Tab flexGrow={1}>
                   <AllIcon
                     boxSize={8}
@@ -412,6 +417,10 @@ const Profile = ({ user = {}, videosRT, videosPublic }) => {
                 maxH='full'
                 height='full'
                 mt={{ base: "-19px", sm: 0 }}
+                ml={mobile ? "-12px" : 0}
+                style={{
+                  width: mobile ? "calc(100% + 24px) !important" : "full",
+                }}
               >
                 <TabPanel p={0} pt={1} h='full'>
                   <Videos
@@ -600,7 +609,7 @@ const Videos = ({ videos = [], onOpen, setCurrentVideoIndex, mobile }) => {
             "1fr 1fr 1fr",
             "1fr 1fr 1fr 1fr",
           ]}
-          gap={6}
+          gap={mobile ? "1px" : 6}
         >
           {videos.map(({ video, video_type }, index) => (
             <Box
@@ -630,15 +639,16 @@ const Videos = ({ videos = [], onOpen, setCurrentVideoIndex, mobile }) => {
                 />
               )}
               {mobile && (
-                <Link href={`/${video.share_url}`}>
-                  <Image
-                    src={
-                      video_type === "rt"
-                        ? video.thumbnail_url
-                        : video.video_thumbnail
-                    }
-                  />
-                </Link>
+                <Image
+                  src={
+                    video_type === "rt"
+                      ? video.thumbnail_url
+                      : video.video_thumbnail
+                  }
+                  onClick={() => {
+                    window.location.href = video.share_url;
+                  }}
+                />
               )}
 
               {video_type === "rt" && (
