@@ -415,66 +415,68 @@ const Videos = ({
   mobile,
   setWatchRoundtable,
   chatId,
-}) => (
-  <Box overflow='auto' whiteSpace='nowrap' pl={0}>
-    {!Boolean(videos.length) && (
-      <Flex
-        w='full'
-        h='full'
-        alignItems='center'
-        justifyContent='center'
-        fontWeight={700}
-        fontSize={20}
-        color='#949494'
-      >
-        No videos yet
-      </Flex>
-    )}
-    {Boolean(videos.length) &&
-      videos.map((video, index) => (
-        <Box
-          cursor='pointer'
-          transition='transform .2s'
-          key={video.thumbnail_url}
-          h={{ base: 120, sm: 240 }}
-          display='inline-block'
-          pr={index === videos.length - 1 ? 0 : 4}
-          position='relative'
-          zIndex={index === videos.length - 1 || index === 0 ? 11 : 9}
+}) => {
+  return (
+    <Box overflow='auto' whiteSpace='nowrap' pl={0}>
+      {!Boolean(videos.length) && (
+        <Flex
+          w='full'
+          h='full'
+          alignItems='center'
+          justifyContent='center'
+          fontWeight={700}
+          fontSize={20}
+          color='#949494'
         >
-          {!mobile && (
-            <Image
-              src={video.thumbnail_url}
-              onClick={() => {
-                onOpen();
-                setWatchRoundtable(false);
-                setCurrentVideoIndex(index);
-              }}
-              h='full'
-            />
-          )}
-          {mobile && (
-            // this needs to point to the same page but with &video_id=${v} at te end
-            <Link href={`${chatId}?v=${video.share_string}`}>
-              <Image src={video.thumbnail_url} h='full' />
-            </Link>
-          )}
-
+          No videos yet
+        </Flex>
+      )}
+      {Boolean(videos.length) &&
+        videos.map((video, index) => (
           <Box
-            position='absolute'
-            gap={3}
-            top={3}
-            left={2}
-            color='white'
-            fontSize='15px'
-            fontWeight='bold'
+            cursor='pointer'
+            transition='transform .2s'
+            key={video.thumbnail_url}
+            h={{ base: 120, sm: 240 }}
+            display='inline-block'
+            pr={index === videos.length - 1 ? 0 : 4}
+            position='relative'
+            zIndex={index === videos.length - 1 || index === 0 ? 11 : 9}
           >
-            {video.meta_data.duration}
+            {!mobile && (
+              <Image
+                src={video.thumbnail_url}
+                onClick={() => {
+                  onOpen();
+                  setWatchRoundtable(true);
+                  setCurrentVideoIndex(index);
+                }}
+                h='full'
+              />
+            )}
+            {mobile && (
+              // this needs to point to the same page but with &video_id=${v} at te end
+              <Link href={`${chatId}?v=${video.share_string}`}>
+                <Image src={video.thumbnail_url} h='full' />
+              </Link>
+            )}
+
+            <Box
+              position='absolute'
+              gap={3}
+              top={3}
+              left={2}
+              color='white'
+              fontSize='15px'
+              fontWeight='bold'
+            >
+              {video.meta_data.duration}
+            </Box>
           </Box>
-        </Box>
-      ))}
-  </Box>
-);
+        ))}
+    </Box>
+  );
+};
 
 const Participants = ({ members, mobile }) => {
   return (

@@ -40,9 +40,8 @@ import {
   Text,
   Link,
 } from "@chakra-ui/react";
-import { useRouter } from "next/router";
 
-const Profile = ({ user = {}, videosRT, videosPublic }) => {
+const Profile = ({ user = {}, videosRT = [], videosPublic = [] }) => {
   const rtVideos = videosRT.reduce((res, { video: { chats, group } }) => {
     return res.concat(
       chats.map((chat) => ({
@@ -105,25 +104,34 @@ const Profile = ({ user = {}, videosRT, videosPublic }) => {
   } = useDisclosure();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const mobile = useBreakpointValue({ base: true, sm: false });
+  const mobile = useBreakpointValue({ base: true, md: false });
 
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+  const [currentVideoIndexPublic, setCurrentVideoIndexPublic] = useState(0);
+  const [currentVideoIndexRT, setCurrentVideoIndexRT] = useState(0);
   const totalVideos = user.videos ?? 0;
 
   const getNextVideo = () => {
-    if (currentVideoIndex < totalVideos - 1) {
-      setCurrentVideoIndex((old) => old + 1);
-    } else {
-      setCurrentVideoIndex(0);
-    }
+    setCurrentVideoIndex((old) => old + 1);
   };
   const getPrevVideo = () => {
-    if (currentVideoIndex > 0) {
-      setCurrentVideoIndex((old) => old - 1);
-    } else {
-      setCurrentVideoIndex(totalVideos - 1);
-    }
+    setCurrentVideoIndex((old) => old - 1);
   };
+
+  const getNextVideoPublic = () => {
+    setCurrentVideoIndexPublic((old) => old + 1);
+  };
+  const getPrevVideoPublic = () => {
+    setCurrentVideoIndexPublic((old) => old - 1);
+  };
+
+  const getNextVideoRT = () => {
+    setCurrentVideoIndexRT((old) => old + 1);
+  };
+  const getPrevVideoRT = () => {
+    setCurrentVideoIndexRT((old) => old - 1);
+  };
+
   const [tabIndex, setTabIndex] = useState(0);
 
   const showGetAppToViewDialog = () =>
@@ -250,19 +258,26 @@ const Profile = ({ user = {}, videosRT, videosPublic }) => {
           <Flex
             flexDir={{
               base: "column",
-              sm: "row",
+              md: "row",
             }}
             maxH={mobile ? "calc(100vh - 70px)" : "calc(100vh - 140px)"}
             h='full'
-            gap={{ base: 4, sm: "calc(100% / 12)" }}
-            mt={{ base: 16, sm: 0 }}
+            gap={{ base: 0, md: "calc(100% / 12)" }}
+            mt={{ base: 16, md: 0 }}
             justifyContent='space-between'
           >
-            {mobile && <Divider opacity={0.2} w='120%' ml={-3} />}
+            {mobile && (
+              <Divider
+                opacity={0.2}
+                w='200%'
+                ml={-28}
+                mb={{ base: 4, md: 0 }}
+              />
+            )}
             <Flex
               color='#111111'
               flexDir='column'
-              w={{ base: "100%", sm: "calc(100% / 12 * 3)" }}
+              w={{ base: "100%", md: "calc(100% / 12 * 3)" }}
             >
               <Flex justifyContent={"space-between"}>
                 <Avatar
@@ -311,7 +326,7 @@ const Profile = ({ user = {}, videosRT, videosPublic }) => {
                 <Flex
                   justifyContent={{
                     base: "space-around",
-                    sm: "space-between",
+                    md: "space-between",
                   }}
                   textAlign='center'
                   my={4}
@@ -336,7 +351,7 @@ const Profile = ({ user = {}, videosRT, videosPublic }) => {
                   </Flex>
                 </Flex>
               )}
-              <Flex gap={4} mt={2}>
+              <Flex gap={4} mt={2} mb={{ base: 4, md: 0 }}>
                 <Button
                   color='#0645ff'
                   bgColor='transparent'
@@ -382,10 +397,10 @@ const Profile = ({ user = {}, videosRT, videosPublic }) => {
             <Tabs
               onChange={(index) => setTabIndex(index)}
               colorScheme='black'
-              display={{ base: "contents", sm: "block" }}
+              display={{ base: "contents", md: "block" }}
               width={mobile ? "calc(100% + 24px)" : "full"}
             >
-              <Divider opacity={0.2} />
+              <Divider opacity={0.2} w='200%' ml={-28} />
               <TabList
                 borderBottom={0}
                 mb='2px'
@@ -416,13 +431,12 @@ const Profile = ({ user = {}, videosRT, videosPublic }) => {
                 overflow='auto'
                 maxH='full'
                 height='full'
-                mt={{ base: "-19px", sm: 0 }}
                 ml={mobile ? "-12px" : 0}
                 style={{
                   width: mobile ? "calc(100% + 24px) !important" : "full",
                 }}
               >
-                <TabPanel p={0} pt={1} h='full'>
+                <TabPanel p={0} pt='1px' h='full'>
                   <Videos
                     mobile={mobile}
                     videos={videos}
@@ -430,20 +444,20 @@ const Profile = ({ user = {}, videosRT, videosPublic }) => {
                     setCurrentVideoIndex={setCurrentVideoIndex}
                   />
                 </TabPanel>
-                <TabPanel p={0} pt={1} h='full'>
+                <TabPanel p={0} pt='1px' h='full'>
                   <Videos
                     mobile={mobile}
                     videos={videosPublic}
                     onOpen={onOpenPublic}
-                    setCurrentVideoIndex={setCurrentVideoIndex}
+                    setCurrentVideoIndex={setCurrentVideoIndexPublic}
                   />
                 </TabPanel>
-                <TabPanel p={0} pt={1} h='full'>
+                <TabPanel p={0} pt='1px' h='full'>
                   <Videos
                     mobile={mobile}
                     videos={rtVideos}
                     onOpen={onOpenRT}
-                    setCurrentVideoIndex={setCurrentVideoIndex}
+                    setCurrentVideoIndex={setCurrentVideoIndexRT}
                   />
                 </TabPanel>
               </TabPanels>
@@ -461,27 +475,29 @@ const Profile = ({ user = {}, videosRT, videosPublic }) => {
           >
             <ModalBody p={0} height='full' w='full' overflow='hidden'>
               <Player
+                currentVideoIndex={currentVideoIndexRT}
                 videoThumbnail={
-                  videosRT[currentVideoIndex]?.video?.video_thumbnail
+                  videosRT[currentVideoIndexRT]?.video?.video_thumbnail
                 }
-                description={videosRT[currentVideoIndex]?.video?.description}
-                link={videosRT[currentVideoIndex]?.video?.link}
-                videoUrl={videosRT[currentVideoIndex]?.video?.video_url}
+                description={videosRT[currentVideoIndexRT]?.video?.description}
+                link={videosRT[currentVideoIndexRT]?.video?.link}
+                videoUrl={videosRT[currentVideoIndexRT]?.video?.video_url}
                 userName={`@${nickname}`}
                 onClickOutsideOfVideo={onCloseRT}
                 userProfileImage={profile_image}
                 showGetAppModal={showGetAppToViewDialog}
                 onEnded={showGetAppToViewDialog}
-                getNextVideo={getNextVideo}
-                getPrevVideo={getPrevVideo}
+                getNextVideo={getNextVideoRT}
+                getPrevVideo={getPrevVideoRT}
+                videos={videosRT}
               >
                 <AppActions
                   showGetAppModal={showGetAppToViewDialog}
                   userName={`@${nickname}`}
-                  link={videosRT[currentVideoIndex]?.video?.link}
+                  link={videosRT[currentVideoIndexRT]?.video?.link}
                   videoUrl={globalThis?.location?.href}
                   videoDescription={
-                    videosRT[currentVideoIndex]?.video?.description
+                    videosRT[currentVideoIndexRT]?.video?.description
                   }
                   videoTitle='Genuin'
                 />
@@ -504,29 +520,33 @@ const Profile = ({ user = {}, videosRT, videosPublic }) => {
           >
             <ModalBody p={0} height='full' w='full' overflow='hidden'>
               <Player
+                currentVideoIndex={currentVideoIndexPublic}
                 videoThumbnail={
-                  videosPublic[currentVideoIndex]?.video?.video_thumbnail
+                  videosPublic[currentVideoIndexPublic]?.video?.video_thumbnail
                 }
                 description={
-                  videosPublic[currentVideoIndex]?.video?.description
+                  videosPublic[currentVideoIndexPublic]?.video?.description
                 }
-                link={videosPublic[currentVideoIndex]?.video?.link}
-                videoUrl={videosPublic[currentVideoIndex]?.video?.video_url}
+                link={videosPublic[currentVideoIndexPublic]?.video?.link}
+                videoUrl={
+                  videosPublic[currentVideoIndexPublic]?.video?.video_url
+                }
                 userName={`@${nickname}`}
                 onClickOutsideOfVideo={onClosePublic}
                 userProfileImage={profile_image}
                 showGetAppModal={showGetAppToViewDialog}
                 onEnded={showGetAppToViewDialog}
-                getNextVideo={getNextVideo}
-                getPrevVideo={getPrevVideo}
+                getNextVideo={getNextVideoPublic}
+                getPrevVideo={getPrevVideoPublic}
+                videos={videosPublic}
               >
                 <AppActions
                   showGetAppModal={showGetAppToViewDialog}
                   userName={`@${nickname}`}
-                  link={videosPublic[currentVideoIndex]?.video?.link}
+                  link={videosPublic[currentVideoIndexPublic]?.video?.link}
                   videoUrl={globalThis?.location?.href}
                   videoDescription={
-                    videosPublic[currentVideoIndex]?.video?.description
+                    videosPublic[currentVideoIndexPublic]?.video?.description
                   }
                   videoTitle='Genuin'
                 />
@@ -545,6 +565,7 @@ const Profile = ({ user = {}, videosRT, videosPublic }) => {
           >
             <ModalBody p={0} height='full' w='full' overflow='hidden'>
               <Player
+                currentVideoIndex={currentVideoIndex}
                 videoThumbnail={
                   videos[currentVideoIndex]?.video?.video_thumbnail
                 }
@@ -558,6 +579,7 @@ const Profile = ({ user = {}, videosRT, videosPublic }) => {
                 onEnded={showGetAppToViewDialog}
                 getNextVideo={getNextVideo}
                 getPrevVideo={getPrevVideo}
+                videos={videos}
               >
                 <AppActions
                   showGetAppModal={showGetAppToViewDialog}
@@ -612,7 +634,7 @@ const Videos = ({ videos = [], onOpen, setCurrentVideoIndex, mobile }) => {
           gap={mobile ? "1px" : 6}
         >
           {videos.map(({ video, video_type }, index) => (
-            <Box
+            <Flex
               cursor='pointer'
               transition='transform .2s'
               _hover={{
@@ -620,6 +642,8 @@ const Videos = ({ videos = [], onOpen, setCurrentVideoIndex, mobile }) => {
               }}
               position='relative'
               key={video.video_uuid}
+              bgColor='black'
+              alignItems='center'
             >
               {!mobile && (
                 <Image
@@ -717,7 +741,7 @@ const Videos = ({ videos = [], onOpen, setCurrentVideoIndex, mobile }) => {
                   </Flex>
                 </Flex>
               )}
-            </Box>
+            </Flex>
           ))}
         </Grid>
       )}

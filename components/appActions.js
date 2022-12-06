@@ -1,5 +1,4 @@
 import { ShareComponent } from "../components/share";
-import linkIcon from "../images/video-more-options/ic-link.svg";
 import bookmark from "../images/video-more-options/ic-bookmark.svg";
 import replay from "../images/video-more-options/ic-replay.svg";
 import comments from "../images/video-more-options/ic-comments.svg";
@@ -49,7 +48,7 @@ export const AppActions = ({
       {link ? (
         <li>
           <a href={link} target='_blank'>
-            <Image src={linkIcon.src} size={6} alt='Link' title='Link' />
+            <Image src={network.src} size={6} alt='Link' title='Link' />
           </a>
         </li>
       ) : null}
@@ -106,9 +105,6 @@ export const AppActions = ({
 
       {roundTable ? (
         <>
-          <li onClick={() => window.open("https://www.google.com", "_blank")}>
-            <Image src={network.src} size={6} alt='Network' title='Network' />
-          </li>
           <li>
             <Image
               src={comments.src}

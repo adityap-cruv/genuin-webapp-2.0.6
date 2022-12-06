@@ -22,7 +22,6 @@ import {
   useBreakpointValue,
 } from "@chakra-ui/react";
 import ReactTimeAgo from "react-time-ago";
-import en from "javascript-time-ago/locale/en.json";
 
 export const ReactPlayerWrapper = ({
   videoUrl,
@@ -53,8 +52,6 @@ export const ReactPlayerWrapper = ({
   const [progress, setProgress] = useState(0);
   const [isPlaying, setIsPlaying] = useState(autoplay);
   const [isPlayingDebounced] = useDebounce(isPlaying, 65);
-  const mobile = useBreakpointValue({ base: true, sm: false });
-  const pad = useBreakpointValue({ base: true, md: false });
 
   const handleToggleIsPlaying = useCallback(() => {
     setIsPlaying((old) => !old);
@@ -285,26 +282,32 @@ export const ReactPlayerWrapper = ({
       )}
       {Boolean(getNextVideo) && Boolean(getPrevVideo) && !roundTableMode ? (
         <div className='btn-arrow-controler d-none d-md-flex flex-column align-items-center justify-content-center'>
-          <button className='btn-arrow'>
-            <Image
-              src={icArrowUp.src}
-              width={6}
-              height={6}
-              alt='Arrow Up'
-              title='Arrow Up'
-              onClick={getPrevVideo}
-            />
-          </button>
-          <button className='btn-arrow'>
-            <Image
-              src={icArrowDown.src}
-              width={6}
-              height={6}
-              alt='Arrow Down'
-              title='Arrow Down'
-              onClick={getNextVideo}
-            />
-          </button>
+          {currentVideoIndex !== 0 && (
+            <button className='btn-arrow'>
+              <Image
+                src={icArrowUp.src}
+                width={6}
+                height={6}
+                alt='Arrow Up'
+                title='Arrow Up'
+                onClick={getPrevVideo}
+              />
+            </button>
+          )}
+          {currentVideoIndex === 0 && <Box h={12} />}
+          {currentVideoIndex !== videos.length - 1 && (
+            <button className='btn-arrow'>
+              <Image
+                src={icArrowDown.src}
+                width={6}
+                height={6}
+                alt='Arrow Down'
+                title='Arrow Down'
+                onClick={getNextVideo}
+              />
+            </button>
+          )}
+          {currentVideoIndex === videos.length - 1 && <Box h={16} />}
         </div>
       ) : null}
       {Boolean(getNextVideo) &&
