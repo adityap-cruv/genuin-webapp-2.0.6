@@ -17,6 +17,7 @@ import views from "../../images/views.svg";
 import comments from "../../images/comments.svg";
 import directMessage from "../../images/direct_message.svg";
 import roundtable from "../../images/video-more-options/ic-roundtable.svg";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 import {
   Box,
@@ -38,24 +39,14 @@ import {
   TabPanel,
   Icon,
   Text,
-  Link,
 } from "@chakra-ui/react";
 
-const Profile = ({ user = {}, videosRT = [], videosPublic = [] }) => {
-  const rtVideos = videosRT.reduce((res, { video: { chats, group } }) => {
-    return res.concat(
-      chats.map((chat) => ({
-        video_type: "rt",
-        video: {
-          ...chat,
-          group_name: group.group_name,
-        },
-      }))
-    );
-  }, []);
-
-  const videos = rtVideos.concat(videosPublic);
-
+const Profile = ({
+  user = {},
+  videosRT = [],
+  videosPublic = [],
+  share_string,
+}) => {
   const {
     user_id,
     preview_image,
@@ -69,6 +60,89 @@ const Profile = ({ user = {}, videosRT = [], videosPublic = [] }) => {
   } = user;
 
   let { hashtags } = user;
+
+  const tab1Ref = useRef(null);
+  const tab2Ref = useRef(null);
+  const tab3Ref = useRef(null);
+  const scrollToTop1 = () => tab1Ref.current.scrollIntoView();
+  const scrollToTop2 = () => tab2Ref.current.scrollIntoView();
+  const scrollToTop3 = () => tab3Ref.current.scrollIntoView();
+
+  const prepareRTVideos = (videos = []) => {
+    return videos.reduce((res, { video: { chats, group } }) => {
+      return res.concat(
+        chats.map((chat) => ({
+          video_type: "rt",
+          video: {
+            ...chat,
+            group_name: group.group_name,
+          },
+        }))
+      );
+    }, []);
+  };
+
+  const [publicVideos, setPublicVideos] = useState(videosPublic);
+  const [rtVideos, setRTVideos] = useState(prepareRTVideos(videosRT));
+  const [videos, setVideos] = useState(rtVideos.concat(publicVideos));
+
+  const getMoreVideosPublic = async () => {
+    const res = await fetch(
+      `${
+        process.env.apiurl
+      }/api/v3/user/profile_videos?user_id=${share_string}&video_types[]=public_video&last_video_type=public_video&last_video_id=${
+        publicVideos[publicVideos.length - 1]?.video?.video_id
+      }`
+    );
+    const response = await res.json();
+    const newVideos = response?.data?.videos || [];
+    if (newVideos.length !== 0) {
+      setPublicVideos(publicVideos.concat(newVideos));
+    }
+  };
+
+  const getMoreVideosRT = async () => {
+    const res = await fetch(
+      `${
+        process.env.apiurl
+      }/api/v3/user/profile_videos?user_id=${share_string}&video_types[]=rt&last_video_type=rt&last_video_id=${
+        rtVideos[rtVideos.length - 1]?.video?.conversation_id
+      }`
+    );
+    const response = await res.json();
+    const newVideos = response?.data?.videos || [];
+
+    if (newVideos.length !== 0) {
+      const preparedNewVideos = prepareRTVideos(newVideos);
+
+      setRTVideos(rtVideos.concat(preparedNewVideos));
+    }
+  };
+
+  const getMoreVideos = async () => {
+    const resPublic = await fetch(
+      `${
+        process.env.apiurl
+      }/api/v3/user/profile_videos?user_id=${share_string}&video_types[]=public_video&last_video_type=public_video&last_video_id=${
+        publicVideos[publicVideos.length - 1]?.video?.video_id
+      }`
+    );
+    const responsePublic = await resPublic.json();
+    const newVideosPublic = responsePublic?.data?.videos || [];
+
+    const resRT = await fetch(
+      `${
+        process.env.apiurl
+      }/api/v3/user/profile_videos?user_id=${share_string}&video_types[]=rt&last_video_type=rt&last_video_id=${
+        rtVideos[rtVideos.length - 1]?.video?.conversation_id
+      }`
+    );
+    const responseRT = await resRT.json();
+    const newVideosRT = responseRT?.data?.videos || [];
+    const preparedNewVideos = prepareRTVideos(newVideosRT);
+
+    setVideos(videos.concat(newVideosPublic).concat(preparedNewVideos));
+  };
 
   const profilePic = useMemo(() => {
     if (Boolean(profile_image)) {
@@ -109,7 +183,6 @@ const Profile = ({ user = {}, videosRT = [], videosPublic = [] }) => {
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [currentVideoIndexPublic, setCurrentVideoIndexPublic] = useState(0);
   const [currentVideoIndexRT, setCurrentVideoIndexRT] = useState(0);
-  const totalVideos = user.videos ?? 0;
 
   const getNextVideo = () => {
     setCurrentVideoIndex((old) => old + 1);
@@ -395,7 +468,12 @@ const Profile = ({ user = {}, videosRT = [], videosPublic = [] }) => {
             </Flex>
 
             <Tabs
-              onChange={(index) => setTabIndex(index)}
+              onChange={(index) => {
+                setTabIndex(index);
+                scrollToTop1();
+                scrollToTop2();
+                scrollToTop3();
+              }}
               colorScheme='black'
               display={{ base: "contents", md: "block" }}
               width={mobile ? "calc(100% + 24px)" : "full"}
@@ -435,29 +513,36 @@ const Profile = ({ user = {}, videosRT = [], videosPublic = [] }) => {
                 style={{
                   width: mobile ? "calc(100% + 24px) !important" : "full",
                 }}
+                id='scrollableDiv'
               >
                 <TabPanel p={0} pt='1px' h='full'>
+                  <Box ref={tab1Ref} />
                   <Videos
                     mobile={mobile}
                     videos={videos}
                     onOpen={onOpen}
                     setCurrentVideoIndex={setCurrentVideoIndex}
+                    getMoreVideos={getMoreVideos}
                   />
                 </TabPanel>
                 <TabPanel p={0} pt='1px' h='full'>
+                  <Box ref={tab2Ref} />
                   <Videos
                     mobile={mobile}
-                    videos={videosPublic}
+                    videos={publicVideos}
                     onOpen={onOpenPublic}
                     setCurrentVideoIndex={setCurrentVideoIndexPublic}
+                    getMoreVideos={getMoreVideosPublic}
                   />
                 </TabPanel>
                 <TabPanel p={0} pt='1px' h='full'>
+                  <Box ref={tab3Ref} />
                   <Videos
                     mobile={mobile}
                     videos={rtVideos}
                     onOpen={onOpenRT}
                     setCurrentVideoIndex={setCurrentVideoIndexRT}
+                    getMoreVideos={getMoreVideosRT}
                   />
                 </TabPanel>
               </TabPanels>
@@ -522,14 +607,14 @@ const Profile = ({ user = {}, videosRT = [], videosPublic = [] }) => {
               <Player
                 currentVideoIndex={currentVideoIndexPublic}
                 videoThumbnail={
-                  videosPublic[currentVideoIndexPublic]?.video?.video_thumbnail
+                  publicVideos[currentVideoIndexPublic]?.video?.video_thumbnail
                 }
                 description={
-                  videosPublic[currentVideoIndexPublic]?.video?.description
+                  publicVideos[currentVideoIndexPublic]?.video?.description
                 }
-                link={videosPublic[currentVideoIndexPublic]?.video?.link}
+                link={publicVideos[currentVideoIndexPublic]?.video?.link}
                 videoUrl={
-                  videosPublic[currentVideoIndexPublic]?.video?.video_url
+                  publicVideos[currentVideoIndexPublic]?.video?.video_url
                 }
                 userName={`@${nickname}`}
                 onClickOutsideOfVideo={onClosePublic}
@@ -538,15 +623,15 @@ const Profile = ({ user = {}, videosRT = [], videosPublic = [] }) => {
                 onEnded={showGetAppToViewDialog}
                 getNextVideo={getNextVideoPublic}
                 getPrevVideo={getPrevVideoPublic}
-                videos={videosPublic}
+                videos={publicVideos}
               >
                 <AppActions
                   showGetAppModal={showGetAppToViewDialog}
                   userName={`@${nickname}`}
-                  link={videosPublic[currentVideoIndexPublic]?.video?.link}
+                  link={publicVideos[currentVideoIndexPublic]?.video?.link}
                   videoUrl={globalThis?.location?.href}
                   videoDescription={
-                    videosPublic[currentVideoIndexPublic]?.video?.description
+                    publicVideos[currentVideoIndexPublic]?.video?.description
                   }
                   videoTitle='Genuin'
                 />
@@ -606,7 +691,13 @@ const Profile = ({ user = {}, videosRT = [], videosPublic = [] }) => {
   );
 };
 
-const Videos = ({ videos = [], onOpen, setCurrentVideoIndex, mobile }) => {
+const Videos = ({
+  videos = [],
+  onOpen,
+  setCurrentVideoIndex,
+  mobile,
+  getMoreVideos,
+}) => {
   return (
     <Box h='full'>
       {!Boolean(videos.length) && (
@@ -623,127 +714,135 @@ const Videos = ({ videos = [], onOpen, setCurrentVideoIndex, mobile }) => {
         </Flex>
       )}
       {Boolean(videos.length) && (
-        <Grid
-          templateColumns={[
-            "1fr 1fr 1fr",
-            "1fr",
-            "1fr 1fr ",
-            "1fr 1fr 1fr",
-            "1fr 1fr 1fr 1fr",
-          ]}
-          gap={mobile ? "1px" : 6}
+        <InfiniteScroll
+          dataLength={videos.length}
+          next={getMoreVideos}
+          hasMore
+          scrollThreshold={1}
+          scrollableTarget='scrollableDiv'
         >
-          {videos.map(({ video, video_type }, index) => (
-            <Flex
-              cursor='pointer'
-              transition='transform .2s'
-              _hover={{
-                transform: "scale(0.97)",
-              }}
-              position='relative'
-              key={video.video_uuid}
-              bgColor='black'
-              alignItems='center'
-            >
-              {!mobile && (
-                <Image
-                  src={
-                    video_type === "rt"
-                      ? video.thumbnail_url
-                      : video.video_thumbnail
-                  }
-                  onClick={() => {
-                    if (video_type === "rt")
-                      window.location.href = video.share_url;
-                    else {
-                      setCurrentVideoIndex(index);
-                      onOpen();
+          <Grid
+            templateColumns={[
+              "1fr 1fr 1fr",
+              "1fr",
+              "1fr 1fr ",
+              "1fr 1fr 1fr",
+              "1fr 1fr 1fr 1fr",
+            ]}
+            gap={mobile ? "1px" : 6}
+          >
+            {videos.map(({ video, video_type }, index) => (
+              <Flex
+                cursor='pointer'
+                transition='transform .2s'
+                _hover={{
+                  transform: "scale(0.97)",
+                }}
+                position='relative'
+                key={video.video_uuid}
+                bgColor='black'
+                alignItems='center'
+              >
+                {!mobile && (
+                  <Image
+                    src={
+                      video_type === "rt"
+                        ? video.thumbnail_url
+                        : video.video_thumbnail
                     }
-                  }}
-                />
-              )}
-              {mobile && (
-                <Image
-                  src={
-                    video_type === "rt"
-                      ? video.thumbnail_url
-                      : video.video_thumbnail
-                  }
-                  onClick={() => {
-                    window.location.href = video.share_url;
-                  }}
-                />
-              )}
+                    onClick={() => {
+                      if (video_type === "rt")
+                        window.location.href = video.share_url;
+                      else {
+                        setCurrentVideoIndex(index);
+                        onOpen();
+                      }
+                    }}
+                  />
+                )}
+                {mobile && (
+                  <Image
+                    src={
+                      video_type === "rt"
+                        ? video.thumbnail_url
+                        : video.video_thumbnail
+                    }
+                    onClick={() => {
+                      window.location.href = video.share_url;
+                    }}
+                  />
+                )}
 
-              {video_type === "rt" && (
-                <Flex
-                  position='absolute'
-                  w='full'
-                  h='full'
-                  top={0}
-                  direction='column'
-                  justifyContent='space-between'
-                  onClick={() => {
-                    window.location.href = video.share_url;
-                  }}
-                >
+                {video_type === "rt" && (
                   <Flex
-                    justifyContent='space-between'
-                    top={3}
+                    position='absolute'
                     w='full'
+                    h='full'
+                    top={0}
+                    direction='column'
+                    justifyContent='space-between'
+                    onClick={() => {
+                      window.location.href = video.share_url;
+                    }}
+                  >
+                    <Flex
+                      justifyContent='space-between'
+                      top={3}
+                      w='full'
+                      color='white'
+                      fontSize='15px'
+                      fontWeight='bold'
+                      p={3}
+                    >
+                      <Flex>
+                        <Image src={views.src} mr={1} mt='3px' h={5} />
+                        {video.no_of_views}
+                      </Flex>
+                      <Flex>
+                        <Image src={roundtable.src} h={5} />
+                      </Flex>
+                    </Flex>
+                    <Flex p={3}>
+                      <Text
+                        fontWeight='bold'
+                        color='white'
+                        overflow='hidden'
+                        text-overflow='ellipsis'
+                        display='-webkit-box'
+                        css={{
+                          WebkitLineClamp: "2",
+                          WebkitBoxOrient: "vertical",
+                        }}
+                      >
+                        {video.group_name}
+                      </Text>
+                    </Flex>
+                  </Flex>
+                )}
+                {video_type === "public_video" && (
+                  <Flex
+                    position='absolute'
+                    gap={3}
+                    bottom={3}
+                    left={2}
                     color='white'
                     fontSize='15px'
                     fontWeight='bold'
-                    p={3}
                   >
                     <Flex>
-                      <Image src={views.src} mr={1} mt='3px' h={5} />
-                      {video.no_of_views}
+                      <Image mr={2} src={comments.src} h={5} mt={1} />
+                      {video.no_of_conversation}
                     </Flex>
                     <Flex>
-                      <Image src={roundtable.src} h={5} />
+                      <Image src={views.src} mr={1} mt={1} />
+                      {video.no_of_views}
                     </Flex>
                   </Flex>
-                  <Flex p={3}>
-                    <Text
-                      fontWeight='bold'
-                      color='white'
-                      overflow='hidden'
-                      text-overflow='ellipsis'
-                      display='-webkit-box'
-                      css={{
-                        WebkitLineClamp: "2",
-                        WebkitBoxOrient: "vertical",
-                      }}
-                    >
-                      {video.group_name}
-                    </Text>
-                  </Flex>
-                </Flex>
-              )}
-              {video_type === "public_video" && (
-                <Flex
-                  position='absolute'
-                  gap={3}
-                  bottom={3}
-                  left={2}
-                  color='white'
-                  fontSize='15px'
-                  fontWeight='bold'
-                >
-                  <Flex>
-                    <Image mr={2} src={comments.src} h={5} mt={1} />
-                    {video.no_of_conversation}
-                  </Flex>
-                  <Flex>
-                    <Image src={views.src} mr={1} mt={1} />
-                    {video.no_of_views}
-                  </Flex>
-                </Flex>
-              )}
-            </Flex>
-          ))}
-        </Grid>
+                )}
+              </Flex>
+            ))}
+          </Grid>
+        </InfiniteScroll>
       )}
     </Box>
   );
@@ -798,6 +897,7 @@ Profile.getInitialProps = async ({ query: { share_string } }) => {
         user: user?.data?.data,
         videosRT: videosRT?.data?.data?.videos,
         videosPublic: videosPublic?.data?.data?.videos,
+        share_string,
       };
     } catch (error) {
       return {};
