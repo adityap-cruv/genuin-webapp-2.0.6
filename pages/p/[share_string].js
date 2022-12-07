@@ -742,6 +742,7 @@ const Videos = ({
                 key={video.video_uuid}
                 bgColor='black'
                 alignItems='center'
+                minH={{ base: "245px", md: "320px" }}
               >
                 {!mobile && (
                   <Image
