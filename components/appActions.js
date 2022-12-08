@@ -43,14 +43,21 @@ export const AppActions = ({
 }) => {
   const mobile = useBreakpointValue({ base: true, sm: false });
 
-  console.log("link", link);
+  const getClickableLink = (link) => {
+    return link.startsWith("http://") || link.startsWith("https://")
+      ? link
+      : `http://${link}`;
+  };
+
+  const userLink = getClickableLink(link);
+
   return (
     <ul>
       {link ? (
         <li>
-          <Link href={`//${link}`} isExternal pointerEvents='all'>
+          <a href={userLink} target='_blank'>
             <Image src={network.src} size={6} alt='Link' title='Link' />
-          </Link>
+          </a>
         </li>
       ) : null}
       {!roundTable ? (
