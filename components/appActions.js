@@ -43,13 +43,14 @@ export const AppActions = ({
 }) => {
   const mobile = useBreakpointValue({ base: true, sm: false });
 
+  console.log("link", link);
   return (
     <ul>
       {link ? (
         <li>
-          <a href={link} target='_blank'>
+          <Link href={`//${link}`} isExternal pointerEvents='all'>
             <Image src={network.src} size={6} alt='Link' title='Link' />
-          </a>
+          </Link>
         </li>
       ) : null}
       {!roundTable ? (
