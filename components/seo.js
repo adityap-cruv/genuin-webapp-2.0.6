@@ -23,10 +23,6 @@ export const SEO = ({
         <meta property='og:video:url' content={videoUrl} />
         <meta property='og:video:secure_url' content={videoUrl} />
         <meta property='og:video:type' content={videoType} />
-        <meta
-          http-equiv='Content-Security-Policy'
-          content='upgrade-insecure-requests'
-        />
       </NextHead>
     )}
     <NextSeo

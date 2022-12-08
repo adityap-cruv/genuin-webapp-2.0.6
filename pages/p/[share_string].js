@@ -92,30 +92,30 @@ const Profile = ({
   const [videos, setVideos] = useState(rtVideos.concat(publicVideos));
 
   const getMoreVideosPublic = async () => {
-    const res = await fetch(
+    const res = await axios.get(
       `${
         process.env.apiurl
       }/api/v3/user/profile_videos?user_id=${share_string}&video_types[]=public_video&last_video_type=public_video&last_video_id=${
         publicVideos[publicVideos.length - 1]?.video?.video_id
       }`
     );
-    const response = await res.json();
-    const newVideos = response?.data?.videos || [];
+
+    const newVideos = res?.data?.data?.videos || [];
     if (newVideos.length !== 0) {
       setPublicVideos(publicVideos.concat(newVideos));
     }
   };
 
   const getMoreVideosRT = async () => {
-    const res = await fetch(
+    const res = await axios.get(
       `${
         process.env.apiurl
       }/api/v3/user/profile_videos?user_id=${share_string}&video_types[]=rt&last_video_type=rt&last_video_id=${
         rtVideos[rtVideos.length - 1]?.video?.conversation_id
       }`
     );
-    const response = await res.json();
-    const newVideos = response?.data?.videos || [];
+
+    const newVideos = res?.data?.data?.videos || [];
 
     if (newVideos.length !== 0) {
       const preparedNewVideos = prepareRTVideos(newVideos);
@@ -124,26 +124,29 @@ const Profile = ({
     }
   };
 
+  console.log("process.env", process.env.apiurl);
   const getMoreVideos = async () => {
-    const resPublic = await fetch(
+    const resPublic = await axios.get(
       `${
         process.env.apiurl
       }/api/v3/user/profile_videos?user_id=${share_string}&video_types[]=public_video&last_video_type=public_video&last_video_id=${
         publicVideos[publicVideos.length - 1]?.video?.video_id
       }`
     );
-    const responsePublic = await resPublic.json();
-    const newVideosPublic = responsePublic?.data?.videos || [];
 
-    const resRT = await fetch(
+    console.log("resPublic", resPublic);
+    const newVideosPublic = resPublic?.data?.data?.videos || [];
+    console.log("newVideosPublic", newVideosPublic);
+
+    const resRT = await axios.get(
       `${
         process.env.apiurl
       }/api/v3/user/profile_videos?user_id=${share_string}&video_types[]=rt&last_video_type=rt&last_video_id=${
         rtVideos[rtVideos.length - 1]?.video?.conversation_id
       }`
     );
-    const responseRT = await resRT.json();
-    const newVideosRT = responseRT?.data?.videos || [];
+
+    const newVideosRT = resRT?.data?.data?.videos || [];
     const preparedNewVideos = prepareRTVideos(newVideosRT);
 
     setVideos(videos.concat(newVideosPublic).concat(preparedNewVideos));
