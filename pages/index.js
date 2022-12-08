@@ -1,7 +1,6 @@
 import { useState } from "react";
 import NextHead from "next/head";
 import { Layout } from "../components/layout";
-import { TopNav } from "../components/topNav";
 import { GetAppModal } from "../components/getAppModal";
 import { SEO } from "../components/seo";
 import { handleInvestClick } from "../actions/appInstall";
@@ -13,7 +12,6 @@ import imgCarousel3 from "../images/web3/feed_page_public_video.png";
 import imgCarousel4 from "../images/web3/initiate_conversation_about_web3.png";
 
 import favicon from "../images/favicon.ico";
-import { useBreakpointValue } from "@chakra-ui/react";
 import { InstallApp } from "../components/installApp";
 import { HomeNav } from "../components/homeNav";
 
@@ -27,8 +25,6 @@ const Home = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [showModalAppDownload, setShowModalAppDownload] = useState(false);
   const handleCloseAppDownload = () => setShowModalAppDownload(false);
-  const handleShowModalAppDownload = () => setShowModalAppDownload(true);
-  const mobile = useBreakpointValue({ base: true, sm: false });
 
   return (
     <>
@@ -45,10 +41,7 @@ const Home = () => {
         <link rel='shortcut icon' href={favicon.src} type='image/x-icon' />
       </NextHead>
       <Layout>
-        <HomeNav
-          variant="light"
-          isContiner
-        />
+        <HomeNav variant='light' isContiner />
         <section className='bg-gradient-blue section-content d-flex flex-column h-100 justify-content-center justify-content-md-between'>
           <Container className='container-false d-none d-md-block'></Container>
           <Container className='content-container'>

@@ -69,13 +69,16 @@ const Profile = ({
   const scrollToTop3 = () => tab3Ref.current.scrollIntoView();
 
   const prepareRTVideos = (videos = []) => {
-    return videos.reduce((res, { video: { chats, group } }) => {
+    return videos.reduce((res, { video: { chats, group, chat_id } }) => {
       return res.concat(
         chats.map((chat) => ({
           video_type: "rt",
           video: {
             ...chat,
+            video_thumbnail: chat.thumbnail_url,
+            description: group.group_description,
             group_name: group.group_name,
+            chat_id,
           },
         }))
       );
@@ -83,34 +86,36 @@ const Profile = ({
   };
 
   const [publicVideos, setPublicVideos] = useState(videosPublic);
-  const [rtVideos, setRTVideos] = useState(prepareRTVideos(videosRT));
+  const preparedRTVideos = prepareRTVideos(videosRT);
+
+  const [rtVideos, setRTVideos] = useState(preparedRTVideos);
   const [videos, setVideos] = useState(rtVideos.concat(publicVideos));
 
   const getMoreVideosPublic = async () => {
-    const res = await fetch(
+    const res = await axios.get(
       `${
         process.env.apiurl
       }/api/v3/user/profile_videos?user_id=${share_string}&video_types[]=public_video&last_video_type=public_video&last_video_id=${
         publicVideos[publicVideos.length - 1]?.video?.video_id
       }`
     );
-    const response = await res.json();
-    const newVideos = response?.data?.videos || [];
+
+    const newVideos = res?.data?.data?.videos || [];
     if (newVideos.length !== 0) {
       setPublicVideos(publicVideos.concat(newVideos));
     }
   };
 
   const getMoreVideosRT = async () => {
-    const res = await fetch(
+    const res = await axios.get(
       `${
         process.env.apiurl
       }/api/v3/user/profile_videos?user_id=${share_string}&video_types[]=rt&last_video_type=rt&last_video_id=${
         rtVideos[rtVideos.length - 1]?.video?.conversation_id
       }`
     );
-    const response = await res.json();
-    const newVideos = response?.data?.videos || [];
+
+    const newVideos = res?.data?.data?.videos || [];
 
     if (newVideos.length !== 0) {
       const preparedNewVideos = prepareRTVideos(newVideos);
@@ -119,26 +124,29 @@ const Profile = ({
     }
   };
 
+  console.log("process.env", process.env.apiurl);
   const getMoreVideos = async () => {
-    const resPublic = await fetch(
+    const resPublic = await axios.get(
       `${
         process.env.apiurl
       }/api/v3/user/profile_videos?user_id=${share_string}&video_types[]=public_video&last_video_type=public_video&last_video_id=${
         publicVideos[publicVideos.length - 1]?.video?.video_id
       }`
     );
-    const responsePublic = await resPublic.json();
-    const newVideosPublic = responsePublic?.data?.videos || [];
 
-    const resRT = await fetch(
+    console.log("resPublic", resPublic);
+    const newVideosPublic = resPublic?.data?.data?.videos || [];
+    console.log("newVideosPublic", newVideosPublic);
+
+    const resRT = await axios.get(
       `${
         process.env.apiurl
       }/api/v3/user/profile_videos?user_id=${share_string}&video_types[]=rt&last_video_type=rt&last_video_id=${
         rtVideos[rtVideos.length - 1]?.video?.conversation_id
       }`
     );
-    const responseRT = await resRT.json();
-    const newVideosRT = responseRT?.data?.videos || [];
+
+    const newVideosRT = resRT?.data?.data?.videos || [];
     const preparedNewVideos = prepareRTVideos(newVideosRT);
 
     setVideos(videos.concat(newVideosPublic).concat(preparedNewVideos));
@@ -185,7 +193,7 @@ const Profile = ({
   const [currentVideoIndexRT, setCurrentVideoIndexRT] = useState(0);
 
   const getNextVideo = () => {
-    setCurrentVideoIndex((old) => old + 1);
+    setCurrentVideoIndex((old) => (old + 1 >= 0 ? old + 1 : 0));
   };
   const getPrevVideo = () => {
     setCurrentVideoIndex((old) => old - 1);
@@ -575,6 +583,7 @@ const Profile = ({
                 getNextVideo={getNextVideoRT}
                 getPrevVideo={getPrevVideoRT}
                 videos={videosRT}
+                autoplay
               >
                 <AppActions
                   showGetAppModal={showGetAppToViewDialog}
@@ -624,6 +633,7 @@ const Profile = ({
                 getNextVideo={getNextVideoPublic}
                 getPrevVideo={getPrevVideoPublic}
                 videos={publicVideos}
+                autoplay
               >
                 <AppActions
                   showGetAppModal={showGetAppToViewDialog}
@@ -657,14 +667,21 @@ const Profile = ({
                 description={videos[currentVideoIndex]?.video?.description}
                 link={videos[currentVideoIndex]?.video?.link}
                 videoUrl={videos[currentVideoIndex]?.video?.video_url}
-                userName={`@${nickname}`}
+                userName={nickname}
                 onClickOutsideOfVideo={onClose}
                 userProfileImage={profile_image}
                 showGetAppModal={showGetAppToViewDialog}
-                onEnded={showGetAppToViewDialog}
                 getNextVideo={getNextVideo}
                 getPrevVideo={getPrevVideo}
                 videos={videos}
+                autoplay
+                video_id_to_use={videos[currentVideoIndex]?.conversation_id}
+                userId={videos[currentVideoIndex]?.owner?.member_id}
+                roundTableMode={videos[currentVideoIndex]?.video_type === "rt"}
+                roundTableName={videos[currentVideoIndex]?.video.group_name}
+                roundTableId={videos[currentVideoIndex]?.video.chat_id}
+                shareUrl={videos[currentVideoIndex]?.video.share_url}
+                verticalNavigation
               >
                 <AppActions
                   showGetAppModal={showGetAppToViewDialog}
@@ -675,6 +692,9 @@ const Profile = ({
                     videos[currentVideoIndex]?.video?.description
                   }
                   videoTitle='Genuin'
+                  roundTable={videos[currentVideoIndex]?.video_type === "rt"}
+                  roundTableName={videos[currentVideoIndex]?.group_name}
+                  roundTableId={videos[currentVideoIndex]?.chat_id}
                 />
               </Player>
             </ModalBody>
@@ -752,12 +772,8 @@ const Videos = ({
                         : video.video_thumbnail
                     }
                     onClick={() => {
-                      if (video_type === "rt")
-                        window.location.href = video.share_url;
-                      else {
-                        setCurrentVideoIndex(index);
-                        onOpen();
-                      }
+                      setCurrentVideoIndex(index);
+                      onOpen();
                     }}
                   />
                 )}
@@ -773,7 +789,6 @@ const Videos = ({
                     }}
                   />
                 )}
-
                 {video_type === "rt" && (
                   <Flex
                     position='absolute'
@@ -783,7 +798,12 @@ const Videos = ({
                     direction='column'
                     justifyContent='space-between'
                     onClick={() => {
-                      window.location.href = video.share_url;
+                      if (mobile) {
+                        window.location.href = video.share_url;
+                      } else {
+                        setCurrentVideoIndex(index);
+                        onOpen();
+                      }
                     }}
                   >
                     <Flex

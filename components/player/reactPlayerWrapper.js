@@ -13,14 +13,7 @@ import icFlipLeft from "../../images/video-more-options/ic-flip-left.svg";
 import icFlipRight from "../../images/video-more-options/ic-flip-right.svg";
 import icClose from "../../images/video-more-options/ic-close.svg";
 import earth from "../../images/video-more-options/ic-earth.svg";
-import {
-  Image,
-  Flex,
-  Text,
-  Link,
-  Box,
-  useBreakpointValue,
-} from "@chakra-ui/react";
+import { Image, Flex, Text, Link, Box } from "@chakra-ui/react";
 import ReactTimeAgo from "react-time-ago";
 
 export const ReactPlayerWrapper = ({
@@ -41,13 +34,15 @@ export const ReactPlayerWrapper = ({
   roundTableMode = false,
   roundTableName = "",
   roundTableId,
-  autoplay = false,
+  autoplay = true,
   autoJumpToNextVideo = false,
   watchRoundTable,
   setWatchRoundtable,
   onClose,
   direction,
   setDirection,
+  verticalNavigation,
+  shareUrl,
 }) => {
   const [progress, setProgress] = useState(0);
   const [isPlaying, setIsPlaying] = useState(autoplay);
@@ -111,9 +106,7 @@ export const ReactPlayerWrapper = ({
     <div
       className='video-container'
       style={{
-        pointerEvents: watchRoundTable || !roundTableMode ? "all" : "none",
         color: "white",
-        // zIndex: 1031,
       }}
     >
       <ReactPlayer
@@ -142,7 +135,6 @@ export const ReactPlayerWrapper = ({
         <Flex
           w='full'
           position='absolute'
-          pointerEvents='all'
           top='0'
           p={4}
           direction='column'
@@ -161,7 +153,7 @@ export const ReactPlayerWrapper = ({
                 locale='en-US'
               />
             </Text>
-            <Link href={roundTableId} pointerEvents='all'>
+            <Link href={roundTableId}>
               <Flex
                 alignItems='center'
                 gap={3}
@@ -195,7 +187,6 @@ export const ReactPlayerWrapper = ({
               alt='Close'
               title='Close'
               onClick={onClose}
-              pointerEvents='all'
             />
           </Flex>
           <Flex w='full' gap={1}>
@@ -237,12 +228,7 @@ export const ReactPlayerWrapper = ({
                 );
               })}
           </Flex>
-          <Flex
-            w='full'
-            justifyContent='space-between'
-            alignItems='center'
-            pointerEvents='all'
-          >
+          <Flex w='full' justifyContent='space-between' alignItems='center'>
             <Text fontWeight={600} fontSize={17}>
               {videos[currentVideoIndex].meta_data.duration}
             </Text>
@@ -270,17 +256,18 @@ export const ReactPlayerWrapper = ({
       )}
 
       {/* don't show it if it's watchRoundTable  */}
-      {(watchRoundTable || !roundTableMode) && (
+      {(watchRoundTable || !roundTableMode || verticalNavigation) && (
         <FontAwesomeIcon
           icon={isPlaying ? faPause : faPlay}
           style={{
             display: isPlayingDebounced ? "none" : "block",
-            pointerEvents: "none",
           }}
           className='btn-play'
         />
       )}
-      {Boolean(getNextVideo) && Boolean(getPrevVideo) && !roundTableMode ? (
+      {Boolean(getNextVideo) &&
+      Boolean(getPrevVideo) &&
+      (!roundTableMode || verticalNavigation) ? (
         <div className='btn-arrow-controler d-none d-md-flex flex-column align-items-center justify-content-center'>
           {currentVideoIndex !== 0 && (
             <button className='btn-arrow'>
@@ -354,10 +341,7 @@ export const ReactPlayerWrapper = ({
             />
           </Button>
         )}
-      <div
-        className='video-footer bg-gradient-180'
-        style={{ pointerEvents: "none" }}
-      >
+      <div className='video-footer bg-gradient-180'>
         <Flex alignItems='end' justifyContent='space-between' mb={3}>
           {/* this should not show if it's rountableMode && watchRoundTable  */}
           {(!watchRoundTable || !roundTableMode) && (
@@ -369,7 +353,6 @@ export const ReactPlayerWrapper = ({
                   _hover={{
                     textDecoration: "none",
                   }}
-                  pointerEvents='all'
                 >
                   <Badge pill bg='dark' className='mb-2 align-self-start'>
                     @{userName} added
@@ -392,14 +375,17 @@ export const ReactPlayerWrapper = ({
                       <Button
                         variant='outline-light'
                         className='ms-3'
-                        style={{ pointerEvents: "all" }}
-                        onClick={() => setWatchRoundtable(true)}
+                        onClick={() => {
+                          if (verticalNavigation && shareUrl) {
+                            window.location.href = shareUrl;
+                          } else setWatchRoundtable(true);
+                        }}
                       >
                         Watch
                       </Button>
                     </>
                   ) : (
-                    userName
+                    `@${userName}`
                   )}
                 </h5>
               </div>
@@ -412,9 +398,8 @@ export const ReactPlayerWrapper = ({
               _hover={{
                 textDecoration: "none",
               }}
-              pointerEvents='all'
             >
-              <Flex alignItems='center' gap={2} pointerEvents='all'>
+              <Flex alignItems='center' gap={2}>
                 <Image
                   src={profilePic}
                   width={9}
@@ -427,10 +412,7 @@ export const ReactPlayerWrapper = ({
               </Flex>
             </Link>
           )}
-          <div
-            className='flex-shrink-0 position-relative video-more-option'
-            style={{ pointerEvents: "all" }}
-          >
+          <div className='flex-shrink-0 position-relative video-more-option'>
             {children}
           </div>
         </Flex>

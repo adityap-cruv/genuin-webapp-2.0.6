@@ -59,6 +59,13 @@ const RoundTable = ({
 
   useEffect(() => {
     setCurrentUrl(window.location.href);
+    if (router?.query?.v) {
+      setCurrentVideoIndex(
+        videos.findIndex(
+          ({ share_string }) => share_string === router?.query?.v
+        )
+      );
+    }
   }, []);
 
   const handleCloseAppDownload = () => {
@@ -140,7 +147,7 @@ const RoundTable = ({
             getPrevVideo={getPrevVideo}
             watchRoundTable={watchRoundTable}
             setWatchRoundtable={setWatchRoundtable}
-            autoJumpToNextVideo
+            // autoJumpToNextVideo
             autoplay={watchRoundTable}
             onClose={onClose}
             roundTableId={details.chat_id}
