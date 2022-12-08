@@ -30,6 +30,8 @@ export const Player = ({
   onClose = () => {},
   direction,
   setDirection,
+  verticalNavigation,
+  shareUrl,
 }) => {
   const [triggerPlayCount, setTriggetPlayCount] = useState(false);
   const pad = useBreakpointValue({ base: true, md: false });
@@ -111,6 +113,8 @@ export const Player = ({
         onClose={onClose}
         direction={direction}
         setDirection={setDirection}
+        verticalNavigation={verticalNavigation}
+        shareUrl={shareUrl}
       >
         {children}
       </ReactPlayerWrapper>

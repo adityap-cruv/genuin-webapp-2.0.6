@@ -45,10 +45,7 @@ const Home = () => {
         <link rel='shortcut icon' href={favicon.src} type='image/x-icon' />
       </NextHead>
       <Layout>
-        <HomeNav
-          variant="light"
-          isContiner
-        />
+        <HomeNav variant='light' isContiner />
         <section className='bg-gradient-blue section-content d-flex flex-column h-100 justify-content-center justify-content-md-between'>
           <Container className='container-false d-none d-md-block'></Container>
           <Container className='content-container'>

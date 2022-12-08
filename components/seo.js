@@ -1,20 +1,20 @@
-import { NextSeo } from 'next-seo';
-import NextHead from 'next/head';
+import { NextSeo } from "next-seo";
+import NextHead from "next/head";
 
 export const SEO = ({
   videoUrl,
   description,
   videoPreviewImage,
   urlToCopy,
-  title = 'Genuin',
+  title = "Genuin",
   metaImageWidth = 1084,
   metaImageHeight = 546,
   metaVideoHeight = 1280,
   metaVideoWidth = 720,
-  openGraphTitle = 'Genuin',
+  openGraphTitle = "Genuin",
   openGraphDescription,
-  videoType = 'video/mp4',
-  openGraphType = 'website',
+  videoType = "video/mp4",
+  openGraphType = "website",
   includeHead = true,
 }) => (
   <>
@@ -23,6 +23,10 @@ export const SEO = ({
         <meta property='og:video:url' content={videoUrl} />
         <meta property='og:video:secure_url' content={videoUrl} />
         <meta property='og:video:type' content={videoType} />
+        <meta
+          http-equiv='Content-Security-Policy'
+          content='upgrade-insecure-requests'
+        />
       </NextHead>
     )}
     <NextSeo
@@ -40,7 +44,7 @@ export const SEO = ({
             type: videoType,
             width: metaVideoWidth,
             height: metaVideoHeight,
-            alt: 'Genuin',
+            alt: "Genuin",
           },
         ],
         images: [
@@ -48,18 +52,18 @@ export const SEO = ({
             url: videoPreviewImage,
             width: metaImageWidth,
             height: metaImageHeight,
-            alt: 'Genuin',
+            alt: "Genuin",
           },
         ],
-        site_name: 'Genuin',
+        site_name: "Genuin",
       }}
       facebook={{
         appId: 1234567890,
       }}
       twitter={{
-        handle: '@handle',
-        site: '@site',
-        cardType: 'summary_large_image',
+        handle: "@handle",
+        site: "@site",
+        cardType: "summary_large_image",
       }}
     />
   </>

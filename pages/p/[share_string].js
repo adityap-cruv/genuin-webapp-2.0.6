@@ -69,13 +69,16 @@ const Profile = ({
   const scrollToTop3 = () => tab3Ref.current.scrollIntoView();
 
   const prepareRTVideos = (videos = []) => {
-    return videos.reduce((res, { video: { chats, group } }) => {
+    return videos.reduce((res, { video: { chats, group, chat_id } }) => {
       return res.concat(
         chats.map((chat) => ({
           video_type: "rt",
           video: {
             ...chat,
+            video_thumbnail: chat.thumbnail_url,
+            description: group.group_description,
             group_name: group.group_name,
+            chat_id,
           },
         }))
       );
@@ -83,7 +86,9 @@ const Profile = ({
   };
 
   const [publicVideos, setPublicVideos] = useState(videosPublic);
-  const [rtVideos, setRTVideos] = useState(prepareRTVideos(videosRT));
+  const preparedRTVideos = prepareRTVideos(videosRT);
+
+  const [rtVideos, setRTVideos] = useState(preparedRTVideos);
   const [videos, setVideos] = useState(rtVideos.concat(publicVideos));
 
   const getMoreVideosPublic = async () => {
@@ -185,7 +190,7 @@ const Profile = ({
   const [currentVideoIndexRT, setCurrentVideoIndexRT] = useState(0);
 
   const getNextVideo = () => {
-    setCurrentVideoIndex((old) => old + 1);
+    setCurrentVideoIndex((old) => (old + 1 >= 0 ? old + 1 : 0));
   };
   const getPrevVideo = () => {
     setCurrentVideoIndex((old) => old - 1);
@@ -575,6 +580,7 @@ const Profile = ({
                 getNextVideo={getNextVideoRT}
                 getPrevVideo={getPrevVideoRT}
                 videos={videosRT}
+                autoplay
               >
                 <AppActions
                   showGetAppModal={showGetAppToViewDialog}
@@ -624,6 +630,7 @@ const Profile = ({
                 getNextVideo={getNextVideoPublic}
                 getPrevVideo={getPrevVideoPublic}
                 videos={publicVideos}
+                autoplay
               >
                 <AppActions
                   showGetAppModal={showGetAppToViewDialog}
@@ -657,14 +664,21 @@ const Profile = ({
                 description={videos[currentVideoIndex]?.video?.description}
                 link={videos[currentVideoIndex]?.video?.link}
                 videoUrl={videos[currentVideoIndex]?.video?.video_url}
-                userName={`@${nickname}`}
+                userName={nickname}
                 onClickOutsideOfVideo={onClose}
                 userProfileImage={profile_image}
                 showGetAppModal={showGetAppToViewDialog}
-                onEnded={showGetAppToViewDialog}
                 getNextVideo={getNextVideo}
                 getPrevVideo={getPrevVideo}
                 videos={videos}
+                autoplay
+                video_id_to_use={videos[currentVideoIndex]?.conversation_id}
+                userId={videos[currentVideoIndex]?.owner?.member_id}
+                roundTableMode={videos[currentVideoIndex]?.video_type === "rt"}
+                roundTableName={videos[currentVideoIndex]?.video.group_name}
+                roundTableId={videos[currentVideoIndex]?.video.chat_id}
+                shareUrl={videos[currentVideoIndex]?.video.share_url}
+                verticalNavigation
               >
                 <AppActions
                   showGetAppModal={showGetAppToViewDialog}
@@ -675,6 +689,9 @@ const Profile = ({
                     videos[currentVideoIndex]?.video?.description
                   }
                   videoTitle='Genuin'
+                  roundTable={videos[currentVideoIndex]?.video_type === "rt"}
+                  roundTableName={videos[currentVideoIndex]?.group_name}
+                  roundTableId={videos[currentVideoIndex]?.chat_id}
                 />
               </Player>
             </ModalBody>
@@ -752,12 +769,8 @@ const Videos = ({
                         : video.video_thumbnail
                     }
                     onClick={() => {
-                      if (video_type === "rt")
-                        window.location.href = video.share_url;
-                      else {
-                        setCurrentVideoIndex(index);
-                        onOpen();
-                      }
+                      setCurrentVideoIndex(index);
+                      onOpen();
                     }}
                   />
                 )}
@@ -773,7 +786,6 @@ const Videos = ({
                     }}
                   />
                 )}
-
                 {video_type === "rt" && (
                   <Flex
                     position='absolute'
@@ -783,7 +795,12 @@ const Videos = ({
                     direction='column'
                     justifyContent='space-between'
                     onClick={() => {
-                      window.location.href = video.share_url;
+                      if (mobile) {
+                        window.location.href = video.share_url;
+                      } else {
+                        setCurrentVideoIndex(index);
+                        onOpen();
+                      }
                     }}
                   >
                     <Flex
