@@ -102,6 +102,7 @@ export const ReactPlayerWrapper = ({
     [autoJumpToNextVideo, direction]
   );
 
+  console.log("isPlaying", isPlaying);
   return (
     <div
       className='video-container'
@@ -378,7 +379,10 @@ export const ReactPlayerWrapper = ({
                         onClick={() => {
                           if (verticalNavigation && shareUrl) {
                             window.location.href = shareUrl;
-                          } else setWatchRoundtable(true);
+                          } else {
+                            setWatchRoundtable(true);
+                            setIsPlaying(true);
+                          }
                         }}
                       >
                         Watch
