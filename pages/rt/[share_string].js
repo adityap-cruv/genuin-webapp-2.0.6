@@ -147,8 +147,6 @@ const RoundTable = ({
             getPrevVideo={getPrevVideo}
             watchRoundTable={watchRoundTable}
             setWatchRoundtable={setWatchRoundtable}
-            // autoJumpToNextVideo
-            autoplay={watchRoundTable}
             onClose={onClose}
             roundTableId={details.chat_id}
             direction={direction}
