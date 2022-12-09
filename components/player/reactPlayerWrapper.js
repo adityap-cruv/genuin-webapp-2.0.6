@@ -378,7 +378,10 @@ export const ReactPlayerWrapper = ({
                         onClick={() => {
                           if (verticalNavigation && shareUrl) {
                             window.location.href = shareUrl;
-                          } else setWatchRoundtable(true);
+                          } else {
+                            setWatchRoundtable(true);
+                            setIsPlaying(true);
+                          }
                         }}
                       >
                         Watch
