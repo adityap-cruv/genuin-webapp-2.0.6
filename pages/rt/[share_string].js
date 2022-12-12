@@ -171,8 +171,8 @@ const RoundTable = ({
           <Container
             style={{
               height: mobile ? "100%" : "calc(100% - 70px)",
-              maxWidth: "100vw",
             }}
+            className={mobile ? "mobile-rt" : ""}
           >
             <Flex
               flexDir={{
