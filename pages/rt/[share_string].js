@@ -171,6 +171,7 @@ const RoundTable = ({
           <Container
             style={{
               height: mobile ? "100%" : "calc(100% - 70px)",
+              maxWidth: "100vw",
             }}
           >
             <Flex
@@ -443,26 +444,39 @@ const Videos = ({
             transition='transform .2s'
             key={video.thumbnail_url}
             h={{ base: 120, sm: 240 }}
+            w={{ base: 67, sm: 135 }}
             display='inline-block'
-            pr={index === videos.length - 1 ? 0 : 4}
+            mr={index === videos.length - 1 ? 0 : 4}
             position='relative'
             zIndex={index === videos.length - 1 || index === 0 ? 11 : 9}
+            bg='black'
           >
             {!mobile && (
-              <Image
-                src={video.thumbnail_url}
+              <Box
+                h='full'
+                bgImage={video.thumbnail_url}
+                bgSize='contain'
+                bgRepeat='no-repeat'
+                bgPosition='center'
                 onClick={() => {
                   onOpen();
                   setWatchRoundtable(true);
                   setCurrentVideoIndex(index);
                 }}
-                h='full'
+                maxH='full'
               />
             )}
             {mobile && (
               // this needs to point to the same page but with &video_id=${v} at te end
               <Link href={`${chatId}?v=${video.share_string}`}>
-                <Image src={video.thumbnail_url} h='full' />
+                <Box
+                  h='full'
+                  bgImage={video.thumbnail_url}
+                  bgSize='contain'
+                  bgRepeat='no-repeat'
+                  bgPosition='center'
+                  maxH='full'
+                />
               </Link>
             )}
 
