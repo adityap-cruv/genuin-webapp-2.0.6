@@ -587,6 +587,12 @@ const Profile = ({
                 getPrevVideo={getPrevVideoRT}
                 videos={rtVideos}
                 autoplay
+                video_id_to_use={rtVideos[currentVideoIndex]?.conversation_id}
+                roundTableMode
+                roundTableName={rtVideos[currentVideoIndex]?.video.group_name}
+                roundTableId={rtVideos[currentVideoIndex]?.video.chat_id}
+                shareUrl={rtVideos[currentVideoIndex]?.video.share_url}
+                verticalNavigation
               >
                 <AppActions
                   showGetAppModal={showGetAppToViewDialog}
@@ -597,6 +603,9 @@ const Profile = ({
                     rtVideos[currentVideoIndexRT]?.video?.description
                   }
                   videoTitle='Genuin'
+                  roundTable={rtVideos[currentVideoIndex]?.video_type === "rt"}
+                  roundTableName={rtVideos[currentVideoIndex]?.group_name}
+                  roundTableId={rtVideos[currentVideoIndex]?.chat_id}
                 />
               </Player>
             </ModalBody>
