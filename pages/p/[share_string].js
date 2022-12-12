@@ -58,6 +58,7 @@ const Profile = ({
     replies,
     profile_image,
   } = user;
+  console.log("user_id", user_id);
 
   let { hashtags } = user;
 
@@ -290,6 +291,7 @@ const Profile = ({
     setCurrentUrl(window.location.href);
   }, []);
 
+  console.log("nickname", nickname);
   return !Boolean(user_id) ? (
     <Error />
   ) : (
@@ -570,28 +572,29 @@ const Profile = ({
               <Player
                 currentVideoIndex={currentVideoIndexRT}
                 videoThumbnail={
-                  videosRT[currentVideoIndexRT]?.video?.video_thumbnail
+                  rtVideos[currentVideoIndexRT]?.video?.video_thumbnail
                 }
-                description={videosRT[currentVideoIndexRT]?.video?.description}
-                link={videosRT[currentVideoIndexRT]?.video?.link}
-                videoUrl={videosRT[currentVideoIndexRT]?.video?.video_url}
-                userName={`@${nickname}`}
+                description={rtVideos[currentVideoIndexRT]?.video?.description}
+                link={rtVideos[currentVideoIndexRT]?.video?.link}
+                videoUrl={rtVideos[currentVideoIndexRT]?.video?.video_url}
+                userName={nickname}
+                userId={user_id}
                 onClickOutsideOfVideo={onCloseRT}
                 userProfileImage={profile_image}
                 showGetAppModal={showGetAppToViewDialog}
                 onEnded={showGetAppToViewDialog}
                 getNextVideo={getNextVideoRT}
                 getPrevVideo={getPrevVideoRT}
-                videos={videosRT}
+                videos={rtVideos}
                 autoplay
               >
                 <AppActions
                   showGetAppModal={showGetAppToViewDialog}
-                  userName={`@${nickname}`}
-                  link={videosRT[currentVideoIndexRT]?.video?.link}
+                  userName={nickname}
+                  link={rtVideos[currentVideoIndexRT]?.video?.link}
                   videoUrl={globalThis?.location?.href}
                   videoDescription={
-                    videosRT[currentVideoIndexRT]?.video?.description
+                    rtVideos[currentVideoIndexRT]?.video?.description
                   }
                   videoTitle='Genuin'
                 />
@@ -625,7 +628,8 @@ const Profile = ({
                 videoUrl={
                   publicVideos[currentVideoIndexPublic]?.video?.video_url
                 }
-                userName={`@${nickname}`}
+                userName={nickname}
+                userId={user_id}
                 onClickOutsideOfVideo={onClosePublic}
                 userProfileImage={profile_image}
                 showGetAppModal={showGetAppToViewDialog}
@@ -637,7 +641,7 @@ const Profile = ({
               >
                 <AppActions
                   showGetAppModal={showGetAppToViewDialog}
-                  userName={`@${nickname}`}
+                  userName={nickname}
                   link={publicVideos[currentVideoIndexPublic]?.video?.link}
                   videoUrl={globalThis?.location?.href}
                   videoDescription={
@@ -668,6 +672,7 @@ const Profile = ({
                 link={videos[currentVideoIndex]?.video?.link}
                 videoUrl={videos[currentVideoIndex]?.video?.video_url}
                 userName={nickname}
+                userId={user_id}
                 onClickOutsideOfVideo={onClose}
                 userProfileImage={profile_image}
                 showGetAppModal={showGetAppToViewDialog}
@@ -676,7 +681,6 @@ const Profile = ({
                 videos={videos}
                 autoplay
                 video_id_to_use={videos[currentVideoIndex]?.conversation_id}
-                userId={videos[currentVideoIndex]?.owner?.member_id}
                 roundTableMode={videos[currentVideoIndex]?.video_type === "rt"}
                 roundTableName={videos[currentVideoIndex]?.video.group_name}
                 roundTableId={videos[currentVideoIndex]?.video.chat_id}
@@ -684,8 +688,8 @@ const Profile = ({
                 verticalNavigation
               >
                 <AppActions
-                  showGetAppModal={showGetAppToViewDialog}
-                  userName={`@${nickname}`}
+                  showGetAppModal={handleShowModalAppDownload}
+                  userName={nickname}
                   link={videos[currentVideoIndex]?.video?.link}
                   videoUrl={globalThis?.location?.href}
                   videoDescription={

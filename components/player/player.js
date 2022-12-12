@@ -84,7 +84,6 @@ export const Player = ({
         top={-10}
         pos='absolute'
         filter='blur(25px) brightness(30%)'
-        onClick={onClickOutsideOfVideo}
       />
       {/* don't show if it's a pad & watch roundtable  */}
       {(!watchRoundTable || !pad) && (
@@ -110,7 +109,10 @@ export const Player = ({
         roundTableId={roundTableId}
         watchRoundTable={watchRoundTable}
         setWatchRoundtable={setWatchRoundtable}
-        onClose={onClose}
+        onClose={() => {
+          onClickOutsideOfVideo();
+          onClose();
+        }}
         direction={direction}
         setDirection={setDirection}
         verticalNavigation={verticalNavigation}

@@ -25,18 +25,20 @@ export const GetAppModal = ({ show, onClose, TextNode = () => null }) => {
     >
       <Modal.Header closeButton className='border-0'></Modal.Header>
       <Modal.Body className='text-center py-0'>
-        <VStack px={mobile ? 8 : 16}>
+        <VStack px={mobile ? 6 : 16}>
           <Image src={logo.src} alt='Genuin' title='Genuin' h={16} />
-          <Text fontWeight={700} fontSize={40}>
-            Download App
-          </Text>
+          {!mobile && (
+            <Text fontWeight={700} fontSize={40}>
+              Download App
+            </Text>
+          )}
           <Text fontSize={20} fontWeight={600}>
             {typeof TextNode === "function" ? <TextNode /> : null}
           </Text>
         </VStack>
       </Modal.Body>
       <Modal.Footer className='justify-content-center border-0 py-10'>
-        <Flex pb={8}>
+        <Flex pb={4} w='full' px={mobile ? 7 : 0}>
           <InstallApp small onClick={onClose} />
         </Flex>
       </Modal.Footer>

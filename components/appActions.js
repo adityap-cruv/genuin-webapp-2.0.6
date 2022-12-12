@@ -41,9 +41,10 @@ export const AppActions = ({
   videoDescription = "",
   videoTitle = "",
 }) => {
+  console.log("roundTable", roundTable);
   const mobile = useBreakpointValue({ base: true, sm: false });
 
-  const getClickableLink = (link) => {
+  const getClickableLink = (link = "") => {
     return link.startsWith("http://") || link.startsWith("https://")
       ? link
       : `http://${link}`;

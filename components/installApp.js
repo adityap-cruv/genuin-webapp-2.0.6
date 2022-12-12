@@ -17,10 +17,10 @@ export const InstallApp = ({ small = false, onClick = () => {} }) => {
   return (
     <>
       {mobile && (
-        <Button onClick={onClick}>
+        <Button onClick={onClick} style={{ width: "100%" }}>
           <Link href={appStoreLink} isExternal>
             <Text fontSize={24} fontWeight='bold'>
-              Download App
+              Get App
             </Text>
           </Link>
         </Button>

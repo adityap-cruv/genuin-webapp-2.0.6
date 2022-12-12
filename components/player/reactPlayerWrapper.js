@@ -44,6 +44,7 @@ export const ReactPlayerWrapper = ({
   verticalNavigation,
   shareUrl,
 }) => {
+  console.log("onClose", onClose);
   const [progress, setProgress] = useState(0);
   const [isPlaying, setIsPlaying] = useState(autoplay);
   const [isPlayingDebounced] = useDebounce(isPlaying, 65);
@@ -230,7 +231,7 @@ export const ReactPlayerWrapper = ({
           </Flex>
           <Flex w='full' justifyContent='space-between' alignItems='center'>
             <Text fontWeight={600} fontSize={17}>
-              {videos[currentVideoIndex].meta_data.duration}
+              {videos[currentVideoIndex].meta_data.duration} sec
             </Text>
             {direction === "forward" ? (
               <Image
@@ -370,8 +371,8 @@ export const ReactPlayerWrapper = ({
                 />
                 <h5 className='mb-0'>
                   {Boolean(roundTableMode) ? (
-                    <>
-                      {roundTableName}
+                    <Flex alignItems='center'>
+                      <Link href={`/rt/${roundTableId}`}>{roundTableName}</Link>
                       <Button
                         variant='outline-light'
                         className='ms-3'
@@ -386,7 +387,7 @@ export const ReactPlayerWrapper = ({
                       >
                         Watch
                       </Button>
-                    </>
+                    </Flex>
                   ) : (
                     `@${userName}`
                   )}
