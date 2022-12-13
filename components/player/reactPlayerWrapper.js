@@ -44,7 +44,6 @@ export const ReactPlayerWrapper = ({
   verticalNavigation,
   shareUrl,
 }) => {
-  console.log("onClose", onClose);
   const [progress, setProgress] = useState(0);
   const [isPlaying, setIsPlaying] = useState(autoplay);
   const [isPlayingDebounced] = useDebounce(isPlaying, 65);
@@ -193,7 +192,7 @@ export const ReactPlayerWrapper = ({
           <Flex w='full' gap={1}>
             {/* {JSON.stringify(videos)} */}
             {Boolean(videos.length) &&
-              videos.map((video, index) => {
+              videos.map((_, index) => {
                 return (
                   <Box h={1} w='full' borderRadius={10} background='white'>
                     {direction === "forward" && (
@@ -252,6 +251,35 @@ export const ReactPlayerWrapper = ({
                 onClick={() => setDirection("forward")}
               />
             )}
+          </Flex>
+        </Flex>
+      )}
+
+      {/* x button */}
+      {!watchRoundTable && (
+        <Flex
+          w='full'
+          position='absolute'
+          top='0'
+          p={4}
+          direction='column'
+          gap={2}
+        >
+          <Flex
+            w='full'
+            justifyContent='space-between'
+            alignItems='center'
+            h={10}
+          >
+            <Box />
+            <Image
+              src={icClose.src}
+              width={6}
+              height={6}
+              alt='Close'
+              title='Close'
+              onClick={onClose}
+            />
           </Flex>
         </Flex>
       )}
