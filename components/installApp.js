@@ -10,17 +10,30 @@ import { useBreakpointValue } from "@chakra-ui/react";
 import ios from "../images/badge_appstore.png";
 import android from "../images/badge_playstore.png";
 import { handleLink } from "../actions/appInstall";
+import { useRouter } from "next/router";
 
 export const InstallApp = ({ small = false, onClick = () => {} }) => {
   const mobile = useBreakpointValue({ base: true, sm: false });
+  const router = useRouter();
+  console.log("router", router.pathname);
 
   return (
     <>
-      {mobile && (
+      {mobile && router.pathname !== "/" && (
         <Button onClick={onClick} style={{ width: "100%" }}>
           <Link href={appStoreLink} isExternal>
             <Text fontSize={24} fontWeight='bold'>
               Get App
+            </Text>
+          </Link>
+        </Button>
+      )}
+
+      {mobile && router.pathname === "/" && (
+        <Button onClick={onClick}>
+          <Link href={appStoreLink} isExternal>
+            <Text fontSize={24} fontWeight='bold'>
+              Download App
             </Text>
           </Link>
         </Button>

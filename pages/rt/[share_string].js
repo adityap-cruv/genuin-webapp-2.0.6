@@ -50,7 +50,7 @@ const RoundTable = ({
   const getAppComponentRef = useRef(() => null);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [currentUrl, setCurrentUrl] = useState("");
-  const [watchRoundTable, setWatchRoundtable] = useState(false);
+  const [watchRoundTable, setWatchRoundtable] = useState(true);
   const [direction, setDirection] = useState("forward");
 
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -504,7 +504,7 @@ const Videos = ({
               fontSize='15px'
               fontWeight='bold'
             >
-              {video.meta_data.duration}
+              {video.meta_data.duration}s
             </Box>
           </Box>
         ))}
