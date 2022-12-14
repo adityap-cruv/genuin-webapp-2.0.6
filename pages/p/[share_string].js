@@ -257,31 +257,41 @@ const Profile = ({
     hashtags || hashtags == []
       ? ["entreprenuer", "business", "leadership", "startups"]
       : hashtags;
+
+  const title_name = `${Boolean(name) && name.replace(/\s+/g, '') !== "" ? `${name.trim()} (@${nickname})` : `@${nickname}`} on Genuin | Connect with @${nickname} with a video reply`
+  
+  const views_val = abbreviateNumber(views) !== 0 ? " "+abbreviateNumber(views)+" Views." : ""
+  const videos_val = user.videos !== 0 ? " "+user.videos+" Videos.":""
+  const replies_val = replies !== 0 ? " "+replies+" Replies.":""
+  const bio_val = bio ? " "+bio.replace(/\n+/g, '\n').replace(/\s+\n+\s+|\s+\n+|\n+\s+|\n+/g, ' ') : ""
+  const tags_val = hashtags && hashtags != [] && hashtags.length > 0? " "+hashtags.map((tag) => "#" + tag).join(" "): ""
+  const pipe_val = views_val || videos_val || replies_val || bio_val || tags_val ? " |": ""
+  const ld_description = `${Boolean(name) && name.replace(/\s+/g, '') !== "" ? `[${name.trim()}] (@${nickname})` : `@${nickname}`} on Genuin.${pipe_val}${views_val}${videos_val}${replies_val}${bio_val}${tags_val}`
+
   const ORG_SCHEMA = JSON.stringify({
     "@context": "http://schema.org",
     "@type": "ProfilePage",
     id: `${share_url}`,
     url: `${share_url}`,
-    name: `${
-      Boolean(name) ? `${name} (@${nickname})` : `@${nickname}`
-    } on Genuin | Connect with @${nickname} with a video reply`,
-    isPartOf: "https://begenuin.com/#website",
-    image: `${share_url}/#primaryimage`,
-    thumbnailUrl: `${preview_image}`,
-    description: `${
-      Boolean(name) ? `[${name}] (@${nickname})` : `@${nickname}`
-    } on Genuin | ${abbreviateNumber(views)} Views. ${
-      user.videos
-    } Videos. ${replies} Replies. ${bio ? bio.replace(/\n+/g, " ") : ""} ${
-      hashtags && hashtags != [] && hashtags.length > 0
-        ? hashtags.map((tag) => "#" + tag).join(" ")
-        : ""
-    }`,
+    name: `${title_name}`,
+    isPartOf: `${process.env.genuinurl}#website`,
+    primaryImageOfPage:`${profile_image}/#primaryimage`,
+    image: `${profile_image}/#primaryimage`,
+    thumbnailUrl: `${profile_image}`,
+    description: `${ld_description}`,
     inLanguage: "en-US",
+    actionStatus: "ActiveActionStatus",
     potentialAction: [
       {
         "@type": "ReadAction",
+        actionStatus: "ActiveActionStatus",
         target: `${share_url}`,
+        image: `${profile_image}`
+      },
+      {
+        "@type": "WatchAction",
+        target: `${share_url}`,
+        image: `${profile_image}`
       },
     ],
   });
@@ -298,22 +308,12 @@ const Profile = ({
     <Layout>
       <SEO
         openGraphType='profile'
-        title={`${
-          Boolean(name) ? `${name} (@${nickname})` : `@${nickname}`
-        } is on Genuin. | Connect with @${nickname} with a video reply`}
+        title={title_name}
         openGraphTitle={`${
           Boolean(name) ? name : `@${nickname}`
         } is on Genuin. Connect confidently.`}
         // openGraphTitle={`${Boolean(name) ? `${name} (@${nickname})` : `@${nickname}`} is on Genuin. | Connect with @${nickname} with a video reply`}
-        description={`${
-          Boolean(name) ? `[${name}] (@${nickname})` : `@${nickname}`
-        } on Genuin. | ${abbreviateNumber(views)} Views. ${
-          user.videos
-        } Videos. ${replies} Replies. ${bio ? bio.replace(/\n+/g, " ") : ""} ${
-          hashtags && hashtags != [] && hashtags.length > 0
-            ? hashtags.map((tag) => "#" + tag).join(" ")
-            : ""
-        }`}
+        description={ld_description}
         openGraphDescription={`${Boolean(name) ? name : `@${nickname}`}, ${
           user.videos
         } Videos, ${abbreviateNumber(views)} Views, ${replies} Replies`}

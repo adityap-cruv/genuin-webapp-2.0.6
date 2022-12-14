@@ -104,17 +104,58 @@ const RoundTable = ({
       </>
     ));
 
+  const tags_string = details.group.tags!==null && details.group.tags!==undefined && details.group.tags.replace(/\s+/g,'')!==''?`#${details.group.tags.split(',').join(' #')}`:''
+  const ld_description = `${details.group.description.replace(/\s+/g,'')!==''? details.group.group_description + " | ": ''}Web3 related roundtable discussions available on Genuin ${tags_string}`
+  const title_name = details.group.group_name
+  const share_url = `${share_string !== undefined && share_string !== null && share_string ? process.env.genuinurl+"rt/"+share_string : videos.video_url}`
+  const ORG_SCHEMA = JSON.stringify({
+    "@context": "http://schema.org",
+    "@type": "VideoObject",
+    id: share_url,
+    url: share_url,
+    name: title_name,
+    isPartOf: `${process.env.genuinurl}#website`,
+    image: `${videos.thumbnail_url}/#primaryimage`,
+    thumbnailUrl: videos.thumbnail_url,
+    contentUrl: videos.video_url,
+    embedUrl: videos.video_url, 
+    author: {
+      "@type": "Person",
+      "name": "@"+userNickname,
+      "url": `${process.env.genuinurl}${userNickname}`
+    },
+    publisher: {
+      "@type": "Organization",
+      "name": "Genuin",
+      "url": process.env.genuinurl
+    },
+    description: ld_description,
+    inLanguage: "en-US",
+    uploadDate: details.created_at,
+    dateCreated: details.created_at,
+    dateModified: details.updated_at,
+    datePublished: details.created_at,
+    potentialAction: [
+      {
+        "@type": "WatchAction",
+        target: share_url,
+        image: videoThumbnail
+      },
+    ],
+  });
+
   return !Boolean(group?.group_id) ? (
     <Error />
   ) : (
     <Layout>
       <SEO
-        title={group.group_name}
+        title={title_name}
         openGraphTitle={group.group_name}
         videoUrl={videos?.[currentVideoIndex]?.video_url}
-        description={group?.group_description}
+        description={ld_description}
         openGraphDescription={group?.group_description}
       />
+      <script type='application/ld+json' dangerouslySetInnerHTML={{ __html: ORG_SCHEMA }}/>
       {!router.query.v && (
         <TopNav showGetAppModal={showGetAppToViewDialog} isContiner isBlue />
       )}

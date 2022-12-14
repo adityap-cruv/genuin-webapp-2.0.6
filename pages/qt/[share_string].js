@@ -37,23 +37,50 @@ const QuestionWrapper = ({
         : owner?.nickname,
     [owner?.nickname]
   );
-  const description = useMemo(
+  const openGraphDescription = useMemo(
     () =>
       Boolean(askedBy)
         ? `Answer this trending question on Genuin${askedBy}`
         : `Answer this trending question on Genuin`,
     [askedBy]
   );
+  const description = useMemo(
+    () =>
+    Boolean(owner?.nickname)
+        ? `{Asked by ${owner && owner.name.replace(/\s+/g, '') != ""?`[${owner?.name.trim()}] `: ''}(@${owner?.nickname})} ${owner.bio.replace(/\s+/g, '') != ""?"| "+owner.bio.replace(/\n+/g, '\n').replace(/\s+\n+\s+|\s+\n+|\n+\s+|\n+/g, ' '):""}`
+        : `{Answer this trending Web3 question on Genuin}`
+  );
+  const title = `Answer '${question}' on Genuin | Reach billions of people with your expert advice.`
 
   const showGetAppToViewDialog = () =>
     handleShowModalAppDownload(() => <>Get the app to view this video.</>);
+
+  const ORG_SCHEMA = JSON.stringify({
+    "@context": "http://schema.org",
+    "@type": "WebPage",
+    id: `${share_url}`,
+    url: `${share_url}`,
+    name: `${title}`,
+    isPartOf: `${process.env.genuinurl}#website`,
+    image: `${preview_image}/#primaryimage`,
+    thumbnailUrl: `${preview_image}`,
+    description: `${description}`,
+    inLanguage: "en-US",
+    potentialAction: [
+      {
+        "@type": "WatchAction",
+        target: `${share_url}`,
+        image: `${preview_image}`
+      },
+    ],
+  });
 
   return Boolean(question_id) ? (
     <Layout>
       <SEO
         description={description}
-        openGraphDescription={description}
-        title={_question}
+        openGraphDescription={openGraphDescription}
+        title={title}
         openGraphType='object'
         openGraphTitle={_question}
         metaImageWidth={1084}
@@ -61,6 +88,9 @@ const QuestionWrapper = ({
         urlToCopy={share_url}
         videoPreviewImage={preview_image}
       />
+      
+      <script type='application/ld+json' dangerouslySetInnerHTML={{ __html: ORG_SCHEMA }}/>
+
       <TopNav showGetAppModal={showGetAppToViewDialog} />
       <Question previewImage={preview_image} />
       <GetAppModal

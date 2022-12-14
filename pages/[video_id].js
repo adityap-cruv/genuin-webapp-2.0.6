@@ -15,8 +15,13 @@ const Video = (props) => {
     videoUrl,
     videoPreviewImage,
     description,
+    created_at,
+    updated_at,
+    tags,
+    share_string,
     video_id_to_use,
     videoThumbnail,
+    userName,
     userNickname,
     userProfileImage,
     link,
@@ -37,21 +42,63 @@ const Video = (props) => {
   const showGetAppToViewDialog = () =>
     handleShowModalAppDownload(() => <>Get the app to view this video.</>);
 
+  const tags_string = tags!==null && tags!==undefined && tags.replace(/\s+/g,'')!==''?` #${tags.split(',').join(' #')}`:''
+  const ld_description = `${userName? userName: "@"+userNickname} | Web3 related bite-sized content available on Genuin${tags_string}`
+  const title_name = description
+  const share_url = `${process.env.genuinurl}${share_string}`
+  const ORG_SCHEMA = JSON.stringify({
+    "@context": "http://schema.org",
+    "@type": "VideoObject",
+    id: share_url,
+    url: share_url,
+    name: title_name,
+    isPartOf: `${process.env.genuinurl}#website`,
+    image: `${videoThumbnail}/#primaryimage`,
+    thumbnailUrl: videoThumbnail,
+    contentUrl: videoUrl,
+    embedUrl: videoUrl,
+    author: {
+      "@type": "Person",
+      "name": "@"+userNickname,
+      "url": `${process.env.genuinurl}${userNickname}`
+    },
+    publisher: {
+      "@type": "Organization",
+      "name": "Genuin",
+      "url": process.env.genuinurl
+    },
+    description: ld_description,
+    inLanguage: "en-US",
+    uploadDate: created_at,
+    dateCreated: created_at,
+    dateModified: updated_at,
+    datePublished: created_at,
+    potentialAction: [
+      {
+        "@type": "WatchAction",
+        target: share_url,
+        image: videoThumbnail
+      },
+    ],
+  });
+
+
   return !Boolean(videoUrl) ? (
     <Error />
   ) : (
     <Layout>
       <SEO
-        title={`${userNickname} @ Genuin`}
+        title={title_name}
         openGraphTitle={`${userNickname} @ Genuin`}
         videoUrl={videoUrl}
         videoPreviewImage={videoPreviewImage}
-        description={description}
+        description={ld_description}
         openGraphDescription={description}
         metaImageWidth={1200}
         metaImageHeight={630}
         urlToCopy={process?.env?.hostname + "/" + video_id_to_use}
       />
+      <script type='application/ld+json' dangerouslySetInnerHTML={{ __html: ORG_SCHEMA }}/>
       <Player
         key={video_id_to_use ?? `${Math.random()}`}
         video_id_to_use={video_id_to_use}
