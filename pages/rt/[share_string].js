@@ -50,7 +50,7 @@ const RoundTable = ({
   const getAppComponentRef = useRef(() => null);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [currentUrl, setCurrentUrl] = useState("");
-  const [watchRoundTable, setWatchRoundtable] = useState(false);
+  const [watchRoundTable, setWatchRoundtable] = useState(true);
   const [direction, setDirection] = useState("forward");
 
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -65,6 +65,7 @@ const RoundTable = ({
           ({ share_string }) => share_string === router?.query?.v
         )
       );
+      onOpen();
     }
   }, []);
 
@@ -166,7 +167,8 @@ const RoundTable = ({
       >
         <Container className='container-false d-none d-md-block'></Container>
         {/* if there is a specific video url */}
-        {router.query.v && (
+        <Modal></Modal>
+        {/* {router.query.v && (
           <Player
             key={currentVideoIndex}
             videos={videos}
@@ -205,15 +207,15 @@ const RoundTable = ({
               watchRoundTable={watchRoundTable}
             />
           </Player>
-        )}
+        )} */}
 
         {/* if there is no specific video url */}
         {!router.query.v && (
           <Container
             style={{
               height: mobile ? "100%" : "calc(100% - 70px)",
-              maxWidth: "100vw",
             }}
+            className={mobile ? "mobile-rt" : ""}
           >
             <Flex
               flexDir={{
@@ -389,7 +391,17 @@ const RoundTable = ({
           </Container>
         )}
 
-        <Modal isOpen={isOpen} onClose={onClose} scrollBehavior='inside'>
+        <Modal
+          isOpen={isOpen}
+          onClose={() => {
+            if (router?.query?.v) window.location.href = details.chat_id;
+            else {
+              onClose();
+              setWatchRoundtable(false);
+            }
+          }}
+          scrollBehavior='inside'
+        >
           <ModalContent
             h='full'
             marginTop={0}
@@ -412,8 +424,11 @@ const RoundTable = ({
                   videos?.[currentVideoIndex]?.owner?.profile_image
                 }
                 onClickOutsideOfVideo={() => {
-                  onClose();
-                  setWatchRoundtable(false);
+                  if (router?.query?.v) window.location.href = details.chat_id;
+                  else {
+                    onClose();
+                    setWatchRoundtable(false);
+                  }
                 }}
                 roundTableMode
                 roundTableName={group?.group_name}
@@ -422,7 +437,7 @@ const RoundTable = ({
                 getPrevVideo={getPrevVideo}
                 watchRoundTable={watchRoundTable}
                 setWatchRoundtable={setWatchRoundtable}
-                autoJumpToNextVideo
+                autoJumpToNextVideo={watchRoundTable}
                 autoplay={watchRoundTable}
                 onClose={onClose}
                 roundTableId={details.chat_id}
@@ -530,7 +545,7 @@ const Videos = ({
               fontSize='15px'
               fontWeight='bold'
             >
-              {video.meta_data.duration}
+              {video.meta_data.duration}s
             </Box>
           </Box>
         ))}

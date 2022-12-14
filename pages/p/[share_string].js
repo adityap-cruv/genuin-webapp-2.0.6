@@ -560,6 +560,57 @@ const Profile = ({
           </Flex>
         </Container>
 
+        <Modal isOpen={isOpen} onClose={onClose} scrollBehavior='inside'>
+          <ModalContent
+            h='full'
+            marginTop={0}
+            maxH='full'
+            maxW='full'
+            bg='transparent'
+          >
+            <ModalBody p={0} height='full' w='full' overflow='hidden'>
+              <Player
+                currentVideoIndex={currentVideoIndex}
+                videoThumbnail={
+                  videos[currentVideoIndex]?.video?.video_thumbnail
+                }
+                description={videos[currentVideoIndex]?.video?.description}
+                link={videos[currentVideoIndex]?.video?.link}
+                videoUrl={videos[currentVideoIndex]?.video?.video_url}
+                userName={nickname}
+                userId={user_id}
+                onClickOutsideOfVideo={onClose}
+                userProfileImage={profile_image}
+                showGetAppModal={showGetAppToViewDialog}
+                getNextVideo={getNextVideo}
+                getPrevVideo={getPrevVideo}
+                videos={videos}
+                autoplay
+                video_id_to_use={videos[currentVideoIndex]?.conversation_id}
+                roundTableMode={videos[currentVideoIndex]?.video_type === "rt"}
+                roundTableName={videos[currentVideoIndex]?.video.group_name}
+                roundTableId={videos[currentVideoIndex]?.video.chat_id}
+                shareUrl={videos[currentVideoIndex]?.video.share_url}
+                verticalNavigation
+              >
+                <AppActions
+                  showGetAppModal={handleShowModalAppDownload}
+                  userName={nickname}
+                  link={videos[currentVideoIndex]?.video?.link}
+                  videoUrl={globalThis?.location?.href}
+                  videoDescription={
+                    videos[currentVideoIndex]?.video?.description
+                  }
+                  videoTitle='Genuin'
+                  roundTable={videos[currentVideoIndex]?.video_type === "rt"}
+                  roundTableName={videos[currentVideoIndex]?.group_name}
+                  roundTableId={videos[currentVideoIndex]?.chat_id}
+                />
+              </Player>
+            </ModalBody>
+          </ModalContent>
+        </Modal>
+
         <Modal isOpen={isOpenRT} onClose={onCloseRT} scrollBehavior='inside'>
           <ModalContent
             h='full'
@@ -587,6 +638,12 @@ const Profile = ({
                 getPrevVideo={getPrevVideoRT}
                 videos={rtVideos}
                 autoplay
+                video_id_to_use={rtVideos[currentVideoIndex]?.conversation_id}
+                roundTableMode
+                roundTableName={rtVideos[currentVideoIndex]?.video.group_name}
+                roundTableId={rtVideos[currentVideoIndex]?.video.chat_id}
+                shareUrl={rtVideos[currentVideoIndex]?.video.share_url}
+                verticalNavigation
               >
                 <AppActions
                   showGetAppModal={showGetAppToViewDialog}
@@ -597,6 +654,9 @@ const Profile = ({
                     rtVideos[currentVideoIndexRT]?.video?.description
                   }
                   videoTitle='Genuin'
+                  roundTable={rtVideos[currentVideoIndex]?.video_type === "rt"}
+                  roundTableName={rtVideos[currentVideoIndex]?.group_name}
+                  roundTableId={rtVideos[currentVideoIndex]?.chat_id}
                 />
               </Player>
             </ModalBody>
@@ -648,57 +708,6 @@ const Profile = ({
                     publicVideos[currentVideoIndexPublic]?.video?.description
                   }
                   videoTitle='Genuin'
-                />
-              </Player>
-            </ModalBody>
-          </ModalContent>
-        </Modal>
-
-        <Modal isOpen={isOpen} onClose={onClose} scrollBehavior='inside'>
-          <ModalContent
-            h='full'
-            marginTop={0}
-            maxH='full'
-            maxW='full'
-            bg='transparent'
-          >
-            <ModalBody p={0} height='full' w='full' overflow='hidden'>
-              <Player
-                currentVideoIndex={currentVideoIndex}
-                videoThumbnail={
-                  videos[currentVideoIndex]?.video?.video_thumbnail
-                }
-                description={videos[currentVideoIndex]?.video?.description}
-                link={videos[currentVideoIndex]?.video?.link}
-                videoUrl={videos[currentVideoIndex]?.video?.video_url}
-                userName={nickname}
-                userId={user_id}
-                onClickOutsideOfVideo={onClose}
-                userProfileImage={profile_image}
-                showGetAppModal={showGetAppToViewDialog}
-                getNextVideo={getNextVideo}
-                getPrevVideo={getPrevVideo}
-                videos={videos}
-                autoplay
-                video_id_to_use={videos[currentVideoIndex]?.conversation_id}
-                roundTableMode={videos[currentVideoIndex]?.video_type === "rt"}
-                roundTableName={videos[currentVideoIndex]?.video.group_name}
-                roundTableId={videos[currentVideoIndex]?.video.chat_id}
-                shareUrl={videos[currentVideoIndex]?.video.share_url}
-                verticalNavigation
-              >
-                <AppActions
-                  showGetAppModal={handleShowModalAppDownload}
-                  userName={nickname}
-                  link={videos[currentVideoIndex]?.video?.link}
-                  videoUrl={globalThis?.location?.href}
-                  videoDescription={
-                    videos[currentVideoIndex]?.video?.description
-                  }
-                  videoTitle='Genuin'
-                  roundTable={videos[currentVideoIndex]?.video_type === "rt"}
-                  roundTableName={videos[currentVideoIndex]?.group_name}
-                  roundTableId={videos[currentVideoIndex]?.chat_id}
                 />
               </Player>
             </ModalBody>
