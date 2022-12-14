@@ -56,6 +56,7 @@ const RoundTable = ({
   const { isOpen, onOpen, onClose } = useDisclosure();
   const mobile = useBreakpointValue({ base: true, sm: false });
   const router = useRouter();
+  const { asPath } = useRouter();
 
   useEffect(() => {
     setCurrentUrl(window.location.href);
@@ -104,11 +105,10 @@ const RoundTable = ({
         roundtable.
       </>
     ));
-
-  const tags_string = details.group.tags!==null && details.group.tags!==undefined && details.group.tags.replace(/\s+/g,'')!==''?`#${details.group.tags.split(',').join(' #')}`:''
-  const ld_description = `${details.group.description.replace(/\s+/g,'')!==''? details.group.group_description + " | ": ''}Web3 related roundtable discussions available on Genuin ${tags_string}`
-  const title_name = details.group.group_name
-  const share_url = `${share_string !== undefined && share_string !== null && share_string ? process.env.genuinurl+"rt/"+share_string : videos.video_url}`
+  const tags_string = group.tags!==null && group.tags!==undefined && group.tags.replace(/\s+/g,'')!==''?` #${group.tags.split(',').join(' #')}`:''
+  const ld_description = `${group.group_description!==null && group.group_description!==undefined && group.group_description.replace(/\s+/g,'')!==''? group.group_description + " | ": ''}Web3 related roundtable discussions available on Genuin${tags_string}`
+  const title_name = group.group_name
+  const share_url = `${process.env.genuinurl}${asPath.slice(1)}`
   const ORG_SCHEMA = JSON.stringify({
     "@context": "http://schema.org",
     "@type": "VideoObject",
@@ -116,14 +116,14 @@ const RoundTable = ({
     url: share_url,
     name: title_name,
     isPartOf: `${process.env.genuinurl}#website`,
-    image: `${videos.thumbnail_url}/#primaryimage`,
-    thumbnailUrl: videos.thumbnail_url,
-    contentUrl: videos.video_url,
-    embedUrl: videos.video_url, 
+    image: `${videos?.[currentVideoIndex]?.thumbnail_url}/#primaryimage`,
+    thumbnailUrl: videos?.[currentVideoIndex]?.thumbnail_url,
+    contentUrl: videos?.[currentVideoIndex]?.video_url,
+    embedUrl: videos?.[currentVideoIndex]?.video_url,
     author: {
       "@type": "Person",
-      "name": "@"+userNickname,
-      "url": `${process.env.genuinurl}${userNickname}`
+      "name": "@"+details.owner.nickname,
+      "url": `${process.env.genuinurl}p/${details.owner.nickname}`
     },
     publisher: {
       "@type": "Organization",
@@ -140,7 +140,7 @@ const RoundTable = ({
       {
         "@type": "WatchAction",
         target: share_url,
-        image: videoThumbnail
+        image: videos?.[currentVideoIndex]?.thumbnail_url
       },
     ],
   });
@@ -725,7 +725,6 @@ RoundTable.getInitialProps = async ({ query: { share_string, v } }) => {
       const details = await axios.get(
         `${process.env.apiurl}/api/v3/rt/details?chat_id=${share_string}`
       );
-
       return {
         videos: videos?.data?.data,
         users: users?.data?.data,

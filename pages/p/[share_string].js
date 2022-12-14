@@ -266,7 +266,7 @@ const Profile = ({
   const bio_val = bio ? " "+bio.replace(/\n+/g, '\n').replace(/\s+\n+\s+|\s+\n+|\n+\s+|\n+/g, ' ') : ""
   const tags_val = hashtags && hashtags != [] && hashtags.length > 0? " "+hashtags.map((tag) => "#" + tag).join(" "): ""
   const pipe_val = views_val || videos_val || replies_val || bio_val || tags_val ? " |": ""
-  const ld_description = `${Boolean(name) && name.replace(/\s+/g, '') !== "" ? `[${name.trim()}] (@${nickname})` : `@${nickname}`} on Genuin.${pipe_val}${views_val}${videos_val}${replies_val}${bio_val}${tags_val}`
+  const ld_description = `${Boolean(name) && name.replace(/\s+/g, '') !== "" ? `[${name.trim()}] (@${nickname})` : `@${nickname}`} on Genuin${pipe_val}${views_val}${videos_val}${replies_val}${bio_val}${tags_val}`
 
   const ORG_SCHEMA = JSON.stringify({
     "@context": "http://schema.org",
