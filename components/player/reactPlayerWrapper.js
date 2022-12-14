@@ -417,7 +417,7 @@ export const ReactPlayerWrapper = ({
                       </Button>
                     </Flex>
                   ) : (
-                    `@${userName}`
+                    <Link href={`/p/${userId}`}>@{userName}</Link>
                   )}
                 </h5>
               </div>

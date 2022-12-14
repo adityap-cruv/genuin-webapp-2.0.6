@@ -105,10 +105,21 @@ const RoundTable = ({
         roundtable.
       </>
     ));
-  const tags_string = group.tags!==null && group.tags!==undefined && group.tags.replace(/\s+/g,'')!==''?` #${group.tags.split(',').join(' #')}`:''
-  const ld_description = `${group.group_description!==null && group.group_description!==undefined && group.group_description.replace(/\s+/g,'')!==''? group.group_description + " | ": ''}Web3 related roundtable discussions available on Genuin${tags_string}`
-  const title_name = group.group_name
-  const share_url = `${process.env.genuinurl}${asPath.slice(1)}`
+  const tags_string =
+    group.tags !== null &&
+    group.tags !== undefined &&
+    group.tags.replace(/\s+/g, "") !== ""
+      ? ` #${group.tags.split(",").join(" #")}`
+      : "";
+  const ld_description = `${
+    group.group_description !== null &&
+    group.group_description !== undefined &&
+    group.group_description.replace(/\s+/g, "") !== ""
+      ? group.group_description + " | "
+      : ""
+  }Web3 related roundtable discussions available on Genuin${tags_string}`;
+  const title_name = group.group_name;
+  const share_url = `${process.env.genuinurl}${asPath.slice(1)}`;
   const ORG_SCHEMA = JSON.stringify({
     "@context": "http://schema.org",
     "@type": "VideoObject",
@@ -122,13 +133,13 @@ const RoundTable = ({
     embedUrl: videos?.[currentVideoIndex]?.video_url,
     author: {
       "@type": "Person",
-      "name": "@"+details.owner.nickname,
-      "url": `${process.env.genuinurl}p/${details.owner.nickname}`
+      name: "@" + details.owner.nickname,
+      url: `${process.env.genuinurl}p/${details.owner.nickname}`,
     },
     publisher: {
       "@type": "Organization",
-      "name": "Genuin",
-      "url": process.env.genuinurl
+      name: "Genuin",
+      url: process.env.genuinurl,
     },
     description: ld_description,
     inLanguage: "en-US",
@@ -140,7 +151,7 @@ const RoundTable = ({
       {
         "@type": "WatchAction",
         target: share_url,
-        image: videos?.[currentVideoIndex]?.thumbnail_url
+        image: videos?.[currentVideoIndex]?.thumbnail_url,
       },
     ],
   });
@@ -155,8 +166,12 @@ const RoundTable = ({
         videoUrl={videos?.[currentVideoIndex]?.video_url}
         description={ld_description}
         openGraphDescription={group?.group_description}
+        videoPreviewImage={videos?.[currentVideoIndex]?.thumbnail_url}
       />
-      <script type='application/ld+json' dangerouslySetInnerHTML={{ __html: ORG_SCHEMA }}/>
+      <script
+        type='application/ld+json'
+        dangerouslySetInnerHTML={{ __html: ORG_SCHEMA }}
+      />
       {!router.query.v && (
         <TopNav showGetAppModal={showGetAppToViewDialog} isContiner isBlue />
       )}
@@ -166,50 +181,6 @@ const RoundTable = ({
         position={mobile ? "fixed" : "initial"}
       >
         <Container className='container-false d-none d-md-block'></Container>
-        {/* if there is a specific video url */}
-        <Modal></Modal>
-        {/* {router.query.v && (
-          <Player
-            key={currentVideoIndex}
-            videos={videos}
-            currentVideoIndex={currentVideoIndex}
-            video_id_to_use={videos?.[currentVideoIndex]?.conversation_id}
-            description={group?.group_description}
-            videoUrl={videos?.[currentVideoIndex]?.video_url}
-            videoThumbnail={videos?.[currentVideoIndex]?.thumbnail_url}
-            userName={videos?.[currentVideoIndex]?.owner?.nickname}
-            userId={videos?.[currentVideoIndex]?.owner?.member_id}
-            userProfileImage={videos?.[currentVideoIndex]?.owner?.profile_image}
-            onClickOutsideOfVideo={() => {
-              window.location.href = details.chat_id;
-            }}
-            roundTableMode
-            roundTableName={group?.group_name}
-            showGetAppModal={handleShowModalAppDownload}
-            getNextVideo={getNextVideo}
-            getPrevVideo={getPrevVideo}
-            watchRoundTable={watchRoundTable}
-            setWatchRoundtable={setWatchRoundtable}
-            onClose={onClose}
-            roundTableId={details.chat_id}
-            direction={direction}
-            setDirection={setDirection}
-          >
-            <AppActions
-              showGetAppModal={handleShowModalAppDownload}
-              roundTable
-              roundTableName={group?.group_name}
-              roundTableId={details.chat_id}
-              link={videos?.[currentVideoIndex]?.link}
-              videoUrl={globalThis?.location?.href}
-              videoDescription={group?.group_description}
-              videoTitle='Genuin'
-              watchRoundTable={watchRoundTable}
-            />
-          </Player>
-        )} */}
-
-        {/* if there is no specific video url */}
         {!router.query.v && (
           <Container
             style={{
