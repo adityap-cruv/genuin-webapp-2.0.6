@@ -166,7 +166,7 @@ const RoundTable = ({
         videoUrl={videos?.[currentVideoIndex]?.video_url}
         description={ld_description}
         openGraphDescription={group?.group_description}
-        videoPreviewImage={videos?.[currentVideoIndex]?.thumbnail_url}
+        videoPreviewImage={details?.preview_image}
       />
       <script
         type='application/ld+json'
