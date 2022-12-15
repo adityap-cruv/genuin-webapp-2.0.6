@@ -924,7 +924,7 @@ Profile.getInitialProps = async ({ query: { share_string } }) => {
         `${process.env.apiurl}/api/v3/user/profile_videos?user_id=${share_string}&video_types[]=public_video`
       );
       const user = await axios.get(
-        `${process.env.apiurl}/api/v3/user/details?user_id=${share_string}`
+        `${process.env.apiurl}/api/v3/user/details?nickname=${share_string}`
       );
 
       return {
