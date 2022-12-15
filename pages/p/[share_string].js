@@ -253,10 +253,6 @@ const Profile = ({
     }
     return newValue;
   };
-  hashtags =
-    hashtags || hashtags == []
-      ? ["entreprenuer", "business", "leadership", "startups"]
-      : hashtags;
 
   const title_name = `${Boolean(name) && name.replace(/\s+/g, '') !== "" ? `${name.trim()} (@${nickname})` : `@${nickname}`} on Genuin | Connect with @${nickname} with a video reply`
   
