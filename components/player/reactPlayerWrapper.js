@@ -46,10 +46,12 @@ export const ReactPlayerWrapper = ({
 }) => {
   const [progress, setProgress] = useState(0);
   const [isPlaying, setIsPlaying] = useState(autoplay);
+  const[isMuted, setIsMuted] = useState(true);
   const [isPlayingDebounced] = useDebounce(isPlaying, 65);
 
   const handleToggleIsPlaying = useCallback(() => {
     setIsPlaying((old) => !old);
+    setIsMuted(false)
   }, [setIsPlaying]);
 
   const touchStartYRef = useRef(0);
@@ -113,6 +115,7 @@ export const ReactPlayerWrapper = ({
         key={videoUrl}
         url={[videoUrl]}
         playing={isPlaying}
+        muted={isMuted}
         controls={false}
         playsinline={true}
         config={{
