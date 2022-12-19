@@ -440,7 +440,7 @@ export const ReactPlayerWrapper = ({
                   title={userName}
                   className='img-auther-pic'
                 />
-                <Text>{userName}</Text>
+                <Text>@{userName}</Text>
               </Flex>
             </Link>
           )}

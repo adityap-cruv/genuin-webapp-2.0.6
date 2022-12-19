@@ -103,7 +103,7 @@ export const AppActions = ({
               onClick={() =>
                 showGetAppModal(() => (
                   <>
-                    Get the app to reply to <b>{userName}</b>
+                    Get the app to reply to <b>{"@"+userName}</b>
                   </>
                 ))
               }
@@ -248,7 +248,7 @@ export const MobileShareButton = ({
       px={1}
       minW={8}
       onClick={() => {
-        if (isSupported && !loading) share({ url, title, text: description });
+        if (isSupported && !loading) share({ url });
       }}
     />
   );

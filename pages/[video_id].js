@@ -44,7 +44,7 @@ const Video = (props) => {
 
   const tags_string = tags!==null && tags!==undefined && tags.replace(/\s+/g,'')!==''?` #${tags.split(',').join(' #')}`:''
   const ld_description = `${userName? userName: "@"+userNickname} | Web3 related bite-sized content available on Genuin${tags_string}`
-  const title_name = description
+  const title_name = description?description:`Watch byte sized videos from @${userNickname} on Genuin`
   const share_url = `${process.env.genuinurl}${share_string}`
   const ORG_SCHEMA = JSON.stringify({
     "@context": "http://schema.org",
@@ -60,7 +60,7 @@ const Video = (props) => {
     author: {
       "@type": "Person",
       "name": "@"+userNickname,
-      "url": `${process.env.genuinurl}${userNickname}`
+      "url": `${process.env.genuinurl}p/${userNickname}`
     },
     publisher: {
       "@type": "Organization",
@@ -93,7 +93,7 @@ const Video = (props) => {
         videoUrl={videoUrl}
         videoPreviewImage={videoPreviewImage}
         description={ld_description}
-        openGraphDescription={description}
+        openGraphDescription={description?description:" "}
         metaImageWidth={1200}
         metaImageHeight={630}
         urlToCopy={process?.env?.hostname + "/" + video_id_to_use}
@@ -106,6 +106,7 @@ const Video = (props) => {
         videoUrl={videoUrl}
         videoThumbnail={videoThumbnail}
         userName={userNickname}
+        userId={userNickname}
         userProfileImage={userProfileImage}
         showGetAppModal={handleShowModalAppDownload}
         onEnded={showGetAppToViewDialog}
