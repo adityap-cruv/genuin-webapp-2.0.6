@@ -43,6 +43,7 @@ import {
 
 const Profile = ({
   user = {},
+  all_videos = [],
   videosRT = [],
   videosPublic = [],
   share_string,
@@ -86,11 +87,33 @@ const Profile = ({
     }, []);
   };
 
+  const prepareFeedVideos = (videos = []) => {
+    return videos.reduce((res, { video_type, video }) => {
+        if (video_type === "rt"){
+            return res.concat(
+                video.chats.map((chat) => ({
+                  video_type: "rt",
+                  video: {
+                    ...chat,
+                    video_thumbnail: chat.thumbnail_url,
+                    description: video.group.group_description,
+                    group_name: video.group.group_name,
+                    chat_id: video.chat_id,
+                  },
+                }))
+            )
+        }else{
+          return res.concat(({video_type:video_type, video: video}))
+        }
+    }, []);
+}
   const [publicVideos, setPublicVideos] = useState(videosPublic);
   const preparedRTVideos = prepareRTVideos(videosRT);
 
   const [rtVideos, setRTVideos] = useState(preparedRTVideos);
-  const [videos, setVideos] = useState(rtVideos.concat(publicVideos));
+
+  const preparedFeedVideos = prepareFeedVideos(all_videos)
+  const [videos, setVideos] = useState(preparedFeedVideos);
 
   const getMoreVideosPublic = async () => {
     const res = await axios.get(
@@ -127,30 +150,23 @@ const Profile = ({
 
   console.log("process.env", process.env.apiurl);
   const getMoreVideos = async () => {
-    const resPublic = await axios.get(
+    let type = videos[videos.length-1].video_type
+    let id =""
+    if(type == "rt"){
+      id = videos[videos.length-1]["video"]["video_id"]
+    }else{
+      id = videos[videos.length-1]["video"]["chat_id"]
+    }
+    const res = await axios.get(
       `${
         process.env.apiurl
-      }/api/v3/user/profile_videos?user_id=${share_string}&video_types[]=public_video&last_video_type=public_video&last_video_id=${
-        publicVideos[publicVideos.length - 1]?.video?.video_id
-      }`
+      }/api/v3/user/profile_videos?user_id=${share_string}&video_types[]=public_video&video_types[]=rt&last_video_type=${type}&last_video_id=${id}`
     );
-
-    console.log("resPublic", resPublic);
-    const newVideosPublic = resPublic?.data?.data?.videos || [];
-    console.log("newVideosPublic", newVideosPublic);
-
-    const resRT = await axios.get(
-      `${
-        process.env.apiurl
-      }/api/v3/user/profile_videos?user_id=${share_string}&video_types[]=rt&last_video_type=rt&last_video_id=${
-        rtVideos[rtVideos.length - 1]?.video?.conversation_id
-      }`
-    );
-
-    const newVideosRT = resRT?.data?.data?.videos || [];
-    const preparedNewVideos = prepareRTVideos(newVideosRT);
-
-    setVideos(videos.concat(newVideosPublic).concat(preparedNewVideos));
+    const newVideos = res?.data?.data?.videos || [];
+    if (newVideos.length !== 0) {
+      const preparedFeedVideos = prepareFeedVideos(newVideos)
+      setVideos(videos.concat(preparedFeedVideos));
+    }
   };
 
   const profilePic = useMemo(() => {
@@ -593,7 +609,7 @@ const Profile = ({
                   showGetAppModal={handleShowModalAppDownload}
                   userName={nickname}
                   link={videos[currentVideoIndex]?.video?.link}
-                  videoUrl={globalThis?.location?.href}
+                  videoUrl={videos[currentVideoIndex].video.share_url}
                   videoDescription={
                     videos[currentVideoIndex]?.video?.description
                   }
@@ -645,7 +661,7 @@ const Profile = ({
                   showGetAppModal={showGetAppToViewDialog}
                   userName={nickname}
                   link={rtVideos[currentVideoIndexRT]?.video?.link}
-                  videoUrl={globalThis?.location?.href}
+                  videoUrl={rtVideos[currentVideoIndexRT]?.video?.share_url}
                   videoDescription={
                     rtVideos[currentVideoIndexRT]?.video?.description
                   }
@@ -699,7 +715,7 @@ const Profile = ({
                   showGetAppModal={showGetAppToViewDialog}
                   userName={nickname}
                   link={publicVideos[currentVideoIndexPublic]?.video?.link}
-                  videoUrl={globalThis?.location?.href}
+                  videoUrl={publicVideos[currentVideoIndexPublic]?.video?.share_url}
                   videoDescription={
                     publicVideos[currentVideoIndexPublic]?.video?.description
                   }
@@ -913,6 +929,9 @@ Profile.getInitialProps = async ({ query: { share_string } }) => {
     share_string !== ""
   ) {
     try {
+      const all_videos = await axios.get(
+        `${process.env.apiurl}/api/v3/user/profile_videos?user_id=${share_string}&video_types[]=rt&video_types[]=public_video`
+      );
       const videosRT = await axios.get(
         `${process.env.apiurl}/api/v3/user/profile_videos?user_id=${share_string}&video_types[]=rt`
       );
@@ -925,6 +944,7 @@ Profile.getInitialProps = async ({ query: { share_string } }) => {
 
       return {
         user: user?.data?.data,
+        all_videos: all_videos?.data?.data?.videos,
         videosRT: videosRT?.data?.data?.videos,
         videosPublic: videosPublic?.data?.data?.videos,
         share_string,

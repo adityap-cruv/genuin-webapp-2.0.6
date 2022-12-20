@@ -141,3 +141,4 @@ sketch
 
 next.config.js
 .env.*.local
+.env.local
