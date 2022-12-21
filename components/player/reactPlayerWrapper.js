@@ -113,7 +113,7 @@ export const ReactPlayerWrapper = ({
     >
       <ReactPlayer
         key={videoUrl}
-        url={"https://media.qa.begenuin.com/temp_video/m3u8s/9677d0f5-7a01-4ebc-8b22-b1af76a9fc8a_1669819912866/output.m3u8"}
+        url={[videoUrl]}
         playing={isPlaying}
         muted={isMuted}
         controls={false}
