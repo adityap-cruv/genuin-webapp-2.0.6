@@ -588,7 +588,7 @@ const Profile = ({
                 }
                 description={videos[currentVideoIndex]?.video?.description}
                 link={videos[currentVideoIndex]?.video?.link}
-                videoUrl={videos[currentVideoIndex]?.video?.video_url}
+                videoUrl={videos[currentVideoIndex]?.video?.video_url_m3u8 ?? videos[currentVideoIndex]?.video?.videoUrl}
                 userName={nickname}
                 userId={user_id}
                 onClickOutsideOfVideo={onClose}
@@ -639,7 +639,7 @@ const Profile = ({
                 }
                 description={rtVideos[currentVideoIndexRT]?.video?.description}
                 link={rtVideos[currentVideoIndexRT]?.video?.link}
-                videoUrl={rtVideos[currentVideoIndexRT]?.video?.video_url}
+                videoUrl={rtVideos[currentVideoIndexRT]?.video?.video_url_m3u8 ?? rtVideos[currentVideoIndexRT]?.video?.video_url}
                 userName={nickname}
                 userId={user_id}
                 onClickOutsideOfVideo={onCloseRT}
@@ -698,7 +698,7 @@ const Profile = ({
                 }
                 link={publicVideos[currentVideoIndexPublic]?.video?.link}
                 videoUrl={
-                  publicVideos[currentVideoIndexPublic]?.video?.video_url
+                  publicVideos[currentVideoIndexPublic]?.video?.video_url_m3u8 ?? publicVideos[currentVideoIndexPublic]?.video?.video_url
                 }
                 userName={nickname}
                 userId={user_id}

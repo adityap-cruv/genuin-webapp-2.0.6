@@ -13,6 +13,7 @@ import { Box } from "@chakra-ui/react";
 const Video = (props) => {
   const {
     videoUrl,
+    video_url_m3u8,
     videoPreviewImage,
     description,
     created_at,
@@ -103,13 +104,14 @@ const Video = (props) => {
         key={video_id_to_use ?? `${Math.random()}`}
         video_id_to_use={video_id_to_use}
         description={description}
-        videoUrl={videoUrl}
+        videoUrl={video_url_m3u8 ?? videoUrl}
         videoThumbnail={videoThumbnail}
         userName={userNickname}
         userId={userNickname}
         userProfileImage={userProfileImage}
         showGetAppModal={handleShowModalAppDownload}
         onEnded={showGetAppToViewDialog}
+        autoplay
       >
         <AppActions
           showGetAppModal={handleShowModalAppDownload}

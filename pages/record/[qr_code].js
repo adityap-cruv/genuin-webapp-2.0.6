@@ -95,7 +95,7 @@ const Record = (props) => {
         openGraphTitle={`Record and publish videos for ${
           Boolean(name) ? name : `@${nickname}`
         }`}
-        videoUrl={videos[currentVideoIndex]?.videoUrl}
+        videoUrl={videos[currentVideoIndex]?.video_url_m3u8 ?? videos[currentVideoIndex]?.videoUrl}
         videoPreviewImage={preview_image}
         urlToCopy={share_url}
         description={`${
@@ -122,6 +122,7 @@ const Record = (props) => {
         getNextVideo={getNextVideo}
         getPrevVideo={getPrevVideo}
         onEnded={showGetAppToViewDialog}
+        autoplay
       >
         <AppActions
           showGetAppModal={handleShowModalAppDownload}

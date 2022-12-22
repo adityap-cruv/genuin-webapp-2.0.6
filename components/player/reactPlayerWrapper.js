@@ -113,7 +113,7 @@ export const ReactPlayerWrapper = ({
     >
       <ReactPlayer
         key={videoUrl}
-        url={[videoUrl]}
+        url={videoUrl}
         playing={isPlaying}
         muted={isMuted}
         controls={false}
@@ -122,6 +122,8 @@ export const ReactPlayerWrapper = ({
           file: {
             attributes: { poster: videoThumbnail },
           },
+          forcedHLS: false,
+          forcedVideo: true
         }}
         onClick={handleToggleIsPlaying}
         className='video-wrapper'
