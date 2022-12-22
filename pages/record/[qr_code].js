@@ -117,7 +117,7 @@ const Record = (props) => {
         videoThumbnail={videos[currentVideoIndex]?.videoThumbnail}
         description={videos[currentVideoIndex]?.description}
         link={videos[currentVideoIndex]?.link}
-        videoUrl={videos[currentVideoIndex]?.videoUrl}
+        videoUrl={videos[currentVideoIndex]?.video_url_m3u8 ?? videos[currentVideoIndex]?.videoUrl}
         showGetAppModal={handleShowModalAppDownload}
         getNextVideo={getNextVideo}
         getPrevVideo={getPrevVideo}
