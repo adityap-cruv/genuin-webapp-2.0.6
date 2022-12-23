@@ -307,7 +307,7 @@ export const ReactPlayerWrapper = ({
             <button className='btn-arrow'>
               <Image
                 src={icArrowUp.src}
-                width={6}
+                width={12}
                 height={6}
                 alt='Arrow Up'
                 title='Arrow Up'
@@ -320,7 +320,7 @@ export const ReactPlayerWrapper = ({
             <button className='btn-arrow'>
               <Image
                 src={icArrowDown.src}
-                width={6}
+                width={12}
                 height={6}
                 alt='Arrow Down'
                 title='Arrow Down'

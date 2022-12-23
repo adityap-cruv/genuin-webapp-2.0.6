@@ -810,7 +810,9 @@ const Videos = ({
                         : video.video_thumbnail
                     }
                     onClick={() => {
-                      window.location.href = video.share_url;
+                      // window.location.href = video.share_url;
+                      setCurrentVideoIndex(index);
+                      onOpen();
                     }}
                   />
                 )}
