@@ -92,7 +92,15 @@ export const ReactPlayerWrapper = ({
       window.removeEventListener("touchend", touchEnd);
     };
   }, []);
-
+  const newClose = () => {
+    onClose()
+    // window.history.back();
+    if(watchRoundTable){
+      window.history.replaceState(null, "",`../p/${userName}`)
+    }else{
+      window.history.replaceState(null, "",`../p/${userName}`)
+    }
+  }
   const onEndedWrapper = useCallback(
     (e) => {
       onEndedRef?.current?.(e);
@@ -259,9 +267,9 @@ export const ReactPlayerWrapper = ({
           </Flex>
         </Flex>
       )}
-
       {/* x button */}
       {!watchRoundTable && (
+        shareUrl ? window.location.href.split("/")[3] === 'p' ? window.history.pushState(null, "",`..${roundTableMode ? '/rt': ''}/${shareUrl.split("/").pop()}`) : window.history.replaceState(null, "",`..${roundTableMode ? '/rt': ''}/${shareUrl.split("/").pop()}`) : "",
         <Flex
           w='full'
           position='absolute'
@@ -283,7 +291,7 @@ export const ReactPlayerWrapper = ({
               height={6}
               alt='Close'
               title='Close'
-              onClick={onClose}
+              onClick={newClose}
             />
           </Flex>
         </Flex>
@@ -382,8 +390,8 @@ export const ReactPlayerWrapper = ({
             <Flex direction='column'>
               {Boolean(roundTableMode) && (
                 <Link
-                  key={userId}
-                  href={`/p/${userId}`}
+                  key={userName}
+                  href={`/p/${userName}`}
                   _hover={{
                     textDecoration: "none",
                   }}
@@ -422,7 +430,7 @@ export const ReactPlayerWrapper = ({
                       </Button>
                     </Flex>
                   ) : (
-                    <Link href={`/p/${userId}`}>@{userName}</Link>
+                    <Link href={`/p/${userName}`}>@{userName}</Link>
                   )}
                 </h5>
               </div>
@@ -431,7 +439,7 @@ export const ReactPlayerWrapper = ({
           )}
           {watchRoundTable && roundTableMode && (
             <Link
-              href={`/p/${userId}`}
+              href={`/p/${userName}`}
               _hover={{
                 textDecoration: "none",
               }}

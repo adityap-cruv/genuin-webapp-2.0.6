@@ -390,7 +390,7 @@ const RoundTable = ({
                 videoUrl={videos?.[currentVideoIndex]?.video_url_m3u8 ?? videos?.[currentVideoIndex]?.video_url}
                 videoThumbnail={videos?.[currentVideoIndex]?.thumbnail_url}
                 userName={videos?.[currentVideoIndex]?.owner?.nickname}
-                userId={videos?.[currentVideoIndex]?.owner?.member_id}
+                userId={videos?.[currentVideoIndex]?.owner?.nickname}
                 userProfileImage={
                   videos?.[currentVideoIndex]?.owner?.profile_image
                 }
@@ -542,8 +542,8 @@ const Participants = ({ members, mobile }) => {
             // .concat(members)
             .map((user, index) => (
               <Link
-                key={user.user_id}
-                href={`/p/${user.user_id}`}
+                key={user.nickname}
+                href={`/p/${user.nickname}`}
                 _hover={{
                   textDecoration: "none",
                 }}
@@ -554,7 +554,7 @@ const Participants = ({ members, mobile }) => {
                   _hover={{
                     transform: "scale(0.97)",
                   }}
-                  key={user.user_id}
+                  key={user.nickname}
                   color='#111111'
                   justifyContent='space-between'
                 >
@@ -591,7 +591,7 @@ const Participants = ({ members, mobile }) => {
                       {user.bio}
                     </Text>
                   </Flex>
-                  <Link href={`/p/${user.user_id}`}>
+                  <Link href={`/p/${user.nickname}`}>
                     <Image
                       src={directMessage.src}
                       size={6}
@@ -618,8 +618,8 @@ const Participants = ({ members, mobile }) => {
         >
           {members.map((user, index) => (
             <Link
-              href={`/p/${user.user_id}`}
-              key={user.user_id}
+              href={`/p/${user.nickname}`}
+              key={user.nickname}
               _hover={{
                 textDecoration: "none",
               }}
@@ -630,7 +630,7 @@ const Participants = ({ members, mobile }) => {
                 _hover={{
                   transform: "scale(0.97)",
                 }}
-                key={user.user_id}
+                key={user.nickname}
                 border='1px solid #949494'
                 borderRadius={10}
                 maxW={180}

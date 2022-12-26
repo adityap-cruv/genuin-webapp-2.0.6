@@ -590,7 +590,7 @@ const Profile = ({
                 link={videos[currentVideoIndex]?.video?.link}
                 videoUrl={videos[currentVideoIndex]?.video?.video_url_m3u8 ?? videos[currentVideoIndex]?.video?.videoUrl}
                 userName={nickname}
-                userId={user_id}
+                userId={nickname}
                 onClickOutsideOfVideo={onClose}
                 userProfileImage={profile_image}
                 showGetAppModal={showGetAppToViewDialog}
@@ -609,7 +609,7 @@ const Profile = ({
                   showGetAppModal={handleShowModalAppDownload}
                   userName={nickname}
                   link={videos[currentVideoIndex]?.video?.link}
-                  videoUrl={videos[currentVideoIndex].video.share_url}
+                  videoUrl={videos[currentVideoIndex]?.video?.share_url}
                   videoDescription={
                     videos[currentVideoIndex]?.video?.description
                   }
@@ -641,7 +641,7 @@ const Profile = ({
                 link={rtVideos[currentVideoIndexRT]?.video?.link}
                 videoUrl={rtVideos[currentVideoIndexRT]?.video?.video_url_m3u8 ?? rtVideos[currentVideoIndexRT]?.video?.video_url}
                 userName={nickname}
-                userId={user_id}
+                userId={nickname}
                 onClickOutsideOfVideo={onCloseRT}
                 userProfileImage={profile_image}
                 showGetAppModal={showGetAppToViewDialog}
@@ -652,9 +652,9 @@ const Profile = ({
                 autoplay
                 video_id_to_use={rtVideos[currentVideoIndex]?.conversation_id}
                 roundTableMode
-                roundTableName={rtVideos[currentVideoIndex]?.video.group_name}
-                roundTableId={rtVideos[currentVideoIndex]?.video.chat_id}
-                shareUrl={rtVideos[currentVideoIndex]?.video.share_url}
+                roundTableName={rtVideos[currentVideoIndexRT]?.video?.group_name}
+                roundTableId={rtVideos[currentVideoIndexRT]?.video?.chat_id}
+                shareUrl={rtVideos[currentVideoIndexRT]?.video?.share_url}
                 verticalNavigation
               >
                 <AppActions
@@ -666,9 +666,9 @@ const Profile = ({
                     rtVideos[currentVideoIndexRT]?.video?.description
                   }
                   videoTitle='Genuin'
-                  roundTable={rtVideos[currentVideoIndex]?.video_type === "rt"}
-                  roundTableName={rtVideos[currentVideoIndex]?.group_name}
-                  roundTableId={rtVideos[currentVideoIndex]?.chat_id}
+                  roundTable={rtVideos[currentVideoIndexRT]?.video_type === "rt"}
+                  roundTableName={rtVideos[currentVideoIndexRT]?.group_name}
+                  roundTableId={rtVideos[currentVideoIndexRT]?.chat_id}
                 />
               </Player>
             </ModalBody>
@@ -701,7 +701,7 @@ const Profile = ({
                   publicVideos[currentVideoIndexPublic]?.video?.video_url_m3u8 ?? publicVideos[currentVideoIndexPublic]?.video?.video_url
                 }
                 userName={nickname}
-                userId={user_id}
+                userId={nickname}
                 onClickOutsideOfVideo={onClosePublic}
                 userProfileImage={profile_image}
                 showGetAppModal={showGetAppToViewDialog}
@@ -710,6 +710,7 @@ const Profile = ({
                 getPrevVideo={getPrevVideoPublic}
                 videos={publicVideos}
                 autoplay
+                shareUrl={publicVideos[currentVideoIndexPublic]?.video.share_url}
               >
                 <AppActions
                   showGetAppModal={showGetAppToViewDialog}
