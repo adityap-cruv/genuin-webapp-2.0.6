@@ -13,7 +13,8 @@ import icFlipLeft from "../../images/video-more-options/ic-flip-left.svg";
 import icFlipRight from "../../images/video-more-options/ic-flip-right.svg";
 import icClose from "../../images/video-more-options/ic-close.svg";
 import earth from "../../images/video-more-options/ic-earth.svg";
-import { Image, Flex, Text, Link, Box } from "@chakra-ui/react";
+import { Image, Flex, Text, Link, Box, useBreakpointValue } from "@chakra-ui/react";
+
 import ReactTimeAgo from "react-time-ago";
 
 export const ReactPlayerWrapper = ({
@@ -63,6 +64,8 @@ export const ReactPlayerWrapper = ({
   onProgressRef.current = onProgress;
   const onEndedRef = useRef(onEnded);
   onEndedRef.current = onEnded;
+
+  const mobile = useBreakpointValue({ base: true, md: false });
 
   const setProgressWrapper = useCallback(
     (event) => {
@@ -289,6 +292,7 @@ export const ReactPlayerWrapper = ({
               src={icClose.src}
               width={6}
               height={6}
+              marginTop={mobile ? '50px' : '0px' }
               alt='Close'
               title='Close'
               onClick={newClose}
