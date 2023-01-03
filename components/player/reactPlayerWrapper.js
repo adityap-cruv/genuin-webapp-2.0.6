@@ -61,6 +61,8 @@ export const ReactPlayerWrapper = ({
   getNextVideoRef.current = getNextVideo;
   const onProgressRef = useRef(onProgress);
   onProgressRef.current = onProgress;
+  const onDurationRef = useRef(onDuration);
+  onDurationRef.current = onDuration;
   const onEndedRef = useRef(onEnded);
   onEndedRef.current = onEnded;
 
@@ -73,6 +75,12 @@ export const ReactPlayerWrapper = ({
       onProgressRef?.current?.(event);
     },
     [setProgress]
+  );
+
+  const setDurationWrapper = useCallback(
+    (event) => {
+      onDurationRef?.current?.(event);
+    }
   );
 
   useEffect(() => {
@@ -145,7 +153,7 @@ export const ReactPlayerWrapper = ({
         width='auto'
         height='100%'
         onProgress={setProgressWrapper}
-        onDuration={onDuration}
+        onDuration={setDurationWrapper}
         onEnded={onEndedWrapper}
         progressInterval={200}
       />

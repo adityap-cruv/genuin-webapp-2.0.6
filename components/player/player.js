@@ -34,6 +34,7 @@ export const Player = ({
   shareUrl,
 }) => {
   const [triggerPlayCount, setTriggetPlayCount] = useState(false);
+  const [duration, setDuration] = useState(0);
   const pad = useBreakpointValue({ base: true, md: false });
 
   const shortDescription = useMemo(() => {
@@ -52,16 +53,24 @@ export const Player = ({
     return "https://media.qa.begenuin.com/backend_assets/lottie/snowman.png";
   }, [userProfileImage]);
 
+  const handleDuration = (event) => {
+    setDuration(Math.round(Number.parseFloat(event)))
+  };
+
   const handleProgress = (event) => {
     const playedProgress = Math.round(Number.parseFloat(event.played) * 100);
-    if (playedProgress > 10 && !triggerPlayCount) {
+    if (playedProgress >= duration/2 && !triggerPlayCount) {
       setTriggetPlayCount(true);
     }
   };
 
   useEffect(() => {
     if (triggerPlayCount) {
-      increaseVideoViewCount(video_id_to_use);
+      var type = 1
+      if(roundTableMode){
+        type = 2
+      }
+      increaseVideoViewCount(video_id_to_use, type);
     }
   }, [video_id_to_use, triggerPlayCount]);
 
@@ -92,6 +101,7 @@ export const Player = ({
       <ReactPlayerWrapper
         videoUrl={videoUrl}
         onProgress={handleProgress}
+        onDuration={handleDuration}
         videoThumbnail={videoThumbnail}
         videos={videos}
         currentVideoIndex={currentVideoIndex}

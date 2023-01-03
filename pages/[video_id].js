@@ -47,14 +47,14 @@ const Video = (props) => {
   const tags_string = tags!==null && tags!==undefined && tags.replace(/\s+/g,'')!==''?` #${tags.split(',').join(' #')}`:''
   const ld_description = `${userName? userName: "@"+userNickname} | Web3 related bite-sized content available on Genuin${tags_string}`
   const title_name = description?description:`Watch byte sized videos from @${userNickname} on Genuin`
-  const share_url = `${process.env.genuinurl}${share_string}`
+  const share_url = `${process.env.hostname}${share_string}`
   const ORG_SCHEMA = JSON.stringify({
     "@context": "http://schema.org",
     "@type": "VideoObject",
     id: share_url,
     url: share_url,
     name: title_name,
-    isPartOf: `${process.env.genuinurl}#website`,
+    isPartOf: `${process.env.hostname}#website`,
     image: `${videoThumbnail}/#primaryimage`,
     thumbnailUrl: videoThumbnail,
     contentUrl: videoUrl,
@@ -62,12 +62,12 @@ const Video = (props) => {
     author: {
       "@type": "Person",
       "name": "@"+userNickname,
-      "url": `${process.env.genuinurl}p/${userNickname}`
+      "url": `${process.env.hostname}p/${userNickname}`
     },
     publisher: {
       "@type": "Organization",
       "name": "Genuin",
-      "url": process.env.genuinurl
+      "url": process.env.hostname
     },
     description: ld_description,
     inLanguage: "en-US",
@@ -93,7 +93,7 @@ const Video = (props) => {
 
   const setProfileUrl = () => {
     // console.log("Setting profile url in public video individual")
-    window.location.href = `${process.env.genuinurl}p/${userNickname}`
+    window.location.href = `${process.env.hostname}p/${userNickname}`
   }
 
   return !Boolean(videoUrl) ? (
@@ -160,10 +160,7 @@ Video.getInitialProps = async ({ query: { video_id } }) => {
     .get(url)
     .then((response) => {
       var resObj = response.data.data;
-      var video_id_to_use =
-        resObj.video_uuid !== undefined && resObj.video_uuid !== null
-          ? resObj.video_uuid
-          : video_id;
+      var video_id_to_use = resObj.share_string;
       Object.assign(resObj, {
         video_id: video_id,
         video_id_to_use: video_id_to_use,

@@ -135,14 +135,14 @@ const RoundTable = ({
       : ""
   }Web3 related roundtable discussions available on Genuin${tags_string}`;
   const title_name = group.group_name;
-  const share_url = `${process.env.genuinurl}${asPath.slice(1)}`;
+  const share_url = `${process.env.hostname}${asPath.slice(1)}`;
   const ORG_SCHEMA = JSON.stringify({
     "@context": "http://schema.org",
     "@type": "VideoObject",
     id: share_url,
     url: share_url,
     name: title_name,
-    isPartOf: `${process.env.genuinurl}#website`,
+    isPartOf: `${process.env.hostname}#website`,
     image: `${videos?.[currentVideoIndex]?.thumbnail_url}/#primaryimage`,
     thumbnailUrl: videos?.[currentVideoIndex]?.thumbnail_url,
     contentUrl: videos?.[currentVideoIndex]?.video_url,
@@ -150,12 +150,12 @@ const RoundTable = ({
     author: {
       "@type": "Person",
       name: "@" + details.owner.nickname,
-      url: `${process.env.genuinurl}p/${details.owner.nickname}`,
+      url: `${process.env.hostname}p/${details.owner.nickname}`,
     },
     publisher: {
       "@type": "Organization",
       name: "Genuin",
-      url: process.env.genuinurl,
+      url: process.env.hostname,
     },
     description: ld_description,
     inLanguage: "en-US",
@@ -395,7 +395,7 @@ const RoundTable = ({
                 key={currentVideoIndex}
                 videos={videos}
                 currentVideoIndex={currentVideoIndex}
-                video_id_to_use={videos?.[currentVideoIndex]?.conversation_id}
+                video_id_to_use={videos?.[currentVideoIndex]?.share_string}
                 description={group?.group_description}
                 videoUrl={videos?.[currentVideoIndex]?.video_url_m3u8 ?? videos?.[currentVideoIndex]?.video_url}
                 videoThumbnail={videos?.[currentVideoIndex]?.thumbnail_url}
@@ -432,7 +432,7 @@ const RoundTable = ({
                   roundTableName={group?.group_name}
                   roundTableId={details.share_string}
                   link={videos?.[currentVideoIndex]?.link}
-                  videoUrl={`${process.env.genuinurl}rt/${details.share_string}?v=${videos?.[currentVideoIndex]?.share_string}`}
+                  videoUrl={`${process.env.hostname}rt/${details.share_string}?v=${videos?.[currentVideoIndex]?.share_string}`}
                   videoDescription={group?.group_description}
                   videoTitle='Genuin'
                   watchRoundTable={watchRoundTable}

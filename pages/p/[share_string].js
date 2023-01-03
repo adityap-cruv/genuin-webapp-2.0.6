@@ -340,7 +340,7 @@ const Profile = ({
     id: `${share_url}`,
     url: `${share_url}`,
     name: `${title_name}`,
-    isPartOf: `${process.env.genuinurl}#website`,
+    isPartOf: `${process.env.hostname}#website`,
     primaryImageOfPage:`${profile_image}/#primaryimage`,
     image: `${profile_image}/#primaryimage`,
     thumbnailUrl: `${profile_image}`,
@@ -682,7 +682,7 @@ const Profile = ({
                 getPrevVideo={getPrevVideo}
                 videos={videos}
                 autoplay
-                video_id_to_use={videos[currentVideoIndex]?.conversation_id}
+                video_id_to_use={videos[currentVideoIndex]?.video?.share_string}
                 roundTableMode={videos[currentVideoIndex]?.video_type === "rt"}
                 roundTableName={videos[currentVideoIndex]?.video?.group_name}
                 roundTableId={videos[currentVideoIndex]?.video?.chat_id}
@@ -734,7 +734,7 @@ const Profile = ({
                 getPrevVideo={getPrevVideoRT}
                 videos={rtVideos}
                 autoplay
-                video_id_to_use={rtVideos[currentVideoIndex]?.conversation_id}
+                video_id_to_use={rtVideos[currentVideoIndexRT]?.video?.share_string}
                 roundTableMode
                 roundTableName={rtVideos[currentVideoIndexRT]?.video?.group_name}
                 roundTableId={rtVideos[currentVideoIndexRT]?.video?.chat_id}
@@ -794,6 +794,7 @@ const Profile = ({
                 getPrevVideo={getPrevVideoPublic}
                 videos={publicVideos}
                 autoplay
+                video_id_to_use={publicVideos[currentVideoIndexPublic]?.video?.share_string}
                 shareUrl={publicVideos[currentVideoIndexPublic]?.video.share_url}
               >
                 <AppActions
@@ -918,7 +919,7 @@ const Videos = ({
                       // if (mobile) {
                         // window.location.href = video.share_url;
                         
-                        // window.location.href = `${process.env.genuinurl}rt/${video?.share_url.split("/").pop()}`;
+                        // window.location.href = `${process.env.hostname}rt/${video?.share_url.split("/").pop()}`;
                         // setCurrentVideoIndex(index);
                         // onOpen();
                         // window.history.pushState(null, "",`..${video_type === "rt" ? '/rt': ''}/${video.share_url.split("/").pop()}`)

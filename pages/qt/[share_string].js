@@ -64,7 +64,7 @@ const QuestionWrapper = ({
     id: `${share_url}`,
     url: `${share_url}`,
     name: `${title}`,
-    isPartOf: `${process.env.genuinurl}#website`,
+    isPartOf: `${process.env.hostname}#website`,
     image: `${preview_image}/#primaryimage`,
     thumbnailUrl: `${preview_image}`,
     description: `${description}`,
