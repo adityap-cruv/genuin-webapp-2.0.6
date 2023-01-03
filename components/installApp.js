@@ -64,7 +64,7 @@ export const InstallApp = ({ small = false, onClick = () => {} }) => {
           <Col
             xs='6'
             lg='auto'
-            className='d-flex align-items-center justify-content-start pe-4 ps-em-0'
+            className='d-flex align-items-center'
           >
             <Image
               src={android.src}

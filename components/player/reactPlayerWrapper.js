@@ -4,7 +4,6 @@ import { useDebounce } from "use-debounce";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
 import { ProgressBar, Badge, Button } from "react-bootstrap";
-
 import icArrowDown from "../../images/video-more-options/ic-arrow-down.svg";
 import icArrowUp from "../../images/video-more-options/ic-arrow-up.svg";
 import icArrowLeft from "../../images/video-more-options/ic-arrow-left.svg";
@@ -95,15 +94,20 @@ export const ReactPlayerWrapper = ({
       window.removeEventListener("touchend", touchEnd);
     };
   }, []);
-  const newClose = () => {
-    onClose()
-    // window.history.back();
-    if(watchRoundTable){
-      window.history.replaceState(null, "",`../p/${userName}`)
-    }else{
-      window.history.replaceState(null, "",`../p/${userName}`)
-    }
+
+  const onBackButtonEvent = (e) => {
+    e.preventDefault();
+    onClose();
+    console.log("onBack message")
   }
+
+  useEffect(() => {
+    window.addEventListener('popstate', onBackButtonEvent);
+    return () => {
+      window.removeEventListener('popstate', onBackButtonEvent);  
+    };
+  }, []);
+
   const onEndedWrapper = useCallback(
     (e) => {
       onEndedRef?.current?.(e);
@@ -246,7 +250,7 @@ export const ReactPlayerWrapper = ({
           </Flex>
           <Flex w='full' justifyContent='space-between' alignItems='center'>
             <Text fontWeight={600} fontSize={17}>
-              {videos[currentVideoIndex].meta_data.duration} sec
+              {videos[currentVideoIndex].meta_data.duration}s
             </Text>
             {direction === "forward" ? (
               <Image
@@ -271,8 +275,7 @@ export const ReactPlayerWrapper = ({
         </Flex>
       )}
       {/* x button */}
-      {!watchRoundTable && (
-        shareUrl ? window.location.href.split("/")[3] === 'p' ? window.history.pushState(null, "",`..${roundTableMode ? '/rt': ''}/${shareUrl.split("/").pop()}`) : window.history.replaceState(null, "",`..${roundTableMode ? '/rt': ''}/${shareUrl.split("/").pop()}`) : "",
+      {!watchRoundTable && !mobile &&(
         <Flex
           w='full'
           position='absolute'
@@ -292,10 +295,10 @@ export const ReactPlayerWrapper = ({
               src={icClose.src}
               width={6}
               height={6}
-              marginTop={mobile ? '50px' : '0px' }
+              // marginTop={mobile ? '50px' : '0px' }
               alt='Close'
               title='Close'
-              onClick={newClose}
+              onClick={onClose}
             />
           </Flex>
         </Flex>
@@ -424,6 +427,7 @@ export const ReactPlayerWrapper = ({
                         onClick={() => {
                           if (verticalNavigation && shareUrl) {
                             window.location.href = shareUrl;
+                            onClose();
                           } else {
                             setWatchRoundtable(true);
                             setIsPlaying(true);
