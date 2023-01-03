@@ -9,10 +9,13 @@
 
 import axios from 'axios';
 
-export function increaseVideoViewCount(video_id) {
+export function increaseVideoViewCount(share_string, type) {
   return new Promise((resolve, reject) => {
     axios
-      .post(process.env.apiurl + '/api/v3/users/video/view/' + video_id)
+      .put(process.env.apiurl + '/api/v3/video_view/', {
+        "share_string": share_string,
+        "type": type
+      })
       .then((response) => {
         resolve({});
       })
