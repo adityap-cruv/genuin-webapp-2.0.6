@@ -150,12 +150,13 @@ const Profile = ({
 
   console.log("process.env", process.env.apiurl);
   const getMoreVideos = async () => {
-    let type = videos[videos.length-1].video_type
-    let id =""
+    var videoObj = videos[videos.length-1]
+    var type = videoObj?.video_type
+    var id = ""
     if(type == "rt"){
-      id = videos[videos.length-1]["video"]["video_id"]
+      id = videoObj?.video?.conversation_id
     }else{
-      id = videos[videos.length-1]["video"]["chat_id"]
+      id = videoObj?.video?.video_id
     }
     const res = await axios.get(
       `${
