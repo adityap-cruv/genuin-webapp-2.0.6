@@ -205,6 +205,7 @@ const Profile = ({
 
   const mobile = useBreakpointValue({ base: true, md: false });
 
+  const [firstTime, setFirstTime] = useState(true);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [currentVideoIndexPublic, setCurrentVideoIndexPublic] = useState(0);
   const [currentVideoIndexRT, setCurrentVideoIndexRT] = useState(0);
@@ -230,6 +231,59 @@ const Profile = ({
     setCurrentVideoIndexRT((old) => old - 1);
   };
 
+  useEffect(() => {
+    if (firstTime){
+      setFirstTime(false)
+    }else{
+      // console.log("All Change URL")
+      changeUrl("all")
+    }
+  }, [currentVideoIndex]);
+
+  useEffect(() => {
+    if (firstTime){
+      setFirstTime(false)
+    }else{
+      // console.log("Public Change URL")
+      changeUrl("public")
+    }
+  }, [currentVideoIndexPublic]);
+
+  useEffect(() => {
+    if (firstTime){
+      setFirstTime(false)
+    }else{
+      // console.log("RT Change URL")
+      changeUrl("rt")
+    }
+  }, [currentVideoIndexRT]);
+
+  const changeUrl = (type, replace=true, share_url=null) => {
+    if(replace){
+      // console.log("Replace Change URL Called")
+      var videoObj = {}
+      if (type === "all"){
+        videoObj = videos[currentVideoIndex]
+      }else if (type === "rt"){
+        videoObj = rtVideos[currentVideoIndexRT]
+      }else if (type === "public"){
+        videoObj = publicVideos[currentVideoIndexPublic]
+      }
+      var shareUrl = videoObj && Object.keys(videoObj).length!==0 ? videoObj.video?.share_url : ""
+      var video_type = videoObj && Object.keys(videoObj).length!==0 ? videoObj?.video_type : ""
+
+      shareUrl ? window.history.replaceState(null, "",`..${video_type === "rt" ? '/rt': ''}/${shareUrl.split("/").pop()}`) : ""
+    }else{
+      // console.log("Push Change URL Called")
+      share_url ? window.history.pushState(null, "",`..${type === "rt" ? '/rt': ''}/${share_url.split("/").pop()}`) : ""
+    }
+  };
+
+  const setProfileUrl = () => {
+    // console.log("Setting profile url")
+    window.history.replaceState(null, "",`../p/${nickname}`)
+  }  
+
   const [tabIndex, setTabIndex] = useState(0);
 
   const showGetAppToViewDialog = () =>
@@ -238,7 +292,7 @@ const Profile = ({
   const showGetAppToSendMessage = () =>
     handleShowModalAppDownload(() => (
       <Text fontWeight={600} lineHeight={8} fontSize={20}>
-        Get the Genuin app to send a direct message to{" "}
+        Get the Genuin app to send a video message to{" "}
         <strong>@{nickname}</strong>
       </Text>
     ));
@@ -313,6 +367,33 @@ const Profile = ({
     setCurrentUrl(window.location.href);
   }, []);
 
+  useEffect(() => {
+    window.addEventListener('popstate',(event)=> {
+      // console.log("Here it came",window.location.href)
+      var ls = window.location.href.split("/")
+      if (ls && (ls.length == 4 || ls[3] === "rt")){
+        // const val = sessionStorage.getItem('urlCameFrom')
+        // if (!val){
+        //   sessionStorage.setItem('urlCameFrom', "");
+        // }else{
+        //   // if (val === "all"){
+        //   //   onOpen()
+        //   // }else if (val === "rt"){
+        //   //   onOpenRT()
+        //   // }else if (val === "public"){
+        //   //   onOpenPublic()
+        //   // }
+          if (tabIndex === 0){
+            onOpen()
+          }else if (tabIndex === 1){
+            onOpenRT()
+          }else if (tabIndex === 2){
+            onOpenPublic()
+          }
+        // }
+      }
+    })
+  },[])
   console.log("nickname", nickname);
   return !Boolean(user_id) ? (
     <Error />
@@ -545,6 +626,7 @@ const Profile = ({
                     onOpen={onOpen}
                     setCurrentVideoIndex={setCurrentVideoIndex}
                     getMoreVideos={getMoreVideos}
+                    changeUrl={changeUrl}
                   />
                 </TabPanel>
                 <TabPanel p={0} pt='1px' h='full'>
@@ -555,6 +637,7 @@ const Profile = ({
                     onOpen={onOpenPublic}
                     setCurrentVideoIndex={setCurrentVideoIndexPublic}
                     getMoreVideos={getMoreVideosPublic}
+                    changeUrl={changeUrl}
                   />
                 </TabPanel>
                 <TabPanel p={0} pt='1px' h='full'>
@@ -565,6 +648,7 @@ const Profile = ({
                     onOpen={onOpenRT}
                     setCurrentVideoIndex={setCurrentVideoIndexRT}
                     getMoreVideos={getMoreVideosRT}
+                    changeUrl={changeUrl}
                   />
                 </TabPanel>
               </TabPanels>
@@ -591,7 +675,7 @@ const Profile = ({
                 videoUrl={videos[currentVideoIndex]?.video?.video_url_m3u8 ?? videos[currentVideoIndex]?.video?.videoUrl}
                 userName={nickname}
                 userId={nickname}
-                onClickOutsideOfVideo={onClose}
+                onClickOutsideOfVideo={() => {setProfileUrl(); onClose();}}
                 userProfileImage={profile_image}
                 showGetAppModal={showGetAppToViewDialog}
                 getNextVideo={getNextVideo}
@@ -600,9 +684,9 @@ const Profile = ({
                 autoplay
                 video_id_to_use={videos[currentVideoIndex]?.conversation_id}
                 roundTableMode={videos[currentVideoIndex]?.video_type === "rt"}
-                roundTableName={videos[currentVideoIndex]?.video.group_name}
-                roundTableId={videos[currentVideoIndex]?.video.chat_id}
-                shareUrl={videos[currentVideoIndex]?.video.share_url}
+                roundTableName={videos[currentVideoIndex]?.video?.group_name}
+                roundTableId={videos[currentVideoIndex]?.video?.chat_id}
+                shareUrl={videos[currentVideoIndex]?.video?.share_url}
                 verticalNavigation
               >
                 <AppActions
@@ -615,8 +699,8 @@ const Profile = ({
                   }
                   videoTitle='Genuin'
                   roundTable={videos[currentVideoIndex]?.video_type === "rt"}
-                  roundTableName={videos[currentVideoIndex]?.group_name}
-                  roundTableId={videos[currentVideoIndex]?.chat_id}
+                  roundTableName={videos[currentVideoIndex]?.video?.group_name}
+                  roundTableId={videos[currentVideoIndex]?.video?.chat_id}
                 />
               </Player>
             </ModalBody>
@@ -642,7 +726,7 @@ const Profile = ({
                 videoUrl={rtVideos[currentVideoIndexRT]?.video?.video_url_m3u8 ?? rtVideos[currentVideoIndexRT]?.video?.video_url}
                 userName={nickname}
                 userId={nickname}
-                onClickOutsideOfVideo={onCloseRT}
+                onClickOutsideOfVideo={() => {setProfileUrl(); onCloseRT();}}
                 userProfileImage={profile_image}
                 showGetAppModal={showGetAppToViewDialog}
                 onEnded={showGetAppToViewDialog}
@@ -658,7 +742,7 @@ const Profile = ({
                 verticalNavigation
               >
                 <AppActions
-                  showGetAppModal={showGetAppToViewDialog}
+                  showGetAppModal={handleShowModalAppDownload}
                   userName={nickname}
                   link={rtVideos[currentVideoIndexRT]?.video?.link}
                   videoUrl={rtVideos[currentVideoIndexRT]?.video?.share_url}
@@ -667,8 +751,8 @@ const Profile = ({
                   }
                   videoTitle='Genuin'
                   roundTable={rtVideos[currentVideoIndexRT]?.video_type === "rt"}
-                  roundTableName={rtVideos[currentVideoIndexRT]?.group_name}
-                  roundTableId={rtVideos[currentVideoIndexRT]?.chat_id}
+                  roundTableName={rtVideos[currentVideoIndexRT]?.video?.group_name}
+                  roundTableId={rtVideos[currentVideoIndexRT]?.video?.chat_id}
                 />
               </Player>
             </ModalBody>
@@ -702,7 +786,7 @@ const Profile = ({
                 }
                 userName={nickname}
                 userId={nickname}
-                onClickOutsideOfVideo={onClosePublic}
+                onClickOutsideOfVideo={() => {setProfileUrl(); onClosePublic();}}
                 userProfileImage={profile_image}
                 showGetAppModal={showGetAppToViewDialog}
                 onEnded={showGetAppToViewDialog}
@@ -743,6 +827,7 @@ const Videos = ({
   setCurrentVideoIndex,
   mobile,
   getMoreVideos,
+  changeUrl
 }) => {
   return (
     <Box h='full'>
@@ -790,7 +875,7 @@ const Videos = ({
                 alignItems='center'
                 minH={{ base: "245px", md: "320px" }}
               >
-                {!mobile && (
+                {/* {!mobile && (
                   <Image
                     src={
                       video_type === "rt"
@@ -800,10 +885,12 @@ const Videos = ({
                     onClick={() => {
                       setCurrentVideoIndex(index);
                       onOpen();
+                      // console.log("Not mobile click")
+                      changeUrl(video_type, false, video?.share_url)
                     }}
                   />
-                )}
-                {mobile && (
+                )} */}
+                {(
                   <Image
                     src={
                       video_type === "rt"
@@ -814,6 +901,8 @@ const Videos = ({
                       // window.location.href = video.share_url;
                       setCurrentVideoIndex(index);
                       onOpen();
+                      // console.log("mobile click")
+                      changeUrl(video_type, false, video?.share_url)
                     }}
                   />
                 )}
@@ -826,12 +915,20 @@ const Videos = ({
                     direction='column'
                     justifyContent='space-between'
                     onClick={() => {
-                      if (mobile) {
-                        window.location.href = video.share_url;
-                      } else {
+                      // if (mobile) {
+                        // window.location.href = video.share_url;
+                        
+                        // window.location.href = `${process.env.genuinurl}rt/${video?.share_url.split("/").pop()}`;
+                        // setCurrentVideoIndex(index);
+                        // onOpen();
+                        // window.history.pushState(null, "",`..${video_type === "rt" ? '/rt': ''}/${video.share_url.split("/").pop()}`)
+                        // console.log("mobile rt click")
+                      // } else {
                         setCurrentVideoIndex(index);
                         onOpen();
-                      }
+                        // console.log("Not mobile rt click")
+                        changeUrl(video_type, false, video?.share_url)
+                      // }
                     }}
                   >
                     <Flex

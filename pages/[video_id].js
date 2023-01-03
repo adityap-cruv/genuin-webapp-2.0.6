@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import axios from "axios";
 import { Player } from "../components/player";
 import { Layout } from "../components/layout";
@@ -9,7 +9,7 @@ import { Error } from "../components/error";
 import { SEO } from "../components/seo";
 import { AppActions } from "../components/appActions";
 import { appStoreLink } from "../config";
-import { Box } from "@chakra-ui/react";
+import { Box, Modal, ModalBody, ModalContent, useDisclosure } from "@chakra-ui/react";
 const Video = (props) => {
   const {
     videoUrl,
@@ -43,6 +43,7 @@ const Video = (props) => {
   const showGetAppToViewDialog = () =>
     handleShowModalAppDownload(() => <>Get the app to view this video.</>);
 
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const tags_string = tags!==null && tags!==undefined && tags.replace(/\s+/g,'')!==''?` #${tags.split(',').join(' #')}`:''
   const ld_description = `${userName? userName: "@"+userNickname} | Web3 related bite-sized content available on Genuin${tags_string}`
   const title_name = description?description:`Watch byte sized videos from @${userNickname} on Genuin`
@@ -83,52 +84,74 @@ const Video = (props) => {
     ],
   });
 
+  useEffect(() => {
+    var ls = window.location.href.split("/")
+    if (ls && ls.length == 4){
+      onOpen()
+    }
+  },[])
+
+  const setProfileUrl = () => {
+    // console.log("Setting profile url in public video individual")
+    window.location.href = `${process.env.genuinurl}p/${userNickname}`
+  }
 
   return !Boolean(videoUrl) ? (
     <Error />
   ) : (
-    <Layout>
-      <SEO
-        title={title_name}
-        openGraphTitle={`${userNickname} @ Genuin`}
-        videoUrl={videoUrl}
-        videoPreviewImage={videoPreviewImage}
-        description={ld_description}
-        openGraphDescription={description?description:" "}
-        metaImageWidth={1200}
-        metaImageHeight={630}
-        urlToCopy={process?.env?.hostname + "/" + video_id_to_use}
-      />
-      <script type='application/ld+json' dangerouslySetInnerHTML={{ __html: ORG_SCHEMA }}/>
-      <Player
-        key={video_id_to_use ?? `${Math.random()}`}
-        video_id_to_use={video_id_to_use}
-        description={description}
-        videoUrl={video_url_m3u8 ?? videoUrl}
-        videoThumbnail={videoThumbnail}
-        userName={userNickname}
-        userId={userNickname}
-        userProfileImage={userProfileImage}
-        showGetAppModal={handleShowModalAppDownload}
-        onEnded={showGetAppToViewDialog}
-        autoplay
-      >
-        <AppActions
-          showGetAppModal={handleShowModalAppDownload}
-          userName={userNickname}
-          link={link}
-          videoUrl={globalThis?.location?.href}
-          videoDescription={description}
-          videoTitle='Genuin'
-        />
-      </Player>
-      <GetAppModal
-        show={showModalAppDownload}
-        onClose={handleCloseAppDownload}
-        TextNode={getAppComponentRef.current}
-      />
-      <WelcomeModal show={showModalWelcome} onClose={handleCloseWelcome} />
-    </Layout>
+    <>
+      <Layout>
+        <SEO
+          title={title_name}
+          openGraphTitle={`${userNickname} @ Genuin`}
+          videoUrl={videoUrl}
+          videoPreviewImage={videoPreviewImage}
+          description={ld_description}
+          openGraphDescription={description ? description : " "}
+          metaImageWidth={1200}
+          metaImageHeight={630}
+          urlToCopy={process?.env?.hostname + "/" + video_id_to_use} />
+        <script type='application/ld+json' dangerouslySetInnerHTML={{ __html: ORG_SCHEMA }} />
+        <Modal isOpen={isOpen} onClose={onClose} scrollBehavior='inside'>
+          <ModalContent
+            h='full'
+            marginTop={0}
+            maxH='full'
+            maxW='full'
+            bg='transparent'
+          >
+            <ModalBody p={0} height='full' w='full' overflow='hidden'>
+              <Player
+                key={video_id_to_use ?? `${Math.random()}`}
+                video_id_to_use={video_id_to_use}
+                description={description}
+                videoUrl={video_url_m3u8 ?? videoUrl}
+                videoThumbnail={videoThumbnail}
+                userName={userNickname}
+                userId={userNickname}
+                userProfileImage={userProfileImage}
+                showGetAppModal={handleShowModalAppDownload}
+                onEnded={showGetAppToViewDialog}
+                autoplay
+                onClickOutsideOfVideo={() => {setProfileUrl(); onClose();}}
+              >
+                <AppActions
+                  showGetAppModal={handleShowModalAppDownload}
+                  userName={userNickname}
+                  link={link}
+                  videoUrl={globalThis?.location?.href}
+                  videoDescription={description}
+                  videoTitle='Genuin' />
+              </Player>
+            </ModalBody>
+          </ModalContent>
+        </Modal>
+        <GetAppModal
+          show={showModalAppDownload}
+          onClose={handleCloseAppDownload}
+          TextNode={getAppComponentRef.current} /><WelcomeModal show={showModalWelcome} onClose={handleCloseWelcome} />
+      </Layout>
+    </>
   );
 };
 Video.getInitialProps = async ({ query: { video_id } }) => {
