@@ -95,6 +95,22 @@ const RoundTable = ({
     }
   };
 
+  const [firstTime, setFirstTime] = useState(true)
+
+  useEffect(() => {
+    if(firstTime){
+      setFirstTime(false)
+    }else{
+      // console.log("use effect to replace url to current video on index change")
+      window.history.replaceState(null, "", `../rt/${details.share_string}?v=${videos?.[currentVideoIndex]?.share_string}`)
+    }
+  }, [currentVideoIndex]);
+
+  const setRtUrl = () => {
+    // console.log("Came in set rt utl")
+    window.history.replaceState(null, "", `../rt/${details.share_string}`)
+  }
+
   const showGetAppToViewDialog = () =>
     handleShowModalAppDownload(() => <>Get the app to view this video.</>);
 
@@ -331,7 +347,7 @@ const RoundTable = ({
                     onOpen={onOpen}
                     setCurrentVideoIndex={setCurrentVideoIndex}
                     setWatchRoundtable={setWatchRoundtable}
-                    chatId={details.chat_id}
+                    chatId={details.share_string}
                   />
                   <Box
                     position='absolute'
@@ -364,13 +380,7 @@ const RoundTable = ({
 
         <Modal
           isOpen={isOpen}
-          onClose={() => {
-            if (router?.query?.v) window.location.href = details.chat_id;
-            else {
-              onClose();
-              setWatchRoundtable(false);
-            }
-          }}
+          onClose={onClose}
           scrollBehavior='inside'
         >
           <ModalContent
@@ -395,10 +405,11 @@ const RoundTable = ({
                   videos?.[currentVideoIndex]?.owner?.profile_image
                 }
                 onClickOutsideOfVideo={() => {
-                  if (router?.query?.v) window.location.href = details.chat_id;
+                  if (router?.query?.v) window.location.href = details.share_string;
                   else {
                     onClose();
                     setWatchRoundtable(false);
+                    setRtUrl();
                   }
                 }}
                 roundTableMode
@@ -411,7 +422,7 @@ const RoundTable = ({
                 autoJumpToNextVideo={watchRoundTable}
                 autoplay={watchRoundTable}
                 onClose={onClose}
-                roundTableId={details.chat_id}
+                roundTableId={details.share_string}
                 direction={direction}
                 setDirection={setDirection}
               >
@@ -419,9 +430,9 @@ const RoundTable = ({
                   showGetAppModal={handleShowModalAppDownload}
                   roundTable
                   roundTableName={group?.group_name}
-                  roundTableId={details.chat_id}
+                  roundTableId={details.share_string}
                   link={videos?.[currentVideoIndex]?.link}
-                  videoUrl={globalThis?.location?.href}
+                  videoUrl={`${process.env.genuinurl}rt/${details.share_string}?v=${videos?.[currentVideoIndex]?.share_string}`}
                   videoDescription={group?.group_description}
                   videoTitle='Genuin'
                   watchRoundTable={watchRoundTable}
