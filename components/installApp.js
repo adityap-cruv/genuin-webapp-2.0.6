@@ -12,18 +12,28 @@ import android from "../images/badge_playstore.png";
 import { handleLink } from "../actions/appInstall";
 import { useRouter } from "next/router";
 
-export const InstallApp = ({ small = false, onClick = () => {} }) => {
+export const InstallApp = ({ small = false, errorPage = false, onClick = () => {} }) => {
   const mobile = useBreakpointValue({ base: true, sm: false });
   const router = useRouter();
   console.log("router", router.pathname);
 
   return (
     <>
-      {mobile && router.pathname !== "/" && (
-        <Button onClick={onClick} style={{ width: "100%" }}>
+      {mobile && !errorPage && router.pathname !== "/" && (
+        <Button onClick={onClick} style={{ width: '334px' }}>
           <Link href={appStoreLink} isExternal>
             <Text fontSize={24} fontWeight='bold'>
               Get App
+            </Text>
+          </Link>
+        </Button>
+      )}
+
+      {mobile && errorPage && router.pathname !== "/" && (
+        <Button onClick={onClick} style={{ width: '334px' }}>
+          <Link href={appStoreLink} isExternal>
+            <Text fontSize={24} fontWeight='bold'>
+              Download App
             </Text>
           </Link>
         </Button>

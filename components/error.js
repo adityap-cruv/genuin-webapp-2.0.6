@@ -25,7 +25,7 @@ export const Error = ({ homePageUrl = "/" }) => {
             </Col>
           </Row>
           <Row xs={2} className='justify-content-center'>
-            <InstallApp />
+            <InstallApp errorPage={true}/>
           </Row>
         </Container>
       </section>

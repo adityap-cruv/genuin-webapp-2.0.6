@@ -71,10 +71,11 @@ const Profile = ({
   const scrollToTop3 = () => tab3Ref.current.scrollIntoView();
 
   const prepareRTVideos = (videos = []) => {
-    return videos.reduce((res, { video: { chats, group, chat_id } }) => {
+    return videos.reduce((res, { video: { chats, group, chat_id, share_string } }) => {
       return res.concat(
         chats.map((chat) => ({
           video_type: "rt",
+          share_string: share_string,
           video: {
             ...chat,
             video_thumbnail: chat.thumbnail_url,
@@ -93,6 +94,7 @@ const Profile = ({
             return res.concat(
                 video.chats.map((chat) => ({
                   video_type: "rt",
+                  share_string: video.share_string,
                   video: {
                     ...chat,
                     video_thumbnail: chat.thumbnail_url,
@@ -114,6 +116,8 @@ const Profile = ({
 
   const preparedFeedVideos = prepareFeedVideos(all_videos)
   const [videos, setVideos] = useState(preparedFeedVideos);
+
+  console.log("process.env", process.env.apiurl);
 
   const getMoreVideosPublic = async () => {
     const res = await axios.get(
@@ -148,7 +152,6 @@ const Profile = ({
     }
   };
 
-  console.log("process.env", process.env.apiurl);
   const getMoreVideos = async () => {
     var videoObj = videos[videos.length-1]
     var type = videoObj?.video_type
@@ -679,6 +682,7 @@ const Profile = ({
                 onClickOutsideOfVideo={() => {setProfileUrl(); onClose();}}
                 userProfileImage={profile_image}
                 showGetAppModal={showGetAppToViewDialog}
+                onEnded={showGetAppToViewDialog}
                 getNextVideo={getNextVideo}
                 getPrevVideo={getPrevVideo}
                 videos={videos}
@@ -686,7 +690,7 @@ const Profile = ({
                 video_id_to_use={videos[currentVideoIndex]?.video?.share_string}
                 roundTableMode={videos[currentVideoIndex]?.video_type === "rt"}
                 roundTableName={videos[currentVideoIndex]?.video?.group_name}
-                roundTableId={videos[currentVideoIndex]?.video?.chat_id}
+                roundTableId={videos[currentVideoIndex]?.share_string}
                 shareUrl={videos[currentVideoIndex]?.video?.share_url}
                 verticalNavigation
               >
@@ -701,7 +705,7 @@ const Profile = ({
                   videoTitle='Genuin'
                   roundTable={videos[currentVideoIndex]?.video_type === "rt"}
                   roundTableName={videos[currentVideoIndex]?.video?.group_name}
-                  roundTableId={videos[currentVideoIndex]?.video?.chat_id}
+                  roundTableId={videos[currentVideoIndex]?.share_string}
                 />
               </Player>
             </ModalBody>
@@ -738,7 +742,7 @@ const Profile = ({
                 video_id_to_use={rtVideos[currentVideoIndexRT]?.video?.share_string}
                 roundTableMode
                 roundTableName={rtVideos[currentVideoIndexRT]?.video?.group_name}
-                roundTableId={rtVideos[currentVideoIndexRT]?.video?.chat_id}
+                roundTableId={rtVideos[currentVideoIndexRT]?.share_string}
                 shareUrl={rtVideos[currentVideoIndexRT]?.video?.share_url}
                 verticalNavigation
               >
@@ -753,7 +757,7 @@ const Profile = ({
                   videoTitle='Genuin'
                   roundTable={rtVideos[currentVideoIndexRT]?.video_type === "rt"}
                   roundTableName={rtVideos[currentVideoIndexRT]?.video?.group_name}
-                  roundTableId={rtVideos[currentVideoIndexRT]?.video?.chat_id}
+                  roundTableId={rtVideos[currentVideoIndexRT]?.share_string}
                 />
               </Player>
             </ModalBody>

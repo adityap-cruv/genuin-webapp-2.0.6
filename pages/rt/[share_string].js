@@ -122,19 +122,19 @@ const RoundTable = ({
       </>
     ));
   const tags_string =
-    group.tags !== null &&
+    group && group.tags !== null &&
     group.tags !== undefined &&
     group.tags.replace(/\s+/g, "") !== ""
       ? ` #${group.tags.split(",").join(" #")}`
       : "";
   const ld_description = `${
-    group.group_description !== null &&
+    group && group.group_description !== null &&
     group.group_description !== undefined &&
     group.group_description.replace(/\s+/g, "") !== ""
       ? group.group_description + " | "
       : ""
   }Web3 related roundtable discussions available on Genuin${tags_string}`;
-  const title_name = group.group_name;
+  const title_name = group?.group_name;
   const share_url = `${process.env.hostname}${asPath.slice(1)}`;
   const ORG_SCHEMA = JSON.stringify({
     "@context": "http://schema.org",
@@ -149,8 +149,8 @@ const RoundTable = ({
     embedUrl: videos?.[currentVideoIndex]?.video_url,
     author: {
       "@type": "Person",
-      name: "@" + details.owner.nickname,
-      url: `${process.env.hostname}p/${details.owner.nickname}`,
+      name: "@" + details?.owner?.nickname,
+      url: `${process.env.hostname}p/${details?.owner?.nickname}`,
     },
     publisher: {
       "@type": "Organization",
@@ -262,7 +262,7 @@ const RoundTable = ({
                 </Flex>
 
                 <Box fontWeight='700' fontSize={17}>
-                  @{group.group_name}
+                  {group.group_name}
                 </Box>
                 <Box fontWeight='600' fontSize={15} mb={1}>
                   {group?.group_description || "No bio yet"}
@@ -405,7 +405,10 @@ const RoundTable = ({
                   videos?.[currentVideoIndex]?.owner?.profile_image
                 }
                 onClickOutsideOfVideo={() => {
-                  if (router?.query?.v) window.location.href = details.share_string;
+                  if (router?.query?.v && !(window.location.href.split("/")[3] === "p")) {
+                    window.location.href = details.share_string;
+                    // window.location.href = `${process.env.hostname}rt/${details.share_string}?v=${videos?.[currentVideoIndex]?.share_string}`
+                  }
                   else {
                     onClose();
                     setWatchRoundtable(false);
@@ -498,6 +501,7 @@ const Videos = ({
                 bgPosition='center'
                 onClick={() => {
                   onOpen();
+                  window.history.replaceState(null, "", `../rt/${chatId}?v=${video.share_string}`)
                   setWatchRoundtable(true);
                   setCurrentVideoIndex(index);
                 }}

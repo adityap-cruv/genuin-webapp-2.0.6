@@ -175,11 +175,11 @@ export const ReactPlayerWrapper = ({
             h={10}
           >
             <Text fontWeight='bold' fontSize={17}>
-              <ReactTimeAgo
+            {videos[currentVideoIndex] && (<ReactTimeAgo
                 timeStyle='mini'
-                date={Number(videos[currentVideoIndex].conversation_at)}
+                date={Number(videos[currentVideoIndex]?.conversation_at)}
                 locale='en-US'
-              />
+              />)}
             </Text>
             <Link href={roundTableId}>
               <Flex
@@ -258,7 +258,7 @@ export const ReactPlayerWrapper = ({
           </Flex>
           <Flex w='full' justifyContent='space-between' alignItems='center'>
             <Text fontWeight={600} fontSize={17}>
-              {videos[currentVideoIndex].meta_data.duration}s
+              {videos[currentVideoIndex]?.meta_data?.duration} sec
             </Text>
             {direction === "forward" ? (
               <Image
@@ -435,6 +435,7 @@ export const ReactPlayerWrapper = ({
                         onClick={() => {
                           if (verticalNavigation && shareUrl) {
                             window.location.href = shareUrl;
+                            // window.location.href = `${process.env.hostname}rt/${shareUrl.split("/").pop()}`
                             onClose();
                           } else {
                             setWatchRoundtable(true);
