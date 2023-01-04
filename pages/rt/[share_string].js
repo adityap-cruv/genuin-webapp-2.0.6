@@ -409,6 +409,9 @@ const RoundTable = ({
                     window.location.href = details.share_string;
                     // window.location.href = `${process.env.hostname}rt/${details.share_string}?v=${videos?.[currentVideoIndex]?.share_string}`
                   }
+                  else if (window.location.href.split("/")[3] === "p"){
+                    window.location.href = window.location.href;
+                  }
                   else {
                     onClose();
                     setWatchRoundtable(false);
