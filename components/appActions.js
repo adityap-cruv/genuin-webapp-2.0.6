@@ -63,19 +63,18 @@ export const AppActions = ({
       ) : null}
       {!roundTable ? (
         <>
-          <li>
-            <Image
-              src={bookmark.src}
-              size={6}
-              alt='Bookmark'
-              title='Bookmark'
-              onClick={() =>
+          <li onClick={() =>
                 showGetAppModal(() => (
                   <>
                     Get the app to <b>bookmark</b> this video.
                   </>
                 ))
-              }
+              }>
+            <Image
+              src={bookmark.src}
+              size={6}
+              alt='Bookmark'
+              title='Bookmark'
             />
           </li>
           <li>
@@ -94,19 +93,18 @@ export const AppActions = ({
               />
             )}
           </li>
-          <li>
-            <Image
-              src={replay.src}
-              size={6}
-              alt='Replay'
-              title='Replay'
-              onClick={() =>
+          <li onClick={() =>
                 showGetAppModal(() => (
                   <>
                     Get the app to reply to <b>{"@"+userName}</b>
                   </>
                 ))
-              }
+              }>
+            <Image
+              src={replay.src}
+              size={6}
+              alt='Reply'
+              title='Reply'
             />
           </li>
         </>
@@ -114,33 +112,31 @@ export const AppActions = ({
 
       {roundTable ? (
         <>
-          <li>
+          <li onClick={() =>
+                showGetAppModal(() => (
+                  <>Get the app to watch the comments on this video.</>
+                ))
+              }>
             <Image
               src={comments.src}
               size={6}
               alt='Comments'
               title='Comments'
-              onClick={() =>
-                showGetAppModal(() => (
-                  <>Get the app to watch the comments on this video.</>
-                ))
-              }
             />
           </li>
-          <li>
-            <Image
-              src={subscribePlus.src}
-              size={6}
-              alt='Subscribe Plus'
-              title='Subscribe Plus'
-              onClick={() =>
+          <li onClick={() =>
                 showGetAppModal(() => (
                   <>
                     Get the app to subscribe to <b>{roundTableName ?? ""}</b>{" "}
                     roundtable.
                   </>
                 ))
-              }
+              }>
+            <Image
+              src={subscribePlus.src}
+              size={6}
+              alt='Subscribe Plus'
+              title='Subscribe Plus'
             />
           </li>
           <li>

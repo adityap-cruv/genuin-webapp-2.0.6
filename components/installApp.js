@@ -30,7 +30,7 @@ export const InstallApp = ({ small = false, errorPage = false, onClick = () => {
       )}
 
       {mobile && errorPage && router.pathname !== "/" && (
-        <Button onClick={onClick} style={{ width: '334px' }}>
+        <Button onClick={onClick}>
           <Link href={appStoreLink} isExternal>
             <Text fontSize={24} fontWeight='bold'>
               Download App

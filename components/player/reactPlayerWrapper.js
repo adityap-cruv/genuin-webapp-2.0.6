@@ -12,7 +12,7 @@ import icFlipLeft from "../../images/video-more-options/ic-flip-left.svg";
 import icFlipRight from "../../images/video-more-options/ic-flip-right.svg";
 import icClose from "../../images/video-more-options/ic-close.svg";
 import earth from "../../images/video-more-options/ic-earth.svg";
-import { Image, Flex, Text, Link, Box, useBreakpointValue } from "@chakra-ui/react";
+import { Image, Flex, Text, Link, Box, useBreakpointValue, Avatar } from "@chakra-ui/react";
 
 import ReactTimeAgo from "react-time-ago";
 
@@ -417,12 +417,21 @@ export const ReactPlayerWrapper = ({
                 </Link>
               )}
               <div className='video-auther mb-2'>
-                <Image
+                {/* <Image
                   src={profilePic}
                   width={9}
                   height={9}
                   alt={userName}
                   title={userName}
+                  className='img-auther-pic'
+                /> */}
+                <Avatar
+                  name={roundTableName}
+                  width={9}
+                  height={9}
+                  src={""}
+                  size='l'
+                  background='#A4E6DA'
                   className='img-auther-pic'
                 />
                 <h5 className='mb-0'>

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import { Error } from "../../components/error";
-import { Player } from "../../components/player";
+import { isValidHttpUrl, Player } from "../../components/player";
 import { Layout } from "../../components/layout";
 import { TopNav } from "../../components/topNav";
 import { GetAppModal } from "../../components/getAppModal";
@@ -230,6 +230,7 @@ const RoundTable = ({
                     size='xl'
                     background='#A4E6DA'
                     mb={3}
+                    mt="24px"
                   />
                   {mobile && (
                     <Flex
@@ -578,7 +579,10 @@ const Participants = ({ members, mobile }) => {
                 >
                   <Avatar
                     name={user.nickname}
-                    src={user.profile_image_s}
+                    src={user.profile_image ? (isValidHttpUrl(user.profile_image)
+                      ? user.profile_image
+                      : `https://media.qa.begenuin.com/backend_assets/lottie/${user.profile_image}.png`) : "https://media.qa.begenuin.com/backend_assets/lottie/snowman.png"
+                    }
                     h='44px'
                     w='44px'
                     background='#A4E6DA'
@@ -659,7 +663,10 @@ const Participants = ({ members, mobile }) => {
               >
                 <Avatar
                   name={user.nickname}
-                  src={user.profile_image_s}
+                  src={user.profile_image ? (isValidHttpUrl(user.profile_image)
+                    ? user.profile_image
+                    : `https://media.qa.begenuin.com/backend_assets/lottie/${user.profile_image}.png`) : "https://media.qa.begenuin.com/backend_assets/lottie/snowman.png"
+                  }
                   size='xl'
                   mb={2}
                   background='#A4E6DA'

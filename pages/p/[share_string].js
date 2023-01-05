@@ -466,6 +466,7 @@ const Profile = ({
                   size='xl'
                   background='#A4E6DA'
                   mb={2}
+                  mt="24px"
                 />
                 {mobile && (
                   <Flex
