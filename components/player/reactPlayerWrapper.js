@@ -417,15 +417,7 @@ export const ReactPlayerWrapper = ({
                 </Link>
               )}
               <div className='video-auther mb-2'>
-                {/* <Image
-                  src={profilePic}
-                  width={9}
-                  height={9}
-                  alt={userName}
-                  title={userName}
-                  className='img-auther-pic'
-                /> */}
-                <Avatar
+                { Boolean(roundTableMode) ? (<Avatar
                   name={roundTableName}
                   width={9}
                   height={9}
@@ -433,7 +425,15 @@ export const ReactPlayerWrapper = ({
                   size='l'
                   background='#A4E6DA'
                   className='img-auther-pic'
-                />
+                />) : (<Image
+                  src={profilePic}
+                  width={9}
+                  height={9}
+                  alt={userName}
+                  title={userName}
+                  className='img-auther-pic'
+                /> )
+                }
                 <h5 className='mb-0'>
                   {Boolean(roundTableMode) ? (
                     <Flex alignItems='center'>
