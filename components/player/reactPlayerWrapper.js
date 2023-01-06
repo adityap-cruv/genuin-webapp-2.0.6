@@ -14,8 +14,6 @@ import icClose from "../../images/video-more-options/ic-close.svg";
 import earth from "../../images/video-more-options/ic-earth.svg";
 import { Image, Flex, Text, Link, Box, useBreakpointValue, Avatar } from "@chakra-ui/react";
 
-import ReactTimeAgo from "react-time-ago";
-
 export const ReactPlayerWrapper = ({
   videoUrl,
   onProgress,
@@ -176,11 +174,7 @@ export const ReactPlayerWrapper = ({
             h={10}
           >
             <Text fontWeight='bold' fontSize={17}>
-            {videos[currentVideoIndex] && (<ReactTimeAgo
-                timeStyle='mini'
-                date={Number(videos[currentVideoIndex]?.conversation_at)}
-                locale='en-US'
-              />)}
+            {videos[currentVideoIndex] && ( `${Math.floor ( ( Date.now() - Number(videos[currentVideoIndex]?.conversation_at) ) / (604800*1000) )}w` ) }
             </Text>
             <Link href={roundTableId}>
               <Flex
@@ -259,7 +253,7 @@ export const ReactPlayerWrapper = ({
           </Flex>
           <Flex w='full' justifyContent='space-between' alignItems='center'>
             <Text fontWeight={600} fontSize={17}>
-              {videos[currentVideoIndex]?.meta_data?.duration} sec
+              {videos[currentVideoIndex]?.meta_data?.duration} Sec
             </Text>
             {direction === "forward" ? (
               <Image

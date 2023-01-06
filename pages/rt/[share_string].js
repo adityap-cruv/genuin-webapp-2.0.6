@@ -529,7 +529,7 @@ const Videos = ({
             <Box
               position='absolute'
               gap={3}
-              top={3}
+              top={1.5}
               left={2}
               color='white'
               fontSize='15px'
