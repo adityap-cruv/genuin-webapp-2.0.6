@@ -143,7 +143,7 @@ const Record = (props) => {
 };
 Record.getInitialProps = async ({ query: { qr_code } }) => {
   return new Promise(function (resolve, reject) {
-    var url_to_use = `${process.env.apiurl}/api/v3/qr/web?qr_code=${qr_code}`;
+    var url_to_use = `${process.env.apiurl}/api/v3/public/qr/web?qr_code=${qr_code}`;
 
     axios
       .get(url_to_use)
@@ -153,7 +153,7 @@ Record.getInitialProps = async ({ query: { qr_code } }) => {
           response.data.data.owner.nickname !== null &&
           response.data.data.owner.nickname !== ""
         ) {
-          var url_to_use2 = `${process.env.apiurl}/api/v3/p/web?username=${response.data.data.owner.nickname}&start=0&rows=10`;
+          var url_to_use2 = `${process.env.apiurl}/api/v3/public/p/web?username=${response.data.data.owner.nickname}&start=0&rows=10`;
           axios
             .get(url_to_use2)
             .then((response2) => {

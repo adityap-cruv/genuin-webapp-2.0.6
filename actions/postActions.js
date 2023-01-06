@@ -12,7 +12,7 @@ import axios from 'axios';
 export function increaseVideoViewCount(share_string, type) {
   return new Promise((resolve, reject) => {
     axios
-      .put(process.env.apiurl + '/api/v3/video_view/', {
+      .put(process.env.apiurl + '/api/v3/public/video_view/', {
         "share_string": share_string,
         "type": type
       })

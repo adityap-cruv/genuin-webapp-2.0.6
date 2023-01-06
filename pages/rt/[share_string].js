@@ -226,7 +226,7 @@ const RoundTable = ({
                 <Flex justifyContent={"space-between"}>
                   <Avatar
                     name={group.group_name}
-                    src={""}
+                    src={group.dp}
                     size='xl'
                     background='#A4E6DA'
                     mb={3}
@@ -713,13 +713,13 @@ RoundTable.getInitialProps = async ({ query: { share_string, v } }) => {
   ) {
     try {
       const videos = await axios.get(
-        `${process.env.apiurl}/api/v3/rt/videos?chat_id=${share_string}`
+        `${process.env.apiurl}/api/v3/public/rt/videos?chat_id=${share_string}`
       );
       const users = await axios.get(
-        `${process.env.apiurl}/api/v3/rt/users?chat_id=${share_string}`
+        `${process.env.apiurl}/api/v3/public/rt/users?chat_id=${share_string}`
       );
       const details = await axios.get(
-        `${process.env.apiurl}/api/v3/rt/details?chat_id=${share_string}`
+        `${process.env.apiurl}/api/v3/public/rt/details?chat_id=${share_string}`
       );
       return {
         videos: videos?.data?.data,

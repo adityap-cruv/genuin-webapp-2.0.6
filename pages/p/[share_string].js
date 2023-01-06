@@ -81,6 +81,7 @@ const Profile = ({
             video_thumbnail: chat.thumbnail_url,
             description: group.group_description,
             group_name: group.group_name,
+            group_dp: group.dp,
             chat_id,
           },
         }))
@@ -100,6 +101,7 @@ const Profile = ({
                     video_thumbnail: chat.thumbnail_url,
                     description: video.group.group_description,
                     group_name: video.group.group_name,
+                    group_dp: video.group.dp,
                     chat_id: video.chat_id,
                   },
                 }))
@@ -123,7 +125,7 @@ const Profile = ({
     const res = await axios.get(
       `${
         process.env.apiurl
-      }/api/v3/user/profile_videos?user_id=${share_string}&video_types[]=public_video&last_video_type=public_video&last_video_id=${
+      }/api/v3/public/profile_videos?user_id=${share_string}&video_types[]=public_video&last_video_type=public_video&last_video_id=${
         publicVideos[publicVideos.length - 1]?.video?.video_id
       }`
     );
@@ -138,7 +140,7 @@ const Profile = ({
     const res = await axios.get(
       `${
         process.env.apiurl
-      }/api/v3/user/profile_videos?user_id=${share_string}&video_types[]=rt&last_video_type=rt&last_video_id=${
+      }/api/v3/public/profile_videos?user_id=${share_string}&video_types[]=rt&last_video_type=rt&last_video_id=${
         rtVideos[rtVideos.length - 1]?.video?.conversation_id
       }`
     );
@@ -164,7 +166,7 @@ const Profile = ({
     const res = await axios.get(
       `${
         process.env.apiurl
-      }/api/v3/user/profile_videos?user_id=${share_string}&video_types[]=public_video&video_types[]=rt&last_video_type=${type}&last_video_id=${id}`
+      }/api/v3/public/profile_videos?user_id=${share_string}&video_types[]=public_video&video_types[]=rt&last_video_type=${type}&last_video_id=${id}`
     );
     const newVideos = res?.data?.data?.videos || [];
     if (newVideos.length !== 0) {
@@ -682,6 +684,7 @@ const Profile = ({
                 userId={nickname}
                 onClickOutsideOfVideo={() => {setProfileUrl(); onClose();}}
                 userProfileImage={profile_image}
+                rtProfileImage={videos[currentVideoIndex]?.video?.group_dp}
                 showGetAppModal={showGetAppToViewDialog}
                 onEnded={showGetAppToViewDialog}
                 getNextVideo={getNextVideo}
@@ -734,6 +737,7 @@ const Profile = ({
                 userId={nickname}
                 onClickOutsideOfVideo={() => {setProfileUrl(); onCloseRT();}}
                 userProfileImage={profile_image}
+                rtProfileImage={rtVideos[currentVideoIndexRT]?.video?.group_dp}
                 showGetAppModal={showGetAppToViewDialog}
                 onEnded={showGetAppToViewDialog}
                 getNextVideo={getNextVideoRT}
@@ -804,7 +808,7 @@ const Profile = ({
                 shareUrl={publicVideos[currentVideoIndexPublic]?.video.share_url}
               >
                 <AppActions
-                  showGetAppModal={showGetAppToViewDialog}
+                  showGetAppModal={handleShowModalAppDownload}
                   userName={nickname}
                   link={publicVideos[currentVideoIndexPublic]?.video?.link}
                   videoUrl={publicVideos[currentVideoIndexPublic]?.video?.share_url}
@@ -1037,16 +1041,16 @@ Profile.getInitialProps = async ({ query: { share_string } }) => {
   ) {
     try {
       const all_videos = await axios.get(
-        `${process.env.apiurl}/api/v3/user/profile_videos?user_id=${share_string}&video_types[]=rt&video_types[]=public_video`
+        `${process.env.apiurl}/api/v3/public/profile_videos?user_id=${share_string}&video_types[]=rt&video_types[]=public_video`
       );
       const videosRT = await axios.get(
-        `${process.env.apiurl}/api/v3/user/profile_videos?user_id=${share_string}&video_types[]=rt`
+        `${process.env.apiurl}/api/v3/public/profile_videos?user_id=${share_string}&video_types[]=rt`
       );
       const videosPublic = await axios.get(
-        `${process.env.apiurl}/api/v3/user/profile_videos?user_id=${share_string}&video_types[]=public_video`
+        `${process.env.apiurl}/api/v3/public/profile_videos?user_id=${share_string}&video_types[]=public_video`
       );
       const user = await axios.get(
-        `${process.env.apiurl}/api/v3/user/details?nickname=${share_string}`
+        `${process.env.apiurl}/api/v3/public/user/details?nickname=${share_string}`
       );
 
       return {

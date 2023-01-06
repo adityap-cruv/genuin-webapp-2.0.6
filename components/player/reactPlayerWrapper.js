@@ -26,6 +26,7 @@ export const ReactPlayerWrapper = ({
   userId,
   description,
   profilePic,
+  rtProfilePic,
   children,
   onDuration,
   onEnded,
@@ -421,7 +422,7 @@ export const ReactPlayerWrapper = ({
                   name={roundTableName}
                   width={9}
                   height={9}
-                  src={""}
+                  src={rtProfilePic ?? ""}
                   size='l'
                   background='#A4E6DA'
                   className='img-auther-pic'

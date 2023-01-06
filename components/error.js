@@ -1,13 +1,22 @@
+import { useState } from "react"
 import { Container, Row, Col } from "react-bootstrap";
 import { TopNav } from "./topNav";
 import { Layout } from "./layout";
 import { InstallApp } from "./installApp";
+import { GetAppModal } from "./getAppModal";
 
 export const Error = ({ homePageUrl = "/" }) => {
+  const [showModalAppDownload, setShowModalAppDownload] = useState(false)
+  const handleShowModalAppDownload = (message = () => null) => {
+    setShowModalAppDownload(true);
+  };
+  const handleCloseModalAppDownload = (message = () => null) => {
+    setShowModalAppDownload(false);
+  };
   return (
     <Layout>
       <section className='w-100 h-100 bg-gradient-blue d-flex align-items-center'>
-        <TopNav isContiner variant='light' />
+        <TopNav showGetAppModal={handleShowModalAppDownload} isContiner variant='light' />
         <Container>
           <Row className='mb-5'>
             <Col
@@ -28,6 +37,7 @@ export const Error = ({ homePageUrl = "/" }) => {
             <InstallApp errorPage={true}/>
           </Row>
         </Container>
+        <GetAppModal show={showModalAppDownload} onClose={handleCloseModalAppDownload}/>
       </section>
     </Layout>
   );

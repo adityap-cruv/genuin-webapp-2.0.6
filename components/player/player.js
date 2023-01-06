@@ -13,6 +13,7 @@ export const Player = ({
   currentVideoIndex,
   userName,
   userProfileImage = "",
+  rtProfileImage = "",
   userId,
   getNextVideo,
   getPrevVideo,
@@ -109,6 +110,7 @@ export const Player = ({
         userId={userId}
         description={shortDescription}
         profilePic={profilePic}
+        rtProfilePic = {rtProfileImage}
         getNextVideo={getNextVideo}
         getPrevVideo={getPrevVideo}
         roundTableMode={roundTableMode}

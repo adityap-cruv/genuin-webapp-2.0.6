@@ -156,15 +156,13 @@ export const AppActions = ({
             )}
           </li>
           {watchRoundTable && (
-            <li>
-              <Link href={roundTableId}>
-                <Image
-                  src={roundtable.src}
-                  size={6}
-                  alt='Roundtable'
-                  title='Roundtable'
-                />
-              </Link>
+            <li onClick = {() => {window.location.href=roundTableId}}>
+            <Image
+              src={roundtable.src}
+              size={6}
+              alt='Roundtable'
+              title='Roundtable'
+            />
             </li>
           )}
         </>

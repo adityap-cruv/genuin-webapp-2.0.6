@@ -155,7 +155,7 @@ const Video = (props) => {
   );
 };
 Video.getInitialProps = async ({ query: { video_id } }) => {
-  const url = process.env.apiurl + "/api/v3/users/video/meta_data/" + video_id;
+  const url = `${process.env.apiurl}/api/v3/public/pv/?video_id=${video_id}`
   return axios
     .get(url)
     .then((response) => {

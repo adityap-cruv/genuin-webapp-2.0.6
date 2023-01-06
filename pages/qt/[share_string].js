@@ -112,7 +112,7 @@ QuestionWrapper.getInitialProps = async ({ query: { share_string } }) => {
     share_string !== null &&
     share_string !== ""
   ) {
-    var url_to_use = `${process.env.apiurl}/api/v3/qt/web?question_id=${share_string}`;
+    var url_to_use = `${process.env.apiurl}/api/v3/public/qt/web?question_id=${share_string}`;
     return axios
       .get(url_to_use)
       .then((response) => {
