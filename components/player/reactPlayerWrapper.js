@@ -322,27 +322,25 @@ export const ReactPlayerWrapper = ({
       (!roundTableMode || verticalNavigation) ? (
         <div className='btn-arrow-controler d-none d-md-flex flex-column align-items-center justify-content-center'>
           {currentVideoIndex !== 0 && (
-            <button className='btn-arrow'>
+            <button className='btn-arrow' onClick={getPrevVideo}>
               <Image
                 src={icArrowUp.src}
                 width={12}
                 height={6}
                 alt='Arrow Up'
                 title='Arrow Up'
-                onClick={getPrevVideo}
               />
             </button>
           )}
           {currentVideoIndex === 0 && <Box h={12} />}
           {currentVideoIndex !== videos.length - 1 && (
-            <button className='btn-arrow'>
+            <button className='btn-arrow' onClick={getNextVideo}>
               <Image
                 src={icArrowDown.src}
                 width={12}
                 height={6}
                 alt='Arrow Down'
                 title='Arrow Down'
-                onClick={getNextVideo}
               />
             </button>
           )}
@@ -360,6 +358,7 @@ export const ReactPlayerWrapper = ({
               top: "50%",
               right: -60,
             }}
+            onClick={getNextVideo}
           >
             <Image
               src={icArrowRight.src}
@@ -367,7 +366,6 @@ export const ReactPlayerWrapper = ({
               height={6}
               alt='Arrow Right'
               title='Arrow Right'
-              onClick={getNextVideo}
             />
           </Button>
         )}
@@ -382,6 +380,7 @@ export const ReactPlayerWrapper = ({
               top: "50%",
               left: -60,
             }}
+            onClick={getPrevVideo}
           >
             <Image
               src={icArrowLeft.src}
@@ -389,7 +388,6 @@ export const ReactPlayerWrapper = ({
               height={6}
               alt='Arrow Left'
               title='Arrow Left'
-              onClick={getPrevVideo}
             />
           </Button>
         )}
