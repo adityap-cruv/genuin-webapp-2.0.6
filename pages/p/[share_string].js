@@ -110,7 +110,7 @@ const Profile = ({
           return res.concat(({video_type:video_type, video: video}))
         }
     }, []);
-}
+  }
   const [publicVideos, setPublicVideos] = useState(videosPublic);
   const preparedRTVideos = prepareRTVideos(videosRT);
 
@@ -293,7 +293,7 @@ const Profile = ({
   const [tabIndex, setTabIndex] = useState(0);
 
   const showGetAppToViewDialog = () =>
-    handleShowModalAppDownload(() => <>Get the app to view this video.</>);
+    handleShowModalAppDownload(() => <></>);
 
   const showGetAppToSendMessage = () =>
     handleShowModalAppDownload(() => (

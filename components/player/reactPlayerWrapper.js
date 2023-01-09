@@ -126,6 +126,14 @@ export const ReactPlayerWrapper = ({
     [autoJumpToNextVideo, direction]
   );
 
+  const getTimeDiff = () => {
+    var time = Math.floor ( ( Date.now() - Number(videos[currentVideoIndex]?.conversation_at) ) / (86400*1000) )
+    if (time>7){
+      return `${Math.floor(time/7)}w`
+    }else{
+      return `${time}d`
+    }
+  }
   return (
     <div
       className='video-container'
@@ -174,7 +182,7 @@ export const ReactPlayerWrapper = ({
             h={10}
           >
             <Text fontWeight='bold' fontSize={17}>
-            {videos[currentVideoIndex] && ( `${Math.floor ( ( Date.now() - Number(videos[currentVideoIndex]?.conversation_at) ) / (604800*1000) )}w` ) }
+            {videos[currentVideoIndex] && (`${getTimeDiff()}`)}
             </Text>
             <Link href={roundTableId}>
               <Flex

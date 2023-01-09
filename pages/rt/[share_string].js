@@ -58,15 +58,21 @@ const RoundTable = ({
   const router = useRouter();
   const { asPath } = useRouter();
 
+  const [isError, setIsError] = useState(false);
+
   useEffect(() => {
     setCurrentUrl(window.location.href);
     if (router?.query?.v) {
-      setCurrentVideoIndex(
-        videos.findIndex(
-          ({ share_string }) => share_string === router?.query?.v
-        )
-      );
-      onOpen();
+      var idx = videos.findIndex( ({ share_string }) => share_string === router?.query?.v )
+      if(videos?.[idx]?.share_string){
+        setCurrentVideoIndex(idx);
+        window.history.replaceState(null, "", `../rt/${details.share_string}?v=${videos?.[idx]?.share_string}`)
+        onOpen();
+      }else{
+        setIsError(true)
+      }
+    }else if(router?.query?.v !== null && router?.query?.v !== undefined && router?.query?.v == ""){
+      setIsError(true)
     }
   }, []);
 
@@ -82,29 +88,33 @@ const RoundTable = ({
   const totalVideos = videos?.length ?? 0;
   const getNextVideo = () => {
     if (currentVideoIndex < totalVideos - 1) {
+      window.history.replaceState(null, "", `../rt/${details.share_string}?v=${videos?.[currentVideoIndex+1]?.share_string}`)
       setCurrentVideoIndex((old) => old + 1);
     } else {
+      window.history.replaceState(null, "", `../rt/${details.share_string}?v=${videos?.[0]?.share_string}`)
       setCurrentVideoIndex(0);
     }
   };
   const getPrevVideo = () => {
     if (currentVideoIndex > 0) {
+      window.history.replaceState(null, "", `../rt/${details.share_string}?v=${videos?.[currentVideoIndex-1]?.share_string}`)
       setCurrentVideoIndex((old) => old - 1);
     } else {
+      window.history.replaceState(null, "", `../rt/${details.share_string}?v=${videos?.[totalVideos-1]?.share_string}`)
       setCurrentVideoIndex(totalVideos - 1);
     }
   };
 
-  const [firstTime, setFirstTime] = useState(true)
+  // const [firstTime, setFirstTime] = useState(true)
 
-  useEffect(() => {
-    if(firstTime){
-      setFirstTime(false)
-    }else{
-      // console.log("use effect to replace url to current video on index change")
-      window.history.replaceState(null, "", `../rt/${details.share_string}?v=${videos?.[currentVideoIndex]?.share_string}`)
-    }
-  }, [currentVideoIndex]);
+  // useEffect(() => {
+  //   if(firstTime){
+  //     setFirstTime(false)
+  //   }else{
+  //     // console.log("use effect to replace url to current video on index change")
+  //     window.history.replaceState(null, "", `../rt/${details.share_string}?v=${videos?.[currentVideoIndex]?.share_string}`)
+  //   }
+  // }, [currentVideoIndex]);
 
   const setRtUrl = () => {
     // console.log("Came in set rt utl")
@@ -112,7 +122,7 @@ const RoundTable = ({
   }
 
   const showGetAppToViewDialog = () =>
-    handleShowModalAppDownload(() => <>Get the app to view this video.</>);
+    handleShowModalAppDownload(() => <></>);
 
   const showGetAppToSubscribeDialog = () =>
     handleShowModalAppDownload(() => (
@@ -172,7 +182,7 @@ const RoundTable = ({
     ],
   });
 
-  return !Boolean(group?.group_id) ? (
+  return (!Boolean(group?.group_id) || isError) ? (
     <Error />
   ) : (
     <Layout>
