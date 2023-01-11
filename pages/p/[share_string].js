@@ -656,7 +656,7 @@ const Profile = ({
                 ml={mobile ? "-12px" : 0}
                 mr={mobile ? "-12px" : 0}
                 style={{
-                  width: mobile ? `${screenWidth} !important` : "full",
+                  width: mobile ? "calc(100% + 24px) !important" : "full",
                 }}
                 id='scrollableDiv'
               >
