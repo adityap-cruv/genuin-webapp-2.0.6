@@ -45,9 +45,13 @@ export const AppActions = ({
   const mobile = useBreakpointValue({ base: true, sm: false });
 
   const getClickableLink = (link = "") => {
-    return link.startsWith("http://") || link.startsWith("https://")
-      ? link
-      : `http://${link}`;
+    if(link !== null && link!== undefined ){
+      return link.startsWith("http://") || link.startsWith("https://")
+        ? link
+        : `http://${link}`;
+    }else{
+      return ""
+    }
   };
 
   const userLink = getClickableLink(link);

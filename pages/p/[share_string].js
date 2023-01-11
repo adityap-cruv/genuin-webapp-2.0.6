@@ -122,6 +122,7 @@ const Profile = ({
   console.log("process.env", process.env.apiurl);
 
   const getMoreVideosPublic = async () => {
+    console.log("Get More Public Videos")
     const res = await axios.get(
       `${
         process.env.apiurl
@@ -137,6 +138,7 @@ const Profile = ({
   };
 
   const getMoreVideosRT = async () => {
+    console.log("Get More RT Videos")
     const res = await axios.get(
       `${
         process.env.apiurl
@@ -155,6 +157,7 @@ const Profile = ({
   };
 
   const getMoreVideos = async () => {
+    console.log("Get More Videos")
     var videoObj = videos[videos.length-1]
     var type = videoObj?.video_type
     var id = ""
@@ -217,63 +220,73 @@ const Profile = ({
   const [currentVideoIndexRT, setCurrentVideoIndexRT] = useState(0);
 
   const getNextVideo = () => {
+    if(currentVideoIndex+1>=0){
+      changeUrl("all", currentVideoIndex+1)
+    }else{
+      changeUrl("all", 0)
+    }
     setCurrentVideoIndex((old) => (old + 1 >= 0 ? old + 1 : 0));
   };
   const getPrevVideo = () => {
+    changeUrl("all", currentVideoIndex-1)
     setCurrentVideoIndex((old) => old - 1);
   };
 
   const getNextVideoPublic = () => {
+    changeUrl("public", currentVideoIndexPublic+1)
     setCurrentVideoIndexPublic((old) => old + 1);
   };
   const getPrevVideoPublic = () => {
+    changeUrl("public", currentVideoIndexPublic-1)
     setCurrentVideoIndexPublic((old) => old - 1);
   };
 
   const getNextVideoRT = () => {
+    changeUrl("rt", currentVideoIndexRT+1)
     setCurrentVideoIndexRT((old) => old + 1);
   };
   const getPrevVideoRT = () => {
+    changeUrl("rt", currentVideoIndexRT-1)
     setCurrentVideoIndexRT((old) => old - 1);
   };
 
-  useEffect(() => {
-    if (firstTime){
-      setFirstTime(false)
-    }else{
-      // console.log("All Change URL")
-      changeUrl("all")
-    }
-  }, [currentVideoIndex]);
+  // useEffect(() => {
+  //   if (firstTime){
+  //     setFirstTime(false)
+  //   }else{
+  //     // console.log("All Change URL")
+  //     changeUrl("all")
+  //   }
+  // }, [currentVideoIndex]);
 
-  useEffect(() => {
-    if (firstTime){
-      setFirstTime(false)
-    }else{
-      // console.log("Public Change URL")
-      changeUrl("public")
-    }
-  }, [currentVideoIndexPublic]);
+  // useEffect(() => {
+  //   if (firstTime){
+  //     setFirstTime(false)
+  //   }else{
+  //     // console.log("Public Change URL")
+  //     changeUrl("public")
+  //   }
+  // }, [currentVideoIndexPublic]);
 
-  useEffect(() => {
-    if (firstTime){
-      setFirstTime(false)
-    }else{
-      // console.log("RT Change URL")
-      changeUrl("rt")
-    }
-  }, [currentVideoIndexRT]);
+  // useEffect(() => {
+  //   if (firstTime){
+  //     setFirstTime(false)
+  //   }else{
+  //     // console.log("RT Change URL")
+  //     changeUrl("rt")
+  //   }
+  // }, [currentVideoIndexRT]);
 
-  const changeUrl = (type, replace=true, share_url=null) => {
+  const changeUrl = (type, idx, replace=true, share_url=null) => {
     if(replace){
       // console.log("Replace Change URL Called")
       var videoObj = {}
       if (type === "all"){
-        videoObj = videos[currentVideoIndex]
+        videoObj = videos[idx]
       }else if (type === "rt"){
-        videoObj = rtVideos[currentVideoIndexRT]
+        videoObj = rtVideos[idx]
       }else if (type === "public"){
-        videoObj = publicVideos[currentVideoIndexPublic]
+        videoObj = publicVideos[idx]
       }
       var shareUrl = videoObj && Object.keys(videoObj).length!==0 ? videoObj.video?.share_url : ""
       var video_type = videoObj && Object.keys(videoObj).length!==0 ? videoObj?.video_type : ""
@@ -376,6 +389,7 @@ const Profile = ({
   useEffect(() => {
     window.addEventListener('popstate',(event)=> {
       // console.log("Here it came",window.location.href)
+      // console.log("tabIndex",tabIndex)
       var ls = window.location.href.split("/")
       if (ls && (ls.length == 4 || ls[3] === "rt")){
         // const val = sessionStorage.getItem('urlCameFrom')
@@ -897,7 +911,7 @@ const Videos = ({
                       setCurrentVideoIndex(index);
                       onOpen();
                       // console.log("Not mobile click")
-                      changeUrl(video_type, false, video?.share_url)
+                      changeUrl(video_type, index, false, video?.share_url)
                     }}
                   />
                 )} */}
@@ -913,7 +927,7 @@ const Videos = ({
                       setCurrentVideoIndex(index);
                       onOpen();
                       // console.log("mobile click")
-                      changeUrl(video_type, false, video?.share_url)
+                      changeUrl(video_type, index, false, video?.share_url)
                     }}
                   />
                 )}
@@ -938,7 +952,7 @@ const Videos = ({
                         setCurrentVideoIndex(index);
                         onOpen();
                         // console.log("Not mobile rt click")
-                        changeUrl(video_type, false, video?.share_url)
+                        changeUrl(video_type, index, false, video?.share_url)
                       // }
                     }}
                   >
