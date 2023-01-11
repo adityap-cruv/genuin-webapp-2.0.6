@@ -214,40 +214,60 @@ const Profile = ({
 
   const mobile = useBreakpointValue({ base: true, md: false });
 
-  const [firstTime, setFirstTime] = useState(true);
+  // const [firstTime, setFirstTime] = useState(true);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
   const [currentVideoIndexPublic, setCurrentVideoIndexPublic] = useState(0);
   const [currentVideoIndexRT, setCurrentVideoIndexRT] = useState(0);
 
   const getNextVideo = () => {
-    if(currentVideoIndex+1>=0){
-      changeUrl("all", currentVideoIndex+1)
-    }else{
-      changeUrl("all", 0)
+    var idx = currentVideoIndex
+    if(currentVideoIndex+1<videos.length){
+      idx = currentVideoIndex+1
+      changeUrl("all", idx)
+      setCurrentVideoIndex(idx);
     }
-    setCurrentVideoIndex((old) => (old + 1 >= 0 ? old + 1 : 0));
   };
   const getPrevVideo = () => {
-    changeUrl("all", currentVideoIndex-1)
-    setCurrentVideoIndex((old) => old - 1);
+    var idx = 0
+    if(currentVideoIndex-1>=0){
+      idx = currentVideoIndex-1
+      changeUrl("all", idx)
+      setCurrentVideoIndex(idx);
+    }
   };
 
   const getNextVideoPublic = () => {
-    changeUrl("public", currentVideoIndexPublic+1)
-    setCurrentVideoIndexPublic((old) => old + 1);
+    var idx = currentVideoIndexPublic
+    if(currentVideoIndexPublic+1<publicVideos.length){
+      idx = currentVideoIndexPublic+1
+      changeUrl("public", idx)
+      setCurrentVideoIndexPublic(idx);
+    }
   };
   const getPrevVideoPublic = () => {
-    changeUrl("public", currentVideoIndexPublic-1)
-    setCurrentVideoIndexPublic((old) => old - 1);
+    var idx = 0
+    if(currentVideoIndexPublic-1>=0){
+      idx = currentVideoIndexPublic-1
+      changeUrl("public", idx)
+      setCurrentVideoIndexPublic(idx);
+    }
   };
 
   const getNextVideoRT = () => {
-    changeUrl("rt", currentVideoIndexRT+1)
-    setCurrentVideoIndexRT((old) => old + 1);
+    var idx = currentVideoIndexRT
+    if(currentVideoIndexRT+1<rtVideos.length){
+      idx = currentVideoIndexRT+1
+      changeUrl("rt", idx)
+      setCurrentVideoIndexRT(idx);
+    }
   };
   const getPrevVideoRT = () => {
-    changeUrl("rt", currentVideoIndexRT-1)
-    setCurrentVideoIndexRT((old) => old - 1);
+    var idx = 0
+    if(currentVideoIndexRT-1>=0){
+      idx = currentVideoIndexRT-1
+      changeUrl("rt", idx)
+      setCurrentVideoIndexRT(idx);
+    }
   };
 
   // useEffect(() => {
@@ -634,8 +654,9 @@ const Profile = ({
                 maxH='full'
                 height='full'
                 ml={mobile ? "-12px" : 0}
+                mr={mobile ? "-12px" : 0}
                 style={{
-                  width: mobile ? "calc(100% + 24px) !important" : "full",
+                  width: mobile ? `${screenWidth} !important` : "full",
                 }}
                 id='scrollableDiv'
               >
@@ -898,7 +919,8 @@ const Videos = ({
                 key={video.video_uuid}
                 bgColor='black'
                 alignItems='center'
-                minH={{ base: "245px", md: "320px" }}
+                // minH={{ base: "245px", md: "320px" }}
+                minH = {mobile ? {base: "200px", md: "300px" } : {base: "245px", md: "390px" }}
               >
                 {/* {!mobile && (
                   <Image
@@ -922,6 +944,8 @@ const Videos = ({
                         ? video.thumbnail_url
                         : video.video_thumbnail
                     }
+                    height = {mobile ? {base: "200px", md: "300px" } : {base: "245px", md: "390px" }}
+                    width = "full"
                     onClick={() => {
                       // window.location.href = video.share_url;
                       setCurrentVideoIndex(index);

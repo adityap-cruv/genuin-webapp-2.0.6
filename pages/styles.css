@@ -260,7 +260,7 @@ body .overlay {
   height: 100%;
   cursor: pointer;
   aspect-ratio: 9 / 16;
-  background: transparent;
+  background: #333333;
   isolation: isolate;
 }
 .video-wrapper {
