@@ -326,7 +326,7 @@ const Profile = ({
   const [tabIndex, setTabIndex] = useState(0);
 
   const showGetAppToViewDialog = () =>
-    handleShowModalAppDownload(() => <></>);
+    handleShowModalAppDownload(() => <>Get the app to view this video.</>);
 
   const showGetAppToSendMessage = () =>
     handleShowModalAppDownload(() => (
@@ -458,7 +458,7 @@ const Profile = ({
         type='application/ld+json'
         dangerouslySetInnerHTML={{ __html: ORG_SCHEMA }}
       />
-      <TopNav showGetAppModal={showGetAppToViewDialog} isContiner isBlue />
+      <TopNav showGetAppModal={handleShowModalAppDownload} isContiner isBlue />
       <Flex
         className='section-content h-100'
         direction='column'
@@ -720,7 +720,7 @@ const Profile = ({
                 onClickOutsideOfVideo={() => {setProfileUrl(); onClose();}}
                 userProfileImage={profile_image}
                 rtProfileImage={videos[currentVideoIndex]?.video?.group_dp}
-                showGetAppModal={showGetAppToViewDialog}
+                showGetAppModal={handleShowModalAppDownload}
                 onEnded={showGetAppToViewDialog}
                 getNextVideo={getNextVideo}
                 getPrevVideo={getPrevVideo}
@@ -773,7 +773,7 @@ const Profile = ({
                 onClickOutsideOfVideo={() => {setProfileUrl(); onCloseRT();}}
                 userProfileImage={profile_image}
                 rtProfileImage={rtVideos[currentVideoIndexRT]?.video?.group_dp}
-                showGetAppModal={showGetAppToViewDialog}
+                showGetAppModal={handleShowModalAppDownload}
                 onEnded={showGetAppToViewDialog}
                 getNextVideo={getNextVideoRT}
                 getPrevVideo={getPrevVideoRT}
@@ -833,7 +833,7 @@ const Profile = ({
                 userId={nickname}
                 onClickOutsideOfVideo={() => {setProfileUrl(); onClosePublic();}}
                 userProfileImage={profile_image}
-                showGetAppModal={showGetAppToViewDialog}
+                showGetAppModal={handleShowModalAppDownload}
                 onEnded={showGetAppToViewDialog}
                 getNextVideo={getNextVideoPublic}
                 getPrevVideo={getPrevVideoPublic}
@@ -950,7 +950,6 @@ const Videos = ({
                       // window.location.href = video.share_url;
                       setCurrentVideoIndex(index);
                       onOpen();
-                      // console.log("mobile click")
                       changeUrl(video_type, index, false, video?.share_url)
                     }}
                   />
@@ -975,7 +974,6 @@ const Videos = ({
                       // } else {
                         setCurrentVideoIndex(index);
                         onOpen();
-                        // console.log("Not mobile rt click")
                         changeUrl(video_type, index, false, video?.share_url)
                       // }
                     }}
