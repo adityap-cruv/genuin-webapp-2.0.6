@@ -127,11 +127,27 @@ export const ReactPlayerWrapper = ({
   );
 
   const getTimeDiff = () => {
-    var time = Math.floor ( ( Date.now() - Number(videos[currentVideoIndex]?.conversation_at) ) / (86400*1000) )
-    if (time>7){
-      return `${Math.floor(time/7)}w`
-    }else{
-      return `${time}d`
+    var time = Math.floor ( ( Date.now() - Number(videos[currentVideoIndex]?.conversation_at) )/1000 )
+    if (time<60){
+      return `${time}s`
+    } else{
+        time = Math.floor(time/60)
+        if (time<60){
+          return `${time}m`
+        } else{
+            time = Math.floor(time/60)
+            if (time<24){
+                return `${time}h`
+            }
+            else{
+                time = Math.floor(time/24)
+                if (time<7){
+                    return `${time}d`
+                }else{
+                  return `${Math.floor(time/7)}w`
+                }
+            }
+        }
     }
   }
   return (
