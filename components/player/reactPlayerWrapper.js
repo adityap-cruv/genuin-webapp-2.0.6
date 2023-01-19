@@ -450,20 +450,24 @@ export const ReactPlayerWrapper = ({
       {Boolean(roundTableMode) && Boolean(rtEnded) && !Boolean(watchRoundTable) && (
       <div className='rt-video-overlay'>
         <Flex direction='column' alignItems='center' justifyContent='center' mb={3}>
-          <div className='video-auther mb-2'>
+          <div className='watch-again-auther mb-2'>
             <Button
               transform = 'translate(-50%, -50%)'
               border='1px solid #FFFFFF'
               fontWeight='bold'
               display='flex'
-              width = '187px !important'
               height = '32px'
               cursor = 'pointer'
               position = 'absolute'
               top = '48%'
               left = '50%'
               variant='outline-light'
-              // className='ms-3'
+              style = {{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "200px !important"
+              }}
               justifyContent='center'
               className='watch-roundtable'
               onClick={() => {
