@@ -238,6 +238,7 @@ export const MobileShareButton = ({
       <Image
         src={white ? shareImg.src : shareImgBlue.src}
         size={8}
+        padding='10px'
         alt='Share'
         title='Share'
         bgColor='transparent'

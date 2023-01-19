@@ -649,7 +649,7 @@ const Participants = ({ members, mobile }) => {
             "1fr 1fr 1fr",
             "1fr 1fr 1fr 1fr",
           ]}
-          gap={6}
+          gap={0}
         >
           {members.map((user, index) => (
             <Link
@@ -668,11 +668,14 @@ const Participants = ({ members, mobile }) => {
                 key={user.nickname}
                 border='1px solid #949494'
                 borderRadius={10}
-                maxW={180}
+                maxW={210}
                 h={240}
                 color='#111111'
                 textAlign='center'
-                p={6}
+                pt={6}
+                pb={6}
+                pl={3}
+                pr={3}
               >
                 <Avatar
                   name={user.nickname}
