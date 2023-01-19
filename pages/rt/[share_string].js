@@ -734,11 +734,13 @@ RoundTable.getInitialProps = async ({ query: { share_string, v } }) => {
       const details = await axios.get(
         `${process.env.apiurl}/api/v3/public/rt/details?chat_id=${share_string}`
       );
-      return {
+      var returnProps = {
         videos: videos?.data?.data,
         users: users?.data?.data,
         details: details?.data?.data,
-      };
+      }
+      returnProps.videos.reverse();
+      return returnProps;
     } catch (error) {
       return {};
     }
