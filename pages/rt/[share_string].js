@@ -14,6 +14,7 @@ import {
 } from "../../components/appActions";
 import { Container } from "react-bootstrap";
 import directMessage from "../../images/direct_message_grey.svg";
+import icPreviewPlaceholder from "../../images/video-more-options/ic_preview_placeholder.png";
 import {
   Avatar,
   Box,
@@ -509,7 +510,7 @@ const Videos = ({
             {!mobile && (
               <Box
                 h='full'
-                bgImage={video.thumbnail_url}
+                bgImage={video.thumbnail_url ?? icPreviewPlaceholder.src}
                 bgSize='contain'
                 bgRepeat='no-repeat'
                 bgPosition='center'
@@ -527,7 +528,7 @@ const Videos = ({
               <Link href={`${chatId}?v=${video.share_string}`}>
                 <Box
                   h='full'
-                  bgImage={video.thumbnail_url}
+                  bgImage={video.thumbnail_url ?? icPreviewPlaceholder.src}
                   bgSize='contain'
                   bgRepeat='no-repeat'
                   bgPosition='center'

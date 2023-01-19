@@ -29,6 +29,7 @@ html {
   width: 100%;
   height: 100%;
   overflow-y: hidden;
+  overflow-x: hidden !important;
 }
 body {
   width: 100%;
@@ -281,6 +282,103 @@ body .overlay {
   z-index: 1000;
   transform: translate(-50%, -50%);
   pointer-events: none;
+}
+.btn-watch-roundtable{
+  display: flex;
+  color: rgb(255 255 255 / 0.5);
+  width: 187px !important;
+  height: 32px;
+  cursor: pointer;
+  position: absolute;
+  top: 48%;
+  left: 50%;
+  font-size: 15px;
+  flex-direction: row;
+  /* z-index: 1000; */
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.btn-watch-roundtable:hover
+.btn-watch-roundtable.hover{
+  background-color: rgba(6, 69, 255, 0.1);
+}
+.btn-watch-again{
+  display: flex;
+  color: rgb(255 255 255 / 0.5);
+  width: 187px !important;
+  height: 32px;
+  cursor: pointer;
+  position: absolute;
+  top: 52%;
+  left: 50%;
+  font-size: 15px;
+  /* z-index: 1000; */
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.rt-video-overlay {
+  display: flex;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1000;
+  /* width: 250px; */
+  /* width:max-content; */
+  height: 200px;
+  min-height: 5rem;
+  flex-direction: column;
+  padding: 1rem;
+  transform: translate(-50%, -50%);
+  color: #fff;
+}
+@keyframes spinner {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+.spinner-container{
+  height: 200px;
+}
+.loading-spinner {
+  width: 75px;
+  height: 75px;
+  border:8px solid #f3f3f3; /* Light grey */
+  border-top: 8px solid #383636; /* Black */
+  border-radius: 50%;
+  margin: auto;
+  margin-left: 45%;
+  position: relative;
+  top: 30%;
+  animation: spinner 1.5s linear infinite;
+}
+.mobile-loading-spinner {
+  width: 45px;
+  height: 45px;
+  border:6px solid #f3f3f3; /* Light grey */
+  border-top: 6px solid #383636; /* Black */
+  border-radius: 50%;
+  margin: auto;
+  position: relative;
+  top: 30%;
+  animation: spinner 1.5s linear infinite;
+}
+.small-loading-spinner {
+  width: 25px;
+  height: 25px;
+  border:3px solid #f3f3f3; /* Light grey */
+  border-top: 3px solid #383636; /* Black */
+  border-radius: 50%;
+  margin: auto;
+  position: relative;
+  /* top: 30%; */
+  bottom: 10%;
+  animation: spinner 1.5s linear infinite;
+}
+.infinite-scroll-component{
+  overflow-y: hidden !important; 
 }
 .video-footer {
   position: absolute;

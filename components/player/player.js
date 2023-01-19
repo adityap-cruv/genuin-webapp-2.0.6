@@ -85,6 +85,7 @@ export const Player = ({
     >
       <Box
         backgroundImage={`url(${videoThumbnail})`}
+        backgroundColor={videoThumbnail ? "transparent" : "rgba(0,0,0,0.9)"}
         backgroundRepeat='no-repeat'
         backgroundSize='cover'
         backgroundPosition='center'
