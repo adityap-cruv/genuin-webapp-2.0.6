@@ -187,6 +187,8 @@ const RoundTable = ({
     <Error />
   ) : (
     <Layout>
+             
+
       <SEO
         title={title_name}
         openGraphTitle={group.group_name}
@@ -744,4 +746,5 @@ RoundTable.getInitialProps = async ({ query: { share_string, v } }) => {
     return Promise.resolve({});
   }
 };
+
 export default RoundTable;

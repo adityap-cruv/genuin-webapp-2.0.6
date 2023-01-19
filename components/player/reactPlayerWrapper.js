@@ -1,9 +1,9 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import {useCallback, useEffect, useRef, useState} from "react";
 import ReactPlayer from "react-player/lazy";
-import { useDebounce } from "use-debounce";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
-import { ProgressBar, Badge, Button } from "react-bootstrap";
+import {useDebounce} from "use-debounce";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faPlay, faPause} from "@fortawesome/free-solid-svg-icons";
+import {ProgressBar, Badge, Button} from "react-bootstrap";
 import icArrowDown from "../../images/video-more-options/ic-arrow-down.svg";
 import icArrowUp from "../../images/video-more-options/ic-arrow-up.svg";
 import icArrowLeft from "../../images/video-more-options/ic-arrow-left.svg";
@@ -46,13 +46,15 @@ export const ReactPlayerWrapper = ({
 }) => {
   const [progress, setProgress] = useState(0);
   const [isPlaying, setIsPlaying] = useState(autoplay);
-  const[isMuted, setIsMuted] = useState(true);
+  const [isMuted, setIsMuted] = useState(true);
   const [rtEnded, setRtEnded] = useState(false);
   const [isPlayingDebounced] = useDebounce(isPlaying, 65);
+  const [innerwidth, seInnerwidth] = useState(window.innerWidth);
+  const [innerheight, seInnerheight] = useState(window.innerHeight);
 
   const handleToggleIsPlaying = useCallback(() => {
     setIsPlaying((old) => !old);
-    setIsMuted(false)
+    setIsMuted(false);
   }, [setIsPlaying]);
 
   const touchStartYRef = useRef(0);
@@ -66,8 +68,9 @@ export const ReactPlayerWrapper = ({
   onDurationRef.current = onDuration;
   const onEndedRef = useRef(onEnded);
   onEndedRef.current = onEnded;
+  const new_userName = "";
 
-  const mobile = useBreakpointValue({ base: true, md: false });
+  const mobile = useBreakpointValue({base: true, md: false});
 
   const setProgressWrapper = useCallback(
     (event) => {
@@ -78,11 +81,23 @@ export const ReactPlayerWrapper = ({
     [setProgress]
   );
 
-  const setDurationWrapper = useCallback(
-    (event) => {
-      onDurationRef?.current?.(event);
-    }
-  );
+  const setDurationWrapper = useCallback((event) => {
+    onDurationRef?.current?.(event);
+  });
+
+  // for truncate
+  useEffect(() => {
+    seInnerwidth(window.innerWidth);
+    seInnerheight(window.innerHeight);
+  }, [window.innerWidth, window.innerHeight]);
+
+
+  // for truncate username which is place in video footer
+  if ((innerwidth < 330 || innerheight < 600) && userName.length > 15) {
+    new_userName = userName.substring(0, 18);
+  } else {
+    new_userName = userName;
+  }
 
   useEffect(() => {
     const touchStart = (e) => {
@@ -107,13 +122,13 @@ export const ReactPlayerWrapper = ({
   const onBackButtonEvent = (e) => {
     e.preventDefault();
     onClose();
-    console.log("onBack message")
-  }
+    console.log("onBack message");
+  };
 
   useEffect(() => {
-    window.addEventListener('popstate', onBackButtonEvent);
+    window.addEventListener("popstate", onBackButtonEvent);
     return () => {
-      window.removeEventListener('popstate', onBackButtonEvent);  
+      window.removeEventListener("popstate", onBackButtonEvent);
     };
   }, []);
 
@@ -140,32 +155,33 @@ export const ReactPlayerWrapper = ({
   }
 
   const getTimeDiff = () => {
-    var time = Math.floor ( ( Date.now() - Number(videos[currentVideoIndex]?.conversation_at) )/1000 )
-    if (time<60){
-      return `${time}s`
-    } else{
-        time = Math.floor(time/60)
-        if (time<60){
-          return `${time}m`
-        } else{
-            time = Math.floor(time/60)
-            if (time<24){
-                return `${time}h`
-            }
-            else{
-                time = Math.floor(time/24)
-                if (time<7){
-                    return `${time}d`
-                }else{
-                  return `${Math.floor(time/7)}w`
-                }
-            }
+    var time = Math.floor(
+      (Date.now() - Number(videos[currentVideoIndex]?.conversation_at)) / 1000
+    );
+    if (time < 60) {
+      return `${time}s`;
+    } else {
+      time = Math.floor(time / 60);
+      if (time < 60) {
+        return `${time}m`;
+      } else {
+        time = Math.floor(time / 60);
+        if (time < 24) {
+          return `${time}h`;
+        } else {
+          time = Math.floor(time / 24);
+          if (time < 7) {
+            return `${time}d`;
+          } else {
+            return `${Math.floor(time / 7)}w`;
+          }
         }
+      }
     }
-  }
+  };
   return (
     <div
-      className='video-container'
+      className="video-container"
       style={{
         color: "white",
       }}
@@ -179,15 +195,15 @@ export const ReactPlayerWrapper = ({
         playsinline={true}
         config={{
           file: {
-            attributes: { poster: videoThumbnail },
+            attributes: {poster: videoThumbnail},
           },
           forcedHLS: false,
-          forcedVideo: true
+          forcedVideo: true,
         }}
         onClick={handleToggleIsPlaying}
-        className='video-wrapper'
-        width='auto'
-        height='100%'
+        className="video-wrapper"
+        width="auto"
+        height="100%"
         onProgress={setProgressWrapper}
         onDuration={setDurationWrapper}
         onEnded={onEndedWrapper}
@@ -197,46 +213,49 @@ export const ReactPlayerWrapper = ({
       {/* roundtable header */}
       {watchRoundTable && (
         <Flex
-          w='full'
-          position='absolute'
-          top='0'
+          w="full"
+          position="absolute"
+          top="0"
           p={4}
-          direction='column'
+          direction="column"
           gap={2}
         >
           <Flex
-            w='full'
-            justifyContent='space-between'
-            alignItems='center'
+            w="full"
+            justifyContent="space-between"
+            alignItems="center"
             h={10}
           >
-            <Text fontWeight='bold' fontSize={17}>
-            {videos[currentVideoIndex] && (`${getTimeDiff()}`)}
+            <Text fontWeight="bold" fontSize={17}>
+              {videos[currentVideoIndex] && `${getTimeDiff()}`}
             </Text>
             <Link href={roundTableId}>
               <Flex
-                alignItems='center'
+                alignItems="center"
                 gap={3}
-                margin='0'
-                position='absolute'
-                left='50%'
-                transform='translate(-50%, -50%)'
+                margin="0"
+                position="absolute"
+                left="50%"
+                transform="translate(-50%, -50%)"
               >
                 <Text
-                  background='rgba(17, 17, 17, 0.6)'
-                  borderRadius='5px'
+                  background="rgba(17, 17, 17, 0.6)"
+                  borderRadius="5px"
                   p={2}
-                  fontWeight='bold'
-                  fontSize={{ base: 14, sm: 17 }}
+                  fontWeight="bold"
+                  fontSize={{base: 14, sm: 17}}
+                  whiteSpace="nowrap"
+                  overflow="hidden"
+                  textOverflow="ellipsis"
                 >
                   {roundTableName}
                 </Text>
                 <Image
                   src={earth.src}
-                  width={{ base: 5, sm: 6 }}
-                  height={{ base: 5, sm: 6 }}
-                  alt='Roundtable'
-                  title='Roundtable'
+                  width={{base: 5, sm: 6}}
+                  height={{base: 5, sm: 6}}
+                  alt="Roundtable"
+                  title="Roundtable"
                 />
               </Flex>
             </Link>
@@ -244,20 +263,20 @@ export const ReactPlayerWrapper = ({
               src={icClose.src}
               width={6}
               height={6}
-              alt='Close'
-              title='Close'
+              alt="Close"
+              title="Close"
               onClick={onClose}
             />
           </Flex>
-          <Flex w='full' gap={1}>
+          <Flex w="full" gap={1}>
             {/* {JSON.stringify(videos)} */}
             {Boolean(videos.length) &&
               videos.map((_, index) => {
                 return (
-                  <Box h={1} w='full' borderRadius={10} background='white'>
+                  <Box h={1} w="full" borderRadius={10} background="white">
                     {direction === "forward" && (
                       <Box
-                        backgroundColor='#0645FF'
+                        backgroundColor="#0645FF"
                         borderRadius={10}
                         h={1}
                         w={`${
@@ -271,10 +290,10 @@ export const ReactPlayerWrapper = ({
                     )}
                     {direction === "backward" && (
                       <Box
-                        backgroundColor='#0645FF'
+                        backgroundColor="#0645FF"
                         borderRadius={10}
                         h={1}
-                        float='right'
+                        float="right"
                         w={`${
                           index > currentVideoIndex
                             ? 100
@@ -288,7 +307,7 @@ export const ReactPlayerWrapper = ({
                 );
               })}
           </Flex>
-          <Flex w='full' justifyContent='space-between' alignItems='center'>
+          <Flex w="full" justifyContent="space-between" alignItems="center">
             <Text fontWeight={600} fontSize={17}>
               {videos[currentVideoIndex]?.meta_data?.duration} Sec
             </Text>
@@ -297,8 +316,8 @@ export const ReactPlayerWrapper = ({
                 src={icFlipRight.src}
                 width={6}
                 height={6}
-                alt='Flip Right'
-                title='Flip Right'
+                alt="Flip Right"
+                title="Flip Right"
                 onClick={() => setDirection("backward")}
               />
             ) : (
@@ -306,8 +325,8 @@ export const ReactPlayerWrapper = ({
                 src={icFlipLeft.src}
                 width={6}
                 height={6}
-                alt='Flip Left'
-                title='Flip Left'
+                alt="Flip Left"
+                title="Flip Left"
                 onClick={() => setDirection("forward")}
               />
             )}
@@ -315,19 +334,19 @@ export const ReactPlayerWrapper = ({
         </Flex>
       )}
       {/* x button */}
-      {!watchRoundTable && !mobile &&(
+      {!watchRoundTable && !mobile && (
         <Flex
-          w='full'
-          position='absolute'
-          top='0'
+          w="full"
+          position="absolute"
+          top="0"
           p={4}
-          direction='column'
+          direction="column"
           gap={2}
         >
           <Flex
-            w='full'
-            justifyContent='space-between'
-            alignItems='center'
+            w="full"
+            justifyContent="space-between"
+            alignItems="center"
             h={10}
           >
             <Box />
@@ -336,8 +355,8 @@ export const ReactPlayerWrapper = ({
               width={6}
               height={6}
               // marginTop={mobile ? '50px' : '0px' }
-              alt='Close'
-              title='Close'
+              alt="Close"
+              title="Close"
               onClick={onClose}
             />
           </Flex>
@@ -351,21 +370,21 @@ export const ReactPlayerWrapper = ({
           style={{
             display: isPlayingDebounced ? "none" : "block",
           }}
-          className='btn-play'
+          className="btn-play"
         />
       )}
       {Boolean(getNextVideo) &&
       Boolean(getPrevVideo) &&
       (!roundTableMode || verticalNavigation) ? (
-        <div className='btn-arrow-controler d-none d-md-flex flex-column align-items-center justify-content-center'>
+        <div className="btn-arrow-controler d-none d-md-flex flex-column align-items-center justify-content-center">
           {currentVideoIndex !== 0 && (
             <button className='btn-arrow' onClick={() => {changeState(); getPrevVideo();}}>
               <Image
                 src={icArrowUp.src}
                 width={12}
                 height={6}
-                alt='Arrow Up'
-                title='Arrow Up'
+                alt="Arrow Up"
+                title="Arrow Up"
               />
             </button>
           )}
@@ -376,8 +395,8 @@ export const ReactPlayerWrapper = ({
                 src={icArrowDown.src}
                 width={12}
                 height={6}
-                alt='Arrow Down'
-                title='Arrow Down'
+                alt="Arrow Down"
+                title="Arrow Down"
               />
             </button>
           )}
@@ -389,7 +408,7 @@ export const ReactPlayerWrapper = ({
         roundTableMode &&
         watchRoundTable && (
           <Button
-            className='btn-arrow'
+            className="btn-arrow"
             style={{
               position: "absolute",
               top: "50%",
@@ -401,8 +420,8 @@ export const ReactPlayerWrapper = ({
               src={icArrowRight.src}
               width={6}
               height={6}
-              alt='Arrow Right'
-              title='Arrow Right'
+              alt="Arrow Right"
+              title="Arrow Right"
             />
           </Button>
         )}
@@ -411,7 +430,7 @@ export const ReactPlayerWrapper = ({
         roundTableMode &&
         watchRoundTable && (
           <Button
-            className='btn-arrow'
+            className="btn-arrow"
             style={{
               position: "absolute",
               top: "50%",
@@ -423,8 +442,8 @@ export const ReactPlayerWrapper = ({
               src={icArrowLeft.src}
               width={6}
               height={6}
-              alt='Arrow Left'
-              title='Arrow Left'
+              alt="Arrow Left"
+              title="Arrow Left"
             />
           </Button>
         )}
@@ -507,7 +526,7 @@ export const ReactPlayerWrapper = ({
         <Flex alignItems='end' justifyContent='space-between' mb={3}>
           {/* this should not show if it's rountableMode && watchRoundTable  */}
           {(!watchRoundTable || !roundTableMode) && (
-            <Flex direction='column'>
+            <Flex direction="column">
               {Boolean(roundTableMode) && (
                 <Link
                   key={userName}
@@ -516,36 +535,39 @@ export const ReactPlayerWrapper = ({
                     textDecoration: "none",
                   }}
                 >
-                  <Badge pill bg='dark' className='mb-2 align-self-start'>
+                  <Badge pill bg="dark" className="mb-2 align-self-start">
                     @{userName} added
                   </Badge>
                 </Link>
               )}
-              <div className='video-auther mb-2'>
-                { Boolean(roundTableMode) ? (<Avatar
-                  name={roundTableName}
-                  width={9}
-                  height={9}
-                  src={rtProfilePic ?? ""}
-                  size='l'
-                  background='#A4E6DA'
-                  className='img-auther-pic'
-                />) : (<Image
-                  src={profilePic}
-                  width={9}
-                  height={9}
-                  alt={userName}
-                  title={userName}
-                  className='img-auther-pic'
-                /> )
-                }
-                <h5 className='mb-0'>
+              <div className="video-auther mb-2">
+                {Boolean(roundTableMode) ? (
+                  <Avatar
+                    name={roundTableName}
+                    width={9}
+                    height={9}
+                    src={rtProfilePic ?? ""}
+                    size="l"
+                    background="#A4E6DA"
+                    className="img-auther-pic"
+                  />
+                ) : (
+                  <Image
+                    src={profilePic}
+                    width={9}
+                    height={9}
+                    alt={userName}
+                    title={userName}
+                    className="img-auther-pic"
+                  />
+                )}
+                <h5 className="mb-0">
                   {Boolean(roundTableMode) ? (
-                    <Flex alignItems='center'>
+                    <Flex alignItems="center">
                       <Link href={`/rt/${roundTableId}`}>{roundTableName}</Link>
                       <Button
-                        variant='outline-light'
-                        className='ms-3'
+                        variant="outline-light"
+                        className="ms-3"
                         onClick={() => {
                           if (verticalNavigation && shareUrl) {
                             window.location.href = shareUrl;
@@ -565,7 +587,7 @@ export const ReactPlayerWrapper = ({
                   )}
                 </h5>
               </div>
-              <p className='mb-0'>{description}</p>
+              <p className="mb-0">{description}</p>
             </Flex>
           )}
           {watchRoundTable && roundTableMode && (
@@ -575,20 +597,26 @@ export const ReactPlayerWrapper = ({
                 textDecoration: "none",
               }}
             >
-              <Flex alignItems='center' gap={2}>
+              <Flex alignItems="center" gap={2}>
                 <Image
                   src={profilePic}
                   width={9}
                   height={9}
                   alt={userName}
                   title={userName}
-                  className='img-auther-pic'
+                  className="img-auther-pic"
                 />
-                <Text>@{userName}</Text>
+                <Text
+                  whiteSpace="nowrap"
+                  overflow="hidden"
+                  textOverflow="ellipsis"
+                >
+                  @{new_userName}
+                </Text>
               </Flex>
             </Link>
           )}
-          <div className='flex-shrink-0 position-relative video-more-option'>
+          <div className="flex-shrink-0 position-relative video-more-option">
             {children}
           </div>
         </Flex>
