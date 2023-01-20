@@ -572,7 +572,7 @@ export const ReactPlayerWrapper = ({
                         overflow="hidden"
                         textOverflow="ellipsis"
                       >
-                        @{roundTableName}
+                        {roundTableName}
                       </Text>
                       </Link>
                       <Button
