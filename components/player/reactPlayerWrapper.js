@@ -12,15 +12,8 @@ import icFlipLeft from "../../images/video-more-options/ic-flip-left.svg";
 import icFlipRight from "../../images/video-more-options/ic-flip-right.svg";
 import icClose from "../../images/video-more-options/ic-close.svg";
 import earth from "../../images/video-more-options/ic-earth.svg";
-import {
-  Image,
-  Flex,
-  Text,
-  Link,
-  Box,
-  useBreakpointValue,
-  Avatar,
-} from "@chakra-ui/react";
+import { Image, Flex, Text, Link, Box, useBreakpointValue, Avatar } from "@chakra-ui/react";
+import roundtable from "../../images/video-more-options/ic-roundtable.svg";
 
 export const ReactPlayerWrapper = ({
   videoUrl,
@@ -54,6 +47,7 @@ export const ReactPlayerWrapper = ({
   const [progress, setProgress] = useState(0);
   const [isPlaying, setIsPlaying] = useState(autoplay);
   const [isMuted, setIsMuted] = useState(true);
+  const [rtEnded, setRtEnded] = useState(false);
   const [isPlayingDebounced] = useDebounce(isPlaying, 65);
   const [innerwidth, seInnerwidth] = useState(window.innerWidth);
   const [innerheight, seInnerheight] = useState(window.innerHeight);
@@ -138,6 +132,10 @@ export const ReactPlayerWrapper = ({
 
   const onEndedWrapper = useCallback(
     (e) => {
+      if(roundTableMode){
+        setRtEnded(true)
+        setIsPlaying(false)
+      }
       onEndedRef?.current?.(e);
       if (autoJumpToNextVideo) {
         if (direction === "forward") getNextVideoRef?.current?.();
@@ -146,6 +144,13 @@ export const ReactPlayerWrapper = ({
     },
     [autoJumpToNextVideo, direction]
   );
+
+  const changeState = () => {
+    if(rtEnded){
+      setRtEnded(false);
+      setIsPlaying(true);
+    }
+  }
 
   const getTimeDiff = () => {
     var time = Math.floor(
@@ -357,7 +362,7 @@ export const ReactPlayerWrapper = ({
       )}
 
       {/* don't show it if it's watchRoundTable  */}
-      {(watchRoundTable || !roundTableMode || verticalNavigation) && (
+      {(watchRoundTable || (!verticalNavigation && roundTableMode) || (verticalNavigation && !roundTableMode) || (verticalNavigation && (roundTableMode && !rtEnded))) && (
         <FontAwesomeIcon
           icon={isPlaying ? faPause : faPlay}
           style={{
@@ -371,7 +376,7 @@ export const ReactPlayerWrapper = ({
       (!roundTableMode || verticalNavigation) ? (
         <div className="btn-arrow-controler d-none d-md-flex flex-column align-items-center justify-content-center">
           {currentVideoIndex !== 0 && (
-            <button className="btn-arrow" onClick={getPrevVideo}>
+            <button className='btn-arrow' onClick={() => {changeState(); getPrevVideo();}}>
               <Image
                 src={icArrowUp.src}
                 width={12}
@@ -383,7 +388,7 @@ export const ReactPlayerWrapper = ({
           )}
           {currentVideoIndex === 0 && <Box h={12} />}
           {currentVideoIndex !== videos.length - 1 && (
-            <button className="btn-arrow" onClick={getNextVideo}>
+            <button className='btn-arrow' onClick={() => {changeState(); getNextVideo();}}>
               <Image
                 src={icArrowDown.src}
                 width={12}
@@ -440,11 +445,90 @@ export const ReactPlayerWrapper = ({
             />
           </Button>
         )}
-      <div className="video-footer bg-gradient-180">
-        <Flex alignItems="end" justifyContent="space-between" mb={3}>
+      {Boolean(roundTableMode) && Boolean(rtEnded) && !Boolean(watchRoundTable) && (
+      <div className='rt-video-overlay'>
+        <Flex direction='column' alignItems='center' justifyContent='center' mb={3}>
+          <div className='watch-again-auther mb-2'>
+            <Button
+              transform = 'translate(-50%, -50%)'
+              border='1px solid #FFFFFF'
+              fontWeight='bold'
+              display='flex'
+              height = '32px'
+              cursor = 'pointer'
+              position = 'absolute'
+              top = '48%'
+              left = '50%'
+              variant='outline-light'
+              style = {{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "200px !important"
+              }}
+              justifyContent='center'
+              className='watch-roundtable'
+              onClick={() => {
+                if (verticalNavigation && shareUrl) {
+                  window.location.href = `${process.env.hostname}rt/${shareUrl.split("/").pop()}`
+                  onClose();
+                } else {
+                  setWatchRoundtable(true);
+                  setIsPlaying(true);
+                }
+              }}
+            >
+              <Image
+                src={roundtable.src}
+                size={1}
+                className='left'
+                alt='Watch'
+                ml='-1'
+                mt='-0.5'
+                md='-0.5'
+                pr={3}
+              />
+              {/* Watch roundtable */}
+              <Text color='white' marginTop={'-0.5'}>
+                Watch roundtable
+              </Text>
+            </Button>
+          </div>
+          <div className='video-auther'>
+            <Button
+              transform = 'translate(-50%, -50%)'
+              // border='1px solid #FFFFFF'
+              fontWeight='bold'
+              display='flex'
+              width = '187px !important'
+              height = '32px'
+              cursor = 'pointer'
+              position = 'absolute'
+              top = '52%'
+              left = '50%'
+              variant='outline'
+              // className='ms-3'
+              justifyContent='center'
+              className='watch-again'
+              // className='btn-watch-roundtable'
+              onClick={() => {
+                setIsPlaying(true)
+                setRtEnded(false)
+              }}
+            >
+              {/* Watch again */}
+              <Text color='white'>
+                Watch again
+              </Text>
+            </Button>
+          </div>
+        </Flex>
+      </div>)}
+      <div className='video-footer bg-gradient-180'>
+        <Flex alignItems='end' justifyContent='space-between' mb={3}>
           {/* this should not show if it's rountableMode && watchRoundTable  */}
           {(!watchRoundTable || !roundTableMode) && (
-            <Flex direction="column" style={{width : "84%"}}>
+            <Flex direction="column" style={{wordBreak: 'break-word', width : "84%"}}>
               {Boolean(roundTableMode) && (
                 <Link
                   key={userName}
@@ -453,7 +537,7 @@ export const ReactPlayerWrapper = ({
                     textDecoration: "none",
                   }}
                 >
-                  <Badge pill bg="dark" className="mb-2 align-self-start trunc">
+                  <Badge pill bg="dark" style={{whiteSpace:'normal'}} className="mb-2 align-self-start trunc">
                     @{userName + " added"}
                   </Badge>
                 </Link>

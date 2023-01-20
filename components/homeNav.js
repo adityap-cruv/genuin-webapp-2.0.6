@@ -48,7 +48,7 @@ export const HomeNav = ({
       }}
       variant={variant}
     >
-      <Navbar.Brand href='/' className='p-0'>
+      <Navbar.Brand href='/' className='p-0' style={{margin: 'auto'}}>
         <Image
           src={isBlue ? logoBlue.src : logo.src}
           alt='Genuin'

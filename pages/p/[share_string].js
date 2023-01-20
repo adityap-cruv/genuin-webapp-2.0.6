@@ -18,6 +18,7 @@ import comments from "../../images/comments.svg";
 import directMessage from "../../images/direct_message.svg";
 import roundtable from "../../images/video-more-options/ic-roundtable.svg";
 import InfiniteScroll from "react-infinite-scroll-component";
+import icPreviewPlaceholder from "../../images/video-more-options/ic_preview_placeholder.png";
 
 import {
   Box,
@@ -44,8 +45,9 @@ import {
 const Profile = ({
   user = {},
   all_videos = [],
-  videosRT = [],
-  videosPublic = [],
+  end_of_videos,
+  // videosRT = [],
+  // videosPublic = [],
   share_string,
 }) => {
   const {
@@ -111,18 +113,71 @@ const Profile = ({
         }
     }, []);
   }
-  const [publicVideos, setPublicVideos] = useState(videosPublic);
-  const preparedRTVideos = prepareRTVideos(videosRT);
+  // const [publicVideos, setPublicVideos] = useState(videosPublic);
+  const [publicVideos, setPublicVideos] = useState([]);
+  // const preparedRTVideos = prepareRTVideos(videosRT);
 
-  const [rtVideos, setRTVideos] = useState(preparedRTVideos);
+  const [rtVideos, setRTVideos] = useState([]);
 
   const preparedFeedVideos = prepareFeedVideos(all_videos)
   const [videos, setVideos] = useState(preparedFeedVideos);
 
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [isLoadedPublic, setIsLoadedPublic] = useState(false);
+  const [isLoadedRT, setIsLoadedRT] = useState(false);
+
+  const [noMoreVideos, setNoMoreVideos] = useState(end_of_videos);
+  const [noMoreVideosPublic, setNoMoreVideosPublic] = useState(false);
+  const [noMoreVideosRT, setNoMoreVideosRT] = useState(false);
+
   console.log("process.env", process.env.apiurl);
 
+  const loadVideosPublic = async () => {
+    if(!isLoadedPublic){
+      setIsLoading(true)
+      // console.log("Load Public Videos Page")
+      const res = await axios.get(
+        `${
+          process.env.apiurl
+        }/api/v3/public/profile_videos?user_id=${share_string}&video_types[]=public_video`
+      );
+
+      const newVideos = res?.data?.data?.videos || [];
+      res?.data?.data?.end_of_videos?setNoMoreVideosPublic(true):setNoMoreVideosPublic(false)
+      console.log("end_of_videos public load",res?.data?.data?.end_of_videos)
+      if (newVideos.length !== 0) {
+        setPublicVideos(publicVideos.concat(newVideos));
+      }
+      setIsLoading(false)
+      setIsLoadedPublic(true)
+    }
+  };
+
+  const loadVideosRT = async () => {
+    if(!isLoadedRT){
+      // console.log("Load RT Videos Page")
+      setIsLoading(true)
+      const res = await axios.get(
+        `${
+          process.env.apiurl
+        }/api/v3/public/profile_videos?user_id=${share_string}&video_types[]=rt`
+      );
+
+      const newVideos = res?.data?.data?.videos || [];
+      res?.data?.data?.end_of_videos?setNoMoreVideosRT(true):setNoMoreVideosRT(false)
+
+      if (newVideos.length !== 0) {
+        const preparedNewVideos = prepareRTVideos(newVideos);
+        setRTVideos(rtVideos.concat(preparedNewVideos));
+      }
+      setIsLoading(false)
+      setIsLoadedRT(true)
+    }
+  };
+
   const getMoreVideosPublic = async () => {
-    console.log("Get More Public Videos")
+    // console.log("Get More Public Videos")
     const res = await axios.get(
       `${
         process.env.apiurl
@@ -130,15 +185,21 @@ const Profile = ({
         publicVideos[publicVideos.length - 1]?.video?.video_id
       }`
     );
-
+    console.log("Url going to hit",`${
+      process.env.apiurl
+    }/api/v3/public/profile_videos?user_id=${share_string}&video_types[]=public_video&last_video_type=public_video&last_video_id=${
+      publicVideos[publicVideos.length - 1]?.video?.video_id
+    }`)
     const newVideos = res?.data?.data?.videos || [];
+    res?.data?.data?.end_of_videos?setNoMoreVideosPublic(true):setNoMoreVideosPublic(false)
+    console.log("end_of_videos public load",res?.data?.data?.end_of_videos)
     if (newVideos.length !== 0) {
       setPublicVideos(publicVideos.concat(newVideos));
     }
   };
 
   const getMoreVideosRT = async () => {
-    console.log("Get More RT Videos")
+    // console.log("Get More RT Videos")
     const res = await axios.get(
       `${
         process.env.apiurl
@@ -148,6 +209,7 @@ const Profile = ({
     );
 
     const newVideos = res?.data?.data?.videos || [];
+    res?.data?.data?.end_of_videos?setNoMoreVideosRT(true):setNoMoreVideosRT(false)
 
     if (newVideos.length !== 0) {
       const preparedNewVideos = prepareRTVideos(newVideos);
@@ -157,7 +219,7 @@ const Profile = ({
   };
 
   const getMoreVideos = async () => {
-    console.log("Get More Videos")
+    // console.log("Get More Videos")
     var videoObj = videos[videos.length-1]
     var type = videoObj?.video_type
     var id = ""
@@ -172,6 +234,7 @@ const Profile = ({
       }/api/v3/public/profile_videos?user_id=${share_string}&video_types[]=public_video&video_types[]=rt&last_video_type=${type}&last_video_id=${id}`
     );
     const newVideos = res?.data?.data?.videos || [];
+    res?.data?.data?.end_of_videos?setNoMoreVideos(true):setNoMoreVideos(false)
     if (newVideos.length !== 0) {
       const preparedFeedVideos = prepareFeedVideos(newVideos)
       setVideos(videos.concat(preparedFeedVideos));
@@ -452,7 +515,7 @@ const Profile = ({
         } Videos, ${abbreviateNumber(views)} Views, ${replies} Replies`}
         urlToCopy={share_url}
         videoPreviewImage={preview_image}
-        videoUrl={videosRT[currentVideoIndex]?.video?.video_url}
+        videoUrl={videos[currentVideoIndex]?.video?.video_url}
       />
       <script
         type='application/ld+json'
@@ -635,13 +698,13 @@ const Profile = ({
                     color={tabIndex === 0 ? "#111111" : "#949494"}
                   />
                 </Tab>
-                <Tab flexGrow={1}>
+                <Tab flexGrow={1} onClick={loadVideosPublic}>
                   <PublicIcon
                     boxSize={8}
                     color={tabIndex === 1 ? "#111111" : "#949494"}
                   />
                 </Tab>
-                <Tab flexGrow={1}>
+                <Tab flexGrow={1} onClick={loadVideosRT}>
                   <RoundtableIcon
                     boxSize={8}
                     color={tabIndex === 2 ? "#111111" : "#949494"}
@@ -656,7 +719,7 @@ const Profile = ({
                 ml={mobile ? "-12px" : 0}
                 mr={mobile ? "-12px" : 0}
                 style={{
-                  width: mobile ? "calc(100% + 24px) !important" : "full",
+                  width: mobile ? "auto" : "calc(100% + 24px)",
                 }}
                 id='scrollableDiv'
               >
@@ -668,6 +731,7 @@ const Profile = ({
                     onOpen={onOpen}
                     setCurrentVideoIndex={setCurrentVideoIndex}
                     getMoreVideos={getMoreVideos}
+                    noMoreVideos={noMoreVideos}
                     changeUrl={changeUrl}
                   />
                 </TabPanel>
@@ -679,7 +743,9 @@ const Profile = ({
                     onOpen={onOpenPublic}
                     setCurrentVideoIndex={setCurrentVideoIndexPublic}
                     getMoreVideos={getMoreVideosPublic}
+                    noMoreVideos={noMoreVideosPublic}
                     changeUrl={changeUrl}
+                    isLoading={isLoading}
                   />
                 </TabPanel>
                 <TabPanel p={0} pt='1px' h='full'>
@@ -690,7 +756,9 @@ const Profile = ({
                     onOpen={onOpenRT}
                     setCurrentVideoIndex={setCurrentVideoIndexRT}
                     getMoreVideos={getMoreVideosRT}
+                    noMoreVideos={noMoreVideosRT}
                     changeUrl={changeUrl}
+                    isLoading={isLoading}
                   />
                 </TabPanel>
               </TabPanels>
@@ -841,6 +909,7 @@ const Profile = ({
                 autoplay
                 video_id_to_use={publicVideos[currentVideoIndexPublic]?.video?.share_string}
                 shareUrl={publicVideos[currentVideoIndexPublic]?.video.share_url}
+                verticalNavigation
               >
                 <AppActions
                   showGetAppModal={handleShowModalAppDownload}
@@ -873,11 +942,13 @@ const Videos = ({
   setCurrentVideoIndex,
   mobile,
   getMoreVideos,
-  changeUrl
+  noMoreVideos,
+  changeUrl,
+  isLoading = false
 }) => {
   return (
     <Box h='full'>
-      {!Boolean(videos.length) && (
+      {!Boolean(videos.length) && !Boolean(isLoading) && (
         <Flex
           w='full'
           h='full'
@@ -890,13 +961,22 @@ const Videos = ({
           No videos yet
         </Flex>
       )}
+      {!Boolean(videos.length) && Boolean(isLoading) && (
+        <div className="spinner-container" alignItems='center'>
+          {mobile ? (
+          <div className="mobile-loading-spinner" >
+          </div>) : (<div className="loading-spinner" >
+          </div>)}
+        </div>
+      )}
       {Boolean(videos.length) && (
         <InfiniteScroll
           dataLength={videos.length}
           next={getMoreVideos}
-          hasMore
+          hasMore={!noMoreVideos}
           scrollThreshold={1}
           scrollableTarget='scrollableDiv'
+          loader={<div className="small-loading-spinner"></div>}
         >
           <Grid
             templateColumns={[
@@ -941,9 +1021,18 @@ const Videos = ({
                   <Image
                     src={
                       video_type === "rt"
-                        ? video.thumbnail_url
-                        : video.video_thumbnail
+                        ? (video.thumbnail_url ?? icPreviewPlaceholder.src)
+                        : (video.video_thumbnail ?? icPreviewPlaceholder.src)
                     }
+                    onError={({ currentTarget }) => {
+                      currentTarget.onerror = null; // prevents looping
+                      currentTarget.src=icPreviewPlaceholder.src;
+                      if(video_type === "rt"){
+                        video.thumbnail_url=icPreviewPlaceholder.src;
+                      }else{
+                        video.video_thumbnail=icPreviewPlaceholder.src;
+                      }
+                    }}
                     height = {mobile ? {base: "200px", md: "300px" } : {base: "245px", md: "390px" }}
                     width = "full"
                     onClick={() => {
@@ -1079,12 +1168,12 @@ Profile.getInitialProps = async ({ query: { share_string } }) => {
       const all_videos = await axios.get(
         `${process.env.apiurl}/api/v3/public/profile_videos?user_id=${share_string}&video_types[]=rt&video_types[]=public_video`
       );
-      const videosRT = await axios.get(
-        `${process.env.apiurl}/api/v3/public/profile_videos?user_id=${share_string}&video_types[]=rt`
-      );
-      const videosPublic = await axios.get(
-        `${process.env.apiurl}/api/v3/public/profile_videos?user_id=${share_string}&video_types[]=public_video`
-      );
+      // const videosRT = await axios.get(
+      //   `${process.env.apiurl}/api/v3/public/profile_videos?user_id=${share_string}&video_types[]=rt`
+      // );
+      // const videosPublic = await axios.get(
+      //   `${process.env.apiurl}/api/v3/public/profile_videos?user_id=${share_string}&video_types[]=public_video`
+      // );
       const user = await axios.get(
         `${process.env.apiurl}/api/v3/public/user/details?nickname=${share_string}`
       );
@@ -1092,8 +1181,9 @@ Profile.getInitialProps = async ({ query: { share_string } }) => {
       return {
         user: user?.data?.data,
         all_videos: all_videos?.data?.data?.videos,
-        videosRT: videosRT?.data?.data?.videos,
-        videosPublic: videosPublic?.data?.data?.videos,
+        end_of_videos : all_videos?.data?.data?.end_of_videos? true : false,
+        // videosRT: videosRT?.data?.data?.videos,
+        // videosPublic: videosPublic?.data?.data?.videos,
         share_string,
       };
     } catch (error) {

@@ -185,7 +185,7 @@ export const ShareButton = ({
   return (
     <Menu placement='right' preventOverflow gutter={40}>
       <>
-        <MenuButton pos='relative' {...props} textAlign='-webkit-center'>
+        <MenuButton width='100%' height='100%' pos='relative' {...props} textAlign='-webkit-center'>
           <Image
             size={6}
             src={variation === "white" ? shareImg.src : shareImgBlue.src}
@@ -235,19 +235,20 @@ export const MobileShareButton = ({
   const { isSupported, loading, share } = useWebShare();
 
   return (
-    <Image
-      src={white ? shareImg.src : shareImgBlue.src}
-      size={8}
-      alt='Share'
-      title='Share'
-      bgColor='transparent'
-      border={white ? "none" : "1px solid #0645FF"}
-      borderRadius='md'
-      px={1}
-      minW={8}
-      onClick={() => {
-        if (isSupported && !loading) share({ url });
-      }}
-    />
+      <Image
+        src={white ? shareImg.src : shareImgBlue.src}
+        size={8}
+        padding='10px'
+        alt='Share'
+        title='Share'
+        bgColor='transparent'
+        border={white ? "none" : "1px solid #0645FF"}
+        borderRadius='md'
+        px={1}
+        minW={8}
+        onClick={() => {
+          if (isSupported && !loading) share({ url });
+        }}
+      />
   );
 };
