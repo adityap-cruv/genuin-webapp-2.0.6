@@ -91,8 +91,6 @@ export const ReactPlayerWrapper = ({
     seInnerheight(window.innerHeight);
   }, [window.innerWidth, window.innerHeight]);
 
-
-  // for truncate username which is place in video footer
   if ((innerwidth < 330 || innerheight < 600) && userName.length > 15) {
     new_userName = userName.substring(0, 18);
   } else {
@@ -530,7 +528,7 @@ export const ReactPlayerWrapper = ({
         <Flex alignItems='end' justifyContent='space-between' mb={3}>
           {/* this should not show if it's rountableMode && watchRoundTable  */}
           {(!watchRoundTable || !roundTableMode) && (
-            <Flex direction="column" style={{wordBreak: 'break-word'}}>
+            <Flex direction="column" style={{wordBreak: 'break-word', width : "84%"}}>
               {Boolean(roundTableMode) && (
                 <Link
                   key={userName}
@@ -539,8 +537,8 @@ export const ReactPlayerWrapper = ({
                     textDecoration: "none",
                   }}
                 >
-                  <Badge pill bg="dark" style={{whiteSpace:'normal'}} className="mb-2 align-self-start">
-                    @{userName} added
+                  <Badge pill bg="dark" style={{whiteSpace:'normal'}} className="mb-2 align-self-start trunc">
+                    @{userName + " added"}
                   </Badge>
                 </Link>
               )}
@@ -568,7 +566,15 @@ export const ReactPlayerWrapper = ({
                 <h5 className="mb-0">
                   {Boolean(roundTableMode) ? (
                     <Flex alignItems="center">
-                      <Link href={`/rt/${roundTableId}`}>{roundTableName}</Link>
+                      <Link href={`/rt/${roundTableId}`} style={{}}>
+                      <Text
+                        whiteSpace="nowrap"
+                        overflow="hidden"
+                        textOverflow="ellipsis"
+                      >
+                        @{roundTableName}
+                      </Text>
+                      </Link>
                       <Button
                         variant="outline-light"
                         className="ms-3"
@@ -587,7 +593,15 @@ export const ReactPlayerWrapper = ({
                       </Button>
                     </Flex>
                   ) : (
-                    <Link href={`/p/${userName}`}>@{userName}</Link>
+                    <Link href={`/p/${userName}`}>
+                      <Text
+                        whiteSpace="nowrap"
+                        overflow="hidden"
+                        textOverflow="ellipsis"
+                      >
+                        @{userName}
+                      </Text>
+                    </Link>
                   )}
                 </h5>
               </div>
