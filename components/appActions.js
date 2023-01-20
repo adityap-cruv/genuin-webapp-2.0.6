@@ -88,12 +88,14 @@ export const AppActions = ({
                 description={videoDescription}
                 title={videoTitle}
                 white
+                fullWidth={true}
               />
             ) : (
               <ShareButton
                 url={videoUrl}
                 description={videoDescription}
                 title={videoTitle}
+                fullWidth={true}
               />
             )}
           </li>
@@ -150,12 +152,14 @@ export const AppActions = ({
                 description={videoDescription}
                 title={videoTitle}
                 white
+                fullWidth={true}
               />
             ) : (
               <ShareButton
                 url={videoUrl}
                 description={videoDescription}
                 title={videoTitle}
+                fullWidth={true}
               />
             )}
           </li>
@@ -180,12 +184,13 @@ export const ShareButton = ({
   description,
   title,
   variation = "white",
+  fullWidth = false,
   ...props
 }) => {
   return (
     <Menu placement='right' preventOverflow gutter={40}>
       <>
-        <MenuButton width='100%' height='100%' pos='relative' {...props} textAlign='-webkit-center'>
+        <MenuButton style={{width: fullWidth?'100%':'auto', height: fullWidth?'100%':'auto'}} pos='relative' {...props} textAlign='-webkit-center'>
           <Image
             size={6}
             src={variation === "white" ? shareImg.src : shareImgBlue.src}
@@ -231,6 +236,7 @@ export const MobileShareButton = ({
   description,
   url,
   white = false,
+  fullWidth=false
 }) => {
   const { isSupported, loading, share } = useWebShare();
 
@@ -238,7 +244,7 @@ export const MobileShareButton = ({
       <Image
         src={white ? shareImg.src : shareImgBlue.src}
         size={8}
-        padding='10px'
+        padding={fullWidth?'10px': 'unset'}
         alt='Share'
         title='Share'
         bgColor='transparent'
