@@ -1033,8 +1033,8 @@ const Videos = ({
                         video.video_thumbnail=icPreviewPlaceholder.src;
                       }
                     }}
-                    height = {mobile ? {base: "200px", md: "300px" } : {base: "245px", md: "390px" }}
-                    width = "full"
+                    // height = {mobile ? {base: "200px", md: "300px" } : {base: "245px", md: "390px" }}
+                    width='full'
                     onClick={() => {
                       // window.location.href = video.share_url;
                       setCurrentVideoIndex(index);
