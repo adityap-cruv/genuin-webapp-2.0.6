@@ -12,7 +12,7 @@ import icFlipLeft from "../../images/video-more-options/ic-flip-left.svg";
 import icFlipRight from "../../images/video-more-options/ic-flip-right.svg";
 import icClose from "../../images/video-more-options/ic-close.svg";
 import earth from "../../images/video-more-options/ic-earth.svg";
-import { Image, Flex, Text, Link, Box, useBreakpointValue, Avatar } from "@chakra-ui/react";
+import { Image, Flex, Text, Link, Box, useBreakpointValue, Avatar, scroll } from "@chakra-ui/react";
 import roundtable from "../../images/video-more-options/ic-roundtable.svg";
 
 export const ReactPlayerWrapper = ({
@@ -49,8 +49,6 @@ export const ReactPlayerWrapper = ({
   const [isMuted, setIsMuted] = useState(true);
   const [rtEnded, setRtEnded] = useState(false);
   const [isPlayingDebounced] = useDebounce(isPlaying, 65);
-  const [innerwidth, seInnerwidth] = useState(window.innerWidth);
-  const [innerheight, seInnerheight] = useState(window.innerHeight);
 
   const handleToggleIsPlaying = useCallback(() => {
     setIsPlaying((old) => !old);
@@ -68,7 +66,6 @@ export const ReactPlayerWrapper = ({
   onDurationRef.current = onDuration;
   const onEndedRef = useRef(onEnded);
   onEndedRef.current = onEnded;
-  const new_userName = "";
 
   const mobile = useBreakpointValue({base: true, md: false});
 
@@ -84,18 +81,6 @@ export const ReactPlayerWrapper = ({
   const setDurationWrapper = useCallback((event) => {
     onDurationRef?.current?.(event);
   });
-
-  // for truncate
-  useEffect(() => {
-    seInnerwidth(window.innerWidth);
-    seInnerheight(window.innerHeight);
-  }, [window.innerWidth, window.innerHeight]);
-
-  if ((innerwidth < 330 || innerheight < 600) && userName.length > 15) {
-    new_userName = userName.substring(0, 18);
-  } else {
-    new_userName = userName;
-  }
 
   useEffect(() => {
     const touchStart = (e) => {
@@ -540,8 +525,21 @@ export const ReactPlayerWrapper = ({
                     textDecoration: "none",
                   }}
                 >
-                  <Badge pill bg="dark" style={{whiteSpace:'normal'}} className="mb-2 align-self-start trunc">
-                    @{userName + " added"}
+                  <Badge
+                    pill bg="dark"
+                    className="mb-2 align-self-start trunc">
+                    <Flex direction='horizontal'>
+                      <Text style={{
+                        textOverflow: 'ellipsis',
+                        overflow: 'hidden',
+                        maxWidth: '75%',
+                      }}>
+                        @{userName}
+                      </Text>
+                      <pre style={{
+                        overflow: 'visible'
+                      }}> added</pre>
+                    </Flex>
                   </Badge>
                 </Link>
               )}
@@ -566,21 +564,22 @@ export const ReactPlayerWrapper = ({
                     className="img-auther-pic"
                   />
                 )}
-                <h5 className="mb-0">
                   {Boolean(roundTableMode) ? (
                     <Flex alignItems="center">
-                      <Link href={`/rt/${roundTableId}`} style={{}}>
+                    <Link href={`/rt/${roundTableId}`} style={{
+                        marginRight: "10px"
+                      }}>
                       <Text
                         whiteSpace="nowrap"
                         overflow="hidden"
                         textOverflow="ellipsis"
+                        width={mobile ? 'calc(100vw - 235px)' : '200px'}
                       >
                         {roundTableName}
                       </Text>
                       </Link>
                       <Button
                         variant="outline-light"
-                        className="ms-3"
                         onClick={() => {
                           if (verticalNavigation && shareUrl) {
                             window.location.href = shareUrl;
@@ -592,21 +591,21 @@ export const ReactPlayerWrapper = ({
                           }
                         }}
                       >
-                        Watch
+                          Watch
                       </Button>
                     </Flex>
                   ) : (
-                    <Link href={`/p/${userName}`}>
-                      <Text
-                        whiteSpace="nowrap"
-                        overflow="hidden"
-                        textOverflow="ellipsis"
-                      >
-                        @{userName}
-                      </Text>
+                      <Link href={`/p/${userName}`}>
+                          <Text
+                            whiteSpace="nowrap"
+                            overflow="hidden"
+                          textOverflow="ellipsis"
+                          width={mobile ? 'calc(100vw - 135px)' : '270px'}
+                          >
+                          @{userName}
+                          </Text>
                     </Link>
                   )}
-                </h5>
               </div>
               <p className="mb-0">{description}</p>
             </Flex>
@@ -631,8 +630,9 @@ export const ReactPlayerWrapper = ({
                   whiteSpace="nowrap"
                   overflow="hidden"
                   textOverflow="ellipsis"
+                  maxW= '70%'
                 >
-                  @{new_userName}
+                  @{userName}
                 </Text>
               </Flex>
             </Link>

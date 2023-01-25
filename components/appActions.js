@@ -194,6 +194,7 @@ export const ShareButton = ({
           <Image
             size={6}
             src={variation === "white" ? shareImg.src : shareImgBlue.src}
+            margin='auto'
           />
         </MenuButton>
         <MenuList

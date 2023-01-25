@@ -40,6 +40,7 @@ import {
   TabPanel,
   Icon,
   Text,
+  SimpleGrid,
 } from "@chakra-ui/react";
 
 const Profile = ({
@@ -978,15 +979,9 @@ const Videos = ({
           scrollableTarget='scrollableDiv'
           loader={<div className="small-loading-spinner"></div>}
         >
-          <Grid
-            templateColumns={[
-              "1fr 1fr 1fr",
-              "1fr",
-              "1fr 1fr ",
-              "1fr 1fr 1fr",
-              "1fr 1fr 1fr 1fr",
-            ]}
-            gap={mobile ? "1px" : 6}
+          <SimpleGrid
+            gap={mobile ? "1px" : "10px"}
+            minChildWidth={mobile ? "124px" : "200px"}
           >
             {videos.map(({ video, video_type }, index) => (
               <Flex
@@ -999,7 +994,6 @@ const Videos = ({
                 key={video.video_uuid}
                 bgColor='black'
                 alignItems='center'
-                // minH={{ base: "245px", md: "320px" }}
                 minH = {mobile ? {base: "200px", md: "300px" } : {base: "245px", md: "390px" }}
               >
                 {/* {!mobile && (
@@ -1033,8 +1027,8 @@ const Videos = ({
                         video.video_thumbnail=icPreviewPlaceholder.src;
                       }
                     }}
-                    height = {mobile ? {base: "200px", md: "300px" } : {base: "245px", md: "390px" }}
-                    width = "full"
+                    height={mobile ? { base: "200px", md: "300px" } : { base: "245px", md: "390px" }}
+                    width='full'
                     onClick={() => {
                       // window.location.href = video.share_url;
                       setCurrentVideoIndex(index);
@@ -1123,7 +1117,7 @@ const Videos = ({
                 )}
               </Flex>
             ))}
-          </Grid>
+          </SimpleGrid>
         </InfiniteScroll>
       )}
     </Box>
