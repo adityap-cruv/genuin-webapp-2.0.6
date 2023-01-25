@@ -48,6 +48,7 @@ export const ReactPlayerWrapper = ({
   const [isPlaying, setIsPlaying] = useState(autoplay);
   const [isMuted, setIsMuted] = useState(true);
   const [rtEnded, setRtEnded] = useState(false);
+  const [isPlayingDebounced] = useDebounce(isPlaying, 65);
 
   const handleToggleIsPlaying = useCallback(() => {
     setIsPlaying((old) => !old);
@@ -80,12 +81,6 @@ export const ReactPlayerWrapper = ({
   const setDurationWrapper = useCallback((event) => {
     onDurationRef?.current?.(event);
   });
-
-  // for truncate
-  useEffect(() => {
-    setInnerWidth(window.innerWidth);
-    setInnerHeight(window.innerHeight);
-  }, [window.innerWidth, window.innerHeight]);
 
   useEffect(() => {
     const touchStart = (e) => {
