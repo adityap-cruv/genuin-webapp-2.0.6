@@ -129,14 +129,17 @@ export const ReactPlayerWrapper = ({
       window.removeEventListener("popstate", onBackButtonEvent);
     };
   }, []);
-
+  
   const onEndedWrapper = useCallback(
     (e) => {
       if(roundTableMode){
         setRtEnded(true)
         setIsPlaying(false)
       }
-      onEndedRef?.current?.(e);
+      
+      if(!roundTableMode){
+        onEndedRef?.current?.(e);
+      }
       if (autoJumpToNextVideo) {
         if (direction === "forward") getNextVideoRef?.current?.();
         if (direction === "backward") getPrevVideoRef?.current?.();
