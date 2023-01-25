@@ -649,8 +649,7 @@ const Participants = ({ members, mobile }) => {
             "1fr 1fr 1fr",
             "1fr 1fr 1fr 1fr",
           ]}
-          gap={0}
-          rowGap = {"0.8%"}
+          gridRowGap = "1.5rem"
         >
           {members.map((user, index) => (
             <Link
