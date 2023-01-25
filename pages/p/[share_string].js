@@ -981,7 +981,7 @@ const Videos = ({
         >
           <SimpleGrid
             gap={mobile ? "1px" : "10px"}
-            minChildWidth={mobile ? "124px" : "200px"}
+            minChildWidth={mobile ? "110px" : "200px"}
           >
             {videos.map(({ video, video_type }, index) => (
               <Flex
