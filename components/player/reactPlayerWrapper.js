@@ -581,7 +581,6 @@ export const ReactPlayerWrapper = ({
                       </Link>
                       <Button
                         variant="outline-light"
-                        
                         onClick={() => {
                           if (verticalNavigation && shareUrl) {
                             window.location.href = shareUrl;

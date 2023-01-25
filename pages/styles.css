@@ -655,6 +655,7 @@ body .overlay {
 .rt_name {
   width: 150px;
 }
+
 .user-name{
   width: 200px
 }
@@ -684,7 +685,7 @@ body .overlay {
   .rt_name {
     width: 50px;
   }
-    .user-name {
-      width: 120px;
-    }
+  .user-name {
+    width: 120px;
+  }
 }
