@@ -660,13 +660,13 @@ body .overlay {
   width: 200px
 }
 
-@media only screen and ((min-width: 600px) and (min-height: 640px)) {
+@media only screen and (min-width: 600px) and (min-height: 640px) {
   .rt_name {
   width: 150px;
   }
 }
 
-@media only screen and ((max-width: 365px) or (max-height: 644px)) {
+@media only screen and (max-width: 365px), only screen and (max-height: 644px) {
   .rt_name {
     width: 100px;
   }
