@@ -570,10 +570,11 @@ export const ReactPlayerWrapper = ({
                         marginRight: "10px"
                       }}>
                       <Text
+                        className="rt_name"
                         whiteSpace="nowrap"
                         overflow="hidden"
                         textOverflow="ellipsis"
-                        width={mobile ? 'calc(100vw - 235px)' : '200px'}
+                        // width={mobile ? 'calc(100vw - 235px)' : '150px'}
                       >
                         {roundTableName}
                       </Text>
@@ -599,8 +600,9 @@ export const ReactPlayerWrapper = ({
                           <Text
                             whiteSpace="nowrap"
                             overflow="hidden"
-                          textOverflow="ellipsis"
-                          width={mobile ? 'calc(100vw - 135px)' : '270px'}
+                        textOverflow="ellipsis"
+                        className="user-name"
+                          // width={mobile ? 'calc(100vw - 135px)' : '270px'}
                           >
                           @{userName}
                           </Text>
