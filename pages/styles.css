@@ -660,24 +660,30 @@ body .overlay {
   width: 200px
 }
 
-@media only screen and (min-width: 600px) {
+@media only screen and ((min-width: 600px) and (min-height: 640px)) {
   .rt_name {
   width: 150px;
   }
 }
 
-@media only screen and (max-width: 600px) {
-  .rt_name {
-    width: 150px;
-  }
-}
-
-@media only screen and (max-width: 365px) {
+@media only screen and ((max-width: 365px) or (max-height: 644px)) {
   .rt_name {
     width: 100px;
   }
   .user-name {
     width: 170px;
+  }
+}
+
+@media only screen and (max-height: 546px) {
+  .rt_name {
+    width: 50px;
+  }
+}
+
+@media only screen and (max-height: 457px) {
+  .rt_name {
+    width: 30px;
   }
 }
 
