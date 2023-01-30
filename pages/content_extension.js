@@ -1,14 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 import axios from "axios";
-import { Player } from "../components/player";
+import { Player } from "../components/player/player_swipe";
 import { Layout } from "../components/layout";
 import { GetAppModal } from "../components/getAppModal";
 import {
   AppActions
 } from "../components/appActions";
-import { WelcomeModal } from "../components/welcomeModal";
 import { Error } from "../components/error";
-import { Waypoint } from 'react-waypoint';
 import {
   Flex,
   useBreakpointValue
@@ -50,8 +48,6 @@ const Profile = ({
   const preparedFeedVideos = prepareFeedVideos(all_videos)
   const [videos, setVideos] = useState(preparedFeedVideos);
 
-  const [showModalWelcome, setShowModalWelcome] = useState(true);
-  const handleCloseWelcome = () => setShowModalWelcome(false);
   const [showModalAppDownload, setShowModalAppDownload] = useState(false);
   const getAppComponentRef = useRef(() => null);
   const handleCloseAppDownload = () => {
@@ -82,34 +78,40 @@ const Profile = ({
     // }
   };
 
-  const showGetAppToViewDialog = () =>
-    handleShowModalAppDownload(() => <>Get the app to view this video.</>);
-
-  let handleEnterViewport = function() {
-      setIsPlaying(true);
-  }
-  let handleExitViewport = function() {
-      setIsPlaying(false);
+  const showGetAppToViewDialog = () => {
+    // handleShowModalAppDownload(() => <>Get the app to view this video.</>);
   }
 
+  const getInfyUrl = (url) => {
+    var client_ip = ``;
+    var location_lat = ``;
+    var location_lng = ``;
+    var minimum_duration = 1;
+    var maximum_duration = 120;
+    var device_width = 720;
+    var device_height = 1280;
+    var new_m3u8_url = `https://nxs.infy.tv/ssai/master.m3u8?live=0&avod=1&c=1048&min_ad_duration=6&max_ad_duration=300&pod_duration=3005&ad_breaks=-1,-1&pdomain=cnn.com&pname=CNN&u=${url}&t=2071&dnt=0&width=${device_width}&height=${device_height}&minimum_duration=${minimum_duration}&maximum_duration=${maximum_duration}&placement_id=cnn001${client_ip}${location_lat}${location_lng}`;
+    // console.log('new_m3u8_url', new_m3u8_url);
+    return new_m3u8_url;
+  }
 
   return !Boolean(user_id) ? (
-    <Error />
+    // <Error />
+    <>
+    Loading. . .
+    </>
   ) : (
     <Layout>
       <Flex
         className='section-content h-100 swipe-container'
-        direction='column'
+        direction='initial'
+        wrap='wrap'
         w='full'
-        position={mobile ? "fixed" : "initial"}
+        // position={mobile ? "fixed" : "initial"}
       >
         {videos.length > 0 ? (
           <>
             {videos.map((video, id) => (
-            <Waypoint 
-              onEnter={handleEnterViewport}
-              onLeave={handleExitViewport}
-            >
               <Player
                 currentVideoIndex={id}
                 videoThumbnail={
@@ -117,10 +119,9 @@ const Profile = ({
                 }
                 description={videos[id]?.video?.description}
                 link={videos[id]?.video?.link}
-                videoUrl={videos[id]?.video?.video_url_m3u8 ?? videos[id]?.video?.videoUrl}
+                videoUrl={videos[id] && videos[id]['video'] && videos[id]['video']['video_url_m3u8']?getInfyUrl(videos[id]['video']['video_url_m3u8']) : (videos[id] && videos[id]['video'] && videos[id]['video']['videoUrl']?videos[id] && videos[id]['video'] && videos[id]['video']['videoUrl']: null) }
                 userName={nickname}
                 userId={nickname}
-                // onClickOutsideOfVideo={() => {setProfileUrl(); onClose();}}
                 userProfileImage={profile_image}
                 rtProfileImage={videos[id]?.video?.group_dp}
                 showGetAppModal={handleShowModalAppDownload}
@@ -150,7 +151,6 @@ const Profile = ({
                   roundTableId={videos[id]?.share_string}
                 />
               </Player>
-            </Waypoint>
             ))}
             </>
           ) : (
@@ -164,7 +164,6 @@ const Profile = ({
         onClose={handleCloseAppDownload}
         TextNode={getAppComponentRef.current}
       />
-      <WelcomeModal show={showModalWelcome} onClose={handleCloseWelcome} />
     </Layout>
   );
 };
