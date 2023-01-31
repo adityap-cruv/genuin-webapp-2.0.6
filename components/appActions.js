@@ -41,7 +41,7 @@ export const AppActions = ({
   videoDescription = "",
   videoTitle = "",
 }) => {
-  console.log("roundTable", roundTable);
+  // console.log("roundTable", roundTable);
   const mobile = useBreakpointValue({ base: true, sm: false });
 
   const getClickableLink = (link = "") => {
