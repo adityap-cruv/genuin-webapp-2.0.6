@@ -3,6 +3,9 @@ import axios from "axios";
 import { Player } from "../components/player/player_swipe";
 import { Layout } from "../components/layout";
 import { GetAppModal } from "../components/getAppModal";
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faVolumeMute, faVolumeUp } from '@fortawesome/free-solid-svg-icons'
 import {
   AppActions
 } from "../components/appActions";
@@ -47,6 +50,7 @@ const Profile = ({
 
   const preparedFeedVideos = prepareFeedVideos(all_videos)
   const [videos, setVideos] = useState(preparedFeedVideos);
+  const [muted, setMuted] = useState(true);
 
   const [showModalAppDownload, setShowModalAppDownload] = useState(false);
   const getAppComponentRef = useRef(() => null);
@@ -102,6 +106,12 @@ const Profile = ({
     </>
   ) : (
     <Layout>
+      <div className="volume-control" onClick={() => setMuted(prev => !prev)}>
+        {
+          muted ? <FontAwesomeIcon icon={faVolumeMute} /> : <FontAwesomeIcon icon={faVolumeUp} />
+        }
+        <p>Feed powered by Genuin</p>
+      </div>
       <Flex
         className='section-content h-100 swipe-container'
         direction='initial'
@@ -129,13 +139,14 @@ const Profile = ({
                 getNextVideo={getNextVideo}
                 getPrevVideo={getPrevVideo}
                 videos={videos}
-                autoplay
+                autoplay={id === 0?true: false}
                 video_id_to_use={videos[id]?.video?.share_string}
                 roundTableMode={videos[id]?.video_type === "rt"}
                 roundTableName={videos[id]?.video?.group_name}
                 roundTableId={videos[id]?.share_string}
                 shareUrl={videos[id]?.video?.share_url}
                 verticalNavigation
+                muted={muted}
               >
                 <AppActions
                   showGetAppModal={handleShowModalAppDownload}

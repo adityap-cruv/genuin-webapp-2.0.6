@@ -47,6 +47,7 @@ export const TopNav = ({
       style={{
         background: variant === "light" ? "transparent" : "white",
         pointerEvents: "none",
+        marginTop: '25px'
       }}
       variant={variant}
     >
