@@ -48,7 +48,6 @@ export const ReactPlayerWrapper = ({
 }) => {
   const [progress, setProgress] = useState(0);
   const [isPlaying, setIsPlaying] = useState(autoplay);
-  const [isMuted, setIsMuted] = useState(muted);
   const [rtEnded, setRtEnded] = useState(false);
   const [isPlayingDebounced] = useDebounce(isPlaying, 65);
 
@@ -194,7 +193,7 @@ export const ReactPlayerWrapper = ({
           key={videoUrl}
           url={videoUrl}
           playing={isPlaying}
-          muted={isMuted}
+          muted={muted}
           controls={false}
           playsinline={true}
           config={{
