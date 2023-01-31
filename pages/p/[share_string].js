@@ -715,12 +715,13 @@ const Profile = ({
 
               <TabPanels
                 overflow='auto'
-                maxH='full'
+                // maxH='full'
                 height='full'
                 ml={mobile ? "-12px" : 0}
                 mr={mobile ? "-12px" : 0}
                 style={{
-                  width: mobile ? "auto" : "calc(100% + 24px)",
+                  // width: mobile ? "auto" : "calc(100% + 24px)",
+                  width: "auto"
                 }}
                 id='scrollableDiv'
               >
@@ -979,12 +980,12 @@ const Videos = ({
           scrollableTarget='scrollableDiv'
           loader={<div className="small-loading-spinner"></div>}
         >
-          <SimpleGrid
-            gap={mobile ? "1px" : "10px"}
-            minChildWidth={mobile ? "110px" : "200px"}
+          <div
+            className="grid-layout"
           >
             {videos.map(({ video, video_type }, index) => (
               <Flex
+                className="grid-item"
                 cursor='pointer'
                 transition='transform .2s'
                 _hover={{
@@ -994,8 +995,8 @@ const Videos = ({
                 key={video.video_uuid}
                 bgColor='black'
                 alignItems='center'
-                minH = {mobile ? {base: "200px", md: "300px" } : {base: "245px", md: "390px" }}
               >
+
                 {/* {!mobile && (
                   <Image
                     src={
@@ -1009,8 +1010,8 @@ const Videos = ({
                       // console.log("Not mobile click")
                       changeUrl(video_type, index, false, video?.share_url)
                     }}
-                  />
-                )} */}
+                  /> */}
+                {/* )} */}
                 {(
                   <Image
                     src={
@@ -1027,7 +1028,8 @@ const Videos = ({
                         video.video_thumbnail=icPreviewPlaceholder.src;
                       }
                     }}
-                    height={mobile ? { base: "200px", md: "300px" } : { base: "245px", md: "390px" }}
+                    height='full'
+                    objectFit='cover'
                     width='full'
                     onClick={() => {
                       // window.location.href = video.share_url;
@@ -1117,7 +1119,7 @@ const Videos = ({
                 )}
               </Flex>
             ))}
-          </SimpleGrid>
+          </div>
         </InfiniteScroll>
       )}
     </Box>
