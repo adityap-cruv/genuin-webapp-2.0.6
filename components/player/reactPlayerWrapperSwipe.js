@@ -44,16 +44,17 @@ export const ReactPlayerWrapper = ({
   setDirection,
   verticalNavigation,
   shareUrl,
+  muted
 }) => {
   const [progress, setProgress] = useState(0);
   const [isPlaying, setIsPlaying] = useState(autoplay);
-  const [isMuted, setIsMuted] = useState(true);
+  const [isMuted, setIsMuted] = useState(muted);
   const [rtEnded, setRtEnded] = useState(false);
   const [isPlayingDebounced] = useDebounce(isPlaying, 65);
 
   const handleToggleIsPlaying = useCallback(() => {
     setIsPlaying((old) => !old);
-    setIsMuted(false);
+    // setIsMuted(false);
   }, [setIsPlaying]);
 
   const touchStartYRef = useRef(0);
@@ -168,15 +169,20 @@ export const ReactPlayerWrapper = ({
   };
 
   let handleEnterViewport = function() {
+      console.log('view port enter')
+      console.log('currentVideoIndex', currentVideoIndex)
       setIsPlaying(true);
   }
   let handleExitViewport = function() {
+      console.log('view port exit')
+      console.log('currentVideoIndex', currentVideoIndex)
       setIsPlaying(false);
   }
   return (
     <Waypoint 
       onEnter={handleEnterViewport}
       onLeave={handleExitViewport}
+      topOffset='80%'
     >
       <div
         className="video-container"

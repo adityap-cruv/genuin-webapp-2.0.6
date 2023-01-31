@@ -32,6 +32,7 @@ export const Player = ({
   setDirection,
   verticalNavigation,
   shareUrl,
+  muted
 }) => {
   const [triggerPlayCount, setTriggetPlayCount] = useState(false);
   const [duration, setDuration] = useState(0);
@@ -128,6 +129,7 @@ export const Player = ({
         setDirection={setDirection}
         verticalNavigation={verticalNavigation}
         shareUrl={shareUrl}
+        muted={muted}
       >
         {children}
       </ReactPlayerWrapper>
