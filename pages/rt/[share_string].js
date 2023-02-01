@@ -641,15 +641,9 @@ const Participants = ({ members, mobile }) => {
         </Flex>
       )}
       {!mobile && (
-        <Grid
-          templateColumns={[
-            "1fr 1fr 1fr",
-            "1fr",
-            "1fr 1fr ",
-            "1fr 1fr 1fr",
-            "1fr 1fr 1fr 1fr",
-          ]}
-          gridRowGap = "1.5rem"
+        
+        <div
+            className="user-layout"
         >
           {members.map((user, index) => (
             <Link
@@ -658,6 +652,7 @@ const Participants = ({ members, mobile }) => {
               _hover={{
                 textDecoration: "none",
               }}
+              className = "user-item"
             >
               <VStack
                 cursor='pointer'
@@ -715,7 +710,8 @@ const Participants = ({ members, mobile }) => {
               </VStack>
             </Link>
           ))}
-        </Grid>
+
+        </div>
       )}
     </Flex>
   );
