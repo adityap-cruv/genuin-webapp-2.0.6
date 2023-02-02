@@ -508,6 +508,7 @@ const Videos = ({
             position='relative'
             zIndex={index === videos.length - 1 || index === 0 ? 11 : 9}
             bg='black'
+            id={`video-${index}`}
           >
             {!mobile && (
               <Box
@@ -523,6 +524,7 @@ const Videos = ({
                   setCurrentVideoIndex(index);
                 }}
                 maxH='full'
+                id={`video-${index}${index}`}
               />
             )}
             {mobile && (
@@ -535,6 +537,7 @@ const Videos = ({
                   bgRepeat='no-repeat'
                   bgPosition='center'
                   maxH='full'
+                  id={`video-${index}${index}`}
                 />
               </Link>
             )}
@@ -579,6 +582,7 @@ const Participants = ({ members, mobile }) => {
                 _hover={{
                   textDecoration: "none",
                 }}
+                className = {`user_${index}`}
               >
                 <HStack
                   cursor='pointer'
@@ -652,7 +656,7 @@ const Participants = ({ members, mobile }) => {
               _hover={{
                 textDecoration: "none",
               }}
-              className = "user-item"
+              className = {`user-item user_${index}`}
             >
               <VStack
                 cursor='pointer'

@@ -832,6 +832,8 @@ body .overlay {
     display: grid;
     grid-template-columns:1fr 1fr 1fr;
     row-gap: 22px;
+    /* just for 2 user */
+    column-gap: 20px; 
   }
 }
 
