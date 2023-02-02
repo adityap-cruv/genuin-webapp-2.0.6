@@ -51,7 +51,7 @@ export const TopNav = ({
       }}
       variant={variant}
     >
-      <Navbar.Brand href='/' className='p-0' style={{ pointerEvents: "all" }}>
+      <Navbar.Brand target="_blank" href='/' className='p-0' style={{ pointerEvents: "all" }}>
         <Image
           src={isBlue ? logoBlue.src : logo.src}
           alt='Genuin'
@@ -76,7 +76,7 @@ export const TopNav = ({
           </Button>
         )}
         {mobile && (
-          <Link href={appStoreLink} pointerEvents='all'>
+          <Link target="_blank" href={appStoreLink} pointerEvents='all'>
             <Button
               variant='primary'
               className='me-3'
@@ -112,13 +112,13 @@ export const TopNav = ({
                 <Nav {...(isContiner ? { className: "container" } : {})}>
                   <Navbar.Toggle aria-controls='navbarMoreOptionDrawer' />
                   <Trail open={isOpen}>
-                    <Nav.Link href={investLink}>Invest in Genuin</Nav.Link>
-                    <Nav.Link href={hireLink}>Join us</Nav.Link>
-                    <Nav.Link href='/terms'>Terms of Service</Nav.Link>
-                    <Nav.Link href='/privacy'>Privacy Policy</Nav.Link>
+                    <Nav.Link target="_blank" href={investLink}>Invest in Genuin</Nav.Link>
+                    <Nav.Link target="_blank" href={hireLink}>Join us</Nav.Link>
+                    <Nav.Link target="_blank" href='/terms'>Terms of Service</Nav.Link>
+                    <Nav.Link target="_blank" href='/privacy'>Privacy Policy</Nav.Link>
                   </Trail>
-                  <Nav.Link href='/' className='text-primary small mt-auto'>
-                    &copy; 2022 Genuin Inc.
+                  <Nav.Link target="_blank" href='/' className='text-primary small mt-auto'>
+                    &copy; 2023 Genuin Inc.
                   </Nav.Link>
                 </Nav>
               </Navbar.Collapse>

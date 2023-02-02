@@ -48,7 +48,6 @@ export const ReactPlayerWrapper = ({
 }) => {
   const [progress, setProgress] = useState(0);
   const [isPlaying, setIsPlaying] = useState(autoplay);
-  const [isMuted, setIsMuted] = useState(muted);
   const [rtEnded, setRtEnded] = useState(false);
   const [isPlayingDebounced] = useDebounce(isPlaying, 65);
 
@@ -169,21 +168,16 @@ export const ReactPlayerWrapper = ({
   };
 
   let handleEnterViewport = function() {
-      console.log('view port enter')
+      console.log('view port enterrrrrrrrrrrrrr')
       console.log('currentVideoIndex', currentVideoIndex)
       setIsPlaying(true);
   }
   let handleExitViewport = function() {
-      console.log('view port exit')
+      console.log('view port exittttttttttttttttt')
       console.log('currentVideoIndex', currentVideoIndex)
       setIsPlaying(false);
   }
   return (
-    <Waypoint 
-      onEnter={handleEnterViewport}
-      onLeave={handleExitViewport}
-      topOffset='80%'
-    >
       <div
         className="video-container"
         style={{
@@ -194,7 +188,7 @@ export const ReactPlayerWrapper = ({
           key={videoUrl}
           url={videoUrl}
           playing={isPlaying}
-          muted={isMuted}
+          muted={muted}
           controls={false}
           playsinline={true}
           config={{
@@ -233,7 +227,7 @@ export const ReactPlayerWrapper = ({
               <Text fontWeight="bold" fontSize={17}>
                 {videos[currentVideoIndex] && `${getTimeDiff()}`}
               </Text>
-              <Link href={roundTableId}>
+              <Link target="_blank" href={roundTableId}>
                 <Flex
                   alignItems="center"
                   gap={3}
@@ -538,6 +532,7 @@ export const ReactPlayerWrapper = ({
                 {Boolean(roundTableMode) && (
                   <Link
                     key={userName}
+                    target="_blank"
                     href={`/p/${userName}`}
                     _hover={{
                       textDecoration: "none",
@@ -573,18 +568,24 @@ export const ReactPlayerWrapper = ({
                       className="img-auther-pic"
                     />
                   ) : (
-                    <Image
-                      src={profilePic}
-                      width={9}
-                      height={9}
-                      alt={userName}
-                      title={userName}
-                      className="img-auther-pic"
-                    />
+                    <Waypoint 
+                      onEnter={handleEnterViewport}
+                      onLeave={handleExitViewport}
+                      // topOffset='80%'
+                    >
+                      <Image
+                        src={profilePic}
+                        width={9}
+                        height={9}
+                        alt={userName}
+                        title={userName}
+                        className="img-auther-pic"
+                      />
+                    </Waypoint>
                   )}
                     {Boolean(roundTableMode) ? (
                       <Flex alignItems="center">
-                      <Link href={`/rt/${roundTableId}`} style={{
+                      <Link target="_blank" href={`/rt/${roundTableId}`} style={{
                           marginRight: "10px"
                         }}>
                         <Text
@@ -614,7 +615,7 @@ export const ReactPlayerWrapper = ({
                         </Button>
                       </Flex>
                     ) : (
-                        <Link href={`/p/${userName}`}>
+                        <Link target="_blank" href={`/p/${userName}`}>
                             <Text
                               whiteSpace="nowrap"
                               overflow="hidden"
@@ -632,6 +633,7 @@ export const ReactPlayerWrapper = ({
             )}
             {watchRoundTable && roundTableMode && (
               <Link
+                target="_blank"
                 href={`/p/${userName}`}
                 _hover={{
                   textDecoration: "none",
@@ -664,6 +666,5 @@ export const ReactPlayerWrapper = ({
           <ProgressBar now={progress} />
         </div>
       </div>
-    </Waypoint>
   );
 };
