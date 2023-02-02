@@ -580,6 +580,7 @@ export const ReactPlayerWrapper = ({
                         alt={userName}
                         title={userName}
                         className="img-auther-pic"
+                        style={{objectFit: 'cover'}}
                       />
                     </Waypoint>
                   )}
@@ -619,16 +620,17 @@ export const ReactPlayerWrapper = ({
                             <Text
                               whiteSpace="nowrap"
                               overflow="hidden"
-                          textOverflow="ellipsis"
-                          className="user-name"
-                            // width={mobile ? 'calc(100vw - 135px)' : '270px'}
+                              textOverflow="ellipsis"
+                              className="user-name"
+                              fontWeight="bold"
+                              // width={mobile ? 'calc(100vw - 135px)' : '270px'}
                             >
                             @{userName}
                             </Text>
                       </Link>
                     )}
                 </div>
-                <p className="mb-0">{description}</p>
+                <p style={{fontWeight:"bold"}} className="mb-0">{description}</p>
               </Flex>
             )}
             {watchRoundTable && roundTableMode && (

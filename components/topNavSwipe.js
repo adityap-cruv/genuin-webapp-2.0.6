@@ -40,7 +40,7 @@ export const TopNav = ({
 
   return (
     <>
-    <p style={{fontSize: '12px', zIndex: 1, position: 'fixed', top: 15, left: 28, color: 'white'}}>Feed powered by</p>
+    <p style={{fontSize: '12px', fontFamily: 'AvenirNext-DemiBold', zIndex: 1, position: 'fixed', top: 13, left: 18, color: 'white'}}>Feed powered by</p>
     <Navbar
       {...(isContiner ? { className: "p-3 container" } : { className: "p-3" })}
       expand={false}
@@ -57,7 +57,7 @@ export const TopNav = ({
           src={isBlue ? logoBlue.src : logo.src}
           alt='Genuin'
           title='Genuin'
-          style={{position: 'fixed', top: 40}}
+          style={{position: 'fixed', top: 27, left: 14, width: '80px'}}
         />
       </Navbar.Brand>
       <div className='d-flex align-items-center justify-content-center'>

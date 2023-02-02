@@ -689,7 +689,7 @@ body .overlay {
 .volume-control {
   position: fixed;
   display: flex;
-  top: 85px;
+  top: 60px;
   left: 1px;
   z-index: 1;
   margin-left: 1rem;
