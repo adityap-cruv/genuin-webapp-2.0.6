@@ -118,6 +118,7 @@ const Profile = ({
     <>
       <Layout>
       <TopNav showGetAppModal={handleShowModalAppDownload} variant='light' />
+      { muted ?
       <div className="volume-control">
           <Button
               variant='primary'
@@ -131,12 +132,11 @@ const Profile = ({
                 borderRadius: '8px'
               }}
           >
-            {
-              muted ? <FontAwesomeIcon icon={faVolumeMute} /> : <FontAwesomeIcon icon={faVolumeUp} />
-            }
+            <FontAwesomeIcon icon={faVolumeMute} />
             {show_unmute_text?<p>Tap to unmute</p>:""}
           </Button>
       </div>
+      :""}
       <Flex
         className='section-content h-100 swipe-container'
         direction='initial'
