@@ -687,29 +687,39 @@ body .overlay {
 }
 
 .volume-control {
-  position: absolute;
-  z-index: 2;
-  width: 100%;
-  background:rgba(0,0,0,0.8);
-  /* filter:blur(25px) brightness(30%);
-  -o-filter:blur(25px) brightness(30%);
-  -ms-filter:blur(25px) brightness(30%);
-  -moz-filter:blur(25px) brightness(30%);
-  -webkit-filter:blur(25px) brightness(30%); */
+  position: fixed;
+  display: flex;
+  top: 85px;
+  left: 1px;
+  z-index: 1;
+  margin-left: 1rem;
 }
 .volume-control svg {
-  top: 5px;
-  left: 10px;
-  position: absolute;
-  color: white;
-  padding: 0.2rem 0.8rem;
+  position: relative;
+  color: black;
+  padding: 0rem;
+  /* height: 2em; */
+  width: 28px;
+  height: 28px;
+  vertical-align: inherit;
 }
+.volume-control .btn-primary {
+  color: black;
+  background-color: white;
+  border-color: #0645ff;
+}
+
 .volume-control p {
-  text-align: center;
-  margin: 5px auto;
-  font-weight: bold;
-  color: white;
+  float: right;
+  margin-left: 11px;
+  margin-top: 1px;
 }
+
+/* .top-bar {
+  background: linear-gradient(180deg, rgba(17, 17, 17, 0) 0%, rgba(17, 17, 17, 0.7) 100%);
+  transform: rotate(180deg);
+  z-index: 1;
+} */
 
 /* to improve on reduce media queries */
 @media only screen and (min-width: 600px) and (min-height: 640px) {

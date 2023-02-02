@@ -97,9 +97,9 @@ export const Player = ({
         filter='blur(25px) brightness(30%)'
       />
       {/* don't show if it's a pad & watch roundtable  */}
-      {(!watchRoundTable || !pad) && (
+      {/* {(!watchRoundTable || !pad) && (
         <TopNav showGetAppModal={showGetAppModal} variant='light' />
-      )}
+      )} */}
       <ReactPlayerWrapper
         videoUrl={videoUrl}
         onProgress={handleProgress}

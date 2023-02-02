@@ -4,8 +4,11 @@ import { Player } from "../components/player/player_swipe";
 import { Layout } from "../components/layout";
 import { GetAppModal } from "../components/getAppModal";
 
+import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faVolumeMute, faVolumeUp } from '@fortawesome/free-solid-svg-icons'
+import { TopNav } from "../components/topNavSwipe";
+
 import {
   AppActions
 } from "../components/appActions";
@@ -51,6 +54,7 @@ const Profile = ({
   const preparedFeedVideos = prepareFeedVideos(all_videos)
   const [videos, setVideos] = useState(preparedFeedVideos);
   const [muted, setMuted] = useState(true);
+  const [show_unmute_text, setShowUnmuteText] = useState(true);
 
   const [showModalAppDownload, setShowModalAppDownload] = useState(false);
   const getAppComponentRef = useRef(() => null);
@@ -62,6 +66,12 @@ const Profile = ({
     getAppComponentRef.current = message;
     setShowModalAppDownload(true);
   };
+
+  useEffect(function(){
+    setTimeout(() => {
+      setShowUnmuteText(false);
+    }, 5000);
+  },[])
 
   const mobile = useBreakpointValue({ base: true, md: false });
 
@@ -107,11 +117,25 @@ const Profile = ({
   ) : (
     <>
       <Layout>
-      <div className="volume-control" onClick={() => setMuted(prev => !prev)}>
-        {
-          muted ? <FontAwesomeIcon icon={faVolumeMute} /> : <FontAwesomeIcon icon={faVolumeUp} />
-        }
-        <p>Feed powered by Genuin</p>
+      <TopNav showGetAppModal={handleShowModalAppDownload} variant='light' />
+      <div className="volume-control">
+          <Button
+              variant='primary'
+              onClick={() => {setMuted(prev => !prev); setShowUnmuteText(false); }}
+              style={{
+                height: 45,
+                padding: "8px",
+                fontSize: 17,
+                fontWeight: "bold",
+                pointerEvents: "all",
+                borderRadius: '8px'
+              }}
+          >
+            {
+              muted ? <FontAwesomeIcon icon={faVolumeMute} /> : <FontAwesomeIcon icon={faVolumeUp} />
+            }
+            {show_unmute_text?<p>Tap to unmute</p>:""}
+          </Button>
       </div>
       <Flex
         className='section-content h-100 swipe-container'

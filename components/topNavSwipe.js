@@ -33,12 +33,14 @@ export const TopNav = ({
   hideBurgerMenu = false,
   isContiner = false,
   isBlue = false,
-  variant = "dark",
+  variant = "dark"
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const mobile = useBreakpointValue({ base: true, sm: false });
 
   return (
+    <>
+    <p style={{fontSize: '12px', zIndex: 1, position: 'fixed', top: 15, left: 28, color: 'white'}}>Feed powered by</p>
     <Navbar
       {...(isContiner ? { className: "p-3 container" } : { className: "p-3" })}
       expand={false}
@@ -47,7 +49,6 @@ export const TopNav = ({
       style={{
         background: variant === "light" ? "transparent" : "white",
         pointerEvents: "none",
-        marginTop: '25px'
       }}
       variant={variant}
     >
@@ -56,6 +57,7 @@ export const TopNav = ({
           src={isBlue ? logoBlue.src : logo.src}
           alt='Genuin'
           title='Genuin'
+          style={{position: 'fixed', top: 40}}
         />
       </Navbar.Brand>
       <div className='d-flex align-items-center justify-content-center'>
@@ -127,5 +129,6 @@ export const TopNav = ({
         )}
       </div>
     </Navbar>
+    </>
   );
 };
