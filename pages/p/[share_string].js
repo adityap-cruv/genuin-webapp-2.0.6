@@ -641,6 +641,7 @@ const Profile = ({
                   h={8}
                   px={5}
                   onClick={showGetAppToSendMessage}
+                  id = "profile_message"
                 >
                   <Image
                     src={directMessage.src}
@@ -670,6 +671,7 @@ const Profile = ({
                     h={8}
                     borderRadius='md'
                     variation='blue'
+                    className = "profile_share"
                   />
                 )}
               </Flex>
@@ -693,19 +695,19 @@ const Profile = ({
                 w={mobile ? "calc(100% + 24px)" : "full"}
                 ml={mobile ? "-12px" : 0}
               >
-                <Tab flexGrow={1}>
+                <Tab flexGrow={1} className = "all_icon">
                   <AllIcon
                     boxSize={8}
                     color={tabIndex === 0 ? "#111111" : "#949494"}
                   />
                 </Tab>
-                <Tab flexGrow={1} onClick={loadVideosPublic}>
+                <Tab flexGrow={1} onClick={loadVideosPublic} className = "public_icon">
                   <PublicIcon
                     boxSize={8}
                     color={tabIndex === 1 ? "#111111" : "#949494"}
                   />
                 </Tab>
-                <Tab flexGrow={1} onClick={loadVideosRT}>
+                <Tab flexGrow={1} onClick={loadVideosRT} className = "roundtable_icon">
                   <RoundtableIcon
                     boxSize={8}
                     color={tabIndex === 2 ? "#111111" : "#949494"}
@@ -725,9 +727,10 @@ const Profile = ({
                 }}
                 id='scrollableDiv'
               >
+                 // for all video
                 <TabPanel p={0} pt='1px' h='full'>
                   <Box ref={tab1Ref} />
-                  <Videos
+                  <Videos 
                     mobile={mobile}
                     videos={videos}
                     onOpen={onOpen}
@@ -737,6 +740,8 @@ const Profile = ({
                     changeUrl={changeUrl}
                   />
                 </TabPanel>
+
+                // for public video
                 <TabPanel p={0} pt='1px' h='full'>
                   <Box ref={tab2Ref} />
                   <Videos
@@ -750,6 +755,8 @@ const Profile = ({
                     isLoading={isLoading}
                   />
                 </TabPanel>
+
+                // for rt video
                 <TabPanel p={0} pt='1px' h='full'>
                   <Box ref={tab3Ref} />
                   <Videos
@@ -763,6 +770,7 @@ const Profile = ({
                     isLoading={isLoading}
                   />
                 </TabPanel>
+
               </TabPanels>
             </Tabs>
           </Flex>
@@ -985,7 +993,7 @@ const Videos = ({
           >
             {videos.map(({ video, video_type }, index) => (
               <Flex
-                className="grid-item"
+                className={`grid-item video_${index}`}
                 cursor='pointer'
                 transition='transform .2s'
                 _hover={{
@@ -1144,7 +1152,7 @@ const PublicIcon = (props) => (
   </Icon>
 );
 const AllIcon = (props) => (
-  <Icon viewBox='0 0 22 24' {...props}>
+  <Icon viewBox='0 0 22 24' {...props} className = "allIcon">
     <path
       fillRule='evenodd'
       clipRule='evenodd'
@@ -1189,4 +1197,5 @@ Profile.getInitialProps = async ({ query: { share_string } }) => {
     return Promise.resolve({});
   }
 };
+
 export default Profile;
