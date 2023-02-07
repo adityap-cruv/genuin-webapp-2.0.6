@@ -111,13 +111,13 @@ export const TopNav = ({
                 <Nav {...(isContiner ? { className: "container" } : {})}>
                   <Navbar.Toggle aria-controls='navbarMoreOptionDrawer' />
                   <Trail open={isOpen}>
-                    <Nav.Link href={investLink}>Invest in Genuin</Nav.Link>
+                    {/* <Nav.Link href={investLink}>Invest in Genuin</Nav.Link> */}
                     <Nav.Link href={hireLink}>Join us</Nav.Link>
                     <Nav.Link href='/terms'>Terms of Service</Nav.Link>
                     <Nav.Link href='/privacy'>Privacy Policy</Nav.Link>
                   </Trail>
                   <Nav.Link href='/' className='text-primary small mt-auto'>
-                    &copy; 2022 Genuin Inc.
+                    &copy; 2023 Genuin Inc.
                   </Nav.Link>
                 </Nav>
               </Navbar.Collapse>

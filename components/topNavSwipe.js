@@ -114,7 +114,7 @@ export const TopNav = ({
                 <Nav {...(isContiner ? { className: "container" } : {})}>
                   <Navbar.Toggle aria-controls='navbarMoreOptionDrawer' />
                   <Trail open={isOpen}>
-                    <Nav.Link target="_blank" href={investLink}>Invest in Genuin</Nav.Link>
+                    {/* <Nav.Link target="_blank" href={investLink}>Invest in Genuin</Nav.Link> */}
                     <Nav.Link target="_blank" href={hireLink}>Join us</Nav.Link>
                     <Nav.Link target="_blank" href='/terms'>Terms of Service</Nav.Link>
                     <Nav.Link target="_blank" href='/privacy'>Privacy Policy</Nav.Link>
