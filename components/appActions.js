@@ -245,6 +245,7 @@ export const MobileShareButton = ({
       <Image
         src={white ? shareImg.src : shareImgBlue.src}
         size={8}
+        className = "profile_share"
         padding={fullWidth?'10px': 'unset'}
         alt='Share'
         title='Share'
