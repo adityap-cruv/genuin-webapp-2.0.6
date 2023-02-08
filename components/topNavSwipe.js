@@ -118,7 +118,6 @@ export const TopNav = ({
                     <Nav.Link target="_blank" href={hireLink}>Join us</Nav.Link>
                     <Nav.Link target="_blank" href='/terms'>Terms of Service</Nav.Link>
                     <Nav.Link target="_blank" href='/privacy'>Privacy Policy</Nav.Link>
-                    <Nav.Link target="_blank" href={`/content_demo?value=rt_123f373977001407`}>Life at Genuin</Nav.Link>
                   </Trail>
                   <Nav.Link target="_blank" href='/' className='text-primary small mt-auto'>
                     &copy; 2023 Genuin Inc.
