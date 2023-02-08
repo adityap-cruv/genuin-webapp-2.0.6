@@ -848,6 +848,14 @@ body .overlay {
   }
 }
 
+@media only screen and (min-width: 769px) and (max-width : 992px){
+  .user-layout {
+    display: grid;
+    grid-template-columns:1fr 1fr;
+    row-gap: 25px;
+  }
+}
+
 /* for small screens */
 @media only screen and (min-width: 768px) {
   .grid-layout {
