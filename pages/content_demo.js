@@ -8,11 +8,6 @@ import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faVolumeMute, faVolumeUp } from '@fortawesome/free-solid-svg-icons'
 import { TopNav } from "../components/topNavSwipe";
-<<<<<<< HEAD
-// doing minor change to check
-=======
-
->>>>>>> 4ca2ab4f8c7065d391576caf8a01b5b32f1bba8d
 import {
   AppActions
 } from "../components/appActions";
@@ -286,8 +281,4 @@ Profile.getInitialProps = async ({ query: { nickname, rt } }) => {
     return Promise.resolve({});
   }
 };
-<<<<<<< HEAD
 export default Profile;
-=======
-export default Profile;
->>>>>>> 4ca2ab4f8c7065d391576caf8a01b5b32f1bba8d
