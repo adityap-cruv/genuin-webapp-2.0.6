@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import NextHead from "next/head";
 import { Layout } from "../components/layout";
 import { GetAppModal } from "../components/getAppModal";
@@ -25,6 +25,12 @@ const Home = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [showModalAppDownload, setShowModalAppDownload] = useState(false);
   const handleCloseAppDownload = () => setShowModalAppDownload(false);
+
+  // const search = () => {
+  //   console.log("sending event")
+  //   window.rudderanalytics.page();
+  //   window.rudderanalytics.track("new Track Event");
+  // };
 
   return (
     <>
@@ -148,7 +154,7 @@ const Home = () => {
                   className='justify-content-start justify-content-md-end'
                   as='ul'
                 >
-                  <Nav.Item as='li'>
+                  {/* <Nav.Item as='li'>
                     <Nav.Link
                       style={{ opacity: 0.5 }}
                       href='#'
@@ -156,7 +162,7 @@ const Home = () => {
                     >
                       Invest in Genuin
                     </Nav.Link>
-                  </Nav.Item>
+                  </Nav.Item> */}
                   <Nav.Item as='li'>
                     <Nav.Link
                       style={{

@@ -173,7 +173,7 @@ const Terms = () => {
                 className='justify-content-start justify-content-md-end'
                 as='ul'
               >
-                <Nav.Item as='li'>
+                {/* <Nav.Item as='li'>
                   <Nav.Link
                     style={{ opacity: 0.5 }}
                     href='#'
@@ -181,7 +181,7 @@ const Terms = () => {
                   >
                     Invest in Genuin
                   </Nav.Link>
-                </Nav.Item>
+                </Nav.Item> */}
                 <Nav.Item as='li'>
                   <Nav.Link
                     style={{

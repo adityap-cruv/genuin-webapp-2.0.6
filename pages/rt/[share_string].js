@@ -187,8 +187,6 @@ const RoundTable = ({
     <Error />
   ) : (
     <Layout>
-             
-
       <SEO
         title={title_name}
         openGraphTitle={group.group_name}
@@ -508,6 +506,7 @@ const Videos = ({
             position='relative'
             zIndex={index === videos.length - 1 || index === 0 ? 11 : 9}
             bg='black'
+            id={`video-${index}`}
           >
             {!mobile && (
               <Box
@@ -523,6 +522,7 @@ const Videos = ({
                   setCurrentVideoIndex(index);
                 }}
                 maxH='full'
+                id={`video-${index}${index}`}
               />
             )}
             {mobile && (
@@ -535,6 +535,7 @@ const Videos = ({
                   bgRepeat='no-repeat'
                   bgPosition='center'
                   maxH='full'
+                  id={`video-${index}${index}`}
                 />
               </Link>
             )}
@@ -579,6 +580,7 @@ const Participants = ({ members, mobile }) => {
                 _hover={{
                   textDecoration: "none",
                 }}
+                className = {`user_${index}`}
               >
                 <HStack
                   cursor='pointer'
@@ -641,15 +643,9 @@ const Participants = ({ members, mobile }) => {
         </Flex>
       )}
       {!mobile && (
-        <Grid
-          templateColumns={[
-            "1fr 1fr 1fr",
-            "1fr",
-            "1fr 1fr ",
-            "1fr 1fr 1fr",
-            "1fr 1fr 1fr 1fr",
-          ]}
-          gridRowGap = "1.5rem"
+        
+        <div
+            className="user-layout"
         >
           {members.map((user, index) => (
             <Link
@@ -658,6 +654,7 @@ const Participants = ({ members, mobile }) => {
               _hover={{
                 textDecoration: "none",
               }}
+              className = {`user-item user_${index}`}
             >
               <VStack
                 cursor='pointer'
@@ -715,7 +712,8 @@ const Participants = ({ members, mobile }) => {
               </VStack>
             </Link>
           ))}
-        </Grid>
+
+        </div>
       )}
     </Flex>
   );
