@@ -93,7 +93,7 @@ export const Player = ({
         left={0}
         top={0}
         pos='absolute'
-        filter='blur(25px) brightness(30%)'
+        filter='blur(25px) brightness(95%)'
       />
       {/* don't show if it's a pad & watch roundtable  */}
       {/* {(!watchRoundTable || !pad) && (
