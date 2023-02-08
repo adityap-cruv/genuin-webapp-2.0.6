@@ -758,17 +758,20 @@ body .overlay {
   }
 }
 /* media queries */
+
+/* grid layout for showing video list */
 .grid-layout {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
 }
 
+/* single grid component in grid layout */
 .grid-item {
   height: 200px;
 }
 
 /* for smaller than mobiles */
-@media only screen and (min-width: 200px) {
+@media only screen and (min-width: 100px) {
   .grid-layout {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
@@ -777,6 +780,11 @@ body .overlay {
 
   .grid-item {
     height: 150px;
+  }
+
+  /* homeNav Join us button */
+  .custom-home-button {
+    display: none;
   }
 }
 
@@ -812,6 +820,31 @@ body .overlay {
 
   .grid-item {
     height: 280px;
+  }
+  
+  /* homeNav burger menu */
+  .custom-home-burger {
+    display: none;
+  }
+
+  .custom-home-button {
+    display: block;
+  }
+}
+
+@media only screen and (min-width: 769px) and (max-width : 992px){
+  .user-layout {
+    display: grid;
+    grid-template-columns:1fr 1fr;
+    row-gap: 25px;
+  }
+}
+
+@media only screen and (min-width: 769px) and (max-width : 992px){
+  .user-layout {
+    display: grid;
+    grid-template-columns:1fr 1fr;
+    row-gap: 25px;
   }
 }
 

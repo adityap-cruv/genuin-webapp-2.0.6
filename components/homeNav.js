@@ -56,10 +56,9 @@ export const HomeNav = ({
         />
       </Navbar.Brand>
       <div className='d-flex align-items-center justify-content-center'>
-        {!mobile && (
           <Button
             variant='primary'
-            className='me-3'
+            className='me-3 custom-home-button'
             onClick={handleHireLinkClick}
             style={{
               fontSize: 22,
@@ -69,11 +68,10 @@ export const HomeNav = ({
           >
             Join Us
           </Button>
-        )}
-        {mobile && (
-          <>
+
             <Navbar.Toggle
-              aria-controls='navbarMoreOptionDrawer'
+            aria-controls='navbarMoreOptionDrawer'
+            className='custom-home-burger'
               style={{
                 visibility: isOpen ? "hidden" : "revert",
               }}
@@ -96,8 +94,6 @@ export const HomeNav = ({
                 </Nav>
               </Navbar.Collapse>
             </Fade>
-          </>
-        )}
       </div>
     </Navbar>
   );

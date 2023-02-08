@@ -187,8 +187,6 @@ const RoundTable = ({
     <Error />
   ) : (
     <Layout>
-             
-
       <SEO
         title={title_name}
         openGraphTitle={group.group_name}

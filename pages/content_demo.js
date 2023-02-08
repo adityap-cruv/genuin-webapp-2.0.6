@@ -8,7 +8,6 @@ import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faVolumeMute, faVolumeUp } from '@fortawesome/free-solid-svg-icons'
 import { TopNav } from "../components/topNavSwipe";
-
 import {
   AppActions
 } from "../components/appActions";
