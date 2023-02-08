@@ -202,7 +202,21 @@ const Profile = ({
 };
 
 
-Profile.getInitialProps = async ({ query: { nickname, rt } }) => {
+Profile.getInitialProps = async ({ query: { value } }) => {
+  var nickname, rt;
+
+  if (value !== undefined &&
+    value !== null &&
+    value !== "") {
+    if (value.indexOf('p_') === 0) {
+      nickname = value.substring(2)
+    }
+
+    if (value.indexOf('rt_') === 0) {
+      rt = value.substring(3);
+    }
+  }
+
   if (
     nickname !== undefined &&
     nickname !== null &&
