@@ -154,7 +154,7 @@ const Home = () => {
                       target="_blank"
                       href={`/content_demo?value=rt_123f373977001407`}
                     >
-                      Invest in Genuin
+                      Life at Genuin
                     </Nav.Link>
                   </Nav.Item>
                   <Nav.Item as='li'>
