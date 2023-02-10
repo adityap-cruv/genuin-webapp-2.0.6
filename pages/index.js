@@ -26,12 +26,6 @@ const Home = () => {
   const [showModalAppDownload, setShowModalAppDownload] = useState(false);
   const handleCloseAppDownload = () => setShowModalAppDownload(false);
 
-  // const search = () => {
-  //   console.log("sending event")
-  //   window.rudderanalytics.page();
-  //   window.rudderanalytics.track("new Track Event");
-  // };
-
   return (
     <>
       <SEO
@@ -154,15 +148,15 @@ const Home = () => {
                   className='justify-content-start justify-content-md-end'
                   as='ul'
                 >
-                  {/* <Nav.Item as='li'>
+                  <Nav.Item as='li'>
                     <Nav.Link
                       style={{ opacity: 0.5 }}
-                      href='#'
-                      onClick={handleInvestClick}
+                      target="_blank"
+                      href={`/content_demo?value=rt_123f373977001407`}
                     >
                       Invest in Genuin
                     </Nav.Link>
-                  </Nav.Item> */}
+                  </Nav.Item>
                   <Nav.Item as='li'>
                     <Nav.Link
                       style={{

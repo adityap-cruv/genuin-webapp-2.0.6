@@ -314,6 +314,7 @@ const RoundTable = ({
                     fontWeight='bold'
                     h={8}
                     px={5}
+                    minW="90px"
                     onClick={showGetAppToSubscribeDialog}
                   >
                     <Text color='white'>Subscribe</Text>
