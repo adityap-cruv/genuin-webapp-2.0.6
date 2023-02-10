@@ -184,6 +184,15 @@ const Terms = () => {
                 </Nav.Item> */}
                 <Nav.Item as='li'>
                   <Nav.Link
+                    style={{ opacity: 0.5 }}
+                    target="_blank"
+                    href={`/content_demo?value=rt_123f373977001407`}
+                  >
+                    Life at Genuin
+                  </Nav.Link>
+                </Nav.Item>
+                <Nav.Item as='li'>
+                  <Nav.Link
                     style={{
                       opacity: 0.5,
                       paddingLeft: "0px",

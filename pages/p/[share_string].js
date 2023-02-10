@@ -32,7 +32,6 @@ import {
   Divider,
   useDisclosure,
   useBreakpointValue,
-  Grid,
   Tabs,
   TabList,
   TabPanels,
@@ -40,7 +39,7 @@ import {
   TabPanel,
   Icon,
   Text,
-  SimpleGrid,
+  Spinner  
 } from "@chakra-ui/react";
 
 const Profile = ({
@@ -986,7 +985,20 @@ const Videos = ({
           hasMore={!noMoreVideos}
           scrollThreshold={1}
           scrollableTarget='scrollableDiv'
-          loader={<div className="small-loading-spinner"></div>}
+          loader={<div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '20vh'
+            }}>
+            <Spinner
+              thickness='4px'
+              speed='1s'
+              emptyColor='blue'
+              color='white'
+              size='lg' />
+          </div>}
         >
           <div
             className="grid-layout"

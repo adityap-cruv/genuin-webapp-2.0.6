@@ -757,6 +757,7 @@ body .overlay {
     width: 120px;
   }
 }
+
 /* media queries */
 
 /* grid layout for showing video list */
@@ -802,14 +803,6 @@ body .overlay {
   }
 }
 
-@media only screen and (min-width: 480px ) and (max-width : 769px) {
-  .user-layout {
-    display: grid;
-    grid-template-columns:1fr;
-    gap: 25px;
-  }
-}
-
 /* for ipads and tablets */
 @media only screen and (min-width: 480px) {
   .grid-layout {
@@ -830,29 +823,11 @@ body .overlay {
   .custom-home-button {
     display: block;
   }
-}
 
-@media only screen and (min-width: 769px) and (max-width : 992px){
   .user-layout {
     display: grid;
-    grid-template-columns:1fr 1fr;
-    row-gap: 25px;
-  }
-}
-
-@media only screen and (min-width: 769px) and (max-width : 992px){
-  .user-layout {
-    display: grid;
-    grid-template-columns:1fr 1fr;
-    row-gap: 25px;
-  }
-}
-
-@media only screen and (min-width: 769px) and (max-width : 992px){
-  .user-layout {
-    display: grid;
-    grid-template-columns:1fr 1fr;
-    row-gap: 25px;
+    grid-template-columns: 1fr;
+    gap: 25px;
   }
 }
 
@@ -868,16 +843,12 @@ body .overlay {
     height: 280px;
   }
 
-}
-
-@media only screen and (min-width: 992px) and (max-width : 1200px){
   .user-layout {
     display: grid;
-    grid-template-columns:1fr 1fr 1fr;
-    row-gap: 22px;
-    /* just for 2 user */
-    column-gap: 20px; 
+    grid-template-columns: 1fr 1fr;
+    row-gap: 25px;
   }
+
 }
 
 /* for large screens */
@@ -891,44 +862,13 @@ body .overlay {
   .grid-item {
     height: 300px;
   }
-}
 
-@media only screen and (min-width: 1201px) and (max-width: 1399px){
   .user-layout {
     display: grid;
-    grid-template-columns:1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
     row-gap: 22px;
-  }
-
-  
-  .user-item{
-    width: 180px;
-  }
-}
-
-@media only screen and (min-width: 1399px) and (max-width : 1402px){
-  .user-layout {
-    display: grid;
-    grid-template-columns:1fr 1fr 1fr 1fr;
-    column-gap: 10px;
-    row-gap: 10px;
-  }
-
-  @media only screen and (min-width: 1400px) and (max-width : 1402px){
-    .user-layout {
-      display: grid;
-      grid-template-columns:0.8fr 0.8fr 0.8fr 0.8fr;
-      column-gap: 10px;
-      row-gap: 25px;
-    }
-  }
-}
-
-@media only screen and (min-width: 1402px){
-  .user-layout {
-    display: grid;
-    grid-template-columns:1fr 1fr 1fr 1fr;
-    row-gap: 22px;
+    /* just for 2 user */
+    column-gap: 20px;
   }
 }
 
@@ -942,5 +882,28 @@ body .overlay {
 
   .grid-item {
     height: 380px;
+  }
+
+  .user-layout {
+    display: grid;
+    grid-template-columns: .8fr .8fr .8fr .8fr;
+    row-gap: 21px;
+  }
+
+  .user-item {
+    width: 15vw;
+  }
+}
+
+@media only screen and (min-width: 1398px) {
+  .user-layout {
+    display: grid;
+    grid-template-columns: 0.8fr 0.8fr 0.8fr 0.8fr;
+    column-gap: 10px;
+    row-gap: 25px;
+  }
+
+  .user-item {
+    width: auto;
   }
 }
