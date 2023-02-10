@@ -34,7 +34,10 @@ const Profile = ({
       }
     }, []);
   }
+<<<<<<< HEAD
   console.log("revenue enabled :", revenue_enabled);
+=======
+>>>>>>> d459081be899d2eb0057fe3df87ad226940a8a32
   const preparedFeedVideos = prepareFeedVideos(all_videos)
   const [videos, setVideos] = useState(preparedFeedVideos);
   const [muted, setMuted] = useState(true);
@@ -151,6 +154,7 @@ const Profile = ({
                   }
                   description={videos[id]?.video?.description}
                   link={videos[id]?.video?.link}
+<<<<<<< HEAD
                   videoUrl={videos[id] && videos[id]['video'] && videos[id]['video']['video_url_m3u8']
                     ? (revenue_enabled
                       ? getInfyUrl(videos[id]['video']['video_url_m3u8'])
@@ -158,6 +162,9 @@ const Profile = ({
                     : (videos[id] && videos[id]['video'] && videos[id]['video']['videoUrl']
                       ? videos[id] && videos[id]['video'] && videos[id]['video']['videoUrl']
                       : null)}
+=======
+                  videoUrl={videos[id] && videos[id]['video'] && videos[id]['video']['video_url_m3u8'] ? (revenue_enabled ? getInfyUrl(videos[id]['video']['video_url_m3u8']) : videos[id]['video']['video_url_m3u8']) : (videos[id] && videos[id]['video'] && videos[id]['video']['videoUrl'] ? videos[id] && videos[id]['video'] && videos[id]['video']['videoUrl'] : null)}
+>>>>>>> d459081be899d2eb0057fe3df87ad226940a8a32
                   userName={videos[id] && videos[id]['video_type'] == 'rt' ? videos[id]['video']['owner']['nickname'] : (user && user.nickname ? user.nickname: null)}
                   userId={videos[id] && videos[id]['video_type'] == 'rt' ? videos[id]['video']['owner']['nickname'] : (user && user.nickname ? user.nickname : null)}
                   userProfileImage={videos[id] && videos[id]['video_type'] == 'rt' ? videos[id]['video']['owner']['profile_image'] : (user && user.profile_image ? user.profile_image : null)}
@@ -211,11 +218,15 @@ const Profile = ({
 
 Profile.getInitialProps = async ({ query: { value, revenue_enabled } }) => {
   var nickname, rt;
+<<<<<<< HEAD
   if (revenue_enabled === "true") {
     revenue_enabled = true;
   } else {
     revenue_enabled = false;
   }
+=======
+  console.log("revenue enabled :", revenue_enabled)
+>>>>>>> d459081be899d2eb0057fe3df87ad226940a8a32
   if (value !== undefined &&
     value !== null &&
     value !== "") {
