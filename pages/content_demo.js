@@ -21,7 +21,8 @@ import {
 const Profile = ({
   user = {},
   all_videos = [],
-  is_prop_loaded = false
+  is_prop_loaded = false,
+  revenue_enabled = false,
 }) => {
   const prepareFeedVideos = (videos = []) => {
     return videos.reduce((res, { video_type, video }) => {
@@ -33,7 +34,6 @@ const Profile = ({
       }
     }, []);
   }
-
   const preparedFeedVideos = prepareFeedVideos(all_videos)
   const [videos, setVideos] = useState(preparedFeedVideos);
   const [muted, setMuted] = useState(true);
@@ -150,7 +150,7 @@ const Profile = ({
                   }
                   description={videos[id]?.video?.description}
                   link={videos[id]?.video?.link}
-                  videoUrl={videos[id] && videos[id]['video'] && videos[id]['video']['video_url_m3u8'] ? getInfyUrl(videos[id]['video']['video_url_m3u8']) : (videos[id] && videos[id]['video'] && videos[id]['video']['videoUrl'] ? videos[id] && videos[id]['video'] && videos[id]['video']['videoUrl'] : null)}
+                  videoUrl={videos[id] && videos[id]['video'] && videos[id]['video']['video_url_m3u8'] ? (revenue_enabled ? getInfyUrl(videos[id]['video']['video_url_m3u8']) : videos[id]['video']['video_url_m3u8']) : (videos[id] && videos[id]['video'] && videos[id]['video']['videoUrl'] ? videos[id] && videos[id]['video'] && videos[id]['video']['videoUrl'] : null)}
                   userName={videos[id] && videos[id]['video_type'] == 'rt' ? videos[id]['video']['owner']['nickname'] : (user && user.nickname ? user.nickname: null)}
                   userId={videos[id] && videos[id]['video_type'] == 'rt' ? videos[id]['video']['owner']['nickname'] : (user && user.nickname ? user.nickname : null)}
                   userProfileImage={videos[id] && videos[id]['video_type'] == 'rt' ? videos[id]['video']['owner']['profile_image'] : (user && user.profile_image ? user.profile_image : null)}
@@ -202,9 +202,9 @@ const Profile = ({
 };
 
 
-Profile.getInitialProps = async ({ query: { value } }) => {
+Profile.getInitialProps = async ({ query: { value, revenue_enabled } }) => {
   var nickname, rt;
-
+  console.log("revenue enabled :", revenue_enabled)
   if (value !== undefined &&
     value !== null &&
     value !== "") {
@@ -232,7 +232,8 @@ Profile.getInitialProps = async ({ query: { value } }) => {
       return {
         user: user?.data?.data,
         all_videos: all_videos?.data?.data?.videos,
-        is_prop_loaded: true
+        is_prop_loaded: true,
+        revenue_enabled: revenue_enabled
       };
     } catch (error) {
       return {};
@@ -286,10 +287,10 @@ Profile.getInitialProps = async ({ query: { value } }) => {
         rt_videos.push(videoObj);
       })
     }
-    console.log('rt_videos', rt_videos);
     return {
       all_videos: rt_videos,
-      is_prop_loaded: true
+      is_prop_loaded: true,
+      revenue_enabled: revenue_enabled
     }
   } else {
     return Promise.resolve({});
