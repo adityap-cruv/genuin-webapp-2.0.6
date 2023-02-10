@@ -34,6 +34,7 @@ const Profile = ({
       }
     }, []);
   }
+
   const preparedFeedVideos = prepareFeedVideos(all_videos)
   const [videos, setVideos] = useState(preparedFeedVideos);
   const [muted, setMuted] = useState(true);
@@ -150,7 +151,13 @@ const Profile = ({
                   }
                   description={videos[id]?.video?.description}
                   link={videos[id]?.video?.link}
-                  videoUrl={videos[id] && videos[id]['video'] && videos[id]['video']['video_url_m3u8'] ? (revenue_enabled ? getInfyUrl(videos[id]['video']['video_url_m3u8']) : videos[id]['video']['video_url_m3u8']) : (videos[id] && videos[id]['video'] && videos[id]['video']['videoUrl'] ? videos[id] && videos[id]['video'] && videos[id]['video']['videoUrl'] : null)}
+                  videoUrl={videos[id] && videos[id]['video'] && videos[id]['video']['video_url_m3u8']
+                    ? (revenue_enabled
+                      ? getInfyUrl(videos[id]['video']['video_url_m3u8'])
+                      : videos[id]['video']['video_url_m3u8'])
+                    : (videos[id] && videos[id]['video'] && videos[id]['video']['videoUrl']
+                      ? videos[id] && videos[id]['video'] && videos[id]['video']['videoUrl']
+                      : null)}
                   userName={videos[id] && videos[id]['video_type'] == 'rt' ? videos[id]['video']['owner']['nickname'] : (user && user.nickname ? user.nickname: null)}
                   userId={videos[id] && videos[id]['video_type'] == 'rt' ? videos[id]['video']['owner']['nickname'] : (user && user.nickname ? user.nickname : null)}
                   userProfileImage={videos[id] && videos[id]['video_type'] == 'rt' ? videos[id]['video']['owner']['profile_image'] : (user && user.profile_image ? user.profile_image : null)}
@@ -204,7 +211,12 @@ const Profile = ({
 
 Profile.getInitialProps = async ({ query: { value, revenue_enabled } }) => {
   var nickname, rt;
-  console.log("revenue enabled :", revenue_enabled)
+  if (revenue_enabled === "true") {
+    revenue_enabled = true;
+  } else {
+    revenue_enabled = false;
+  }
+  
   if (value !== undefined &&
     value !== null &&
     value !== "") {
