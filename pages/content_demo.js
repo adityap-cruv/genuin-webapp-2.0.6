@@ -34,7 +34,6 @@ const Profile = ({
       }
     }, []);
   }
-  console.log("revenue enabled :", revenue_enabled)
   const preparedFeedVideos = prepareFeedVideos(all_videos)
   const [videos, setVideos] = useState(preparedFeedVideos);
   const [muted, setMuted] = useState(true);
