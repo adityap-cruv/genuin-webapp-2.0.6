@@ -52,8 +52,6 @@ export const InstallApp = ({ small = false, errorPage = false, onClick = () => {
       {!mobile && (
         <>
           <Col
-            xs='6'
-            lg='auto'
             className='d-flex align-items-center justify-content-end ps-4 ps-sm-0'
           >
             <Image
@@ -72,8 +70,6 @@ export const InstallApp = ({ small = false, errorPage = false, onClick = () => {
             />
           </Col>
           <Col
-            xs='6'
-            lg='auto'
             className='d-flex align-items-center'
           >
             <Image
