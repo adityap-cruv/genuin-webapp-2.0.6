@@ -211,12 +211,7 @@ const Profile = ({
 
 Profile.getInitialProps = async ({ query: { value, revenue_enabled } }) => {
   var nickname, rt;
-  if (revenue_enabled === "true") {
-    revenue_enabled = true;
-  } else {
-    revenue_enabled = false;
-  }
-  
+
   if (value !== undefined &&
     value !== null &&
     value !== "") {
@@ -243,9 +238,9 @@ Profile.getInitialProps = async ({ query: { value, revenue_enabled } }) => {
       );
       return {
         user: user?.data?.data,
-        all_videos: all_videos?.data?.data?.videos,
+        all_videos: all_videos?.data?.data?.videos.splice(0, 5),
         is_prop_loaded: true,
-        revenue_enabled: revenue_enabled
+        revenue_enabled: revenue_enabled === "true"
       };
     } catch (error) {
       return {};
@@ -300,9 +295,9 @@ Profile.getInitialProps = async ({ query: { value, revenue_enabled } }) => {
       })
     }
     return {
-      all_videos: rt_videos,
+      all_videos: rt_videos.splice(0, 5),
       is_prop_loaded: true,
-      revenue_enabled: revenue_enabled
+      revenue_enabled: revenue_enabled === "true"
     }
   } else {
     return Promise.resolve({});
