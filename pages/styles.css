@@ -661,14 +661,14 @@ body .overlay {
 }
 
 .swipe-container {
-  height: 100vh !important;
-  max-width: 100vw !important;
+  height: 100% !important;
+  width: 100% !important;
   overflow-y: scroll;
   scroll-snap-type: y mandatory;
   scroll-behavior: smooth;
 }
 .swipe-container > div {
-  height: 100vh !important;
+  height: 100% !important;
   scroll-snap-align: start;
   background: #000;
   position: relative;
@@ -682,8 +682,8 @@ body .overlay {
   height: -webkit-fill-available !important;
   object-fit: cover;
   aspect-ratio: 9/16;
-  max-width: 100vw !important;
-  max-height: 100vh !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
 }
 
 .volume-control {
