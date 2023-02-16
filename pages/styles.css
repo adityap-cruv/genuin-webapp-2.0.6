@@ -1,6 +1,11 @@
 :root {
   --h-top-navbar: 70px;
 }
+
+body {
+  overflow-y: hidden;
+}
+
 @font-face {
   font-family: "AvenirNext";
   src: url("/fonts/AvenirNext-Bold-01.ttf");
