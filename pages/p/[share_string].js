@@ -521,12 +521,19 @@ const Profile = ({
         type='application/ld+json'
         dangerouslySetInnerHTML={{ __html: ORG_SCHEMA }}
       />
-      <TopNav showGetAppModal={handleShowModalAppDownload} isContiner isBlue />
+        <TopNav showGetAppModal={handleShowModalAppDownload} isContiner isBlue />
+        <div
+          id={mobile ? "scrollableDiv" : ""}
+          style={ mobile ? {
+            height: "100%",
+            overflow: "auto",
+            overflowX: "hidden"
+          } : {}}>
       <Flex
         className='section-content h-100'
         direction='column'
         w='full'
-        position={mobile ? "fixed" : "initial"}
+        position={mobile ? "initial" : "fixed"}
       >
         <Container className='container-false d-none d-md-block'></Container>
         <Container
@@ -715,7 +722,7 @@ const Profile = ({
               </TabList>
 
               <TabPanels
-                overflow='auto'
+                overflow={!mobile ? 'auto' : ''}
                 // maxH='full'
                 height='full'
                 ml={mobile ? "-12px" : 0}
@@ -724,7 +731,7 @@ const Profile = ({
                   // width: mobile ? "auto" : "calc(100% + 24px)",
                   width: "auto"
                 }}
-                id='scrollableDiv'
+                id={!mobile ? 'scrollableDiv' : ''}
               >
                  // for all video
                 <TabPanel p={0} pt='1px' h='full'>
@@ -934,7 +941,8 @@ const Profile = ({
             </ModalBody>
           </ModalContent>
         </Modal>
-      </Flex>
+          </Flex>
+        </div>
       <GetAppModal
         show={showModalAppDownload}
         onClose={handleCloseAppDownload}
