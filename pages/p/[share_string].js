@@ -61,7 +61,7 @@ const Profile = ({
     replies,
     profile_image,
   } = user;
-  console.log("user_id", user_id);
+  // console.log("user_id", user_id);
 
   let { hashtags } = user;
 
@@ -105,6 +105,7 @@ const Profile = ({
                     group_name: video.group.group_name,
                     group_dp: video.group.dp,
                     chat_id: video.chat_id,
+                    conversation_id: video.chats[0].conversation_id
                   },
                 }))
             )
@@ -521,12 +522,19 @@ const Profile = ({
         type='application/ld+json'
         dangerouslySetInnerHTML={{ __html: ORG_SCHEMA }}
       />
-      <TopNav showGetAppModal={handleShowModalAppDownload} isContiner isBlue />
+        <TopNav showGetAppModal={handleShowModalAppDownload} isContiner isBlue />
+        <div
+          id={mobile ? "scrollableDiv" : ""}
+          style={ mobile ? {
+            height: "100%",
+            overflow: "auto",
+            overflowX: "clip"
+          } : {}}>
       <Flex
         className='section-content h-100'
         direction='column'
         w='full'
-        position={mobile ? "fixed" : "initial"}
+        position={mobile ? "initial" : "fixed"}
       >
         <Container className='container-false d-none d-md-block'></Container>
         <Container
@@ -715,7 +723,7 @@ const Profile = ({
               </TabList>
 
               <TabPanels
-                overflow='auto'
+                overflow={!mobile ? 'auto' : ''}
                 // maxH='full'
                 height='full'
                 ml={mobile ? "-12px" : 0}
@@ -724,7 +732,7 @@ const Profile = ({
                   // width: mobile ? "auto" : "calc(100% + 24px)",
                   width: "auto"
                 }}
-                id='scrollableDiv'
+                id={!mobile ? 'scrollableDiv' : ''}
               >
                  // for all video
                 <TabPanel p={0} pt='1px' h='full'>
@@ -934,7 +942,8 @@ const Profile = ({
             </ModalBody>
           </ModalContent>
         </Modal>
-      </Flex>
+          </Flex>
+        </div>
       <GetAppModal
         show={showModalAppDownload}
         onClose={handleCloseAppDownload}
@@ -971,7 +980,7 @@ const Videos = ({
         </Flex>
       )}
       {!Boolean(videos.length) && Boolean(isLoading) && (
-        <div className="spinner-container" alignItems='center'>
+        <div className="spinner-container" align='center'>
           {mobile ? (
           <div className="mobile-loading-spinner" >
           </div>) : (<div className="loading-spinner" >
@@ -1004,7 +1013,7 @@ const Videos = ({
             className="grid-layout"
           >
             {videos.map(({ video, video_type }, index) => (
-              <Flex
+              <Flex 
                 className={`grid-item video_${index}`}
                 cursor='pointer'
                 transition='transform .2s'
@@ -1012,7 +1021,7 @@ const Videos = ({
                   transform: "scale(0.97)",
                 }}
                 position='relative'
-                key={video.video_uuid}
+                key={video_type === 'rt' ? video.conversation_id : video.video_id}
                 bgColor='black'
                 alignItems='center'
               >
@@ -1137,7 +1146,7 @@ const Videos = ({
                     </Flex>
                   </Flex>
                 )}
-              </Flex>
+                </Flex>
             ))}
           </div>
         </InfiniteScroll>

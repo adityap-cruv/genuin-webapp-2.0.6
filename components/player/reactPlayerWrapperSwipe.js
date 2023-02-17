@@ -178,13 +178,13 @@ export const ReactPlayerWrapper = ({
       setIsPlaying(false);
   }
   return (
-      <div
+    <div
         className="video-container"
         style={{
           color: "white",
         }}
         >
-        <ReactPlayer
+      <ReactPlayer
           key={videoUrl}
           url={videoUrl}
           playing={isPlaying}
