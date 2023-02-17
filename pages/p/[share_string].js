@@ -566,10 +566,10 @@ const Profile = ({
               color='#111111'
               flexDir='column'
               w={{ base: "100%", md: "calc(100% / 12 * 3)" }}
-            >
-              <Flex justifyContent={"space-between"}>
+                >
+            <Flex justifyContent={"space-between"}>
                 <Avatar
-                  name={`@${nickname}`}
+                  name={nickname}
                   src={profilePic}
                   size='xl'
                   background='#A4E6DA'
@@ -696,7 +696,7 @@ const Profile = ({
               display={{ base: "contents", md: "block" }}
               width={mobile ? "calc(100% + 24px)" : "full"}
             >
-              <Divider opacity={0.2} w='200%' ml={-28} />
+              <Divider opacity={0.1} />
               <TabList
                 borderBottom={0}
                 mb='2px'
