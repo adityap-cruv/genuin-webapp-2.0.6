@@ -980,7 +980,7 @@ const Videos = ({
         </Flex>
       )}
       {!Boolean(videos.length) && Boolean(isLoading) && (
-        <div className="spinner-container" alignItems='center'>
+        <div className="spinner-container" align='center'>
           {mobile ? (
           <div className="mobile-loading-spinner" >
           </div>) : (<div className="loading-spinner" >
