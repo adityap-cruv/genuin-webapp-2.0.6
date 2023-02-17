@@ -61,7 +61,7 @@ const Profile = ({
     replies,
     profile_image,
   } = user;
-  console.log("user_id", user_id);
+  // console.log("user_id", user_id);
 
   let { hashtags } = user;
 
@@ -105,6 +105,7 @@ const Profile = ({
                     group_name: video.group.group_name,
                     group_dp: video.group.dp,
                     chat_id: video.chat_id,
+                    conversation_id: video.chats[0].conversation_id
                   },
                 }))
             )
@@ -1012,7 +1013,7 @@ const Videos = ({
             className="grid-layout"
           >
             {videos.map(({ video, video_type }, index) => (
-              <Flex
+              <Flex 
                 className={`grid-item video_${index}`}
                 cursor='pointer'
                 transition='transform .2s'
@@ -1020,7 +1021,7 @@ const Videos = ({
                   transform: "scale(0.97)",
                 }}
                 position='relative'
-                key={video.video_uuid}
+                key={video_type === 'rt' ? video.conversation_id : video.video_id}
                 bgColor='black'
                 alignItems='center'
               >
@@ -1145,7 +1146,7 @@ const Videos = ({
                     </Flex>
                   </Flex>
                 )}
-              </Flex>
+                </Flex>
             ))}
           </div>
         </InfiniteScroll>
