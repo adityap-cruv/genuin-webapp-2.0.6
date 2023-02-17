@@ -2,10 +2,6 @@
   --h-top-navbar: 70px;
 }
 
-body {
-  overflow-y: hidden;
-}
-
 @font-face {
   font-family: "AvenirNext";
   src: url("/fonts/AvenirNext-Bold-01.ttf");
@@ -689,6 +685,10 @@ body .overlay {
   aspect-ratio: 9/16;
   max-width: 100% !important;
   max-height: 100% !important;
+}
+
+.content-demo {
+  overflow-y: hidden;
 }
 
 .volume-control {

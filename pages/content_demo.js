@@ -113,7 +113,7 @@ const Profile = ({
       </>
   ) : (
     <>
-      <Layout>
+      <Layout className="content-demo">
         <TopNav hideBurgerMenu={true} showGetAppModal={handleShowModalAppDownload} variant='light' />
         {muted ?
           <div className="volume-control">
