@@ -19,6 +19,7 @@ import directMessage from "../../images/direct_message.svg";
 import roundtable from "../../images/video-more-options/ic-roundtable.svg";
 import InfiniteScroll from "react-infinite-scroll-component";
 import icPreviewPlaceholder from "../../images/video-more-options/ic_preview_placeholder.png";
+import { isMobile } from "react-device-detect";
 
 import {
   Box,
@@ -659,7 +660,7 @@ const Profile = ({
                   />
                   <Text>Message</Text>
                 </Button>
-                {mobile ? (
+                {isMobile ? (
                   <MobileShareButton
                     url={currentUrl}
                     description='Hello, visit this profile!'
