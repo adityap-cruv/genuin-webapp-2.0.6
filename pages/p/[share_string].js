@@ -527,7 +527,7 @@ const Profile = ({
           style={ mobile ? {
             height: "100%",
             overflow: "auto",
-            overflowX: "hidden"
+            overflowX: "clip"
           } : {}}>
       <Flex
         className='section-content h-100'
