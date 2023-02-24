@@ -69,9 +69,9 @@ const Profile = ({
   const tab1Ref = useRef(null);
   const tab2Ref = useRef(null);
   const tab3Ref = useRef(null);
-  const scrollToTop1 = () => tab1Ref.current.scrollIntoView();
-  const scrollToTop2 = () => tab2Ref.current.scrollIntoView();
-  const scrollToTop3 = () => tab3Ref.current.scrollIntoView();
+  const scrollToTop1 = () => tab1Ref.current.scrollIntoView(false);
+  const scrollToTop2 = () => tab2Ref.current.scrollIntoView(false);
+  const scrollToTop3 = () => tab3Ref.current.scrollIntoView(false);
 
   const prepareRTVideos = (videos = []) => {
     return videos.reduce((res, { video: { chats, group, chat_id, share_string } }) => {
@@ -132,8 +132,9 @@ const Profile = ({
   const [noMoreVideos, setNoMoreVideos] = useState(end_of_videos);
   const [noMoreVideosPublic, setNoMoreVideosPublic] = useState(false);
   const [noMoreVideosRT, setNoMoreVideosRT] = useState(false);
+  const [noVideos, setNoVideos] = useState(true);
 
-  console.log("process.env", process.env.apiurl);
+  // console.log("process.env", process.env.apiurl);
 
   const loadVideosPublic = async () => {
     if(!isLoadedPublic){
@@ -150,6 +151,9 @@ const Profile = ({
       console.log("end_of_videos public load",res?.data?.data?.end_of_videos)
       if (newVideos.length !== 0) {
         setPublicVideos(publicVideos.concat(newVideos));
+        setNoVideos(false);
+      } else {
+        setNoVideos(true)
       }
       setIsLoading(false)
       setIsLoadedPublic(true)
@@ -172,6 +176,9 @@ const Profile = ({
       if (newVideos.length !== 0) {
         const preparedNewVideos = prepareRTVideos(newVideos);
         setRTVideos(rtVideos.concat(preparedNewVideos));
+        setNoVideos(false);
+      } else {
+        setNoVideos(true);
       }
       setIsLoading(false)
       setIsLoadedRT(true)
@@ -535,7 +542,6 @@ const Profile = ({
         className='section-content h-100'
         direction='column'
         w='full'
-        position={mobile ? "initial" : "fixed"}
       >
         <Container className='container-false d-none d-md-block'></Container>
         <Container
@@ -691,7 +697,7 @@ const Profile = ({
                 scrollToTop1();
                 scrollToTop2();
                 scrollToTop3();
-              }}
+                  }}
               colorScheme='black'
               display={{ base: "contents", md: "block" }}
               width={mobile ? "calc(100% + 24px)" : "full"}
@@ -746,6 +752,8 @@ const Profile = ({
                     getMoreVideos={getMoreVideos}
                     noMoreVideos={noMoreVideos}
                     changeUrl={changeUrl}
+                    noVideos={noVideos}
+
                   />
                 </TabPanel>
 
@@ -760,7 +768,8 @@ const Profile = ({
                     getMoreVideos={getMoreVideosPublic}
                     noMoreVideos={noMoreVideosPublic}
                     changeUrl={changeUrl}
-                    isLoading={isLoading}
+                    isLoading={isLoading || isLoadedRT || isLoadedPublic}
+                    noVideos={noVideos}
                   />
                 </TabPanel>
 
@@ -775,7 +784,8 @@ const Profile = ({
                     getMoreVideos={getMoreVideosRT}
                     noMoreVideos={noMoreVideosRT}
                     changeUrl={changeUrl}
-                    isLoading={isLoading}
+                    isLoading={isLoading || isLoadedPublic || isLoadedRT}
+                    noVideos={noVideos}
                   />
                 </TabPanel>
 
@@ -963,11 +973,12 @@ const Videos = ({
   getMoreVideos,
   noMoreVideos,
   changeUrl,
-  isLoading = false
+  isLoading = false,
+  noVideos
 }) => {
   return (
     <Box h='full'>
-      {!Boolean(videos.length) && !Boolean(isLoading) && (
+      {!Boolean(videos.length) && !Boolean(isLoading) && Boolean(noVideos) &&(
         <Flex
           w='full'
           h='full'
