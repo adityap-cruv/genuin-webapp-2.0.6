@@ -50,6 +50,7 @@ export const ReactPlayerWrapper = ({
   const [isPlaying, setIsPlaying] = useState(autoplay);
   const [rtEnded, setRtEnded] = useState(false);
   const [isPlayingDebounced] = useDebounce(isPlaying, 65);
+  const [tempVideoUrl, setTempVideoUrl] = useState(null);
 
   const handleToggleIsPlaying = useCallback(() => {
     setIsPlaying((old) => !old);
@@ -168,14 +169,16 @@ export const ReactPlayerWrapper = ({
   };
 
   let handleEnterViewport = function() {
-      console.log('view port enterrrrrrrrrrrrrr')
-      console.log('currentVideoIndex', currentVideoIndex)
+      // console.log('view port enterrrrrrrrrrrrrr')
+      // console.log('currentVideoIndex', currentVideoIndex)
+      setTempVideoUrl(videoUrl)
       setIsPlaying(true);
   }
   let handleExitViewport = function() {
-      console.log('view port exittttttttttttttttt')
-      console.log('currentVideoIndex', currentVideoIndex)
-      setIsPlaying(false);
+      // console.log('view port exittttttttttttttttt')
+      // console.log('currentVideoIndex', currentVideoIndex)
+    setTempVideoUrl(null);
+    setIsPlaying(false);
   }
   return (
     <div
@@ -186,7 +189,7 @@ export const ReactPlayerWrapper = ({
         >
       <ReactPlayer
           key={videoUrl}
-          url={videoUrl}
+          url={tempVideoUrl}
           playing={isPlaying}
           muted={muted}
           controls={false}

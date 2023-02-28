@@ -19,6 +19,7 @@ import directMessage from "../../images/direct_message.svg";
 import roundtable from "../../images/video-more-options/ic-roundtable.svg";
 import InfiniteScroll from "react-infinite-scroll-component";
 import icPreviewPlaceholder from "../../images/video-more-options/ic_preview_placeholder.png";
+import { isMobile } from "react-device-detect";
 
 import {
   Box,
@@ -68,9 +69,9 @@ const Profile = ({
   const tab1Ref = useRef(null);
   const tab2Ref = useRef(null);
   const tab3Ref = useRef(null);
-  const scrollToTop1 = () => tab1Ref.current.scrollIntoView();
-  const scrollToTop2 = () => tab2Ref.current.scrollIntoView();
-  const scrollToTop3 = () => tab3Ref.current.scrollIntoView();
+  const scrollToTop1 = () => tab1Ref.current.scrollIntoView(false);
+  const scrollToTop2 = () => tab2Ref.current.scrollIntoView(false);
+  const scrollToTop3 = () => tab3Ref.current.scrollIntoView(false);
 
   const prepareRTVideos = (videos = []) => {
     return videos.reduce((res, { video: { chats, group, chat_id, share_string } }) => {
@@ -131,8 +132,9 @@ const Profile = ({
   const [noMoreVideos, setNoMoreVideos] = useState(end_of_videos);
   const [noMoreVideosPublic, setNoMoreVideosPublic] = useState(false);
   const [noMoreVideosRT, setNoMoreVideosRT] = useState(false);
+  const [noVideos, setNoVideos] = useState(true);
 
-  console.log("process.env", process.env.apiurl);
+  // console.log("process.env", process.env.apiurl);
 
   const loadVideosPublic = async () => {
     if(!isLoadedPublic){
@@ -149,6 +151,9 @@ const Profile = ({
       console.log("end_of_videos public load",res?.data?.data?.end_of_videos)
       if (newVideos.length !== 0) {
         setPublicVideos(publicVideos.concat(newVideos));
+        setNoVideos(false);
+      } else {
+        setNoVideos(true)
       }
       setIsLoading(false)
       setIsLoadedPublic(true)
@@ -171,6 +176,9 @@ const Profile = ({
       if (newVideos.length !== 0) {
         const preparedNewVideos = prepareRTVideos(newVideos);
         setRTVideos(rtVideos.concat(preparedNewVideos));
+        setNoVideos(false);
+      } else {
+        setNoVideos(true);
       }
       setIsLoading(false)
       setIsLoadedRT(true)
@@ -534,7 +542,6 @@ const Profile = ({
         className='section-content h-100'
         direction='column'
         w='full'
-        position={mobile ? "initial" : "fixed"}
       >
         <Container className='container-false d-none d-md-block'></Container>
         <Container
@@ -565,10 +572,10 @@ const Profile = ({
               color='#111111'
               flexDir='column'
               w={{ base: "100%", md: "calc(100% / 12 * 3)" }}
-            >
-              <Flex justifyContent={"space-between"}>
+                >
+            <Flex justifyContent={"space-between"}>
                 <Avatar
-                  name={`@${nickname}`}
+                  name={nickname}
                   src={profilePic}
                   size='xl'
                   background='#A4E6DA'
@@ -659,7 +666,7 @@ const Profile = ({
                   />
                   <Text>Message</Text>
                 </Button>
-                {mobile ? (
+                {isMobile ? (
                   <MobileShareButton
                     url={currentUrl}
                     description='Hello, visit this profile!'
@@ -690,12 +697,12 @@ const Profile = ({
                 scrollToTop1();
                 scrollToTop2();
                 scrollToTop3();
-              }}
+                  }}
               colorScheme='black'
               display={{ base: "contents", md: "block" }}
               width={mobile ? "calc(100% + 24px)" : "full"}
             >
-              <Divider opacity={0.2} w='200%' ml={-28} />
+              <Divider opacity={0.1} />
               <TabList
                 borderBottom={0}
                 mb='2px'
@@ -745,6 +752,8 @@ const Profile = ({
                     getMoreVideos={getMoreVideos}
                     noMoreVideos={noMoreVideos}
                     changeUrl={changeUrl}
+                    noVideos={noVideos}
+
                   />
                 </TabPanel>
 
@@ -759,7 +768,8 @@ const Profile = ({
                     getMoreVideos={getMoreVideosPublic}
                     noMoreVideos={noMoreVideosPublic}
                     changeUrl={changeUrl}
-                    isLoading={isLoading}
+                    isLoading={isLoading || isLoadedRT || isLoadedPublic}
+                    noVideos={noVideos}
                   />
                 </TabPanel>
 
@@ -774,7 +784,8 @@ const Profile = ({
                     getMoreVideos={getMoreVideosRT}
                     noMoreVideos={noMoreVideosRT}
                     changeUrl={changeUrl}
-                    isLoading={isLoading}
+                    isLoading={isLoading || isLoadedPublic || isLoadedRT}
+                    noVideos={noVideos}
                   />
                 </TabPanel>
 
@@ -962,11 +973,12 @@ const Videos = ({
   getMoreVideos,
   noMoreVideos,
   changeUrl,
-  isLoading = false
+  isLoading = false,
+  noVideos
 }) => {
   return (
     <Box h='full'>
-      {!Boolean(videos.length) && !Boolean(isLoading) && (
+      {!Boolean(videos.length) && !Boolean(isLoading) && Boolean(noVideos) &&(
         <Flex
           w='full'
           h='full'
