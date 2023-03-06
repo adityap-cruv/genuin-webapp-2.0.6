@@ -154,7 +154,7 @@ const Profile = ({
   ) : (
     <>
       <Layout className="content-demo">
-        <TopNav hideBurgerMenu={true} showGetAppModal={handleShowModalAppDownload} variant='light' />
+          <TopNav hideBurgerMenu={true} showGetAppModal={handleShowModalAppDownload} variant='light' />
         {muted ?
           <div className="volume-control">
             <Button
@@ -283,7 +283,7 @@ Profile.getInitialProps = async ({ query: { value, revenue_enabled } }) => {
         all_videos: all_videos?.data?.data?.videos,
         is_prop_loaded: true,
         revenue_enabled: revenue_enabled === "true",
-        end_of_videos: all_videos?.data?.data?.videos.length !== 12,
+        end_of_videos: all_videos.data.data.end_of_videos,
       };
     } catch (error) {
       return {};
