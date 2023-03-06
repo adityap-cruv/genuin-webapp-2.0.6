@@ -170,7 +170,7 @@ export const ReactPlayerWrapper = ({
   };
 
   let handleEnterViewport = function () {
-    if (currentVideoIndex === (videos.length - 1)) {
+    if (currentVideoIndex === (videos.length - 3)) {
       loadMoreVideos();
     }
       setTempVideoUrl(videoUrl)
