@@ -44,7 +44,8 @@ export const ReactPlayerWrapper = ({
   setDirection,
   verticalNavigation,
   shareUrl,
-  muted
+  muted,
+  loadMoreVideos
 }) => {
   const [progress, setProgress] = useState(0);
   const [isPlaying, setIsPlaying] = useState(autoplay);
@@ -168,15 +169,14 @@ export const ReactPlayerWrapper = ({
     }
   };
 
-  let handleEnterViewport = function() {
-      // console.log('view port enterrrrrrrrrrrrrr')
-      // console.log('currentVideoIndex', currentVideoIndex)
+  let handleEnterViewport = function () {
+    if (currentVideoIndex === (videos.length - 3)) {
+      loadMoreVideos();
+    }
       setTempVideoUrl(videoUrl)
       setIsPlaying(true);
   }
   let handleExitViewport = function() {
-      // console.log('view port exittttttttttttttttt')
-      // console.log('currentVideoIndex', currentVideoIndex)
     setTempVideoUrl(null);
     setIsPlaying(false);
   }

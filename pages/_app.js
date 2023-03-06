@@ -3,18 +3,26 @@ import "./styles.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.min.css";
 import { ChakraProvider } from "@chakra-ui/react";
+import favicon from "../images/favicon.ico";
+import NextHead from "next/head"
 
 function MyApp({ Component, pageProps }) {
   return (
-    <ChakraProvider>
-      <Component {...pageProps} />
-      <ToastContainer
-        position='bottom-left'
-        draggable={false}
-        limit={1}
-        theme={"dark"}
-      />
-    </ChakraProvider>
+    <>
+      <NextHead>
+        <link rel='shortcut icon' href={favicon.src} type='image/x-icon' />
+      </NextHead>
+      <ChakraProvider>
+        <Component {...pageProps} />
+        <ToastContainer
+          position='bottom-left'
+          draggable={false}
+          limit={1}
+          theme={"dark"}
+        />
+      </ChakraProvider>
+    </>
+    
   );
 }
 
