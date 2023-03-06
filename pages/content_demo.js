@@ -283,7 +283,7 @@ Profile.getInitialProps = async ({ query: { value, revenue_enabled } }) => {
         all_videos: all_videos?.data?.data?.videos,
         is_prop_loaded: true,
         revenue_enabled: revenue_enabled === "true",
-        end_of_videos: all_videos.data.data.end_of_videos,
+        end_of_videos: all_videos?.data?.data?.end_of_videos,
       };
     } catch (error) {
       return {};
