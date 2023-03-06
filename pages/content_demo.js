@@ -6,15 +6,13 @@ import { GetAppModal } from "../components/getAppModal";
 
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faVolumeMute, faVolumeUp } from '@fortawesome/free-solid-svg-icons'
+import { faVolumeMute } from '@fortawesome/free-solid-svg-icons'
 import { TopNav } from "../components/topNavSwipe";
 import {
   AppActions
 } from "../components/appActions";
-import { Error } from "../components/error";
 import {
   Flex,
-  useBreakpointValue,
   Spinner
 } from "@chakra-ui/react";
 
@@ -23,6 +21,8 @@ const Profile = ({
   all_videos = [],
   is_prop_loaded = false,
   revenue_enabled = false,
+  is_rt = false,
+  end_of_videos = false
 }) => {
   const prepareFeedVideos = (videos = []) => {
     return videos.reduce((res, { video_type, video }) => {
@@ -34,7 +34,6 @@ const Profile = ({
       }
     }, []);
   }
-
   const preparedFeedVideos = prepareFeedVideos(all_videos)
   const [videos, setVideos] = useState(preparedFeedVideos);
   const [muted, setMuted] = useState(true);
@@ -42,6 +41,8 @@ const Profile = ({
 
   const [showModalAppDownload, setShowModalAppDownload] = useState(false);
   const getAppComponentRef = useRef(() => null);
+  const [noMoreVideos, setNoMoreVideos] = useState(end_of_videos);
+
   const handleCloseAppDownload = () => {
     getAppComponentRef.current = () => null;
     setShowModalAppDownload(false);
@@ -57,9 +58,47 @@ const Profile = ({
     }, 5000);
   }, [])
 
-  const mobile = useBreakpointValue({ base: true, md: false });
+  // const mobile = useBreakpointValue({ base: true, md: false }); --> not used
 
-  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+  // const [currentVideoIndex, setCurrentVideoIndex] = useState(0); --> not used
+  const [isLoading, setIsLoading] = useState(false);
+  const loadMoreVideos = () => {
+    if (!isLoading && !is_rt && !noMoreVideos) {
+      getMoreVideosPublic();
+    } else {
+      console.log("Not calling...")
+    }
+  }
+
+  const getMoreVideosPublic = async () => {
+    setIsLoading(true)
+    const res = await axios.get(
+      `${process.env.apiurl
+      }/api/v3/public/profile_videos?user_id=${user.user_id}&video_types[]=public_video&last_video_type=public_video&last_video_id=${videos[videos.length - 1]?.video?.video_id
+      }`
+    );
+
+    const newVideos = res?.data?.data?.videos || [];
+    res?.data?.data?.end_of_videos ? setNoMoreVideos(true) : setNoMoreVideos(false)
+
+    if (newVideos.length !== 0) {
+      setVideos(videos.concat(prepareFeedVideos(newVideos)));
+    }
+    setIsLoading(false);
+  };
+
+  // --------> IN CASE OF PAGINATION IN RT <---------------------------------------------------------------------------
+  // const getMoreVideosRT = async () => {
+  //     console.log("Get More RT Videos")
+  //     const res = await axios.get(
+  //       `${process.env.apiurl
+  //       }/api/v3/public/profile_videos?user_id=${share_string}&video_types[]=rt&last_video_type=rt&last_video_id=${rtVideos[rtVideos.length - 1]?.video?.conversation_id
+  //       }`
+  //     );
+  //   console.log("response is : ", res.data.data);
+  // }
+  // ---------------------------------------------------------------------------------------------------------------------
+
 
   const getNextVideo = () => {
     // var idx = currentVideoIndex
@@ -67,7 +106,8 @@ const Profile = ({
     //   idx = currentVideoIndex+1
     //   setCurrentVideoIndex(idx);
     // }
-  };
+  }
+
   const getPrevVideo = () => {
     // var idx = 0
     // if(currentVideoIndex-1>=0){
@@ -175,6 +215,7 @@ const Profile = ({
                   shareUrl={videos[id]?.video?.share_url}
                   verticalNavigation
                   muted={muted}
+                  loadMoreVideos={loadMoreVideos}
                 >
                   <AppActions
                     showGetAppModal={handleShowModalAppDownload}
@@ -197,7 +238,7 @@ const Profile = ({
               <h1>Nothing to show here</h1>
             </>
           )}
-        </Flex>
+          </Flex>
         <GetAppModal
           show={showModalAppDownload}
           onClose={handleCloseAppDownload}
@@ -240,7 +281,8 @@ Profile.getInitialProps = async ({ query: { value, revenue_enabled } }) => {
         user: user?.data?.data,
         all_videos: all_videos?.data?.data?.videos,
         is_prop_loaded: true,
-        revenue_enabled: revenue_enabled === "true"
+        revenue_enabled: revenue_enabled === "true",
+        end_of_videos: all_videos?.data?.data?.videos.length !== 12,
       };
     } catch (error) {
       return {};
@@ -297,7 +339,8 @@ Profile.getInitialProps = async ({ query: { value, revenue_enabled } }) => {
     return {
       all_videos: rt_videos,
       is_prop_loaded: true,
-      revenue_enabled: revenue_enabled === "true"
+      revenue_enabled: revenue_enabled === "true",
+      is_rt: true
     }
   } else {
     return Promise.resolve({});

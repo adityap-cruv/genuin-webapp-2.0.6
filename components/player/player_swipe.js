@@ -31,7 +31,8 @@ export const Player = ({
   setDirection,
   verticalNavigation,
   shareUrl,
-  muted
+  muted, 
+  loadMoreVideos = () => {}
 }) => {
   const [triggerPlayCount, setTriggetPlayCount] = useState(false);
   const [duration, setDuration] = useState(0);
@@ -129,6 +130,7 @@ export const Player = ({
         verticalNavigation={verticalNavigation}
         shareUrl={shareUrl}
         muted={muted}
+        loadMoreVideos={loadMoreVideos}
       >
         {children}
       </ReactPlayerWrapper>
