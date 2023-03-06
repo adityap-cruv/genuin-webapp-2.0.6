@@ -166,7 +166,8 @@ const Profile = ({
                 fontSize: 17,
                 fontWeight: "bold",
                 pointerEvents: "all",
-                borderRadius: '8px'
+                borderRadius: '8px',
+                display: "flex"
               }}
             >
               <FontAwesomeIcon icon={faVolumeMute} />
