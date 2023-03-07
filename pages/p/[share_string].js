@@ -532,12 +532,12 @@ const Profile = ({
       />
         <TopNav showGetAppModal={handleShowModalAppDownload} isContiner isBlue />
         <div
-          id={mobile ? "scrollableDiv" : ""}
-          style={ mobile ? {
+          id="scrollableDiv"
+          style={{
             height: "100%",
-            overflow: "auto",
+            overflowY: "auto",
             overflowX: "clip"
-          } : {}}>
+          }}>
       <Flex
         className='section-content h-100'
         direction='column'
@@ -571,7 +571,8 @@ const Profile = ({
             <Flex
               color='#111111'
               flexDir='column'
-              w={{ base: "100%", md: "calc(100% / 12 * 3)" }}
+              w={{ base: "100%", md: "calc(100% / 12 * 2)" }}
+              position={mobile ? "" : "fixed"}
                 >
             <Flex justifyContent={"space-between"}>
                 <Avatar
@@ -701,6 +702,7 @@ const Profile = ({
               colorScheme='black'
               display={{ base: "contents", md: "block" }}
               width={mobile ? "calc(100% + 24px)" : "full"}
+              ml={!mobile ? "calc((100% / 12 * 2) + 100px)" : "0"}
             >
               <Divider opacity={0.1} />
               <TabList
@@ -730,16 +732,14 @@ const Profile = ({
               </TabList>
 
               <TabPanels
-                overflow={!mobile ? 'auto' : ''}
                 // maxH='full'
-                height='full'
+                height='100%'
                 ml={mobile ? "-12px" : 0}
                 mr={mobile ? "-12px" : 0}
                 style={{
                   // width: mobile ? "auto" : "calc(100% + 24px)",
                   width: "auto"
                 }}
-                id={!mobile ? 'scrollableDiv' : ''}
               >
                  // for all video
                 <TabPanel p={0} pt='1px' h='full'>
@@ -1004,7 +1004,7 @@ const Videos = ({
           dataLength={videos.length}
           next={getMoreVideos}
           hasMore={!noMoreVideos}
-          scrollThreshold={1}
+          scrollThreshold={.75}
           scrollableTarget='scrollableDiv'
           loader={<div
             style={{
