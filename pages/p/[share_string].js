@@ -536,7 +536,7 @@ const Profile = ({
           style={{
             height: "100%",
             overflowY: "auto",
-            overflowX: "clip"
+            overflowX: "hidden"
           }}>
       <Flex
         className='section-content h-100'
@@ -571,7 +571,7 @@ const Profile = ({
             <Flex
               color='#111111'
               flexDir='column'
-              w={{ base: "100%", md: "calc(100% / 12 * 2)" }}
+              w={{ base: "100%", md: "calc(100% / 12 * 2.5)", lg: "calc(100% / 7 * 1.2)", xl: "calc(100% / 8)" }}
               position={mobile ? "" : "fixed"}
                 >
             <Flex justifyContent={"space-between"}>
