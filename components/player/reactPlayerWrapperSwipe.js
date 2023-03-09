@@ -52,7 +52,7 @@ export const ReactPlayerWrapper = ({
   const [rtEnded, setRtEnded] = useState(false);
   const [isPlayingDebounced] = useDebounce(isPlaying, 65);
   const [tempVideoUrl, setTempVideoUrl] = useState(null);
-  const [displayThumbnail, setDisplayThumbnail] = useState("block")
+  const [displayThumbnail, setDisplayThumbnail] = useState(true)
 
   const handleToggleIsPlaying = useCallback(() => {
     setIsPlaying((old) => !old);
@@ -174,14 +174,13 @@ export const ReactPlayerWrapper = ({
     if (currentVideoIndex === (videos.length - 3)) {
       loadMoreVideos();
     }
-    setDisplayThumbnail("none");
       setTempVideoUrl(videoUrl)
       setIsPlaying(true);
   }
   let handleExitViewport = function() {
     setTempVideoUrl(null);
     setIsPlaying(false);
-    setDisplayThumbnail("block")
+    setDisplayThumbnail(true)
   }
   return (
     <div
@@ -190,10 +189,16 @@ export const ReactPlayerWrapper = ({
           color: "white",
         }}
     >
-      <Image
-        src={videoThumbnail}
-        display={displayThumbnail}
-      />
+      {displayThumbnail && <Box
+        backgroundImage={`url(${videoThumbnail})`}
+        backgroundColor= {Boolean(videoThumbnail) ? "transparent" : "blue"}
+        backgroundRepeat='no-repeat'
+        backgroundSize='cover'
+        backgroundPosition='center'
+        width='100%'
+        h='100%'
+        filter='blur(10px)'
+      />}
       <ReactPlayer
           key={videoUrl}
           url={tempVideoUrl}
@@ -215,6 +220,9 @@ export const ReactPlayerWrapper = ({
           onDuration={setDurationWrapper}
           onEnded={onEndedWrapper}
           progressInterval={200}
+          onReady={() => {
+            setDisplayThumbnail(false);
+          }}
       />
 
         {/* roundtable header */}
