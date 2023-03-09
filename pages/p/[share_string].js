@@ -805,7 +805,7 @@ const Profile = ({
               <Player
                 currentVideoIndex={currentVideoIndex}
                 videoThumbnail={
-                  videos[currentVideoIndex]?.video?.video_thumbnail_s
+                  videos[currentVideoIndex]?.video?.video_thumbnail
                 }
                 description={videos[currentVideoIndex]?.video?.description}
                 link={videos[currentVideoIndex]?.video?.link}
@@ -1056,8 +1056,8 @@ const Videos = ({
                   <Image
                     src={
                       video_type === "rt"
-                        ? (video.thumbnail_url_l ?? icPreviewPlaceholder.src)
-                        : (video.video_thumbnail_l ?? icPreviewPlaceholder.src)
+                        ? (video.thumbnail_url ?? icPreviewPlaceholder.src)
+                        : (video.video_thumbnail ?? icPreviewPlaceholder.src)
                     }
                     onError={({ currentTarget }) => {
                       currentTarget.onerror = null; // prevents looping
