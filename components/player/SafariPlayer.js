@@ -8,7 +8,8 @@ export const SafariPlayer = ({
    width,
    className,
    muted,
-   currentVideoIndex
+   currentVideoIndex,
+   onClick
 }) => {
 
    useEffect(() => {
@@ -25,6 +26,7 @@ export const SafariPlayer = ({
          className={className}
          height={height}
          width={width}
+         onClick={onClick}
       >
          <video
             id={uniqueKey}
@@ -33,7 +35,6 @@ export const SafariPlayer = ({
             loop
             src={videoUrl}
             type="application/x-mpegURL"
-            controls
             height={height}
             width={width}
          />
