@@ -265,6 +265,15 @@ body .overlay {
   background: #333333;
   isolation: isolate;
 }
+.video-container-mobile {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  aspect-ratio: 9 / 16;
+  background: #333333;
+  isolation: isolate;
+}
 .video-wrapper {
   cursor: pointer;
   display: flex;

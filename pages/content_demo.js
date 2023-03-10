@@ -66,7 +66,8 @@ const Profile = ({
     if (!isLoading && !is_rt && !noMoreVideos) {
       getMoreVideosPublic();
     } else {
-      console.log("Not calling...")
+      //TODO: what to do if no more videos or it is loading ..........
+      // console.log("Not calling...")
     }
   }
 
@@ -175,7 +176,7 @@ const Profile = ({
           </div>
           : ""}
         <Flex
-          className='section-content h-100 swipe-container'
+          className='section-content h-100 swipe-container hide-scrollbar'
           direction='initial'
           wrap='wrap'
           w='full'

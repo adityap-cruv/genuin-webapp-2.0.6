@@ -9,7 +9,7 @@ import icFlipRight from "../../images/video-more-options/ic-flip-right.svg";
 import earth from "../../images/video-more-options/ic-earth.svg";
 import { Image, Flex, Text, Link, Box, useBreakpointValue, Avatar, scroll } from "@chakra-ui/react";
 import { Waypoint } from 'react-waypoint';
-import { isSafari } from "react-device-detect";
+import { isMobile, isSafari } from "react-device-detect";
 import { SafariPlayer } from "./SafariPlayer";
 
 export const ReactPlayerWrapper = ({
@@ -171,26 +171,24 @@ export const ReactPlayerWrapper = ({
     if (currentVideoIndex === (videos.length - 3)) {
       loadMoreVideos();
     }
-    console.log("on enter viewPort : curent inde", currentVideoIndex)
     setTempVideoUrl(videoUrl)
     setIsPlaying(true)
   }
   let handleExitViewport = function () {
-    console.log("on exit viewPort : curent inde", currentVideoIndex)
     setIsPlaying(false)
     setTempVideoUrl(null);
     setDisplayThumbnail(true)
   }
   return (
     <div
-        className="video-container"
+      className={isMobile ? "video-container-mobile" : "video-container"}
         style={{
           color: "white",
         }}
     >
-      {displayThumbnail && !isSafari && <Box
+      {displayThumbnail && <Box
         backgroundImage={`url(${videoThumbnail})`}
-        backgroundColor= {Boolean(videoThumbnail) ? "transparent" : "blue"}
+        backgroundColor= {Boolean(videoThumbnail) ? "transparent" : "lightgray"}
         backgroundRepeat='no-repeat'
         backgroundSize='cover'
         backgroundPosition='center'
@@ -199,15 +197,13 @@ export const ReactPlayerWrapper = ({
         filter='blur(10px)'
       />}
       {!isSafari && <ReactPlayer
-          key={videos[currentVideoIndex]['video']['videos_id']}
+          key={videos[currentVideoIndex]['video_type'] === 'rt' ? videos[currentVideoIndex]['video']['conversation_id'] : videos[currentVideoIndex]['video']['video_id']}
           playing={isPlaying}
           url={tempVideoUrl}
           muted={muted}
           controls={false}
           playsinline={true}
           config={{
-            file: {
-            },
             forceHLS: false,
             forceVideo: true,
           }}
@@ -221,8 +217,8 @@ export const ReactPlayerWrapper = ({
           progressInterval={200}
           onReady={() => {
             setDisplayThumbnail(false);
-            console.log("is playing on ready:", isPlaying)
           }}
+          loop
       />}
 
       {isSafari && <SafariPlayer
@@ -235,6 +231,9 @@ export const ReactPlayerWrapper = ({
         muted={muted}
         onClick={handleToggleIsPlaying}
         currentVideoIndex={currentVideoIndex}
+        onReady={(_, __) => {
+          setDisplayThumbnail(false);
+        }}
       />}
 
         {/* roundtable header */}
