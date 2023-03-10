@@ -175,7 +175,7 @@ const Profile = ({
           </div>
           : ""}
         <Flex
-          className='section-content h-100 swipe-container hide-scrollbar'
+          className='section-content h-100 swipe-container'
           direction='initial'
           wrap='wrap'
           w='full'
