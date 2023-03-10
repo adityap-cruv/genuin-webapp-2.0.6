@@ -4,17 +4,13 @@ import {useDebounce} from "use-debounce";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faPlay, faPause} from "@fortawesome/free-solid-svg-icons";
 import {ProgressBar, Badge, Button} from "react-bootstrap";
-import icArrowDown from "../../images/video-more-options/ic-arrow-down.svg";
-import icArrowUp from "../../images/video-more-options/ic-arrow-up.svg";
-import icArrowLeft from "../../images/video-more-options/ic-arrow-left.svg";
-import icArrowRight from "../../images/video-more-options/ic-arrow-right.svg";
 import icFlipLeft from "../../images/video-more-options/ic-flip-left.svg";
 import icFlipRight from "../../images/video-more-options/ic-flip-right.svg";
-import icClose from "../../images/video-more-options/ic-close.svg";
 import earth from "../../images/video-more-options/ic-earth.svg";
 import { Image, Flex, Text, Link, Box, useBreakpointValue, Avatar, scroll } from "@chakra-ui/react";
-import roundtable from "../../images/video-more-options/ic-roundtable.svg";
 import { Waypoint } from 'react-waypoint';
+import { isSafari } from "react-device-detect";
+import { SafariPlayer } from "./SafariPlayer";
 
 export const ReactPlayerWrapper = ({
   videoUrl,
@@ -52,10 +48,11 @@ export const ReactPlayerWrapper = ({
   const [rtEnded, setRtEnded] = useState(false);
   const [isPlayingDebounced] = useDebounce(isPlaying, 65);
   const [tempVideoUrl, setTempVideoUrl] = useState(null);
-  const [displayThumbnail, setDisplayThumbnail] = useState("block")
+  const [displayThumbnail, setDisplayThumbnail] = useState(true)
 
   const handleToggleIsPlaying = useCallback(() => {
     setIsPlaying((old) => !old);
+    console.log("clicked")
     // setIsMuted(false);
   }, [setIsPlaying]);
 
@@ -174,14 +171,15 @@ export const ReactPlayerWrapper = ({
     if (currentVideoIndex === (videos.length - 3)) {
       loadMoreVideos();
     }
-    setDisplayThumbnail("none");
-      setTempVideoUrl(videoUrl)
-      setIsPlaying(true);
+    console.log("on enter viewPort : curent inde", currentVideoIndex)
+    setTempVideoUrl(videoUrl)
+    setIsPlaying(true)
   }
-  let handleExitViewport = function() {
+  let handleExitViewport = function () {
+    console.log("on exit viewPort : curent inde", currentVideoIndex)
+    setIsPlaying(false)
     setTempVideoUrl(null);
-    setIsPlaying(false);
-    setDisplayThumbnail("block")
+    setDisplayThumbnail(true)
   }
   return (
     <div
@@ -190,14 +188,20 @@ export const ReactPlayerWrapper = ({
           color: "white",
         }}
     >
-      <Image
-        src={videoThumbnail}
-        display={displayThumbnail}
-      />
-      <ReactPlayer
-          key={videoUrl}
-          url={tempVideoUrl}
+      {displayThumbnail && !isSafari && <Box
+        backgroundImage={`url(${videoThumbnail})`}
+        backgroundColor= {Boolean(videoThumbnail) ? "transparent" : "blue"}
+        backgroundRepeat='no-repeat'
+        backgroundSize='cover'
+        backgroundPosition='center'
+        width='100%'
+        h='100%'
+        filter='blur(10px)'
+      />}
+      {!isSafari && <ReactPlayer
+          key={videos[currentVideoIndex]['video']['videos_id']}
           playing={isPlaying}
+          url={tempVideoUrl}
           muted={muted}
           controls={false}
           playsinline={true}
@@ -215,7 +219,23 @@ export const ReactPlayerWrapper = ({
           onDuration={setDurationWrapper}
           onEnded={onEndedWrapper}
           progressInterval={200}
-      />
+          onReady={() => {
+            setDisplayThumbnail(false);
+            console.log("is playing on ready:", isPlaying)
+          }}
+      />}
+
+      {isSafari && <SafariPlayer
+        uniqueKey={'safari-player-'+ currentVideoIndex}
+        playing={isPlaying}
+        videoUrl={tempVideoUrl}
+        height="100%"
+        width="100%"
+        className="video-wrapper"
+        muted={muted}
+        onClick={handleToggleIsPlaying}
+        currentVideoIndex={currentVideoIndex}
+      />}
 
         {/* roundtable header */}
         {watchRoundTable && (
@@ -555,7 +575,7 @@ export const ReactPlayerWrapper = ({
                           className="img-auther-pic"
                           style={{objectFit: 'cover'}}
                         />
-                    )}
+                  )}
                   </Waypoint>
                     {Boolean(roundTableMode) ? (
                       <Flex alignItems="center">

@@ -768,6 +768,9 @@ body .overlay {
   border-radius: 8px;
 }
 
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
 /* .top-bar {
   background: linear-gradient(180deg, rgba(17, 17, 17, 0) 0%, rgba(17, 17, 17, 0.7) 100%);
   transform: rotate(180deg);

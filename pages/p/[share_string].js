@@ -148,7 +148,7 @@ const Profile = ({
 
       const newVideos = res?.data?.data?.videos || [];
       res?.data?.data?.end_of_videos?setNoMoreVideosPublic(true):setNoMoreVideosPublic(false)
-      console.log("end_of_videos public load",res?.data?.data?.end_of_videos)
+      // console.log("end_of_videos public load",res?.data?.data?.end_of_videos)
       if (newVideos.length !== 0) {
         setPublicVideos(publicVideos.concat(newVideos));
         setNoVideos(false);
@@ -194,14 +194,14 @@ const Profile = ({
         publicVideos[publicVideos.length - 1]?.video?.video_id
       }`
     );
-    console.log("Url going to hit",`${
-      process.env.apiurl
-    }/api/v3/public/profile_videos?user_id=${share_string}&video_types[]=public_video&last_video_type=public_video&last_video_id=${
-      publicVideos[publicVideos.length - 1]?.video?.video_id
-    }`)
+    // console.log("Url going to hit",`${
+    //   process.env.apiurl
+    // }/api/v3/public/profile_videos?user_id=${share_string}&video_types[]=public_video&last_video_type=public_video&last_video_id=${
+    //   publicVideos[publicVideos.length - 1]?.video?.video_id
+    // }`)
     const newVideos = res?.data?.data?.videos || [];
     res?.data?.data?.end_of_videos?setNoMoreVideosPublic(true):setNoMoreVideosPublic(false)
-    console.log("end_of_videos public load",res?.data?.data?.end_of_videos)
+    // console.log("end_of_videos public load",res?.data?.data?.end_of_videos)
     if (newVideos.length !== 0) {
       setPublicVideos(publicVideos.concat(newVideos));
     }
@@ -506,7 +506,6 @@ const Profile = ({
       }
     })
   },[])
-  console.log("nickname", nickname);
   return !Boolean(user_id) ? (
     <Error />
   ) : (
@@ -1089,19 +1088,9 @@ const Videos = ({
                     direction='column'
                     justifyContent='space-between'
                     onClick={() => {
-                      // if (mobile) {
-                        // window.location.href = video.share_url;
-                        
-                        // window.location.href = `${process.env.hostname}rt/${video?.share_url.split("/").pop()}`;
-                        // setCurrentVideoIndex(index);
-                        // onOpen();
-                        // window.history.pushState(null, "",`..${video_type === "rt" ? '/rt': ''}/${video.share_url.split("/").pop()}`)
-                        // console.log("mobile rt click")
-                      // } else {
                         setCurrentVideoIndex(index);
                         onOpen();
                         changeUrl(video_type, index, false, video?.share_url)
-                      // }
                     }}
                   >
                     <Flex

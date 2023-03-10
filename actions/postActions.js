@@ -17,7 +17,7 @@ export function increaseVideoViewCount(share_string, type) {
         "type": type
       })
       .then((response) => {
-        console.log("Response from video_view",response)
+        // console.log("Response from video_view",response)
         resolve({});
       })
       .catch((err) => {

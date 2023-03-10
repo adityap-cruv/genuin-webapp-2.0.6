@@ -129,7 +129,6 @@ const Profile = ({
     var device_width = 720;
     var device_height = 1280;
     var new_m3u8_url = `https://nxs.infy.tv/ssai/master.m3u8?live=0&avod=1&c=1048&min_ad_duration=6&max_ad_duration=300&pod_duration=3005&ad_breaks=-1,-1&pdomain=cnn.com&pname=CNN&u=${url}&t=2071&dnt=0&width=${device_width}&height=${device_height}&minimum_duration=${minimum_duration}&maximum_duration=${maximum_duration}&placement_id=cnn001${client_ip}${location_lat}${location_lng}`;
-    // console.log('new_m3u8_url', new_m3u8_url);
     return new_m3u8_url;
   }
 
@@ -156,7 +155,7 @@ const Profile = ({
       <Layout className="content-demo">
           <TopNav hideBurgerMenu={true} showGetAppModal={handleShowModalAppDownload} variant='light' />
         {muted ?
-          <div className="volume-control">
+          <div className="volume-control ">
             <Button
               variant='primary'
               onClick={() => { setMuted(prev => !prev); setShowUnmuteText(false); }}
@@ -186,9 +185,10 @@ const Profile = ({
             <>
               {videos.map((video, id) => (
                 <Player
+                  key={videos[id]['video_type'] === 'rt' ? videos[id]['video']['conversation_id']: videos[id]['video']['video_id'] }
                   currentVideoIndex={id}
                   videoThumbnail={
-                    videos[id]?.video?.video_thumbnail
+                    videos[id]['video_type'] == 'rt' ? videos[id].video.thumbnail_url_s: videos[id]?.video?.video_thumbnail_s
                   }
                   description={videos[id]?.video?.description}
                   link={videos[id]?.video?.link}
@@ -201,7 +201,7 @@ const Profile = ({
                       : null)}
                   userName={videos[id] && videos[id]['video_type'] == 'rt' ? videos[id]['video']['owner']['nickname'] : (user && user.nickname ? user.nickname: null)}
                   userId={videos[id] && videos[id]['video_type'] == 'rt' ? videos[id]['video']['owner']['nickname'] : (user && user.nickname ? user.nickname : null)}
-                  userProfileImage={videos[id] && videos[id]['video_type'] == 'rt' ? videos[id]['video']['owner']['profile_image'] : (user && user.profile_image ? user.profile_image : null)}
+                  userProfileImage={videos[id] && videos[id]['video_type'] == 'rt' ? videos[id]['video']['owner']['profile_image_s'] : (user && user.profile_image_s ? user.profile_image_s : null)}
                   rtProfileImage={videos[id]?.video?.group_dp}
                   showGetAppModal={handleShowModalAppDownload}
                   onEnded={showGetAppToViewDialog}
