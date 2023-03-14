@@ -7,6 +7,8 @@ import {ProgressBar, Badge, Button} from "react-bootstrap";
 import icFlipLeft from "../../images/video-more-options/ic-flip-left.svg";
 import icFlipRight from "../../images/video-more-options/ic-flip-right.svg";
 import earth from "../../images/video-more-options/ic-earth.svg";
+import mute from "../../images/video-more-options/ic-mute.svg"
+import unmute from "../../images/video-more-options/ic-unmute.svg"
 import { Image, Flex, Text, Link, Box, useBreakpointValue, Avatar, scroll } from "@chakra-ui/react";
 import { Waypoint } from 'react-waypoint';
 import { isMobile, isSafari } from "react-device-detect";
@@ -41,19 +43,19 @@ export const ReactPlayerWrapper = ({
   verticalNavigation,
   shareUrl,
   muted,
+  onClick,
   loadMoreVideos
 }) => {
   const [progress, setProgress] = useState(0);
   const [isPlaying, setIsPlaying] = useState(autoplay);
   const [rtEnded, setRtEnded] = useState(false);
-  const [isPlayingDebounced] = useDebounce(isPlaying, 65);
+  // const [isPlayingDebounced] = useDebounce(isPlaying, 65);
+  const [isMutedDebounced] = useDebounce(muted, 800);
   const [tempVideoUrl, setTempVideoUrl] = useState(null);
   const [displayThumbnail, setDisplayThumbnail] = useState(true)
 
   const handleToggleIsPlaying = useCallback(() => {
     setIsPlaying((old) => !old);
-    console.log("clicked")
-    // setIsMuted(false);
   }, [setIsPlaying]);
 
   const touchStartYRef = useRef(0);
@@ -207,7 +209,7 @@ export const ReactPlayerWrapper = ({
             forceHLS: false,
             forceVideo: true,
           }}
-          onClick={handleToggleIsPlaying}
+          onClick={onClick}
           className="video-wrapper"
           width="auto"
           height="100%"
@@ -229,7 +231,7 @@ export const ReactPlayerWrapper = ({
         width="100%"
         className="video-wrapper"
         muted={muted}
-        onClick={handleToggleIsPlaying}
+        onClick={onClick}
         currentVideoIndex={currentVideoIndex}
         onReady={(_, __) => {
           setDisplayThumbnail(false);
@@ -387,14 +389,31 @@ export const ReactPlayerWrapper = ({
               /> */}
             </Flex>
           </Flex>
-        )}
-        <FontAwesomeIcon
+      )}
+      {muted ?
+        <Image
+          src={mute.src}
+          className="btn-play"
+          opacity={.7}
+          style={{
+            display: isMutedDebounced ? "none" : "block",
+          }}
+        />
+        : <Image
+          src={unmute.src}
+          className="btn-play"
+          style={{
+            display: isMutedDebounced ? "block" : "none",
+          }}
+          opacity={.7}
+        />}
+        {/* <FontAwesomeIcon
           icon={isPlaying ? faPause : faPlay}
           style={{
-            display: isPlayingDebounced ? "none" : "block",
+            display: isPlayingDebounced ? "block" : "none",
           }}
           className="btn-play"
-        />
+        /> */}
         {/* {Boolean(getNextVideo) &&
           Boolean(getPrevVideo) &&
           roundTableMode &&
