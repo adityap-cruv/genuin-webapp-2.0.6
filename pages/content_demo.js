@@ -1,20 +1,13 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import axios from "axios";
-import { Player } from "../components/player/player_swipe";
 import { Layout } from "../components/layout";
 import { GetAppModal } from "../components/getAppModal";
-
-import { Button } from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faVolumeMute } from '@fortawesome/free-solid-svg-icons'
 import { TopNav } from "../components/topNavSwipe";
-import {
-  AppActions
-} from "../components/appActions";
 import {
   Flex,
   Spinner
 } from "@chakra-ui/react";
+import Videos from "../components/videos";
 const Profile = ({
   user = {},
   all_videos = [],
@@ -33,37 +26,12 @@ const Profile = ({
       }
     }, []);
   }
-  const preparedFeedVideos = prepareFeedVideos(all_videos)
-  const [videos, setVideos] = useState(preparedFeedVideos);
-  const [muted, setMuted] = useState(true);
-  const [show_unmute_text, setShowUnmuteText] = useState(true);
+  const [videos, setVideos] = useState(prepareFeedVideos(all_videos));
 
-  const [showModalAppDownload, setShowModalAppDownload] = useState(false);
   const getAppComponentRef = useRef(() => null);
   const [noMoreVideos, setNoMoreVideos] = useState(end_of_videos);
+  const [showModalAppDownload, setShowModalAppDownload] = useState(false);
 
-  const handleCloseAppDownload = () => {
-    getAppComponentRef.current = () => null;
-    setShowModalAppDownload(false);
-  };
-  const handleShowModalAppDownload = (message = () => null) => {
-    getAppComponentRef.current = message;
-    setShowModalAppDownload(true);
-  };
-
-  useEffect(function () {
-    setTimeout(() => {
-      setShowUnmuteText(false);
-    }, 5000);
-  }, [])
-
-  const handleMuted = () => {
-    setMuted((old) => !old);
-  }
-
-  // const mobile = useBreakpointValue({ base: true, md: false }); --> not used
-
-  // const [currentVideoIndex, setCurrentVideoIndex] = useState(0); --> not used
   const [isLoading, setIsLoading] = useState(false);
   const loadMoreVideos = () => {
     if (!isLoading && !is_rt && !noMoreVideos) {
@@ -103,41 +71,17 @@ const Profile = ({
   // }
   // ---------------------------------------------------------------------------------------------------------------------
 
-
-  const getNextVideo = () => {
-    // var idx = currentVideoIndex
-    // if(currentVideoIndex+1<videos.length){
-    //   idx = currentVideoIndex+1
-    //   setCurrentVideoIndex(idx);
-    // }
-  }
-
-  const getPrevVideo = () => {
-    // var idx = 0
-    // if(currentVideoIndex-1>=0){
-    //   idx = currentVideoIndex-1
-    //   setCurrentVideoIndex(idx);
-    // }
+  const handleShowModalAppDownload = (message = () => null) => {
+    getAppComponentRef.current = message;
+    setShowModalAppDownload(true);
   };
 
-  const showGetAppToViewDialog = () => {
-    // handleShowModalAppDownload(() => <>Get the app to view this video.</>);
-  }
-
-  const getInfyUrl = (url) => {
-    var client_ip = ``;
-    var location_lat = ``;
-    var location_lng = ``;
-    var minimum_duration = 1;
-    var maximum_duration = 120;
-    var device_width = 720;
-    var device_height = 1280;
-    var new_m3u8_url = `https://nxs.infy.tv/ssai/master.m3u8?live=0&avod=1&c=1048&min_ad_duration=6&max_ad_duration=300&pod_duration=3005&ad_breaks=-1,-1&pdomain=cnn.com&pname=CNN&u=${url}&t=2071&dnt=0&width=${device_width}&height=${device_height}&minimum_duration=${minimum_duration}&maximum_duration=${maximum_duration}&placement_id=cnn001${client_ip}${location_lat}${location_lng}`;
-    return new_m3u8_url;
-  }
+  const handleCloseAppDownload = () => {
+    getAppComponentRef.current = () => null;
+    setShowModalAppDownload(false);
+  };
 
   return !Boolean(is_prop_loaded) ? (
-    // <Error />
       <>
         <div
           style={{
@@ -158,81 +102,17 @@ const Profile = ({
     <>
       <Layout className="content-demo">
           <TopNav hideBurgerMenu={true} showGetAppModal={handleShowModalAppDownload} variant='light' />
-        
-        <Flex
-          className='section-content h-100 swipe-container hide-scrollbar'
-          direction='initial'
-          wrap='wrap'
-          w='full'
-        // position={mobile ? "fixed" : "initial"}
-        >
-          {videos.length > 0 ? (
-            <>
-              {videos.map((video, id) => (
-                <Player
-                  key={videos[id]['video_type'] === 'rt' ? videos[id]['video']['conversation_id']: videos[id]['video']['video_id'] }
-                  currentVideoIndex={id}
-                  videoThumbnail={
-                    videos[id]['video_type'] == 'rt' ? videos[id].video.thumbnail_url_s: videos[id]?.video?.video_thumbnail_s
-                  }
-                  description={videos[id]?.video?.description}
-                  link={videos[id]?.video?.link}
-                  videoUrl={videos[id] && videos[id]['video'] && videos[id]['video']['video_url_m3u8']
-                    ? (revenue_enabled
-                      ? getInfyUrl(videos[id]['video']['video_url_m3u8'])
-                      : videos[id]['video']['video_url_m3u8'])
-                    : (videos[id] && videos[id]['video'] && videos[id]['video']['videoUrl']
-                      ? videos[id] && videos[id]['video'] && videos[id]['video']['videoUrl']
-                      : null)}
-                  userName={videos[id] && videos[id]['video_type'] == 'rt' ? videos[id]['video']['owner']['nickname'] : (user && user.nickname ? user.nickname: null)}
-                  userId={videos[id] && videos[id]['video_type'] == 'rt' ? videos[id]['video']['owner']['nickname'] : (user && user.nickname ? user.nickname : null)}
-                  userProfileImage={videos[id] && videos[id]['video_type'] == 'rt' ? videos[id]['video']['owner']['profile_image_s'] : (user && user.profile_image_s ? user.profile_image_s : null)}
-                  rtProfileImage={videos[id]?.video?.group_dp}
-                  showGetAppModal={handleShowModalAppDownload}
-                  onEnded={showGetAppToViewDialog}
-                  getNextVideo={getNextVideo}
-                  getPrevVideo={getPrevVideo}
-                  videos={videos}
-                  autoplay={id === 0 ? true : false}
-                  video_id_to_use={videos[id]?.video?.share_string}
-                  roundTableMode={videos[id]?.video_type === "rt"}
-                  roundTableName={videos[id]?.video?.group_name}
-                  roundTableId={videos[id]?.share_string}
-                  shareUrl={videos[id]?.video?.share_url}
-                  verticalNavigation
-                  muted={muted}
-                  loadMoreVideos={loadMoreVideos}
-                  onClick={handleMuted}
-                >
-                  
-                  <AppActions
-                    showGetAppModal={handleShowModalAppDownload}
-                    userName={videos[id] && videos[id]['video_type'] == 'rt' ? videos[id]['video']['owner']['nickname'] : (user && user.nickname ? user.nickname : null)}
-                    link={videos[id]?.video?.link}
-                    videoUrl={videos[id]?.video?.share_url}
-                    videoDescription={
-                      videos[id]?.video?.description
-                    }
-                    videoTitle='Genuin'
-                    roundTable={videos[id]?.video_type === "rt"}
-                    roundTableName={videos[id]?.video?.group_name}
-                    roundTableId={videos[id]?.share_string}
-                  />
-                 
-                </Player>
-              ))}
-            </>
-          ) : (
-            <>
-              <h1>Nothing to show here</h1>
-            </>
-          )}
-          </Flex>
-        <GetAppModal
-          show={showModalAppDownload}
-          onClose={handleCloseAppDownload}
-          TextNode={getAppComponentRef.current}
-        />
+              <Videos
+                videos={videos}
+                loadMoreVideos={loadMoreVideos}
+                revenue_enabled={revenue_enabled}
+                user={user}
+              />
+          <GetAppModal
+            show={showModalAppDownload}
+            onClose={handleCloseAppDownload}
+            TextNode={getAppComponentRef.current}
+          />
       </Layout>
     </>
   );

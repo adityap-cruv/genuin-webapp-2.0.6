@@ -2,8 +2,6 @@ import { useState, useMemo, useEffect } from "react";
 import { ReactPlayerWrapper } from "./reactPlayerWrapperSwipe";
 import { increaseVideoViewCount } from "../../actions/postActions";
 import { Box, Flex, useBreakpointValue } from "@chakra-ui/react";
-import { Image } from "@chakra-ui/react";
-
 
 export const Player = ({
   video_id_to_use,
