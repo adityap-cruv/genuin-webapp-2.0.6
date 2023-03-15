@@ -566,11 +566,14 @@ export const ReactPlayerWrapper = ({
                 )}
                   {Boolean(roundTableMode) ? (
                     <Flex alignItems="center">
-                    <Link href={`/rt/${roundTableId}`} style={{
+                    <Link
+                      href={`/rt/${roundTableId}`}
+                      style={{
                         marginRight: "10px"
-                      }}>
+                      }}
+                      className="rt-name"
+                    >
                       <Text
-                        className="rt_name"
                         whiteSpace="nowrap"
                         overflow="hidden"
                         textOverflow="ellipsis"
@@ -596,12 +599,14 @@ export const ReactPlayerWrapper = ({
                       </Button>
                     </Flex>
                   ) : (
-                      <Link href={`/p/${userName}`}>
+                    <Link
+                      href={`/p/${userName}`}
+                      className="user-name"
+                    >
                           <Text
                             whiteSpace="nowrap"
                             overflow="hidden"
                         textOverflow="ellipsis"
-                        className="user-name"
                           // width={mobile ? 'calc(100vw - 135px)' : '270px'}
                           >
                           @{userName}
