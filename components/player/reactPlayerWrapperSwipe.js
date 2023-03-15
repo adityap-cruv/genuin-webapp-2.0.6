@@ -407,134 +407,7 @@ export const ReactPlayerWrapper = ({
           }}
           opacity={.7}
         />}
-        {/* <FontAwesomeIcon
-          icon={isPlaying ? faPause : faPlay}
-          style={{
-            display: isPlayingDebounced ? "block" : "none",
-          }}
-          className="btn-play"
-        /> */}
-        {/* {Boolean(getNextVideo) &&
-          Boolean(getPrevVideo) &&
-          roundTableMode &&
-          watchRoundTable && (
-            <Button
-              className="btn-arrow"
-              style={{
-                position: "absolute",
-                top: "50%",
-                right: -60,
-              }}
-              onClick={getNextVideo}
-            >
-              <Image
-                src={icArrowRight.src}
-                width={6}
-                height={6}
-                alt="Arrow Right"
-                title="Arrow Right"
-              />
-            </Button>
-          )}
-        {Boolean(getNextVideo) &&
-          Boolean(getPrevVideo) &&
-          roundTableMode &&
-          watchRoundTable && (
-            <Button
-              className="btn-arrow"
-              style={{
-                position: "absolute",
-                top: "50%",
-                left: -60,
-              }}
-              onClick={getPrevVideo}
-            >
-              <Image
-                src={icArrowLeft.src}
-                width={6}
-                height={6}
-                alt="Arrow Left"
-                title="Arrow Left"
-              />
-            </Button>
-          )} */}
-        {/* {Boolean(roundTableMode) && Boolean(rtEnded) && !Boolean(watchRoundTable) && (
-        <div className='rt-video-overlay'>
-          <Flex direction='column' alignItems='center' justifyContent='center' mb={3}>
-            <div className='watch-again-auther mb-2'>
-              <Button
-                transform = 'translate(-50%, -50%)'
-                border='1px solid #FFFFFF'
-                fontWeight='bold'
-                display='flex'
-                height = '32px'
-                cursor = 'pointer'
-                position = 'absolute'
-                top = '48%'
-                left = '50%'
-                variant='outline-light'
-                style = {{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  width: "200px !important"
-                }}
-                justifyContent='center'
-                className='watch-roundtable'
-                onClick={() => {
-                  if (verticalNavigation && shareUrl) {
-                    window.location.href = `${process.env.hostname}rt/${shareUrl.split("/").pop()}`
-                    onClose();
-                  } else {
-                    setWatchRoundtable(true);
-                    setIsPlaying(true);
-                  }
-                }}
-              >
-                <Image
-                  src={roundtable.src}
-                  size={1}
-                  className='left'
-                  alt='Watch'
-                  ml='-1'
-                  mt='-0.5'
-                  md='-0.5'
-                  pr={3}
-                />
-                <Text color='white' marginTop={'-0.5'}>
-                  Watch roundtable
-                </Text>
-              </Button>
-            </div>
-            <div className='video-auther'>
-              <Button
-                transform = 'translate(-50%, -50%)'
-                // border='1px solid #FFFFFF'
-                fontWeight='bold'
-                display='flex'
-                width = '187px !important'
-                height = '32px'
-                cursor = 'pointer'
-                position = 'absolute'
-                top = '52%'
-                left = '50%'
-                variant='outline'
-                // className='ms-3'
-                justifyContent='center'
-                className='watch-again'
-                // className='btn-watch-roundtable'
-                onClick={() => {
-                  setIsPlaying(true)
-                  setRtEnded(false)
-                }}
-              >
-                <Text color='white'>
-                  Watch again
-                </Text>
-              </Button>
-            </div>
-          </Flex>
-        </div>)} */}
+
         <div className='video-footer bg-gradient-180'>
           <Flex alignItems='end' justifyContent='space-between' mb={3}>
             {(!watchRoundTable || !roundTableMode) && (
@@ -597,11 +470,15 @@ export const ReactPlayerWrapper = ({
                   </Waypoint>
                     {Boolean(roundTableMode) ? (
                       <Flex alignItems="center">
-                      <Link target="_blank" href={`/rt/${roundTableId}`} style={{
+                    <Link
+                      target="_blank"
+                      href={`/rt/${roundTableId}`}
+                      style={{
                           marginRight: "10px"
-                        }}>
+                      }}
+                      className="rt-name"
+                    >
                         <Text
-                          className="rt_name"
                           whiteSpace="nowrap"
                           overflow="hidden"
                           textOverflow="ellipsis"
@@ -628,12 +505,14 @@ export const ReactPlayerWrapper = ({
                         </Button>
                       </Flex>
                     ) : (
-                        <Link target="_blank" href={`/p/${userName}`}>
+                    <Link
+                      className="user-name"
+                      target="_blank"
+                      href={`/p/${userName}`}>
                             <Text
                               whiteSpace="nowrap"
                               overflow="hidden"
                               textOverflow="ellipsis"
-                              className="user-name"
                               fontWeight="bold"
                               // width={mobile ? 'calc(100vw - 135px)' : '270px'}
                             >
