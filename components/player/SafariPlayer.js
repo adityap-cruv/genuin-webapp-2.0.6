@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 export const SafariPlayer = ({ 
    uniqueKey,
@@ -8,9 +8,16 @@ export const SafariPlayer = ({
    width,
    className,
    muted,
-   currentVideoIndex,
-   onClick
+   onClick,
+   onReady
 }) => {
+
+   useEffect(() => {
+      var player = document.getElementById(uniqueKey);
+      player.addEventListener('canplay', onReady);
+
+      return () => player.removeEventListener('canplay', onReady);
+   }, [])
 
    useEffect(() => {
       var player = document.getElementById(uniqueKey);

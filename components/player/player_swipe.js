@@ -2,6 +2,8 @@ import { useState, useMemo, useEffect } from "react";
 import { ReactPlayerWrapper } from "./reactPlayerWrapperSwipe";
 import { increaseVideoViewCount } from "../../actions/postActions";
 import { Box, Flex, useBreakpointValue } from "@chakra-ui/react";
+import { Image } from "@chakra-ui/react";
+
 
 export const Player = ({
   video_id_to_use,
@@ -32,6 +34,7 @@ export const Player = ({
   verticalNavigation,
   shareUrl,
   muted, 
+  onClick,
   loadMoreVideos = () => {}
 }) => {
   const [triggerPlayCount, setTriggetPlayCount] = useState(false);
@@ -130,9 +133,11 @@ export const Player = ({
         verticalNavigation={verticalNavigation}
         shareUrl={shareUrl}
         muted={muted}
+        onClick={onClick}
         loadMoreVideos={loadMoreVideos}
       >
         {children}
+        
       </ReactPlayerWrapper>
     </Flex>
   );

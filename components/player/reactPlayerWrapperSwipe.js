@@ -7,9 +7,11 @@ import {ProgressBar, Badge, Button} from "react-bootstrap";
 import icFlipLeft from "../../images/video-more-options/ic-flip-left.svg";
 import icFlipRight from "../../images/video-more-options/ic-flip-right.svg";
 import earth from "../../images/video-more-options/ic-earth.svg";
+import mute from "../../images/video-more-options/ic-mute.svg"
+import unmute from "../../images/video-more-options/ic-unmute.svg"
 import { Image, Flex, Text, Link, Box, useBreakpointValue, Avatar, scroll } from "@chakra-ui/react";
 import { Waypoint } from 'react-waypoint';
-import { isSafari } from "react-device-detect";
+import { isMobile, isSafari } from "react-device-detect";
 import { SafariPlayer } from "./SafariPlayer";
 
 export const ReactPlayerWrapper = ({
@@ -41,19 +43,19 @@ export const ReactPlayerWrapper = ({
   verticalNavigation,
   shareUrl,
   muted,
+  onClick,
   loadMoreVideos
 }) => {
   const [progress, setProgress] = useState(0);
   const [isPlaying, setIsPlaying] = useState(autoplay);
   const [rtEnded, setRtEnded] = useState(false);
-  const [isPlayingDebounced] = useDebounce(isPlaying, 65);
+  // const [isPlayingDebounced] = useDebounce(isPlaying, 65);
+  const [isMutedDebounced] = useDebounce(muted, 800);
   const [tempVideoUrl, setTempVideoUrl] = useState(null);
   const [displayThumbnail, setDisplayThumbnail] = useState(true)
 
   const handleToggleIsPlaying = useCallback(() => {
     setIsPlaying((old) => !old);
-    console.log("clicked")
-    // setIsMuted(false);
   }, [setIsPlaying]);
 
   const touchStartYRef = useRef(0);
@@ -171,26 +173,24 @@ export const ReactPlayerWrapper = ({
     if (currentVideoIndex === (videos.length - 3)) {
       loadMoreVideos();
     }
-    console.log("on enter viewPort : curent inde", currentVideoIndex)
     setTempVideoUrl(videoUrl)
     setIsPlaying(true)
   }
   let handleExitViewport = function () {
-    console.log("on exit viewPort : curent inde", currentVideoIndex)
     setIsPlaying(false)
     setTempVideoUrl(null);
     setDisplayThumbnail(true)
   }
   return (
     <div
-        className="video-container"
+      className={isMobile ? "video-container-mobile" : "video-container"}
         style={{
           color: "white",
         }}
     >
-      {displayThumbnail && !isSafari && <Box
+      {displayThumbnail && <Box
         backgroundImage={`url(${videoThumbnail})`}
-        backgroundColor= {Boolean(videoThumbnail) ? "transparent" : "blue"}
+        backgroundColor= {Boolean(videoThumbnail) ? "transparent" : "lightgray"}
         backgroundRepeat='no-repeat'
         backgroundSize='cover'
         backgroundPosition='center'
@@ -199,19 +199,17 @@ export const ReactPlayerWrapper = ({
         filter='blur(10px)'
       />}
       {!isSafari && <ReactPlayer
-          key={videos[currentVideoIndex]['video']['videos_id']}
+          key={videos[currentVideoIndex]['video_type'] === 'rt' ? videos[currentVideoIndex]['video']['conversation_id'] : videos[currentVideoIndex]['video']['video_id']}
           playing={isPlaying}
           url={tempVideoUrl}
           muted={muted}
           controls={false}
           playsinline={true}
           config={{
-            file: {
-            },
             forceHLS: false,
             forceVideo: true,
           }}
-          onClick={handleToggleIsPlaying}
+          onClick={onClick}
           className="video-wrapper"
           width="auto"
           height="100%"
@@ -221,8 +219,8 @@ export const ReactPlayerWrapper = ({
           progressInterval={200}
           onReady={() => {
             setDisplayThumbnail(false);
-            console.log("is playing on ready:", isPlaying)
           }}
+          loop
       />}
 
       {isSafari && <SafariPlayer
@@ -233,8 +231,11 @@ export const ReactPlayerWrapper = ({
         width="100%"
         className="video-wrapper"
         muted={muted}
-        onClick={handleToggleIsPlaying}
+        onClick={onClick}
         currentVideoIndex={currentVideoIndex}
+        onReady={(_, __) => {
+          setDisplayThumbnail(false);
+        }}
       />}
 
         {/* roundtable header */}
@@ -388,14 +389,31 @@ export const ReactPlayerWrapper = ({
               /> */}
             </Flex>
           </Flex>
-        )}
-        <FontAwesomeIcon
+      )}
+      {muted ?
+        <Image
+          src={mute.src}
+          className="btn-play"
+          opacity={.7}
+          style={{
+            display: isMutedDebounced ? "none" : "block",
+          }}
+        />
+        : <Image
+          src={unmute.src}
+          className="btn-play"
+          style={{
+            display: isMutedDebounced ? "block" : "none",
+          }}
+          opacity={.7}
+        />}
+        {/* <FontAwesomeIcon
           icon={isPlaying ? faPause : faPlay}
           style={{
-            display: isPlayingDebounced ? "none" : "block",
+            display: isPlayingDebounced ? "block" : "none",
           }}
           className="btn-play"
-        />
+        /> */}
         {/* {Boolean(getNextVideo) &&
           Boolean(getPrevVideo) &&
           roundTableMode &&

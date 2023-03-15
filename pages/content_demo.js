@@ -15,7 +15,6 @@ import {
   Flex,
   Spinner
 } from "@chakra-ui/react";
-
 const Profile = ({
   user = {},
   all_videos = [],
@@ -58,6 +57,10 @@ const Profile = ({
     }, 5000);
   }, [])
 
+  const handleMuted = () => {
+    setMuted((old) => !old);
+  }
+
   // const mobile = useBreakpointValue({ base: true, md: false }); --> not used
 
   // const [currentVideoIndex, setCurrentVideoIndex] = useState(0); --> not used
@@ -66,7 +69,8 @@ const Profile = ({
     if (!isLoading && !is_rt && !noMoreVideos) {
       getMoreVideosPublic();
     } else {
-      console.log("Not calling...")
+      //TODO: what to do if no more videos or it is loading ..........
+      // console.log("Not calling...")
     }
   }
 
@@ -154,28 +158,9 @@ const Profile = ({
     <>
       <Layout className="content-demo">
           <TopNav hideBurgerMenu={true} showGetAppModal={handleShowModalAppDownload} variant='light' />
-        {muted ?
-          <div className="volume-control ">
-            <Button
-              variant='primary'
-              onClick={() => { setMuted(prev => !prev); setShowUnmuteText(false); }}
-              style={{
-                height: 45,
-                padding: "8px",
-                fontSize: 17,
-                fontWeight: "bold",
-                pointerEvents: "all",
-                borderRadius: '8px',
-                display: "flex"
-              }}
-            >
-              <FontAwesomeIcon icon={faVolumeMute} />
-              {show_unmute_text ? <p>Tap to unmute</p> : ""}
-            </Button>
-          </div>
-          : ""}
+        
         <Flex
-          className='section-content h-100 swipe-container'
+          className='section-content h-100 swipe-container hide-scrollbar'
           direction='initial'
           wrap='wrap'
           w='full'
@@ -217,7 +202,9 @@ const Profile = ({
                   verticalNavigation
                   muted={muted}
                   loadMoreVideos={loadMoreVideos}
+                  onClick={handleMuted}
                 >
+                  
                   <AppActions
                     showGetAppModal={handleShowModalAppDownload}
                     userName={videos[id] && videos[id]['video_type'] == 'rt' ? videos[id]['video']['owner']['nickname'] : (user && user.nickname ? user.nickname : null)}
@@ -231,6 +218,7 @@ const Profile = ({
                     roundTableName={videos[id]?.video?.group_name}
                     roundTableId={videos[id]?.share_string}
                   />
+                 
                 </Player>
               ))}
             </>

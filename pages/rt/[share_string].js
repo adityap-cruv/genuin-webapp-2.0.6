@@ -29,9 +29,9 @@ import {
   HStack,
   useDisclosure,
   useBreakpointValue,
-  Grid,
   Text,
   VStack,
+  Spinner
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 
@@ -55,7 +55,15 @@ const RoundTable = ({
   const [direction, setDirection] = useState("forward");
 
   const { isOpen, onOpen, onClose } = useDisclosure();
+
   const mobile = useBreakpointValue({ base: true, sm: false });
+  //! This is just faking user 
+  //TODO: find better way to detect mobile early before rendering....
+  const [isLoadingFake, setIsLoadingFake] = useState(true);
+  setTimeout(() => {
+    setIsLoadingFake(false);
+  }, 100)
+
   const router = useRouter();
   const { asPath } = useRouter();
 
@@ -185,7 +193,23 @@ const RoundTable = ({
 
   return (!Boolean(group?.group_id) || isError) ? (
     <Error />
-  ) : (
+  ) : isLoadingFake
+      ? 
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          height: '100%'
+        }}>
+        <Spinner
+          thickness='4px'
+          speed='1s'
+          emptyColor='blue'
+          color='white'
+          size='lg' />
+      </div> 
+      : (
     <Layout>
       <SEO
         title={title_name}
