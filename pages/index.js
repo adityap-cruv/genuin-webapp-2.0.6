@@ -103,24 +103,24 @@ const Home = () => {
                 >
                   <Carousel.Item>
                     <h1>
-                      Learn Web3 via
-                      <br />
-                      bite-sized content
+                      Igniting curiosity,<br />
+                      unlocking potential,<br />
+                      shaping culture. Genuinly.
                     </h1>
                   </Carousel.Item>
                   <Carousel.Item>
-                    <h1>Connect people in the Web3 business</h1>
+                    <h1>Market your skills and make professional connections</h1>
                   </Carousel.Item>
                   <Carousel.Item>
-                    <h1>Showcase your Web3 knowledge</h1>
+                    <h1>Breaking news from top journalists</h1>
                   </Carousel.Item>
                   <Carousel.Item>
-                    <h1>Initiate conversation about Web3</h1>
+                    <h1>Learn about your passions from experts in the field</h1>
                   </Carousel.Item>
                 </Carousel>
                 <Row
                   xs={2}
-                  className='justify-content-center justify-content-md-start mt-5 pt-3'
+                  className='justify-content-center justify-content-md-start mt-5 pt-3 '
                 >
                   <InstallApp />
                 </Row>
