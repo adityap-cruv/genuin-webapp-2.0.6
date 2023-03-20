@@ -619,6 +619,7 @@ body .overlay {
     margin-top: 2rem;
     font-size: 2rem;
     text-align: center;
+    text-shadow: 0px 3.5px 0px #0645ff;
   }
   .img-carousel {
     max-height: 400px;
