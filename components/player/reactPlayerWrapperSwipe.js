@@ -13,6 +13,7 @@ import { Image, Flex, Text, Link, Box, useBreakpointValue, Avatar, scroll } from
 import { Waypoint } from 'react-waypoint';
 import { isMobile, isSafari } from "react-device-detect";
 import { SafariPlayer } from "./SafariPlayer";
+import { DynamicPlayer } from "./dynamic_player";
 
 export const ReactPlayerWrapper = ({
   videoUrl,
@@ -198,45 +199,20 @@ export const ReactPlayerWrapper = ({
         h='100%'
         filter='blur(10px)'
       />}
-      {!isSafari && <ReactPlayer
-          key={videos[currentVideoIndex]['video_type'] === 'rt' ? videos[currentVideoIndex]['video']['conversation_id'] : videos[currentVideoIndex]['video']['video_id']}
-          playing={isPlaying}
-          url={tempVideoUrl}
-          muted={muted}
-          controls={false}
-          playsinline={true}
-          config={{
-            forceHLS: false,
-            forceVideo: true,
-          }}
-          onClick={onClick}
-          className="video-wrapper"
-          width="auto"
-          height="100%"
-          onProgress={setProgressWrapper}
-          onDuration={setDurationWrapper}
-          onEnded={onEndedWrapper}
-          progressInterval={200}
-          onReady={() => {
-            setDisplayThumbnail(false);
-          }}
-          loop
-      />}
-
-      {isSafari && <SafariPlayer
-        uniqueKey={'safari-player-'+ currentVideoIndex}
-        playing={isPlaying}
-        videoUrl={tempVideoUrl}
-        height="100%"
-        width="100%"
-        className="video-wrapper"
-        muted={muted}
-        onClick={onClick}
+      <DynamicPlayer
+        videos={videos}
         currentVideoIndex={currentVideoIndex}
-        onReady={(_, __) => {
+        isPlaying={isPlaying}
+        onClick={onClick}
+        muted={muted}
+        onDuration={setDurationWrapper}
+        onProgress={setProgressWrapper}
+        onEnded={onEndedWrapper}
+        onReady={() => {
           setDisplayThumbnail(false);
         }}
-      />}
+        url={tempVideoUrl}
+      />
 
         {/* roundtable header */}
         {watchRoundTable && (
