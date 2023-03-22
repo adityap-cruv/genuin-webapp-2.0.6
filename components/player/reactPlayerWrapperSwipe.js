@@ -1,8 +1,5 @@
 import {useCallback, useEffect, useRef, useState} from "react";
-import ReactPlayer from "react-player/lazy";
 import {useDebounce} from "use-debounce";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faPlay, faPause} from "@fortawesome/free-solid-svg-icons";
 import {ProgressBar, Badge, Button} from "react-bootstrap";
 import icFlipLeft from "../../images/video-more-options/ic-flip-left.svg";
 import icFlipRight from "../../images/video-more-options/ic-flip-right.svg";
@@ -11,8 +8,7 @@ import mute from "../../images/video-more-options/ic-mute.svg"
 import unmute from "../../images/video-more-options/ic-unmute.svg"
 import { Image, Flex, Text, Link, Box, useBreakpointValue, Avatar, scroll } from "@chakra-ui/react";
 import { Waypoint } from 'react-waypoint';
-import { isMobile, isSafari } from "react-device-detect";
-import { SafariPlayer } from "./SafariPlayer";
+import { isMobile } from "react-device-detect";
 import { DynamicPlayer } from "./dynamic_player";
 
 export const ReactPlayerWrapper = ({
@@ -55,9 +51,9 @@ export const ReactPlayerWrapper = ({
   const [tempVideoUrl, setTempVideoUrl] = useState(null);
   const [displayThumbnail, setDisplayThumbnail] = useState(true)
 
-  const handleToggleIsPlaying = useCallback(() => {
-    setIsPlaying((old) => !old);
-  }, [setIsPlaying]);
+  // const handleToggleIsPlaying = useCallback(() => {
+  //   setIsPlaying((old) => !old);
+  // }, [setIsPlaying]);
 
   const touchStartYRef = useRef(0);
   const getPrevVideoRef = useRef(getPrevVideo);
@@ -200,7 +196,6 @@ export const ReactPlayerWrapper = ({
         filter='blur(10px)'
       />}
       <DynamicPlayer
-        videos={videos}
         currentVideoIndex={currentVideoIndex}
         isPlaying={isPlaying}
         onClick={onClick}
@@ -212,6 +207,7 @@ export const ReactPlayerWrapper = ({
           setDisplayThumbnail(false);
         }}
         url={tempVideoUrl}
+        uniqueKey={videos[currentVideoIndex]['video_type'] === 'rt' ? videos[currentVideoIndex]['video']['conversation_id'] : videos[currentVideoIndex]['video']['video_id']}
       />
 
         {/* roundtable header */}

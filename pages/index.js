@@ -60,17 +60,15 @@ const Home = ({
   
   const [activeIndex, setActiveIndex] = useState(0);
   const mainRef = useRef(null);
-  const [tempX, setTempX] = useState(0);
-  const [opacity, setOpacity] = useState(1);
+  const [latest, setLatest] = useState(0)
 
   const { scrollYProgress } = useScroll({
     container: mainRef
   });
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
-    setTempX(latest);
-    setOpacity(1 - latest)
-    console.log("latest : ", latest)
+    setLatest(latest.toPrecision(6))
   })
+  console.log("latest : ", latest)
 
   return (
     <>
@@ -102,17 +100,17 @@ const Home = ({
               <Row className='justify-content-center align-items-center'>
               <Col sm={12} md={6} lg={6} xl={6}>
                 <motion.div style={{
-                  translateX: tempX * 300,
+                  translateX: latest * 300,
                   position: "relative",
                   // scale: temp * 3,
                 }}>
                 <HomePageVideo></HomePageVideo>
                 </motion.div>
 
-                </Col>
+              </Col>
               <Col sm={12} md={6} lg={6} xl={6}>
                 <motion.div style={{
-                  opacity: opacity,
+                  opacity: 1 - latest,
                   zIndex: 1
                 }}>
                   <Carousel
@@ -141,18 +139,14 @@ const Home = ({
                   <Row
                     xs={2}
                     className='justify-content-center justify-content-md-start mt-5 pt-3'
-                    style={{
-                      position: "inherit",
-                      zIndex: 1000
-                    }}
                   >
                     <InstallApp />
                   </Row>
                 </motion.div>
-                </Col>
+              </Col>
               </Row>
-            </Container>
-         
+          </Container>
+          
           <div style={{
             position: "fixed",
             zIndex: 0
@@ -228,22 +222,9 @@ const Home = ({
             </Row>
           </Container>
         </section>
-        <section
-          style={{
-            height: "100%",
-            position: "absolute"
-        }}>
-          <Videos
-            videos={videos}
-            loadMoreVideos={() => {
-              console.log("load more videos..")
-            }}
-            user={user}
-          /> 
-        </section>
         <div
           style={{
-            height: "calc(100% * 2)",
+            height: "calc(100% * 3)",
             position: "relative",
             zIndex: 100,
         }}>

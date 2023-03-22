@@ -1,10 +1,9 @@
 import { isSafari } from "react-device-detect";
 import ReactPlayer from "react-player/lazy";
+import {SafariPlayer} from "./safari_player.js"
 
 
 export const DynamicPlayer = ({
-   currentVideoIndex,
-   videos,
    isPlaying,
    url,
    muted,
@@ -12,11 +11,12 @@ export const DynamicPlayer = ({
    onProgress,
    onDuration,
    onEnded,
-   onReady
+   onReady,
+   uniqueKey
 }) => {
    return (<>
       {!isSafari && <ReactPlayer
-         key={videos[currentVideoIndex]['video_type'] === 'rt' ? videos[currentVideoIndex]['video']['conversation_id'] : videos[currentVideoIndex]['video']['video_id']}
+         key={uniqueKey}
          playing={isPlaying}
          url={url}
          muted={muted}
@@ -39,7 +39,7 @@ export const DynamicPlayer = ({
       />}
 
       {isSafari && <SafariPlayer
-         uniqueKey={'safari-player-' + currentVideoIndex}
+         uniqueKey={uniqueKey}
          playing={isPlaying}
          videoUrl={url}
          height="100%"
@@ -47,10 +47,7 @@ export const DynamicPlayer = ({
          className="video-wrapper"
          muted={muted}
          onClick={onClick}
-         currentVideoIndex={currentVideoIndex}
-         onReady={(_, __) => {
-            setDisplayThumbnail(false);
-         }}
+         onReady={onReady}
       />}
    </>)
 }

@@ -1,17 +1,15 @@
-import mobileFrame  from "../images/mobile_frame.png"
+import mobileFrame from "../images/mobile_frame.png"
 
 export const HomePageVideo = () => {
-   return (
+   return (<>
       <div
-      style={{
-         width: 380,
-         heigth: 770
-         }}>
+         style={{
+            height: "700px",
+            width: "380px"
+      }}>
          <img
-            src={mobileFrame.src}
-            alt='Learn Web3 via bite-sized content'
-            title='Learn Web3 via bite-sized content'
-            className='img-carousel mx-auto d-block'
-         />
-      </div>);
+         src={mobileFrame.src}>
+         </img>
+      </div>
+   </>)
 }
