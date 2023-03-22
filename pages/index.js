@@ -1,4 +1,4 @@
-import { Nav, Container, Row, Col, Carousel } from "react-bootstrap";
+import { Carousel } from "react-bootstrap";
 import { InstallApp } from "../components/installApp";
 
 import { useState, useRef } from "react";
@@ -38,25 +38,6 @@ const Home = ({
   }
 
   const [videos, setVideos] = useState(prepareFeedVideos(all_videos));
-  const scrollPosChanged = (event) => {
-    const homePage = document.getElementById("temp")
-    const limit = window.innerHeight * .2;
-    // if (homePage.scrollTop > limit) {
-    //   homePage.scrollTo({
-    //     top: window.innerWidth + 70,
-    //     behavior: "smooth"
-    //   })
-    // }
-  }
-
-  // useEffect(() => {
-  //   const homePage = document.getElementById('temp')
-  //   console.log('home page : ', homePage)
-   
-  //   homePage.addEventListener("scroll", scrollPosChanged)
-  
-  //   return homePage.removeEventListener("scroll", scrollPosChanged)
-  // }, [])
   
   const [activeIndex, setActiveIndex] = useState(0);
   const mainRef = useRef(null);
@@ -68,7 +49,6 @@ const Home = ({
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
     setLatest(latest.toPrecision(6))
   })
-  console.log("latest : ", latest)
 
   return (
     <>
@@ -90,143 +70,122 @@ const Home = ({
       }}
       ref={mainRef}>
         <HomeNav variant='light' isContiner />
-        <section className="bg-gradient-blue w-100 section-content d-flex flex-column h-100 justify-content-center justify-content-md-between"
+        <div
+          className="bg-gradient-blue h-100 w-100"
           style={{
             position: "absolute",
-            zIndex: 1
+            zIndex: -99
         }}>
-          <Container className='container-false d-none d-md-block'></Container>
-            <Container className='content-container'>
-              <Row className='justify-content-center align-items-center'>
-              <Col sm={12} md={6} lg={6} xl={6}>
-                <motion.div style={{
-                  translateX: latest * 300,
-                  position: "relative",
-                  // scale: temp * 3,
-                }}>
-                <HomePageVideo></HomePageVideo>
-                </motion.div>
-
-              </Col>
-              <Col sm={12} md={6} lg={6} xl={6}>
-                <motion.div style={{
-                  opacity: 1 - latest,
-                  zIndex: 1
-                }}>
-                  <Carousel
-                    controls={false}
-                    interval={2000}
-                    onSelect={(selectedIndex) => setActiveIndex(selectedIndex)}
-                    activeIndex={activeIndex}
-                  >
-                    <Carousel.Item>
-                      <h1>
-                        Learn Web3 via
-                        <br />
-                        bite-sized content
-                      </h1>
-                    </Carousel.Item>
-                    <Carousel.Item>
-                      <h1>Connect people in the Web3 business</h1>
-                    </Carousel.Item>
-                    <Carousel.Item>
-                      <h1>Showcase your Web3 knowledge</h1>
-                    </Carousel.Item>
-                    <Carousel.Item>
-                      <h1>Initiate conversation about Web3</h1>
-                    </Carousel.Item>
-                  </Carousel>
-                  <Row
-                    xs={2}
-                    className='justify-content-center justify-content-md-start mt-5 pt-3'
-                  >
-                    <InstallApp />
-                  </Row>
-                </motion.div>
-              </Col>
-              </Row>
-          </Container>
-          
-          <div style={{
-            position: "fixed",
-            zIndex: 0
-          }}>
-            
         </div>
-          <Container className='d-none d-md-block container-footer'>
-            <Row className='py-3'>
-              <Col xl={4} lg={4} md={4} sm={12}>
-                <Nav as='ul'>
-                  <Nav.Item as='li'>
-                    <Nav.Link
-                      style={{ opacity: 0.5 }}
-                      href='/'
-                      className='pr-0'
-                    >
-                      © 2022 Genuin Inc.
-                    </Nav.Link>
-                  </Nav.Item>
-                </Nav>
-              </Col>
-              <Col xl={8} lg={8} md={8} sm={12}>
-                <Nav
-                  className='justify-content-start justify-content-md-end'
-                  as='ul'
+        {latest > .9899999 && <div
+          style={{
+            position: "absolute",
+            display: "flex",
+            flexDirection: "row",
+            left: "33.33%",
+            width: "33.33%",
+            height: "100%",
+            zIndex: 100
+          }}>
+          <Videos
+            user={user}
+            loadMoreVideos={() => {
+              console.log("loadmore...")
+            }}
+            videos={videos}
+          />
+        </div>}
+        
+        {latest < .989999 && <div
+          style={{
+            position: "absolute",
+            height: "70%",
+            width: "70%",
+            top: "15%",
+            left: "15%",
+            zIndex: 1,
+            display: "flex",
+            justifyItems: "center",
+            flexFlow: 'row'
+        }}>
+          <motion.div style={{
+            translateX: latest < .5 ? `calc(50% * ${latest * 2})` : `calc(50%)`,
+            position: "inherit",
+            scale: latest > .5 ? latest * 1.7 : 1,
+            opacity: latest > .5 ? (1 - latest) : 1,
+            height: "100%",
+            width: "50%",
+            display: "flex",
+            justifyContent: "space-evenly"
+          }}>
+            <HomePageVideo
+              videoUrl={videos[3].video.video_url_m3u8}
+            />
+          </motion.div>
+
+          <motion.div style={{
+            opacity: latest < .5  ? 1 - (latest * 2) : 0,
+            zIndex: -1,
+            position: "relative",
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            justifyContent: "end"
+          }}
+            className="section-content">
+            <div
+              style={{
+                width: "50%",
+                height: "100%",
+              }}>
+              <div
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  display: "flex",
+                  alignItems: "center"
+              }}>
+                <Carousel
+                  controls={false}
+                  interval={2000}
+                  onSelect={(selectedIndex) => setActiveIndex(selectedIndex)}
+                  activeIndex={activeIndex}
                 >
-                  <Nav.Item as='li'>
-                    <Nav.Link
-                      style={{ opacity: 0.5 }}
-                      target="_blank"
-                      href={`/content_demo?value=rt_123f373977001407`}
-                    >
-                      Life at Genuin
-                    </Nav.Link>
-                  </Nav.Item>
-                  <Nav.Item as='li'>
-                    <Nav.Link
-                      style={{
-                        opacity: 0.5,
-                        paddingLeft: "0px",
-                        paddingRight: "0px",
-                      }}
-                      href={void 0}
-                      eventKey='link-2'
-                    >
-                      |
-                    </Nav.Link>
-                  </Nav.Item>
-                  <Nav.Item as='li'>
-                    <Nav.Link style={{ opacity: 0.5 }} href='/terms'>
-                      Terms of Service
-                    </Nav.Link>
-                  </Nav.Item>
-                  <Nav.Item as='li'>
-                    <Nav.Link
-                      style={{
-                        opacity: 0.5,
-                        paddingLeft: "0px",
-                        paddingRight: "0px",
-                      }}
-                      href={void 0}
-                    >
-                      |
-                    </Nav.Link>
-                  </Nav.Item>
-                  <Nav.Item as='li'>
-                    <Nav.Link style={{ opacity: 0.5 }} href='/privacy'>
-                      Privacy Policy
-                    </Nav.Link>
-                  </Nav.Item>
-                </Nav>
-              </Col>
-            </Row>
-          </Container>
-        </section>
+                  <Carousel.Item>
+                    <h1>
+                      Learn Web3 via
+                      <br />
+                      bite-sized content
+                    </h1>
+                  </Carousel.Item>
+                  <Carousel.Item>
+                    <h1>Connect people in the Web3 business</h1>
+                  </Carousel.Item>
+                  <Carousel.Item>
+                    <h1>Showcase your Web3 knowledge</h1>
+                  </Carousel.Item>
+                  <Carousel.Item>
+                    <h1>Initiate conversation about Web3</h1>
+                  </Carousel.Item>
+                </Carousel>
+              </div>
+              {/* <div
+                style={{
+                  height: "25%",
+                  width: "100%",
+                  display: "flex",
+                  alignItems: "start"
+                }}>
+                <InstallApp />
+              </div> */}
+            </div>
+          </motion.div>
+        </div>}
         <div
           style={{
-            height: "calc(100% * 3)",
+            height: "calc(100% * 5)",
             position: "relative",
-            zIndex: 100,
+            zIndex: 99,
         }}>
         </div>       
         <GetAppModal

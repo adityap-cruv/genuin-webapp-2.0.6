@@ -1,15 +1,31 @@
 import mobileFrame from "../images/mobile_frame.png"
+import { DynamicPlayer } from "./player/dynamic_player"
 
-export const HomePageVideo = () => {
+export const HomePageVideo = ({
+   videoUrl
+}) => {
    return (<>
+         <img
+            style={{
+               position: "absolute",
+            }}
+            width="50%"
+            height="80%"
+            src={mobileFrame.src}>
+      </img>
       <div
          style={{
-            height: "700px",
-            width: "380px"
+            height: "96%"
       }}>
-         <img
-         src={mobileFrame.src}>
-         </img>
+         <DynamicPlayer
+            isPlaying={true}
+            muted={true}
+            onClick={() => {
+               console.log("onclicke")
+            }}
+            url={videoUrl}
+            uniqueKey="feed_index_player"
+         />
       </div>
    </>)
 }
