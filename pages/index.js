@@ -3,7 +3,6 @@ import NextHead from "next/head";
 import { Layout } from "../components/layout";
 import { GetAppModal } from "../components/getAppModal";
 import { SEO } from "../components/seo";
-import { handleInvestClick } from "../actions/appInstall";
 import { Nav, Container, Row, Col, Carousel } from "react-bootstrap";
 
 import imgCarousel1 from "../images/web3/learn_web3_via_bite-sized_content.png";

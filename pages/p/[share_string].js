@@ -799,11 +799,11 @@ const Profile = ({
                   <Player
                     currentVideoIndex={currentVideoIndex}
                     videoThumbnail={
-                      videos[currentVideoIndex]?.video?.video_thumbnail
+                      videos[currentVideoIndex]?.video?.video_thumbnail_s
                     }
                     description={videos[currentVideoIndex]?.video?.description}
                     link={videos[currentVideoIndex]?.video?.link}
-                    videoUrl={videos[currentVideoIndex]?.video?.video_url_m3u8 ?? videos[currentVideoIndex]?.video?.videoUrl}
+                    videoUrl={videos[currentVideoIndex]?.video?.video_url_m3u8 ?? videos[currentVideoIndex]?.video?.video_url}
                     userName={nickname}
                     userId={nickname}
                     onClickOutsideOfVideo={() => { setProfileUrl(); onClose(); }}
@@ -852,7 +852,7 @@ const Profile = ({
                   <Player
                     currentVideoIndex={currentVideoIndexRT}
                     videoThumbnail={
-                      rtVideos[currentVideoIndexRT]?.video?.video_thumbnail
+                      rtVideos[currentVideoIndexRT]?.video?.video_thumbnail_s
                     }
                     description={rtVideos[currentVideoIndexRT]?.video?.description}
                     link={rtVideos[currentVideoIndexRT]?.video?.link}
@@ -909,7 +909,7 @@ const Profile = ({
                   <Player
                     currentVideoIndex={currentVideoIndexPublic}
                     videoThumbnail={
-                      publicVideos[currentVideoIndexPublic]?.video?.video_thumbnail
+                      publicVideos[currentVideoIndexPublic]?.video?.video_thumbnail_s
                     }
                     description={
                       publicVideos[currentVideoIndexPublic]?.video?.description
