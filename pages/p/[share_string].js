@@ -791,7 +791,7 @@ const Profile = ({
                 }
                 description={videos[currentVideoIndex]?.video?.description}
                 link={videos[currentVideoIndex]?.video?.link}
-                videoUrl={videos[currentVideoIndex]?.video?.video_url_m3u8 ?? videos[currentVideoIndex]?.video?.videoUrl}
+                videoUrl={videos[currentVideoIndex]?.video?.video_url_m3u8 ?? videos[currentVideoIndex]?.video?.video_url}
                 userName={nickname}
                 userId={nickname}
                 onClickOutsideOfVideo={() => {setProfileUrl(); onClose();}}
