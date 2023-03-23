@@ -38,16 +38,17 @@ const Home = ({
   }
 
   const [videos, setVideos] = useState(prepareFeedVideos(all_videos));
-  
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+
   const [activeIndex, setActiveIndex] = useState(0);
   const mainRef = useRef(null);
   const [latest, setLatest] = useState(0)
 
-  const dynamicWidth = useBreakpointValue({xl: false, base: true})
-  const [{width, height}, setWH] = useState(0)
-  
+  const dynamicWidth = useBreakpointValue({ xl: false, base: true })
+  const [{ width, height }, setWH] = useState(0)
+
   const resizeHandler = (event) => {
-    setWH({width: window.innerWidth, height: window.innerHeight})
+    setWH({ width: window.innerWidth, height: window.innerHeight })
   }
   useEffect(() => {
     setWH({ width: window.innerWidth, height: window.innerHeight })
@@ -55,11 +56,7 @@ const Home = ({
     return () => {
       window.removeEventListener('resize', resizeHandler);
     }
-  },[])
-
-  useEffect(() => {
-    console.log('width chagnes');
-  }, [width])
+  }, [])
 
   const { scrollYProgress } = useScroll({
     container: mainRef
@@ -92,13 +89,13 @@ const Home = ({
           style={{
             position: "absolute",
             zIndex: -99
-        }}>
+          }}>
         </div>
         <div
           className="h-100 w-100"
           style={{
             opacity: latest > .58 ? (-(.58 - latest)) * 3 : 0,
-            backgroundImage: `url(${videos[0].video.video_thumbnail_s})`,
+            backgroundImage: `url(${videos[currentVideoIndex].video.video_thumbnail_s})`,
             backgroundRepeat: "no-repeat",
             backgroundSize: "cover",
             backgroundPosition: "center",
@@ -108,16 +105,17 @@ const Home = ({
             zIndex: -98
           }}>
         </div>
-        {latest > .9899999 && <div
+        <div
           style={{
             position: "absolute",
             display: "flex",
             flexDirection: "row",
-            left: (window.innerWidth - (9 * height / 16)) / 2,
+            left: (width - (9 * height / 16)) / 2,
             width: 9 * height / 16,
             height: "100%",
-            right: (window.innerWidth - (9 * height / 16)) / 2,
-            zIndex: 10
+            right: (width - (9 * height / 16)) / 2,
+            zIndex: latest > .9899999 ? 10 : -1,
+            opacity: latest > .9899999 ? 1 : 0
           }}>
           <Videos
             user={user}
@@ -125,14 +123,15 @@ const Home = ({
               console.log("loadmore...")
             }}
             videos={videos}
+            setCurrentVideoIndex={setCurrentVideoIndex}
           />
-        </div>}
-        
+        </div>
+
         {latest < .989999 && <div
           style={{
             position: "absolute",
             height: "70%",
-            width: dynamicWidth ? "100%" :"70%",
+            width: dynamicWidth ? "100%" : "70%",
             top: "15%",
             left: dynamicWidth ? "0" : "15%",
             paddingRight: dynamicWidth ? "40px" : "0px",
@@ -140,11 +139,11 @@ const Home = ({
             display: "flex",
             justifyItems: "center",
             flexFlow: 'row'
-        }}>
+          }}>
           <motion.div style={{
             translateX: latest < .5 ? `calc(50% * ${latest * 2})` : `calc(50%)`,
             position: "inherit",
-            scale: latest > .58 ? latest * 1.7 : 1,
+            scale: latest > .58 ? latest * 1.6 : 1,
             height: "100%",
             width: "50%",
             display: "flex",
@@ -158,7 +157,7 @@ const Home = ({
           </motion.div>
 
           <motion.div style={{
-            opacity: latest < .5  ? 1 - (latest * 2) : 0,
+            opacity: latest < .5 ? 1 - (latest * 2) : 0,
             zIndex: -1,
             position: "relative",
             width: "100%",
@@ -178,7 +177,7 @@ const Home = ({
                   height: "100%",
                   display: "flex",
                   alignItems: "center"
-              }}>
+                }}>
                 <Carousel
                   controls={false}
                   interval={2000}
@@ -218,13 +217,14 @@ const Home = ({
         </div>}
         <div
           style={{
+            opacity: latest > .911111 ? 0 : 1,
             zIndex: 12,
             display: "flex",
             position: 'absolute',
             width: "100%",
             bottom: 0,
             justifyContent: "space-around"
-        }}>
+          }}>
           <div
             className="container-footer container"
             style={{
@@ -297,14 +297,14 @@ const Home = ({
             </Nav>
           </div>
         </div>
-        
+
         <div
           style={{
             height: "calc(100% * 2)",
             position: "relative",
             zIndex: 9,
-        }}>
-        </div>       
+          }}>
+        </div>
         <GetAppModal
           show={showModalAppDownload}
           onClose={handleCloseAppDownload}

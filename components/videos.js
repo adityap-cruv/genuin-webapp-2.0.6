@@ -9,7 +9,8 @@ const Videos = ({
    videos,
    loadMoreVideos,
    revenue_enabled,
-   user
+   user,
+   setCurrentVideoIndex=() => {},
 }) => {
 
    const [showModalAppDownload, setShowModalAppDownload] = useState(false);
@@ -108,6 +109,7 @@ const Videos = ({
                      muted={muted}
                      loadMoreVideos={loadMoreVideos}
                      onClick={handleClick}
+                     setCurrentVideoIndex={setCurrentVideoIndex}
                   >
                      <AppActions
                         showGetAppModal={handleShowModalAppDownload}

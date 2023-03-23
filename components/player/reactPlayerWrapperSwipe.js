@@ -41,7 +41,8 @@ export const ReactPlayerWrapper = ({
   shareUrl,
   muted,
   onClick,
-  loadMoreVideos
+  loadMoreVideos,
+  setCurrentVideoIndex
 }) => {
   const [progress, setProgress] = useState(0);
   const [isPlaying, setIsPlaying] = useState(autoplay);
@@ -170,6 +171,7 @@ export const ReactPlayerWrapper = ({
     if (currentVideoIndex === (videos.length - 3)) {
       loadMoreVideos();
     }
+    setCurrentVideoIndex(currentVideoIndex)
     setTempVideoUrl(videoUrl)
     setIsPlaying(true)
   }
