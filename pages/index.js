@@ -36,9 +36,6 @@ const Home = () => {
         videoPreviewImage={metaImage}
         includeHead={false}
       />
-      <NextHead>
-        <link rel='shortcut icon' href={favicon.src} type='image/x-icon' />
-      </NextHead>
       <Layout>
         <HomeNav variant='light' isContiner />
         <section className='bg-gradient-blue section-content d-flex flex-column h-100 justify-content-center justify-content-md-between'>
