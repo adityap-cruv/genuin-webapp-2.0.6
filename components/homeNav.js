@@ -61,12 +61,12 @@ export const HomeNav = ({
             className='me-3 custom-home-button'
             onClick={handleHireLinkClick}
             style={{
-              fontSize: 22,
+              fontSize: 20,
               padding: "0.275rem 2rem",
               borderRadius: "0.4rem",
             }}
           >
-            Join Us
+            Join the team
           </Button>
 
             <Navbar.Toggle
