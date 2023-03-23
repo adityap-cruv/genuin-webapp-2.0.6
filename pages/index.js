@@ -6,11 +6,12 @@ import { SEO } from "../components/seo";
 import axios from "axios";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion"
 import { HomePageVideo } from "../components/homepage_video";
+import { InstallApp } from "../components/installApp";
 
 import { HomeNav } from "../components/homeNav";
 import Videos from "../components/videos";
 import { useBreakpointValue } from "@chakra-ui/react";
-import { useDebounce } from "use-debounce";
+import { Nav } from "react-bootstrap";
 
 let title = "Genuin";
 let metaImage = "https://media.begenuin.com/backend_assets/preview.png";
@@ -43,21 +44,22 @@ const Home = ({
   const [latest, setLatest] = useState(0)
 
   const dynamicWidth = useBreakpointValue({xl: false, base: true})
-  const [width, setWidth] = useState(0)
-  const [horizontalMargin, setHorizontalMargin] = useState(0)
+  const [{width, height}, setWH] = useState(0)
   
   const resizeHandler = (event) => {
-    setWidth((9 * window.innerHeight / 16));
-    setHorizontalMargin((window.innerWidth - width) / 2)
+    setWH({width: window.innerWidth, height: window.innerHeight})
   }
   useEffect(() => {
-    setWidth((9 * window.innerHeight / 16));
-    setHorizontalMargin((window.innerWidth - width) / 2)
+    setWH({ width: window.innerWidth, height: window.innerHeight })
     window.addEventListener('resize', resizeHandler);
     return () => {
       window.removeEventListener('resize', resizeHandler);
     }
   },[])
+
+  useEffect(() => {
+    console.log('width chagnes');
+  }, [width])
 
   const { scrollYProgress } = useScroll({
     container: mainRef
@@ -111,10 +113,10 @@ const Home = ({
             position: "absolute",
             display: "flex",
             flexDirection: "row",
-            left: horizontalMargin,
-            width: width,
+            left: (window.innerWidth - (9 * height / 16)) / 2,
+            width: 9 * height / 16,
             height: "100%",
-            right: horizontalMargin,
+            right: (window.innerWidth - (9 * height / 16)) / 2,
             zIndex: 10
           }}>
           <Videos
@@ -206,13 +208,96 @@ const Home = ({
                   height: "25%",
                   width: "100%",
                   display: "flex",
-                  alignItems: "start"
+                  alignItems: "start",
+                  zIndex: 2000
                 }}>
                 <InstallApp />
               </div> */}
             </div>
           </motion.div>
         </div>}
+        <div
+          style={{
+            zIndex: 12,
+            display: "flex",
+            position: 'absolute',
+            width: "100%",
+            bottom: 0,
+            justifyContent: "space-around"
+        }}>
+          <div
+            className="container-footer container"
+            style={{
+              position: "absolute",
+              bottom: 0,
+              display: "flex",
+              paddingBottom: "10px",
+              justifyContent: "space-between",
+              width: "100%"
+            }}>
+            <Nav as='ul'>
+              <Nav.Item as='li'>
+                <Nav.Link
+                  style={{ opacity: 0.5 }}
+                  href='/'
+                  className='pr-0'
+                >
+                  © 2022 Genuin Inc.
+                </Nav.Link>
+              </Nav.Item>
+            </Nav>
+            <Nav
+              className='justify-content-start justify-content-md-end'
+              as='ul'
+            >
+              <Nav.Item as='li'>
+                <Nav.Link
+                  style={{ opacity: 0.5 }}
+                  target="_blank"
+                  href={`/content_demo?value=rt_123f373977001407`}
+                >
+                  Life at Genuin
+                </Nav.Link>
+              </Nav.Item>
+              <Nav.Item as='li'>
+                <Nav.Link
+                  style={{
+                    opacity: 0.5,
+                    paddingLeft: "0px",
+                    paddingRight: "0px",
+                  }}
+                  href={void 0}
+                  eventKey='link-2'
+                >
+                  |
+                </Nav.Link>
+              </Nav.Item>
+              <Nav.Item as='li'>
+                <Nav.Link style={{ opacity: 0.5 }} href='/terms'>
+                  Terms of Service
+                </Nav.Link>
+              </Nav.Item>
+              <Nav.Item as='li'>
+                <Nav.Link
+                  style={{
+                    opacity: 0.5,
+                    paddingLeft: "0px",
+                    paddingRight: "0px",
+                  }}
+                  href={void 0}
+                >
+                  |
+                </Nav.Link>
+              </Nav.Item>
+              <Nav.Item as='li'>
+                <Nav.Link style={{ opacity: 0.5 }} href='/privacy'>
+                  Privacy Policy
+                </Nav.Link>
+              </Nav.Item>
+            </Nav>
+          </div>
+        </div>
+        
         <div
           style={{
             height: "calc(100% * 2)",
