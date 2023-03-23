@@ -6,6 +6,7 @@ import { ChakraProvider } from "@chakra-ui/react";
 import favicon from "../images/favicon.ico";
 import NextHead from "next/head"
 
+
 function MyApp({ Component, pageProps }) {
   return (
     <>

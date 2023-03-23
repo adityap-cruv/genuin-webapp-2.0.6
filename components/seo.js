@@ -16,7 +16,9 @@ export const SEO = ({
   videoType = "video/mp4",
   openGraphType = "website",
   includeHead = true,
-}) => (
+}) => {
+  console.log("title...", title)
+  return (
   <>
     {includeHead && (
       <NextHead>
@@ -63,4 +65,4 @@ export const SEO = ({
       }}
     />
   </>
-);
+)}
