@@ -191,34 +191,36 @@ const RoundTable = ({
     ],
   });
 
-  return (!Boolean(group?.group_id) || isError) ? (
+  return (<>
+    <SEO
+      title={title_name}
+      openGraphTitle={group.group_name}
+      videoUrl={videos?.[currentVideoIndex]?.video_url}
+      description={ld_description}
+      openGraphDescription={group?.group_description}
+      videoPreviewImage={details?.preview_image}
+    />
+    {(!Boolean(group?.group_id) || isError) ? (
     <Error />
-  ) : isLoadingFake
-      ? 
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          height: '100%'
-        }}>
-        <Spinner
-          thickness='4px'
-          speed='1s'
-          emptyColor='blue'
-          color='white'
-          size='lg' />
-      </div> 
-      : (
+    ) : isLoadingFake
+    ?
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100%'
+      }}>
+      <Spinner
+        thickness='4px'
+        speed='1s'
+        emptyColor='blue'
+        color='white'
+        size='lg' />
+    </div>
+    : (
     <Layout>
-      <SEO
-        title={title_name}
-        openGraphTitle={group.group_name}
-        videoUrl={videos?.[currentVideoIndex]?.video_url}
-        description={ld_description}
-        openGraphDescription={group?.group_description}
-        videoPreviewImage={details?.preview_image}
-      />
+
       <script
         type='application/ld+json'
         dangerouslySetInnerHTML={{ __html: ORG_SCHEMA }}
@@ -446,7 +448,7 @@ const RoundTable = ({
                     window.location.href = details.share_string;
                     // window.location.href = `${process.env.hostname}rt/${details.share_string}?v=${videos?.[currentVideoIndex]?.share_string}`
                   }
-                  else if (window.location.href.split("/")[3] === "p"){
+                  else if (window.location.href.split("/")[3] === "p") {
                     window.location.href = window.location.href;
                   }
                   else {
@@ -492,7 +494,10 @@ const RoundTable = ({
       />
       <WelcomeModal show={showModalWelcome} onClose={handleCloseWelcome} />
     </Layout>
-  );
+    )}
+  </>)
+  
+  
 };
 
 const Videos = ({

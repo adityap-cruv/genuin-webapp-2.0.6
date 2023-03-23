@@ -165,6 +165,7 @@ export const ReactPlayerWrapper = ({
       }
     }
   };
+  // console.log("videos; ",videos)
   return (
     <div
       className="video-container"
@@ -569,15 +570,14 @@ export const ReactPlayerWrapper = ({
                     <Link
                       href={`/rt/${roundTableId}`}
                       style={{
-                        marginRight: "10px"
+                        marginRight: "10px",
+                        maxWidth: "150px"
                       }}
-                      className="rt-name"
                     >
                       <Text
                         whiteSpace="nowrap"
                         overflow="hidden"
                         textOverflow="ellipsis"
-                        // width={mobile ? 'calc(100vw - 235px)' : '150px'}
                       >
                         {roundTableName}
                       </Text>
@@ -601,12 +601,12 @@ export const ReactPlayerWrapper = ({
                   ) : (
                     <Link
                       href={`/p/${userName}`}
-                      className="user-name"
+                      maxW="150px"
                     >
                           <Text
                             whiteSpace="nowrap"
                             overflow="hidden"
-                        textOverflow="ellipsis"
+                            textOverflow="ellipsis"
                           // width={mobile ? 'calc(100vw - 135px)' : '270px'}
                           >
                           @{userName}

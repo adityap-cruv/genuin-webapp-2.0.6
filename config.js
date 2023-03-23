@@ -1,5 +1,5 @@
 export const appStoreLink = 'https://install.begenuin.com/86sn/cgs';
-export const hireLink = 'https://angel.co/company/begenuin/jobs';
+export const hireLink = 'https://www.linkedin.com/jobs/genuin-jobs-worldwide?f_C=11153452';
 export const investLink = 'https://www.linkedin.com/company/begenuin/';
 
 export const appleAppStoreLink =
