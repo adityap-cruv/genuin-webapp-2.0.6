@@ -2,21 +2,15 @@ import mobileFrame from "../images/mobile_frame.png"
 import { DynamicPlayer } from "./player/dynamic_player"
 
 export const HomePageVideo = ({
-   videoUrl
+   videoUrl,
+   opacityFrame
 }) => {
    return (<>
-         <img
-            style={{
-               position: "absolute",
-            }}
-            width="50%"
-            height="80%"
-            src={mobileFrame.src}>
-      </img>
       <div
          style={{
-            height: "96%"
-      }}>
+            width: "300px",
+            position: "absolute"
+         }}>
          <DynamicPlayer
             isPlaying={true}
             muted={true}
@@ -27,5 +21,13 @@ export const HomePageVideo = ({
             uniqueKey="feed_index_player"
          />
       </div>
+         <img
+            style={{
+               position: "absolute",
+               opacity: opacityFrame
+            }}
+            width="310px"
+            src={mobileFrame.src}>
+      </img>
    </>)
 }

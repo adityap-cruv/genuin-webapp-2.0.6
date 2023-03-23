@@ -1,17 +1,16 @@
 import { Carousel } from "react-bootstrap";
-import { InstallApp } from "../components/installApp";
 
-import { useState, useRef } from "react";
-import NextHead from "next/head";
+import { useState, useRef, useEffect } from "react";
 import { GetAppModal } from "../components/getAppModal";
 import { SEO } from "../components/seo";
 import axios from "axios";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion"
 import { HomePageVideo } from "../components/homepage_video";
 
-import favicon from "../images/favicon.ico";
 import { HomeNav } from "../components/homeNav";
 import Videos from "../components/videos";
+import { useBreakpointValue } from "@chakra-ui/react";
+import { useDebounce } from "use-debounce";
 
 let title = "Genuin";
 let metaImage = "https://media.begenuin.com/backend_assets/preview.png";
@@ -43,13 +42,29 @@ const Home = ({
   const mainRef = useRef(null);
   const [latest, setLatest] = useState(0)
 
+  const dynamicWidth = useBreakpointValue({xl: false, base: true})
+  const [width, setWidth] = useState(0)
+  const [horizontalMargin, setHorizontalMargin] = useState(0)
+  
+  const resizeHandler = (event) => {
+    setWidth((9 * window.innerHeight / 16));
+    setHorizontalMargin((window.innerWidth - width) / 2)
+  }
+  useEffect(() => {
+    setWidth((9 * window.innerHeight / 16));
+    setHorizontalMargin((window.innerWidth - width) / 2)
+    window.addEventListener('resize', resizeHandler);
+    return () => {
+      window.removeEventListener('resize', resizeHandler);
+    }
+  },[])
+
   const { scrollYProgress } = useScroll({
     container: mainRef
   });
   useMotionValueEvent(scrollYProgress, "change", (latest) => {
     setLatest(latest.toPrecision(6))
   })
-
   return (
     <>
       <SEO
@@ -61,14 +76,14 @@ const Home = ({
         videoPreviewImage={metaImage}
         includeHead={false}
       />
-      <NextHead>
-        <link rel='shortcut icon' href={favicon.src} type='image/x-icon' />
-      </NextHead>
-      <div style={{
-        height: "100%",
-        overflowY: "scroll"
-      }}
-      ref={mainRef}>
+      <div
+        style={{
+          height: "100%",
+          overflowY: "scroll"
+        }}
+        ref={mainRef}
+        className="hide-scrollbar"
+      >
         <HomeNav variant='light' isContiner />
         <div
           className="bg-gradient-blue h-100 w-100"
@@ -77,15 +92,30 @@ const Home = ({
             zIndex: -99
         }}>
         </div>
+        <div
+          className="h-100 w-100"
+          style={{
+            opacity: latest > .58 ? (-(.58 - latest)) * 3 : 0,
+            backgroundImage: `url(${videos[0].video.video_thumbnail_s})`,
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            filter: 'blur(60px) brightness(60%)',
+            backgroundColor: 'black',
+            position: "absolute",
+            zIndex: -98
+          }}>
+        </div>
         {latest > .9899999 && <div
           style={{
             position: "absolute",
             display: "flex",
             flexDirection: "row",
-            left: "33.33%",
-            width: "33.33%",
+            left: horizontalMargin,
+            width: width,
             height: "100%",
-            zIndex: 100
+            right: horizontalMargin,
+            zIndex: 10
           }}>
           <Videos
             user={user}
@@ -100,9 +130,10 @@ const Home = ({
           style={{
             position: "absolute",
             height: "70%",
-            width: "70%",
+            width: dynamicWidth ? "100%" :"70%",
             top: "15%",
-            left: "15%",
+            left: dynamicWidth ? "0" : "15%",
+            paddingRight: dynamicWidth ? "40px" : "0px",
             zIndex: 1,
             display: "flex",
             justifyItems: "center",
@@ -111,15 +142,16 @@ const Home = ({
           <motion.div style={{
             translateX: latest < .5 ? `calc(50% * ${latest * 2})` : `calc(50%)`,
             position: "inherit",
-            scale: latest > .5 ? latest * 1.7 : 1,
-            opacity: latest > .5 ? (1 - latest) : 1,
+            scale: latest > .58 ? latest * 1.7 : 1,
             height: "100%",
             width: "50%",
             display: "flex",
-            justifyContent: "space-evenly"
+            justifyContent: "space-evenly",
+            alignItems: "center"
           }}>
             <HomePageVideo
-              videoUrl={videos[3].video.video_url_m3u8}
+              opacityFrame={latest > .58 ? (1.5 - latest) : 1}
+              videoUrl={videos[0].video.video_url_m3u8}
             />
           </motion.div>
 
@@ -183,9 +215,9 @@ const Home = ({
         </div>}
         <div
           style={{
-            height: "calc(100% * 5)",
+            height: "calc(100% * 2)",
             position: "relative",
-            zIndex: 99,
+            zIndex: 9,
         }}>
         </div>       
         <GetAppModal
@@ -198,7 +230,7 @@ const Home = ({
 };
 
 Home.getInitialProps = async () => {
-  const nickname = "srk";
+  const nickname = "himanshu";
   try {
     const all_videos = await axios.get(
       `${process.env.apiurl}/api/v3/public/profile_videos?user_id=${nickname}&video_types[]=public_video`

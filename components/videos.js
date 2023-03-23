@@ -68,7 +68,7 @@ const Videos = ({
          className='section-content h-100 swipe-container hide-scrollbar'
          direction='initial'
          wrap='wrap'
-         w='full'
+         w='100%'
       >
          {videos.length === 0
             ? <h1>Nothing to show here</h1>
