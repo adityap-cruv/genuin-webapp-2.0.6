@@ -1,9 +1,11 @@
 import {useCallback, useEffect, useRef, useState} from "react";
-import ReactPlayer from "react-player/lazy";
 import {useDebounce} from "use-debounce";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faPlay, faPause} from "@fortawesome/free-solid-svg-icons";
-import {ProgressBar, Badge, Button} from "react-bootstrap";
+import { ProgressBar, Badge, Button } from "react-bootstrap";
+import { Image, Flex, Text, Link, Box, useBreakpointValue, Avatar } from "@chakra-ui/react";
+
+
 import icArrowDown from "../../images/video-more-options/ic-arrow-down.svg";
 import icArrowUp from "../../images/video-more-options/ic-arrow-up.svg";
 import icArrowLeft from "../../images/video-more-options/ic-arrow-left.svg";
@@ -12,8 +14,8 @@ import icFlipLeft from "../../images/video-more-options/ic-flip-left.svg";
 import icFlipRight from "../../images/video-more-options/ic-flip-right.svg";
 import icClose from "../../images/video-more-options/ic-close.svg";
 import earth from "../../images/video-more-options/ic-earth.svg";
-import { Image, Flex, Text, Link, Box, useBreakpointValue, Avatar, scroll } from "@chakra-ui/react";
 import roundtable from "../../images/video-more-options/ic-roundtable.svg";
+import { DynamicPlayer } from "./dynamic_player";
 
 export const ReactPlayerWrapper = ({
   videoUrl,
@@ -173,28 +175,15 @@ export const ReactPlayerWrapper = ({
         color: "white",
       }}
     >
-      <ReactPlayer
-        key={videoUrl}
+      <DynamicPlayer
+        isPlaying={isPlaying}
         url={videoUrl}
-        playing={isPlaying}
         muted={isMuted}
-        controls={false}
-        playsinline={true}
-        config={{
-          file: {
-            attributes: {poster: videoThumbnail},
-          },
-          forcedHLS: false,
-          forcedVideo: true,
-        }}
+        uniqueKey={videoUrl}
         onClick={handleToggleIsPlaying}
-        className="video-wrapper"
-        width="auto"
-        height="100%"
         onProgress={setProgressWrapper}
         onDuration={setDurationWrapper}
         onEnded={onEndedWrapper}
-        progressInterval={200}
       />
 
       {/* roundtable header */}
