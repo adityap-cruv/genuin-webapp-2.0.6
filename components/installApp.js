@@ -15,7 +15,6 @@ import { useRouter } from "next/router";
 export const InstallApp = ({ small = false, errorPage = false, onClick = () => {} }) => {
   const mobile = useBreakpointValue({ base: true, sm: false });
   const router = useRouter();
-  console.log("router", router.pathname);
 
   return (
     <>

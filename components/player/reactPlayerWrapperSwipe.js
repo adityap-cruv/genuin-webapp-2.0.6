@@ -1,8 +1,5 @@
 import {useCallback, useEffect, useRef, useState} from "react";
-import ReactPlayer from "react-player/lazy";
 import {useDebounce} from "use-debounce";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faPlay, faPause} from "@fortawesome/free-solid-svg-icons";
 import {ProgressBar, Badge, Button} from "react-bootstrap";
 import icFlipLeft from "../../images/video-more-options/ic-flip-left.svg";
 import icFlipRight from "../../images/video-more-options/ic-flip-right.svg";
@@ -11,8 +8,8 @@ import mute from "../../images/video-more-options/ic-mute.svg"
 import unmute from "../../images/video-more-options/ic-unmute.svg"
 import { Image, Flex, Text, Link, Box, useBreakpointValue, Avatar, scroll } from "@chakra-ui/react";
 import { Waypoint } from 'react-waypoint';
-import { isMobile, isSafari } from "react-device-detect";
-import { SafariPlayer } from "./SafariPlayer";
+import { isMobile } from "react-device-detect";
+import { DynamicPlayer } from "./dynamic_player";
 
 export const ReactPlayerWrapper = ({
   videoUrl,
@@ -44,7 +41,8 @@ export const ReactPlayerWrapper = ({
   shareUrl,
   muted,
   onClick,
-  loadMoreVideos
+  loadMoreVideos,
+  setCurrentVideoIndex
 }) => {
   const [progress, setProgress] = useState(0);
   const [isPlaying, setIsPlaying] = useState(autoplay);
@@ -54,9 +52,9 @@ export const ReactPlayerWrapper = ({
   const [tempVideoUrl, setTempVideoUrl] = useState(null);
   const [displayThumbnail, setDisplayThumbnail] = useState(true)
 
-  const handleToggleIsPlaying = useCallback(() => {
-    setIsPlaying((old) => !old);
-  }, [setIsPlaying]);
+  // const handleToggleIsPlaying = useCallback(() => {
+  //   setIsPlaying((old) => !old);
+  // }, [setIsPlaying]);
 
   const touchStartYRef = useRef(0);
   const getPrevVideoRef = useRef(getPrevVideo);
@@ -173,6 +171,7 @@ export const ReactPlayerWrapper = ({
     if (currentVideoIndex === (videos.length - 3)) {
       loadMoreVideos();
     }
+    setCurrentVideoIndex(currentVideoIndex)
     setTempVideoUrl(videoUrl)
     setIsPlaying(true)
   }
@@ -198,45 +197,20 @@ export const ReactPlayerWrapper = ({
         h='100%'
         filter='blur(10px)'
       />}
-      {!isSafari && <ReactPlayer
-          key={videos[currentVideoIndex]['video_type'] === 'rt' ? videos[currentVideoIndex]['video']['conversation_id'] : videos[currentVideoIndex]['video']['video_id']}
-          playing={isPlaying}
-          url={tempVideoUrl}
-          muted={muted}
-          controls={false}
-          playsinline={true}
-          config={{
-            forceHLS: false,
-            forceVideo: true,
-          }}
-          onClick={onClick}
-          className="video-wrapper"
-          width="auto"
-          height="100%"
-          onProgress={setProgressWrapper}
-          onDuration={setDurationWrapper}
-          onEnded={onEndedWrapper}
-          progressInterval={200}
-          onReady={() => {
-            setDisplayThumbnail(false);
-          }}
-          loop
-      />}
-
-      {isSafari && <SafariPlayer
-        uniqueKey={'safari-player-'+ currentVideoIndex}
-        playing={isPlaying}
-        videoUrl={tempVideoUrl}
-        height="100%"
-        width="100%"
-        className="video-wrapper"
-        muted={muted}
-        onClick={onClick}
+      <DynamicPlayer
         currentVideoIndex={currentVideoIndex}
-        onReady={(_, __) => {
+        isPlaying={isPlaying}
+        onClick={onClick}
+        muted={muted}
+        onDuration={setDurationWrapper}
+        onProgress={setProgressWrapper}
+        onEnded={onEndedWrapper}
+        onReady={() => {
           setDisplayThumbnail(false);
         }}
-      />}
+        url={tempVideoUrl}
+        uniqueKey={videos[currentVideoIndex]['video_type'] === 'rt' ? videos[currentVideoIndex]['video']['conversation_id'] : videos[currentVideoIndex]['video']['video_id']}
+      />
 
         {/* roundtable header */}
         {watchRoundTable && (
