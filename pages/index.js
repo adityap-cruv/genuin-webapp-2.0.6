@@ -1,12 +1,12 @@
 import { useState } from "react";
-import { SEO } from "../components/seo";
 import axios from "axios";
-import { Nav, Container, Row, Col, Carousel } from "react-bootstrap";
+import { useBreakpointValue } from "@chakra-ui/react";
+
 
 import { HomeNav } from "../components/homeNav";
-import { useBreakpointValue } from "@chakra-ui/react";
 import { AnimatedIndexPage } from "./animated_index_page";
 import { SimpleIndexPage } from "./simple_index_page";
+import { SEO } from "../components/seo";
 
 let title = "Genuin";
 let metaImage = "https://media.begenuin.com/backend_assets/preview.png";
