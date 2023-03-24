@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Layout } from "../components/layout";
 import { GetAppModal } from "../components/getAppModal";
 import { Nav, Container, Row, Col, Carousel } from "react-bootstrap";
 

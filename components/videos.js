@@ -10,9 +10,13 @@ const Videos = ({
    loadMoreVideos,
    revenue_enabled,
    user,
-   setCurrentVideoIndex=() => {},
+   setCurrentVideoIndex = () => { },
+   company_id,
+   tag_id,
+   domain,
+   publisher_name   
 }) => {
-
+console.log("company_id ::", company_id, "tag_id ::", tag_id,"domain ::", domain, "publisher_name::", publisher_name )
    const [showModalAppDownload, setShowModalAppDownload] = useState(false);
    const getAppComponentRef = useRef(() => null);
    const [muted, setMuted] = useState(true);
@@ -52,8 +56,7 @@ const Videos = ({
       var maximum_duration = 120;
       var device_width = 720;
       var device_height = 1280;
-      var new_m3u8_url = `https://nxs.infy.tv/ssai/master.m3u8?live=0&avod=1&c=1048&min_ad_duration=6&max_ad_duration=300&pod_duration=3005&ad_breaks=-1,-1&pdomain=cnn.com&pname=CNN&u=${url}&t=2071&dnt=0&width=${device_width}&height=${device_height}&minimum_duration=${minimum_duration}&maximum_duration=${maximum_duration}&placement_id=cnn001${client_ip}${location_lat}${location_lng}`;
-      return new_m3u8_url;
+      var new_m3u8_url = `https://nxs.infy.tv/ssai/master.m3u8?live=0&avod=1&c=${company_id}&min_ad_duration=6&max_ad_duration=300&pod_duration=3005&ad_breaks=-1,-1&pdomain=${domain}&pname=${publisher_name}&u=${url}&t=${tag_id}&dnt=0&width=${device_width}&height=${device_height}&minimum_duration=${minimum_duration}&maximum_duration=${maximum_duration}&placement_id=cnn001${client_ip}${location_lat}${location_lng}`;      return new_m3u8_url;
    }
 
    const showGetAppToViewDialog = () => {

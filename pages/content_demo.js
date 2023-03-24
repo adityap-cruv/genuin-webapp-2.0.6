@@ -16,7 +16,11 @@ const Profile = ({
   is_rt = false,
   end_of_videos = false,
   chat_id,
-  rt_details
+  rt_details,
+  company_id = 1048, 
+  tag_id = 2071,
+  domain = "cnn.com",
+  publisher_name = "CNN"
 }) => {
   const prepareFeedVideos = (videos = []) => {
     return videos.reduce((res, { video_type, video }) => {
@@ -46,7 +50,6 @@ const Profile = ({
     }
   }
 
-  console.log("videos : ", videos)
   const getMoreVideosPublic = async () => {
     setIsLoading(true)
     const res = await axios.get(
@@ -149,6 +152,10 @@ const Profile = ({
                 loadMoreVideos={loadMoreVideos}
                 revenue_enabled={revenue_enabled}
                 user={user}
+                company_id={company_id}
+                tag_id={tag_id}
+                domain={domain}
+                publisher_name={publisher_name}
               />
           <GetAppModal
             show={showModalAppDownload}
@@ -161,7 +168,7 @@ const Profile = ({
 };
 
 
-Profile.getInitialProps = async ({ query: { value, revenue_enabled } }) => {
+Profile.getInitialProps = async ({ query: { value, revenue_enabled, company_id, tag_id, domain, publisher_name } }) => {
   var nickname, rt;
 
   if (value !== undefined &&
@@ -194,6 +201,10 @@ Profile.getInitialProps = async ({ query: { value, revenue_enabled } }) => {
         is_prop_loaded: true,
         revenue_enabled: revenue_enabled === "true",
         end_of_videos: all_videos?.data?.data?.end_of_videos,
+        company_id: company_id,
+        tag_id: tag_id,
+        domain: domain,
+        publisher_name: publisher_name
       };
     } catch (error) {
       return {};
@@ -255,7 +266,11 @@ Profile.getInitialProps = async ({ query: { value, revenue_enabled } }) => {
       revenue_enabled: revenue_enabled === "true",
       is_rt: true,
       chat_id: rt,
-      rt_details: rt_data
+      rt_details: rt_data,
+      company_id: company_id,
+      tag_id: tag_id,
+      domain: domain,
+      publisher_name: publisher_name
     }
   } else {
     return Promise.resolve({});
