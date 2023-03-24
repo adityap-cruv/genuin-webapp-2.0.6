@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { useBreakpointValue } from "@chakra-ui/react";
 
@@ -7,6 +7,7 @@ import { HomeNav } from "../components/homeNav";
 import { AnimatedIndexPage } from "../components/animated_index_page";
 import { SimpleIndexPage } from "../components/simple_index_page";
 import { SEO } from "../components/seo";
+import { Spinner } from "@chakra-ui/react";
 
 let title = "Genuin";
 let metaImage = "https://media.begenuin.com/backend_assets/preview.png";
@@ -33,6 +34,11 @@ const Home = ({
   }
 
   const [videos, setVideos] = useState(prepareFeedVideos(all_videos));
+  const [isLoadingFake, setIsLoadingFake] = useState(true);
+
+  setTimeout(() => {
+    setIsLoadingFake(false)
+  }, 100)
 
   return (
     <>
@@ -45,17 +51,45 @@ const Home = ({
         videoPreviewImage={metaImage}
         includeHead={false}
       />
-      <HomeNav variant='light' isContiner />
-      {!mobile && <AnimatedIndexPage
-        videos={videos}
-        user={user}
-      />
+      <HomeNav variant="light" isContiner />
+      {isLoadingFake
+        ?
+        <>
+          <div
+            className="bg-gradient-blue h-100 w-100"
+            style={{
+              position: "absolute",
+              zIndex: -99
+            }}>
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              height: '100%'
+            }}>
+            <Spinner
+              thickness='4px'
+              speed='1s'
+              emptyColor='blue'
+              color='white'
+              size='lg' />
+          </div>
+        </>
+        : <>
+          {!mobile && <AnimatedIndexPage
+            videos={videos}
+            user={user}
+          />
+          }
+          {mobile &&
+            <SimpleIndexPage
+              videos={videos}
+              user={user}
+            />}
+        </>
       }
-      {mobile &&
-        <SimpleIndexPage
-          videos={videos}
-          user={user}
-        />}
     </>
   );
 };

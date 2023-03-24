@@ -621,6 +621,13 @@ body .overlay {
 .container-footer.text-black a:hover {
   color: #000000;
 }
+
+@media (max-width: 992px){
+  .section-content h1 {
+    font-size: 2.5rem;
+  }
+}
+
 @media (max-width: 768px) {
   .section-content {
     width: 100%;
@@ -677,7 +684,7 @@ a:hover{
 }
 .swipe-container > div {
   height: 100% !important;
-  scroll-snap-align: start;
+  scroll-snap-align: start end;
   background: #000;
   position: relative;
   /* display: flex; */
@@ -744,6 +751,11 @@ a:hover{
 .single-row {
   scroll-snap-align: start;
   content-visibility: auto;
+}
+
+.index-player-border video {
+  border-radius: 36px;
+  padding: 10px;
 }
 
 .list {

@@ -1,13 +1,12 @@
-import { Carousel } from "react-bootstrap";
-
 import { useState, useRef, useEffect } from "react";
 import { GetAppModal } from "./getAppModal";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion"
-import { HomePageVideo } from "./homepage_video";
-
-import Videos from "./videos";
 import { useBreakpointValue } from "@chakra-ui/react";
 import { Nav } from "react-bootstrap";
+
+import Videos from "./videos";
+import { HomePageVideo } from "./homepage_video";
+import downloadQR from "../images/app_download_qr.svg"
 
 export const AnimatedIndexPage = ({
    videos,
@@ -18,7 +17,6 @@ export const AnimatedIndexPage = ({
 
    const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
 
-   const [activeIndex, setActiveIndex] = useState(0);
    const mainRef = useRef(null);
    const [latest, setLatest] = useState(0)
 
@@ -94,7 +92,7 @@ export const AnimatedIndexPage = ({
             />
          </div>
 
-         {latest < .989999 && <div
+         <div
             style={{
                position: "absolute",
                height: "70%",
@@ -105,7 +103,8 @@ export const AnimatedIndexPage = ({
                zIndex: 1,
                display: "flex",
                justifyItems: "center",
-               flexFlow: 'row'
+               flexFlow: 'row',
+               opacity: latest < .989999 ? 1 : 0
             }}>
             <motion.div style={{
                translateX: latest < .5 ? `calc(50% * ${latest * 2})` : `calc(50%)`,
@@ -120,6 +119,7 @@ export const AnimatedIndexPage = ({
                <HomePageVideo
                   opacityFrame={latest > .58 ? (1.5 - latest) : 1}
                   videoUrl={videos[currentVideoIndex].video.video_url_m3u8 ?? videos[currentVideoIndex].video.video_url}
+                  videoThumbnail={videos[currentVideoIndex].video.video_thumbnail_s}
                />
             </motion.div>
 
@@ -136,52 +136,38 @@ export const AnimatedIndexPage = ({
                <div
                   style={{
                      width: "50%",
-                     height: "100%",
+                     height: "60%",
                   }}>
                   <div
                      style={{
                         width: "100%",
-                        height: "100%",
+                        height: "75%",
                         display: "flex",
                         alignItems: "center"
                      }}>
-                     <Carousel
-                        controls={false}
-                        interval={2000}
-                        onSelect={(selectedIndex) => setActiveIndex(selectedIndex)}
-                        activeIndex={activeIndex}
-                     >
-                        <Carousel.Item>
-                           <h1>
-                              Igniting curiosity,
-                              <br />unlocking potential,
-                              <br />shaping culture. Genuinly.
-                           </h1>
-                        </Carousel.Item>
-                        <Carousel.Item>
-                           <h1>Market your skills and make professional connections</h1>
-                        </Carousel.Item>
-                        <Carousel.Item>
-                           <h1>Breaking news from top journalists</h1>
-                        </Carousel.Item>
-                        <Carousel.Item>
-                           <h1>Learn about your passions from experts in the field</h1>
-                        </Carousel.Item>
-                     </Carousel>
+                     <h1>
+                        Igniting curiosity,
+                        <br />unlocking potential,
+                        <br />shaping culture. Genuinly.
+                     </h1>
                   </div>
-                  {/* <div
-                style={{
-                  height: "25%",
-                  width: "100%",
-                  display: "flex",
-                  alignItems: "start",
-                  zIndex: 2000
-                }}>
-                <InstallApp />
-              </div> */}
+                  <div
+                     style={{
+                        height: "100%",
+                        width: "30%",
+                        display: "flex",
+                        alignItems: "start",
+                        justifyContent: "center",
+                        paddingTop: "20px",
+                        zIndex: 2000
+                     }}>
+                     <img
+                        src={downloadQR.src}>
+                     </img>
+                  </div>
                </div>
             </motion.div>
-         </div>}
+         </div>
          <div
             style={{
                opacity: latest > .911111 ? 0 : 1,

@@ -8,7 +8,6 @@ const Record = ({
   const {
     nickname
   } = owner;
-  console.log("Nickname",nickname)
 
   useEffect(() => {
     if(nickname){
