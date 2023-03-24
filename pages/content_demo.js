@@ -14,7 +14,9 @@ const Profile = ({
   is_prop_loaded = false,
   revenue_enabled = false,
   is_rt = false,
-  end_of_videos = false
+  end_of_videos = false,
+  chat_id,
+  rt_details
 }) => {
   const prepareFeedVideos = (videos = []) => {
     return videos.reduce((res, { video_type, video }) => {
@@ -36,12 +38,15 @@ const Profile = ({
   const loadMoreVideos = () => {
     if (!isLoading && !is_rt && !noMoreVideos) {
       getMoreVideosPublic();
+    } else if (!isLoading && is_rt && !noMoreVideos) {
+      getMoreVideosRT();
     } else {
       //TODO: what to do if no more videos or it is loading ..........
       // console.log("Not calling...")
     }
   }
 
+  console.log("videos : ", videos)
   const getMoreVideosPublic = async () => {
     setIsLoading(true)
     const res = await axios.get(
@@ -59,16 +64,53 @@ const Profile = ({
     setIsLoading(false);
   };
 
+  const prepareRTVideos = (videos) => {
+    var tempData = [];
+    videos.forEach(function (v) {
+      var videoObj = {
+        "video_type": "rt",
+        "share_string": rt_details.share_string,
+        "video": {
+          "owner": v.owner,
+          "thumbnail_url": v.thumbnail_url,
+          "thumbnail_url_s": v.thumbnail_url_s,
+          "thumbnail_url_l": v.thumbnail_url_l,
+          "video_url": v.video_url,
+          "video_url_m3u8": v.video_url_m3u8,
+          "link": v.link,
+          "meta_data": v.meta_data,
+          "conversation_id": v.conversation_id,
+          "conversation_at": v.conversation_at,
+          "no_of_views": v.no_of_views,
+          "no_of_comments": v.no_of_comments,
+          "video_thumbnail": v.video_thumbnail,
+          "share_url": `${process.env.hostname}rt/${rt_details.share_string}?v=${v.share_string}`,
+          "share_string": v.share_string,
+          "rt_share_string": v.share_string,
+          "description": rt_details.group.group_description,
+          "group_name": rt_details.group.group_name,
+          "group_dp": rt_details.group.dp,
+          "chat_id": rt_details.chat_id
+        }
+      };
+      tempData.push(videoObj);
+    });
+    return tempData;
+  }
+
   // --------> IN CASE OF PAGINATION IN RT <---------------------------------------------------------------------------
-  // const getMoreVideosRT = async () => {
-  //     console.log("Get More RT Videos")
-  //     const res = await axios.get(
-  //       `${process.env.apiurl
-  //       }/api/v3/public/profile_videos?user_id=${share_string}&video_types[]=rt&last_video_type=rt&last_video_id=${rtVideos[rtVideos.length - 1]?.video?.conversation_id
-  //       }`
-  //     );
-  //   console.log("response is : ", res.data.data);
-  // }
+  const getMoreVideosRT = async () => {
+      console.log("Get More RT Videos")
+      const res = await axios.get(
+        `${process.env.apiurl}/api/v3/public/rt/paginate_videos?chat_id=${chat_id}&last_video_id=${videos[videos.length - 1].video.conversation_id}`
+      );
+    const newVideos = res?.data?.data?.chats || [];
+    console.log("new vdieos :", newVideos)
+    res?.data?.data?.end_of_videos ? setNoMoreVideos(true) : setNoMoreVideos(false)
+    if (newVideos.length !== 0) {
+      setVideos(videos.concat(prepareFeedVideos(prepareRTVideos(newVideos))))
+    }
+  }
   // ---------------------------------------------------------------------------------------------------------------------
 
   const handleShowModalAppDownload = (message = () => null) => {
@@ -162,20 +204,22 @@ Profile.getInitialProps = async ({ query: { value, revenue_enabled } }) => {
     rt !== ""
   ) {
     const videos = await axios.get(
-      `${process.env.apiurl}/api/v3/public/rt/videos?chat_id=${rt}`
+      `${process.env.apiurl}/api/v3/public/rt/paginate_videos?chat_id=${rt}`
     );
     const rt_details = await axios.get(
       `${process.env.apiurl}/api/v3/public/rt/details?chat_id=${rt}`
     );
+    const rt_data = rt_details?.data?.data;
     var rt_videos = [];
     if (rt_details !== undefined && rt_details !== null &&
       rt_details.data !== undefined && rt_details.data !== null &&
-      rt_details.data.data !== undefined && rt_details.data.data !== null &&
+      rt_details !== undefined && rt_details !== null &&
       videos !== undefined && videos !== null &&
       videos.data !== undefined && videos.data !== null &&
       videos.data.data !== undefined && videos.data.data !== null &&
-      videos.data.data.length > 0) {
-      videos.data.data.forEach(function (v) {
+      videos.data.data.chats !== undefined && videos.data.data.chats !== null &&
+      videos.data.data.chats.length > 0) {
+      videos.data.data.chats.forEach(function (v) {
         var videoObj = {
           "video_type": "rt",
           "share_string": rt_details.data.data.share_string,
@@ -196,10 +240,10 @@ Profile.getInitialProps = async ({ query: { value, revenue_enabled } }) => {
             "share_url": `${process.env.hostname}rt/${rt_details.data.data.share_string}?v=${v.share_string}`,
             "share_string": v.share_string,
             "rt_share_string": v.share_string,
-            "description": rt_details.data.data.group.group_description,
-            "group_name": rt_details.data.data.group.group_name,
-            "group_dp": rt_details.data.data.group.dp,
-            "chat_id": rt_details.data.data.chat_id
+            "description": rt_data.group.group_description,
+            "group_name": rt_data.group.group_name,
+            "group_dp": rt_data.group.dp,
+            "chat_id": rt_data.chat_id
           }
         };
         rt_videos.push(videoObj);
@@ -209,7 +253,9 @@ Profile.getInitialProps = async ({ query: { value, revenue_enabled } }) => {
       all_videos: rt_videos,
       is_prop_loaded: true,
       revenue_enabled: revenue_enabled === "true",
-      is_rt: true
+      is_rt: true,
+      chat_id: rt,
+      rt_details: rt_data
     }
   } else {
     return Promise.resolve({});

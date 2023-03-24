@@ -448,9 +448,9 @@ export const ReactPlayerWrapper = ({
                       target="_blank"
                       href={`/rt/${roundTableId}`}
                       style={{
-                          marginRight: "10px"
+                        marginRight: "10px",
+                        maxWidth: "150px"
                       }}
-                      className="rt-name"
                     >
                         <Text
                           whiteSpace="nowrap"
@@ -480,15 +480,16 @@ export const ReactPlayerWrapper = ({
                       </Flex>
                     ) : (
                     <Link
-                      className="user-name"
                       target="_blank"
-                      href={`/p/${userName}`}>
+                      href={`/p/${userName}`}
+                      style={{
+                        maxWidth: "150px"
+                      }}>
                             <Text
                               whiteSpace="nowrap"
                               overflow="hidden"
                               textOverflow="ellipsis"
                               fontWeight="bold"
-                              // width={mobile ? 'calc(100vw - 135px)' : '270px'}
                             >
                             @{userName}
                             </Text>

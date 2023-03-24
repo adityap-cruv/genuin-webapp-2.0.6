@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { SEO } from "../components/seo";
 import axios from "axios";
+import { Nav, Container, Row, Col, Carousel } from "react-bootstrap";
 
 import { HomeNav } from "../components/homeNav";
 import { useBreakpointValue } from "@chakra-ui/react";
