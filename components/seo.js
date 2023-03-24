@@ -17,7 +17,6 @@ export const SEO = ({
   openGraphType = "website",
   includeHead = true,
 }) => {
-  console.log("title...", title)
   return (
   <>
     {includeHead && (
