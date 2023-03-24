@@ -6,7 +6,7 @@ import { Nav } from "react-bootstrap";
 
 import Videos from "./videos";
 import { HomePageVideo } from "./homepage_video";
-import { InstallApp } from "./installApp";
+import downloadQR from "../images/app_download_qr.svg"
 
 export const AnimatedIndexPage = ({
    videos,
@@ -17,7 +17,6 @@ export const AnimatedIndexPage = ({
 
    const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
 
-   const [activeIndex, setActiveIndex] = useState(0);
    const mainRef = useRef(null);
    const [latest, setLatest] = useState(0)
 
@@ -142,7 +141,7 @@ export const AnimatedIndexPage = ({
                   <div
                      style={{
                         width: "100%",
-                        height: "100%",
+                        height: "75%",
                         display: "flex",
                         alignItems: "center"
                      }}>
@@ -154,13 +153,17 @@ export const AnimatedIndexPage = ({
                   </div>
                   <div
                      style={{
-                        height: "25%",
-                        width: "100%",
+                        height: "100%",
+                        width: "30%",
                         display: "flex",
                         alignItems: "start",
+                        justifyContent: "center",
+                        paddingTop: "20px",
                         zIndex: 2000
                      }}>
-                     <InstallApp />
+                     <img
+                        src={downloadQR.src}>
+                     </img>
                   </div>
                </div>
             </motion.div>

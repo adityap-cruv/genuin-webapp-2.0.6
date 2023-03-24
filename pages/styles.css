@@ -621,6 +621,13 @@ body .overlay {
 .container-footer.text-black a:hover {
   color: #000000;
 }
+
+@media (max-width: 992px){
+  .section-content h1 {
+    font-size: 2.5rem;
+  }
+}
+
 @media (max-width: 768px) {
   .section-content {
     width: 100%;
