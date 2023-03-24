@@ -1,16 +1,12 @@
 import { Carousel } from "react-bootstrap";
 
 import { useState, useRef, useEffect } from "react";
-import { GetAppModal } from "../components/getAppModal";
-import { SEO } from "../components/seo";
-import axios from "axios";
+import { GetAppModal } from "./getAppModal";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion"
-import { HomePageVideo } from "../components/homepage_video";
-import { InstallApp } from "../components/installApp";
+import { HomePageVideo } from "./homepage_video";
 
-import { HomeNav } from "../components/homeNav";
-import Videos from "../components/videos";
-import { useBreakpointValue, useBreakpoint } from "@chakra-ui/react";
+import Videos from "./videos";
+import { useBreakpointValue } from "@chakra-ui/react";
 import { Nav } from "react-bootstrap";
 
 export const AnimatedIndexPage = ({

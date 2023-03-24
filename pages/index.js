@@ -4,8 +4,8 @@ import { useBreakpointValue } from "@chakra-ui/react";
 
 
 import { HomeNav } from "../components/homeNav";
-import { AnimatedIndexPage } from "./animated_index_page";
-import { SimpleIndexPage } from "./simple_index_page";
+import { AnimatedIndexPage } from "../components/animated_index_page";
+import { SimpleIndexPage } from "../components/simple_index_page";
 import { SEO } from "../components/seo";
 
 let title = "Genuin";
