@@ -87,8 +87,8 @@ const Videos = ({
                         ? (revenue_enabled
                            ? getInfyUrl(videos[id]['video']['video_url_m3u8'])
                            : videos[id]['video']['video_url_m3u8'])
-                        : (videos[id] && videos[id]['video'] && videos[id]['video']['videoUrl']
-                           ? videos[id] && videos[id]['video'] && videos[id]['video']['videoUrl']
+                        : (videos[id] && videos[id]['video'] && videos[id]['video']['video_url']
+                           ? videos[id] && videos[id]['video'] && videos[id]['video']['video_url']
                            : null)}
                      userName={videos[id] && videos[id]['video_type'] == 'rt' ? videos[id]['video']['owner']['nickname'] : (user && user.nickname ? user.nickname : null)}
                      userId={videos[id] && videos[id]['video_type'] == 'rt' ? videos[id]['video']['owner']['nickname'] : (user && user.nickname ? user.nickname : null)}
