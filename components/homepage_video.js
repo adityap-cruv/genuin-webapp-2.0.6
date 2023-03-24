@@ -1,33 +1,59 @@
-import mobileFrame from "../images/mobile_frame.png"
+import { useState } from "react";
+import { Box } from "@chakra-ui/react";
+
+import mobileFrame from "../images/mobile_frame_3.png"
 import { DynamicPlayer } from "./player/dynamic_player"
 
 export const HomePageVideo = ({
    videoUrl,
-   opacityFrame
+   opacityFrame,
+   videoThumbnail
 }) => {
+
+   const [displayThumbnail, setDisplayThumbnail] = useState(true);
    return (<>
       <div
          style={{
+            position: "relative",
             width: "300px",
-            position: "absolute"
-         }}>
-         <DynamicPlayer
-            isPlaying={true}
-            muted={true}
-            onClick={() => {
-               console.log("onclicke")
+               height: "100%"
+         }}
+      >
+         <div
+            className="index-player-border"
+            style={{
+               position: "absolute"
             }}
-            url={videoUrl}
-            uniqueKey="feed_index_player"
-         />
-      </div>
+         >
+            <DynamicPlayer
+               isPlaying={true}
+               muted={true}
+               onClick={() => { }}
+               url={videoUrl}
+               uniqueKey="feed_index_player"
+               onReady={() => {
+                  setDisplayThumbnail(false);
+               }}
+            />
+            {displayThumbnail && <Box
+               backgroundImage={`url(${videoThumbnail})`}
+               backgroundColor={Boolean(videoThumbnail) ? "transparent" : "lightgray"}
+               backgroundRepeat='no-repeat'
+               backgroundSize='cover'
+               backgroundPosition='center'
+               width='100%'
+               h='100%'
+               filter='blur(10px)'
+            />}
+         </div>
          <img
             style={{
                position: "absolute",
                opacity: opacityFrame
             }}
-            width="310px"
             src={mobileFrame.src}>
-      </img>
+         </img>
+      </div>
+     
    </>)
 }

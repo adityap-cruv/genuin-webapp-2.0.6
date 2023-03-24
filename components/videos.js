@@ -16,7 +16,6 @@ const Videos = ({
    domain,
    publisher_name   
 }) => {
-console.log("company_id ::", company_id, "tag_id ::", tag_id,"domain ::", domain, "publisher_name::", publisher_name )
    const [showModalAppDownload, setShowModalAppDownload] = useState(false);
    const getAppComponentRef = useRef(() => null);
    const [muted, setMuted] = useState(true);
