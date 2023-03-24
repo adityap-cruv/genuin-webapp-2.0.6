@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { GetAppModal } from "../components/getAppModal";
+import { GetAppModal } from "./getAppModal";
 import { Nav, Container, Row, Col, Carousel } from "react-bootstrap";
 
 import imgCarousel1 from "../images/web3/learn_web3_via_bite-sized_content.png";
@@ -7,8 +7,8 @@ import imgCarousel2 from "../images/web3/connect_people_in_the_web3_business.png
 import imgCarousel3 from "../images/web3/feed_page_public_video.png";
 import imgCarousel4 from "../images/web3/initiate_conversation_about_web3.png";
 
-import { InstallApp } from "../components/installApp";
-import Videos from "../components/videos";
+import { InstallApp } from "./installApp";
+import Videos from "./videos";
 
 export const SimpleIndexPage = ({
    videos,
