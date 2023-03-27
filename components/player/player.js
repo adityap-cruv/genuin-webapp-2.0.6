@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { ReactPlayerWrapper } from "./reactPlayerWrapper";
+import { ReactPlayerWrapper } from "./react_player_wrapper";
 import { increaseVideoViewCount } from "../../actions/postActions";
 import { TopNav } from "../topNav";
 import { Box, Flex, useBreakpointValue } from "@chakra-ui/react";
