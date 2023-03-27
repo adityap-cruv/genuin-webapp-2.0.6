@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Box } from "@chakra-ui/react";
 
-import mobileFrame from "../images/mobile_frame_3.png"
+import mobileFrame from "../assets/images/mobile_frame_3.png"
 import { DynamicPlayer } from "./player/dynamic_player"
 
 export const HomePageVideo = ({

@@ -3,7 +3,7 @@ import "./styles.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.min.css";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
-import favicon from "../images/favicon.ico";
+import favicon from "../assets/images/favicon.ico";
 import NextHead from "next/head"
 
 const theme = extendTheme({

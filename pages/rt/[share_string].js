@@ -13,8 +13,8 @@ import {
   MobileShareButton,
 } from "../../components/appActions";
 import { Container } from "react-bootstrap";
-import directMessage from "../../images/direct_message_grey.svg";
-import icPreviewPlaceholder from "../../images/video-more-options/ic_preview_placeholder.png";
+import directMessage from "../../assets/images/direct_message_grey.svg";
+import icPreviewPlaceholder from "../../assets/images/video-more-options/ic_preview_placeholder.png";
 import {
   Avatar,
   Box,

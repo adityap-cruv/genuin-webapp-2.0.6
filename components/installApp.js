@@ -7,8 +7,8 @@ import {
 } from "../config";
 import { useBreakpointValue } from "@chakra-ui/react";
 
-import ios from "../images/badge_appstore.png";
-import android from "../images/badge_playstore.png";
+import ios from "../assets/images/badge_appstore.png";
+import android from "../assets/images/badge_playstore.png";
 import { handleLink } from "../actions/appInstall";
 import { useRouter } from "next/router";
 

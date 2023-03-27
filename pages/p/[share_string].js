@@ -13,12 +13,12 @@ import { WelcomeModal } from "../../components/welcomeModal";
 import { Error } from "../../components/error";
 import { SEO } from "../../components/seo";
 import { Container } from "react-bootstrap";
-import views from "../../images/views.svg";
-import comments from "../../images/comments.svg";
-import directMessage from "../../images/direct_message.svg";
-import roundtable from "../../images/video-more-options/ic-roundtable.svg";
+import views from "../../assets/images/views.svg";
+import comments from "../../assets/images/comments.svg";
+import directMessage from "../../assets/images/direct_message.svg";
+import roundtable from "../../assets/images/video-more-options/ic-roundtable.svg";
 import InfiniteScroll from "react-infinite-scroll-component";
-import icPreviewPlaceholder from "../../images/video-more-options/ic_preview_placeholder.png";
+import icPreviewPlaceholder from "../../assets/images/video-more-options/ic_preview_placeholder.png";
 import { isMobile } from "react-device-detect";
 
 import {

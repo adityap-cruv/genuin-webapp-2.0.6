@@ -1,10 +1,10 @@
 import { ShareComponent } from "../components/share";
-import bookmark from "../images/video-more-options/ic-bookmark.svg";
-import replay from "../images/video-more-options/ic-replay.svg";
-import comments from "../images/video-more-options/ic-comments.svg";
-import subscribePlus from "../images/video-more-options/ic-subscribe-plus.svg";
-import network from "../images/video-more-options/ic-network.svg";
-import roundtable from "../images/video-more-options/ic-roundtable.svg";
+import bookmark from "../assets/images/video-more-options/ic-bookmark.svg";
+import replay from "../assets/images/video-more-options/ic-replay.svg";
+import comments from "../assets/images/video-more-options/ic-comments.svg";
+import subscribePlus from "../assets/images/video-more-options/ic-subscribe-plus.svg";
+import network from "../assets/images/video-more-options/ic-network.svg";
+import roundtable from "../assets/images/video-more-options/ic-roundtable.svg";
 import {
   Menu,
   MenuButton,
@@ -13,13 +13,13 @@ import {
   Image,
   Link,
 } from "@chakra-ui/react";
-import Email from "../images/video-actions/Email.svg";
-import Facebook from "../images/video-actions/Facebook.svg";
-import LinkedIN from "../images/video-actions/LinkedIN.svg";
-import Twitter from "../images/video-actions/Twitter.svg";
-import WhatsApp from "../images/video-actions/WhatsApp.svg";
-import shareImg from "../images/video-more-options/ic-share.svg";
-import shareImgBlue from "../images/video-more-options/ic-share-blue.svg";
+import Email from "../assets/images/video-actions/Email.svg";
+import Facebook from "../assets/images/video-actions/Facebook.svg";
+import LinkedIN from "../assets/images/video-actions/LinkedIN.svg";
+import Twitter from "../assets/images/video-actions/Twitter.svg";
+import WhatsApp from "../assets/images/video-actions/WhatsApp.svg";
+import shareImg from "../assets/images/video-more-options/ic-share.svg";
+import shareImgBlue from "../assets/images/video-more-options/ic-share-blue.svg";
 import {
   WhatsappShareButton,
   TwitterShareButton,

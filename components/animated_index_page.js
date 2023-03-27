@@ -6,7 +6,7 @@ import { Nav } from "react-bootstrap";
 
 import Videos from "./videos";
 import { HomePageVideo } from "./homepage_video";
-import downloadQR from "../images/app_download_qr.svg"
+import downloadQR from "../assets/images/app_download_qr.svg"
 
 export const AnimatedIndexPage = ({
    videos,

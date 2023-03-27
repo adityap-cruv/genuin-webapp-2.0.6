@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Image, Navbar, Nav, Button, Fade } from "react-bootstrap";
 import { useTrail, a } from "react-spring";
-import logo from "../images/logo_header_new.svg";
-import logoBlue from "../images/logo_header_new_blue.svg";
+import logo from "../assets/images/logo_header_new.svg";
+import logoBlue from "../assets/images/logo_header_new_blue.svg";
 import { hireLink, investLink } from "../config";
 import { useBreakpointValue } from "@chakra-ui/react";
 import { handleHireLinkClick } from "../actions/appInstall";
