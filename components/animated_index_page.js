@@ -59,16 +59,29 @@ export const AnimatedIndexPage = ({
          <div
             className="h-100 w-100"
             style={{
-               opacity: latest > .58 ? (-(.58 - latest)) * 3 : 0,
                backgroundImage: `url(${videos[currentVideoIndex].video.video_thumbnail_s})`,
                backgroundRepeat: "no-repeat",
                backgroundSize: "cover",
                backgroundPosition: "center",
-               filter: 'blur(60px) brightness(60%)',
+               filter: 'blur(100px) brightness(50%)',
                backgroundColor: 'black',
                position: "absolute",
-               zIndex: -98
+               zIndex: -98,
             }}>
+            </div>
+            <div
+               className="h-100 w-100"
+               style={{
+                  opacity: latest > .58 ? (-(.58 - latest)) * 3 : 0,
+                  backgroundImage: `url(${videos[currentVideoIndex].video.video_thumbnail_s})`,
+                  backgroundRepeat: "no-repeat",
+                  backgroundSize: "cover",
+                  backgroundPosition: "center",
+                  filter: 'blur(60px) brightness(60%)',
+                  backgroundColor: 'black',
+                  position: "absolute",
+                  zIndex: -98,
+               }}>
          </div>
          <div
             style={{
@@ -109,7 +122,7 @@ export const AnimatedIndexPage = ({
             <motion.div style={{
                translateX: latest < .5 ? `calc(50% * ${latest * 2})` : `calc(50%)`,
                position: "inherit",
-               scale: latest > .58 ? latest * 1.7 : 1,
+               scale: latest > .58 ? latest * 1.775555 : 1,
                height: "100%",
                width: "50%",
                display: "flex",

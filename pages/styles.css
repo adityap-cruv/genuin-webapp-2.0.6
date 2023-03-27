@@ -754,7 +754,8 @@ a:hover{
 }
 
 .index-player-border video {
-  border-radius: 36px;
+  border-top-right-radius: 60px;
+  border-top-left-radius: 60px;
   padding: 10px;
 }
 
