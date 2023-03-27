@@ -533,7 +533,10 @@ export const ReactPlayerWrapper = ({
                   </Badge>
                 </Link>
               )}
-              <div className="video-auther mb-2">
+              <div className="video-auther mb-2"
+                style={{
+                  fontWeight: "bold"
+                }}>
                 {Boolean(roundTableMode) ? (
                   <Avatar
                     name={roundTableName}
@@ -591,6 +594,7 @@ export const ReactPlayerWrapper = ({
                     <Link
                       href={`/p/${userName}`}
                       maxW="150px"
+                      
                     >
                           <Text
                             whiteSpace="nowrap"
