@@ -1,7 +1,7 @@
 import { Player } from "./player/player_swipe";
-import { AppActions } from "./appActions";
+import { AppActions } from "./app_actions";
 import { useState, useRef } from "react";
-import { GetAppModal } from "./getAppModal";
+import { GetAppModal } from "./get_app_modal";
 import { Flex } from "@chakra-ui/react";
 
 

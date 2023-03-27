@@ -2,12 +2,12 @@ import React, { useRef, useState, useEffect } from "react";
 import axios from "axios";
 import { Player } from "../components/player";
 import { Layout } from "../components/layout";
-import { TopNav } from "../components/topNav";
-import { GetAppModal } from "../components/getAppModal";
-import { WelcomeModal } from "../components/welcomeModal";
+import { TopNav } from "../components/top_nav";
+import { GetAppModal } from "../components/get_app_modal";
+import { WelcomeModal } from "../components/welcome_modal";
 import { Error } from "../components/error";
 import { SEO } from "../components/seo";
-import { AppActions } from "../components/appActions";
+import { AppActions } from "../components/app_actions";
 import { appStoreLink } from "../config";
 import { Box, Modal, ModalBody, ModalContent, useDisclosure } from "@chakra-ui/react";
 const Video = (props) => {

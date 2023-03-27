@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { GetAppModal } from "./getAppModal";
+import { GetAppModal } from "./get_app_modal";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion"
 import { useBreakpointValue } from "@chakra-ui/react";
 import { Nav } from "react-bootstrap";

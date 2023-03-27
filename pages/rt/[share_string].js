@@ -3,15 +3,15 @@ import axios from "axios";
 import { Error } from "../../components/error";
 import { isValidHttpUrl, Player } from "../../components/player";
 import { Layout } from "../../components/layout";
-import { TopNav } from "../../components/topNav";
-import { GetAppModal } from "../../components/getAppModal";
-import { WelcomeModal } from "../../components/welcomeModal";
+import { TopNav } from "../../components/top_nav";
+import { GetAppModal } from "../../components/get_app_modal";
+import { WelcomeModal } from "../../components/welcome_modal";
 import { SEO } from "../../components/seo";
 import {
   AppActions,
   ShareButton,
   MobileShareButton,
-} from "../../components/appActions";
+} from "../../components/app_actions";
 import { Container } from "react-bootstrap";
 import directMessage from "../../assets/images/direct_message_grey.svg";
 import icPreviewPlaceholder from "../../assets/images/video-more-options/ic_preview_placeholder.png";

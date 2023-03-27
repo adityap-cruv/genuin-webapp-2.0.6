@@ -1,9 +1,9 @@
 import { useState } from "react"
 import { Container, Row, Col } from "react-bootstrap";
-import { TopNav } from "./topNav";
+import { TopNav } from "./top_nav";
 import { Layout } from "./layout";
-import { InstallApp } from "./installApp";
-import { GetAppModal } from "./getAppModal";
+import { InstallApp } from "./install_app";
+import { GetAppModal } from "./get_app_modal";
 
 export const Error = ({ homePageUrl = "/" }) => {
   const [showModalAppDownload, setShowModalAppDownload] = useState(false)

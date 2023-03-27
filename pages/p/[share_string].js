@@ -2,14 +2,14 @@ import { useState, useRef, useMemo, useEffect } from "react";
 import axios from "axios";
 import { isValidHttpUrl, Player } from "../../components/player";
 import { Layout } from "../../components/layout";
-import { TopNav } from "../../components/topNav";
-import { GetAppModal } from "../../components/getAppModal";
+import { TopNav } from "../../components/top_nav";
+import { GetAppModal } from "../../components/get_app_modal";
 import {
   AppActions,
   MobileShareButton,
   ShareButton,
-} from "../../components/appActions";
-import { WelcomeModal } from "../../components/welcomeModal";
+} from "../../components/app_actions";
+import { WelcomeModal } from "../../components/welcome_modal";
 import { Error } from "../../components/error";
 import { SEO } from "../../components/seo";
 import { Container } from "react-bootstrap";

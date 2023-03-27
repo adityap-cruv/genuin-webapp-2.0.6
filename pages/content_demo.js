@@ -1,8 +1,8 @@
 import { useState, useRef } from "react";
 import axios from "axios";
 import { Layout } from "../components/layout";
-import { GetAppModal } from "../components/getAppModal";
-import { TopNav } from "../components/topNavSwipe";
+import { GetAppModal } from "../components/get_app_modal";
+import { TopNav } from "../components/top_nav_swipe";
 import {
   Flex,
   Spinner

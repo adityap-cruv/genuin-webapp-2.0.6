@@ -2,16 +2,16 @@ import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import { Player } from "../components/player/player_swipe";
 import { Layout } from "../components/layout";
-import { GetAppModal } from "../components/getAppModal";
+import { GetAppModal } from "../components/get_app_modal";
 
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faVolumeMute, faVolumeUp } from '@fortawesome/free-solid-svg-icons'
-import { TopNav } from "../components/topNavSwipe";
+import { TopNav } from "../components/top_nav_swipe";
 
 import {
   AppActions
-} from "../components/appActions";
+} from "../components/app_actions";
 import { Error } from "../components/error";
 import {
   Flex,

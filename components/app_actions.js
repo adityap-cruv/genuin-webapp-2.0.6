@@ -1,4 +1,4 @@
-import { ShareComponent } from "../components/share";
+import { ShareComponent } from "./share";
 import bookmark from "../assets/images/video-more-options/ic-bookmark.svg";
 import replay from "../assets/images/video-more-options/ic-replay.svg";
 import comments from "../assets/images/video-more-options/ic-comments.svg";

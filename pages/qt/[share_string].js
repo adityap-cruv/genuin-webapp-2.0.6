@@ -4,8 +4,8 @@ import { Question } from "../../components/question";
 import { Layout } from "../../components/layout";
 import { Error } from "../../components/error";
 import { SEO } from "../../components/seo";
-import { GetAppModal } from "../../components/getAppModal";
-import { TopNav } from "../../components/topNav";
+import { GetAppModal } from "../../components/get_app_modal";
+import { TopNav } from "../../components/top_nav";
 import { appStoreLink } from "../../config";
 
 const QuestionWrapper = ({
