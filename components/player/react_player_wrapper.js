@@ -506,7 +506,10 @@ export const ReactPlayerWrapper = ({
         <Flex alignItems='end' justifyContent='space-between' mb={3}>
           {/* this should not show if it's rountableMode && watchRoundTable  */}
           {(!watchRoundTable || !roundTableMode) && (
-            <Flex direction="column" style={{wordBreak: 'break-word', width : "84%"}}>
+            <Flex direction="column" style={{
+              wordBreak: 'break-word',
+              width: "84%",
+            }}>
               {Boolean(roundTableMode) && (
                 <Link
                   key={userName}
@@ -517,7 +520,13 @@ export const ReactPlayerWrapper = ({
                 >
                   <Badge
                     pill bg="dark"
-                    className="mb-2 align-self-start trunc">
+                    className="mb-2 align-self-start trunc"
+                    style={{
+                      fontSize: "15px",
+                      fontWeight: 700,
+                      lineHeight: "24px"
+                    }}
+                  >
                     <Flex direction='horizontal'>
                       <Text style={{
                         textOverflow: 'ellipsis',
@@ -533,7 +542,11 @@ export const ReactPlayerWrapper = ({
                   </Badge>
                 </Link>
               )}
-              <div className="video-auther mb-2">
+              <div className="video-auther mb-2"
+                style={{
+                  fontWeight: "bold",
+                  fontSize: "17px"
+                }}>
                 {Boolean(roundTableMode) ? (
                   <Avatar
                     name={roundTableName}
@@ -583,6 +596,10 @@ export const ReactPlayerWrapper = ({
                             setIsPlaying(true);
                           }
                         }}
+                        style={{
+                          fontWeight: "700",
+                          fontSize: "15px"
+                        }}
                       >
                           Watch
                       </Button>
@@ -596,14 +613,16 @@ export const ReactPlayerWrapper = ({
                             whiteSpace="nowrap"
                             overflow="hidden"
                             textOverflow="ellipsis"
-                          // width={mobile ? 'calc(100vw - 135px)' : '270px'}
                           >
                           @{userName}
                           </Text>
                     </Link>
                   )}
               </div>
-              <p className="mb-0">{description}</p>
+              <p className="mb-0" style={{
+                fontSize:"15px",
+                fontWeight: "600"
+              }}>{description}</p>
             </Flex>
           )}
           {watchRoundTable && roundTableMode && (

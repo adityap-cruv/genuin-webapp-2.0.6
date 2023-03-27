@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import axios from "axios";
 import { useBreakpointValue } from "@chakra-ui/react";
 
 
-import { HomeNav } from "../components/homeNav";
+import { HomeNav } from "../components/home_nav";
 import { AnimatedIndexPage } from "../components/animated_index_page";
 import { SimpleIndexPage } from "../components/simple_index_page";
 import { SEO } from "../components/seo";

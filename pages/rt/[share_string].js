@@ -190,7 +190,6 @@ const RoundTable = ({
       },
     ],
   });
-
   return (<>
     <SEO
       title={title_name}
