@@ -1,11 +1,11 @@
 import {useCallback, useEffect, useRef, useState} from "react";
 import {useDebounce} from "use-debounce";
 import {ProgressBar, Badge, Button} from "react-bootstrap";
-import icFlipLeft from "../../images/video-more-options/ic-flip-left.svg";
-import icFlipRight from "../../images/video-more-options/ic-flip-right.svg";
-import earth from "../../images/video-more-options/ic-earth.svg";
-import mute from "../../images/video-more-options/ic-mute.svg"
-import unmute from "../../images/video-more-options/ic-unmute.svg"
+import icFlipLeft from "../../assets/images/video-more-options/ic-flip-left.svg";
+import icFlipRight from "../../assets/images/video-more-options/ic-flip-right.svg";
+import earth from "../../assets/images/video-more-options/ic-earth.svg";
+import mute from "../../assets/images/video-more-options/ic-mute.svg"
+import unmute from "../../assets/images/video-more-options/ic-unmute.svg"
 import { Image, Flex, Text, Link, Box, useBreakpointValue, Avatar, scroll } from "@chakra-ui/react";
 import { Waypoint } from 'react-waypoint';
 import { isMobile } from "react-device-detect";

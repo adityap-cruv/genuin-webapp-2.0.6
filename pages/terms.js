@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Nav, Container, Row, Col } from "react-bootstrap";
-import { Layout } from "../components/layout";
-import { TopNav } from "../components/topNav";
-import { GetAppModal } from "../components/getAppModal";
+import { Layout } from "../components/layout/layout";
+import { TopNav } from "../components/basic/top_nav";
+import { GetAppModal } from "../components/basic/get_app_modal";
 import { handleInvestClick } from "../actions/appInstall";
 
 const Terms = () => {

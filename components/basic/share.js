@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { toast } from "react-toastify";
-import { useClipboard } from "./hooks/useClipboard";
-import CopyLink from "../images/video-actions/CopyLink.svg";
+import { useClipboard } from "../hooks/useClipboard";
+import CopyLink from "../../assets/images/video-actions/CopyLink.svg";
 import { Image } from "@chakra-ui/react";
 
 export const ShareComponent = ({ title, description, url }) => {

@@ -12,7 +12,8 @@ export const DynamicPlayer = ({
    onDuration,
    onEnded,
    onReady,
-   uniqueKey
+   uniqueKey,
+   loop = true
 }) => {
    return (<>
       {!isSafari && <ReactPlayer
@@ -32,10 +33,10 @@ export const DynamicPlayer = ({
          height="100%"
          onProgress={onProgress}
          onDuration={onDuration}
-         onEnded={onEnded}
+         onEnded={() => { onEnded() }}
          progressInterval={200}
          onReady={onReady}
-         loop
+         loop={loop}
       />}
 
       {isSafari && <SafariPlayer

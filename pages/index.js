@@ -3,10 +3,10 @@ import axios from "axios";
 import { useBreakpointValue } from "@chakra-ui/react";
 
 
-import { HomeNav } from "../components/home_nav";
-import { AnimatedIndexPage } from "../components/animated_index_page";
-import { SimpleIndexPage } from "../components/simple_index_page";
-import { SEO } from "../components/seo";
+import { HomeNav } from "../components/index/home_nav";
+import { AnimatedIndexPage } from "../components/index/animated_index_page";
+import { SimpleIndexPage } from "../components/index/simple_index_page";
+import { SEO } from "../components/basic/seo";
 import { Spinner } from "@chakra-ui/react";
 
 let title = "Genuin";
@@ -39,7 +39,6 @@ const Home = ({
   setTimeout(() => {
     setIsLoadingFake(false)
   }, 100)
-
   return (
     <>
       <SEO

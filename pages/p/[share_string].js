@@ -1,24 +1,24 @@
 import { useState, useRef, useMemo, useEffect } from "react";
 import axios from "axios";
-import { isValidHttpUrl, Player } from "../../components/player";
-import { Layout } from "../../components/layout";
-import { TopNav } from "../../components/topNav";
-import { GetAppModal } from "../../components/getAppModal";
+import { isValidHttpUrl, Player } from "../../components/player/player";
+import { Layout } from "../../components/layout/layout";
+import { TopNav } from "../../components/basic/top_nav";
+import { GetAppModal } from "../../components/basic/get_app_modal";
 import {
   AppActions,
   MobileShareButton,
   ShareButton,
-} from "../../components/appActions";
-import { WelcomeModal } from "../../components/welcomeModal";
-import { Error } from "../../components/error";
-import { SEO } from "../../components/seo";
+} from "../../components/basic/app_actions";
+import { WelcomeModal } from "../../components/basic/welcome_modal";
+import { Error } from "../../components/basic/error";
+import { SEO } from "../../components/basic/seo";
 import { Container } from "react-bootstrap";
-import views from "../../images/views.svg";
-import comments from "../../images/comments.svg";
-import directMessage from "../../images/direct_message.svg";
-import roundtable from "../../images/video-more-options/ic-roundtable.svg";
+import views from "../../assets/images/views.svg";
+import comments from "../../assets/images/comments.svg";
+import directMessage from "../../assets/images/direct_message.svg";
+import roundtable from "../../assets/images/video-more-options/ic-roundtable.svg";
 import InfiniteScroll from "react-infinite-scroll-component";
-import icPreviewPlaceholder from "../../images/video-more-options/ic_preview_placeholder.png";
+import icPreviewPlaceholder from "../../assets/images/video-more-options/ic_preview_placeholder.png";
 import { isMobile } from "react-device-detect";
 
 import {

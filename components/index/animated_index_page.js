@@ -1,12 +1,11 @@
 import { useState, useRef, useEffect } from "react";
-import { GetAppModal } from "./getAppModal";
+import { GetAppModal } from "../basic/get_app_modal";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion"
 import { useBreakpointValue } from "@chakra-ui/react";
 import { Nav } from "react-bootstrap";
-
-import Videos from "./videos";
+import Videos from "../basic/videos";
 import { HomePageVideo } from "./homepage_video";
-import downloadQR from "../images/app_download_qr.svg"
+import downloadQR from "../../assets/images/app_download_qr.svg"
 
 export const AnimatedIndexPage = ({
    videos,
@@ -14,7 +13,6 @@ export const AnimatedIndexPage = ({
 }) => {
    const [showModalAppDownload, setShowModalAppDownload] = useState(false);
    const handleCloseAppDownload = () => setShowModalAppDownload(false);
-
    const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
 
    const mainRef = useRef(null);

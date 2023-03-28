@@ -6,15 +6,15 @@ import { ProgressBar, Badge, Button } from "react-bootstrap";
 import { Image, Flex, Text, Link, Box, useBreakpointValue, Avatar } from "@chakra-ui/react";
 
 
-import icArrowDown from "../../images/video-more-options/ic-arrow-down.svg";
-import icArrowUp from "../../images/video-more-options/ic-arrow-up.svg";
-import icArrowLeft from "../../images/video-more-options/ic-arrow-left.svg";
-import icArrowRight from "../../images/video-more-options/ic-arrow-right.svg";
-import icFlipLeft from "../../images/video-more-options/ic-flip-left.svg";
-import icFlipRight from "../../images/video-more-options/ic-flip-right.svg";
-import icClose from "../../images/video-more-options/ic-close.svg";
-import earth from "../../images/video-more-options/ic-earth.svg";
-import roundtable from "../../images/video-more-options/ic-roundtable.svg";
+import icArrowDown from "../../assets/images/video-more-options/ic-arrow-down.svg";
+import icArrowUp from "../../assets/images/video-more-options/ic-arrow-up.svg";
+import icArrowLeft from "../../assets/images/video-more-options/ic-arrow-left.svg";
+import icArrowRight from "../../assets/images/video-more-options/ic-arrow-right.svg";
+import icFlipLeft from "../../assets/images/video-more-options/ic-flip-left.svg";
+import icFlipRight from "../../assets/images/video-more-options/ic-flip-right.svg";
+import icClose from "../../assets/images/video-more-options/ic-close.svg";
+import earth from "../../assets/images/video-more-options/ic-earth.svg";
+import roundtable from "../../assets/images/video-more-options/ic-roundtable.svg";
 import { DynamicPlayer } from "./dynamic_player";
 
 export const ReactPlayerWrapper = ({
@@ -184,6 +184,7 @@ export const ReactPlayerWrapper = ({
         onProgress={setProgressWrapper}
         onDuration={setDurationWrapper}
         onEnded={onEndedWrapper}
+        loop={false}
       />
 
       {/* roundtable header */}

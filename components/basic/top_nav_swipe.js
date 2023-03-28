@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Image, Navbar, Nav, Button, Fade } from "react-bootstrap";
 import { useTrail, a } from "react-spring";
-import logo from "../images/logo_header_new.svg";
-import logoBlue from "../images/logo_header_new_blue.svg";
-import { hireLink, investLink } from "../config";
+import logo from "../../assets/images/logo_header_new.svg";
+import logoBlue from "../../assets/images/logo_header_new_blue.svg";
+import { hireLink, investLink } from "../../config";
 import { useBreakpointValue, Link, Text } from "@chakra-ui/react";
-import { InstallApp } from "./installApp";
-import { appStoreLink } from "../config";
+import { InstallApp } from "./install_app";
+import { appStoreLink } from "../../config";
 
 const Trail = ({ children, open }) => {
   const items = React.Children.toArray(children);
@@ -33,12 +33,14 @@ export const TopNav = ({
   hideBurgerMenu = false,
   isContiner = false,
   isBlue = false,
-  variant = "dark",
+  variant = "dark"
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const mobile = useBreakpointValue({ base: true, sm: false });
 
   return (
+    <>
+    <p style={{fontSize: '12px', fontFamily: 'AvenirNext-DemiBold', zIndex: 1, position: 'fixed', top: 13, left: 18, color: 'white'}}>Feed powered by</p>
     <Navbar
       {...(isContiner ? { className: "p-3 container" } : { className: "p-3" })}
       expand={false}
@@ -50,11 +52,12 @@ export const TopNav = ({
       }}
       variant={variant}
     >
-      <Navbar.Brand href='/' className='p-0' style={{ pointerEvents: "all" }}>
+      <Navbar.Brand target="_blank" href='/' className='p-0' style={{ pointerEvents: "all" }}>
         <Image
           src={isBlue ? logoBlue.src : logo.src}
           alt='Genuin'
           title='Genuin'
+          style={{position: 'fixed', top: 27, left: 14, width: '80px'}}
         />
       </Navbar.Brand>
       <div className='d-flex align-items-center justify-content-center'>
@@ -75,7 +78,7 @@ export const TopNav = ({
           </Button>
         )}
         {mobile && (
-          <Link href={appStoreLink} pointerEvents='all'>
+          <Link target="_blank" href={appStoreLink} pointerEvents='all'>
             <Button
               variant='primary'
               className='me-3'
@@ -111,13 +114,12 @@ export const TopNav = ({
                 <Nav {...(isContiner ? { className: "container" } : {})}>
                   <Navbar.Toggle aria-controls='navbarMoreOptionDrawer' />
                   <Trail open={isOpen}>
-                    {/* <Nav.Link href={investLink}>Invest in Genuin</Nav.Link> */}
-                    <Nav.Link href={hireLink}>Join us</Nav.Link>
-                    <Nav.Link href='/terms'>Terms of Service</Nav.Link>
-                    <Nav.Link href='/privacy'>Privacy Policy</Nav.Link>
-                    <Nav.Link target="_blank" href={`/content_demo?value=rt_123f373977001407`}>Life at Genuin</Nav.Link>
+                    {/* <Nav.Link target="_blank" href={investLink}>Invest in Genuin</Nav.Link> */}
+                    <Nav.Link target="_blank" href={hireLink}>Join us</Nav.Link>
+                    <Nav.Link target="_blank" href='/terms'>Terms of Service</Nav.Link>
+                    <Nav.Link target="_blank" href='/privacy'>Privacy Policy</Nav.Link>
                   </Trail>
-                  <Nav.Link href='/' className='text-primary small mt-auto'>
+                  <Nav.Link target="_blank" href='/' className='text-primary small mt-auto'>
                     &copy; 2023 Genuin Inc.
                   </Nav.Link>
                 </Nav>
@@ -127,5 +129,6 @@ export const TopNav = ({
         )}
       </div>
     </Navbar>
+    </>
   );
 };

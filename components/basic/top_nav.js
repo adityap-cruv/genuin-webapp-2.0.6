@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Image, Navbar, Nav, Button, Fade } from "react-bootstrap";
 import { useTrail, a } from "react-spring";
-import logo from "../images/logo_header_new.svg";
-import logoBlue from "../images/logo_header_new_blue.svg";
-import { hireLink, investLink } from "../config";
-import { useBreakpointValue } from "@chakra-ui/react";
-import { handleHireLinkClick } from "../actions/appInstall";
+import logo from "../../assets/images/logo_header_new.svg";
+import logoBlue from "../../assets/images/logo_header_new_blue.svg";
+import { hireLink, investLink } from "../../config";
+import { useBreakpointValue, Link, Text } from "@chakra-ui/react";
+import { InstallApp } from "./install_app";
+import { appStoreLink } from "../../config";
 
 const Trail = ({ children, open }) => {
   const items = React.Children.toArray(children);
@@ -27,7 +28,7 @@ const Trail = ({ children, open }) => {
   );
 };
 
-export const HomeNav = ({
+export const TopNav = ({
   showGetAppModal,
   hideBurgerMenu = false,
   isContiner = false,
@@ -45,10 +46,11 @@ export const HomeNav = ({
       onToggle={(isOpen) => setIsOpen(isOpen)}
       style={{
         background: variant === "light" ? "transparent" : "white",
+        pointerEvents: "none",
       }}
       variant={variant}
     >
-      <Navbar.Brand href='/' className='p-0'>
+      <Navbar.Brand href='/' className='p-0' style={{ pointerEvents: "all" }}>
         <Image
           src={isBlue ? logoBlue.src : logo.src}
           alt='Genuin'
@@ -56,29 +58,55 @@ export const HomeNav = ({
         />
       </Navbar.Brand>
       <div className='d-flex align-items-center justify-content-center'>
+        {!mobile && (
           <Button
             variant='primary'
-            className='me-3 custom-home-button'
-            onClick={handleHireLinkClick}
+            className='me-3'
+            onClick={showGetAppModal}
             style={{
-              fontSize: 20,
-              padding: "0.275rem 2rem",
-              borderRadius: "0.4rem",
+              height: 32,
+              padding: "4px 16px",
+              fontSize: 15,
+              fontWeight: "bold",
+              pointerEvents: "all",
             }}
           >
-            Join the team
+            Get App
           </Button>
-
+        )}
+        {mobile && (
+          <Link href={appStoreLink} pointerEvents='all'>
+            <Button
+              variant='primary'
+              className='me-3'
+              style={{
+                height: 32,
+                padding: "4px 16px",
+                fontSize: 15,
+                fontWeight: "bold",
+                pointerEvents: "all",
+              }}
+            >
+              Get App
+            </Button>
+          </Link>
+        )}
+        {!hideBurgerMenu && (
+          <>
             <Navbar.Toggle
-            aria-controls='navbarMoreOptionDrawer'
-            className='custom-home-burger'
+              aria-controls='navbarMoreOptionDrawer'
               style={{
                 visibility: isOpen ? "hidden" : "revert",
+                pointerEvents: "all",
               }}
             />
             <Fade in={isOpen}>
               <Navbar.Collapse
-                style={{ left: 0, visibility: isOpen ? "visible" : "hidden" }}
+                style={{
+                  left: 0,
+                  visibility: isOpen ? "visible" : "hidden",
+                  pointerEvents: "all",
+                }}
               >
                 <Nav {...(isContiner ? { className: "container" } : {})}>
                   <Navbar.Toggle aria-controls='navbarMoreOptionDrawer' />
@@ -95,6 +123,8 @@ export const HomeNav = ({
                 </Nav>
               </Navbar.Collapse>
             </Fade>
+          </>
+        )}
       </div>
     </Navbar>
   );
