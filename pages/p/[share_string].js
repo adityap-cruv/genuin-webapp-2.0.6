@@ -610,7 +610,7 @@ const Profile = ({
                         @{nickname}
                       </Box>
                       <Box fontWeight='600' fontSize={15}>
-                        {bio || "No bio yet"}
+                        {bio}
                       </Box>
                       {!mobile && (
                         <Flex
