@@ -193,7 +193,7 @@ const RoundTable = ({
   return (<>
     <SEO
       title={title_name}
-      openGraphTitle={group.group_name}
+      openGraphTitle={group?.group_name}
       videoUrl={videos?.[currentVideoIndex]?.video_url}
       description={ld_description}
       openGraphDescription={group?.group_description}
