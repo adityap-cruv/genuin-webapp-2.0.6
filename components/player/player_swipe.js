@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { ReactPlayerWrapper } from "./reactPlayerWrapperSwipe";
+import { ReactPlayerWrapper } from "./react_player_wrapper_swipe";
 import { increaseVideoViewCount } from "../../actions/postActions";
 import { Box, Flex, useBreakpointValue } from "@chakra-ui/react";
 
