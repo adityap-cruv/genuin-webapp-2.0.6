@@ -59,7 +59,7 @@ const RoundTable = ({
       }
       setVideos(videos.concat(newVideos));
     } catch (error) {
-      console.log("erro : ", error)
+      console.log("error in loading more videos :: ", error)
     }
   }
   const { group } = details;
@@ -391,6 +391,7 @@ const RoundTable = ({
                   {/* videos and profiles */}
                   <Flex
                     overflowY='auto'
+                    overflowX="hidden"
                     direction='column'
                     gap={4}
                     pb={{ base: 0, sm: 8 }}
@@ -529,7 +530,6 @@ const Videos = ({
   mobile,
   setWatchRoundtable,
   chatId,
-  end_of_videos,
   loadMoreVideos = () => { },
   noMoreVideos
 }) => {
@@ -547,7 +547,7 @@ const Videos = ({
   })
 
   return (
-    <Box overflow='auto' whiteSpace='nowrap' pl={0} ref={mainRef}>
+    <Box overflowX='auto' whiteSpace='nowrap' pl={0} ref={mainRef}>
       {!Boolean(videos.length) && (
         <Flex
           w='full'
@@ -773,10 +773,11 @@ const Participants = ({ members, mobile }) => {
                   text-overflow='ellipsis'
                   display='-webkit-box'
                   css={{
-                    WebkitLineClamp: "3",
+                    WebkitLineClamp: "2",
                     WebkitBoxOrient: "vertical",
                   }}
                   line-clamp='2'
+                  maxW="100%"
                 >
                   {user.bio}
                 </Text>
