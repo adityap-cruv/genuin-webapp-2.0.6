@@ -1,17 +1,17 @@
 import { useState, useRef, useEffect } from "react";
 import axios from "axios";
-import { Error } from "../../components/error";
-import { isValidHttpUrl, Player } from "../../components/player";
-import { Layout } from "../../components/layout";
-import { TopNav } from "../../components/top_nav";
-import { GetAppModal } from "../../components/get_app_modal";
-import { WelcomeModal } from "../../components/welcome_modal";
-import { SEO } from "../../components/seo";
+import { Error } from "../../components/basic/error";
+import { isValidHttpUrl, Player } from "../../components/player/player";
+import { Layout } from "../../components/layout/layout";
+import { TopNav } from "../../components/basic/top_nav";
+import { GetAppModal } from "../../components/basic/get_app_modal";
+import { WelcomeModal } from "../../components/basic/welcome_modal";
+import { SEO } from "../../components/basic/seo";
 import {
   AppActions,
   ShareButton,
   MobileShareButton,
-} from "../../components/app_actions";
+} from "../../components/basic/app_actions";
 import { Container } from "react-bootstrap";
 import directMessage from "../../assets/images/direct_message_grey.svg";
 import icPreviewPlaceholder from "../../assets/images/video-more-options/ic_preview_placeholder.png";

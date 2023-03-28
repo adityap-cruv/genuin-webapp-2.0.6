@@ -1,11 +1,11 @@
 import { useMemo, useRef, useState } from "react";
 import axios from "axios";
-import { Question } from "../../components/question";
-import { Layout } from "../../components/layout";
-import { Error } from "../../components/error";
-import { SEO } from "../../components/seo";
-import { GetAppModal } from "../../components/get_app_modal";
-import { TopNav } from "../../components/top_nav";
+import { Question } from "../../components/basic/question";
+import { Layout } from "../../components/layout/layout";
+import { Error } from "../../components/basic/error";
+import { SEO } from "../../components/basic/seo";
+import { GetAppModal } from "../../components/basic/get_app_modal";
+import { TopNav } from "../../components/basic/top_nav";
 import { appStoreLink } from "../../config";
 
 const QuestionWrapper = ({

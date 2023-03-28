@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { ReactPlayerWrapper } from "./react_player_wrapper";
 import { increaseVideoViewCount } from "../../actions/postActions";
-import { TopNav } from "../top_nav";
+import { TopNav } from "../basic/top_nav";
 import { Box, Flex, useBreakpointValue } from "@chakra-ui/react";
 
 export const Player = ({

@@ -6,7 +6,7 @@ import {
   useBreakpointValue,
 } from "@chakra-ui/react";
 import { Modal } from "react-bootstrap";
-import logo from "../assets/images/Genuin_icon_vector.svg";
+import logo from "../../assets/images/Genuin_icon_vector.svg";
 import { InstallApp } from "./install_app";
 
 export const GetAppModal = ({ show, onClose, TextNode = () => null }) => {

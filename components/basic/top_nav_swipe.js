@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Image, Navbar, Nav, Button, Fade } from "react-bootstrap";
 import { useTrail, a } from "react-spring";
-import logo from "../assets/images/logo_header_new.svg";
-import logoBlue from "../assets/images/logo_header_new_blue.svg";
-import { hireLink, investLink } from "../config";
+import logo from "../../assets/images/logo_header_new.svg";
+import logoBlue from "../../assets/images/logo_header_new_blue.svg";
+import { hireLink, investLink } from "../../config";
 import { useBreakpointValue, Link, Text } from "@chakra-ui/react";
 import { InstallApp } from "./install_app";
-import { appStoreLink } from "../config";
+import { appStoreLink } from "../../config";
 
 const Trail = ({ children, open }) => {
   const items = React.Children.toArray(children);

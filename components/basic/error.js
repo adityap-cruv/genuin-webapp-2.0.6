@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Container, Row, Col } from "react-bootstrap";
 import { TopNav } from "./top_nav";
-import { Layout } from "./layout";
+import { Layout } from "../layout";
 import { InstallApp } from "./install_app";
 import { GetAppModal } from "./get_app_modal";
 

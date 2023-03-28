@@ -1,4 +1,4 @@
-import { Player } from "./player/player_swipe";
+import { Player } from "../player/player_swipe";
 import { AppActions } from "./app_actions";
 import { useState, useRef } from "react";
 import { GetAppModal } from "./get_app_modal";

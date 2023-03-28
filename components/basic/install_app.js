@@ -4,12 +4,12 @@ import {
   appleAppStoreLink,
   appStoreLink,
   googlePlayStoreLink,
-} from "../config";
+} from "../../config";
 import { useBreakpointValue } from "@chakra-ui/react";
 
-import ios from "../assets/images/badge_appstore.png";
-import android from "../assets/images/badge_playstore.png";
-import { handleLink } from "../actions/appInstall";
+import ios from "../../assets/images/badge_appstore.png";
+import android from "../../assets/images/badge_playstore.png";
+import { handleLink } from "../../actions/appInstall";
 import { useRouter } from "next/router";
 
 export const InstallApp = ({ small = false, errorPage = false, onClick = () => {} }) => {

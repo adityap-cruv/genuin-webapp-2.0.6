@@ -15,7 +15,6 @@ export const DynamicPlayer = ({
    uniqueKey,
    loop = true
 }) => {
-   console.log("on ended... ", onEnded)
    return (<>
       {!isSafari && <ReactPlayer
          key={uniqueKey}

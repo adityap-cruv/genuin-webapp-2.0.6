@@ -1,13 +1,13 @@
 import { useState, useRef } from "react";
 import axios from "axios";
 import { Layout } from "../components/layout";
-import { GetAppModal } from "../components/get_app_modal";
-import { TopNav } from "../components/top_nav_swipe";
+import { GetAppModal } from "../components/basic/get_app_modal";
+import { TopNav } from "../components/basic/top_nav_swipe";
 import {
   Flex,
   Spinner
 } from "@chakra-ui/react";
-import Videos from "../components/videos";
+import Videos from "../components/basic/videos";
 const Profile = ({
   user = {},
   all_videos = [],

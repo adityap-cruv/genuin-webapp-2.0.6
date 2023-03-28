@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import axios from "axios";
-import { Error } from "../../components/error";
+import { Error } from "../../components/basic/error";
 
 const Record = ({
   owner = {}
