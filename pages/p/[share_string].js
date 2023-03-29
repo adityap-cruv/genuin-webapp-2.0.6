@@ -1137,11 +1137,11 @@ const Videos = ({
                     fontWeight='bold'
                   >
                     <Flex>
-                      <Image mr={2} src={comments.src} h={5} mt={1} />
-                      {video.no_of_conversation}
+                      <Image mr={2} src={comments.src} />
+                        {video.no_of_conversation}
                     </Flex>
                     <Flex>
-                      <Image src={views.src} mr={1} mt={1} />
+                      <Image src={views.src} mr={1}/>
                       {video.no_of_views}
                     </Flex>
                   </Flex>
