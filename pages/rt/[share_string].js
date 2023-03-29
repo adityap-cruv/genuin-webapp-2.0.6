@@ -722,17 +722,17 @@ const Participants = ({ members, mobile }) => {
             <Link
               href={`/p/${user.nickname}`}
               key={user.nickname}
+              transition='transform .2s'
               _hover={{
                 textDecoration: "none",
+                transform: "scale(0.97)",
+                opacity: ".8 !important"
               }}
               className={`user-item user_${index}`}
             >
               <VStack
                 cursor='pointer'
-                transition='transform .2s'
-                _hover={{
-                  transform: "scale(0.97)",
-                }}
+                
                 key={user.nickname}
                 border='1px solid #949494'
                 borderRadius={10}
