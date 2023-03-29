@@ -1,6 +1,6 @@
 import { Player } from "../player/player_swipe";
 import { AppActions } from "./app_actions";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { GetAppModal } from "./get_app_modal";
 import { Flex } from "@chakra-ui/react";
 
@@ -19,6 +19,14 @@ const Videos = ({
    const [showModalAppDownload, setShowModalAppDownload] = useState(false);
    const getAppComponentRef = useRef(() => null);
    const [muted, setMuted] = useState(true);
+   const [indexTo, setIndexTo] = useState(videos.length > 2 ? 3 : videos.length);
+
+   const addMoreVideos = (index) => {
+      setIndexTo(old => (old - 2 == index) ? old + 1 : old)
+      if (indexTo === videos.length) {
+         loadMoreVideos();
+      }
+   }
 
 
    const getNextVideo = () => {
@@ -76,7 +84,7 @@ const Videos = ({
          {videos.length === 0
             ? <h1>Nothing to show here</h1>
             :(<>
-               {videos.map((video, id) => (
+               {videos.slice(0, indexTo).map((video, id) => (
                   <Player
                      key={videos[id]['video_type'] === 'rt' ? videos[id]['video']['conversation_id'] : videos[id]['video']['video_id']}
                      currentVideoIndex={id}
@@ -109,7 +117,7 @@ const Videos = ({
                      shareUrl={videos[id]?.video?.share_url}
                      verticalNavigation
                      muted={muted}
-                     loadMoreVideos={loadMoreVideos}
+                     loadMoreVideos={addMoreVideos}
                      onClick={handleClick}
                      setCurrentVideoIndex={setCurrentVideoIndex}
                   >
