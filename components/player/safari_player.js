@@ -10,18 +10,23 @@ export const SafariPlayer = ({
    muted,
    onClick,
    onReady,
-   onPlaying
+   onPlaying,
 }) => {
 
    useEffect(() => {
+      const onPause = (event) => {
+         event.target.currentTime = 0;
+      }
       var player = document.getElementById(uniqueKey);
       player.addEventListener('canplay', onReady);
 
       player.addEventListener("playing", onPlaying)
+      player.addEventListener('pause', onPause)
 
       return () => {
          player.removeEventListener('canplay', onReady);
          player.removeEventListener("playing", onPlaying);
+         player.removeEventListener("pause", onPause)
       }
    }, [])
 

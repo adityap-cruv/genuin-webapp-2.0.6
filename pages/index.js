@@ -94,7 +94,7 @@ const Home = ({
 };
 
 Home.getInitialProps = async () => {
-  const nickname = "himanshu";
+  const nickname = "climatepolitics";
   try {
     const all_videos = await axios.get(
       `${process.env.apiurl}/api/v3/public/profile_videos?user_id=${nickname}&video_types[]=public_video`

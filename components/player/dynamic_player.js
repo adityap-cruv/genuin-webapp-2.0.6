@@ -39,6 +39,10 @@ export const DynamicPlayer = ({
          onReady={onReady}
          loop={loop}
          onPlay={onPlaying}
+         onPause={(event) => {
+            event.target.currentTime = 0;
+         }
+         }
       />}
 
       {isSafari && <SafariPlayer
@@ -52,6 +56,7 @@ export const DynamicPlayer = ({
          onClick={onClick}
          onReady={onReady}
          onPlaying={onPlaying}
+         
       />}
    </>)
 }
