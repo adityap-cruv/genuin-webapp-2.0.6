@@ -43,6 +43,7 @@ import {
   Spinner,  
   Skeleton
 } from "@chakra-ui/react";
+import { GenuinLoader } from "../../components/basic/genuin_loader";
 
 const Profile = ({
   user = {},
@@ -505,20 +506,7 @@ const Profile = ({
         ? (
           <Error />
         ) : isLoadingFake ?
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              height: '100%'
-            }}>
-            <Spinner
-              thickness='4px'
-              speed='1s'
-              emptyColor='blue'
-              color='white'
-              size='lg' />
-          </div>
+          <GenuinLoader/>
           : (<Layout>
             <script
               type='application/ld+json'
@@ -1004,20 +992,7 @@ const Videos = ({
           hasMore={!noMoreVideos}
           scrollThreshold={.75}
           scrollableTarget='scrollableDiv'
-          loader={<div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              height: '20vh'
-            }}>
-            <Spinner
-              thickness='4px'
-              speed='1s'
-              emptyColor='blue'
-              color='white'
-              size='lg' />
-          </div>}
+          loader={<GenuinLoader height="20vh"/>}
         >
           <div
             className="grid-layout"

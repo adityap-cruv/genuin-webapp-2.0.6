@@ -7,7 +7,7 @@ import { HomeNav } from "../components/index/home_nav";
 import { AnimatedIndexPage } from "../components/index/animated_index_page";
 import { SimpleIndexPage } from "../components/index/simple_index_page";
 import { SEO } from "../components/basic/seo";
-import { Spinner } from "@chakra-ui/react";
+import { GenuinLoader } from "../components/basic/genuin_loader";
 
 let title = "Genuin";
 let metaImage = "https://media.begenuin.com/backend_assets/preview.png";
@@ -60,20 +60,7 @@ const Home = ({
               position: "absolute",
               zIndex: -99
             }}>
-          </div>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              height: '100%'
-            }}>
-            <Spinner
-              thickness='4px'
-              speed='1s'
-              emptyColor='blue'
-              color='white'
-              size='lg' />
+            <GenuinLoader />
           </div>
         </>
         : <>

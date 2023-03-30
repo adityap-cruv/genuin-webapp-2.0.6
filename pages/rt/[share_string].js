@@ -35,6 +35,7 @@ import {
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useMotionValueEvent, useScroll } from "framer-motion";
+import { GenuinLoader } from "../../components/basic/genuin_loader";
 
 const RoundTable = ({
   details = {},
@@ -223,20 +224,7 @@ const RoundTable = ({
       <Error />
     ) : isLoadingFake
       ?
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          height: '100%'
-        }}>
-        <Spinner
-          thickness='4px'
-          speed='1s'
-          emptyColor='blue'
-          color='white'
-          size='lg' />
-      </div>
+      <GenuinLoader/>
       : (
         <Layout>
 
