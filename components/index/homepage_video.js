@@ -35,6 +35,8 @@ export const HomePageVideo = ({
                   setDisplayThumbnail(false);
                }}
             />
+
+            //TODO: somehow this component is getting height,width = 0px, fix it.
             {displayThumbnail && <Box
                backgroundImage={`url(${videoThumbnail})`}
                backgroundColor={Boolean(videoThumbnail) ? "transparent" : "lightgray"}
@@ -54,6 +56,5 @@ export const HomePageVideo = ({
             src={mobileFrame.src}>
          </img>
       </div>
-     
    </>)
 }
