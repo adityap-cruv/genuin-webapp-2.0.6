@@ -9,14 +9,25 @@ export const SafariPlayer = ({
    className,
    muted,
    onClick,
-   onReady
+   onReady,
+   onPlaying,
 }) => {
 
    useEffect(() => {
+      const onPause = (event) => {
+         event.target.currentTime = 0;
+      }
       var player = document.getElementById(uniqueKey);
       player.addEventListener('canplay', onReady);
 
-      return () => player.removeEventListener('canplay', onReady);
+      player.addEventListener("playing", onPlaying)
+      player.addEventListener('pause', onPause)
+
+      return () => {
+         player.removeEventListener('canplay', onReady);
+         player.removeEventListener("playing", onPlaying);
+         player.removeEventListener("pause", onPause)
+      }
    }, [])
 
    useEffect(() => {

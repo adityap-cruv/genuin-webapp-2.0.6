@@ -35,6 +35,7 @@ import {
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useMotionValueEvent, useScroll } from "framer-motion";
+import { GenuinLoader } from "../../components/basic/genuin_loader";
 
 const RoundTable = ({
   details = {},
@@ -223,20 +224,7 @@ const RoundTable = ({
       <Error />
     ) : isLoadingFake
       ?
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          height: '100%'
-        }}>
-        <Spinner
-          thickness='4px'
-          speed='1s'
-          emptyColor='blue'
-          color='white'
-          size='lg' />
-      </div>
+      <GenuinLoader/>
       : (
         <Layout>
 
@@ -722,17 +710,17 @@ const Participants = ({ members, mobile }) => {
             <Link
               href={`/p/${user.nickname}`}
               key={user.nickname}
+              transition='transform .2s'
               _hover={{
                 textDecoration: "none",
+                transform: "scale(0.97)",
+                opacity: ".8 !important"
               }}
               className={`user-item user_${index}`}
             >
               <VStack
                 cursor='pointer'
-                transition='transform .2s'
-                _hover={{
-                  transform: "scale(0.97)",
-                }}
+                
                 key={user.nickname}
                 border='1px solid #949494'
                 borderRadius={10}

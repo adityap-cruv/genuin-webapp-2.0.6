@@ -173,6 +173,7 @@ export const ReactPlayerWrapper = ({
       className="video-container"
       style={{
         color: "white",
+        display: "flex"
       }}
     >
       <DynamicPlayer

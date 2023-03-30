@@ -3,11 +3,8 @@ import axios from "axios";
 import { Layout } from "../components/layout";
 import { GetAppModal } from "../components/basic/get_app_modal";
 import { TopNav } from "../components/basic/top_nav_swipe";
-import {
-  Flex,
-  Spinner
-} from "@chakra-ui/react";
 import Videos from "../components/basic/videos";
+import { GenuinLoader } from "../components/basic/genuin_loader";
 const Profile = ({
   user = {},
   all_videos = [],
@@ -127,22 +124,7 @@ const Profile = ({
   };
 
   return !Boolean(is_prop_loaded) ? (
-      <>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            height: '100vh'
-          }}>
-          <Spinner
-            thickness='4px'
-            speed='1s'
-            emptyColor='gray.200'
-            color='blue.500'
-            size='lg' />
-        </div>
-      </>
+    <GenuinLoader/>
   ) : (
     <>
       <Layout className="content-demo">

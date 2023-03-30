@@ -35,6 +35,7 @@ export const HomePageVideo = ({
                   setDisplayThumbnail(false);
                }}
             />
+         
             {displayThumbnail && <Box
                backgroundImage={`url(${videoThumbnail})`}
                backgroundColor={Boolean(videoThumbnail) ? "transparent" : "lightgray"}
@@ -54,6 +55,5 @@ export const HomePageVideo = ({
             src={mobileFrame.src}>
          </img>
       </div>
-     
    </>)
 }

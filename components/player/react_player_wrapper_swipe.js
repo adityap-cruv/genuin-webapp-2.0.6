@@ -168,9 +168,7 @@ export const ReactPlayerWrapper = ({
   };
 
   let handleEnterViewport = function () {
-    if (currentVideoIndex === (videos.length - 3)) {
-      loadMoreVideos();
-    }
+      loadMoreVideos(currentVideoIndex);
     setCurrentVideoIndex(currentVideoIndex)
     setTempVideoUrl(videoUrl)
     setIsPlaying(true)
@@ -205,10 +203,12 @@ export const ReactPlayerWrapper = ({
         onDuration={setDurationWrapper}
         onProgress={setProgressWrapper}
         onEnded={onEndedWrapper}
-        onReady={() => {
-          setDisplayThumbnail(false);
-        }}
-        url={tempVideoUrl}
+        onPlaying={
+          () => {
+            setDisplayThumbnail(false);
+          }
+        }
+        url={videoUrl}
         uniqueKey={videos[currentVideoIndex]['video_type'] === 'rt' ? videos[currentVideoIndex]['video']['conversation_id'] : videos[currentVideoIndex]['video']['video_id']}
       />
 
