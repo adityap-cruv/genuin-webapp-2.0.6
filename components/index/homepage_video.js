@@ -7,16 +7,15 @@ import { DynamicPlayer } from "../player/dynamic_player"
 export const HomePageVideo = ({
    videoUrl,
    opacityFrame,
-   videoThumbnail
+   videoThumbnail,
 }) => {
-
    const [displayThumbnail, setDisplayThumbnail] = useState(true);
    return (<>
       <div
+         id="index-player-width"
          style={{
             position: "relative",
-            width: "300px",
-               height: "100%"
+            height: "100%",
          }}
       >
          <div

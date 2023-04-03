@@ -14,12 +14,15 @@ const Videos = ({
    company_id,
    tag_id,
    domain,
-   publisher_name   
+   publisher_name,
+   handleWheel = () => {
+   }
 }) => {
    const [showModalAppDownload, setShowModalAppDownload] = useState(false);
    const getAppComponentRef = useRef(() => null);
    const [muted, setMuted] = useState(true);
    const [indexTo, setIndexTo] = useState(videos.length > 2 ? 3 : videos.length);
+   
 
    const addMoreVideos = (index) => {
       setIndexTo(old => (old - 2 == index) ? old + 1 : old)
@@ -74,7 +77,15 @@ const Videos = ({
       setMuted((old) => !old);
    }
 
+   useEffect(() => {
+      window.addEventListener("wheel", handleWheel)
+      return () => {
+         return window.removeEventListener("wheel", handleWheel)
+      }
+   })
+
    return (<>
+
       <Flex
          className='section-content h-100 swipe-container hide-scrollbar'
          direction='initial'
@@ -85,56 +96,60 @@ const Videos = ({
             ? <h1>Nothing to show here</h1>
             :(<>
                {videos.slice(0, indexTo).map((video, id) => (
-                  <Player
-                     key={videos[id]['video_type'] === 'rt' ? videos[id]['video']['conversation_id'] : videos[id]['video']['video_id']}
-                     currentVideoIndex={id}
-                     videoThumbnail={
-                        videos[id]['video_type'] == 'rt' ? videos[id].video.thumbnail_url_s : videos[id]?.video?.video_thumbnail_s
-                     }
-                     description={videos[id]?.video?.description}
-                     link={videos[id]?.video?.link}
-                     videoUrl={videos[id] && videos[id]['video'] && videos[id]['video']['video_url_m3u8']
-                        ? (revenue_enabled
-                           ? getInfyUrl(videos[id]['video']['video_url_m3u8'])
-                           : videos[id]['video']['video_url_m3u8'])
-                        : (videos[id] && videos[id]['video'] && videos[id]['video']['video_url']
-                           ? videos[id] && videos[id]['video'] && videos[id]['video']['video_url']
-                           : null)}
-                     userName={videos[id] && videos[id]['video_type'] == 'rt' ? videos[id]['video']['owner']['nickname'] : (user && user.nickname ? user.nickname : null)}
-                     userId={videos[id] && videos[id]['video_type'] == 'rt' ? videos[id]['video']['owner']['nickname'] : (user && user.nickname ? user.nickname : null)}
-                     userProfileImage={videos[id] && videos[id]['video_type'] == 'rt' ? videos[id]['video']['owner']['profile_image_s'] : (user && user.profile_image_s ? user.profile_image_s : null)}
-                     rtProfileImage={videos[id]?.video?.group_dp}
-                     showGetAppModal={handleShowModalAppDownload}
-                     onEnded={showGetAppToViewDialog}
-                     getNextVideo={getNextVideo}
-                     getPrevVideo={getPrevVideo}
-                     videos={videos}
-                     autoplay={id === 0 ? true : false}
-                     video_id_to_use={videos[id]?.video?.share_string}
-                     roundTableMode={videos[id]?.video_type === "rt"}
-                     roundTableName={videos[id]?.video?.group_name}
-                     roundTableId={videos[id]?.share_string}
-                     shareUrl={videos[id]?.video?.share_url}
-                     verticalNavigation
-                     muted={muted}
-                     loadMoreVideos={addMoreVideos}
-                     onClick={handleClick}
-                     setCurrentVideoIndex={setCurrentVideoIndex}
-                  >
-                     <AppActions
-                        showGetAppModal={handleShowModalAppDownload}
-                        userName={videos[id] && videos[id]['video_type'] == 'rt' ? videos[id]['video']['owner']['nickname'] : (user && user.nickname ? user.nickname : null)}
-                        link={videos[id]?.video?.link}
-                        videoUrl={videos[id]?.video?.share_url}
-                        videoDescription={
-                           videos[id]?.video?.description
+                  <>
+                     <Player
+                        key={videos[id]['video_type'] === 'rt' ? videos[id]['video']['conversation_id'] : videos[id]['video']['video_id']}
+                        currentVideoIndex={id}
+                        videoThumbnail={
+                           videos[id]['video_type'] == 'rt' ? videos[id].video.thumbnail_url_s : videos[id]?.video?.video_thumbnail_s
                         }
-                        videoTitle='Genuin'
-                        roundTable={videos[id]?.video_type === "rt"}
+                        description={videos[id]?.video?.description}
+                        link={videos[id]?.video?.link}
+                        videoUrl={videos[id] && videos[id]['video'] && videos[id]['video']['video_url_m3u8']
+                           ? (revenue_enabled
+                              ? getInfyUrl(videos[id]['video']['video_url_m3u8'])
+                              : videos[id]['video']['video_url_m3u8'])
+                           : (videos[id] && videos[id]['video'] && videos[id]['video']['video_url']
+                              ? videos[id] && videos[id]['video'] && videos[id]['video']['video_url']
+                              : null)}
+                        userName={videos[id] && videos[id]['video_type'] == 'rt' ? videos[id]['video']['owner']['nickname'] : (user && user.nickname ? user.nickname : null)}
+                        userId={videos[id] && videos[id]['video_type'] == 'rt' ? videos[id]['video']['owner']['nickname'] : (user && user.nickname ? user.nickname : null)}
+                        userProfileImage={videos[id] && videos[id]['video_type'] == 'rt' ? videos[id]['video']['owner']['profile_image_s'] : (user && user.profile_image_s ? user.profile_image_s : null)}
+                        rtProfileImage={videos[id]?.video?.group_dp}
+                        showGetAppModal={handleShowModalAppDownload}
+                        onEnded={showGetAppToViewDialog}
+                        getNextVideo={getNextVideo}
+                        getPrevVideo={getPrevVideo}
+                        videos={videos}
+                        autoplay={id === 0 ? true : false}
+                        video_id_to_use={videos[id]?.video?.share_string}
+                        roundTableMode={videos[id]?.video_type === "rt"}
                         roundTableName={videos[id]?.video?.group_name}
                         roundTableId={videos[id]?.share_string}
-                     />
-                  </Player>
+                        shareUrl={videos[id]?.video?.share_url}
+                        verticalNavigation
+                        muted={muted}
+                        loadMoreVideos={addMoreVideos}
+                        onClick={handleClick}
+                        setCurrentVideoIndex={setCurrentVideoIndex}
+                     >
+                        <AppActions
+                           showGetAppModal={handleShowModalAppDownload}
+                           userName={videos[id] && videos[id]['video_type'] == 'rt' ? videos[id]['video']['owner']['nickname'] : (user && user.nickname ? user.nickname : null)}
+                           link={videos[id]?.video?.link}
+                           videoUrl={videos[id]?.video?.share_url}
+                           videoDescription={
+                              videos[id]?.video?.description
+                           }
+                           videoTitle='Genuin'
+                           roundTable={videos[id]?.video_type === "rt"}
+                           roundTableName={videos[id]?.video?.group_name}
+                           roundTableId={videos[id]?.share_string}
+                        />
+                     </Player>
+                     
+                  </>
+                
                ))}
             </>)
          }

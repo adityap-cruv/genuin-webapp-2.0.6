@@ -5,7 +5,7 @@ import { useBreakpointValue } from "@chakra-ui/react";
 
 import { HomeNav } from "../components/index/home_nav";
 import { AnimatedIndexPage } from "../components/index/animated_index_page";
-import { SimpleIndexPage } from "../components/index/simple_index_page";
+import { MobileIndexPage } from "../components/index/mobile_index_page";
 import { SEO } from "../components/basic/seo";
 import { GenuinLoader } from "../components/basic/genuin_loader";
 
@@ -70,7 +70,7 @@ const Home = ({
           />
           }
           {mobile &&
-            <SimpleIndexPage
+            <MobileIndexPage
               videos={videos}
               user={user}
             />}
