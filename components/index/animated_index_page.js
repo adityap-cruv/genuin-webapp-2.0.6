@@ -13,7 +13,8 @@ export const AnimatedIndexPage = ({
 }) => {
    const [showModalAppDownload, setShowModalAppDownload] = useState(false);
    const handleCloseAppDownload = () => setShowModalAppDownload(false);
-   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+   const [currentVideoIndex, setCurrentVideoIndex] = useState(-1);
+   const [reelShown, setReelShown] = useState(false);
 
    const mainRef = useRef(null);
    const [latest, setLatest] = useState(0)
@@ -24,6 +25,15 @@ export const AnimatedIndexPage = ({
    const resizeHandler = (event) => {
       setWH({ width: window.innerWidth, height: window.innerHeight })
    }
+
+   const handleWheel = (event) => {
+      console.log("deltaY", event)
+      console.log("currnt index :", currentVideoIndex)
+      if (event.deltaY < 0 && reelShown && (currentVideoIndex === 0)) {
+         setLatest(.989995)
+         console.log("done....")
+      }
+   }
    useEffect(() => {
       setWH({ width: window.innerWidth, height: window.innerHeight })
       window.addEventListener('resize', resizeHandler);
@@ -31,12 +41,20 @@ export const AnimatedIndexPage = ({
          window.removeEventListener('resize', resizeHandler);
       }
    }, [])
+   useEffect(() => {
+      console.log("reel shown ..", reelShown)
+   }, [reelShown])
 
    const { scrollYProgress } = useScroll({
       container: mainRef
    });
    useMotionValueEvent(scrollYProgress, "change", (latest) => {
       setLatest(latest.toPrecision(6))
+      if (latest > .9899995) {
+         setReelShown(true)
+      } else {
+         setReelShown(false);
+      }
    })
    return (<>
       <div
@@ -57,7 +75,7 @@ export const AnimatedIndexPage = ({
          <div
             className="h-100 w-100"
             style={{
-               backgroundImage: `url(${videos[currentVideoIndex].video.video_thumbnail_s})`,
+               backgroundImage: `url(${videos[0].video.video_thumbnail_s})`,
                backgroundRepeat: "no-repeat",
                backgroundSize: "cover",
                backgroundPosition: "center",
@@ -67,20 +85,6 @@ export const AnimatedIndexPage = ({
                zIndex: -98,
             }}>
             </div>
-            <div
-               className="h-100 w-100"
-               style={{
-                  opacity: latest > .58 ? (-(.58 - latest)) * 3 : 0,
-                  backgroundImage: `url(${videos[currentVideoIndex].video.video_thumbnail_s})`,
-                  backgroundRepeat: "no-repeat",
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                  filter: 'blur(60px) brightness(60%)',
-                  backgroundColor: 'black',
-                  position: "absolute",
-                  zIndex: -98,
-               }}>
-         </div>
          <div
             style={{
                position: "absolute",
@@ -100,6 +104,7 @@ export const AnimatedIndexPage = ({
                }}
                videos={videos}
                setCurrentVideoIndex={setCurrentVideoIndex}
+               handleWheel={handleWheel}
             />
          </div>
 
@@ -129,8 +134,8 @@ export const AnimatedIndexPage = ({
             }}>
                <HomePageVideo
                   opacityFrame={latest > .58 ? (1.5 - latest) : 1}
-                  videoUrl={videos[currentVideoIndex].video.video_url_m3u8 ?? videos[currentVideoIndex].video.video_url}
-                  videoThumbnail={videos[currentVideoIndex].video.video_thumbnail_s}
+                  videoUrl={videos[0].video.video_url_m3u8 ?? videos[0].video.video_url}
+                  videoThumbnail={videos[0].video.video_thumbnail_s}
                />
             </motion.div>
 
