@@ -1,197 +1,189 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { GetAppModal } from "../basic/get_app_modal";
-import { Nav, Container, Row, Col, Carousel } from "react-bootstrap";
+import { Button } from "react-bootstrap";
 
-import imgCarousel1 from "../../assets/images/web3/learn_web3_via_bite-sized_content.png";
-import imgCarousel2 from "../../assets/images/web3/connect_people_in_the_web3_business.png";
-import imgCarousel3 from "../../assets/images/web3/feed_page_public_video.png";
-import imgCarousel4 from "../../assets/images/web3/initiate_conversation_about_web3.png";
-
-import { InstallApp } from "../basic/install_app";
 import Videos from "../basic/videos";
+import { useMotionValueEvent, useScroll } from "framer-motion";
+import { motion } from "framer-motion";
+import { HomePageVideo } from "./homepage_video";
+import trayArrow from "../../assets/images/tray_arrow.svg";
 
 export const SimpleIndexPage = ({
    videos,
    user,
+   setCurrentVideoIndex
 }) => {
-   const [activeIndex, setActiveIndex] = useState(0);
    const [showModalAppDownload, setShowModalAppDownload] = useState(false);
    const handleCloseAppDownload = () => setShowModalAppDownload(false);
+   const mainRef = useRef(null);
+   const [latest, setLatest] = useState(0);
+
+   const { scrollYProgress } = useScroll({
+      container: mainRef
+   })
+
+   useMotionValueEvent(scrollYProgress, "change", (latest) => {
+      setLatest(latest.toPrecision(6));
+   })
 
    return (<>
       <div
+         ref={mainRef}
          style={{
             height: "100%",
             overflowY: "auto",
          }}
+         className="hide-scrollbar"
       >
-         <section className='bg-gradient-blue section-content d-flex flex-column h-100 justify-content-center justify-content-md-between'>
-            <Container className='container-false d-none d-md-block'></Container>
-            <Container className='content-container'>
-               <Row className='justify-content-center align-items-center'>
-                  <Col sm={12} md={6} lg={6} xl={6}>
-                     <Carousel
-                        controls={false}
-                        indicators={false}
-                        fade
-                        activeIndex={activeIndex}
-                     >
-                        <Carousel.Item>
-                           <img
-                              src={imgCarousel1.src}
-                              width={380}
-                              height={770}
-                              alt='Learn Web3 via bite-sized content'
-                              title='Learn Web3 via bite-sized content'
-                              className='img-carousel mx-auto d-block'
-                           />
-                        </Carousel.Item>
-                        <Carousel.Item>
-                           <img
-                              src={imgCarousel2.src}
-                              width={380}
-                              height={770}
-                              alt='Connect people in the Web3 business'
-                              title='Connect people in the Web3 business'
-                              className='img-carousel mx-auto d-block'
-                           />
-                        </Carousel.Item>
-                        <Carousel.Item>
-                           <img
-                              src={imgCarousel3.src}
-                              width={380}
-                              height={770}
-                              alt='Showcase your Web3 knowledge'
-                              title='Showcase your Web3 knowledge'
-                              className='img-carousel mx-auto d-block'
-                           />
-                        </Carousel.Item>
-                        <Carousel.Item>
-                           <img
-                              src={imgCarousel4.src}
-                              width={380}
-                              height={770}
-                              alt='Initiate conversation about Web3'
-                              title='Initiate conversation about Web3'
-                              className='img-carousel mx-auto d-block'
-                           />
-                        </Carousel.Item>
-                     </Carousel>
-                  </Col>
-                  <Col sm={12} md={6} lg={6} xl={6}>
-                     <Carousel
-                        controls={false}
-                        interval={2000}
-                        onSelect={(selectedIndex) => setActiveIndex(selectedIndex)}
-                     >
-                        <Carousel.Item>
-                           <h1>
-                              Learn Web3 via
-                              <br />
-                              bite-sized content
-                           </h1>
-                        </Carousel.Item>
-                        <Carousel.Item>
-                           <h1>Connect people in the Web3 business</h1>
-                        </Carousel.Item>
-                        <Carousel.Item>
-                           <h1>Showcase your Web3 knowledge</h1>
-                        </Carousel.Item>
-                        <Carousel.Item>
-                           <h1>Initiate conversation about Web3</h1>
-                        </Carousel.Item>
-                     </Carousel>
-                     <Row
-                        xs={2}
-                        className='justify-content-center justify-content-md-start mt-5 pt-3'
-                     >
-                        <InstallApp />
-                     </Row>
-                  </Col>
-               </Row>
-            </Container>
-
-            <Container className='d-none d-md-block container-footer'>
-               <Row className='py-3'>
-                  <Col xl={4} lg={4} md={4} sm={12}>
-                     <Nav as='ul'>
-                        <Nav.Item as='li'>
-                           <Nav.Link
-                              style={{ opacity: 0.5 }}
-                              href='/'
-                              className='pr-0'
-                           >
-                              © 2022 Genuin Inc.
-                           </Nav.Link>
-                        </Nav.Item>
-                     </Nav>
-                  </Col>
-                  <Col xl={8} lg={8} md={8} sm={12}>
-                     <Nav
-                        className='justify-content-start justify-content-md-end'
-                        as='ul'
-                     >
-                        <Nav.Item as='li'>
-                           <Nav.Link
-                              style={{ opacity: 0.5 }}
-                              target="_blank"
-                              href={`/content_demo?value=rt_123f373977001407`}
-                           >
-                              Life at Genuin
-                           </Nav.Link>
-                        </Nav.Item>
-                        <Nav.Item as='li'>
-                           <Nav.Link
-                              style={{
-                                 opacity: 0.5,
-                                 paddingLeft: "0px",
-                                 paddingRight: "0px",
-                              }}
-                              href={void 0}
-                              eventKey='link-2'
-                           >
-                              |
-                           </Nav.Link>
-                        </Nav.Item>
-                        <Nav.Item as='li'>
-                           <Nav.Link style={{ opacity: 0.5 }} href='/terms'>
-                              Terms of Service
-                           </Nav.Link>
-                        </Nav.Item>
-                        <Nav.Item as='li'>
-                           <Nav.Link
-                              style={{
-                                 opacity: 0.5,
-                                 paddingLeft: "0px",
-                                 paddingRight: "0px",
-                              }}
-                              href={void 0}
-                           >
-                              |
-                           </Nav.Link>
-                        </Nav.Item>
-                        <Nav.Item as='li'>
-                           <Nav.Link style={{ opacity: 0.5 }} href='/privacy'>
-                              Privacy Policy
-                           </Nav.Link>
-                        </Nav.Item>
-                     </Nav>
-                  </Col>
-               </Row>
-            </Container>
-         </section>
-         <section
+         <div
+            className="bg-gradient-blue h-100 w-100"
             style={{
-            height: "100%"
-         }}>
+               position: "absolute",
+               zIndex: -99
+            }}>
+         </div>
+         <div
+            className="h-100 w-100"
+            style={{
+               //todo: update currentVideoIndex
+               backgroundImage: `url(${videos[0].video.video_thumbnail_s})`,
+               backgroundRepeat: "no-repeat",
+               backgroundSize: "cover",
+               backgroundPosition: "center",
+               filter: 'blur(100px) brightness(50%)',
+               backgroundColor: 'black',
+               position: "absolute",
+               zIndex: -98,
+            }}>
+         </div>
+
+         <motion.div
+            style={{
+               height: "50%",
+               width: "100%",
+               top: "65%",
+               display: "flex",
+               position: "absolute",
+               alignItems: "start",
+               opacity: latest < .5 ? 1 - (latest * 2) : 0
+            }}>
+            <div
+               style={{
+                  height: "50%",
+                  display: "flex",
+                  width: "100%",
+                  flexDirection: "column",
+                  paddingTop: "10px",
+               }}>
+               <div style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  fontSize: "24px",
+                  fontWeight: 900,
+                  textAlign: "center",
+               }}>
+                  <h1 style={{ color: "white" }}>FIND YOUR PEOPLE.<br /> FIND WHAT YOU LOVE.</h1>
+               </div>
+               <div style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  fontWeight: 600,
+                  fontSize: "15px",
+                  textAlign: "center",
+                  paddingRight: "10px",
+                  paddingLeft: "10px",
+                  paddingTop: "10px"
+               }}>
+                  <h2 style={{ color: "white" }}>Genuin gives you a place to keep up with your friends and the issues you care about.</h2>
+               </div>
+               <div
+                  style={{
+                     paddingTop: "10px",
+                     display: "flex",
+                     justifyContent: "center",
+                     zIndex: 13
+                  }}>
+                  <Button
+                     variant='primary'
+                     onClick={() => {
+                        console.log(" add get app button.")
+                     }}
+                     style={{
+                        fontSize: 15,
+                        padding: "0.275rem 2rem",
+                        borderRadius: "0.5rem",
+                     }}
+                  >
+                     Get App
+                  </Button>
+               </div>
+               <div
+                  style={{
+                     display: "flex",
+                     width: "100%",
+                     justifyContent: "center",
+                     paddingTop: "25px",
+                     bottom: "10%"
+                  }}>
+                  <img
+                     src={trayArrow.src}
+                  ></img>
+               </div>
+            </div>
+         </motion.div>
+
+         <div
+            style={{
+               position: "absolute",
+               height: "50%",
+               width: "100%",
+               display: "flex",
+               justifyContent: "center",
+
+            }}>
+            <motion.div
+               style={{
+                  height: "fit-content",
+                  position: "relative",
+                  top: "13%",
+                  scale: (latest > .58) ? (latest - .09) * 2 : 1,
+                  translateY: (latest < .58) ? `calc(100px * ${latest} * 2)` : `calc(100px * ${1 - latest} * 2)`
+               }}>
+               <HomePageVideo
+                  opacityFrame={latest > .58 ? 1 - latest : 1}
+                  videoUrl={videos[0].video.video_url_m3u8 ?? videos[0].video.video_url}
+                  videoThumbnail={videos[0].video.video_thumbnail_s}
+               />
+            </motion.div>
+         </div>
+         <div
+            style={{
+               position: "absolute",
+               display: "flex",
+               flexDirection: "row",
+               left: 0,
+               width: "100%",
+               height: "100%",
+               right: 0,
+               zIndex: latest > 0.984444 ? 13 : -1,
+               opacity: latest > 0.98444 ? 1 : 0
+            }}>
             <Videos
-               videos={videos}
                user={user}
                loadMoreVideos={() => {
-                  console.log("pass in mobile view also...")
+                  console.log("loadmore...")
                }}
+               videos={videos}
+               setCurrentVideoIndex={setCurrentVideoIndex}
             />
-         </section>
+         </div>
+         <div
+            style={{
+               height: "200%",
+               position: "relative",
+               zIndex: 9
+            }}>
+         </div>
          <GetAppModal
             show={showModalAppDownload}
             onClose={handleCloseAppDownload}

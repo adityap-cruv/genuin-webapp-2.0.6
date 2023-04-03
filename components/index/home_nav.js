@@ -61,7 +61,7 @@ export const HomeNav = ({
             className='me-3 custom-home-button'
             onClick={handleHireLinkClick}
             style={{
-              fontSize: 20,
+              fontSize: 17,
               padding: "0.275rem 2rem",
               borderRadius: "0.4rem",
             }}
@@ -69,7 +69,8 @@ export const HomeNav = ({
             Join the team
           </Button>
 
-            <Navbar.Toggle
+
+              <Navbar.Toggle
             aria-controls='navbarMoreOptionDrawer'
             className='custom-home-burger'
               style={{
@@ -84,7 +85,7 @@ export const HomeNav = ({
                   <Navbar.Toggle aria-controls='navbarMoreOptionDrawer' />
                   <Trail open={isOpen}>
                     {/* <Nav.Link href={investLink}>Invest in Genuin</Nav.Link> */}
-                    <Nav.Link href={hireLink}>Join us</Nav.Link>
+                    <Nav.Link href={hireLink}>Join the team</Nav.Link>
                     <Nav.Link href='/terms'>Terms of Service</Nav.Link>
                     <Nav.Link href='/privacy'>Privacy Policy</Nav.Link>
                     <Nav.Link target="_blank" href={`/content_demo?value=rt_123f373977001407`}>Life at Genuin</Nav.Link>

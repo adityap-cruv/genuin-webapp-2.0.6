@@ -41,9 +41,6 @@ export const AnimatedIndexPage = ({
          window.removeEventListener('resize', resizeHandler);
       }
    }, [])
-   useEffect(() => {
-      console.log("reel shown ..", reelShown)
-   }, [reelShown])
 
    const { scrollYProgress } = useScroll({
       container: mainRef
@@ -123,7 +120,7 @@ export const AnimatedIndexPage = ({
                opacity: latest < .989999 ? 1 : 0
             }}>
             <motion.div style={{
-               translateX: latest < .5 ? `calc(50% * ${latest * 2})` : `calc(50%)`,
+               translateX: latest < .5 ? `calc(50% * ${latest * 2})` : "50%",
                position: "inherit",
                scale: latest > .58 ? latest * 1.775555 : 1,
                height: "100%",
@@ -211,7 +208,7 @@ export const AnimatedIndexPage = ({
                         href='/'
                         className='pr-0'
                      >
-                        © 2022 Genuin Inc.
+                        © 2023 Genuin Inc.
                      </Nav.Link>
                   </Nav.Item>
                </Nav>

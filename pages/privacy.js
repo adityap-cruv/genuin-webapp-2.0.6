@@ -86,7 +86,7 @@ const Privacy = () => {
               <Nav as='ul'>
                 <Nav.Item as='li'>
                   <Nav.Link style={{ opacity: 0.5 }} href='/' className='pr-0'>
-                    © 2022 Genuin Inc.
+                    © 2023 Genuin Inc.
                   </Nav.Link>
                 </Nav.Item>
               </Nav>
