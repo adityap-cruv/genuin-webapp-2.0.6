@@ -8,22 +8,58 @@ import { motion } from "framer-motion";
 import { HomePageVideo } from "./homepage_video";
 import trayArrow from "../../assets/images/tray_arrow.svg";
 
-export const SimpleIndexPage = ({
+export const MobileIndexPage = ({
    videos,
    user,
-   setCurrentVideoIndex
 }) => {
    const [showModalAppDownload, setShowModalAppDownload] = useState(false);
    const handleCloseAppDownload = () => setShowModalAppDownload(false);
    const mainRef = useRef(null);
    const [latest, setLatest] = useState(0);
+   const [currentVideoIndex, setCurrentVideoIndex] = useState(-1);
+   const [reelShown, setReelShown] = useState(false);
 
    const { scrollYProgress } = useScroll({
       container: mainRef
    })
 
+   const [touchStartPointY, setTouchStartPointY] = useState(0)
+   const [touchEndPointY, setTouchEndPointY] = useState(0)
+
+   const handleWheel = (event) => {
+      if (event.deltaY < 0 && reelShown && currentVideoIndex === 0) {
+         mainRef.current.scrollTo({top: 0, left: 0, behavior: "smooth"})
+      }
+   }
+
+   const handleTouchStart = (event) => {
+      setTouchStartPointY(event.changedTouches[0].clientY);
+   }
+
+   const handleTouchEnd = (event) => {
+      setTouchEndPointY(event.changedTouches[0].clientY);
+      if ((touchEndPointY > touchStartPointY) && currentVideoIndex === 0) {
+         mainRef.current.scrollTo({top: 0, left:0, behavior: "smooth"})
+      }
+   }
+
+   useEffect(() => {
+      window.addEventListener("touchstart", handleTouchStart);
+      window.addEventListener("touchend", handleTouchEnd);
+
+      return () => {
+         window.removeEventListener("touchstart", handleTouchStart);
+         window.removeEventListener("touchend", handleTouchEnd)
+      }
+   })
+
    useMotionValueEvent(scrollYProgress, "change", (latest) => {
       setLatest(latest.toPrecision(6));
+      if (latest > 0.98444) {
+         setReelShown(true);
+      } else {
+         setReelShown(false);
+      }
    })
 
    return (<>
@@ -175,11 +211,12 @@ export const SimpleIndexPage = ({
                }}
                videos={videos}
                setCurrentVideoIndex={setCurrentVideoIndex}
+               handleWheel={handleWheel}
             />
          </div>
          <div
             style={{
-               height: "200%",
+               height: "180%",
                position: "relative",
                zIndex: 9
             }}>

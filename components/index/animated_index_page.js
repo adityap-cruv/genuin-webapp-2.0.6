@@ -27,11 +27,8 @@ export const AnimatedIndexPage = ({
    }
 
    const handleWheel = (event) => {
-      console.log("deltaY", event)
-      console.log("currnt index :", currentVideoIndex)
       if (event.deltaY < 0 && reelShown && (currentVideoIndex === 0)) {
-         setLatest(.989995)
-         console.log("done....")
+         mainRef.current.scrollTo({left: 0, top: 0, behavior: "smooth"})
       }
    }
    useEffect(() => {
