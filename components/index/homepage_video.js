@@ -8,14 +8,15 @@ export const HomePageVideo = ({
    videoUrl,
    opacityFrame,
    videoThumbnail,
+   width = 300
 }) => {
    const [displayThumbnail, setDisplayThumbnail] = useState(true);
    return (<>
       <div
-         id="index-player-width"
          style={{
             position: "relative",
             height: "100%",
+            width: width
          }}
       >
          <div

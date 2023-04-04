@@ -25,10 +25,15 @@ export const MobileIndexPage = ({
 
    const [touchStartPointY, setTouchStartPointY] = useState(0)
    const [touchEndPointY, setTouchEndPointY] = useState(0)
+   const [innerHeight, setInnerHeight] = useState(0);
+
+   const scrollToReel = () => {
+      mainRef.current.scroll({ top: window.innerHeight, behavior: "smooth" });
+   }
 
    const handleWheel = (event) => {
       if (event.deltaY < 0 && reelShown && currentVideoIndex === 0) {
-         mainRef.current.scrollTo({top: 0, left: 0, behavior: "smooth"})
+         mainRef.current.scrollTo({ top: 0, left: 0, behavior: "smooth" })
       }
    }
 
@@ -39,17 +44,24 @@ export const MobileIndexPage = ({
    const handleTouchEnd = (event) => {
       setTouchEndPointY(event.changedTouches[0].clientY);
       if ((touchEndPointY > touchStartPointY) && currentVideoIndex === 0) {
-         mainRef.current.scrollTo({top: 0, left:0, behavior: "smooth"})
+         mainRef.current.scrollTo({ top: 0, left: 0, behavior: "smooth" })
       }
    }
 
+   const handleResize = (event) => {
+      setInnerHeight(window.innerHeight)
+   }
+
    useEffect(() => {
+      setInnerHeight(window.innerHeight);
       window.addEventListener("touchstart", handleTouchStart);
       window.addEventListener("touchend", handleTouchEnd);
+      window.addEventListener("resize", handleResize);
 
       return () => {
          window.removeEventListener("touchstart", handleTouchStart);
          window.removeEventListener("touchend", handleTouchEnd)
+         window.addEventListener("resize", handleResize)
       }
    })
 
@@ -97,11 +109,11 @@ export const MobileIndexPage = ({
             style={{
                height: "50%",
                width: "100%",
-               top: "65%",
+               top: "60%",
                display: "flex",
                position: "absolute",
                alignItems: "start",
-               opacity: latest < .5 ? 1 - (latest * 2) : 0
+               opacity: latest < .5 ? 1.5 - (latest * 2) : 0
             }}>
             <div
                style={{
@@ -159,11 +171,22 @@ export const MobileIndexPage = ({
                      width: "100%",
                      justifyContent: "center",
                      paddingTop: "25px",
-                     bottom: "10%"
+                     zIndex: 13
                   }}>
-                  <img
-                     src={trayArrow.src}
-                  ></img>
+                  <motion.div
+                     initial={{ scale: .9 }}
+                     animate={{ scale: 1.1 }}
+                     transition={{ duration: 1, repeat: Infinity, type: "tween", ease: "easeIn", repeatType: "mirror" }}
+                  >
+                     <button
+                        onClick={scrollToReel}
+                     >
+                        <img
+                           src={trayArrow.src}
+                        ></img>
+                     </button>
+                  </motion.div>
+
                </div>
             </div>
          </motion.div>
@@ -181,7 +204,7 @@ export const MobileIndexPage = ({
                style={{
                   height: "fit-content",
                   position: "relative",
-                  top: "13%",
+                  top: "80px",
                   scale: (latest > .58) ? (latest - .09) * 2 : 1,
                   translateY: (latest < .58) ? `calc(100px * ${latest} * 2)` : `calc(100px * ${1 - latest} * 2)`
                }}>
@@ -189,6 +212,7 @@ export const MobileIndexPage = ({
                   opacityFrame={latest > .58 ? 1 - latest : 1}
                   videoUrl={videos[0].video.video_url_m3u8 ?? videos[0].video.video_url}
                   videoThumbnail={videos[0].video.video_thumbnail_s}
+                  width={innerHeight * (2 / 9)}
                />
             </motion.div>
          </div>
@@ -216,7 +240,7 @@ export const MobileIndexPage = ({
          </div>
          <div
             style={{
-               height: "180%",
+               height: "200%",
                position: "relative",
                zIndex: 9
             }}>
