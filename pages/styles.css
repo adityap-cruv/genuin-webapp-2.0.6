@@ -992,11 +992,6 @@ a:hover {
   height: 200px;
 }
 
-#index-player-width {
-  width: 300px;
-}
-
-
 /*todo: change media query to min-width to max-width.*/
 /* for smaller than mobiles */
 @media only screen and (min-width: 100px) {
@@ -1020,10 +1015,6 @@ a:hover {
     border-top-left-radius: 12px;
     padding: 10px;
   }
-
-  #index-player-width {
-    width: 120px;
-  }
 }
 
 /* for mobiles */
@@ -1037,10 +1028,6 @@ a:hover {
   .grid-item {
     height: 220px;
     /* width: 110px; */
-  }
-
-  #index-player-width {
-    width: 190px;
   }
 }
 
@@ -1069,10 +1056,6 @@ a:hover {
     display: grid;
     grid-template-columns: 1fr;
     gap: 25px;
-  }
-
-  #index-player-width {
-    width: 220px;
   }
 }
 
@@ -1107,11 +1090,6 @@ a:hover {
     border-top-left-radius: 60px;
     padding: 10px;
   }
-
-  #index-player-width {
-    width: 300px;
-  }
-
 }
 
 /* for large screens */
