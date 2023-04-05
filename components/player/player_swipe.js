@@ -34,7 +34,8 @@ export const Player = ({
   muted, 
   onClick,
   loadMoreVideos = () => { },
-  setCurrentVideoIndex
+  setCurrentVideoIndex,
+  uniqueKey
 }) => {
   const [triggerPlayCount, setTriggetPlayCount] = useState(false);
   const [duration, setDuration] = useState(0);
@@ -135,6 +136,7 @@ export const Player = ({
         onClick={onClick}
         loadMoreVideos={loadMoreVideos}
         setCurrentVideoIndex={setCurrentVideoIndex}
+        uniqueKey={uniqueKey}
       >
         {children}
         

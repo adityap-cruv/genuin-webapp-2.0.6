@@ -3,12 +3,14 @@ import { Box } from "@chakra-ui/react";
 
 import mobileFrame from "../../assets/images/mobile_frame.png"
 import { DynamicPlayer } from "../player/dynamic_player"
+import { GenuinLoader } from "../basic/genuin_loader";
 
 export const HomePageVideo = ({
    videoUrl,
    opacityFrame,
    videoThumbnail,
-   width = 300
+   width = 300,
+   feedLoading
 }) => {
    const [displayThumbnail, setDisplayThumbnail] = useState(true);
    return (<>
@@ -19,23 +21,32 @@ export const HomePageVideo = ({
             width: width
          }}
       >
+         <div style={{
+            position: "absolute",
+            height: "100%",
+            display: "flex",
+            justifyContent: "center",
+            width: "100%"
+         }}>
+            {feedLoading && <GenuinLoader />}
+         </div>
          <div
             className="index-player-border"
             style={{
                position: "absolute"
             }}
          >
-            <DynamicPlayer
-               isPlaying={true}
-               muted={true}
-               onClick={() => { }}
-               url={videoUrl}
-               uniqueKey="feed_index_player"
-               onReady={() => {
-                  setDisplayThumbnail(false);
-               }}
-            />
-         
+            {!feedLoading && <DynamicPlayer
+                  isPlaying={true}
+                  muted={true}
+                  onClick={() => { }}
+                  url={videoUrl}
+                  uniqueKey="feed_index_player"
+                  onReady={() => {
+                     setDisplayThumbnail(false);
+                  }}
+               />}
+
             {displayThumbnail && <Box
                backgroundImage={`url(${videoThumbnail})`}
                backgroundColor={Boolean(videoThumbnail) ? "transparent" : "lightgray"}

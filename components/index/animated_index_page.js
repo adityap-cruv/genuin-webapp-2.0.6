@@ -3,13 +3,14 @@ import { GetAppModal } from "../basic/get_app_modal";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion"
 import { useBreakpointValue } from "@chakra-ui/react";
 import { Nav } from "react-bootstrap";
-import Videos from "../basic/videos";
+import Videos from "../index/feed_videos";
 import { HomePageVideo } from "./homepage_video";
 import downloadQR from "../../assets/images/app_download_qr.svg"
+import trayArrow from "../../assets/images/tray_arrow.svg";
 
 export const AnimatedIndexPage = ({
-   videos,
-   user
+   feeds,
+   loadMoreVideos
 }) => {
    const [showModalAppDownload, setShowModalAppDownload] = useState(false);
    const handleCloseAppDownload = () => setShowModalAppDownload(false);
@@ -22,13 +23,17 @@ export const AnimatedIndexPage = ({
    const dynamicWidth = useBreakpointValue({ xl: false, base: true })
    const [{ width, height }, setWH] = useState(0)
 
+   const scrollToReel = () => {
+      mainRef.current.scroll({ top: window.innerHeight, behavior: "smooth" });
+   }
+
    const resizeHandler = (event) => {
       setWH({ width: window.innerWidth, height: window.innerHeight })
    }
 
    const handleWheel = (event) => {
       if (event.deltaY < 0 && reelShown && (currentVideoIndex === 0)) {
-         mainRef.current.scrollTo({left: 0, top: 0, behavior: "smooth"})
+         mainRef.current.scrollTo({ left: 0, top: 0, behavior: "smooth" })
       }
    }
    useEffect(() => {
@@ -69,16 +74,18 @@ export const AnimatedIndexPage = ({
          <div
             className="h-100 w-100"
             style={{
-               backgroundImage: `url(${videos[0].video.video_thumbnail_s})`,
+               backgroundImage: `url(${feeds.length != 0 ?feeds[0]['feed_type'] === 'rt'
+                  ? feeds[0]['feed']['chats'][0]['thumbnail_url_s']
+                  : feeds[0]['feed']['video_thumbnail_s'] : ""})`,
                backgroundRepeat: "no-repeat",
                backgroundSize: "cover",
                backgroundPosition: "center",
                filter: 'blur(100px) brightness(50%)',
-               backgroundColor: 'black',
+               backgroundColor: feeds.length == 0 ? 'transparent' :'black',
                position: "absolute",
                zIndex: -98,
             }}>
-            </div>
+         </div>
          <div
             style={{
                position: "absolute",
@@ -92,11 +99,8 @@ export const AnimatedIndexPage = ({
                opacity: latest > .9899999 ? 1 : 0
             }}>
             <Videos
-               user={user}
-               loadMoreVideos={() => {
-                  console.log("loadmore...")
-               }}
-               videos={videos}
+               loadMoreVideos={loadMoreVideos}
+               feeds={feeds}
                setCurrentVideoIndex={setCurrentVideoIndex}
                handleWheel={handleWheel}
             />
@@ -127,9 +131,15 @@ export const AnimatedIndexPage = ({
                alignItems: "center"
             }}>
                <HomePageVideo
+                  width={height * (1 / 3)}
                   opacityFrame={latest > .58 ? (1.5 - latest) : 1}
-                  videoUrl={videos[0].video.video_url_m3u8 ?? videos[0].video.video_url}
-                  videoThumbnail={videos[0].video.video_thumbnail_s}
+                  videoUrl={feeds.length != 0 ? feeds[0]['feed_type'] === 'rt'
+                     ? feeds[0]['feed']['chats'][0]['video_url_m3u8'] ?? feeds[0]['feed']['chats'][0]['video_url']
+                     : feeds[0]['feed']['video_url_m3u8'] ?? feeds[0]['feed']['video_url'] : null}
+                  videoThumbnail={feeds.length != 0 ? feeds[0]['feed_type'] === 'rt'
+                     ? feeds[0]['feed']['chats'][0]['thumbnail_url_s']
+                     : feeds[0]['feed']['video_thumbnail_s'] : ""}
+                  feedLoading={feeds.length === 0}
                />
             </motion.div>
 
@@ -141,8 +151,7 @@ export const AnimatedIndexPage = ({
                height: "100%",
                display: "flex",
                justifyContent: "end"
-            }}
-               className="section-content">
+            }}>
                <div
                   style={{
                      width: "50%",
@@ -153,13 +162,30 @@ export const AnimatedIndexPage = ({
                         width: "100%",
                         height: "75%",
                         display: "flex",
-                        alignItems: "center"
+                        alignItems: "start",
+                        flexDirection: "column",
+                        color: "white",
+                        textAlign: "start",
+                        justifyContent: "center"
                      }}>
-                     <h1>
-                        Igniting curiosity,
-                        <br />unlocking potential,
-                        <br />shaping culture. Genuinly.
+                     <h1
+                        style={{
+                           fontSize: "2.2rem",
+                           lineHeight: "3rem",
+                           fontWeight: 900
+                        }}>
+                        FIND YOUR PEOPLE.<br />
+                        FIND WHAT YOU LOVE.
                      </h1>
+                     <h2
+                        style={{
+                           fontSize: "1.3rem",
+                           fontWeight: 600,
+                           lineHeight: "1.8rem"
+                        }}>
+                        Genuin gives you a place to keep up with <br />
+                        friends and the issues you care about.
+                     </h2>
                   </div>
                   <div
                      style={{
@@ -171,13 +197,55 @@ export const AnimatedIndexPage = ({
                         paddingTop: "20px",
                         zIndex: 2000
                      }}>
-                     <img
-                        src={downloadQR.src}>
-                     </img>
+                     <div
+                        style={{
+                           width: height * (1 / 6),
+                        }}>
+                        <img
+                           src={downloadQR.src}>
+                        </img>
+                     </div>
                   </div>
+
                </div>
             </motion.div>
          </div>
+
+         {!reelShown
+            ? feeds.length != 0
+               ? <div
+                  style={{
+                     position: "absolute",
+                     bottom: "13%",
+                     left: "50%",
+                     zIndex: 12,
+                     display: "flex"
+                  }}>
+                  <motion.div
+                     style={{
+                        opacity: .4
+                     }}
+                     initial={{ scale: 1 }}
+                     animate={{ scale: 1.2 }}
+                     transition={{
+                        duration: .6,
+                        repeat: Infinity,
+                        type: "tween",
+                        ease: "easeIn",
+                        repeatType: "mirror"
+                     }}
+                  >
+                     <button
+                        onClick={scrollToReel}
+                     >
+                        <img
+                           src={trayArrow.src}
+                        ></img>
+                     </button>
+                  </motion.div>
+               </div>
+               : <></>
+            : <></>}
          <div
             style={{
                opacity: latest > .911111 ? 0 : 1,
