@@ -42,7 +42,8 @@ export const ReactPlayerWrapper = ({
   muted,
   onClick,
   loadMoreVideos,
-  setCurrentVideoIndex
+  setCurrentVideoIndex,
+  uniqueKey = null
 }) => {
   const [progress, setProgress] = useState(0);
   const [isPlaying, setIsPlaying] = useState(autoplay);
@@ -209,7 +210,10 @@ export const ReactPlayerWrapper = ({
           }
         }
         url={videoUrl}
-        uniqueKey={videos[currentVideoIndex]['video_type'] === 'rt' ? videos[currentVideoIndex]['video']['conversation_id'] : videos[currentVideoIndex]['video']['video_id']}
+        uniqueKey={!uniqueKey ?
+          (videos[currentVideoIndex]['video_type'] === 'rt'
+          ? videos[currentVideoIndex]['video']['conversation_id']
+          : videos[currentVideoIndex]['video']['video_id']) : uniqueKey}
       />
 
         {/* roundtable header */}
