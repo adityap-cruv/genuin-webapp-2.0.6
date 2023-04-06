@@ -7,7 +7,7 @@ import Videos from "../index/feed_videos";
 import { HomePageVideo } from "./homepage_video";
 import downloadQR from "../../assets/images/app_download_qr.svg"
 import trayArrow from "../../assets/images/tray_arrow.svg";
-import backgroundVector from "../../assets/images/background_vector.svg"
+import backgroundVector from "../../assets/images/genuin_background_logo.png"
 
 export const AnimatedIndexPage = ({
    feeds,
@@ -70,11 +70,11 @@ export const AnimatedIndexPage = ({
             style={{
                position: "absolute",
                zIndex: -99,
-               backgroundImage: `url(${backgroundVector.src})`,
                backgroundColor: "black",
-               backgroundRepeat: 'no-repeat',
-               backgroundPosition: 'center' 
+               display: "flex",
+               justifyContent: "center"
             }}>
+            <img src={backgroundVector.src} style={{opacity: .2}}/>
          </div>
          <div
             className="h-100 w-100"

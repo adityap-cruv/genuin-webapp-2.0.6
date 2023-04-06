@@ -7,7 +7,6 @@ import { useMotionValueEvent, useScroll } from "framer-motion";
 import { motion } from "framer-motion";
 import { HomePageVideo } from "./homepage_video";
 import trayArrow from "../../assets/images/tray_arrow.svg";
-import backgroundVector from "../../assets/images/background_vector.svg"
 
 export const MobileIndexPage = ({
    feeds,
@@ -85,13 +84,10 @@ export const MobileIndexPage = ({
          className="hide-scrollbar"
       >
          <div
-            className="h-100 w-100"
+            className=" bg-gradient-blue h-100 w-100"
             style={{
                position: "absolute",
                zIndex: -99,
-               backgroundImage: `url(${backgroundVector.src})`,
-               backgroundColor: 'black',
-               backgroundPositionY: "center",
             }}>
          </div>
          <div
