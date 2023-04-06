@@ -16,6 +16,11 @@ import icClose from "../../assets/images/video-more-options/ic-close.svg";
 import earth from "../../assets/images/video-more-options/ic-earth.svg";
 import roundtable from "../../assets/images/video-more-options/ic-roundtable.svg";
 import { DynamicPlayer } from "./dynamic_player";
+import icMute from "../../assets/images/video-more-options/ic-mute.svg";
+import icUnmute from "../../assets/images/video-more-options/ic-unmute.svg";
+import icMuteDesktop from "../../assets/images/video-more-options/ic-mute-desktop.svg"
+import icUnmuteDesktop from "../../assets/images/video-more-options/ic-unmute-desktop.svg"
+import { isMobile } from "react-device-detect";
 
 export const ReactPlayerWrapper = ({
   videoUrl,
@@ -45,17 +50,23 @@ export const ReactPlayerWrapper = ({
   setDirection,
   verticalNavigation,
   shareUrl,
+  muted,
+  onClick
 }) => {
   const [progress, setProgress] = useState(0);
   const [isPlaying, setIsPlaying] = useState(autoplay);
-  const [isMuted, setIsMuted] = useState(true);
   const [rtEnded, setRtEnded] = useState(false);
   const [isPlayingDebounced] = useDebounce(isPlaying, 65);
+  const [isMutedDebounced] = useDebounce(muted, 800);
 
-  const handleToggleIsPlaying = useCallback(() => {
-    setIsPlaying((old) => !old);
-    setIsMuted(false);
-  }, [setIsPlaying]);
+
+  const handleOnClick = useCallback(() => {
+    if (isMobile) {
+      onClick();
+    } else {
+      setIsPlaying((old) => !old);
+    }
+  }, []);
 
   const touchStartYRef = useRef(0);
   const getPrevVideoRef = useRef(getPrevVideo);
@@ -84,9 +95,13 @@ export const ReactPlayerWrapper = ({
     onDurationRef?.current?.(event);
   });
 
+  var delay;
   useEffect(() => {
     const touchStart = (e) => {
       touchStartYRef.current = e.changedTouches[0].clientY;
+      delay = setInterval(() => { 
+        setIsPlaying(false);
+      }, 500);
     };
     const touchEnd = (e) => {
       const touchEndY = e.changedTouches[0].clientY;
@@ -95,6 +110,8 @@ export const ReactPlayerWrapper = ({
       } else if (touchStartYRef.current < touchEndY - 5) {
         getPrevVideoRef?.current?.();
       }
+      setIsPlaying(true);
+      clearInterval(delay);
     };
     window.addEventListener("touchstart", touchStart);
     window.addEventListener("touchend", touchEnd);
@@ -175,19 +192,30 @@ export const ReactPlayerWrapper = ({
         color: "white",
         display: "flex"
       }}
+    
     >
       <DynamicPlayer
         isPlaying={isPlaying}
         url={videoUrl}
-        muted={isMuted}
+        muted={muted}
         uniqueKey={videoUrl}
-        onClick={handleToggleIsPlaying}
+        onClick={handleOnClick}
         onProgress={setProgressWrapper}
         onDuration={setDurationWrapper}
         onEnded={onEndedWrapper}
         loop={false}
       />
-
+      {!isMobile && <div style={{
+        position: "absolute",
+        top: watchRoundTable ? '100px' : '10px',
+        left: "1%",
+        zIndex: 2
+      }}
+        onClick={() => {
+          onClick();
+        }}>
+        <img src={muted ? icMuteDesktop.src : icUnmuteDesktop.src}/>
+      </div>}
       {/* roundtable header */}
       {watchRoundTable && (
         <Flex
@@ -343,13 +371,41 @@ export const ReactPlayerWrapper = ({
 
       {/* don't show it if it's watchRoundTable  */}
       {(watchRoundTable || (!verticalNavigation && roundTableMode) || (verticalNavigation && !roundTableMode) || (verticalNavigation && (roundTableMode && !rtEnded))) && (
-        <FontAwesomeIcon
-          icon={isPlaying ? faPause : faPlay}
-          style={{
-            display: isPlayingDebounced ? "none" : "block",
-          }}
-          className="btn-play"
-        />
+        <>{isMobile ? <>
+          {muted ?
+            <Image
+              src={icMute.src}
+              className="btn-play"
+              opacity={.7}
+              style={{
+                display: isMutedDebounced ? "none" : "block",
+              }}
+            />
+            : <Image
+              src={icUnmute.src}
+              className="btn-play"
+              style={{
+                display: isMutedDebounced ? "block" : "none",
+              }}
+              opacity={.7}
+            />}</> : <>
+            {isPlaying ? <FontAwesomeIcon
+              icon={faPause}
+              style={{
+                display: isPlayingDebounced ? "none" : "block",
+              }}
+              className="btn-play"
+            /> : <FontAwesomeIcon
+              icon={faPlay}
+              style={{
+                display: "block",
+              }}
+              className="btn-play"
+            />}
+            
+        </>}
+          
+        </>
       )}
       {Boolean(getNextVideo) &&
       Boolean(getPrevVideo) &&

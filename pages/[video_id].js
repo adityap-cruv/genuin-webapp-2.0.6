@@ -96,6 +96,13 @@ const Video = (props) => {
     window.location.href = `${process.env.hostname}p/${userNickname}`
   }
 
+  //todo: remove it
+  const [muted, setMuted] = useState(true);
+  const onClick = () => {
+    setMuted(old => !old);
+    console.log("on click called..")
+  }
+
   return !Boolean(videoUrl) ? (
     <Error />
   ) : (
@@ -133,7 +140,9 @@ const Video = (props) => {
                 showGetAppModal={handleShowModalAppDownload}
                 onEnded={showGetAppToViewDialog}
                 autoplay
-                onClickOutsideOfVideo={() => {setProfileUrl(); onClose();}}
+                  onClickOutsideOfVideo={() => { setProfileUrl(); onClose(); }}
+                  onClick={onClick}
+                  muted={muted}
               >
                 <AppActions
                   showGetAppModal={handleShowModalAppDownload}

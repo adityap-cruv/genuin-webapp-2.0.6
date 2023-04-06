@@ -4,17 +4,16 @@ import { Layout } from "../components/layout";
 import { GetAppModal } from "../components/basic/get_app_modal";
 import { TopNav } from "../components/basic/top_nav_swipe";
 import Videos from "../components/basic/videos";
-import { GenuinLoader } from "../components/basic/genuin_loader";
+import { Error } from "../components/basic/error";
 const Profile = ({
-  user = {},
+  user,
   all_videos = [],
-  is_prop_loaded = false,
   revenue_enabled = false,
   is_rt = false,
   end_of_videos = false,
   chat_id,
   rt_details,
-  company_id = 1048, 
+  company_id = 1048,
   tag_id = 2071,
   domain = "cnn.com",
   publisher_name = "CNN"
@@ -25,7 +24,7 @@ const Profile = ({
         return res.concat(({ video_type: video_type, share_string: video.share_string, video: video }))
       }
       else {
-        return res.concat(({ video_type: video_type, video: video })) 
+        return res.concat(({ video_type: video_type, video: video }))
       }
     }, []);
   }
@@ -100,10 +99,10 @@ const Profile = ({
 
   // --------> IN CASE OF PAGINATION IN RT <---------------------------------------------------------------------------
   const getMoreVideosRT = async () => {
-      console.log("Get More RT Videos")
-      const res = await axios.get(
-        `${process.env.apiurl}/api/v3/public/rt/paginate_videos?chat_id=${chat_id}&last_video_id=${videos[videos.length - 1].video.conversation_id}`
-      );
+    console.log("Get More RT Videos")
+    const res = await axios.get(
+      `${process.env.apiurl}/api/v3/public/rt/paginate_videos?chat_id=${chat_id}&last_video_id=${videos[videos.length - 1].video.conversation_id}`
+    );
     const newVideos = res?.data?.data?.chats || [];
     console.log("new vdieos :", newVideos)
     res?.data?.data?.end_of_videos ? setNoMoreVideos(true) : setNoMoreVideos(false)
@@ -123,28 +122,26 @@ const Profile = ({
     setShowModalAppDownload(false);
   };
 
-  return !Boolean(is_prop_loaded) ? (
-    <GenuinLoader/>
-  ) : (
+  return (
     <>
-      <Layout className="content-demo">
-          <TopNav hideBurgerMenu={true} showGetAppModal={handleShowModalAppDownload} variant='light' />
-              <Videos
-                videos={videos}
-                loadMoreVideos={loadMoreVideos}
-                revenue_enabled={revenue_enabled}
-                user={user}
-                company_id={company_id}
-                tag_id={tag_id}
-                domain={domain}
-                publisher_name={publisher_name}
-              />
-          <GetAppModal
-            show={showModalAppDownload}
-            onClose={handleCloseAppDownload}
-            TextNode={getAppComponentRef.current}
-          />
-      </Layout>
+      {(rt_details || user) ? <Layout className="content-demo">
+        <TopNav hideBurgerMenu={true} showGetAppModal={handleShowModalAppDownload} variant='light' />
+        <Videos
+          videos={videos}
+          loadMoreVideos={loadMoreVideos}
+          revenue_enabled={revenue_enabled}
+          user={user}
+          company_id={company_id}
+          tag_id={tag_id}
+          domain={domain}
+          publisher_name={publisher_name}
+        />
+        <GetAppModal
+          show={showModalAppDownload}
+          onClose={handleCloseAppDownload}
+          TextNode={getAppComponentRef.current}
+        />
+      </Layout> : <Error />}
     </>
   );
 };
@@ -196,63 +193,68 @@ Profile.getInitialProps = async ({ query: { value, revenue_enabled, company_id, 
     rt !== null &&
     rt !== ""
   ) {
-    const videos = await axios.get(
-      `${process.env.apiurl}/api/v3/public/rt/paginate_videos?chat_id=${rt}`
-    );
-    const rt_details = await axios.get(
-      `${process.env.apiurl}/api/v3/public/rt/details?chat_id=${rt}`
-    );
-    const rt_data = rt_details?.data?.data;
-    var rt_videos = [];
-    if (rt_details !== undefined && rt_details !== null &&
-      rt_details.data !== undefined && rt_details.data !== null &&
-      rt_details !== undefined && rt_details !== null &&
-      videos !== undefined && videos !== null &&
-      videos.data !== undefined && videos.data !== null &&
-      videos.data.data !== undefined && videos.data.data !== null &&
-      videos.data.data.chats !== undefined && videos.data.data.chats !== null &&
-      videos.data.data.chats.length > 0) {
-      videos.data.data.chats.forEach(function (v) {
-        var videoObj = {
-          "video_type": "rt",
-          "share_string": rt_details.data.data.share_string,
-          "video": {
-            "owner": v.owner,
-            "thumbnail_url": v.thumbnail_url,
-            "thumbnail_url_s": v.thumbnail_url_s,
-            "thumbnail_url_l": v.thumbnail_url_l,
-            "video_url": v.video_url,
-            "video_url_m3u8": v.video_url_m3u8,
-            "link": v.link,
-            "meta_data": v.meta_data,
-            "conversation_id": v.conversation_id,
-            "conversation_at": v.conversation_at,
-            "no_of_views": v.no_of_views,
-            "no_of_comments": v.no_of_comments,
-            "video_thumbnail": v.video_thumbnail,
-            "share_url": `${process.env.hostname}rt/${rt_details.data.data.share_string}?v=${v.share_string}`,
-            "share_string": v.share_string,
-            "rt_share_string": v.share_string,
-            "description": rt_data.group.group_description,
-            "group_name": rt_data.group.group_name,
-            "group_dp": rt_data.group.dp,
-            "chat_id": rt_data.chat_id
-          }
-        };
-        rt_videos.push(videoObj);
-      })
-    }
-    return {
-      all_videos: rt_videos,
-      is_prop_loaded: true,
-      revenue_enabled: revenue_enabled === "true",
-      is_rt: true,
-      chat_id: rt,
-      rt_details: rt_data,
-      company_id: company_id,
-      tag_id: tag_id,
-      domain: domain,
-      publisher_name: publisher_name
+    try {
+      const videos = await axios.get(
+        `${process.env.apiurl}/api/v3/public/rt/paginate_videos?chat_id=${rt}`
+      );
+      const rt_details = await axios.get(
+        `${process.env.apiurl}/api/v3/public/rt/details?chat_id=${rt}`
+      );
+      const rt_data = rt_details?.data?.data;
+      var rt_videos = [];
+      if (rt_details !== undefined && rt_details !== null &&
+        rt_details.data !== undefined && rt_details.data !== null &&
+        rt_details !== undefined && rt_details !== null &&
+        videos !== undefined && videos !== null &&
+        videos.data !== undefined && videos.data !== null &&
+        videos.data.data !== undefined && videos.data.data !== null &&
+        videos.data.data.chats !== undefined && videos.data.data.chats !== null &&
+        videos.data.data.chats.length > 0) {
+        videos.data.data.chats.forEach(function (v) {
+          var videoObj = {
+            "video_type": "rt",
+            "share_string": rt_details.data.data.share_string,
+            "video": {
+              "owner": v.owner,
+              "thumbnail_url": v.thumbnail_url,
+              "thumbnail_url_s": v.thumbnail_url_s,
+              "thumbnail_url_l": v.thumbnail_url_l,
+              "video_url": v.video_url,
+              "video_url_m3u8": v.video_url_m3u8,
+              "link": v.link,
+              "meta_data": v.meta_data,
+              "conversation_id": v.conversation_id,
+              "conversation_at": v.conversation_at,
+              "no_of_views": v.no_of_views,
+              "no_of_comments": v.no_of_comments,
+              "video_thumbnail": v.video_thumbnail,
+              "share_url": `${process.env.hostname}rt/${rt_details.data.data.share_string}?v=${v.share_string}`,
+              "share_string": v.share_string,
+              "rt_share_string": v.share_string,
+              "description": rt_data.group.group_description,
+              "group_name": rt_data.group.group_name,
+              "group_dp": rt_data.group.dp,
+              "chat_id": rt_data.chat_id
+            }
+          };
+          rt_videos.push(videoObj);
+        })
+      }
+      return {
+        all_videos: rt_videos,
+        is_prop_loaded: true,
+        revenue_enabled: revenue_enabled === "true",
+        is_rt: true,
+        chat_id: rt,
+        rt_details: rt_data,
+        company_id: company_id,
+        tag_id: tag_id,
+        domain: domain,
+        publisher_name: publisher_name
+      }
+    } catch (e) {
+      console.log("error : ", e)
+      return Promise.resolve({})
     }
   } else {
     return Promise.resolve({});
