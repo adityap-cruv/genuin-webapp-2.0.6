@@ -141,8 +141,8 @@ export const AppActions = ({
             <Image
               src={subscribePlus.src}
               size={6}
-              alt='Subscribe Plus'
-              title='Subscribe Plus'
+              alt='Subscribe'
+              title='Subscribe'
             />
           </li>
           <li>
