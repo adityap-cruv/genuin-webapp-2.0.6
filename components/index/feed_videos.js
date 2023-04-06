@@ -124,13 +124,13 @@ const Videos = ({
                               ? feeds[id]['feed']['chats'][0]['owner']['nickname']
                               : feeds[id]['feed']['recorded_by']['nickname'] }
                            link={feeds[id]?.video?.link}
-                           videoUrl={feeds[id]?.video?.share_url}
+                           videoUrl={feeds[id]['feed']['share_url']}
                            videoDescription={
                               feeds[id]?.feed?.description
                            }
                            videoTitle='Genuin'
                            roundTable={feeds[id]?.feed_type === "rt"}
-                           roundTableName={feeds[id]?.video?.group_name}
+                           roundTableName={(feeds.length != 0 && feeds[id]['feed_type'] === 'rt') ? feeds[id]['feed']['group']['group_name'] : ""}
                            roundTableId={feeds[id]?.share_string}
                         />
                      </Player>

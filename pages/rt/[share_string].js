@@ -156,7 +156,7 @@ const RoundTable = ({
     handleShowModalAppDownload(() => (
       <>
         Get the app to subscribe to <strong>{group.group_name}</strong>{" "}
-        roundtable.
+        loop.
       </>
     ));
 
@@ -176,7 +176,7 @@ const RoundTable = ({
     group.group_description.replace(/\s+/g, "") !== ""
     ? group.group_description + " | "
     : ""
-    }Web3 related roundtable discussions available on Genuin${tags_string}`;
+    }Web3 related loop discussions available on Genuin${tags_string}`;
   const title_name = group?.group_name;
   const share_url = `${process.env.hostname}${asPath.slice(1)}`;
   const ORG_SCHEMA = JSON.stringify({
@@ -630,7 +630,7 @@ const Participants = ({ members, mobile }) => {
         color='#111111'
         mb={5}
       >
-        Participants
+        Co-Hosts
       </Text>
       {mobile && (
         <Flex direction='column' gap={6}>
