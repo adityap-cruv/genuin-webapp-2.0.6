@@ -84,10 +84,10 @@ export const MobileIndexPage = ({
          className="hide-scrollbar"
       >
          <div
-            className="bg-gradient-blue h-100 w-100"
+            className=" bg-gradient-blue h-100 w-100"
             style={{
                position: "absolute",
-               zIndex: -99
+               zIndex: -99,
             }}>
          </div>
          <div

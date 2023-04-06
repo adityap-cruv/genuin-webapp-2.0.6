@@ -1,12 +1,13 @@
 import { useState, useRef, useEffect } from "react";
 import { GetAppModal } from "../basic/get_app_modal";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion"
-import { useBreakpointValue } from "@chakra-ui/react";
+import { background, useBreakpointValue } from "@chakra-ui/react";
 import { Nav } from "react-bootstrap";
 import Videos from "../index/feed_videos";
 import { HomePageVideo } from "./homepage_video";
 import downloadQR from "../../assets/images/app_download_qr.svg"
 import trayArrow from "../../assets/images/tray_arrow.svg";
+import backgroundVector from "../../assets/images/genuin_background_logo.png"
 
 export const AnimatedIndexPage = ({
    feeds,
@@ -65,11 +66,15 @@ export const AnimatedIndexPage = ({
          className="hide-scrollbar"
       >
          <div
-            className="bg-gradient-blue h-100 w-100"
+            className="h-100 w-100"
             style={{
                position: "absolute",
-               zIndex: -99
+               zIndex: -99,
+               backgroundColor: "black",
+               display: "flex",
+               justifyContent: "center"
             }}>
+            <img src={backgroundVector.src} style={{opacity: .2}}/>
          </div>
          <div
             className="h-100 w-100"
@@ -80,6 +85,7 @@ export const AnimatedIndexPage = ({
                backgroundRepeat: "no-repeat",
                backgroundSize: "cover",
                backgroundPosition: "center",
+               opacity: .4,
                filter: 'blur(100px) brightness(50%)',
                backgroundColor: feeds.length == 0 ? 'transparent' :'black',
                position: "absolute",
@@ -188,14 +194,15 @@ export const AnimatedIndexPage = ({
                      </h2>
                   </div>
                   <div
+                     onClick={() => {
+                        console.log("on click clicked ...");
+                     }}
                      style={{
                         height: "100%",
-                        width: "30%",
                         display: "flex",
                         alignItems: "start",
-                        justifyContent: "center",
+                        justifyContent: "start",
                         paddingTop: "20px",
-                        zIndex: 2000
                      }}>
                      <div
                         style={{
