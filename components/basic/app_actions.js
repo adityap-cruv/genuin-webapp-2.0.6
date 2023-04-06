@@ -205,18 +205,18 @@ export const ShareButton = ({
           flexDir='column'
           mb={16}
         >
-          <WhatsappShareButton url={url}> {/*title={title}>*/}
+          {/* <WhatsappShareButton url={url} title={title}>
             <Image size={12} src={WhatsApp.src} />
           </WhatsappShareButton>
-          <TwitterShareButton url={url}> {/*title={title}>*/}
+          <TwitterShareButton url={url} title={title}>
             <Image size={12} src={Twitter.src} />
           </TwitterShareButton>
-          <LinkedinShareButton url={url}> {/*title={title}>*/}
+          <LinkedinShareButton url={url} title={title}>
             <Image size={12} src={LinkedIN.src} />
           </LinkedinShareButton>
-          <FacebookShareButton url={url}> {/*title={title}>*/}
+          <FacebookShareButton url={url}>
             <Image size={12} src={Facebook.src} />
-          </FacebookShareButton>
+          </FacebookShareButton> */}
           <EmailShareButton
             url={url}
             // title={title}
