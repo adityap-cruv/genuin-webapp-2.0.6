@@ -85,7 +85,7 @@ export const AnimatedIndexPage = ({
                backgroundRepeat: "no-repeat",
                backgroundSize: "cover",
                backgroundPosition: "center",
-               opacity: .4,
+               opacity: .5,
                filter: 'blur(100px) brightness(50%)',
                backgroundColor: feeds.length == 0 ? 'transparent' :'black',
                position: "absolute",
