@@ -526,7 +526,7 @@ export const ReactPlayerWrapper = ({
               />
               {/* Watch roundtable */}
               <Text color='white' marginTop={'-0.5'}>
-                Watch roundtable
+                Watch loop
               </Text>
             </Button>
           </div>
