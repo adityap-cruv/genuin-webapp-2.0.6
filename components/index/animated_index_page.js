@@ -101,7 +101,7 @@ export const AnimatedIndexPage = ({
                width: 9 * height / 16,
                height: "100%",
                right: (width - (9 * height / 16)) / 2,
-               zIndex: latest > .9899999 ? 10 : -1,
+               zIndex: latest > .9899999 ? 1031 : -1,
                opacity: latest > .9899999 ? 1 : 0
             }}>
             <Videos

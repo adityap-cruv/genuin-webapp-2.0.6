@@ -160,7 +160,10 @@ const RoundTable = ({
       </>
     ));
 
-
+  const [muted, setMuted] = useState(true);
+  const onClick = () => {
+    setMuted(old => !old);
+  }
 
   const tags_string =
     group && group.tags !== null &&
@@ -480,7 +483,9 @@ const RoundTable = ({
                     onClose={onClose}
                     roundTableId={details.share_string}
                     direction={direction}
-                    setDirection={setDirection}
+                      setDirection={setDirection}
+                      muted={muted}
+                      onClick={onClick}
                   >
                     <AppActions
                       showGetAppModal={handleShowModalAppDownload}
