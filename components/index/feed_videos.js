@@ -71,6 +71,7 @@ const Videos = ({
          return window.removeEventListener("wheel", handleWheel)
       }
    })
+
    return (<>
 
       <Flex
@@ -123,7 +124,7 @@ const Videos = ({
                               ? feeds[id]['feed']['chats'][0]['owner']['nickname']
                               : feeds[id]['feed']['recorded_by']['nickname'] }
                            link={feeds[id]?.video?.link}
-                           videoUrl={feeds[id]?.video?.share_url}
+                           videoUrl={feeds[id]['feed']['share_url']}
                            videoDescription={
                               feeds[id]?.feed?.description
                            }

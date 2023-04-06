@@ -253,9 +253,8 @@ export const AnimatedIndexPage = ({
                </div>
                : <></>
             : <></>}
-         <div
+         {latest < .95555 && <div
             style={{
-               opacity: latest > .911111 ? 0 : 1,
                zIndex: 12,
                display: "flex",
                position: 'absolute',
@@ -334,8 +333,7 @@ export const AnimatedIndexPage = ({
                   </Nav.Item>
                </Nav>
             </div>
-         </div>
-
+         </div>}
          <div
             style={{
                height: "calc(100% * 2)",
