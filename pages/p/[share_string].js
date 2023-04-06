@@ -134,6 +134,13 @@ const Profile = ({
   const [noMoreVideosRT, setNoMoreVideosRT] = useState(false);
   const [noVideos, setNoVideos] = useState(all_videos.length === 0);
 
+  //Todo improve this logic..it is temporary
+  const [muted, setMuted] = useState(true);
+  const onClick = () => {
+    console.log("on click")
+    setMuted(old => !old);
+  }
+
   // console.log("process.env", process.env.apiurl);
 
   const loadVideosPublic = async () => {
@@ -796,6 +803,8 @@ const Profile = ({
                         roundTableId={videos[currentVideoIndex]?.share_string}
                         shareUrl={videos[currentVideoIndex]?.video?.share_url}
                         verticalNavigation
+                        onClick={onClick}
+                        muted={muted}
                       >
                         <AppActions
                           showGetAppModal={handleShowModalAppDownload}
@@ -849,6 +858,8 @@ const Profile = ({
                         roundTableId={rtVideos[currentVideoIndexRT]?.share_string}
                         shareUrl={rtVideos[currentVideoIndexRT]?.video?.share_url}
                         verticalNavigation
+                        onClick={onClick}
+                        muted={muted}
                       >
                         <AppActions
                           showGetAppModal={handleShowModalAppDownload}
@@ -906,6 +917,8 @@ const Profile = ({
                         video_id_to_use={publicVideos[currentVideoIndexPublic]?.video?.share_string}
                         shareUrl={publicVideos[currentVideoIndexPublic]?.video.share_url}
                         verticalNavigation
+                        onClick={onClick}
+                        muted={muted}
                       >
                         <AppActions
                           showGetAppModal={handleShowModalAppDownload}

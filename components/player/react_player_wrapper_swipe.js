@@ -1,14 +1,19 @@
 import {useCallback, useEffect, useRef, useState} from "react";
 import {useDebounce} from "use-debounce";
 import {ProgressBar, Badge, Button} from "react-bootstrap";
+import { Image, Flex, Text, Link, Box, useBreakpointValue, Avatar } from "@chakra-ui/react";
+import { Waypoint } from 'react-waypoint';
+import { isMobile } from "react-device-detect";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {faPlay, faPause} from "@fortawesome/free-solid-svg-icons";
+
 import icFlipLeft from "../../assets/images/video-more-options/ic-flip-left.svg";
 import icFlipRight from "../../assets/images/video-more-options/ic-flip-right.svg";
 import earth from "../../assets/images/video-more-options/ic-earth.svg";
-import mute from "../../assets/images/video-more-options/ic-mute.svg"
-import unmute from "../../assets/images/video-more-options/ic-unmute.svg"
-import { Image, Flex, Text, Link, Box, useBreakpointValue, Avatar, scroll } from "@chakra-ui/react";
-import { Waypoint } from 'react-waypoint';
-import { isMobile } from "react-device-detect";
+import icMute from "../../assets/images/video-more-options/ic-mute.svg";
+import icUnmuteDesktop from "../../assets/images/video-more-options/ic-unmute-desktop.svg";
+import icMuteDesktop from "../../assets/images/video-more-options/ic-mute-desktop.svg";
+import icUnmute from "../../assets/images/video-more-options/ic-unmute.svg";
 import { DynamicPlayer } from "./dynamic_player";
 
 export const ReactPlayerWrapper = ({
@@ -45,17 +50,21 @@ export const ReactPlayerWrapper = ({
   setCurrentVideoIndex,
   uniqueKey = null
 }) => {
+  const [isMuted, setIsMuted] = useState(true);
   const [progress, setProgress] = useState(0);
   const [isPlaying, setIsPlaying] = useState(autoplay);
   const [rtEnded, setRtEnded] = useState(false);
-  // const [isPlayingDebounced] = useDebounce(isPlaying, 65);
-  const [isMutedDebounced] = useDebounce(muted, 800);
-  const [tempVideoUrl, setTempVideoUrl] = useState(null);
+  const [isPlayingDebounced] = useDebounce(isPlaying, 65);
+  const [isMutedDebounced] = useDebounce(muted,500);
   const [displayThumbnail, setDisplayThumbnail] = useState(true)
 
-  // const handleToggleIsPlaying = useCallback(() => {
-  //   setIsPlaying((old) => !old);
-  // }, [setIsPlaying]);
+  const handleOnClick = useCallback(() => {
+    if (isMobile) {
+      onClick();
+    } else {
+      setIsPlaying((old) => !old);
+    }
+  }, [setIsPlaying]);
 
   const touchStartYRef = useRef(0);
   const getPrevVideoRef = useRef(getPrevVideo);
@@ -84,9 +93,15 @@ export const ReactPlayerWrapper = ({
     onDurationRef?.current?.(event);
   });
 
+  var delay;
   useEffect(() => {
     const touchStart = (e) => {
       touchStartYRef.current = e.changedTouches[0].clientY;
+      delay = setInterval(() => {
+        if (e) {
+          setIsPlaying(false);
+        }
+      }, 500)
     };
     const touchEnd = (e) => {
       const touchEndY = e.changedTouches[0].clientY;
@@ -95,6 +110,8 @@ export const ReactPlayerWrapper = ({
       } else if (touchStartYRef.current < touchEndY - 5) {
         getPrevVideoRef?.current?.();
       }
+      clearInterval(delay)
+      setIsPlaying(true);
     };
     window.addEventListener("touchstart", touchStart);
     window.addEventListener("touchend", touchEnd);
@@ -171,12 +188,10 @@ export const ReactPlayerWrapper = ({
   let handleEnterViewport = function () {
       loadMoreVideos(currentVideoIndex);
     setCurrentVideoIndex(currentVideoIndex)
-    setTempVideoUrl(videoUrl)
     setIsPlaying(true)
   }
   let handleExitViewport = function () {
     setIsPlaying(false)
-    setTempVideoUrl(null);
     setDisplayThumbnail(true)
   }
   return (
@@ -199,7 +214,7 @@ export const ReactPlayerWrapper = ({
       <DynamicPlayer
         currentVideoIndex={currentVideoIndex}
         isPlaying={isPlaying}
-        onClick={onClick}
+        onClick={handleOnClick}
         muted={muted}
         onDuration={setDurationWrapper}
         onProgress={setProgressWrapper}
@@ -215,6 +230,17 @@ export const ReactPlayerWrapper = ({
           ? videos[currentVideoIndex]['video']['conversation_id']
           : videos[currentVideoIndex]['video']['video_id']) : uniqueKey}
       />
+      {!isMobile && <div style={{
+        position: "absolute",
+        top: watchRoundTable ? '100px' : '10px',
+        left: "1%",
+        zIndex: 2
+      }}
+        onClick={() => {
+          onClick();
+        }}>
+        <img src={muted ? icMuteDesktop.src : icUnmuteDesktop.src} />
+      </div>}
 
         {/* roundtable header */}
         {watchRoundTable && (
@@ -368,23 +394,43 @@ export const ReactPlayerWrapper = ({
             </Flex>
           </Flex>
       )}
-      {muted ?
-        <Image
-          src={mute.src}
-          className="btn-play"
-          opacity={.7}
+      <>{isMobile ? <>
+        {muted ?
+          <Image
+            src={icMute.src}
+            className="btn-play"
+            opacity={.7}
+            style={{
+              display: isMutedDebounced ? "none" : "block",
+            }}
+          />
+          : <Image
+            src={icUnmute.src}
+            className="btn-play"
+            style={{
+              display: isMutedDebounced ? "block" : "none",
+            }}
+            opacity={.7}
+          />}</> :
+        <>
+          {isPlaying
+            ? <FontAwesomeIcon
+          icon={faPause}
           style={{
-            display: isMutedDebounced ? "none" : "block",
+            display: isPlayingDebounced ? "none" : "block",
           }}
-        />
-        : <Image
-          src={unmute.src}
           className="btn-play"
+            />
+            : <FontAwesomeIcon
+          icon={faPlay}
           style={{
-            display: isMutedDebounced ? "block" : "none",
+            display: "block",
           }}
-          opacity={.7}
+          className="btn-play"
         />}
+      </>}
+
+      </>
 
         <div className='video-footer bg-gradient-180'>
           <Flex alignItems='end' justifyContent='space-between' mb={3}>
@@ -401,7 +447,12 @@ export const ReactPlayerWrapper = ({
                   >
                     <Badge
                       pill bg="dark"
-                      className="mb-2 align-self-start trunc">
+                    className="mb-2 align-self-start trunc"
+                    style={{
+                      fontSize: "15px",
+                      fontWeight: 700,
+                      lineHeight: "24px"
+                    }}>
                       <Flex direction='horizontal'>
                         <Text style={{
                           textOverflow: 'ellipsis',
@@ -417,7 +468,11 @@ export const ReactPlayerWrapper = ({
                     </Badge>
                   </Link>
                 )}
-                <div className="video-auther mb-2">
+              <div className="video-auther mb-2"
+                style={{
+                  fontWeight: "bold",
+                  fontSize: "17px"
+                }}>
                   <Waypoint
                     onEnter={handleEnterViewport}
                     onLeave={handleExitViewport}
@@ -500,7 +555,12 @@ export const ReactPlayerWrapper = ({
                       </Link>
                     )}
                 </div>
-                <p style={{fontWeight:"bold"}} className="mb-0">{description}</p>
+              <p
+                className="mb-0"
+                style={{
+                  fontSize: "15px",
+                  fontWeight: "600"
+                }}>{description}</p>
               </Flex>
             )}
             {watchRoundTable && roundTableMode && (
