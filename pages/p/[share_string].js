@@ -240,8 +240,8 @@ const Profile = ({
     return "https://media.qa.begenuin.com/backend_assets/lottie/snowman.png";
   }, [profile_image]);
 
-  const [showModalWelcome, setShowModalWelcome] = useState(true);
-  const handleCloseWelcome = () => setShowModalWelcome(false);
+  // const [showModalWelcome, setShowModalWelcome] = useState(true);
+  // const handleCloseWelcome = () => setShowModalWelcome(false);
   const [showModalAppDownload, setShowModalAppDownload] = useState(false);
   const getAppComponentRef = useRef(() => null);
   const handleCloseAppDownload = () => {
@@ -927,7 +927,7 @@ const Profile = ({
               onClose={handleCloseAppDownload}
               TextNode={getAppComponentRef.current}
             />
-            <WelcomeModal show={showModalWelcome} onClose={handleCloseWelcome} />
+            {/* <WelcomeModal show={showModalWelcome} onClose={handleCloseWelcome} /> */}
           </Layout>
           )
     }
