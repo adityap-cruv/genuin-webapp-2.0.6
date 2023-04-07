@@ -56,18 +56,32 @@ export const HomeNav = ({
         />
       </Navbar.Brand>
       <div className='d-flex align-items-center justify-content-center'>
-          <Button
-            variant='primary'
-            className='me-3 custom-home-button'
+        <Button
+          variant="outline-light me-3"
+          className="custom-home-button"
             onClick={handleHireLinkClick}
             style={{
               fontSize: 17,
               padding: "0.275rem 2rem",
-              borderRadius: "0.4rem",
+              borderRadius: "5px",
             }}
           >
-            Join Our team
-          </Button>
+            Join Our Team
+        </Button>
+        <Button
+          variant='primary'
+          className='me-3 custom-home-button'
+          onClick={() => {
+            showGetAppModal(true);
+          }}
+          style={{
+            fontSize: 17,
+            padding: "0.275rem 2rem",
+            borderRadius: "5px",
+          }}
+        >
+          Get App
+        </Button>
 
 
               <Navbar.Toggle

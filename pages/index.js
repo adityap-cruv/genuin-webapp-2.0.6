@@ -9,7 +9,8 @@ import { AnimatedIndexPage } from "../components/index/animated_index_page";
 import { MobileIndexPage } from "../components/index/mobile_index_page";
 import { SEO } from "../components/basic/seo";
 import { GenuinLoader } from "../components/basic/genuin_loader";
-import loadCustomRoutes from "next/dist/lib/load-custom-routes";
+import { GetAppModal } from "../components/basic/get_app_modal";
+
 
 let title = "Genuin";
 let metaImage = "https://media.begenuin.com/backend_assets/preview.png";
@@ -18,6 +19,8 @@ let description =
 let currentUrl = "https://begenuin.com";
 
 const Home = () => {
+  const [showModalAppDownload, setShowModalAppDownload] = useState(false);
+  const handleCloseAppDownload = () => setShowModalAppDownload(false);
   const mobile = useBreakpointValue({ base: true, md: false });
   const [videos, setVideos] = useState([]);
   const [isLoadingFake, setIsLoadingFake] = useState(true);
@@ -84,7 +87,7 @@ const Home = () => {
         videoPreviewImage={metaImage}
         includeHead={false}
       />
-      <HomeNav variant="light" isContiner />
+      <HomeNav variant="light" isContiner showGetAppModal={setShowModalAppDownload}/>
       {isLoadingFake
         ?
         <>
@@ -110,6 +113,10 @@ const Home = () => {
             />}
         </>
       }
+      <GetAppModal
+        show={showModalAppDownload}
+        onClose={handleCloseAppDownload}
+      />
     </>
   );
 };

@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from "react";
-import { GetAppModal } from "../basic/get_app_modal";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion"
 import { background, useBreakpointValue } from "@chakra-ui/react";
 import { Nav } from "react-bootstrap";
@@ -13,8 +12,6 @@ export const AnimatedIndexPage = ({
    feeds,
    loadMoreVideos
 }) => {
-   const [showModalAppDownload, setShowModalAppDownload] = useState(false);
-   const handleCloseAppDownload = () => setShowModalAppDownload(false);
    const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
    const [reelShown, setReelShown] = useState(false);
 
@@ -341,10 +338,7 @@ export const AnimatedIndexPage = ({
                zIndex: 9,
             }}>
          </div>
-         <GetAppModal
-            show={showModalAppDownload}
-            onClose={handleCloseAppDownload}
-         />
+         
       </div>
    </>);
 }
