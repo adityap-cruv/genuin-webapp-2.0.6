@@ -2,14 +2,12 @@ import React, { useRef, useState, useEffect } from "react";
 import axios from "axios";
 import { Player } from "../components/player/player";
 import { Layout } from "../components/layout/layout";
-import { TopNav } from "../components/basic/top_nav";
 import { GetAppModal } from "../components/basic/get_app_modal";
 import { WelcomeModal } from "../components/basic/welcome_modal";
 import { Error } from "../components/basic/error";
 import { SEO } from "../components/basic/seo";
 import { AppActions } from "../components/basic/app_actions";
-import { appStoreLink } from "../config";
-import { Box, Modal, ModalBody, ModalContent, useDisclosure } from "@chakra-ui/react";
+import { Modal, ModalBody, ModalContent, useDisclosure } from "@chakra-ui/react";
 const Video = (props) => {
   const {
     videoUrl,
@@ -27,8 +25,8 @@ const Video = (props) => {
     userProfileImage,
     link,
   } = props;
-  const [showModalWelcome, setShowModalWelcome] = useState(true);
-  const handleCloseWelcome = () => setShowModalWelcome(false);
+  // const [showModalWelcome, setShowModalWelcome] = useState(true);
+  // const handleCloseWelcome = () => setShowModalWelcome(false);
   const [showModalAppDownload, setShowModalAppDownload] = useState(false);
   const getAppComponentRef = useRef(() => null);
   const handleCloseAppDownload = () => {
@@ -158,7 +156,8 @@ const Video = (props) => {
         <GetAppModal
           show={showModalAppDownload}
           onClose={handleCloseAppDownload}
-          TextNode={getAppComponentRef.current} /><WelcomeModal show={showModalWelcome} onClose={handleCloseWelcome} />
+            TextNode={getAppComponentRef.current} />
+          {/* <WelcomeModal show={showModalWelcome} onClose={handleCloseWelcome} /> */}
       </Layout>
     </>
   );

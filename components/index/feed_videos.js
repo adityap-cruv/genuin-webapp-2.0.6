@@ -71,9 +71,8 @@ const Videos = ({
          return window.removeEventListener("wheel", handleWheel)
       }
    })
-
+   console.log("feeds : ", feeds)
    return (<>
-
       <Flex
          className='section-content h-100 swipe-container hide-scrollbar'
          direction='initial'
@@ -97,7 +96,7 @@ const Videos = ({
                         videoUrl={feeds[id]['feed_type'] === 'rt' ?
                            feeds[id]['feed']['chats'][0]['video_url_m3u8'] ?? feeds[id]['feed']['chats'][0]['video_url']
                            : feeds[id]['feed']['video_url_m3u8'] ?? feeds[id]['feed']['video_url']}
-                        userName={feeds[id]['feed_type'] == 'rt' ? feeds[id]['feed']['chats'][0]['owner']['nickname'] : feeds[id]['feed']['recorded_by']['name']}
+                        userName={feeds[id]['feed_type'] == 'rt' ? feeds[id]['feed']['chats'][0]['owner']['nickname'] : feeds[id]['feed']['recorded_by']['nickname']}
                         userId={feeds[id]['feed_type'] == 'rt' ? feeds[id]['feed']['chats'][0]['owner']['nickname'] : feeds[id]['feed']['recorded_by']['nickname']}
                         userProfileImage={feeds[id]['feed_type'] == 'rt' ? feeds[id]['feed']['chats'][0]['owner']['profile_image_s'] : feeds[id]['feed']['recorded_by']['profile_image_s']}
                         rtProfileImage={feeds[id]?.feed?.group?.dp_s ?? null}
@@ -107,11 +106,11 @@ const Videos = ({
                         getPrevVideo={getPrevVideo}
                         videos={feeds}
                         autoplay={id === 0 ? true : false}
-                        video_id_to_use={feeds[id]?.video?.share_string}
+                        video_id_to_use={feeds[id]?.feed?.share_string}
                         roundTableMode={feeds[id]?.feed_type === "rt"}
                         roundTableName={feeds[id]?.feed?.group?.group_name ?? null}
-                        roundTableId={feeds[id]?.share_string ?? null}
-                        shareUrl={feeds[id]?.feed?.share_url}
+                        roundTableId={feeds[id]['feed_type'] === 'rt' ? feeds[id]['feed']['share_url'].split('/').pop() : ""}
+                        shareUrl={feeds[id]?.feed_type === 'rt' ? feeds[id]['feed']['chats'][0]['share_url']: feeds[id]['feed']['share_url']}
                         verticalNavigation
                         muted={muted}
                         loadMoreVideos={addMoreVideos}

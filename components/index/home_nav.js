@@ -56,18 +56,32 @@ export const HomeNav = ({
         />
       </Navbar.Brand>
       <div className='d-flex align-items-center justify-content-center'>
-          <Button
-            variant='primary'
-            className='me-3 custom-home-button'
+        <Button
+          variant="outline-light me-3"
+          className="custom-home-button"
             onClick={handleHireLinkClick}
             style={{
               fontSize: 17,
               padding: "0.275rem 2rem",
-              borderRadius: "0.4rem",
+              borderRadius: "5px",
             }}
           >
-            Join the team
-          </Button>
+            Join Our Team
+        </Button>
+        <Button
+          variant='primary'
+          className='me-3 custom-home-button'
+          onClick={() => {
+            showGetAppModal(true);
+          }}
+          style={{
+            fontSize: 17,
+            padding: "0.275rem 2rem",
+            borderRadius: "5px",
+          }}
+        >
+          Get App
+        </Button>
 
 
               <Navbar.Toggle
@@ -85,10 +99,10 @@ export const HomeNav = ({
                   <Navbar.Toggle aria-controls='navbarMoreOptionDrawer' />
                   <Trail open={isOpen}>
                     {/* <Nav.Link href={investLink}>Invest in Genuin</Nav.Link> */}
-                    <Nav.Link href={hireLink}>Join the team</Nav.Link>
+                    <Nav.Link href={hireLink}>Join Our team</Nav.Link>
+                    <Nav.Link target="_blank" href={`/content_demo?value=rt_123f373977001407`}>Life at Genuin</Nav.Link>
                     <Nav.Link href='/terms'>Terms of Service</Nav.Link>
                     <Nav.Link href='/privacy'>Privacy Policy</Nav.Link>
-                    <Nav.Link target="_blank" href={`/content_demo?value=rt_123f373977001407`}>Life at Genuin</Nav.Link>
                   </Trail>
                   <Nav.Link href='/' className='text-primary small mt-auto'>
                     &copy; 2023 Genuin Inc.

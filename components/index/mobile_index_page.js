@@ -156,7 +156,7 @@ export const MobileIndexPage = ({
                   <Button
                      variant='primary'
                      onClick={() => {
-                        console.log(" add get app button.")
+                        window.open("https://install.begenuin.com/86sn/cgs")
                      }}
                      style={{
                         fontSize: 15,
