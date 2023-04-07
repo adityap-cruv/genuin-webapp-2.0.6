@@ -1,19 +1,15 @@
 import { useState, useEffect } from "react";
-import NextHead from "next/head";
-import { Layout } from "../components/layout";
-import { GetAppModal } from "../components/getAppModal";
-import { SEO } from "../components/seo";
-import { handleInvestClick } from "../actions/appInstall";
-import { Nav, Container, Row, Col, Carousel } from "react-bootstrap";
+import axios from "axios";
+import { useBreakpointValue } from "@chakra-ui/react";
+import { v4 as uuidv4 } from "uuid";
 
-import imgCarousel1 from "../images/web3/learn_web3_via_bite-sized_content.png";
-import imgCarousel2 from "../images/web3/connect_people_in_the_web3_business.png";
-import imgCarousel3 from "../images/web3/feed_page_public_video.png";
-import imgCarousel4 from "../images/web3/initiate_conversation_about_web3.png";
 
-import favicon from "../images/favicon.ico";
-import { InstallApp } from "../components/installApp";
-import { HomeNav } from "../components/homeNav";
+import { HomeNav } from "../components/index/home_nav";
+import { AnimatedIndexPage } from "../components/index/animated_index_page";
+import { MobileIndexPage } from "../components/index/mobile_index_page";
+import { SEO } from "../components/basic/seo";
+import { GenuinLoader } from "../components/basic/genuin_loader";
+import loadCustomRoutes from "next/dist/lib/load-custom-routes";
 
 let title = "Genuin";
 let metaImage = "https://media.begenuin.com/backend_assets/preview.png";
@@ -22,10 +18,61 @@ let description =
 let currentUrl = "https://begenuin.com";
 
 const Home = () => {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [showModalAppDownload, setShowModalAppDownload] = useState(false);
-  const handleCloseAppDownload = () => setShowModalAppDownload(false);
+  const mobile = useBreakpointValue({ base: true, md: false });
+  const [videos, setVideos] = useState([]);
+  const [isLoadingFake, setIsLoadingFake] = useState(true);
 
+  setTimeout(() => {
+    setIsLoadingFake(false)
+  }, 100)
+
+  const setPageSession = (session) => {
+    localStorage.setItem("page_session", session);
+  }
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const deviceId = localStorage.getItem("device_id")
+        var oldPageSession = localStorage.getItem("page_session")
+        if (!deviceId) {
+          deviceId = uuidv4();
+          localStorage.setItem("device_id", deviceId);
+        }
+        const feed_data = await axios.get(
+          `${process.env.apiurl}/api/v3/public/home?device_id=${deviceId}&old_page_session=${oldPageSession}`
+        );
+        const feeds = feed_data?.data?.data?.feeds;
+        setPageSession(feed_data?.data?.data?.page_session);
+        if (feeds.length > 0) {
+          setVideos(videos.concat(feeds))
+        }
+      } catch (e) {
+        console.log("error : ", e)
+      }
+    }
+    fetchData();
+  }, [])
+
+  const loadMoreVideos = async () => {
+    try {
+      const index = videos.length - 1;
+      const lastVideoIsRT = videos[index]['feed_type'] === 'rt';
+      const lastVideoId = lastVideoIsRT ? videos[index]['feed']['chats'][0]['conversation_id'] : videos[index]['feed']['video_id'];
+      const lastVideoParentId = lastVideoIsRT ? videos[index]['feed']['chat_id'] : undefined;
+      const more_data = await axios.get(
+        `${process.env.apiurl}/api/v3/public/home?device_id=${localStorage.getItem("device_id")}&last_video_id=${lastVideoId}&last_video_parent_id=${lastVideoParentId}&last_video_type=${videos[index]['feed_type']}&page_session=${localStorage.getItem("page_session")}`
+      )
+      const feeds = more_data?.data?.data?.feeds;
+      if (feeds.length > 0) {
+        setVideos(videos.concat(feeds));
+      }
+      
+      setPageSession(more_data?.data?.data?.page_session)
+    } catch (e) {
+      console.log('error : ', e)
+    }
+  }
   return (
     <>
       <SEO
@@ -37,173 +84,53 @@ const Home = () => {
         videoPreviewImage={metaImage}
         includeHead={false}
       />
-      <NextHead>
-        <link rel='shortcut icon' href={favicon.src} type='image/x-icon' />
-      </NextHead>
-      <Layout>
-        <HomeNav variant='light' isContiner />
-        <section className='bg-gradient-blue section-content d-flex flex-column h-100 justify-content-center justify-content-md-between'>
-          <Container className='container-false d-none d-md-block'></Container>
-          <Container className='content-container'>
-            <Row className='justify-content-center align-items-center'>
-              <Col sm={12} md={6} lg={6} xl={6}>
-                <Carousel
-                  controls={false}
-                  indicators={false}
-                  fade
-                  activeIndex={activeIndex}
-                >
-                  <Carousel.Item>
-                    <img
-                      src={imgCarousel1.src}
-                      width={380}
-                      height={770}
-                      alt='Learn Web3 via bite-sized content'
-                      title='Learn Web3 via bite-sized content'
-                      className='img-carousel mx-auto d-block'
-                    />
-                  </Carousel.Item>
-                  <Carousel.Item>
-                    <img
-                      src={imgCarousel2.src}
-                      width={380}
-                      height={770}
-                      alt='Connect people in the Web3 business'
-                      title='Connect people in the Web3 business'
-                      className='img-carousel mx-auto d-block'
-                    />
-                  </Carousel.Item>
-                  <Carousel.Item>
-                    <img
-                      src={imgCarousel3.src}
-                      width={380}
-                      height={770}
-                      alt='Showcase your Web3 knowledge'
-                      title='Showcase your Web3 knowledge'
-                      className='img-carousel mx-auto d-block'
-                    />
-                  </Carousel.Item>
-                  <Carousel.Item>
-                    <img
-                      src={imgCarousel4.src}
-                      width={380}
-                      height={770}
-                      alt='Initiate conversation about Web3'
-                      title='Initiate conversation about Web3'
-                      className='img-carousel mx-auto d-block'
-                    />
-                  </Carousel.Item>
-                </Carousel>
-              </Col>
-              <Col sm={12} md={6} lg={6} xl={6}>
-                <Carousel
-                  controls={false}
-                  interval={2000}
-                  onSelect={(selectedIndex) => setActiveIndex(selectedIndex)}
-                >
-                  <Carousel.Item>
-                    <h1>
-                      Igniting curiosity,<br />
-                      unlocking potential,<br />
-                      shaping culture. Genuinly.
-                    </h1>
-                  </Carousel.Item>
-                  <Carousel.Item>
-                    <h1>Market your skills and make professional connections</h1>
-                  </Carousel.Item>
-                  <Carousel.Item>
-                    <h1>Breaking news from top journalists</h1>
-                  </Carousel.Item>
-                  <Carousel.Item>
-                    <h1>Learn about your passions from experts in the field</h1>
-                  </Carousel.Item>
-                </Carousel>
-                <Row
-                  xs={2}
-                  className='justify-content-center justify-content-md-start mt-5 pt-3 '
-                >
-                  <InstallApp />
-                </Row>
-              </Col>
-            </Row>
-          </Container>
-
-          <Container className='d-none d-md-block container-footer'>
-            <Row className='py-3'>
-              <Col xl={4} lg={4} md={4} sm={12}>
-                <Nav as='ul'>
-                  <Nav.Item as='li'>
-                    <Nav.Link
-                      style={{ opacity: 0.5 }}
-                      href='/'
-                      className='pr-0'
-                    >
-                      © 2022 Genuin Inc.
-                    </Nav.Link>
-                  </Nav.Item>
-                </Nav>
-              </Col>
-              <Col xl={8} lg={8} md={8} sm={12}>
-                <Nav
-                  className='justify-content-start justify-content-md-end'
-                  as='ul'
-                >
-                  <Nav.Item as='li'>
-                    <Nav.Link
-                      style={{ opacity: 0.5 }}
-                      target="_blank"
-                      href={`/content_demo?value=rt_123f373977001407`}
-                    >
-                      Life at Genuin
-                    </Nav.Link>
-                  </Nav.Item>
-                  <Nav.Item as='li'>
-                    <Nav.Link
-                      style={{
-                        opacity: 0.5,
-                        paddingLeft: "0px",
-                        paddingRight: "0px",
-                      }}
-                      href={void 0}
-                      eventKey='link-2'
-                    >
-                      |
-                    </Nav.Link>
-                  </Nav.Item>
-                  <Nav.Item as='li'>
-                    <Nav.Link style={{ opacity: 0.5 }} href='/terms'>
-                      Terms of Service
-                    </Nav.Link>
-                  </Nav.Item>
-                  <Nav.Item as='li'>
-                    <Nav.Link
-                      style={{
-                        opacity: 0.5,
-                        paddingLeft: "0px",
-                        paddingRight: "0px",
-                      }}
-                      href={void 0}
-                    >
-                      |
-                    </Nav.Link>
-                  </Nav.Item>
-                  <Nav.Item as='li'>
-                    <Nav.Link style={{ opacity: 0.5 }} href='/privacy'>
-                      Privacy Policy
-                    </Nav.Link>
-                  </Nav.Item>
-                </Nav>
-              </Col>
-            </Row>
-          </Container>
-        </section>
-        <GetAppModal
-          show={showModalAppDownload}
-          onClose={handleCloseAppDownload}
-        />
-      </Layout>
+      <HomeNav variant="light" isContiner />
+      {isLoadingFake
+        ?
+        <>
+          <div
+            className="bg-gradient-blue h-100 w-100"
+            style={{
+              position: "absolute",
+              zIndex: -99
+            }}>
+            <GenuinLoader />
+          </div>
+        </>
+        : <>
+          {!mobile && <AnimatedIndexPage
+            feeds={videos}
+            loadMoreVideos={loadMoreVideos}
+          />
+          }
+          {mobile &&
+            <MobileIndexPage
+              feeds={videos}
+              loadMoreVideos={loadMoreVideos}
+            />}
+        </>
+      }
     </>
   );
 };
 
+// Home.getInitialProps = async ({ req}) => {
+//   const uuid = "2bc36a7a-6ef8-40e0-8549-0b1ecd99000e";
+//   console.log("get item  :", uuid)
+
+//     try {
+//       const feed_data = await axios.get(
+//         `${process.env.apiurl}/api/v3/public/home?device_id=${uuid}`
+//       );
+
+//       const feed = feed_data?.data?.data?.feeds;
+//       console.log("details : ", feed_data?.data?.data?.feeds)
+//       return {
+//         // feed: feed,
+//       };
+//     } catch (error) {
+//       console.log("return error")
+//       return {};
+//     }  
+// }
 export default Home;

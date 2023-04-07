@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
-import { ReactPlayerWrapper } from "./reactPlayerWrapper";
+import { ReactPlayerWrapper } from "./react_player_wrapper";
 import { increaseVideoViewCount } from "../../actions/postActions";
-import { TopNav } from "../topNav";
+import { TopNav } from "../basic/top_nav";
 import { Box, Flex, useBreakpointValue } from "@chakra-ui/react";
 
 export const Player = ({
@@ -33,6 +33,8 @@ export const Player = ({
   setDirection,
   verticalNavigation,
   shareUrl,
+  muted,
+  onClick
 }) => {
   const [triggerPlayCount, setTriggetPlayCount] = useState(false);
   const [duration, setDuration] = useState(0);
@@ -130,6 +132,8 @@ export const Player = ({
         setDirection={setDirection}
         verticalNavigation={verticalNavigation}
         shareUrl={shareUrl}
+        muted={muted}
+        onClick={onClick}
       >
         {children}
       </ReactPlayerWrapper>

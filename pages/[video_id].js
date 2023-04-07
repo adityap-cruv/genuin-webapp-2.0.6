@@ -1,13 +1,13 @@
 import React, { useRef, useState, useEffect } from "react";
 import axios from "axios";
-import { Player } from "../components/player";
-import { Layout } from "../components/layout";
-import { TopNav } from "../components/topNav";
-import { GetAppModal } from "../components/getAppModal";
-import { WelcomeModal } from "../components/welcomeModal";
-import { Error } from "../components/error";
-import { SEO } from "../components/seo";
-import { AppActions } from "../components/appActions";
+import { Player } from "../components/player/player";
+import { Layout } from "../components/layout/layout";
+import { TopNav } from "../components/basic/top_nav";
+import { GetAppModal } from "../components/basic/get_app_modal";
+import { WelcomeModal } from "../components/basic/welcome_modal";
+import { Error } from "../components/basic/error";
+import { SEO } from "../components/basic/seo";
+import { AppActions } from "../components/basic/app_actions";
 import { appStoreLink } from "../config";
 import { Box, Modal, ModalBody, ModalContent, useDisclosure } from "@chakra-ui/react";
 const Video = (props) => {
@@ -96,6 +96,13 @@ const Video = (props) => {
     window.location.href = `${process.env.hostname}p/${userNickname}`
   }
 
+  //todo: remove it
+  const [muted, setMuted] = useState(true);
+  const onClick = () => {
+    setMuted(old => !old);
+    console.log("on click called..")
+  }
+
   return !Boolean(videoUrl) ? (
     <Error />
   ) : (
@@ -133,7 +140,9 @@ const Video = (props) => {
                 showGetAppModal={handleShowModalAppDownload}
                 onEnded={showGetAppToViewDialog}
                 autoplay
-                onClickOutsideOfVideo={() => {setProfileUrl(); onClose();}}
+                  onClickOutsideOfVideo={() => { setProfileUrl(); onClose(); }}
+                  onClick={onClick}
+                  muted={muted}
               >
                 <AppActions
                   showGetAppModal={handleShowModalAppDownload}
