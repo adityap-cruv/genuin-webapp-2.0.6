@@ -39,9 +39,7 @@ import {
   Tab,
   TabPanel,
   Icon,
-  Text,
-  Spinner,
-  Skeleton
+  Text
 } from "@chakra-ui/react";
 import { GenuinLoader } from "../../components/basic/genuin_loader";
 
@@ -117,9 +115,7 @@ const Profile = ({
       }
     }, []);
   }
-  // const [publicVideos, setPublicVideos] = useState(videosPublic);
   const [publicVideos, setPublicVideos] = useState([]);
-  // const preparedRTVideos = prepareRTVideos(videosRT);
 
   const [rtVideos, setRTVideos] = useState([]);
 
@@ -133,19 +129,18 @@ const Profile = ({
   const [noMoreVideosPublic, setNoMoreVideosPublic] = useState(false);
   const [noMoreVideosRT, setNoMoreVideosRT] = useState(false);
   const [noVideos, setNoVideos] = useState(all_videos.length === 0);
+  //todo this is temporary solution improve it.
+  const [allVideos, setAllVideos] = useState(all_videos.length != 0)
 
   //Todo improve this logic..it is temporary
   const [muted, setMuted] = useState(true);
   const onClick = () => {
-    console.log("on click")
     setMuted(old => !old);
   }
 
-  // console.log("process.env", process.env.apiurl);
 
   const loadVideosPublic = async () => {
     if (!isLoadingPublic) {
-      // console.log("Load Public Videos Page")
       setIsLoadingPublic(true);
       const res = await axios.get(
         `${process.env.apiurl
@@ -154,9 +149,9 @@ const Profile = ({
 
       const newVideos = res?.data?.data?.videos || [];
       res?.data?.data?.end_of_videos ? setNoMoreVideosPublic(true) : setNoMoreVideosPublic(false)
-      // console.log("end_of_videos public load",res?.data?.data?.end_of_videos)
       if (newVideos.length !== 0) {
-        setPublicVideos(publicVideos.concat(newVideos));
+        setPublicVideos(newVideos);
+        setNoVideos(false);
       } else {
         setNoVideos(true)
       }
@@ -166,7 +161,6 @@ const Profile = ({
 
   const loadVideosRT = async () => {
     if (!isLoadingRT) {
-      // console.log("Load RT Videos Page")
       setIsLoadingRT(true)
       const res = await axios.get(
         `${process.env.apiurl
@@ -175,10 +169,10 @@ const Profile = ({
 
       const newVideos = res?.data?.data?.videos || [];
       res?.data?.data?.end_of_videos ? setNoMoreVideosRT(true) : setNoMoreVideosRT(false)
-
       if (newVideos.length !== 0) {
         const preparedNewVideos = prepareRTVideos(newVideos);
-        setRTVideos(rtVideos.concat(preparedNewVideos));
+        setRTVideos(preparedNewVideos);
+        setNoVideos(false);
       } else {
         setNoVideos(true);
       }
@@ -187,27 +181,19 @@ const Profile = ({
   };
 
   const getMoreVideosPublic = async () => {
-    // console.log("Get More Public Videos")
     const res = await axios.get(
       `${process.env.apiurl
       }/api/v3/public/profile_videos?user_id=${share_string}&video_types[]=public_video&last_video_type=public_video&last_video_id=${publicVideos[publicVideos.length - 1]?.video?.video_id
       }`
     );
-    // console.log("Url going to hit",`${
-    //   process.env.apiurl
-    // }/api/v3/public/profile_videos?user_id=${share_string}&video_types[]=public_video&last_video_type=public_video&last_video_id=${
-    //   publicVideos[publicVideos.length - 1]?.video?.video_id
-    // }`)
     const newVideos = res?.data?.data?.videos || [];
     res?.data?.data?.end_of_videos ? setNoMoreVideosPublic(true) : setNoMoreVideosPublic(false)
-    // console.log("end_of_videos public load",res?.data?.data?.end_of_videos)
     if (newVideos.length !== 0) {
       setPublicVideos(publicVideos.concat(newVideos));
     }
   };
 
   const getMoreVideosRT = async () => {
-    // console.log("Get More RT Videos")
     const res = await axios.get(
       `${process.env.apiurl
       }/api/v3/public/profile_videos?user_id=${share_string}&video_types[]=rt&last_video_type=rt&last_video_id=${rtVideos[rtVideos.length - 1]?.video?.conversation_id
@@ -225,7 +211,6 @@ const Profile = ({
   };
 
   const getMoreVideos = async () => {
-    // console.log("Get More Videos")
     var videoObj = videos[videos.length - 1]
     var type = videoObj?.video_type
     var id = ""
@@ -729,6 +714,7 @@ const Profile = ({
                             noMoreVideos={noMoreVideos}
                             changeUrl={changeUrl}
                             noVideos={noVideos}
+                            allVideos={allVideos}
                           />
                         </TabPanel>
 
@@ -958,12 +944,13 @@ const Videos = ({
   noMoreVideos,
   changeUrl,
   isLoading,
-  noVideos
+  noVideos,
+  allVideos = true
 }) => {
   return (
     <>
       {isLoading && <GenuinLoader />}
-      {noVideos &&
+      {(noVideos || !allVideos) &&
         <div
           style={{
             height: "100%",
