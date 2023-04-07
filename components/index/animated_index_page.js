@@ -22,7 +22,7 @@ export const AnimatedIndexPage = ({
    const [{ width, height }, setWH] = useState(0)
 
    const scrollToReel = () => {
-      mainRef.current.scroll({ top: window.innerHeight, behavior: "smooth" });
+      // mainRef.current.scroll({ top: window.innerHeight, behavior: "smooth" });
    }
 
    const resizeHandler = (event) => {
