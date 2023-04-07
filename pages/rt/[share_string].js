@@ -64,8 +64,8 @@ const RoundTable = ({
     }
   }
   const { group } = details;
-  const [showModalWelcome, setShowModalWelcome] = useState(true);
-  const handleCloseWelcome = () => setShowModalWelcome(false);
+  // const [showModalWelcome, setShowModalWelcome] = useState(true);
+  // const handleCloseWelcome = () => setShowModalWelcome(false);
   const [showModalAppDownload, setShowModalAppDownload] = useState(false);
   const getAppComponentRef = useRef(() => null);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
@@ -156,7 +156,7 @@ const RoundTable = ({
     handleShowModalAppDownload(() => (
       <>
         Get the app to subscribe to <strong>{group.group_name}</strong>{" "}
-        loop.
+        Loop.
       </>
     ));
 
@@ -508,7 +508,7 @@ const RoundTable = ({
             onClose={handleCloseAppDownload}
             TextNode={getAppComponentRef.current}
           />
-          <WelcomeModal show={showModalWelcome} onClose={handleCloseWelcome} />
+          {/* <WelcomeModal show={showModalWelcome} onClose={handleCloseWelcome} /> */}
         </Layout>
       )}
   </>)

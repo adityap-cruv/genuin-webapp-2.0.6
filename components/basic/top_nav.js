@@ -112,10 +112,10 @@ export const TopNav = ({
                   <Navbar.Toggle aria-controls='navbarMoreOptionDrawer' />
                   <Trail open={isOpen}>
                     {/* <Nav.Link href={investLink}>Invest in Genuin</Nav.Link> */}
-                    <Nav.Link href={hireLink}>Join us</Nav.Link>
+                    <Nav.Link href={hireLink}>Join Our Team</Nav.Link>
+                    <Nav.Link target="_blank" href={`/content_demo?value=rt_123f373977001407`}>Life at Genuin</Nav.Link>
                     <Nav.Link href='/terms'>Terms of Service</Nav.Link>
                     <Nav.Link href='/privacy'>Privacy Policy</Nav.Link>
-                    <Nav.Link target="_blank" href={`/content_demo?value=rt_123f373977001407`}>Life at Genuin</Nav.Link>
                   </Trail>
                   <Nav.Link href='/' className='text-primary small mt-auto'>
                     &copy; 2023 Genuin Inc.

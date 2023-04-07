@@ -28,7 +28,7 @@ export const MobileIndexPage = ({
    const [innerHeight, setInnerHeight] = useState(0);
 
    const scrollToReel = () => {
-      mainRef.current.scroll({ top: window.innerHeight, behavior: "smooth" });
+      // mainRef.current.scroll({ top: window.innerHeight, behavior: "smooth" });
    }
 
    const handleWheel = (event) => {
@@ -156,7 +156,7 @@ export const MobileIndexPage = ({
                   <Button
                      variant='primary'
                      onClick={() => {
-                        console.log(" add get app button.")
+                        window.open("https://install.begenuin.com/86sn/cgs")
                      }}
                      style={{
                         fontSize: 15,

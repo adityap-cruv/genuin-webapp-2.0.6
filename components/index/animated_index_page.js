@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from "react";
-import { GetAppModal } from "../basic/get_app_modal";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion"
 import { background, useBreakpointValue } from "@chakra-ui/react";
 import { Nav } from "react-bootstrap";
@@ -13,9 +12,7 @@ export const AnimatedIndexPage = ({
    feeds,
    loadMoreVideos
 }) => {
-   const [showModalAppDownload, setShowModalAppDownload] = useState(false);
-   const handleCloseAppDownload = () => setShowModalAppDownload(false);
-   const [currentVideoIndex, setCurrentVideoIndex] = useState(-1);
+   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
    const [reelShown, setReelShown] = useState(false);
 
    const mainRef = useRef(null);
@@ -25,7 +22,7 @@ export const AnimatedIndexPage = ({
    const [{ width, height }, setWH] = useState(0)
 
    const scrollToReel = () => {
-      mainRef.current.scroll({ top: window.innerHeight, behavior: "smooth" });
+      // mainRef.current.scroll({ top: window.innerHeight, behavior: "smooth" });
    }
 
    const resizeHandler = (event) => {
@@ -72,20 +69,20 @@ export const AnimatedIndexPage = ({
                zIndex: -99,
                backgroundColor: "black",
                display: "flex",
-               justifyContent: "center"
+               justifyContent: "center",
             }}>
-            <img src={backgroundVector.src} style={{opacity: .2}}/>
+            <img src={backgroundVector.src} style={{opacity: .2, top: "10vh", position: "absolute", display: latest > .985555 ? "none": "block" }}/>
          </div>
          <div
             className="h-100 w-100"
             style={{
-               backgroundImage: `url(${feeds.length != 0 ?feeds[0]['feed_type'] === 'rt'
-                  ? feeds[0]['feed']['chats'][0]['thumbnail_url_s']
-                  : feeds[0]['feed']['video_thumbnail_s'] : ""})`,
+               backgroundImage: `url(${feeds.length != 0 ?feeds[currentVideoIndex]['feed_type'] === 'rt'
+                  ? feeds[currentVideoIndex]['feed']['chats'][0]['thumbnail_url_s']
+                  : feeds[currentVideoIndex]['feed']['video_thumbnail_s'] : ""})`,
                backgroundRepeat: "no-repeat",
                backgroundSize: "cover",
                backgroundPosition: "center",
-               opacity: .4,
+               opacity: reelShown ? 1 : 0.7,
                filter: 'blur(100px) brightness(50%)',
                backgroundColor: feeds.length == 0 ? 'transparent' :'black',
                position: "absolute",
@@ -341,10 +338,7 @@ export const AnimatedIndexPage = ({
                zIndex: 9,
             }}>
          </div>
-         <GetAppModal
-            show={showModalAppDownload}
-            onClose={handleCloseAppDownload}
-         />
+         
       </div>
    </>);
 }
