@@ -71,6 +71,7 @@ const Videos = ({
          return window.removeEventListener("wheel", handleWheel)
       }
    })
+   console.log("feeds : ", feeds)
    return (<>
       <Flex
          className='section-content h-100 swipe-container hide-scrollbar'
@@ -108,8 +109,8 @@ const Videos = ({
                         video_id_to_use={feeds[id]?.feed?.share_string}
                         roundTableMode={feeds[id]?.feed_type === "rt"}
                         roundTableName={feeds[id]?.feed?.group?.group_name ?? null}
-                        roundTableId={feeds[id]?.feed?.share_string ?? null}
-                        shareUrl={feeds[id]?.feed?.share_url}
+                        roundTableId={feeds[id]['feed_type'] === 'rt' ? feeds[id]['feed']['share_url'].split('/').pop() : ""}
+                        shareUrl={feeds[id]?.feed_type === 'rt' ? feeds[id]['feed']['chats'][0]['share_url']: feeds[id]['feed']['share_url']}
                         verticalNavigation
                         muted={muted}
                         loadMoreVideos={addMoreVideos}
