@@ -134,7 +134,7 @@ export const AppActions = ({
                 showGetAppModal(() => (
                   <>
                     Get the app to subscribe to <b>{roundTableName ?? ""}</b>{" "}
-                    loop.
+                    Loop.
                   </>
                 ))
               }>
