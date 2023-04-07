@@ -28,7 +28,7 @@ export const MobileIndexPage = ({
    const [innerHeight, setInnerHeight] = useState(0);
 
    const scrollToReel = () => {
-      mainRef.current.scroll({ top: window.innerHeight, behavior: "smooth" });
+      // mainRef.current.scroll({ top: window.innerHeight, behavior: "smooth" });
    }
 
    const handleWheel = (event) => {

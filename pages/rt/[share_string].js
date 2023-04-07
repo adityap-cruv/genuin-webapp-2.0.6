@@ -156,7 +156,7 @@ const RoundTable = ({
     handleShowModalAppDownload(() => (
       <>
         Get the app to subscribe to <strong>{group.group_name}</strong>{" "}
-        loop.
+        Loop.
       </>
     ));
 
