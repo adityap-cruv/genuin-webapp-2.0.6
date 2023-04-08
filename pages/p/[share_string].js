@@ -9,7 +9,6 @@ import {
   MobileShareButton,
   ShareButton,
 } from "../../components/basic/app_actions";
-import { WelcomeModal } from "../../components/basic/welcome_modal";
 import { Error } from "../../components/basic/error";
 import { SEO } from "../../components/basic/seo";
 import { Container } from "react-bootstrap";
@@ -44,12 +43,8 @@ import {
 import { GenuinLoader } from "../../components/basic/genuin_loader";
 
 const Profile = ({
-  user = {},
-  all_videos = [],
-  end_of_videos,
-  // videosRT = [],
-  // videosPublic = [],
-  share_string,
+  share_string, 
+  user
 }) => {
   const {
     user_id,
@@ -119,18 +114,16 @@ const Profile = ({
 
   const [rtVideos, setRTVideos] = useState([]);
 
-  const preparedFeedVideos = prepareFeedVideos(all_videos)
-  const [videos, setVideos] = useState(preparedFeedVideos);
+  const [videos, setVideos] = useState([]);
 
   const [isLoadingPublic, setIsLoadingPublic] = useState(false);
   const [isLoadingRT, setIsLoadingRT] = useState(false);
+  const [isLoadingAll, setIsLoadingAll] = useState(false);
 
-  const [noMoreVideos, setNoMoreVideos] = useState(end_of_videos);
+  const [noMoreVideos, setNoMoreVideos] = useState(false);
   const [noMoreVideosPublic, setNoMoreVideosPublic] = useState(false);
   const [noMoreVideosRT, setNoMoreVideosRT] = useState(false);
-  const [noVideos, setNoVideos] = useState(all_videos.length === 0);
-  //todo this is temporary solution improve it.
-  const [allVideos, setAllVideos] = useState(all_videos.length != 0)
+  const [noVideos, setNoVideos] = useState(false);
 
   //Todo improve this logic..it is temporary
   const [muted, setMuted] = useState(true);
@@ -138,6 +131,31 @@ const Profile = ({
     setMuted(old => !old);
   }
 
+
+  const loadVideosAll = async () => {
+    setIsLoadingAll(true);
+    try {
+      const all_videos_data = await axios.get(
+        `${process.env.apiurl}/api/v3/public/profile_videos?user_id=${share_string}&video_types[]=rt&video_types[]=public_video`
+      );
+      const videos = all_videos_data?.data?.data?.videos;
+      setNoMoreVideos(all_videos_data?.data?.data?.end_of_videos);
+      if (videos.length > 0) {
+        setVideos(prepareFeedVideos(videos));
+        setNoVideos(false);
+      } else {
+        setNoVideos(true);
+      }
+    } catch (e) {
+      console.log("error :", e)
+    }
+    setIsLoadingAll(false);
+  }
+
+
+  useEffect(() => {
+    loadVideosAll();
+  }, [])
 
   const loadVideosPublic = async () => {
     if (!isLoadingPublic) {
@@ -672,7 +690,7 @@ const Profile = ({
                         w={mobile ? "calc(100% + 24px)" : "full"}
                         ml={mobile ? "-12px" : 0}
                       >
-                        <Tab flexGrow={1} className="all_icon">
+                        <Tab flexGrow={1} className="all_icon" onClick={loadVideosAll}>
                           <AllIcon
                             boxSize={8}
                             color={tabIndex === 0 ? "#111111" : "#949494"}
@@ -714,7 +732,7 @@ const Profile = ({
                             noMoreVideos={noMoreVideos}
                             changeUrl={changeUrl}
                             noVideos={noVideos}
-                            allVideos={allVideos}
+                            isLoading={isLoadingAll}
                           />
                         </TabPanel>
 
@@ -944,13 +962,12 @@ const Videos = ({
   noMoreVideos,
   changeUrl,
   isLoading,
-  noVideos,
-  allVideos = true
+  noVideos
 }) => {
   return (
     <>
       {isLoading && <GenuinLoader />}
-      {(noVideos || !allVideos) &&
+      {(noVideos) &&
         <div
           style={{
             height: "100%",
@@ -1133,29 +1150,16 @@ Profile.getInitialProps = async ({ query: { share_string } }) => {
     share_string !== ""
   ) {
     try {
-      const all_videos = await axios.get(
-        `${process.env.apiurl}/api/v3/public/profile_videos?user_id=${share_string}&video_types[]=rt&video_types[]=public_video`
-      );
-      // const videosRT = await axios.get(
-      //   `${process.env.apiurl}/api/v3/public/profile_videos?user_id=${share_string}&video_types[]=rt`
-      // );
-      // const videosPublic = await axios.get(
-      //   `${process.env.apiurl}/api/v3/public/profile_videos?user_id=${share_string}&video_types[]=public_video`
-      // );
       const user = await axios.get(
         `${process.env.apiurl}/api/v3/public/user/details?nickname=${share_string}`
       );
-
+      
       return {
-        user: user?.data?.data,
-        all_videos: all_videos?.data?.data?.videos,
-        end_of_videos: all_videos?.data?.data?.end_of_videos ? true : false,
-        // videosRT: videosRT?.data?.data?.videos,
-        // videosPublic: videosPublic?.data?.data?.videos,
         share_string,
+        user: user?.data?.data,
       };
-    } catch (error) {
-      return {};
+    } catch (e) {
+      console.log("error :", e)
     }
   } else {
     return Promise.resolve({});
