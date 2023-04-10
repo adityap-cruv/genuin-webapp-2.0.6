@@ -5,7 +5,6 @@ import { isValidHttpUrl, Player } from "../../components/player/player";
 import { Layout } from "../../components/layout/layout";
 import { TopNav } from "../../components/basic/top_nav";
 import { GetAppModal } from "../../components/basic/get_app_modal";
-import { WelcomeModal } from "../../components/basic/welcome_modal";
 import { SEO } from "../../components/basic/seo";
 import {
   AppActions,
@@ -103,7 +102,6 @@ const RoundTable = ({
       setIsError(true)
     }
   }, []);
-
   const handleCloseAppDownload = () => {
     getAppComponentRef.current = () => null;
     setShowModalAppDownload(false);
@@ -807,7 +805,6 @@ RoundTable.getInitialProps = async ({ query: { share_string, v } }) => {
         end_of_videos: videos?.data?.data?.end_of_videos || false,
         rt: share_string
       }
-      returnProps.rt_videos.reverse();
       return returnProps;
     } catch (error) {
       return {};

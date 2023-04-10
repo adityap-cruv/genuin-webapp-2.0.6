@@ -146,8 +146,9 @@ export const MobileIndexPage = ({
                      }}
                      style={{
                         fontSize: 15,
-                        padding: "0.275rem 2rem",
-                        borderRadius: "0.5rem",
+                        lineHeight: "24px",
+                        padding: "8px 24px 8px 24px",
+                        borderRadius: "8px",
                      }}
                   >
                      Get App
