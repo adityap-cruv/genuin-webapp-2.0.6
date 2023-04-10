@@ -921,9 +921,9 @@ a:hover {
 }
 
 .index-player-border video {
-  border-top-right-radius: 60px;
-  border-top-left-radius: 60px;
-  padding: 10px;
+  border-top-right-radius:7%; 
+  border-top-left-radius: 7%;
+  padding: 4%;
 }
 
 .list {
@@ -1033,12 +1033,6 @@ a:hover {
   .custom-home-button {
     display: none;
   }
-
-  .index-player-border video {
-    border-top-right-radius: 12px;
-    border-top-left-radius: 12px;
-    padding: 10px;
-  }
 }
 
 /* for mobiles */
@@ -1107,12 +1101,6 @@ a:hover {
     display: grid;
     grid-template-columns: 1fr 1fr;
     row-gap: 25px;
-  }
-
-  .index-player-border video {
-    border-top-right-radius: 60px;
-    border-top-left-radius: 60px;
-    padding: 10px;
   }
 }
 

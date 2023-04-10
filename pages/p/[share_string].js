@@ -1160,7 +1160,9 @@ Profile.getInitialProps = async ({ query: { share_string } }) => {
       };
     } catch (e) {
       console.log("error :", e)
+      return Promise.reject("user not found..");
     }
+
   } else {
     return Promise.resolve({});
   }
