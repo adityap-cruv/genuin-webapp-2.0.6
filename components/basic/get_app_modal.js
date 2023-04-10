@@ -9,7 +9,7 @@ import { Modal } from "react-bootstrap";
 import logo from "../../assets/images/Genuin_icon_vector.svg";
 import { InstallApp } from "./install_app";
 
-export const GetAppModal = ({ show, onClose, TextNode = () => null }) => {
+export const GetAppModal = ({ show, onClose, TextNode = () => null, title= "Download App" }) => {
   const mobile = useBreakpointValue({ base: true, sm: false });
 
   return (
@@ -25,11 +25,11 @@ export const GetAppModal = ({ show, onClose, TextNode = () => null }) => {
     >
       <Modal.Header closeButton className='border-0'></Modal.Header>
       <Modal.Body className='text-center py-0'>
-        <VStack px={mobile ? 6 : 16}>
+        <VStack px={mobile ? 6 : 10}>
           <Image src={logo.src} alt='Genuin' title='Genuin' h={16} />
           {!mobile && (
             <Text fontWeight={700} fontSize={40}>
-              Download App
+              {title}
             </Text>
           )}
           <Text fontSize={20} fontWeight={600}>

@@ -116,6 +116,13 @@ const Home = () => {
       <GetAppModal
         show={showModalAppDownload}
         onClose={handleCloseAppDownload}
+        title="Get the Genuin app"
+        TextNode={() => (
+          <>
+            Genuin gives you a place to keep up with
+            friends and the issues you care about.
+          </>
+        )}
       />
     </>
   );
