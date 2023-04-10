@@ -17,61 +17,47 @@ export const MobileIndexPage = ({
    const mainRef = useRef(null);
    const [latest, setLatest] = useState(0);
    const [currentVideoIndex, setCurrentVideoIndex] = useState(-1);
-   const [reelShown, setReelShown] = useState(false);
 
    const { scrollYProgress } = useScroll({
       container: mainRef
    })
 
    const [touchStartPointY, setTouchStartPointY] = useState(0)
-   const [touchEndPointY, setTouchEndPointY] = useState(0)
    const [innerHeight, setInnerHeight] = useState(0);
 
    const scrollToReel = () => {
-      // mainRef.current.scroll({ top: window.innerHeight, behavior: "smooth" });
+      mainRef.current.scroll({ top: window.innerHeight, behavior: "smooth" });
    }
 
    const handleWheel = (event) => {
-      if (event.deltaY < 0 && reelShown && currentVideoIndex === 0) {
+      if (event.deltaY < 0 && latest > 0.984444 && currentVideoIndex === 0) {
          mainRef.current.scrollTo({ top: 0, left: 0, behavior: "smooth" })
       }
    }
 
    const handleTouchStart = (event) => {
-      setTouchStartPointY(event.changedTouches[0].clientY);
+      setTouchStartPointY(event.changedTouches[0].clientY)
    }
 
    const handleTouchEnd = (event) => {
-      setTouchEndPointY(event.changedTouches[0].clientY);
-      if ((touchEndPointY > touchStartPointY) && currentVideoIndex === 0) {
+      if ((event.changedTouches[0].clientY > touchStartPointY) && currentVideoIndex === 0) {
          mainRef.current.scrollTo({ top: 0, left: 0, behavior: "smooth" })
       }
-   }
-
-   const handleResize = (event) => {
-      setInnerHeight(window.innerHeight)
    }
 
    useEffect(() => {
       setInnerHeight(window.innerHeight);
       window.addEventListener("touchstart", handleTouchStart);
       window.addEventListener("touchend", handleTouchEnd);
-      window.addEventListener("resize", handleResize);
 
       return () => {
          window.removeEventListener("touchstart", handleTouchStart);
          window.removeEventListener("touchend", handleTouchEnd)
-         window.addEventListener("resize", handleResize)
       }
    })
 
    useMotionValueEvent(scrollYProgress, "change", (latest) => {
       setLatest(latest.toPrecision(6));
-      if (latest > 0.98444) {
-         setReelShown(true);
-      } else {
-         setReelShown(false);
-      }
    })
 
    return (<>
@@ -160,8 +146,9 @@ export const MobileIndexPage = ({
                      }}
                      style={{
                         fontSize: 15,
-                        padding: "0.275rem 2rem",
-                        borderRadius: "0.5rem",
+                        lineHeight: "24px",
+                        padding: "8px 24px 8px 24px",
+                        borderRadius: "8px",
                      }}
                   >
                      Get App

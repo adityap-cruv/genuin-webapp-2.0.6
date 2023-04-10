@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, useScroll, useMotionValueEvent } from "framer-motion"
-import { background, useBreakpointValue } from "@chakra-ui/react";
+import {  useBreakpointValue } from "@chakra-ui/react";
 import { Nav } from "react-bootstrap";
 import Videos from "../index/feed_videos";
 import { HomePageVideo } from "./homepage_video";
@@ -13,7 +13,6 @@ export const AnimatedIndexPage = ({
    loadMoreVideos
 }) => {
    const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
-   const [reelShown, setReelShown] = useState(false);
 
    const mainRef = useRef(null);
    const [latest, setLatest] = useState(0)
@@ -22,7 +21,7 @@ export const AnimatedIndexPage = ({
    const [{ width, height }, setWH] = useState(0)
 
    const scrollToReel = () => {
-      // mainRef.current.scroll({ top: window.innerHeight, behavior: "smooth" });
+      mainRef.current.scroll({ top: window.innerHeight, behavior: "smooth" });
    }
 
    const resizeHandler = (event) => {
@@ -30,7 +29,7 @@ export const AnimatedIndexPage = ({
    }
 
    const handleWheel = (event) => {
-      if (event.deltaY < 0 && reelShown && (currentVideoIndex === 0)) {
+      if (event.deltaY < 0 && latest > .9899999 && (currentVideoIndex === 0)) {
          mainRef.current.scrollTo({ left: 0, top: 0, behavior: "smooth" })
       }
    }
@@ -47,11 +46,6 @@ export const AnimatedIndexPage = ({
    });
    useMotionValueEvent(scrollYProgress, "change", (latest) => {
       setLatest(latest.toPrecision(6))
-      if (latest > .9899995) {
-         setReelShown(true)
-      } else {
-         setReelShown(false);
-      }
    })
    return (<>
       <div
@@ -82,7 +76,7 @@ export const AnimatedIndexPage = ({
                backgroundRepeat: "no-repeat",
                backgroundSize: "cover",
                backgroundPosition: "center",
-               opacity: reelShown ? 1 : 0.7,
+               opacity: latest > .985555 ? 1 : 0.7,
                filter: 'blur(100px) brightness(50%)',
                backgroundColor: feeds.length == 0 ? 'transparent' :'black',
                position: "absolute",
@@ -215,7 +209,7 @@ export const AnimatedIndexPage = ({
             </motion.div>
          </div>
 
-         {!reelShown
+         {!(latest > .985555)
             ? feeds.length != 0
                ? <div
                   style={{
@@ -227,7 +221,7 @@ export const AnimatedIndexPage = ({
                   }}>
                   <motion.div
                      style={{
-                        opacity: .4
+                        opacity: latest < .58 ? .4 - latest: 0
                      }}
                      initial={{ scale: 1 }}
                      animate={{ scale: 1.2 }}
@@ -236,7 +230,7 @@ export const AnimatedIndexPage = ({
                         repeat: Infinity,
                         type: "tween",
                         ease: "easeIn",
-                        repeatType: "mirror"
+                        repeatType: "mirror",
                      }}
                   >
                      <button
