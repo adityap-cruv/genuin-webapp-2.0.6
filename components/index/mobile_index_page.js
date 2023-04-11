@@ -133,7 +133,7 @@ export const MobileIndexPage = ({
                </div>
                <div
                   style={{
-                     paddingTop: "10px",
+                     paddingTop: "16px",
                      display: "flex",
                      justifyContent: "center",
                      zIndex: 13
