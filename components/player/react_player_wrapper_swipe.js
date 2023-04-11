@@ -48,7 +48,8 @@ export const ReactPlayerWrapper = ({
   onClick,
   loadMoreVideos,
   setCurrentVideoIndex,
-  uniqueKey = null
+  uniqueKey = null,
+  disableWatch = false
 }) => {
   const [isMuted, setIsMuted] = useState(true);
   const [progress, setProgress] = useState(0);
@@ -520,7 +521,7 @@ export const ReactPlayerWrapper = ({
                           {roundTableName}
                         </Text>
                         </Link>
-                        <Button
+                        {!disableWatch && <Button
                           variant="outline-light"
                           onClick={() => {
                             if (verticalNavigation && shareUrl) {
@@ -535,7 +536,7 @@ export const ReactPlayerWrapper = ({
                           }}
                         >
                             Watch
-                        </Button>
+                        </Button>}
                       </Flex>
                     ) : (
                     <Link

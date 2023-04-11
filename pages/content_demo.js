@@ -99,12 +99,10 @@ const Profile = ({
 
   // --------> IN CASE OF PAGINATION IN RT <---------------------------------------------------------------------------
   const getMoreVideosRT = async () => {
-    console.log("Get More RT Videos")
     const res = await axios.get(
       `${process.env.apiurl}/api/v3/public/rt/paginate_videos?chat_id=${chat_id}&last_video_id=${videos[videos.length - 1].video.conversation_id}`
     );
     const newVideos = res?.data?.data?.chats || [];
-    console.log("new vdieos :", newVideos)
     res?.data?.data?.end_of_videos ? setNoMoreVideos(true) : setNoMoreVideos(false)
     if (newVideos.length !== 0) {
       setVideos(videos.concat(prepareFeedVideos(prepareRTVideos(newVideos))))
