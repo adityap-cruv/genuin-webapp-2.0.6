@@ -121,7 +121,7 @@ const Videos = ({
                               rtData?.rtData?.description
                            }
                            videoTitle='Genuin'
-                           roundTable={videos[id]?.video_type === "rt"}
+                           roundTable={true}
                            roundTableName={rtData?.rtData?.group_name}
                            roundTableId={videos[id]?.share_string}
                         />
