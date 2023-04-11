@@ -8,6 +8,7 @@ import { Error } from "../components/basic/error";
 import { SEO } from "../components/basic/seo";
 import { AppActions } from "../components/basic/app_actions";
 import { Modal, ModalBody, ModalContent, useDisclosure } from "@chakra-ui/react";
+import { datadogLogs } from "@datadog/browser-logs";
 const Video = (props) => {
   const {
     videoUrl,
@@ -83,6 +84,7 @@ const Video = (props) => {
   });
 
   useEffect(() => {
+    datadogLogs.logger.info("Video Watched", {"view.id" : props.video_id})
     var ls = window.location.href.split("/")
     if (ls && ls.length == 4){
       onOpen()

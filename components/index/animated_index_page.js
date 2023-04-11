@@ -9,9 +9,10 @@ import trayArrow from "../../assets/images/tray_arrow.svg";
 import backgroundVector from "../../assets/images/genuin_background_logo.png"
 
 export const AnimatedIndexPage = ({
-   feeds,
+   rtData,
    loadMoreVideos
 }) => {
+   const videos = rtData.rtVideos;
    const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
 
    const mainRef = useRef(null);
@@ -70,15 +71,13 @@ export const AnimatedIndexPage = ({
          <div
             className="h-100 w-100"
             style={{
-               backgroundImage: `url(${feeds.length != 0 ?feeds[currentVideoIndex]['feed_type'] === 'rt'
-                  ? feeds[currentVideoIndex]['feed']['chats'][0]['thumbnail_url_s']
-                  : feeds[currentVideoIndex]['feed']['video_thumbnail_s'] : ""})`,
+               backgroundImage: `url(${videos.length != 0 ? videos[currentVideoIndex]['video_thumbnail_s'] : ""})`,
                backgroundRepeat: "no-repeat",
                backgroundSize: "cover",
                backgroundPosition: "center",
                opacity: latest > .985555 ? 1 : 0.7,
                filter: 'blur(100px) brightness(50%)',
-               backgroundColor: feeds.length == 0 ? 'transparent' :'black',
+               backgroundColor: videos.length == 0 ? 'transparent' :'black',
                position: "absolute",
                zIndex: -98,
             }}>
@@ -97,7 +96,7 @@ export const AnimatedIndexPage = ({
             }}>
             <Videos
                loadMoreVideos={loadMoreVideos}
-               feeds={feeds}
+               rtData={rtData}
                setCurrentVideoIndex={setCurrentVideoIndex}
                handleWheel={handleWheel}
             />
@@ -130,13 +129,9 @@ export const AnimatedIndexPage = ({
                <HomePageVideo
                   width={height * (1 / 3)}
                   opacityFrame={latest > .58 ? (1.5 - latest) : 1}
-                  videoUrl={feeds.length != 0 ? feeds[0]['feed_type'] === 'rt'
-                     ? feeds[0]['feed']['chats'][0]['video_url_m3u8'] ?? feeds[0]['feed']['chats'][0]['video_url']
-                     : feeds[0]['feed']['video_url_m3u8'] ?? feeds[0]['feed']['video_url'] : null}
-                  videoThumbnail={feeds.length != 0 ? feeds[0]['feed_type'] === 'rt'
-                     ? feeds[0]['feed']['chats'][0]['thumbnail_url_s']
-                     : feeds[0]['feed']['video_thumbnail_s'] : ""}
-                  feedLoading={feeds.length === 0}
+                  videoUrl={videos.length != 0 ? videos[0]['video_url_m3u8'] ?? videos[0]['video_url'] : null}
+                  videoThumbnail={videos.length != 0 ? videos[0]['video_thumbnail_s'] : ""}
+                  feedLoading={videos.length === 0}
                />
             </motion.div>
 
@@ -185,9 +180,6 @@ export const AnimatedIndexPage = ({
                      </h2>
                   </div>
                   <div
-                     onClick={() => {
-                        console.log("on click clicked ...");
-                     }}
                      style={{
                         height: "100%",
                         display: "flex",
@@ -210,7 +202,7 @@ export const AnimatedIndexPage = ({
          </div>
 
          {!(latest > .985555)
-            ? feeds.length != 0
+            ? videos.length != 0
                ? <div
                   style={{
                      position: "absolute",

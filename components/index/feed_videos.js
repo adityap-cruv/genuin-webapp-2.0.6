@@ -7,28 +7,28 @@ import { Flex } from "@chakra-ui/react";
 
 
 const Videos = ({
-   feeds,
+   rtData,
    loadMoreVideos,
    setCurrentVideoIndex = () => { },
    handleWheel = () => { }
 }) => {
+   const videos = rtData.rtVideos;
    const [showModalAppDownload, setShowModalAppDownload] = useState(false);
    const getAppComponentRef = useRef(() => null);
    const [muted, setMuted] = useState(true);
-   const [indexTo, setIndexTo] = useState(feeds.length > 2 ? 3 : feeds.length);
-   
+   const [indexTo, setIndexTo] = useState(videos.length > 2 ? 3 : videos.length);
    const addMoreVideos = (index) => {
       setIndexTo(old => (old - 2 == index) ? old + 1 : old)
-      if (indexTo === feeds.length) {
+      if (indexTo === videos.length) {
          loadMoreVideos();
       }
    }
 
    useEffect(() => {
-      if (indexTo === 0 && feeds.length !== 0) {
-         setIndexTo(feeds.length > 2 ? 3 : feeds.length)
+      if (indexTo === 0 && videos.length !== 0) {
+         setIndexTo(videos.length > 2 ? 3 : videos.length)
       }
-   }, [feeds])
+   }, [videos])
 
 
    const getNextVideo = () => {
@@ -71,7 +71,6 @@ const Videos = ({
          return window.removeEventListener("wheel", handleWheel)
       }
    })
-   console.log("feeds : ", feeds)
    return (<>
       <Flex
          className='section-content h-100 swipe-container hide-scrollbar'
@@ -79,58 +78,52 @@ const Videos = ({
          wrap='wrap'
          w='100%'
       >
-         {feeds.length === 0
+         {videos.length === 0
             ? <h1>Nothing to show here</h1>
             :(<>
-               {feeds.slice(0, indexTo).map((video, id) => (
+               {videos.slice(0, indexTo).map((video, id) => (
                   <>
                      <Player
-                        key={feeds[id]['feed_type'] === 'rt' ? feeds[id]['feed']['chats'][0]['conversation_id'] : feeds[id]['feed']['video_id']}
-                        uniqueKey={feeds[id]['feed_type'] === 'rt' ? feeds[id]['feed']['chats'][0]['conversation_id'] : feeds[id]['feed']['video_id']}
+                        uniqueKey={videos[id]['conversation_id']}
+                        key={videos[id]['conversation_id']}
                         currentVideoIndex={id}
-                        videoThumbnail={
-                           feeds[id]['feed_type'] == 'rt' ? feeds[id].feed.chats[0].thumbnail_url_s : feeds[id]?.feed?.video_thumbnail_s
-                        }
-                        description={feeds[id]['feed_type'] === 'rt' ? feeds[id]['feed']['group']['group_description'] : feeds[id]['feed']['description']}
-                        link={feeds[id]?.video?.link}
-                        videoUrl={feeds[id]['feed_type'] === 'rt' ?
-                           feeds[id]['feed']['chats'][0]['video_url_m3u8'] ?? feeds[id]['feed']['chats'][0]['video_url']
-                           : feeds[id]['feed']['video_url_m3u8'] ?? feeds[id]['feed']['video_url']}
-                        userName={feeds[id]['feed_type'] == 'rt' ? feeds[id]['feed']['chats'][0]['owner']['nickname'] : feeds[id]['feed']['recorded_by']['nickname']}
-                        userId={feeds[id]['feed_type'] == 'rt' ? feeds[id]['feed']['chats'][0]['owner']['nickname'] : feeds[id]['feed']['recorded_by']['nickname']}
-                        userProfileImage={feeds[id]['feed_type'] == 'rt' ? feeds[id]['feed']['chats'][0]['owner']['profile_image_s'] : feeds[id]['feed']['recorded_by']['profile_image_s']}
-                        rtProfileImage={feeds[id]?.feed?.group?.dp_s ?? null}
+                        videoThumbnail={ videos[id].thumbnail_url_s}
+                        description={rtData?.rtData?.group?.group_description} //! description is not comming in API
+                        videoUrl={videos[id]['video_url_m3u8'] ?? videos[id]['video_url'] }
+                        userName={videos[id]['owner']['nickname'] }
+                        userId={videos[id]['owner']['nickname']}
+                        userProfileImage={videos[id]['owner']['profile_image_s']}
+                        rtProfileImage={rtData?.rtData?.group?.dp_s}
                         showGetAppModal={handleShowModalAppDownload}
                         onEnded={showGetAppToViewDialog}
                         getNextVideo={getNextVideo}
                         getPrevVideo={getPrevVideo}
-                        videos={feeds}
+                        videos={videos}
                         autoplay={id === 0 ? true : false}
-                        video_id_to_use={feeds[id]?.feed?.share_string}
-                        roundTableMode={feeds[id]?.feed_type === "rt"}
-                        roundTableName={feeds[id]?.feed?.group?.group_name ?? null}
-                        roundTableId={feeds[id]['feed_type'] === 'rt' ? feeds[id]['feed']['share_url'].split('/').pop() : ""}
-                        shareUrl={feeds[id]?.feed_type === 'rt' ? feeds[id]['feed']['chats'][0]['share_url']: feeds[id]['feed']['share_url']}
+                        video_id_to_use={videos[id]?.share_string}
+                        roundTableMode={true}
+                        roundTableName={rtData?.rtData?.group?.group_name}
+                        roundTableId={rtData?.rtData?.share_string}
+                        shareUrl={`${process.env.hostname}/rt/${rtData?.rtData?.share_string}?v=${rtData?.rtVideos[id]['share_string']}`}
                         verticalNavigation
                         muted={muted}
                         loadMoreVideos={addMoreVideos}
                         onClick={handleClick}
                         setCurrentVideoIndex={setCurrentVideoIndex}
+                        disableWatch
                      >
                         <AppActions
                            showGetAppModal={handleShowModalAppDownload}
-                           userName={feeds[id] && feeds[id]['feed_type'] == 'rt'
-                              ? feeds[id]['feed']['chats'][0]['owner']['nickname']
-                              : feeds[id]['feed']['recorded_by']['nickname'] }
-                           link={feeds[id]?.video?.link}
-                           videoUrl={feeds[id]['feed']['share_url']}
+                           userName={videos[id]['owner']['nickname']}
+                           link={videos[id]?.link}
+                           videoUrl={videos[id]?.share_url}
                            videoDescription={
-                              feeds[id]?.feed?.description
+                              rtData?.rtData?.description
                            }
                            videoTitle='Genuin'
-                           roundTable={feeds[id]?.feed_type === "rt"}
-                           roundTableName={(feeds.length != 0 && feeds[id]['feed_type'] === 'rt') ? feeds[id]['feed']['group']['group_name'] : ""}
-                           roundTableId={feeds[id]?.share_string}
+                           roundTable={true}
+                           roundTableName={rtData?.rtData?.group_name}
+                           roundTableId={videos[id]?.share_string}
                         />
                      </Player>
                      

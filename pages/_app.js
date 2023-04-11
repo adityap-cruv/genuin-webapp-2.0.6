@@ -5,6 +5,9 @@ import "react-toastify/dist/ReactToastify.min.css";
 import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import favicon from "../assets/images/favicon.ico";
 import NextHead from "next/head"
+import { datadogRum } from "@datadog/browser-rum";
+import { datadogLogs } from '@datadog/browser-logs'
+import { DatadogConfigs } from "../constants/datadog_configs";
 
 const theme = extendTheme({
   fonts: {
@@ -14,6 +17,32 @@ const theme = extendTheme({
 
 
 function MyApp({ Component, pageProps }) {
+  datadogRum.init({
+    applicationId: DatadogConfigs.applicationId,
+    clientToken: DatadogConfigs.clientToken,
+    site: DatadogConfigs.site,
+    service: DatadogConfigs.service,
+    env: DatadogConfigs.env,
+    // Specify a version number to identify the deployed version of your application in Datadog 
+    // version: '1.0.0',
+    sessionSampleRate: 100,
+    sessionReplaySampleRate: 20,
+    trackUserInteractions: true,
+    trackResources: true,
+    trackLongTasks: true,
+    defaultPrivacyLevel: 'mask-user-input'
+  });
+
+  datadogRum.startSessionReplayRecording();
+  datadogLogs.init({
+    clientToken: DatadogConfigs.clientToken,
+    site: DatadogConfigs.site,
+    service: DatadogConfigs.service,
+    env: DatadogConfigs.env ||'qa',
+    forwardErrorsToLogs: true,
+    sessionSampleRate: 100,
+  })
+
   return (
     <>
       <NextHead>

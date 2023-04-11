@@ -9,9 +9,10 @@ import { HomePageVideo } from "./homepage_video";
 import trayArrow from "../../assets/images/tray_arrow.svg";
 
 export const MobileIndexPage = ({
-   feeds,
+   rtData,
    loadMoreVideos
 }) => {
+   const videos = rtData.rtVideos;
    const [showModalAppDownload, setShowModalAppDownload] = useState(false);
    const handleCloseAppDownload = () => setShowModalAppDownload(false);
    const mainRef = useRef(null);
@@ -80,14 +81,12 @@ export const MobileIndexPage = ({
             className="h-100 w-100"
             style={{
                //todo: update currentVideoIndex
-               backgroundImage: `url(${feeds.length !== 0 ? feeds[0]['feed_type'] === 'rt'
-                  ? feeds[0]['feed']['chats'][0]['thumbnail_url_s']
-                  : feeds[0]['feed']['video_thumbnail_s'] : ""})`,
+               backgroundImage: `url(${videos.length !== 0 ?  videos[0]['video_thumbnail_s'] : ""})`,
                backgroundRepeat: "no-repeat",
                backgroundSize: "cover",
                backgroundPosition: "center",
                filter: 'blur(100px) brightness(50%)',
-               backgroundColor: feeds.length !== 0 ? 'black' : 'transparent',
+               backgroundColor: videos.length !== 0 ? 'black' : 'transparent',
                position: "absolute",
                zIndex: -98,
             }}>
@@ -154,7 +153,7 @@ export const MobileIndexPage = ({
                      Get App
                   </Button>
                </div>
-               {!(feeds.length == 0) && <div
+               {!(videos.length == 0) && <div
                   style={{
                      display: "flex",
                      width: "100%",
@@ -208,14 +207,10 @@ export const MobileIndexPage = ({
                }}>
                <HomePageVideo
                   opacityFrame={latest > .58 ? 1 - latest : 1}
-                  videoUrl={feeds.length !== 0 ? feeds[0]['feed_type'] === 'rt'
-                     ? feeds[0]['feed']['chats'][0]['video_url_m3u8'] ?? feeds[0]['feed']['chats'][0]['video_url']
-                     : feeds[0]['feed']['video_url_m3u8'] ?? feeds[0]['feed']['video_url'] : ""}
-                  videoThumbnail={feeds.length !== 0 ? feeds[0]['feed_type'] === 'rt'
-                     ? feeds[0]['feed']['chats'][0]['thumbnail_url_s']
-                     : feeds[0]['feed']['video_thumbnail_s'] : ""}
+                  videoUrl={videos.length !== 0 ? videos[0]['video_url_m3u8'] ?? videos[0]['video_url'] : ""}
+                  videoThumbnail={videos.length !== 0 ? videos[0]['video_thumbnail_s'] : ""}
                   width={innerHeight * (2 / 9)}
-                  feedLoading={feeds.length === 0}
+                  feedLoading={videos.length === 0}
                />
             </motion.div>
          </div>
@@ -233,9 +228,9 @@ export const MobileIndexPage = ({
             }}>
             <Videos
                loadMoreVideos={loadMoreVideos}
-               feeds={feeds}
                setCurrentVideoIndex={setCurrentVideoIndex}
                handleWheel={handleWheel}
+               rtData={rtData}
             />
          </div>
          <div
