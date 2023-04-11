@@ -35,11 +35,11 @@ export const Player = ({
   onClick,
   loadMoreVideos = () => { },
   setCurrentVideoIndex,
-  uniqueKey
+  uniqueKey,
+  disableWatch
 }) => {
   const [triggerPlayCount, setTriggetPlayCount] = useState(false);
   const [duration, setDuration] = useState(0);
-  const pad = useBreakpointValue({ base: true, md: false });
 
   const shortDescription = useMemo(() => {
     if (description?.length > 50) {
@@ -137,6 +137,7 @@ export const Player = ({
         loadMoreVideos={loadMoreVideos}
         setCurrentVideoIndex={setCurrentVideoIndex}
         uniqueKey={uniqueKey}
+        disableWatch={disableWatch}
       >
         {children}
         

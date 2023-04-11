@@ -22,33 +22,41 @@ const Home = () => {
   const [showModalAppDownload, setShowModalAppDownload] = useState(false);
   const handleCloseAppDownload = () => setShowModalAppDownload(false);
   const mobile = useBreakpointValue({ base: true, md: false });
-  const [videos, setVideos] = useState([]);
+  const [{rtVideos, rtData}, setRTData] = useState({rtVideos: [], rtData: {}});
+
   const [isLoadingFake, setIsLoadingFake] = useState(true);
 
   setTimeout(() => {
     setIsLoadingFake(false)
   }, 100)
 
-  const setPageSession = (session) => {
-    localStorage.setItem("page_session", session);
-  }
+  // const setPageSession = (session) => {
+  //   localStorage.setItem("page_session", session);
+  // }
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const deviceId = localStorage.getItem("device_id")
-        var oldPageSession = localStorage.getItem("page_session")
-        if (!deviceId) {
-          deviceId = uuidv4();
-          localStorage.setItem("device_id", deviceId);
-        }
-        const feed_data = await axios.get(
-          `${process.env.apiurl}/api/v3/public/home?device_id=${deviceId}&old_page_session=${oldPageSession}`
+        // const deviceId = localStorage.getItem("device_id")
+        // var oldPageSession = localStorage.getItem("page_session")
+        // if (!deviceId) {
+        //   deviceId = uuidv4();
+        //   localStorage.setItem("device_id", deviceId);
+        // }
+        // const feed_data = await axios.get(
+        //   `${process.env.apiurl}/api/v3/public/home?device_id=${deviceId}&old_page_session=${oldPageSession}`
+        // );
+        const videos_data = await axios.get(
+          `${process.env.apiurl}/api/v3/public/rt/paginate_videos?chat_id=13f3348fd5801493`
         );
-        const feeds = feed_data?.data?.data?.feeds;
-        setPageSession(feed_data?.data?.data?.page_session);
+        const rt_details = await axios.get(
+          `${process.env.apiurl}/api/v3/public/rt/details?chat_id=13f3348fd5801493`
+        );
+
+        const feeds = videos_data?.data?.data?.chats;
+        // setPageSession(feed_data?.data?.data?.page_session);
         if (feeds.length > 0) {
-          setVideos(videos.concat(feeds))
+          setRTData({ rtVideos: feeds, rtData: rt_details?.data?.data })
         }
       } catch (e) {
         console.log("error : ", e)
@@ -59,19 +67,21 @@ const Home = () => {
 
   const loadMoreVideos = async () => {
     try {
-      const index = videos.length - 1;
-      const lastVideoIsRT = videos[index]['feed_type'] === 'rt';
-      const lastVideoId = lastVideoIsRT ? videos[index]['feed']['chats'][0]['conversation_id'] : videos[index]['feed']['video_id'];
-      const lastVideoParentId = lastVideoIsRT ? videos[index]['feed']['chat_id'] : undefined;
-      const more_data = await axios.get(
-        `${process.env.apiurl}/api/v3/public/home?device_id=${localStorage.getItem("device_id")}&last_video_id=${lastVideoId}&last_video_parent_id=${lastVideoParentId}&last_video_type=${videos[index]['feed_type']}&page_session=${localStorage.getItem("page_session")}`
-      )
-      const feeds = more_data?.data?.data?.feeds;
-      if (feeds.length > 0) {
-        setVideos(videos.concat(feeds));
+      // const index = videos.length - 1;
+      // const lastVideoIsRT = videos[index]['feed_type'] === 'rt';
+      // const lastVideoId = lastVideoIsRT ? videos[index]['feed']['chats'][0]['conversation_id'] : videos[index]['feed']['video_id'];
+      // const lastVideoParentId = lastVideoIsRT ? videos[index]['feed']['chat_id'] : undefined;
+      // const more_data = await axios.get(
+      //   `${process.env.apiurl}/api/v3/public/home?device_id=${localStorage.getItem("device_id")}&last_video_id=${lastVideoId}&last_video_parent_id=${lastVideoParentId}&last_video_type=${videos[index]['feed_type']}&page_session=${localStorage.getItem("page_session")}`
+      // )
+      const res = await axios.get(
+        `${process.env.apiurl}/api/v3/public/rt/paginate_videos?chat_id=13f3348fd5801493&last_video_id=${rtVideos[rtVideos.length - 1].conversation_id}`
+      );
+      const chats = res?.data?.data?.chats;
+      if (chats.length > 0) {
+        setRTData((old) => ({rtVideos: old.rtVideos.concat(chats), rtData: old.rtData}));
       }
       
-      setPageSession(more_data?.data?.data?.page_session)
     } catch (e) {
       console.log('error : ', e)
     }
@@ -102,13 +112,13 @@ const Home = () => {
         </>
         : <>
           {!mobile && <AnimatedIndexPage
-            feeds={videos}
+            rtData={{rtVideos:rtVideos, rtData:rtData}}
             loadMoreVideos={loadMoreVideos}
           />
           }
           {mobile &&
             <MobileIndexPage
-              feeds={videos}
+              rtData={{rtVideos:rtVideos, rtData:rtData}}
               loadMoreVideos={loadMoreVideos}
             />}
         </>
