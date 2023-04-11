@@ -20,6 +20,8 @@
   "license": "ISC",
   "dependencies": {
     "@chakra-ui/react": "^2.3.7",
+    "@datadog/browser-logs": "^4.38.0",
+    "@datadog/browser-rum": "^4.38.0",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
     "@fortawesome/fontawesome-svg-core": "^6.2.0",
