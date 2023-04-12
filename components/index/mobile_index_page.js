@@ -47,6 +47,10 @@ export const MobileIndexPage = ({
    }
 
    useEffect(() => {
+      console.log("latest : ", latest)
+   }, [latest])
+
+   useEffect(() => {
       setInnerHeight(window.innerHeight);
       window.addEventListener("touchstart", handleTouchStart);
       window.addEventListener("touchend", handleTouchEnd);
@@ -58,7 +62,7 @@ export const MobileIndexPage = ({
    })
 
    useMotionValueEvent(scrollYProgress, "change", (latest) => {
-      setLatest(latest.toPrecision(6));
+      setLatest(latest > 0 ? latest.toPrecision(6) : 0);
    })
 
    return (<>
@@ -67,6 +71,7 @@ export const MobileIndexPage = ({
          style={{
             height: "100%",
             overflowY: "auto",
+            overscrollBehavior: "none"
          }}
          className="hide-scrollbar"
       >
@@ -133,7 +138,7 @@ export const MobileIndexPage = ({
                </div>
                <div
                   style={{
-                     paddingTop: "10px",
+                     paddingTop: "16px",
                      display: "flex",
                      justifyContent: "center",
                      zIndex: 13
