@@ -231,17 +231,17 @@ export const ReactPlayerWrapper = ({
             ? videos[currentVideoIndex]['video']['conversation_id']
             : videos[currentVideoIndex]['video']['video_id']) : uniqueKey}
       />
-      {!isMobile && <div style={{
+      <div style={{
         position: "absolute",
-        top: watchRoundTable ? '100px' : '10px',
-        left: "1%",
+        top: !isMobile ? (watchRoundTable ? '100px' : '10px') : '55px', 
+        left: "2%",
         zIndex: 2
       }}
         onClick={() => {
           onClick();
         }}>
         <img src={muted ? icMuteDesktop.src : icUnmuteDesktop.src} />
-      </div>}
+      </div>
 
       {/* roundtable header */}
       {watchRoundTable && (
