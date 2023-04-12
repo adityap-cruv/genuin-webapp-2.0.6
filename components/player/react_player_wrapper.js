@@ -95,13 +95,13 @@ export const ReactPlayerWrapper = ({
     onDurationRef?.current?.(event);
   });
 
-  var delay;
+  // var delay;
   useEffect(() => {
     const touchStart = (e) => {
       touchStartYRef.current = e.changedTouches[0].clientY;
-      delay = setInterval(() => { 
-        setIsPlaying(false);
-      }, 500);
+      // delay = setInterval(() => { 
+      //   setIsPlaying(false);
+      // }, 500);
     };
     const touchEnd = (e) => {
       const touchEndY = e.changedTouches[0].clientY;
@@ -110,8 +110,8 @@ export const ReactPlayerWrapper = ({
       } else if (touchStartYRef.current < touchEndY - 5) {
         getPrevVideoRef?.current?.();
       }
-      setIsPlaying(true);
-      clearInterval(delay);
+      // setIsPlaying(true);
+      // clearInterval(delay);
     };
     window.addEventListener("touchstart", touchStart);
     window.addEventListener("touchend", touchEnd);

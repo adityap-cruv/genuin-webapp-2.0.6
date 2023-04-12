@@ -27,7 +27,7 @@ export const MobileIndexPage = ({
    const [innerHeight, setInnerHeight] = useState(0);
 
    const scrollToReel = () => {
-      mainRef.current.scroll({ top: window.innerHeight, behavior: "smooth" });
+      mainRef.current.scroll({ top: (window.innerHeight + window.innerHeight / 2), behavior: "smooth" });
    }
 
    const handleWheel = (event) => {
@@ -46,6 +46,7 @@ export const MobileIndexPage = ({
       }
    }
 
+
    useEffect(() => {
       setInnerHeight(window.innerHeight);
       window.addEventListener("touchstart", handleTouchStart);
@@ -58,7 +59,7 @@ export const MobileIndexPage = ({
    })
 
    useMotionValueEvent(scrollYProgress, "change", (latest) => {
-      setLatest(latest.toPrecision(6));
+      setLatest(latest > 0 ? latest.toPrecision(6) : 0);
    })
 
    return (<>
@@ -67,6 +68,7 @@ export const MobileIndexPage = ({
          style={{
             height: "100%",
             overflowY: "auto",
+            overscrollBehavior: "none"
          }}
          className="hide-scrollbar"
       >
@@ -133,7 +135,7 @@ export const MobileIndexPage = ({
                </div>
                <div
                   style={{
-                     paddingTop: "10px",
+                     paddingTop: "16px",
                      display: "flex",
                      justifyContent: "center",
                      zIndex: 13
@@ -202,11 +204,11 @@ export const MobileIndexPage = ({
                   height: "80%",
                   position: "relative",
                   top: "80px",
-                  scale: (latest > .58) ? (latest - .09) * 2 : 1,
-                  translateY: (latest < .58) ? `calc(100px * ${latest} * 2)` : `calc(100px * ${1 - latest} * 2)`
+                  scale: (latest > .58) ? (latest - .18) * 2.7 : 1,
+                  translateY: (latest < .58) ? `calc(120px * ${latest} * 2)` : "50%"
                }}>
                <HomePageVideo
-                  opacityFrame={latest > .58 ? 1 - latest : 1}
+                  opacityFrame={latest > .58 ? 1.5 - latest : 1}
                   videoUrl={videos.length !== 0 ? videos[0]['video_url_m3u8'] ?? videos[0]['video_url'] : ""}
                   videoThumbnail={videos.length !== 0 ? videos[0]['video_thumbnail_s'] : ""}
                   width={innerHeight * (2 / 9)}
@@ -235,7 +237,7 @@ export const MobileIndexPage = ({
          </div>
          <div
             style={{
-               height: "200%",
+               height: "250%",
                position: "relative",
                zIndex: 9
             }}>
