@@ -66,7 +66,13 @@ export const AnimatedIndexPage = ({
                display: "flex",
                justifyContent: "center",
             }}>
-            <img src={backgroundVector.src} style={{opacity: .2, top: "10vh", position: "absolute", display: latest > .985555 ? "none": "block" }}/>
+            <img src={backgroundVector.src} style={{
+               opacity: .2,
+               height: "110%",
+               top: "10%",
+               position: "absolute",
+               display: latest > .985555 ? "none" : "block"
+            }} />
          </div>
          <div
             className="h-100 w-100"

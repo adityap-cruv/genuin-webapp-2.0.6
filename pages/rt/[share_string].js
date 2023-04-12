@@ -14,6 +14,7 @@ import {
 import { Container } from "react-bootstrap";
 import directMessage from "../../assets/images/direct_message_grey.svg";
 import icPreviewPlaceholder from "../../assets/images/video-more-options/ic_preview_placeholder.png";
+import { datadogLogs } from "@datadog/browser-logs";
 import {
   Avatar,
   Box,
@@ -30,7 +31,6 @@ import {
   useBreakpointValue,
   Text,
   VStack,
-  Spinner
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useMotionValueEvent, useScroll } from "framer-motion";
@@ -90,6 +90,7 @@ const RoundTable = ({
   useEffect(() => {
     setCurrentUrl(window.location.href);
     if (router?.query?.v) {
+      datadogLogs.logger.info("Video Watched")
       var idx = videos.findIndex(({ share_string }) => share_string === router?.query?.v)
       if (videos?.[idx]?.share_string) {
         setCurrentVideoIndex(idx);

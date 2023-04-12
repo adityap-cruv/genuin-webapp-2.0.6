@@ -3,7 +3,6 @@ import axios from "axios";
 import { Player } from "../components/player/player";
 import { Layout } from "../components/layout/layout";
 import { GetAppModal } from "../components/basic/get_app_modal";
-import { WelcomeModal } from "../components/basic/welcome_modal";
 import { Error } from "../components/basic/error";
 import { SEO } from "../components/basic/seo";
 import { AppActions } from "../components/basic/app_actions";
@@ -84,7 +83,7 @@ const Video = (props) => {
   });
 
   useEffect(() => {
-    datadogLogs.logger.info("Video Watched", {"view.id" : props.video_id})
+    datadogLogs.logger.info("Video Watched")
     var ls = window.location.href.split("/")
     if (ls && ls.length == 4){
       onOpen()

@@ -1,11 +1,11 @@
-import {useCallback, useEffect, useRef, useState} from "react";
-import {useDebounce} from "use-debounce";
-import {ProgressBar, Badge, Button} from "react-bootstrap";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useDebounce } from "use-debounce";
+import { ProgressBar, Badge, Button } from "react-bootstrap";
 import { Image, Flex, Text, Link, Box, useBreakpointValue, Avatar } from "@chakra-ui/react";
 import { Waypoint } from 'react-waypoint';
 import { isMobile } from "react-device-detect";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {faPlay, faPause} from "@fortawesome/free-solid-svg-icons";
+import { faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
 
 import icFlipLeft from "../../assets/images/video-more-options/ic-flip-left.svg";
 import icFlipRight from "../../assets/images/video-more-options/ic-flip-right.svg";
@@ -56,7 +56,7 @@ export const ReactPlayerWrapper = ({
   const [isPlaying, setIsPlaying] = useState(autoplay);
   const [rtEnded, setRtEnded] = useState(false);
   const [isPlayingDebounced] = useDebounce(isPlaying, 65);
-  const [isMutedDebounced] = useDebounce(muted,500);
+  const [isMutedDebounced] = useDebounce(muted, 500);
   const [displayThumbnail, setDisplayThumbnail] = useState(true)
 
   const handleOnClick = useCallback(() => {
@@ -79,7 +79,7 @@ export const ReactPlayerWrapper = ({
   const onEndedRef = useRef(onEnded);
   onEndedRef.current = onEnded;
 
-  const mobile = useBreakpointValue({base: true, md: false});
+  const mobile = useBreakpointValue({ base: true, md: false });
 
   const setProgressWrapper = useCallback(
     (event) => {
@@ -134,14 +134,14 @@ export const ReactPlayerWrapper = ({
       window.removeEventListener("popstate", onBackButtonEvent);
     };
   }, []);
-  
+
   const onEndedWrapper = useCallback(
     (e) => {
       // if(roundTableMode){
       //   setRtEnded(true)
       //   setIsPlaying(false)
       // }
-      
+
       // if(!roundTableMode){
       //   onEndedRef?.current?.(e);
       // }
@@ -154,7 +154,7 @@ export const ReactPlayerWrapper = ({
   );
 
   const changeState = () => {
-    if(rtEnded){
+    if (rtEnded) {
       setRtEnded(false);
       setIsPlaying(true);
     }
@@ -187,7 +187,7 @@ export const ReactPlayerWrapper = ({
   };
 
   let handleEnterViewport = function () {
-      loadMoreVideos(currentVideoIndex);
+    loadMoreVideos(currentVideoIndex);
     setCurrentVideoIndex(currentVideoIndex)
     setIsPlaying(true)
   }
@@ -198,13 +198,13 @@ export const ReactPlayerWrapper = ({
   return (
     <div
       className={isMobile ? "video-container-mobile" : "video-container"}
-        style={{
-          color: "white",
-        }}
+      style={{
+        color: "white",
+      }}
     >
       {displayThumbnail && <Box
         backgroundImage={`url(${videoThumbnail})`}
-        backgroundColor= {Boolean(videoThumbnail) ? "transparent" : "lightgray"}
+        backgroundColor={Boolean(videoThumbnail) ? "transparent" : "lightgray"}
         backgroundRepeat='no-repeat'
         backgroundSize='cover'
         backgroundPosition='center'
@@ -228,71 +228,71 @@ export const ReactPlayerWrapper = ({
         url={videoUrl}
         uniqueKey={!uniqueKey ?
           (videos[currentVideoIndex]['video_type'] === 'rt'
-          ? videos[currentVideoIndex]['video']['conversation_id']
-          : videos[currentVideoIndex]['video']['video_id']) : uniqueKey}
+            ? videos[currentVideoIndex]['video']['conversation_id']
+            : videos[currentVideoIndex]['video']['video_id']) : uniqueKey}
       />
-      {!isMobile && <div style={{
+      <div style={{
         position: "absolute",
-        top: watchRoundTable ? '100px' : '10px',
-        left: "1%",
+        top: !isMobile ? (watchRoundTable ? '100px' : '10px') : '55px', 
+        left: "2%",
         zIndex: 2
       }}
         onClick={() => {
           onClick();
         }}>
         <img src={muted ? icMuteDesktop.src : icUnmuteDesktop.src} />
-      </div>}
+      </div>
 
-        {/* roundtable header */}
-        {watchRoundTable && (
+      {/* roundtable header */}
+      {watchRoundTable && (
+        <Flex
+          w="full"
+          position="absolute"
+          top="0"
+          p={4}
+          direction="column"
+          gap={2}
+        >
           <Flex
             w="full"
-            position="absolute"
-            top="0"
-            p={4}
-            direction="column"
-            gap={2}
+            justifyContent="space-between"
+            alignItems="center"
+            h={10}
           >
-            <Flex
-              w="full"
-              justifyContent="space-between"
-              alignItems="center"
-              h={10}
-            >
-              <Text fontWeight="bold" fontSize={17}>
-                {videos[currentVideoIndex] && `${getTimeDiff()}`}
-              </Text>
-              <Link target="_blank" href={roundTableId}>
-                <Flex
-                  alignItems="center"
-                  gap={3}
-                  margin="0"
-                  position="absolute"
-                  left="50%"
-                  transform="translate(-50%, -50%)"
+            <Text fontWeight="bold" fontSize={17}>
+              {videos[currentVideoIndex] && `${getTimeDiff()}`}
+            </Text>
+            <Link target="_blank" href={roundTableId}>
+              <Flex
+                alignItems="center"
+                gap={3}
+                margin="0"
+                position="absolute"
+                left="50%"
+                transform="translate(-50%, -50%)"
+              >
+                <Text
+                  background="rgba(17, 17, 17, 0.6)"
+                  borderRadius="5px"
+                  p={2}
+                  fontWeight="bold"
+                  fontSize={{ base: 14, sm: 17 }}
+                  whiteSpace="nowrap"
+                  overflow="hidden"
+                  textOverflow="ellipsis"
                 >
-                  <Text
-                    background="rgba(17, 17, 17, 0.6)"
-                    borderRadius="5px"
-                    p={2}
-                    fontWeight="bold"
-                    fontSize={{base: 14, sm: 17}}
-                    whiteSpace="nowrap"
-                    overflow="hidden"
-                    textOverflow="ellipsis"
-                  >
-                    {roundTableName}
-                  </Text>
-                  <Image
-                    src={earth.src}
-                    width={{base: 5, sm: 6}}
-                    height={{base: 5, sm: 6}}
-                    alt="Roundtable"
-                    title="Roundtable"
-                  />
-                </Flex>
-              </Link>
-              {/* <Image
+                  {roundTableName}
+                </Text>
+                <Image
+                  src={earth.src}
+                  width={{ base: 5, sm: 6 }}
+                  height={{ base: 5, sm: 6 }}
+                  alt="Roundtable"
+                  title="Roundtable"
+                />
+              </Flex>
+            </Link>
+            {/* <Image
                 src={icClose.src}
                 width={6}
                 height={6}
@@ -300,90 +300,88 @@ export const ReactPlayerWrapper = ({
                 title="Close"
                 onClick={onClose}
               /> */}
-            </Flex>
-            <Flex w="full" gap={1}>
-              {/* {JSON.stringify(videos)} */}
-              {Boolean(videos.length) &&
-                videos.map((_, index) => {
-                  return (
-                    <Box h={1} w="full" borderRadius={10} background="white">
-                      {direction === "forward" && (
-                        <Box
-                          backgroundColor="#0645FF"
-                          borderRadius={10}
-                          h={1}
-                          w={`${
-                            index < currentVideoIndex
-                              ? 100
-                              : index === currentVideoIndex
-                              ? progress
-                              : 0
-                          }%`}
-                        />
-                      )}
-                      {direction === "backward" && (
-                        <Box
-                          backgroundColor="#0645FF"
-                          borderRadius={10}
-                          h={1}
-                          float="right"
-                          w={`${
-                            index > currentVideoIndex
-                              ? 100
-                              : index === currentVideoIndex
-                              ? progress
-                              : 0
-                          }%`}
-                        />
-                      )}
-                    </Box>
-                  );
-                })}
-            </Flex>
-            <Flex w="full" justifyContent="space-between" alignItems="center">
-              <Text fontWeight={600} fontSize={17}>
-                {videos[currentVideoIndex]?.meta_data?.duration} Sec
-              </Text>
-              {direction === "forward" ? (
-                <Image
-                  src={icFlipRight.src}
-                  width={6}
-                  height={6}
-                  alt="Flip Right"
-                  title="Flip Right"
-                  onClick={() => setDirection("backward")}
-                />
-              ) : (
-                <Image
-                  src={icFlipLeft.src}
-                  width={6}
-                  height={6}
-                  alt="Flip Left"
-                  title="Flip Left"
-                  onClick={() => setDirection("forward")}
-                />
-              )}
-            </Flex>
           </Flex>
-        )}
-        {/* x button */}
-        {!watchRoundTable && !mobile && (
+          <Flex w="full" gap={1}>
+            {/* {JSON.stringify(videos)} */}
+            {Boolean(videos.length) &&
+              videos.map((_, index) => {
+                return (
+                  <Box h={1} w="full" borderRadius={10} background="white">
+                    {direction === "forward" && (
+                      <Box
+                        backgroundColor="#0645FF"
+                        borderRadius={10}
+                        h={1}
+                        w={`${index < currentVideoIndex
+                          ? 100
+                          : index === currentVideoIndex
+                            ? progress
+                            : 0
+                          }%`}
+                      />
+                    )}
+                    {direction === "backward" && (
+                      <Box
+                        backgroundColor="#0645FF"
+                        borderRadius={10}
+                        h={1}
+                        float="right"
+                        w={`${index > currentVideoIndex
+                          ? 100
+                          : index === currentVideoIndex
+                            ? progress
+                            : 0
+                          }%`}
+                      />
+                    )}
+                  </Box>
+                );
+              })}
+          </Flex>
+          <Flex w="full" justifyContent="space-between" alignItems="center">
+            <Text fontWeight={600} fontSize={17}>
+              {videos[currentVideoIndex]?.meta_data?.duration} Sec
+            </Text>
+            {direction === "forward" ? (
+              <Image
+                src={icFlipRight.src}
+                width={6}
+                height={6}
+                alt="Flip Right"
+                title="Flip Right"
+                onClick={() => setDirection("backward")}
+              />
+            ) : (
+              <Image
+                src={icFlipLeft.src}
+                width={6}
+                height={6}
+                alt="Flip Left"
+                title="Flip Left"
+                onClick={() => setDirection("forward")}
+              />
+            )}
+          </Flex>
+        </Flex>
+      )}
+      {/* x button */}
+      {!watchRoundTable && !mobile && (
+        <Flex
+          w="full"
+          position="absolute"
+          top="0"
+          p={4}
+          direction="column"
+          gap={2}
+        >
           <Flex
             w="full"
-            position="absolute"
-            top="0"
-            p={4}
-            direction="column"
-            gap={2}
+            justifyContent="space-between"
+            alignItems="center"
+            h={10}
           >
-            <Flex
-              w="full"
-              justifyContent="space-between"
-              alignItems="center"
-              h={10}
-            >
-              <Box />
-              {/* <Image
+            <Box />
+            {/* <Image
                 src={icClose.src}
                 width={6}
                 height={6}
@@ -392,8 +390,8 @@ export const ReactPlayerWrapper = ({
                 title="Close"
                 onClick={onClose}
               /> */}
-            </Flex>
           </Flex>
+        </Flex>
       )}
       <>{isMobile ? <>
         {muted ?
@@ -416,44 +414,39 @@ export const ReactPlayerWrapper = ({
         <>
           {isPlaying
             ? <FontAwesomeIcon
-          icon={faPause}
-          style={{
-            display: isPlayingDebounced ? "none" : "block",
-          }}
-          className="btn-play"
+              icon={faPause}
+              style={{
+                display: isPlayingDebounced ? "none" : "block",
+              }}
+              className="btn-play"
             />
             : <FontAwesomeIcon
-          icon={faPlay}
-          style={{
-            display: "block",
-          }}
-          className="btn-play"
-        />}
-      </>}
+              icon={faPlay}
+              style={{
+                display: "block",
+              }}
+              className="btn-play"
+            />}
+        </>}
 
       </>
 
-        <div className='video-footer bg-gradient-180'>
-          <Flex alignItems='end' justifyContent='space-between' mb={3}>
-            {(!watchRoundTable || !roundTableMode) && (
-              <Flex direction="column" style={{wordBreak: 'break-word', width : "84%"}}>
-                {Boolean(roundTableMode) && (
-                  <Link
-                    key={userName}
-                    target="_blank"
-                    href={`/p/${userName}`}
-                    _hover={{
-                      textDecoration: "none",
-                    }}
-                  >
+      <div className='video-footer bg-gradient-180'>
+        <Flex alignItems='end' justifyContent='space-between' mb={3}>
+          {(!watchRoundTable || !roundTableMode) && (
+            <Flex direction="column" style={{ wordBreak: 'break-word', width: "84%" }}>
+              {Boolean(roundTableMode) && (
+                <>
+                  {disableWatch
+                    ?
                     <Badge
                       pill bg="dark"
-                    className="mb-2 align-self-start trunc"
-                    style={{
-                      fontSize: "15px",
-                      fontWeight: 700,
-                      lineHeight: "24px"
-                    }}>
+                      className="mb-2 align-self-start trunc"
+                      style={{
+                        fontSize: "15px",
+                        fontWeight: 700,
+                        lineHeight: "24px"
+                      }}>
                       <Flex direction='horizontal'>
                         <Text style={{
                           textOverflow: 'ellipsis',
@@ -467,137 +460,185 @@ export const ReactPlayerWrapper = ({
                         }}> added</pre>
                       </Flex>
                     </Badge>
-                  </Link>
-                )}
+                    : <Link
+                      key={userName}
+                      target="_blank"
+                      href={`/p/${userName}`}
+                      _hover={{
+                        textDecoration: "none",
+                      }}
+                    >
+                      <Badge
+                        pill bg="dark"
+                        className="mb-2 align-self-start trunc"
+                        style={{
+                          fontSize: "15px",
+                          fontWeight: 700,
+                          lineHeight: "24px"
+                        }}>
+                        <Flex direction='horizontal'>
+                          <Text style={{
+                            textOverflow: 'ellipsis',
+                            overflow: 'hidden',
+                            maxWidth: '75%',
+                          }}>
+                            @{userName}
+                          </Text>
+                          <pre style={{
+                            overflow: 'visible'
+                          }}> added</pre>
+                        </Flex>
+                      </Badge>
+                    </Link>}
+
+                </>
+              )}
               <div className="video-auther mb-2"
                 style={{
                   fontWeight: "bold",
                   fontSize: "17px"
                 }}>
-                  <Waypoint
-                    onEnter={handleEnterViewport}
-                    onLeave={handleExitViewport}
-                  // topOffset='80%'
-                  >
-                    {Boolean(roundTableMode) ? (
-                      <Avatar
-                        name={roundTableName}
-                        width={9}
-                        height={9}
-                        src={rtProfilePic ?? ""}
-                        size="l"
-                        background="#A4E6DA"
-                        className="img-auther-pic"
-                      />
-                    ) : (
-                      
-                        <Image
-                          src={profilePic}
-                          width={9}
-                          height={9}
-                          alt={userName}
-                          title={userName}
-                          className="img-auther-pic"
-                          style={{objectFit: 'cover'}}
-                        />
+                <Waypoint
+                  onEnter={handleEnterViewport}
+                  onLeave={handleExitViewport}
+                // topOffset='80%'
+                >
+                  {Boolean(roundTableMode) ? (
+                    <Avatar
+                      name={roundTableName}
+                      width={9}
+                      height={9}
+                      src={rtProfilePic ?? ""}
+                      size="l"
+                      background="#A4E6DA"
+                      className="img-auther-pic"
+                    />
+                  ) : (
+
+                    <Image
+                      src={profilePic}
+                      width={9}
+                      height={9}
+                      alt={userName}
+                      title={userName}
+                      className="img-auther-pic"
+                      style={{ objectFit: 'cover' }}
+                    />
                   )}
-                  </Waypoint>
-                    {Boolean(roundTableMode) ? (
-                      <Flex alignItems="center">
-                    <Link
-                      target="_blank"
-                      href={`/rt/${roundTableId}`}
-                      style={{
-                        marginRight: "10px",
-                        maxWidth: "150px"
-                      }}
-                    >
+                </Waypoint>
+                {Boolean(roundTableMode) ? (
+                  <Flex alignItems="center">
+                    {
+                      disableWatch
+                        ?
                         <Text
-                          whiteSpace="nowrap"
-                          overflow="hidden"
-                          textOverflow="ellipsis"
+                            whiteSpace="nowrap"
+                            overflow="hidden"
+                            textOverflow="ellipsis"
+                            style={{
+                              marginRight: "10px",
+                              maxWidth: "150px"
+                            }}
                           // width={mobile ? 'calc(100vw - 235px)' : '150px'}
-                        >
-                          {roundTableName}
-                        </Text>
-                        </Link>
-                        {!disableWatch && <Button
-                          variant="outline-light"
-                          onClick={() => {
-                            if (verticalNavigation && shareUrl) {
-                              // window.location.href = shareUrl;
-                              window.open(shareUrl, "_blank");
-                              // window.location.href = `${process.env.hostname}rt/${shareUrl.split("/").pop()}`
-                              // onClose();
-                            } else {
-                              // setWatchRoundtable(true);
-                              // setIsPlaying(true);
-                            }
+                          >
+                            {roundTableName}
+                          </Text>
+                        : <Link
+                          target="_blank"
+                          href={`/rt/${roundTableId}`}
+                          style={{
+                            marginRight: "10px",
+                            maxWidth: "150px"
                           }}
                         >
-                            Watch
-                        </Button>}
-                      </Flex>
-                    ) : (
-                    <Link
-                      target="_blank"
-                      href={`/p/${userName}`}
-                      style={{
-                        maxWidth: "150px"
-                      }}>
-                            <Text
-                              whiteSpace="nowrap"
-                              overflow="hidden"
-                              textOverflow="ellipsis"
-                              fontWeight="bold"
-                            >
-                            @{userName}
-                            </Text>
-                      </Link>
-                    )}
-                </div>
+                          <Text
+                            whiteSpace="nowrap"
+                            overflow="hidden"
+                            textOverflow="ellipsis"
+                          // width={mobile ? 'calc(100vw - 235px)' : '150px'}
+                          >
+                            {roundTableName}
+                          </Text>
+                        </Link>
+                    }
+
+                    {!disableWatch && <Button
+                      variant="outline-light"
+                      onClick={() => {
+                        if (verticalNavigation && shareUrl) {
+                          // window.location.href = shareUrl;
+                          window.open(shareUrl, "_blank");
+                          // window.location.href = `${process.env.hostname}rt/${shareUrl.split("/").pop()}`
+                          // onClose();
+                        } else {
+                          // setWatchRoundtable(true);
+                          // setIsPlaying(true);
+                        }
+                      }}
+                    >
+                      Watch
+                    </Button>}
+                  </Flex>
+                ) : (
+                  <Link
+                    target="_blank"
+                    href={`/p/${userName}`}
+                    style={{
+                      maxWidth: "150px"
+                    }}>
+                    <Text
+                      whiteSpace="nowrap"
+                      overflow="hidden"
+                      textOverflow="ellipsis"
+                      fontWeight="bold"
+                    >
+                      @{userName}
+                    </Text>
+                  </Link>
+                )}
+              </div>
               <p
                 className="mb-0"
                 style={{
                   fontSize: "15px",
                   fontWeight: "600"
                 }}>{description}</p>
+            </Flex>
+          )}
+          {watchRoundTable && roundTableMode && (
+            <Link
+              target="_blank"
+              href={`/p/${userName}`}
+              _hover={{
+                textDecoration: "none",
+              }}
+            >
+              <Flex alignItems="center" gap={2}>
+                <Image
+                  src={profilePic}
+                  width={9}
+                  height={9}
+                  alt={userName}
+                  title={userName}
+                  className="img-auther-pic"
+                />
+                <Text
+                  whiteSpace="nowrap"
+                  overflow="hidden"
+                  textOverflow="ellipsis"
+                  maxW='70%'
+                >
+                  @{userName}
+                </Text>
               </Flex>
-            )}
-            {watchRoundTable && roundTableMode && (
-              <Link
-                target="_blank"
-                href={`/p/${userName}`}
-                _hover={{
-                  textDecoration: "none",
-                }}
-              >
-                <Flex alignItems="center" gap={2}>
-                  <Image
-                    src={profilePic}
-                    width={9}
-                    height={9}
-                    alt={userName}
-                    title={userName}
-                    className="img-auther-pic"
-                  />
-                  <Text
-                    whiteSpace="nowrap"
-                    overflow="hidden"
-                    textOverflow="ellipsis"
-                    maxW= '70%'
-                  >
-                    @{userName}
-                  </Text>
-                </Flex>
-              </Link>
-            )}
-            <div className="flex-shrink-0 position-relative video-more-option">
-              {children}
-            </div>
-          </Flex>
-          <ProgressBar now={progress} />
-        </div>
+            </Link>
+          )}
+          <div className="flex-shrink-0 position-relative video-more-option">
+            {children}
+          </div>
+        </Flex>
+        <ProgressBar now={progress} />
       </div>
+    </div>
   );
 };
