@@ -61,39 +61,6 @@ export const TopNav = ({
         />
       </Navbar.Brand>
       <div className='d-flex align-items-center justify-content-center'>
-        {!mobile && (
-          <Button
-            variant='primary'
-            className='me-3'
-            onClick={showGetAppModal}
-            style={{
-              height: 32,
-              padding: "4px 16px",
-              fontSize: 15,
-              fontWeight: "bold",
-              pointerEvents: "all",
-            }}
-          >
-            Get App
-          </Button>
-        )}
-        {mobile && (
-          <Link target="_blank" href={appStoreLink} pointerEvents='all'>
-            <Button
-              variant='primary'
-              className='me-3'
-              style={{
-                height: 32,
-                padding: "4px 16px",
-                fontSize: 15,
-                fontWeight: "bold",
-                pointerEvents: "all",
-              }}
-            >
-              Get App
-            </Button>
-          </Link>
-        )}
         {!hideBurgerMenu && (
           <>
             <Navbar.Toggle

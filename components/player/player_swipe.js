@@ -36,7 +36,8 @@ export const Player = ({
   loadMoreVideos = () => { },
   setCurrentVideoIndex,
   uniqueKey,
-  disableWatch
+  disableWatch,
+  contextReel,//! this is temporary
 }) => {
   const [triggerPlayCount, setTriggetPlayCount] = useState(false);
   const [duration, setDuration] = useState(0);
@@ -138,6 +139,7 @@ export const Player = ({
         setCurrentVideoIndex={setCurrentVideoIndex}
         uniqueKey={uniqueKey}
         disableWatch={disableWatch}
+        contextReel={contextReel}
       >
         {children}
         
