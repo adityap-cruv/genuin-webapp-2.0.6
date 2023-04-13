@@ -234,7 +234,7 @@ export const ReactPlayerWrapper = ({
         backgroundPosition='center'
         width='100%'
         h='100%'
-        filter='blur(10px)'
+        filter='blur(5px)'
       />}
       <DynamicPlayer
         currentVideoIndex={currentVideoIndex}
