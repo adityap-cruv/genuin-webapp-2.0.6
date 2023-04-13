@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useDebounce } from "use-debounce";
 import { ProgressBar, Badge, Button } from "react-bootstrap";
-import { Image, Flex, Text, Link, Box, useBreakpointValue, Avatar } from "@chakra-ui/react";
+import { Image, Flex, Text, Link, Box, useBreakpointValue, Avatar, transition } from "@chakra-ui/react";
 import { Waypoint } from 'react-waypoint';
 import { isMobile } from "react-device-detect";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
+import { motion, useAnimationControls } from "framer-motion";
 
 import icFlipLeft from "../../assets/images/video-more-options/ic-flip-left.svg";
 import icFlipRight from "../../assets/images/video-more-options/ic-flip-right.svg";
@@ -15,6 +16,7 @@ import icUnmuteDesktop from "../../assets/images/video-more-options/ic-unmute-de
 import icMuteDesktop from "../../assets/images/video-more-options/ic-mute-desktop.svg";
 import icUnmute from "../../assets/images/video-more-options/ic-unmute.svg";
 import { DynamicPlayer } from "./dynamic_player";
+import icArrowRight from "../../assets/images/video-more-options/ic-arrow-right.svg"
 
 export const ReactPlayerWrapper = ({
   videoUrl,
@@ -49,7 +51,8 @@ export const ReactPlayerWrapper = ({
   loadMoreVideos,
   setCurrentVideoIndex,
   uniqueKey = null,
-  disableWatch = false
+  disableWatch = false,
+  contextReel //! this is temporary.
 }) => {
   const [isMuted, setIsMuted] = useState(true);
   const [progress, setProgress] = useState(0);
@@ -58,6 +61,23 @@ export const ReactPlayerWrapper = ({
   const [isPlayingDebounced] = useDebounce(isPlaying, 65);
   const [isMutedDebounced] = useDebounce(muted, 500);
   const [displayThumbnail, setDisplayThumbnail] = useState(true)
+
+  //# this is for animation of bottom button(download button);
+  const bottomButtonAnimationController = contextReel && useAnimationControls();
+  const bottomButtonBackgroundColorController = contextReel && useAnimationControls();
+  const startAnimation = () => {
+    setTimeout(() => {
+      bottomButtonAnimationController.start({ y: 0, transition: { duration: 1 } })
+    }, 3000)
+    setTimeout(() => {
+      bottomButtonBackgroundColorController.start({ backgroundColor: "rgba(6, 69, 255, 1)", transition: { duration: .5 } })
+    }, 6000)
+  }
+
+  const resetAnimation = () => {
+    bottomButtonBackgroundColorController.start({ backgroundColor: "rgba(255, 255, 255, 0.2)", transition: { duration: 0 } })
+    bottomButtonAnimationController.start({ y: 70, transition: { duration: 0 } })
+  }
 
   const handleOnClick = useCallback(() => {
     if (isMobile) {
@@ -190,6 +210,10 @@ export const ReactPlayerWrapper = ({
     loadMoreVideos(currentVideoIndex);
     setCurrentVideoIndex(currentVideoIndex)
     setIsPlaying(true)
+    if (contextReel) {
+      resetAnimation();
+      startAnimation();
+    }
   }
   let handleExitViewport = function () {
     setIsPlaying(false)
@@ -233,7 +257,7 @@ export const ReactPlayerWrapper = ({
       />
       <div style={{
         position: "absolute",
-        top: !isMobile ? (watchRoundTable ? '100px' : '10px') : '55px', 
+        top: !isMobile ? (watchRoundTable ? '100px' : '10px') : '55px',
         left: "2%",
         zIndex: 2
       }}
@@ -431,43 +455,23 @@ export const ReactPlayerWrapper = ({
 
       </>
 
-      <div className='video-footer bg-gradient-180'>
-        <Flex alignItems='end' justifyContent='space-between' mb={3}>
-          {(!watchRoundTable || !roundTableMode) && (
-            <Flex direction="column" style={{ wordBreak: 'break-word', width: "84%" }}>
-              {Boolean(roundTableMode) && (
-                <>
-                  {disableWatch
-                    ?
-                    <Badge
-                      pill bg="dark"
-                      className="mb-2 align-self-start trunc"
-                      style={{
-                        fontSize: "15px",
-                        fontWeight: 700,
-                        lineHeight: "24px"
-                      }}>
-                      <Flex direction='horizontal'>
-                        <Text style={{
-                          textOverflow: 'ellipsis',
-                          overflow: 'hidden',
-                          maxWidth: '75%',
-                        }}>
-                          @{userName}
-                        </Text>
-                        <pre style={{
-                          overflow: 'visible'
-                        }}> added</pre>
-                      </Flex>
-                    </Badge>
-                    : <Link
-                      key={userName}
-                      target="_blank"
-                      href={`/p/${userName}`}
-                      _hover={{
-                        textDecoration: "none",
-                      }}
-                    >
+      <div
+        className='video-footer bg-gradient-180'
+      >
+        <motion.div
+          animate={bottomButtonAnimationController}
+          initial={{ y: 70 }}
+          style={{
+            paddingBottom: "8px"
+          }}
+        >
+          <Flex alignItems='end' justifyContent='space-between' mb={3}>
+            {(!watchRoundTable || !roundTableMode) && (
+              <Flex direction="column" style={{ wordBreak: 'break-word', width: "84%" }}>
+                {Boolean(roundTableMode) && (
+                  <>
+                    {disableWatch
+                      ?
                       <Badge
                         pill bg="dark"
                         className="mb-2 align-self-start trunc"
@@ -489,49 +493,78 @@ export const ReactPlayerWrapper = ({
                           }}> added</pre>
                         </Flex>
                       </Badge>
-                    </Link>}
+                      : <Link
+                        key={userName}
+                        target="_blank"
+                        href={`/p/${userName}`}
+                        _hover={{
+                          textDecoration: "none",
+                        }}
+                      >
+                        <Badge
+                          pill bg="dark"
+                          className="mb-2 align-self-start trunc"
+                          style={{
+                            fontSize: "15px",
+                            fontWeight: 700,
+                            lineHeight: "24px"
+                          }}>
+                          <Flex direction='horizontal'>
+                            <Text style={{
+                              textOverflow: 'ellipsis',
+                              overflow: 'hidden',
+                              maxWidth: '75%',
+                            }}>
+                              @{userName}
+                            </Text>
+                            <pre style={{
+                              overflow: 'visible'
+                            }}> added</pre>
+                          </Flex>
+                        </Badge>
+                      </Link>}
 
-                </>
-              )}
-              <div className="video-auther mb-2"
-                style={{
-                  fontWeight: "bold",
-                  fontSize: "17px"
-                }}>
-                <Waypoint
-                  onEnter={handleEnterViewport}
-                  onLeave={handleExitViewport}
-                // topOffset='80%'
-                >
+                  </>
+                )}
+                <div className="video-auther mb-2"
+                  style={{
+                    fontWeight: "bold",
+                    fontSize: "17px"
+                  }}>
+                  <Waypoint
+                    onEnter={handleEnterViewport}
+                    onLeave={handleExitViewport}
+                  // topOffset='80%'
+                  >
+                    {Boolean(roundTableMode) ? (
+                      <Avatar
+                        name={roundTableName}
+                        width={9}
+                        height={9}
+                        src={rtProfilePic ?? ""}
+                        size="l"
+                        background="#A4E6DA"
+                        className="img-auther-pic"
+                      />
+                    ) : (
+
+                      <Image
+                        src={profilePic}
+                        width={9}
+                        height={9}
+                        alt={userName}
+                        title={userName}
+                        className="img-auther-pic"
+                        style={{ objectFit: 'cover' }}
+                      />
+                    )}
+                  </Waypoint>
                   {Boolean(roundTableMode) ? (
-                    <Avatar
-                      name={roundTableName}
-                      width={9}
-                      height={9}
-                      src={rtProfilePic ?? ""}
-                      size="l"
-                      background="#A4E6DA"
-                      className="img-auther-pic"
-                    />
-                  ) : (
-
-                    <Image
-                      src={profilePic}
-                      width={9}
-                      height={9}
-                      alt={userName}
-                      title={userName}
-                      className="img-auther-pic"
-                      style={{ objectFit: 'cover' }}
-                    />
-                  )}
-                </Waypoint>
-                {Boolean(roundTableMode) ? (
-                  <Flex alignItems="center">
-                    {
-                      disableWatch
-                        ?
-                        <Text
+                    <Flex alignItems="center">
+                      {
+                        disableWatch
+                          ?
+                          <Text
                             whiteSpace="nowrap"
                             overflow="hidden"
                             textOverflow="ellipsis"
@@ -543,100 +576,126 @@ export const ReactPlayerWrapper = ({
                           >
                             {roundTableName}
                           </Text>
-                        : <Link
-                          target="_blank"
-                          href={`/rt/${roundTableId}`}
-                          style={{
-                            marginRight: "10px",
-                            maxWidth: "150px"
-                          }}
-                        >
-                          <Text
-                            whiteSpace="nowrap"
-                            overflow="hidden"
-                            textOverflow="ellipsis"
-                          // width={mobile ? 'calc(100vw - 235px)' : '150px'}
+                          : <Link
+                            target="_blank"
+                            href={`/rt/${roundTableId}`}
+                            style={{
+                              marginRight: "10px",
+                              maxWidth: "150px"
+                            }}
                           >
-                            {roundTableName}
-                          </Text>
-                        </Link>
-                    }
+                            <Text
+                              whiteSpace="nowrap"
+                              overflow="hidden"
+                              textOverflow="ellipsis"
+                            // width={mobile ? 'calc(100vw - 235px)' : '150px'}
+                            >
+                              {roundTableName}
+                            </Text>
+                          </Link>
+                      }
 
-                    {!disableWatch && <Button
-                      variant="outline-light"
-                      onClick={() => {
-                        if (verticalNavigation && shareUrl) {
-                          // window.location.href = shareUrl;
-                          window.open(shareUrl, "_blank");
-                          // window.location.href = `${process.env.hostname}rt/${shareUrl.split("/").pop()}`
-                          // onClose();
-                        } else {
-                          // setWatchRoundtable(true);
-                          // setIsPlaying(true);
-                        }
-                      }}
-                    >
-                      Watch
-                    </Button>}
-                  </Flex>
-                ) : (
-                  <Link
-                    target="_blank"
-                    href={`/p/${userName}`}
-                    style={{
-                      maxWidth: "150px"
-                    }}>
-                    <Text
-                      whiteSpace="nowrap"
-                      overflow="hidden"
-                      textOverflow="ellipsis"
-                      fontWeight="bold"
-                    >
-                      @{userName}
-                    </Text>
-                  </Link>
-                )}
-              </div>
-              <p
-                className="mb-0"
-                style={{
-                  fontSize: "15px",
-                  fontWeight: "600"
-                }}>{description}</p>
-            </Flex>
-          )}
-          {watchRoundTable && roundTableMode && (
-            <Link
-              target="_blank"
-              href={`/p/${userName}`}
-              _hover={{
-                textDecoration: "none",
-              }}
-            >
-              <Flex alignItems="center" gap={2}>
-                <Image
-                  src={profilePic}
-                  width={9}
-                  height={9}
-                  alt={userName}
-                  title={userName}
-                  className="img-auther-pic"
-                />
-                <Text
-                  whiteSpace="nowrap"
-                  overflow="hidden"
-                  textOverflow="ellipsis"
-                  maxW='70%'
-                >
-                  @{userName}
-                </Text>
+                      {!disableWatch && <Button
+                        variant="outline-light"
+                        onClick={() => {
+                          if (verticalNavigation && shareUrl) {
+                            // window.location.href = shareUrl;
+                            window.open(shareUrl, "_blank");
+                            // window.location.href = `${process.env.hostname}rt/${shareUrl.split("/").pop()}`
+                            // onClose();
+                          } else {
+                            // setWatchRoundtable(true);
+                            // setIsPlaying(true);
+                          }
+                        }}
+                      >
+                        Watch
+                      </Button>}
+                    </Flex>
+                  ) : (
+                    <Link
+                      target="_blank"
+                      href={`/p/${userName}`}
+                      style={{
+                        maxWidth: "150px"
+                      }}>
+                      <Text
+                        whiteSpace="nowrap"
+                        overflow="hidden"
+                        textOverflow="ellipsis"
+                        fontWeight="bold"
+                      >
+                        @{userName}
+                      </Text>
+                    </Link>
+                  )}
+                </div>
+                <p
+                  className="mb-0"
+                  style={{
+                    fontSize: "15px",
+                    fontWeight: "600"
+                  }}>{description}</p>
               </Flex>
-            </Link>
-          )}
-          <div className="flex-shrink-0 position-relative video-more-option">
-            {children}
-          </div>
-        </Flex>
+            )}
+            {watchRoundTable && roundTableMode && (
+              <Link
+                target="_blank"
+                href={`/p/${userName}`}
+                _hover={{
+                  textDecoration: "none",
+                }}
+              >
+                <Flex alignItems="center" gap={2}>
+                  <Image
+                    src={profilePic}
+                    width={9}
+                    height={9}
+                    alt={userName}
+                    title={userName}
+                    className="img-auther-pic"
+                  />
+                  <Text
+                    whiteSpace="nowrap"
+                    overflow="hidden"
+                    textOverflow="ellipsis"
+                    maxW='70%'
+                  >
+                    @{userName}
+                  </Text>
+                </Flex>
+              </Link>
+            )}
+            <div className="flex-shrink-0 position-relative video-more-option">
+              {children}
+            </div>
+          </Flex>
+          <motion.div
+            style={{
+              width: "100%",
+              borderRadius: "8px",
+              padding: "8px",
+              display: "flex",
+              backgroundColor: "rgba(255, 255, 255, 0.2)",
+              justifyContent: 'space-between',
+            }}
+            onClick={() => {
+              window.open("https://install.begenuin.com/86sn/cgs")
+            }}
+            animate={bottomButtonBackgroundColorController}
+          >
+            <p
+              style={{
+                lineHeight: "24px",
+                fontSize: "17px",
+                fontWeight: "700",
+                paddingLeft: "16px",
+                paddingTop: "6px",
+                paddingBottom: '6px'
+              }}>Download App</p>
+            <img src={icArrowRight.src}></img>
+          </motion.div>
+        </motion.div>
         <ProgressBar now={progress} />
       </div>
     </div>
