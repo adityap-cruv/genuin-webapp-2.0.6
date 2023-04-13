@@ -132,6 +132,7 @@ const Videos = ({
                         loadMoreVideos={addMoreVideos}
                         onClick={handleClick}
                         setCurrentVideoIndex={setCurrentVideoIndex}
+                        disableWatch={disableWatch}
                      >
                         <AppActions
                            showGetAppModal={handleShowModalAppDownload}

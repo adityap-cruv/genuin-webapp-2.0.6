@@ -7,12 +7,11 @@ import { GetAppModal } from "../components/basic/get_app_modal";
 import { Button } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faVolumeMute, faVolumeUp } from '@fortawesome/free-solid-svg-icons'
-import { TopNav } from "../components/basic/top_nav_swipe";
+import { TopNav } from "../components/basic/top_nav_content_demo";
 
 import {
   AppActions
 } from "../components/basic/app_actions";
-import { Error } from "../components/basic/error";
 import {
   Flex,
   useBreakpointValue

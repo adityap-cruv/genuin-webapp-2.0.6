@@ -640,17 +640,10 @@ const Participants = ({ members, mobile }) => {
               <Link
                 key={user.nickname}
                 href={`/p/${user.nickname}`}
-                _hover={{
-                  textDecoration: "none",
-                }}
                 className={`user_${index}`}
               >
                 <HStack
                   cursor='pointer'
-                  transition='transform .2s'
-                  _hover={{
-                    transform: "scale(0.97)",
-                  }}
                   key={user.nickname}
                   color='#111111'
                   justifyContent='space-between'
@@ -691,7 +684,6 @@ const Participants = ({ members, mobile }) => {
                       {user.bio}
                     </Text>
                   </Flex>
-                  <Link href={`/p/${user.nickname}`}>
                     <Image
                       src={directMessage.src}
                       size={6}
@@ -699,7 +691,6 @@ const Participants = ({ members, mobile }) => {
                       alt='Share'
                       title='Share Profile'
                     />
-                  </Link>
                 </HStack>
               </Link>
             ))}
