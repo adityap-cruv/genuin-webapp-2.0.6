@@ -15,8 +15,9 @@ const Videos = ({
    tag_id,
    domain,
    publisher_name,
-   handleWheel = () => {
-   }
+   handleWheel = () => { },
+   disableWatch = false,
+   contextReel = false
 }) => {
    const [showModalAppDownload, setShowModalAppDownload] = useState(false);
    const getAppComponentRef = useRef(() => null);
@@ -133,6 +134,7 @@ const Videos = ({
                         onClick={handleClick}
                         setCurrentVideoIndex={setCurrentVideoIndex}
                         disableWatch={disableWatch}
+                        contextReel={contextReel}
                      >
                         <AppActions
                            showGetAppModal={handleShowModalAppDownload}

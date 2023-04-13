@@ -1,10 +1,12 @@
 import { useState, useRef } from "react";
 import axios from "axios";
+
 import { Layout } from "../components/layout";
 import { GetAppModal } from "../components/basic/get_app_modal";
-import { TopNav } from "../components/basic/top_nav_swipe";
-import Videos from "../components/basic/videos";
+import { TopNav } from "../components/basic/top_nav_content_demo";
+import Videos from "../components/basic/videos_content_demo";
 import { Error } from "../components/basic/error";
+
 const Profile = ({
   user,
   all_videos = [],
@@ -16,7 +18,8 @@ const Profile = ({
   company_id = 1048,
   tag_id = 2071,
   domain = "cnn.com",
-  publisher_name = "CNN"
+  publisher_name = "CNN",
+  context_reel
 }) => {
   const prepareFeedVideos = (videos = []) => {
     return videos.reduce((res, { video_type, video }) => {
@@ -133,6 +136,8 @@ const Profile = ({
           tag_id={tag_id}
           domain={domain}
           publisher_name={publisher_name}
+          disableWatch={true}
+          contextReel={context_reel}
         />
         <GetAppModal
           show={showModalAppDownload}
@@ -145,8 +150,9 @@ const Profile = ({
 };
 
 
-Profile.getInitialProps = async ({ query: { value, revenue_enabled, company_id, tag_id, domain, publisher_name } }) => {
+Profile.getInitialProps = async ({ query: { value, revenue_enabled, company_id, tag_id, domain, publisher_name, context_reel } }) => {
   var nickname, rt;
+  context_reel = context_reel === "true";
 
   if (value !== undefined &&
     value !== null &&
@@ -181,7 +187,8 @@ Profile.getInitialProps = async ({ query: { value, revenue_enabled, company_id, 
         company_id: company_id,
         tag_id: tag_id,
         domain: domain,
-        publisher_name: publisher_name
+        publisher_name: publisher_name,
+        context_reel: context_reel
       };
     } catch (error) {
       return {};
@@ -248,7 +255,8 @@ Profile.getInitialProps = async ({ query: { value, revenue_enabled, company_id, 
         company_id: company_id,
         tag_id: tag_id,
         domain: domain,
-        publisher_name: publisher_name
+        publisher_name: publisher_name,
+        context_reel: context_reel
       }
     } catch (e) {
       console.log("error : ", e)
