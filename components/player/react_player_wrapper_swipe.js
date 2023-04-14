@@ -209,7 +209,12 @@ export const ReactPlayerWrapper = ({
   };
 
   const sendLog = () => {
-    datadogLogs.logger.info("Video Watched", { watchTime: videoTimesPlayed * duration + Math.ceil(duration * currentProgress) })
+    datadogLogs.logger.info("Video Watched", {
+      watchTime: videoTimesPlayed * duration + Math.ceil(duration * currentProgress),
+      video_id: videos[currentVideoIndex]['video_type'] === 'rt'
+        ? videos[currentVideoIndex]['video']['conversation_id']
+        : videos[currentVideoIndex]['video']['video_id']
+    })
   }
 
   let handleEnterViewport = function () {
