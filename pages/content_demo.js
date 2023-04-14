@@ -169,8 +169,8 @@ Profile.getInitialProps = async ({ query: { value,
   var nickname, rt;
   context_reel = context_reel === "true";
   var infy_params = {
-      "t": tag_id,
-      "c": company_id,
+      "t": tag_id ?? 2084,
+      "c": company_id ?? 1094,
       "ad_breaks": ad_breaks,
       "site_publisher_domain": site_publisher_domain,
       "site_publisher_name": site_publisher_name,

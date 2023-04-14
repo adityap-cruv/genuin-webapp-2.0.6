@@ -120,13 +120,13 @@ const Videos = ({
 
    const setType = () => {
       if (isDesktop) {
-         setDeviceType(1)
-      } else if (isMobile) {
          setDeviceType(2)
+      } else if (isMobile) {
+         setDeviceType(1)
       } else if (isTablet) {
-         setDeviceType(3)
+         setDeviceType(5)
       } else {
-         setDeviceType(4)
+         setDeviceType(2)
       }
    }
 
