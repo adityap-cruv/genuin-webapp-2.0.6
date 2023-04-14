@@ -17,6 +17,7 @@ import icMuteDesktop from "../../assets/images/video-more-options/ic-mute-deskto
 import icUnmute from "../../assets/images/video-more-options/ic-unmute.svg";
 import { DynamicPlayer } from "./dynamic_player";
 import icArrowRight from "../../assets/images/video-more-options/ic-arrow-right.svg"
+import { datadogLogs } from "@datadog/browser-logs";
 
 export const ReactPlayerWrapper = ({
   videoUrl,
@@ -52,15 +53,17 @@ export const ReactPlayerWrapper = ({
   setCurrentVideoIndex,
   uniqueKey = null,
   disableWatch = false,
-  contextReel //! this is temporary.
+  contextReel, //! this is temporary.
+  duration
 }) => {
   const [isMuted, setIsMuted] = useState(true);
-  const [progress, setProgress] = useState(0);
+  const [currentProgress, setCurrentProgress] = useState(0);
   const [isPlaying, setIsPlaying] = useState(autoplay);
   const [rtEnded, setRtEnded] = useState(false);
   const [isPlayingDebounced] = useDebounce(isPlaying, 65);
   const [isMutedDebounced] = useDebounce(muted, 500);
   const [displayThumbnail, setDisplayThumbnail] = useState(true)
+  const [videoTimesPlayed, setVideoTimesPlayed] = useState(0); 
 
   //# this is for animation of bottom button(download button);
   const bottomButtonAnimationController = contextReel && useAnimationControls();
@@ -103,11 +106,10 @@ export const ReactPlayerWrapper = ({
 
   const setProgressWrapper = useCallback(
     (event) => {
-      const playedProgress = Math.round(Number.parseFloat(event.played) * 100);
-      setProgress(playedProgress);
+      setCurrentProgress(Number.parseFloat(event.played).toFixed(2));
       onProgressRef?.current?.(event);
     },
-    [setProgress]
+    [setCurrentProgress]
   );
 
   const setDurationWrapper = useCallback((event) => {
@@ -206,6 +208,10 @@ export const ReactPlayerWrapper = ({
     }
   };
 
+  const sendLog = () => {
+    datadogLogs.logger.info("Video Watched", { watchTime: videoTimesPlayed * duration + Math.ceil(duration * currentProgress) })
+  }
+
   let handleEnterViewport = function () {
     loadMoreVideos(currentVideoIndex);
     setCurrentVideoIndex(currentVideoIndex)
@@ -218,6 +224,7 @@ export const ReactPlayerWrapper = ({
   let handleExitViewport = function () {
     setIsPlaying(false)
     setDisplayThumbnail(true)
+    sendLog();
   }
   return (
     <div
@@ -255,17 +262,30 @@ export const ReactPlayerWrapper = ({
             ? videos[currentVideoIndex]['video']['conversation_id']
             : videos[currentVideoIndex]['video']['video_id']) : uniqueKey}
       />
-      <div style={{
-        position: "absolute",
-        top: !isMobile ? (watchRoundTable ? '100px' : '10px') : '55px',
-        left: "2%",
-        zIndex: 2
-      }}
-        onClick={() => {
-          onClick();
-        }}>
-        <img src={muted ? icMuteDesktop.src : icUnmuteDesktop.src} />
-      </div>
+      //!context reels 
+      {!contextReel
+        ? <div style={{
+          position: "absolute",
+          top: !isMobile ? (watchRoundTable ? '100px' : '10px') : '55px',
+          left: "2%",
+          zIndex: 2
+        }}
+          onClick={() => {
+            onClick();
+          }}>
+          <img src={muted ? icMuteDesktop.src : icUnmuteDesktop.src} />
+        </div>
+        :<div style={{
+          position: "absolute",
+          top: "1%",
+          right: "2%",
+          zIndex: 2
+        }}
+          onClick={() => {
+            onClick();
+          }}>
+          <img src={muted ? icMuteDesktop.src : icUnmuteDesktop.src} />
+        </div>}
 
       {/* roundtable header */}
       {watchRoundTable && (
@@ -696,7 +716,7 @@ export const ReactPlayerWrapper = ({
             <img src={icArrowRight.src}></img>
           </motion.div>
         </motion.div>
-        <ProgressBar now={progress} />
+        <ProgressBar now={Math.round(Number.parseFloat(currentProgress) * 100)} style={{height: 1}} />
       </div>
     </div>
   );
