@@ -140,6 +140,7 @@ export const Player = ({
         uniqueKey={uniqueKey}
         disableWatch={disableWatch}
         contextReel={contextReel}
+        duration={duration}
       >
         {children}
         

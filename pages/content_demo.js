@@ -15,10 +15,7 @@ const Profile = ({
   end_of_videos = false,
   chat_id,
   rt_details,
-  company_id = 1048,
-  tag_id = 2071,
-  domain = "cnn.com",
-  publisher_name = "CNN",
+  infy_params = {},
   context_reel
 }) => {
   const prepareFeedVideos = (videos = []) => {
@@ -132,10 +129,7 @@ const Profile = ({
           loadMoreVideos={loadMoreVideos}
           revenue_enabled={revenue_enabled}
           user={user}
-          company_id={company_id}
-          tag_id={tag_id}
-          domain={domain}
-          publisher_name={publisher_name}
+          infy_params={infy_params}
           disableWatch={true}
           contextReel={context_reel}
         />
@@ -150,9 +144,50 @@ const Profile = ({
 };
 
 
-Profile.getInitialProps = async ({ query: { value, revenue_enabled, company_id, tag_id, domain, publisher_name, context_reel } }) => {
+Profile.getInitialProps = async ({ query: { value,
+  revenue_enabled,
+  company_id,
+  tag_id,
+  domain,
+  publisher_name,
+  context_reel,
+  ad_breaks,
+  site_page,
+  site_domain,
+  site_name,
+  site_keywords,
+  site_publisher_cat,
+  site_publisher_domain,
+  site_publisher_name,
+  device_geo_zip,
+  device_ip,
+  device_geo_city,
+  device_ifa,
+  device_model,
+  device_geo_country
+} }) => {
   var nickname, rt;
   context_reel = context_reel === "true";
+  var infy_params = {
+      "t": tag_id || 2084,
+      "c": company_id || 1094,
+      "ad_breaks": ad_breaks,
+      "site_publisher_domain": site_publisher_domain,
+      "site_publisher_name": site_publisher_name,
+      "site_page": site_page, 
+      "site_domain": site_domain, 
+      "site_name": site_name,
+      "site_keywords": site_keywords,
+      "site_publisher_cat": site_publisher_cat,
+      "pdomain": domain,
+      "pname": publisher_name,
+      "device_geo_zip": device_geo_zip,
+      "device_ip": device_ip,
+      "device_geo_city": device_geo_city,
+      "device_ifa": device_ifa,
+      "device_model": device_model,
+      "device_geo_country": device_geo_country
+  }
 
   if (value !== undefined &&
     value !== null &&
@@ -184,10 +219,7 @@ Profile.getInitialProps = async ({ query: { value, revenue_enabled, company_id, 
         is_prop_loaded: true,
         revenue_enabled: revenue_enabled === "true",
         end_of_videos: all_videos?.data?.data?.end_of_videos,
-        company_id: company_id,
-        tag_id: tag_id,
-        domain: domain,
-        publisher_name: publisher_name,
+        infy_params: infy_params,
         context_reel: context_reel
       };
     } catch (error) {
@@ -252,10 +284,7 @@ Profile.getInitialProps = async ({ query: { value, revenue_enabled, company_id, 
         is_rt: true,
         chat_id: rt,
         rt_details: rt_data,
-        company_id: company_id,
-        tag_id: tag_id,
-        domain: domain,
-        publisher_name: publisher_name,
+        infy_params: infy_params,
         context_reel: context_reel
       }
     } catch (e) {

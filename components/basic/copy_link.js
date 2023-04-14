@@ -1,10 +1,12 @@
+//! this is unused file please modify this comment when using it.
+
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 import { useClipboard } from "../hooks/useClipboard";
-import CopyLink from "../../assets/images/video-actions/CopyLink.svg";
+import icCopyLink from "../../assets/images/video-actions/icon-copy-link.svg"; //disabled..
 import { Image } from "@chakra-ui/react";
 
-export const ShareComponent = ({ title, description, url }) => {
+export const CopyLink = ({ url }) => {
   const [isCopied, copy] = useClipboard(url, { successDuration: 1000 });
 
   useEffect(() => {
@@ -23,11 +25,9 @@ export const ShareComponent = ({ title, description, url }) => {
   return (
     <Image
       cursor='pointer'
-      src={CopyLink.src}
-      width={12}
-      height={12}
-      alt='Share'
-      title='Share'
+      src={icCopyLink.src}
+      alt='copy link!'
+      title='copy link!'
       onClick={copy}
     />
   );
