@@ -88,7 +88,7 @@ const Videos = ({
          "pname":infy_params.pname,
          "pdomain":infy_params.pdomain,
       };
-      var infy_url = "https://nxs.infy.tv/ssai/master.m3u8?live=0&avod=1&dnt=0"
+      var infy_url = "https://nxs.infy.tv/ssai/master.m3u8?live=0&avod=1&dnt=0&min_ad_duration=6&max_ad_duration=300"
       Object.keys(obj).forEach((key) => {
          if (obj[key]) {
             infy_url += `&${key}=${obj[key]}`
