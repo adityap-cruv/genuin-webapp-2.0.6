@@ -19,7 +19,7 @@ export const AnimatedIndexPage = ({
    const [latest, setLatest] = useState(0)
 
    const dynamicWidth = useBreakpointValue({ xl: false, base: true })
-   const [{ width, height }, setWH] = useState(0)
+   const [{ width, height }, setWH] = useState({width: 0, height: 0})
 
    const scrollToReel = () => {
       mainRef.current.scroll({ top: window.innerHeight, behavior: "smooth" });
