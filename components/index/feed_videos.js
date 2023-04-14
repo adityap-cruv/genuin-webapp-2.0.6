@@ -85,10 +85,10 @@ const Videos = ({
                   <>
                      <Player
                         uniqueKey={videos[id]['conversation_id']}
-                        key={videos[id]['conversation_id']}
+                        key={videos && (videos[0] && videos[0]['conversation_id'])}
                         currentVideoIndex={id}
                         videoThumbnail={ videos[id].thumbnail_url_s}
-                        description={rtData?.rtData?.group?.group_description} //! description is not comming in API
+                        description={rtData?.rtData?.group?.group_description}
                         videoUrl={videos[id]['video_url_m3u8'] ?? videos[id]['video_url'] }
                         userName={videos[id]['owner']['nickname'] }
                         userId={videos[id]['owner']['nickname']}

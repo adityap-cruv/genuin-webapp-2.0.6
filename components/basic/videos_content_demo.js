@@ -3,6 +3,7 @@ import { AppActions } from "./app_actions";
 import { useState, useRef, useEffect } from "react";
 import { GetAppModal } from "./get_app_modal";
 import { Flex } from "@chakra-ui/react";
+import { isChromium, isDesktop, isIOS, isMacOs, isMobile, isTablet, isWindows } from "react-device-detect";
 
 
 const Videos = ({
@@ -11,10 +12,7 @@ const Videos = ({
    revenue_enabled,
    user,
    setCurrentVideoIndex = () => { },
-   company_id,
-   tag_id,
-   domain,
-   publisher_name,
+   infy_params,
    handleWheel = () => { },
    disableWatch = false,
    contextReel = false
@@ -23,6 +21,10 @@ const Videos = ({
    const getAppComponentRef = useRef(() => null);
    const [muted, setMuted] = useState(true);
    const [indexTo, setIndexTo] = useState(videos.length > 2 ? 3 : videos.length);
+   const [{ width, height }, setWH] = useState({ width: 0, height: 0 })
+   const [deviceUA, setDeviceUA] = useState("");
+   const [deviceOS, setDeviceOS] = useState("");
+   const [deviceType, setDeviceType] = useState(0);
    
 
    const addMoreVideos = (index) => {
@@ -60,14 +62,39 @@ const Videos = ({
    };
 
    const getInfyUrl = (url) => {
-      var client_ip = ``;
-      var location_lat = ``;
-      var location_lng = ``;
-      var minimum_duration = 1;
-      var maximum_duration = 120;
-      var device_width = 720;
-      var device_height = 1280;
-      var new_m3u8_url = `https://nxs.infy.tv/ssai/master.m3u8?live=0&avod=1&c=${company_id}&min_ad_duration=6&max_ad_duration=300&pod_duration=3005&ad_breaks=-1,-1&pdomain=${domain}&pname=${publisher_name}&u=${url}&t=${tag_id}&dnt=0&width=${device_width}&height=${device_height}&minimum_duration=${minimum_duration}&maximum_duration=${maximum_duration}&placement_id=cnn001${client_ip}${location_lat}${location_lng}`;      return new_m3u8_url;
+      var obj = {
+         "u": url,
+         "t": infy_params.t,
+         "c": infy_params.c,
+         "ad_breaks": infy_params.ad_breaks,
+         "site_publisher_domain": infy_params.site__publisher__domain,
+         "site_publisher_name": infy_params.site_publisher_name,
+         "site_page": infy_params.site_page,
+         "site_domain": infy_params.site_domain, 
+         "site_name": infy_params.site_name, 
+         "site_keywords": infy_params.site_keywords, 
+         "site_publisher_cat": infy_params.site_publisher_cat,
+         "device_geo_zip": infy_params.device_geo_zip,
+         "device_ip": infy_params.device_ip,
+         "device_h":height,
+         "device_w":width,
+         "device_ua":deviceUA,
+         "device_geo_city": infy_params.device_geo_city,
+         "device_ifa": infy_params.device_ifa,
+         "device_os": deviceOS,
+         "device_model": infy_params.device_model,
+         "device_devicetype":deviceType,
+         "device_geo_country": infy_params.device_geo_country,
+         "pname":infy_params.pname,
+         "pdomain":infy_params.pdomain,
+      };
+      var infy_url = "https://nxs.infy.tv/ssai/master.m3u8?live=0&avod=1&dnt=0"
+      Object.keys(obj).forEach((key) => {
+         if (obj[key]) {
+            infy_url += `&${key}=${obj[key]}`
+         }
+      })
+      return infy_url;
    }
 
    const showGetAppToViewDialog = () => {
@@ -77,13 +104,42 @@ const Videos = ({
    const handleClick = () => {
       setMuted((old) => !old);
    }
+   const setOS = () => {
+      if (isMacOs) {
+         setDeviceOS("macOS")
+      }else if (isWindows) {
+         setDeviceOS("windows")
+      }else if (isIOS) {
+         setDeviceOS("ios")
+      }else if (isChromium) {
+         setDeviceOS("chromium")
+      } else {
+         setDeviceOS("linux")
+      }
+   }
+
+   const setType = () => {
+      if (isDesktop) {
+         setDeviceType(1)
+      } else if (isMobile) {
+         setDeviceType(2)
+      } else if (isTablet) {
+         setDeviceType(3)
+      } else {
+         setDeviceType(4)
+      }
+   }
 
    useEffect(() => {
+      setWH({ width: window.innerWidth, height: window.innerHeight })
+      setDeviceUA(encodeURIComponent(navigator.userAgent));
+      setOS();
+      setType();
       window.addEventListener("wheel", handleWheel)
       return () => {
          return window.removeEventListener("wheel", handleWheel)
       }
-   })
+   }, [])
 
    return (<>
 
