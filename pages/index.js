@@ -15,7 +15,7 @@ import { GetAppModal } from "../components/basic/get_app_modal";
 let title = "Genuin";
 let metaImage = "https://media.begenuin.com/backend_assets/preview.png";
 let description =
-  "Genuin is a video-first professional networking platform that allows you to showcase your expertise and connect with other professionals and businesses. Whether you are searching for a job, seeking investment, hiring candidates, or any other networking, Genuin helps you stand out";
+"Genuin gives you a place to keep up with friends and the issues you care about.";
 let currentUrl = "https://begenuin.com";
 
 const Home = () => {
