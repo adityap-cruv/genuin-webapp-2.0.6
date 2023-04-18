@@ -1,55 +1,54 @@
-import { useEffect } from "react";
-import { toast } from "react-toastify";
+import React, { useEffect } from 'react'
+import { toast } from 'react-toastify'
 import {
   Menu,
   MenuButton,
   useBreakpointValue,
-  Image,
-} from "@chakra-ui/react";
+  Image
+} from '@chakra-ui/react'
 
-import { useWebShare } from "../hooks/useWebShare";
-import { useClipboard } from "../hooks/useClipboard";
-import shareImg from "../../assets/images/video-more-options/ic-share.svg";
-import shareImgBlue from "../../assets/images/video-more-options/ic-share-blue.svg";
-import bookmark from "../../assets/images/video-more-options/ic-bookmark.svg";
-import replay from "../../assets/images/video-more-options/ic-replay.svg";
-import comments from "../../assets/images/video-more-options/ic-comments.svg";
-import subscribePlus from "../../assets/images/video-more-options/ic-subscribe-plus.svg";
-import network from "../../assets/images/video-more-options/ic-network.svg";
-import roundtable from "../../assets/images/video-more-options/ic-roundtable.svg";
+import { useWebShare } from '../hooks/useWebShare'
+import { useClipboard } from '../hooks/useClipboard'
+import shareImg from '../../assets/images/video-more-options/ic-share.svg'
+import shareImgBlue from '../../assets/images/video-more-options/ic-share-blue.svg'
+import bookmark from '../../assets/images/video-more-options/ic-bookmark.svg'
+import replay from '../../assets/images/video-more-options/ic-replay.svg'
+import comments from '../../assets/images/video-more-options/ic-comments.svg'
+import subscribePlus from '../../assets/images/video-more-options/ic-subscribe-plus.svg'
+import network from '../../assets/images/video-more-options/ic-network.svg'
+import roundtable from '../../assets/images/video-more-options/ic-roundtable.svg'
 
 export const AppActions = ({
   showGetAppModal,
   userName,
   link,
   roundTableName,
-  roundTableId = "",
+  roundTableId = '',
   roundTable = false,
   watchRoundTable = false,
-  videoUrl = "",
-  videoDescription = "",
-  videoTitle = "",
+  videoUrl = '',
+  videoDescription = '',
+  videoTitle = ''
 }) => {
   // console.log("roundTable", roundTable);
-  const mobile = useBreakpointValue({ base: true, sm: false });
+  const mobile = useBreakpointValue({ base: true, sm: false })
 
-  const getClickableLink = (link = "") => {
+  const getClickableLink = (link = '') => {
     if (link !== null && link !== undefined) {
-      return link.startsWith("http://") || link.startsWith("https://")
+      return link.startsWith('http://') || link.startsWith('https://')
         ? link
-        : `http://${link}`;
-    } else {
-      return ""
+        : `http://${link}`
     }
-  };
+    return ''
+  }
 
-  const userLink = getClickableLink(link);
+  const userLink = getClickableLink(link)
 
   return (
     <ul>
       {link ? (
         <li>
-          <a href={userLink} target='_blank'>
+          <a href={userLink} target='_blank' rel="noreferrer">
             <Image src={network.src} size={6} alt='Link' title='Link' />
           </a>
         </li>
@@ -91,7 +90,7 @@ export const AppActions = ({
           <li onClick={() =>
             showGetAppModal(() => (
               <>
-                Get the app to reply to <b>{"@" + userName}</b>
+                Get the app to reply to <b>{'@' + userName}</b>
               </>
             ))
           }>
@@ -122,7 +121,7 @@ export const AppActions = ({
           <li onClick={() =>
             showGetAppModal(() => (
               <>
-                Get the app to subscribe to <b>{roundTableName ?? ""}</b>{" "}
+                Get the app to subscribe to <b>{roundTableName ?? ''}</b>{' '}
                 Loop.
               </>
             ))
@@ -165,31 +164,30 @@ export const AppActions = ({
         </>
       ) : null}
     </ul>
-  );
-};
+  )
+}
 
 export const ShareButton = ({
   url,
   description,
   title,
-  variation = "white",
+  variation = 'white',
   fullWidth = false,
   ...props
 }) => {
-  const [isCopied, copy] = useClipboard(url, { successDuration: 1000 });
+  const [isCopied, copy] = useClipboard(url, { successDuration: 1000 })
 
   useEffect(() => {
     if (isCopied) {
-      let key;
-      key = toast("Link copied!", {
+      const key = toast('Link copied!', {
         autoClose: false,
-        hideProgressBar: true,
-      });
+        hideProgressBar: true
+      })
       return () => {
-        toast.dismiss(key);
-      };
+        toast.dismiss(key)
+      }
     }
-  }, [isCopied]);
+  }, [isCopied])
 
   return (
     <Menu placement='right' preventOverflow gutter={40}>
@@ -198,7 +196,7 @@ export const ShareButton = ({
           title="copy link!"
           style={{
             width: fullWidth ? '100%' : 'auto',
-            height: fullWidth ? '100%' : 'auto',
+            height: fullWidth ? '100%' : 'auto'
           }}
           pos='relative'
           {...props}
@@ -206,7 +204,7 @@ export const ShareButton = ({
           <Image
             title="copy link!"
             size={6}
-            src={variation === "white" ? shareImg.src : shareImgBlue.src}
+            src={variation === 'white' ? shareImg.src : shareImgBlue.src}
             margin='auto'
           />
         </MenuButton>
@@ -229,7 +227,7 @@ export const ShareButton = ({
           </LinkedinShareButton>
           <FacebookShareButton url={url}>
             <Image size={12} src={Facebook.src} />
-          </FacebookShareButton> 
+          </FacebookShareButton>
           <EmailShareButton
             url={url}
             // title={title}
@@ -242,8 +240,8 @@ export const ShareButton = ({
         </MenuList> */}
       </>
     </Menu>
-  );
-};
+  )
+}
 
 export const MobileShareButton = ({
   title,
@@ -252,7 +250,7 @@ export const MobileShareButton = ({
   white = false,
   fullWidth = false
 }) => {
-  const { isSupported, loading, share } = useWebShare();
+  const { isSupported, loading, share } = useWebShare()
 
   return (
     <Image
@@ -263,13 +261,13 @@ export const MobileShareButton = ({
       alt='Share'
       title='Share'
       bgColor='transparent'
-      border={white ? "none" : "1px solid #0645FF"}
+      border={white ? 'none' : '1px solid #0645FF'}
       borderRadius='md'
       px={1}
       minW={8}
       onClick={() => {
-        if (isSupported && !loading) share({ url });
+        if (isSupported && !loading) share({ url })
       }}
     />
-  );
-};
+  )
+}

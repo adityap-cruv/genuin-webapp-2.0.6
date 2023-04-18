@@ -1,46 +1,46 @@
-import "bootstrap/dist/css/bootstrap.min.css";
-import "./styles.css";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.min.css";
-import { ChakraProvider, extendTheme } from "@chakra-ui/react";
-import favicon from "../assets/images/favicon.ico";
-import NextHead from "next/head"
-import { datadogRum } from "@datadog/browser-rum";
+import React from 'react'
+import 'bootstrap/dist/css/bootstrap.min.css'
+import './styles.css'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.min.css'
+import { ChakraProvider, extendTheme } from '@chakra-ui/react'
+import favicon from '../assets/images/favicon.ico'
+import NextHead from 'next/head'
+import { datadogRum } from '@datadog/browser-rum'
 import { datadogLogs } from '@datadog/browser-logs'
-import { DatadogConfigs } from "../constants/datadog_configs";
-
+import { DatadogConfigs } from '../constants/datadog_configs'
 const theme = extendTheme({
   fonts: {
-    body:"Avenir Next, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji,Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji"
+    body: 'Avenir Next, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji,Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji'
   }
 })
 
-
-function MyApp({ Component, pageProps }) {
+function MyApp ({ Component, pageProps }) {
   datadogRum.init({
     applicationId: DatadogConfigs.applicationId,
     clientToken: DatadogConfigs.clientToken,
     site: DatadogConfigs.site,
     service: DatadogConfigs.service,
     env: DatadogConfigs.env,
-    // Specify a version number to identify the deployed version of your application in Datadog 
+    // Specify a version number to identify the deployed version of your application in Datadog
     // version: '1.0.0',
     sessionSampleRate: 100,
     sessionReplaySampleRate: 20,
     trackUserInteractions: true,
     trackResources: true,
     trackLongTasks: true,
-    defaultPrivacyLevel: 'mask-user-input'
-  });
+    defaultPrivacyLevel: 'mask-user-input',
+    enableExperimentalFeatures: ['clickmap']
+  })
 
-  datadogRum.startSessionReplayRecording();
+  datadogRum.startSessionReplayRecording()
   datadogLogs.init({
     clientToken: DatadogConfigs.clientToken,
     site: DatadogConfigs.site,
     service: DatadogConfigs.service,
-    env: DatadogConfigs.env ||'qa',
+    env: DatadogConfigs.env || 'qa',
     forwardErrorsToLogs: true,
-    sessionSampleRate: 100,
+    sessionSampleRate: 100
   })
 
   return (
@@ -54,24 +54,11 @@ function MyApp({ Component, pageProps }) {
           position='bottom-left'
           draggable={false}
           limit={1}
-          theme={"dark"}
+          theme={'dark'}
         />
       </ChakraProvider>
     </>
-    
-  );
+
+  )
 }
-
-// Only uncomment this method if you have blocking data requirements for
-// every single page in your application. This disables the ability to
-// perform automatic static optimization, causing every page in your app to
-// be server-side rendered.
-//
-// MyApp.getInitialProps = async (appContext) => {
-//   // calls page's `getInitialProps` and fills `appProps.pageProps`
-//   const appProps = await App.getInitialProps(appContext);
-//
-//   return { ...appProps }
-// }
-
-export default MyApp;
+export default MyApp

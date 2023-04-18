@@ -45,7 +45,14 @@
     "react-spring": "^9.5.2",
     "react-toastify": "^9.0.8",
     "react-waypoint": "^10.3.0",
-    "use-debounce": "^8.0.3",
-    "uuid": "^9.0.0"
+    "use-debounce": "^8.0.3"
+  },
+  "devDependencies": {
+    "eslint": "^8.38.0",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-n": "^15.7.0",
+    "eslint-plugin-promise": "^6.1.1",
+    "eslint-plugin-react": "^7.32.2"
   }
 }

@@ -1,13 +1,13 @@
-import React, { useRef, useState, useEffect } from "react";
-import axios from "axios";
-import { Player } from "../components/player/player";
-import { Layout } from "../components/layout/layout";
-import { GetAppModal } from "../components/basic/get_app_modal";
-import { Error } from "../components/basic/error";
-import { SEO } from "../components/basic/seo";
-import { AppActions } from "../components/basic/app_actions";
-import { Modal, ModalBody, ModalContent, useDisclosure } from "@chakra-ui/react";
-import { datadogLogs } from "@datadog/browser-logs";
+import React, { useRef, useState, useEffect } from 'react'
+import axios from 'axios'
+import { Player } from '../components/player/player'
+import { Layout } from '../components/layout/layout'
+import { GetAppModal } from '../components/basic/get_app_modal'
+import { Error } from '../components/basic/error'
+import { SEO } from '../components/basic/seo'
+import { AppActions } from '../components/basic/app_actions'
+import { Modal, ModalBody, ModalContent, useDisclosure } from '@chakra-ui/react'
+import { datadogLogs } from '@datadog/browser-logs'
 const Video = (props) => {
   const {
     videoUrl,
@@ -23,32 +23,32 @@ const Video = (props) => {
     userName,
     userNickname,
     userProfileImage,
-    link,
-  } = props;
+    link
+  } = props
   // const [showModalWelcome, setShowModalWelcome] = useState(true);
   // const handleCloseWelcome = () => setShowModalWelcome(false);
-  const [showModalAppDownload, setShowModalAppDownload] = useState(false);
-  const getAppComponentRef = useRef(() => null);
+  const [showModalAppDownload, setShowModalAppDownload] = useState(false)
+  const getAppComponentRef = useRef(() => null)
   const handleCloseAppDownload = () => {
-    getAppComponentRef.current = () => null;
-    setShowModalAppDownload(false);
-  };
+    getAppComponentRef.current = () => null
+    setShowModalAppDownload(false)
+  }
   const handleShowModalAppDownload = (message = () => null) => {
-    getAppComponentRef.current = message;
-    setShowModalAppDownload(true);
-  };
+    getAppComponentRef.current = message
+    setShowModalAppDownload(true)
+  }
 
   const showGetAppToViewDialog = () =>
-    handleShowModalAppDownload(() => <>Get the app to view this video.</>);
+    handleShowModalAppDownload(() => <>Get the app to view this video.</>)
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const tags_string = tags!==null && tags!==undefined && tags.replace(/\s+/g,'')!==''?` #${tags.split(',').join(' #')}`:''
-  const ld_description = `${userName? userName: "@"+userNickname} | Web3 related bite-sized content available on Genuin${tags_string}`
-  const title_name = description?description:`Watch byte sized videos from @${userNickname} on Genuin`
+  const { isOpen, onOpen, onClose } = useDisclosure()
+  const tags_string = tags !== null && tags !== undefined && tags.replace(/\s+/g, '') !== '' ? ` #${tags.split(',').join(' #')}` : ''
+  const ld_description = `${userName || '@' + userNickname} | Web3 related bite-sized content available on Genuin${tags_string}`
+  const title_name = description || `Watch byte sized videos from @${userNickname} on Genuin`
   const share_url = `${process.env.hostname}${share_string}`
   const ORG_SCHEMA = JSON.stringify({
-    "@context": "http://schema.org",
-    "@type": "VideoObject",
+    '@context': 'http://schema.org',
+    '@type': 'VideoObject',
     id: share_url,
     url: share_url,
     name: title_name,
@@ -58,51 +58,51 @@ const Video = (props) => {
     contentUrl: videoUrl,
     embedUrl: videoUrl,
     author: {
-      "@type": "Person",
-      "name": "@"+userNickname,
-      "url": `${process.env.hostname}p/${userNickname}`
+      '@type': 'Person',
+      name: '@' + userNickname,
+      url: `${process.env.hostname}p/${userNickname}`
     },
     publisher: {
-      "@type": "Organization",
-      "name": "Genuin",
-      "url": process.env.hostname
+      '@type': 'Organization',
+      name: 'Genuin',
+      url: process.env.hostname
     },
     description: ld_description,
-    inLanguage: "en-US",
+    inLanguage: 'en-US',
     uploadDate: created_at,
     dateCreated: created_at,
     dateModified: updated_at,
     datePublished: created_at,
     potentialAction: [
       {
-        "@type": "WatchAction",
+        '@type': 'WatchAction',
         target: share_url,
         image: videoThumbnail
-      },
-    ],
-  });
+      }
+    ]
+  })
 
   useEffect(() => {
-    datadogLogs.logger.info("Video Watched")
-    var ls = window.location.href.split("/")
-    if (ls && ls.length == 4){
+    datadogLogs.logger.info('Video Watched')
+    const ls = window.location.href.split('/')
+    if (ls && ls.length === 4) {
       onOpen()
     }
-  },[])
+  }, [])
 
   const setProfileUrl = () => {
     // console.log("Setting profile url in public video individual")
     window.location.href = `${process.env.hostname}p/${userNickname}`
   }
 
-  //todo: remove it
-  const [muted, setMuted] = useState(true);
+  // todo: remove it
+  const [muted, setMuted] = useState(true)
   const onClick = () => {
-    setMuted(old => !old);
-    console.log("on click called..")
+    setMuted(old => !old)
+    console.log('on click called..')
   }
 
-  return !Boolean(videoUrl) ? (
+  return !videoUrl ? (
     <Error />
   ) : (
     <>
@@ -113,10 +113,10 @@ const Video = (props) => {
           videoUrl={videoUrl}
           videoPreviewImage={videoPreviewImage}
           description={ld_description}
-          openGraphDescription={description ? description : " "}
+          openGraphDescription={description || ' '}
           metaImageWidth={1200}
           metaImageHeight={630}
-          urlToCopy={process?.env?.hostname + "/" + video_id_to_use} />
+          urlToCopy={process?.env?.hostname + '/' + video_id_to_use} />
         <script type='application/ld+json' dangerouslySetInnerHTML={{ __html: ORG_SCHEMA }} />
         <Modal isOpen={isOpen} onClose={onClose} scrollBehavior='inside'>
           <ModalContent
@@ -139,9 +139,9 @@ const Video = (props) => {
                 showGetAppModal={handleShowModalAppDownload}
                 onEnded={showGetAppToViewDialog}
                 autoplay
-                  onClickOutsideOfVideo={() => { setProfileUrl(); onClose(); }}
-                  onClick={onClick}
-                  muted={muted}
+                onClickOutsideOfVideo={() => { setProfileUrl(); onClose() }}
+                onClick={onClick}
+                muted={muted}
               >
                 <AppActions
                   showGetAppModal={handleShowModalAppDownload}
@@ -157,27 +157,27 @@ const Video = (props) => {
         <GetAppModal
           show={showModalAppDownload}
           onClose={handleCloseAppDownload}
-            TextNode={getAppComponentRef.current} />
-          {/* <WelcomeModal show={showModalWelcome} onClose={handleCloseWelcome} /> */}
+          TextNode={getAppComponentRef.current} />
+        {/* <WelcomeModal show={showModalWelcome} onClose={handleCloseWelcome} /> */}
       </Layout>
     </>
-  );
-};
+  )
+}
 Video.getInitialProps = async ({ query: { video_id } }) => {
   const url = `${process.env.apiurl}/api/v3/public/pv/?video_id=${video_id}`
   return axios
     .get(url)
     .then((response) => {
-      var resObj = response.data.data;
-      var video_id_to_use = resObj.share_string;
+      const resObj = response.data.data
+      const video_id_to_use = resObj.share_string
       Object.assign(resObj, {
-        video_id: video_id,
-        video_id_to_use: video_id_to_use,
-      });
-      return Promise.resolve(resObj);
+        video_id,
+        video_id_to_use
+      })
+      return Promise.resolve(resObj)
     })
-    .catch((err) => {
-      return Promise.resolve({});
-    });
-};
-export default Video;
+    .catch((_err) => {
+      return Promise.resolve({})
+    })
+}
+export default Video

@@ -1,14 +1,13 @@
-import { useState } from "react";
-import { Nav, Container, Row, Col } from "react-bootstrap";
-import { Layout } from "../components/layout/layout";
-import { TopNav } from "../components/basic/top_nav";
-import { GetAppModal } from "../components/basic/get_app_modal";
-import { handleInvestClick } from "../actions/appInstall";
+import React, { useState } from 'react'
+import { Nav, Container, Row, Col } from 'react-bootstrap'
+import { Layout } from '../components/layout/layout'
+import { TopNav } from '../components/basic/top_nav'
+import { GetAppModal } from '../components/basic/get_app_modal'
 
 const Terms = () => {
-  const [showModalAppDownload, setShowModalAppDownload] = useState(false);
-  const handleCloseAppDownload = () => setShowModalAppDownload(false);
-  const handleShowModalAppDownload = () => setShowModalAppDownload(true);
+  const [showModalAppDownload, setShowModalAppDownload] = useState(false)
+  const handleCloseAppDownload = () => setShowModalAppDownload(false)
+  const handleShowModalAppDownload = () => setShowModalAppDownload(true)
   return (
     <Layout className='overflow-auto'>
       <section className='bg-black h-top-navbar position-sticky top-0'>
@@ -186,7 +185,7 @@ const Terms = () => {
                   <Nav.Link
                     style={{ opacity: 0.5 }}
                     target="_blank"
-                    href={`/content_demo?value=rt_123f373977001407`}
+                    href={'/content_demo?value=rt_123f373977001407'}
                   >
                     Life at Genuin
                   </Nav.Link>
@@ -195,10 +194,10 @@ const Terms = () => {
                   <Nav.Link
                     style={{
                       opacity: 0.5,
-                      paddingLeft: "0px",
-                      paddingRight: "0px",
+                      paddingLeft: '0px',
+                      paddingRight: '0px'
                     }}
-                    href={void 0}
+                    href={undefined}
                     eventKey='link-2'
                   >
                     |
@@ -213,10 +212,10 @@ const Terms = () => {
                   <Nav.Link
                     style={{
                       opacity: 0.5,
-                      paddingLeft: "0px",
-                      paddingRight: "0px",
+                      paddingLeft: '0px',
+                      paddingRight: '0px'
                     }}
-                    href={void 0}
+                    href={undefined}
                   >
                     |
                   </Nav.Link>
@@ -236,7 +235,7 @@ const Terms = () => {
         onClose={handleCloseAppDownload}
       />
     </Layout>
-  );
-};
+  )
+}
 
-export default Terms;
+export default Terms

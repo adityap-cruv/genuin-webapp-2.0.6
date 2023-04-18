@@ -1,26 +1,25 @@
 //! this is unused file please modify this comment when using it.
 
-import { useEffect } from "react";
-import { toast } from "react-toastify";
-import { useClipboard } from "../hooks/useClipboard";
-import icCopyLink from "../../assets/images/video-actions/icon-copy-link.svg"; //disabled..
-import { Image } from "@chakra-ui/react";
+import React, { useEffect } from 'react'
+import { toast } from 'react-toastify'
+import { useClipboard } from '../hooks/useClipboard'
+import icCopyLink from '../../assets/images/video-actions/icon-copy-link.svg' // disabled..
+import { Image } from '@chakra-ui/react'
 
 export const CopyLink = ({ url }) => {
-  const [isCopied, copy] = useClipboard(url, { successDuration: 1000 });
+  const [isCopied, copy] = useClipboard(url, { successDuration: 1000 })
 
   useEffect(() => {
     if (isCopied) {
-      let key;
-      key = toast("Link copied!", {
+      const key = toast('Link copied!', {
         autoClose: false,
-        hideProgressBar: true,
-      });
+        hideProgressBar: true
+      })
       return () => {
-        toast.dismiss(key);
-      };
+        toast.dismiss(key)
+      }
     }
-  }, [isCopied]);
+  }, [isCopied])
 
   return (
     <Image
@@ -30,5 +29,5 @@ export const CopyLink = ({ url }) => {
       title='copy link!'
       onClick={copy}
     />
-  );
-};
+  )
+}
