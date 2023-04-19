@@ -1,25 +1,25 @@
-import { useCallback, useRef } from 'react';
-import { Modal, Carousel } from 'react-bootstrap';
-import imgCarousel1 from '../../assets/images/web3/learn_web3_via_bite-sized_content.png';
-import imgCarousel2 from '../../assets/images/web3/connect_people_in_the_web3_business.png';
-import imgCarousel3 from '../../assets/images/web3/feed_page_public_video.png';
-import imgCarousel4 from '../../assets/images/web3/initiate_conversation_about_web3.png';
+import React, { useCallback, useRef } from 'react'
+import { Modal, Carousel } from 'react-bootstrap'
+import imgCarousel1 from '../../assets/images/web3/learn_web3_via_bite-sized_content.png'
+import imgCarousel2 from '../../assets/images/web3/connect_people_in_the_web3_business.png'
+import imgCarousel3 from '../../assets/images/web3/feed_page_public_video.png'
+import imgCarousel4 from '../../assets/images/web3/initiate_conversation_about_web3.png'
 
-const WELCOME_DIALOG_SHOWN = 'WELCOME_DIALOG_SHOWN';
+const WELCOME_DIALOG_SHOWN = 'WELCOME_DIALOG_SHOWN'
 
 export const WelcomeModal = ({ show, onClose, ignoreLocalStorage = false }) => {
   const isAlreadyShown = useRef(
     Boolean(globalThis?.localStorage?.getItem?.(WELCOME_DIALOG_SHOWN) ?? false)
-  );
+  )
 
   const onCloseWrapper = useCallback(() => {
     try {
-      globalThis?.localStorage?.setItem?.(WELCOME_DIALOG_SHOWN, true);
+      globalThis?.localStorage?.setItem?.(WELCOME_DIALOG_SHOWN, true)
     } catch (e) {
     } finally {
-      onClose();
+      onClose()
     }
-  }, [onClose]);
+  }, [onClose])
 
   return (
     <Modal
@@ -80,5 +80,5 @@ export const WelcomeModal = ({ show, onClose, ignoreLocalStorage = false }) => {
         </Carousel>
       </Modal.Body>
     </Modal>
-  );
-};
+  )
+}

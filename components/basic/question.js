@@ -1,5 +1,6 @@
-import { Container, Row, Col, Image } from "react-bootstrap";
-import { InstallApp } from "./install_app";
+import React from 'react'
+import { Container, Row, Col, Image } from 'react-bootstrap'
+import { InstallApp } from './install_app'
 
 export const Question = ({ previewImage }) => (
   <section className='w-100 h-100 bg-gradient-blue d-flex align-items-center'>
@@ -26,4 +27,4 @@ export const Question = ({ previewImage }) => (
       </Row>
     </Container>
   </section>
-);
+)

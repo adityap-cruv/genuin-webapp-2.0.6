@@ -1,30 +1,27 @@
-import { useState, useEffect } from "react";
-import axios from "axios";
-import { useBreakpointValue } from "@chakra-ui/react";
-import { v4 as uuidv4 } from "uuid";
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
+import { useBreakpointValue } from '@chakra-ui/react'
 
+import { HomeNav } from '../components/index/home_nav'
+import { AnimatedIndexPage } from '../components/index/animated_index_page'
+import { MobileIndexPage } from '../components/index/mobile_index_page'
+import { SEO } from '../components/basic/seo'
+import { GenuinLoader } from '../components/basic/genuin_loader'
+import { GetAppModal } from '../components/basic/get_app_modal'
 
-import { HomeNav } from "../components/index/home_nav";
-import { AnimatedIndexPage } from "../components/index/animated_index_page";
-import { MobileIndexPage } from "../components/index/mobile_index_page";
-import { SEO } from "../components/basic/seo";
-import { GenuinLoader } from "../components/basic/genuin_loader";
-import { GetAppModal } from "../components/basic/get_app_modal";
-
-
-let title = "Genuin";
-let metaImage = "https://media.begenuin.com/backend_assets/preview.png";
-let description =
-"Genuin gives you a place to keep up with friends and the issues you care about.";
-let currentUrl = "https://begenuin.com";
+const title = 'Genuin'
+const metaImage = 'https://media.begenuin.com/backend_assets/preview.png'
+const description =
+'Genuin gives you a place to keep up with friends and the issues you care about.'
+const currentUrl = 'https://begenuin.com'
 
 const Home = () => {
-  const [showModalAppDownload, setShowModalAppDownload] = useState(false);
-  const handleCloseAppDownload = () => setShowModalAppDownload(false);
-  const mobile = useBreakpointValue({ base: true, md: false });
-  const [{rtVideos, rtData}, setRTData] = useState({rtVideos: [], rtData: {}});
+  const [showModalAppDownload, setShowModalAppDownload] = useState(false)
+  const handleCloseAppDownload = () => setShowModalAppDownload(false)
+  const mobile = useBreakpointValue({ base: true, md: false })
+  const [{ rtVideos, rtData }, setRTData] = useState({ rtVideos: [], rtData: {} })
 
-  const [isLoadingFake, setIsLoadingFake] = useState(true);
+  const [isLoadingFake, setIsLoadingFake] = useState(true)
 
   setTimeout(() => {
     setIsLoadingFake(false)
@@ -48,21 +45,21 @@ const Home = () => {
         // );
         const videos_data = await axios.get(
           `${process.env.apiurl}/api/v3/public/rt/paginate_videos?chat_id=13f3348fd5801493`
-        );
+        )
         const rt_details = await axios.get(
           `${process.env.apiurl}/api/v3/public/rt/details?chat_id=13f3348fd5801493`
-        );
+        )
 
-        const feeds = videos_data?.data?.data?.chats;
+        const feeds = videos_data?.data?.data?.chats
         // setPageSession(feed_data?.data?.data?.page_session);
         if (feeds.length > 0) {
           setRTData({ rtVideos: feeds, rtData: rt_details?.data?.data })
         }
       } catch (e) {
-        console.log("error : ", e)
+        console.log('error : ', e)
       }
     }
-    fetchData();
+    fetchData()
   }, [])
 
   const loadMoreVideos = async () => {
@@ -76,12 +73,11 @@ const Home = () => {
       // )
       const res = await axios.get(
         `${process.env.apiurl}/api/v3/public/rt/paginate_videos?chat_id=13f3348fd5801493&last_video_id=${rtVideos[rtVideos.length - 1].conversation_id}`
-      );
-      const chats = res?.data?.data?.chats;
+      )
+      const chats = res?.data?.data?.chats
       if (chats.length > 0) {
-        setRTData((old) => ({rtVideos: old.rtVideos.concat(chats), rtData: old.rtData}));
+        setRTData((old) => ({ rtVideos: old.rtVideos.concat(chats), rtData: old.rtData }))
       }
-      
     } catch (e) {
       console.log('error : ', e)
     }
@@ -99,12 +95,11 @@ const Home = () => {
       />
       <HomeNav variant="light" isContiner showGetAppModal={setShowModalAppDownload}/>
       {isLoadingFake
-        ?
-        <>
+        ? <>
           <div
             className="bg-gradient-blue h-100 w-100"
             style={{
-              position: "absolute",
+              position: 'absolute',
               zIndex: -99
             }}>
             <GenuinLoader />
@@ -112,13 +107,13 @@ const Home = () => {
         </>
         : <>
           {!mobile && <AnimatedIndexPage
-            rtData={{rtVideos:rtVideos, rtData:rtData}}
+            rtData={{ rtVideos, rtData }}
             loadMoreVideos={loadMoreVideos}
           />
           }
           {mobile &&
             <MobileIndexPage
-              rtData={{rtVideos:rtVideos, rtData:rtData}}
+              rtData={{ rtVideos, rtData }}
               loadMoreVideos={loadMoreVideos}
             />}
         </>
@@ -135,26 +130,6 @@ const Home = () => {
         )}
       />
     </>
-  );
-};
-
-// Home.getInitialProps = async ({ req}) => {
-//   const uuid = "2bc36a7a-6ef8-40e0-8549-0b1ecd99000e";
-//   console.log("get item  :", uuid)
-
-//     try {
-//       const feed_data = await axios.get(
-//         `${process.env.apiurl}/api/v3/public/home?device_id=${uuid}`
-//       );
-
-//       const feed = feed_data?.data?.data?.feeds;
-//       console.log("details : ", feed_data?.data?.data?.feeds)
-//       return {
-//         // feed: feed,
-//       };
-//     } catch (error) {
-//       console.log("return error")
-//       return {};
-//     }  
-// }
-export default Home;
+  )
+}
+export default Home
