@@ -54,7 +54,8 @@ export const ReactPlayerWrapper = ({
   uniqueKey = null,
   disableWatch = false,
   contextReel, //! this is temporary.
-  duration
+  duration,
+  scrollToNextVideo
 }) => {
   const [currentProgress, setCurrentProgress] = useState(0)
   const [isPlaying, setIsPlaying] = useState(autoplay)
@@ -62,7 +63,6 @@ export const ReactPlayerWrapper = ({
   const [isPlayingDebounced] = useDebounce(isPlaying, 65)
   const [isMutedDebounced] = useDebounce(muted, 500)
   const [displayThumbnail, setDisplayThumbnail] = useState(true)
-  const [videoTimesPlayed, setVideoTimesPlayed] = useState(0)
 
   // # this is for animation of bottom button(download button);
   const bottomButtonAnimationController = contextReel && useAnimationControls()
@@ -205,7 +205,8 @@ export const ReactPlayerWrapper = ({
 
   const sendLog = () => {
     datadogLogs.logger.info('Video Watched', {
-      watchTime: videoTimesPlayed * duration + Math.ceil(duration * currentProgress),
+      watchTime: Math.ceil(duration * currentProgress),
+      duration,
       video_id: videos[currentVideoIndex].video_type === 'rt'
         ? videos[currentVideoIndex].video.conversation_id
         : videos[currentVideoIndex].video.video_id
@@ -250,12 +251,15 @@ export const ReactPlayerWrapper = ({
         muted={muted}
         onDuration={setDurationWrapper}
         onProgress={setProgressWrapper}
-        onEnded={onEndedWrapper}
+        onEnded={() => {
+          scrollToNextVideo()
+        }}
         onPlaying={
           () => {
             setDisplayThumbnail(false)
           }
         }
+        loop={false}
         url={videoUrl}
         uniqueKey={!uniqueKey
           ? (videos[currentVideoIndex].video_type === 'rt'

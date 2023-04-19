@@ -57,7 +57,6 @@ const Profile = ({
     replies,
     profile_image
   } = user
-  // console.log("user_id", user_id);
 
   const { hashtags } = user
 
@@ -133,11 +132,11 @@ const Profile = ({
   const loadVideosAll = async () => {
     setIsLoadingAll(true)
     try {
-      const all_videos_data = await axios.get(
+      const allVideosData = await axios.get(
         `${process.env.apiurl}/api/v3/public/profile_videos?user_id=${share_string}&video_types[]=rt&video_types[]=public_video`
       )
-      const videos = all_videos_data?.data?.data?.videos
-      setNoMoreVideos(all_videos_data?.data?.data?.end_of_videos)
+      const videos = allVideosData?.data?.data?.videos
+      setNoMoreVideos(allVideosData?.data?.data?.end_of_videos)
       if (videos.length > 0) {
         setVideos(prepareFeedVideos(videos))
         setNoVideos(false)
@@ -415,26 +414,26 @@ const Profile = ({
   const abbreviatedVideosCount = abbreviateNumber(user.videos)
   const abbreviatedRepliesCount = abbreviateNumber(replies)
 
-  const title_name = `${Boolean(name) && name.replace(/\s+/g, '') !== '' ? `${name.trim()} (@${nickname})` : `@${nickname}`} on Genuin | Connect with @${nickname} with a video reply`
-  const views_val = abbreviateNumber(views) !== 0 ? ' ' + abbreviateNumber(views) + ' Views.' : ''
-  const videos_val = user.videos !== 0 ? ' ' + user.videos + ' Videos.' : ''
-  const replies_val = replies !== 0 ? ' ' + replies + ' Replies.' : ''
-  const bio_val = bio ? ' ' + bio.replace(/\n+/g, '\n').replace(/\s+\n+\s+|\s+\n+|\n+\s+|\n+/g, ' ') : ''
-  const tags_val = hashtags && hashtags !== [] && hashtags.length > 0 ? ' ' + hashtags.map((tag) => '#' + tag).join(' ') : ''
-  const pipe_val = views_val || videos_val || replies_val || bio_val || tags_val ? ' |' : ''
-  const ld_description = `${Boolean(name) && name.replace(/\s+/g, '') !== '' ? `[${name.trim()}] (@${nickname})` : `@${nickname}`} on Genuin${pipe_val}${views_val}${videos_val}${replies_val}${bio_val}${tags_val}`
+  const titleNameSEO = `${Boolean(name) && name.replace(/\s+/g, '') !== '' ? `${name.trim()} (@${nickname})` : `@${nickname}`} - Genuin • Genuin Videos`
+  const viewsValue = abbreviateNumber(views) !== 0 ? ' ' + abbreviateNumber(views) + ' Views.' : ''
+  const videosValue = user.videos !== 0 ? ' ' + user.videos + ' Videos.' : ''
+  const repliesValue = replies !== 0 ? ' ' + replies + ' Replies.' : ''
+  const bioValue = bio ? ' ' + bio.replace(/\n+/g, '\n').replace(/\s+\n+\s+|\s+\n+|\n+\s+|\n+/g, ' ') : ''
+  const tagsValue = hashtags && hashtags !== [] && hashtags.length > 0 ? ' ' + hashtags.map((tag) => '#' + tag).join(' ') : ''
+  const pipeValue = viewsValue || videosValue || repliesValue || bioValue || tagsValue ? ' |' : ''
+  const ldDescription = `${Boolean(name) && name.replace(/\s+/g, '') !== '' ? `${name.trim()} (@${nickname})` : `@${nickname}`} on Genuin${pipeValue}${bioValue}.${viewsValue}${videosValue}${repliesValue}${tagsValue}`
 
   const ORG_SCHEMA = JSON.stringify({
     '@context': 'http://schema.org',
     '@type': 'ProfilePage',
     id: `${share_url}`,
     url: `${share_url}`,
-    name: `${title_name}`,
+    name: `${titleNameSEO}`,
     isPartOf: `${process.env.hostname}#website`,
     primaryImageOfPage: `${profile_image}/#primaryimage`,
     image: `${profile_image}/#primaryimage`,
     thumbnailUrl: `${profile_image}`,
-    description: `${ld_description}`,
+    description: `${ldDescription}`,
     inLanguage: 'en-US',
     actionStatus: 'ActiveActionStatus',
     potentialAction: [
@@ -488,10 +487,10 @@ const Profile = ({
   return (<>
     <SEO
       openGraphType='profile'
-      title={title_name}
+      title={titleNameSEO}
       openGraphTitle={`${name || `@${nickname}`
       } is on Genuin. Connect confidently.`}
-      description={ld_description}
+      description={ldDescription}
       openGraphDescription={`${name || `@${nickname}`}, ${user.videos
       } Videos, ${abbreviateNumber(views)} Views, ${replies} Replies`}
       urlToCopy={share_url}
