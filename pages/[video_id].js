@@ -43,8 +43,8 @@ const Video = (props) => {
 
   const { isOpen, onOpen, onClose } = useDisclosure()
   const tags_string = tags !== null && tags !== undefined && tags.replace(/\s+/g, '') !== '' ? ` #${tags.split(',').join(' #')}` : ''
-  const ld_description = `${userName || '@' + userNickname} | Web3 related bite-sized content available on Genuin${tags_string}`
-  const title_name = description || `Watch byte sized videos from @${userNickname} on Genuin`
+  const ld_description = `Watch videos from ${userName || '@' + userNickname} on Genuin`
+  const title_name = `${description} • Watch and react on Genuin`
   const share_url = `${process.env.hostname}${share_string}`
   const ORG_SCHEMA = JSON.stringify({
     '@context': 'http://schema.org',

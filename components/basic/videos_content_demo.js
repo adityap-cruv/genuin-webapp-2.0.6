@@ -24,6 +24,7 @@ const Videos = ({
   const [deviceUA, setDeviceUA] = useState('')
   const [deviceOS, setDeviceOS] = useState('')
   const [deviceType, setDeviceType] = useState(0)
+  const contentDemoRef = useRef(null)
 
   const addMoreVideos = (index) => {
     setIndexTo(old => (old - 2 === index) ? old + 1 : old)
@@ -138,13 +139,19 @@ const Videos = ({
     }
   }, [])
 
+  const scrollToNextVideo = () => {
+    contentDemoRef.current.scrollBy(0, height / 2 + 50)
+  }
+
   return (<>
 
     <Flex
+      id='temp'
       className='section-content h-100 swipe-container hide-scrollbar'
       direction='initial'
       wrap='wrap'
       w='100%'
+      ref={contentDemoRef}
     >
       {videos.length === 0
         ? <h1>Nothing to show here</h1>
@@ -188,6 +195,7 @@ const Videos = ({
                 setCurrentVideoIndex={setCurrentVideoIndex}
                 disableWatch={disableWatch}
                 contextReel={contextReel}
+                scrollToNextVideo={scrollToNextVideo}
               >
                 <AppActions
                   showGetAppModal={handleShowModalAppDownload}

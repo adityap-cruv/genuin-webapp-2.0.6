@@ -174,8 +174,7 @@ const RoundTable = ({
     group.group_description !== undefined &&
     group.group_description.replace(/\s+/g, '') !== ''
     ? group.group_description + ' | '
-    : ''
-  }Web3 related loop discussions available on Genuin${tags_string}`
+    : ''} • Join ${group?.group_name} to talk about it` //! consider "it" as temporary var will have to change once api gives categories in response.
   const title_name = group?.group_name
   const share_url = `${process.env.hostname}${asPath.slice(1)}`
   const ORG_SCHEMA = JSON.stringify({

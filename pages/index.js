@@ -9,10 +9,10 @@ import { SEO } from '../components/basic/seo'
 import { GenuinLoader } from '../components/basic/genuin_loader'
 import { GetAppModal } from '../components/basic/get_app_modal'
 
-const title = 'Genuin'
+const title = 'Be Genuin - learn, discover, connect.'
 const metaImage = 'https://media.begenuin.com/backend_assets/preview.png'
 const description =
-'Genuin gives you a place to keep up with friends and the issues you care about.'
+'Discover videos that level up your life. Learn new things, share your knowledge, and create authentic connections.'
 const currentUrl = 'https://begenuin.com'
 
 const Home = () => {
@@ -56,6 +56,7 @@ const Home = () => {
           setRTData({ rtVideos: feeds, rtData: rt_details?.data?.data })
         }
       } catch (e) {
+        // eslint-disable-next-line no-console
         console.log('error : ', e)
       }
     }
@@ -79,6 +80,7 @@ const Home = () => {
         setRTData((old) => ({ rtVideos: old.rtVideos.concat(chats), rtData: old.rtData }))
       }
     } catch (e) {
+      // eslint-disable-next-line no-console
       console.log('error : ', e)
     }
   }
