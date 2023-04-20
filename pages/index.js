@@ -43,17 +43,17 @@ const Home = () => {
         // const feed_data = await axios.get(
         //   `${process.env.apiurl}/api/v3/public/home?device_id=${deviceId}&old_page_session=${oldPageSession}`
         // );
-        const videos_data = await axios.get(
+        const videosData = await axios.get(
           `${process.env.apiurl}/api/v3/public/rt/paginate_videos?chat_id=13f3348fd5801493`
         )
-        const rt_details = await axios.get(
+        const rtDetails = await axios.get(
           `${process.env.apiurl}/api/v3/public/rt/details?chat_id=13f3348fd5801493`
         )
 
-        const feeds = videos_data?.data?.data?.chats
+        const feeds = videosData?.data?.data?.chats
         // setPageSession(feed_data?.data?.data?.page_session);
         if (feeds.length > 0) {
-          setRTData({ rtVideos: feeds, rtData: rt_details?.data?.data })
+          setRTData({ rtVideos: feeds, rtData: rtDetails?.data?.data })
         }
       } catch (e) {
         // eslint-disable-next-line no-console
