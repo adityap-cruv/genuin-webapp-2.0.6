@@ -8,6 +8,7 @@ import { SEO } from '../components/basic/seo'
 import { AppActions } from '../components/basic/app_actions'
 import { Modal, ModalBody, ModalContent, useDisclosure } from '@chakra-ui/react'
 import { datadogLogs } from '@datadog/browser-logs'
+import { DownloadAppPopup } from '../components/download_app_popup'
 const Video = (props) => {
   const {
     videoUrl,
@@ -37,6 +38,11 @@ const Video = (props) => {
     getAppComponentRef.current = message
     setShowModalAppDownload(true)
   }
+
+  const [showDownloadAppPopup, setShowDownloadAppPopup] = useState(false)
+  const handleShowDownloadAppPopup = () => setShowDownloadAppPopup(true)
+
+  const handleCloseDownloadAppPopup = () => setShowDownloadAppPopup(false)
 
   const showGetAppToViewDialog = () =>
     handleShowModalAppDownload(() => <>Get the app to view this video.</>)
@@ -99,7 +105,6 @@ const Video = (props) => {
   const [muted, setMuted] = useState(true)
   const onClick = () => {
     setMuted(old => !old)
-    console.log('on click called..')
   }
 
   return !videoUrl ? (
@@ -136,7 +141,7 @@ const Video = (props) => {
                 userName={userNickname}
                 userId={userNickname}
                 userProfileImage={userProfileImage}
-                showGetAppModal={handleShowModalAppDownload}
+                showGetAppModal={handleShowDownloadAppPopup }
                 onEnded={showGetAppToViewDialog}
                 autoplay
                 onClickOutsideOfVideo={() => { setProfileUrl(); onClose() }}
@@ -158,6 +163,10 @@ const Video = (props) => {
           show={showModalAppDownload}
           onClose={handleCloseAppDownload}
           TextNode={getAppComponentRef.current} />
+        <DownloadAppPopup
+          show={showDownloadAppPopup}
+          onClose={handleCloseDownloadAppPopup}
+        />
         {/* <WelcomeModal show={showModalWelcome} onClose={handleCloseWelcome} /> */}
       </Layout>
     </>

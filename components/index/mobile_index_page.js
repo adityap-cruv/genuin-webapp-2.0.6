@@ -112,24 +112,30 @@ export const MobileIndexPage = ({
           }}>
           <div style={{
             display: 'flex',
-            justifyContent: 'center',
-            fontSize: '24px',
-            fontWeight: 900,
-            textAlign: 'center'
+            justifyContent: 'center'
           }}>
-            <h1 style={{ color: 'white' }}>FIND YOUR PEOPLE.<br /> FIND WHAT YOU LOVE.</h1>
+            <p style={{
+              color: 'white',
+              lineHeight: '32px',
+              fontSize: '24px',
+              fontWeight: 900,
+              textAlign: 'center'
+            }}>FIND YOUR PEOPLE.<br /> FIND WHAT YOU LOVE.</p>
           </div>
           <div style={{
             display: 'flex',
             justifyContent: 'center',
-            fontWeight: 600,
-            fontSize: '15px',
-            textAlign: 'center',
             paddingRight: '10px',
             paddingLeft: '10px',
             paddingTop: '10px'
           }}>
-            <h2 style={{ color: 'white' }}>Genuin gives you a place to keep up with your friends and the issues you care about.</h2>
+            <p style={{
+              color: 'white',
+              lineHeight: '24px',
+              fontSize: '15px',
+              fontWeight: 600,
+              textAlign: 'center'
+            }}>Genuin gives you a place to keep up with your friends and the issues you care about.</p>
           </div>
           <div
             style={{

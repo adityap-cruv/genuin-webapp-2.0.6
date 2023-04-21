@@ -265,7 +265,7 @@ body .overlay {
   color: #fff !important;
   font-weight: 700;
   font-size: 1.5rem;
-  line-height: 1.56;
+  line-height: 2;
 }
 
 .navbar-collapse .navbar-nav a.text-primary {
