@@ -7,7 +7,7 @@ import { AnimatedIndexPage } from '../components/index/animated_index_page'
 import { MobileIndexPage } from '../components/index/mobile_index_page'
 import { SEO } from '../components/basic/seo'
 import { GenuinLoader } from '../components/basic/genuin_loader'
-import { GetAppModal } from '../components/basic/get_app_modal'
+import { DownloadAppPopup } from '../components/download_app_popup'
 
 const title = 'Be Genuin - learn, discover, connect.'
 const metaImage = 'https://media.begenuin.com/backend_assets/preview.png'
@@ -119,7 +119,7 @@ const Home = () => {
             />}
         </>
       }
-      <GetAppModal
+      <DownloadAppPopup
         show={showModalAppDownload}
         onClose={handleCloseAppDownload}
         title="Get the Genuin app"

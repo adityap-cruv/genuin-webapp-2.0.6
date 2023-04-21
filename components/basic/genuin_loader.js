@@ -1,8 +1,12 @@
 import React from 'react'
 import { Spinner } from '@chakra-ui/react'
+import { BasicColors } from '../../constants/colors'
 
 export const GenuinLoader = ({
-  height = '100%'
+  height = '100%',
+  size = 'lg',
+  thickness = '4px',
+  color = BasicColors.primaryColor
 }) => {
   return (<>
     <div
@@ -13,11 +17,11 @@ export const GenuinLoader = ({
         height
       }}>
       <Spinner
-        thickness='4px'
+        thickness={thickness}
         speed='1s'
-        emptyColor='blue'
-        color='white'
-        size='lg' />
+        emptyColor='white'
+        color={color}
+        size={size} />
     </div>
   </>)
 }
