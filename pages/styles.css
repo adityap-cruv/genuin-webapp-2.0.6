@@ -783,6 +783,11 @@ body .overlay {
   color: #000000;
 }
 
+/* dropdown in flag collection */
+.dropdown-item:hover{
+  opacity: 1 !important;
+}
+
 /* @media (max-width: 992px) {
   .section-content h1 {
     font-size: 2.5rem;
