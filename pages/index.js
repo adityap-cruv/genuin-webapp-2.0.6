@@ -22,7 +22,6 @@ const Home = () => {
   const [{ rtVideos, rtData }, setRTData] = useState({ rtVideos: [], rtData: {} })
 
   const [isLoadingFake, setIsLoadingFake] = useState(true)
-
   setTimeout(() => {
     setIsLoadingFake(false)
   }, 100)

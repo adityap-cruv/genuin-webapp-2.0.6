@@ -96,14 +96,19 @@ export const HomeNav = ({
               <Navbar.Toggle aria-controls='navbarMoreOptionDrawer' />
               <Trail open={isOpen}>
                 {/* <Nav.Link href={investLink}>Invest in Genuin</Nav.Link> */}
-                <Nav.Link href={hireLink}>Join Our Team</Nav.Link>
-                <Nav.Link target="_blank" href={'/content_demo?value=rt_123f373977001407'}>Life at Genuin</Nav.Link>
-                <Nav.Link href='/terms'>Terms of Service</Nav.Link>
-                <Nav.Link href='/privacy'>Privacy Policy</Nav.Link>
+                <a
+                  target="_blank"
+                  href={'/content_demo?value=rt_123f373977001407'}
+                  rel="noreferrer">Life at Genuin</a>
+                <a href={hireLink} >Join Our Team</a>
+                <a href='/terms'>Terms of Service</a>
+                <a href='/privacy'>Privacy Policy</a>
               </Trail>
-              <Nav.Link href='/' className='text-primary small mt-auto'>
+              <a
+                href='/'
+                className='text-primary small mt-auto'>
                     &copy; 2023 Genuin Inc.
-              </Nav.Link>
+              </a>
             </Nav>
           </Navbar.Collapse>
         </Fade>
