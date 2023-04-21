@@ -105,7 +105,6 @@ const Video = (props) => {
   const [muted, setMuted] = useState(true)
   const onClick = () => {
     setMuted(old => !old)
-    console.log('on click called..')
   }
 
   return !videoUrl ? (

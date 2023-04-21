@@ -2,7 +2,8 @@ import React, { useState, useMemo, useEffect } from 'react'
 import { ReactPlayerWrapper } from './react_player_wrapper'
 import { increaseVideoViewCount } from '../../actions/postActions'
 import { TopNav } from '../basic/top_nav'
-import { Box, Flex, useBreakpointValue } from '@chakra-ui/react'
+import { Flex, useBreakpointValue, Image } from '@chakra-ui/react'
+import icPreviewPlaceholder from '../../assets/images/video-more-options/ic_preview_placeholder.png'
 
 export const Player = ({
   video_id_to_use,
@@ -84,19 +85,24 @@ export const Player = ({
       justifyContent='center'
       alignItems='center'
       position='fixed'
+      backgroundColor={!videoThumbnail ? 'black' : undefined}
     >
-      <Box
-        backgroundImage={`url(${videoThumbnail})`}
+      <Image
+        src={videoThumbnail}
         backgroundColor={videoThumbnail ? 'transparent' : 'rgba(0,0,0,0.9)'}
         backgroundRepeat='no-repeat'
         backgroundSize='cover'
         backgroundPosition='center'
         width='110%'
-        h='110%'
-        left={-10}
-        top={-10}
+        height='110%'
+        top='-10'
         pos='absolute'
         filter='blur(25px) brightness(30%)'
+        onError={({ currentTarget }) => {
+          currentTarget.onerror = null // prevents looping
+          currentTarget.style.backgroundColor = 'rgba(0,0,0,0.9)'
+          currentTarget.style.filter = 'brightness(0%)'
+        }}
       />
       {/* don't show if it's a pad & watch roundtable  */}
       {(!watchRoundTable || !pad) && (
