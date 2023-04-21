@@ -1,9 +1,8 @@
 import React, { useState, useMemo, useEffect } from 'react'
 import { ReactPlayerWrapper } from './react_player_wrapper'
 import { increaseVideoViewCount } from '../../actions/postActions'
-import { TopNav } from '../basic/top_nav'
+import { TopNav } from '../navbar/top_nav'
 import { Flex, useBreakpointValue, Image } from '@chakra-ui/react'
-import icPreviewPlaceholder from '../../assets/images/video-more-options/ic_preview_placeholder.png'
 
 export const Player = ({
   video_id_to_use,

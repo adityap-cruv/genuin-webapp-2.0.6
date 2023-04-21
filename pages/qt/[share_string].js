@@ -5,7 +5,7 @@ import { Layout } from '../../components/layout/layout'
 import { Error } from '../../components/basic/error'
 import { SEO } from '../../components/basic/seo'
 import { GetAppModal } from '../../components/basic/get_app_modal'
-import { TopNav } from '../../components/basic/top_nav'
+import { TopNav } from '../../components/navbar/top_nav'
 
 const QuestionWrapper = ({
   question_id,

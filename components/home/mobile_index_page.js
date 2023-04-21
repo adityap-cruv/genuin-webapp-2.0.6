@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { GetAppModal } from '../basic/get_app_modal'
 import { Button } from 'react-bootstrap'
 
-import Videos from './../index/feed_videos'
+import Videos from './../home/feed_videos'
 import { useMotionValueEvent, useScroll, motion } from 'framer-motion'
 import { HomePageVideo } from './homepage_video'
 import trayArrow from '../../assets/images/tray_arrow.svg'

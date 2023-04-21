@@ -3,7 +3,7 @@ import axios from 'axios'
 
 import { Layout } from '../components/layout'
 import { GetAppModal } from '../components/basic/get_app_modal'
-import { TopNav } from '../components/basic/top_nav_content_demo'
+import { TopNav } from '../components/navbar/top_nav_content_demo'
 import Videos from '../components/basic/videos_content_demo'
 import { Error } from '../components/basic/error'
 
