@@ -41,6 +41,7 @@ import {
   Text
 } from '@chakra-ui/react'
 import { GenuinLoader } from '../../components/basic/genuin_loader'
+import { DownloadAppPopup } from '../../components/download_app_popup'
 
 const Profile = ({
   share_string,
@@ -266,6 +267,11 @@ const Profile = ({
     getAppComponentRef.current = message
     setShowModalAppDownload(true)
   }
+
+  const [showDownloadAppPopup, setShowDownloadAppPopup] = useState(false)
+  const handleShowDownloadAppPopup = () => setShowDownloadAppPopup(true)
+
+  const handleCloseDownloadAppPopup = () => setShowDownloadAppPopup(false)
 
   const {
     isOpen: isOpenPublic,
@@ -508,7 +514,7 @@ const Profile = ({
               type='application/ld+json'
               dangerouslySetInnerHTML={{ __html: ORG_SCHEMA }}
             />
-            <TopNav showGetAppModal={handleShowModalAppDownload} isContiner isBlue />
+            <TopNav showGetAppModal={handleShowDownloadAppPopup} isContiner isBlue />
             <div
               id="scrollableDiv"
               style={{
@@ -793,7 +799,7 @@ const Profile = ({
                         onClickOutsideOfVideo={() => { setProfileUrl(); onClose() }}
                         userProfileImage={profile_image}
                         rtProfileImage={videos[currentVideoIndex]?.video?.group_dp}
-                        showGetAppModal={handleShowModalAppDownload}
+                        showGetAppModal={handleShowDownloadAppPopup}
                         onEnded={showGetAppToViewDialog}
                         getNextVideo={getNextVideo}
                         getPrevVideo={getPrevVideo}
@@ -848,7 +854,7 @@ const Profile = ({
                         onClickOutsideOfVideo={() => { setProfileUrl(); onCloseRT() }}
                         userProfileImage={profile_image}
                         rtProfileImage={rtVideos[currentVideoIndexRT]?.video?.group_dp}
-                        showGetAppModal={handleShowModalAppDownload}
+                        showGetAppModal={handleShowDownloadAppPopup}
                         onEnded={showGetAppToViewDialog}
                         getNextVideo={getNextVideoRT}
                         getPrevVideo={getPrevVideoRT}
@@ -910,7 +916,7 @@ const Profile = ({
                         userId={nickname}
                         onClickOutsideOfVideo={() => { setProfileUrl(); onClosePublic() }}
                         userProfileImage={profile_image}
-                        showGetAppModal={handleShowModalAppDownload}
+                        showGetAppModal={handleShowDownloadAppPopup}
                         onEnded={showGetAppToViewDialog}
                         getNextVideo={getNextVideoPublic}
                         getPrevVideo={getPrevVideoPublic}
@@ -942,6 +948,10 @@ const Profile = ({
               show={showModalAppDownload}
               onClose={handleCloseAppDownload}
               TextNode={getAppComponentRef.current}
+            />
+            <DownloadAppPopup
+              show={showDownloadAppPopup}
+              onClose={handleCloseDownloadAppPopup}
             />
             {/* <WelcomeModal show={showModalWelcome} onClose={handleCloseWelcome} /> */}
           </Layout>

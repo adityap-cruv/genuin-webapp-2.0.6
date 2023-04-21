@@ -35,6 +35,7 @@ import {
 import { useRouter } from 'next/router'
 import { useMotionValueEvent, useScroll } from 'framer-motion'
 import { GenuinLoader } from '../../components/basic/genuin_loader'
+import { DownloadAppPopup } from '../../components/download_app_popup'
 
 const RoundTable = ({
   details = {},
@@ -112,6 +113,10 @@ const RoundTable = ({
     setShowModalAppDownload(true)
   }
 
+  const [showDownloadAppPopup, setShowDownloadAppPopup] = useState(false)
+  const handleShowDownloadAppPopup = () => setShowDownloadAppPopup(true)
+  const handleCloseDownloadAppPopup = () => setShowDownloadAppPopup(false)
+
   const totalVideos = videos?.length ?? 0
   const getNextVideo = () => {
     if (currentVideoIndex < totalVideos - 1) {
@@ -148,8 +153,8 @@ const RoundTable = ({
     window.history.replaceState(null, '', `../rt/${details.share_string}`)
   }
 
-  const showGetAppToViewDialog = () =>
-    handleShowModalAppDownload(() => <></>)
+  // const showGetAppToViewDialog = () =>
+  //   handleShowModalAppDownload(() => <></>)
 
   const showGetAppToSubscribeDialog = () =>
     handleShowModalAppDownload(() => (
@@ -233,7 +238,7 @@ const RoundTable = ({
             dangerouslySetInnerHTML={{ __html: ORG_SCHEMA }}
           />
           {!router.query.v && (
-            <TopNav showGetAppModal={showGetAppToViewDialog} isContiner isBlue />
+            <TopNav showGetAppModal={handleShowDownloadAppPopup} isContiner isBlue />
           )}
           <Flex
             className='section-content h-100'
@@ -468,7 +473,7 @@ const RoundTable = ({
                     }}
                     roundTableMode
                     roundTableName={group?.group_name}
-                    showGetAppModal={handleShowModalAppDownload}
+                    showGetAppModal={handleShowDownloadAppPopup}
                     getNextVideo={getNextVideo}
                     getPrevVideo={getPrevVideo}
                     watchRoundTable={watchRoundTable}
@@ -502,6 +507,10 @@ const RoundTable = ({
             show={showModalAppDownload}
             onClose={handleCloseAppDownload}
             TextNode={getAppComponentRef.current}
+          />
+          <DownloadAppPopup
+            show={showDownloadAppPopup}
+            onClose={handleCloseDownloadAppPopup}
           />
           {/* <WelcomeModal show={showModalWelcome} onClose={handleCloseWelcome} /> */}
         </Layout>
