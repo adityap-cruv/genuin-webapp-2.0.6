@@ -2,7 +2,7 @@ import React, { useState, useRef, useMemo, useEffect } from 'react'
 import axios from 'axios'
 import { isValidHttpUrl, Player } from '../../components/player/player'
 import { Layout } from '../../components/layout/layout'
-import { TopNav } from '../../components/basic/top_nav'
+import { TopNav } from '../../components/navbar/top_nav'
 import { GetAppModal } from '../../components/basic/get_app_modal'
 import {
   AppActions,

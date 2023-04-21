@@ -4,6 +4,7 @@ import { useTrail, a } from 'react-spring'
 import logo from '../../assets/images/logo_header_new.svg'
 import logoBlue from '../../assets/images/logo_header_new_blue.svg'
 import { hireLink } from '../../config'
+import { BurgerMenu } from './burger_menu'
 
 const Trail = ({ children, open }) => {
   const items = React.Children.toArray(children)
@@ -57,39 +58,11 @@ export const TopNav = ({
           />
         </Navbar.Brand>
         <div className='d-flex align-items-center justify-content-center'>
-          {!hideBurgerMenu && (
-            <>
-              <Navbar.Toggle
-                aria-controls='navbarMoreOptionDrawer'
-                style={{
-                  visibility: isOpen ? 'hidden' : 'revert',
-                  pointerEvents: 'all'
-                }}
-              />
-              <Fade in={isOpen}>
-                <Navbar.Collapse
-                  style={{
-                    left: 0,
-                    visibility: isOpen ? 'visible' : 'hidden',
-                    pointerEvents: 'all'
-                  }}
-                >
-                  <Nav {...(isContiner ? { className: 'container' } : {})}>
-                    <Navbar.Toggle aria-controls='navbarMoreOptionDrawer' />
-                    <Trail open={isOpen}>
-                      {/* <Nav.Link target="_blank" href={investLink}>Invest in Genuin</Nav.Link> */}
-                      <Nav.Link target="_blank" href={hireLink}>Join Our Team</Nav.Link>
-                      <Nav.Link target="_blank" href='/terms'>Terms of Service</Nav.Link>
-                      <Nav.Link target="_blank" href='/privacy'>Privacy Policy</Nav.Link>
-                    </Trail>
-                    <Nav.Link target="_blank" href='/' className='text-primary small mt-auto'>
-                    &copy; 2023 Genuin Inc.
-                    </Nav.Link>
-                  </Nav>
-                </Navbar.Collapse>
-              </Fade>
-            </>
-          )}
+          <BurgerMenu
+            isOpen={isOpen}
+            hideBurgerMenu={hideBurgerMenu}
+            isContiner={isContiner}
+          />
         </div>
       </Navbar>
     </>

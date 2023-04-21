@@ -1,8 +1,7 @@
 import React, { useState } from 'react'
 import { Nav, Container, Row, Col } from 'react-bootstrap'
 import { Layout } from '../components/layout/layout'
-import { TopNav } from '../components/basic/top_nav'
-import { GetAppModal } from '../components/basic/get_app_modal'
+import { TopNav } from '../components/navbar/top_nav'
 import { DownloadAppPopup } from '../components/download_app_popup'
 
 const Privacy = () => {

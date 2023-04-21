@@ -8,14 +8,14 @@ module.exports = {
     qt_apps_flyer_url: process.env.qt_apps_flyer_url,
     profile_apps_flyer_url: process.env.profile_apps_flyer_url,
     record_apps_flyer_url: process.env.record_apps_flyer_url,
-    installurl: process.env.installurl,
+    installurl: process.env.installurl
   },
-  async headers() {
+  async headers () {
     return [
       {
         source: '/.well-known/apple-app-site-association',
-        headers: [{ key: 'content-type', value: 'application/json' }],
-      },
-    ];
-  },
-};
+        headers: [{ key: 'content-type', value: 'application/json' }]
+      }
+    ]
+  }
+}

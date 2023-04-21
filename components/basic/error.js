@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Container, Row, Col } from 'react-bootstrap'
-import { TopNav } from './top_nav'
+import { TopNav } from '../navbar/top_nav'
 import { Layout } from '../layout'
 import { InstallApp } from './install_app'
 import { DownloadAppPopup } from '../download_app_popup'
