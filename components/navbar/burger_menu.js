@@ -81,9 +81,11 @@ export const BurgerMenu = ({
                   }}
                 >Privacy Policy</a>
               </Trail>
-              <a href='/' className='text-primary small mt-auto'>
-                &copy; 2023 Genuin Inc.
-              </a>
+              <div className=' small mt-auto'>
+                <a href='/' className='text-primary'>
+                  &copy; 2023 Genuin Inc.
+                </a>
+              </div>
             </Nav>
           </Navbar.Collapse>
         </Fade>

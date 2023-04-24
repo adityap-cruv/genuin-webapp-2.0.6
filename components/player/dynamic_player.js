@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { isSafari } from 'react-device-detect'
 import ReactPlayer from 'react-player/lazy'
 import { SafariPlayer } from './safari_player.js'
@@ -16,10 +16,25 @@ export const DynamicPlayer = ({
   loop = true,
   onPlaying
 }) => {
+  const [inViewPort, setInViewPort] = useState(false)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.intersectionRatio > 0) {
+          setInViewPort(true)
+        } else {
+          setInViewPort(false)
+        }
+      })
+    })
+
+    observer.observe(document.body)
+  }, [])
   return (<>
     {!isSafari && <ReactPlayer
       key={uniqueKey}
-      playing={isPlaying}
+      playing={isPlaying && inViewPort}
       url={url}
       muted={muted}
       controls={false}
@@ -43,7 +58,7 @@ export const DynamicPlayer = ({
 
     {isSafari && <SafariPlayer
       uniqueKey={uniqueKey}
-      playing={isPlaying}
+      playing={isPlaying && inViewPort}
       videoUrl={url}
       height="100%"
       width="100%"
