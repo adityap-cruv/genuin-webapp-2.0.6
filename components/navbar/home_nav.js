@@ -5,15 +5,17 @@ import logoBlue from '../../assets/images/logo_header_new_blue.svg'
 import { handleHireLinkClick } from '../../actions/appInstall'
 import { datadogLogs } from '@datadog/browser-logs'
 import { BurgerMenu } from './burger_menu'
+import { useBreakpointValue } from '@chakra-ui/react'
 
 export const HomeNav = ({
   showGetAppModal,
-  hideBurgerMenu = false,
+  // hideBurgerMenu = false,
   isContiner = false,
   isBlue = false,
   variant = 'dark'
 }) => {
   const [isOpen, setIsOpen] = useState(false)
+  const mobile = useBreakpointValue({ base: true, md: false })
 
   return (
     <Navbar
@@ -62,7 +64,7 @@ export const HomeNav = ({
           Get App
         </Button>
         <BurgerMenu
-          hideBurgerMenu={hideBurgerMenu}
+          hideBurgerMenu={!mobile}
           isContiner={isContiner}
           isOpen={isOpen}
         />
