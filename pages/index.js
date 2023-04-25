@@ -19,6 +19,7 @@ const currentUrl = 'https://begenuin.com'
 const Home = () => {
   const [showModalAppDownload, setShowModalAppDownload] = useState(false)
   const handleCloseAppDownload = () => setShowModalAppDownload(false)
+  const handleOpenAppDownload = () => setShowModalAppDownload(true)
   const mobile = useBreakpointValue({ base: true, md: false })
   const [{ rtVideos, rtData }, setRTData] = useState({ rtVideos: [], rtData: {} })
 
@@ -101,6 +102,7 @@ const Home = () => {
             <MobileIndexPage
               rtData={{ rtVideos, rtData }}
               loadMoreVideos={loadMoreVideos}
+              showModalAppDownload={handleOpenAppDownload}
             />}
         </>
       }
