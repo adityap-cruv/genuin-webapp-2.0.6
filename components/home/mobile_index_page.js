@@ -6,6 +6,7 @@ import Videos from './../home/feed_videos'
 import { useMotionValueEvent, useScroll, motion } from 'framer-motion'
 import { HomePageVideo } from './homepage_video'
 import trayArrow from '../../assets/images/tray_arrow.svg'
+import { datadogLogs } from '@datadog/browser-logs'
 
 export const MobileIndexPage = ({
   rtData,
@@ -148,6 +149,7 @@ export const MobileIndexPage = ({
               variant='primary'
               onClick={() => {
                 window.open('https://install.begenuin.com/86sn/cgs')
+                datadogLogs.logger.info('Get App')
               }}
               style={{
                 fontSize: 15,
@@ -156,7 +158,7 @@ export const MobileIndexPage = ({
                 borderRadius: '8px'
               }}
             >
-                     Get App
+              Get App
             </Button>
           </div>
           {!(videos.length === 0) && <div

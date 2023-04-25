@@ -146,7 +146,6 @@ export const ReactPlayerWrapper = ({
   const onBackButtonEvent = (e) => {
     e.preventDefault()
     onClose()
-    console.log('onBack message')
   }
 
   useEffect(() => {
@@ -156,30 +155,30 @@ export const ReactPlayerWrapper = ({
     }
   }, [])
 
-  const onEndedWrapper = useCallback(
-    (e) => {
-      // if(roundTableMode){
-      //   setRtEnded(true)
-      //   setIsPlaying(false)
-      // }
+  // const onEndedWrapper = useCallback(
+  //   (e) => {
+  //     // if(roundTableMode){
+  //     //   setRtEnded(true)
+  //     //   setIsPlaying(false)
+  //     // }
 
-      // if(!roundTableMode){
-      //   onEndedRef?.current?.(e);
-      // }
-      // if (autoJumpToNextVideo) {
-      //   if (direction === "forward") getNextVideoRef?.current?.();
-      //   if (direction === "backward") getPrevVideoRef?.current?.();
-      // }
-    },
-    [autoJumpToNextVideo, direction]
-  )
+  //     // if(!roundTableMode){
+  //     //   onEndedRef?.current?.(e);
+  //     // }
+  //     // if (autoJumpToNextVideo) {
+  //     //   if (direction === "forward") getNextVideoRef?.current?.();
+  //     //   if (direction === "backward") getPrevVideoRef?.current?.();
+  //     // }
+  //   },
+  //   [autoJumpToNextVideo, direction]
+  // )
 
-  const changeState = () => {
-    if (rtEnded) {
-      setRtEnded(false)
-      setIsPlaying(true)
-    }
-  }
+  // const changeState = () => {
+  //   if (rtEnded) {
+  //     setRtEnded(false)
+  //     setIsPlaying(true)
+  //   }
+  // }
 
   const getTimeDiff = () => {
     let time = Math.floor(
@@ -207,9 +206,7 @@ export const ReactPlayerWrapper = ({
     datadogLogs.logger.info('Video Watched', {
       watchTime: Math.ceil(duration * currentProgress),
       duration,
-      video_id: videos[currentVideoIndex].video_type === 'rt'
-        ? videos[currentVideoIndex].video.conversation_id
-        : videos[currentVideoIndex].video.video_id
+      share_string: videos[currentVideoIndex]?.share_string
     })
   }
 
@@ -222,6 +219,7 @@ export const ReactPlayerWrapper = ({
       startAnimation()
     }
   }
+
   const handleExitViewport = function () {
     setIsPlaying(false)
     setDisplayThumbnail(true)

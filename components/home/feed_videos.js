@@ -102,7 +102,7 @@ const Videos = ({
                 roundTableMode={true}
                 roundTableName={rtData?.rtData?.group?.group_name}
                 roundTableId={rtData?.rtData?.share_string}
-                shareUrl={`${process.env.hostname}/rt/${rtData?.rtData?.share_string}?v=${rtData?.rtVideos[id].share_string}`}
+                shareUrl={`${process.env.hostname}/rt/${rtData?.rtData?.share_string}?v=${videos[id]?.share_string}`}
                 verticalNavigation
                 muted={muted}
                 loadMoreVideos={addMoreVideos}
@@ -114,7 +114,7 @@ const Videos = ({
                   showGetAppModal={handleShowModalAppDownload}
                   userName={videos[id].owner.nickname}
                   link={videos[id]?.link}
-                  videoUrl={videos[id]?.share_url}
+                  videoUrl={`${process.env.hostname}/rt/${rtData?.rtData?.share_string}?v=${videos[id]?.share_string}`}
                   videoDescription={
                     rtData?.rtData?.description
                   }
