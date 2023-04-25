@@ -14,7 +14,9 @@ export const SendingLink = ({
         fontWeight: '700',
         fontSize: '700',
         lineHeight: '32px',
-        color: BasicColors.secondaryColor
+        color: BasicColors.secondaryColor,
+        paddingTop: '2%',
+        paddingBottom: '2%'
       }}
     >
       <div

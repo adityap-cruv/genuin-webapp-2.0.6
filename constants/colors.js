@@ -1,6 +1,7 @@
 export const BasicColors = {
   primaryColor: '#0645FF',
-  secondaryColor: '#949494'
+  secondaryColor: '#949494',
+  errorColor: '#F2545B'
 }
 
 export const TextInputColors = {

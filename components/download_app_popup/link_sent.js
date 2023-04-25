@@ -10,7 +10,9 @@ export const LinkSent = ({
       fontWeight: '700',
       fontSize: '20px',
       lineHeight: '32px',
-      textAlign: 'center'
+      textAlign: 'center',
+      paddingTop: '2%',
+      paddingBottom: '2%'
     }}
   >
     {text}

@@ -33,7 +33,7 @@ export const DownloadAppForm = () => {
   }, [mobile, email])
 
   const validatePhoneNumber = (input) => {
-    const phoneRegex = /^\d{9,14}$/
+    const phoneRegex = /^[0-9]{9,14}$/
     if (input) {
       if (phoneRegex.test(input)) {
         setIsInvalidNumber(false)
@@ -41,7 +41,7 @@ export const DownloadAppForm = () => {
         setIsInvalidNumber(true)
       }
     } else {
-      setIsInvalidNumber(false)
+      setIsInvalidNumber(true)
     }
   }
 
@@ -54,7 +54,7 @@ export const DownloadAppForm = () => {
         setIsInvalidEmail(true)
       }
     } else {
-      setIsInvalidEmail(false)
+      setIsInvalidEmail(true)
     }
   }
 
@@ -105,7 +105,7 @@ export const DownloadAppForm = () => {
       width: '100%'
     }}>
       {isError
-        ? <Error text='Oops! Something went wrong..'/>
+        ? <Error text='Sorry, we could not send the download link. Please try again in some time.'/>
         : <>
           {isLoading
             ? <SendingLink text='Sending...'/>
