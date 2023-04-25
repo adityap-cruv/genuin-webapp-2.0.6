@@ -17,24 +17,28 @@ export const SafariPlayer = ({
     //    event.target.currentTime = 0;
     // }
     const player = document.getElementById(uniqueKey)
-    player.addEventListener('canplay', onReady)
+    if (player) {
+      player.addEventListener('canplay', onReady)
 
-    player.addEventListener('playing', onPlaying)
-    // player.addEventListener('pause', onPause)
+      player.addEventListener('playing', onPlaying)
+      // player.addEventListener('pause', onPause)
 
-    return () => {
-      player.removeEventListener('canplay', onReady)
-      player.removeEventListener('playing', onPlaying)
+      return () => {
+        player.removeEventListener('canplay', onReady)
+        player.removeEventListener('playing', onPlaying)
       // player.removeEventListener("pause", onPause)
+      }
     }
   }, [])
 
   useEffect(() => {
     const player = document.getElementById(uniqueKey)
-    if (playing) {
-      player.play()
-    } else {
-      player.pause()
+    if (player) {
+      if (playing) {
+        player.play()
+      } else {
+        player.pause()
+      }
     }
   }, [playing])
 

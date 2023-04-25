@@ -561,7 +561,7 @@ const Videos = ({
             <Box
               cursor='pointer'
               transition='transform .2s'
-              key={video.thumbnail_url}
+              key={index}
               h={{ base: 120, sm: 240 }}
               w={{ base: 67, sm: 135 }}
               display='inline-block'
