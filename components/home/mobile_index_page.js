@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { GetAppModal } from '../basic/get_app_modal'
 import { Button } from 'react-bootstrap'
 
 import Videos from './../home/feed_videos'
@@ -7,14 +6,14 @@ import { useMotionValueEvent, useScroll, motion } from 'framer-motion'
 import { HomePageVideo } from './homepage_video'
 import trayArrow from '../../assets/images/tray_arrow.svg'
 import { datadogLogs } from '@datadog/browser-logs'
+import { isDesktop } from 'react-device-detect'
 
 export const MobileIndexPage = ({
   rtData,
-  loadMoreVideos
+  loadMoreVideos,
+  showModalAppDownload
 }) => {
   const videos = rtData.rtVideos
-  const [showModalAppDownload, setShowModalAppDownload] = useState(false)
-  const handleCloseAppDownload = () => setShowModalAppDownload(false)
   const mainRef = useRef(null)
   const [latest, setLatest] = useState(0)
   const [currentVideoIndex, setCurrentVideoIndex] = useState(-1)
@@ -148,7 +147,11 @@ export const MobileIndexPage = ({
             <Button
               variant='primary'
               onClick={() => {
-                window.open('https://install.begenuin.com/86sn/cgs')
+                if (isDesktop) {
+                  showModalAppDownload()
+                } else {
+                  window.open('https://install.begenuin.com/86sn/cgs')
+                }
                 datadogLogs.logger.info('Get App')
               }}
               style={{
@@ -248,10 +251,6 @@ export const MobileIndexPage = ({
           zIndex: 9
         }}>
       </div>
-      <GetAppModal
-        show={showModalAppDownload}
-        onClose={handleCloseAppDownload}
-      />
     </div>
   </>)
 }
