@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useDebounce } from 'use-debounce'
 import { ProgressBar, Badge, Button } from 'react-bootstrap'
-import { Image, Flex, Text, Link, Box, useBreakpointValue, Avatar, transition } from '@chakra-ui/react'
+import { Image, Flex, Text, Link, Box, useBreakpointValue, Avatar } from '@chakra-ui/react'
 import { Waypoint } from 'react-waypoint'
 import { isMobile } from 'react-device-detect'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -55,11 +55,11 @@ export const ReactPlayerWrapper = ({
   disableWatch = false,
   contextReel, //! this is temporary.
   duration,
-  scrollToNextVideo
+  scrollToNextVideo,
+  loop = false
 }) => {
   const [currentProgress, setCurrentProgress] = useState(0)
   const [isPlaying, setIsPlaying] = useState(autoplay)
-  const [rtEnded, setRtEnded] = useState(false)
   const [isPlayingDebounced] = useDebounce(isPlaying, 65)
   const [isMutedDebounced] = useDebounce(muted, 500)
   const [displayThumbnail, setDisplayThumbnail] = useState(true)
@@ -257,7 +257,7 @@ export const ReactPlayerWrapper = ({
             setDisplayThumbnail(false)
           }
         }
-        loop={false}
+        loop={loop}
         url={videoUrl}
         uniqueKey={!uniqueKey
           ? (videos[currentVideoIndex].video_type === 'rt'

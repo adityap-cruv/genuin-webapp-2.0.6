@@ -84,7 +84,7 @@ export const Player = ({
       justifyContent='center'
       alignItems='center'
       position='fixed'
-      backgroundColor={!videoThumbnail ? 'black' : undefined}
+      backgroundColor='black'
     >
       <Image
         src={videoThumbnail}

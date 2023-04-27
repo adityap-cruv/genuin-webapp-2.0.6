@@ -25,9 +25,6 @@ import {
   Image,
   Button,
   Flex,
-  Modal,
-  ModalBody,
-  ModalContent,
   Avatar,
   Divider,
   useDisclosure,
@@ -44,7 +41,7 @@ import { GenuinLoader } from '../../components/basic/genuin_loader'
 import { DownloadAppPopup } from '../../components/download_app_popup'
 
 const Profile = ({
-  share_string,
+  shareString,
   user
 }) => {
   const {
@@ -69,11 +66,11 @@ const Profile = ({
   const scrollToTop3 = () => tab3Ref.current.scrollIntoView(false)
 
   const prepareRTVideos = (videos = []) => {
-    return videos.reduce((res, { video: { chats, group, chat_id, share_string } }) => {
+    return videos.reduce((res, { video: { chats, group, chat_id, shareString } }) => {
       return res.concat(
         chats.map((chat) => ({
           video_type: 'rt',
-          share_string,
+          share_string: shareString,
           video: {
             ...chat,
             video_thumbnail: chat.thumbnail_url,
@@ -134,7 +131,7 @@ const Profile = ({
     setIsLoadingAll(true)
     try {
       const allVideosData = await axios.get(
-        `${process.env.apiurl}/api/v3/public/profile_videos?user_id=${share_string}&video_types[]=rt&video_types[]=public_video`
+        `${process.env.apiurl}/api/v3/public/profile_videos?user_id=${shareString}&video_types[]=rt&video_types[]=public_video`
       )
       const videos = allVideosData?.data?.data?.videos
       setNoMoreVideos(allVideosData?.data?.data?.end_of_videos)
@@ -145,6 +142,7 @@ const Profile = ({
         setNoVideos(true)
       }
     } catch (e) {
+      // eslint-disable-next-line no-console
       console.log('error :', e)
     }
     setIsLoadingAll(false)
@@ -159,7 +157,7 @@ const Profile = ({
       setIsLoadingPublic(true)
       const res = await axios.get(
         `${process.env.apiurl
-        }/api/v3/public/profile_videos?user_id=${share_string}&video_types[]=public_video`
+        }/api/v3/public/profile_videos?user_id=${shareString}&video_types[]=public_video`
       )
 
       const newVideos = res?.data?.data?.videos || []
@@ -179,7 +177,7 @@ const Profile = ({
       setIsLoadingRT(true)
       const res = await axios.get(
         `${process.env.apiurl
-        }/api/v3/public/profile_videos?user_id=${share_string}&video_types[]=rt`
+        }/api/v3/public/profile_videos?user_id=${shareString}&video_types[]=rt`
       )
 
       const newVideos = res?.data?.data?.videos || []
@@ -198,7 +196,7 @@ const Profile = ({
   const getMoreVideosPublic = async () => {
     const res = await axios.get(
       `${process.env.apiurl
-      }/api/v3/public/profile_videos?user_id=${share_string}&video_types[]=public_video&last_video_type=public_video&last_video_id=${publicVideos[publicVideos.length - 1]?.video?.video_id
+      }/api/v3/public/profile_videos?user_id=${shareString}&video_types[]=public_video&last_video_type=public_video&last_video_id=${publicVideos[publicVideos.length - 1]?.video?.video_id
       }`
     )
     const newVideos = res?.data?.data?.videos || []
@@ -211,7 +209,7 @@ const Profile = ({
   const getMoreVideosRT = async () => {
     const res = await axios.get(
       `${process.env.apiurl
-      }/api/v3/public/profile_videos?user_id=${share_string}&video_types[]=rt&last_video_type=rt&last_video_id=${rtVideos[rtVideos.length - 1]?.video?.conversation_id
+      }/api/v3/public/profile_videos?user_id=${shareString}&video_types[]=rt&last_video_type=rt&last_video_id=${rtVideos[rtVideos.length - 1]?.video?.conversation_id
       }`
     )
 
@@ -236,7 +234,7 @@ const Profile = ({
     }
     const res = await axios.get(
       `${process.env.apiurl
-      }/api/v3/public/profile_videos?user_id=${share_string}&video_types[]=public_video&video_types[]=rt&last_video_type=${type}&last_video_id=${id}`
+      }/api/v3/public/profile_videos?user_id=${shareString}&video_types[]=public_video&video_types[]=rt&last_video_type=${type}&last_video_id=${id}`
     )
     const newVideos = res?.data?.data?.videos || []
     res?.data?.data?.end_of_videos ? setNoMoreVideos(true) : setNoMoreVideos(false)
@@ -378,8 +376,11 @@ const Profile = ({
 
   const [tabIndex, setTabIndex] = useState(0)
 
-  const showGetAppToViewDialog = () =>
-    handleShowModalAppDownload(() => <>Get the app to view this video.</>)
+  const showGetAppToViewDialog = (e) => {
+    if (!showDownloadAppPopup) {
+      handleShowModalAppDownload(() => <>Get the app to view this video.</>)
+    }
+  }
 
   const showGetAppToSendMessage = () =>
     handleShowModalAppDownload(() => (
@@ -514,66 +515,103 @@ const Profile = ({
               type='application/ld+json'
               dangerouslySetInnerHTML={{ __html: ORG_SCHEMA }}
             />
-            <TopNav showGetAppModal={handleShowDownloadAppPopup} isContiner isBlue />
-            <div
-              id="scrollableDiv"
-              style={{
-                height: '100%',
-                overflowY: 'auto',
-                overflowX: 'hidden'
-              }}>
-              <Flex
-                className='section-content h-100'
-                direction='column'
-                w='full'
-              >
-                <Container className='container-false d-none d-md-block'></Container>
-                <Container
-                  style={{
-                    height: mobile ? '100%' : 'calc(100% - 70px)'
-                  }}
+            {!(isOpen || isOpenRT || isOpenPublic) && <div style={{ height: '100%' }}>
+              <TopNav showGetAppModal={handleShowDownloadAppPopup} isContiner isBlue />
+              <div
+                id="scrollableDiv"
+                style={{
+                  height: '100%',
+                  overflowY: 'auto',
+                  overflowX: 'hidden'
+                }}>
+                <Flex
+                  className='section-content h-100'
+                  direction='column'
+                  w='full'
                 >
-                  <Flex
-                    flexDir={{
-                      base: 'column',
-                      md: 'row'
+                  <Container className='container-false d-none d-md-block'></Container>
+                  <Container
+                    style={{
+                      height: mobile ? '100%' : 'calc(100% - 70px)'
                     }}
-                    maxH={mobile ? 'calc(100vh - 70px)' : 'calc(100vh - 140px)'}
-                    h='full'
-                    gap={{ base: 0, md: 'calc(100% / 12)' }}
-                    mt={{ base: 16, md: 0 }}
-                    justifyContent='space-between'
                   >
-                    {mobile && (
-                      <Divider
-                        opacity={0.2}
-                        w='200%'
-                        ml={-28}
-                        mb={{ base: 4, md: 0 }}
-                      />
-                    )}
                     <Flex
-                      color='#111111'
-                      flexDir='column'
-                      w={{ base: '100%', md: 'calc(100% / 12 * 2.5)', lg: 'calc(100% / 7 * 1.2)', xl: 'calc(100% / 8)' }}
-                      position={mobile ? '' : 'fixed'}
+                      flexDir={{
+                        base: 'column',
+                        md: 'row'
+                      }}
+                      maxH={mobile ? 'calc(100vh - 70px)' : 'calc(100vh - 140px)'}
+                      h='full'
+                      gap={{ base: 0, md: 'calc(100% / 12)' }}
+                      mt={{ base: 16, md: 0 }}
+                      justifyContent='space-between'
                     >
-                      <Flex justifyContent={'space-between'}>
-                        <Avatar
-                          name={nickname}
-                          src={profilePic}
-                          size='xl'
-                          background='#A4E6DA'
-                          mb={2}
-                          mt="24px"
+                      {mobile && (
+                        <Divider
+                          opacity={0.2}
+                          w='200%'
+                          ml={-28}
+                          mb={{ base: 4, md: 0 }}
                         />
-                        {mobile && (
+                      )}
+                      <Flex
+                        color='#111111'
+                        flexDir='column'
+                        w={{ base: '100%', md: 'calc(100% / 12 * 2.5)', lg: 'calc(100% / 7 * 1.2)', xl: 'calc(100% / 8)' }}
+                        position={mobile ? '' : 'fixed'}
+                      >
+                        <Flex justifyContent={'space-between'}>
+                          <Avatar
+                            name={nickname}
+                            src={profilePic}
+                            size='xl'
+                            background='#A4E6DA'
+                            mb={2}
+                            mt="24px"
+                          />
+                          {mobile && (
+                            <Flex
+                              textAlign='center'
+                              alignItems='center'
+                              justifyContent={'space-between'}
+                              w='full'
+                              mx={6}
+                            >
+                              <Flex flexGrow={1} flexDir='column'>
+                                <Box fontWeight='bold'>{abbreviatedViewsCount}</Box>
+                                <Box fontWeight={600} fontSize={12} color='#949494'>
+                                  Views
+                                </Box>
+                              </Flex>
+                              <Flex flexGrow={1} flexDir='column'>
+                                <Box fontWeight='bold'>{abbreviatedVideosCount}</Box>
+                                <Box fontWeight={600} fontSize={12} color='#949494'>
+                                  Videos
+                                </Box>
+                              </Flex>
+                              <Flex flexGrow={1} flexDir='column'>
+                                <Box fontWeight='bold'>{abbreviatedRepliesCount}</Box>
+                                <Box fontWeight={600} fontSize={12} color='#949494'>
+                                  Replies
+                                </Box>
+                              </Flex>
+                            </Flex>
+                          )}
+                        </Flex>
+                        <Box fontWeight='700' fontSize={17}>
+                          @{nickname}
+                        </Box>
+                        <Box fontWeight='600' fontSize={15}>
+                          {bio}
+                        </Box>
+                        {!mobile && (
                           <Flex
+                            justifyContent={{
+                              base: 'space-around',
+                              md: 'space-between'
+                            }}
                             textAlign='center'
-                            alignItems='center'
-                            justifyContent={'space-between'}
-                            w='full'
-                            mx={6}
+                            my={4}
                           >
                             <Flex flexGrow={1} flexDir='column'>
                               <Box fontWeight='bold'>{abbreviatedViewsCount}</Box>
@@ -595,355 +633,280 @@ const Profile = ({
                             </Flex>
                           </Flex>
                         )}
-                      </Flex>
-                      <Box fontWeight='700' fontSize={17}>
-                        @{nickname}
-                      </Box>
-                      <Box fontWeight='600' fontSize={15}>
-                        {bio}
-                      </Box>
-                      {!mobile && (
-                        <Flex
-                          justifyContent={{
-                            base: 'space-around',
-                            md: 'space-between'
-                          }}
-                          textAlign='center'
-                          my={4}
-                        >
-                          <Flex flexGrow={1} flexDir='column'>
-                            <Box fontWeight='bold'>{abbreviatedViewsCount}</Box>
-                            <Box fontWeight={600} fontSize={12} color='#949494'>
-                              Views
-                            </Box>
-                          </Flex>
-                          <Flex flexGrow={1} flexDir='column'>
-                            <Box fontWeight='bold'>{abbreviatedVideosCount}</Box>
-                            <Box fontWeight={600} fontSize={12} color='#949494'>
-                              Videos
-                            </Box>
-                          </Flex>
-                          <Flex flexGrow={1} flexDir='column'>
-                            <Box fontWeight='bold'>{abbreviatedRepliesCount}</Box>
-                            <Box fontWeight={600} fontSize={12} color='#949494'>
-                              Replies
-                            </Box>
-                          </Flex>
-                        </Flex>
-                      )}
-                      <Flex gap={4} mt={2} mb={{ base: 4, md: 0 }}>
-                        <Button
-                          color='#0645ff'
-                          bgColor='transparent'
-                          border='1px solid #0645FF'
-                          fontWeight='bold'
-                          h={8}
-                          px={5}
-                          onClick={showGetAppToSendMessage}
-                          id="profile_message"
-                        >
-                          <Image
-                            src={directMessage.src}
-                            size={8}
-                            pr={3}
-                            alt='Share'
-                            title='Share Profile'
-                          />
-                          <Text>Message</Text>
-                        </Button>
-                        {isMobile ? (
-                          <MobileShareButton
-                            url={currentUrl}
-                            description='Hello, visit this profile!'
-                            title='Genuin on web'
-                          />
-                        ) : (
-                          <ShareButton
-                            url={currentUrl}
-                            description='Hello, visit this profile!'
-                            title='Genuin on web'
+                        <Flex gap={4} mt={2} mb={{ base: 4, md: 0 }}>
+                          <Button
                             color='#0645ff'
                             bgColor='transparent'
                             border='1px solid #0645FF'
-                            p={0}
-                            minW={8}
+                            fontWeight='bold'
                             h={8}
-                            borderRadius='md'
-                            variation='blue'
-                            className="profile_share"
-                          />
-                        )}
+                            px={5}
+                            onClick={showGetAppToSendMessage}
+                            id="profile_message"
+                          >
+                            <Image
+                              src={directMessage.src}
+                              size={8}
+                              pr={3}
+                              alt='Share'
+                              title='Share Profile'
+                            />
+                            <Text>Message</Text>
+                          </Button>
+                          {isMobile ? (
+                            <MobileShareButton
+                              url={currentUrl}
+                              description='Hello, visit this profile!'
+                              title='Genuin on web'
+                            />
+                          ) : (
+                            <ShareButton
+                              url={currentUrl}
+                              description='Hello, visit this profile!'
+                              title='Genuin on web'
+                              color='#0645ff'
+                              bgColor='transparent'
+                              border='1px solid #0645FF'
+                              p={0}
+                              minW={8}
+                              h={8}
+                              borderRadius='md'
+                              variation='blue'
+                              className="profile_share"
+                            />
+                          )}
+                        </Flex>
                       </Flex>
-                    </Flex>
 
-                    <Tabs
-                      onChange={(index) => {
-                        setTabIndex(index)
-                        scrollToTop1()
-                        scrollToTop2()
-                        scrollToTop3()
-                      }}
-                      colorScheme='black'
-                      display={{ base: 'contents', md: 'block' }}
-                      width={mobile ? 'calc(100% + 24px)' : 'full'}
-                      ml={!mobile ? 'calc((100% / 12 * 2) + 100px)' : '0'}
-                    >
-                      <Divider opacity={0.1} />
-                      <TabList
-                        borderBottom={0}
-                        mb='2px'
-                        w={mobile ? 'calc(100% + 24px)' : 'full'}
-                        ml={mobile ? '-12px' : 0}
-                        backgroundColor="white"
-                        top="64px"
-                        zIndex={2}
-                        position="sticky"
-                      >
-                        <Tab flexGrow={1} className="all_icon" onClick={loadVideosAll}>
-                          <AllIcon
-                            boxSize={8}
-                            color={tabIndex === 0 ? '#111111' : '#949494'}
-                          />
-                        </Tab>
-                        <Tab flexGrow={1} onClick={loadVideosPublic} className="public_icon">
-                          <PublicIcon
-                            boxSize={8}
-                            color={tabIndex === 1 ? '#111111' : '#949494'}
-                          />
-                        </Tab>
-                        <Tab flexGrow={1} onClick={loadVideosRT} className="roundtable_icon">
-                          <RoundtableIcon
-                            boxSize={8}
-                            color={tabIndex === 2 ? '#111111' : '#949494'}
-                          />
-                        </Tab>
-                      </TabList>
-
-                      <TabPanels
-                        // maxH='full'
-                        height='100%'
-                        ml={mobile ? '-12px' : 0}
-                        mr={mobile ? '-12px' : 0}
-                        style={{
-                          // width: mobile ? "auto" : "calc(100% + 24px)",
-                          width: 'auto'
+                      <Tabs
+                        onChange={(index) => {
+                          setTabIndex(index)
+                          scrollToTop1()
+                          scrollToTop2()
+                          scrollToTop3()
                         }}
+                        colorScheme='black'
+                        display={{ base: 'contents', md: 'block' }}
+                        width={mobile ? 'calc(100% + 24px)' : 'full'}
+                        ml={!mobile ? 'calc((100% / 12 * 2) + 100px)' : '0'}
                       >
-                        <TabPanel p={0} pt='1px' h='full'>
-                          <Box ref={tab1Ref} />
-                          <Videos
-                            mobile={mobile}
-                            videos={videos}
-                            onOpen={onOpen}
-                            setCurrentVideoIndex={setCurrentVideoIndex}
-                            getMoreVideos={getMoreVideos}
-                            noMoreVideos={noMoreVideos}
-                            changeUrl={changeUrl}
-                            noVideos={noVideos}
-                            isLoading={isLoadingAll}
-                          />
-                        </TabPanel>
-                        <TabPanel p={0} pt='1px' h='full'>
-                          <Box ref={tab2Ref} />
-                          <Videos
-                            mobile={mobile}
-                            videos={publicVideos}
-                            onOpen={onOpenPublic}
-                            setCurrentVideoIndex={setCurrentVideoIndexPublic}
-                            getMoreVideos={getMoreVideosPublic}
-                            noMoreVideos={noMoreVideosPublic}
-                            changeUrl={changeUrl}
-                            isLoading={isLoadingPublic}
-                            noVideos={noVideos}
-                          />
-                        </TabPanel>
-                        <TabPanel p={0} pt='1px' h='full'>
-                          <Box ref={tab3Ref} />
-                          <Videos
-                            mobile={mobile}
-                            videos={rtVideos}
-                            onOpen={onOpenRT}
-                            setCurrentVideoIndex={setCurrentVideoIndexRT}
-                            getMoreVideos={getMoreVideosRT}
-                            noMoreVideos={noMoreVideosRT}
-                            changeUrl={changeUrl}
-                            isLoading={isLoadingRT}
-                            noVideos={noVideos}
-                          />
-                        </TabPanel>
+                        <Divider opacity={0.1} />
+                        <TabList
+                          borderBottom={0}
+                          mb='2px'
+                          w={mobile ? 'calc(100% + 24px)' : 'full'}
+                          ml={mobile ? '-12px' : 0}
+                          backgroundColor="white"
+                          top="64px"
+                          zIndex={2}
+                          position="sticky"
+                        >
+                          <Tab flexGrow={1} className="all_icon" onClick={loadVideosAll}>
+                            <AllIcon
+                              boxSize={8}
+                              color={tabIndex === 0 ? '#111111' : '#949494'}
+                            />
+                          </Tab>
+                          <Tab flexGrow={1} onClick={loadVideosPublic} className="public_icon">
+                            <PublicIcon
+                              boxSize={8}
+                              color={tabIndex === 1 ? '#111111' : '#949494'}
+                            />
+                          </Tab>
+                          <Tab flexGrow={1} onClick={loadVideosRT} className="roundtable_icon">
+                            <RoundtableIcon
+                              boxSize={8}
+                              color={tabIndex === 2 ? '#111111' : '#949494'}
+                            />
+                          </Tab>
+                        </TabList>
 
-                      </TabPanels>
-                    </Tabs>
-                  </Flex>
-                </Container>
+                        <TabPanels
+                          // maxH='full'
+                          height='100%'
+                          ml={mobile ? '-12px' : 0}
+                          mr={mobile ? '-12px' : 0}
+                          style={{
+                            // width: mobile ? "auto" : "calc(100% + 24px)",
+                            width: 'auto'
+                          }}
+                        >
+                          <TabPanel p={0} pt='1px' h='full'>
+                            <Box ref={tab1Ref} />
+                            <Videos
+                              mobile={mobile}
+                              videos={videos}
+                              onOpen={onOpen}
+                              setCurrentVideoIndex={setCurrentVideoIndex}
+                              getMoreVideos={getMoreVideos}
+                              noMoreVideos={noMoreVideos}
+                              changeUrl={changeUrl}
+                              noVideos={noVideos}
+                              isLoading={isLoadingAll}
+                            />
+                          </TabPanel>
+                          <TabPanel p={0} pt='1px' h='full'>
+                            <Box ref={tab2Ref} />
+                            <Videos
+                              mobile={mobile}
+                              videos={publicVideos}
+                              onOpen={onOpenPublic}
+                              setCurrentVideoIndex={setCurrentVideoIndexPublic}
+                              getMoreVideos={getMoreVideosPublic}
+                              noMoreVideos={noMoreVideosPublic}
+                              changeUrl={changeUrl}
+                              isLoading={isLoadingPublic}
+                              noVideos={noVideos}
+                            />
+                          </TabPanel>
+                          <TabPanel p={0} pt='1px' h='full'>
+                            <Box ref={tab3Ref} />
+                            <Videos
+                              mobile={mobile}
+                              videos={rtVideos}
+                              onOpen={onOpenRT}
+                              setCurrentVideoIndex={setCurrentVideoIndexRT}
+                              getMoreVideos={getMoreVideosRT}
+                              noMoreVideos={noMoreVideosRT}
+                              changeUrl={changeUrl}
+                              isLoading={isLoadingRT}
+                              noVideos={noVideos}
+                            />
+                          </TabPanel>
 
-                <Modal isOpen={isOpen} onClose={onClose} scrollBehavior='inside'>
-                  <ModalContent
-                    h='full'
-                    marginTop={0}
-                    maxH='full'
-                    maxW='full'
-                    bg='transparent'
-                  >
-                    <ModalBody p={0} height='full' w='full' overflow='hidden'>
-                      <Player
-                        currentVideoIndex={currentVideoIndex}
-                        videoThumbnail={
-                          videos[currentVideoIndex]?.video?.video_thumbnail_s
-                        }
-                        description={videos[currentVideoIndex]?.video?.description}
-                        link={videos[currentVideoIndex]?.video?.link}
-                        videoUrl={videos[currentVideoIndex]?.video?.video_url_m3u8 ?? videos[currentVideoIndex]?.video?.video_url}
-                        userName={nickname}
-                        userId={nickname}
-                        onClickOutsideOfVideo={() => { setProfileUrl(); onClose() }}
-                        userProfileImage={profile_image}
-                        rtProfileImage={videos[currentVideoIndex]?.video?.group_dp}
-                        showGetAppModal={handleShowDownloadAppPopup}
-                        onEnded={showGetAppToViewDialog}
-                        getNextVideo={getNextVideo}
-                        getPrevVideo={getPrevVideo}
-                        videos={videos}
-                        autoplay
-                        video_id_to_use={videos[currentVideoIndex]?.video?.share_string}
-                        roundTableMode={videos[currentVideoIndex]?.video_type === 'rt'}
-                        roundTableName={videos[currentVideoIndex]?.video?.group_name}
-                        roundTableId={videos[currentVideoIndex]?.share_string}
-                        shareUrl={videos[currentVideoIndex]?.video?.share_url}
-                        verticalNavigation
-                        onClick={onClick}
-                        muted={muted}
-                      >
-                        <AppActions
-                          showGetAppModal={handleShowModalAppDownload}
-                          userName={nickname}
-                          link={videos[currentVideoIndex]?.video?.link}
-                          videoUrl={videos[currentVideoIndex]?.video?.share_url}
-                          videoDescription={
-                            videos[currentVideoIndex]?.video?.description
-                          }
-                          videoTitle='Genuin'
-                          roundTable={videos[currentVideoIndex]?.video_type === 'rt'}
-                          roundTableName={videos[currentVideoIndex]?.video?.group_name}
-                          roundTableId={videos[currentVideoIndex]?.share_string}
-                        />
-                      </Player>
-                    </ModalBody>
-                  </ModalContent>
-                </Modal>
+                        </TabPanels>
+                      </Tabs>
+                    </Flex>
+                  </Container>
+                </Flex>
+              </div>
+            </div>}
 
-                <Modal isOpen={isOpenRT} onClose={onCloseRT} scrollBehavior='inside'>
-                  <ModalContent
-                    h='full'
-                    marginTop={0}
-                    maxH='full'
-                    maxW='full'
-                    bg='transparent'
-                  >
-                    <ModalBody p={0} height='full' w='full' overflow='hidden'>
-                      <Player
-                        currentVideoIndex={currentVideoIndexRT}
-                        videoThumbnail={
-                          rtVideos[currentVideoIndexRT]?.video?.video_thumbnail_s
-                        }
-                        description={rtVideos[currentVideoIndexRT]?.video?.description}
-                        link={rtVideos[currentVideoIndexRT]?.video?.link}
-                        videoUrl={rtVideos[currentVideoIndexRT]?.video?.video_url_m3u8 ?? rtVideos[currentVideoIndexRT]?.video?.video_url}
-                        userName={nickname}
-                        userId={nickname}
-                        onClickOutsideOfVideo={() => { setProfileUrl(); onCloseRT() }}
-                        userProfileImage={profile_image}
-                        rtProfileImage={rtVideos[currentVideoIndexRT]?.video?.group_dp}
-                        showGetAppModal={handleShowDownloadAppPopup}
-                        onEnded={showGetAppToViewDialog}
-                        getNextVideo={getNextVideoRT}
-                        getPrevVideo={getPrevVideoRT}
-                        videos={rtVideos}
-                        autoplay
-                        video_id_to_use={rtVideos[currentVideoIndexRT]?.video?.share_string}
-                        roundTableMode
-                        roundTableName={rtVideos[currentVideoIndexRT]?.video?.group_name}
-                        roundTableId={rtVideos[currentVideoIndexRT]?.share_string}
-                        shareUrl={rtVideos[currentVideoIndexRT]?.video?.share_url}
-                        verticalNavigation
-                        onClick={onClick}
-                        muted={muted}
-                      >
-                        <AppActions
-                          showGetAppModal={handleShowModalAppDownload}
-                          userName={nickname}
-                          link={rtVideos[currentVideoIndexRT]?.video?.link}
-                          videoUrl={rtVideos[currentVideoIndexRT]?.video?.share_url}
-                          videoDescription={
-                            rtVideos[currentVideoIndexRT]?.video?.description
-                          }
-                          videoTitle='Genuin'
-                          roundTable={rtVideos[currentVideoIndexRT]?.video_type === 'rt'}
-                          roundTableName={rtVideos[currentVideoIndexRT]?.video?.group_name}
-                          roundTableId={rtVideos[currentVideoIndexRT]?.share_string}
-                        />
-                      </Player>
-                    </ModalBody>
-                  </ModalContent>
-                </Modal>
+            {isOpen && <Player
+              currentVideoIndex={currentVideoIndex}
+              videoThumbnail={
+                videos[currentVideoIndex]?.video?.video_thumbnail_s
+              }
+              description={videos[currentVideoIndex]?.video?.description}
+              link={videos[currentVideoIndex]?.video?.link}
+              videoUrl={videos[currentVideoIndex]?.video?.video_url_m3u8 ?? videos[currentVideoIndex]?.video?.video_url}
+              userName={nickname}
+              userId={nickname}
+              onClickOutsideOfVideo={() => { setProfileUrl(); onClose() }}
+              userProfileImage={profile_image}
+              rtProfileImage={videos[currentVideoIndex]?.video?.group_dp}
+              showGetAppModal={handleShowDownloadAppPopup}
+              onEnded={showGetAppToViewDialog}
+              getNextVideo={getNextVideo}
+              getPrevVideo={getPrevVideo}
+              videos={videos}
+              autoplay
+              video_id_to_use={videos[currentVideoIndex]?.video?.share_string}
+              roundTableMode={videos[currentVideoIndex]?.video_type === 'rt'}
+              roundTableName={videos[currentVideoIndex]?.video?.group_name}
+              roundTableId={videos[currentVideoIndex]?.share_string}
+              shareUrl={videos[currentVideoIndex]?.video?.share_url}
+              verticalNavigation
+              onClick={onClick}
+              muted={muted}
+            >
+              <AppActions
+                showGetAppModal={handleShowModalAppDownload}
+                userName={nickname}
+                link={videos[currentVideoIndex]?.video?.link}
+                videoUrl={videos[currentVideoIndex]?.video?.share_url}
+                videoDescription={
+                  videos[currentVideoIndex]?.video?.description
+                }
+                videoTitle='Genuin'
+                roundTable={videos[currentVideoIndex]?.video_type === 'rt'}
+                roundTableName={videos[currentVideoIndex]?.video?.group_name}
+                roundTableId={videos[currentVideoIndex]?.share_string}
+              />
+            </Player>}
 
-                <Modal
-                  isOpen={isOpenPublic}
-                  onClose={onClosePublic}
-                  scrollBehavior='inside'
-                >
-                  <ModalContent
-                    h='full'
-                    marginTop={0}
-                    maxH='full'
-                    maxW='full'
-                    bg='transparent'
-                  >
-                    <ModalBody p={0} height='full' w='full' overflow='hidden'>
-                      <Player
-                        currentVideoIndex={currentVideoIndexPublic}
-                        videoThumbnail={
-                          publicVideos[currentVideoIndexPublic]?.video?.video_thumbnail_s
-                        }
-                        description={
-                          publicVideos[currentVideoIndexPublic]?.video?.description
-                        }
-                        link={publicVideos[currentVideoIndexPublic]?.video?.link}
-                        videoUrl={
-                          publicVideos[currentVideoIndexPublic]?.video?.video_url_m3u8 ?? publicVideos[currentVideoIndexPublic]?.video?.video_url
-                        }
-                        userName={nickname}
-                        userId={nickname}
-                        onClickOutsideOfVideo={() => { setProfileUrl(); onClosePublic() }}
-                        userProfileImage={profile_image}
-                        showGetAppModal={handleShowDownloadAppPopup}
-                        onEnded={showGetAppToViewDialog}
-                        getNextVideo={getNextVideoPublic}
-                        getPrevVideo={getPrevVideoPublic}
-                        videos={publicVideos}
-                        autoplay
-                        video_id_to_use={publicVideos[currentVideoIndexPublic]?.video?.share_string}
-                        shareUrl={publicVideos[currentVideoIndexPublic]?.video.share_url}
-                        verticalNavigation
-                        onClick={onClick}
-                        muted={muted}
-                      >
-                        <AppActions
-                          showGetAppModal={handleShowModalAppDownload}
-                          userName={nickname}
-                          link={publicVideos[currentVideoIndexPublic]?.video?.link}
-                          videoUrl={publicVideos[currentVideoIndexPublic]?.video?.share_url}
-                          videoDescription={
-                            publicVideos[currentVideoIndexPublic]?.video?.description
-                          }
-                          videoTitle='Genuin'
-                        />
-                      </Player>
-                    </ModalBody>
-                  </ModalContent>
-                </Modal>
-              </Flex>
-            </div>
+            {isOpenRT && <Player
+              currentVideoIndex={currentVideoIndexRT}
+              videoThumbnail={
+                rtVideos[currentVideoIndexRT]?.video?.video_thumbnail_s
+              }
+              description={rtVideos[currentVideoIndexRT]?.video?.description}
+              link={rtVideos[currentVideoIndexRT]?.video?.link}
+              videoUrl={rtVideos[currentVideoIndexRT]?.video?.video_url_m3u8 ?? rtVideos[currentVideoIndexRT]?.video?.video_url}
+              userName={nickname}
+              userId={nickname}
+              onClickOutsideOfVideo={() => { setProfileUrl(); onCloseRT() }}
+              userProfileImage={profile_image}
+              rtProfileImage={rtVideos[currentVideoIndexRT]?.video?.group_dp}
+              showGetAppModal={handleShowDownloadAppPopup}
+              onEnded={showGetAppToViewDialog}
+              getNextVideo={getNextVideoRT}
+              getPrevVideo={getPrevVideoRT}
+              videos={rtVideos}
+              autoplay
+              video_id_to_use={rtVideos[currentVideoIndexRT]?.video?.share_string}
+              roundTableMode
+              roundTableName={rtVideos[currentVideoIndexRT]?.video?.group_name}
+              roundTableId={rtVideos[currentVideoIndexRT]?.share_string}
+              shareUrl={rtVideos[currentVideoIndexRT]?.video?.share_url}
+              verticalNavigation
+              onClick={onClick}
+              muted={muted}
+            >
+              <AppActions
+                showGetAppModal={handleShowModalAppDownload}
+                userName={nickname}
+                link={rtVideos[currentVideoIndexRT]?.video?.link}
+                videoUrl={rtVideos[currentVideoIndexRT]?.video?.share_url}
+                videoDescription={
+                  rtVideos[currentVideoIndexRT]?.video?.description
+                }
+                videoTitle='Genuin'
+                roundTable={rtVideos[currentVideoIndexRT]?.video_type === 'rt'}
+                roundTableName={rtVideos[currentVideoIndexRT]?.video?.group_name}
+                roundTableId={rtVideos[currentVideoIndexRT]?.share_string}
+              />
+            </Player>}
+
+            {isOpenPublic && <Player
+              currentVideoIndex={currentVideoIndexPublic}
+              videoThumbnail={
+                publicVideos[currentVideoIndexPublic]?.video?.video_thumbnail_s
+              }
+              description={
+                publicVideos[currentVideoIndexPublic]?.video?.description
+              }
+              link={publicVideos[currentVideoIndexPublic]?.video?.link}
+              videoUrl={
+                publicVideos[currentVideoIndexPublic]?.video?.video_url_m3u8 ?? publicVideos[currentVideoIndexPublic]?.video?.video_url
+              }
+              userName={nickname}
+              userId={nickname}
+              onClickOutsideOfVideo={() => { setProfileUrl(); onClosePublic() }}
+              userProfileImage={profile_image}
+              showGetAppModal={handleShowDownloadAppPopup}
+              onEnded={showGetAppToViewDialog}
+              getNextVideo={getNextVideoPublic}
+              getPrevVideo={getPrevVideoPublic}
+              videos={publicVideos}
+              autoplay
+              video_id_to_use={publicVideos[currentVideoIndexPublic]?.video?.share_string}
+              shareUrl={publicVideos[currentVideoIndexPublic]?.video.share_url}
+              verticalNavigation
+              onClick={onClick}
+              muted={muted}
+            >
+              <AppActions
+                showGetAppModal={handleShowModalAppDownload}
+                userName={nickname}
+                link={publicVideos[currentVideoIndexPublic]?.video?.link}
+                videoUrl={publicVideos[currentVideoIndexPublic]?.video?.share_url}
+                videoDescription={
+                  publicVideos[currentVideoIndexPublic]?.video?.description
+                }
+                videoTitle='Genuin'
+              />
+            </Player>}
             <GetAppModal
               show={showModalAppDownload}
               onClose={handleCloseAppDownload}
@@ -1161,13 +1124,14 @@ Profile.getInitialProps = async ({ query: { share_string } }) => {
       )
 
       return {
-        share_string,
+        shareString: share_string,
         user: user?.data?.data
       }
     } catch (e) {
+      // eslint-disable-next-line no-console
       console.log('error :', e)
       return {
-        share_string,
+        shareString: share_string,
         user: {}
       }
     }

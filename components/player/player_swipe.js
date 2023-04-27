@@ -38,7 +38,8 @@ export const Player = ({
   uniqueKey,
   disableWatch,
   contextReel, //! this is temporary
-  scrollToNextVideo = () => {}
+  scrollToNextVideo = () => { },
+  loop
 }) => {
   const [triggerPlayCount, setTriggetPlayCount] = useState(false)
   const [duration, setDuration] = useState(0)
@@ -143,6 +144,7 @@ export const Player = ({
         contextReel={contextReel}
         duration={duration}
         scrollToNextVideo={scrollToNextVideo}
+        loop={loop}
       >
         {children}
 
