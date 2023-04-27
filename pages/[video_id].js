@@ -6,7 +6,7 @@ import { GetAppModal } from '../components/basic/get_app_modal'
 import { Error } from '../components/basic/error'
 import { SEO } from '../components/basic/seo'
 import { AppActions } from '../components/basic/app_actions'
-import { Modal, ModalBody, ModalContent, useDisclosure } from '@chakra-ui/react'
+import { useDisclosure } from '@chakra-ui/react'
 import { datadogLogs } from '@datadog/browser-logs'
 import { DownloadAppPopup } from '../components/download_app_popup'
 const Video = (props) => {
@@ -17,7 +17,7 @@ const Video = (props) => {
     description,
     created_at,
     updated_at,
-    tags,
+    // tags,
     share_string,
     video_id_to_use,
     videoThumbnail,
@@ -44,11 +44,14 @@ const Video = (props) => {
 
   const handleCloseDownloadAppPopup = () => setShowDownloadAppPopup(false)
 
-  const showGetAppToViewDialog = () =>
-    handleShowModalAppDownload(() => <>Get the app to view this video.</>)
+  const showGetAppToViewDialog = () => {
+    if (!showDownloadAppPopup) {
+      handleShowModalAppDownload(() => <>Get the app to view this video.</>)
+    }
+  }
 
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const tags_string = tags !== null && tags !== undefined && tags.replace(/\s+/g, '') !== '' ? ` #${tags.split(',').join(' #')}` : ''
+  // const tags_string = tags !== null && tags !== undefined && tags.replace(/\s+/g, '') !== '' ? ` #${tags.split(',').join(' #')}` : ''
   const ld_description = `Watch videos from ${userName || '@' + userNickname} on Genuin`
   const title_name = `${description} • Watch and react on Genuin`
   const share_url = `${process.env.hostname}${share_string}`
@@ -123,42 +126,31 @@ const Video = (props) => {
           metaImageHeight={630}
           urlToCopy={process?.env?.hostname + '/' + video_id_to_use} />
         <script type='application/ld+json' dangerouslySetInnerHTML={{ __html: ORG_SCHEMA }} />
-        <Modal isOpen={isOpen} onClose={onClose} scrollBehavior='inside'>
-          <ModalContent
-            h='full'
-            marginTop={0}
-            maxH='full'
-            maxW='full'
-            bg='transparent'
-          >
-            <ModalBody p={0} height='full' w='full' overflow='hidden'>
-              <Player
-                key={video_id_to_use ?? `${Math.random()}`}
-                video_id_to_use={video_id_to_use}
-                description={description}
-                videoUrl={video_url_m3u8 ?? videoUrl}
-                videoThumbnail={videoThumbnail}
-                userName={userNickname}
-                userId={userNickname}
-                userProfileImage={userProfileImage}
-                showGetAppModal={handleShowDownloadAppPopup }
-                onEnded={showGetAppToViewDialog}
-                autoplay
-                onClickOutsideOfVideo={() => { setProfileUrl(); onClose() }}
-                onClick={onClick}
-                muted={muted}
-              >
-                <AppActions
-                  showGetAppModal={handleShowModalAppDownload}
-                  userName={userNickname}
-                  link={link}
-                  videoUrl={globalThis?.location?.href}
-                  videoDescription={description}
-                  videoTitle='Genuin' />
-              </Player>
-            </ModalBody>
-          </ModalContent>
-        </Modal>
+        {isOpen && <Player
+          key={video_id_to_use ?? `${Math.random()}`}
+          video_id_to_use={video_id_to_use}
+          description={description}
+          videoUrl={video_url_m3u8 ?? videoUrl}
+          videoThumbnail={videoThumbnail}
+          userName={userNickname}
+          userId={userNickname}
+          userProfileImage={userProfileImage}
+          showGetAppModal={handleShowDownloadAppPopup}
+          onEnded={showGetAppToViewDialog}
+          autoplay
+          onClickOutsideOfVideo={() => { setProfileUrl(); onClose() }}
+          onClick={onClick}
+          muted={muted}
+        >
+          <AppActions
+            showGetAppModal={handleShowModalAppDownload}
+            userName={userNickname}
+            link={link}
+            videoUrl={globalThis?.location?.href}
+            videoDescription={description}
+            videoTitle='Genuin' />
+        </Player>}
+
         <GetAppModal
           show={showModalAppDownload}
           onClose={handleCloseAppDownload}

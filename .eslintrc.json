@@ -30,7 +30,7 @@
                 "allowElseIf": true
             }
         ],
-        "camelcase": "warn",
+        "camelcase": "off",
         "no-unused-vars": "warn",
         "multiline-ternary": "off",
         "indent": ["error", 2],

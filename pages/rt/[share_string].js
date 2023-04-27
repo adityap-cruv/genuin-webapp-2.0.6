@@ -22,9 +22,6 @@ import {
   Image,
   Link,
   Flex,
-  Modal,
-  ModalBody,
-  ModalContent,
   Divider,
   HStack,
   useDisclosure,
@@ -60,6 +57,7 @@ const RoundTable = ({
       }
       setVideos(videos.concat(newVideos))
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.log('error in loading more videos :: ', error)
     }
   }
@@ -169,12 +167,12 @@ const RoundTable = ({
     setMuted(old => !old)
   }
 
-  const tags_string =
-    group && group.tags !== null &&
-      group.tags !== undefined &&
-      group.tags.replace(/\s+/g, '') !== ''
-      ? ` #${group.tags.split(',').join(' #')}`
-      : ''
+  // const tags_string =
+  //   group && group.tags !== null &&
+  //     group.tags !== undefined &&
+  //     group.tags.replace(/\s+/g, '') !== ''
+  //     ? ` #${group.tags.split(',').join(' #')}`
+  //     : ''
   const ld_description = `${group && group.group_description !== null &&
     group.group_description !== undefined &&
     group.group_description.replace(/\s+/g, '') !== ''
@@ -229,24 +227,21 @@ const RoundTable = ({
     {(!group?.group_id || isError) ? (
       <Error />
     ) : isLoadingFake
-      ? <GenuinLoader/>
+      ? <GenuinLoader />
       : (
         <Layout>
-
           <script
             type='application/ld+json'
             dangerouslySetInnerHTML={{ __html: ORG_SCHEMA }}
           />
-          {!router.query.v && (
+          {!isOpen && <>
             <TopNav showGetAppModal={handleShowDownloadAppPopup} isContiner isBlue />
-          )}
-          <Flex
-            className='section-content h-100'
-            direction='column'
-            position={mobile ? 'fixed' : 'initial'}
-          >
-            <Container className='container-false d-none d-md-block'></Container>
-            {!router.query.v && (
+            <Flex
+              className='section-content h-100'
+              direction='column'
+              position={mobile ? 'fixed' : 'initial'}
+            >
+              <Container className='container-false d-none d-md-block'></Container>
               <Container
                 style={{
                   height: mobile ? '100%' : 'calc(100% - 70px)'
@@ -431,78 +426,65 @@ const RoundTable = ({
                   </Flex>
                 </Flex>
               </Container>
-            )}
+            </Flex>
+          </>}
 
-            <Modal
-              isOpen={isOpen}
+          {isOpen &&
+            <Player
+              key={currentVideoIndex}
+              videos={videos}
+              currentVideoIndex={currentVideoIndex}
+              video_id_to_use={videos?.[currentVideoIndex]?.share_string}
+              description={group?.group_description}
+              videoUrl={videos?.[currentVideoIndex]?.video_url_m3u8 ?? videos?.[currentVideoIndex]?.video_url}
+              videoThumbnail={videos?.[currentVideoIndex]?.thumbnail_url}
+              userName={videos?.[currentVideoIndex]?.owner?.nickname}
+              userId={videos?.[currentVideoIndex]?.owner?.nickname}
+              userProfileImage={
+                videos?.[currentVideoIndex]?.owner?.profile_image
+              }
+              onClickOutsideOfVideo={() => {
+                if (router?.query?.v && !(window.location.href.split('/')[3] === 'p')) {
+                  window.location.href = details.share_string
+                  // window.location.href = `${process.env.hostname}rt/${details.share_string}?v=${videos?.[currentVideoIndex]?.share_string}`
+                } else if (window.location.href.split('/')[3] === 'p') {
+                  //! window.location.href = window.location.href
+                } else {
+                  onClose()
+                  setWatchRoundtable(false)
+                  setRtUrl()
+                }
+              }}
+              roundTableMode
+              roundTableName={group?.group_name}
+              showGetAppModal={handleShowDownloadAppPopup}
+              getNextVideo={getNextVideo}
+              getPrevVideo={getPrevVideo}
+              watchRoundTable={watchRoundTable}
+              setWatchRoundtable={setWatchRoundtable}
+              autoJumpToNextVideo={watchRoundTable}
+              autoplay={watchRoundTable}
               onClose={onClose}
-              scrollBehavior='inside'
+              roundTableId={details.share_string}
+              direction={direction}
+              setDirection={setDirection}
+              muted={muted}
+              onClick={onClick}
             >
-              <ModalContent
-                h='full'
-                marginTop={0}
-                maxH='full'
-                maxW='full'
-                bg='transparent'
-              >
-                <ModalBody p={0} height='full' w='full'>
-                  <Player
-                    key={currentVideoIndex}
-                    videos={videos}
-                    currentVideoIndex={currentVideoIndex}
-                    video_id_to_use={videos?.[currentVideoIndex]?.share_string}
-                    description={group?.group_description}
-                    videoUrl={videos?.[currentVideoIndex]?.video_url_m3u8 ?? videos?.[currentVideoIndex]?.video_url}
-                    videoThumbnail={videos?.[currentVideoIndex]?.thumbnail_url}
-                    userName={videos?.[currentVideoIndex]?.owner?.nickname}
-                    userId={videos?.[currentVideoIndex]?.owner?.nickname}
-                    userProfileImage={
-                      videos?.[currentVideoIndex]?.owner?.profile_image
-                    }
-                    onClickOutsideOfVideo={() => {
-                      if (router?.query?.v && !(window.location.href.split('/')[3] === 'p')) {
-                        window.location.href = details.share_string
-                        // window.location.href = `${process.env.hostname}rt/${details.share_string}?v=${videos?.[currentVideoIndex]?.share_string}`
-                      } else if (window.location.href.split('/')[3] === 'p') {
-                        //! window.location.href = window.location.href
-                      } else {
-                        onClose()
-                        setWatchRoundtable(false)
-                        setRtUrl()
-                      }
-                    }}
-                    roundTableMode
-                    roundTableName={group?.group_name}
-                    showGetAppModal={handleShowDownloadAppPopup}
-                    getNextVideo={getNextVideo}
-                    getPrevVideo={getPrevVideo}
-                    watchRoundTable={watchRoundTable}
-                    setWatchRoundtable={setWatchRoundtable}
-                    autoJumpToNextVideo={watchRoundTable}
-                    autoplay={watchRoundTable}
-                    onClose={onClose}
-                    roundTableId={details.share_string}
-                    direction={direction}
-                    setDirection={setDirection}
-                    muted={muted}
-                    onClick={onClick}
-                  >
-                    <AppActions
-                      showGetAppModal={handleShowModalAppDownload}
-                      roundTable
-                      roundTableName={group?.group_name}
-                      roundTableId={details.share_string}
-                      link={videos?.[currentVideoIndex]?.link}
-                      videoUrl={`${process.env.hostname}rt/${details.share_string}?v=${videos?.[currentVideoIndex]?.share_string}`}
-                      videoDescription={group?.group_description}
-                      videoTitle='Genuin'
-                      watchRoundTable={watchRoundTable}
-                    />
-                  </Player>
-                </ModalBody>
-              </ModalContent>
-            </Modal>
-          </Flex>
+              <AppActions
+                showGetAppModal={handleShowModalAppDownload}
+                roundTable
+                roundTableName={group?.group_name}
+                roundTableId={details.share_string}
+                link={videos?.[currentVideoIndex]?.link}
+                videoUrl={`${process.env.hostname}rt/${details.share_string}?v=${videos?.[currentVideoIndex]?.share_string}`}
+                videoDescription={group?.group_description}
+                videoTitle='Genuin'
+                watchRoundTable={watchRoundTable}
+              />
+            </Player>
+          }
+
           <GetAppModal
             show={showModalAppDownload}
             onClose={handleCloseAppDownload}
