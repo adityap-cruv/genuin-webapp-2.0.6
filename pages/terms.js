@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
-import { Nav, Container, Row, Col } from 'react-bootstrap'
+import { Container } from 'react-bootstrap'
 import { Layout } from '../components/layout/layout'
 import { TopNav } from '../components/navbar/top_nav'
 import { DownloadAppPopup } from '../components/download_app_popup'
+import { Footer } from '../components/basic/footer'
 
 const Terms = () => {
   const [showDownloadAppPopup, setShowDownloadAppPopup] = useState(false)
@@ -448,79 +449,9 @@ const Terms = () => {
 
         </Container>
 
-        <Container className='container-footer text-black mt-auto'>
-          <Row className='py-3'>
-            <Col xl={4} lg={4} md={4} sm={12}>
-              <Nav as='ul'>
-                <Nav.Item as='li'>
-                  <Nav.Link style={{ opacity: 0.5 }} href='/' className='pr-0'>
-                    © 2023 Genuin Inc.
-                  </Nav.Link>
-                </Nav.Item>
-              </Nav>
-            </Col>
-            <Col xl={8} lg={8} md={8} sm={12}>
-              <Nav
-                className='justify-content-start justify-content-md-end'
-                as='ul'
-              >
-                {/* <Nav.Item as='li'>
-                  <Nav.Link
-                    style={{ opacity: 0.5 }}
-                    href='#'
-                    onClick={handleInvestClick}
-                  >
-                    Invest in Genuin
-                  </Nav.Link>
-                </Nav.Item> */}
-                <Nav.Item as='li'>
-                  <Nav.Link
-                    style={{ opacity: 0.5 }}
-                    target="_blank"
-                    href={'/content_demo?value=rt_123f373977001407'}
-                  >
-                    Life at Genuin
-                  </Nav.Link>
-                </Nav.Item>
-                <Nav.Item as='li'>
-                  <Nav.Link
-                    style={{
-                      opacity: 0.5,
-                      paddingLeft: '0px',
-                      paddingRight: '0px'
-                    }}
-                    href={undefined}
-                    eventKey='link-2'
-                  >
-                    |
-                  </Nav.Link>
-                </Nav.Item>
-                <Nav.Item as='li'>
-                  <Nav.Link style={{ opacity: 0.5 }} href='/terms'>
-                    Terms of Service
-                  </Nav.Link>
-                </Nav.Item>
-                <Nav.Item as='li'>
-                  <Nav.Link
-                    style={{
-                      opacity: 0.5,
-                      paddingLeft: '0px',
-                      paddingRight: '0px'
-                    }}
-                    href={undefined}
-                  >
-                    |
-                  </Nav.Link>
-                </Nav.Item>
-                <Nav.Item as='li'>
-                  <Nav.Link style={{ opacity: 0.5 }} href='/privacy'>
-                    Privacy Policy
-                  </Nav.Link>
-                </Nav.Item>
-              </Nav>
-            </Col>
-          </Row>
-        </Container>
+        <Footer
+          theme='black'
+        />
       </section>
       {/* <GetAppModal
         show={showModalAppDownload}
