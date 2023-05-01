@@ -104,6 +104,8 @@ export const ReactPlayerWrapper = ({
     const touchEnd = (e) => {
       const touchEndY = e.changedTouches[0].clientY
       if (touchStartYRef.current > touchEndY + 5) {
+        setRtEnded(false)
+        setIsPlaying(true)
         getNextVideoRef?.current?.()
       } else if (touchStartYRef.current < touchEndY - 5) {
         getPrevVideoRef?.current?.()
@@ -122,7 +124,6 @@ export const ReactPlayerWrapper = ({
   const onBackButtonEvent = (e) => {
     e.preventDefault()
     onClose()
-    console.log('onBack message')
   }
 
   useEffect(() => {
