@@ -41,7 +41,7 @@ export const DownloadAppForm = () => {
         setIsInvalidNumber(true)
       }
     } else {
-      setIsInvalidNumber(true)
+      setIsInvalidNumber(false)
     }
   }
 
@@ -54,7 +54,7 @@ export const DownloadAppForm = () => {
         setIsInvalidEmail(true)
       }
     } else {
-      setIsInvalidEmail(true)
+      setIsInvalidEmail(false)
     }
   }
 
