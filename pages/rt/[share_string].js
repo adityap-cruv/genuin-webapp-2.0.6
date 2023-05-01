@@ -32,7 +32,9 @@ import {
 import { useRouter } from 'next/router'
 import { useMotionValueEvent, useScroll } from 'framer-motion'
 import { GenuinLoader } from '../../components/basic/genuin_loader'
-import { DownloadAppPopup } from '../../components/download_app_popup'
+import dynamic from 'next/dynamic'
+
+const DownloadAppPopup = dynamic(() => import('../../components/download_app_popup'))
 
 const RoundTable = ({
   details = {},

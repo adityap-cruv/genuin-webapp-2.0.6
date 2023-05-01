@@ -11,7 +11,7 @@ import { InstallApp } from '../basic/install_app'
 import { DownloadAppForm } from './download_app_form'
 import { isMobile } from 'react-device-detect'
 
-export const DownloadAppPopup = ({ show, onClose }) => {
+const DownloadAppPopup = ({ show, onClose }) => {
   return (
     <Modal
       key='app'
@@ -47,3 +47,5 @@ export const DownloadAppPopup = ({ show, onClose }) => {
     </Modal>
   )
 }
+
+export default DownloadAppPopup

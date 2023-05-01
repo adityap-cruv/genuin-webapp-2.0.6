@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { useBreakpointValue } from '@chakra-ui/react'
+import dynamic from 'next/dynamic'
 
 import { HomeNav } from '../components/navbar/home_nav'
-import { AnimatedIndexPage } from '../components/home/animated_index_page'
-import { MobileIndexPage } from '../components/home/mobile_index_page'
 import { SEO } from '../components/basic/seo'
 import { GenuinLoader } from '../components/basic/genuin_loader'
-import { DownloadAppPopup } from '../components/download_app_popup'
 import { datadogLogs } from '@datadog/browser-logs'
+// import { AnimatedIndexPage } from '../components/home/animated_index_page'
+// import { MobileIndexPage } from '../components/home/mobile_index_page'
+// import { DownloadAppPopup } from '../components/download_app_popup'
+
+const AnimatedIndexPage = dynamic(() => import('../components/home/animated_index_page'))
+const MobileIndexPage = dynamic(() => import('../components/home/mobile_index_page'))
+const DownloadAppPopup = dynamic(() => import('../components/download_app_popup'))
 
 const title = 'Be Genuin - learn, discover, connect.'
 const metaImage = 'https://media.begenuin.com/backend_assets/preview.png'

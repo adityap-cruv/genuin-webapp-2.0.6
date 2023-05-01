@@ -25,6 +25,7 @@ export function useClipboard (value, options = defaultOptions) {
       const didCopy = copyToClipboard && copyToClipboard(value)
       setIsCopied(didCopy)
     } catch (e) {
+      // eslint-disable-next-line no-console
       console.log(e)
     }
   }

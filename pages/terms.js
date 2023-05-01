@@ -2,8 +2,10 @@ import React, { useState } from 'react'
 import { Container } from 'react-bootstrap'
 import { Layout } from '../components/layout/layout'
 import { TopNav } from '../components/navbar/top_nav'
-import { DownloadAppPopup } from '../components/download_app_popup'
+import dynamic from 'next/dynamic'
 import { Footer } from '../components/basic/footer'
+
+const DownloadAppPopup = dynamic(() => import('../components/download_app_popup'))
 
 const Terms = () => {
   const [showDownloadAppPopup, setShowDownloadAppPopup] = useState(false)

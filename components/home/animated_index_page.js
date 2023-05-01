@@ -8,7 +8,7 @@ import trayArrow from '../../assets/images/tray_arrow.svg'
 import backgroundVector from '../../assets/images/genuin_background_logo.png'
 import { Footer } from '../basic/footer'
 
-export const AnimatedIndexPage = ({
+const AnimatedIndexPage = ({
   rtData,
   loadMoreVideos
 }) => {
@@ -264,3 +264,5 @@ export const AnimatedIndexPage = ({
     </div>
   </>)
 }
+
+export default AnimatedIndexPage

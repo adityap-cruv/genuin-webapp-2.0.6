@@ -3,7 +3,9 @@ import { Container, Row, Col } from 'react-bootstrap'
 import { TopNav } from '../navbar/top_nav'
 import { Layout } from '../layout'
 import { InstallApp } from './install_app'
-import { DownloadAppPopup } from '../download_app_popup'
+import dynamic from 'next/dynamic'
+
+const DownloadAppPopup = dynamic(() => import('../download_app_popup'))
 
 export const Error = ({ homePageUrl = '/' }) => {
   // const [showModalAppDownload, setShowModalAppDownload] = useState(false)
