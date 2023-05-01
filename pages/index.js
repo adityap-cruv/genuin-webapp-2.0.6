@@ -7,9 +7,6 @@ import { HomeNav } from '../components/navbar/home_nav'
 import { SEO } from '../components/basic/seo'
 import { GenuinLoader } from '../components/basic/genuin_loader'
 import { datadogLogs } from '@datadog/browser-logs'
-// import { AnimatedIndexPage } from '../components/home/animated_index_page'
-// import { MobileIndexPage } from '../components/home/mobile_index_page'
-// import { DownloadAppPopup } from '../components/download_app_popup'
 
 const AnimatedIndexPage = dynamic(() => import('../components/home/animated_index_page'))
 const MobileIndexPage = dynamic(() => import('../components/home/mobile_index_page'))
