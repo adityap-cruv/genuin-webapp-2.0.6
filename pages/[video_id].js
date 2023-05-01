@@ -8,7 +8,10 @@ import { SEO } from '../components/basic/seo'
 import { AppActions } from '../components/basic/app_actions'
 import { useDisclosure } from '@chakra-ui/react'
 import { datadogLogs } from '@datadog/browser-logs'
-import { DownloadAppPopup } from '../components/download_app_popup'
+import dynamic from 'next/dynamic'
+
+const DownloadAppPopup = dynamic(() => import('../components/download_app_popup'))
+
 const Video = (props) => {
   const {
     videoUrl,

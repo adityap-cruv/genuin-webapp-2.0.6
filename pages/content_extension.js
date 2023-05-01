@@ -13,8 +13,7 @@ import {
   AppActions
 } from '../components/basic/app_actions'
 import {
-  Flex,
-  useBreakpointValue
+  Flex
 } from '@chakra-ui/react'
 
 const Profile = ({
@@ -48,9 +47,7 @@ const Profile = ({
       return res.concat(({ video_type, video }))
     }, [])
   }
-
-  const preparedFeedVideos = prepareFeedVideos(all_videos)
-  const [videos, setVideos] = useState(preparedFeedVideos)
+  const videos = prepareFeedVideos(all_videos)
   const [muted, setMuted] = useState(true)
   const [show_unmute_text, setShowUnmuteText] = useState(true)
 
@@ -70,10 +67,6 @@ const Profile = ({
       setShowUnmuteText(false)
     }, 5000)
   }, [])
-
-  const mobile = useBreakpointValue({ base: true, md: false })
-
-  const [currentVideoIndex, setCurrentVideoIndex] = useState(0)
 
   const getNextVideo = () => {
     // var idx = currentVideoIndex

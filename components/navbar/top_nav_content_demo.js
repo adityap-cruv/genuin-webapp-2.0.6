@@ -1,30 +1,8 @@
 import React, { useState } from 'react'
-import { Image, Navbar, Nav, Fade } from 'react-bootstrap'
-import { useTrail, a } from 'react-spring'
+import { Image, Navbar } from 'react-bootstrap'
 import logo from '../../assets/images/logo_header_new.svg'
 import logoBlue from '../../assets/images/logo_header_new_blue.svg'
-import { hireLink } from '../../config'
 import { BurgerMenu } from './burger_menu'
-
-const Trail = ({ children, open }) => {
-  const items = React.Children.toArray(children)
-  const trail = useTrail(items.length, {
-    config: { mass: 5, tension: 2000, friction: 200 },
-    opacity: open ? 1 : 0,
-    y: open ? 0 : 20,
-    height: open ? 20 : 0,
-    from: { opacity: 0, y: 20, height: 0 }
-  })
-  return (
-    <div>
-      {trail.map(({ height, ...style }, index) => (
-        <a.div key={index} style={style}>
-          {items[index]}
-        </a.div>
-      ))}
-    </div>
-  )
-}
 
 export const TopNav = ({
   showGetAppModal,

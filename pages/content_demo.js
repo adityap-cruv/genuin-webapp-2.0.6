@@ -289,6 +289,7 @@ Profile.getInitialProps = async ({
         context_reel
       }
     } catch (e) {
+      // eslint-disable-next-line no-console
       console.log('error : ', e)
       return Promise.resolve({})
     }

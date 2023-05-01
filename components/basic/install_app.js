@@ -21,7 +21,7 @@ export const InstallApp = ({ small = false, errorPage = false, onClick = () => {
       {mobile && !errorPage && router.pathname !== '/' && (
         <Button onClick={onClick} style={{ width: '334px' }}>
           <Link href={appStoreLink} isExternal>
-            <Text fontSize={24} fontWeight='bold'>
+            <Text fontSize={20} fontWeight='bold'>
               Get App
             </Text>
           </Link>
@@ -31,7 +31,7 @@ export const InstallApp = ({ small = false, errorPage = false, onClick = () => {
       {mobile && errorPage && router.pathname !== '/' && (
         <Button onClick={onClick}>
           <Link href={appStoreLink} isExternal>
-            <Text fontSize={24} fontWeight='bold'>
+            <Text fontSize={20} fontWeight='bold'>
               Download App
             </Text>
           </Link>
@@ -39,10 +39,10 @@ export const InstallApp = ({ small = false, errorPage = false, onClick = () => {
       )}
 
       {mobile && router.pathname === '/' && (
-        <Button onClick={onClick}>
+        <Button onClick={onClick} style={{ width: '90%' }}>
           <Link href={appStoreLink} isExternal>
-            <Text fontSize={24} fontWeight='bold'>
-              Download App
+            <Text fontSize={20} fontWeight='bold'>
+                Get App
             </Text>
           </Link>
         </Button>
