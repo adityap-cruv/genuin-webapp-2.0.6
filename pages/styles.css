@@ -4,14 +4,16 @@
 
 @font-face {
   font-family: "Avenir Next";
-  src: url("/fonts/AvenirNext-Regular.ttf") format("truetype");
+  src: url('/fonts/AvenirNext-Regular.woff') format('woff'), 
+        url("/fonts/AvenirNext-Regular.ttf") format("truetype");
   font-weight: 300;
   font-style: normal;
 }
 
 @font-face {
   font-family: "Avenir Next";
-  src: url("/fonts/AvenirNext-Medium.ttf") format("truetype");
+  src: url('/fonts/AvenirNext-Medium.woff') format('woff'),
+  url("/fonts/AvenirNext-Medium.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
 }
@@ -67,21 +69,24 @@
 
 @font-face {
   font-family: "Avenir Next";
-  src: url("/fonts/AvenirNext-Heavy.ttf") format("truetype");
+  src: url('/fonts/AvenirNext-Heavy.woff') format('woff'),
+    url("/fonts/AvenirNext-Heavy.ttf") format("truetype");
   font-weight: 900;
   font-style: normal;
 }
 
 @font-face {
   font-family: "Avenir Next";
-  src: url("/fonts/AvenirNext-DemiBold.ttf") format("truetype");
+  src: url('/fonts/AvenirNext-DemiBold.woff') format('woff'),
+    url("/fonts/AvenirNext-DemiBold.ttf") format("truetype");
   font-weight: 600;
   font-style: normal;
 }
 
 @font-face {
   font-family: "Avenir Next";
-  src: url("/fonts/AvenirNext-Bold.ttf") format("truetype");
+  src: url('/fonts/AvenirNext-Bold.woff') format('woff'),
+    url("/fonts/AvenirNext-Bold.ttf") format("truetype");
   font-weight: 700;
   font-style: normal;
 }

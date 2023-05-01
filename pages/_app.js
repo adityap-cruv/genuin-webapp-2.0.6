@@ -47,6 +47,7 @@ function MyApp ({ Component, pageProps }) {
     <>
       <NextHead>
         <link rel='shortcut icon' href={favicon.src} type='image/x-icon' />
+        {process.env.env === 'qa' && <meta name="robots" content="noindex, nofollow"></meta>}
       </NextHead>
       <ChakraProvider theme={theme}>
         <Component {...pageProps} />
