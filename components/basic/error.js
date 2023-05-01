@@ -1,22 +1,27 @@
-import { useState } from "react"
-import { Container, Row, Col } from "react-bootstrap";
-import { TopNav } from "./top_nav";
-import { Layout } from "../layout";
-import { InstallApp } from "./install_app";
-import { GetAppModal } from "./get_app_modal";
+import React, { useState } from 'react'
+import { Container, Row, Col } from 'react-bootstrap'
+import { TopNav } from '../navbar/top_nav'
+import { Layout } from '../layout'
+import { InstallApp } from './install_app'
+import { DownloadAppPopup } from '../download_app_popup'
 
-export const Error = ({ homePageUrl = "/" }) => {
-  const [showModalAppDownload, setShowModalAppDownload] = useState(false)
-  const handleShowModalAppDownload = (message = () => null) => {
-    setShowModalAppDownload(true);
-  };
-  const handleCloseModalAppDownload = (message = () => null) => {
-    setShowModalAppDownload(false);
-  };
+export const Error = ({ homePageUrl = '/' }) => {
+  // const [showModalAppDownload, setShowModalAppDownload] = useState(false)
+  // const handleShowModalAppDownload = (message = () => null) => {
+  //   setShowModalAppDownload(true)
+  // }
+  // const handleCloseModalAppDownload = (message = () => null) => {
+  //   setShowModalAppDownload(false)
+  // }
+
+  const [showDownloadAppPopup, setShowDownloadAppPopup] = useState(false)
+  const handleShowDownloadAppPopup = () => setShowDownloadAppPopup(true)
+
+  const handleCloseDownloadAppPopup = () => setShowDownloadAppPopup(false)
   return (
     <Layout>
       <section className='w-100 h-100 bg-gradient-blue d-flex align-items-center'>
-        <TopNav showGetAppModal={handleShowModalAppDownload} isContiner variant='light' />
+        <TopNav showGetAppModal={handleShowDownloadAppPopup} isContiner variant='light' />
         <Container>
           <Row className='mb-5'>
             <Col
@@ -29,7 +34,7 @@ export const Error = ({ homePageUrl = "/" }) => {
               </h2>
               <p className='fs-3'>
                 The link you followed may be broken, or the page may have been
-                removed. Go to <a href={homePageUrl ?? ""}>Genuin Home Page.</a>
+                removed. Go to <a href={homePageUrl ?? ''}>Genuin Home Page.</a>
               </p>
             </Col>
           </Row>
@@ -37,8 +42,12 @@ export const Error = ({ homePageUrl = "/" }) => {
             <InstallApp errorPage={true}/>
           </Row>
         </Container>
-        <GetAppModal show={showModalAppDownload} onClose={handleCloseModalAppDownload}/>
+        {/* <GetAppModal show={showModalAppDownload} onClose={handleCloseModalAppDownload} /> */}
+        <DownloadAppPopup
+          show={showDownloadAppPopup}
+          onClose={handleCloseDownloadAppPopup}
+        />
       </section>
     </Layout>
-  );
-};
+  )
+}

@@ -1,19 +1,23 @@
-import { useState } from "react";
-import { Nav, Container, Row, Col } from "react-bootstrap";
-import { Layout } from "../components/layout/layout";
-import { TopNav } from "../components/basic/top_nav";
-import { GetAppModal } from "../components/basic/get_app_modal";
-import { handleInvestClick } from "../actions/appInstall";
+import React, { useState } from 'react'
+import { Nav, Container, Row, Col } from 'react-bootstrap'
+import { Layout } from '../components/layout/layout'
+import { TopNav } from '../components/navbar/top_nav'
+import { DownloadAppPopup } from '../components/download_app_popup'
 
 const Privacy = () => {
-  const [showModalAppDownload, setShowModalAppDownload] = useState(false);
-  const handleCloseAppDownload = () => setShowModalAppDownload(false);
-  const handleShowModalAppDownload = () => setShowModalAppDownload(true);
+  // const [showModalAppDownload, setShowModalAppDownload] = useState(false)
+  // const handleCloseAppDownload = () => setShowModalAppDownload(false)
+  // const handleShowModalAppDownload = () => setShowModalAppDownload(true)
+
+  const [showDownloadAppPopup, setShowDownloadAppPopup] = useState(false)
+  const handleShowDownloadAppPopup = () => setShowDownloadAppPopup(true)
+
+  const handleCloseDownloadAppPopup = () => setShowDownloadAppPopup(false)
   return (
     <Layout className='overflow-auto'>
       <section className='bg-black h-top-navbar position-sticky top-0'>
         <TopNav
-          showGetAppModal={handleShowModalAppDownload}
+          showGetAppModal={handleShowDownloadAppPopup}
           isContiner
           variant='light'
         />
@@ -109,7 +113,7 @@ const Privacy = () => {
                   <Nav.Link
                     style={{ opacity: 0.5 }}
                     target="_blank"
-                    href={`/content_demo?value=rt_123f373977001407`}
+                    href={'/content_demo?value=rt_123f373977001407'}
                   >
                     Life at Genuin
                   </Nav.Link>
@@ -118,10 +122,10 @@ const Privacy = () => {
                   <Nav.Link
                     style={{
                       opacity: 0.5,
-                      paddingLeft: "0px",
-                      paddingRight: "0px",
+                      paddingLeft: '0px',
+                      paddingRight: '0px'
                     }}
-                    href={void 0}
+                    href={undefined}
                     eventKey='link-2'
                   >
                     |
@@ -136,10 +140,10 @@ const Privacy = () => {
                   <Nav.Link
                     style={{
                       opacity: 0.5,
-                      paddingLeft: "0px",
-                      paddingRight: "0px",
+                      paddingLeft: '0px',
+                      paddingRight: '0px'
                     }}
-                    href={void 0}
+                    href={undefined}
                   >
                     |
                   </Nav.Link>
@@ -154,12 +158,15 @@ const Privacy = () => {
           </Row>
         </Container>
       </section>
-      <GetAppModal
+      {/* <GetAppModal
         show={showModalAppDownload}
         onClose={handleCloseAppDownload}
-      />
+      /> */}
+      <DownloadAppPopup
+        show={showDownloadAppPopup}
+        onClose={handleCloseDownloadAppPopup}/>
     </Layout>
-  );
-};
+  )
+}
 
-export default Privacy;
+export default Privacy

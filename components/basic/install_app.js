@@ -1,24 +1,24 @@
-import { Col, Button } from "react-bootstrap";
-import { Text, Link, Image } from "@chakra-ui/react";
+import React from 'react'
+import { Col, Button } from 'react-bootstrap'
+import { Text, Link, Image, useBreakpointValue } from '@chakra-ui/react'
 import {
   appleAppStoreLink,
   appStoreLink,
-  googlePlayStoreLink,
-} from "../../config";
-import { useBreakpointValue } from "@chakra-ui/react";
+  googlePlayStoreLink
+} from '../../config'
 
-import ios from "../../assets/images/badge_appstore.png";
-import android from "../../assets/images/badge_playstore.png";
-import { handleLink } from "../../actions/appInstall";
-import { useRouter } from "next/router";
+import ios from '../../assets/images/badge_appstore.png'
+import android from '../../assets/images/badge_playstore.png'
+import { handleLink } from '../../actions/appInstall'
+import { useRouter } from 'next/router'
 
 export const InstallApp = ({ small = false, errorPage = false, onClick = () => {} }) => {
-  const mobile = useBreakpointValue({ base: true, sm: false });
-  const router = useRouter();
+  const mobile = useBreakpointValue({ base: true, sm: false })
+  const router = useRouter()
 
   return (
     <>
-      {mobile && !errorPage && router.pathname !== "/" && (
+      {mobile && !errorPage && router.pathname !== '/' && (
         <Button onClick={onClick} style={{ width: '334px' }}>
           <Link href={appStoreLink} isExternal>
             <Text fontSize={24} fontWeight='bold'>
@@ -28,7 +28,7 @@ export const InstallApp = ({ small = false, errorPage = false, onClick = () => {
         </Button>
       )}
 
-      {mobile && errorPage && router.pathname !== "/" && (
+      {mobile && errorPage && router.pathname !== '/' && (
         <Button onClick={onClick}>
           <Link href={appStoreLink} isExternal>
             <Text fontSize={20} fontWeight='bold'>
@@ -38,7 +38,7 @@ export const InstallApp = ({ small = false, errorPage = false, onClick = () => {
         </Button>
       )}
 
-      {mobile && router.pathname === "/" && (
+      {mobile && router.pathname === '/' && (
         <Button onClick={onClick}>
           <Link href={appStoreLink} isExternal>
             <Text fontSize={18} fontWeight='bold'>
@@ -56,12 +56,12 @@ export const InstallApp = ({ small = false, errorPage = false, onClick = () => {
             <Image
               src={ios.src}
               onClick={() => {
-                onClick();
-                handleLink(appleAppStoreLink);
+                onClick()
+                handleLink(appleAppStoreLink)
               }}
               style={{
-                cursor: "pointer",
-                paddingRight: "11px",
+                cursor: 'pointer',
+                paddingRight: '11px'
               }}
               height={small ? 10 : 16}
               alt='iOs App Store'
@@ -74,11 +74,11 @@ export const InstallApp = ({ small = false, errorPage = false, onClick = () => {
             <Image
               src={android.src}
               onClick={() => {
-                onClick();
-                handleLink(googlePlayStoreLink);
+                onClick()
+                handleLink(googlePlayStoreLink)
               }}
               style={{
-                cursor: "pointer",
+                cursor: 'pointer'
               }}
               height={small ? 10 : 16}
               alt='Android Play Store'
@@ -88,5 +88,5 @@ export const InstallApp = ({ small = false, errorPage = false, onClick = () => {
         </>
       )}
     </>
-  );
-};
+  )
+}

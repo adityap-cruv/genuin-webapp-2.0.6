@@ -265,7 +265,7 @@ body .overlay {
   color: #fff !important;
   font-weight: 700;
   font-size: 1.5rem;
-  line-height: 1.56;
+  line-height: 2;
 }
 
 .navbar-collapse .navbar-nav a.text-primary {
@@ -641,6 +641,12 @@ body .overlay {
   margin-top: 0;
 }
 
+/*only for marker-style*/
+.marker-style>li::marker {
+  font-weight: 700;
+  font-size: 20px;
+}
+
 /* Next and Previous Video Controler CSS */
 .btn-arrow-controler {
   position: absolute;
@@ -781,6 +787,11 @@ body .overlay {
 .container-footer.text-black a,
 .container-footer.text-black a:hover {
   color: #000000;
+}
+
+/* dropdown in flag collection */
+.dropdown-item:hover{
+  opacity: 1 !important;
 }
 
 /* @media (max-width: 992px) {

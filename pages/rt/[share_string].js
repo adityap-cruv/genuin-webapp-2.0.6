@@ -1,20 +1,20 @@
-import { useState, useRef, useEffect } from "react";
-import axios from "axios";
-import { Error } from "../../components/basic/error";
-import { isValidHttpUrl, Player } from "../../components/player/player";
-import { Layout } from "../../components/layout/layout";
-import { TopNav } from "../../components/basic/top_nav";
-import { GetAppModal } from "../../components/basic/get_app_modal";
-import { SEO } from "../../components/basic/seo";
+import React, { useState, useRef, useEffect } from 'react'
+import axios from 'axios'
+import { Error } from '../../components/basic/error'
+import { isValidHttpUrl, Player } from '../../components/player/player'
+import { Layout } from '../../components/layout/layout'
+import { TopNav } from '../../components/navbar/top_nav'
+import { GetAppModal } from '../../components/basic/get_app_modal'
+import { SEO } from '../../components/basic/seo'
 import {
   AppActions,
   ShareButton,
-  MobileShareButton,
-} from "../../components/basic/app_actions";
-import { Container } from "react-bootstrap";
-import directMessage from "../../assets/images/direct_message_grey.svg";
-import icPreviewPlaceholder from "../../assets/images/video-more-options/ic_preview_placeholder.png";
-import { datadogLogs } from "@datadog/browser-logs";
+  MobileShareButton
+} from '../../components/basic/app_actions'
+import { Container } from 'react-bootstrap'
+import directMessage from '../../assets/images/direct_message_grey.svg'
+import icPreviewPlaceholder from '../../assets/images/video-more-options/ic_preview_placeholder.png'
+import { datadogLogs } from '@datadog/browser-logs'
 import {
   Avatar,
   Box,
@@ -22,115 +22,118 @@ import {
   Image,
   Link,
   Flex,
-  Modal,
-  ModalBody,
-  ModalContent,
   Divider,
   HStack,
   useDisclosure,
   useBreakpointValue,
   Text,
-  VStack,
-} from "@chakra-ui/react";
-import { useRouter } from "next/router";
-import { useMotionValueEvent, useScroll } from "framer-motion";
-import { GenuinLoader } from "../../components/basic/genuin_loader";
+  VStack
+} from '@chakra-ui/react'
+import { useRouter } from 'next/router'
+import { useMotionValueEvent, useScroll } from 'framer-motion'
+import { GenuinLoader } from '../../components/basic/genuin_loader'
+import { DownloadAppPopup } from '../../components/download_app_popup'
 
 const RoundTable = ({
   details = {},
   rt_videos = [],
   users = {
     members: [],
-    subscribers: [],
+    subscribers: []
   },
   end_of_videos,
   rt
 }) => {
   const [videos, setVideos] = useState(rt_videos)
-  const [noMoreVideos, setNoMoreVideos] = useState(end_of_videos);
+  const [noMoreVideos, setNoMoreVideos] = useState(end_of_videos)
   const loadMoreVideos = async () => {
     try {
       const res = await axios.get(
         `${process.env.apiurl}/api/v3/public/rt/paginate_videos?chat_id=${rt}&last_video_id=${videos[videos.length - 1].conversation_id}`
-      );
-      const newVideos = res?.data?.data?.chats ?? [];
+      )
+      const newVideos = res?.data?.data?.chats ?? []
       if (res?.data?.data?.end_of_videos) {
-        setNoMoreVideos(true);
+        setNoMoreVideos(true)
       }
-      setVideos(videos.concat(newVideos));
+      setVideos(videos.concat(newVideos))
     } catch (error) {
-      console.log("error in loading more videos :: ", error)
+      // eslint-disable-next-line no-console
+      console.log('error in loading more videos :: ', error)
     }
   }
-  const { group } = details;
+  const { group } = details
   // const [showModalWelcome, setShowModalWelcome] = useState(true);
   // const handleCloseWelcome = () => setShowModalWelcome(false);
-  const [showModalAppDownload, setShowModalAppDownload] = useState(false);
-  const getAppComponentRef = useRef(() => null);
-  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
-  const [currentUrl, setCurrentUrl] = useState("");
-  const [watchRoundTable, setWatchRoundtable] = useState(true);
-  const [direction, setDirection] = useState("forward");
+  const [showModalAppDownload, setShowModalAppDownload] = useState(false)
+  const getAppComponentRef = useRef(() => null)
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0)
+  const [currentUrl, setCurrentUrl] = useState('')
+  const [watchRoundTable, setWatchRoundtable] = useState(true)
+  const [direction, setDirection] = useState('forward')
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen, onOpen, onClose } = useDisclosure()
 
-  const mobile = useBreakpointValue({ base: true, sm: false });
-  //! This is just faking profile loading 
-  //TODO: find better way to detect mobile early before rendering....
-  const [isLoadingFake, setIsLoadingFake] = useState(true);
+  const mobile = useBreakpointValue({ base: true, sm: false })
+  //! This is just faking profile loading
+  // TODO: find better way to detect mobile early before rendering....
+  const [isLoadingFake, setIsLoadingFake] = useState(true)
   setTimeout(() => {
-    setIsLoadingFake(false);
+    setIsLoadingFake(false)
   }, 100)
 
-  const router = useRouter();
-  const { asPath } = useRouter();
+  const router = useRouter()
+  const { asPath } = useRouter()
 
-  const [isError, setIsError] = useState(false);
+  const [isError, setIsError] = useState(false)
 
   useEffect(() => {
-    setCurrentUrl(window.location.href);
+    setCurrentUrl(window.location.href)
     if (router?.query?.v) {
-      datadogLogs.logger.info("Video Watched")
-      var idx = videos.findIndex(({ share_string }) => share_string === router?.query?.v)
+      datadogLogs.logger.info('Video Watched')
+      const idx = videos.findIndex(({ share_string }) => share_string === router?.query?.v)
       if (videos?.[idx]?.share_string) {
-        setCurrentVideoIndex(idx);
-        window.history.replaceState(null, "", `../rt/${details.share_string}?v=${videos?.[idx]?.share_string}`)
-        onOpen();
+        setCurrentVideoIndex(idx)
+        window.history.replaceState(null, '', `../rt/${details.share_string}?v=${videos?.[idx]?.share_string}`)
+        onOpen()
       } else {
         setIsError(true)
       }
-    } else if (router?.query?.v !== null && router?.query?.v !== undefined && router?.query?.v == "") {
+    } else if (router?.query?.v !== null && router?.query?.v !== undefined && router?.query?.v === '') {
       setIsError(true)
     }
-  }, []);
+  }, [])
   const handleCloseAppDownload = () => {
-    getAppComponentRef.current = () => null;
-    setShowModalAppDownload(false);
-  };
+    getAppComponentRef.current = () => null
+    setShowModalAppDownload(false)
+  }
   const handleShowModalAppDownload = (message = () => null) => {
-    getAppComponentRef.current = message;
-    setShowModalAppDownload(true);
-  };
+    getAppComponentRef.current = message
+    setShowModalAppDownload(true)
+  }
 
-  const totalVideos = videos?.length ?? 0;
+  const [showDownloadAppPopup, setShowDownloadAppPopup] = useState(false)
+  const handleShowDownloadAppPopup = () => setShowDownloadAppPopup(true)
+  const handleCloseDownloadAppPopup = () => setShowDownloadAppPopup(false)
+
+  const totalVideos = videos?.length ?? 0
   const getNextVideo = () => {
     if (currentVideoIndex < totalVideos - 1) {
-      window.history.replaceState(null, "", `../rt/${details.share_string}?v=${videos?.[currentVideoIndex + 1]?.share_string}`)
-      setCurrentVideoIndex((old) => old + 1);
+      window.history.replaceState(null, '', `../rt/${details.share_string}?v=${videos?.[currentVideoIndex + 1]?.share_string}`)
+      setCurrentVideoIndex((old) => old + 1)
     } else {
-      window.history.replaceState(null, "", `../rt/${details.share_string}?v=${videos?.[0]?.share_string}`)
-      setCurrentVideoIndex(0);
+      window.history.replaceState(null, '', `../rt/${details.share_string}?v=${videos?.[0]?.share_string}`)
+      setCurrentVideoIndex(0)
     }
-  };
+  }
   const getPrevVideo = () => {
     if (currentVideoIndex > 0) {
-      window.history.replaceState(null, "", `../rt/${details.share_string}?v=${videos?.[currentVideoIndex - 1]?.share_string}`)
-      setCurrentVideoIndex((old) => old - 1);
+      window.history.replaceState(null, '', `../rt/${details.share_string}?v=${videos?.[currentVideoIndex - 1]?.share_string}`)
+      setCurrentVideoIndex((old) => old - 1)
     } else {
-      window.history.replaceState(null, "", `../rt/${details.share_string}?v=${videos?.[totalVideos - 1]?.share_string}`)
-      setCurrentVideoIndex(totalVideos - 1);
+      window.history.replaceState(null, '', `../rt/${details.share_string}?v=${videos?.[totalVideos - 1]?.share_string}`)
+      setCurrentVideoIndex(totalVideos - 1)
     }
-  };
+  }
 
   // const [firstTime, setFirstTime] = useState(true)
 
@@ -145,42 +148,41 @@ const RoundTable = ({
 
   const setRtUrl = () => {
     // console.log("Came in set rt utl")
-    window.history.replaceState(null, "", `../rt/${details.share_string}`)
+    window.history.replaceState(null, '', `../rt/${details.share_string}`)
   }
 
-  const showGetAppToViewDialog = () =>
-    handleShowModalAppDownload(() => <></>);
+  // const showGetAppToViewDialog = () =>
+  //   handleShowModalAppDownload(() => <></>)
 
   const showGetAppToSubscribeDialog = () =>
     handleShowModalAppDownload(() => (
       <>
-        Get the app to subscribe to <strong>{group.group_name}</strong>{" "}
+        Get the app to subscribe to <strong>{group.group_name}</strong>{' '}
         Loop.
       </>
-    ));
+    ))
 
-  const [muted, setMuted] = useState(true);
+  const [muted, setMuted] = useState(true)
   const onClick = () => {
-    setMuted(old => !old);
+    setMuted(old => !old)
   }
 
-  const tags_string =
-    group && group.tags !== null &&
-      group.tags !== undefined &&
-      group.tags.replace(/\s+/g, "") !== ""
-      ? ` #${group.tags.split(",").join(" #")}`
-      : "";
+  // const tags_string =
+  //   group && group.tags !== null &&
+  //     group.tags !== undefined &&
+  //     group.tags.replace(/\s+/g, '') !== ''
+  //     ? ` #${group.tags.split(',').join(' #')}`
+  //     : ''
   const ld_description = `${group && group.group_description !== null &&
     group.group_description !== undefined &&
-    group.group_description.replace(/\s+/g, "") !== ""
-    ? group.group_description + " | "
-    : ""
-    }Web3 related loop discussions available on Genuin${tags_string}`;
-  const title_name = group?.group_name;
-  const share_url = `${process.env.hostname}${asPath.slice(1)}`;
+    group.group_description.replace(/\s+/g, '') !== ''
+    ? group.group_description + ' | '
+    : ''} • Join ${group?.group_name} to talk about it` //! consider "it" as temporary var will have to change once api gives categories in response.
+  const title_name = group?.group_name
+  const share_url = `${process.env.hostname}${asPath.slice(1)}`
   const ORG_SCHEMA = JSON.stringify({
-    "@context": "http://schema.org",
-    "@type": "VideoObject",
+    '@context': 'http://schema.org',
+    '@type': 'VideoObject',
     id: share_url,
     url: share_url,
     name: title_name,
@@ -190,29 +192,29 @@ const RoundTable = ({
     contentUrl: videos?.[currentVideoIndex]?.video_url,
     embedUrl: videos?.[currentVideoIndex]?.video_url,
     author: {
-      "@type": "Person",
-      name: "@" + details?.owner?.nickname,
-      url: `${process.env.hostname}p/${details?.owner?.nickname}`,
+      '@type': 'Person',
+      name: '@' + details?.owner?.nickname,
+      url: `${process.env.hostname}p/${details?.owner?.nickname}`
     },
     publisher: {
-      "@type": "Organization",
-      name: "Genuin",
-      url: process.env.hostname,
+      '@type': 'Organization',
+      name: 'Genuin',
+      url: process.env.hostname
     },
     description: ld_description,
-    inLanguage: "en-US",
+    inLanguage: 'en-US',
     uploadDate: details.created_at,
     dateCreated: details.created_at,
     dateModified: details.updated_at,
     datePublished: details.created_at,
     potentialAction: [
       {
-        "@type": "WatchAction",
+        '@type': 'WatchAction',
         target: share_url,
-        image: videos?.[currentVideoIndex]?.thumbnail_url,
-      },
-    ],
-  });
+        image: videos?.[currentVideoIndex]?.thumbnail_url
+      }
+    ]
+  })
   return (<>
     <SEO
       title={title_name}
@@ -222,42 +224,38 @@ const RoundTable = ({
       openGraphDescription={group?.group_description}
       videoPreviewImage={details?.preview_image}
     />
-    {(!Boolean(group?.group_id) || isError) ? (
+    {(!group?.group_id || isError) ? (
       <Error />
     ) : isLoadingFake
-      ?
-      <GenuinLoader/>
+      ? <GenuinLoader />
       : (
         <Layout>
-
           <script
             type='application/ld+json'
             dangerouslySetInnerHTML={{ __html: ORG_SCHEMA }}
           />
-          {!router.query.v && (
-            <TopNav showGetAppModal={showGetAppToViewDialog} isContiner isBlue />
-          )}
-          <Flex
-            className='section-content h-100'
-            direction='column'
-            position={mobile ? "fixed" : "initial"}
-          >
-            <Container className='container-false d-none d-md-block'></Container>
-            {!router.query.v && (
+          {!isOpen && <>
+            <TopNav showGetAppModal={handleShowDownloadAppPopup} isContiner isBlue />
+            <Flex
+              className='section-content h-100'
+              direction='column'
+              position={mobile ? 'fixed' : 'initial'}
+            >
+              <Container className='container-false d-none d-md-block'></Container>
               <Container
                 style={{
-                  height: mobile ? "100%" : "calc(100% - 70px)",
+                  height: mobile ? '100%' : 'calc(100% - 70px)'
                 }}
-                className={mobile ? "mobile-rt" : ""}
+                className={mobile ? 'mobile-rt' : ''}
               >
                 <Flex
                   flexDir={{
-                    base: "column",
-                    sm: "row",
+                    base: 'column',
+                    sm: 'row'
                   }}
-                  maxH={mobile ? "calc(100vh - 70px)" : "calc(100vh - 140px)"}
+                  maxH={mobile ? 'calc(100vh - 70px)' : 'calc(100vh - 140px)'}
                   h='full'
-                  gap={{ base: 4, sm: "calc(100% / 12)" }}
+                  gap={{ base: 4, sm: 'calc(100% / 12)' }}
                   mt={{ base: 16, md: 0 }}
                   justifyContent='space-between'
                 >
@@ -267,9 +265,9 @@ const RoundTable = ({
                   <Flex
                     color='#111111'
                     flexDir='column'
-                    w={{ base: "100%", sm: "calc(100% / 12 * 3)" }}
+                    w={{ base: '100%', sm: 'calc(100% / 12 * 3)' }}
                   >
-                    <Flex justifyContent={"space-between"}>
+                    <Flex justifyContent={'space-between'}>
                       <Avatar
                         name={group.group_name}
                         src={group.dp}
@@ -282,7 +280,7 @@ const RoundTable = ({
                         <Flex
                           textAlign='center'
                           alignItems='center'
-                          justifyContent={"space-between"}
+                          justifyContent={'space-between'}
                           w='full'
                           mx={6}
                         >
@@ -312,13 +310,13 @@ const RoundTable = ({
                       {group.group_name}
                     </Box>
                     <Box fontWeight='600' fontSize={15} mb={1}>
-                      {group?.group_description || "No bio yet"}
+                      {group?.group_description || 'No bio yet'}
                     </Box>
                     {!mobile && (
                       <Flex
                         justifyContent={{
-                          base: "space-around",
-                          sm: "space-between",
+                          base: 'space-around',
+                          sm: 'space-between'
                         }}
                         textAlign='center'
                         my={4}
@@ -428,92 +426,79 @@ const RoundTable = ({
                   </Flex>
                 </Flex>
               </Container>
-            )}
+            </Flex>
+          </>}
 
-            <Modal
-              isOpen={isOpen}
+          {isOpen &&
+            <Player
+              key={currentVideoIndex}
+              videos={videos}
+              currentVideoIndex={currentVideoIndex}
+              video_id_to_use={videos?.[currentVideoIndex]?.share_string}
+              description={group?.group_description}
+              videoUrl={videos?.[currentVideoIndex]?.video_url_m3u8 ?? videos?.[currentVideoIndex]?.video_url}
+              videoThumbnail={videos?.[currentVideoIndex]?.thumbnail_url}
+              userName={videos?.[currentVideoIndex]?.owner?.nickname}
+              userId={videos?.[currentVideoIndex]?.owner?.nickname}
+              userProfileImage={
+                videos?.[currentVideoIndex]?.owner?.profile_image
+              }
+              onClickOutsideOfVideo={() => {
+                if (router?.query?.v && !(window.location.href.split('/')[3] === 'p')) {
+                  window.location.href = details.share_string
+                  // window.location.href = `${process.env.hostname}rt/${details.share_string}?v=${videos?.[currentVideoIndex]?.share_string}`
+                } else if (window.location.href.split('/')[3] === 'p') {
+                  //! window.location.href = window.location.href
+                } else {
+                  onClose()
+                  setWatchRoundtable(false)
+                  setRtUrl()
+                }
+              }}
+              roundTableMode
+              roundTableName={group?.group_name}
+              showGetAppModal={handleShowDownloadAppPopup}
+              getNextVideo={getNextVideo}
+              getPrevVideo={getPrevVideo}
+              watchRoundTable={watchRoundTable}
+              setWatchRoundtable={setWatchRoundtable}
+              autoJumpToNextVideo={watchRoundTable}
+              autoplay={watchRoundTable}
               onClose={onClose}
-              scrollBehavior='inside'
+              roundTableId={details.share_string}
+              direction={direction}
+              setDirection={setDirection}
+              muted={muted}
+              onClick={onClick}
             >
-              <ModalContent
-                h='full'
-                marginTop={0}
-                maxH='full'
-                maxW='full'
-                bg='transparent'
-              >
-                <ModalBody p={0} height='full' w='full'>
-                  <Player
-                    key={currentVideoIndex}
-                    videos={videos}
-                    currentVideoIndex={currentVideoIndex}
-                    video_id_to_use={videos?.[currentVideoIndex]?.share_string}
-                    description={group?.group_description}
-                    videoUrl={videos?.[currentVideoIndex]?.video_url_m3u8 ?? videos?.[currentVideoIndex]?.video_url}
-                    videoThumbnail={videos?.[currentVideoIndex]?.thumbnail_url}
-                    userName={videos?.[currentVideoIndex]?.owner?.nickname}
-                    userId={videos?.[currentVideoIndex]?.owner?.nickname}
-                    userProfileImage={
-                      videos?.[currentVideoIndex]?.owner?.profile_image
-                    }
-                    onClickOutsideOfVideo={() => {
-                      if (router?.query?.v && !(window.location.href.split("/")[3] === "p")) {
-                        window.location.href = details.share_string;
-                        // window.location.href = `${process.env.hostname}rt/${details.share_string}?v=${videos?.[currentVideoIndex]?.share_string}`
-                      }
-                      else if (window.location.href.split("/")[3] === "p") {
-                        window.location.href = window.location.href;
-                      }
-                      else {
-                        onClose();
-                        setWatchRoundtable(false);
-                        setRtUrl();
-                      }
-                    }}
-                    roundTableMode
-                    roundTableName={group?.group_name}
-                    showGetAppModal={handleShowModalAppDownload}
-                    getNextVideo={getNextVideo}
-                    getPrevVideo={getPrevVideo}
-                    watchRoundTable={watchRoundTable}
-                    setWatchRoundtable={setWatchRoundtable}
-                    autoJumpToNextVideo={watchRoundTable}
-                    autoplay={watchRoundTable}
-                    onClose={onClose}
-                    roundTableId={details.share_string}
-                    direction={direction}
-                      setDirection={setDirection}
-                      muted={muted}
-                      onClick={onClick}
-                  >
-                    <AppActions
-                      showGetAppModal={handleShowModalAppDownload}
-                      roundTable
-                      roundTableName={group?.group_name}
-                      roundTableId={details.share_string}
-                      link={videos?.[currentVideoIndex]?.link}
-                      videoUrl={`${process.env.hostname}rt/${details.share_string}?v=${videos?.[currentVideoIndex]?.share_string}`}
-                      videoDescription={group?.group_description}
-                      videoTitle='Genuin'
-                      watchRoundTable={watchRoundTable}
-                    />
-                  </Player>
-                </ModalBody>
-              </ModalContent>
-            </Modal>
-          </Flex>
+              <AppActions
+                showGetAppModal={handleShowModalAppDownload}
+                roundTable
+                roundTableName={group?.group_name}
+                roundTableId={details.share_string}
+                link={videos?.[currentVideoIndex]?.link}
+                videoUrl={`${process.env.hostname}rt/${details.share_string}?v=${videos?.[currentVideoIndex]?.share_string}`}
+                videoDescription={group?.group_description}
+                videoTitle='Genuin'
+                watchRoundTable={watchRoundTable}
+              />
+            </Player>
+          }
+
           <GetAppModal
             show={showModalAppDownload}
             onClose={handleCloseAppDownload}
             TextNode={getAppComponentRef.current}
           />
+          <DownloadAppPopup
+            show={showDownloadAppPopup}
+            onClose={handleCloseDownloadAppPopup}
+          />
           {/* <WelcomeModal show={showModalWelcome} onClose={handleCloseWelcome} /> */}
         </Layout>
       )}
   </>)
-
-
-};
+}
 
 const Videos = ({
   videos,
@@ -527,20 +512,19 @@ const Videos = ({
 }) => {
   const mainRef = useRef(null)
 
-
   const { scrollXProgress } = useScroll({
     container: mainRef
   })
 
-  useMotionValueEvent(scrollXProgress, "change", (latest) => {
-    if (latest > .99 && !noMoreVideos) {
-      loadMoreVideos();
+  useMotionValueEvent(scrollXProgress, 'change', (latest) => {
+    if (latest > 0.99 && !noMoreVideos) {
+      loadMoreVideos()
     }
   })
 
   return (
     <Box overflowX='auto' whiteSpace='nowrap' pl={0} ref={mainRef}>
-      {!Boolean(videos.length) && (
+      {!videos.length && (
         <Flex
           w='full'
           h='full'
@@ -559,7 +543,7 @@ const Videos = ({
             <Box
               cursor='pointer'
               transition='transform .2s'
-              key={video.thumbnail_url}
+              key={index}
               h={{ base: 120, sm: 240 }}
               w={{ base: 67, sm: 135 }}
               display='inline-block'
@@ -577,10 +561,10 @@ const Videos = ({
                   bgRepeat='no-repeat'
                   bgPosition='center'
                   onClick={() => {
-                    onOpen();
-                    window.history.replaceState(null, "", `../rt/${chatId}?v=${video.share_string}`)
-                    setWatchRoundtable(true);
-                    setCurrentVideoIndex(index);
+                    onOpen()
+                    window.history.replaceState(null, '', `../rt/${chatId}?v=${video.share_string}`)
+                    setWatchRoundtable(true)
+                    setCurrentVideoIndex(index)
                   }}
                   maxH='full'
                   id={`video-${index}${index}`}
@@ -617,8 +601,8 @@ const Videos = ({
         </>
       }
     </Box>
-  );
-};
+  )
+}
 
 const Participants = ({ members, mobile }) => {
   return (
@@ -652,7 +636,7 @@ const Participants = ({ members, mobile }) => {
                     name={user.nickname}
                     src={user.profile_image ? (isValidHttpUrl(user.profile_image)
                       ? user.profile_image
-                      : `https://media.qa.begenuin.com/backend_assets/lottie/${user.profile_image}.png`) : "https://media.qa.begenuin.com/backend_assets/lottie/snowman.png"
+                      : `https://media.qa.begenuin.com/backend_assets/lottie/${user.profile_image}.png`) : 'https://media.qa.begenuin.com/backend_assets/lottie/snowman.png'
                     }
                     h='44px'
                     w='44px'
@@ -676,21 +660,21 @@ const Participants = ({ members, mobile }) => {
                       text-overflow='ellipsis'
                       display='-webkit-box'
                       css={{
-                        WebkitLineClamp: "2",
-                        WebkitBoxOrient: "vertical",
+                        WebkitLineClamp: '2',
+                        WebkitBoxOrient: 'vertical'
                       }}
                       line-clamp='2'
                     >
                       {user.bio}
                     </Text>
                   </Flex>
-                    <Image
-                      src={directMessage.src}
-                      size={6}
-                      pr={3}
-                      alt='Share'
-                      title='Share Profile'
-                    />
+                  <Image
+                    src={directMessage.src}
+                    size={6}
+                    pr={3}
+                    alt='Share'
+                    title='Share Profile'
+                  />
                 </HStack>
               </Link>
             ))}
@@ -707,15 +691,15 @@ const Participants = ({ members, mobile }) => {
               key={user.nickname}
               transition='transform .2s'
               _hover={{
-                textDecoration: "none",
-                transform: "scale(0.97)",
-                opacity: ".8 !important"
+                textDecoration: 'none',
+                transform: 'scale(0.97)',
+                opacity: '.8 !important'
               }}
               className={`user-item user_${index}`}
             >
               <VStack
                 cursor='pointer'
-                
+
                 key={user.nickname}
                 border='1px solid #949494'
                 borderRadius={10}
@@ -732,7 +716,7 @@ const Participants = ({ members, mobile }) => {
                   name={user.nickname}
                   src={user.profile_image ? (isValidHttpUrl(user.profile_image)
                     ? user.profile_image
-                    : `https://media.qa.begenuin.com/backend_assets/lottie/${user.profile_image}.png`) : "https://media.qa.begenuin.com/backend_assets/lottie/snowman.png"
+                    : `https://media.qa.begenuin.com/backend_assets/lottie/${user.profile_image}.png`) : 'https://media.qa.begenuin.com/backend_assets/lottie/snowman.png'
                   }
                   size='xl'
                   mb={2}
@@ -756,8 +740,8 @@ const Participants = ({ members, mobile }) => {
                   text-overflow='ellipsis'
                   display='-webkit-box'
                   css={{
-                    WebkitLineClamp: "2",
-                    WebkitBoxOrient: "vertical",
+                    WebkitLineClamp: '2',
+                    WebkitBoxOrient: 'vertical'
                   }}
                   line-clamp='2'
                   maxW="100%"
@@ -771,39 +755,39 @@ const Participants = ({ members, mobile }) => {
         </div>
       )}
     </Flex>
-  );
-};
+  )
+}
 
 RoundTable.getInitialProps = async ({ query: { share_string, v } }) => {
   if (
     share_string !== undefined &&
     share_string !== null &&
-    share_string !== ""
+    share_string !== ''
   ) {
     try {
       const videos = await axios.get(
         `${process.env.apiurl}/api/v3/public/rt/paginate_videos?chat_id=${share_string}`
-      );
+      )
       const users = await axios.get(
         `${process.env.apiurl}/api/v3/public/rt/users?chat_id=${share_string}`
-      );
+      )
       const details = await axios.get(
         `${process.env.apiurl}/api/v3/public/rt/details?chat_id=${share_string}`
-      );
-      var returnProps = {
+      )
+      const returnProps = {
         rt_videos: videos?.data?.data?.chats,
         users: users?.data?.data,
         details: details?.data?.data,
         end_of_videos: videos?.data?.data?.end_of_videos || false,
         rt: share_string
       }
-      return returnProps;
+      return returnProps
     } catch (error) {
-      return {};
+      return {}
     }
   } else {
-    return Promise.resolve({});
+    return Promise.resolve({})
   }
-};
+}
 
-export default RoundTable;
+export default RoundTable

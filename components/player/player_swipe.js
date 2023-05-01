@@ -1,18 +1,18 @@
-import { useState, useMemo, useEffect } from "react";
-import { ReactPlayerWrapper } from "./react_player_wrapper_swipe";
-import { increaseVideoViewCount } from "../../actions/postActions";
-import { Box, Flex, useBreakpointValue } from "@chakra-ui/react";
+import React, { useState, useMemo, useEffect } from 'react'
+import { ReactPlayerWrapper } from './react_player_wrapper_swipe'
+import { increaseVideoViewCount } from '../../actions/postActions'
+import { Box, Flex } from '@chakra-ui/react'
 
 export const Player = ({
   video_id_to_use,
   description,
-  videoUrl = "",
+  videoUrl = '',
   videoThumbnail,
   videos = [],
   currentVideoIndex,
   userName,
-  userProfileImage = "",
-  rtProfileImage = "",
+  userProfileImage = '',
+  rtProfileImage = '',
   userId,
   getNextVideo,
   getPrevVideo,
@@ -31,53 +31,55 @@ export const Player = ({
   setDirection,
   verticalNavigation,
   shareUrl,
-  muted, 
+  muted,
   onClick,
   loadMoreVideos = () => { },
   setCurrentVideoIndex,
   uniqueKey,
   disableWatch,
-  contextReel,//! this is temporary
+  contextReel, //! this is temporary
+  scrollToNextVideo = () => { },
+  loop
 }) => {
-  const [triggerPlayCount, setTriggetPlayCount] = useState(false);
-  const [duration, setDuration] = useState(0);
+  const [triggerPlayCount, setTriggetPlayCount] = useState(false)
+  const [duration, setDuration] = useState(0)
 
   const shortDescription = useMemo(() => {
     if (description?.length > 50) {
-      return `${description.slice(0, 50)}...`;
+      return `${description.slice(0, 50)}...`
     }
-    return description;
-  }, [description]);
+    return description
+  }, [description])
 
   const profilePic = useMemo(() => {
-    if (Boolean(userProfileImage)) {
+    if (userProfileImage) {
       return isValidHttpUrl(userProfileImage)
         ? userProfileImage
-        : `https://media.qa.begenuin.com/backend_assets/lottie/${userProfileImage}.png`;
+        : `https://media.qa.begenuin.com/backend_assets/lottie/${userProfileImage}.png`
     }
-    return "https://media.qa.begenuin.com/backend_assets/lottie/snowman.png";
-  }, [userProfileImage]);
+    return 'https://media.qa.begenuin.com/backend_assets/lottie/snowman.png'
+  }, [userProfileImage])
 
   const handleDuration = (event) => {
     setDuration(Math.round(Number.parseFloat(event)))
-  };
+  }
 
   const handleProgress = (event) => {
-    const playedProgress = Math.round(Number.parseFloat(event.played) * 100);
-    if (playedProgress >= duration/2 && !triggerPlayCount) {
-      setTriggetPlayCount(true);
+    const playedProgress = Math.round(Number.parseFloat(event.played) * 100)
+    if (playedProgress >= duration / 2 && !triggerPlayCount) {
+      setTriggetPlayCount(true)
     }
-  };
+  }
 
   useEffect(() => {
     if (triggerPlayCount) {
-      var type = 1
-      if(roundTableMode){
+      let type = 1
+      if (roundTableMode) {
         type = 2
       }
-      increaseVideoViewCount(video_id_to_use, type);
+      increaseVideoViewCount(video_id_to_use, type)
     }
-  }, [video_id_to_use, triggerPlayCount]);
+  }, [video_id_to_use, triggerPlayCount])
 
   return (
     <Flex
@@ -89,7 +91,7 @@ export const Player = ({
     >
       <Box
         backgroundImage={`url(${videoThumbnail})`}
-        backgroundColor={videoThumbnail ? "transparent" : "rgba(0,0,0,0.9)"}
+        backgroundColor={videoThumbnail ? 'transparent' : 'rgba(0,0,0,0.9)'}
         backgroundRepeat='no-repeat'
         backgroundSize='cover'
         backgroundPosition='center'
@@ -127,7 +129,7 @@ export const Player = ({
         watchRoundTable={watchRoundTable}
         setWatchRoundtable={setWatchRoundtable}
         onClose={() => {
-          onClose();
+          onClose()
         }}
         direction={direction}
         setDirection={setDirection}
@@ -141,21 +143,23 @@ export const Player = ({
         disableWatch={disableWatch}
         contextReel={contextReel}
         duration={duration}
+        scrollToNextVideo={scrollToNextVideo}
+        loop={loop}
       >
         {children}
-        
+
       </ReactPlayerWrapper>
     </Flex>
-  );
-};
+  )
+}
 
-export function isValidHttpUrl(string) {
-  let url;
+export function isValidHttpUrl (string) {
+  let url
   try {
-    url = new URL(string);
+    url = new URL(string)
   } catch (_) {
-    return false;
+    return false
   }
 
-  return url.protocol === "http:" || url.protocol === "https:";
+  return url.protocol === 'http:' || url.protocol === 'https:'
 }

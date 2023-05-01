@@ -1,0 +1,45 @@
+{
+    "env": {
+        "browser": true,
+        "es2021": true
+    },
+    "extends": [
+        "plugin:react/recommended",
+        "standard"
+    ],
+    "overrides": [],
+    "parserOptions": {
+        "ecmaVersion": "latest",
+        "sourceType": "module"
+    },
+    "plugins": [
+        "react"
+    ],
+    "rules": {
+        "react/prop-types": "off",
+        "react/no-unescaped-entities": "off",
+        "quotes": [
+            "warn",
+            "single"
+        ],
+        "no-console": "warn",
+        "eqeqeq": "error",
+        "no-else-return": [
+            "error",
+            {
+                "allowElseIf": true
+            }
+        ],
+        "camelcase": "off",
+        "no-unused-vars": "warn",
+        "multiline-ternary": "off",
+        "indent": ["error", 2],
+        "no-duplicate-imports": "error",
+        "no-unused-expressions": [
+          "error",
+          {
+            "allowTernary": true
+          }
+        ]
+    }
+}

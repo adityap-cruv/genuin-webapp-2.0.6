@@ -1,16 +1,17 @@
+import React from 'react'
 import {
   Text,
   VStack,
   Image,
   Flex,
-  useBreakpointValue,
-} from "@chakra-ui/react";
-import { Modal } from "react-bootstrap";
-import logo from "../../assets/images/Genuin_icon_vector.svg";
-import { InstallApp } from "./install_app";
+  useBreakpointValue
+} from '@chakra-ui/react'
+import { Modal } from 'react-bootstrap'
+import logo from '../../assets/images/Genuin_icon_vector.svg'
+import { InstallApp } from './install_app'
 
-export const GetAppModal = ({ show, onClose, TextNode = () => null, title= "Download App" }) => {
-  const mobile = useBreakpointValue({ base: true, sm: false });
+export const GetAppModal = ({ show, onClose, TextNode = () => null, title = 'Get the Genuin app' }) => {
+  const mobile = useBreakpointValue({ base: true, sm: false })
 
   return (
     <Modal
@@ -20,7 +21,7 @@ export const GetAppModal = ({ show, onClose, TextNode = () => null, title= "Down
       centered
       className='modal-app-download'
       style={{
-        zIndex: 10000,
+        zIndex: 10000
       }}
     >
       <Modal.Header closeButton className='border-0'></Modal.Header>
@@ -33,7 +34,7 @@ export const GetAppModal = ({ show, onClose, TextNode = () => null, title= "Down
             </Text>
           )}
           <Text fontSize={20} fontWeight={600}>
-            {typeof TextNode === "function" ? <TextNode /> : null}
+            {typeof TextNode === 'function' ? <TextNode /> : null}
           </Text>
         </VStack>
       </Modal.Body>
@@ -43,5 +44,5 @@ export const GetAppModal = ({ show, onClose, TextNode = () => null, title= "Down
         </Flex>
       </Modal.Footer>
     </Modal>
-  );
-};
+  )
+}
