@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { FormControl, FormErrorMessage, Input, InputLeftAddon, InputGroup, InputLeftElement } from '@chakra-ui/react'
 import { TextInputColors } from '../../constants/colors'
-import { Countries } from '../../constants/countries'
 import { FlagsDropdown } from './flags_dropdown'
 
 export const MobileNumberTextInput = ({
@@ -11,12 +10,12 @@ export const MobileNumberTextInput = ({
   isInvalid,
   onFocusOut,
   uniqueKey,
-  onChange
+  onChange,
+  setDialcode,
+  dialCode
 }) => {
-  const [selectedCountry, setSelectedCountry] = useState(Countries[0].dial_code)
   useEffect(() => {
     const handleFocusOut = (event) => {
-      // console.log('going from this way..')
       onFocusOut(event.target.value)
     }
     const input = document.getElementById(uniqueKey)
@@ -25,6 +24,7 @@ export const MobileNumberTextInput = ({
       input.removeEventListener('focusout', handleFocusOut)
     }
   }, [])
+
   return (
     <FormControl
       id={uniqueKey}
@@ -42,7 +42,7 @@ export const MobileNumberTextInput = ({
           padding='0'
         >
           <FlagsDropdown
-            setValue={setSelectedCountry}
+            setValue={setDialcode}
           />
         </InputLeftAddon>
         <InputGroup>
@@ -52,12 +52,10 @@ export const MobileNumberTextInput = ({
             lineHeight='24px'
             width='17%'
           >
-            {selectedCountry}
+            {dialCode}
           </InputLeftElement>
           <Input
-            onChange={(event) => {
-              onChange(event.target.value, selectedCountry)
-            }}
+            onChange={onChange}
             paddingLeft='16%'
             placeholder={placeHolder}
             _placeholder={{
