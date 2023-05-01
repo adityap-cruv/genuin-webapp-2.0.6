@@ -66,15 +66,9 @@ const Home = () => {
   const loadMoreVideos = async () => {
     try {
       const res = await axios.get(
-<<<<<<< HEAD
         `${process.env.apiurl}/api/v3/public/rt/paginate_videos?chat_id=17bb88b72c80153b&last_video_id=${rtVideos[rtVideos.length - 1].conversation_id}`
       );
       const chats = res?.data?.data?.chats;
-=======
-        `${process.env.apiurl}/api/v3/public/rt/paginate_videos?chat_id=13f3348fd5801493&last_video_id=${rtVideos[rtVideos.length - 1].conversation_id}`
-      )
-      const chats = res?.data?.data?.chats
->>>>>>> qa
       if (chats.length > 0) {
         setRTData((old) => ({ rtVideos: old.rtVideos.concat(chats), rtData: old.rtData }))
       }
