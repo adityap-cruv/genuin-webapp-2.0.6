@@ -3,7 +3,6 @@ import {
   Text,
   VStack,
   Image,
-  Flex,
   useBreakpointValue
 } from '@chakra-ui/react'
 import { Modal } from 'react-bootstrap'
@@ -39,9 +38,7 @@ export const GetAppModal = ({ show, onClose, TextNode = () => null, title = 'Get
         </VStack>
       </Modal.Body>
       <Modal.Footer className='justify-content-center border-0 py-10'>
-        <Flex pb={4} px={mobile ? 7 : 0}>
-          <InstallApp small onClick={onClose} />
-        </Flex>
+        <InstallApp small onClick={onClose} />
       </Modal.Footer>
     </Modal>
   )
