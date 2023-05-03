@@ -15,7 +15,8 @@ export const DownloadAppForm = () => {
   const [isInvalidNumber, setIsInvalidNumber] = useState(false)
   const [isInvalidEmail, setIsInvalidEmail] = useState(false)
   const [email, setEmail] = useState(null)
-  const [{ dialCode, mobile }, setMobileNumber] = useState({ dialCode: Countries[0].dial_code, mobile: null })
+  const [mobile, setMobileNumber] = useState(null)
+  const [dialCode, setDialCode] = useState(Countries[0].dial_code)
   const [isLoading, setIsLoading] = useState(false)
   const [isLinkSent, setIsLinkSent] = useState(false)
   const [isError, setIsError] = useState(false)
@@ -41,7 +42,7 @@ export const DownloadAppForm = () => {
         setIsInvalidNumber(true)
       }
     } else {
-      setIsInvalidNumber(true)
+      setIsInvalidNumber(false)
     }
   }
 
@@ -54,12 +55,12 @@ export const DownloadAppForm = () => {
         setIsInvalidEmail(true)
       }
     } else {
-      setIsInvalidEmail(true)
+      setIsInvalidEmail(false)
     }
   }
 
-  const numberChange = (input, dialCode) => {
-    setMobileNumber({ dialCode, mobile: input })
+  const numberChange = (input) => {
+    setMobileNumber(input.target.value)
   }
 
   const emailChange = (input) => {
@@ -121,6 +122,8 @@ export const DownloadAppForm = () => {
                     errorText='Please enter a valid phone number.'
                     isInvalid={isInvalidNumber}
                     onFocusOut={validatePhoneNumber}
+                    setDialcode={setDialCode}
+                    dialCode={dialCode}
                   />
                   <TextInput
                     onChange={emailChange}
@@ -144,7 +147,7 @@ export const DownloadAppForm = () => {
                     }}
                     variant='primary'
                     disabled={disableSubmit}
-                    onClick={onSendLink}
+                    onClick={(onSendLink)}
                   >Send link</Button>
                 </>} </>}
         </>}

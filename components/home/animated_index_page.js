@@ -1,14 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { motion, useScroll, useMotionValueEvent } from 'framer-motion'
 import { useBreakpointValue } from '@chakra-ui/react'
-import { Nav } from 'react-bootstrap'
 import Videos from './feed_videos'
 import { HomePageVideo } from './homepage_video'
 import downloadQR from '../../assets/images/app_download_qr.svg'
 import trayArrow from '../../assets/images/tray_arrow.svg'
 import backgroundVector from '../../assets/images/genuin_background_logo.png'
+import { Footer } from '../basic/footer'
 
-export const AnimatedIndexPage = ({
+const AnimatedIndexPage = ({
   rtData,
   loadMoreVideos
 }) => {
@@ -251,77 +251,7 @@ export const AnimatedIndexPage = ({
           bottom: 0,
           justifyContent: 'space-around'
         }}>
-        <div
-          className="container-footer container"
-          style={{
-            position: 'absolute',
-            bottom: 0,
-            display: 'flex',
-            paddingBottom: '10px',
-            justifyContent: 'space-between',
-            width: '100%'
-          }}>
-          <Nav as='ul'>
-            <Nav.Item as='li'>
-              <Nav.Link
-                style={{ opacity: 0.5 }}
-                href='/'
-                className='pr-0'
-              >
-                        © 2023 Genuin Inc.
-              </Nav.Link>
-            </Nav.Item>
-          </Nav>
-          <Nav
-            className='justify-content-start justify-content-md-end'
-            as='ul'
-          >
-            <Nav.Item as='li'>
-              <Nav.Link
-                style={{ opacity: 0.5 }}
-                target="_blank"
-                href={'/content_demo?value=rt_123f373977001407'}
-              >
-                        Life at Genuin
-              </Nav.Link>
-            </Nav.Item>
-            <Nav.Item as='li'>
-              <Nav.Link
-                style={{
-                  opacity: 0.5,
-                  paddingLeft: '0px',
-                  paddingRight: '0px'
-                }}
-                href={undefined}
-                eventKey='link-2'
-              >
-                        |
-              </Nav.Link>
-            </Nav.Item>
-            <Nav.Item as='li'>
-              <Nav.Link style={{ opacity: 0.5 }} href='/terms'>
-                        Terms of Service
-              </Nav.Link>
-            </Nav.Item>
-            <Nav.Item as='li'>
-              <Nav.Link
-                style={{
-                  opacity: 0.5,
-                  paddingLeft: '0px',
-                  paddingRight: '0px'
-                }}
-                href={undefined}
-              >
-                        |
-              </Nav.Link>
-            </Nav.Item>
-            <Nav.Item as='li'>
-              <Nav.Link style={{ opacity: 0.5 }} href='/privacy'>
-                        Privacy Policy
-              </Nav.Link>
-            </Nav.Item>
-          </Nav>
-        </div>
+        <Footer/>
       </div>}
       <div
         style={{
@@ -334,3 +264,5 @@ export const AnimatedIndexPage = ({
     </div>
   </>)
 }
+
+export default AnimatedIndexPage

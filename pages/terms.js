@@ -1,8 +1,11 @@
 import React, { useState } from 'react'
-import { Nav, Container, Row, Col } from 'react-bootstrap'
+import { Container } from 'react-bootstrap'
 import { Layout } from '../components/layout/layout'
 import { TopNav } from '../components/navbar/top_nav'
-import { DownloadAppPopup } from '../components/download_app_popup'
+import dynamic from 'next/dynamic'
+import { Footer } from '../components/basic/footer'
+
+const DownloadAppPopup = dynamic(() => import('../components/download_app_popup'))
 
 const Terms = () => {
   const [showDownloadAppPopup, setShowDownloadAppPopup] = useState(false)
@@ -12,16 +15,19 @@ const Terms = () => {
   const mainTitleStyle = {
     fontSize: '40px',
     fontWeight: '700',
-    lineHeight: '32px',
+    lineHeight: '45px',
     display: 'flex',
     justifyContent: 'center',
     paddingTop: '40px',
-    paddingBottom: '20px'
+    paddingBottom: '20px',
+    textAlign: 'center'
   }
 
   const generalStyle = {
     fontSize: '16px',
-    lineHeight: '24px'
+    lineHeight: '24px',
+    paddingLeft: '8px',
+    paddingRight: '8px'
   }
 
   const titleStyle = {
@@ -49,8 +55,8 @@ const Terms = () => {
       </section>
       <section className='bg-body h-100'>
         <Container className='mt-3'>
-          <p style={mainTitleStyle}>
-            Terms of Service
+          <p style={{ ...mainTitleStyle }}>
+            Genuin, Inc. <br/>General Terms of Service
           </p>
 
           <div style={generalStyle}>
@@ -367,7 +373,7 @@ const Terms = () => {
                       Genuin, then you agree to set forth the basis of such claim in writing in a "<b>Notice of
                         Claim</b>," as a form of prior notice to Genuin. The Notice of Claim must: (1) describe the nature
                       and basis of the claim or dispute; (2) set forth the specific relief sought; and (3) include your Genuin
-                      account phone number. The Notice of Claim should be submitted to <a
+                      account phone number. The Notice of Claim should be submitted to <a style={{ color: 'blue !important', textDecoration: 'underline' }}
                       href="&#x6d;&#97;&#x69;&#x6c;&#116;&#111;&#x3a;&#99;&#111;&#x6e;&#116;&#97;&#99;&#x74;&#x40;&#98;&#101;&#x67;&#101;&#x6e;&#117;&#x69;&#x6e;&#x2e;&#x63;&#x6f;&#x6d;">&#99;&#111;&#x6e;&#116;&#97;&#99;&#x74;&#x40;&#98;&#101;&#x67;&#101;&#x6e;&#117;&#x69;&#x6e;&#x2e;&#x63;&#x6f;&#x6d;</a>.
                       After you have provided the Notice of Claim to Genuin, the dispute referenced in the Notice of Claim may be
                       submitted by either Genuin or you to arbitration in accordance with Subsection (b) of this Section, below.
@@ -448,79 +454,9 @@ const Terms = () => {
 
         </Container>
 
-        <Container className='container-footer text-black mt-auto'>
-          <Row className='py-3'>
-            <Col xl={4} lg={4} md={4} sm={12}>
-              <Nav as='ul'>
-                <Nav.Item as='li'>
-                  <Nav.Link style={{ opacity: 0.5 }} href='/' className='pr-0'>
-                    © 2023 Genuin Inc.
-                  </Nav.Link>
-                </Nav.Item>
-              </Nav>
-            </Col>
-            <Col xl={8} lg={8} md={8} sm={12}>
-              <Nav
-                className='justify-content-start justify-content-md-end'
-                as='ul'
-              >
-                {/* <Nav.Item as='li'>
-                  <Nav.Link
-                    style={{ opacity: 0.5 }}
-                    href='#'
-                    onClick={handleInvestClick}
-                  >
-                    Invest in Genuin
-                  </Nav.Link>
-                </Nav.Item> */}
-                <Nav.Item as='li'>
-                  <Nav.Link
-                    style={{ opacity: 0.5 }}
-                    target="_blank"
-                    href={'/content_demo?value=rt_123f373977001407'}
-                  >
-                    Life at Genuin
-                  </Nav.Link>
-                </Nav.Item>
-                <Nav.Item as='li'>
-                  <Nav.Link
-                    style={{
-                      opacity: 0.5,
-                      paddingLeft: '0px',
-                      paddingRight: '0px'
-                    }}
-                    href={undefined}
-                    eventKey='link-2'
-                  >
-                    |
-                  </Nav.Link>
-                </Nav.Item>
-                <Nav.Item as='li'>
-                  <Nav.Link style={{ opacity: 0.5 }} href='/terms'>
-                    Terms of Service
-                  </Nav.Link>
-                </Nav.Item>
-                <Nav.Item as='li'>
-                  <Nav.Link
-                    style={{
-                      opacity: 0.5,
-                      paddingLeft: '0px',
-                      paddingRight: '0px'
-                    }}
-                    href={undefined}
-                  >
-                    |
-                  </Nav.Link>
-                </Nav.Item>
-                <Nav.Item as='li'>
-                  <Nav.Link style={{ opacity: 0.5 }} href='/privacy'>
-                    Privacy Policy
-                  </Nav.Link>
-                </Nav.Item>
-              </Nav>
-            </Col>
-          </Row>
-        </Container>
+        <Footer
+          theme='black'
+        />
       </section>
       {/* <GetAppModal
         show={showModalAppDownload}

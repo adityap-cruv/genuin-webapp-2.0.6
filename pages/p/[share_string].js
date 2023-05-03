@@ -38,7 +38,9 @@ import {
   Text
 } from '@chakra-ui/react'
 import { GenuinLoader } from '../../components/basic/genuin_loader'
-import { DownloadAppPopup } from '../../components/download_app_popup'
+import dynamic from 'next/dynamic'
+
+const DownloadAppPopup = dynamic(() => import('../../components/download_app_popup'))
 
 const Profile = ({
   shareString,

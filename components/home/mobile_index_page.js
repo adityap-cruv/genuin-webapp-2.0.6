@@ -1,14 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Button } from 'react-bootstrap'
 
 import Videos from './../home/feed_videos'
 import { useMotionValueEvent, useScroll, motion } from 'framer-motion'
 import { HomePageVideo } from './homepage_video'
-import trayArrow from '../../assets/images/tray_arrow.svg'
-import { datadogLogs } from '@datadog/browser-logs'
-import { isDesktop } from 'react-device-detect'
 
-export const MobileIndexPage = ({
+import MobileIndexBottomComponent from './mobile_index_bottom_component'
+
+const MobileIndexPage = ({
   rtData,
   loadMoreVideos,
   showModalAppDownload
@@ -137,65 +135,19 @@ export const MobileIndexPage = ({
               textAlign: 'center'
             }}>Genuin gives you a place to keep up with your friends and the issues you care about.</p>
           </div>
-          <div
-            style={{
-              paddingTop: '16px',
-              display: 'flex',
-              justifyContent: 'center',
-              zIndex: 13
-            }}>
-            <Button
-              variant='primary'
-              onClick={() => {
-                if (isDesktop) {
-                  showModalAppDownload()
-                } else {
-                  window.open('https://install.begenuin.com/86sn/cgs')
-                }
-                datadogLogs.logger.info('Get App')
-              }}
-              style={{
-                fontSize: 15,
-                lineHeight: '24px',
-                padding: '8px 24px 8px 24px',
-                borderRadius: '8px'
-              }}
-            >
-              Get App
-            </Button>
+          <div style={{
+            position: 'absolute',
+            top: '48%',
+            left: '36%',
+            zIndex: 13
+          }}>
+            <MobileIndexBottomComponent
+              scrollToReel={scrollToReel}
+              showModalAppDownload={showModalAppDownload}
+              showTray={videos.length !== 0}
+            />
           </div>
-          {!(videos.length === 0) && <div
-            style={{
-              display: 'flex',
-              width: '100%',
-              justifyContent: 'center',
-              paddingTop: '25px',
-              zIndex: 13
-            }}>
-            <motion.div
-              style={{
-                opacity: 0.4
-              }}
-              initial={{ scale: 0.8 }}
-              animate={{ scale: 1 }}
-              transition={{
-                duration: 0.6,
-                repeat: Infinity,
-                type: 'tween',
-                ease: 'easeIn',
-                repeatType: 'mirror'
-              }}
-            >
-              <button
-                onClick={scrollToReel}
-              >
-                <img
-                  src={trayArrow.src}
-                ></img>
-              </button>
-            </motion.div>
 
-          </div>}
         </div>
       </motion.div>
 
@@ -254,3 +206,5 @@ export const MobileIndexPage = ({
     </div>
   </>)
 }
+
+export default MobileIndexPage
