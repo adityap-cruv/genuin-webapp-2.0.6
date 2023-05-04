@@ -8,7 +8,8 @@ module.exports = {
     qt_apps_flyer_url: process.env.qt_apps_flyer_url,
     profile_apps_flyer_url: process.env.profile_apps_flyer_url,
     record_apps_flyer_url: process.env.record_apps_flyer_url,
-    installurl: process.env.installurl
+    installurl: process.env.installurl,
+    internalApiurl: process.env.internalApiurl
   },
   async headers () {
     return [
