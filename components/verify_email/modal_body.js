@@ -42,7 +42,7 @@ export const ModalBody = ({
     }}>
       <p>{subtitle}</p>
     </div>
-    <div
+    {/* <div
       style={{
         display: 'flex',
         alignItems: 'center',
@@ -58,6 +58,6 @@ export const ModalBody = ({
       >
         Open App
       </Button>
-    </div>
+    </div> */}
   </div>)
 }
