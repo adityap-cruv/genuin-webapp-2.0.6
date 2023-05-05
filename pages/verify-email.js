@@ -19,16 +19,16 @@ const VerifyEmail = ({
         subtitle: 'Now you’ll receive latest app updates on your registered email address. You can go back to app now.',
         error: false
       })
-    } else if (code === 5176) {
+    } else if (code === '5176') {
       setData({
         title: 'Verification link expired',
-        subtitle: 'We\'re sorry, but it looks like the verification link has expired.Please request a new verification link from the app to verify your email address.',
+        subtitle: 'We\'re sorry, but it looks like the verification link has expired. Please request a new verification link from the app to verify your email address.',
         error: true
       })
     } else {
       setData({
         title: 'Oops, something went wrong!',
-        subtitle: 'We\'re sorry, but something went wrong.Please try again later or contact our support team for assistance on the app.',
+        subtitle: 'We\'re sorry, but something went wrong. Please try again later or contact our support team for assistance on the app.',
         error: true
       })
     }
@@ -80,7 +80,9 @@ VerifyEmail.getInitialProps = async ({ query: { token } }) => {
         code: res?.data?.code
       }
     } catch (e) {
-      return Promise.resolve({})
+      return {
+        code: e?.response?.data?.code
+      }
     }
   } else {
     return {
