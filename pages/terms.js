@@ -39,7 +39,7 @@ const Terms = () => {
   }
 
   const paddingStyle = {
-    paddingLeft: '40px',
+    paddingLeft: '25px',
     paddingTop: '15px',
     paddingBottom: '15px'
   }
@@ -79,7 +79,7 @@ const Terms = () => {
               ARBITRATION AND YOU WAIVE YOUR RIGHT TO PARTICIPATE IN A CLASS ACTION LAWSUIT OR CLASS-WIDE ARBITRATION. WE EXPLAIN
               SOME EXCEPTIONS AND HOW YOU CAN OPT OUT OF ARBITRATION BELOW.</b></p>
 
-            <ol type="I" className='marker-style' style={{ paddingLeft: '15px' }}>
+            <ol type="I" className='marker-style' style={{ paddingLeft: '30px' }}>
               <li>
                 <p style={titleStyle}>Introduction</p>
                 <ol type="a" style={paddingStyle}>
