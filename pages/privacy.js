@@ -3,7 +3,6 @@ import { Container } from 'react-bootstrap'
 import { Layout } from '../components/layout/layout'
 import { TopNav } from '../components/navbar/top_nav'
 import dynamic from 'next/dynamic'
-import { Footer } from '../components/basic/footer'
 
 const DownloadAppPopup = dynamic(() => import('../components/download_app_popup'))
 

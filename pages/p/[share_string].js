@@ -766,9 +766,10 @@ const Profile = ({
                           w={mobile ? 'calc(100% + 24px)' : 'full'}
                           ml={mobile ? '-12px' : 0}
                           backgroundColor="white"
-                          top="64px"
+                          top="57px"
                           zIndex={2}
                           position="sticky"
+                          className='position-sticky'
                         >
                           <Tab flexGrow={1} className="all_icon" onClick={loadVideosAll}>
                             <AllIcon
