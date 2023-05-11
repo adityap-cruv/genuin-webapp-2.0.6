@@ -647,6 +647,11 @@ body .overlay {
   font-size: 20px;
 }
 
+.subtitle-marker-style>li::marker{
+  font-weight: 700;
+  font-size: 16px;
+}
+
 /* Next and Previous Video Controler CSS */
 .btn-arrow-controler {
   position: absolute;

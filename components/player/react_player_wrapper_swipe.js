@@ -18,6 +18,7 @@ import icUnmute from '../../assets/images/video-more-options/ic-unmute.svg'
 import { DynamicPlayer } from './dynamic_player'
 import icArrowRight from '../../assets/images/video-more-options/ic-arrow-right.svg'
 import { datadogLogs } from '@datadog/browser-logs'
+import { FontStyle } from '../../constants/font_style'
 
 export const ReactPlayerWrapper = ({
   videoUrl,
@@ -496,9 +497,9 @@ export const ReactPlayerWrapper = ({
                         pill bg="dark"
                         className="mb-2 align-self-start trunc"
                         style={{
-                          fontSize: '15px',
+                          fontSize: FontStyle.subtitle.fontSize,
                           fontWeight: 700,
-                          lineHeight: '24px'
+                          lineHeight: FontStyle.subtitle.lineHeight
                         }}>
                         <Flex direction='horizontal'>
                           <Text style={{
@@ -525,9 +526,9 @@ export const ReactPlayerWrapper = ({
                           pill bg="dark"
                           className="mb-2 align-self-start trunc"
                           style={{
-                            fontSize: '15px',
+                            fontSize: FontStyle.subtitle.fontSize,
                             fontWeight: 700,
-                            lineHeight: '24px'
+                            lineHeight: FontStyle.subtitle.lineHeight
                           }}>
                           <Flex direction='horizontal'>
                             <Text style={{
@@ -549,7 +550,8 @@ export const ReactPlayerWrapper = ({
                 <div className="video-auther mb-2"
                   style={{
                     fontWeight: 'bold',
-                    fontSize: '17px'
+                    fontSize: FontStyle.title.fontSize,
+                    lineHeight: FontStyle.title.lienHeight
                   }}>
                   <Waypoint
                     onEnter={handleEnterViewport}
@@ -652,7 +654,7 @@ export const ReactPlayerWrapper = ({
                 <p
                   className="mb-0"
                   style={{
-                    fontSize: '15px',
+                    fontSize: FontStyle.subtitle.fontSize,
                     fontWeight: '600'
                   }}>{description}</p>
               </Flex>
@@ -705,8 +707,8 @@ export const ReactPlayerWrapper = ({
           >
             <p
               style={{
-                lineHeight: '24px',
-                fontSize: '17px',
+                lineHeight: FontStyle.title.lineHeight,
+                fontSize: FontStyle.title.fontSize,
                 fontWeight: '700',
                 paddingLeft: '16px',
                 paddingTop: '6px',

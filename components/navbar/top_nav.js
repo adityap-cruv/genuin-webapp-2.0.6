@@ -28,7 +28,12 @@ export const TopNav = ({
       variant={variant}
     >
       <div
-        {...(isContiner ? { className: 'p-1 container' } : { className: 'p-1' })}
+        {...(isContiner ? { className: 'p-2 container' } : { className: 'p-2' })}
+        style={{
+          display: 'flex',
+          width: '100%',
+          justifyContent: 'space-between'
+        }}
       >
         <Navbar.Brand href='/' className='p-0' style={{ pointerEvents: 'all' }}>
           <Image

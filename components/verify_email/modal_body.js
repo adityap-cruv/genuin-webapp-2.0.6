@@ -2,7 +2,7 @@ import React from 'react'
 import VerifyEmailSuccess from '../../assets/images/verify_email/verify_email_success.svg'
 import VerifyEmailError from '../../assets/images/verify_email/verify_email_error.svg'
 import Image from 'next/image'
-import { Button } from 'react-bootstrap'
+import { FontStyle } from '../../constants/font_style'
 
 export const ModalBody = ({
   isError = false,
@@ -34,8 +34,8 @@ export const ModalBody = ({
       <p>{title}</p>
     </div>
     <div style={{
-      fontSize: '17px',
-      lineHeight: '24px',
+      fontSize: FontStyle.title.fontSize,
+      lineHeight: FontStyle.title.lineHeight,
       textAlign: 'center',
       padding: '1rem',
       fontWeight: '600'

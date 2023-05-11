@@ -5,6 +5,7 @@ import { useMotionValueEvent, useScroll, motion } from 'framer-motion'
 import { HomePageVideo } from './homepage_video'
 
 import MobileIndexBottomComponent from './mobile_index_bottom_component'
+import { FontStyle } from '../../constants/font_style'
 
 const MobileIndexPage = ({
   rtData,
@@ -129,8 +130,8 @@ const MobileIndexPage = ({
           }}>
             <p style={{
               color: 'white',
-              lineHeight: '24px',
-              fontSize: '15px',
+              lineHeight: FontStyle.subtitle.lineHeight,
+              fontSize: FontStyle.subtitle.fontSize,
               fontWeight: 600,
               textAlign: 'center'
             }}>Genuin gives you a place to keep up with your friends and the issues you care about.</p>
