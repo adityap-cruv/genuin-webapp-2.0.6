@@ -296,6 +296,17 @@ const Profile = ({
     setIsLoadingFake(false)
   }, 100)
 
+  useEffect(() => {
+    const scrollDiv = document.documentElement
+    function hideBars () {
+      scrollDiv.requestFullscreen({ navigationUI: 'hide' }).catch(e => { console.log('error :', e) })
+      console.log('called hide bars..')
+    }
+    setTimeout(() => {
+      hideBars()
+    }, 7000)
+  }, [])
+
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0)
   const [currentVideoIndexPublic, setCurrentVideoIndexPublic] = useState(0)
   const [currentVideoIndexRT, setCurrentVideoIndexRT] = useState(0)
