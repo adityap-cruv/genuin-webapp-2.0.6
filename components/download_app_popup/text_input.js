@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import { FormControl, FormErrorMessage, Input } from '@chakra-ui/react'
 import { TextInputColors } from '../../constants/colors'
+import { FontStyle } from '../../constants/font_style'
 
 export const TextInput = ({
   placeHolder,
@@ -39,9 +40,9 @@ export const TextInput = ({
         backgroundColor={TextInputColors.textInputBackgroundColor}
         borderColor={`${isInvalid ? TextInputColors.errorColor : TextInputColors.focusBorderColor} !important`}
         boxShadow={`0 0 0 1px ${isInvalid ? TextInputColors.errorColor : TextInputColors.focusBorderColor} !important`}
-        fontSize='17px'
+        fontSize={FontStyle.title.fontSize}
         fontWeight='600'
-        lineHeight='24px'
+        lineHeight={FontStyle.title.lineHeight}
         borderRadius='5px !important'
         type={type}
       />

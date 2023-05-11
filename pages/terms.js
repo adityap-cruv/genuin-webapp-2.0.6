@@ -79,7 +79,7 @@ const Terms = () => {
               ARBITRATION AND YOU WAIVE YOUR RIGHT TO PARTICIPATE IN A CLASS ACTION LAWSUIT OR CLASS-WIDE ARBITRATION. WE EXPLAIN
               SOME EXCEPTIONS AND HOW YOU CAN OPT OUT OF ARBITRATION BELOW.</b></p>
 
-            <ol type="I" className='marker-style' style={{ paddingLeft: '30px' }}>
+            <ol type="1" className='marker-style' style={{ paddingLeft: '30px' }}>
               <li>
                 <p style={titleStyle}>Introduction</p>
                 <ol type="a" style={paddingStyle}>

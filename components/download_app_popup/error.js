@@ -1,5 +1,6 @@
 import React from 'react'
 import { BasicColors } from '../../constants/colors'
+import { FontStyle } from '../../constants/font_style'
 
 export const Error = ({
   text
@@ -8,8 +9,8 @@ export const Error = ({
     <div
       style={{
         textAlign: 'center',
-        fontSize: '17px',
-        lineHeight: '24px',
+        fontSize: FontStyle.title.fontSize,
+        lineHeight: FontStyle.title.lineHeight,
         fontWeight: '600',
         color: BasicColors.errorColor,
         paddingTop: '2%',

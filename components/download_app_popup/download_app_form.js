@@ -10,6 +10,7 @@ import { Error } from './error'
 import { SendingLink } from './sending_link'
 import { LinkSent } from './link_sent'
 import { datadogLogs } from '@datadog/browser-logs'
+import { FontStyle } from '../../constants/font_style'
 
 export const DownloadAppForm = () => {
   const [isInvalidNumber, setIsInvalidNumber] = useState(false)
@@ -137,7 +138,7 @@ export const DownloadAppForm = () => {
                   <Button
                     style={{
                       width: '100%',
-                      fontSize: '17px',
+                      fontSize: FontStyle.title.fontSize,
                       fontWeight: '700',
                       lineHeight: '24px',
                       marginTop: '10%',
