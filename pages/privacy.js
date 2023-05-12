@@ -54,7 +54,7 @@ const Privacy = () => {
       <section className='bg-body section-privacy'>
         <Container className='mt-3' >
           <p style={{ ...mainTitleStyle }}>Genuin, Inc.<br />Privacy Policy</p>
-          <div style={{ ...generalStyle }}>
+          <div style={{ ...generalStyle, paddingBottom: '5%' }}>
             <p><b>Last Updated:</b>  May 5, 2023</p>
             <p style={{ paddingTop: '5px' }}>Genuin, Inc., (“<strong>Genuin</strong>”, &quot;<strong>us</strong>&quot;, &quot;<strong>we</strong>&quot;, or
               &quot;<strong>our</strong>&quot;) cares about how your personal information is used and shared. We take your privacy

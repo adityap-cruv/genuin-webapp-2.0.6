@@ -3,7 +3,6 @@ import { Container } from 'react-bootstrap'
 import { Layout } from '../components/layout/layout'
 import { TopNav } from '../components/navbar/top_nav'
 import dynamic from 'next/dynamic'
-import { Footer } from '../components/basic/footer'
 
 const DownloadAppPopup = dynamic(() => import('../components/download_app_popup'))
 
@@ -53,13 +52,13 @@ const Terms = () => {
           variant='light'
         />
       </section>
-      <section className='bg-body h-100'>
+      <section className='bg-body h-100' style={{ paddingBottom: '20%' }}>
         <Container className='mt-3'>
           <p style={{ ...mainTitleStyle }}>
             Genuin, Inc. <br/>General Terms of Service
           </p>
 
-          <div style={generalStyle}>
+          <div style={{ ...generalStyle, paddingBottom: '5%' }}>
             <p><b>Last Updated:</b> April 20, 2023</p>
             <p
               style={{
@@ -451,12 +450,7 @@ const Terms = () => {
               </li>
             </ol>
           </div>
-
         </Container>
-
-        <Footer
-          theme='black'
-        />
       </section>
       {/* <GetAppModal
         show={showModalAppDownload}
