@@ -39,6 +39,8 @@ import {
 } from '@chakra-ui/react'
 import { GenuinLoader } from '../../components/basic/genuin_loader'
 import dynamic from 'next/dynamic'
+import { FontStyle } from '../../constants/font_style'
+import { BasicColors } from '../../constants/colors'
 
 const DownloadAppPopup = dynamic(() => import('../../components/download_app_popup'))
 
@@ -293,6 +295,17 @@ const Profile = ({
   setTimeout(() => {
     setIsLoadingFake(false)
   }, 100)
+
+  useEffect(() => {
+    const scrollDiv = document.documentElement
+    function hideBars () {
+      scrollDiv.requestFullscreen({ navigationUI: 'hide' }).catch(e => { console.log('error :', e) })
+      console.log('called hide bars..')
+    }
+    setTimeout(() => {
+      hideBars()
+    }, 7000)
+  }, [])
 
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0)
   const [currentVideoIndexPublic, setCurrentVideoIndexPublic] = useState(0)
@@ -580,30 +593,62 @@ const Profile = ({
                               mx={6}
                             >
                               <Flex flexGrow={1} flexDir='column'>
-                                <Box fontWeight='bold'>{abbreviatedViewsCount}</Box>
-                                <Box fontWeight={600} fontSize={12} color='#949494'>
+                                <Box
+                                  fontWeight='bold'
+                                  fontSize={FontStyle.bigTitle.fontSize}
+                                  lineHeight={FontStyle.bigTitle.lineHeight}
+                                >{abbreviatedViewsCount}</Box>
+                                <Box
+                                  fontWeight={600}
+                                  fontSize={FontStyle.smallSubtitle.fontSize}
+                                  lineHeight={FontStyle.smallSubtitle.lineHeight}
+                                  color={BasicColors.secondaryColor}>
                                   Views
                                 </Box>
                               </Flex>
                               <Flex flexGrow={1} flexDir='column'>
-                                <Box fontWeight='bold'>{abbreviatedVideosCount}</Box>
-                                <Box fontWeight={600} fontSize={12} color='#949494'>
+                                <Box
+                                  fontWeight='bold'
+                                  fontSize={FontStyle.bigTitle.fontSize}
+                                  lineHeight={FontStyle.bigTitle.lineHeight}>
+                                  {abbreviatedVideosCount}
+                                </Box>
+                                <Box
+                                  fontWeight={600}
+                                  fontSize={FontStyle.smallSubtitle.fontSize}
+                                  lineHeight={FontStyle.smallSubtitle.lineHeight}
+                                  color={BasicColors.secondaryColor}>
                                   Videos
                                 </Box>
                               </Flex>
                               <Flex flexGrow={1} flexDir='column'>
-                                <Box fontWeight='bold'>{abbreviatedRepliesCount}</Box>
-                                <Box fontWeight={600} fontSize={12} color='#949494'>
+                                <Box
+                                  fontWeight='bold'
+                                  fontSize={FontStyle.bigTitle.fontSize}
+                                  lineHeight={FontStyle.bigTitle.lineHeight}>
+                                  {abbreviatedRepliesCount}
+                                </Box>
+                                <Box
+                                  fontWeight={600}
+                                  fontSize={FontStyle.smallSubtitle.fontSize}
+                                  lineHeight={FontStyle.smallSubtitle.lineHeight}
+                                  color={BasicColors.secondaryColor}>
                                   Replies
                                 </Box>
                               </Flex>
                             </Flex>
                           )}
                         </Flex>
-                        <Box fontWeight='700' fontSize={17}>
+                        <Box
+                          fontWeight='700'
+                          fontSize={FontStyle.bigTitle.fontSize}
+                          lineStyle={FontStyle.bigTitle.lineHeight}>
                           @{nickname}
                         </Box>
-                        <Box fontWeight='600' fontSize={15}>
+                        <Box
+                          fontWeight='600'
+                          fontSize={FontStyle.title.fontSize}
+                          lineHeight={FontStyle.title.lineHeight}>
                           {bio}
                         </Box>
                         {!mobile && (
@@ -616,20 +661,50 @@ const Profile = ({
                             my={4}
                           >
                             <Flex flexGrow={1} flexDir='column'>
-                              <Box fontWeight='bold'>{abbreviatedViewsCount}</Box>
-                              <Box fontWeight={600} fontSize={12} color='#949494'>
+                              <Box
+                                fontWeight='bold'
+                                fontSize={FontStyle.bigTitle.fontSize}
+                                lineHeight={FontStyle.bigTitle.lineHeight}
+                              >
+                                {abbreviatedViewsCount}
+                              </Box>
+                              <Box
+                                fontWeight={600}
+                                fontSize={FontStyle.smallSubtitle.fontSize}
+                                lineHeight={FontStyle.smallSubtitle.lineHeight}
+                                color={BasicColors.secondaryColor}>
                                 Views
                               </Box>
                             </Flex>
                             <Flex flexGrow={1} flexDir='column'>
-                              <Box fontWeight='bold'>{abbreviatedVideosCount}</Box>
-                              <Box fontWeight={600} fontSize={12} color='#949494'>
+                              <Box
+                                fontWeight='bold'
+                                fontSize={FontStyle.bigTitle.fontSize}
+                                lineHeight={FontStyle.bigTitle.lineHeight}
+                              >
+                                {abbreviatedVideosCount}
+                              </Box>
+                              <Box
+                                fontWeight={600}
+                                fontSize={FontStyle.smallSubtitle.fontSize}
+                                lineHeight={FontStyle.smallSubtitle.lineHeight}
+                                color={BasicColors.secondaryColor}>
                                 Videos
                               </Box>
                             </Flex>
                             <Flex flexGrow={1} flexDir='column'>
-                              <Box fontWeight='bold'>{abbreviatedRepliesCount}</Box>
-                              <Box fontWeight={600} fontSize={12} color='#949494'>
+                              <Box
+                                fontWeight='bold'
+                                fontSize={FontStyle.bigTitle.fontSize}
+                                lineHeight={FontStyle.bigTitle.lineHeight}
+                              >
+                                {abbreviatedRepliesCount}
+                              </Box>
+                              <Box
+                                fontWeight={600}
+                                fontSize={FontStyle.smallSubtitle.fontSize}
+                                lineHeight={FontStyle.smallSubtitle.lineHeight}
+                                color={BasicColors.secondaryColor}>
                                 Replies
                               </Box>
                             </Flex>
@@ -637,10 +712,9 @@ const Profile = ({
                         )}
                         <Flex gap={4} mt={2} mb={{ base: 4, md: 0 }}>
                           <Button
-                            color='#0645ff'
+                            color={BasicColors.primaryColor}
                             bgColor='transparent'
-                            border='1px solid #0645FF'
-                            fontWeight='bold'
+                            border='1px solid'
                             h={8}
                             px={5}
                             onClick={showGetAppToSendMessage}
@@ -653,7 +727,11 @@ const Profile = ({
                               alt='Share'
                               title='Share Profile'
                             />
-                            <Text>Message</Text>
+                            <Text
+                              fontSize={FontStyle.subtitle.fontSize}
+                              lineHeight={FontStyle.subtitle.lineHeight}
+                              fontWeight='bold'
+                            >Message</Text>
                           </Button>
                           {isMobile ? (
                             <MobileShareButton
@@ -699,26 +777,27 @@ const Profile = ({
                           w={mobile ? 'calc(100% + 24px)' : 'full'}
                           ml={mobile ? '-12px' : 0}
                           backgroundColor="white"
-                          top="64px"
+                          top="57px"
                           zIndex={2}
                           position="sticky"
+                          className='position-sticky'
                         >
                           <Tab flexGrow={1} className="all_icon" onClick={loadVideosAll}>
                             <AllIcon
                               boxSize={8}
-                              color={tabIndex === 0 ? '#111111' : '#949494'}
+                              color={tabIndex === 0 ? '#111111' : BasicColors.secondaryColor}
                             />
                           </Tab>
                           <Tab flexGrow={1} onClick={loadVideosPublic} className="public_icon">
                             <PublicIcon
                               boxSize={8}
-                              color={tabIndex === 1 ? '#111111' : '#949494'}
+                              color={tabIndex === 1 ? '#111111' : BasicColors.secondaryColor}
                             />
                           </Tab>
                           <Tab flexGrow={1} onClick={loadVideosRT} className="roundtable_icon">
                             <RoundtableIcon
                               boxSize={8}
-                              color={tabIndex === 2 ? '#111111' : '#949494'}
+                              color={tabIndex === 2 ? '#111111' : BasicColors.secondaryColor}
                             />
                           </Tab>
                         </TabList>
@@ -949,10 +1028,10 @@ const Videos = ({
             display: 'flex'
           }}><p
             style={{
-              color: '#949494',
+              color: BasicColors.primaryColor,
               fontWeight: '700',
-              fontSize: '20px',
-              lineHeight: '32px'
+              fontSize: FontStyle.bigTitle.fontSize,
+              lineHeight: FontStyle.bigTitle.lineHeight
             }}>No videos yet</p></div>}
       {(!isLoading && !noVideos) &&
         <Box h='full'>
@@ -1027,7 +1106,7 @@ const Videos = ({
                           top={3}
                           w='full'
                           color='white'
-                          fontSize='15px'
+                          fontSize={FontStyle.subtitle.fontSize}
                           fontWeight='bold'
                           p={3}
                         >
@@ -1041,6 +1120,7 @@ const Videos = ({
                         </Flex>
                         <Flex p={3}>
                           <Text
+                            fontSize={FontStyle.subtitle.fontSize}
                             fontWeight='bold'
                             color='white'
                             overflow='hidden'
@@ -1063,7 +1143,7 @@ const Videos = ({
                         bottom={3}
                         left={2}
                         color='white'
-                        fontSize='15px'
+                        fontSize={FontStyle.subtitle.fontSize}
                         fontWeight='bold'
                       >
                         <Flex>

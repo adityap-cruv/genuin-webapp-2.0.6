@@ -3,7 +3,6 @@ import { Container } from 'react-bootstrap'
 import { Layout } from '../components/layout/layout'
 import { TopNav } from '../components/navbar/top_nav'
 import dynamic from 'next/dynamic'
-import { Footer } from '../components/basic/footer'
 
 const DownloadAppPopup = dynamic(() => import('../components/download_app_popup'))
 
@@ -39,7 +38,7 @@ const Terms = () => {
   }
 
   const paddingStyle = {
-    paddingLeft: '40px',
+    paddingLeft: '25px',
     paddingTop: '15px',
     paddingBottom: '15px'
   }
@@ -53,13 +52,13 @@ const Terms = () => {
           variant='light'
         />
       </section>
-      <section className='bg-body h-100'>
+      <section className='bg-body h-100' style={{ paddingBottom: '20%' }}>
         <Container className='mt-3'>
           <p style={{ ...mainTitleStyle }}>
             Genuin, Inc. <br/>General Terms of Service
           </p>
 
-          <div style={generalStyle}>
+          <div style={{ ...generalStyle, paddingBottom: '5%' }}>
             <p><b>Last Updated:</b> April 20, 2023</p>
             <p
               style={{
@@ -79,7 +78,7 @@ const Terms = () => {
               ARBITRATION AND YOU WAIVE YOUR RIGHT TO PARTICIPATE IN A CLASS ACTION LAWSUIT OR CLASS-WIDE ARBITRATION. WE EXPLAIN
               SOME EXCEPTIONS AND HOW YOU CAN OPT OUT OF ARBITRATION BELOW.</b></p>
 
-            <ol type="I" className='marker-style' style={{ paddingLeft: '15px' }}>
+            <ol type="1" className='marker-style' style={{ paddingLeft: '30px' }}>
               <li>
                 <p style={titleStyle}>Introduction</p>
                 <ol type="a" style={paddingStyle}>
@@ -451,12 +450,7 @@ const Terms = () => {
               </li>
             </ol>
           </div>
-
         </Container>
-
-        <Footer
-          theme='black'
-        />
       </section>
       {/* <GetAppModal
         show={showModalAppDownload}

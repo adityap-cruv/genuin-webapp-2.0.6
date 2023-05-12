@@ -33,6 +33,8 @@ import { useRouter } from 'next/router'
 import { useMotionValueEvent, useScroll } from 'framer-motion'
 import { GenuinLoader } from '../../components/basic/genuin_loader'
 import dynamic from 'next/dynamic'
+import { FontStyle } from '../../constants/font_style'
+import { BasicColors } from '../../constants/colors'
 
 const DownloadAppPopup = dynamic(() => import('../../components/download_app_popup'))
 
@@ -64,8 +66,6 @@ const RoundTable = ({
     }
   }
   const { group } = details
-  // const [showModalWelcome, setShowModalWelcome] = useState(true);
-  // const handleCloseWelcome = () => setShowModalWelcome(false);
   const [showModalAppDownload, setShowModalAppDownload] = useState(false)
   const getAppComponentRef = useRef(() => null)
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0)
@@ -137,24 +137,9 @@ const RoundTable = ({
     }
   }
 
-  // const [firstTime, setFirstTime] = useState(true)
-
-  // useEffect(() => {
-  //   if(firstTime){
-  //     setFirstTime(false)
-  //   }else{
-  //     // console.log("use effect to replace url to current video on index change")
-  //     window.history.replaceState(null, "", `../rt/${details.share_string}?v=${videos?.[currentVideoIndex]?.share_string}`)
-  //   }
-  // }, [currentVideoIndex]);
-
   const setRtUrl = () => {
-    // console.log("Came in set rt utl")
     window.history.replaceState(null, '', `../rt/${details.share_string}`)
   }
-
-  // const showGetAppToViewDialog = () =>
-  //   handleShowModalAppDownload(() => <></>)
 
   const showGetAppToSubscribeDialog = () =>
     handleShowModalAppDownload(() => (
@@ -169,12 +154,6 @@ const RoundTable = ({
     setMuted(old => !old)
   }
 
-  // const tags_string =
-  //   group && group.tags !== null &&
-  //     group.tags !== undefined &&
-  //     group.tags.replace(/\s+/g, '') !== ''
-  //     ? ` #${group.tags.split(',').join(' #')}`
-  //     : ''
   const ld_description = `${group && group.group_description !== null &&
     group.group_description !== undefined &&
     group.group_description.replace(/\s+/g, '') !== ''
@@ -282,25 +261,54 @@ const RoundTable = ({
                         <Flex
                           textAlign='center'
                           alignItems='center'
-                          justifyContent={'space-between'}
+                          justifyContent='space-between'
                           w='full'
                           mx={6}
                         >
                           <Flex flexGrow={1} flexDir='column'>
-                            <Box fontWeight='bold'>{group.no_of_views}</Box>
-                            <Box fontWeight={600} fontSize={12} color='#949494'>
+                            <Box
+                              fontWeight='bold'
+                              fontSize={FontStyle.bigTitle.fontSize}
+                              lineHeight={FontStyle.bigTitle.lineHeight}
+                            >{group.no_of_views}</Box>
+                            <Box
+                              fontWeight={600}
+                              fontSize={FontStyle.smallSubtitle.fontSize}
+                              lineHeight={FontStyle.smallSubtitle.lineHeight}
+                              color={BasicColors.secondaryColor}
+                            >
                               Views
                             </Box>
                           </Flex>
                           <Flex flexGrow={1} flexDir='column'>
-                            <Box fontWeight='bold'>{group.no_of_videos}</Box>
-                            <Box fontWeight={600} fontSize={12} color='#949494'>
+                            <Box
+                              fontWeight='bold'
+                              fontSize={FontStyle.bigTitle.fontSize}
+                              lineHeight={FontStyle.bigTitle.lineHeight}>{group.no_of_videos}</Box>
+                            <Box
+                              fontWeight={600}
+                              fontSize={FontStyle.smallSubtitle.fontSize}
+                              lineHeight={FontStyle.smallSubtitle.lineHeight}
+                              color={BasicColors.secondaryColor}
+
+                            >
+
                               Videos
                             </Box>
                           </Flex>
                           <Flex flexGrow={1} flexDir='column'>
-                            <Box fontWeight='bold'>{group.no_of_subscribers}</Box>
-                            <Box fontWeight={600} fontSize={12} color='#949494'>
+                            <Box
+                              fontWeight='bold'
+                              fontSize={FontStyle.bigTitle.fontSize}
+                              lineHeight={FontStyle.bigTitle.lineHeight}>
+                              {group.no_of_subscribers}
+                            </Box>
+                            <Box
+                              fontWeight={600}
+                              fontSize={FontStyle.smallSubtitle.fontSize}
+                              lineHeight={FontStyle.smallSubtitle.lineHeight}
+                              color={BasicColors.secondaryColor}
+                            >
                               Subscribers
                             </Box>
                           </Flex>
@@ -308,11 +316,11 @@ const RoundTable = ({
                       )}
                     </Flex>
 
-                    <Box fontWeight='700' fontSize={17}>
+                    <Box fontWeight='700' fontSize={FontStyle.bigTitle.fontSize} lineHeight={FontStyle.bigTitle.lineHeight}>
                       {group.group_name}
                     </Box>
-                    <Box fontWeight='600' fontSize={15} mb={1}>
-                      {group?.group_description || 'No bio yet'}
+                    <Box fontWeight='600' fontSize={FontStyle.title.fontSize} lineHeight={FontStyle.title.lineHeight}>
+                      {group?.group_description}
                     </Box>
                     {!mobile && (
                       <Flex
@@ -324,20 +332,47 @@ const RoundTable = ({
                         my={4}
                       >
                         <Flex flexGrow={1} flexDir='column'>
-                          <Box fontWeight='bold'>{group.no_of_views}</Box>
-                          <Box fontWeight={600} fontSize={12} color='#949494'>
+                          <Box
+                            fontWeight='bold'
+                            fontSize={FontStyle.bigTitle.fontSize}
+                            lineHeight={FontStyle.bigTitle.lineHeight}
+                          >
+                            {group.no_of_views}</Box>
+                          <Box
+                            fontWeight={600}
+                            fontSize={FontStyle.smallSubtitle.fontSize}
+                            lineHeight={FontStyle.smallSubtitle.lineHeight}
+                            color={BasicColors.secondaryColor}>
                             Views
                           </Box>
                         </Flex>
                         <Flex flexGrow={1} flexDir='column'>
-                          <Box fontWeight='bold'>{group.no_of_videos}</Box>
-                          <Box fontWeight={600} fontSize={12} color='#949494'>
+                          <Box
+                            fontWeight='bold'
+                            fontSize={FontStyle.bigTitle.fontSize}
+                            lineHeight={FontStyle.bigTitle.lineHeight}
+                          >
+                            {group.no_of_videos}</Box>
+                          <Box
+                            fontWeight={600}
+                            fontSize={FontStyle.smallSubtitle.fontSize}
+                            lineHeight={FontStyle.smallSubtitle.lineHeight}
+                            color={BasicColors.secondaryColor}>
                             Videos
                           </Box>
                         </Flex>
                         <Flex flexGrow={1} flexDir='column'>
-                          <Box fontWeight='bold'>{group.no_of_subscribers}</Box>
-                          <Box fontWeight={600} fontSize={12} color='#949494'>
+                          <Box
+                            fontWeight='bold'
+                            fontSize={FontStyle.bigTitle.fontSize}
+                            lineHeight={FontStyle.bigTitle.lineHeight}
+                          >
+                            {group.no_of_subscribers}</Box>
+                          <Box
+                            fontWeight={600}
+                            fontSize={FontStyle.smallSubtitle.fontSize}
+                            lineHeight={FontStyle.smallSubtitle.lineHeight}
+                            color={BasicColors.secondaryColor}>
                             Subscribers
                           </Box>
                         </Flex>
@@ -345,12 +380,13 @@ const RoundTable = ({
                     )}
                     <Flex gap={4} mt={2}>
                       <Button
-                        bgColor='#0645FF'
+                        bgColor={BasicColors.primaryColor}
                         fontWeight='bold'
                         h={8}
                         px={5}
                         minW="90px"
                         onClick={showGetAppToSubscribeDialog}
+                        fontSize={FontStyle.subtitle.fontSize}
                       >
                         <Text color='white'>Subscribe</Text>
                       </Button>
@@ -534,7 +570,7 @@ const Videos = ({
           justifyContent='center'
           fontWeight={700}
           fontSize={20}
-          color='#949494'
+          color={BasicColors.secondaryColor}
         >
           No videos yet
         </Flex>
@@ -593,7 +629,7 @@ const Videos = ({
                 top={1.5}
                 left={2}
                 color='white'
-                fontSize='15px'
+                fontSize={FontStyle.subtitle.fontSize}
                 fontWeight='bold'
               >
                 {video.meta_data.duration}s
@@ -647,7 +683,7 @@ const Participants = ({ members, mobile }) => {
                   <Flex direction='column' w='70%'>
                     <Text
                       fontWeight='bold'
-                      fontSize={15}
+                      fontSize={FontStyle.subtitle.fontSize}
                       display='inline-block'
                       overflow='hidden'
                       textOverflow='ellipsis'
@@ -657,7 +693,8 @@ const Participants = ({ members, mobile }) => {
                     </Text>
                     <Text
                       fontWeight={600}
-                      fontSize={{ base: 15, sm: 12 }}
+                      fontSize={{ base: FontStyle.subtitle.fontSize, sm: FontStyle.smallSubtitle.fontSize }}
+                      lineHeight={{ base: FontStyle.subtitle.lineHeight, sm: FontStyle.smallSubtitle.lineHeight }}
                       overflow='hidden'
                       text-overflow='ellipsis'
                       display='-webkit-box'
@@ -683,7 +720,6 @@ const Participants = ({ members, mobile }) => {
         </Flex>
       )}
       {!mobile && (
-
         <div
           className="user-layout"
         >
@@ -701,9 +737,8 @@ const Participants = ({ members, mobile }) => {
             >
               <VStack
                 cursor='pointer'
-
                 key={user.nickname}
-                border='1px solid #949494'
+                border={`1px solid ${BasicColors.secondaryColor}`}
                 borderRadius={10}
                 maxW={210}
                 h={240}
@@ -726,7 +761,7 @@ const Participants = ({ members, mobile }) => {
                 />
                 <Text
                   fontWeight='bold'
-                  fontSize={15}
+                  fontSize={FontStyle.subtitle.fontSize}
                   display='inline-block'
                   maxW='80%'
                   overflow='hidden'
@@ -737,7 +772,7 @@ const Participants = ({ members, mobile }) => {
                 </Text>
                 <Text
                   fontWeight={600}
-                  fontSize={12}
+                  fontSize={FontStyle.smallSubtitle.fontSize}
                   overflow='hidden'
                   text-overflow='ellipsis'
                   display='-webkit-box'

@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import { FormControl, FormErrorMessage, Input, InputLeftAddon, InputGroup, InputLeftElement } from '@chakra-ui/react'
 import { TextInputColors } from '../../constants/colors'
 import { FlagsDropdown } from './flags_dropdown'
+import { FontStyle } from '../../constants/font_style'
 
 export const MobileNumberTextInput = ({
   placeHolder,
@@ -47,9 +48,9 @@ export const MobileNumberTextInput = ({
         </InputLeftAddon>
         <InputGroup>
           <InputLeftElement
-            fontSize='17px'
+            fontSize={FontStyle.title.fontSize}
             fontWeight='600'
-            lineHeight='24px'
+            lineHeight={FontStyle.title.lineHeight}
             width='17%'
           >
             {dialCode}
@@ -64,9 +65,9 @@ export const MobileNumberTextInput = ({
             borderColor={`${isInvalid ? TextInputColors.errorColor : TextInputColors.focusBorderColor} !important`}
             boxShadow={`0 0 0 1px ${isInvalid ? TextInputColors.errorColor : TextInputColors.focusBorderColor} !important`}
             backgroundColor={TextInputColors.textInputBackgroundColor}
-            fontSize='17px'
+            fontSize={FontStyle.title.fontSize}
             fontWeight='600'
-            lineHeight='24px'
+            lineHeight={FontStyle.title.lineHeight}
             borderRadius='5px !important'
             type={type}
           />

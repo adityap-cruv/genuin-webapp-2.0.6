@@ -20,6 +20,7 @@ import icUnmute from '../../assets/images/video-more-options/ic-unmute.svg'
 import icMuteDesktop from '../../assets/images/video-more-options/ic-mute-desktop.svg'
 import icUnmuteDesktop from '../../assets/images/video-more-options/ic-unmute-desktop.svg'
 import { isMobile } from 'react-device-detect'
+import { FontStyle } from '../../constants/font_style'
 
 export const ReactPlayerWrapper = ({
   videoUrl,
@@ -575,9 +576,9 @@ export const ReactPlayerWrapper = ({
                     pill bg="dark"
                     className="mb-2 align-self-start trunc"
                     style={{
-                      fontSize: '15px',
+                      fontSize: FontStyle.subtitle.fontSize,
                       fontWeight: 700,
-                      lineHeight: '24px'
+                      lineHeight: FontStyle.subtitle.fontSize
                     }}
                   >
                     <Flex direction='horizontal'>
@@ -598,7 +599,8 @@ export const ReactPlayerWrapper = ({
               <div className="video-auther mb-2"
                 style={{
                   fontWeight: 'bold',
-                  fontSize: '17px'
+                  fontSize: FontStyle.title.fontSize,
+                  lineHeight: FontStyle.title.lineHeight
                 }}>
                 {roundTableMode ? (
                   <Avatar
@@ -651,7 +653,7 @@ export const ReactPlayerWrapper = ({
                       }}
                       style={{
                         fontWeight: '700',
-                        fontSize: '15px'
+                        fontSize: FontStyle.subtitle.fontSize
                       }}
                     >
                           Watch
@@ -666,6 +668,7 @@ export const ReactPlayerWrapper = ({
                       whiteSpace="nowrap"
                       overflow="hidden"
                       textOverflow="ellipsis"
+                      fontSize={FontStyle.title.fontSize}
                     >
                           @{userName}
                     </Text>
@@ -673,7 +676,7 @@ export const ReactPlayerWrapper = ({
                 )}
               </div>
               <p className="mb-0" style={{
-                fontSize: '15px',
+                fontSize: FontStyle.subtitle.fontSize,
                 fontWeight: '600'
               }}>{description}</p>
             </Flex>
@@ -698,7 +701,9 @@ export const ReactPlayerWrapper = ({
                   whiteSpace="nowrap"
                   overflow="hidden"
                   textOverflow="ellipsis"
-                  maxW= '70%'
+                  maxW='70%'
+                  fontSize={FontStyle.title.fontSize}
+                  fontWeight='bold'
                 >
                   @{userName}
                 </Text>

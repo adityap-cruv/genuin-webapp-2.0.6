@@ -18,7 +18,6 @@ export const TopNav = ({
 
   return (
     <Navbar
-      {...(isContiner ? { className: 'p-3 container' } : { className: 'p-3' })}
       expand={false}
       fixed='top'
       onToggle={(isOpen) => setIsOpen(isOpen)}
@@ -28,35 +27,27 @@ export const TopNav = ({
       }}
       variant={variant}
     >
-      <Navbar.Brand href='/' className='p-0' style={{ pointerEvents: 'all' }}>
-        <Image
-          src={isBlue ? logoBlue.src : logo.src}
-          alt='Genuin'
-          title='Genuin'
-        />
-      </Navbar.Brand>
-      <div className='d-flex align-items-center justify-content-center'>
-        {!mobile && (
-          <Button
-            variant='primary'
-            className='me-3'
-            onClick={showGetAppModal}
-            style={{
-              height: 32,
-              padding: '4px 16px',
-              fontSize: 15,
-              fontWeight: 'bold',
-              pointerEvents: 'all'
-            }}
-          >
-            Get App
-          </Button>
-        )}
-        {mobile && (
-          <Link href={appStoreLink} pointerEvents='all'>
+      <div
+        {...(isContiner ? { className: 'p-2 container' } : { className: 'p-2' })}
+        style={{
+          display: 'flex',
+          width: '100%',
+          justifyContent: 'space-between'
+        }}
+      >
+        <Navbar.Brand href='/' className='p-0' style={{ pointerEvents: 'all' }}>
+          <Image
+            src={isBlue ? logoBlue.src : logo.src}
+            alt='Genuin'
+            title='Genuin'
+          />
+        </Navbar.Brand>
+        <div className='d-flex align-items-center justify-content-center'>
+          {!mobile && (
             <Button
               variant='primary'
               className='me-3'
+              onClick={showGetAppModal}
               style={{
                 height: 32,
                 padding: '4px 16px',
@@ -67,15 +58,32 @@ export const TopNav = ({
             >
               Get App
             </Button>
-          </Link>
-        )}
-        <BurgerMenu
-          hideBurgerMenu={hideBurgerMenu}
-          isContiner={isContiner}
-          isOpen={isOpen}
-          mobile={mobile}
-          showGetAppModal={showGetAppModal}
-        />
+          )}
+          {mobile && (
+            <Link href={appStoreLink} pointerEvents='all'>
+              <Button
+                variant='primary'
+                className='me-3'
+                style={{
+                  height: 32,
+                  padding: '4px 16px',
+                  fontSize: 15,
+                  fontWeight: 'bold',
+                  pointerEvents: 'all'
+                }}
+              >
+                Get App
+              </Button>
+            </Link>
+          )}
+          <BurgerMenu
+            hideBurgerMenu={hideBurgerMenu}
+            isContiner={isContiner}
+            isOpen={isOpen}
+            mobile={mobile}
+            showGetAppModal={showGetAppModal}
+          />
+        </div>
       </div>
     </Navbar>
   )

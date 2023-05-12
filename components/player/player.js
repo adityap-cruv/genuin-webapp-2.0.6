@@ -38,7 +38,10 @@ export const Player = ({
 }) => {
   const [triggerPlayCount, setTriggetPlayCount] = useState(false)
   const [duration, setDuration] = useState(0)
-  const pad = useBreakpointValue({ base: true, md: false })
+  const pad = useBreakpointValue({ base: false, xs: true, sm: true, md: true, lg: false, xl: false })
+  useEffect(() => {
+    console.log('pade : ', pad)
+  }, [pad])
 
   const shortDescription = useMemo(() => {
     if (description?.length > 50) {
@@ -104,8 +107,8 @@ export const Player = ({
         }}
       />
       {/* don't show if it's a pad & watch roundtable  */}
-      {(!watchRoundTable || !pad) && (
-        <TopNav showGetAppModal={showGetAppModal} variant='light' />
+      {!pad && (
+        <TopNav showGetAppModal={showGetAppModal} variant='light' isContiner={true} />
       )}
       <ReactPlayerWrapper
         videoUrl={videoUrl}
