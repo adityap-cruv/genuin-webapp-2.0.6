@@ -9,6 +9,7 @@ import NextHead from 'next/head'
 import { datadogRum } from '@datadog/browser-rum'
 import { datadogLogs } from '@datadog/browser-logs'
 import { DatadogConfigs } from '../constants/datadog_configs'
+import { BasicColors } from '../constants/colors'
 const theme = extendTheme({
   fonts: {
     body: 'Avenir Next, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji,Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji'
@@ -47,6 +48,7 @@ function MyApp ({ Component, pageProps }) {
     <>
       <NextHead>
         <link rel='shortcut icon' href={favicon.src} type='image/x-icon' />
+        <meta name='theme-color' content={ BasicColors.secondaryColor } />
         {process.env.env === 'qa' && <meta name="robots" content="noindex, nofollow"></meta>}
       </NextHead>
       <ChakraProvider theme={theme}>

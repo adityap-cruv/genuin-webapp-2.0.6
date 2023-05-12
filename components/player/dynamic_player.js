@@ -67,7 +67,6 @@ export const DynamicPlayer = ({
       onClick={onClick}
       onReady={onReady}
       onPlaying={onPlaying}
-
     />}
   </>)
 }
