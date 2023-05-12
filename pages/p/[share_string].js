@@ -484,17 +484,6 @@ const Profile = ({
       // console.log("tabIndex",tabIndex)
       const ls = window.location.href.split('/')
       if (ls && (ls.length === 4 || ls[3] === 'rt')) {
-        // const val = sessionStorage.getItem('urlCameFrom')
-        // if (!val){
-        //   sessionStorage.setItem('urlCameFrom', "");
-        // }else{
-        //   // if (val === "all"){
-        //   //   onOpen()
-        //   // }else if (val === "rt"){
-        //   //   onOpenRT()
-        //   // }else if (val === "public"){
-        //   //   onOpenPublic()
-        //   // }
         if (tabIndex === 0) {
           onOpen()
         } else if (tabIndex === 1) {
