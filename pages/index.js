@@ -39,6 +39,10 @@ const Home = () => {
         const rtDetails = await axios.get(
           `${process.env.apiurl}/api/v3/public/rt/details?chat_id=13f3348fd5801493`
         )
+        datadogLogs.logger.log('roundtable videos and details', {
+          roundtableVideosData: videosData,
+          roundtableDetailsData: rtDetails
+        })
         const feeds = videosData?.data?.data?.chats
         if (feeds.length > 0) {
           setRTData({ rtVideos: feeds, rtData: rtDetails?.data?.data })
@@ -49,6 +53,9 @@ const Home = () => {
       } catch (e) {
         // eslint-disable-next-line no-console
         console.log('error : ', e)
+        datadogLogs.logger.log('error in fetching roundtable data', {
+          error: e
+        })
       }
     }
     fetchData()
@@ -59,6 +66,9 @@ const Home = () => {
       const res = await axios.get(
         `${process.env.apiurl}/api/v3/public/rt/paginate_videos?chat_id=13f3348fd5801493&last_video_id=${rtVideos[rtVideos.length - 1].conversation_id}`
       )
+      datadogLogs.logger.log('roundtable videos paginated', {
+        roundtableVideosData: res
+      })
       const chats = res?.data?.data?.chats
       if (chats.length > 0) {
         setRTData((old) => ({ rtVideos: old.rtVideos.concat(chats), rtData: old.rtData }))
@@ -69,6 +79,9 @@ const Home = () => {
     } catch (e) {
       // eslint-disable-next-line no-console
       console.log('error : ', e)
+      datadogLogs.logger.log('error in fetching roundtable data paginated', {
+        error: e
+      })
     }
   }
   return (
