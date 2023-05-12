@@ -156,31 +156,6 @@ export const ReactPlayerWrapper = ({
     }
   }, [])
 
-  // const onEndedWrapper = useCallback(
-  //   (e) => {
-  //     // if(roundTableMode){
-  //     //   setRtEnded(true)
-  //     //   setIsPlaying(false)
-  //     // }
-
-  //     // if(!roundTableMode){
-  //     //   onEndedRef?.current?.(e);
-  //     // }
-  //     // if (autoJumpToNextVideo) {
-  //     //   if (direction === "forward") getNextVideoRef?.current?.();
-  //     //   if (direction === "backward") getPrevVideoRef?.current?.();
-  //     // }
-  //   },
-  //   [autoJumpToNextVideo, direction]
-  // )
-
-  // const changeState = () => {
-  //   if (rtEnded) {
-  //     setRtEnded(false)
-  //     setIsPlaying(true)
-  //   }
-  // }
-
   const getTimeDiff = () => {
     let time = Math.floor(
       (Date.now() - Number(videos[currentVideoIndex]?.conversation_at)) / 1000
