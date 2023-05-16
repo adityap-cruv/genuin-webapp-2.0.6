@@ -38,10 +38,7 @@ export const Player = ({
 }) => {
   const [triggerPlayCount, setTriggetPlayCount] = useState(false)
   const [duration, setDuration] = useState(0)
-  const pad = useBreakpointValue({ base: false, xs: true, sm: true, md: true, lg: false, xl: false })
-  useEffect(() => {
-    console.log('pade : ', pad)
-  }, [pad])
+  const pad = useBreakpointValue({ base: true, xs: true, sm: true, md: true, lg: false, xl: false })
 
   const shortDescription = useMemo(() => {
     if (description?.length > 50) {
