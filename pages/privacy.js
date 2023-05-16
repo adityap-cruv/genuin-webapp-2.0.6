@@ -44,14 +44,13 @@ const Privacy = () => {
   }
   return (
     <Layout className='overflow-auto'>
-      <section className='bg-black h-top-navbar position-sticky top-0'>
-        <TopNav
-          showGetAppModal={handleShowDownloadAppPopup}
-          isContiner
-          variant='light'
-        />
-      </section>
-      <section className='bg-body section-privacy'>
+      <TopNav
+        showGetAppModal={handleShowDownloadAppPopup}
+        isContiner
+        variant='light'
+        backgroundColor='black'
+      />
+      <section className='bg-body section-privacy' style={{ paddingTop: '10%' }}>
         <Container className='mt-3' >
           <p style={{ ...mainTitleStyle }}>Genuin, Inc.<br />Privacy Policy</p>
           <div style={{ ...generalStyle, paddingBottom: '5%' }}>
