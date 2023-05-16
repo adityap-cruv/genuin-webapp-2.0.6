@@ -76,18 +76,15 @@ const VerifyEmail = ({
 VerifyEmail.getInitialProps = async ({ query: { token } }) => {
   if (token) {
     try {
-      console.log('Verify Email API Called', { apiURL: process.env.internalApiurl, token: token });
-      datadogLogs.logger.info('Verify Email API Called', { apiURL: process.env.internalApiurl, token: token })
+      datadogLogs.logger.info('Verify Email API Called', { apiURL: process.env.internalApiurl, token })
       const res = await axios.get(`${process.env.internalApiurl}/api/v3/verify_email_token?token=${token}`)
       datadogLogs.logger.info('Verify Email API Response', { response: res?.data?.code })
-      console.log('Verify Email API Response', { response: res?.data?.code })
 
       return {
         code: res?.data?.code
       }
     } catch (e) {
       datadogLogs.logger.info('Verify Email API Error', { response: e?.response?.data?.code })
-      console.log('Verify Email API Error', { response: e?.response?.data?.code })
       return {
         code: e?.response?.data?.code
       }

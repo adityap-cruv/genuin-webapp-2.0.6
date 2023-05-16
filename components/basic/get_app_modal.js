@@ -37,7 +37,7 @@ export const GetAppModal = ({ show, onClose, TextNode = () => null, title = 'Get
           </Text>
         </VStack>
       </Modal.Body>
-      <Modal.Footer className='justify-content-center border-0 py-10'>
+      <Modal.Footer className='justify-content-center border-0' style={{ paddingBottom: '6%' }}>
         <InstallApp small onClick={onClose} />
       </Modal.Footer>
     </Modal>
