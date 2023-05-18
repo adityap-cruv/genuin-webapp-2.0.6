@@ -509,7 +509,7 @@ const Profile = ({
               dangerouslySetInnerHTML={{ __html: ORG_SCHEMA }}
             />
             {!(isOpen || isOpenRT || isOpenPublic) && <div style={{ height: '100%' }}>
-              <TopNav showGetAppModal={handleShowDownloadAppPopup} isContiner isBlue />
+              <TopNav showGetAppModal={handleShowDownloadAppPopup} isContiner isBlue backgroundColor='white'/>
               <div
                 id="scrollableDiv"
                 style={{
