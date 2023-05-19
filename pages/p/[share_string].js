@@ -296,17 +296,6 @@ const Profile = ({
     setIsLoadingFake(false)
   }, 100)
 
-  useEffect(() => {
-    const scrollDiv = document.documentElement
-    function hideBars () {
-      scrollDiv.requestFullscreen({ navigationUI: 'hide' }).catch(e => { console.log('error :', e) })
-      console.log('called hide bars..')
-    }
-    setTimeout(() => {
-      hideBars()
-    }, 7000)
-  }, [])
-
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0)
   const [currentVideoIndexPublic, setCurrentVideoIndexPublic] = useState(0)
   const [currentVideoIndexRT, setCurrentVideoIndexRT] = useState(0)
@@ -484,17 +473,6 @@ const Profile = ({
       // console.log("tabIndex",tabIndex)
       const ls = window.location.href.split('/')
       if (ls && (ls.length === 4 || ls[3] === 'rt')) {
-        // const val = sessionStorage.getItem('urlCameFrom')
-        // if (!val){
-        //   sessionStorage.setItem('urlCameFrom', "");
-        // }else{
-        //   // if (val === "all"){
-        //   //   onOpen()
-        //   // }else if (val === "rt"){
-        //   //   onOpenRT()
-        //   // }else if (val === "public"){
-        //   //   onOpenPublic()
-        //   // }
         if (tabIndex === 0) {
           onOpen()
         } else if (tabIndex === 1) {
@@ -531,7 +509,7 @@ const Profile = ({
               dangerouslySetInnerHTML={{ __html: ORG_SCHEMA }}
             />
             {!(isOpen || isOpenRT || isOpenPublic) && <div style={{ height: '100%' }}>
-              <TopNav showGetAppModal={handleShowDownloadAppPopup} isContiner isBlue />
+              <TopNav showGetAppModal={handleShowDownloadAppPopup} isContiner isBlue backgroundColor='white'/>
               <div
                 id="scrollableDiv"
                 style={{
@@ -1028,7 +1006,7 @@ const Videos = ({
             display: 'flex'
           }}><p
             style={{
-              color: BasicColors.primaryColor,
+              color: BasicColors.secondaryColor,
               fontWeight: '700',
               fontSize: FontStyle.bigTitle.fontSize,
               lineHeight: FontStyle.bigTitle.lineHeight

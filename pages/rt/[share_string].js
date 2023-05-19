@@ -216,7 +216,7 @@ const RoundTable = ({
             dangerouslySetInnerHTML={{ __html: ORG_SCHEMA }}
           />
           {!isOpen && <>
-            <TopNav showGetAppModal={handleShowDownloadAppPopup} isContiner isBlue />
+            <TopNav showGetAppModal={handleShowDownloadAppPopup} isContiner isBlue backgroundColor='white'/>
             <Flex
               className='section-content h-100'
               direction='column'

@@ -1,6 +1,6 @@
 import React from 'react'
 import { Col, Button } from 'react-bootstrap'
-import { Text, Link, Image, useBreakpointValue } from '@chakra-ui/react'
+import { Text, Link, Image } from '@chakra-ui/react'
 import {
   appleAppStoreLink,
   appStoreLink,
@@ -11,14 +11,14 @@ import ios from '../../assets/images/badge_appstore.png'
 import android from '../../assets/images/badge_playstore.png'
 import { handleLink } from '../../actions/appInstall'
 import { useRouter } from 'next/router'
+import { isMobile } from 'react-device-detect'
 
 export const InstallApp = ({ small = false, errorPage = false, onClick = () => {} }) => {
-  const mobile = useBreakpointValue({ base: true, sm: false })
   const router = useRouter()
 
   return (
     <>
-      {mobile && !errorPage && router.pathname !== '/' && (
+      {isMobile && !errorPage && router.pathname !== '/' && (
         <Button onClick={onClick} style={{ width: '334px' }}>
           <Link href={appStoreLink} isExternal>
             <Text fontSize={20} fontWeight='bold'>
@@ -28,7 +28,7 @@ export const InstallApp = ({ small = false, errorPage = false, onClick = () => {
         </Button>
       )}
 
-      {mobile && errorPage && router.pathname !== '/' && (
+      {isMobile && errorPage && router.pathname !== '/' && (
         <Button onClick={onClick}>
           <Link href={appStoreLink} isExternal>
             <Text fontSize={20} fontWeight='bold'>
@@ -38,7 +38,7 @@ export const InstallApp = ({ small = false, errorPage = false, onClick = () => {
         </Button>
       )}
 
-      {mobile && router.pathname === '/' && (
+      {isMobile && router.pathname === '/' && (
         <Button onClick={onClick} style={{ width: '90%' }}>
           <Link href={appStoreLink} isExternal>
             <Text fontSize={20} fontWeight='bold'>
@@ -48,7 +48,7 @@ export const InstallApp = ({ small = false, errorPage = false, onClick = () => {
         </Button>
       )}
 
-      {!mobile && (
+      {!isMobile && (
         <>
           <Col
             className='d-flex align-items-center justify-content-end ps-4 ps-sm-0'
