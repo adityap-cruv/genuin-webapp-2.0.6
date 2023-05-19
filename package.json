@@ -4,14 +4,12 @@
   "description": "Genuin web-app",
   "main": "index.js",
   "scripts": {
-    "preinstall": "curl -o genuin-player.tgz https://genuin-media-qa.s3.us-west-2.amazonaws.com/genuin-player/genuin_player-1.0.1.tgz",
     "dev": "next dev -p 4000",
     "build": "next build",
     "start": "next start -p $PORT",
     "start_prod": "export NODE_ENV=production && pm2 start server.js -i 1 --name 'genuin-web-react'",
     "restart_prod": "export NODE_ENV=production && pm2 restart server.js -i 1 --name 'genuin-web-react'",
-    "stop_prod": "pm2 stop genuin-web-react",
-    "postinstall": "rm -f *.tgz"
+    "stop_prod": "pm2 stop genuin-web-react"
   },
   "engines": {
     "node": "14.18.1",
@@ -34,7 +32,7 @@
     "copy-to-clipboard": "^3.3.1",
     "express": "^4.17.1",
     "framer-motion": "^10.6.1",
-    "genuin_player": "file:./genuin-player.tgz",
+    "genuin_player": "file:https://genuin-media-qa.s3.us-west-2.amazonaws.com/genuin-player/genuin_player-1.0.1.tgz",
     "next": "^12.2.5",
     "next-seo": "^4.29.0",
     "notistack": "^2.0.5",
