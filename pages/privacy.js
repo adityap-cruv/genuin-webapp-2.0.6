@@ -42,32 +42,35 @@ const Privacy = () => {
     paddingTop: '10px',
     paddingBottom: '15px'
   }
+
+  const paraTopPaddingStyle = {
+    paddingTop: '15px'
+  }
   return (
     <Layout className='overflow-auto'>
-      <section className='bg-black h-top-navbar position-sticky top-0'>
-        <TopNav
-          showGetAppModal={handleShowDownloadAppPopup}
-          isContiner
-          variant='light'
-        />
-      </section>
-      <section className='bg-body section-privacy'>
+      <TopNav
+        showGetAppModal={handleShowDownloadAppPopup}
+        isContiner
+        variant='light'
+        backgroundColor='black'
+      />
+      <section className='bg-body section-privacy' style={{ paddingTop: '10%' }}>
         <Container className='mt-3' >
           <p style={{ ...mainTitleStyle }}>Genuin, Inc.<br />Privacy Policy</p>
           <div style={{ ...generalStyle, paddingBottom: '5%' }}>
             <p><b>Last Updated:</b>  May 5, 2023</p>
-            <p style={{ paddingTop: '5px' }}>Genuin, Inc., (“<strong>Genuin</strong>”, &quot;<strong>us</strong>&quot;, &quot;<strong>we</strong>&quot;, or
+            <p style={{ paddingTop: '5px', ...paraTopPaddingStyle }}>Genuin, Inc., (“<strong>Genuin</strong>”, &quot;<strong>us</strong>&quot;, &quot;<strong>we</strong>&quot;, or
               &quot;<strong>our</strong>&quot;) cares about how your personal information is used and shared. We take your privacy
               as a consumer very seriously. We operate the website, <a style={{ color: 'blue !important', textDecoration: 'underline' }} href="http://www.begenuin.com">www.begenuin.com</a> (our
               “<strong>Website</strong>”) and the mobile application, ‘Genuine’ available for download on the iOS App Store and the
               Google Play App Store (the “<strong>App</strong>”), both of which offer an all-in-one internet technology service (the
               “<strong>Services</strong>”). The terms “<strong>you</strong>,” “<strong>your</strong>,” and “<strong>yours</strong>”
               refer to the user, customer, or company using the Services.</p>
-            <p>Please read the following to learn more about this privacy policy (this “<strong>Privacy Policy</strong>”).</p>
-            <p><strong>By accessing the Services in any manner, you agree and acknowledge that you accept the terms of this Privacy
+            <p style={{ ...paraTopPaddingStyle }}>Please read the following to learn more about this privacy policy (this “<strong>Privacy Policy</strong>”).</p>
+            <p style={{ ...paraTopPaddingStyle }}><strong>By accessing the Services in any manner, you agree and acknowledge that you accept the terms of this Privacy
               Policy, and you expressly consent that we may collect, use, and share your information in accordance with this
               Privacy Policy.</strong></p>
-            <p>By using the Services, you are at all times subject to our Terms of Service which hereinafter incorporates this
+            <p style={{ ...paraTopPaddingStyle }}>By using the Services, you are at all times subject to our Terms of Service which hereinafter incorporates this
               Privacy Policy. Unless otherwise defined in this Privacy Policy, capitalized terms not defined herein have the
               meanings as given to them in our Terms of Service.</p>
             <ol type="1" className='marker-style' style={{ paddingLeft: '30px' }}>
@@ -120,19 +123,19 @@ const Privacy = () => {
                 <p>We gather various types of PII from our users, as explained in more detail below, and we use this PII only in
                   connection with the Services, including to personalize, provide, promote, and improve the Services, to allow you
                   to
-                  set up a user account and profile, to contact you and allow other users to contact you, to folfill your requests
+                  set up a user account and profile, to contact you and allow other users to contact you, to fulfill your requests
                   for
                   certain products and services, and to analyze how you use the Services.</p>
               </li>
               <li>
                 <p style={{ ...titleStyle }}><strong>WHY ARE WE ALLOWED TO COLLECT YOUR PII AND HOW DO WE USE THE PII?</strong></p>
-                <p>We will only process PII where we have a lawfol reason for doing so. The lawfol basis for processing PII by us
+                <p>We will only process PII where we have a lawful reason for doing so. The lawful basis for processing PII by us
                   will
                   be one of the following:</p>
                 <ol style={{ ...paddingStyle }} type='a'>
                   <li>The processing is necessary for the creation of an account by you and to provide the Services at your request;
                   </li>
-                  <li>The processing is necessary in order for us to comply with our legal obligations (such as lawfol subpoena
+                  <li>The processing is necessary in order for us to comply with our legal obligations (such as lawful subpoena
                     requests
                     or responding to copyright disputes);</li>
                   <li>The processing is necessary for the pursuit of our legitimate business interests (including that of the
@@ -188,17 +191,17 @@ const Privacy = () => {
                       device to prevent or limit your device’s acceptance of Cookies, but this may prevent you from taking advantage of
                       some
                       of our features.</p>
-                    <p>We may use third parties to provide analytics services. These entities may use Cookies, web beacons and other
+                    <p style={{ ...paraTopPaddingStyle }}>We may use third parties to provide analytics services. These entities may use Cookies, web beacons and other
                       technologies to collect information about your use of the Services and other websites, including your IP address,
                       web
                       browser, pages viewed, time spent on pages, links clicked and conversion information. This information may be used
                       by
-                      Genuin and others to, among other things, analyze and track data, determine the popolarity of certain content,
+                      Genuin and others to, among other things, analyze and track data, determine the popularity of certain content,
                       customize the Services, deliver content targeted to your interests on the Services and other websites and better
                       understand your online activity.</p>
-                    <p>We may use this data to customize content for you that we think you might like, based on your usage patterns. We
+                    <p style={{ ...paraTopPaddingStyle }}>We may use this data to customize content for you that we think you might like, based on your usage patterns. We
                       may
-                      also use it to improve the Services – for example, this data can tell us how often users use a particolar feature
+                      also use it to improve the Services – for example, this data can tell us how often users use a particular feature
                       of
                       the Services, and we can use that knowledge to make the Services interesting to as many users as possible.</p>
                   </li>
@@ -230,7 +233,7 @@ const Privacy = () => {
                       Services,
                       so that they, too, can provide you with an optimal online experience. However, we never disclose aggregate usage
                       or
-                      de-identified information to a partner (or allow a partner to collect such information) in a manner that woold
+                      de-identified information to a partner (or allow a partner to collect such information) in a manner that would
                       identify you as an individual person.</p>
                   </li>
                   <li>
@@ -258,7 +261,7 @@ const Privacy = () => {
                       Services..</p>
                     <p>The Services are designed, among other things, to help you share information. If you have a profile on our mobile
                       application, most of the information you provide us through the Services is information you are asking us to make
-                      accessible. When you share information or content via the Services, you shoold think carefolly about what you are
+                      accessible. When you share information or content via the Services, you should think carefully about what you are
                       making accessible.</p>
                   </li>
                   <li>
@@ -266,7 +269,7 @@ const Privacy = () => {
                     <p>We may choose to buy or sell assets and may share and/or transfer customer information in connection with the
                       evaluation of and entry into such transactions. Also, if we (or our assets) are acquired, or if we go out of
                       business,
-                      enter bankruptcy, or go through some other change of control, PII coold be one of the assets transferred to or
+                      enter bankruptcy, or go through some other change of control, PII could be one of the assets transferred to or
                       acquired by a third party.</p>
                   </li>
                   <li>
@@ -351,7 +354,7 @@ const Privacy = () => {
                   unrevised information in our records. You may request deletion of your account by contacting us at <a style={{ color: 'blue !important', textDecoration: 'underline' }}
                   href="mailto:&#99;&#111;&#110;&#116;&#97;&#x63;&#116;&#64;&#x62;&#x65;&#103;&#101;&#110;&#117;&#x69;&#x6e;&#46;&#x63;&#111;&#x6d;">&#99;&#111;&#110;&#116;&#97;&#x63;&#116;&#64;&#x62;&#x65;&#103;&#101;&#110;&#117;&#x69;&#x6e;&#46;&#x63;&#111;&#x6d;</a> note that we may retain certain information as required by law or for legitimate business purposes. We may use any
                   aggregated data derived from or incorporating your PII after you update or delete it, but not in a manner that
-                  woold
+                  would
                   identify you personally.</p>
               </li>
               <li>
@@ -382,28 +385,28 @@ const Privacy = () => {
               </li>
               <li>
                 <p style={{ ...titleStyle }}><strong>GDPR</strong></p>
-                <p>The General Data Protection Regolation (the “GDPR”) gives individual data subjects, located in the European Union
+                <p>The General Data Protection Regulation (the “GDPR”) gives individual data subjects, located in the European Union
                   in
                   certain circumstances the right to, among other things, access, delete, and make corrections to their personal
                   data.
                   Further, the GDPR requires us to explain the valid legal bases we rely on to process your personal information.
                 </p>
-                <p>At its core, the GDPR is focused on transparency, fairness, and accountability. Accordingly, the law requires
+                <p style={{ ...paraTopPaddingStyle }}>At its core, the GDPR is focused on transparency, fairness, and accountability. Accordingly, the law requires
                   organizations to maintain documentation about their privacy practices and their decisions about how they handle
                   individuals’ personal data. We are committed to facilitating data subject requests consistent with the GDPR, as
                   further described in this Privacy Policy.</p>
               </li>
               <li>
-                <p style={{ ...titleStyle }}><strong>STATE SPECIFIC PRIVACY LAWS AND REGolATIONS</strong></p>
+                <p style={{ ...titleStyle }}><strong>STATE SPECIFIC PRIVACY LAWS AND REGULATIONS</strong></p>
                 <p>This section (this “<strong>Supplemental Notice</strong>”) applies only to information collected about consumers
                   in
                   the following states: (1) California, (2) Colorado, (3) Connecticut, (4) Nevada, (5) Utah, and (6) Virginia and
                   describes our practices regarding the collection, use, and disclosure of PII and provides instructions for
                   submitting
-                  data subject requests. Some apply only to consumers of particolar states. In those instances, we have indicated
+                  data subject requests. Some apply only to consumers of particular states. In those instances, we have indicated
                   that
                   such language applies only to those consumers.</p>
-                <p>To the extent terms used in this Supplemental Notice are defined terms under the applicable US State Privacy Law,
+                <p style={{ ...paraTopPaddingStyle }}>To the extent terms used in this Supplemental Notice are defined terms under the applicable US State Privacy Law,
                   they shall have the meanings afforded to them in those statutes, whether or not capitalized herein. As there are
                   some
                   variations between such definitions in each of the state statutes, the definitions applicable to you are those

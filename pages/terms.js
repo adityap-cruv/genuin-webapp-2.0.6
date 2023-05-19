@@ -45,14 +45,13 @@ const Terms = () => {
 
   return (
     <Layout className='overflow-auto'>
-      <section className='bg-black h-top-navbar position-sticky top-0'>
-        <TopNav
-          showGetAppModal={handleShowDownloadAppPopup}
-          isContiner
-          variant='light'
-        />
-      </section>
-      <section className='bg-body h-100' style={{ paddingBottom: '20%' }}>
+      <TopNav
+        showGetAppModal={handleShowDownloadAppPopup}
+        isContiner
+        variant='light'
+        backgroundColor='black'
+      />
+      <section className='bg-body h-100' style={{ paddingBottom: '20%', paddingTop: '10%' }}>
         <Container className='mt-3'>
           <p style={{ ...mainTitleStyle }}>
             Genuin, Inc. <br/>General Terms of Service

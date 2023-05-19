@@ -11,7 +11,8 @@ export const TopNav = ({
   hideBurgerMenu = false,
   isContiner = false,
   isBlue = false,
-  variant = 'dark'
+  variant = 'dark',
+  backgroundColor = undefined
 }) => {
   const [isOpen, setIsOpen] = useState(false)
   const mobile = useBreakpointValue({ base: true, sm: false })
@@ -23,6 +24,7 @@ export const TopNav = ({
       onToggle={(isOpen) => setIsOpen(isOpen)}
       style={{
         background: variant === 'light' ? 'transparent' : 'white',
+        backgroundColor,
         pointerEvents: 'none'
       }}
       variant={variant}

@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import axios from 'axios'
 import { Error } from '../../components/basic/error'
+import NextHead from 'next/head'
 
 const Record = ({
   owner = {}
@@ -16,12 +17,17 @@ const Record = ({
     }
   }, [])
 
-  return !nickname ? (
-    <Error />
-  ) : (
+  return (
     <>
-    </>
-  )
+      <NextHead>
+        <meta name="robots" content="noindex, nofollow"></meta>
+      </NextHead>
+      {!nickname ? (
+        <Error />
+      ) : (
+        <>
+        </>
+      )}</>)
 }
 Record.getInitialProps = async ({ query: { qr_code } }) => {
   return new Promise(function (resolve, reject) {
