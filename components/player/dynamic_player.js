@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import GenuinPlayer from 'genuin_player'
+import ReactPlayer from 'react-player/lazy'
+import SafariPlayer from './safari_player'
+// import GenuinPlayer from 'genuin_player'
+import isSafari from 'react-device-detect'
 
 export const DynamicPlayer = ({
   isPlaying,
@@ -30,7 +33,7 @@ export const DynamicPlayer = ({
     observer.observe(document.body)
   }, [])
   return (<>
-    <GenuinPlayer
+    {/* <GenuinPlayer
       src={url}
       uniqueKey={uniqueKey}
       controls={false}
@@ -45,8 +48,8 @@ export const DynamicPlayer = ({
       onError={() => console.log('error')}
       onPlaying={onPlaying}
       onTimeUpdate={onProgress}
-    />
-    {/* {!isSafari && <ReactPlayer
+    /> */}
+    {!isSafari && <ReactPlayer
       key={uniqueKey}
       playing={isPlaying && inViewPort}
       url={url}
@@ -81,6 +84,6 @@ export const DynamicPlayer = ({
       onClick={onClick}
       onReady={onReady}
       onPlaying={onPlaying}
-    />} */}
+    />}
   </>)
 }
