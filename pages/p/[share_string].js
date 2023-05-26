@@ -41,7 +41,7 @@ import { GenuinLoader } from '../../components/basic/genuin_loader'
 import dynamic from 'next/dynamic'
 import { FontStyle } from '../../constants/font_style'
 import { BasicColors } from '../../constants/colors'
-
+// testing
 const DownloadAppPopup = dynamic(() => import('../../components/download_app_popup'))
 
 const Profile = ({
