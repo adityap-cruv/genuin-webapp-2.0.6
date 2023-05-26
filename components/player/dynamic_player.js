@@ -37,7 +37,7 @@ export const DynamicPlayer = ({
       isMP4={url.endsWith('mp4')}
       loop={loop}
       mute={muted}
-      onClick={() => console.log('clicked.')}
+      onClick={onClick}
       playing={isPlaying}
       onDurationChange={onDuration}
       onEnded={onEnded}

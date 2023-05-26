@@ -7,7 +7,6 @@ import { Error } from '../components/basic/error'
 import { SEO } from '../components/basic/seo'
 import { AppActions } from '../components/basic/app_actions'
 import { useDisclosure } from '@chakra-ui/react'
-import { datadogLogs } from '@datadog/browser-logs'
 import dynamic from 'next/dynamic'
 
 const DownloadAppPopup = dynamic(() => import('../components/download_app_popup'))
@@ -95,7 +94,6 @@ const Video = (props) => {
   })
 
   useEffect(() => {
-    datadogLogs.logger.info('Video Watched')
     const ls = window.location.href.split('/')
     if (ls && ls.length === 4) {
       onOpen()

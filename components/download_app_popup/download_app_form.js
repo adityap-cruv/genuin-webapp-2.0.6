@@ -9,7 +9,6 @@ import { Countries } from '../../constants/countries'
 import { Error } from './error'
 import { SendingLink } from './sending_link'
 import { LinkSent } from './link_sent'
-import { datadogLogs } from '@datadog/browser-logs'
 import { FontStyle } from '../../constants/font_style'
 
 export const DownloadAppForm = () => {
@@ -89,7 +88,6 @@ export const DownloadAppForm = () => {
         if (res.data.code === 200) {
           setIsLinkSent(true)
         }
-        datadogLogs.logger.info('Send Download Link', { payload })
       } catch (e) {
         // eslint-disable-next-line no-console
         console.log(e)

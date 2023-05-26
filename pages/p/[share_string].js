@@ -110,6 +110,7 @@ const Profile = ({
       return res.concat(({ video_type, video }))
     }, [])
   }
+
   const [publicVideos, setPublicVideos] = useState([])
 
   const [rtVideos, setRTVideos] = useState([])

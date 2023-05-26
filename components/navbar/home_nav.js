@@ -3,7 +3,6 @@ import { Image, Navbar, Button } from 'react-bootstrap'
 import logo from '../../assets/images/logo_header_new.svg'
 import logoBlue from '../../assets/images/logo_header_new_blue.svg'
 import { handleHireLinkClick } from '../../actions/appInstall'
-import { datadogLogs } from '@datadog/browser-logs'
 import { BurgerMenu } from './burger_menu'
 import { useBreakpointValue } from '@chakra-ui/react'
 
@@ -53,7 +52,6 @@ export const HomeNav = ({
           className='me-3 custom-home-button'
           onClick={() => {
             showGetAppModal(true)
-            datadogLogs.logger.info('Get App')
           }}
           style={{
             fontSize: 17,

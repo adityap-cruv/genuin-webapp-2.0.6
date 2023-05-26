@@ -3,7 +3,6 @@ import { Button } from 'react-bootstrap'
 import trayArrow from '../../assets/images/tray_arrow.svg'
 import { motion } from 'framer-motion'
 import { isDesktop } from 'react-device-detect'
-import { datadogLogs } from '@datadog/browser-logs'
 
 const MobileIndexBottomComponent = ({
   showTray = true,
@@ -24,7 +23,6 @@ const MobileIndexBottomComponent = ({
           } else {
             window.open('https://install.begenuin.com/86sn/cgs')
           }
-          datadogLogs.logger.info('Get App')
         }}
         style={{
           fontSize: 15,

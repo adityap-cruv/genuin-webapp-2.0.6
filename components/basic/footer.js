@@ -1,6 +1,5 @@
 import React from 'react'
 import { Nav, Container, Row, Col } from 'react-bootstrap'
-import { datadogLogs } from '@datadog/browser-logs'
 import { useBreakpointValue } from '@chakra-ui/react'
 
 export const Footer = ({
@@ -31,9 +30,6 @@ export const Footer = ({
                     style={{ opacity: 0.5 }}
                     target="_blank"
                     href={'/content_demo?value=rt_123f373977001407'}
-                    onClick={() => {
-                      datadogLogs.logger.info('Link Clicked', { buttonType: 'Life at Genuin' })
-                    }}
                   >
                     Life at Genuin
                   </Nav.Link>
@@ -55,9 +51,6 @@ export const Footer = ({
                   <Nav.Link
                     style={{ opacity: 0.5 }}
                     href='/terms'
-                    onClick={() => {
-                      datadogLogs.logger.info('Link Clicked', { buttonType: 'Terms of Service' })
-                    }}
                   >
                     Terms of Service
                   </Nav.Link>
@@ -78,9 +71,6 @@ export const Footer = ({
                   <Nav.Link
                     style={{ opacity: 0.5 }}
                     href='/privacy'
-                    onClick={() => {
-                      datadogLogs.logger.log('Link Clicked', { buttonType: 'Privacy Policy' })
-                    }}
                   >
                     Privacy Policy
                   </Nav.Link>
