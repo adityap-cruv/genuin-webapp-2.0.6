@@ -1,40 +1,14 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { TopNav } from '../components/navbar/top_nav'
 import { Layout } from '../components/layout'
 import axios from 'axios'
-import { datadogLogs } from '@datadog/browser-logs'
 
 import { Container } from 'react-bootstrap'
 import { ModalBody } from '../components/verify_email/modal_body'
 
 const VerifyEmail = ({
-  isError = false,
-  code
+  data
 }) => {
-  const [{ title, subtitle, error }, setData] = useState({ title: '', subtitle: '', error: isError })
-
-  useEffect(() => {
-    if (code === 200) {
-      setData({
-        title: 'Email successfully verified',
-        subtitle: 'Now you’ll receive latest app updates on your registered email address. You can go back to app now.',
-        error: false
-      })
-    } else if (code === '5176') {
-      setData({
-        title: 'Verification link expired',
-        subtitle: 'We\'re sorry, but it looks like the verification link has expired. Please request a new verification link from the app to verify your email address.',
-        error: true
-      })
-    } else {
-      setData({
-        title: 'Oops, something went wrong!',
-        subtitle: 'We\'re sorry, but something went wrong. Please try again later or contact our support team for assistance on the app.',
-        error: true
-      })
-    }
-  }, [])
-
   return (<Layout>
     <TopNav isBlue isContiner/>
     <section
@@ -63,9 +37,9 @@ const VerifyEmail = ({
           }}
         >
           <ModalBody
-            isError={error}
-            title={title}
-            subtitle={subtitle}
+            isError={data?.error}
+            title={data?.title}
+            subtitle={data?.subtitle}
           />
         </div>
       </Container>
@@ -73,25 +47,61 @@ const VerifyEmail = ({
   </Layout>)
 }
 
+// 1003 / 401  -  token has expired
+// 5033 / 401 - token has expired
+// 1099 / 400 - An unexpected error occurred processing the request
+// 5025 / 404 - Could not find the user.
+// 5100 / 500 - Could not update the user.
+// 5176 / 429 - Data has been expired. (edited
 VerifyEmail.getInitialProps = async ({ query: { token } }) => {
   if (token) {
     try {
-      datadogLogs.logger.info('Verify Email API Called', { apiURL: process.env.internalApiurl, token })
       const res = await axios.get(`${process.env.internalApiurl}/api/v3/verify_email_token?token=${token}`)
-      datadogLogs.logger.info('Verify Email API Response', { response: res?.data?.code })
-
+      let data = {}
+      if (res?.data?.code === 200) {
+        data = {
+          title: 'Email successfully verified',
+          subtitle: 'Now you’ll receive important updates and notifications about your account, new features, and exciting news straight to your inbox. You can go back to app now.',
+          error: false
+        }
+      } else {
+        data = {
+          title: 'Oops, something went wrong!',
+          subtitle: 'We\'re sorry, but something went wrong. Please try again later or contact our support team for assistance on the app.',
+          error: true
+        }
+      }
       return {
-        code: res?.data?.code
+        data
       }
     } catch (e) {
-      datadogLogs.logger.info('Verify Email API Error', { response: e?.response?.data?.code })
+      const code = e?.response?.data?.code
+      let data = {}
+      if (code === '1003' || code === '5176' || code === '5033') {
+        data = {
+          title: 'Verification link expired',
+          subtitle: 'We\'re sorry, but it looks like the verification link has expired. Please request a new verification link from the app to verify your email address.',
+          error: true
+        }
+      } else {
+        data = {
+          title: 'Oops, something went wrong!',
+          subtitle: 'We\'re sorry, but something went wrong. Please try again later or contact our support team for assistance on the app.',
+          error: true
+        }
+      }
+
       return {
-        code: e?.response?.data?.code
+        data
       }
     }
   } else {
     return {
-      isError: 'true'
+      data: {
+        title: 'Oops, something went wrong!',
+        subtitle: 'We\'re sorry, but something went wrong. Please try again later or contact our support team for assistance on the app.',
+        error: true
+      }
     }
   }
 }
