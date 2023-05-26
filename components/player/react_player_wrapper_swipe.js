@@ -17,7 +17,6 @@ import icMuteDesktop from '../../assets/images/video-more-options/ic-mute-deskto
 import icUnmute from '../../assets/images/video-more-options/ic-unmute.svg'
 import { DynamicPlayer } from './dynamic_player'
 import icArrowRight from '../../assets/images/video-more-options/ic-arrow-right.svg'
-import { datadogLogs } from '@datadog/browser-logs'
 import { FontStyle } from '../../constants/font_style'
 
 export const ReactPlayerWrapper = ({
@@ -178,14 +177,6 @@ export const ReactPlayerWrapper = ({
     return `${Math.floor(time / 7)}w`
   }
 
-  const sendLog = () => {
-    datadogLogs.logger.info('Video Watched', {
-      watchTime: Math.ceil(duration * currentProgress),
-      duration,
-      share_string: videos[currentVideoIndex]?.share_string
-    })
-  }
-
   const handleEnterViewport = function () {
     loadMoreVideos(currentVideoIndex)
     setCurrentVideoIndex(currentVideoIndex)
@@ -199,7 +190,6 @@ export const ReactPlayerWrapper = ({
   const handleExitViewport = function () {
     setIsPlaying(false)
     setDisplayThumbnail(true)
-    sendLog()
   }
   return (
     <div
