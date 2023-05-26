@@ -120,7 +120,7 @@ html {
   /* overscroll-behavior-y: contain; */
 }
 
-p {
+p,pre {
   margin-bottom: 0px;
 }
 
