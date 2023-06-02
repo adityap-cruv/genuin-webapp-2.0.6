@@ -78,7 +78,7 @@ const Videos = ({
       return window.removeEventListener('wheel', handleWheel)
     }
   }, [])
-  deepLinkParamsRef.current.metaDescription = `${rtData?.rtData?.group.group_description && rtData?.rtData?.group.group_description + '| '}• Join ${rtData?.rtData?.group_name} to talk about it`
+  deepLinkParamsRef.current.metaDescription = `${rtData?.rtData?.group?.group_description && rtData?.rtData?.group?.group_description + '| '}• Join ${rtData?.rtData?.group_name} to talk about it`
   deepLinkParamsRef.current.metaPreviewImage = rtData?.rtData?.preview_image
   deepLinkParamsRef.current.metaTitle = rtData?.rtData?.group?.group_name
   return (<>
