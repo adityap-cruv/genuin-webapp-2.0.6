@@ -1,7 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useDebounce } from 'use-debounce'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlay, faPause } from '@fortawesome/free-solid-svg-icons'
 import { ProgressBar, Badge, Button } from 'react-bootstrap'
 import { Image, Flex, Text, Link, Box, useBreakpointValue, Avatar } from '@chakra-ui/react'
 
@@ -21,6 +19,8 @@ import icMuteDesktop from '../../assets/images/video-more-options/ic-mute-deskto
 import icUnmuteDesktop from '../../assets/images/video-more-options/ic-unmute-desktop.svg'
 import { isMobile } from 'react-device-detect'
 import { FontStyle } from '../../constants/font_style'
+import icPlay from '../../assets/icons/icon-play.svg'
+import icPause from '../../assets/icons/icon-pause.svg'
 
 export const ReactPlayerWrapper = ({
   videoUrl,
@@ -385,14 +385,14 @@ export const ReactPlayerWrapper = ({
               }}
               opacity={0.7}
             />}</> : <>
-          {isPlaying ? <FontAwesomeIcon
-            icon={faPause}
+          {isPlaying ? <Image
+            src={icPause.src}
             style={{
               display: isPlayingDebounced ? 'none' : 'block'
             }}
             className="btn-play"
-          /> : <FontAwesomeIcon
-            icon={faPlay}
+          /> : <Image
+            src={icPlay.src}
             style={{
               display: 'block'
             }}

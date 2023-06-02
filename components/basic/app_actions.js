@@ -6,6 +6,7 @@ import {
   useBreakpointValue,
   Image
 } from '@chakra-ui/react'
+import { generateDeepLink } from '../utility'
 
 import { useWebShare } from '../hooks/useWebShare'
 import { useClipboard } from '../hooks/useClipboard'
@@ -17,6 +18,7 @@ import comments from '../../assets/images/video-more-options/ic-comments.svg'
 import subscribePlus from '../../assets/images/video-more-options/ic-subscribe-plus.svg'
 import network from '../../assets/images/video-more-options/ic-network.svg'
 import roundtable from '../../assets/images/video-more-options/ic-roundtable.svg'
+import { isMobile } from 'react-device-detect'
 
 export const AppActions = ({
   showGetAppModal,
@@ -28,9 +30,10 @@ export const AppActions = ({
   watchRoundTable = false,
   videoUrl = '',
   videoDescription = '',
-  videoTitle = ''
+  videoTitle = '',
+  deepLinkParams,
+  sourceId
 }) => {
-  // console.log("roundTable", roundTable);
   const mobile = useBreakpointValue({ base: true, sm: false })
 
   const getClickableLink = (link = '') => {
@@ -41,9 +44,7 @@ export const AppActions = ({
     }
     return ''
   }
-
   const userLink = getClickableLink(link)
-
   return (
     <ul>
       {link ? (
@@ -55,12 +56,31 @@ export const AppActions = ({
       ) : null}
       {!roundTable ? (
         <>
-          <li onClick={() =>
-            showGetAppModal(() => (
-              <>
-                Get the app to <b>bookmark</b> this video.
-              </>
-            ))
+          <li onClick={() => {
+            if (isMobile) {
+              generateDeepLink({
+                action: 'save',
+                contentType: 'pv',
+                title: deepLinkParams.metaTitle,
+                description: deepLinkParams.metaDescription,
+                fromUserName: deepLinkParams.geshc,
+                pathName: deepLinkParams.pathName,
+                previewImage: deepLinkParams.metaPreviewImage,
+                sourceId,
+                utmCampaign: 'share',
+                utmMedium: 'web',
+                utmSource: deepLinkParams.hostName,
+                parentId: roundTableId
+              }).then(link => window.open(link))
+                .catch(e => window.open(process.env.hostname))
+            } else {
+              showGetAppModal(() => (
+                <>
+                  Get the app to <b>bookmark</b> this video.
+                </>
+              ))
+            }
+          }
           }>
             <Image
               src={bookmark.src}
@@ -77,6 +97,7 @@ export const AppActions = ({
                 title={videoTitle}
                 white
                 fullWidth={true}
+                deepLinkParams={deepLinkParams}
               />
             ) : (
               <ShareButton
@@ -87,12 +108,31 @@ export const AppActions = ({
               />
             )}
           </li>
-          <li onClick={() =>
-            showGetAppModal(() => (
-              <>
-                Get the app to reply to <b>{'@' + userName}</b>
-              </>
-            ))
+          <li onClick={() => {
+            if (isMobile) {
+              generateDeepLink({
+                action: 'reply',
+                contentType: 'pv',
+                title: deepLinkParams.metaTitle,
+                description: deepLinkParams.metaDescription,
+                fromUserName: deepLinkParams.geshc,
+                pathName: deepLinkParams.pathName,
+                previewImage: deepLinkParams.metaPreviewImage,
+                sourceId,
+                utmCampaign: 'share',
+                utmMedium: 'web',
+                utmSource: deepLinkParams.hostName,
+                parentId: roundTableId
+              }).then(link => window.open(link))
+                .catch(e => window.open(process.env.hostname))
+            } else {
+              showGetAppModal(() => (
+                <>
+                  Get the app to reply to <b>{'@' + userName}</b>
+                </>
+              ))
+            }
+          }
           }>
             <Image
               src={replay.src}
@@ -106,10 +146,29 @@ export const AppActions = ({
 
       {roundTable ? (
         <>
-          <li onClick={() =>
-            showGetAppModal(() => (
-              <>Get the app to watch the comments on this video.</>
-            ))
+          <li onClick={() => {
+            if (isMobile) {
+              generateDeepLink({
+                action: 'comment',
+                contentType: 'loop',
+                title: deepLinkParams.metaTitle,
+                description: deepLinkParams.metaDescription,
+                fromUserName: deepLinkParams.geshc,
+                pathName: deepLinkParams.pathName,
+                previewImage: deepLinkParams.metaPreviewImage,
+                sourceId,
+                utmCampaign: 'share',
+                utmMedium: 'web',
+                utmSource: deepLinkParams.hostName,
+                parentId: roundTableId
+              }).then(link => window.open(link))
+                .catch(e => window.open(process.env.hostname))
+            } else {
+              showGetAppModal(() => (
+                <>Get the app to watch the comments on this video.</>
+              ))
+            }
+          }
           }>
             <Image
               src={comments.src}
@@ -118,13 +177,32 @@ export const AppActions = ({
               title='Comments'
             />
           </li>
-          <li onClick={() =>
-            showGetAppModal(() => (
-              <>
-                Get the app to subscribe to <b>{roundTableName ?? ''}</b>{' '}
-                Loop.
-              </>
-            ))
+          <li onClick={() => {
+            if (isMobile) {
+              generateDeepLink({
+                action: 'subscribe',
+                contentType: 'loop',
+                title: deepLinkParams.metaTitle,
+                description: deepLinkParams.metaDescription,
+                fromUserName: deepLinkParams.geshc,
+                pathName: deepLinkParams.pathName,
+                previewImage: deepLinkParams.metaPreviewImage,
+                sourceId,
+                utmCampaign: 'share',
+                utmMedium: 'web',
+                utmSource: deepLinkParams.hostName,
+                parentId: roundTableId
+              }).then(link => window.open(link))
+                .catch(e => window.open(process.env.hostname))
+            } else {
+              showGetAppModal(() => (
+                <>
+                  Get the app to subscribe to <b>{roundTableName ?? ''}</b>{' '}
+                  Loop.
+                </>
+              ))
+            }
+          }
           }>
             <Image
               src={subscribePlus.src}
@@ -141,6 +219,7 @@ export const AppActions = ({
                 title={videoTitle}
                 white
                 fullWidth={true}
+                deepLinkParams={deepLinkParams}
               />
             ) : (
               <ShareButton
@@ -244,11 +323,10 @@ export const ShareButton = ({
 }
 
 export const MobileShareButton = ({
-  title,
-  description,
   url,
   white = false,
-  fullWidth = false
+  fullWidth = false,
+  deepLinkParams
 }) => {
   const { isSupported, loading, share } = useWebShare()
 
@@ -266,7 +344,22 @@ export const MobileShareButton = ({
       px={1}
       minW={8}
       onClick={() => {
-        if (isSupported && !loading) share({ url })
+        generateDeepLink({
+          utmCampaign: 'share',
+          action: 'share',
+          contentType: 'profile',
+          description: deepLinkParams.metaDescription,
+          title: deepLinkParams.metaTitle,
+          fromUserName: deepLinkParams.geshc,
+          pathName: deepLinkParams.pathName,
+          previewImage: deepLinkParams.metaPreviewImage,
+          utmMedium: 'web',
+          utmSource: deepLinkParams.hostName
+        }).then(generatedLink => {
+          if (isSupported && !loading) share({ url: generatedLink })
+        }).catch(e => {
+          if (isSupported && !loading) share({ url })
+        })
       }}
     />
   )

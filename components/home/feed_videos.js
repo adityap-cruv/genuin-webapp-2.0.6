@@ -16,6 +16,13 @@ const Videos = ({
   const getAppComponentRef = useRef(() => null)
   const [muted, setMuted] = useState(true)
   const [indexTo, setIndexTo] = useState(videos.length > 2 ? 3 : videos.length)
+  const deepLinkParamsRef = useRef({
+    pathName: null,
+    hostName: null,
+    metaDescription: null,
+    metaTitle: null,
+    metaPreviewImage: null
+  })
   const addMoreVideos = (index) => {
     setIndexTo(old => (old - 2 === index) ? old + 1 : old)
     if (indexTo === videos.length) {
@@ -64,11 +71,16 @@ const Videos = ({
   }
 
   useEffect(() => {
+    deepLinkParamsRef.current.hostName = window.location.hostname
+    deepLinkParamsRef.current.pathName = window.location.pathname
     window.addEventListener('wheel', handleWheel)
     return () => {
       return window.removeEventListener('wheel', handleWheel)
     }
-  })
+  }, [])
+  deepLinkParamsRef.current.metaDescription = `${rtData?.rtData?.group.group_description && rtData?.rtData?.group.group_description + '| '}• Join ${rtData?.rtData?.group_name} to talk about it`
+  deepLinkParamsRef.current.metaPreviewImage = rtData?.rtData?.preview_image
+  deepLinkParamsRef.current.metaTitle = rtData?.rtData?.group?.group_name
   return (<>
     <Flex
       className='section-content h-100 swipe-container hide-scrollbar'
@@ -115,14 +127,16 @@ const Videos = ({
                   showGetAppModal={handleShowModalAppDownload}
                   userName={videos[id].owner.nickname}
                   link={videos[id]?.link}
-                  videoUrl={`${process.env.hostname}/rt/${rtData?.rtData?.share_string}?v=${videos[id]?.share_string}`}
+                  videoUrl={`${process.env.hostname}rt/${rtData?.rtData?.share_string}?v=${videos[id]?.share_string}`}
                   videoDescription={
                     rtData?.rtData?.description
                   }
                   videoTitle='Genuin'
                   roundTable={true}
                   roundTableName={rtData?.rtData?.group?.group_name}
-                  roundTableId={videos[id]?.share_string}
+                  roundTableId={rtData?.rtData?.share_string}
+                  deepLinkParams={deepLinkParamsRef.current}
+                  sourceId={videos[id]?.share_string}
                 />
               </Player>
 
