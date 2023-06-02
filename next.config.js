@@ -1,5 +1,3 @@
-const TerserPlugin = require('terser-webpack-plugin')
-
 module.exports = {
   env: {
     hostname: process.env.hostname,
@@ -20,24 +18,6 @@ module.exports = {
         headers: [{ key: 'content-type', value: 'application/json' }]
       }
     ]
-  },
-  webpack: (config, { isServer }) => {
-    if (!isServer) {
-      config.optimization.minimizer.push(
-        new TerserPlugin({
-          terserOptions: {
-            compress: {
-              // Optionally, you can customize the compression options
-              drop_console: true // Remove console statements
-            }
-            // Optionally, you can set additional terser options
-          },
-          extractComments: false // Remove comments
-        })
-      )
-    }
-
-    return config
   },
   reactStrictMode: true
 }
