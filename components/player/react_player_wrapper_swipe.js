@@ -4,8 +4,6 @@ import { ProgressBar, Badge, Button } from 'react-bootstrap'
 import { Image, Flex, Text, Link, Box, useBreakpointValue, Avatar } from '@chakra-ui/react'
 import { Waypoint } from 'react-waypoint'
 import { isMobile } from 'react-device-detect'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlay, faPause } from '@fortawesome/free-solid-svg-icons'
 import { motion, useAnimationControls } from 'framer-motion'
 
 import icFlipLeft from '../../assets/images/video-more-options/ic-flip-left.svg'
@@ -18,6 +16,8 @@ import icUnmute from '../../assets/images/video-more-options/ic-unmute.svg'
 import { DynamicPlayer } from './dynamic_player'
 import icArrowRight from '../../assets/images/video-more-options/ic-arrow-right.svg'
 import { FontStyle } from '../../constants/font_style'
+import icPlay from '../../assets/icons/icon-play.svg'
+import icPause from '../../assets/icons/icon-pause.svg'
 
 export const ReactPlayerWrapper = ({
   videoUrl,
@@ -424,15 +424,15 @@ export const ReactPlayerWrapper = ({
           />}</>
         : <>
           {isPlaying
-            ? <FontAwesomeIcon
-              icon={faPause}
+            ? <Image
+              src={icPause.src}
               style={{
                 display: isPlayingDebounced ? 'none' : 'block'
               }}
               className="btn-play"
             />
-            : <FontAwesomeIcon
-              icon={faPlay}
+            : <Image
+              src={icPlay.src}
               style={{
                 display: 'block'
               }}

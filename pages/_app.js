@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css'
-import './styles.css'
+import '../components/styles.css'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.min.css'
 import { ChakraProvider, extendTheme } from '@chakra-ui/react'
@@ -25,9 +25,7 @@ function MyApp ({ Component, pageProps }) {
     appId: '1:948935706940:web:80b617b9783f2d0d51b639',
     measurementId: 'G-207GT5P81F'
   }
-  useEffect(() => {
-    const app = initializeApp(firebaseConfig)
-  }, [])
+  initializeApp(firebaseConfig)
   return (
     <>
       <NextHead>

@@ -34,6 +34,8 @@ import { GenuinLoader } from '../../components/basic/genuin_loader'
 import dynamic from 'next/dynamic'
 import { FontStyle } from '../../constants/font_style'
 import { BasicColors } from '../../constants/colors'
+import { isMobile } from 'react-device-detect'
+import { generateDeepLink } from '../../components/utility'
 
 const DownloadAppPopup = dynamic(() => import('../../components/download_app_popup'))
 
@@ -45,7 +47,8 @@ const RoundTable = ({
     subscribers: []
   },
   end_of_videos,
-  rt
+  rt,
+  geshc
 }) => {
   const [videos, setVideos] = useState(rt_videos)
   const [noMoreVideos, setNoMoreVideos] = useState(end_of_videos)
@@ -71,6 +74,14 @@ const RoundTable = ({
   const [currentUrl, setCurrentUrl] = useState('')
   const [watchRoundTable, setWatchRoundtable] = useState(true)
   const [direction, setDirection] = useState('forward')
+  const deepLinkParamsRef = useRef({
+    pathName: null,
+    hostName: null,
+    geshc,
+    metaDescription: null,
+    metaTitle: null,
+    metaPreviewImage: null
+  })
 
   const { isOpen, onOpen, onClose } = useDisclosure()
 
@@ -89,6 +100,8 @@ const RoundTable = ({
 
   useEffect(() => {
     setCurrentUrl(window.location.href)
+    deepLinkParamsRef.current.hostName = window.location.hostname
+    deepLinkParamsRef.current.pathName = window.location.pathname
     if (router?.query?.v) {
       const idx = videos.findIndex(({ share_string }) => share_string === router?.query?.v)
       if (videos?.[idx]?.share_string) {
@@ -194,6 +207,9 @@ const RoundTable = ({
       }
     ]
   })
+  deepLinkParamsRef.current.metaDescription = ld_description
+  deepLinkParamsRef.current.metaTitle = title_name
+  deepLinkParamsRef.current.metaPreviewImage = details?.preview_image
   return (<>
     <SEO
       title={title_name}
@@ -383,7 +399,27 @@ const RoundTable = ({
                         h={8}
                         px={5}
                         minW="90px"
-                        onClick={showGetAppToSubscribeDialog}
+                        onClick={() => {
+                          if (isMobile) {
+                            generateDeepLink({
+                              action: 'subscribe',
+                              contentType: 'loop',
+                              description: deepLinkParamsRef.current.metaDescription,
+                              title: deepLinkParamsRef.current.metaTitle,
+                              previewImage: deepLinkParamsRef.current.metaPreviewImage,
+                              fromUserName: deepLinkParamsRef.current.geshc,
+                              parentId: details?.share_string,
+                              pathName: deepLinkParamsRef.current.pathName,
+                              sourceId: details?.share_string,
+                              utmCampaign: 'share',
+                              utmMedium: 'web',
+                              utmSource: deepLinkParamsRef.current.hostName
+                            }).then(generatedLink => window.open(generatedLink))
+                              .catch(e => window.open(process.env.hostname))
+                          } else {
+                            showGetAppToSubscribeDialog()
+                          }
+                        }}
                         fontSize={FontStyle.subtitle.fontSize}
                       >
                         <Text color='white'>Subscribe</Text>
@@ -393,6 +429,7 @@ const RoundTable = ({
                           url={currentUrl}
                           description='Hello, visit this roundtable!'
                           title='Genuin on web'
+                          deepLinkParams={deepLinkParamsRef.current}
                         />
                       ) : (
                         <ShareButton
@@ -517,6 +554,8 @@ const RoundTable = ({
                 videoDescription={group?.group_description}
                 videoTitle='Genuin'
                 watchRoundTable={watchRoundTable}
+                deepLinkParams={deepLinkParamsRef.current}
+                sourceId={videos[currentVideoIndex]?.video?.share_string}
               />
             </Player>
           }
@@ -793,7 +832,7 @@ const Participants = ({ members, mobile }) => {
   )
 }
 
-RoundTable.getInitialProps = async ({ query: { share_string, v } }) => {
+RoundTable.getInitialProps = async ({ query: { share_string, geshc } }) => {
   if (
     share_string !== undefined &&
     share_string !== null &&
@@ -814,7 +853,8 @@ RoundTable.getInitialProps = async ({ query: { share_string, v } }) => {
         users: users?.data?.data,
         details: details?.data?.data,
         end_of_videos: videos?.data?.data?.end_of_videos || false,
-        rt: share_string
+        rt: share_string,
+        geshc
       }
       return returnProps
     } catch (error) {
