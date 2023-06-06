@@ -832,7 +832,7 @@ const Participants = ({ members, mobile }) => {
   )
 }
 
-RoundTable.getInitialProps = async ({ query: { share_string, geshc } }) => {
+RoundTable.getInitialProps = async ({ query: { share_string, geshc, v } }) => {
   if (
     share_string !== undefined &&
     share_string !== null &&
@@ -840,7 +840,7 @@ RoundTable.getInitialProps = async ({ query: { share_string, geshc } }) => {
   ) {
     try {
       const videos = await axios.get(
-        `${process.env.apiurl}/api/v3/public/rt/paginate_videos?chat_id=${share_string}`
+        `${process.env.apiurl}/api/v3/public/rt/paginate_videos?chat_id=${share_string}&start_from_video_id=${v}`
       )
       const users = await axios.get(
         `${process.env.apiurl}/api/v3/public/rt/users?chat_id=${share_string}`
