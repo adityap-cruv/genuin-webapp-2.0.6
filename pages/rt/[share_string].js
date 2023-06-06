@@ -429,7 +429,6 @@ const RoundTable = ({
                           url={currentUrl}
                           description='Hello, visit this roundtable!'
                           title='Genuin on web'
-                          deepLinkParams={deepLinkParamsRef.current}
                         />
                       ) : (
                         <ShareButton

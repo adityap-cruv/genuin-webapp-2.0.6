@@ -326,7 +326,7 @@ export const MobileShareButton = ({
   url,
   white = false,
   fullWidth = false,
-  deepLinkParams
+  deepLinkParams = null
 }) => {
   const { isSupported, loading, share } = useWebShare()
 
@@ -344,22 +344,27 @@ export const MobileShareButton = ({
       px={1}
       minW={8}
       onClick={() => {
-        generateDeepLink({
-          utmCampaign: 'share',
-          action: 'share',
-          contentType: 'profile',
-          description: deepLinkParams.metaDescription,
-          title: deepLinkParams.metaTitle,
-          fromUserName: deepLinkParams.geshc,
-          pathName: deepLinkParams.pathName,
-          previewImage: deepLinkParams.metaPreviewImage,
-          utmMedium: 'web',
-          utmSource: deepLinkParams.hostName
-        }).then(generatedLink => {
-          if (isSupported && !loading) share({ url: generatedLink })
-        }).catch(e => {
+        if (deepLinkParams) {
+          generateDeepLink({
+            utmCampaign: 'share',
+            action: 'share',
+            contentType: 'profile',
+            description: deepLinkParams.metaDescription,
+            title: deepLinkParams.metaTitle,
+            fromUserName: deepLinkParams.geshc,
+            pathName: deepLinkParams.pathName,
+            previewImage: deepLinkParams.metaPreviewImage,
+            utmMedium: 'web',
+            utmSource: deepLinkParams.hostName
+          }).then(generatedLink => {
+            if (isSupported && !loading) share({ url: generatedLink })
+          }).catch(e => {
+            if (isSupported && !loading) share({ url })
+          })
+        } else {
           if (isSupported && !loading) share({ url })
-        })
+        }
+        
       }}
     />
   )

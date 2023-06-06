@@ -710,7 +710,6 @@ const Profile = ({
                             h={8}
                             px={5}
                             onClick={() => {
-                              // eslint-disable-next-line no-constant-condition
                               if (isMobile) {
                                 generateDeepLink({
                                   action: 'dm',
@@ -724,7 +723,12 @@ const Profile = ({
                                   utmMedium: 'web',
                                   utmSource: deepLinkParamsRef.current.hostName,
                                   fromUserName: deepLinkParamsRef.current.geshc
-                                }).then(link => window.open(link))
+                                }).then(link => {
+                                  const element = document.createElement('a')
+                                  element.setAttribute('href', link)
+                                  element.target = '_blank'
+                                  element.click()
+                                })
                                   .catch(e => window.open(process.env.hostname))
                               } else {
                                 showGetAppToSendMessage()
@@ -750,7 +754,6 @@ const Profile = ({
                               url={currentUrl}
                               description='Hello, visit this profile!'
                               title='Genuin on web'
-                              deepLinkParams={deepLinkParamsRef.current}
                             />
                           ) : (
                             <ShareButton
