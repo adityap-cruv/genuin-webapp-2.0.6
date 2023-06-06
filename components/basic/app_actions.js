@@ -187,7 +187,7 @@ export const AppActions = ({
                 fromUserName: deepLinkParams.geshc,
                 pathName: deepLinkParams.pathName,
                 previewImage: deepLinkParams.metaPreviewImage,
-                sourceId,
+                sourceId: roundTableId,
                 utmCampaign: 'share',
                 utmMedium: 'web',
                 utmSource: deepLinkParams.hostName,
