@@ -190,8 +190,7 @@ export const AppActions = ({
                 sourceId: roundTableId,
                 utmCampaign: 'share',
                 utmMedium: 'web',
-                utmSource: deepLinkParams.hostName,
-                parentId: roundTableId
+                utmSource: deepLinkParams.hostName
               }).then(link => window.open(link))
                 .catch(e => window.open(process.env.hostname))
             } else {
