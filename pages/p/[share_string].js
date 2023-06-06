@@ -754,7 +754,6 @@ const Profile = ({
                               url={currentUrl}
                               description='Hello, visit this profile!'
                               title='Genuin on web'
-                              deepLinkParams={deepLinkParamsRef.current}
                             />
                           ) : (
                             <ShareButton
