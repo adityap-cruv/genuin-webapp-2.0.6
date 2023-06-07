@@ -41,7 +41,7 @@ import { GenuinLoader } from '../../components/basic/genuin_loader'
 import dynamic from 'next/dynamic'
 import { FontStyle } from '../../constants/font_style'
 import { BasicColors } from '../../constants/colors'
-import { generateDeepLink } from '../../components/utility'
+import { generateDeepLink, openGeneratedLink } from '../../components/utility'
 // testing
 const DownloadAppPopup = dynamic(() => import('../../components/download_app_popup'))
 
@@ -724,10 +724,7 @@ const Profile = ({
                                   utmSource: deepLinkParamsRef.current.hostName,
                                   fromUserName: deepLinkParamsRef.current.geshc
                                 }).then(link => {
-                                  const element = document.createElement('a')
-                                  element.setAttribute('href', link)
-                                  element.target = '_blank'
-                                  element.click()
+                                  openGeneratedLink(link)
                                 })
                                   .catch(e => window.open(process.env.hostname))
                               } else {

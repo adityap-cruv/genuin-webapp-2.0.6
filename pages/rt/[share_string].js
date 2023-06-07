@@ -35,7 +35,7 @@ import dynamic from 'next/dynamic'
 import { FontStyle } from '../../constants/font_style'
 import { BasicColors } from '../../constants/colors'
 import { isMobile } from 'react-device-detect'
-import { generateDeepLink } from '../../components/utility'
+import { generateDeepLink, openGeneratedLink } from '../../components/utility'
 
 const DownloadAppPopup = dynamic(() => import('../../components/download_app_popup'))
 
@@ -414,7 +414,7 @@ const RoundTable = ({
                               utmCampaign: 'share',
                               utmMedium: 'web',
                               utmSource: deepLinkParamsRef.current.hostName
-                            }).then(generatedLink => window.open(generatedLink))
+                            }).then(generatedLink => openGeneratedLink(generatedLink))
                               .catch(e => window.open(process.env.hostname))
                           } else {
                             showGetAppToSubscribeDialog()

@@ -6,7 +6,7 @@ import {
   useBreakpointValue,
   Image
 } from '@chakra-ui/react'
-import { generateDeepLink } from '../utility'
+import { generateDeepLink, openGeneratedLink } from '../utility'
 
 import { useWebShare } from '../hooks/useWebShare'
 import { useClipboard } from '../hooks/useClipboard'
@@ -71,7 +71,7 @@ export const AppActions = ({
                 utmMedium: 'web',
                 utmSource: deepLinkParams.hostName,
                 parentId: roundTableId
-              }).then(link => window.open(link))
+              }).then(link => openGeneratedLink(link))
                 .catch(e => window.open(process.env.hostname))
             } else {
               showGetAppModal(() => (
@@ -123,7 +123,7 @@ export const AppActions = ({
                 utmMedium: 'web',
                 utmSource: deepLinkParams.hostName,
                 parentId: roundTableId
-              }).then(link => window.open(link))
+              }).then(link => openGeneratedLink(link))
                 .catch(e => window.open(process.env.hostname))
             } else {
               showGetAppModal(() => (
@@ -161,7 +161,7 @@ export const AppActions = ({
                 utmMedium: 'web',
                 utmSource: deepLinkParams.hostName,
                 parentId: roundTableId
-              }).then(link => window.open(link))
+              }).then(link => openGeneratedLink(link))
                 .catch(e => window.open(process.env.hostname))
             } else {
               showGetAppModal(() => (
@@ -191,7 +191,7 @@ export const AppActions = ({
                 utmCampaign: 'share',
                 utmMedium: 'web',
                 utmSource: deepLinkParams.hostName
-              }).then(link => window.open(link))
+              }).then(link => openGeneratedLink(link))
                 .catch(e => window.open(process.env.hostname))
             } else {
               showGetAppModal(() => (

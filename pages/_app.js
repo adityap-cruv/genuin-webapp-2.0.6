@@ -30,7 +30,10 @@ function MyApp ({ Component, pageProps }) {
     <>
       <NextHead>
         <link rel='shortcut icon' href={favicon.src} type='image/x-icon' />
-        <meta name='theme-color' content={ BasicColors.secondaryColor } />
+        <meta name='theme-color' content={BasicColors.secondaryColor} />
+        //! It is for testing purpose only
+        <meta name='apple-mobile-web-app-status-bar-style' content='default' />
+        <meta name='mobile-web-app-capable' content='yes'/>
         {process.env.env === 'qa' && <meta name="robots" content="noindex, nofollow"></meta>}
       </NextHead>
       <ChakraProvider theme={theme}>
