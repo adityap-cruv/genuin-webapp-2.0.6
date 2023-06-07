@@ -7,7 +7,6 @@ import { Error } from '../components/basic/error'
 import { SEO } from '../components/basic/seo'
 import { AppActions } from '../components/basic/app_actions'
 import { useDisclosure } from '@chakra-ui/react'
-import { datadogLogs } from '@datadog/browser-logs'
 import dynamic from 'next/dynamic'
 
 const DownloadAppPopup = dynamic(() => import('../components/download_app_popup'))
@@ -27,10 +26,19 @@ const Video = (props) => {
     userName,
     userNickname,
     userProfileImage,
-    link
+    link,
+    geshc
   } = props
   // const [showModalWelcome, setShowModalWelcome] = useState(true);
   // const handleCloseWelcome = () => setShowModalWelcome(false);
+  const deepLinkParamsRef = useRef({
+    pathName: null,
+    hostName: null,
+    geshc,
+    metaDescription: null,
+    metaTitle: null,
+    metaPreviewImage: null
+  })
   const [showModalAppDownload, setShowModalAppDownload] = useState(false)
   const getAppComponentRef = useRef(() => null)
   const handleCloseAppDownload = () => {
@@ -93,9 +101,13 @@ const Video = (props) => {
       }
     ]
   })
+  deepLinkParamsRef.current.metaDescription = ld_description
+  deepLinkParamsRef.current.metaTitle = title_name
+  deepLinkParamsRef.current.metaPreviewImage = videoPreviewImage
 
   useEffect(() => {
-    datadogLogs.logger.info('Video Watched')
+    deepLinkParamsRef.current.hostName = window.location.hostname
+    deepLinkParamsRef.current.pathName = window.location.pathname
     const ls = window.location.href.split('/')
     if (ls && ls.length === 4) {
       onOpen()
@@ -151,7 +163,10 @@ const Video = (props) => {
             link={link}
             videoUrl={globalThis?.location?.href}
             videoDescription={description}
-            videoTitle='Genuin' />
+            videoTitle='Genuin'
+            deepLinkParams={deepLinkParamsRef.current}
+            sourceId={share_string}
+          />
         </Player>}
 
         <GetAppModal
@@ -167,7 +182,7 @@ const Video = (props) => {
     </>
   )
 }
-Video.getInitialProps = async ({ query: { video_id } }) => {
+Video.getInitialProps = async ({ query: { video_id, geshc } }) => {
   const url = `${process.env.apiurl}/api/v3/public/pv/?video_id=${video_id}`
   return axios
     .get(url)
@@ -176,7 +191,8 @@ Video.getInitialProps = async ({ query: { video_id } }) => {
       const video_id_to_use = resObj.share_string
       Object.assign(resObj, {
         video_id,
-        video_id_to_use
+        video_id_to_use,
+        geshc
       })
       return Promise.resolve(resObj)
     })

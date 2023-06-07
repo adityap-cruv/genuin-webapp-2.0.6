@@ -41,12 +41,14 @@ import { GenuinLoader } from '../../components/basic/genuin_loader'
 import dynamic from 'next/dynamic'
 import { FontStyle } from '../../constants/font_style'
 import { BasicColors } from '../../constants/colors'
-
+import { generateDeepLink, openGeneratedLink } from '../../components/utility'
+// testing
 const DownloadAppPopup = dynamic(() => import('../../components/download_app_popup'))
 
 const Profile = ({
   shareString,
-  user
+  user,
+  geshc
 }) => {
   const {
     user_id,
@@ -68,13 +70,21 @@ const Profile = ({
   const scrollToTop1 = () => tab1Ref.current.scrollIntoView(false)
   const scrollToTop2 = () => tab2Ref.current.scrollIntoView(false)
   const scrollToTop3 = () => tab3Ref.current.scrollIntoView(false)
+  const deepLinkParamsRef = useRef({
+    pathName: null,
+    hostName: null,
+    geshc,
+    metaDescription: null,
+    metaTitle: null,
+    metaPreviewImage: null
+  })
 
   const prepareRTVideos = (videos = []) => {
-    return videos.reduce((res, { video: { chats, group, chat_id, shareString } }) => {
+    return videos.reduce((res, { video: { chats, group, chat_id, share_string } }) => {
       return res.concat(
         chats.map((chat) => ({
           video_type: 'rt',
-          share_string: shareString,
+          share_string,
           video: {
             ...chat,
             video_thumbnail: chat.thumbnail_url,
@@ -110,6 +120,7 @@ const Profile = ({
       return res.concat(({ video_type, video }))
     }, [])
   }
+
   const [publicVideos, setPublicVideos] = useState([])
 
   const [rtVideos, setRTVideos] = useState([])
@@ -153,6 +164,8 @@ const Profile = ({
   }
 
   useEffect(() => {
+    deepLinkParamsRef.current.hostName = window.location.hostname
+    deepLinkParamsRef.current.pathName = window.location.pathname
     loadVideosAll()
   }, [])
 
@@ -288,7 +301,6 @@ const Profile = ({
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   const mobile = useBreakpointValue({ base: true, md: false })
-
   //! This is just faking user
   // TODO: find better way to detect mobile early....
   const [isLoadingFake, setIsLoadingFake] = useState(true)
@@ -433,7 +445,9 @@ const Profile = ({
   const tagsValue = hashtags && hashtags !== [] && hashtags.length > 0 ? ' ' + hashtags.map((tag) => '#' + tag).join(' ') : ''
   const pipeValue = viewsValue || videosValue || repliesValue || bioValue || tagsValue ? ' |' : ''
   const ldDescription = `${Boolean(name) && name.replace(/\s+/g, '') !== '' ? `${name.trim()} (@${nickname})` : `@${nickname}`} on Genuin${pipeValue}${bioValue}.${viewsValue}${videosValue}${repliesValue}${tagsValue}`
-
+  deepLinkParamsRef.current.metaDescription = ldDescription
+  deepLinkParamsRef.current.metaTitle = titleNameSEO
+  deepLinkParamsRef.current.metaPreviewImage = preview_image
   const ORG_SCHEMA = JSON.stringify({
     '@context': 'http://schema.org',
     '@type': 'ProfilePage',
@@ -695,7 +709,28 @@ const Profile = ({
                             border='1px solid'
                             h={8}
                             px={5}
-                            onClick={showGetAppToSendMessage}
+                            onClick={() => {
+                              if (isMobile) {
+                                generateDeepLink({
+                                  action: 'dm',
+                                  contentType: 'profile',
+                                  description: bio,
+                                  pathName: deepLinkParamsRef.current.pathName,
+                                  previewImage: preview_image,
+                                  sourceId: nickname,
+                                  title: nickname,
+                                  utmCampaign: 'share',
+                                  utmMedium: 'web',
+                                  utmSource: deepLinkParamsRef.current.hostName,
+                                  fromUserName: deepLinkParamsRef.current.geshc
+                                }).then(link => {
+                                  openGeneratedLink(link)
+                                })
+                                  .catch(e => window.open(process.env.hostname))
+                              } else {
+                                showGetAppToSendMessage()
+                              }
+                            }}
                             id="profile_message"
                           >
                             <Image
@@ -750,6 +785,7 @@ const Profile = ({
                       >
                         <Divider opacity={0.1} />
                         <TabList
+                          id='temp'
                           borderBottom={0}
                           mb='2px'
                           w={mobile ? 'calc(100% + 24px)' : 'full'}
@@ -874,13 +910,13 @@ const Profile = ({
                 userName={nickname}
                 link={videos[currentVideoIndex]?.video?.link}
                 videoUrl={videos[currentVideoIndex]?.video?.share_url}
-                videoDescription={
-                  videos[currentVideoIndex]?.video?.description
-                }
+                videoDescription={videos[currentVideoIndex]?.video?.description}
                 videoTitle='Genuin'
                 roundTable={videos[currentVideoIndex]?.video_type === 'rt'}
                 roundTableName={videos[currentVideoIndex]?.video?.group_name}
                 roundTableId={videos[currentVideoIndex]?.share_string}
+                deepLinkParams={deepLinkParamsRef.current}
+                sourceId={videos[currentVideoIndex]?.video_type === 'rt' ? videos[currentVideoIndex]?.video?.share_string : videos[currentVideoIndex]?.video?.share_string}
               />
             </Player>}
 
@@ -924,6 +960,8 @@ const Profile = ({
                 roundTable={rtVideos[currentVideoIndexRT]?.video_type === 'rt'}
                 roundTableName={rtVideos[currentVideoIndexRT]?.video?.group_name}
                 roundTableId={rtVideos[currentVideoIndexRT]?.share_string}
+                deepLinkParams={deepLinkParamsRef.current}
+                sourceId={rtVideos[currentVideoIndexRT]?.video_type === 'rt' ? rtVideos[currentVideoIndexRT]?.video?.share_string : rtVideos[currentVideoIndexRT]?.video?.share_string}
               />
             </Player>}
 
@@ -960,10 +998,10 @@ const Profile = ({
                 userName={nickname}
                 link={publicVideos[currentVideoIndexPublic]?.video?.link}
                 videoUrl={publicVideos[currentVideoIndexPublic]?.video?.share_url}
-                videoDescription={
-                  publicVideos[currentVideoIndexPublic]?.video?.description
-                }
+                videoDescription={publicVideos[currentVideoIndexPublic]?.video?.description}
                 videoTitle='Genuin'
+                deepLinkParams={deepLinkParamsRef.current}
+                sourceId={publicVideos[currentVideoIndexPublic]?.video_type === 'rt' ? publicVideos[currentVideoIndexPublic]?.video?.share_string : publicVideos[currentVideoIndexPublic]?.video?.share_string}
               />
             </Player>}
             <GetAppModal
@@ -1172,7 +1210,7 @@ const AllIcon = (props) => (
   </Icon>
 )
 
-Profile.getInitialProps = async ({ query: { share_string } }) => {
+Profile.getInitialProps = async ({ query: { share_string, geshc } }) => {
   if (
     share_string !== undefined &&
     share_string !== null &&
@@ -1185,14 +1223,16 @@ Profile.getInitialProps = async ({ query: { share_string } }) => {
 
       return {
         shareString: share_string,
-        user: user?.data?.data
+        user: user?.data?.data,
+        geshc
       }
     } catch (e) {
       // eslint-disable-next-line no-console
       console.log('error :', e)
       return {
         shareString: share_string,
-        user: {}
+        user: {},
+        geshc
       }
     }
   } else {

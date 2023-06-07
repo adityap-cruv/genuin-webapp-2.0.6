@@ -18,5 +18,6 @@ module.exports = {
         headers: [{ key: 'content-type', value: 'application/json' }]
       }
     ]
-  }
+  },
+  reactStrictMode: true
 }

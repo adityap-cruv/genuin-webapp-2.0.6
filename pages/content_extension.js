@@ -5,8 +5,6 @@ import { Layout } from '../components/layout'
 import { GetAppModal } from '../components/basic/get_app_modal'
 
 import { Button } from 'react-bootstrap'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faVolumeMute } from '@fortawesome/free-solid-svg-icons'
 import { TopNav } from '../components/navbar/top_nav_content_demo'
 
 import {
@@ -123,7 +121,6 @@ const Profile = ({
                 borderRadius: '8px'
               }}
             >
-              <FontAwesomeIcon icon={faVolumeMute} />
               {show_unmute_text ? <p>Tap to unmute</p> : ''}
             </Button>
           </div>

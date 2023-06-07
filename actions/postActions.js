@@ -7,21 +7,21 @@
 /* eslint-disable camelcase */
 /* eslint-disable no-param-reassign */
 
-import axios from 'axios';
+import axios from 'axios'
 
-export function increaseVideoViewCount(share_string, type) {
+export function increaseVideoViewCount (share_string, type) {
   return new Promise((resolve, reject) => {
     axios
       .put(process.env.apiurl + '/api/v3/public/video_view/', {
-        "share_string": share_string,
-        "type": type
+        share_string,
+        type
       })
       .then((response) => {
         // console.log("Response from video_view",response)
-        resolve({});
+        resolve({})
       })
       .catch((err) => {
-        reject(err);
-      });
-  });
+        reject(err)
+      })
+  })
 }

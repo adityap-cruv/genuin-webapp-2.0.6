@@ -2,7 +2,6 @@ import React from 'react'
 import { hireLink } from '../../config'
 import { Nav, Fade, Navbar } from 'react-bootstrap'
 import { useTrail, a } from 'react-spring'
-import { datadogLogs } from '@datadog/browser-logs'
 
 export const BurgerMenu = ({
   isOpen,
@@ -53,32 +52,20 @@ export const BurgerMenu = ({
                 {/* <Nav.Link href={investLink}>Invest in Genuin</Nav.Link> */}
                 <a
                   href={hireLink}
-                  onClick={() => {
-                    datadogLogs.logger.info('Link Clicked', { buttonType: 'Join Our Team' })
-                  }}
                 >
                   Join Our Team
                 </a>
                 <a
                   target="_blank"
-                  onClick={() => {
-                    datadogLogs.logger.info('Link Clicked', { buttonType: 'Life at Genuin' })
-                  }}
                   href={'/content_demo?value=rt_123f373977001407'}
                   rel="noreferrer">
                   Life at Genuin
                 </a>
                 <a
                   href='/terms'
-                  onClick={() => {
-                    datadogLogs.logger.info('Link Clicked', { buttonType: 'Terms of Service' })
-                  }}
                 >Terms of Service</a>
                 <a
                   href='/privacy'
-                  onClick={() => {
-                    datadogLogs.logger.info('Link Clicked', { buttonType: 'Privacy Policy' })
-                  }}
                 >Privacy Policy</a>
               </Trail>
               <div className=' small mt-auto'>

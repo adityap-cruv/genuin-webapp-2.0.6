@@ -6,7 +6,6 @@ import dynamic from 'next/dynamic'
 import { HomeNav } from '../components/navbar/home_nav'
 import { SEO } from '../components/basic/seo'
 import { GenuinLoader } from '../components/basic/genuin_loader'
-import { datadogLogs } from '@datadog/browser-logs'
 
 const AnimatedIndexPage = dynamic(() => import('../components/home/animated_index_page'))
 const MobileIndexPage = dynamic(() => import('../components/home/mobile_index_page'))
@@ -48,24 +47,14 @@ const Home = () => {
         const rtDetails = await axios.get(
           `${process.env.apiurl}/api/v3/public/rt/details?chat_id=17bb88b72c80153b`
         )
-        datadogLogs.logger.log('roundtable videos and details', {
-          roundtableVideosData: videosData,
-          roundtableDetailsData: rtDetails
-        })
         const feeds = videosData?.data?.data?.chats
         // setPageSession(feed_data?.data?.data?.page_session);
         if (feeds.length > 0) {
           setRTData({ rtVideos: feeds, rtData: rtDetails?.data?.data })
         }
-        if (feeds.end_of_videos) {
-          datadogLogs.logger.info('End of home feed')
-        }
       } catch (e) {
         // eslint-disable-next-line no-console
         console.log('error : ', e)
-        datadogLogs.logger.log('error in fetching roundtable data', {
-          error: e
-        })
       }
     }
     fetchData()
@@ -76,22 +65,13 @@ const Home = () => {
       const res = await axios.get(
         `${process.env.apiurl}/api/v3/public/rt/paginate_videos?chat_id=17bb88b72c80153b&last_video_id=${rtVideos[rtVideos.length - 1].conversation_id}`
       )
-      datadogLogs.logger.log('roundtable videos paginated', {
-        roundtableVideosData: res
-      })
       const chats = res?.data?.data?.chats
       if (chats.length > 0) {
         setRTData((old) => ({ rtVideos: old.rtVideos.concat(chats), rtData: old.rtData }))
       }
-      if (chats.end_of_videos) {
-        datadogLogs.logger.info('End of home feed')
-      }
     } catch (e) {
       // eslint-disable-next-line no-console
       console.log('error : ', e)
-      datadogLogs.logger.log('error in fetching roundtable data paginated', {
-        error: e
-      })
     }
   }
   return (
