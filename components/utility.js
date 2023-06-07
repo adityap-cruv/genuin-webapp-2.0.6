@@ -55,3 +55,10 @@ export const generateDeepLink = async ({
     return process.env.hostname
   }
 }
+
+export const openGeneratedLink = (link = '') => {
+  const element = document.createElement('a')
+  element.setAttribute('href', link)
+  element.target = '_blank'
+  element.click()
+}
