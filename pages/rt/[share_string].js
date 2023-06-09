@@ -408,7 +408,6 @@ const RoundTable = ({
                               title: deepLinkParamsRef.current.metaTitle,
                               previewImage: deepLinkParamsRef.current.metaPreviewImage,
                               fromUserName: deepLinkParamsRef.current.geshc,
-                              parentId: details?.share_string,
                               pathName: deepLinkParamsRef.current.pathName,
                               sourceId: details?.share_string,
                               utmCampaign: 'share',
@@ -554,7 +553,7 @@ const RoundTable = ({
                 videoTitle='Genuin'
                 watchRoundTable={watchRoundTable}
                 deepLinkParams={deepLinkParamsRef.current}
-                sourceId={videos[currentVideoIndex]?.video?.share_string}
+                sourceId={videos[currentVideoIndex]?.share_string}
               />
             </Player>
           }
