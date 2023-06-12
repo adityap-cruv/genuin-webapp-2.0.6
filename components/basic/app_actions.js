@@ -183,11 +183,12 @@ export const AppActions = ({
                 action: 'subscribe',
                 contentType: 'loop',
                 title: deepLinkParams.metaTitle,
+                parentId: roundTableId,
                 description: deepLinkParams.metaDescription,
                 fromUserName: deepLinkParams.geshc,
                 pathName: deepLinkParams.pathName,
                 previewImage: deepLinkParams.metaPreviewImage,
-                sourceId: roundTableId,
+                sourceId,
                 utmCampaign: 'share',
                 utmMedium: 'web',
                 utmSource: deepLinkParams.hostName
@@ -363,7 +364,6 @@ export const MobileShareButton = ({
         } else {
           if (isSupported && !loading) share({ url })
         }
-        
       }}
     />
   )
