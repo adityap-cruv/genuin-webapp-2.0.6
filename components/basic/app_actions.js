@@ -183,6 +183,7 @@ export const AppActions = ({
                 action: 'subscribe',
                 contentType: 'loop',
                 title: deepLinkParams.metaTitle,
+                parentId: roundTableId,
                 description: deepLinkParams.metaDescription,
                 fromUserName: deepLinkParams.geshc,
                 pathName: deepLinkParams.pathName,
@@ -364,7 +365,6 @@ export const MobileShareButton = ({
         } else {
           if (isSupported && !loading) share({ url })
         }
-        
       }}
     />
   )
