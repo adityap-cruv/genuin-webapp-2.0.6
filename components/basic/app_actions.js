@@ -187,10 +187,11 @@ export const AppActions = ({
                 fromUserName: deepLinkParams.geshc,
                 pathName: deepLinkParams.pathName,
                 previewImage: deepLinkParams.metaPreviewImage,
-                sourceId: roundTableId,
+                sourceId,
                 utmCampaign: 'share',
                 utmMedium: 'web',
-                utmSource: deepLinkParams.hostName
+                utmSource: deepLinkParams.hostName,
+                parentId: roundTableId
               }).then(link => openGeneratedLink(link))
                 .catch(e => window.open(process.env.hostname))
             } else {
