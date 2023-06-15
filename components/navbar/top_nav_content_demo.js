@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Image, Navbar } from 'react-bootstrap'
-import InfyLogo from '../../assets/images/logo_header_new_blue.svg'
+import InfyLogo from '../../assets/images/logo_header_new.svg'
 import { BurgerMenu } from './burger_menu'
 
 export const TopNav = ({
