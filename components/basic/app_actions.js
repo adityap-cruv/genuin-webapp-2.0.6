@@ -183,14 +183,16 @@ export const AppActions = ({
                 action: 'subscribe',
                 contentType: 'loop',
                 title: deepLinkParams.metaTitle,
+                parentId: roundTableId,
                 description: deepLinkParams.metaDescription,
                 fromUserName: deepLinkParams.geshc,
                 pathName: deepLinkParams.pathName,
                 previewImage: deepLinkParams.metaPreviewImage,
-                sourceId: roundTableId,
+                sourceId,
                 utmCampaign: 'share',
                 utmMedium: 'web',
-                utmSource: deepLinkParams.hostName
+                utmSource: deepLinkParams.hostName,
+                parentId: roundTableId
               }).then(link => openGeneratedLink(link))
                 .catch(e => window.open(process.env.hostname))
             } else {
@@ -343,27 +345,26 @@ export const MobileShareButton = ({
       px={1}
       minW={8}
       onClick={() => {
-        if (deepLinkParams) {
-          generateDeepLink({
-            utmCampaign: 'share',
-            action: 'share',
-            contentType: 'profile',
-            description: deepLinkParams.metaDescription,
-            title: deepLinkParams.metaTitle,
-            fromUserName: deepLinkParams.geshc,
-            pathName: deepLinkParams.pathName,
-            previewImage: deepLinkParams.metaPreviewImage,
-            utmMedium: 'web',
-            utmSource: deepLinkParams.hostName
-          }).then(generatedLink => {
-            if (isSupported && !loading) share({ url: generatedLink })
-          }).catch(e => {
-            if (isSupported && !loading) share({ url })
-          })
-        } else {
+        // if (deepLinkParams) {
+        //   generateDeepLink({
+        //     utmCampaign: 'share',
+        //     action: 'share',
+        //     contentType: 'profile',
+        //     description: deepLinkParams.metaDescription,
+        //     title: deepLinkParams.metaTitle,
+        //     fromUserName: deepLinkParams.geshc,
+        //     pathName: deepLinkParams.pathName,
+        //     previewImage: deepLinkParams.metaPreviewImage,
+        //     utmMedium: 'web',
+        //     utmSource: deepLinkParams.hostName
+        //   }).then(generatedLink => {
+        //     if (isSupported && !loading) share({ url: generatedLink })
+        //   }).catch(e => {
+        //     if (isSupported && !loading) share({ url })
+        //   })
+        // } else {
           if (isSupported && !loading) share({ url })
-        }
-        
+        // }
       }}
     />
   )
