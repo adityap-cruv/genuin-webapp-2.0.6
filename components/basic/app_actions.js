@@ -192,7 +192,6 @@ export const AppActions = ({
                 utmCampaign: 'share',
                 utmMedium: 'web',
                 utmSource: deepLinkParams.hostName,
-                parentId: roundTableId
               }).then(link => openGeneratedLink(link))
                 .catch(e => window.open(process.env.hostname))
             } else {
