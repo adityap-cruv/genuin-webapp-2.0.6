@@ -34,7 +34,9 @@ export const MobileNumberTextInput = ({
       }}
       isInvalid={isInvalid}
     >
-      <InputGroup>
+      <InputGroup style={{
+        zIndex: 1
+      }}>
         <InputLeftAddon
           marginRight="12px"
           backgroundColor={TextInputColors.textInputBackgroundColor}
