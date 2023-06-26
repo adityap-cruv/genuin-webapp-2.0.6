@@ -5,6 +5,7 @@ import logoBlue from '../../assets/images/logo_header_new_blue.svg'
 import { handleHireLinkClick } from '../../actions/appInstall'
 import { BurgerMenu } from './burger_menu'
 import { useBreakpointValue } from '@chakra-ui/react'
+import { analyticsService } from '../basic/analytics_service'
 
 export const HomeNav = ({
   showGetAppModal,
@@ -52,6 +53,14 @@ export const HomeNav = ({
           className='me-3 custom-home-button'
           onClick={() => {
             showGetAppModal(true)
+
+            const event_name = 'get_app'
+            const event_details = {
+              page: window.location.href
+            }
+            const user_details = {}
+            analyticsService({ eventDetails: event_details, eventName: event_name, userDetails: user_details })
+
           }}
           style={{
             fontSize: 17,

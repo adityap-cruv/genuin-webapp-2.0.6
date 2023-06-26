@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import '../components/styles.css'
 import { ToastContainer } from 'react-toastify'
@@ -8,6 +8,8 @@ import favicon from '../assets/images/favicon.ico'
 import NextHead from 'next/head'
 import { BasicColors } from '../constants/colors'
 import { initializeApp } from 'firebase/app'
+import * as rudderstack from 'rudder-sdk-js'
+
 const theme = extendTheme({
   fonts: {
     body: 'Avenir Next, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji,Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji'
@@ -26,12 +28,19 @@ function MyApp ({ Component, pageProps }) {
     measurementId: 'G-207GT5P81F'
   }
   initializeApp(firebaseConfig)
+  
+  useEffect(() => {
+    rudderstack.load('2Rb3KQGzR3qyC6R3ljX4FkmBqZf', 'https://rudderstack.begenuin.com/')
+    rudderstack.ready(() => {
+      console.log('We are all set!!!')
+    })
+  }, [])
+
   return (
     <>
       <NextHead>
         <link rel='shortcut icon' href={favicon.src} type='image/x-icon' />
         <meta name='theme-color' content={BasicColors.secondaryColor} />
-        //! It is for testing purpose only
         <meta name='apple-mobile-web-app-status-bar-style' content='default' />
         <meta name='mobile-web-app-capable' content='yes'/>
         {process.env.env === 'qa' && <meta name="robots" content="noindex, nofollow"></meta>}
