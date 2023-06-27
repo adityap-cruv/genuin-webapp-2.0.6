@@ -55,7 +55,13 @@ const RoundTable = ({
   const loadMoreVideos = async () => {
     try {
       const res = await axios.get(
-        `${process.env.apiurl}/api/v3/public/rt/paginate_videos?chat_id=${rt}&last_video_id=${videos[videos.length - 1].conversation_id}`
+        `${process.env.apiurl}/api/v3/public/rt/paginate_videos`,
+        {
+          params: {
+            chat_id: rt,
+            last_video_id: videos[videos.length - 1].conversation_id
+          }
+        }
       )
       const newVideos = res?.data?.data?.chats ?? []
       if (res?.data?.data?.end_of_videos) {
@@ -230,7 +236,7 @@ const RoundTable = ({
             dangerouslySetInnerHTML={{ __html: ORG_SCHEMA }}
           />
           {!isOpen && <>
-            <TopNav showGetAppModal={handleShowDownloadAppPopup} isContiner isBlue backgroundColor='white'/>
+            <TopNav showGetAppModal={handleShowDownloadAppPopup} isContiner isBlue backgroundColor='white' />
             <Flex
               className='section-content h-100'
               direction='column'
@@ -838,7 +844,13 @@ RoundTable.getInitialProps = async ({ query: { share_string, geshc, v } }) => {
   ) {
     try {
       const videos = await axios.get(
-        `${process.env.apiurl}/api/v3/public/rt/paginate_videos?chat_id=${share_string}&start_from_video_id=${v}`
+        `${process.env.apiurl}/api/v3/public/rt/paginate_videos`,
+        {
+          params: {
+            chat_id: share_string,
+            start_from_video_id: v
+          }
+        }
       )
       const users = await axios.get(
         `${process.env.apiurl}/api/v3/public/rt/users?chat_id=${share_string}`
