@@ -6,7 +6,7 @@ export const DynamicPlayer = ({
   url,
   muted,
   onClick,
-  onProgress,
+  onTimeUpdate,
   onDuration,
   onEnded,
   onReady,
@@ -44,7 +44,7 @@ export const DynamicPlayer = ({
       playsInline={true}
       onError={() => console.log('error')}
       onPlaying={onPlaying}
-      onTimeUpdate={onProgress}
+      onTimeUpdate={onTimeUpdate}
     />
     {/* {!isSafari && <ReactPlayer
       key={uniqueKey}
