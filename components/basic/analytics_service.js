@@ -7,7 +7,6 @@ import {
   isTablet,
   isWindows
 } from 'react-device-detect'
-import * as rudderstack from 'rudder-sdk-js'
 
 // Set device type
 let deviceType = ''
@@ -60,11 +59,11 @@ export const analyticsService = async ({ eventName, eventDetails, userDetails })
     deviceDetails
   }
 
-  rudderstack.track(
-    eventName, payLoad,
-    () => {
-      console.log("track call");
-    }
-  );
+  if(window.rudderanalytics){
+    console.log('sending..')
+    window.rudderanalytics.track(eventName, payLoad, () => {
+      console.log('sent....')
+     })
+  }
 
 }

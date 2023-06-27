@@ -8,7 +8,7 @@ import favicon from '../assets/images/favicon.ico'
 import NextHead from 'next/head'
 import { BasicColors } from '../constants/colors'
 import { initializeApp } from 'firebase/app'
-import * as rudderstack from 'rudder-sdk-js'
+import { rudderInitialize } from '../components/utility'
 
 const theme = extendTheme({
   fonts: {
@@ -28,14 +28,11 @@ function MyApp ({ Component, pageProps }) {
     measurementId: 'G-207GT5P81F'
   }
   initializeApp(firebaseConfig)
-  
-  useEffect(() => {
-    rudderstack.load('2Rb3KQGzR3qyC6R3ljX4FkmBqZf', 'https://rudderstack.begenuin.com/')
-    rudderstack.ready(() => {
-      console.log('We are all set!!!')
-    })
-  }, [])
 
+  useEffect(() => {
+    rudderInitialize()
+  }, [])
+  
   return (
     <>
       <NextHead>
