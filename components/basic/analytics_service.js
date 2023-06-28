@@ -31,14 +31,27 @@ if (isMacOs) {
   osType = 'Chromium'
 }
 
+
+async function fetchIPAddress() {
+  try {
+    const response = await fetch('https://nodejs.qa.begenuin.com/api/v3/public/ipconfig');
+    const data = await response.json();
+    return data.data.ip;
+  } catch (error) {
+    console.error('Failed to fetch IP address:', error);
+    return '';
+  }
+}
+
 export const analyticsService = async ({ eventName, eventDetails, userDetails }) => {
+  const ipAddress = await fetchIPAddress();
 
   // Construct device_details object
   const deviceDetails = {
     user_agent: navigator.userAgent,
     device_type: deviceType,
     os_type: osType,
-    ip: ''
+    ip: ipAddress
   }
 
   console.log(eventName, eventDetails, userDetails, deviceDetails)
