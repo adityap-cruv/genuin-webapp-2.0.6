@@ -58,6 +58,7 @@ export const AppActions = ({
         <>
           <li onClick={() => {
 
+            //analytics service 'save' event
             const event_name = 'save'
             const event_details = {
               video_share_string: sourceId,
@@ -120,6 +121,7 @@ export const AppActions = ({
           </li>
           <li onClick={() => {
 
+            //analytics service 'reply' event
             const event_name = 'reply'
             const event_details = {
               video_share_string: sourceId,
@@ -167,6 +169,8 @@ export const AppActions = ({
       {roundTable ? (
         <>
           <li onClick={() => {
+
+            //analytics service 'comment' event
             const event_name = 'comment'
             const event_details = {
               video_share_string: sourceId,
@@ -208,6 +212,7 @@ export const AppActions = ({
           </li>
           <li onClick={() => {
 
+            //analytics service 'subscribe' event
             const event_name = 'subscribe'
             const event_details = {
               video_share_string: sourceId,
@@ -314,6 +319,7 @@ export const ShareButton = ({
       <>
         <MenuButton onClick={() => {
 
+          //analytics service 'share' event
           const event_name = 'share'
           const event_details = {
             video_share_string: sourceId,
