@@ -7,6 +7,7 @@ import {
   isTablet,
   isWindows
 } from 'react-device-detect'
+import { datadogLogs } from "@datadog/browser-logs";
 
 // Set device type
 let deviceType = ''
@@ -30,19 +31,7 @@ if (isMacOs) {
   osType = 'Chromium'
 }
 
-// async function fetchIPAddress () {
-//   try {
-//     const response = await fetch('https://api.ipify.org?format=json')
-//     const data = await response.json()
-//     return data.ip
-//   } catch (error) {
-//     console.error('Error fetching IP address:', error)
-//     return null
-//   }
-// }
-
 export const analyticsService = async ({ eventName, eventDetails, userDetails }) => {
-  // const ipAddress = await fetchIPAddress()
 
   // Construct device_details object
   const deviceDetails = {
@@ -65,5 +54,9 @@ export const analyticsService = async ({ eventName, eventDetails, userDetails })
       console.log('sent....')
      })
   }
+
+  console.log('sending data to datadog...')
+  datadogLogs.logger.info(eventName, payLoad)
+  console.log('sent to Datadog.')
 
 }
