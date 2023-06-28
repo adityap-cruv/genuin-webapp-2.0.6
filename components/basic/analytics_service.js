@@ -34,7 +34,7 @@ if (isMacOs) {
 
 async function fetchIPAddress() {
   try {
-    const response = await fetch('https://nodejs.qa.begenuin.com/api/v3/public/ipconfig');
+    const response = await fetch(`${process.env.apiurl}/api/v3/public/ipconfig`);
     const data = await response.json();
     return data.data.ip;
   } catch (error) {
