@@ -56,20 +56,15 @@ export const analyticsService = async ({ eventName, eventDetails, userDetails })
 
   console.log(eventName, eventDetails, userDetails, deviceDetails)
   const payLoad = {
-    eventDetails,
-    userDetails,
-    deviceDetails
+    event_details : eventDetails,
+    user_details : userDetails,
+    device_details : deviceDetails
   }
 
   if(window.rudderanalytics){
-    console.log('sending..')
-    window.rudderanalytics.track(eventName, payLoad, () => {
-      console.log('sent....')
-     })
+    window.rudderanalytics.track(eventName, payLoad)
   }
 
-  console.log('sending data to datadog...')
   datadogLogs.logger.info(eventName, payLoad)
-  console.log('sent to Datadog.')
 
 }
