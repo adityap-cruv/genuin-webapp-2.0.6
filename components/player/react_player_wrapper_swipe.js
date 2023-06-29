@@ -193,7 +193,7 @@ export const ReactPlayerWrapper = ({
     setIsPlaying(false)
     setDisplayThumbnail(true)
 
-    console.log('in view port')
+    //analytics service 'video_watch' event
     const event_name = 'video_watch'
     const event_details = {
       video_share_string: videos[currentVideoIndex].share_string,
