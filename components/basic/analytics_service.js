@@ -54,7 +54,7 @@ export const analyticsService = async ({ eventName, eventDetails, userDetails })
     ip: ipAddress
   }
 
-  console.log(eventName, eventDetails, userDetails, deviceDetails)
+  // console.log(eventName, eventDetails, userDetails, deviceDetails)
   const payLoad = {
     event_details : eventDetails,
     user_details : userDetails,
