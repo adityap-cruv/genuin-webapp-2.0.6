@@ -57,8 +57,7 @@ export const AppActions = ({
       {!roundTable ? (
         <>
           <li onClick={() => {
-
-            //analytics service 'save' event
+            // analytics service 'save' event
             const event_name = 'save'
             const event_details = {
               video_share_string: sourceId,
@@ -120,8 +119,7 @@ export const AppActions = ({
             )}
           </li>
           <li onClick={() => {
-
-            //analytics service 'reply' event
+            // analytics service 'reply' event
             const event_name = 'reply'
             const event_details = {
               video_share_string: sourceId,
@@ -169,8 +167,7 @@ export const AppActions = ({
       {roundTable ? (
         <>
           <li onClick={() => {
-
-            //analytics service 'comment' event
+            // analytics service 'comment' event
             const event_name = 'comment'
             const event_details = {
               video_share_string: sourceId,
@@ -211,8 +208,7 @@ export const AppActions = ({
             />
           </li>
           <li onClick={() => {
-
-            //analytics service 'subscribe' event
+            // analytics service 'subscribe' event
             const event_name = 'subscribe'
             const event_details = {
               video_share_string: sourceId,
@@ -235,7 +231,7 @@ export const AppActions = ({
                 sourceId,
                 utmCampaign: 'share',
                 utmMedium: 'web',
-                utmSource: deepLinkParams.hostName,
+                utmSource: deepLinkParams.hostName
               }).then(link => openGeneratedLink(link))
                 .catch(e => window.open(process.env.hostname))
             } else {
@@ -299,7 +295,8 @@ export const ShareButton = ({
   variation = 'white',
   fullWidth = false,
   roundTableId = '',
-  sourceId = ''
+  sourceId = '',
+  ...props
 }) => {
   const [isCopied, copy] = useClipboard(url, { successDuration: 1000 })
   useEffect(() => {
@@ -318,8 +315,7 @@ export const ShareButton = ({
     <Menu placement='right' preventOverflow gutter={40}>
       <>
         <MenuButton onClick={() => {
-
-          //analytics service 'share' event
+          // analytics service 'share' event
           const event_name = 'share'
           const event_details = {
             video_share_string: sourceId,
@@ -337,6 +333,7 @@ export const ShareButton = ({
           height: fullWidth ? '100%' : 'auto'
         }}
         pos='relative'
+        {...props}
         textAlign='-webkit-center'>
           <Image
             title="copy link!"
@@ -420,7 +417,7 @@ export const MobileShareButton = ({
         //     if (isSupported && !loading) share({ url })
         //   })
         // } else {
-          if (isSupported && !loading) share({ url })
+        if (isSupported && !loading) share({ url })
         // }
       }}
     />
