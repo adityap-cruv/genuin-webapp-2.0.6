@@ -66,9 +66,9 @@ export const AppActions = ({
               page: window.location.href
             }
             const user_details = {}
-            analyticsService({ eventDetails: event_details, eventName: event_name, userDetails: user_details })
 
             if (isMobile) {
+              analyticsService({ eventDetails: event_details, eventName: event_name, userDetails: user_details })
               generateDeepLink({
                 action: 'save',
                 contentType: 'pv',
@@ -85,6 +85,7 @@ export const AppActions = ({
               }).then(link => openGeneratedLink(link))
                 .catch(e => window.open(process.env.hostname))
             } else {
+              analyticsService({ eventDetails: event_details, eventName: event_name, userDetails: user_details })
               showGetAppModal(() => (
                 <>
                   Get the app to <b>bookmark</b> this video.
@@ -109,6 +110,7 @@ export const AppActions = ({
                 white
                 fullWidth={true}
                 deepLinkParams={deepLinkParams}
+                sourceId={sourceId}
               />
             ) : (
               <ShareButton
@@ -116,6 +118,7 @@ export const AppActions = ({
                 description={videoDescription}
                 title={videoTitle}
                 fullWidth={true}
+                sourceId={sourceId}
               />
             )}
           </li>
@@ -129,9 +132,9 @@ export const AppActions = ({
               page: window.location.href
             }
             const user_details = {}
-            analyticsService({ eventDetails: event_details, eventName: event_name, userDetails: user_details })
 
             if (isMobile) {
+              analyticsService({ eventDetails: event_details, eventName: event_name, userDetails: user_details })
               generateDeepLink({
                 action: 'reply',
                 contentType: 'pv',
@@ -148,6 +151,7 @@ export const AppActions = ({
               }).then(link => openGeneratedLink(link))
                 .catch(e => window.open(process.env.hostname))
             } else {
+              analyticsService({ eventDetails: event_details, eventName: event_name, userDetails: user_details })
               showGetAppModal(() => (
                 <>
                   Get the app to reply to <b>{'@' + userName}</b>
@@ -178,9 +182,9 @@ export const AppActions = ({
               page: window.location.href
             }
             const user_details = {}
-            analyticsService({ eventDetails: event_details, eventName: event_name, userDetails: user_details })
 
             if (isMobile) {
+              analyticsService({ eventDetails: event_details, eventName: event_name, userDetails: user_details })
               generateDeepLink({
                 action: 'comment',
                 contentType: 'loop',
@@ -197,6 +201,7 @@ export const AppActions = ({
               }).then(link => openGeneratedLink(link))
                 .catch(e => window.open(process.env.hostname))
             } else {
+              analyticsService({ eventDetails: event_details, eventName: event_name, userDetails: user_details })
               showGetAppModal(() => (
                 <>Get the app to watch the comments on this video.</>
               ))
@@ -220,9 +225,9 @@ export const AppActions = ({
               page: window.location.href
             }
             const user_details = {}
-            analyticsService({ eventDetails: event_details, eventName: event_name, userDetails: user_details })
 
             if (isMobile) {
+              analyticsService({ eventDetails: event_details, eventName: event_name, userDetails: user_details })
               generateDeepLink({
                 action: 'subscribe',
                 contentType: 'loop',
@@ -239,6 +244,7 @@ export const AppActions = ({
               }).then(link => openGeneratedLink(link))
                 .catch(e => window.open(process.env.hostname))
             } else {
+              analyticsService({ eventDetails: event_details, eventName: event_name, userDetails: user_details })
               showGetAppModal(() => (
                 <>
                   Get the app to subscribe to <b>{roundTableName ?? ''}</b>{' '}
@@ -264,6 +270,8 @@ export const AppActions = ({
                 white
                 fullWidth={true}
                 deepLinkParams={deepLinkParams}
+                sourceId={sourceId}
+                roundTableId={roundTableId}
               />
             ) : (
               <ShareButton
@@ -299,7 +307,8 @@ export const ShareButton = ({
   variation = 'white',
   fullWidth = false,
   roundTableId = '',
-  sourceId = ''
+  sourceId = '',
+  genuin_nickname = ''
 }) => {
   const [isCopied, copy] = useClipboard(url, { successDuration: 1000 })
   useEffect(() => {
@@ -322,9 +331,16 @@ export const ShareButton = ({
           //analytics service 'share' event
           const event_name = 'share'
           const event_details = {
-            video_share_string: sourceId,
-            loop_share_string: roundTableId,
-            page: window.location.href
+            page: window.location.href,
+          }
+          if (sourceId !== '') {
+            event_details.video_share_string = sourceId;
+          }
+          if (roundTableId !== '') {
+            event_details.loop_share_string = roundTableId;
+          }
+          if (genuin_nickname && genuin_nickname.trim() !== '') {
+            event_details.genuin_nickname = genuin_nickname;
           }
           const user_details = {}
           analyticsService({ eventDetails: event_details, eventName: event_name, userDetails: user_details })
@@ -384,7 +400,10 @@ export const MobileShareButton = ({
   url,
   white = false,
   fullWidth = false,
-  deepLinkParams = null
+  deepLinkParams = null,
+  roundTableId = '',
+  sourceId = '',
+  genuin_nickname = ''
 }) => {
   const { isSupported, loading, share } = useWebShare()
 
@@ -402,6 +421,24 @@ export const MobileShareButton = ({
       px={1}
       minW={8}
       onClick={() => {
+
+          //analytics service 'share' event
+          const event_name = 'share'
+          const event_details = {
+            page: window.location.href,
+          }
+          if (sourceId !== '') {
+            event_details.video_share_string = sourceId;
+          }
+          if (roundTableId !== '') {
+            event_details.loop_share_string = roundTableId;
+          }
+          if (genuin_nickname && genuin_nickname.trim() !== '') {
+            event_details.genuin_nickname = genuin_nickname;
+          }
+          const user_details = {}
+          analyticsService({ eventDetails: event_details, eventName: event_name, userDetails: user_details })
+
         // if (deepLinkParams) {
         //   generateDeepLink({
         //     utmCampaign: 'share',

@@ -53,6 +53,7 @@ export const TopNav = ({
               onClick={() => {
                 showGetAppModal()
 
+                //analyticsService for get_app
                 const event_name = 'get_app'
                 const event_details = {
                   page: window.location.href
@@ -77,6 +78,17 @@ export const TopNav = ({
               <Button
                 variant='primary'
                 className='me-3'
+                onClick={() => {
+  
+                  //analyticsService for get_app
+                  const event_name = 'get_app'
+                  const event_details = {
+                    page: window.location.href
+                  }
+                  const user_details = {}
+                  analyticsService({ eventDetails: event_details, eventName: event_name, userDetails: user_details })
+      
+                }}
                 style={{
                   height: 32,
                   padding: '4px 16px',
