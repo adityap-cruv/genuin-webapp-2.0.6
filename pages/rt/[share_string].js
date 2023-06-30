@@ -36,6 +36,7 @@ import { FontStyle } from '../../constants/font_style'
 import { BasicColors } from '../../constants/colors'
 import { isMobile } from 'react-device-detect'
 import { generateDeepLink, openGeneratedLink } from '../../components/utility'
+import { analyticsService } from '../../components/basic/analytics_service'
 
 const DownloadAppPopup = dynamic(() => import('../../components/download_app_popup'))
 
@@ -406,7 +407,17 @@ const RoundTable = ({
                         px={5}
                         minW="90px"
                         onClick={() => {
+
+                          //analytics service 'subscribe' event
+                          const event_name = 'subscribe'
+                          const event_details = {
+                            video_share_string: '',
+                            loop_share_string: details.share_string,
+                            page: window.location.href
+                          }
+
                           if (isMobile) {
+                            analyticsService({ eventDetails: event_details, eventName: event_name })
                             generateDeepLink({
                               action: 'subscribe',
                               contentType: 'loop',
@@ -422,6 +433,7 @@ const RoundTable = ({
                             }).then(generatedLink => openGeneratedLink(generatedLink))
                               .catch(e => window.open(process.env.hostname))
                           } else {
+                            analyticsService({ eventDetails: event_details, eventName: event_name })
                             showGetAppToSubscribeDialog()
                           }
                         }}
@@ -434,6 +446,7 @@ const RoundTable = ({
                           url={currentUrl}
                           description='Hello, visit this roundtable!'
                           title='Genuin on web'
+                          roundTableId={details.share_string}
                         />
                       ) : (
                         <ShareButton
@@ -448,6 +461,7 @@ const RoundTable = ({
                           h={8}
                           borderRadius='md'
                           variation='blue'
+                          roundTableId={details.share_string}
                         />
                       )}
                     </Flex>

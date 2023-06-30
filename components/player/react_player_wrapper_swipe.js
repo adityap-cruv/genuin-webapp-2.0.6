@@ -200,10 +200,9 @@ export const ReactPlayerWrapper = ({
       loop_share_string: roundTableId,
       page: window.location.href,
       duration: Math.floor(videoPlayingDetails.current.duration),
-      currentTime: Math.floor(videoPlayingDetails.current.currentTime)
+      current_time: Math.floor(videoPlayingDetails.current.currentTime)
     }
-    const user_details = {}
-    analyticsService({ eventDetails: event_details, eventName: event_name, userDetails: user_details })
+    analyticsService({ eventDetails: event_details, eventName: event_name })
 
   }
   return (

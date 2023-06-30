@@ -107,7 +107,6 @@ export async function rudderInitialize() {
     };
     e.loadJS();
     e.load('2Rb3KQGzR3qyC6R3ljX4FkmBqZf', 'https://rudderstack.begenuin.com/');
-    e.ready(() => console.log("rudder is ready")); // Replace 'WRITE-KEY' and 'DATAPLANE-URL'
     e.page();
   })();
 }
