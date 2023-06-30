@@ -180,7 +180,6 @@ export const ReactPlayerWrapper = ({
     }
     return `${Math.floor(time / 7)}w`
   }
-  // console.log("videos; ",videos)
   return (
     <div
       className="video-container"
@@ -194,7 +193,7 @@ export const ReactPlayerWrapper = ({
         isPlaying={isPlaying}
         url={videoUrl}
         muted={muted}
-        uniqueKey={videoUrl}
+        uniqueKey={videos[currentVideoIndex].conversation_id}
         onClick={handleOnClick}
         onProgress={setProgressWrapper}
         onDuration={setDurationWrapper}
