@@ -20,6 +20,8 @@
   "license": "ISC",
   "dependencies": {
     "@chakra-ui/react": "^2.3.7",
+    "@datadog/browser-logs": "^4.43.0",
+    "@datadog/browser-rum": "^4.43.0",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
     "axios": "^0.19.2",

@@ -33,10 +33,10 @@ const Home = () => {
     const fetchData = async () => {
       try {
         const videosData = await axios.get(
-          `${process.env.apiurl}/api/v3/public/rt/paginate_videos?chat_id=13f3348fd5801493`
+          `${process.env.apiurl}/api/v3/public/rt/paginate_videos?chat_id=17bb88b72c80153b`
         )
         const rtDetails = await axios.get(
-          `${process.env.apiurl}/api/v3/public/rt/details?chat_id=13f3348fd5801493`
+          `${process.env.apiurl}/api/v3/public/rt/details?chat_id=17bb88b72c80153b`
         )
         const feeds = videosData?.data?.data?.chats
         if (feeds.length > 0) {
@@ -53,7 +53,7 @@ const Home = () => {
   const loadMoreVideos = async () => {
     try {
       const res = await axios.get(
-        `${process.env.apiurl}/api/v3/public/rt/paginate_videos?chat_id=13f3348fd5801493&last_video_id=${rtVideos[rtVideos.length - 1].conversation_id}`
+        `${process.env.apiurl}/api/v3/public/rt/paginate_videos?chat_id=17bb88b72c80153b&last_video_id=${rtVideos[rtVideos.length - 1].conversation_id}`
       )
       const chats = res?.data?.data?.chats
       if (chats.length > 0) {
