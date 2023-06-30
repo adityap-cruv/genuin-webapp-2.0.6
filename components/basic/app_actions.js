@@ -66,7 +66,7 @@ export const AppActions = ({
             }
 
             if (isMobile) {
-              analyticsService({ eventDetails: event_details, eventName: event_name})
+              analyticsService({ eventDetails: event_details, eventName: event_name })
               generateDeepLink({
                 action: 'save',
                 contentType: 'pv',
@@ -83,7 +83,7 @@ export const AppActions = ({
               }).then(link => openGeneratedLink(link))
                 .catch(e => window.open(process.env.hostname))
             } else {
-              analyticsService({ eventDetails: event_details, eventName: event_name})
+              analyticsService({ eventDetails: event_details, eventName: event_name })
               showGetAppModal(() => (
                 <>
                   Get the app to <b>bookmark</b> this video.
@@ -130,7 +130,7 @@ export const AppActions = ({
             }
 
             if (isMobile) {
-              analyticsService({ eventDetails: event_details, eventName: event_name})
+              analyticsService({ eventDetails: event_details, eventName: event_name })
               generateDeepLink({
                 action: 'reply',
                 contentType: 'pv',
@@ -147,7 +147,7 @@ export const AppActions = ({
               }).then(link => openGeneratedLink(link))
                 .catch(e => window.open(process.env.hostname))
             } else {
-              analyticsService({ eventDetails: event_details, eventName: event_name})
+              analyticsService({ eventDetails: event_details, eventName: event_name })
               showGetAppModal(() => (
                 <>
                   Get the app to reply to <b>{'@' + userName}</b>
@@ -169,7 +169,7 @@ export const AppActions = ({
       {roundTable ? (
         <>
           <li onClick={() => {
-            
+
             // analytics service 'comment' event
             const event_name = 'comment'
             const event_details = {
@@ -338,18 +338,18 @@ export const ShareButton = ({
             event_details.genuin_nickname = genuin_nickname;
           }
 
-          analyticsService({ eventDetails: event_details, eventName: event_name})
+          analyticsService({ eventDetails: event_details, eventName: event_name })
 
           copy()
         }}
-        title="copy link!"
-        style={{
-          width: fullWidth ? '100%' : 'auto',
-          height: fullWidth ? '100%' : 'auto'
-        }}
-        pos='relative'
-        {...props}
-        textAlign='-webkit-center'>
+          title="copy link!"
+          style={{
+            width: fullWidth ? '100%' : 'auto',
+            height: fullWidth ? '100%' : 'auto'
+          }}
+          pos='relative'
+          {...props}
+          textAlign='-webkit-center'>
           <Image
             title="copy link!"
             size={6}
@@ -418,21 +418,21 @@ export const MobileShareButton = ({
       minW={8}
       onClick={() => {
 
-          //analytics service 'share' event
-          const event_name = 'share'
-          const event_details = {
-            page: window.location.href,
-          }
-          if (sourceId !== '') {
-            event_details.video_share_string = sourceId;
-          }
-          if (roundTableId !== '') {
-            event_details.loop_share_string = roundTableId;
-          }
-          if (genuin_nickname && genuin_nickname.trim() !== '') {
-            event_details.genuin_nickname = genuin_nickname;
-          }
-          analyticsService({ eventDetails: event_details, eventName: event_name })
+        //analytics service 'share' event
+        const event_name = 'share'
+        const event_details = {
+          page: window.location.href,
+        }
+        if (sourceId !== '') {
+          event_details.video_share_string = sourceId;
+        }
+        if (roundTableId !== '') {
+          event_details.loop_share_string = roundTableId;
+        }
+        if (genuin_nickname && genuin_nickname.trim() !== '') {
+          event_details.genuin_nickname = genuin_nickname;
+        }
+        analyticsService({ eventDetails: event_details, eventName: event_name })
 
         // if (deepLinkParams) {
         //   generateDeepLink({

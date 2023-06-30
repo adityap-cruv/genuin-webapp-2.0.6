@@ -67,9 +67,9 @@ export const analyticsService = async ({ eventName, eventDetails }) => {
 
   // console.log(eventName, eventDetails, userDetails, deviceDetails)
   const payLoad = {
-    event_details : eventDetails,
-    user_details : userDetails,
-    device_details : deviceDetails
+    event_details: eventDetails,
+    user_details: userDetails,
+    device_details: deviceDetails
   }
 
   if (window.rudderanalytics) {

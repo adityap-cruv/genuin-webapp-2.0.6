@@ -23,14 +23,14 @@ const MobileIndexBottomComponent = ({
             showModalAppDownload()
           } else {
             window.open('https://install.begenuin.com/86sn/cgs')
-            
-                //analyticsService for get_app
-                const event_name = 'get_app'
-                const event_details = {
-                  page: window.location.href
-                }
-                
-                analyticsService({ eventDetails: event_details, eventName: event_name })
+
+            //analyticsService for get_app
+            const event_name = 'get_app'
+            const event_details = {
+              page: window.location.href
+            }
+
+            analyticsService({ eventDetails: event_details, eventName: event_name })
           }
         }}
         style={{

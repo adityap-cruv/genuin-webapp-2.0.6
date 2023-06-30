@@ -408,13 +408,13 @@ const RoundTable = ({
                         minW="90px"
                         onClick={() => {
 
-                        //analytics service 'subscribe' event
-                        const event_name = 'subscribe'
-                        const event_details = {
-                          video_share_string: '',
-                          loop_share_string: details.share_string,
-                          page: window.location.href
-                        }
+                          //analytics service 'subscribe' event
+                          const event_name = 'subscribe'
+                          const event_details = {
+                            video_share_string: '',
+                            loop_share_string: details.share_string,
+                            page: window.location.href
+                          }
 
                           if (isMobile) {
                             analyticsService({ eventDetails: event_details, eventName: event_name })
@@ -446,7 +446,7 @@ const RoundTable = ({
                           url={currentUrl}
                           description='Hello, visit this roundtable!'
                           title='Genuin on web'
-                          roundTableId = {details.share_string}
+                          roundTableId={details.share_string}
                         />
                       ) : (
                         <ShareButton
@@ -461,7 +461,7 @@ const RoundTable = ({
                           h={8}
                           borderRadius='md'
                           variation='blue'
-                          roundTableId = {details.share_string}
+                          roundTableId={details.share_string}
                         />
                       )}
                     </Flex>
