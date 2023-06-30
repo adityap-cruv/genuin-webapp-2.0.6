@@ -415,10 +415,9 @@ const RoundTable = ({
                           loop_share_string: details.share_string,
                           page: window.location.href
                         }
-                        const user_details = {}
 
                           if (isMobile) {
-                            analyticsService({ eventDetails: event_details, eventName: event_name, userDetails: user_details })
+                            analyticsService({ eventDetails: event_details, eventName: event_name })
                             generateDeepLink({
                               action: 'subscribe',
                               contentType: 'loop',
@@ -434,7 +433,7 @@ const RoundTable = ({
                             }).then(generatedLink => openGeneratedLink(generatedLink))
                               .catch(e => window.open(process.env.hostname))
                           } else {
-                            analyticsService({ eventDetails: event_details, eventName: event_name, userDetails: user_details })
+                            analyticsService({ eventDetails: event_details, eventName: event_name })
                             showGetAppToSubscribeDialog()
                           }
                         }}

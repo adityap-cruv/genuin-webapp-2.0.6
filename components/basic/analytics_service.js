@@ -13,27 +13,27 @@ import { datadogLogs } from "@datadog/browser-logs";
 // Set device type
 let deviceType = ''
 if (isDesktop) {
-  deviceType = 'Desktop'
+  deviceType = 'desktop'
 } else if (isMobile) {
-  deviceType = 'Mobile'
+  deviceType = 'mobile'
 } else if (isTablet) {
-  deviceType = 'Tablet'
+  deviceType = 'tablet'
 } else {
-  deviceType = undefined
+  deviceType = ''
 }
 
 // Set OS type
 let osType = ''
 if (isMacOs) {
-  osType = 'macOS'
+  osType = 'macos'
 } else if (isWindows) {
-  osType = 'Windows'
+  osType = 'windows'
 } else if (isIOS) {
-  osType = 'iOS'
+  osType = 'ios'
 } else if (isChromium) {
-  osType = 'Chromium'
+  osType = 'chromium'
 } else if (isAndroid) {
-  osType = 'Android'
+  osType = 'android'
 } else {
   osType = 'linux'
 }
@@ -53,7 +53,9 @@ async function fetchGeoDetails() {
 }
 fetchGeoDetails();
 
-export const analyticsService = async ({ eventName, eventDetails, userDetails }) => {
+let userDetails = {};
+
+export const analyticsService = async ({ eventName, eventDetails }) => {
 
   // Construct device_details object
   const deviceDetails = {

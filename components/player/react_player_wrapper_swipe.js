@@ -202,8 +202,7 @@ export const ReactPlayerWrapper = ({
       duration: Math.floor(videoPlayingDetails.current.duration),
       current_time: Math.floor(videoPlayingDetails.current.currentTime)
     }
-    const user_details = {}
-    analyticsService({ eventDetails: event_details, eventName: event_name, userDetails: user_details })
+    analyticsService({ eventDetails: event_details, eventName: event_name })
 
   }
   return (

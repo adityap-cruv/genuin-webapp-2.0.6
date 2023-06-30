@@ -718,10 +718,9 @@ const Profile = ({
                                 genuin_nickname: nickname,
                                 page: window.location.href
                               }
-                              const user_details = {}
 
                               if (isMobile) {
-                                analyticsService({ eventDetails: event_details, eventName: event_name, userDetails: user_details })
+                                analyticsService({ eventDetails: event_details, eventName: event_name })
                                 generateDeepLink({
                                   action: 'dm',
                                   contentType: 'profile',
@@ -739,7 +738,7 @@ const Profile = ({
                                 })
                                   .catch(e => window.open(process.env.hostname))
                               } else {
-                                analyticsService({ eventDetails: event_details, eventName: event_name, userDetails: user_details })
+                                analyticsService({ eventDetails: event_details, eventName: event_name })
                                 showGetAppToSendMessage()
                               }
                             }}

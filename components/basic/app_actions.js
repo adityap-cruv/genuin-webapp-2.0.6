@@ -64,10 +64,9 @@ export const AppActions = ({
               loop_share_string: roundTableId,
               page: window.location.href
             }
-            const user_details = {}
 
             if (isMobile) {
-              analyticsService({ eventDetails: event_details, eventName: event_name, userDetails: user_details })
+              analyticsService({ eventDetails: event_details, eventName: event_name})
               generateDeepLink({
                 action: 'save',
                 contentType: 'pv',
@@ -84,7 +83,7 @@ export const AppActions = ({
               }).then(link => openGeneratedLink(link))
                 .catch(e => window.open(process.env.hostname))
             } else {
-              analyticsService({ eventDetails: event_details, eventName: event_name, userDetails: user_details })
+              analyticsService({ eventDetails: event_details, eventName: event_name})
               showGetAppModal(() => (
                 <>
                   Get the app to <b>bookmark</b> this video.
@@ -129,10 +128,9 @@ export const AppActions = ({
               loop_share_string: roundTableId,
               page: window.location.href
             }
-            const user_details = {}
 
             if (isMobile) {
-              analyticsService({ eventDetails: event_details, eventName: event_name, userDetails: user_details })
+              analyticsService({ eventDetails: event_details, eventName: event_name})
               generateDeepLink({
                 action: 'reply',
                 contentType: 'pv',
@@ -149,7 +147,7 @@ export const AppActions = ({
               }).then(link => openGeneratedLink(link))
                 .catch(e => window.open(process.env.hostname))
             } else {
-              analyticsService({ eventDetails: event_details, eventName: event_name, userDetails: user_details })
+              analyticsService({ eventDetails: event_details, eventName: event_name})
               showGetAppModal(() => (
                 <>
                   Get the app to reply to <b>{'@' + userName}</b>
@@ -171,6 +169,7 @@ export const AppActions = ({
       {roundTable ? (
         <>
           <li onClick={() => {
+            
             // analytics service 'comment' event
             const event_name = 'comment'
             const event_details = {
@@ -178,10 +177,9 @@ export const AppActions = ({
               loop_share_string: roundTableId,
               page: window.location.href
             }
-            const user_details = {}
 
             if (isMobile) {
-              analyticsService({ eventDetails: event_details, eventName: event_name, userDetails: user_details })
+              analyticsService({ eventDetails: event_details, eventName: event_name })
               generateDeepLink({
                 action: 'comment',
                 contentType: 'loop',
@@ -198,7 +196,7 @@ export const AppActions = ({
               }).then(link => openGeneratedLink(link))
                 .catch(e => window.open(process.env.hostname))
             } else {
-              analyticsService({ eventDetails: event_details, eventName: event_name, userDetails: user_details })
+              analyticsService({ eventDetails: event_details, eventName: event_name })
               showGetAppModal(() => (
                 <>Get the app to watch the comments on this video.</>
               ))
@@ -213,6 +211,7 @@ export const AppActions = ({
             />
           </li>
           <li onClick={() => {
+
             // analytics service 'subscribe' event
             const event_name = 'subscribe'
             const event_details = {
@@ -220,10 +219,9 @@ export const AppActions = ({
               loop_share_string: roundTableId,
               page: window.location.href
             }
-            const user_details = {}
 
             if (isMobile) {
-              analyticsService({ eventDetails: event_details, eventName: event_name, userDetails: user_details })
+              analyticsService({ eventDetails: event_details, eventName: event_name })
               generateDeepLink({
                 action: 'subscribe',
                 contentType: 'loop',
@@ -240,7 +238,7 @@ export const AppActions = ({
               }).then(link => openGeneratedLink(link))
                 .catch(e => window.open(process.env.hostname))
             } else {
-              analyticsService({ eventDetails: event_details, eventName: event_name, userDetails: user_details })
+              analyticsService({ eventDetails: event_details, eventName: event_name })
               showGetAppModal(() => (
                 <>
                   Get the app to subscribe to <b>{roundTableName ?? ''}</b>{' '}
@@ -324,6 +322,7 @@ export const ShareButton = ({
     <Menu placement='right' preventOverflow gutter={40}>
       <>
         <MenuButton onClick={() => {
+
           // analytics service 'share' event
           const event_name = 'share'
           const event_details = {
@@ -338,8 +337,8 @@ export const ShareButton = ({
           if (genuin_nickname && genuin_nickname.trim() !== '') {
             event_details.genuin_nickname = genuin_nickname;
           }
-          const user_details = {}
-          analyticsService({ eventDetails: event_details, eventName: event_name, userDetails: user_details })
+
+          analyticsService({ eventDetails: event_details, eventName: event_name})
 
           copy()
         }}
@@ -433,8 +432,7 @@ export const MobileShareButton = ({
           if (genuin_nickname && genuin_nickname.trim() !== '') {
             event_details.genuin_nickname = genuin_nickname;
           }
-          const user_details = {}
-          analyticsService({ eventDetails: event_details, eventName: event_name, userDetails: user_details })
+          analyticsService({ eventDetails: event_details, eventName: event_name })
 
         // if (deepLinkParams) {
         //   generateDeepLink({

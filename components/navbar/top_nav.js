@@ -58,8 +58,7 @@ export const TopNav = ({
                 const event_details = {
                   page: window.location.href
                 }
-                const user_details = {}
-                analyticsService({ eventDetails: event_details, eventName: event_name, userDetails: user_details })
+                analyticsService({ eventDetails: event_details, eventName: event_name})
     
               }}
               style={{
@@ -85,8 +84,7 @@ export const TopNav = ({
                   const event_details = {
                     page: window.location.href
                   }
-                  const user_details = {}
-                  analyticsService({ eventDetails: event_details, eventName: event_name, userDetails: user_details })
+                  analyticsService({ eventDetails: event_details, eventName: event_name})
       
                 }}
                 style={{
