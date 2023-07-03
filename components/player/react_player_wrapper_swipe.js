@@ -20,6 +20,8 @@ import icPlay from '../../assets/icons/icon-play.svg'
 import icPause from '../../assets/icons/icon-pause.svg'
 import { analyticsService } from '../basic/analytics_service'
 
+let debounceTimeout = null;
+
 export const ReactPlayerWrapper = ({
   videoUrl,
   onProgress,
@@ -194,15 +196,20 @@ export const ReactPlayerWrapper = ({
     setDisplayThumbnail(true)
 
     //analytics service 'video_watch' event
-    const event_name = 'video_watch'
-    const event_details = {
-      video_share_string: videos[currentVideoIndex].share_string,
-      loop_share_string: roundTableId,
-      page: window.location.href,
-      duration: Math.floor(videoPlayingDetails.current.duration),
-      current_time: Math.floor(videoPlayingDetails.current.currentTime)
-    }
-    analyticsService({ eventDetails: event_details, eventName: event_name })
+    clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(() => {
+  
+      const event_name = 'video_watch'
+      const event_details = {
+        video_share_string: videos[currentVideoIndex].share_string,
+        loop_share_string: roundTableId,
+        page: window.location.href,
+        duration: Math.round(videoPlayingDetails.current.duration),
+        watch_time: Math.round(videoPlayingDetails.current.currentTime)
+      }
+      analyticsService({ eventDetails: event_details, eventName: event_name })
+      debounceTimeout = null;
+    }, 500); 
 
   }
   return (
@@ -255,9 +262,9 @@ export const ReactPlayerWrapper = ({
           left: '2%',
           zIndex: 2
         }}
-        onClick={() => {
-          onClick()
-        }}>
+          onClick={() => {
+            onClick()
+          }}>
           <img src={muted ? icMuteDesktop.src : icUnmuteDesktop.src} />
         </div>
         : <div style={{
@@ -266,9 +273,9 @@ export const ReactPlayerWrapper = ({
           right: '2%',
           zIndex: 2
         }}
-        onClick={() => {
-          onClick()
-        }}>
+          onClick={() => {
+            onClick()
+          }}>
           <img src={muted ? icMuteDesktop.src : icUnmuteDesktop.src} />
         </div>}
 
@@ -346,7 +353,7 @@ export const ReactPlayerWrapper = ({
                           : index === currentVideoIndex
                             ? currentProgress
                             : 0
-                        }%`}
+                          }%`}
                       />
                     )}
                     {direction === 'backward' && (
@@ -360,7 +367,7 @@ export const ReactPlayerWrapper = ({
                           : index === currentVideoIndex
                             ? currentProgress
                             : 0
-                        }%`}
+                          }%`}
                       />
                     )}
                   </Box>
