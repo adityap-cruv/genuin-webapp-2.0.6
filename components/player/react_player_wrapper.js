@@ -51,7 +51,8 @@ export const ReactPlayerWrapper = ({
   verticalNavigation,
   shareUrl,
   muted,
-  onClick
+  onClick,
+  updateVideoDetails
 }) => {
   const [progress, setProgress] = useState(0)
   const [isPlaying, setIsPlaying] = useState(autoplay)
@@ -196,8 +197,13 @@ export const ReactPlayerWrapper = ({
         uniqueKey={videos[currentVideoIndex].conversation_id}
         onClick={handleOnClick}
         onProgress={setProgressWrapper}
-        onDuration={setDurationWrapper}
+        onDuration={(duration) => {
+          updateVideoDetails({duration})
+        }}
         onEnded={onEndedWrapper}
+        onTimeUpdate={(currentTime) => {
+          updateVideoDetails({currentTime})
+        }}
         loop={false}
       />
       {!isMobile && <div style={{

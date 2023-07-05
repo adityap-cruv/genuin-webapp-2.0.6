@@ -11,7 +11,6 @@ import { initializeApp } from 'firebase/app'
 import { rudderInitialize } from '../components/utility'
 import { datadogRum } from "@datadog/browser-rum";
 import { datadogLogs } from '@datadog/browser-logs'
-import { DatadogConfigs } from "../constants/datadog_configs";
 
 const theme = extendTheme({
   fonts: {
@@ -33,11 +32,11 @@ function MyApp ({ Component, pageProps }) {
   initializeApp(firebaseConfig)
 
   datadogRum.init({
-    applicationId: DatadogConfigs.applicationId,
-    clientToken: DatadogConfigs.clientToken,
-    site: DatadogConfigs.site,
-    service: DatadogConfigs.service,
-    env: DatadogConfigs.env,
+    applicationId: process.env.applicationId,
+    clientToken: process.env.clientToken,
+    site: process.env.site,
+    service: process.env.service,
+    env: process.env.env,
     // Specify a version number to identify the deployed version of your application in Datadog 
     // version: '1.0.0',
     sessionSampleRate: 100,
@@ -49,10 +48,10 @@ function MyApp ({ Component, pageProps }) {
   });
   datadogRum.startSessionReplayRecording();
   datadogLogs.init({
-    clientToken: DatadogConfigs.clientToken,
-    site: DatadogConfigs.site,
-    service: DatadogConfigs.service,
-    env: DatadogConfigs.env ||'qa',
+    clientToken: process.env.clientToken,
+    site: process.env.site,
+    service: process.env.service,
+    env: process.env.env ||'qa',
     forwardErrorsToLogs: true,
     sessionSampleRate: 100,
   })
