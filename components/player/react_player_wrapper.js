@@ -194,7 +194,7 @@ export const ReactPlayerWrapper = ({
         isPlaying={isPlaying}
         url={videoUrl}
         muted={muted}
-        uniqueKey={videos[currentVideoIndex].conversation_id}
+        uniqueKey={videos[currentVideoIndex]?.conversation_id || 'genuin-player'}
         onClick={handleOnClick}
         onProgress={setProgressWrapper}
         onDuration={(duration) => {
