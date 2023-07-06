@@ -198,11 +198,11 @@ export const ReactPlayerWrapper = ({
         onClick={handleOnClick}
         onProgress={setProgressWrapper}
         onDuration={(duration) => {
-          updateVideoDetails({duration})
+          updateVideoDetails({ duration })
         }}
         onEnded={onEndedWrapper}
         onTimeUpdate={(currentTime) => {
-          updateVideoDetails({currentTime})
+          updateVideoDetails({ currentTime })
         }}
         loop={false}
       />
