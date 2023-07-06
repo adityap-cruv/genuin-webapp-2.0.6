@@ -9,7 +9,7 @@ import NextHead from 'next/head'
 import { BasicColors } from '../constants/colors'
 import { initializeApp } from 'firebase/app'
 import { rudderInitialize } from '../components/utility'
-import { datadogRum } from "@datadog/browser-rum";
+import { datadogRum } from '@datadog/browser-rum'
 import { datadogLogs } from '@datadog/browser-logs'
 
 const theme = extendTheme({
@@ -37,7 +37,7 @@ function MyApp ({ Component, pageProps }) {
     site: process.env.site,
     service: process.env.service,
     env: process.env.env,
-    // Specify a version number to identify the deployed version of your application in Datadog 
+    // Specify a version number to identify the deployed version of your application in Datadog
     // version: '1.0.0',
     sessionSampleRate: 100,
     sessionReplaySampleRate: 20,
@@ -45,21 +45,21 @@ function MyApp ({ Component, pageProps }) {
     trackResources: true,
     trackLongTasks: true,
     defaultPrivacyLevel: 'mask-user-input'
-  });
-  datadogRum.startSessionReplayRecording();
+  })
+  datadogRum.startSessionReplayRecording()
   datadogLogs.init({
     clientToken: process.env.clientToken,
     site: process.env.site,
     service: process.env.service,
-    env: process.env.env ||'qa',
+    env: process.env.env || 'qa',
     forwardErrorsToLogs: true,
-    sessionSampleRate: 100,
+    sessionSampleRate: 100
   })
 
   useEffect(() => {
     rudderInitialize()
   }, [])
-  
+
   return (
     <>
       <NextHead>

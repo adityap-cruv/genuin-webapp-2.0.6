@@ -53,13 +53,12 @@ export const TopNav = ({
               onClick={() => {
                 showGetAppModal()
 
-                //analyticsService for get_app
+                // analyticsService for get_app
                 const event_name = 'get_app'
                 const event_details = {
                   page: window.location.href
                 }
-                analyticsService({ eventDetails: event_details, eventName: event_name})
-    
+                analyticsService({ eventDetails: event_details, eventName: event_name })
               }}
               style={{
                 height: 32,
@@ -78,14 +77,12 @@ export const TopNav = ({
                 variant='primary'
                 className='me-3'
                 onClick={() => {
-  
-                  //analyticsService for get_app
+                  // analyticsService for get_app
                   const event_name = 'get_app'
                   const event_details = {
                     page: window.location.href
                   }
-                  analyticsService({ eventDetails: event_details, eventName: event_name})
-      
+                  analyticsService({ eventDetails: event_details, eventName: event_name })
                 }}
                 style={{
                   height: 32,

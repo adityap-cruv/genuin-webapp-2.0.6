@@ -6,7 +6,7 @@ import { Flex, useBreakpointValue, Image } from '@chakra-ui/react'
 import { analyticsService } from '../basic/analytics_service'
 
 // for debounceTimeout function
-let debounceTimeout = null;
+let debounceTimeout = null
 
 export const Player = ({
   video_id_to_use,
@@ -43,10 +43,10 @@ export const Player = ({
   const [triggerPlayCount, setTriggetPlayCount] = useState(false)
   const [duration, setDuration] = useState(0)
   const pad = useBreakpointValue({ base: true, xs: true, sm: true, md: true, lg: false, xl: false })
-  const videoPlayingDetails = useRef({duration: 0, currentTime: 0})
+  const videoPlayingDetails = useRef({ duration: 0, currentTime: 0 })
 
-  const updateVideoPlayingDetail =  ({duration= null, currentTime= null}) => {
-    if(duration) {
+  const updateVideoPlayingDetail = ({ duration = null, currentTime = null }) => {
+    if (duration) {
       videoPlayingDetails.current.duration = duration
     } else {
       videoPlayingDetails.current.currentTime = currentTime
@@ -131,27 +131,26 @@ export const Player = ({
         description={shortDescription}
         profilePic={profilePic}
         rtProfilePic = {rtProfileImage}
-        //analyticsService for getNextVideo 'video_watch'
+        // analyticsService for getNextVideo 'video_watch'
         getNextVideo = {() => {
           getNextVideo()
 
-          clearTimeout(debounceTimeout);
+          clearTimeout(debounceTimeout)
           debounceTimeout = setTimeout(() => {
-          
-            const event_name = 'video_watch';
+            const event_name = 'video_watch'
             const event_details = {
               video_share_string: video_id_to_use,
               loop_share_string: roundTableId,
               page: window.location.href,
               duration: Math.round(videoPlayingDetails.current.duration),
               watch_time: Math.round(videoPlayingDetails.current.currentTime)
-            };
-            analyticsService({ eventDetails: event_details, eventName: event_name });
-        
-            debounceTimeout = null;
-          }, 500); 
+            }
+            analyticsService({ eventDetails: event_details, eventName: event_name })
+
+            debounceTimeout = null
+          }, 500)
         }}
-        //analyticsService for getPrevVideo 'video_watch'
+        // analyticsService for getPrevVideo 'video_watch'
         getPrevVideo={() => {
           getPrevVideo()
 
@@ -164,29 +163,27 @@ export const Player = ({
             watch_time: Math.round(videoPlayingDetails.current.currentTime)
           }
           analyticsService({ eventDetails: event_details, eventName: event_name })
-
         }}
         roundTableMode={roundTableMode}
         autoplay={autoplay}
         autoJumpToNextVideo={autoJumpToNextVideo}
-        //analyticsService for onEnded 'video_watch'
+        // analyticsService for onEnded 'video_watch'
         onEnded = {() => {
           onEnded()
 
-          clearTimeout(debounceTimeout);
+          clearTimeout(debounceTimeout)
           debounceTimeout = setTimeout(() => {
-            
-            const event_name = 'video_watch';
+            const event_name = 'video_watch'
             const event_details = {
               video_share_string: video_id_to_use,
               page: window.location.href,
               duration: Math.round(videoPlayingDetails.current.duration),
               watch_time: Math.round(videoPlayingDetails.current.currentTime)
-            };
-            analyticsService({ eventDetails: event_details, eventName: event_name });
-        
-            debounceTimeout = null;
-          }, 500); 
+            }
+            analyticsService({ eventDetails: event_details, eventName: event_name })
+
+            debounceTimeout = null
+          }, 500)
         }}
         roundTableName={roundTableName}
         roundTableId={roundTableId}

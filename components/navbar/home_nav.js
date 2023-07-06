@@ -54,13 +54,12 @@ export const HomeNav = ({
           onClick={() => {
             showGetAppModal(true)
 
-            //analyticsService for get_app
+            // analyticsService for get_app
             const event_name = 'get_app'
             const event_details = {
               page: window.location.href
             }
             analyticsService({ eventDetails: event_details, eventName: event_name })
-
           }}
           style={{
             fontSize: 17,

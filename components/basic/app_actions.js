@@ -169,7 +169,6 @@ export const AppActions = ({
       {roundTable ? (
         <>
           <li onClick={() => {
-
             // analytics service 'comment' event
             const event_name = 'comment'
             const event_details = {
@@ -211,7 +210,6 @@ export const AppActions = ({
             />
           </li>
           <li onClick={() => {
-
             // analytics service 'subscribe' event
             const event_name = 'subscribe'
             const event_details = {
@@ -322,34 +320,33 @@ export const ShareButton = ({
     <Menu placement='right' preventOverflow gutter={40}>
       <>
         <MenuButton onClick={() => {
-
           // analytics service 'share' event
           const event_name = 'share'
           const event_details = {
-            page: window.location.href,
+            page: window.location.href
           }
           if (sourceId !== '') {
-            event_details.video_share_string = sourceId;
+            event_details.video_share_string = sourceId
           }
           if (roundTableId !== '') {
-            event_details.loop_share_string = roundTableId;
+            event_details.loop_share_string = roundTableId
           }
           if (genuin_nickname && genuin_nickname.trim() !== '') {
-            event_details.genuin_nickname = genuin_nickname;
+            event_details.genuin_nickname = genuin_nickname
           }
 
           analyticsService({ eventDetails: event_details, eventName: event_name })
 
           copy()
         }}
-          title="copy link!"
-          style={{
-            width: fullWidth ? '100%' : 'auto',
-            height: fullWidth ? '100%' : 'auto'
-          }}
-          pos='relative'
-          {...props}
-          textAlign='-webkit-center'>
+        title="copy link!"
+        style={{
+          width: fullWidth ? '100%' : 'auto',
+          height: fullWidth ? '100%' : 'auto'
+        }}
+        pos='relative'
+        {...props}
+        textAlign='-webkit-center'>
           <Image
             title="copy link!"
             size={6}
@@ -417,20 +414,19 @@ export const MobileShareButton = ({
       px={1}
       minW={8}
       onClick={() => {
-
-        //analytics service 'share' event
+        // analytics service 'share' event
         const event_name = 'share'
         const event_details = {
-          page: window.location.href,
+          page: window.location.href
         }
         if (sourceId !== '') {
-          event_details.video_share_string = sourceId;
+          event_details.video_share_string = sourceId
         }
         if (roundTableId !== '') {
-          event_details.loop_share_string = roundTableId;
+          event_details.loop_share_string = roundTableId
         }
         if (genuin_nickname && genuin_nickname.trim() !== '') {
-          event_details.genuin_nickname = genuin_nickname;
+          event_details.genuin_nickname = genuin_nickname
         }
         analyticsService({ eventDetails: event_details, eventName: event_name })
 
