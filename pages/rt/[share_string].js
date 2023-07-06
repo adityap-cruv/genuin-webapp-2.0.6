@@ -407,8 +407,7 @@ const RoundTable = ({
                         px={5}
                         minW="90px"
                         onClick={() => {
-
-                          //analytics service 'subscribe' event
+                          // analytics service 'subscribe' event
                           const event_name = 'subscribe'
                           const event_details = {
                             video_share_string: '',

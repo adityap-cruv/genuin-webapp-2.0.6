@@ -24,7 +24,7 @@ const MobileIndexBottomComponent = ({
           } else {
             window.open('https://install.begenuin.com/86sn/cgs')
 
-            //analyticsService for get_app
+            // analyticsService for get_app
             const event_name = 'get_app'
             const event_details = {
               page: window.location.href

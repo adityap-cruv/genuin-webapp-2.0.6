@@ -711,8 +711,7 @@ const Profile = ({
                             h={8}
                             px={5}
                             onClick={() => {
-
-                              //analytics service 'subscribe' event
+                              // analytics service 'subscribe' event
                               const event_name = 'message'
                               const event_details = {
                                 genuin_nickname: nickname,

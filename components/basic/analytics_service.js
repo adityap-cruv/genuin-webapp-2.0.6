@@ -8,7 +8,7 @@ import {
   isWindows,
   isAndroid
 } from 'react-device-detect'
-import { datadogLogs } from "@datadog/browser-logs";
+import { datadogLogs } from '@datadog/browser-logs'
 
 // Set device type
 let deviceType = ''
@@ -39,24 +39,23 @@ if (isMacOs) {
 }
 
 // fetch geodetails from api
-let geoip;
-async function fetchGeoDetails() {
+let geoip
+async function fetchGeoDetails () {
   try {
-    const response = await fetch(`${process.env.apiurl}/api/v3/public/ipconfig`);
-    const data = await response.json();
-    geoip = data.data;
-    return data.data;
+    const response = await fetch(`${process.env.apiurl}/api/v3/public/ipconfig`)
+    const data = await response.json()
+    geoip = data.data
+    return data.data
   } catch (error) {
-    console.error('Failed to fetch IP address:', error);
-    return '';
+    console.error('Failed to fetch IP address:', error)
+    return ''
   }
 }
-fetchGeoDetails();
+fetchGeoDetails()
 
-let userDetails = {};
+const userDetails = {}
 
 export const analyticsService = async ({ eventName, eventDetails }) => {
-
   // Construct device_details object
   const deviceDetails = {
     user_agent: navigator.userAgent,
