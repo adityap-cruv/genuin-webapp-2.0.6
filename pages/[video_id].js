@@ -124,7 +124,6 @@ const Video = (props) => {
   const onClick = () => {
     setMuted(old => !old)
   }
-
   return !videoUrl ? (
     <Error />
   ) : (
@@ -189,6 +188,7 @@ Video.getInitialProps = async ({ query: { video_id, geshc } }) => {
     .then((response) => {
       const resObj = response.data.data
       const video_id_to_use = resObj.share_string
+      console.log('res:::::', resObj)
       Object.assign(resObj, {
         video_id,
         video_id_to_use,
