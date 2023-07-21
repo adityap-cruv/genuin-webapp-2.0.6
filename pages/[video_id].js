@@ -89,10 +89,10 @@ const Video = (props) => {
     },
     description: ld_description,
     inLanguage: 'en-US',
-    uploadDate: created_at,
-    dateCreated: created_at,
-    dateModified: updated_at,
-    datePublished: created_at,
+    uploadDate: new Date(created_at).toISOString(),
+    dateCreated: new Date(created_at).toISOString(),
+    dateModified: new Date(updated_at).toISOString(),
+    datePublished: new Date(created_at).toISOString(),
     potentialAction: [
       {
         '@type': 'WatchAction',
@@ -124,7 +124,6 @@ const Video = (props) => {
   const onClick = () => {
     setMuted(old => !old)
   }
-
   return !videoUrl ? (
     <Error />
   ) : (

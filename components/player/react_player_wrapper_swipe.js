@@ -18,6 +18,9 @@ import icArrowRight from '../../assets/images/video-more-options/ic-arrow-right.
 import { FontStyle } from '../../constants/font_style'
 import icPlay from '../../assets/icons/icon-play.svg'
 import icPause from '../../assets/icons/icon-pause.svg'
+import { analyticsService } from '../basic/analytics_service'
+
+let debounceTimeout = null
 
 export const ReactPlayerWrapper = ({
   videoUrl,
@@ -63,6 +66,7 @@ export const ReactPlayerWrapper = ({
   const [isPlayingDebounced] = useDebounce(isPlaying, 65)
   const [isMutedDebounced] = useDebounce(muted, 500)
   const [displayThumbnail, setDisplayThumbnail] = useState(true)
+  const videoPlayingDetails = useRef({ duration: 0, currentTime: 0 })
 
   // # this is for animation of bottom button(download button);
   const bottomButtonAnimationController = contextReel && useAnimationControls()
@@ -190,6 +194,21 @@ export const ReactPlayerWrapper = ({
   const handleExitViewport = function () {
     setIsPlaying(false)
     setDisplayThumbnail(true)
+
+    // analytics service 'video_watch' event
+    clearTimeout(debounceTimeout)
+    debounceTimeout = setTimeout(() => {
+      const event_name = 'video_watch'
+      const event_details = {
+        video_share_string: videos[currentVideoIndex].share_string,
+        loop_share_string: roundTableId,
+        page: window.location.href,
+        duration: Math.round(videoPlayingDetails.current.duration),
+        watch_time: Math.round(videoPlayingDetails.current.currentTime)
+      }
+      analyticsService({ eventDetails: event_details, eventName: event_name })
+      debounceTimeout = null
+    }, 500)
   }
   return (
     <div
@@ -213,8 +232,12 @@ export const ReactPlayerWrapper = ({
         isPlaying={isPlaying}
         onClick={handleOnClick}
         muted={muted}
-        onDuration={setDurationWrapper}
-        onProgress={setProgressWrapper}
+        onDuration={(duration) => {
+          videoPlayingDetails.current.duration = duration
+        }}
+        onTimeUpdate={(time) => {
+          videoPlayingDetails.current.currentTime = time
+        }}
         onEnded={() => {
           scrollToNextVideo()
         }}

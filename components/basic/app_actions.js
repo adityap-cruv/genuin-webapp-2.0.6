@@ -19,6 +19,7 @@ import subscribePlus from '../../assets/images/video-more-options/ic-subscribe-p
 import network from '../../assets/images/video-more-options/ic-network.svg'
 import roundtable from '../../assets/images/video-more-options/ic-roundtable.svg'
 import { isMobile } from 'react-device-detect'
+import { analyticsService } from './analytics_service'
 
 export const AppActions = ({
   showGetAppModal,
@@ -35,7 +36,6 @@ export const AppActions = ({
   sourceId
 }) => {
   const mobile = useBreakpointValue({ base: true, sm: false })
-
   const getClickableLink = (link = '') => {
     if (link !== null && link !== undefined) {
       return link.startsWith('http://') || link.startsWith('https://')
@@ -57,7 +57,16 @@ export const AppActions = ({
       {!roundTable ? (
         <>
           <li onClick={() => {
+            // analytics service 'save' event
+            const event_name = 'save'
+            const event_details = {
+              video_share_string: sourceId,
+              loop_share_string: roundTableId,
+              page: window.location.href
+            }
+
             if (isMobile) {
+              analyticsService({ eventDetails: event_details, eventName: event_name })
               generateDeepLink({
                 action: 'save',
                 contentType: 'pv',
@@ -74,6 +83,7 @@ export const AppActions = ({
               }).then(link => openGeneratedLink(link))
                 .catch(e => window.open(process.env.hostname))
             } else {
+              analyticsService({ eventDetails: event_details, eventName: event_name })
               showGetAppModal(() => (
                 <>
                   Get the app to <b>bookmark</b> this video.
@@ -98,6 +108,7 @@ export const AppActions = ({
                 white
                 fullWidth={true}
                 deepLinkParams={deepLinkParams}
+                sourceId={sourceId}
               />
             ) : (
               <ShareButton
@@ -105,11 +116,21 @@ export const AppActions = ({
                 description={videoDescription}
                 title={videoTitle}
                 fullWidth={true}
+                sourceId={sourceId}
               />
             )}
           </li>
           <li onClick={() => {
+            // analytics service 'reply' event
+            const event_name = 'reply'
+            const event_details = {
+              video_share_string: sourceId,
+              loop_share_string: roundTableId,
+              page: window.location.href
+            }
+
             if (isMobile) {
+              analyticsService({ eventDetails: event_details, eventName: event_name })
               generateDeepLink({
                 action: 'reply',
                 contentType: 'pv',
@@ -126,6 +147,7 @@ export const AppActions = ({
               }).then(link => openGeneratedLink(link))
                 .catch(e => window.open(process.env.hostname))
             } else {
+              analyticsService({ eventDetails: event_details, eventName: event_name })
               showGetAppModal(() => (
                 <>
                   Get the app to reply to <b>{'@' + userName}</b>
@@ -147,7 +169,16 @@ export const AppActions = ({
       {roundTable ? (
         <>
           <li onClick={() => {
+            // analytics service 'comment' event
+            const event_name = 'comment'
+            const event_details = {
+              video_share_string: sourceId,
+              loop_share_string: roundTableId,
+              page: window.location.href
+            }
+
             if (isMobile) {
+              analyticsService({ eventDetails: event_details, eventName: event_name })
               generateDeepLink({
                 action: 'comment',
                 contentType: 'loop',
@@ -164,6 +195,7 @@ export const AppActions = ({
               }).then(link => openGeneratedLink(link))
                 .catch(e => window.open(process.env.hostname))
             } else {
+              analyticsService({ eventDetails: event_details, eventName: event_name })
               showGetAppModal(() => (
                 <>Get the app to watch the comments on this video.</>
               ))
@@ -178,7 +210,16 @@ export const AppActions = ({
             />
           </li>
           <li onClick={() => {
+            // analytics service 'subscribe' event
+            const event_name = 'subscribe'
+            const event_details = {
+              video_share_string: sourceId,
+              loop_share_string: roundTableId,
+              page: window.location.href
+            }
+
             if (isMobile) {
+              analyticsService({ eventDetails: event_details, eventName: event_name })
               generateDeepLink({
                 action: 'subscribe',
                 contentType: 'loop',
@@ -191,10 +232,11 @@ export const AppActions = ({
                 sourceId,
                 utmCampaign: 'share',
                 utmMedium: 'web',
-                utmSource: deepLinkParams.hostName,
+                utmSource: deepLinkParams.hostName
               }).then(link => openGeneratedLink(link))
                 .catch(e => window.open(process.env.hostname))
             } else {
+              analyticsService({ eventDetails: event_details, eventName: event_name })
               showGetAppModal(() => (
                 <>
                   Get the app to subscribe to <b>{roundTableName ?? ''}</b>{' '}
@@ -220,6 +262,8 @@ export const AppActions = ({
                 white
                 fullWidth={true}
                 deepLinkParams={deepLinkParams}
+                sourceId={sourceId}
+                roundTableId={roundTableId}
               />
             ) : (
               <ShareButton
@@ -227,6 +271,8 @@ export const AppActions = ({
                 description={videoDescription}
                 title={videoTitle}
                 fullWidth={true}
+                sourceId={sourceId}
+                roundTableId={roundTableId}
               />
             )}
           </li>
@@ -252,10 +298,12 @@ export const ShareButton = ({
   title,
   variation = 'white',
   fullWidth = false,
+  roundTableId = '',
+  sourceId = '',
+  genuin_nickname = '',
   ...props
 }) => {
   const [isCopied, copy] = useClipboard(url, { successDuration: 1000 })
-
   useEffect(() => {
     if (isCopied) {
       const key = toast('Link copied!', {
@@ -271,15 +319,34 @@ export const ShareButton = ({
   return (
     <Menu placement='right' preventOverflow gutter={40}>
       <>
-        <MenuButton onClick={copy}
-          title="copy link!"
-          style={{
-            width: fullWidth ? '100%' : 'auto',
-            height: fullWidth ? '100%' : 'auto'
-          }}
-          pos='relative'
-          {...props}
-          textAlign='-webkit-center'>
+        <MenuButton onClick={() => {
+          // analytics service 'share' event
+          const event_name = 'share'
+          const event_details = {
+            page: window.location.href
+          }
+          if (sourceId !== '') {
+            event_details.video_share_string = sourceId
+          }
+          if (roundTableId !== '') {
+            event_details.loop_share_string = roundTableId
+          }
+          if (genuin_nickname && genuin_nickname.trim() !== '') {
+            event_details.genuin_nickname = genuin_nickname
+          }
+
+          analyticsService({ eventDetails: event_details, eventName: event_name })
+
+          copy()
+        }}
+        title="copy link!"
+        style={{
+          width: fullWidth ? '100%' : 'auto',
+          height: fullWidth ? '100%' : 'auto'
+        }}
+        pos='relative'
+        {...props}
+        textAlign='-webkit-center'>
           <Image
             title="copy link!"
             size={6}
@@ -326,7 +393,10 @@ export const MobileShareButton = ({
   url,
   white = false,
   fullWidth = false,
-  deepLinkParams = null
+  deepLinkParams = null,
+  roundTableId = '',
+  sourceId = '',
+  genuin_nickname = ''
 }) => {
   const { isSupported, loading, share } = useWebShare()
 
@@ -344,6 +414,22 @@ export const MobileShareButton = ({
       px={1}
       minW={8}
       onClick={() => {
+        // analytics service 'share' event
+        const event_name = 'share'
+        const event_details = {
+          page: window.location.href
+        }
+        if (sourceId !== '') {
+          event_details.video_share_string = sourceId
+        }
+        if (roundTableId !== '') {
+          event_details.loop_share_string = roundTableId
+        }
+        if (genuin_nickname && genuin_nickname.trim() !== '') {
+          event_details.genuin_nickname = genuin_nickname
+        }
+        analyticsService({ eventDetails: event_details, eventName: event_name })
+
         // if (deepLinkParams) {
         //   generateDeepLink({
         //     utmCampaign: 'share',
@@ -362,7 +448,7 @@ export const MobileShareButton = ({
         //     if (isSupported && !loading) share({ url })
         //   })
         // } else {
-          if (isSupported && !loading) share({ url })
+        if (isSupported && !loading) share({ url })
         // }
       }}
     />

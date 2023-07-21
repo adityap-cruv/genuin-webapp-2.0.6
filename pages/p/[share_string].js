@@ -42,6 +42,7 @@ import dynamic from 'next/dynamic'
 import { FontStyle } from '../../constants/font_style'
 import { BasicColors } from '../../constants/colors'
 import { generateDeepLink, openGeneratedLink } from '../../components/utility'
+import { analyticsService } from '../../components/basic/analytics_service'
 // testing
 const DownloadAppPopup = dynamic(() => import('../../components/download_app_popup'))
 
@@ -710,7 +711,15 @@ const Profile = ({
                             h={8}
                             px={5}
                             onClick={() => {
+                              // analytics service 'subscribe' event
+                              const event_name = 'message'
+                              const event_details = {
+                                genuin_nickname: nickname,
+                                page: window.location.href
+                              }
+
                               if (isMobile) {
+                                analyticsService({ eventDetails: event_details, eventName: event_name })
                                 generateDeepLink({
                                   action: 'dm',
                                   contentType: 'profile',
@@ -728,6 +737,7 @@ const Profile = ({
                                 })
                                   .catch(e => window.open(process.env.hostname))
                               } else {
+                                analyticsService({ eventDetails: event_details, eventName: event_name })
                                 showGetAppToSendMessage()
                               }
                             }}
@@ -751,6 +761,7 @@ const Profile = ({
                               url={currentUrl}
                               description='Hello, visit this profile!'
                               title='Genuin on web'
+                              genuin_nickname= {nickname}
                             />
                           ) : (
                             <ShareButton
@@ -766,6 +777,7 @@ const Profile = ({
                               borderRadius='md'
                               variation='blue'
                               className="profile_share"
+                              genuin_nickname= {nickname}
                             />
                           )}
                         </Flex>

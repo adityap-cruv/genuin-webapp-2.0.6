@@ -3,6 +3,7 @@ import { Button } from 'react-bootstrap'
 import trayArrow from '../../assets/images/tray_arrow.svg'
 import { motion } from 'framer-motion'
 import { isDesktop } from 'react-device-detect'
+import { analyticsService } from '../basic/analytics_service'
 
 const MobileIndexBottomComponent = ({
   showTray = true,
@@ -22,6 +23,14 @@ const MobileIndexBottomComponent = ({
             showModalAppDownload()
           } else {
             window.open('https://install.begenuin.com/86sn/cgs')
+
+            // analyticsService for get_app
+            const event_name = 'get_app'
+            const event_details = {
+              page: window.location.href
+            }
+
+            analyticsService({ eventDetails: event_details, eventName: event_name })
           }
         }}
         style={{

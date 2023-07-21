@@ -65,12 +65,12 @@ const Videos = ({
       t: infy_params.t,
       c: infy_params.c,
       ad_breaks: infy_params.ad_breaks,
-      domain_sp: "begenuin.com",
-      name_sp: "Genuin",
+      domain_sp: 'begenuin.com',
+      name_sp: 'Genuin',
       // site_page: infy_params.site_page,
-      site_id: "begenuin.com",
-      domain_s: "begenuin.com",
-      name_s: "Genuin",
+      site_id: 'begenuin.com',
+      domain_s: 'begenuin.com',
+      name_s: 'Genuin',
       site_keywords: infy_params.site_keywords,
       site_publisher_cat: infy_params.site_publisher_cat,
       device_geo_zip: infy_params.device_geo_zip,
@@ -83,7 +83,7 @@ const Videos = ({
       device_os: deviceOS,
       device_model: infy_params.device_model,
       device_devicetype: deviceType,
-      device_geo_country: infy_params.device_geo_country,
+      device_geo_country: infy_params.device_geo_country
       // pname: infy_params.pname,
       // pdomain: infy_params.pdomain
     }

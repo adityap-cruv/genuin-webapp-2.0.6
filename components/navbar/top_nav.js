@@ -5,6 +5,7 @@ import logoBlue from '../../assets/images/logo_header_new_blue.svg'
 import { useBreakpointValue, Link } from '@chakra-ui/react'
 import { BurgerMenu } from './burger_menu'
 import { appStoreLink } from '../../config'
+import { analyticsService } from '../basic/analytics_service'
 
 export const TopNav = ({
   showGetAppModal,
@@ -49,7 +50,16 @@ export const TopNav = ({
             <Button
               variant='primary'
               className='me-3'
-              onClick={showGetAppModal}
+              onClick={() => {
+                showGetAppModal()
+
+                // analyticsService for get_app
+                const event_name = 'get_app'
+                const event_details = {
+                  page: window.location.href
+                }
+                analyticsService({ eventDetails: event_details, eventName: event_name })
+              }}
               style={{
                 height: 32,
                 padding: '4px 16px',
@@ -66,6 +76,14 @@ export const TopNav = ({
               <Button
                 variant='primary'
                 className='me-3'
+                onClick={() => {
+                  // analyticsService for get_app
+                  const event_name = 'get_app'
+                  const event_details = {
+                    page: window.location.href
+                  }
+                  analyticsService({ eventDetails: event_details, eventName: event_name })
+                }}
                 style={{
                   height: 32,
                   padding: '4px 16px',

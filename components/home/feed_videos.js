@@ -92,7 +92,7 @@ const Videos = ({
         ? <h1>Nothing to show here</h1>
         : (<>
           {videos.slice(0, indexTo).map((video, id) => (
-            <>
+            <React.Fragment key={videos[id].conversation_id}>
               <Player
                 uniqueKey={videos[id].conversation_id}
                 key={videos && (videos[0] && videos[0].conversation_id)}
@@ -140,7 +140,7 @@ const Videos = ({
                 />
               </Player>
 
-            </>
+            </React.Fragment>
 
           ))}
         </>)

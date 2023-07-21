@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import '../components/styles.css'
 import { ToastContainer } from 'react-toastify'
@@ -8,6 +8,10 @@ import favicon from '../assets/images/favicon.ico'
 import NextHead from 'next/head'
 import { BasicColors } from '../constants/colors'
 import { initializeApp } from 'firebase/app'
+import { rudderInitialize } from '../components/utility'
+import { datadogRum } from '@datadog/browser-rum'
+import { datadogLogs } from '@datadog/browser-logs'
+
 const theme = extendTheme({
   fonts: {
     body: 'Avenir Next, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji,Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji'
@@ -26,12 +30,41 @@ function MyApp ({ Component, pageProps }) {
     measurementId: 'G-207GT5P81F'
   }
   initializeApp(firebaseConfig)
+
+  datadogRum.init({
+    applicationId: process.env.applicationId,
+    clientToken: process.env.clientToken,
+    site: process.env.site,
+    service: process.env.service,
+    env: process.env.env,
+    // Specify a version number to identify the deployed version of your application in Datadog
+    // version: '1.0.0',
+    sessionSampleRate: 100,
+    sessionReplaySampleRate: 20,
+    trackUserInteractions: true,
+    trackResources: true,
+    trackLongTasks: true,
+    defaultPrivacyLevel: 'mask-user-input'
+  })
+  datadogRum.startSessionReplayRecording()
+  datadogLogs.init({
+    clientToken: process.env.clientToken,
+    site: process.env.site,
+    service: process.env.service,
+    env: process.env.env || 'qa',
+    forwardErrorsToLogs: true,
+    sessionSampleRate: 100
+  })
+
+  useEffect(() => {
+    rudderInitialize()
+  }, [])
+
   return (
     <>
       <NextHead>
         <link rel='shortcut icon' href={favicon.src} type='image/x-icon' />
         <meta name='theme-color' content={BasicColors.secondaryColor} />
-        //! It is for testing purpose only
         <meta name='apple-mobile-web-app-status-bar-style' content='default' />
         <meta name='mobile-web-app-capable' content='yes'/>
         {process.env.env === 'qa' && <meta name="robots" content="noindex, nofollow"></meta>}

@@ -62,3 +62,51 @@ export const openGeneratedLink = (link = '') => {
   element.target = '_self'
   element.click()
 }
+
+export async function rudderInitialize () {
+  (function () {
+    let e = (window.rudderanalytics = window.rudderanalytics || [])
+    if (!Array.isArray(e)) {
+      e = []
+      window.rudderanalytics = e
+    }
+    e.methods = [
+      'load',
+      'page',
+      'track',
+      'identify',
+      'alias',
+      'group',
+      'ready',
+      'reset',
+      'getAnonymousId',
+      'setAnonymousId',
+      'getUserId',
+      'getUserTraits',
+      'getGroupId',
+      'getGroupTraits',
+      'startSession',
+      'endSession'
+    ]
+    e.factory = function (t) {
+      return function () {
+        e.push([t].concat(Array.prototype.slice.call(arguments)))
+      }
+    }
+    for (let t = 0; t < e.methods.length; t++) {
+      const r = e.methods[t]
+      e[r] = e.factory(r)
+    }
+    e.loadJS = function (e, t) {
+      const r = document.createElement('script')
+      r.type = 'text/javascript'
+      r.async = true
+      r.src = 'https://cdn.rudderlabs.com/v1.1/rudder-analytics.min.js'
+      const a = document.getElementsByTagName('script')[0]
+      a.parentNode.insertBefore(r, a)
+    }
+    e.loadJS()
+    e.load('2Rb3KQGzR3qyC6R3ljX4FkmBqZf', 'https://rudderstack.begenuin.com/')
+    e.page()
+  })()
+}
