@@ -101,6 +101,11 @@ const Terms = () => {
                     Services.</li>
                 </ol>
               </li>
+              {/* This is for experimental use only we have to remove in future.... */}
+              <li>
+                <div className="gen-ext" data-tag-id="jimit_dev" data-company-id="1129" style={{ height: '600px', width: '300px' }} />
+                <script src="https://genuin-media-qa.s3.us-west-2.amazonaws.com/cxr/gen_ext.min.js"></script>
+              </li>
               <li>
                 <p style={titleStyle}>Your Account</p>
                 <ol type="a" style={paddingStyle}>
