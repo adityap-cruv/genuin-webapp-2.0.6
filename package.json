@@ -33,6 +33,7 @@
     "genuin_player": "https://genuin-media-qa.s3.us-west-2.amazonaws.com/genuin-player/genuin_player-1.0.5.tgz",
     "next": "^12.2.5",
     "next-seo": "^4.29.0",
+    "openplayerjs": "^2.13.0",
     "react": "^18.2.0",
     "react-bootstrap": "~2.4.0",
     "react-device-detect": "^2.2.3",

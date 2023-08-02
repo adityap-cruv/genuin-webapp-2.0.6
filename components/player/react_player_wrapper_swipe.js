@@ -28,6 +28,7 @@ export const ReactPlayerWrapper = ({
   videoThumbnail,
   videos,
   currentVideoIndex,
+  currentVideoIndexRef,
   userName,
   userId,
   description,
@@ -52,8 +53,6 @@ export const ReactPlayerWrapper = ({
   shareUrl,
   muted,
   onClick,
-  loadMoreVideos,
-  setCurrentVideoIndex,
   uniqueKey = null,
   disableWatch = false,
   contextReel, //! this is temporary.
@@ -65,19 +64,14 @@ export const ReactPlayerWrapper = ({
   const [isPlaying, setIsPlaying] = useState(autoplay)
   const [isPlayingDebounced] = useDebounce(isPlaying, 65)
   const [isMutedDebounced] = useDebounce(muted, 500)
-  const [displayThumbnail, setDisplayThumbnail] = useState(true)
   const videoPlayingDetails = useRef({ duration: 0, currentTime: 0 })
 
   // # this is for animation of bottom button(download button);
   const bottomButtonAnimationController = contextReel && useAnimationControls()
   const bottomButtonBackgroundColorController = contextReel && useAnimationControls()
   const startAnimation = () => {
-    setTimeout(() => {
-      bottomButtonAnimationController.start({ y: 0, transition: { duration: 1 } })
-    }, 3000)
-    setTimeout(() => {
-      bottomButtonBackgroundColorController.start({ backgroundColor: 'rgba(6, 69, 255, 1)', transition: { duration: 0.5 } })
-    }, 6000)
+    bottomButtonAnimationController.start({ y: 0, transition: { duration: 1, delay: 3 } })
+    bottomButtonBackgroundColorController.start({ backgroundColor: 'rgba(6, 69, 255, 1)', transition: { duration: 0.5, delay: 6 } })
   }
 
   const resetAnimation = () => {
@@ -107,17 +101,17 @@ export const ReactPlayerWrapper = ({
 
   const mobile = useBreakpointValue({ base: true, md: false })
 
-  const setProgressWrapper = useCallback(
-    (event) => {
-      setCurrentProgress(Number.parseFloat(event.played).toFixed(2))
-      onProgressRef?.current?.(event)
-    },
-    [setCurrentProgress]
-  )
+  // const setProgressWrapper = useCallback(
+  //   (event) => {
+  //     setCurrentProgress(Number.parseFloat(event.played).toFixed(2))
+  //     onProgressRef?.current?.(event)
+  //   },
+  //   [setCurrentProgress]
+  // )
 
-  const setDurationWrapper = useCallback((event) => {
-    onDurationRef?.current?.(event)
-  })
+  // const setDurationWrapper = useCallback((event) => {
+  //   onDurationRef?.current?.(event)
+  // })
 
   // var delay;
   useEffect(() => {
@@ -161,7 +155,7 @@ export const ReactPlayerWrapper = ({
 
   const getTimeDiff = () => {
     let time = Math.floor(
-      (Date.now() - Number(videos[currentVideoIndex]?.conversation_at)) / 1000
+      (Date.now() - Number(videos[currentVideoIndexRef.current]?.conversation_at)) / 1000
     )
     if (time < 60) {
       return `${time}s`
@@ -182,8 +176,7 @@ export const ReactPlayerWrapper = ({
   }
 
   const handleEnterViewport = function () {
-    loadMoreVideos(currentVideoIndex)
-    setCurrentVideoIndex(currentVideoIndex)
+    currentVideoIndexRef.current = currentVideoIndex
     setIsPlaying(true)
     if (contextReel) {
       resetAnimation()
@@ -193,14 +186,12 @@ export const ReactPlayerWrapper = ({
 
   const handleExitViewport = function () {
     setIsPlaying(false)
-    setDisplayThumbnail(true)
-
     // analytics service 'video_watch' event
     clearTimeout(debounceTimeout)
     debounceTimeout = setTimeout(() => {
       const event_name = 'video_watch'
       const event_details = {
-        video_share_string: videos[currentVideoIndex].share_string,
+        video_share_string: videos[currentVideoIndexRef.current].share_string,
         loop_share_string: roundTableId,
         page: window.location.href,
         duration: Math.round(videoPlayingDetails.current.duration),
@@ -217,21 +208,11 @@ export const ReactPlayerWrapper = ({
         color: 'white'
       }}
     >
-      {displayThumbnail && <Box
-        backgroundImage={`url(${videoThumbnail})`}
-        backgroundColor={videoThumbnail ? 'transparent' : 'lightgray'}
-        backgroundRepeat='no-repeat'
-        backgroundSize='cover'
-        backgroundPosition='center'
-        width='100%'
-        h='100%'
-        filter='blur(5px)'
-      />}
       <DynamicPlayer
-        currentVideoIndex={currentVideoIndex}
-        isPlaying={isPlaying}
+        currentVideoIndexRef={currentVideoIndexRef}
         onClick={handleOnClick}
         muted={muted}
+        poster={videoThumbnail}
         onDuration={(duration) => {
           videoPlayingDetails.current.duration = duration
         }}
@@ -241,17 +222,8 @@ export const ReactPlayerWrapper = ({
         onEnded={() => {
           scrollToNextVideo()
         }}
-        onPlaying={
-          () => {
-            setDisplayThumbnail(false)
-          }
-        }
         loop={loop}
         url={videoUrl}
-        uniqueKey={!uniqueKey
-          ? (videos[currentVideoIndex].video_type === 'rt'
-            ? videos[currentVideoIndex].video.conversation_id
-            : videos[currentVideoIndex].video.video_id) : uniqueKey}
       />
       {!contextReel
         ? <div style={{
@@ -294,7 +266,7 @@ export const ReactPlayerWrapper = ({
             h={10}
           >
             <Text fontWeight="bold" fontSize={17}>
-              {videos[currentVideoIndex] && `${getTimeDiff()}`}
+              {videos[currentVideoIndexRef.current] && `${getTimeDiff()}`}
             </Text>
             <Link target="_blank" href={roundTableId}>
               <Flex
@@ -346,9 +318,9 @@ export const ReactPlayerWrapper = ({
                         backgroundColor="#0645FF"
                         borderRadius={10}
                         h={1}
-                        w={`${index < currentVideoIndex
+                        w={`${index < currentVideoIndexRef.current
                           ? 100
-                          : index === currentVideoIndex
+                          : index === currentVideoIndexRef.current
                             ? currentProgress
                             : 0
                         }%`}
@@ -360,9 +332,9 @@ export const ReactPlayerWrapper = ({
                         borderRadius={10}
                         h={1}
                         float="right"
-                        w={`${index > currentVideoIndex
+                        w={`${index > currentVideoIndexRef.current
                           ? 100
-                          : index === currentVideoIndex
+                          : index === currentVideoIndexRef.current
                             ? currentProgress
                             : 0
                         }%`}
@@ -374,7 +346,7 @@ export const ReactPlayerWrapper = ({
           </Flex>
           <Flex w="full" justifyContent="space-between" alignItems="center">
             <Text fontWeight={600} fontSize={17}>
-              {videos[currentVideoIndex]?.meta_data?.duration} Sec
+              {videos[currentVideoIndexRef.current]?.meta_data?.duration} Sec
             </Text>
             {direction === 'forward' ? (
               <Image

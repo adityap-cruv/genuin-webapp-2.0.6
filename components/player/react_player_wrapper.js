@@ -91,9 +91,9 @@ export const ReactPlayerWrapper = ({
     [setProgress]
   )
 
-  const setDurationWrapper = useCallback((event) => {
-    onDurationRef?.current?.(event)
-  })
+  // const setDurationWrapper = useCallback((event) => {
+  //   onDurationRef?.current?.(event)
+  // })
 
   // var delay;
   useEffect(() => {
