@@ -171,6 +171,7 @@ export const ReactPlayerWrapper = ({
     if ((videosLength - 3) === index) {
       loadMoreVideos()
     }
+    currentVideoIndexRef.current = index
     if (contextReel) {
       resetAnimation()
       startAnimation()
