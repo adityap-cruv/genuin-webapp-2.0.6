@@ -1,7 +1,7 @@
 export const DatadogConfigs = {
-   applicationId: '016bd0d6-20bb-4086-9567-52d5b982d5f2',
-   clientToken: 'pubcf1e888a735ff5456dea1a71b5ccb410',
+   applicationId: 'ecbb7522-17d9-40a0-978f-c8a5bda852f5',
+   clientToken: 'pubb213b537fe1d86f24f50881ff4867305',
    site: 'datadoghq.com',
    service: 'web-application',
-   env: 'prod',
+   env: 'qa'
 }
