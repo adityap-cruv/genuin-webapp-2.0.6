@@ -30,7 +30,7 @@ export const DynamicPlayer = ({
     })
 
     player.init().then(() => {
-      player.load().then(() => player.play())
+      player.load()
       playerRef.current = player
     })
   }, [])
