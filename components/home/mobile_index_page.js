@@ -191,10 +191,10 @@ const MobileIndexPage = ({
           opacity: latest > 0.98444 ? 1 : 0
         }}>
         <Videos
-          loadMoreVideos={loadMoreVideos}
           handleWheel={handleWheel}
           currentVideoIndexRef={currentVideoIndexRef}
           rtData={rtData}
+          loadMoreVideos={loadMoreVideos}
         />
       </div>
       <div

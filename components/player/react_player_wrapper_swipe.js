@@ -16,8 +16,6 @@ import icUnmute from '../../assets/images/video-more-options/ic-unmute.svg'
 import { DynamicPlayer } from './dynamic_player'
 import icArrowRight from '../../assets/images/video-more-options/ic-arrow-right.svg'
 import { FontStyle } from '../../constants/font_style'
-import icPlay from '../../assets/icons/icon-play.svg'
-import icPause from '../../assets/icons/icon-pause.svg'
 import { analyticsService } from '../basic/analytics_service'
 
 let debounceTimeout = null
@@ -27,8 +25,10 @@ export const ReactPlayerWrapper = ({
   onProgress,
   videoThumbnail,
   videos,
-  currentVideoIndex,
+  index,
   currentVideoIndexRef,
+  loadMoreVideos,
+  videosLength,
   userName,
   userId,
   description,
@@ -45,7 +45,6 @@ export const ReactPlayerWrapper = ({
   autoplay = true,
   autoJumpToNextVideo = false,
   watchRoundTable,
-  setWatchRoundtable,
   onClose,
   direction,
   setDirection,
@@ -53,7 +52,6 @@ export const ReactPlayerWrapper = ({
   shareUrl,
   muted,
   onClick,
-  uniqueKey = null,
   disableWatch = false,
   contextReel, //! this is temporary.
   duration,
@@ -61,8 +59,6 @@ export const ReactPlayerWrapper = ({
   loop = false
 }) => {
   const [currentProgress, setCurrentProgress] = useState(0)
-  const [isPlaying, setIsPlaying] = useState(autoplay)
-  const [isPlayingDebounced] = useDebounce(isPlaying, 65)
   const [isMutedDebounced] = useDebounce(muted, 500)
   const videoPlayingDetails = useRef({ duration: 0, currentTime: 0 })
 
@@ -80,12 +76,8 @@ export const ReactPlayerWrapper = ({
   }
 
   const handleOnClick = useCallback(() => {
-    if (isMobile) {
-      onClick()
-    } else {
-      setIsPlaying((old) => !old)
-    }
-  }, [setIsPlaying])
+    onClick()
+  }, [])
 
   const touchStartYRef = useRef(0)
   const getPrevVideoRef = useRef(getPrevVideo)
@@ -176,8 +168,9 @@ export const ReactPlayerWrapper = ({
   }
 
   const handleEnterViewport = function () {
-    currentVideoIndexRef.current = currentVideoIndex
-    setIsPlaying(true)
+    if ((videosLength - 3) === index) {
+      loadMoreVideos()
+    }
     if (contextReel) {
       resetAnimation()
       startAnimation()
@@ -185,7 +178,6 @@ export const ReactPlayerWrapper = ({
   }
 
   const handleExitViewport = function () {
-    setIsPlaying(false)
     // analytics service 'video_watch' event
     clearTimeout(debounceTimeout)
     debounceTimeout = setTimeout(() => {
@@ -210,9 +202,10 @@ export const ReactPlayerWrapper = ({
     >
       <DynamicPlayer
         currentVideoIndexRef={currentVideoIndexRef}
+        index={index}
         onClick={handleOnClick}
         muted={muted}
-        autoPlay={currentVideoIndex === 0}
+        autoPlay={index === 0}
         poster={videoThumbnail}
         onDuration={(duration) => {
           videoPlayingDetails.current.duration = duration
@@ -294,8 +287,8 @@ export const ReactPlayerWrapper = ({
                   src={earth.src}
                   width={{ base: 5, sm: 6 }}
                   height={{ base: 5, sm: 6 }}
-                  alt="Roundtable"
-                  title="Roundtable"
+                  alt="Loop"
+                  title="Loop"
                 />
               </Flex>
             </Link>
@@ -419,7 +412,7 @@ export const ReactPlayerWrapper = ({
             opacity={0.7}
           />}</>
         : <>
-          {isPlaying
+          {/* {isPlaying
             ? <Image
               src={icPause.src}
               style={{
@@ -433,7 +426,7 @@ export const ReactPlayerWrapper = ({
                 display: 'block'
               }}
               className="btn-play"
-            />}
+            />} */}
         </>}
 
       </>

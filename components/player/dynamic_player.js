@@ -39,7 +39,7 @@ export const DynamicPlayer = ({
     const player = playerRef.current
     if (!player) return
     if (isVisible) {
-      player.play().then(() => {}).catch(e => console.log('error::', e))
+      player.play().then(() => { }).catch(e => console.log('error::', e))
     } else {
       player.pause()
     }
