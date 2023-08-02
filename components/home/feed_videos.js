@@ -7,15 +7,13 @@ import { Flex } from '@chakra-ui/react'
 
 const Videos = ({
   rtData,
-  loadMoreVideos,
-  setCurrentVideoIndex = () => { },
-  handleWheel = () => { }
+  handleWheel = () => { },
+  currentVideoIndexRef
 }) => {
   const videos = rtData.rtVideos
   const [showModalAppDownload, setShowModalAppDownload] = useState(false)
   const getAppComponentRef = useRef(() => null)
   const [muted, setMuted] = useState(true)
-  const [indexTo, setIndexTo] = useState(videos.length > 2 ? 3 : videos.length)
   const deepLinkParamsRef = useRef({
     pathName: null,
     hostName: null,
@@ -23,18 +21,6 @@ const Videos = ({
     metaTitle: null,
     metaPreviewImage: null
   })
-  const addMoreVideos = (index) => {
-    setIndexTo(old => (old - 2 === index) ? old + 1 : old)
-    if (indexTo === videos.length) {
-      loadMoreVideos()
-    }
-  }
-
-  useEffect(() => {
-    if (indexTo === 0 && videos.length !== 0) {
-      setIndexTo(videos.length > 2 ? 3 : videos.length)
-    }
-  }, [videos])
 
   const getNextVideo = () => {
     // var idx = currentVideoIndex
@@ -91,13 +77,14 @@ const Videos = ({
       {videos.length === 0
         ? <h1>Nothing to show here</h1>
         : (<>
-          {videos.slice(0, indexTo).map((video, id) => (
+          {videos.map((video, id) => (
             <React.Fragment key={videos[id].conversation_id}>
               <Player
                 uniqueKey={videos[id].conversation_id}
                 key={videos && (videos[0] && videos[0].conversation_id)}
                 currentVideoIndex={id}
-                videoThumbnail={ videos[id].thumbnail_url_s}
+                currentVideoIndexRef={currentVideoIndexRef}
+                videoThumbnail={ videos[id].thumbnail_url_l}
                 description={rtData?.rtData?.group?.group_description}
                 videoUrl={videos[id].video_url_m3u8 ?? videos[id].video_url }
                 userName={videos[id].owner.nickname }
@@ -117,9 +104,7 @@ const Videos = ({
                 shareUrl={`${process.env.hostname}/rt/${rtData?.rtData?.share_string}?v=${videos[id]?.share_string}`}
                 verticalNavigation
                 muted={muted}
-                loadMoreVideos={addMoreVideos}
                 onClick={handleClick}
-                setCurrentVideoIndex={setCurrentVideoIndex}
                 disableWatch
                 loop={true}
               >

@@ -45,6 +45,7 @@ export const HomePageVideo = ({
           onReady={() => {
             setDisplayThumbnail(false)
           }}
+          autoPlay={true}
         />}
 
         {displayThumbnail && <Box

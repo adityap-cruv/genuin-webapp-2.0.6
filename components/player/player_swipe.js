@@ -10,6 +10,7 @@ export const Player = ({
   videoThumbnail,
   videos = [],
   currentVideoIndex,
+  currentVideoIndexRef,
   userName,
   userProfileImage = '',
   rtProfileImage = '',
@@ -33,8 +34,6 @@ export const Player = ({
   shareUrl,
   muted,
   onClick,
-  loadMoreVideos = () => { },
-  setCurrentVideoIndex,
   uniqueKey,
   disableWatch,
   contextReel, //! this is temporary
@@ -113,6 +112,7 @@ export const Player = ({
         videoThumbnail={videoThumbnail}
         videos={videos}
         currentVideoIndex={currentVideoIndex}
+        currentVideoIndexRef={currentVideoIndexRef}
         userName={userName}
         userId={userId}
         description={shortDescription}
@@ -137,8 +137,6 @@ export const Player = ({
         shareUrl={shareUrl}
         muted={muted}
         onClick={onClick}
-        loadMoreVideos={loadMoreVideos}
-        setCurrentVideoIndex={setCurrentVideoIndex}
         uniqueKey={uniqueKey}
         disableWatch={disableWatch}
         contextReel={contextReel}
@@ -147,7 +145,6 @@ export const Player = ({
         loop={loop}
       >
         {children}
-
       </ReactPlayerWrapper>
     </Flex>
   )

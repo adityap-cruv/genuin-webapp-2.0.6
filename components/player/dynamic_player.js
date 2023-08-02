@@ -1,86 +1,65 @@
-import React, { useState, useEffect } from 'react'
-import GenuinPlayer from 'genuin_player'
+import React, { useEffect, useRef } from 'react'
+import useElementOnScreen from '../hooks/useElementOnScreen'
+import OpenPlayerJs from 'openplayerjs'
 
 export const DynamicPlayer = ({
-  isPlaying,
   url,
   muted,
   onClick,
   onTimeUpdate,
   onDuration,
   onEnded,
-  onReady,
-  uniqueKey,
   loop = true,
-  onPlaying
+  autoPlay,
+  poster = null
 }) => {
-  // const [inViewPort, setInViewPort] = useState(false)
+  const videoRef = useRef(null)
+  const playerRef = useRef(null)
+  const isVisible = useElementOnScreen({ root: null, rootMargin: '0px', threshold: 0.6 }, videoRef)
 
-  // useEffect(() => {
-  //   const observer = new IntersectionObserver(entries => {
-  //     entries.forEach(entry => {
-  //       if (entry.intersectionRatio > 0) {
-  //         setInViewPort(true)
-  //       } else {
-  //         setInViewPort(false)
-  //       }
-  //     })
-  //   })
+  // const muted = useState(mutedRef.current)
 
-  //   observer.observe(document.body)
-  // }, [])
-  return (<>
-    <GenuinPlayer
-      src={url}
-      uniqueKey={uniqueKey}
-      controls={false}
-      isMP4={url.endsWith('mp4')}
-      loop={loop}
-      mute={muted}
-      onClick={onClick}
-      playing={isPlaying}
-      onDurationChange={onDuration}
-      onEnded={onEnded}
-      playsInline={true}
-      onError={() => console.log('error')}
-      onPlaying={onPlaying}
-      onTimeUpdate={onTimeUpdate}
-    />
-    {/* {!isSafari && <ReactPlayer
-      key={uniqueKey}
-      playing={isPlaying && inViewPort}
-      url={url}
-      muted={muted}
-      controls={false}
-      playsinline={true}
-      config={{
-        forceHLS: false,
-        forceVideo: true
-      }}
-      onClick={onClick}
-      className="video-wrapper"
-      width="auto"
-      height="100%"
-      onProgress={onProgress}
-      onDuration={onDuration}
-      onEnded={onEnded}
-      progressInterval={200}
-      onReady={onReady}
-      loop={loop}
-      onPlay={onPlaying}
-    />}
+  useEffect(() => {
+    const player = new OpenPlayerJs(videoRef.current, {
+      controls: {
+        alwaysVisible: false
+      },
+      hls: {
+        startLevel: -1
+      }
+    })
 
-    {isSafari && <SafariPlayer
-      uniqueKey={uniqueKey}
-      playing={isPlaying && inViewPort}
-      videoUrl={url}
-      height="100%"
-      width="100%"
-      className="video-wrapper"
-      muted={muted}
-      onClick={onClick}
-      onReady={onReady}
-      onPlaying={onPlaying}
-    />} */}
-  </>)
+    player.init().then(() => {
+      player.load()
+      playerRef.current = player
+    })
+  }, [])
+
+  useEffect(() => {
+    const player = playerRef.current
+    if (!player) return
+    if (isVisible) {
+      player.play().then(() => {}).catch(e => console.log('error::', e))
+    } else {
+      player.pause()
+    }
+  }, [isVisible, playerRef.current])
+
+  return <video
+    ref={videoRef}
+    poster={poster}
+    src={url}
+    muted={muted}
+    autoPlay={autoPlay}
+    style={{
+      width: '100%',
+      height: '100%'
+    }}
+    className='op-player'
+    onClick={onClick}
+    onTimeUpdate={onTimeUpdate}
+    onDurationChange={onDuration}
+    onEnded={onEnded}
+    loop={loop}
+  />
 }

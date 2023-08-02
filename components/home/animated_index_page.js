@@ -13,7 +13,7 @@ const AnimatedIndexPage = ({
   loadMoreVideos
 }) => {
   const videos = rtData.rtVideos
-  const [currentVideoIndex, setCurrentVideoIndex] = useState(0)
+  const currentVideoIndexRef = useRef(0)
 
   const mainRef = useRef(null)
   const [latest, setLatest] = useState(0)
@@ -30,7 +30,7 @@ const AnimatedIndexPage = ({
   }
 
   const handleWheel = (event) => {
-    if (event.deltaY < 0 && latest > 0.9899999 && (currentVideoIndex === 0)) {
+    if (event.deltaY < 0 && latest > 0.9899999 && (currentVideoIndexRef.current === 0)) {
       mainRef.current.scrollTo({ left: 0, top: 0, behavior: 'smooth' })
     }
   }
@@ -77,7 +77,7 @@ const AnimatedIndexPage = ({
       <div
         className="h-100 w-100"
         style={{
-          backgroundImage: `url(${videos.length !== 0 ? videos[currentVideoIndex].video_thumbnail_s : ''})`,
+          backgroundImage: `url(${videos.length !== 0 ? videos[currentVideoIndexRef.current].video_thumbnail_s : ''})`,
           backgroundRepeat: 'no-repeat',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
@@ -103,8 +103,8 @@ const AnimatedIndexPage = ({
         <Videos
           loadMoreVideos={loadMoreVideos}
           rtData={rtData}
-          setCurrentVideoIndex={setCurrentVideoIndex}
           handleWheel={handleWheel}
+          currentVideoIndexRef={currentVideoIndexRef}
         />
       </div>
 

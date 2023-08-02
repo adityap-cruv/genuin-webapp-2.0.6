@@ -15,7 +15,7 @@ const MobileIndexPage = ({
   const videos = rtData.rtVideos
   const mainRef = useRef(null)
   const [latest, setLatest] = useState(0)
-  const [currentVideoIndex, setCurrentVideoIndex] = useState(-1)
+  const currentVideoIndexRef = useRef(0)
 
   const { scrollYProgress } = useScroll({
     container: mainRef
@@ -29,7 +29,7 @@ const MobileIndexPage = ({
   }
 
   const handleWheel = (event) => {
-    if (event.deltaY < 0 && latest > 0.984444 && currentVideoIndex === 0) {
+    if (event.deltaY < 0 && latest > 0.984444 && currentVideoIndexRef.current === 0) {
       mainRef.current.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
     }
   }
@@ -39,7 +39,7 @@ const MobileIndexPage = ({
   }
 
   const handleTouchEnd = (event) => {
-    if ((event.changedTouches[0].clientY > touchStartPointY) && currentVideoIndex === 0) {
+    if ((event.changedTouches[0].clientY > touchStartPointY) && currentVideoIndexRef.current === 0) {
       mainRef.current.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
     }
   }
@@ -192,8 +192,8 @@ const MobileIndexPage = ({
         }}>
         <Videos
           loadMoreVideos={loadMoreVideos}
-          setCurrentVideoIndex={setCurrentVideoIndex}
           handleWheel={handleWheel}
+          currentVideoIndexRef={currentVideoIndexRef}
           rtData={rtData}
         />
       </div>
