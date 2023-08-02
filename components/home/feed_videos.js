@@ -8,7 +8,8 @@ import { Flex } from '@chakra-ui/react'
 const Videos = ({
   rtData,
   handleWheel = () => { },
-  currentVideoIndexRef
+  currentVideoIndexRef,
+  loadMoreVideos
 }) => {
   const videos = rtData.rtVideos
   const [showModalAppDownload, setShowModalAppDownload] = useState(false)
@@ -82,8 +83,10 @@ const Videos = ({
               <Player
                 uniqueKey={videos[id].conversation_id}
                 key={videos && (videos[0] && videos[0].conversation_id)}
-                currentVideoIndex={id}
+                index={id}
                 currentVideoIndexRef={currentVideoIndexRef}
+                videosLength={videos.length}
+                loadMoreVideos={loadMoreVideos}
                 videoThumbnail={ videos[id].thumbnail_url_l}
                 description={rtData?.rtData?.group?.group_description}
                 videoUrl={videos[id].video_url_m3u8 ?? videos[id].video_url }

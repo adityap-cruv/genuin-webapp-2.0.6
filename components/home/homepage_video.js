@@ -37,9 +37,7 @@ export const HomePageVideo = ({
         }}
       >
         {!feedLoading && <DynamicPlayer
-          isPlaying={true}
           muted={true}
-          onClick={() => { }}
           url={videoUrl}
           uniqueKey="feed_index_player"
           onReady={() => {
@@ -50,7 +48,7 @@ export const HomePageVideo = ({
 
         {displayThumbnail && <Box
           backgroundImage={`url(${videoThumbnail})`}
-          backgroundColor={videoThumbnail ? 'transparent' : 'lightgray'}
+          backgroundColor={videoThumbnail ? 'transparent' : 'lightgrey'}
           backgroundRepeat='no-repeat'
           backgroundSize='cover'
           backgroundPosition='center'

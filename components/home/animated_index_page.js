@@ -45,9 +45,11 @@ const AnimatedIndexPage = ({
   const { scrollYProgress } = useScroll({
     container: mainRef
   })
+
   useMotionValueEvent(scrollYProgress, 'change', (latest) => {
     setLatest(latest.toPrecision(6))
   })
+
   return (<>
     <div
       style={{
@@ -101,10 +103,10 @@ const AnimatedIndexPage = ({
           opacity: latest > 0.9899999 ? 1 : 0
         }}>
         <Videos
-          loadMoreVideos={loadMoreVideos}
           rtData={rtData}
           handleWheel={handleWheel}
           currentVideoIndexRef={currentVideoIndexRef}
+          loadMoreVideos={loadMoreVideos}
         />
       </div>
 

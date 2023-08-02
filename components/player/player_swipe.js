@@ -9,8 +9,10 @@ export const Player = ({
   videoUrl = '',
   videoThumbnail,
   videos = [],
-  currentVideoIndex,
+  index,
   currentVideoIndexRef,
+  loadMoreVideos = () => { },
+  videosLength,
   userName,
   userProfileImage = '',
   rtProfileImage = '',
@@ -111,8 +113,10 @@ export const Player = ({
         onDuration={handleDuration}
         videoThumbnail={videoThumbnail}
         videos={videos}
-        currentVideoIndex={currentVideoIndex}
+        index={index}
         currentVideoIndexRef={currentVideoIndexRef}
+        videosLength={videosLength}
+        loadMoreVideos={loadMoreVideos}
         userName={userName}
         userId={userId}
         description={shortDescription}
