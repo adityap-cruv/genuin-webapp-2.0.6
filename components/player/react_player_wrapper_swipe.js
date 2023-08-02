@@ -212,6 +212,7 @@ export const ReactPlayerWrapper = ({
         currentVideoIndexRef={currentVideoIndexRef}
         onClick={handleOnClick}
         muted={muted}
+        autoPlay={currentVideoIndex === 0}
         poster={videoThumbnail}
         onDuration={(duration) => {
           videoPlayingDetails.current.duration = duration

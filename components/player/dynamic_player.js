@@ -30,7 +30,7 @@ export const DynamicPlayer = ({
     })
 
     player.init().then(() => {
-      player.load()
+      player.load().then(() => player.play())
       playerRef.current = player
     })
   }, [])
@@ -61,5 +61,6 @@ export const DynamicPlayer = ({
     onDurationChange={onDuration}
     onEnded={onEnded}
     loop={loop}
+    playsInline={true}
   />
 }
