@@ -73,7 +73,6 @@ const Home = () => {
         openGraphDescription={description}
         urlToCopy={currentUrl}
         videoPreviewImage={metaImage}
-        includeHead={false}
       />
       <HomeNav variant="light" isContiner showGetAppModal={setShowModalAppDownload}/>
       {isLoadingFake

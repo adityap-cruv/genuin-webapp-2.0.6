@@ -15,7 +15,7 @@ export const DynamicPlayer = ({
 }) => {
   const videoRef = useRef(null)
   const playerRef = useRef(null)
-  const isVisible = useElementOnScreen({ root: null, rootMargin: '0px', threshold: 0.6 }, videoRef)
+  const isVisible = useElementOnScreen({ root: null, rootMargin: '0px', threshold: 0.8 }, videoRef)
 
   // const muted = useState(mutedRef.current)
 
@@ -39,6 +39,7 @@ export const DynamicPlayer = ({
     const player = playerRef.current
     if (!player) return
     if (isVisible) {
+      // eslint-disable-next-line no-console
       player.play().then(() => { }).catch(e => console.log('error::', e))
     } else {
       player.pause()

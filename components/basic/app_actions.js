@@ -27,13 +27,12 @@ export const AppActions = ({
   link,
   roundTableName,
   roundTableId = '',
+  videoId = '',
   roundTable = false,
   watchRoundTable = false,
-  videoUrl = '',
   videoDescription = '',
   videoTitle = '',
-  deepLinkParams,
-  sourceId
+  deepLinkParams
 }) => {
   const mobile = useBreakpointValue({ base: true, sm: false })
   const getClickableLink = (link = '') => {
@@ -45,6 +44,18 @@ export const AppActions = ({
     return ''
   }
   const userLink = getClickableLink(link)
+  const getUrl = () => {
+    let link = process.env.hostname + 'v/'
+
+    if (videoId) {
+      link += videoId
+    }
+
+    if (roundTableId) {
+      link += ('?l=' + roundTableId)
+    }
+    return link
+  }
   return (
     <ul>
       {link ? (
@@ -60,7 +71,7 @@ export const AppActions = ({
             // analytics service 'save' event
             const event_name = 'save'
             const event_details = {
-              video_share_string: sourceId,
+              video_share_string: videoId,
               loop_share_string: roundTableId,
               page: window.location.href
             }
@@ -75,7 +86,7 @@ export const AppActions = ({
                 fromUserName: deepLinkParams.geshc,
                 pathName: deepLinkParams.pathName,
                 previewImage: deepLinkParams.metaPreviewImage,
-                sourceId,
+                sourceId: videoId,
                 utmCampaign: 'share',
                 utmMedium: 'web',
                 utmSource: deepLinkParams.hostName,
@@ -102,21 +113,21 @@ export const AppActions = ({
           <li>
             {mobile ? (
               <MobileShareButton
-                url={videoUrl}
+                url={getUrl()}
                 description={videoDescription}
                 title={videoTitle}
                 white
                 fullWidth={true}
                 deepLinkParams={deepLinkParams}
-                sourceId={sourceId}
+                sourceId={videoId}
               />
             ) : (
               <ShareButton
-                url={videoUrl}
+                url={getUrl()}
                 description={videoDescription}
                 title={videoTitle}
                 fullWidth={true}
-                sourceId={sourceId}
+                sourceId={videoId}
               />
             )}
           </li>
@@ -124,7 +135,7 @@ export const AppActions = ({
             // analytics service 'reply' event
             const event_name = 'reply'
             const event_details = {
-              video_share_string: sourceId,
+              video_share_string: videoId,
               loop_share_string: roundTableId,
               page: window.location.href
             }
@@ -139,7 +150,7 @@ export const AppActions = ({
                 fromUserName: deepLinkParams.geshc,
                 pathName: deepLinkParams.pathName,
                 previewImage: deepLinkParams.metaPreviewImage,
-                sourceId,
+                sourceId: videoId,
                 utmCampaign: 'share',
                 utmMedium: 'web',
                 utmSource: deepLinkParams.hostName,
@@ -172,7 +183,7 @@ export const AppActions = ({
             // analytics service 'comment' event
             const event_name = 'comment'
             const event_details = {
-              video_share_string: sourceId,
+              video_share_string: videoId,
               loop_share_string: roundTableId,
               page: window.location.href
             }
@@ -187,7 +198,7 @@ export const AppActions = ({
                 fromUserName: deepLinkParams.geshc,
                 pathName: deepLinkParams.pathName,
                 previewImage: deepLinkParams.metaPreviewImage,
-                sourceId,
+                sourceId: videoId,
                 utmCampaign: 'share',
                 utmMedium: 'web',
                 utmSource: deepLinkParams.hostName,
@@ -213,7 +224,7 @@ export const AppActions = ({
             // analytics service 'subscribe' event
             const event_name = 'subscribe'
             const event_details = {
-              video_share_string: sourceId,
+              video_share_string: videoId,
               loop_share_string: roundTableId,
               page: window.location.href
             }
@@ -229,7 +240,7 @@ export const AppActions = ({
                 fromUserName: deepLinkParams.geshc,
                 pathName: deepLinkParams.pathName,
                 previewImage: deepLinkParams.metaPreviewImage,
-                sourceId,
+                sourceId: videoId,
                 utmCampaign: 'share',
                 utmMedium: 'web',
                 utmSource: deepLinkParams.hostName
@@ -256,22 +267,22 @@ export const AppActions = ({
           <li>
             {mobile ? (
               <MobileShareButton
-                url={videoUrl}
+                url={getUrl()}
                 description={videoDescription}
                 title={videoTitle}
                 white
                 fullWidth={true}
                 deepLinkParams={deepLinkParams}
-                sourceId={sourceId}
+                sourceId={videoId}
                 roundTableId={roundTableId}
               />
             ) : (
               <ShareButton
-                url={videoUrl}
+                url={getUrl()}
                 description={videoDescription}
                 title={videoTitle}
                 fullWidth={true}
-                sourceId={sourceId}
+                sourceId={videoId}
                 roundTableId={roundTableId}
               />
             )}

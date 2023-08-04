@@ -1,32 +1,28 @@
 import React from 'react'
 import { NextSeo } from 'next-seo'
-import NextHead from 'next/head'
 
 export const SEO = ({
   videoUrl,
   description,
   videoPreviewImage,
+  title = undefined,
   urlToCopy,
-  title = 'Genuin',
-  metaImageWidth = 1084,
-  metaImageHeight = 546,
-  metaVideoHeight = 1280,
-  metaVideoWidth = 720,
+  metaImageWidth = undefined,
+  metaImageHeight = undefined,
+  metaVideoHeight = undefined,
+  metaVideoWidth = undefined,
   openGraphTitle = 'Genuin',
   openGraphDescription,
-  videoType = 'video/mp4',
+  videoType = undefined,
   openGraphType = 'website',
-  includeHead = true
+  ownerProfileLink = 'www.genuin.com',
+  videoDuration = undefined,
+  releaseDate = undefined,
+  updateTime = undefined,
+  author = undefined
 }) => {
   return (
     <>
-      {includeHead && (
-        <NextHead>
-          <meta property='og:video:url' content={videoUrl} />
-          <meta property='og:video:secure_url' content={videoUrl} />
-          <meta property='og:video:type' content={videoType} />
-        </NextHead>
-      )}
       <NextSeo
         title={title}
         description={description}
@@ -38,7 +34,7 @@ export const SEO = ({
           videos: [
             {
               url: videoUrl,
-              secure_url: videoUrl,
+              secureUrl: videoUrl,
               type: videoType,
               width: metaVideoWidth,
               height: metaVideoHeight,
@@ -53,16 +49,35 @@ export const SEO = ({
               alt: 'Genuin'
             }
           ],
+          locale: 'en_us',
           site_name: 'Genuin'
         }}
-        facebook={{
-          appId: 1234567890
-        }}
-        twitter={{
-          handle: '@handle',
-          site: '@site',
-          cardType: 'summary_large_image'
-        }}
+        additionalMetaTags={[
+          {
+            property: 'og:video:director',
+            content: ownerProfileLink
+          },
+          {
+            property: 'og:video:release_date',
+            content: releaseDate
+          },
+          {
+            property: 'og:video:duration',
+            content: videoDuration
+          },
+          {
+            property: 'og:published_time',
+            content: releaseDate
+          },
+          {
+            property: 'og:modified_time',
+            content: updateTime
+          },
+          {
+            property: 'og:author',
+            content: author
+          }
+        ]}
       />
     </>
   )

@@ -154,7 +154,7 @@ const Profile = ({
                   getPrevVideo={getPrevVideo}
                   videos={videos}
                   autoplay={id === 0}
-                  video_id_to_use={videos[id]?.video?.share_string}
+                  videoId={videos[id]?.video?.share_string}
                   roundTableMode={videos[id]?.video_type === 'rt'}
                   roundTableName={videos[id]?.video?.group_name}
                   roundTableId={videos[id]?.share_string}

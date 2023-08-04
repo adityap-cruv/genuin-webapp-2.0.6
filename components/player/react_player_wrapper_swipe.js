@@ -554,7 +554,7 @@ export const ReactPlayerWrapper = ({
                           </Text>
                           : <Link
                             target="_blank"
-                            href={`/rt/${roundTableId}`}
+                            href={`/l/${roundTableId}`}
                             style={{
                               marginRight: '10px',
                               maxWidth: '150px'
@@ -576,8 +576,8 @@ export const ReactPlayerWrapper = ({
                         onClick={() => {
                           if (verticalNavigation && shareUrl) {
                             // window.location.href = shareUrl;
-                            window.open(shareUrl, '_blank')
-                            // window.location.href = `${process.env.hostname}rt/${shareUrl.split("/").pop()}`
+                            // window.open(shareUrl, '_blank')
+                            window.location.href = `${process.env.hostname}rt/${shareUrl.split("/").pop()}`
                             // onClose();
                           } else {
                             // setWatchRoundtable(true);

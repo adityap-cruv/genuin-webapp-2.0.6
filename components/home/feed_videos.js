@@ -100,11 +100,11 @@ const Videos = ({
                 getPrevVideo={getPrevVideo}
                 videos={videos}
                 autoplay={id === 0}
-                video_id_to_use={videos[id]?.share_string}
+                videoId={videos[id]?.share_string}
                 roundTableMode={true}
                 roundTableName={rtData?.rtData?.group?.group_name}
                 roundTableId={rtData?.rtData?.share_string}
-                shareUrl={`${process.env.hostname}/rt/${rtData?.rtData?.share_string}?v=${videos[id]?.share_string}`}
+                shareUrl={`${process.env.hostname}/v/${videos[id]?.share_string}?v=${rtData?.rtData?.share_string}`}
                 verticalNavigation
                 muted={muted}
                 onClick={handleClick}
@@ -115,7 +115,6 @@ const Videos = ({
                   showGetAppModal={handleShowModalAppDownload}
                   userName={videos[id].owner.nickname}
                   link={videos[id]?.link}
-                  videoUrl={`${process.env.hostname}rt/${rtData?.rtData?.share_string}?v=${videos[id]?.share_string}`}
                   videoDescription={
                     rtData?.rtData?.description
                   }
@@ -124,7 +123,7 @@ const Videos = ({
                   roundTableName={rtData?.rtData?.group?.group_name}
                   roundTableId={rtData?.rtData?.share_string}
                   deepLinkParams={deepLinkParamsRef.current}
-                  sourceId={videos[id]?.share_string}
+                  videoId={videos[id]?.share_string}
                 />
               </Player>
 

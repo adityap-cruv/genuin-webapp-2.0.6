@@ -46,6 +46,25 @@ import { analyticsService } from '../../components/basic/analytics_service'
 // testing
 const DownloadAppPopup = dynamic(() => import('../../components/download_app_popup'))
 
+const changeUrl = ({ videoObj, replace = true }) => {
+  if (!videoObj) return
+  let link = '/v/'
+
+  link += videoObj?.video?.share_string
+
+  if (videoObj?.video_type === 'rt') {
+    link += `?l=${videoObj?.share_string}`
+  }
+
+  if (window.history) {
+    if (replace) {
+      window.history.replaceState(null, '', link)
+    } else {
+      window.history.pushState(null, '', link)
+    }
+  }
+}
+
 const Profile = ({
   shareString,
   user,
@@ -169,7 +188,6 @@ const Profile = ({
     deepLinkParamsRef.current.pathName = window.location.pathname
     loadVideosAll()
   }, [])
-
   const loadVideosPublic = async () => {
     if (!isLoadingPublic) {
       setIsLoadingPublic(true)
@@ -317,7 +335,7 @@ const Profile = ({
     let idx = currentVideoIndex
     if (currentVideoIndex + 1 < videos.length) {
       idx = currentVideoIndex + 1
-      changeUrl('all', idx)
+      changeUrl({ videoObj: videos[idx] })
       setCurrentVideoIndex(idx)
     }
   }
@@ -325,7 +343,7 @@ const Profile = ({
     let idx = 0
     if (currentVideoIndex - 1 >= 0) {
       idx = currentVideoIndex - 1
-      changeUrl('all', idx)
+      changeUrl({ videoObj: videos[idx] })
       setCurrentVideoIndex(idx)
     }
   }
@@ -334,7 +352,7 @@ const Profile = ({
     let idx = currentVideoIndexPublic
     if (currentVideoIndexPublic + 1 < publicVideos.length) {
       idx = currentVideoIndexPublic + 1
-      changeUrl('public', idx)
+      changeUrl({ videoObj: publicVideos[idx] })
       setCurrentVideoIndexPublic(idx)
     }
   }
@@ -342,7 +360,7 @@ const Profile = ({
     let idx = 0
     if (currentVideoIndexPublic - 1 >= 0) {
       idx = currentVideoIndexPublic - 1
-      changeUrl('public', idx)
+      changeUrl({ videoObj: publicVideos[idx] })
       setCurrentVideoIndexPublic(idx)
     }
   }
@@ -351,7 +369,7 @@ const Profile = ({
     let idx = currentVideoIndexRT
     if (currentVideoIndexRT + 1 < rtVideos.length) {
       idx = currentVideoIndexRT + 1
-      changeUrl('rt', idx)
+      changeUrl({ videoObj: rtVideos[idx] })
       setCurrentVideoIndexRT(idx)
     }
   }
@@ -359,30 +377,8 @@ const Profile = ({
     let idx = 0
     if (currentVideoIndexRT - 1 >= 0) {
       idx = currentVideoIndexRT - 1
-      changeUrl('rt', idx)
+      changeUrl({ videoObj: rtVideos[idx] })
       setCurrentVideoIndexRT(idx)
-    }
-  }
-
-  const changeUrl = (type, idx, replace = true, share_url = null) => {
-    if (replace) {
-      let videoObj = {}
-      if (type === 'all') {
-        videoObj = videos[idx]
-      } else if (type === 'rt') {
-        videoObj = rtVideos[idx]
-      } else if (type === 'public') {
-        videoObj = publicVideos[idx]
-      }
-      const shareUrl = videoObj && Object.keys(videoObj).length !== 0 ? videoObj.video?.share_url : ''
-      const video_type = videoObj && Object.keys(videoObj).length !== 0 ? videoObj?.video_type : ''
-      if (shareUrl) {
-        window.history.replaceState(null, '', `..${video_type === 'rt' ? '/rt' : ''}/${shareUrl.split('/').pop()}`)
-      }
-    } else {
-      if (share_url) {
-        window.history.pushState(null, '', `..${type === 'rt' ? '/rt' : ''}/${share_url.split('/').pop()}`)
-      }
     }
   }
 
@@ -438,7 +434,7 @@ const Profile = ({
   const abbreviatedVideosCount = abbreviateNumber(user.videos)
   const abbreviatedRepliesCount = abbreviateNumber(replies)
 
-  const titleNameSEO = `${Boolean(name) && name.replace(/\s+/g, '') !== '' ? `${name.trim()} (@${nickname})` : `@${nickname}`} - Genuin • Genuin Videos`
+  const title = `${Boolean(name) && name.replace(/\s+/g, '') !== '' ? `${name.trim()} (@${nickname})` : `@${nickname}`} - Genuin • Genuin Videos`
   const viewsValue = abbreviateNumber(views) !== 0 ? ' ' + abbreviateNumber(views) + ' Views.' : ''
   const videosValue = user.videos !== 0 ? ' ' + user.videos + ' Videos.' : ''
   const repliesValue = replies !== 0 ? ' ' + replies + ' Replies.' : ''
@@ -446,15 +442,21 @@ const Profile = ({
   const tagsValue = hashtags && hashtags !== [] && hashtags.length > 0 ? ' ' + hashtags.map((tag) => '#' + tag).join(' ') : ''
   const pipeValue = viewsValue || videosValue || repliesValue || bioValue || tagsValue ? ' |' : ''
   const ldDescription = `${Boolean(name) && name.replace(/\s+/g, '') !== '' ? `${name.trim()} (@${nickname})` : `@${nickname}`} on Genuin${pipeValue}${bioValue}.${viewsValue}${videosValue}${repliesValue}${tagsValue}`
+  const author = {
+    '@type': 'Person',
+    name: '@' + nickname,
+    url: `${process.env.hostname}p/${nickname}`
+  }
   deepLinkParamsRef.current.metaDescription = ldDescription
-  deepLinkParamsRef.current.metaTitle = titleNameSEO
+  deepLinkParamsRef.current.metaTitle = title
   deepLinkParamsRef.current.metaPreviewImage = preview_image
   const ORG_SCHEMA = JSON.stringify({
     '@context': 'http://schema.org',
     '@type': 'ProfilePage',
     id: `${share_url}`,
     url: `${share_url}`,
-    name: `${titleNameSEO}`,
+    author,
+    name: `${title}`,
     isPartOf: `${process.env.hostname}#website`,
     primaryImageOfPage: `${profile_image}/#primaryimage`,
     image: `${profile_image}/#primaryimage`,
@@ -502,15 +504,14 @@ const Profile = ({
   return (<>
     <SEO
       openGraphType='profile'
-      title={titleNameSEO}
+      title={title}
       openGraphTitle={`${name || `@${nickname}`
       } is on Genuin. Connect confidently.`}
       description={ldDescription}
       openGraphDescription={`${name || `@${nickname}`}, ${user.videos
       } Videos, ${abbreviateNumber(views)} Views, ${replies} Replies`}
       urlToCopy={share_url}
-      videoPreviewImage={preview_image}
-      videoUrl={videos[currentVideoIndex]?.video?.video_url}
+      author={JSON.stringify(author)}
     />
     {
       !user_id
@@ -908,7 +909,7 @@ const Profile = ({
               getPrevVideo={getPrevVideo}
               videos={videos}
               autoplay
-              video_id_to_use={videos[currentVideoIndex]?.video?.share_string}
+              videoId={videos[currentVideoIndex]?.video?.share_string}
               roundTableMode={videos[currentVideoIndex]?.video_type === 'rt'}
               roundTableName={videos[currentVideoIndex]?.video?.group_name}
               roundTableId={videos[currentVideoIndex]?.share_string}
@@ -928,7 +929,7 @@ const Profile = ({
                 roundTableName={videos[currentVideoIndex]?.video?.group_name}
                 roundTableId={videos[currentVideoIndex]?.share_string}
                 deepLinkParams={deepLinkParamsRef.current}
-                sourceId={videos[currentVideoIndex]?.video_type === 'rt' ? videos[currentVideoIndex]?.video?.share_string : videos[currentVideoIndex]?.video?.share_string}
+                videoId={videos[currentVideoIndex]?.video?.share_string}
               />
             </Player>}
 
@@ -951,7 +952,7 @@ const Profile = ({
               getPrevVideo={getPrevVideoRT}
               videos={rtVideos}
               autoplay
-              video_id_to_use={rtVideos[currentVideoIndexRT]?.video?.share_string}
+              videoId={rtVideos[currentVideoIndexRT]?.video?.share_string}
               roundTableMode
               roundTableName={rtVideos[currentVideoIndexRT]?.video?.group_name}
               roundTableId={rtVideos[currentVideoIndexRT]?.share_string}
@@ -973,7 +974,7 @@ const Profile = ({
                 roundTableName={rtVideos[currentVideoIndexRT]?.video?.group_name}
                 roundTableId={rtVideos[currentVideoIndexRT]?.share_string}
                 deepLinkParams={deepLinkParamsRef.current}
-                sourceId={rtVideos[currentVideoIndexRT]?.video_type === 'rt' ? rtVideos[currentVideoIndexRT]?.video?.share_string : rtVideos[currentVideoIndexRT]?.video?.share_string}
+                videoId={rtVideos[currentVideoIndexRT]?.video_type === 'rt' ? rtVideos[currentVideoIndexRT]?.video?.share_string : rtVideos[currentVideoIndexRT]?.video?.share_string}
               />
             </Player>}
 
@@ -999,7 +1000,7 @@ const Profile = ({
               getPrevVideo={getPrevVideoPublic}
               videos={publicVideos}
               autoplay
-              video_id_to_use={publicVideos[currentVideoIndexPublic]?.video?.share_string}
+              videoId={publicVideos[currentVideoIndexPublic]?.video?.share_string}
               shareUrl={publicVideos[currentVideoIndexPublic]?.video.share_url}
               verticalNavigation
               onClick={onClick}
@@ -1013,7 +1014,7 @@ const Profile = ({
                 videoDescription={publicVideos[currentVideoIndexPublic]?.video?.description}
                 videoTitle='Genuin'
                 deepLinkParams={deepLinkParamsRef.current}
-                sourceId={publicVideos[currentVideoIndexPublic]?.video_type === 'rt' ? publicVideos[currentVideoIndexPublic]?.video?.share_string : publicVideos[currentVideoIndexPublic]?.video?.share_string}
+                videoId={publicVideos[currentVideoIndexPublic]?.video_type === 'rt' ? publicVideos[currentVideoIndexPublic]?.video?.share_string : publicVideos[currentVideoIndexPublic]?.video?.share_string}
               />
             </Player>}
             <GetAppModal
@@ -1038,7 +1039,6 @@ const Videos = ({
   setCurrentVideoIndex,
   getMoreVideos,
   noMoreVideos,
-  changeUrl,
   isLoading,
   noVideos
 }) => {
@@ -1075,7 +1075,7 @@ const Videos = ({
               <div
                 className="grid-layout"
               >
-                {videos.map(({ video, video_type }, index) => (
+                {videos.map((videoData, index) => (
                   <Flex
                     className={`grid-item video_${index}`}
                     cursor='pointer'
@@ -1084,24 +1084,24 @@ const Videos = ({
                       transform: 'scale(0.97)'
                     }}
                     position='relative'
-                    key={video_type === 'rt' ? video.conversation_id : video.video_id}
+                    key={videoData?.video_type === 'rt' ? videoData?.video?.conversation_id : videoData?.video?.video_id}
                     bgColor='black'
                     alignItems='center'
                   >
                     {(
                       <Image
                         src={
-                          video_type === 'rt'
-                            ? (video.thumbnail_url ?? icPreviewPlaceholder.src)
-                            : (video.video_thumbnail ?? icPreviewPlaceholder.src)
+                          videoData?.video_type === 'rt'
+                            ? (videoData?.video?.thumbnail_url ?? icPreviewPlaceholder.src)
+                            : (videoData?.video?.video_thumbnail ?? icPreviewPlaceholder.src)
                         }
                         onError={({ currentTarget }) => {
                           currentTarget.onerror = null // prevents looping
                           currentTarget.src = icPreviewPlaceholder.src
-                          if (video_type === 'rt') {
-                            video.thumbnail_url = icPreviewPlaceholder.src
+                          if (videoData?.video_type === 'rt') {
+                            videoData.video.thumbnail_url = icPreviewPlaceholder.src
                           } else {
-                            video.video_thumbnail = icPreviewPlaceholder.src
+                            videoData.video.video_thumbnail = icPreviewPlaceholder.src
                           }
                         }}
                         height='full'
@@ -1111,11 +1111,11 @@ const Videos = ({
                           // window.location.href = video.share_url;
                           setCurrentVideoIndex(index)
                           onOpen()
-                          changeUrl(video_type, index, false, video?.share_url)
+                          changeUrl({ videoObj: videoData, replace: false })
                         }}
                       />
                     )}
-                    {video_type === 'rt' && (
+                    {videoData?.video_type === 'rt' && (
                       <Flex
                         position='absolute'
                         w='full'
@@ -1126,7 +1126,7 @@ const Videos = ({
                         onClick={() => {
                           setCurrentVideoIndex(index)
                           onOpen()
-                          changeUrl(video_type, index, false, video?.share_url)
+                          changeUrl({ videoObj: videoData, replace: false })
                         }}
                       >
                         <Flex
@@ -1140,7 +1140,7 @@ const Videos = ({
                         >
                           <Flex>
                             <Image src={views.src} mr={1} mt='3px' h={5} />
-                            {video.no_of_views}
+                            {videoData?.video?.no_of_views}
                           </Flex>
                           <Flex>
                             <Image src={roundtable.src} h={5} />
@@ -1159,12 +1159,12 @@ const Videos = ({
                               WebkitBoxOrient: 'vertical'
                             }}
                           >
-                            {video.group_name}
+                            {videoData?.video?.group_name}
                           </Text>
                         </Flex>
                       </Flex>
                     )}
-                    {video_type === 'public_video' && (
+                    {videoData?.video_type === 'public_video' && (
                       <Flex
                         position='absolute'
                         gap={3}
@@ -1176,11 +1176,11 @@ const Videos = ({
                       >
                         <Flex>
                           <Image mr={2} src={comments.src} />
-                          {video.no_of_conversation}
+                          {videoData?.video?.no_of_conversation}
                         </Flex>
                         <Flex>
                           <Image src={views.src} mr={1} />
-                          {video.no_of_views}
+                          {videoData?.video?.no_of_views}
                         </Flex>
                       </Flex>
                     )}
