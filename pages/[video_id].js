@@ -13,19 +13,19 @@ const DownloadAppPopup = dynamic(() => import('../components/download_app_popup'
 
 const Video = (props) => {
   const {
-    videoUrl,
+    video_url,
     video_url_m3u8,
-    videoPreviewImage,
+    video_preview_image,
     description,
     created_at,
     updated_at,
     // tags,
     share_string,
     video_id_to_use,
-    videoThumbnail,
-    userName,
-    userNickname,
-    userProfileImage,
+    video_thumbnail,
+    user_name,
+    user_nickname,
+    user_profile_image,
     link,
     geshc
   } = props
@@ -63,7 +63,7 @@ const Video = (props) => {
 
   const { isOpen, onOpen, onClose } = useDisclosure()
   // const tags_string = tags !== null && tags !== undefined && tags.replace(/\s+/g, '') !== '' ? ` #${tags.split(',').join(' #')}` : ''
-  const ld_description = `Watch videos from ${userName || '@' + userNickname} on Genuin`
+  const ld_description = `Watch videos from ${user_name || '@' + user_nickname} on Genuin`
   const title_name = `${description} • Watch and react on Genuin`
   const share_url = `${process.env.hostname}${share_string}`
   const ORG_SCHEMA = JSON.stringify({
@@ -73,14 +73,14 @@ const Video = (props) => {
     url: share_url,
     name: title_name,
     isPartOf: `${process.env.hostname}#website`,
-    image: `${videoThumbnail}/#primaryimage`,
-    thumbnailUrl: videoThumbnail,
-    contentUrl: videoUrl,
-    embedUrl: videoUrl,
+    image: `${video_thumbnail}/#primaryimage`,
+    thumbnailUrl: video_thumbnail,
+    contentUrl: video_url,
+    embedUrl: video_url,
     author: {
       '@type': 'Person',
-      name: '@' + userNickname,
-      url: `${process.env.hostname}p/${userNickname}`
+      name: '@' + user_nickname,
+      url: `${process.env.hostname}p/${user_nickname}`
     },
     publisher: {
       '@type': 'Organization',
@@ -97,13 +97,13 @@ const Video = (props) => {
       {
         '@type': 'WatchAction',
         target: share_url,
-        image: videoThumbnail
+        image: video_thumbnail
       }
     ]
   })
   deepLinkParamsRef.current.metaDescription = ld_description
   deepLinkParamsRef.current.metaTitle = title_name
-  deepLinkParamsRef.current.metaPreviewImage = videoPreviewImage
+  deepLinkParamsRef.current.metaPreviewImage = video_preview_image
 
   useEffect(() => {
     deepLinkParamsRef.current.hostName = window.location.hostname
@@ -116,7 +116,7 @@ const Video = (props) => {
 
   const setProfileUrl = () => {
     // console.log("Setting profile url in public video individual")
-    window.location.href = `${process.env.hostname}p/${userNickname}`
+    window.location.href = `${process.env.hostname}p/${user_nickname}`
   }
 
   // todo: remove it
@@ -124,16 +124,16 @@ const Video = (props) => {
   const onClick = () => {
     setMuted(old => !old)
   }
-  return !videoUrl ? (
+  return !video_url ? (
     <Error />
   ) : (
     <>
       <Layout>
         <SEO
           title={title_name}
-          openGraphTitle={`${userNickname} @ Genuin`}
-          videoUrl={videoUrl}
-          videoPreviewImage={videoPreviewImage}
+          openGraphTitle={`${user_nickname} @ Genuin`}
+          videoUrl={video_url}
+          videoPreviewImage={video_preview_image}
           description={ld_description}
           openGraphDescription={description || ' '}
           metaImageWidth={1200}
@@ -144,11 +144,11 @@ const Video = (props) => {
           key={video_id_to_use ?? `${Math.random()}`}
           video_id_to_use={video_id_to_use}
           description={description}
-          videoUrl={video_url_m3u8 ?? videoUrl}
-          videoThumbnail={videoThumbnail}
-          userName={userNickname}
-          userId={userNickname}
-          userProfileImage={userProfileImage}
+          videoUrl={video_url_m3u8 ?? video_url}
+          videoThumbnail={video_thumbnail}
+          userName={user_nickname}
+          userId={user_nickname}
+          userProfileImage={user_profile_image}
           showGetAppModal={handleShowDownloadAppPopup}
           onEnded={showGetAppToViewDialog}
           autoplay
@@ -158,7 +158,7 @@ const Video = (props) => {
         >
           <AppActions
             showGetAppModal={handleShowModalAppDownload}
-            userName={userNickname}
+            userName={user_nickname}
             link={link}
             videoUrl={globalThis?.location?.href}
             videoDescription={description}
