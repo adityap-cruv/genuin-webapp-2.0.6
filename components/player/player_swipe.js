@@ -1,10 +1,9 @@
-import React, { useState, useMemo, useEffect } from 'react'
+import React, { useMemo } from 'react'
 import { ReactPlayerWrapper } from './react_player_wrapper_swipe'
-import { increaseVideoViewCount } from '../../actions/postActions'
 import { Box, Flex } from '@chakra-ui/react'
 
 export const Player = ({
-  video_id_to_use,
+  videoId,
   description,
   videoUrl = '',
   videoThumbnail,
@@ -42,9 +41,6 @@ export const Player = ({
   scrollToNextVideo = () => { },
   loop
 }) => {
-  const [triggerPlayCount, setTriggetPlayCount] = useState(false)
-  const [duration, setDuration] = useState(0)
-
   const shortDescription = useMemo(() => {
     if (description?.length > 50) {
       return `${description.slice(0, 50)}...`
@@ -60,27 +56,6 @@ export const Player = ({
     }
     return 'https://media.qa.begenuin.com/backend_assets/lottie/snowman.png'
   }, [userProfileImage])
-
-  const handleDuration = (event) => {
-    setDuration(Math.round(Number.parseFloat(event)))
-  }
-
-  const handleProgress = (event) => {
-    const playedProgress = Math.round(Number.parseFloat(event.played) * 100)
-    if (playedProgress >= duration / 2 && !triggerPlayCount) {
-      setTriggetPlayCount(true)
-    }
-  }
-
-  useEffect(() => {
-    if (triggerPlayCount) {
-      let type = 1
-      if (roundTableMode) {
-        type = 2
-      }
-      increaseVideoViewCount(video_id_to_use, type)
-    }
-  }, [video_id_to_use, triggerPlayCount])
 
   return (
     <Flex
@@ -109,8 +84,6 @@ export const Player = ({
       )} */}
       <ReactPlayerWrapper
         videoUrl={videoUrl}
-        onProgress={handleProgress}
-        onDuration={handleDuration}
         videoThumbnail={videoThumbnail}
         videos={videos}
         index={index}
@@ -144,7 +117,6 @@ export const Player = ({
         uniqueKey={uniqueKey}
         disableWatch={disableWatch}
         contextReel={contextReel}
-        duration={duration}
         scrollToNextVideo={scrollToNextVideo}
         loop={loop}
       >

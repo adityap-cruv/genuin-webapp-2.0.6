@@ -1,6 +1,5 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react'
+import React, { useMemo, useRef } from 'react'
 import { ReactPlayerWrapper } from './react_player_wrapper'
-import { increaseVideoViewCount } from '../../actions/postActions'
 import { TopNav } from '../navbar/top_nav'
 import { Flex, useBreakpointValue, Image } from '@chakra-ui/react'
 import { analyticsService } from '../basic/analytics_service'
@@ -9,7 +8,7 @@ import { analyticsService } from '../basic/analytics_service'
 let debounceTimeout = null
 
 export const Player = ({
-  video_id_to_use,
+  videoId,
   description,
   videoUrl = '',
   videoThumbnail,
@@ -38,10 +37,9 @@ export const Player = ({
   verticalNavigation,
   shareUrl,
   muted,
-  onClick
+  onClick,
+  singleVideoView
 }) => {
-  const [triggerPlayCount, setTriggetPlayCount] = useState(false)
-  const [duration, setDuration] = useState(0)
   const pad = useBreakpointValue({ base: true, xs: true, sm: true, md: true, lg: false, xl: false })
   const videoPlayingDetails = useRef({ duration: 0, currentTime: 0 })
 
@@ -67,27 +65,6 @@ export const Player = ({
     }
     return 'https://media.qa.begenuin.com/backend_assets/lottie/snowman.png'
   }, [userProfileImage])
-
-  const handleDuration = (event) => {
-    setDuration(Math.round(Number.parseFloat(event)))
-  }
-
-  const handleProgress = (event) => {
-    const playedProgress = Math.round(Number.parseFloat(event.played) * 100)
-    if (playedProgress >= duration / 2 && !triggerPlayCount) {
-      setTriggetPlayCount(true)
-    }
-  }
-
-  useEffect(() => {
-    if (triggerPlayCount) {
-      let type = 1
-      if (roundTableMode) {
-        type = 2
-      }
-      increaseVideoViewCount(video_id_to_use, type)
-    }
-  }, [video_id_to_use, triggerPlayCount])
 
   return (
     <Flex
@@ -121,8 +98,6 @@ export const Player = ({
       )}
       <ReactPlayerWrapper
         videoUrl={videoUrl}
-        onProgress={handleProgress}
-        onDuration={handleDuration}
         videoThumbnail={videoThumbnail}
         videos={videos}
         currentVideoIndex={currentVideoIndex}
@@ -139,7 +114,7 @@ export const Player = ({
           debounceTimeout = setTimeout(() => {
             const event_name = 'video_watch'
             const event_details = {
-              video_share_string: video_id_to_use,
+              video_share_string: videoId,
               loop_share_string: roundTableId,
               page: window.location.href,
               duration: Math.round(videoPlayingDetails.current.duration),
@@ -153,10 +128,9 @@ export const Player = ({
         // analyticsService for getPrevVideo 'video_watch'
         getPrevVideo={() => {
           getPrevVideo()
-
           const event_name = 'video_watch'
           const event_details = {
-            video_share_string: video_id_to_use,
+            video_share_string: videoId,
             loop_share_string: roundTableId,
             page: window.location.href,
             duration: Math.round(videoPlayingDetails.current.duration),
@@ -170,12 +144,11 @@ export const Player = ({
         // analyticsService for onEnded 'video_watch'
         onEnded = {() => {
           onEnded()
-
           clearTimeout(debounceTimeout)
           debounceTimeout = setTimeout(() => {
             const event_name = 'video_watch'
             const event_details = {
-              video_share_string: video_id_to_use,
+              video_share_string: videoId,
               page: window.location.href,
               duration: Math.round(videoPlayingDetails.current.duration),
               watch_time: Math.round(videoPlayingDetails.current.currentTime)
@@ -189,10 +162,6 @@ export const Player = ({
         roundTableId={roundTableId}
         watchRoundTable={watchRoundTable}
         setWatchRoundtable={setWatchRoundtable}
-        onClose={() => {
-          onClickOutsideOfVideo()
-          onClose()
-        }}
         direction={direction}
         setDirection={setDirection}
         verticalNavigation={verticalNavigation}
@@ -200,6 +169,7 @@ export const Player = ({
         muted={muted}
         onClick={onClick}
         updateVideoDetails={updateVideoPlayingDetail}
+        singleVideoView={singleVideoView}
       >
         {children}
       </ReactPlayerWrapper>

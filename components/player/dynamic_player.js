@@ -11,11 +11,12 @@ export const DynamicPlayer = ({
   onEnded,
   loop = true,
   autoPlay,
-  poster = null
+  poster = null,
+  isPlaying = false
 }) => {
   const videoRef = useRef(null)
   const playerRef = useRef(null)
-  const isVisible = useElementOnScreen({ root: null, rootMargin: '0px', threshold: 0.6 }, videoRef)
+  const isVisible = useElementOnScreen({ root: null, rootMargin: '0px', threshold: 0.8 }, videoRef)
 
   // const muted = useState(mutedRef.current)
 
@@ -36,9 +37,18 @@ export const DynamicPlayer = ({
   }, [])
 
   useEffect(() => {
+    if (playerRef?.current) {
+      if (isPlaying) {
+        playerRef?.current?.play()
+      }
+    }
+  }, [isPlaying])
+
+  useEffect(() => {
     const player = playerRef.current
     if (!player) return
     if (isVisible) {
+      // eslint-disable-next-line no-console
       player.play().then(() => { }).catch(e => console.log('error::', e))
     } else {
       player.pause()

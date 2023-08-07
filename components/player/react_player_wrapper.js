@@ -19,8 +19,6 @@ import icMuteDesktop from '../../assets/images/video-more-options/ic-mute-deskto
 import icUnmuteDesktop from '../../assets/images/video-more-options/ic-unmute-desktop.svg'
 import { isMobile } from 'react-device-detect'
 import { FontStyle } from '../../constants/font_style'
-import icPlay from '../../assets/icons/icon-play.svg'
-import icPause from '../../assets/icons/icon-pause.svg'
 
 export const ReactPlayerWrapper = ({
   videoUrl,
@@ -52,12 +50,12 @@ export const ReactPlayerWrapper = ({
   shareUrl,
   muted,
   onClick,
-  updateVideoDetails
+  updateVideoDetails,
+  singleVideoView = false
 }) => {
   const [progress, setProgress] = useState(0)
   const [isPlaying, setIsPlaying] = useState(autoplay)
   const [rtEnded, setRtEnded] = useState(false)
-  const [isPlayingDebounced] = useDebounce(isPlaying, 65)
   const [isMutedDebounced] = useDebounce(muted, 800)
 
   const handleOnClick = useCallback(() => {
@@ -95,14 +93,11 @@ export const ReactPlayerWrapper = ({
   //   onDurationRef?.current?.(event)
   // })
 
-  // var delay;
   useEffect(() => {
     const touchStart = (e) => {
       touchStartYRef.current = e.changedTouches[0].clientY
-      // delay = setInterval(() => {
-      //   setIsPlaying(false);
-      // }, 500);
     }
+
     const touchEnd = (e) => {
       const touchEndY = e.changedTouches[0].clientY
       if (touchStartYRef.current > touchEndY + 5) {
@@ -115,23 +110,12 @@ export const ReactPlayerWrapper = ({
       // setIsPlaying(true);
       // clearInterval(delay);
     }
+
     window.addEventListener('touchstart', touchStart)
     window.addEventListener('touchend', touchEnd)
     return () => {
       window.removeEventListener('touchstart', touchStart)
       window.removeEventListener('touchend', touchEnd)
-    }
-  }, [])
-
-  const onBackButtonEvent = (e) => {
-    e.preventDefault()
-    onClose()
-  }
-
-  useEffect(() => {
-    window.addEventListener('popstate', onBackButtonEvent)
-    return () => {
-      window.removeEventListener('popstate', onBackButtonEvent)
     }
   }, [])
 
@@ -181,6 +165,7 @@ export const ReactPlayerWrapper = ({
     }
     return `${Math.floor(time / 7)}w`
   }
+
   return (
     <div
       className="video-container"
@@ -341,7 +326,7 @@ export const ReactPlayerWrapper = ({
         </Flex>
       )}
       {/* x button */}
-      {!watchRoundTable && !mobile && (
+      {!watchRoundTable && !mobile && !singleVideoView && (
         <Flex
           w="full"
           position="absolute"
@@ -390,26 +375,12 @@ export const ReactPlayerWrapper = ({
               }}
               opacity={0.7}
             />}</> : <>
-          {isPlaying ? <Image
-            src={icPause.src}
-            style={{
-              display: isPlayingDebounced ? 'none' : 'block'
-            }}
-            className="btn-play"
-          /> : <Image
-            src={icPlay.src}
-            style={{
-              display: 'block'
-            }}
-            className="btn-play"
-          />}
-
         </>}
 
         </>
       )}
       {Boolean(getNextVideo) &&
-      Boolean(getPrevVideo) &&
+      Boolean(getPrevVideo) && !singleVideoView &&
       (!roundTableMode || verticalNavigation) ? (
           <div className="btn-arrow-controler d-none d-md-flex flex-column align-items-center justify-content-center">
             {currentVideoIndex !== 0 && (
@@ -506,8 +477,13 @@ export const ReactPlayerWrapper = ({
                 justifyContent='center'
                 className='watch-roundtable'
                 onClick={() => {
+                  if (singleVideoView) {
+                    window.history.pushState(null, '', `/l/${roundTableId}`)
+                    window.location.reload()
+                    return
+                  }
                   if (verticalNavigation && shareUrl) {
-                    window.location.href = `${process.env.hostname}rt/${shareUrl.split('/').pop()}`
+                    window.location.href = `${process.env.hostname}l/${shareUrl.split('/').pop()}`
                     onClose()
                   } else {
                     setWatchRoundtable(true)
@@ -630,7 +606,7 @@ export const ReactPlayerWrapper = ({
                 {roundTableMode ? (
                   <Flex alignItems="center">
                     <Link
-                      href={`/rt/${roundTableId}`}
+                      href={`/l/${roundTableId}`}
                       style={{
                         marginRight: '10px',
                         maxWidth: '150px'
@@ -647,6 +623,11 @@ export const ReactPlayerWrapper = ({
                     <Button
                       variant="outline-light"
                       onClick={() => {
+                        if (singleVideoView) {
+                          window.history.pushState(null, '', `/l/${roundTableId}`)
+                          window.location.reload()
+                          return
+                        }
                         if (verticalNavigation && shareUrl) {
                           window.location.href = shareUrl
                           // window.location.href = `${process.env.hostname}rt/${shareUrl.split("/").pop()}`
