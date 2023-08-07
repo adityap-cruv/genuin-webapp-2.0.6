@@ -32,6 +32,15 @@ const Home = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // const deviceId = localStorage.getItem("device_id")
+        // var oldPageSession = localStorage.getItem("page_session")
+        // if (!deviceId) {
+        //   deviceId = uuidv4();
+        //   localStorage.setItem("device_id", deviceId);
+        // }
+        // const feed_data = await axios.get(
+        //   `${process.env.apiurl}/api/v3/public/home?device_id=${deviceId}&old_page_session=${oldPageSession}`
+        // );
         const videosData = await axios.get(
           `${process.env.apiurl}/api/v3/public/rt/paginate_videos?chat_id=17bb88b72c80153b`
         )
@@ -39,6 +48,7 @@ const Home = () => {
           `${process.env.apiurl}/api/v3/public/rt/details?chat_id=17bb88b72c80153b`
         )
         const feeds = videosData?.data?.data?.chats
+        // setPageSession(feed_data?.data?.data?.page_session);
         if (feeds.length > 0) {
           setRTData({ rtVideos: feeds, rtData: rtDetails?.data?.data })
         }
