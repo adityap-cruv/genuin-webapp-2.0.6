@@ -162,10 +162,6 @@ export const Player = ({
         roundTableId={roundTableId}
         watchRoundTable={watchRoundTable}
         setWatchRoundtable={setWatchRoundtable}
-        onClose={() => {
-          onClickOutsideOfVideo()
-          onClose()
-        }}
         direction={direction}
         setDirection={setDirection}
         verticalNavigation={verticalNavigation}

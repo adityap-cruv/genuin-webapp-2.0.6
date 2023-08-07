@@ -46,19 +46,19 @@ const Video = ({
     }
   }
 
-  const description = `Watch videos from ${videoDetails?.user_name || '@' + videoDetails?.user_nickname} on Genuin`
-  const title = `${videoDetails?.description} • Watch and react on Genuin`
-  let shareLink = `${process.env.hostname}v/${videoDetails?.share_string}`
+  const description = `Watch videos from ${videoDetails?.owner?.username || '@' + videoDetails?.video?.nickname} on Genuin` // todo username is pending
+  const title = `${videoDetails?.video?.description} • Watch and react on Genuin`
+  let shareLink = `${process.env.hostname}v/${videoDetails?.video?.share_string}`
   if (loopId) {
     shareLink += `?l=${loopId}`
   }
   const author = {
     '@type': 'Person',
-    name: '@' + videoDetails?.user_nickname,
-    url: `${process.env.hostname}p/${videoDetails?.user_nickname}`
+    name: '@' + videoDetails?.owner?.nickname,
+    url: `${process.env.hostname}p/${videoDetails?.owner?.nickname}`
   }
-  const dateCreated = new Date(videoDetails?.created_at).toISOString()
-  const dateModified = new Date(videoDetails?.updated_at).toISOString()
+  const dateCreated = new Date(videoDetails?.video?.created_at).toISOString()
+  const dateModified = new Date(videoDetails?.video?.updated_at).toISOString()
 
   const ORG_SCHEMA = JSON.stringify({
     '@context': 'http://schema.org',
@@ -67,10 +67,10 @@ const Video = ({
     url: shareLink,
     name: title,
     isPartOf: `${process.env.hostname}#website`,
-    image: `${videoDetails?.video_thumbnail}/#primaryimage`,
-    thumbnailUrl: videoDetails?.video_thumbnail,
-    contentUrl: videoDetails?.video_url,
-    embedUrl: videoDetails?.video_url,
+    image: `${videoDetails?.video?.thumbnail}/#primaryimage`,
+    thumbnailUrl: videoDetails?.video?.thumbnail,
+    contentUrl: videoDetails?.video?.url,
+    embedUrl: videoDetails?.video?.url,
     author,
     publisher: {
       '@type': 'Organization',
@@ -87,7 +87,7 @@ const Video = ({
       {
         '@type': 'WatchAction',
         target: shareLink,
-        image: videoDetails?.video_thumbnail
+        image: videoDetails?.video?.thumbnail
       }
     ]
   })
@@ -97,7 +97,7 @@ const Video = ({
     deepLinkParamsRef.current.pathName = window.location.pathname
     deepLinkParamsRef.current.metaDescription = description
     deepLinkParamsRef.current.metaTitle = title
-    deepLinkParamsRef.current.metaPreviewImage = videoDetails?.video_preview_image
+    deepLinkParamsRef.current.metaPreviewImage = videoDetails?.video?.thumbnail
   }, [])
 
   // todo: remove it
@@ -114,13 +114,13 @@ const Video = ({
         <SEO
           title={title}
           openGraphTitle={title}
-          videoUrl={videoDetails?.video_url}
-          videoPreviewImage={videoDetails?.video_preview_image}
+          videoUrl={videoDetails?.video?.url}
+          videoPreviewImage={videoDetails?.video?.preview_image}
           openGraphDescription={description}
-          metaImageWidth={1200} // todo change this value according to needs
-          metaImageHeight={630}// todo change this value according to needs
-          metaVideoHeight={1000}// todo change this value according to needs
-          metaVideoWidth={1000}// todo change this value according to needs
+          metaImageWidth={videoDetails?.video?.metadata?.height}
+          metaImageHeight={videoDetails?.video?.metadata?.width}
+          metaVideoHeight={videoDetails?.video?.metadata?.height}
+          metaVideoWidth={videoDetails?.video?.metadata?.width}
           urlToCopy={shareLink}
           author={JSON.stringify(author)}
           description={description}
@@ -128,18 +128,18 @@ const Video = ({
           ownerProfileLink={`${process.env.hostname}p/${videoDetails?.user_nickname}`}
           releaseDate={dateCreated}
           updateTime={dateModified}
-          videoDuration={videoDetails?.duration}
-          videoType='video/mp4'
+          videoDuration={videoDetails?.video?.metadata?.duration}
+          videoType={videoDetails?.video?.metadata?.type} // todo check the res once
         />
         <script type='application/ld+json' dangerouslySetInnerHTML={{ __html: ORG_SCHEMA }} />
         <Player
-          videoId={videoDetails?.share_string}
-          description={videoDetails?.description}
-          videoUrl={videoDetails?.video_url_m3u8 ?? videoDetails?.video_url}
-          videoThumbnail={videoDetails?.videothumbnail}
-          userName={videoDetails?.user_nickname}
-          userId={videoDetails?.user_nickname}
-          userProfileImage={videoDetails?.user_profile_image}
+          videoId={videoDetails?.video?.share_string}
+          description={videoDetails?.video?.description}
+          videoUrl={videoDetails?.video?.url}
+          videoThumbnail={videoDetails?.video?.thumbnail}
+          userName={videoDetails?.owner?.nickname}
+          userId={videoDetails?.owner?.nickname}
+          userProfileImage={videoDetails?.owner?.profile_image}
           showGetAppModal={handleShowDownloadAppPopup}
           onEnded={showGetAppToViewDialog}
           autoplay
@@ -147,16 +147,20 @@ const Video = ({
           muted={muted}
           singleVideoView={true}
           roundTableMode={!!loopId}
+          roundTableName={videoDetails?.loop?.name}
+          rtProfileImage={videoDetails?.loop?.profile_image}
+          roundTableId={loopId}
+          shareUrl={shareLink}
         >
           <AppActions
             showGetAppModal={handleShowModalAppDownload}
-            userName={videoDetails?.user_nickname}
-            link={videoDetails?.link}
+            userName={videoDetails?.owner?.nickname}
+            link={videoDetails?.video?.link}
             videoUrl={globalThis?.location?.href}
-            videoDescription={videoDetails?.description}
+            videoDescription={videoDetails?.video?.description}
             videoTitle='Genuin'
             deepLinkParams={deepLinkParamsRef.current}
-            videoId={videoDetails?.share_string}
+            videoId={videoDetails?.video?.share_string}
           />
         </Player>
         <GetAppModal
@@ -173,21 +177,15 @@ const Video = ({
 }
 
 Video.getInitialProps = async ({ query: { video_id, l, geshc } }) => {
-  let url, params
-  if (video_id) {
-    url = `${process.env.apiurl}/api/v3/public/pv`
-    params = {
-      video_id
-    }
-  }
   try {
-    const res = await axios.get(url, { params })
+    const res = await axios.get(`${process.env.apiurl}/api/v3/public/video_details`, {
+      params: {
+        video_share_string: video_id
+      }
+    })
     let videoDetails = null
     if (res?.data?.data) {
       videoDetails = res?.data?.data
-    }
-    if (l) {
-      videoDetails = videoDetails?.chats[0]
     }
     return {
       videoDetails,

@@ -19,8 +19,6 @@ import icMuteDesktop from '../../assets/images/video-more-options/ic-mute-deskto
 import icUnmuteDesktop from '../../assets/images/video-more-options/ic-unmute-desktop.svg'
 import { isMobile } from 'react-device-detect'
 import { FontStyle } from '../../constants/font_style'
-import icPlay from '../../assets/icons/icon-play.svg'
-import icPause from '../../assets/icons/icon-pause.svg'
 
 export const ReactPlayerWrapper = ({
   videoUrl,
@@ -53,12 +51,11 @@ export const ReactPlayerWrapper = ({
   muted,
   onClick,
   updateVideoDetails,
-  singleVideoView = true
+  singleVideoView = false
 }) => {
   const [progress, setProgress] = useState(0)
   const [isPlaying, setIsPlaying] = useState(autoplay)
   const [rtEnded, setRtEnded] = useState(false)
-  const [isPlayingDebounced] = useDebounce(isPlaying, 65)
   const [isMutedDebounced] = useDebounce(muted, 800)
 
   const handleOnClick = useCallback(() => {
@@ -97,11 +94,6 @@ export const ReactPlayerWrapper = ({
   // })
 
   useEffect(() => {
-    const onBackButtonEvent = (e) => {
-      e.preventDefault()
-      onClose()
-    }
-
     const touchStart = (e) => {
       touchStartYRef.current = e.changedTouches[0].clientY
     }
@@ -119,11 +111,9 @@ export const ReactPlayerWrapper = ({
       // clearInterval(delay);
     }
 
-    window.addEventListener('popstate', onBackButtonEvent)
     window.addEventListener('touchstart', touchStart)
     window.addEventListener('touchend', touchEnd)
     return () => {
-      window.removeEventListener('popstate', onBackButtonEvent)
       window.removeEventListener('touchstart', touchStart)
       window.removeEventListener('touchend', touchEnd)
     }
@@ -385,20 +375,6 @@ export const ReactPlayerWrapper = ({
               }}
               opacity={0.7}
             />}</> : <>
-          {isPlaying ? <Image
-            src={icPause.src}
-            style={{
-              display: isPlayingDebounced ? 'none' : 'block'
-            }}
-            className="btn-play"
-          /> : <Image
-            src={icPlay.src}
-            style={{
-              display: 'block'
-            }}
-            className="btn-play"
-          />}
-
         </>}
 
         </>
@@ -501,6 +477,11 @@ export const ReactPlayerWrapper = ({
                 justifyContent='center'
                 className='watch-roundtable'
                 onClick={() => {
+                  if (singleVideoView) {
+                    window.history.pushState(null, '', `/l/${roundTableId}`)
+                    window.location.reload()
+                    return
+                  }
                   if (verticalNavigation && shareUrl) {
                     window.location.href = `${process.env.hostname}l/${shareUrl.split('/').pop()}`
                     onClose()
@@ -642,6 +623,11 @@ export const ReactPlayerWrapper = ({
                     <Button
                       variant="outline-light"
                       onClick={() => {
+                        if (singleVideoView) {
+                          window.history.pushState(null, '', `/l/${roundTableId}`)
+                          window.location.reload()
+                          return
+                        }
                         if (verticalNavigation && shareUrl) {
                           window.location.href = shareUrl
                           // window.location.href = `${process.env.hostname}rt/${shareUrl.split("/").pop()}`

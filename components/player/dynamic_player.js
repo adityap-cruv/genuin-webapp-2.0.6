@@ -11,7 +11,8 @@ export const DynamicPlayer = ({
   onEnded,
   loop = true,
   autoPlay,
-  poster = null
+  poster = null,
+  isPlaying = false
 }) => {
   const videoRef = useRef(null)
   const playerRef = useRef(null)
@@ -34,6 +35,14 @@ export const DynamicPlayer = ({
       playerRef.current = player
     })
   }, [])
+
+  useEffect(() => {
+    if (playerRef?.current) {
+      if (isPlaying) {
+        playerRef?.current?.play()
+      }
+    }
+  }, [isPlaying])
 
   useEffect(() => {
     const player = playerRef.current
