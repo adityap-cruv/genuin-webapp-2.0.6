@@ -38,6 +38,8 @@ Component.getInitialProps = async ({ query: { video_id, l, geshc } }) => {
   if (geshc) {
     Object.assign(objToReturn, { geshc })
   }
+
+  return objToReturn
 }
 
 export default Component
