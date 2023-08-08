@@ -43,7 +43,6 @@ export const ReactPlayerWrapper = ({
   autoJumpToNextVideo = false,
   watchRoundTable,
   setWatchRoundtable,
-  onClose,
   direction,
   setDirection,
   verticalNavigation,
@@ -51,7 +50,8 @@ export const ReactPlayerWrapper = ({
   muted,
   onClick,
   updateVideoDetails,
-  singleVideoView = false
+  singleVideoView = false,
+  onClose
 }) => {
   const [progress, setProgress] = useState(0)
   const [isPlaying, setIsPlaying] = useState(autoplay)
@@ -98,6 +98,10 @@ export const ReactPlayerWrapper = ({
       touchStartYRef.current = e.changedTouches[0].clientY
     }
 
+    const popstateHandler = (e) => {
+      onClose()
+    }
+
     const touchEnd = (e) => {
       const touchEndY = e.changedTouches[0].clientY
       if (touchStartYRef.current > touchEndY + 5) {
@@ -112,8 +116,10 @@ export const ReactPlayerWrapper = ({
     }
 
     window.addEventListener('touchstart', touchStart)
+    window.addEventListener('popstate', popstateHandler)
     window.addEventListener('touchend', touchEnd)
     return () => {
+      window.removeEventListener('popstate', popstateHandler)
       window.removeEventListener('touchstart', touchStart)
       window.removeEventListener('touchend', touchEnd)
     }
@@ -190,6 +196,7 @@ export const ReactPlayerWrapper = ({
           updateVideoDetails({ currentTime })
         }}
         loop={false}
+        autoPlay={autoplay}
       />
       {!isMobile && <div style={{
         position: 'absolute',
