@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react'
 import NextHead from 'next/head'
+import { Error } from '../components/basic/error'
+import { GenuinLoader } from '../components/basic/genuin_loader'
 
 const Component = ({
   videoId,
@@ -24,6 +26,7 @@ const Component = ({
     <NextHead>
       <meta name="robots" content="noindex, nofollow"></meta>
     </NextHead>
+    {videoId ? <GenuinLoader/> : <Error/>}
   </>
 }
 

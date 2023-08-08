@@ -31,7 +31,6 @@ export const Player = ({
   onClickOutsideOfVideo,
   watchRoundTable = false,
   setWatchRoundtable = () => {},
-  onClose = () => {},
   direction,
   setDirection,
   verticalNavigation,
@@ -124,6 +123,9 @@ export const Player = ({
 
             debounceTimeout = null
           }, 500)
+        }}
+        onClose={() => {
+          onClickOutsideOfVideo()
         }}
         // analyticsService for getPrevVideo 'video_watch'
         getPrevVideo={() => {

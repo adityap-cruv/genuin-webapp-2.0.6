@@ -501,6 +501,7 @@ const Profile = ({
       }
     })
   }, [])
+
   return (<>
     <SEO
       openGraphType='profile'
@@ -511,6 +512,7 @@ const Profile = ({
       openGraphDescription={`${name || `@${nickname}`}, ${user.videos
       } Videos, ${abbreviateNumber(views)} Views, ${replies} Replies`}
       urlToCopy={share_url}
+      videoPreviewImage={preview_image}
       author={JSON.stringify(author)}
     />
     {
@@ -992,7 +994,10 @@ const Profile = ({
               }
               userName={nickname}
               userId={nickname}
-              onClickOutsideOfVideo={() => { setProfileUrl(); onClosePublic() }}
+              onClickOutsideOfVideo={() => {
+                setProfileUrl()
+                onClosePublic()
+              }}
               userProfileImage={profile_image}
               showGetAppModal={handleShowDownloadAppPopup}
               onEnded={showGetAppToViewDialog}

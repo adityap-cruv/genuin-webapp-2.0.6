@@ -46,8 +46,8 @@ const Video = ({
     }
   }
 
-  const description = `Watch videos from ${videoDetails?.owner?.username || '@' + videoDetails?.video?.nickname} on Genuin` // todo username is pending
-  const title = `${videoDetails?.video?.description} • Watch and react on Genuin`
+  const description = `Watch videos from ${videoDetails?.owner?.username || '@' + videoDetails?.video?.nickname} on Genuin`
+  const title = `${videoDetails?.video?.description ? videoDetails?.video?.description + ' • ' : ''}Watch and react on Genuin`
   let shareLink = `${process.env.hostname}v/${videoDetails?.video?.share_string}`
   if (loopId) {
     shareLink += `?l=${loopId}`

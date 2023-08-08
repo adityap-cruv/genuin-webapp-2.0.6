@@ -10,7 +10,7 @@ export const DynamicPlayer = ({
   onDuration,
   onEnded,
   loop = true,
-  autoPlay,
+  autoPlay = true,
   poster = null,
   isPlaying = false
 }) => {
