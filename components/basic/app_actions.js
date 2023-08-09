@@ -45,16 +45,19 @@ export const AppActions = ({
   }
   const userLink = getClickableLink(link)
   const getUrl = () => {
-    let link = process.env.hostname + 'v/'
+    const link = new URL(process.env.hostname)
 
     if (videoId) {
-      link += videoId
+      link.pathname = `/v/${videoId}`
     }
 
     if (roundTableId) {
-      link += ('?l=' + roundTableId)
+      link.searchParams.set('l', roundTableId)
     }
-    return link
+
+    link.searchParams.set('utm_source', 'app_web')
+    alert(link.href)
+    return link.href
   }
   return (
     <ul>

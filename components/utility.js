@@ -106,7 +106,7 @@ export async function rudderInitialize () {
       a.parentNode.insertBefore(r, a)
     }
     e.loadJS()
-    e.load('2Rb3KQGzR3qyC6R3ljX4FkmBqZf', 'https://rudderstack.begenuin.com/')
+    e.load('2TKjFZvo9nt38kcH91svAZ2T1vl', 'https://rudderstack.begenuin.com/')
     e.page()
   })()
 }

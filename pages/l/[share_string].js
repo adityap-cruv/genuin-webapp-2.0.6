@@ -78,7 +78,6 @@ const RoundTable = ({
   const [showModalAppDownload, setShowModalAppDownload] = useState(false)
   const getAppComponentRef = useRef(() => null)
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0)
-  const [currentUrl, setCurrentUrl] = useState('')
   const [watchRoundTable, setWatchRoundtable] = useState(true)
   const [direction, setDirection] = useState('forward')
   const deepLinkParamsRef = useRef({
@@ -105,15 +104,16 @@ const RoundTable = ({
 
   const [isError, setIsError] = useState(false)
 
+  const currentUrlRef = useRef('')
   useEffect(() => {
-    setCurrentUrl(window.location.href)
+    currentUrlRef.current = window.location.href + '?utm_source=app_web'
     deepLinkParamsRef.current.hostName = window.location.hostname
     deepLinkParamsRef.current.pathName = window.location.pathname
     if (router?.query?.v) {
       const idx = videos.findIndex(({ share_string }) => share_string === router?.query?.v)
       if (videos?.[idx]?.share_string) {
         setCurrentVideoIndex(idx)
-        window.history.replaceState(null, '', `../rt/${details.share_string}?v=${videos?.[idx]?.share_string}`)
+        window.history.replaceState(null, '', `../v/${videos?.[idx]?.share_string}?l=${details?.share_string}`)
         onOpen()
       } else {
         setIsError(true)
@@ -456,14 +456,14 @@ const RoundTable = ({
                       </Button>
                       {mobile ? (
                         <MobileShareButton
-                          url={currentUrl}
+                          url={currentUrlRef.current}
                           description='Hello, visit this roundtable!'
                           title='Genuin on web'
                           roundTableId={details.share_string}
                         />
                       ) : (
                         <ShareButton
-                          url={currentUrl}
+                          url={currentUrlRef.current}
                           description='Hello, visit this roundtable!'
                           title='Genuin on web'
                           color='#0645ff'
