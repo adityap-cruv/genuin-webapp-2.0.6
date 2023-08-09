@@ -479,9 +479,9 @@ const Profile = ({
     ]
   })
 
-  const [currentUrl, setCurrentUrl] = useState('')
+  const currentUrlRef = useRef()
   useEffect(() => {
-    setCurrentUrl(window.location.href)
+    currentUrlRef.current = window.location.href + '?utm_source=app_web'
   }, [])
 
   useEffect(() => {
@@ -761,14 +761,14 @@ const Profile = ({
                           </Button>
                           {isMobile ? (
                             <MobileShareButton
-                              url={currentUrl}
+                              url={currentUrlRef.current}
                               description='Hello, visit this profile!'
                               title='Genuin on web'
                               genuin_nickname= {nickname}
                             />
                           ) : (
                             <ShareButton
-                              url={currentUrl}
+                              url={currentUrlRef.current}
                               description='Hello, visit this profile!'
                               title='Genuin on web'
                               color='#0645ff'

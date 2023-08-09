@@ -45,7 +45,6 @@ const Video = ({
       handleShowModalAppDownload(() => <>Get the app to view this video.</>)
     }
   }
-  console.log('details::', videoDetails)
   const description = `Watch videos from ${videoDetails?.owner?.username || '@' + videoDetails?.video?.nickname} on Genuin`
   const title = `${videoDetails?.video?.description ? videoDetails?.video?.description + ' • ' : ''}Watch and react on Genuin`
   let shareLink = `${process.env.hostname}v/${videoDetails?.video?.share_string}`
@@ -186,7 +185,6 @@ Video.getInitialProps = async ({ query: { video_id, l, geshc } }) => {
     let videoDetails = null
     if (res?.data?.data) {
       videoDetails = res?.data?.data
-      console.log(res?.data)
     }
     return {
       videoDetails,
