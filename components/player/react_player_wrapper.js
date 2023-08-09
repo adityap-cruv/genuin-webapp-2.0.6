@@ -228,7 +228,7 @@ export const ReactPlayerWrapper = ({
             <Text fontWeight="bold" fontSize={17}>
               {videos[currentVideoIndex] && `${getTimeDiff()}`}
             </Text>
-            <Link href={roundTableId}>
+            <Link href={'/l/' + roundTableId}>
               <Flex
                 alignItems="center"
                 gap={3}

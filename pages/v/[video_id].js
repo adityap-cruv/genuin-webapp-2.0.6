@@ -45,7 +45,7 @@ const Video = ({
       handleShowModalAppDownload(() => <>Get the app to view this video.</>)
     }
   }
-
+  console.log('details::', videoDetails)
   const description = `Watch videos from ${videoDetails?.owner?.username || '@' + videoDetails?.video?.nickname} on Genuin`
   const title = `${videoDetails?.video?.description ? videoDetails?.video?.description + ' • ' : ''}Watch and react on Genuin`
   let shareLink = `${process.env.hostname}v/${videoDetails?.video?.share_string}`
@@ -57,8 +57,8 @@ const Video = ({
     name: '@' + videoDetails?.owner?.nickname,
     url: `${process.env.hostname}p/${videoDetails?.owner?.nickname}`
   }
-  const dateCreated = new Date(videoDetails?.video?.created_at).toISOString()
-  const dateModified = new Date(videoDetails?.video?.updated_at).toISOString()
+  // const dateCreated = new Date(videoDetails?.video?.created_at).toISOString()
+  // const dateModified = new Date(videoDetails?.video?.updated_at).toISOString()
 
   const ORG_SCHEMA = JSON.stringify({
     '@context': 'http://schema.org',
@@ -79,10 +79,10 @@ const Video = ({
     },
     description,
     inLanguage: 'en-US',
-    uploadDate: dateCreated,
-    dateCreated,
-    dateModified,
-    datePublished: dateCreated,
+    // uploadDate: dateCreated,
+    // dateCreated,
+    // dateModified,
+    // datePublished: dateCreated,
     potentialAction: [
       {
         '@type': 'WatchAction',
@@ -126,8 +126,8 @@ const Video = ({
           description={description}
           openGraphType='video'
           ownerProfileLink={`${process.env.hostname}p/${videoDetails?.user_nickname}`}
-          releaseDate={dateCreated}
-          updateTime={dateModified}
+          // releaseDate={dateCreated}
+          // updateTime={dateModified}
           videoDuration={videoDetails?.video?.metadata?.duration}
           videoType={videoDetails?.video?.metadata?.type} // todo check the res once
         />
@@ -186,6 +186,7 @@ Video.getInitialProps = async ({ query: { video_id, l, geshc } }) => {
     let videoDetails = null
     if (res?.data?.data) {
       videoDetails = res?.data?.data
+      console.log(res?.data)
     }
     return {
       videoDetails,

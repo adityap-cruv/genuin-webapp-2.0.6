@@ -113,7 +113,7 @@ const RoundTable = ({
       const idx = videos.findIndex(({ share_string }) => share_string === router?.query?.v)
       if (videos?.[idx]?.share_string) {
         setCurrentVideoIndex(idx)
-        window.history.replaceState(null, '', `../rt/${details.share_string}?v=${videos?.[idx]?.share_string}`)
+        window.history.replaceState(null, '', `../v/${videos?.[idx]?.share_string}?l=${details?.share_string}`)
         onOpen()
       } else {
         setIsError(true)
