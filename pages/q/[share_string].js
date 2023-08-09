@@ -43,13 +43,13 @@ const QuestionWrapper = ({
         : 'Answer this trending question on Genuin',
     [askedBy]
   )
-  const bio_val = owner && owner?.nickname && owner.bio.replace(/\s+/g, '') !== '' ? ' ' + owner.bio.replace(/\n+/g, '\n').replace(/\s+\n+\s+|\s+\n+|\n+\s+|\n+/g, ' ') : ''
-  const tags_val = owner && owner?.nickname && owner.hashtags && owner.hashtags !== [] && owner.hashtags.length > 0 ? ' ' + owner.hashtags.map((tag) => '#' + tag).join(' ') : ''
+  const bio_val = owner && owner?.nickname && owner?.bio?.replace(/\s+/g, '') !== '' ? ' ' + owner?.bio?.replace(/\n+/g, '\n').replace(/\s+\n+\s+|\s+\n+|\n+\s+|\n+/g, ' ') : ''
+  const tags_val = owner && owner?.nickname && owner?.hashtags && owner?.hashtags !== [] && owner?.hashtags?.length > 0 ? ' ' + owner?.hashtags?.map((tag) => '#' + tag)?.join(' ') : ''
   const pipe_val = bio_val || tags_val ? ' |' : ''
   const description = useMemo(
     () =>
       owner?.nickname
-        ? `{Asked by ${owner && owner.name.replace(/\s+/g, '') !== '' ? `[${owner?.name.trim()}] ` : ''}(@${owner?.nickname})}${pipe_val}${bio_val}${tags_val}`
+        ? `{Asked by ${owner && owner?.name?.replace(/\s+/g, '') !== '' ? `[${owner?.name?.trim()}] ` : ''}(@${owner?.nickname})}${pipe_val}${bio_val}${tags_val}`
         : '{Answer this trending Web3 question on Genuin}'
   )
   const title = `Answer '${question}' on Genuin | Reach billions of people with your expert advice.`
