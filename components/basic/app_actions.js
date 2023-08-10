@@ -56,7 +56,6 @@ export const AppActions = ({
     }
 
     link.searchParams.set('utm_source', 'app_web')
-    alert(link.href)
     return link.href
   }
   return (
