@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useDebounce } from 'use-debounce'
-import { ProgressBar, Badge, Button } from 'react-bootstrap'
+import { Badge, Button, ProgressBar } from 'react-bootstrap'
 import { Image, Flex, Text, Link, Box, useBreakpointValue, Avatar } from '@chakra-ui/react'
 
 import icArrowDown from '../../assets/images/video-more-options/ic-arrow-down.svg'
@@ -51,9 +51,9 @@ export const ReactPlayerWrapper = ({
   onClick,
   updateVideoDetails,
   singleVideoView = false,
-  onClose
+  onClose,
+  progress
 }) => {
-  const [progress, setProgress] = useState(0)
   const [isPlaying, setIsPlaying] = useState(autoplay)
   const [rtEnded, setRtEnded] = useState(false)
   const [isMutedDebounced] = useDebounce(muted, 800)
@@ -80,14 +80,12 @@ export const ReactPlayerWrapper = ({
 
   const mobile = useBreakpointValue({ base: true, md: false })
 
-  const setProgressWrapper = useCallback(
-    (event) => {
-      const playedProgress = Math.round(Number.parseFloat(event.played) * 100)
-      setProgress(playedProgress)
-      onProgressRef?.current?.(event)
-    },
-    [setProgress]
-  )
+  // const setProgressWrapper = useCallback(
+  //   (event) => {
+  //     const playedProgress = Math.round(Number.parseFloat(event.played) * 100)
+  //     setProgress(playedProgress)
+  //     onProgressRef?.current?.(event)
+  //   }, [setProgress])
 
   // const setDurationWrapper = useCallback((event) => {
   //   onDurationRef?.current?.(event)
@@ -187,13 +185,12 @@ export const ReactPlayerWrapper = ({
         muted={muted}
         uniqueKey={videos[currentVideoIndex]?.conversation_id || 'genuin-player'}
         onClick={handleOnClick}
-        onProgress={setProgressWrapper}
-        onDuration={(duration) => {
-          updateVideoDetails({ duration })
+        onDuration={(event) => {
+          updateVideoDetails({ duration: event?.target?.duration })
         }}
         onEnded={onEndedWrapper}
-        onTimeUpdate={(currentTime) => {
-          updateVideoDetails({ currentTime })
+        onTimeUpdate={(event) => {
+          updateVideoDetails({ currentTime: event?.target?.currentTime })
         }}
         loop={false}
         autoPlay={autoplay}
@@ -707,7 +704,7 @@ export const ReactPlayerWrapper = ({
             {children}
           </div>
         </Flex>
-        <ProgressBar now={progress} />
+        <ProgressBar now={progress}/>
       </div>
     </div>
   )
