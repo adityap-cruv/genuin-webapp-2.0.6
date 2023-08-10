@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from 'react'
+import React, { useMemo, useState } from 'react'
 import { ReactPlayerWrapper } from './react_player_wrapper'
 import { TopNav } from '../navbar/top_nav'
 import { Flex, useBreakpointValue, Image } from '@chakra-ui/react'
@@ -30,7 +30,7 @@ export const Player = ({
   roundTableId,
   onClickOutsideOfVideo,
   watchRoundTable = false,
-  setWatchRoundtable = () => {},
+  setWatchRoundtable = () => { },
   direction,
   setDirection,
   verticalNavigation,
@@ -40,13 +40,16 @@ export const Player = ({
   singleVideoView
 }) => {
   const pad = useBreakpointValue({ base: true, xs: true, sm: true, md: true, lg: false, xl: false })
-  const videoPlayingDetails = useRef({ duration: 0, currentTime: 0 })
-
+  const [details, setDetails] = useState({
+    duration: 0,
+    currentTime: 0
+  })
+  const progress = details.currentTime / details.duration * 100
   const updateVideoPlayingDetail = ({ duration = null, currentTime = null }) => {
     if (duration) {
-      videoPlayingDetails.current.duration = duration
+      setDetails(x => ({ ...x, duration }))
     } else {
-      videoPlayingDetails.current.currentTime = currentTime
+      setDetails(x => ({ ...x, currentTime }))
     }
   }
   const shortDescription = useMemo(() => {
@@ -96,6 +99,7 @@ export const Player = ({
         <TopNav showGetAppModal={showGetAppModal} variant='light' isContiner={true} />
       )}
       <ReactPlayerWrapper
+        progress={progress}
         videoUrl={videoUrl}
         videoThumbnail={videoThumbnail}
         videos={videos}
@@ -104,9 +108,9 @@ export const Player = ({
         userId={userId}
         description={shortDescription}
         profilePic={profilePic}
-        rtProfilePic = {rtProfileImage}
+        rtProfilePic={rtProfileImage}
         // analyticsService for getNextVideo 'video_watch'
-        getNextVideo = {() => {
+        getNextVideo={() => {
           getNextVideo()
 
           clearTimeout(debounceTimeout)
@@ -116,8 +120,8 @@ export const Player = ({
               video_share_string: videoId,
               loop_share_string: roundTableId,
               page: window.location.href,
-              duration: Math.round(videoPlayingDetails.current.duration),
-              watch_time: Math.round(videoPlayingDetails.current.currentTime)
+              duration: Math.round(details.duration),
+              watch_time: Math.round(details.currentTime)
             }
             analyticsService({ eventDetails: event_details, eventName: event_name })
 
@@ -135,8 +139,8 @@ export const Player = ({
             video_share_string: videoId,
             loop_share_string: roundTableId,
             page: window.location.href,
-            duration: Math.round(videoPlayingDetails.current.duration),
-            watch_time: Math.round(videoPlayingDetails.current.currentTime)
+            duration: Math.round(details.duration),
+            watch_time: Math.round(details.currentTime)
           }
           analyticsService({ eventDetails: event_details, eventName: event_name })
         }}
@@ -144,7 +148,7 @@ export const Player = ({
         autoplay={autoplay}
         autoJumpToNextVideo={autoJumpToNextVideo}
         // analyticsService for onEnded 'video_watch'
-        onEnded = {() => {
+        onEnded={() => {
           onEnded()
           clearTimeout(debounceTimeout)
           debounceTimeout = setTimeout(() => {
@@ -152,8 +156,8 @@ export const Player = ({
             const event_details = {
               video_share_string: videoId,
               page: window.location.href,
-              duration: Math.round(videoPlayingDetails.current.duration),
-              watch_time: Math.round(videoPlayingDetails.current.currentTime)
+              duration: Math.round(details.duration),
+              watch_time: Math.round(details.currentTime)
             }
             analyticsService({ eventDetails: event_details, eventName: event_name })
 
