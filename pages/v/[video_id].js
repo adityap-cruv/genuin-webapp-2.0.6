@@ -159,6 +159,7 @@ const Video = ({
             videoDescription={videoDetails?.video?.description}
             videoTitle='Genuin'
             deepLinkParams={deepLinkParamsRef.current}
+            roundTable={!!loopId}
             videoId={videoDetails?.video?.share_string}
           />
         </Player>
