@@ -1,58 +1,22 @@
 {
-  "name": "genuine",
-  "version": "1.0.0",
-  "description": "Genuin web-app",
-  "main": "index.js",
+  "name": "genuin-webapp",
+  "version": "2.0.0",
+  "private": true,
   "scripts": {
-    "dev": "next dev -p 4000",
+    "dev": "next dev",
     "build": "next build",
-    "start": "next start -p $PORT",
-    "start_prod": "export NODE_ENV=production && pm2 start server.js -i 1 --name 'genuin-web-react'",
-    "restart_prod": "export NODE_ENV=production && pm2 restart server.js -i 1 --name 'genuin-web-react'",
-    "stop_prod": "pm2 stop genuin-web-react"
+    "start": "next start",
+    "lint": "next lint"
   },
-  "engines": {
-    "node": "14.18.1",
-    "npm": "6.14.15"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "@chakra-ui/react": "^2.3.7",
-    "@datadog/browser-logs": "^4.43.0",
-    "@datadog/browser-rum": "^4.43.0",
-    "@emotion/react": "^11.10.5",
-    "@emotion/styled": "^11.10.5",
-    "axios": "^0.19.2",
-    "bootstrap": "~5.1.0",
-    "copy-to-clipboard": "^3.3.1",
-    "express": "^4.17.1",
-    "firebase": "^9.22.1",
-    "framer-motion": "^10.6.1",
-    "genuin_player": "https://genuin-media-qa.s3.us-west-2.amazonaws.com/genuin-player/genuin_player-1.0.5.tgz",
-    "next": "^12.2.5",
-    "next-seo": "^4.29.0",
-    "openplayerjs": "^2.13.0",
-    "react": "^18.2.0",
-    "react-bootstrap": "~2.4.0",
-    "react-device-detect": "^2.2.3",
-    "react-dom": "^18.2.0",
-    "react-flag-kit": "^1.1.1",
-    "react-infinite-scroll-component": "^6.1.0",
-    "react-player": "^2.3.1",
-    "react-share": "^4.4.1",
-    "react-spring": "^9.5.2",
-    "react-toastify": "^9.0.8",
-    "react-waypoint": "^10.3.0",
-    "use-debounce": "^8.0.3"
-  },
-  "devDependencies": {
-    "eslint": "^8.38.0",
-    "eslint-config-standard": "^17.0.0",
-    "eslint-plugin-import": "^2.27.5",
-    "eslint-plugin-n": "^15.7.0",
-    "eslint-plugin-promise": "^6.1.1",
-    "eslint-plugin-react": "^7.32.2"
+    "@types/node": "20.5.0",
+    "@types/react": "18.2.20",
+    "@types/react-dom": "18.2.7",
+    "eslint": "8.47.0",
+    "eslint-config-next": "13.4.16",
+    "next": "13.4.16",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "typescript": "5.1.6"
   }
 }
