@@ -1,9 +1,12 @@
-import './globals.css'
+import '../utils/common/globals.css'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <head>
+        <title>Genuin Inc.</title>
+      </head>
+      <body className="bg-yellow-400  flex justify-center">{children}</body>
     </html>
   )
 }

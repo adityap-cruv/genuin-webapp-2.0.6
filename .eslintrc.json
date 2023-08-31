@@ -14,7 +14,9 @@
     "sourceType": "module"
   },
   "plugins": [
-    "react"
+    "react",
+    "@tanstack/query",
+    "plugin:@tanstack/eslint-plugin-query/recommended"
   ],
   "rules": {
     "@typescript-eslint/consistent-type-definitions": [
