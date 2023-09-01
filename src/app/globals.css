@@ -98,7 +98,8 @@
     font-weight: 700;
     font-style: normal;
   }
-  body {
-    background-color: 'white';
-  }
+}
+
+.font-testing {
+  @apply font-bold text-[30px];
 }

@@ -1,12 +1,12 @@
 {
-  "name": "genuin0-webapp",
+  "name": "genuin-webapp",
   "version": "0.1.0",
   "private": true,
   "engines": {
     "node": ">=18.17.0"
   },
   "scripts": {
-    "dev": "next dev -p 4000",
+    "dev": "next dev -p 4000 --turbo",
     "build": "next build",
     "start": "next start",
     "lint": "next l int",

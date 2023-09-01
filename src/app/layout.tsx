@@ -1,4 +1,9 @@
-import '../utils/common/globals.css'
+import './globals.css'
+
+export const metadata = {
+  title: 'Genuin Inc.',
+  description: 'Working on new web application.',
+}
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
