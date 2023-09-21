@@ -1,23 +1,17 @@
-'use client'
-import { useSession } from 'next-auth/react'
-import Link from 'next/link'
+import { MainComponent } from '@components/home/mainComponent'
+import { Metadata } from 'next'
+import { getServerSession } from 'next-auth'
+import Head from 'next/head'
 
-const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
-
-export default async function Home() {
-  const { data: session } = useSession({
-    required: false,
-    onUnauthenticated: () => {
-      console.log('not authenticated...')
-    },
-  })
-  console.log('se::', session)
+export default async function Page({ props }: { props: any }) {
+  const session = await getServerSession()
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center text-9xl">
-      <h2 className="text-cap-sm">index page..</h2>
-      <Link href="/terms" className="text-">
-        Go to terms
-      </Link>
-    </main>
+    <section className="flex min-h-screen flex-col items-center justify-center">
+      <MainComponent />
+    </section>
   )
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  return { title: 'Welcome to Genuin!!!' }
 }
