@@ -9,12 +9,10 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className=" flex min-h-screen dark justify-center h-full w-full">
-        <main>
-          <ReactQueryProvider>
-            <NextAuthProvider>{children}</NextAuthProvider>
-          </ReactQueryProvider>
-        </main>
+      <body className="min-h-full min-w-full absolute">
+        <ReactQueryProvider>
+          <NextAuthProvider>{children}</NextAuthProvider>
+        </ReactQueryProvider>
       </body>
     </html>
   )

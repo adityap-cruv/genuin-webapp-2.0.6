@@ -1,15 +1,11 @@
-import { MainComponent } from '@components/home/mainComponent'
+import { Button } from '@/components/ui/button'
+import clsx from 'clsx'
 import { Metadata } from 'next'
 import { getServerSession } from 'next-auth'
-import Head from 'next/head'
 
 export default async function Page({ props }: { props: any }) {
   const session = await getServerSession()
-  return (
-    <section className="flex min-h-screen flex-col items-center justify-center">
-      <MainComponent />
-    </section>
-  )
+  return <section className="flex min-h-screen items-center justify-center"></section>
 }
 
 export async function generateMetadata(): Promise<Metadata> {

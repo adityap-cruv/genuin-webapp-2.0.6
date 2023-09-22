@@ -1,0 +1,10 @@
+declare namespace NodeJS {
+  export interface ProcessEnv {
+    HOST_NAME: string
+    NEXTAUTH_URL_INTERNAL: string
+    NEXTAUTH_SECRET: string
+    AES_IV: string
+    AES_KEY: string
+    NEXT_PUBLIC_API_URL: string
+  }
+}

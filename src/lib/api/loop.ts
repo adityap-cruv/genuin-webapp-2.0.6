@@ -4,7 +4,7 @@ import { z } from 'zod'
 export function getLoopDetails(loopId: string) {
   return async function () {
     return axios
-      .get('https://nodejs.qa.begenuin.com/api/v3/public/rt/details?chat_id=' + loopId)
+      .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/rt/details?chat_id=' + loopId)
       .then((res) => {
         return res?.data?.data
       })
