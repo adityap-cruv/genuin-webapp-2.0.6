@@ -16,6 +16,9 @@ module.exports = {
         DEFAULT: 'hsl(var(--secondary))',
         foreground: 'hsl(var(--secondary-foreground))',
       },
+      transparent: {
+        DEFAULT: 'transparent',
+      },
       blue: {
         DEFAULT: '#0645FF',
         10: '#CDDAFF',
