@@ -11,7 +11,7 @@
     --primary-foreground: 0 0% 100%;
 
     --secondary: 0 0% 58%;
-    --secondary-foreground: 0 0% 7%;
+    --secondary-foreground: 0 0% 100%;
 
     --transparent: 0 0% 0% 1
       /* --card: 0 0% 100%;
@@ -190,5 +190,25 @@
 @layer base {
   body {
     @apply select-none bg-background text-foreground;
+  }
+  ::-webkit-scrollbar {
+    -webkit-appearance: none;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border-radius: 8px;
+    border: 2px solid white;
+    /* should match background, can't be transparent */
+    background-color: hsla(var(--secondary));
+  }
+
+  ::-webkit-scrollbar-track {
+    background-color: #fff;
+    border-radius: 8px;
   }
 }

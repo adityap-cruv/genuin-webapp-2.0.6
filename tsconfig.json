@@ -30,8 +30,11 @@
       "@lib/*": [
         "./src/lib/*"
       ],
-      "@hooks": [
+      "@hooks/*": [
         "./src/hooks/*"
+      ],
+      "@icons/*": [
+        "./public/icons/*"
       ]
     }
   },

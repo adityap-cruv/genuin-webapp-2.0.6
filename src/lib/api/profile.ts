@@ -11,8 +11,8 @@ export async function fetchUserData(nickname: string) {
       return res.data.data
     })
     .catch((e) => {
-      console.log('e::', e)
-      // throw new Error('Something went wrong...')
+      // console.log('e::', e)
+      throw new Error('Something went wrong...')
     })
 }
 
@@ -21,9 +21,13 @@ export async function fetchAllVideos(nickname: string) {
     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/profile_videos', {
       params: {
         user_id: nickname,
+        video_types: ['rt'],
       },
     })
     .then((res) => {
-      console.log('res::', res)
+      return res.data.data
+    })
+    .catch((e) => {
+      throw new Error('Something went wrong with profile videos api..')
     })
 }
