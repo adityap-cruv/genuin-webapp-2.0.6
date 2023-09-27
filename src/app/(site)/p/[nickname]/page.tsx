@@ -1,5 +1,5 @@
 import { Metadata } from 'next'
-import { MainComponent } from './mainComponent'
+import { MainComponent } from './main-component'
 import { cookies } from 'next/headers'
 import { fetchUserData } from '@lib/api/profile'
 

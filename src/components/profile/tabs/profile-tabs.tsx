@@ -1,6 +1,6 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
-import { TabIcons } from './tabIcons'
-import { VideosTab } from './videosTab'
+import { TabIcons } from './tab-icons'
+import { VideosTab } from './videos-tab'
 
 export function ProfileTabs() {
   return (

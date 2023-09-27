@@ -3,6 +3,7 @@ import { cva } from 'class-variance-authority'
 
 interface Props {
   size: 'sm' | 'md' | 'lg' | 'xl'
+  className?: ''
 }
 
 const loaderVariant = cva('animate-spin rounded-full border-4 border-primary', {
@@ -16,10 +17,10 @@ const loaderVariant = cva('animate-spin rounded-full border-4 border-primary', {
   },
 })
 
-export function Loader({ size = 'sm' }: Props) {
+export function Loader({ size = 'sm', className = '' }: Props) {
   return (
-    <div className="flex h-full w-full items-center justify-center">
-      <div className={cn(loaderVariant({ size }), 'border-t-transparent border-l-transparent')} />
+    <div className={cn(className, 'flex h-full w-full items-center justify-center')}>
+      <div className={cn(loaderVariant({ size }), 'border-l-transparent border-t-transparent')} />
     </div>
   )
 }

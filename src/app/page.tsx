@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import { getServerSession } from 'next-auth'
 
-export default async function Page({ props }: { props: any }) {
+export default async function Page() {
   const session = await getServerSession()
   return <section className="flex min-h-screen items-center justify-center"></section>
 }

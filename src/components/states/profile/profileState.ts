@@ -13,7 +13,7 @@ interface ProfileStateProps {
   setLoopVideos: (data: Array<any>) => void
 }
 
-let useStore = (set) => ({
+export const useProfileStore = create<ProfileStateProps>((set) => ({
   profileData: {},
   setProfileData: (data) => set(() => ({ profileData: data })),
   allVideos: [],
@@ -22,8 +22,4 @@ let useStore = (set) => ({
   setGenuinVideos: (data) => set(() => ({ genuinVideos: data }) as ProfileStateProps),
   loopVideos: [],
   setLoopVideos: (data) => set(() => ({ loopVideos: data }) as ProfileStateProps),
-})
-
-useStore = devtools(useStore)
-
-export const useProfileStore = create<ProfileStateProps>(useStore)
+}))

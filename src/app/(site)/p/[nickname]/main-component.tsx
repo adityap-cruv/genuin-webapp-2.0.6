@@ -1,10 +1,10 @@
 'use client'
 import { useEffect } from 'react'
-import { NavBar } from './navBar'
+import { NavBar } from './nav-bar'
 import { Avatar, AvatarImage, AvatarFallback } from '@components/ui/avatar'
 import { getAvatarFallback } from '@lib/utils'
 import { useProfileStore } from '@components/states/profile/profileState'
-import { ProfileTabs } from '@components/profile/tabs/profileTabs'
+import { ProfileTabs } from '@components/profile/tabs/profile-tabs'
 
 interface CompProps {
   profileData: any
@@ -21,7 +21,7 @@ export const MainComponent = ({ profileData }: CompProps) => {
   return (
     <>
       <NavBar />
-      <div className="h-body mt-body container flex w-full flex-col overflow-clip md:flex-row">
+      <div className="container mt-body flex h-body w-full flex-col overflow-clip md:flex-row">
         <div className="mx-2 my-3 w-full md:w-1/3">
           <Avatar className="bg-slate-500 h-20 w-20">
             <AvatarImage src={profileData?.profile_image}></AvatarImage>

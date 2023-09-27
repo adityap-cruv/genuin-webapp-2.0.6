@@ -1,8 +1,10 @@
 import NextAuth from 'next-auth/next'
 import CredentialsProvider from 'next-auth/providers/credentials'
-import GoogleProvider from 'next-auth/providers/google'
 
-export const authOptions = {
+/**
+ * @type {import('next-auth').AuthOptions}
+ */
+const authOptions = {
   providers: [
     CredentialsProvider({
       name: 'credentials',
