@@ -1,15 +1,11 @@
-import Link from 'next/link'
+import { Metadata } from 'next'
+import { getServerSession } from 'next-auth'
 
-const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+export default async function Page() {
+  const session = await getServerSession()
+  return <section className="flex min-h-screen items-center justify-center"></section>
+}
 
-export default async function Home() {
-  await wait(500)
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-center text-9xl">
-      <h2 className="text-cap-sm">index page..</h2>
-      <Link href="/terms" className="text-">
-        Go to terms
-      </Link>
-    </main>
-  )
+export async function generateMetadata(): Promise<Metadata> {
+  return { title: 'Welcome to Genuin!!!' }
 }

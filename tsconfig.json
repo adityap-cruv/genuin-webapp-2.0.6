@@ -24,11 +24,17 @@
       }
     ],
     "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-      "@/components/*": [
+      "@components/*": [
         "./src/components/*"
+      ],
+      "@lib/*": [
+        "./src/lib/*"
+      ],
+      "@hooks/*": [
+        "./src/hooks/*"
+      ],
+      "@icons/*": [
+        "./public/icons/*"
       ]
     }
   },
@@ -36,7 +42,8 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "src/app/api/auth/[...nextauth]/route.js"
   ],
   "exclude": [
     "node_modules",

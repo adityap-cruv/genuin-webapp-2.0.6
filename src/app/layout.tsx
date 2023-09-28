@@ -1,5 +1,6 @@
 import './globals.css'
-
+import { NextAuthProvider } from '@components/providers/nextAuthProvider'
+import { ReactQueryProvider } from '@components/providers/reactQueryProvider'
 export const metadata = {
   title: 'Genuin Inc.',
   description: 'Working on new web application.',
@@ -8,10 +9,11 @@ export const metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <head>
-        <title>Genuin Inc.</title>
-      </head>
-      <body className="bg-yellow-400  flex justify-center">{children}</body>
+      <body className="min-h-full min-w-full absolute">
+        <ReactQueryProvider>
+          <NextAuthProvider>{children}</NextAuthProvider>
+        </ReactQueryProvider>
+      </body>
     </html>
   )
 }
@@ -19,4 +21,4 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 // todo configure next font for optimization
 // todo create servcices
 // todo create basic layout
-// todo create font pallete
+// todo env variables are not working fix
