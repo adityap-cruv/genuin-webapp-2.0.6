@@ -117,6 +117,9 @@ module.exports = {
       margin: {
         body: '74px',
       },
+      spacing: {
+        navbar: '74px',
+      },
     },
   },
   plugins: [require('tailwindcss-animate')],

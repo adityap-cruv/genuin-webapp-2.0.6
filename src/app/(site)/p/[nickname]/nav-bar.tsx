@@ -17,7 +17,9 @@ export function NavBar() {
                 <p className="text-title-sm text-primary-foreground">Get App</p>
               </Button>
             </DialogTrigger>
-            <DialogContent>Hello world..</DialogContent>
+            <DialogContent>
+              <p>Hello world..</p>
+            </DialogContent>
           </Dialog>
           <BurgerMenu />
         </div>

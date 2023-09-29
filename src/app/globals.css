@@ -191,7 +191,7 @@
   body {
     @apply select-none bg-background text-foreground;
   }
-  ::-webkit-scrollbar {
+  hide-scrollbar::-webkit-scrollbar {
     -webkit-appearance: none;
   }
 
