@@ -11,7 +11,8 @@
     "start": "next start",
     "lint": "next l int",
     "format": "prettier --write .",
-    "lint:fix": "lint . --fix"
+    "lint:fix": "lint . --fix",
+    "br": "next build && next start"
   },
   "dependencies": {
     "@radix-ui/react-aspect-ratio": "^1.0.3",
@@ -31,6 +32,7 @@
     "mobile-detect": "^1.4.5",
     "next": "^13.5.4",
     "next-auth": "^4.22.1",
+    "openplayerjs": "^2.13.3",
     "react": "18.2.0",
     "react-device-detect": "^2.2.3",
     "react-dom": "18.2.0",

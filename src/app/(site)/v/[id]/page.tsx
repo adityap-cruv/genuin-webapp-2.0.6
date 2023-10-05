@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { MainComponent } from './main-component'
 
 interface PageProps {
   params: {
@@ -12,6 +13,6 @@ interface PageProps {
 export const dynamic = 'force-static'
 
 export default async function Component(props: PageProps) {
-  console.log('params:', props.searchParams.l)
-  return <div>hello world..</div>
+  console.log('get videos details')
+  return <MainComponent />
 }

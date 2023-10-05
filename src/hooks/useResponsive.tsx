@@ -2,9 +2,9 @@
 import { useEffect, useState } from 'react'
 
 export function useResponsive() {
-  const [width, setWidth] = useState(-1)
+  const [sizeBox, setSizeBox] = useState({ width: -1, height: -1 })
   const handleWindowSizeChange = () => {
-    setWidth(window.innerWidth)
+    setSizeBox({ width: window.innerWidth, height: window.innerHeight })
   }
 
   useEffect(() => {
@@ -15,14 +15,15 @@ export function useResponsive() {
     }
   }, [])
 
-  if (width === -1) return {}
+  if (sizeBox.width === -1 || sizeBox.height === -1) return {}
 
   return {
-    isSm: width >= 640,
-    isMd: width >= 768,
-    isLg: width >= 1024,
-    isXl: width >= 1280,
-    is2xl: width >= 1536,
-    width,
+    isSm: sizeBox.width >= 640,
+    isMd: sizeBox.width >= 768,
+    isLg: sizeBox.width >= 1024,
+    isXl: sizeBox.width >= 1280,
+    is2xl: sizeBox.width >= 1536,
+    width: sizeBox.width,
+    height: sizeBox.height,
   }
 }
