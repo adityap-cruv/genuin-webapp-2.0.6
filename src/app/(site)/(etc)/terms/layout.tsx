@@ -1,3 +1,10 @@
+import { NavBar } from '@components/common/nav-bar'
+
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return <section className="container">{children}</section>
+  return (
+    <main>
+      <NavBar variant="dark" />
+      <section className="container mt-navbar">{children}</section>
+    </main>
+  )
 }

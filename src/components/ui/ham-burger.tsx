@@ -1,3 +1,4 @@
+'use client'
 import { useState } from 'react'
 import { VariantProps, cva } from 'class-variance-authority'
 import { cn } from '@lib/utils'
@@ -29,10 +30,10 @@ export function BurgerMenuIcon({ variant = 'dark', onOpen = () => {}, onClose = 
   }
 
   return (
-    <button className="flex h-12 w-12 flex-col items-center justify-center rounded " onClick={toggle}>
+    <div className="flex h-12 w-12 flex-col items-center justify-center rounded " onClick={toggle}>
       <span className={cn(line, isOpen ? 'translate-y-2 rotate-45' : undefined)} />
       <span className={cn(line, isOpen ? 'opacity-0' : undefined)} />
       <span className={cn(line, isOpen ? '-translate-y-2 -rotate-45' : undefined)} />
-    </button>
+    </div>
   )
 }

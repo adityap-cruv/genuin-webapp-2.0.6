@@ -1,3 +1,5 @@
+import { MainComponent } from './main-component'
+
 export default function Component() {
-  return <div>privacy...</div>
+  return <MainComponent />
 }

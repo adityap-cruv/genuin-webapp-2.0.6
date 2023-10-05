@@ -1,6 +1,6 @@
 'use client'
 import { useEffect } from 'react'
-import { NavBar } from './nav-bar'
+import { NavBar } from '@components/common/nav-bar'
 import { Avatar, AvatarImage, AvatarFallback } from '@components/ui/avatar'
 import { getAvatarFallback } from '@lib/utils'
 import { useProfileStore } from '@components/states/profile/profileState'
@@ -9,6 +9,8 @@ import { Button } from '@components/ui/button'
 import Image from 'next/image'
 import icMessage from '@icons/icMessage.svg'
 import icShare from '@icons/icShare.svg'
+import { useResponsive } from '@hooks/useResponsive'
+import { isMobile } from 'react-device-detect'
 
 interface CompProps {
   profileData: any
@@ -16,6 +18,7 @@ interface CompProps {
 
 export const MainComponent = ({ profileData }: CompProps) => {
   const setProfileData: any = useProfileStore((state) => state.setProfileData)
+  const { isMd = !isMobile } = useResponsive()
 
   useEffect(() => {
     setProfileData(profileData)
@@ -23,16 +26,19 @@ export const MainComponent = ({ profileData }: CompProps) => {
 
   return (
     <>
-      <NavBar />
-      <div className="container mt-body flex h-body w-full flex-col overflow-clip md:flex-row ">
+      <NavBar variant="light" />
+      <div className="container mt-body flex h-body w-full flex-col overflow-auto overflow-x-clip md:flex-row md:overflow-clip ">
         <div className="mx-2 my-3 w-full md:w-1/3">
-          <Avatar className="bg-slate-500 h-20 w-20">
-            <AvatarImage src={profileData?.profile_image}></AvatarImage>
-            <AvatarFallback>{getAvatarFallback(profileData?.name)}</AvatarFallback>
-          </Avatar>
+          <div className="flex items-center">
+            <Avatar className="h-20 w-20 bg-slate-500">
+              <AvatarImage src={profileData?.profile_image}></AvatarImage>
+              <AvatarFallback>{getAvatarFallback(profileData?.name)}</AvatarFallback>
+            </Avatar>
+            <div className="w-full">{!isMd && <Stats />}</div>
+          </div>
           <p className="line-clamp-1 text-title-lg">@{profileData?.nickname}</p>
           <p className="line-clamp-5 text-body-lg">{profileData?.bio || ''}</p>
-          <Stats />
+          {isMd && <Stats />}
           <div className="my-2">
             <Button variant="outline" size="sm" outlineColor="genuin-blue">
               <Image src={icMessage} alt="messsage" className="pr-1" />
