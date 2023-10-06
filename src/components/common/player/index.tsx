@@ -2,21 +2,25 @@
 import { useResponsive } from '@hooks/useResponsive'
 import { InnerPlayer } from './inner-player'
 import { ControlLayer } from './control-layer'
+import { z } from 'zod'
+import { VideoDataSchema, validateVideoData } from './video-data-schema'
 
-export default function Player({}) {
+interface Props {
+  videoData: z.infer<typeof VideoDataSchema> | null
+}
+
+export default function Player({ videoData = null }: Props) {
   const { height } = useResponsive()
+  validateVideoData(videoData)
 
-  if (height) {
+  if (height && videoData) {
     const videoWidth = height * (9 / 16)
     return (
       <div className="flex h-full w-full items-center justify-center">
         <div style={{ height: height, width: videoWidth }} className="relative">
-          <InnerPlayer
-            videoSizeBox={{ height, width: videoWidth }}
-            videoSource="https://media.begenuin.com/temp_video/m3u8s/2f214cdf-8338-431e-9993-9ae4da0f306b_1665672371039/output.m3u8"
-          />
+          <InnerPlayer videoSizeBox={{ height, width: videoWidth }} videoSource={videoData.video.url} />
           <div className="absolute left-0 top-0 h-full w-full bg-blue-10/25">
-            <ControlLayer />
+            <ControlLayer videoData={videoData} />
           </div>
         </div>
       </div>

@@ -33,13 +33,11 @@ export function NavBar({ variant = 'light' }: Props) {
 
 function GetAppButton() {
   return !isMobile ? (
-    <DownloadDialog
-      trigger={
-        <Button size="sm">
-          <p className="line-clamp-1 text-title-sm text-monochrome-white">Get App</p>
-        </Button>
-      }
-    />
+    <DownloadDialog title="design get app form modal" subtitle="given to dev">
+      <Button size="sm">
+        <p className="line-clamp-1 text-title-sm text-monochrome-white">Get App</p>
+      </Button>
+    </DownloadDialog>
   ) : (
     <Link href="https://begenuin.com/sg86n">
       <Button size="sm">

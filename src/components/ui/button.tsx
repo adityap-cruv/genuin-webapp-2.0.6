@@ -12,7 +12,7 @@ const buttonVariants = cva(
         outline: 'border',
       },
       outlineColor: {
-        white: '',
+        white: 'border-monochrome-white',
         'genuin-blue': 'border-primary bg-background',
       },
       size: {

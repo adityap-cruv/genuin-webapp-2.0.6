@@ -35,6 +35,9 @@
       ],
       "@icons/*": [
         "./public/icons/*"
+      ],
+      "@images/*": [
+        "./public/images/*"
       ]
     }
   },

@@ -30,7 +30,6 @@ export function InnerPlayer({ videoSizeBox, videoSource }: Props) {
       })
     })
   }, [videoRef.current])
-  console.log('render in video::')
 
   if (videoSource)
     return (

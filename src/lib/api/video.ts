@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-export async function getVideoDetails(videoId: string) {
+export async function fetchVideoDetails(videoId: string) {
   return axios
     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/video_details', {
       params: {

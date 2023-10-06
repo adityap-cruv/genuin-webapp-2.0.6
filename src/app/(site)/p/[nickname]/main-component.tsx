@@ -8,7 +8,7 @@ import { ProfileTabs } from '@components/pages/profile/tabs/profile-tabs'
 import { Button } from '@components/ui/button'
 import Image from 'next/image'
 import icMessage from '@icons/icMessage.svg'
-import icShare from '@icons/icShare.svg'
+import icShare from '@icons/icShareBlue.svg'
 import { useResponsive } from '@hooks/useResponsive'
 import { isMobile } from 'react-device-detect'
 
@@ -30,7 +30,7 @@ export const MainComponent = ({ profileData }: CompProps) => {
       <div className="container mt-body flex h-body w-full flex-col overflow-auto overflow-x-clip md:flex-row md:overflow-clip ">
         <div className="mx-2 my-3 w-full md:w-1/3">
           <div className="flex items-center">
-            <Avatar className="h-20 w-20 bg-slate-500">
+            <Avatar className="bg-slate-500 h-20 w-20">
               <AvatarImage src={profileData?.profile_image}></AvatarImage>
               <AvatarFallback>{getAvatarFallback(profileData?.name)}</AvatarFallback>
             </Avatar>

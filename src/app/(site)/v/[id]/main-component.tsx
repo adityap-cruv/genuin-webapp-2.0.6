@@ -1,5 +1,9 @@
 import Player from '@components/common/player'
 
-export function MainComponent() {
-  return <Player />
+interface Props {
+  videoData: any
+}
+
+export function MainComponent({ videoData = undefined }: Props) {
+  if (videoData) return <Player videoData={videoData} />
 }
