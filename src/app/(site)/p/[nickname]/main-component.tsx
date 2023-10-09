@@ -1,16 +1,19 @@
 'use client'
 import { useEffect } from 'react'
-import { NavBar } from '@components/common/nav-bar'
 import { Avatar, AvatarImage, AvatarFallback } from '@components/ui/avatar'
 import { getAvatarFallback } from '@lib/utils'
 import { useProfileStore } from '@components/states/profile/profileState'
-import { ProfileTabs } from '@components/pages/profile/tabs/profile-tabs'
 import { Button } from '@components/ui/button'
 import Image from 'next/image'
 import icMessage from '@icons/icMessage.svg'
 import icShare from '@icons/icShareBlue.svg'
 import { useResponsive } from '@hooks/useResponsive'
 import { isMobile } from 'react-device-detect'
+import dynamic from 'next/dynamic'
+const ProfileTabs = dynamic(() =>
+  import('@components/pages/profile/tabs/profile-tabs').then((comp) => comp.ProfileTabs)
+)
+const NavBar = dynamic(() => import('@components/common/nav-bar').then((comp) => comp.NavBar))
 
 interface CompProps {
   profileData: any

@@ -6,7 +6,7 @@ import { cn } from '@lib/utils'
 const badgeVariants = cva('inline-flex items-center rounded-full border px-2.5 py-0.5', {
   variants: {
     variant: {
-      default: 'border-transparent bg-monochrome-black/60 hover:opacity-60',
+      default: 'border-transparent bg-monochrome-black/60',
     },
   },
   defaultVariants: {

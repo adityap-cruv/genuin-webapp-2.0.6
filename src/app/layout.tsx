@@ -1,29 +1,6 @@
 import './globals.css'
 import { NextAuthProvider } from '@components/providers/nextAuthProvider'
 import { ReactQueryProvider } from '@components/providers/reactQueryProvider'
-import localFont from 'next/font/local'
-
-// const fonts = localFont({
-//   src: [{
-//     path: ,
-//     style: ,
-//   weight: },{
-//     path: ,
-//     style: ,
-//   weight: },{
-//     path: ,
-//     style: ,
-//   weight: },{
-//     path: ,
-//     style: ,
-//   weight: },{
-//     path: ,
-//     style: ,
-//   weight: },{
-//     path: ,
-//     style: ,
-//   weight: },],
-// })
 
 export const metadata = {
   title: 'Genuin Inc.',
@@ -44,8 +21,3 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   )
 }
-
-// todo configure next font for optimization
-// todo create servcices
-// todo create basic layout
-// todo env variables are not working fix

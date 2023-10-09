@@ -36,7 +36,7 @@ const LoopInfoSchema = z.object({
 })
 
 export const VideoDataSchema = z.object({
-  video_type: z.enum(['rt', 'public_video']),
+  video_type: z.enum(['rt', 'profile']),
   owner: OwnerSchema,
   video: VideoInfoSchema,
   loop: LoopInfoSchema.optional(),
