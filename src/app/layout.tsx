@@ -1,6 +1,30 @@
 import './globals.css'
 import { NextAuthProvider } from '@components/providers/nextAuthProvider'
 import { ReactQueryProvider } from '@components/providers/reactQueryProvider'
+import localFont from 'next/font/local'
+
+// const fonts = localFont({
+//   src: [{
+//     path: ,
+//     style: ,
+//   weight: },{
+//     path: ,
+//     style: ,
+//   weight: },{
+//     path: ,
+//     style: ,
+//   weight: },{
+//     path: ,
+//     style: ,
+//   weight: },{
+//     path: ,
+//     style: ,
+//   weight: },{
+//     path: ,
+//     style: ,
+//   weight: },],
+// })
+
 export const metadata = {
   title: 'Genuin Inc.',
   description: 'Working on new web application.',
