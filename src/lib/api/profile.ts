@@ -25,6 +25,7 @@ async function fetchVideos(nickname: string, types: [VideoType?, VideoType?]) {
       params: {
         user_id: nickname,
         video_types: types,
+        page: 1,
       },
     })
     .then((res) => {

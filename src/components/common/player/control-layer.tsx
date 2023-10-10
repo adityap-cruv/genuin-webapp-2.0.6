@@ -94,7 +94,7 @@ function Public({ videoData }: Props) {
         <div className="flex items-center">
           <Link
             className="flex cursor-pointer items-center hover:opacity-60"
-            href={{ pathname: PATH_NAME.loop(videoData?.loop?.share_string) }}>
+            href={{ pathname: PATH_NAME.profile(videoData?.owner.nickname) }}>
             <Avatar className="bg-red-40">
               <AvatarImage src={videoData?.owner.profile_image ?? undefined} />
               <AvatarFallback>
