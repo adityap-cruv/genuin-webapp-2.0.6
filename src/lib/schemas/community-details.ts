@@ -56,12 +56,14 @@ const membersSchema = z.array(
 )
 
 // Define the main schema for the entire object
-export const CommunityDetailsSchema = z.object({
+const CommunityDetailsSchema = z.object({
   info: infoSchema,
   popular_loops: popularLoopsSchema,
   moderators: moderatorsSchema,
   members: membersSchema,
 })
+
+export type CommunityDetailsType = z.infer<typeof CommunityDetailsSchema>
 
 export function validateCommunityDetails(communityDetails: any) {
   try {

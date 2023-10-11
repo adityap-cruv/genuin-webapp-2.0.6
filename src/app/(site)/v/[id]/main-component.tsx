@@ -5,5 +5,5 @@ interface Props {
 }
 
 export function MainComponent({ videoData = undefined }: Props) {
-  if (videoData) return <Player videoData={videoData} />
+  if (videoData) return <Player videoData={videoData} shouldPlay={true} />
 }

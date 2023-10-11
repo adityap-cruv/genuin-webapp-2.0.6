@@ -1,9 +1,9 @@
 'use client'
-
 import { CommunityDetails } from '@components/pages/community/details'
 import { CommunityReels } from '@components/pages/community/reels'
+import type { CommunityDetailsType } from '@lib/schemas/community-details'
 
-export function MainComponent({ communityData = null }: { communityData: any }) {
+export function MainComponent({ communityData }: { communityData: CommunityDetailsType }) {
   console.log('communityData::', communityData)
   if (communityData)
     return (

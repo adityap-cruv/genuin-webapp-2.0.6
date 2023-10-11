@@ -1,6 +1,4 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@components/ui/avatar'
-import { VideoDataSchema } from './video-data-schema'
-import { z } from 'zod'
 import { getAvatarFallback } from '@lib/utils'
 import Link from 'next/link'
 import { Button } from '@components/ui/button'
@@ -15,20 +13,17 @@ import { PATH_NAME } from '@lib/utils/constants/path'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import icReply from '@icons/icReply.svg'
 import icSave from '@icons/icSave.svg'
+import { VideoDataType } from '@lib/schemas/video'
 
 interface Props {
-  videoData: z.infer<typeof VideoDataSchema> | null
+  videoData?: VideoDataType
 }
 
-export function ControlLayer({ videoData = null }: Props) {
+export function ControlLayer({ videoData }: Props) {
   if (videoData) {
     return (
       <div className="absolute bottom-0 left-0 w-full p-2">
-        {videoData.video_type === 'rt' && videoData.loop ? (
-          <Loop videoData={videoData} />
-        ) : (
-          <Public videoData={videoData} />
-        )}
+        {videoData.video_type === 'rt' ? <Loop videoData={videoData} /> : <Public videoData={videoData} />}
       </div>
     )
   }

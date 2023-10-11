@@ -35,12 +35,18 @@ const LoopInfoSchema = z.object({
   preview_image: z.string().url().nullable().optional(),
 })
 
-export const VideoDataSchema = z.object({
+const VideoDataSchema = z.object({
   video_type: z.enum(['rt', 'profile']).optional(),
   owner: OwnerSchema,
   video: VideoInfoSchema,
   loop: LoopInfoSchema.optional(),
 })
+
+const VideoDataListSchema = z.array(VideoDataSchema)
+
+export type VideoDataType = z.infer<typeof VideoDataSchema>
+
+export type VideoDataListType = z.infer<typeof VideoDataListSchema>
 
 export function validateVideoData(videoData: any) {
   try {
@@ -51,9 +57,8 @@ export function validateVideoData(videoData: any) {
 }
 
 export function validateVideoListData(videoListData: any) {
-  console.log('video list data::', videoListData)
   try {
-    return z.array(VideoDataSchema).parse(videoListData)
+    return VideoDataListSchema.parse(videoListData)
   } catch (e) {
     console.log('error::', e)
     throw new Error('parsing array of video went wrong.')
