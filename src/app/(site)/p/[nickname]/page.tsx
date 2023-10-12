@@ -16,7 +16,7 @@ export default async function Component({ params }: CompProps) {
   return <MainComponent profileData={profileData} />
 }
 
-export async function generateMetadata({ params }: { params: { nickname: string } }): Promise<Metadata> {
+export async function generateMetadata({ params }: CompProps): Promise<Metadata> {
   // const data = await getUserData(params.nickname)
   return { title: 'himanshu' }
 }

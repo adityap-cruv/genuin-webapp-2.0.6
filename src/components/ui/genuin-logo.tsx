@@ -1,5 +1,7 @@
 import { cva, VariantProps } from 'class-variance-authority'
 import { cn } from '@lib/utils'
+import { useResponsive } from '@hooks/useResponsive'
+import { isMobile } from 'react-device-detect'
 
 const logoVariant = cva('', {
   variants: {
@@ -12,7 +14,7 @@ const logoVariant = cva('', {
 
 interface Logoprops extends VariantProps<typeof logoVariant> {}
 
-function Desktop({ variant = 'dark' }: Logoprops) {
+function Logo({ variant = 'dark' }: Logoprops) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -32,7 +34,7 @@ function Desktop({ variant = 'dark' }: Logoprops) {
   )
 }
 
-function Mobile({ variant = 'dark' }: Logoprops) {
+function Symbol({ variant = 'dark' }: Logoprops) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -45,7 +47,15 @@ function Mobile({ variant = 'dark' }: Logoprops) {
   )
 }
 
+function AdaptiveLogo({ variant = 'dark' }: Logoprops) {
+  const { isSm = !isMobile } = useResponsive()
+
+  if (!isSm) return <Symbol variant={variant} />
+  return <Logo variant={variant} />
+}
+
 export const GenuinLogo = {
-  mobile: Mobile,
-  desktop: Desktop,
+  symbol: Symbol,
+  logo: Logo,
+  adaptive: AdaptiveLogo,
 }

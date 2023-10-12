@@ -6,5 +6,6 @@ declare namespace NodeJS {
     AES_IV: string
     AES_KEY: string
     NEXT_PUBLIC_API_URL: string
+    NEXT_PUBLIC_HOST_URL: string
   }
 }

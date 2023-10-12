@@ -79,8 +79,8 @@
   @font-face {
     font-family: 'Avenir Next';
     src:
-      url('/fonts/AvenirNext-Medium.woff') format('woff'),
       url('/fonts/AvenirNext-Medium.woff2') format('woff2'),
+      url('/fonts/AvenirNext-Medium.woff') format('woff'),
       url('/fonts/AvenirNext-Medium.ttf') format('truetype');
     font-weight: 400;
     font-style: normal;
@@ -89,8 +89,8 @@
   @font-face {
     font-family: 'Avenir Next';
     src:
-      url('/fonts/AvenirNext-MediumItalic.woff') format('woff'),
       url('/fonts/AvenirNext-MediumItalic.woff2') format('woff2'),
+      url('/fonts/AvenirNext-MediumItalic.woff') format('woff'),
       url('/fonts/AvenirNext-MediumItalic.ttf') format('truetype');
     font-weight: 400;
     font-style: italic;
@@ -99,8 +99,8 @@
   @font-face {
     font-family: 'Avenir Next';
     src:
-      url('/fonts/AvenirNext-UltraLight.woff') format('woff'),
       url('/fonts/AvenirNext-UltraLight.woff2') format('woff2'),
+      url('/fonts/AvenirNext-UltraLight.woff') format('woff'),
       url('/fonts/AvenirNext-UltraLight.ttf') format('truetype');
     font-weight: 100;
     font-style: normal;
@@ -109,8 +109,8 @@
   @font-face {
     font-family: 'Avenir Next';
     src:
-      url('/fonts/AvenirNext-UltraLightItalic.woff') format('woff'),
       url('/fonts/AvenirNext-UltraLightItalic.woff2') format('woff2'),
+      url('/fonts/AvenirNext-UltraLightItalic.woff') format('woff'),
       url('/fonts/AvenirNext-UltraLightItalic.ttf') format('truetype');
     font-weight: 100;
     font-style: italic;
@@ -119,8 +119,8 @@
   @font-face {
     font-family: 'Avenir Next';
     src:
-      url('/fonts/AvenirNext-HeavyItalic.woff') format('woff'),
       url('/fonts/AvenirNext-HeavyItalic.woff2') format('woff2'),
+      url('/fonts/AvenirNext-HeavyItalic.woff') format('woff'),
       url('/fonts/AvenirNext-HeavyItalic.ttf') format('truetype');
     font-weight: 900;
     font-style: italic;
@@ -129,8 +129,8 @@
   @font-face {
     font-family: 'Avenir Next';
     src:
-      url('/fonts/AvenirNext-Italic.woff') format('woff'),
       url('/fonts/AvenirNext-Italic.woff2') format('woff2'),
+      url('/fonts/AvenirNext-Italic.woff') format('woff'),
       url('/fonts/AvenirNext-Italic.ttf') format('truetype');
     font-weight: 400;
     font-style: italic;
@@ -139,8 +139,8 @@
   @font-face {
     font-family: 'Avenir Next';
     src:
-      url('/fonts/AvenirNext-BoldItalic.woff') format('woff'),
       url('/fonts/AvenirNext-BoldItalic.woff2') format('woff2'),
+      url('/fonts/AvenirNext-BoldItalic.woff') format('woff'),
       url('/fonts/AvenirNext-BoldItalic.ttf') format('truetype');
     font-weight: 700;
     font-style: italic;
@@ -149,8 +149,8 @@
   @font-face {
     font-family: 'Avenir Next';
     src:
-      url('/fonts/AvenirNext-DemiBoldItalic.woff') format('woff'),
       url('/fonts/AvenirNext-DemiBoldItalic.woff2') format('woff2'),
+      url('/fonts/AvenirNext-DemiBoldItalic.woff') format('woff'),
       url('/fonts/AvenirNext-DemiBoldItalic.ttf') format('truetype');
     font-weight: 600;
     font-style: italic;
@@ -159,8 +159,8 @@
   @font-face {
     font-family: 'Avenir Next';
     src:
-      url('/fonts/AvenirNext-Heavy.woff') format('woff'),
       url('/fonts/AvenirNext-Heavy.woff2') format('woff2'),
+      url('/fonts/AvenirNext-Heavy.woff') format('woff'),
       url('/fonts/AvenirNext-Heavy.ttf') format('truetype');
     font-weight: 900;
     font-style: normal;
@@ -169,8 +169,8 @@
   @font-face {
     font-family: 'Avenir Next';
     src:
-      url('/fonts/AvenirNext-DemiBold.woff') format('woff'),
       url('/fonts/AvenirNext-DemiBold.woff2') format('woff2'),
+      url('/fonts/AvenirNext-DemiBold.woff') format('woff'),
       url('/fonts/AvenirNext-DemiBold.ttf') format('truetype');
     font-weight: 600;
     font-style: normal;
@@ -179,8 +179,8 @@
   @font-face {
     font-family: 'Avenir Next';
     src:
-      url('/fonts/AvenirNext-Bold.woff') format('woff'),
       url('/fonts/AvenirNext-Bold.woff2') format('woff2'),
+      url('/fonts/AvenirNext-Bold.woff') format('woff'),
       url('/fonts/AvenirNext-Bold.ttf') format('truetype');
     font-weight: 700;
     font-style: normal;
@@ -191,7 +191,7 @@
   body {
     @apply select-none bg-background text-foreground;
   }
-  ::-webkit-scrollbar {
+  hide-scrollbar::-webkit-scrollbar {
     -webkit-appearance: none;
   }
 

@@ -117,6 +117,13 @@ module.exports = {
       margin: {
         body: '74px',
       },
+      spacing: {
+        navbar: '74px',
+      },
+      listStyleType: {
+        lower: 'lower-alpha',
+        'lower-roman': 'lower-roman',
+      },
     },
   },
   plugins: [require('tailwindcss-animate')],

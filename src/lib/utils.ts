@@ -5,7 +5,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function getAvatarFallback(str: string) {
+export function getAvatarFallback(str: string | undefined) {
   if (!str) return 'U'
   const strArray = str?.split(' ')
   let ans = ''

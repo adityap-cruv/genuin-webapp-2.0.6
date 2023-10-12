@@ -1,4 +1,5 @@
-import axios from 'axios'
+import { MainComponent } from './main-component'
+import { fetchVideoDetails } from '@lib/api/video'
 
 interface PageProps {
   params: {
@@ -9,9 +10,8 @@ interface PageProps {
   }
 }
 
-export const dynamic = 'force-static'
+export default async function Component({ params, searchParams }: PageProps) {
+  const videoData = await fetchVideoDetails(params.id)
 
-export default async function Component(props: PageProps) {
-  console.log('params:', props.searchParams.l)
-  return <div>hello world..</div>
+  return <MainComponent videoData={videoData} />
 }
