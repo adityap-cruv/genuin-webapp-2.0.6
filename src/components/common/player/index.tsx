@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic'
 import { cn } from '@lib/utils'
 import { Loader } from '@components/ui/loader'
 import { VideoDataType } from '@lib/schemas/video'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 const InnerPlayer = dynamic(() => import('./inner-player').then((comp) => comp.InnerPlayer), {
   loading: (loadingProp) => {
     if (loadingProp.isLoading) return <Loader size="lg" />
@@ -34,9 +34,20 @@ interface Props {
    * size of window.
    */
   sizeBox?: { height: number; width: number }
+  /**
+   * If it is enabled video will play if only if video is in viewport.
+   */
+  playIfInViewPort?: boolean
 }
 
-export default function Player({ videoData, shouldPlay = true, loop = false, showControls = true, sizeBox }: Props) {
+export default function Player({
+  videoData,
+  shouldPlay = true,
+  loop = false,
+  showControls = true,
+  sizeBox,
+  playIfInViewPort,
+}: Props) {
   const [playerControls, setPlayerControls] = useState({ play: shouldPlay, muted: true, loop })
   let height = 0
   if (sizeBox) {
@@ -44,15 +55,6 @@ export default function Player({ videoData, shouldPlay = true, loop = false, sho
   } else {
     height = useResponsive().height || 0
   }
-
-  useEffect(() => {
-    if (playerControls.play !== shouldPlay) {
-      setPlayerControls((x) => {
-        x.play = shouldPlay
-        return { ...x }
-      })
-    }
-  }, [shouldPlay])
 
   if (height && videoData) {
     const videoWidth = height * (9 / 16)
@@ -72,12 +74,13 @@ export default function Player({ videoData, shouldPlay = true, loop = false, sho
             muted={playerControls.muted}
             loop={playerControls.loop}
             shouldPlay={playerControls.play}
+            playIfInViewport={playIfInViewPort}
             onEnded={() => console.log('on Ended called..')}
             onPlay={() => console.log('on play called..')}
             onPlaying={() => console.log('on playing')}
             onCanPlay={() => console.log('can play')}
             onPause={() => console.log('on pause')}
-            onError={(e) => console.log('on error', e)}
+            onError={(e) => {}}
           />
           <div className="absolute left-0 top-0 h-full w-full">
             {showControls && <ControlLayer videoData={videoData} />}

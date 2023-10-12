@@ -1,7 +1,9 @@
 'use client'
-import { CommunityDetails } from '@components/pages/community/details'
-import { CommunityReels } from '@components/pages/community/reels'
+
 import type { CommunityDetailsType } from '@lib/schemas/community-details'
+import dynamic from 'next/dynamic'
+const MobileComponent = dynamic(() => import('./mobile-component').then((comp) => comp.MobileComponent))
+const DesktopComponent = dynamic(() => import('./desktop-component').then((comp) => comp.DesktopComponent))
 
 interface Props {
   communityDetails: CommunityDetailsType
@@ -9,18 +11,6 @@ interface Props {
 }
 
 export function MainComponent({ communityDetails, isMobile }: Props) {
-  if (isMobile) return <Mobile communityDetails={communityDetails} />
-  return <Desktop communityDetails={communityDetails} />
-}
-
-function Mobile({ communityDetails }: Props) {
-  return <div>This is mobile component.</div>
-}
-
-function Desktop({ communityDetails }: Props) {
-  return (
-    <CommunityDetails>
-      <CommunityReels communityHandle={communityDetails.info.handle} />
-    </CommunityDetails>
-  )
+  if (isMobile) return <MobileComponent communityDetails={communityDetails} />
+  return <DesktopComponent communityDetails={communityDetails} />
 }

@@ -3,10 +3,10 @@ import { useEffect, useState, RefObject } from 'react'
 /**
  * @param ref Reference of element.
  * @param rootMargin Defaults to 0px.
- * @returns {boolean} If element is 90% in viewport or not.
+ * @returns {boolean | undefined} If element is 90% in viewport or not.
  */
-export function useInViewport(ref: RefObject<HTMLElement>, rootMargin = '0px'): boolean {
-  const [isInViewport, setIsInViewport] = useState(true)
+export function useInViewport(ref: RefObject<HTMLElement>, rootMargin = '0px'): boolean | undefined {
+  const [isInViewport, setIsInViewport] = useState<boolean | undefined>(undefined)
 
   useEffect(() => {
     const observer = new IntersectionObserver(

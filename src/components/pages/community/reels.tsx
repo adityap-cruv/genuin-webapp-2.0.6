@@ -1,9 +1,12 @@
-import Player from '@components/common/player'
 import { Loader } from '@components/ui/loader'
+import dynamic from 'next/dynamic'
 import { getCommunityVideos } from '@lib/api/community'
-import type { VideoDataListType } from '@lib/schemas/video'
 import { useEffect, useRef, useState } from 'react'
-
+const Player = dynamic(() => import('@components/common/player').then((comp) => comp.default), {
+  loading: (state) => {
+    return <Loader size="lg" />
+  },
+})
 interface CommunityReelsProps {
   communityHandle: string
 }
@@ -33,10 +36,11 @@ export function CommunityReels({ communityHandle }: CommunityReelsProps) {
           return (
             <Player
               key={index}
-              shouldPlay={index === 1}
+              shouldPlay={index === 0}
               videoData={video}
               sizeBox={{ height: parentElementHeight, width: (parentElementHeight * 9) / 16 }}
-              
+              loop
+              playIfInViewPort
             />
           )
         })}

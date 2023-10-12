@@ -20,7 +20,6 @@ interface Props {
 }
 
 export function ControlLayer({ videoData }: Props) {
-  console.log('video type::', videoData)
   if (videoData) {
     return (
       <div className="absolute bottom-0 left-0 w-full p-2">
