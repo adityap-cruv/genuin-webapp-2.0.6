@@ -85,8 +85,6 @@ export function InnerPlayer({
     })
   }, [])
 
-  console.log('times..')
-
   useEffect(() => {
     const player = localRef.current.player
     if (!player) return
@@ -104,14 +102,17 @@ export function InnerPlayer({
   if (videoSource)
     return (
       <video
+        className="object-cover"
         poster={poster}
         ref={videoRef}
         muted={muted}
         loop={loop}
         src={videoSource}
         playsInline
-        height={videoSizeBox.height}
-        width={videoSizeBox.height * (9 / 16)}
+        style={{
+          height: videoSizeBox.height,
+          width: videoSizeBox.width,
+        }}
         onPlay={onPlay}
         onPlaying={onPlaying}
         onError={onError}

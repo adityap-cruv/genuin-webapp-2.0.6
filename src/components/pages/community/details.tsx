@@ -1,12 +1,13 @@
-function Right() {
-  return <div>Community details right...</div>
+interface Props {
+  children: React.ReactNode
 }
 
-function Left() {
-  return <div>community details for left...</div>
-}
-
-export const CommunityDetails = {
-  left: Left,
-  right: Right,
+export function CommunityDetails({ children }: Props) {
+  return (
+    <div className="min-w-tablet flex h-full w-full justify-between ">
+      <div className="w-1/3">This contains profile data..</div>
+      {children}
+      <div className="w-1/3">Moderators this side.</div>
+    </div>
+  )
 }

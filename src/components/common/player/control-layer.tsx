@@ -20,10 +20,15 @@ interface Props {
 }
 
 export function ControlLayer({ videoData }: Props) {
+  console.log('video type::', videoData)
   if (videoData) {
     return (
       <div className="absolute bottom-0 left-0 w-full p-2">
-        {videoData.video_type === 'rt' ? <Loop videoData={videoData} /> : <Public videoData={videoData} />}
+        {videoData.video_type === 'rt' || videoData.loop ? (
+          <Loop videoData={videoData} />
+        ) : (
+          <Public videoData={videoData} />
+        )}
       </div>
     )
   }
@@ -67,7 +72,7 @@ function Loop({ videoData }: Props) {
             </Button>
           </Link>
         </div>
-        <p className="line-clamp-3 h-14 w-full py-2 text-body-sm text-monochrome-white">
+        <p className="line-clamp-3 h-min w-full py-2 text-body-sm text-monochrome-white">
           {videoData?.video.description}
         </p>
       </div>
@@ -99,7 +104,7 @@ function Public({ videoData }: Props) {
             <p className="line-clamp-1 px-2 text-title-md text-monochrome-white">@{videoData?.owner.nickname}</p>
           </Link>
         </div>
-        <p className="line-clamp-3 h-14 w-full py-2 text-body-sm text-monochrome-white">
+        <p className="line-clamp-3 h-min w-full py-2 text-body-sm text-monochrome-white">
           {videoData?.video.description}
         </p>
       </div>

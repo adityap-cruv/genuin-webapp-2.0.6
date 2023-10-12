@@ -3,14 +3,24 @@ import { CommunityDetails } from '@components/pages/community/details'
 import { CommunityReels } from '@components/pages/community/reels'
 import type { CommunityDetailsType } from '@lib/schemas/community-details'
 
-export function MainComponent({ communityData }: { communityData: CommunityDetailsType }) {
-  console.log('communityData::', communityData)
-  if (communityData)
-    return (
-      <div className="flex justify-between">
-        <CommunityDetails.left />
-        <CommunityReels communityHandle={communityData.info.handle} />
-        <CommunityDetails.right />
-      </div>
-    )
+interface Props {
+  communityDetails: CommunityDetailsType
+  isMobile?: boolean
+}
+
+export function MainComponent({ communityDetails, isMobile }: Props) {
+  if (isMobile) return <Mobile communityDetails={communityDetails} />
+  return <Desktop communityDetails={communityDetails} />
+}
+
+function Mobile({ communityDetails }: Props) {
+  return <div>This is mobile component.</div>
+}
+
+function Desktop({ communityDetails }: Props) {
+  return (
+    <CommunityDetails>
+      <CommunityReels communityHandle={communityDetails.info.handle} />
+    </CommunityDetails>
+  )
 }
