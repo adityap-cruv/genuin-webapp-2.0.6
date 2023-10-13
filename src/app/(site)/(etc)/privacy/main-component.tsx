@@ -12,19 +12,19 @@ export function MainComponent() {
         <b>Last Updated:</b> May 5, 2023
       </p>
       <p>
-        Genuin, Inc., (“<strong>Genuin</strong>”, &quot;<strong>us</strong>&quot;, &quot;<strong>we</strong>&quot;, or
+        Genuin, Inc., ("<strong>Genuin</strong>", &quot;<strong>us</strong>&quot;, &quot;<strong>we</strong>&quot;, or
         &quot;<strong>our</strong>&quot;) cares about how your personal information is used and shared. We take your
         privacy as a consumer very seriously. We operate the website,{' '}
         <a className="text-primary underline hover:text-blue-10" href="http://www.begenuin.com">
           www.begenuin.com
         </a>{' '}
-        (our “<strong>Website</strong>”) and the mobile application, 'Genuine' available for download on the iOS App
-        Store and the Google Play App Store (the “<strong>App</strong>”), both of which offer an all-in-one internet
-        technology service (the “<strong>Services</strong>”). The terms “<strong>you</strong>,” “<strong>your</strong>
-        ,” and “<strong>yours</strong>” refer to the user, customer, or company using the Services.
+        (our "<strong>Website</strong>") and the mobile application, 'Genuine' available for download on the iOS App
+        Store and the Google Play App Store (the "<strong>App</strong>"), both of which offer an all-in-one internet
+        technology service (the "<strong>Services</strong>"). The terms "<strong>you</strong>," "<strong>your</strong>
+        ," and "<strong>yours</strong>" refer to the user, customer, or company using the Services.
       </p>
       <p>
-        Please read the following to learn more about this privacy policy (this “<strong>Privacy Policy</strong>”).
+        Please read the following to learn more about this privacy policy (this "<strong>Privacy Policy</strong>").
       </p>
       <p>
         <strong>
@@ -42,7 +42,7 @@ export function MainComponent() {
         <li>
           <strong>WHAT IS PERSONALLY IDENTIFYABLE INFORMATION?</strong>
           <p className="my-2">
-            Personally identifiable information (“<strong>PII</strong>”) is any information about an individual that can
+            Personally identifiable information ("<strong>PII</strong>") is any information about an individual that can
             identify that individual. Examples of PII include (but are not limited to):
           </p>
           <ol className="list-lower">
@@ -64,8 +64,8 @@ export function MainComponent() {
           <strong>COLLECTION AND USE OF PII AND OTHER INFORMATION</strong>
           <p className="py-2">
             This Privacy Policy informs you of our policies regarding the collection, use and disclosure of PII when you
-            use the Services, or that is provided to us with your consent by participating partners (“
-            <strong>Partners</strong>”), but not to the practices of other companies or institutions we don't own or
+            use the Services, or that is provided to us with your consent by participating partners ("
+            <strong>Partners</strong>"), but not to the practices of other companies or institutions we don't own or
             control, or people that we don't manage.
           </p>
         </li>
@@ -149,7 +149,7 @@ export function MainComponent() {
             <li>
               <strong>We receive and store any information you knowingly provide to us:</strong>
               <p className="py-2">
-                If you contact us via e-mail or the “Contact Us” button via the App, we may collect your name, e-mail
+                If you contact us via e-mail or the "Contact Us" button via the App, we may collect your name, e-mail
                 address, phone number, as well as any other content included in the e-mail, in order to send you a
                 reply. When you email us the information contained in your posting will be stored on our service
                 provider's servers. Furthermore, once you have created an account, you will have the option to post PII
@@ -162,9 +162,9 @@ export function MainComponent() {
               <strong>Information Collected Automatically:</strong>
               <p>
                 Whenever you interact with the Services, we automatically receive and record information on our server
-                logs from your browser or device, which may include your internet protocol (“
-                <strong>IP</strong>”) address, device identification, and “cookie” information. “
-                <strong>Cookies</strong>” are identifiers we transfer to your browser or device that allow us to
+                logs from your browser or device, which may include your internet protocol ("
+                <strong>IP</strong>") address, device identification, and "cookie" information. "
+                <strong>Cookies</strong>" are identifiers we transfer to your browser or device that allow us to
                 recognize your browser or device, provides us with geolocation data and tell us how and when pages and
                 features in the Services are visited and by how many people. You may be able to change the preferences
                 on your browser or device to prevent or limit your device's acceptance of Cookies, but this may prevent
@@ -194,7 +194,7 @@ export function MainComponent() {
                 described in this Privacy Policy.{' '}
               </p>
               <p>
-                Your browser may offer you a “Do Not Track” option, which allows you to signal to operators of websites
+                Your browser may offer you a "Do Not Track" option, which allows you to signal to operators of websites
                 and web applications and services (including behavioral advertising services) that you do not wish such
                 operators to track certain of your online activities over time and across different websites. The
                 Services do not support Do Not Track requests at this time, which means that we collect information
@@ -406,7 +406,7 @@ export function MainComponent() {
         <li className="[&>p]:py-2">
           <strong>GDPR</strong>
           <p>
-            The General Data Protection Regulation (the “GDPR”) gives individual data subjects, located in the European
+            The General Data Protection Regulation (the "GDPR") gives individual data subjects, located in the European
             Union in certain circumstances the right to, among other things, access, delete, and make corrections to
             their personal data. Further, the GDPR requires us to explain the valid legal bases we rely on to process
             your personal information.
@@ -421,7 +421,7 @@ export function MainComponent() {
         <li className="[&>p]:py-2">
           <strong>STATE SPECIFIC PRIVACY LAWS AND REGULATIONS</strong>
           <p>
-            This section (this “<strong>Supplemental Notice</strong>”) applies only to information collected about
+            This section (this "<strong>Supplemental Notice</strong>") applies only to information collected about
             consumers in the following states: (1) California, (2) Colorado, (3) Connecticut, (4) Nevada, (5) Utah, and
             (6) Virginia and describes our practices regarding the collection, use, and disclosure of PII and provides
             instructions for submitting data subject requests. Some apply only to consumers of particular states. In
@@ -440,7 +440,7 @@ export function MainComponent() {
               <p>
                 <strong>Supplemental Notice for California Residents.</strong> This Supplemental Notice for California
                 residents only applies to our processing of personal information that is subject to the California
-                “Shine the Light” law which permits users who are California residents to request and obtain from us
+                "Shine the Light" law which permits users who are California residents to request and obtain from us
                 once a year, free of charge, a list of the third parties to whom we have disclosed their personal
                 information (if any) for their direct marketing purposes in the prior calendar year, as well as the type
                 of personal information disclosed to those parties. Further, California Civil Code § 1798.83 permits
@@ -534,7 +534,7 @@ export function MainComponent() {
             <strong>Disclosure for Colorado, Virginia, Utah, and Connecticut Consumers:</strong> Unless specifically
             stated, we do not sell or share PII to third parties for their own use. However, we may share or process one
             or more of the above categories of personal information with our Partners in arrangements for purposes of
-            targeted advertising, as the terms “sell,” “share,” “process,” and “targeted advertising” are defined in the
+            targeted advertising, as the terms "sell," "share," "process," and "targeted advertising" are defined in the
             CPA, VCDPA, UCPA, and CTDPA. In these arrangements, use of the information we share is limited by policies,
             contracts or similar restrictions.
           </p>
