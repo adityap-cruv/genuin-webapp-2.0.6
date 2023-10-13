@@ -15,19 +15,23 @@ export function CommunityReels({ communityHandle }: CommunityReelsProps) {
   const divRef = useRef<HTMLDivElement>(null)
   const { data: videos, isLoading, isError } = getCommunityVideos(communityHandle)
 
-  const [parentElementHeight, setParentElementHeight] = useState(-1)
+  const [parentElementHeight, setParentElementHeight] = useState(0)
 
   useEffect(() => {
     const divElement = divRef.current
     if (!divElement) return
-    setParentElementHeight(divElement.parentElement?.getBoundingClientRect().height || -1)
-  }, [divRef])
+    setParentElementHeight(divElement.parentElement?.getBoundingClientRect().height || 0)
+  }, [])
 
   return (
     <div
-      className="hide-scrollbar snap-y overflow-y-auto overflow-x-clip"
+      className="hide-scrollbar snap-y overflow-y-auto overflow-x-clip bg-blue-20"
       ref={divRef}
-      style={{ width: parentElementHeight * (9 / 16), height: parentElementHeight }}>
+      style={{
+        width: parentElementHeight * (9 / 16),
+        height: parentElementHeight,
+        minWidth: parentElementHeight * (9 / 16),
+      }}>
       {isLoading && <Loader size="lg" />}
       {isError && <div>Something went wrong with api.</div>}
       {videos?.length === 0 && <NoReelsAvailable />}

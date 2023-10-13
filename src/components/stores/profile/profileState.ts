@@ -1,6 +1,4 @@
 import { create } from 'zustand'
-import { devtools } from 'zustand/middleware'
-import { UseBoundStore, StoreApi } from 'zustand'
 
 interface ProfileStateProps {
   profileData: {}
