@@ -52,7 +52,7 @@ export const MainComponent = ({ profileData }: CompProps) => {
             </Button>
           </div>
         </div>
-        <ProfileTabs />
+        {profileData && <ProfileTabs />}
       </div>
     </>
   )
