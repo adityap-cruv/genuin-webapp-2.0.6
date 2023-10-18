@@ -8,7 +8,7 @@ export default function ({ children }: Props) {
   return (
     <main className="absolute inset-0 h-full w-full">
       <NavBar variant="light" />
-      <section className="mt-navbar h-body w-full">{children}</section>
+      <section className="container mt-navbar h-body w-full">{children}</section>
     </main>
   )
 }
