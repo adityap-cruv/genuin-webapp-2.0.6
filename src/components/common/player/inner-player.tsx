@@ -1,10 +1,13 @@
+import { useInViewport } from '@hooks/use-in-viewport'
 import OpenPlayerJS from 'openplayerjs'
-import { DetailedHTMLProps, VideoHTMLAttributes, useEffect, useRef, useState } from 'react'
+import { DetailedHTMLProps, VideoHTMLAttributes, useCallback, useEffect, useRef, useState } from 'react'
 
+// todo work on why player is sendding multiple request.
 interface Props extends DetailedHTMLProps<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement> {
   videoSizeBox: { width: number; height: number }
   videoSource?: string
   shouldPlay: boolean
+  playIfInViewport?: boolean
 }
 
 export function InnerPlayer({
@@ -20,6 +23,7 @@ export function InnerPlayer({
   onCanPlay,
   onPause,
   onError,
+  playIfInViewport,
 }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const localRef = useRef<{
@@ -31,6 +35,16 @@ export function InnerPlayer({
     playing: false,
     player: null,
   })
+
+  let isInViewport: boolean | undefined = undefined
+  if (playIfInViewport) {
+    const temp = useInViewport(videoRef)
+    if (typeof temp !== 'undefined') isInViewport = temp
+  }
+
+  useEffect(() => {
+    console.log('is in viewport::', isInViewport)
+  }, [isInViewport])
 
   // function getSourceType(source: string) {
   //   return source.endsWith('.mp4') ? 'video/mp4' : 'application/x-mpegURL'
@@ -44,6 +58,33 @@ export function InnerPlayer({
   //   <source src={videoSource} type={getSourceType(videoSource)} />
   // )
 
+  // const playOrPause = useCallback(
+  //   function (player: OpenPlayerJS) {
+  //     if (typeof isInViewport === 'undefined') {
+  //       if (shouldPlay) {
+  //         player
+  //           .getMedia()
+  //           .play()
+  //           .then((_) => console.log('start playing'))
+  //           .catch((e) => console.log('something went wrong..', e))
+  //       } else {
+  //         player.pause()
+  //       }
+  //     } else {
+  //       if (shouldPlay && isInViewport) {
+  //         player
+  //           .getMedia()
+  //           .play()
+  //           .then((_) => console.log('start playing'))
+  //           .catch((e) => console.log('something went wrong..', e))
+  //       } else {
+  //         player.pause()
+  //       }
+  //     }
+  //   },
+  //   [localRef.current.player, playIfInViewport, isInViewport]
+  // )
+
   useEffect(() => {
     if (!videoRef.current) return
     const player = new OpenPlayerJS(videoRef.current, {
@@ -53,7 +94,7 @@ export function InnerPlayer({
       mode: 'fill',
       forceNative: true,
       showLoaderOnInit: true,
-      onError: (e) => console.log('error in player::', e),
+      onError: (e) => {},
       hls: {
         /**
          * "startLevel" option typically relates to the initial
@@ -85,8 +126,6 @@ export function InnerPlayer({
     })
   }, [])
 
-  console.log('times..')
-
   useEffect(() => {
     const player = localRef.current.player
     if (!player) return
@@ -104,14 +143,17 @@ export function InnerPlayer({
   if (videoSource)
     return (
       <video
+        className="object-cover"
         poster={poster}
         ref={videoRef}
         muted={muted}
         loop={loop}
         src={videoSource}
         playsInline
-        height={videoSizeBox.height}
-        width={videoSizeBox.height * (9 / 16)}
+        style={{
+          height: videoSizeBox.height,
+          width: videoSizeBox.width,
+        }}
         onPlay={onPlay}
         onPlaying={onPlaying}
         onError={onError}

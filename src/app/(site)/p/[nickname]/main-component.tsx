@@ -2,7 +2,7 @@
 import { useEffect } from 'react'
 import { Avatar, AvatarImage, AvatarFallback } from '@components/ui/avatar'
 import { getAvatarFallback } from '@lib/utils'
-import { useProfileStore } from '@components/states/profile/profileState'
+import { useProfileStore } from '@components/stores/profile/profileState'
 import { Button } from '@components/ui/button'
 import Image from 'next/image'
 import icMessage from '@icons/icMessage.svg'
@@ -52,7 +52,7 @@ export const MainComponent = ({ profileData }: CompProps) => {
             </Button>
           </div>
         </div>
-        <ProfileTabs />
+        {profileData && <ProfileTabs />}
       </div>
     </>
   )

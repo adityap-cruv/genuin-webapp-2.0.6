@@ -1,9 +1,9 @@
 import { z } from 'zod'
 
 const VideoMetadataSchema = z.object({
-  duration: z.number().optional(),
-  height: z.number().optional(),
-  width: z.number().optional(),
+  duration: z.number().nullish(),
+  height: z.number().nullish(),
+  width: z.number().nullish(),
   type: z.string(),
 })
 
@@ -15,8 +15,8 @@ const OwnerSchema = z.object({
 })
 
 const VideoInfoSchema = z.object({
-  description: z.string().nullable().optional(),
-  link: z.string().nullable().optional(),
+  description: z.string().nullish(),
+  link: z.string().nullish(),
   url: z.string().url(),
   id: z.string(),
   created_at: z.string().optional(),
@@ -24,19 +24,21 @@ const VideoInfoSchema = z.object({
   thumbnail: z.string().url().optional(),
   share_string: z.string(),
   metadata: VideoMetadataSchema.optional(),
+  view_count: z.number(),
+  reply_count: z.number().nullish(),
 })
 
 const LoopInfoSchema = z.object({
   share_string: z.string(),
   name: z.string().optional(),
-  description: z.string().nullable().optional(),
-  profile_image: z.string().url().optional().nullable(),
+  description: z.string().nullish(),
+  profile_image: z.string().url().nullish(),
   discoverable: z.boolean().optional(), // todo remove it from api.
-  preview_image: z.string().url().nullable().optional(),
+  preview_image: z.string().url().nullish(),
 })
 
 const VideoDataSchema = z.object({
-  video_type: z.enum(['rt', 'profile']).optional(),
+  video_type: z.enum(['rt', 'public_video']).optional(),
   owner: OwnerSchema,
   video: VideoInfoSchema,
   loop: LoopInfoSchema.optional(),

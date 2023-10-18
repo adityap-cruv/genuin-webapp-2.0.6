@@ -1,16 +1,16 @@
 'use client'
-import { CommunityDetails } from '@components/pages/community/details'
-import { CommunityReels } from '@components/pages/community/reels'
-import type { CommunityDetailsType } from '@lib/schemas/community-details'
 
-export function MainComponent({ communityData }: { communityData: CommunityDetailsType }) {
-  console.log('communityData::', communityData)
-  if (communityData)
-    return (
-      <div className="flex justify-between">
-        <CommunityDetails.left />
-        <CommunityReels communityHandle={communityData.info.handle} />
-        <CommunityDetails.right />
-      </div>
-    )
+import type { CommunityDetailsType } from '@lib/schemas/community-details'
+import dynamic from 'next/dynamic'
+const MobileComponent = dynamic(() => import('./mobile-component').then((comp) => comp.MobileComponent))
+const DesktopComponent = dynamic(() => import('./desktop-component').then((comp) => comp.DesktopComponent))
+
+interface Props {
+  communityDetails: CommunityDetailsType
+  isMobile?: boolean
+}
+
+export function MainComponent({ communityDetails, isMobile }: Props) {
+  if (isMobile) return <MobileComponent communityDetails={communityDetails} />
+  return <DesktopComponent communityDetails={communityDetails} />
 }

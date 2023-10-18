@@ -124,6 +124,9 @@ module.exports = {
         lower: 'lower-alpha',
         'lower-roman': 'lower-roman',
       },
+      minWidth: {
+        tablet: '768px',
+      },
     },
   },
   plugins: [require('tailwindcss-animate')],
