@@ -10,6 +10,7 @@ import icLinkedIn from '@icons/icLinkedIn.svg'
 import icLink from '@icons/icLinkBlack.svg'
 import icTwitter from '@icons/icTwitterBlack.svg'
 import { Separator } from '@components/ui/separator'
+import { PATH_NAME } from '@lib/utils/constants/path'
 
 let communityDetailsModule: CommunityDetailsType | null = null
 
@@ -158,12 +159,14 @@ function Loops() {
       <p className="my-2 text-title-md">Popular Loops</p>
       {communityDetailsModule?.popular_loops.map((loop, index) => {
         return (
-          <ListItem
-            key={index}
-            title={loop.name}
-            image={loop.profile_image ?? undefined}
-            subtitle={loop.subscriber_count + (loop.subscriber_count === 1 ? ' Subscriber' : ' Subscribers')}
-          />
+          <Link href={{ pathname: PATH_NAME.loop(loop.share_string) }}>
+            <ListItem
+              key={index}
+              title={loop.name}
+              image={loop.profile_image ?? undefined}
+              subtitle={loop.subscriber_count + (loop.subscriber_count === 1 ? ' Subscriber' : ' Subscribers')}
+            />
+          </Link>
         )
       })}
     </div>
@@ -204,13 +207,15 @@ function Leaders() {
       <p className="my-2 text-title-md">Leader</p>
       {communityDetailsModule?.moderators.map((moderator, index) => {
         return (
-          <ListItem
-            key={index}
-            title={moderator.name ?? ''}
-            subtitle={'@' + moderator.nickname}
-            description={moderator.description}
-            image={moderator.profile_image}
-          />
+          <Link href={{ pathname: PATH_NAME.profile(moderator.nickname) }}>
+            <ListItem
+              key={index}
+              title={moderator.name ?? ''}
+              subtitle={'@' + moderator.nickname}
+              description={moderator.description}
+              image={moderator.profile_image}
+            />
+          </Link>
         )
       })}
     </div>
@@ -223,13 +228,15 @@ function Members() {
       <p className="my-2 text-title-md">Members</p>
       {communityDetailsModule?.members.map((member, index) => {
         return (
-          <ListItem
-            key={index}
-            title={member.name}
-            subtitle={'@' + member.nickname}
-            description={member.description ?? ''}
-            image={member.profile_image}
-          />
+          <Link href={{ pathname: PATH_NAME.profile(member.nickname) }}>
+            <ListItem
+              key={index}
+              title={member.name}
+              subtitle={'@' + member.nickname}
+              description={member.description ?? ''}
+              image={member.profile_image}
+            />
+          </Link>
         )
       })}
     </div>
