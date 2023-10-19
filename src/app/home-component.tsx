@@ -5,6 +5,7 @@ import mobileFrameImg from '@images/mobileFrame.png'
 import Image from 'next/image'
 import { getLoopVideos } from '@lib/api/loop'
 
+// todo stop working on it new design is coming
 export function HomeComponent() {
   const divRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ container: divRef })

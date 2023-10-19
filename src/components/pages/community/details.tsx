@@ -40,8 +40,8 @@ function Left() {
           <p className="text-title-xl text-monochrome-white">{getAvatarFallback(communityDetailsModule?.info.name)}</p>
         </AvatarFallback>
       </Avatar>
-      <p className="line-clamp-1 break-words text-title-xl">{communityDetailsModule?.info.name}</p>
-      <p className="line-clamp-3 break-words text-body-sm">{communityDetailsModule?.info.description}</p>
+      <p className="line-clamp-1 break-all text-title-xl">{communityDetailsModule?.info.name}</p>
+      <p className="line-clamp-3 break-all text-body-sm">{communityDetailsModule?.info.description}</p>
       <Stats />
       <div className="my-2 flex items-center gap-x-2">
         <Button variant="default" size="sm">
@@ -77,7 +77,7 @@ function Categories() {
         {communityDetailsModule?.info.categories.map((cat, index) => {
           return (
             <p key={index} className="mx-1 my-1 inline-block rounded-full bg-monochrome-9 p-1 px-2 text-body-sm">
-              <span className="line-clamp-1 break-words">{cat}</span>
+              <span className="line-clamp-1 break-all">{cat}</span>
             </p>
           )
         })}

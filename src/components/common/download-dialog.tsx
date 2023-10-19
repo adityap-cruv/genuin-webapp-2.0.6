@@ -25,7 +25,7 @@ export function DownloadDialog({ children, subtitle, title, asChild = true }: Pr
               {title}
             </p>
           )}
-          <p className="line-clamp-2 max-w-none break-words text-center font-semibold" style={{ fontSize: '20px' }}>
+          <p className="line-clamp-2 max-w-none break-all text-center font-semibold" style={{ fontSize: '20px' }}>
             {subtitle}
           </p>
           <div className="mt-6 flex">

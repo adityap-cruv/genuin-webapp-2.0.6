@@ -191,11 +191,19 @@
   body {
     @apply select-none bg-background text-foreground;
   }
+
   .hide-scrollbar::-webkit-scrollbar {
     -webkit-appearance: none;
     appearance: none;
     height: 0px;
     width: 0px;
+  }
+
+  .show-scrollbar::-webkit-scrollbar {
+    -webkit-appearance: initial;
+    appearance: initial;
+    height: 10px;
+    width: 10px;
   }
 
   ::-webkit-scrollbar {

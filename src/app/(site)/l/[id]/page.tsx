@@ -10,6 +10,5 @@ interface Props {
 
 export default async function Component({ params }: Props) {
   const loopDetails = await fetchLoopDetails(params.id)
-  console.log('loope details::', loopDetails)
   return <MainComponent loopDetails={loopDetails} />
 }
