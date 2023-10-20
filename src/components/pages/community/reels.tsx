@@ -1,7 +1,8 @@
 import { Loader } from '@components/ui/loader'
 import dynamic from 'next/dynamic'
 import { getCommunityVideos } from '@lib/api/community'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
+import { useInView } from 'framer-motion'
 const Player = dynamic(() => import('@components/common/player').then((comp) => comp.default), {
   loading: (state) => {
     return <Loader size="lg" />
@@ -15,23 +16,24 @@ export function CommunityReels({ communityHandle }: CommunityReelsProps) {
   const divRef = useRef<HTMLDivElement>(null)
   const animationEleRef = useRef<HTMLDivElement>(null)
   const { data: videos, isLoading, isError } = getCommunityVideos(communityHandle)
+  const inView = useInView(animationEleRef)
 
   useEffect(() => {
     setTimeout(() => {
       animationEleRef.current?.classList.add('left-full')
     }, 3000)
+    setTimeout(() => {
+      animationEleRef.current?.classList.add('left-full')
+    }, 6000)
   }, [])
 
   return (
     <div className="relative z-10">
       <div
-        className="hide-scrollbar relative snap-y overflow-y-auto overflow-x-clip bg-blue-20"
+        className="hide-scrollbar relative h-full snap-y overflow-y-auto overflow-x-clip"
         ref={divRef}
         style={{
           width: (divRef.current?.parentElement?.getBoundingClientRect().height || 0) * (9 / 16),
-          height: divRef.current?.parentElement?.getBoundingClientRect().height || 0,
-          minWidth: (divRef.current?.parentElement?.getBoundingClientRect().height || 0) * (9 / 16),
-          maxWidth: (divRef.current?.parentElement?.getBoundingClientRect().height || 0) * (9 / 16),
         }}>
         {isLoading && <Loader size="lg" />}
         {isError && <div>Something went wrong with api.</div>}

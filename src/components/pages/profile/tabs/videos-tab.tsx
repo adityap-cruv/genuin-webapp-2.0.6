@@ -124,7 +124,7 @@ function TabBody({ videos, hasNextPage, fetchingNextPage }: TabBodyProps) {
               imageUrl={video.video.thumbnail || ''}
               width={tileWidth}
               type={isLoop ? 'loop' : 'public'}
-              viewCount={video.video.view_count}
+              viewCount={video.video.view_count ?? 0}
               alt={video.video.description || 'Genuin Video.'}
               loopName={video.loop ? video.loop.name ?? '' : ''}
               replyCount={video.video.reply_count ?? 0}
