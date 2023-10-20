@@ -24,7 +24,7 @@ const VideoInfoSchema = z.object({
   thumbnail: z.string().url().optional(),
   share_string: z.string(),
   metadata: VideoMetadataSchema.optional(),
-  view_count: z.number(),
+  view_count: z.number().nullish(),
   reply_count: z.number().nullish(),
 })
 

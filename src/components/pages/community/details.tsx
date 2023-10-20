@@ -1,7 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@components/ui/avatar'
 import { Button } from '@components/ui/button'
 import type { CommunityDetailsType } from '@lib/schemas/community-details'
-import { getAvatarFallback } from '@lib/utils'
+import { checkAndAppendHttps, getAvatarFallback } from '@lib/utils'
 import icShare from '@icons/icShareBlue.svg'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -10,6 +10,7 @@ import icLinkedIn from '@icons/icLinkedIn.svg'
 import icLink from '@icons/icLinkBlack.svg'
 import icTwitter from '@icons/icTwitterBlack.svg'
 import { Separator } from '@components/ui/separator'
+import { useRef } from 'react'
 import { PATH_NAME } from '@lib/utils/constants/path'
 
 let communityDetailsModule: CommunityDetailsType | null = null
@@ -33,7 +34,7 @@ export function CommunityDetails({ children, communityDetails }: Props) {
 
 function Left() {
   return (
-    <div className="mx-2 mt-2 flex w-full flex-col overflow-y-auto">
+    <div className="mx-2 mt-2 w-full overflow-y-auto">
       <Avatar className="h-20 w-20 bg-red-50">
         <AvatarImage src={communityDetailsModule?.info.profile_image} />
         <AvatarFallback>
@@ -62,7 +63,7 @@ function Left() {
 
 function Right() {
   return (
-    <div className="ml-2 flex w-full flex-col">
+    <div className="ml-2 w-full">
       <Leaders />
       <Members />
     </div>
@@ -94,28 +95,28 @@ function Links() {
       <div className="flex">
         {links?.instagram_url && (
           <div className="mx-1 rounded-md bg-monochrome-9 p-1">
-            <Link href={links.instagram_url} target="_blank">
+            <Link href={checkAndAppendHttps(links.instagram_url)} target="_blank">
               <Image src={icInstagram} alt="instagram" />
             </Link>
           </div>
         )}
         {links?.linkedin_url && (
           <div className="mx-1 rounded-md bg-monochrome-9 p-1">
-            <Link href={links.linkedin_url} target="_blank">
+            <Link href={checkAndAppendHttps(links.linkedin_url)} target="_blank">
               <Image src={icLinkedIn} alt="linkedin" />
             </Link>
           </div>
         )}
         {links?.twitter_url && (
           <div className="mx-1 rounded-md bg-monochrome-9 p-1">
-            <Link href={links.twitter_url} target="_blank">
+            <Link href={checkAndAppendHttps(links.twitter_url)} target="_blank">
               <Image src={icTwitter} alt="twitter" />
             </Link>
           </div>
         )}
         {links?.social_web_url && (
           <div className="mx-1 rounded-md bg-monochrome-9 p-1">
-            <Link href={links.social_web_url} target="_blank">
+            <Link href={checkAndAppendHttps(links.social_web_url)} target="_blank">
               <div className="flex">
                 <Image src={icLink} alt="web-site" />
                 <p className="text-body-sm">&nbsp;{links.social_web_url}</p>
@@ -159,9 +160,8 @@ function Loops() {
       <p className="my-2 text-title-md">Popular Loops</p>
       {communityDetailsModule?.popular_loops.map((loop, index) => {
         return (
-          <Link href={{ pathname: PATH_NAME.loop(loop.share_string) }}>
+          <Link key={index} href={{ pathname: PATH_NAME.loop(loop.share_string) }}>
             <ListItem
-              key={index}
               title={loop.name}
               image={loop.profile_image ?? undefined}
               subtitle={loop.subscriber_count + (loop.subscriber_count === 1 ? ' Subscriber' : ' Subscribers')}
@@ -207,9 +207,8 @@ function Leaders() {
       <p className="my-2 text-title-md">Leader</p>
       {communityDetailsModule?.moderators.map((moderator, index) => {
         return (
-          <Link href={{ pathname: PATH_NAME.profile(moderator.nickname) }}>
+          <Link key={index} href={{ pathname: PATH_NAME.profile(moderator.nickname) }}>
             <ListItem
-              key={index}
               title={moderator.name ?? ''}
               subtitle={'@' + moderator.nickname}
               description={moderator.description}
@@ -228,9 +227,8 @@ function Members() {
       <p className="my-2 text-title-md">Members</p>
       {communityDetailsModule?.members.map((member, index) => {
         return (
-          <Link href={{ pathname: PATH_NAME.profile(member.nickname) }}>
+          <Link key={index} href={{ pathname: PATH_NAME.profile(member.nickname) }}>
             <ListItem
-              key={index}
               title={member.name}
               subtitle={'@' + member.nickname}
               description={member.description ?? ''}
