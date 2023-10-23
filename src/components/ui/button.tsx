@@ -14,6 +14,7 @@ const buttonVariants = cva(
       outlineColor: {
         white: 'border-monochrome-white hover:bg-monochrome-white',
         'genuin-blue': 'border-primary bg-background',
+        black: 'border-monochrome-black',
       },
       size: {
         default: 'h-10 px-2 py-2',
