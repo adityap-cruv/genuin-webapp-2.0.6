@@ -6,27 +6,27 @@ import { inView } from 'framer-motion'
 import { useEffect, useRef } from 'react'
 
 export function NavBar() {
-  const navRef = useRef<HTMLElement>(null)
+  // const navRef = useRef<HTMLElement>(null)
 
-  useEffect(() => {
-    /**
-     * here in this login navbar will be transparent if initial-component is in viewport
-     */
-    const stop = inView(
-      '#initial-component',
-      () => {
-        navRef.current?.classList.remove('bg-monochrome-white', 'shadow-lg')
-        return (entry) => {
-          navRef.current?.classList.add('bg-monochrome-white', 'shadow-lg')
-        }
-      },
-      { amount: 'some' }
-    )
-    return () => stop()
-  }, [])
+  // useEffect(() => {
+  //   /**
+  //    * here in this login navbar will be transparent if initial-component is in viewport
+  //    */
+  //   const stop = inView(
+  //     '#initial-component',
+  //     () => {
+  //       navRef.current?.classList.remove('bg-monochrome-white', 'shadow-lg')
+  //       return (entry) => {
+  //         navRef.current?.classList.add('bg-monochrome-white', 'shadow-lg')
+  //       }
+  //     },
+  //     { amount: 'some' }
+  //   )
+  //   return () => stop()
+  // }, [])
 
   return (
-    <nav ref={navRef} className="fixed top-0 z-10 m-auto flex h-navbar w-full ">
+    <nav className="absolute top-0 z-10 m-auto flex h-navbar w-full ">
       <div className={cn('container flex h-full items-center justify-between py-1')}>
         <GenuinLogo.text variant="black" />
         <div className="flex items-center gap-x-2">

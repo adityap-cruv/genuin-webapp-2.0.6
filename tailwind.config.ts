@@ -57,6 +57,9 @@ module.exports = {
         yellow: '#FFBF00',
         red: '#F94740',
       },
+      new: {
+        grey: '#3F3F3F',
+      },
       // border: 'hsl(var(--border))',
       // input: 'hsl(var(--input))',
       // ring: 'hsl(var(--ring))',
@@ -95,7 +98,7 @@ module.exports = {
       'new-sm': ['16px', { fontWeight: 500, lineHeight: '120%' }], // This is for new typography
       'new-md': ['20px', { fontWeight: 500, lineHeight: '120%' }],
       'new-lg': ['24px', { fontWeight: 500, lineHeight: '120%' }],
-      'new-index-title': ['calc(min(60px, 5vw))', { fontWeight: 700, lineHeight: '110%' }],
+      'new-index-title': ['calc(min(48px, 4vw))', { fontWeight: 700, lineHeight: '110%' }],
     },
     fontFamily: {
       sans: ['"Avenir Next"', ...defaultTheme.fontFamily.sans], // Here sans is default font in tailwindcss so updated it to avenir next

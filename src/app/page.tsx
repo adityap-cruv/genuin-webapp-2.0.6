@@ -5,7 +5,7 @@ import { MainComponent } from '@components/pages/home/main-component'
 
 export default async function Page() {
   return (
-    <main className="absolute inset-0 min-h-full w-full overflow-auto">
+    <main className="absolute inset-0 min-h-full w-full">
       <NavBar />
       <MainComponent />
       <Footer />
