@@ -1,9 +1,8 @@
 'use client'
-import { Desktop } from './desktop'
-import { Mobile } from './mobile'
-// All images/icons import
+import dynamic from 'next/dynamic'
+const Desktop = dynamic(() => import('./desktop').then((comp) => comp.Desktop))
+const Mobile = dynamic(() => import('./mobile').then((comp) => comp.Mobile))
 
 export const MainComponent = ({ isMobile }: { isMobile: boolean }) => {
-  console.log('is mobile::', isMobile)
   return isMobile ? <Mobile /> : <Desktop />
 }

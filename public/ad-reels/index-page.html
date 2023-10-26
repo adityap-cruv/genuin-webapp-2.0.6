@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+​
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+  </style>
+</head>
+​
+
+<body>
+  <script>
+    // Function to get query parameters from the URL
+    function getQueryParameters() {
+      const queryParams = new URLSearchParams(window.location.search);
+      return {
+        width: queryParams.get('width'),
+        height: queryParams.get('height')
+      };
+    }
+
+    // Function to update the width and height of the embedded element
+    function updateDimensions() {
+      const { width, height } = getQueryParameters();
+
+      if (width && height) {
+        const div = document.createElement('div')
+        div.classList.add('gen-ext')
+        div.setAttribute('data-tag-id', "2444")
+        div.setAttribute('data-company-id', "1129")
+        div.style.width = `${width}px`;
+        div.style.height = `${height}px`;
+        const script = document.createElement('script')
+        script.src = "https://media.begenuin.com/cxr/gen_ext.min.js"
+        document.body.appendChild(div)
+        document.body.appendChild(script)
+      }
+    }
+
+    // Call the updateDimensions function on page load
+    window.addEventListener('DOMContentLoaded', updateDimensions);
+    updateDimensions()
+  </script>
+</body>
+​
+
+</html>

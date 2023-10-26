@@ -15,9 +15,15 @@ const burgerVariants = cva('', {
 interface Props extends VariantProps<typeof burgerVariants> {
   onOpen?: Function
   onClose?: Function
+  toggleToClose?: boolean
 }
 
-export function HamBurgerMenuIcon({ variant = 'dark', onOpen = () => {}, onClose = () => {} }: Props) {
+export function HamBurgerMenuIcon({
+  variant = 'dark',
+  onOpen = () => {},
+  onClose = () => {},
+  toggleToClose = true,
+}: Props) {
   const [isOpen, setIsOpen] = useState(false)
   const line = cn(
     `h-1 w-6 my-0.5 rounded-full transition ease transform duration-100 delay-0`,
@@ -31,9 +37,9 @@ export function HamBurgerMenuIcon({ variant = 'dark', onOpen = () => {}, onClose
 
   return (
     <div className="flex h-12 w-12 flex-col items-center justify-center rounded " onClick={toggle}>
-      <span className={cn(line, isOpen ? 'translate-y-2 rotate-45' : undefined)} />
-      <span className={cn(line, isOpen ? 'opacity-0' : undefined)} />
-      <span className={cn(line, isOpen ? '-translate-y-2 -rotate-45' : undefined)} />
+      <span className={cn(line, isOpen && toggleToClose ? 'translate-y-2 rotate-45' : undefined)} />
+      <span className={cn(line, isOpen && toggleToClose ? 'opacity-0' : undefined)} />
+      <span className={cn(line, isOpen && toggleToClose ? '-translate-y-2 -rotate-45' : undefined)} />
     </div>
   )
 }

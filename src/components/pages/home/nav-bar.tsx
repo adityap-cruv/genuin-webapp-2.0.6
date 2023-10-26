@@ -48,9 +48,9 @@ export function NavBar() {
         <div className={cn('container flex h-full items-center justify-between py-1 pl-2')}>
           <GenuinLogo.text variant="black" />
           <div className="flex items-center gap-x-2">
-            <Sheet>
+            <Sheet modal={false}>
               <SheetTrigger>
-                <HamBurgerMenuIcon />
+                <HamBurgerMenuIcon toggleToClose={false} />
               </SheetTrigger>
               <SheetContent
                 className="w-full border-none"

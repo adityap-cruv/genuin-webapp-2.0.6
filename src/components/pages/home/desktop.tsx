@@ -17,6 +17,7 @@ import imgC5 from '@images/home-page/c5.png'
 import imgC5_2 from '@images/home-page/c5_2.png'
 import imgC7 from '@images/home-page/c7.png'
 import imgReviewerDp from '@images/home-page/reviewerDp.png'
+import { CommunitySection } from './community-section'
 
 export function Desktop() {
   return (
@@ -221,7 +222,7 @@ function Component6() {
       <p className="max-w-lg text-center text-new-lg">
         Take a look inside some of the communities you’ll find in on Genuin and get inspired to start your own.
       </p>
-      <div>This is community section.</div>
+      <CommunitySection />
     </div>
   )
 }
