@@ -1,15 +1,21 @@
 ## Only use this dockerfile after npm run build command.
 
-FROM node:14-slim
+FROM node:18.17.0
 
 WORKDIR /genuin-webapp-qa
 
 COPY  package*.json ./
-COPY  .next ./.next
-COPY  node_modules ./node_modules
+COPY  src ./.src
 COPY  public ./public
+COPY next.config.js ./next.config.js
+
+# Install project dependencies
+RUN npm install
+
+RUN npm run build
 
 EXPOSE 3000
 
 ENV PORT=3000
+
 CMD [ "npm", "start" ]
