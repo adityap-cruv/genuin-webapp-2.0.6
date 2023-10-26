@@ -1,5 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@components/ui/avatar'
-import { getAvatarFallback } from '@lib/utils'
+import { checkAndAppendHttps, getAvatarFallback } from '@lib/utils'
 import Link from 'next/link'
 import { Button } from '@components/ui/button'
 import { Badge } from '@components/ui/badge'
@@ -128,14 +128,10 @@ interface ActionsProps {
 function Actions({ link = '', shareDescription = '', shareTitle = '', isLoop = false }: ActionsProps) {
   const { shareFn } = useAdaptiveShare()
 
-  function appendHttps(link: string) {
-    return link.startsWith('http') || link.startsWith('https') ? link : 'https://' + link
-  }
-
   return (
     <div className="flex flex-col">
       {link && (
-        <Link href={appendHttps(link)} target="_blank">
+        <Link href={checkAndAppendHttps(link)} target="_blank">
           <ActionItem title="Click Here!">
             <Image src={icLink} alt="link" height={20} width={20} />
           </ActionItem>

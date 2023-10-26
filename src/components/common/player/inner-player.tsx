@@ -1,5 +1,5 @@
-import { useInViewport } from '@hooks/use-in-viewport'
 import OpenPlayerJS from 'openplayerjs'
+import { useInView } from 'framer-motion'
 import { DetailedHTMLProps, VideoHTMLAttributes, useCallback, useEffect, useRef, useState } from 'react'
 
 // todo work on why player is sendding multiple request.
@@ -36,11 +36,7 @@ export function InnerPlayer({
     player: null,
   })
 
-  let isInViewport: boolean | undefined = undefined
-  if (playIfInViewport) {
-    const temp = useInViewport(videoRef)
-    if (typeof temp !== 'undefined') isInViewport = temp
-  }
+  const isInViewport = useInView(videoRef)
 
   useEffect(() => {
     console.log('is in viewport::', isInViewport)

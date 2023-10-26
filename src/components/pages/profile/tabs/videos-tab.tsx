@@ -25,7 +25,7 @@ function GenuinVideos() {
   const { scrollYProgress } = useScroll({ container: divRef })
 
   useMotionValueEvent(scrollYProgress, 'change', (latest) => {
-    if (Number(latest.toPrecision(6)) > 0.9) {
+    if (Number(latest.toPrecision(6)) > 0.9 && !isFetchingNextPage) {
       fetchNextPage()
     }
   })
@@ -53,7 +53,7 @@ function LoopVideos() {
   const { scrollYProgress } = useScroll({ container: divRef })
 
   useMotionValueEvent(scrollYProgress, 'change', (latest) => {
-    if (Number(latest.toPrecision(6)) > 0.9) {
+    if (Number(latest.toPrecision(6)) > 0.9 && !isFetchingNextPage) {
       fetchNextPage()
     }
   })
@@ -80,7 +80,7 @@ function AllVideos() {
   const { scrollYProgress } = useScroll({ container: divRef })
 
   useMotionValueEvent(scrollYProgress, 'change', (latest) => {
-    if (Number(latest.toPrecision(6)) > 0.9) {
+    if (Number(latest.toPrecision(6)) > 0.9 && !isFetchingNextPage) {
       fetchNextPage()
     }
   })
@@ -124,7 +124,7 @@ function TabBody({ videos, hasNextPage, fetchingNextPage }: TabBodyProps) {
               imageUrl={video.video.thumbnail || ''}
               width={tileWidth}
               type={isLoop ? 'loop' : 'public'}
-              viewCount={video.video.view_count}
+              viewCount={video.video.view_count ?? 0}
               alt={video.video.description || 'Genuin Video.'}
               loopName={video.loop ? video.loop.name ?? '' : ''}
               replyCount={video.video.reply_count ?? 0}
@@ -174,7 +174,7 @@ function Tile({ imageUrl = '', width = -1, alt = '', viewCount, replyCount, type
               </div>
               <Image src={icLoop} alt="loop" height={24} width={24} />
             </div>
-            <div className="line-clamp-2 w-1/2 break-words text-title-sm text-secondary-foreground">{loopName}</div>
+            <div className="line-clamp-2 w-1/2 break-all text-title-sm text-secondary-foreground">{loopName}</div>
           </div>
         )}
         {type === 'public' && (

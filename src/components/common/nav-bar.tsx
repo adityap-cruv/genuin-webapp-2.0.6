@@ -6,7 +6,7 @@ import { isMobile } from 'react-device-detect'
 import Link from 'next/link'
 import { cn } from '@lib/utils'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@components/ui/dropdown-menu'
-import { BurgerMenuIcon } from '@components/ui/ham-burger'
+import { HamBurgerMenuIcon } from '@components/ui/ham-burger'
 
 interface Props {
   variant: 'light' | 'dark' | 'transparent'
@@ -51,7 +51,7 @@ function BurgerMenu({ variant = 'dark' }: { variant?: 'light' | 'dark' }) {
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger>
-        <BurgerMenuIcon variant={variant} />
+        <HamBurgerMenuIcon variant={variant} />
       </DropdownMenuTrigger>
       <DropdownMenuContent
         className="bg-monochrome-black/90 px-3"
