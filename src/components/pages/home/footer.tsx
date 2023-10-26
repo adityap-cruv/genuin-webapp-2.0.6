@@ -47,12 +47,12 @@ export function Footer() {
         <div className="container flex h-full flex-col gap-y-6">
           <div className="mt-5 flex flex-col items-center justify-center gap-y-2">
             <p className="text-new-index-title-mobile text-center text-monochrome-white">Join the world of Genuin.</p>
-            <Button variant="default" className="bg-monochrome-black">
+            <Button variant="default" className="mt-3 bg-monochrome-black">
               <p className="whitespace-nowrap text-new-md">Download Genuin</p>
             </Button>
           </div>
           <div
-            className="flex justify-between gap-y-10 bg-monochrome-black px-2 pb-8 pt-5 text-primary-foreground"
+            className="mt-5 flex justify-between gap-y-10 bg-monochrome-black px-2 pb-8 pt-5 text-primary-foreground"
             style={{ borderRadius: '20px 20px 0px 0px' }}>
             <GenuinLogo.text variant="light" />
             <p>© 2023 Genuin Inc.</p>

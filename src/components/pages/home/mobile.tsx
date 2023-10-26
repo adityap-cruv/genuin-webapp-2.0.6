@@ -16,6 +16,7 @@ import imgReviewerDp from '@images/home-page/reviewerDp.png'
 import imgC5 from '@images/home-page/c5.png'
 import imgC5_1 from '@images/home-page/c5_2.png'
 import imgC7 from '@images/home-page/c7.png'
+import { CommunitySection } from './community-section'
 
 export function Mobile() {
   return (
@@ -93,8 +94,8 @@ function Component4() {
         <Image src={icConversation} width={40} height={30} alt="conversation" className="inline-block align-baseline" />{' '}
         conversation
       </p>
-      <Accordion type="single" collapsible className="px-3">
-        <AccordionItem value="Connect" className="border-none ">
+      <Accordion type="single" defaultValue="connect" collapsible className="px-3">
+        <AccordionItem value="connect" className="border-none ">
           <AccordionTrigger className="items-baseline">
             <div className="flex flex-col items-start">
               <p className="font-bold" style={{ fontSize: '28px' }}>
@@ -122,7 +123,7 @@ function Component4() {
             <Image src={imgDiscover} alt="discover" />
           </AccordionContent>
         </AccordionItem>
-        <AccordionItem value="Learn" className="border-none ">
+        <AccordionItem value="learn" className="border-none ">
           <AccordionTrigger className="items-baseline">
             <div className="flex flex-col items-start">
               <p className="font-bold" style={{ fontSize: '28px' }}>
@@ -186,7 +187,7 @@ function Component6() {
       <p className="text-center text-new-md">
         Take a look inside some of the communities you’ll find in on Genuin and get inspired to start your own.
       </p>
-      <p>this is community component</p>
+      <CommunitySection />
       <p className="text-center font-bold" style={{ fontSize: '40px', lineHeight: '110%' }}>
         Experience Genuin
       </p>
