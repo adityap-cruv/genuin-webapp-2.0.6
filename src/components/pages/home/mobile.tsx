@@ -1,5 +1,6 @@
 import { Button } from '@components/ui/button'
 import Image from 'next/image'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@components/ui/accordion'
 
 // images and icons import
 import icAddButton from '@icons/home-page/icAddButton.svg'
@@ -15,7 +16,6 @@ import imgReviewerDp from '@images/home-page/reviewerDp.png'
 import imgC5 from '@images/home-page/c5.png'
 import imgC5_1 from '@images/home-page/c5_2.png'
 import imgC7 from '@images/home-page/c7.png'
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@components/ui/accordion'
 
 export function Mobile() {
   return (

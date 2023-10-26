@@ -190,7 +190,7 @@ function Component5() {
               “Genuin is so community–driven — I love having that level of interaction with people sharing their own
               versions of my DIY hacks and offering their own tips.”
             </p>
-            <p className="text-new-md">Esmé, Seattle, DIY Content Creator</p>
+            <p className="mt-3 text-new-md">Esmé, Seattle, DIY Content Creator</p>
           </div>
         </div>
         <Image src={imgC5} alt="genuin" className="" />
