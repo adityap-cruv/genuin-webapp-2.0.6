@@ -17,7 +17,7 @@ interface Props extends VariantProps<typeof burgerVariants> {
   onClose?: Function
 }
 
-export function BurgerMenuIcon({ variant = 'dark', onOpen = () => {}, onClose = () => {} }: Props) {
+export function HamBurgerMenuIcon({ variant = 'dark', onOpen = () => {}, onClose = () => {} }: Props) {
   const [isOpen, setIsOpen] = useState(false)
   const line = cn(
     `h-1 w-6 my-0.5 rounded-full transition ease transform duration-100 delay-0`,

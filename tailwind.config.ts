@@ -99,6 +99,7 @@ module.exports = {
       'new-md': ['20px', { fontWeight: 500, lineHeight: '120%' }],
       'new-lg': ['24px', { fontWeight: 500, lineHeight: '120%' }],
       'new-index-title': ['calc(min(48px, 4vw))', { fontWeight: 700, lineHeight: '110%' }],
+      'new-index-title-mobile': ['32px', { fontWeight: 700, lineHeight: '120%' }],
     },
     fontFamily: {
       sans: ['"Avenir Next"', ...defaultTheme.fontFamily.sans], // Here sans is default font in tailwindcss so updated it to avenir next
@@ -133,6 +134,20 @@ module.exports = {
       },
       minWidth: {
         tablet: '768px',
+      },
+      keyframes: {
+        'accordion-down': {
+          from: { height: '0' },
+          to: { height: 'var(--radix-accordion-content-height)' },
+        },
+        'accordion-up': {
+          from: { height: 'var(--radix-accordion-content-height)' },
+          to: { height: '0' },
+        },
+      },
+      animation: {
+        'accordion-down': 'accordion-down 0.2s ease-out',
+        'accordion-up': 'accordion-up 0.2s ease-out',
       },
     },
   },
