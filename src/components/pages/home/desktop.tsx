@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import { useMotionValueEvent, useScroll } from 'framer-motion'
+import { useInView, useMotionValueEvent, useScroll } from 'framer-motion'
 import { SVGAdReelTag } from './svg-ad-reel-tag'
 import Image from 'next/image'
 import { CommunitySection } from './community-section'
@@ -97,8 +97,8 @@ function Component4() {
 
   useMotionValueEvent(scrollYProgress, 'change', (latest) => {
     const value = Number(latest.toPrecision(2))
-    if (value >= 0.3 && value <= 0.6) {
-      const calcValue = Math.floor((value - 0.3) * 10)
+    if (value >= 0.32 && value <= 0.58) {
+      const calcValue = Math.floor((value - 0.32) * 10)
       if (currentIndexRef.current !== calcValue) {
         toggleIndex(currentIndexRef.current, calcValue)
         currentIndexRef.current = calcValue
@@ -120,44 +120,38 @@ function Component4() {
   }
 
   return (
-    <div className="relative my-5 h-[350%] ">
-      <div id="carousel" className="sticky top-0">
-        <div className="flex h-1/3 w-full flex-col items-center justify-center gap-y-5">
-          <div className="mt-3 flex justify-center">
+    <div className="relative my-5 h-[300%] ">
+      <div id="carousel" className="sticky top-0 h-1/3 ">
+        <div className="h-full w-full">
+          <div className="flex h-1/5 items-center justify-center">
             <p className="max-w-lg text-center text-new-index-title">
               Expand your horizons and add to the{' '}
               <Image src={icConversation} alt="conversation" className="inline-block align-bottom" /> conversation
             </p>
           </div>
-          <div className="flex w-full items-center justify-around">
+          <div className="container flex h-[70%] w-full items-center">
             <div
               ref={imgRef}
-              className="relative h-full w-1/3 [&>img]:inset-0 [&>img]:transition-opacity [&>img]:duration-200 [&>img]:ease-in">
+              className="relative w-1/2 [&>img]:inset-0 [&>img]:transition-opacity [&>img]:duration-200 [&>img]:ease-in">
               <Image quality={100} src={imgConnect} alt="connect" className="inset-0 w-4/5" />
               <Image quality={100} src={imgDiscover} alt="discover" className="absolute w-4/5 opacity-0" />
               <Image quality={100} src={imgLearn} alt="learn" className="absolute w-4/5 opacity-0" />
             </div>
             <div
               ref={textRef}
-              className="flex w-2/3 max-w-md flex-col gap-y-3 [&>div]:opacity-30 [&>div]:transition-opacity [&>div]:duration-300 [&>div]:ease-in ">
+              className="flex h-full w-1/2 flex-col justify-center [&>div]:my-2 [&>div]:opacity-30 [&>div]:transition-opacity [&>div]:duration-300 [&>div]:ease-in lg:[&>div]:my-3 ">
               <div className="!opacity-100">
-                <p className="my-2" style={{ fontSize: '40px', lineHeight: '110%', fontWeight: 700 }}>
-                  Connect
-                </p>
+                <p style={{ fontSize: '40px', lineHeight: '110%', fontWeight: 700 }}>Connect</p>
                 <p className="text-new-lg">Meet new people, grow your audience, and discover new interests.</p>
               </div>
               <div>
-                <p className="my-2" style={{ fontSize: '40px', lineHeight: '110%', fontWeight: 700 }}>
-                  Discover
-                </p>
+                <p style={{ fontSize: '40px', lineHeight: '110%', fontWeight: 700 }}>Discover</p>
                 <p className="text-new-lg">
                   Create Loops, interactive discussion spaces that combine video, photo, voice recording and text.
                 </p>
               </div>
               <div>
-                <p className="my-2" style={{ fontSize: '40px', lineHeight: '110%', fontWeight: 700 }}>
-                  Learn
-                </p>
+                <p style={{ fontSize: '40px', lineHeight: '110%', fontWeight: 700 }}>Learn</p>
                 <p className="text-new-lg">
                   Start conversations and invite your audience to contribute, too—a space to learn alongside and from
                   each other.
@@ -173,10 +167,10 @@ function Component4() {
 
 function Component5() {
   return (
-    <div className="container flex flex-col items-center gap-y-5">
+    <div className="flex flex-col items-center gap-y-5 px-5">
       <p className="mt-7 text-new-index-title">What our members say</p>
       <div className="flex w-full justify-between gap-5">
-        <div className="flex w-2/3 flex-col gap-y-5">
+        <div className="flex w-3/5 flex-col gap-y-5">
           <div className="flex flex-col rounded-[10px] border-[18px] border-[#E9CAF4] bg-monochrome-black p-8">
             <p className="font-bold text-monochrome-white" style={{ fontSize: '40px' }}>
               "Infinite community possibilies."
@@ -194,7 +188,7 @@ function Component5() {
             <p className="mt-3 text-new-md">Esmé, Seattle, DIY Content Creator</p>
           </div>
         </div>
-        <Image quality={100} src={imgC5} alt="genuin" className="w-1/3" />
+        <Image quality={100} src={imgC5} alt="genuin" className="w-2/5" />
       </div>
       <div className="flex w-full justify-between gap-x-2">
         <Image className="w-full" quality={100} src={imgC5_2} alt="board" />
