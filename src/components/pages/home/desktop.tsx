@@ -121,7 +121,7 @@ function Component4() {
 
   return (
     <div className="relative my-5 h-[300%] ">
-      <div id="carousel" className="sticky top-0 h-1/3 ">
+      <div id="carousel" className="sticky top-0 h-1/3">
         <div className="h-full w-full">
           <div className="flex h-1/5 items-center justify-center">
             <p className="max-w-lg text-center text-new-index-title">
@@ -167,7 +167,7 @@ function Component4() {
 
 function Component5() {
   return (
-    <div className="flex flex-col items-center gap-y-5 px-5">
+    <div className=" flex w-full flex-col items-center gap-y-5 px-5 xl:container">
       <p className="mt-7 text-new-index-title">What our members say</p>
       <div className="flex w-full justify-between gap-5">
         <div className="flex w-3/5 flex-col gap-y-5">
@@ -180,7 +180,7 @@ function Component5() {
               <p className="text-monochrome-white">Lauren Hall, App Member</p>
             </div>
           </div>
-          <div className="flex h-full flex-col justify-between rounded-2xl border-2 border-secondary p-5">
+          <div className="flex flex-col justify-between rounded-2xl border-2 border-secondary p-5">
             <p className="text-new-lg">
               “Genuin is so community–driven — I love having that level of interaction with people sharing their own
               versions of my DIY hacks and offering their own tips.”
