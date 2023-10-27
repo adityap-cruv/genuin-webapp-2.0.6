@@ -7,5 +7,6 @@
     "latex",
     "plaintext",
     "typescriptreact"
-  ]
+  ],
+  "svg.preview.background": "dark-transparent"
 }
