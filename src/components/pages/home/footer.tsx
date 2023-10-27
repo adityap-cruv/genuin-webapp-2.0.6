@@ -24,11 +24,11 @@ export function Footer() {
             className="flex flex-col gap-y-10 bg-monochrome-black px-4 pb-8 pt-5 text-primary-foreground"
             style={{ borderRadius: '20px 20px 0px 0px' }}>
             <GenuinLogo.text variant="light" />
-            <div className="flex justify-between text-title-lg">
+            <div className="flex justify-between text-title-md ">
               <div>
                 <p>© 2023 Genuin Inc.</p>
               </div>
-              <div className="flex gap-x-2">
+              <div className="flex gap-x-2 hover:[&>a>p]:text-primary">
                 <Link href="https://careers.begenuin.com">
                   <p>Careers</p>
                 </Link>
@@ -46,7 +46,7 @@ export function Footer() {
       <footer className="relative bg-primary lg:hidden">
         <div className="container flex h-full flex-col gap-y-6">
           <div className="mt-5 flex flex-col items-center justify-center gap-y-2">
-            <p className="text-new-index-title-mobile text-center text-monochrome-white">Join the world of Genuin.</p>
+            <p className="text-center text-new-index-title-mobile text-monochrome-white">Join the world of Genuin.</p>
             <Button variant="default" className="mt-3 bg-monochrome-black">
               <p className="whitespace-nowrap text-new-md">Download Genuin</p>
             </Button>

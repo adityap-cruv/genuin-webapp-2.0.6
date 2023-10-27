@@ -1,5 +1,4 @@
 import './globals.css'
-import { NextAuthProvider } from '@components/providers/nextAuthProvider'
 import { ReactQueryProvider } from '@components/providers/reactQueryProvider'
 
 export const metadata = {
@@ -15,7 +14,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="absolute min-h-full min-w-full">
         <ReactQueryProvider>
-          <NextAuthProvider>{children}</NextAuthProvider>
+          {children}
         </ReactQueryProvider>
       </body>
     </html>
