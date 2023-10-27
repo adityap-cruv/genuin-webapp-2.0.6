@@ -1,6 +1,8 @@
 import { useRef } from 'react'
-import { useInView, useMotionValueEvent, useScroll } from 'framer-motion'
+import { useMotionValueEvent, useScroll } from 'framer-motion'
+import { SVGAdReelTag } from './svg-ad-reel-tag'
 import Image from 'next/image'
+import { CommunitySection } from './community-section'
 
 // all images import
 import imgC1 from '@images/home-page/c1.png'
@@ -15,10 +17,7 @@ import imgLearn from '@images/home-page/c4_learn.png'
 import icConversation from '@icons/home-page/icConversation.svg'
 import imgC5 from '@images/home-page/c5.png'
 import imgC5_2 from '@images/home-page/c5_2.png'
-import imgC7 from '@images/home-page/c7.png'
 import imgReviewerDp from '@images/home-page/reviewerDp.png'
-import { CommunitySection } from './community-section'
-import Script from 'next/script'
 
 export function Desktop() {
   return (
@@ -237,36 +236,5 @@ function Component7() {
       <SVGAdReelTag />
       {/* <Image className="w-1/5" quality={100} src={imgC7} alt="genuin" /> */}
     </div>
-  )
-}
-
-function SVGAdReelTag() {
-  const svgRef = useRef<SVGSVGElement>(null)
-  const isInView = useInView(svgRef, { amount: 1 })
-
-  return (
-    <>
-      <svg ref={svgRef} width="317" height="651" viewBox="0 0 317 651" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <foreignObject xmlns="http://www.w3.org/1999/xhtml" x="7" y="5" width="300" height="600">
-          <div
-            className="gen-ext"
-            data-tag-id="test-rohit"
-            data-company-id="1129"
-            style={{ height: '596px', width: '298px', marginTop: '3px', margin: 'auto', marginBottom: '40px' }}></div>
-        </foreignObject>
-        <rect x="3.73063" y="3.52042" width="307" height="604" rx="35" stroke="#16171A" strokeWidth="12" />
-        <path
-          d="M78.8398 3.60274H263.797V18.1951C263.797 29.0275 255.016 37.8089 244.183 37.8089H98.4536C87.6212 37.8089 78.8398 29.0275 78.8398 18.1951V3.60274Z"
-          fill="#16171A"
-          stroke="#16171A"
-          strokeWidth="1.00583"
-        />
-        <g filter="url(#filter0_dd_0_5)">
-          <rect x="145.008" y="17.5669" width="38.3893" height="5.05122" rx="2.52561" fill="#F8F8F8"></rect>
-        </g>
-        <rect x="191.479" y="17.5669" width="5.05122" height="5.05122" rx="2.52561" fill="#F8F8F8" />
-      </svg>
-      {isInView && <Script src="https://genuin-qa-media.s3.us-west-2.amazonaws.com/cxr/gen_ext.min.js" />}
-    </>
   )
 }

@@ -1,6 +1,8 @@
 import { Button } from '@components/ui/button'
 import Image from 'next/image'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@components/ui/accordion'
+import { SVGAdReelTag } from './svg-ad-reel-tag'
+import { CommunitySection } from './community-section'
 
 // images and icons import
 import icAddButton from '@icons/home-page/icAddButton.svg'
@@ -15,8 +17,6 @@ import imgDiscover from '@images/home-page/c4_discover.png'
 import imgReviewerDp from '@images/home-page/reviewerDp.png'
 import imgC5 from '@images/home-page/c5.png'
 import imgC5_1 from '@images/home-page/c5_2.png'
-import imgC7 from '@images/home-page/c7.png'
-import { CommunitySection } from './community-section'
 
 export function Mobile() {
   return (
@@ -54,7 +54,7 @@ function Component1() {
 function Component2() {
   return (
     <div className="my-10 flex flex-col justify-center">
-      <p className="text-new-index-title-mobile my-4 w-full px-10 text-center">
+      <p className="my-4 w-full px-10 text-center text-new-index-title-mobile">
         <Image src={icAddButton} alt="add" className="mr-2 inline-block align-baseline" height={30} width={30} />
         Create and grow your own community
       </p>
@@ -66,7 +66,7 @@ function Component2() {
 function Component3() {
   return (
     <div className="my-10 flex flex-col gap-y-3">
-      <p className="text-new-index-title-mobile text-center">
+      <p className="text-center text-new-index-title-mobile">
         Be part of the conversation with
         <Image
           src={icVideoAddButton}
@@ -89,7 +89,7 @@ function Component3() {
 function Component4() {
   return (
     <div className="my-10 mt-16">
-      <p className="text-new-index-title-mobile text-center">
+      <p className="text-center text-new-index-title-mobile">
         Expand your horizons and add to the{' '}
         <Image src={icConversation} width={40} height={30} alt="conversation" className="inline-block align-baseline" />{' '}
         conversation
@@ -191,7 +191,7 @@ function Component6() {
       <p className="text-center font-bold" style={{ fontSize: '40px', lineHeight: '110%' }}>
         Experience Genuin
       </p>
-      <Image src={imgC7} alt="genuin" />
+      <SVGAdReelTag />
     </div>
   )
 }
