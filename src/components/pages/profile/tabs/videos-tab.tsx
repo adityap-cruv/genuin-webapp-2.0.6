@@ -7,8 +7,9 @@ import icView from '@icons/icView.svg'
 import icVideoBubble from '@icons/icVideoBubble.svg'
 import icLoop from '@icons/icLoop.svg'
 import { getPaginatedAllVideos, getPaginatedGenuinVideos, getPaginatedLoopVideos } from '@lib/api/profile'
-import { VideoDataType } from '@lib/schemas/video'
+import type { VideoDataType } from '@lib/schemas/video'
 import { useMotionValueEvent, useScroll } from 'framer-motion'
+import { VideoModal } from '@components/common/video-modal'
 
 function getNickname() {
   return useParams().nickname as string
@@ -118,18 +119,7 @@ function TabBody({ videos, hasNextPage, fetchingNextPage }: TabBodyProps) {
       <div ref={divRef} className="inline-grid w-full grid-cols-3 lg:grid-cols-4">
         {videos.map((video, index) => {
           const isLoop = video.video_type === 'rt'
-          return (
-            <Tile
-              key={index}
-              imageUrl={video.video.thumbnail || ''}
-              width={tileWidth}
-              type={isLoop ? 'loop' : 'public'}
-              viewCount={video.video.view_count ?? 0}
-              alt={video.video.description || 'Genuin Video.'}
-              loopName={video.loop ? video.loop.name ?? '' : ''}
-              replyCount={video.video.reply_count ?? 0}
-            />
-          )
+          return <Tile key={index} width={tileWidth} videoDetails={video} />
         })}
       </div>
       <div className="flex h-52 w-full items-center justify-center">
@@ -141,54 +131,53 @@ function TabBody({ videos, hasNextPage, fetchingNextPage }: TabBodyProps) {
 }
 
 type TileProps = {
-  imageUrl: string
   width: number
-  alt?: string
-  type: 'loop' | 'public'
-  viewCount: number
-  replyCount?: number
-  loopName: string
+  videoDetails: VideoDataType
 }
 
-function Tile({ imageUrl = '', width = -1, alt = '', viewCount, replyCount, type, loopName }: TileProps) {
+function Tile({ width = -1, videoDetails }: TileProps) {
   return (
-    <div className="relative cursor-pointer p-[1px] duration-300 hover:scale-95 md:p-1">
-      <Image
-        src={imageUrl}
-        alt={alt}
-        className="bg-secondary object-cover blur-md"
-        height={width * (16 / 9)}
-        width={width}
-        priority={true}
-        onLoadingComplete={(img) => {
-          img.classList.remove('blur-md')
-        }}
-      />
-      <div className="absolute left-0 top-0 h-full w-full p-1.5">
-        {type === 'loop' && (
-          <div className="flex h-full flex-col justify-between">
-            <div className="flex justify-between">
-              <div className="flex items-center">
-                <Image src={icView} alt="views" />
-                <p className="text-title-sm text-secondary-foreground">{viewCount || 0}</p>
+    <VideoModal videoDetails={videoDetails}>
+      <div className="relative p-[1px] duration-300 hover:scale-95 md:p-1">
+        <Image
+          src={videoDetails.video.thumbnail || ''}
+          alt={videoDetails.video.description || 'Genuin Video'}
+          className="bg-secondary object-cover blur-md"
+          height={width * (16 / 9)}
+          width={width}
+          priority={true}
+          onLoadingComplete={(img) => {
+            img.classList.remove('blur-md')
+          }}
+        />
+        <div className="absolute left-0 top-0 h-full w-full p-1.5">
+          {videoDetails.video_type === 'rt' && (
+            <div className="flex h-full flex-col justify-between">
+              <div className="flex justify-between">
+                <div className="flex items-center">
+                  <Image src={icView} alt="views" />
+                  <p className="text-title-sm text-secondary-foreground">{videoDetails.video.view_count || 0}</p>
+                </div>
+                <Image src={icLoop} alt="loop" height={24} width={24} />
               </div>
-              <Image src={icLoop} alt="loop" height={24} width={24} />
+              <div className="line-clamp-2 w-1/2 break-all text-title-sm text-secondary-foreground">
+                {videoDetails.loop?.name}
+              </div>
             </div>
-            <div className="line-clamp-2 w-1/2 break-all text-title-sm text-secondary-foreground">{loopName}</div>
-          </div>
-        )}
-        {type === 'public' && (
-          <div className="flex h-full items-end">
-            <div className="flex items-center">
-              <Image src={icVideoBubble} alt="replies" />
-              <p className="text-title-sm text-secondary-foreground">&nbsp;{replyCount || 0}</p>
-              <Image src={icView} alt="view" />
-              <p className="text-title-sm text-secondary-foreground">&nbsp;{viewCount || 0}</p>
+          )}
+          {videoDetails.video_type === 'public_video' && (
+            <div className="flex h-full items-end">
+              <div className="flex items-center">
+                <Image src={icVideoBubble} alt="replies" />
+                <p className="text-title-sm text-secondary-foreground">&nbsp;{videoDetails.video.reply_count || 0}</p>
+                <Image src={icView} alt="view" />
+                <p className="text-title-sm text-secondary-foreground">&nbsp;{videoDetails.video.view_count || 0}</p>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
-    </div>
+    </VideoModal>
   )
 }
 

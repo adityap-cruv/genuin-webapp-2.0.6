@@ -18,5 +18,5 @@ export default async function Component({ params }: CompProps) {
 
 export async function generateMetadata({ params }: CompProps): Promise<Metadata> {
   // const data = await getUserData(params.nickname)
-  return { title: 'himanshu' }
+  return { title: 'Welcome to Genuin!!!' }
 }

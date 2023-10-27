@@ -45,14 +45,14 @@ function Component1() {
             Community, reimagined. Learn, connect and engage — all under one roof.
           </p>
           <div className="mt-8 flex items-center gap-x-5">
-            <Image src={qrImage} alt="Download Genuin!" />
+            <Image quality={100} src={qrImage} alt="Download Genuin!" />
             <p className="text-left text-new-md">
               Download Genuin to create communities, interact with your audience, and start conversations on the topics
               that really matter.
             </p>
           </div>
         </div>
-        <Image src={imgC1} alt="genuin" />
+        <Image quality={100} src={imgC1} alt="genuin" />
       </div>
     </div>
   )
@@ -65,7 +65,7 @@ function Component2() {
         <Image src={icVideoButton} alt="Add" className="mr-2 inline-block h-full align-top" />
         Create and grow your own community
       </p>
-      <Image className="min-w-[40%]" src={imgC2} alt="Create you community!" />
+      <Image quality={100} className="min-w-[40%]" src={imgC2} alt="Create you community!" />
     </div>
   )
 }
@@ -73,7 +73,7 @@ function Component2() {
 function Component3() {
   return (
     <div className="container flex min-h-full items-center justify-between">
-      <Image src={imgC3} alt="genuin" />
+      <Image quality={100} src={imgC3} alt="genuin" />
       <div className="flex max-w-sm flex-col gap-y-8">
         <p className="text-new-index-title">
           Be part of the conversation with
@@ -133,9 +133,9 @@ function Component4() {
             <div
               ref={imgRef}
               className="relative h-full w-1/2 [&>img]:inset-0 [&>img]:transition-opacity [&>img]:duration-200 [&>img]:ease-in">
-              <Image src={imgConnect} alt="connect" style={{ position: 'sticky' }} className="inset-0" />
-              <Image src={imgDiscover} alt="discover" className="absolute opacity-0" />
-              <Image src={imgLearn} alt="learn" className="absolute opacity-0" />
+              <Image quality={100} src={imgConnect} alt="connect" style={{ position: 'sticky' }} className="inset-0" />
+              <Image quality={100} src={imgDiscover} alt="discover" className="absolute opacity-0" />
+              <Image quality={100} src={imgLearn} alt="learn" className="absolute opacity-0" />
             </div>
             <div
               ref={textRef}
@@ -182,7 +182,7 @@ function Component5() {
               "Infinite community possibilies."
             </p>
             <div className="mt-5 flex items-center">
-              <Image src={imgReviewerDp} alt="lauren hall" className="mr-4" />
+              <Image quality={100} src={imgReviewerDp} alt="lauren hall" className="mr-4" />
               <p className="text-monochrome-white">Lauren Hall, App Member</p>
             </div>
           </div>
@@ -194,10 +194,10 @@ function Component5() {
             <p className="mt-3 text-new-md">Esmé, Seattle, DIY Content Creator</p>
           </div>
         </div>
-        <Image src={imgC5} alt="genuin" className="" />
+        <Image quality={100} src={imgC5} alt="genuin" className="" />
       </div>
       <div className="flex w-full justify-between gap-x-2">
-        <Image src={imgC5_2} alt="board" />
+        <Image quality={100} src={imgC5_2} alt="board" />
         <div className="flex max-w-2xl flex-col justify-between rounded-2xl bg-primary p-10 text-monochrome-white">
           <p className="text-new-lg">
             I love following creators on Instagram and TikTok, but I always wished I could interact with people who
@@ -233,7 +233,7 @@ function Component7() {
       <p className="font-bold" style={{ fontSize: 'calc(min(60px, 5vw))' }}>
         Experience Genuin
       </p>
-      <Image src={imgC7} alt="genuin" />
+      <Image quality={100} src={imgC7} alt="genuin" />
     </div>
   )
 }
