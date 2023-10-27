@@ -229,7 +229,7 @@ function Component6() {
 
 function Component7() {
   return (
-    <div className="container my-10 flex flex-col items-center gap-y-5">
+    <div className="container my-10 flex h-[90%] flex-col items-center gap-y-5">
       <p className="font-bold" style={{ fontSize: 'calc(min(60px, 5vw))' }}>
         Experience Genuin
       </p>
