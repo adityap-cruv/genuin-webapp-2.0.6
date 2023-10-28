@@ -14,12 +14,13 @@ const buttonVariants = cva(
       outlineColor: {
         white: 'border-monochrome-white hover:bg-monochrome-white',
         'genuin-blue': 'border-primary bg-background',
-        black: 'border-monochrome-black',
+        black: 'border-new-off-black ',
       },
       size: {
         default: 'h-10 px-2 py-2',
         sm: 'rounded-md p-2 py-2',
         lg: 'h rounded-md px-8',
+        'index-page': 'px-4 py-3',
       },
     },
     defaultVariants: {

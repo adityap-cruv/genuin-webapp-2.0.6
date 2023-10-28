@@ -2,8 +2,6 @@
 import { cn } from '@lib/utils'
 import { Button } from '@components/ui/button'
 import { GenuinLogo } from '@components/ui/genuin-logo'
-import { inView } from 'framer-motion'
-import { useEffect, useRef } from 'react'
 import { HamBurgerMenuIcon } from '@components/ui/ham-burger'
 import Link from 'next/link'
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@components/ui/sheet'
@@ -34,12 +32,16 @@ export function NavBar() {
       <nav className="absolute top-0 z-10 m-auto hidden h-navbar w-full lg:flex ">
         <div className={cn('container flex h-full items-center justify-between py-1')}>
           <GenuinLogo.text variant="black" />
-          <div className="flex items-center gap-x-2">
-            <Button variant="outline" outlineColor="black" size="sm">
+          <div className="flex items-center gap-x-4">
+            <Button
+              variant="outline"
+              className="hover:bg-new-off-black hover:text-new-off-white"
+              outlineColor="black"
+              size="index-page">
               <p className="text-new-sm">We're hiring!</p>
             </Button>
-            <Button size="sm" className="bg-monochrome-black">
-              <p className="text-new-sm">Download Genuin</p>
+            <Button size="index-page" className="bg-new-off-black hover:bg-new-dark-grey after:bg-new-dark-grey">
+              <p className="text-new-off-white text-new-sm">Download Genuin</p>
             </Button>
           </div>
         </div>
@@ -58,8 +60,8 @@ export function NavBar() {
                   background: 'radial-gradient(123.19% 48.8% at 76.02% 69.05%, #E9CAF4 0%, #ADD8FB 100%)',
                 }}>
                 <div className="flex h-full min-w-full flex-col gap-y-1 py-7">
-                  <Button className="my-2 w-full bg-monochrome-black">
-                    <p className="text-new-md">Download Genuin</p>
+                  <Button className="bg-new-off-black my-2 w-full">
+                    <p className="text-new-off-white text-new-md">Download Genuin</p>
                   </Button>
                   <Link href="https://careers.begenuin.com">
                     <p className="font-semibold " style={{ fontSize: '28px', lineHeight: '120%' }}>

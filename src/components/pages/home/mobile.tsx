@@ -43,8 +43,8 @@ function Component1() {
         Download Genuin to create communities, interact with your audience, and start conversations on the topics that
         really matter.
       </p>
-      <Button className="my-2 bg-monochrome-black">
-        <p className="mx-2 text-new-md">Download Genuin</p>
+      <Button className="bg-new-off-black hover:bg-new-dark-grey after:bg-new-dark-grey my-2">
+        <p className="text-new-off-white mx-2 text-new-md">Download Genuin</p>
       </Button>
       <Image src={imgC1} alt="genuin" />
     </div>
@@ -55,7 +55,7 @@ function Component2() {
   return (
     <div className="my-10 flex flex-col justify-center">
       <p className="my-4 w-full px-10 text-center text-new-index-title-mobile">
-        <Image src={icAddButton} alt="add" className="mr-2 inline-block align-baseline" height={30} width={30} />
+        <Image src={icAddButton} alt="add" className="mr-4 inline-block align-bottom" height={30} width={30} />
         Create and grow your own community
       </p>
       <Image src={imgC2} alt="genuin" className="my-4" />
@@ -150,20 +150,20 @@ function Component5() {
       <p className="font-bold" style={{ fontSize: '32px' }}>
         What our members say
       </p>
-      <div className=" flex flex-col rounded-[10px] border-[18px] border-[#E9CAF4] bg-monochrome-black p-4">
-        <p className="font-bold text-monochrome-white" style={{ fontSize: '28px' }}>
+      <div className=" bg-new-off-black flex flex-col rounded-[10px] border-[18px] border-[#E9CAF4] p-4">
+        <p className="text-new-off-white font-bold" style={{ fontSize: '28px' }}>
           "Infinite community possibilies."
         </p>
         <div className="mt-5 flex items-center">
           <Image src={imgReviewerDp} alt="lauren hall" className="mr-4" />
-          <p className="text-monochrome-white">
+          <p className="text-new-off-white">
             Lauren Hall, <br />
             App Member
           </p>
         </div>
       </div>
       <Image src={imgC5} alt="genuin" />
-      <div className="flex flex-col justify-between rounded-2xl bg-primary p-4 text-monochrome-white">
+      <div className="text-new-off-white flex flex-col justify-between rounded-2xl bg-primary p-4">
         <p className="text-new-md">
           I love following creators on Instagram and TikTok, but I always wished I could interact with people who share
           the same interests as me. On Genuin, I’m part of communities on everything from venture capital to books, and
