@@ -11,6 +11,7 @@ COPY next.config.js ./next.config.js
 COPY tsconfig.json ./tsconfig.json
 COPY tailwind.config.ts ./tailwind.config.ts
 COPY postcss.config.js ./postcss.config.js
+COPY .env ./.env
 
 # Install project dependencies
 RUN npm install
