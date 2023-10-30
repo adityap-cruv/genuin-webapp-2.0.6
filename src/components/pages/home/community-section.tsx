@@ -67,24 +67,24 @@ export function CommunitySection() {
   const divRef = useRef<HTMLDivElement>(null)
 
   return (
-    <div className="mt-5 flex w-full flex-col gap-y-4 sm:px-5">
+    <div className="flex w-full flex-col gap-y-10">
       <div ref={divRef} className="hide-scrollbar flex gap-x-4 overflow-x-auto sm:pl-5 ">
         {communityList.map((item, index) => {
           return (
             <React.Fragment key={index}>
-              <div className="flex min-w-full flex-col gap-y-1 rounded-md border-2 border-monochrome-7 p-3 sm:w-1/4 sm:min-w-max sm:max-w-xs">
+              <div className="border-new-light-grey flex min-w-full flex-col gap-y-1 rounded-[20px] border-[1px] p-6 hover:border-2 hover:border-primary sm:min-w-max sm:max-w-md">
                 <div className="flex w-full justify-between">
                   <Avatar className="h-20 w-20 rounded-full bg-red-40">
                     <AvatarImage src={item.profile_image} className="object-cover" />
                     <AvatarFallback>
-                      <p className="text-title-xl text-monochrome-white">{getAvatarFallback(item.name)}</p>
+                      <p className="text-new-off-white text-title-xl">{getAvatarFallback(item.name)}</p>
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex items-center gap-x-2">
                     <Button size="sm">
                       <p className="text-title-md">Join</p>
                     </Button>
-                    <Button variant="outline" outlineColor="genuin-blue" className="border-2" size="sm">
+                    <Button variant="outline" outlineColor="genuin-blue" size="sm">
                       <Image src={icShare} alt="share" />
                     </Button>
                   </div>
@@ -96,7 +96,7 @@ export function CommunitySection() {
           )
         })}
       </div>
-      <div className="flex justify-between">
+      <div className="flex justify-between px-3">
         <Button
           variant="outline"
           className="border-none"

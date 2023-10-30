@@ -13,7 +13,7 @@ export async function fetchUserData(nickname: string) {
       return res.data.data
     })
     .catch((e) => {
-      throw new Error('Something went wrong...')
+      throw new Error('Something went wrong in profile details api.')
     })
 }
 
@@ -31,7 +31,7 @@ async function fetchVideos(nickname: string, types: [VideoType?, VideoType?], pa
       return { videos: validateVideoListData(res.data.data.videos), end: res.data.data.end_of_videos || false }
     })
     .catch((e) => {
-      throw new Error('Something went wrong with profile videos api..')
+      throw new Error('Something went wrong with profile videos api.')
     })
 }
 

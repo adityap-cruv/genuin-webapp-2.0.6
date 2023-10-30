@@ -9,7 +9,7 @@ const logoVariant = cva('', {
     variant: {
       light: 'fill-monochrome-white',
       dark: 'fill-primary',
-      black: 'fill-monochrome-black',
+      black: 'fill-new-off-black',
     },
   },
 })

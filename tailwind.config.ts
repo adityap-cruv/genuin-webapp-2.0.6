@@ -58,7 +58,10 @@ module.exports = {
         red: '#F94740',
       },
       new: {
-        grey: '#3F3F3F',
+        'off-black': '#16171A',
+        'off-white': '#F8F8F8',
+        'dark-grey': '#3F3F3F',
+        'light-grey': '#BBB',
       },
       // border: 'hsl(var(--border))',
       // input: 'hsl(var(--input))',
@@ -95,11 +98,24 @@ module.exports = {
       'cap-bold-lg': ['12px', { fontWeight: 700, lineHeight: '16px' }], // 12px
       'cap-sm': ['10px', { fontWeight: 600, lineHeight: '16px' }],
       'cap-lg': ['12px', { fontWeight: 600, lineHeight: '16px' }],
-      'new-sm': ['16px', { fontWeight: 500, lineHeight: '120%' }], // This is for new typography
-      'new-md': ['20px', { fontWeight: 500, lineHeight: '120%' }],
-      'new-lg': ['24px', { fontWeight: 500, lineHeight: '120%' }],
-      'new-index-title': ['calc(min(48px, 4vw))', { fontWeight: 700, lineHeight: '110%' }],
-      'new-index-title-mobile': ['32px', { fontWeight: 700, lineHeight: '120%' }],
+      // This is for new typography
+      'new-h1': ['60px', { fontWeight: 700, lineHeight: '110%', letterSpacing: '-1.8px' }],
+      'new-h2': ['48px', { fontWeight: 700, lineHeight: '110%', letterSpacing: '-1.44px' }],
+      'new-h3': ['40px', { fontWeight: 700, lineHeight: '110%', letterSpacing: '-1.2px' }],
+      'new-h4': ['28px', { fontWeight: 600, lineHeight: '120%', letterSpacing: '-0.84px' }],
+      'new-h5': ['24px', { fontWeight: 500, lineHeight: '120%', letterSpacing: '-0.72px' }],
+      'new-para-1': ['20px', { fontWeight: 500, lineHeight: '120%', letterSpacing: '-0.6px' }],
+      'new-para-2': ['16px', { fontWeight: 500, lineHeight: '120%', letterSpacing: '-0.48px' }],
+      'new-h1-mobile': ['40px', { fontWeight: 700, lineHeight: '110%', letterSpacing: '-1.2px' }],
+      'new-h2-mobile': ['32px', { fontWeight: 700, lineHeight: '120%', letterSpacing: '-0.96px' }],
+      'new-h3-mobile': ['28px', { fontWeight: 700, lineHeight: '120%', letterSpacing: '-0.84px' }],
+      'new-h4-mobile': ['24px', { fontWeight: 700, lineHeight: '110%', letterSpacing: '-0.72px' }],
+      'new-h5-mobile': ['20px', { fontWeight: 500, lineHeight: '120%', letterSpacing: '-0.6px' }],
+      'new-para-1-mobile': ['16px', { fontWeight: 500, lineHeight: '125%', letterSpacing: '-0.6px' }],
+      'new-para-2-mobile': ['12px', { fontWeight: 500, lineHeight: '110%', letterSpacing: '-0.36px' }],
+      'new-sm': ['16px', { fontWeight: 500, lineHeight: '120%', letterSpacing: '-0.48px' }],
+      'new-md': ['20px', { fontWeight: 500, lineHeight: '120%', letterSpacing: '-0.6px' }],
+      'new-lg': ['24px', { fontWeight: 500, lineHeight: '120%', letterSpacing: '-0.72px' }],
     },
     fontFamily: {
       sans: ['"Avenir Next"', ...defaultTheme.fontFamily.sans], // Here sans is default font in tailwindcss so updated it to avenir next
@@ -124,6 +140,7 @@ module.exports = {
       },
       margin: {
         body: '74px',
+        15: '3.75rem',
       },
       spacing: {
         navbar: '74px',
@@ -149,6 +166,7 @@ module.exports = {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
       },
+      letterSpacing: {},
     },
   },
   plugins: [require('tailwindcss-animate')],
