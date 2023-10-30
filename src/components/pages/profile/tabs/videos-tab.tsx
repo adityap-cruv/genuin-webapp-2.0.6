@@ -9,7 +9,8 @@ import icLoop from '@icons/icLoop.svg'
 import { getPaginatedAllVideos, getPaginatedGenuinVideos, getPaginatedLoopVideos } from '@lib/api/profile'
 import type { VideoDataType } from '@lib/schemas/video'
 import { useMotionValueEvent, useScroll } from 'framer-motion'
-import { VideoModal } from '@components/common/video-modal'
+import dynamic from 'next/dynamic'
+const PlayerModal = dynamic(() => import('@components/common/player-modal').then((comp) => comp.PlayerModal))
 
 function getNickname() {
   return useParams().nickname as string
@@ -137,18 +138,15 @@ type TileProps = {
 
 function Tile({ width = -1, videoDetails }: TileProps) {
   return (
-    <VideoModal videoDetails={videoDetails}>
+    <PlayerModal videoDetails={videoDetails}>
       <div className="relative p-[1px] duration-300 hover:scale-95 md:p-1">
         <Image
           src={videoDetails.video.thumbnail || ''}
           alt={videoDetails.video.description || 'Genuin Video'}
-          className="bg-secondary object-cover blur-md"
+          className="bg-secondary object-cover"
           height={width * (16 / 9)}
           width={width}
           priority={true}
-          onLoadingComplete={(img) => {
-            img.classList.remove('blur-md')
-          }}
         />
         <div className="absolute left-0 top-0 h-full w-full p-1.5">
           {videoDetails.video_type === 'rt' && (
@@ -177,7 +175,7 @@ function Tile({ width = -1, videoDetails }: TileProps) {
           )}
         </div>
       </div>
-    </VideoModal>
+    </PlayerModal>
   )
 }
 

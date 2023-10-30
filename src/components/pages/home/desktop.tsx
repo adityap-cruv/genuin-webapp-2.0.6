@@ -44,7 +44,7 @@ function Component1() {
           <h1 className="text-new-h1">Community, reimagined. Learn, connect and engage — all under one roof.</h1>
           <div className="mt-15 flex items-center gap-x-5">
             <Image quality={100} src={qrImage} alt="Download Genuin!" />
-            <p className="text-new-para-1 text-left">
+            <p className="text-left text-new-para-1">
               Download Genuin to create communities, interact with your audience, and start conversations on the topics
               that really matter.
             </p>
@@ -59,7 +59,7 @@ function Component1() {
 function Component2() {
   return (
     <div className="my-40 flex max-h-full w-full flex-col items-center justify-center  gap-y-5 ">
-      <h2 className="-tracking-new text-new-h2 max-w-lg text-center">
+      <h2 className="-tracking-new max-w-lg text-center text-new-h2">
         <Image src={icVideoButton} alt="Add" className="align-toh2 mr-2 inline-block h-full" />
         Create and grow your own community
       </h2>
@@ -123,7 +123,7 @@ function Component4() {
       <div id="carousel" className="sticky top-0 h-1/3">
         <div className="h-full w-full">
           <div className="flex h-1/5 items-center justify-center">
-            <h2 className="text-new-h2 max-w-xl text-center">
+            <h2 className="max-w-xl text-center text-new-h2">
               Expand your horizons and add to the
               <Image src={icConversation} alt="conversation" className="ml-3 mr-4 inline-block align-bottom" />
               conversation
@@ -142,17 +142,17 @@ function Component4() {
               className="flex h-full w-1/2 flex-col justify-center gap-y-8 [&>div]:opacity-30 [&>div]:transition-opacity [&>div]:duration-300 [&>div]:ease-in ">
               <div className="!opacity-100">
                 <h3 className="text-new-h3">Connect</h3>
-                <h5 className="text-new-h5 mt-4">Meet new people, grow your audience, and discover new interests.</h5>
+                <h5 className="mt-4 text-new-h5">Meet new people, grow your audience, and discover new interests.</h5>
               </div>
               <div>
                 <h3 className="text-new-h3">Discover</h3>
-                <h5 className="text-new-h5 mt-4">
+                <h5 className="mt-4 text-new-h5">
                   Create Loops, interactive discussion spaces that combine video, photo, voice recording and text.
                 </h5>
               </div>
               <div>
                 <h3 className="text-new-h3">Learn</h3>
-                <h5 className="text-new-h5 mt-4">
+                <h5 className="mt-4 text-new-h5">
                   Start conversations and invite your audience to contribute, too—a space to learn alongside and from
                   each other.
                 </h5>
@@ -169,28 +169,28 @@ function Component5() {
   return (
     <div className="my-40 flex w-full flex-col items-center px-5 xl:container">
       <h2 className="text-new-h2">What our members say</h2>
-      <div className="mt-15 my-10 flex w-full justify-between gap-10">
+      <div className="my-10 mt-15 flex w-full justify-between gap-10">
         <div className="flex w-3/5 flex-col gap-y-10">
-          <div className="-border-spacing-10 bg-new-off-black flex h-1/2 flex-col justify-around rounded-[10px] border-[18px] border-[#E9CAF4] p-8">
+          <div className="-border-spacing-10 flex h-1/2 flex-col justify-around rounded-[10px] border-[18px] border-[#E9CAF4] bg-new-off-black p-8">
             <h3 className="text-new-h3 text-new-off-white">"Infinite community possibilies."</h3>
             <div className="mt-5 flex items-center">
               <Image quality={100} src={imgReviewerDp} alt="lauren hall" className="mr-4" />
               <p className="text-new-off-white">Lauren Hall, App Member</p>
             </div>
           </div>
-          <div className="border-new-light-grey flex h-1/2 flex-col justify-between rounded-[15px] border-[1px] p-10">
+          <div className="flex h-1/2 flex-col justify-between rounded-[15px] border-[1px] border-new-light-grey p-10">
             <h5 className="text-new-h5">
               “Genuin is so community–driven — I love having that level of interaction with people sharing their own
               versions of my DIY hacks and offering their own tips.”
             </h5>
-            <p className="text-new-para-1 mt-10">Esmé, Seattle, DIY Content Creator</p>
+            <p className="mt-10 text-new-para-1">Esmé, Seattle, DIY Content Creator</p>
           </div>
         </div>
         <Image quality={100} src={imgC5} alt="genuin" className="w-2/5" />
       </div>
       <div className="flex w-full justify-between gap-x-10">
         <Image className="w-full" quality={100} src={imgC5_2} alt="board" />
-        <div className="text-new-off-white flex flex-col justify-between rounded-2xl bg-primary p-10">
+        <div className="flex flex-col justify-between rounded-2xl bg-primary p-10 text-new-off-white">
           <h5 className="text-new-h5">
             I love following creators on Instagram and TikTok, but I always wished I could interact with people who
             share the same interests as me. On Genuin, I’m part of communities on everything from venture capital to
@@ -208,8 +208,8 @@ function Component5() {
 function Component6() {
   return (
     <div className="my-20 flex flex-col items-center">
-      <h2 className="text-new-h2 my-6">Community sneak peak</h2>
-      <h5 className="text-new-h5 mb-24 max-w-xl text-center">
+      <h2 className="my-6 text-new-h2">Community sneak peak</h2>
+      <h5 className="mb-24 max-w-xl text-center text-new-h5">
         Take a look inside some of the communities you’ll find in on Genuin and get inspired to start your own.
       </h5>
       <CommunitySection />
@@ -221,7 +221,7 @@ function Component7() {
   return (
     <div className="container my-20 flex max-h-full flex-col items-center gap-y-5">
       <h2 className="text-new-h2">Experience Genuin</h2>
-      {/* <SVGAdReelTag /> */}
+      <SVGAdReelTag />
       {/* <Image className="w-1/5" quality={100} src={imgC7} alt="genuin" /> */}
     </div>
   )

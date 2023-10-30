@@ -66,8 +66,8 @@ function Loop({ videoData }: Props) {
               pathname: PATH_NAME.loop(videoData?.loop?.share_string),
               query: { v: videoData?.video.share_string },
             }}>
-            <Button variant="outline" outlineColor="white" size="sm" className="group">
-              <p className="text-title-sm text-monochrome-white group-hover:text-monochrome-black">Watch</p>
+            <Button variant="outline" outlineColor="white" size="sm" className="[&>p]:hover:text-monochrome-black">
+              <p className="text-title-sm text-monochrome-white">Watch</p>
             </Button>
           </Link>
         </div>

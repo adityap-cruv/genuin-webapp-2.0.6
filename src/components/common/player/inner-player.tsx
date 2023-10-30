@@ -23,7 +23,6 @@ export function InnerPlayer({
   onCanPlay,
   onPause,
   onError,
-  playIfInViewport,
 }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const localRef = useRef<{
@@ -35,12 +34,6 @@ export function InnerPlayer({
     playing: false,
     player: null,
   })
-
-  const isInViewport = useInView(videoRef)
-
-  useEffect(() => {
-    console.log('is in viewport::', isInViewport)
-  }, [isInViewport])
 
   // function getSourceType(source: string) {
   //   return source.endsWith('.mp4') ? 'video/mp4' : 'application/x-mpegURL'
@@ -134,7 +127,7 @@ export function InnerPlayer({
       player.pause()
       console.log('paused from use effect.')
     }
-  }, [localRef.current.player])
+  }, [shouldPlay])
 
   if (videoSource)
     return (

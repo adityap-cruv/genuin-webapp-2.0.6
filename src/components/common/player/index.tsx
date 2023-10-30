@@ -38,6 +38,10 @@ interface Props {
    * If it is enabled video will play if only if video is in viewport.
    */
   playIfInViewPort?: boolean
+  /**
+   * Default is true, if you want to remove backgroundblur than make it false
+   */
+  shouldShowBackgroundBlurImage?: boolean
 }
 
 export default function Player({
@@ -47,6 +51,7 @@ export default function Player({
   showControls = true,
   sizeBox,
   playIfInViewPort,
+  shouldShowBackgroundBlurImage = true
 }: Props) {
   const [playerControls, setPlayerControls] = useState({ play: shouldPlay, muted: true, loop })
   let height = 0
@@ -62,10 +67,10 @@ export default function Player({
       <div
         className={cn('relative flex h-full w-full snap-start snap-always items-center justify-center')}
         style={{ height }}>
-        <div
+        {shouldShowBackgroundBlurImage && <div
           className="absolute inset-0 z-[-1] h-full w-full bg-secondary bg-cover bg-center bg-no-repeat blur-2xl"
           style={{ backgroundImage: `url(${videoData.video.thumbnail})` }}
-        />
+        />}
         <div style={{ height: height, width: videoWidth }} onClick={(e) => console.log('clicked in inner player.')}>
           <InnerPlayer
             videoSizeBox={{ height, width: videoWidth }}
