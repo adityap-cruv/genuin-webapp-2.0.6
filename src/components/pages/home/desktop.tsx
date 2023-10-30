@@ -39,8 +39,8 @@ function Component1() {
       id="initial-component"
       className="flex h-full items-center pt-navbar"
       style={{ background: 'radial-gradient(123.19% 48.8% at 76.02% 69.05%, #E9CAF4 0%, #ADD8FB 100%)' }}>
-      <div className="container flex h-full items-center justify-around">
-        <div className="flex-col justify-between">
+      <div className="container flex h-full w-full items-center justify-around">
+        <div className="w-[60%] flex-col justify-between">
           <h1 className="text-new-h1">Community, reimagined. Learn, connect and engage — all under one roof.</h1>
           <div className="mt-15 flex items-center gap-x-5">
             <Image quality={100} src={qrImage} alt="Download Genuin!" />
@@ -80,7 +80,7 @@ function Component3() {
         </h2>
         <h5 className="text-new-h5">
           Loops are interactive discussion spaces where you can kickstart discussions with Q&A prompts, learn from each
-          other, and join in with video, photo, voice recording or text responses. It’s crowdsourced knowledge at your
+          other, and join in with video, photo, voice recording or text responses. It's crowdsourced knowledge at your
           fingertips.
         </h5>
       </div>
@@ -123,7 +123,7 @@ function Component4() {
       <div id="carousel" className="sticky top-0 h-1/3">
         <div className="h-full w-full">
           <div className="flex h-1/5 items-center justify-center">
-            <h2 className="max-w-xl text-center text-new-h2">
+            <h2 className="max-w-2xl text-center text-new-h2">
               Expand your horizons and add to the
               <Image src={icConversation} alt="conversation" className="ml-3 mr-4 inline-block align-bottom" />
               conversation
@@ -133,9 +133,9 @@ function Component4() {
             <div
               ref={imgRef}
               className="relative w-1/2 [&>img]:inset-0 [&>img]:transition-opacity [&>img]:duration-200 [&>img]:ease-in">
-              <Image quality={100} src={imgConnect} alt="connect" className="inset-0 w-4/5" />
-              <Image quality={100} src={imgDiscover} alt="discover" className="absolute w-4/5 opacity-0" />
-              <Image quality={100} src={imgLearn} alt="learn" className="absolute w-4/5 opacity-0" />
+              <Image quality={100} src={imgConnect} alt="connect" className="inset-0 w-3/4" />
+              <Image quality={100} src={imgDiscover} alt="discover" className="absolute w-3/4 opacity-0" />
+              <Image quality={100} src={imgLearn} alt="learn" className="absolute w-3/4 opacity-0" />
             </div>
             <div
               ref={textRef}
@@ -180,8 +180,8 @@ function Component5() {
           </div>
           <div className="flex h-1/2 flex-col justify-between rounded-[15px] border-[1px] border-new-light-grey p-10">
             <h5 className="text-new-h5">
-              “Genuin is so community–driven — I love having that level of interaction with people sharing their own
-              versions of my DIY hacks and offering their own tips.”
+              "Genuin is so community–driven — I love having that level of interaction with people sharing their own
+              versions of my DIY hacks and offering their own tips."
             </h5>
             <p className="mt-10 text-new-para-1">Esmé, Seattle, DIY Content Creator</p>
           </div>
@@ -193,7 +193,7 @@ function Component5() {
         <div className="flex flex-col justify-between rounded-2xl bg-primary p-10 text-new-off-white">
           <h5 className="text-new-h5">
             I love following creators on Instagram and TikTok, but I always wished I could interact with people who
-            share the same interests as me. On Genuin, I’m part of communities on everything from venture capital to
+            share the same interests as me. On Genuin, I'm part of communities on everything from venture capital to
             books, and I love engaging with others about these topics.
           </h5>
           <p className="text-new-para-1">
@@ -210,7 +210,7 @@ function Component6() {
     <div className="my-20 flex flex-col items-center">
       <h2 className="my-6 text-new-h2">Community sneak peak</h2>
       <h5 className="mb-24 max-w-xl text-center text-new-h5">
-        Take a look inside some of the communities you’ll find in on Genuin and get inspired to start your own.
+        Take a look inside some of the communities you'll find in on Genuin and get inspired to start your own.
       </h5>
       <CommunitySection />
     </div>
