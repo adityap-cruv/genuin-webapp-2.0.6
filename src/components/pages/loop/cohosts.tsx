@@ -5,6 +5,7 @@ import { PATH_NAME } from '@lib/utils/constants/path'
 import { Avatar, AvatarFallback, AvatarImage } from '@components/ui/avatar'
 import { getAvatarFallback } from '@lib/utils'
 
+// todo configure error here.
 export function Cohosts({ loopId }: { loopId: string }) {
   const { data, isLoading, isError } = getLoopCohosts(loopId)
   return (

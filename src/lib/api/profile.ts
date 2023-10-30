@@ -13,6 +13,7 @@ export async function fetchUserData(nickname: string) {
       return res.data.data
     })
     .catch((e) => {
+      console.log('next public url:', process.env.NEXT_PUBLIC_API_URL, e)
       throw new Error('Something went wrong in profile details api.')
     })
 }

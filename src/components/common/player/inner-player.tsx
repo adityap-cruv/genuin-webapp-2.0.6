@@ -125,7 +125,6 @@ export function InnerPlayer({
         .catch((e) => console.error('error from use effect', e))
     } else {
       player.pause()
-      console.log('paused from use effect.')
     }
   }, [shouldPlay])
 
