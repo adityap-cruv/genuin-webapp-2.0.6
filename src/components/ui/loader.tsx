@@ -1,9 +1,9 @@
 import { cn } from '@lib/utils'
+import { DetailedHTMLProps, HTMLAttributes } from 'react'
 import { cva } from 'class-variance-authority'
 
-interface Props {
+interface Props extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
   size: 'sm' | 'md' | 'lg' | 'xl'
-  className?: ''
 }
 
 const loaderVariant = cva('animate-spin rounded-full border-4 border-primary', {
@@ -17,7 +17,7 @@ const loaderVariant = cva('animate-spin rounded-full border-4 border-primary', {
   },
 })
 
-export function Loader({ size = 'sm', className = '' }: Props) {
+export function Loader({ size = 'sm', className }: Props) {
   return (
     <div className={cn(className, 'flex h-full w-full items-center justify-center')}>
       <div className={cn(loaderVariant({ size }), 'border-l-transparent border-t-transparent')} />

@@ -4,6 +4,7 @@ interface Props {
   communityDetails: CommunityDetailsType
 }
 
-export function MobileComponent({ communityDetails }: Props) {
+// todo create mobile component
+export function Mobile({ communityDetails }: Props) {
   return <div>This is mobile component.</div>
 }

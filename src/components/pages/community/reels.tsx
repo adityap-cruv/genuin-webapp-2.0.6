@@ -1,31 +1,23 @@
+'use client'
 import { Loader } from '@components/ui/loader'
 import dynamic from 'next/dynamic'
 import { getCommunityVideos } from '@lib/api/community'
-import { useEffect, useRef } from 'react'
-import { useInView } from 'framer-motion'
+import { useRef } from 'react'
+
 const Player = dynamic(() => import('@components/common/player').then((comp) => comp.default), {
   loading: (state) => {
     return <Loader size="lg" />
   },
 })
+const Comments = dynamic(() => import('./comments').then((comp) => comp.Comments))
 interface CommunityReelsProps {
   communityHandle: string
 }
 
+//todo create error in api component
 export function CommunityReels({ communityHandle }: CommunityReelsProps) {
   const divRef = useRef<HTMLDivElement>(null)
-  const animationEleRef = useRef<HTMLDivElement>(null)
-  const { data: videos, isLoading, isError } = getCommunityVideos(communityHandle)
-  const inView = useInView(animationEleRef)
-
-  useEffect(() => {
-    setTimeout(() => {
-      animationEleRef.current?.classList.add('left-full')
-    }, 3000)
-    setTimeout(() => {
-      animationEleRef.current?.classList.add('left-full')
-    }, 6000)
-  }, [])
+  const { data: videos, isLoading, isError, isFetched } = getCommunityVideos(communityHandle)
 
   return (
     <div className="relative z-10">
@@ -35,10 +27,11 @@ export function CommunityReels({ communityHandle }: CommunityReelsProps) {
         style={{
           width: (divRef.current?.parentElement?.getBoundingClientRect().height || 0) * (9 / 16),
         }}>
-        {isLoading && <Loader size="lg" />}
+        {isLoading && <Loader size="lg" className="h-full w-full" />}
         {isError && <div>Something went wrong with api.</div>}
         {videos?.length === 0 && <NoReelsAvailable />}
-        {videos &&
+        {isFetched &&
+          videos &&
           videos.map((video, index) => {
             return (
               <Player
@@ -55,14 +48,7 @@ export function CommunityReels({ communityHandle }: CommunityReelsProps) {
             )
           })}
       </div>
-      <div
-        ref={animationEleRef}
-        style={{
-          minWidth: '85%',
-        }}
-        className="absolute left-0 top-0 z-[-1] h-full bg-monochrome-3 transition-[left] duration-300 ease-linear">
-        <p>Hello world...</p>
-      </div>
+      {isFetched && <Comments communityHandle="genuincommunity" videoId="23" />}
     </div>
   )
 }

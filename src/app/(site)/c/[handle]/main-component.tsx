@@ -2,8 +2,8 @@
 
 import type { CommunityDetailsType } from '@lib/schemas/community-details'
 import dynamic from 'next/dynamic'
-const MobileComponent = dynamic(() => import('./mobile-component').then((comp) => comp.MobileComponent))
-const DesktopComponent = dynamic(() => import('./desktop-component').then((comp) => comp.DesktopComponent))
+const MobileComponent = dynamic(() => import('./mobile').then((comp) => comp.Mobile))
+const DesktopComponent = dynamic(() => import('./desktop').then((comp) => comp.Desktop))
 
 interface Props {
   communityDetails: CommunityDetailsType
