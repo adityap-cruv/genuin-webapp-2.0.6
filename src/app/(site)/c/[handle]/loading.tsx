@@ -1,3 +1,5 @@
+import { Loader } from '@components/ui/loader'
+
 export default function Loading() {
-  return <div>Loading</div>
+  return <Loader size="md" />
 }

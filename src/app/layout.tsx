@@ -12,10 +12,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="icon" type="image/x-icon" href="/favicon.svg" />
       </head>
-      <body className="absolute min-h-full min-w-full">
-        <ReactQueryProvider>
-          {children}
-        </ReactQueryProvider>
+      <body className="absolute min-h-full min-w-full bg-new-off-white">
+        <ReactQueryProvider>{children}</ReactQueryProvider>
       </body>
     </html>
   )

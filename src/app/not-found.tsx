@@ -1,3 +1,4 @@
-export default function Component() {
-  return <div>Not found</div>
+//todo develop this page.
+export default function NotFound() {
+  return <div>not found develop this page.</div>
 }

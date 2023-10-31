@@ -1,4 +1,4 @@
-import { validateCommunityDetails } from '@lib/schemas/community-details'
+import { validateCommunityDetails } from '@lib/schemas/community'
 import { validateVideoListData } from '@lib/schemas/video'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
@@ -31,4 +31,8 @@ async function fetchCommunityVideos(handle: string) {
 
 export function getCommunityVideos(handle: string) {
   return useQuery({ queryFn: () => fetchCommunityVideos(handle), queryKey: ['community', 'videos'] })
+}
+
+async function fetchVideoComments(handle: string) {
+  return axios.get(process.env.NEXT_PUBLIC_API_URL + '/api/')
 }
