@@ -81,7 +81,7 @@ function Component1() {
 function Component2() {
   return (
     <>
-      <div className="my-40 hidden max-h-full w-full flex-col items-center justify-center gap-y-5  lg:flex ">
+      <div className="my-20 hidden max-h-full w-full flex-col items-center justify-center gap-y-5  lg:flex ">
         <h2 className="-tracking-new max-w-lg text-center text-new-h2">
           <Image src={icAddButton} alt="Add" className="align-toh2 mr-2 inline-block h-full" />
           Create and grow your own community
@@ -175,7 +175,7 @@ function Component4() {
                 conversation
               </h2>
             </div>
-            <div className="flex h-[70%] w-full items-center px-6 pt-10 xl:container xl:px-0">
+            <div className="mt-10 flex h-[60%] w-full items-center px-6 pt-10 xl:container xl:px-0">
               <div
                 ref={imgRef}
                 className="relative w-1/2 [&>img]:inset-0 [&>img]:transition-opacity [&>img]:duration-200 [&>img]:ease-in">
@@ -342,7 +342,7 @@ function Component6() {
   return (
     <div className="my-10 flex flex-col items-center lg:my-20">
       <h2 className="my-6 text-new-h2-mobile sm:text-new-h2">Community sneak peak</h2>
-      <h5 className="mb-24 max-w-xl px-5 text-center text-new-h5-mobile sm:text-new-h5 lg:px-0">
+      <h5 className="mb-10 max-w-xl px-5 text-center text-new-h5-mobile sm:text-new-h5 lg:px-0">
         Take a look inside some of the communities you'll find in on Genuin and get inspired to start your own.
       </h5>
       <CommunitySection />

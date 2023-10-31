@@ -9,9 +9,9 @@ export function Footer() {
       <footer className="relative hidden bg-primary lg:block">
         <div className="container flex h-full flex-col gap-y-6">
           <div className="flex w-full items-end pb-6 pt-7">
-            <div className="flex w-full flex-col gap-y-2 pt-24">
+            <div className="flex w-full flex-col gap-y-8 pt-24">
               <h2 className="text-new-h2 text-new-off-white">Join the world of Genuin.</h2>
-              <h5 className="max-w-3xl text-new-h5 text-new-off-white">
+              <h5 className="max-w-2xl text-new-h5 text-new-off-white">
                 Download the app to join communities and add to the conversation. Don’t see a community that speaks to
                 you? Start your own!
               </h5>
