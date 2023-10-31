@@ -120,16 +120,6 @@ module.exports = {
     fontFamily: {
       sans: ['"Avenir Next"', ...defaultTheme.fontFamily.sans], // Here sans is default font in tailwindcss so updated it to avenir next
     },
-    container: {
-      center: true,
-      padding: {
-        DEFAULT: '0rem',
-        md: '1rem',
-        lg: '2rem',
-        xl: '3rem',
-        '2xl': '4rem',
-      },
-    },
     aspectRatio: {
       reel: '9 / 16',
     },
@@ -137,6 +127,19 @@ module.exports = {
       height: {
         body: 'calc(100% - 74px)',
         navbar: '74px',
+      },
+      container: {
+        center: true,
+        padding: {
+          // DEFAULT: '0rem',
+          // md: '1rem',
+          // lg: '2rem',
+          // xl: '3rem',
+          // '2xl': '',
+        },
+      },
+      screens: {
+        lg: '1074px',
       },
       margin: {
         body: '74px',
@@ -151,6 +154,7 @@ module.exports = {
       },
       minWidth: {
         tablet: '768px',
+        lg: '1074px',
       },
       keyframes: {
         'accordion-down': {
