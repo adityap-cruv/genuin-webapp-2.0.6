@@ -72,7 +72,7 @@ export function CommunitySection() {
         {communityList.map((item, index) => {
           return (
             <React.Fragment key={index}>
-              <div className="flex min-w-full snap-start flex-col gap-y-1 rounded-[20px] border-[1px] border-new-light-grey p-6 hover:border-2 hover:border-primary sm:min-w-max sm:max-w-md sm:snap-center">
+              <div className="box-border flex min-w-full snap-start flex-col gap-y-1 rounded-[20px] border-[1px] border-new-light-grey p-6 hover:border-2 hover:border-primary hover:shadow-md sm:min-w-max sm:max-w-md sm:snap-center">
                 <div className="flex w-full justify-between">
                   <Avatar className="h-20 w-20 rounded-full bg-red-40">
                     <AvatarImage src={item.profile_image} className="object-cover" />
@@ -81,7 +81,7 @@ export function CommunitySection() {
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex items-center gap-x-2">
-                    <Button size="sm">
+                    <Button size="sm" className="px-4">
                       <p className="text-title-md">Join</p>
                     </Button>
                     <Button variant="outline" outlineColor="genuin-blue" size="sm">
@@ -89,7 +89,7 @@ export function CommunitySection() {
                     </Button>
                   </div>
                 </div>
-                <p className="line-clamp-1  text-title-md">{item.name}</p>
+                <p className="mt-2 line-clamp-1 text-title-md">{item.name}</p>
                 <p className="line-clamp-2 text-body-lg sm:max-w-xs">{item.description}</p>
               </div>
             </React.Fragment>

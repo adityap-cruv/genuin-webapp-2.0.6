@@ -5,12 +5,11 @@ import { MainComponent } from '@components/pages/home/main-component'
 import { cookies } from 'next/headers'
 
 // todo configure eslint plugin
-// todo migrate to nextJS 14.0.0
 // todo work on parallel routing for developing mobile and desktop components differently
 export default async function Page() {
   const isMobile = cookies().get('mobile')?.value === 'true'
   return (
-    <main className="absolute inset-0 min-h-full w-full text-new-off-black">
+    <main className="absolute inset-0 min-h-full w-full text-new-off-black [&>div]:bg-new-off-white">
       <NavBar />
       <MainComponent isMobile={isMobile} />
       <Footer />

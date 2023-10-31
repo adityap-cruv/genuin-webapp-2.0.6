@@ -1,5 +1,5 @@
 import { useRef } from 'react'
-import { useInView, useMotionValueEvent, useScroll } from 'framer-motion'
+import { useMotionValueEvent, useScroll } from 'framer-motion'
 import { SVGAdReelTag } from './svg-ad-reel-tag'
 import Image from 'next/image'
 import { CommunitySection } from './community-section'
@@ -60,19 +60,19 @@ function Component1() {
         </div>
       </div>
       <div
-        className="flex min-h-full flex-col items-center justify-center gap-y-3 pt-navbar lg:hidden"
+        className="flex min-h-full flex-col items-center justify-center gap-y-3 px-5 pt-navbar lg:hidden"
         style={{ background: 'radial-gradient(123.19% 48.8% at 76.02% 69.05%, #E9CAF4 0%, #ADD8FB 100%)' }}>
-        <h1 className="my-5 flex justify-center text-center text-new-h1-mobile sm:text-new-h1 ">
+        <h1 className="flex justify-center py-5 text-center text-new-h1-mobile sm:text-new-h1 ">
           Community, reimagined.
         </h1>
         <p className="mx-3 text-center text-new-md sm:w-4/5">
           Download Genuin to create communities, interact with your audience, and start conversations on the topics that
           really matter.
         </p>
-        <Button className="my-5 bg-new-off-black after:bg-new-dark-grey hover:bg-new-dark-grey">
+        <Button className="bg-new-off-black py-5 after:bg-new-dark-grey hover:bg-new-dark-grey">
           <p className="mx-2 text-new-md text-new-off-white">Download Genuin</p>
         </Button>
-        <Image className="my-5 w-4/5 sm:w-1/2" src={imgC1Mobile} alt="genuin" />
+        <Image className="w-4/5 translate-x-2 py-5 sm:w-1/2" src={imgC1Mobile} alt="genuin" />
       </div>
     </>
   )
@@ -88,12 +88,12 @@ function Component2() {
         </h2>
         <Image quality={100} className="w-1/2" src={imgC2} alt="Create you community!" />
       </div>
-      <div className="my-10 flex flex-col items-center justify-center lg:hidden">
-        <h2 className="my-4 w-full px-10 text-center text-new-h2-mobile sm:text-new-h2">
+      <div className="flex flex-col items-center justify-center py-10 lg:hidden">
+        <h2 className="w-full px-10 py-4 text-center text-new-h2-mobile sm:text-new-h2">
           <Image src={icAddButton} alt="add" className="mr-2 inline-block w-8 align-top sm:mr-4 sm:w-11" />
           Create and grow your own community
         </h2>
-        <Image src={imgC2Mobile} alt="genuin" className="my-4 sm:w-1/2" />
+        <Image src={imgC2Mobile} alt="genuin" className="translate-x-5 py-4 sm:w-1/2" />
       </div>
     </>
   )
@@ -117,17 +117,17 @@ function Component3() {
           </h5>
         </div>
       </div>
-      <div className="my-10 flex flex-col items-center gap-y-3 lg:hidden">
+      <div className="my-20 flex flex-col items-center gap-y-8 px-5 lg:hidden">
         <h2 className="max-w-xl text-center text-new-h2-mobile sm:text-new-h2">
           Be part of the conversation with
           <Image src={icVideoAddButton} alt="add" className="ml-3 mr-2 inline-block w-8 align-bottom sm:mr-4 sm:w-11" />
           Loops
         </h2>
-        <h5 className="text-center text-new-h5">
+        <h5 className="flex w-4/5 text-center text-new-h5">
           Loops are interactive discussion spaces where you can join in with video, photo, voice recording and text
           responses.
         </h5>
-        <Image src={imgC3} alt="loops" className="sm:w-1/2" />
+        <Image src={imgC3} alt="loops" className="translate-x-4 sm:w-1/2" />
       </div>
     </>
   )
@@ -208,8 +208,8 @@ function Component4() {
           </div>
         </div>
       </div>
-      <div className="my-10 mt-16 flex flex-col items-center lg:hidden">
-        <h2 className="max-w-2xl text-center text-new-h2-mobile sm:text-new-h2">
+      <div className="my-20 mt-16 flex flex-col items-center px-5 lg:hidden">
+        <h2 className="mb-10 max-w-2xl text-center text-new-h2-mobile sm:text-new-h2">
           Expand your horizons and add to the
           <Image
             src={icConversation}
@@ -279,7 +279,7 @@ function Component5() {
             <div className="-border-spacing-10 flex h-1/2 flex-col justify-around rounded-[10px] border-[18px] border-[#E9CAF4] bg-new-off-black p-8">
               <h3 className="text-new-h3 text-new-off-white">"Infinite community possibilies."</h3>
               <div className="mt-5 flex items-center">
-                <Image quality={100} src={imgReviewerDp} alt="lauren hall" className="mr-4" />
+                <Image quality={100} src={imgReviewerDp} alt="lauren hall" className="mr-4 h-12 w-12" />
                 <p className="text-new-off-white">Lauren Hall, App Member</p>
               </div>
             </div>
@@ -307,21 +307,21 @@ function Component5() {
           </div>
         </div>
       </div>
-      <div className="my-10 flex min-h-full flex-col items-center gap-y-3 px-2 lg:hidden">
+      <div className="my-20 flex min-h-full flex-col items-center gap-y-10 px-5 lg:hidden">
         <h2 className="text-new-h2-mobile sm:text-new-h2">What our members say</h2>
         <div className=" flex flex-col rounded-[10px] border-[18px] border-[#E9CAF4] bg-new-off-black p-4 sm:w-4/5">
           <p className="font-bold text-new-off-white" style={{ fontSize: '28px' }}>
             "Infinite community possibilies."
           </p>
           <div className="mt-5 flex w-full">
-            <Image src={imgReviewerDp} alt="lauren hall" className="mr-4" />
+            <Image src={imgReviewerDp} alt="lauren hall" className="mr-4 h-12 w-12" />
             <p className="text-new-off-white">
               Lauren Hall, <br />
               App Member
             </p>
           </div>
         </div>
-        <Image className="w-1/2" src={imgC5} alt="genuin" />
+        <Image className="sm:w-1/2" src={imgC5} alt="genuin" />
         <div className="flex flex-col justify-between rounded-2xl bg-primary p-4 text-new-off-white sm:w-4/5">
           <p className="text-new-para-1">
             I love following creators on Instagram and TikTok, but I always wished I could interact with people who
@@ -342,7 +342,7 @@ function Component6() {
   return (
     <div className="my-10 flex flex-col items-center lg:my-20">
       <h2 className="my-6 text-new-h2-mobile sm:text-new-h2">Community sneak peak</h2>
-      <h5 className="mb-24 max-w-xl text-center text-new-h5-mobile sm:text-new-h5">
+      <h5 className="mb-24 max-w-xl px-5 text-center text-new-h5-mobile sm:text-new-h5 lg:px-0">
         Take a look inside some of the communities you'll find in on Genuin and get inspired to start your own.
       </h5>
       <CommunitySection />
@@ -353,7 +353,7 @@ function Component6() {
 function Component7() {
   return (
     <div className="my-10 flex max-h-full flex-col items-center gap-y-5 px-6 xl:container lg:my-20 xl:px-0">
-      <h2 className="text-new-h2-mobile sm:text-new-h2">Experience Genuin</h2>
+      <h2 className="mb-10 text-new-h2-mobile sm:text-new-h2">Experience Genuin</h2>
       <SVGAdReelTag />
       {/* <Image className="w-1/5" quality={100} src={imgC7} alt="genuin" /> */}
     </div>
