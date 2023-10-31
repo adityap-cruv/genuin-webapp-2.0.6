@@ -43,9 +43,9 @@ function Component1() {
     <>
       <div
         id="initial-component"
-        className="hidden h-full items-center pt-navbar lg:flex"
+        className=" hidden h-full items-center pt-navbar lg:flex"
         style={{ background: 'radial-gradient(123.19% 48.8% at 76.02% 69.05%, #E9CAF4 0%, #ADD8FB 100%)' }}>
-        <div className="flex h-full w-full items-center justify-around px-6 xl:container xl:px-0">
+        <div className="container flex h-full w-full items-center justify-around">
           <div className="w-[60%] flex-col justify-between">
             <h1 className="text-new-h1">Community, reimagined. Learn, connect and engage — all under one roof.</h1>
             <div className="mt-15 flex items-center gap-x-5">
@@ -93,7 +93,7 @@ function Component2() {
           <Image src={icAddButton} alt="add" className="mr-2 inline-block w-8 align-top sm:mr-4 sm:w-11" />
           Create and grow your own community
         </h2>
-        <Image src={imgC2Mobile} alt="genuin" className="translate-x-5 py-4 sm:w-1/2" />
+        <Image src={imgC2Mobile} alt="genuin" className="py-4 sm:w-1/2 sm:translate-x-5" />
       </div>
     </>
   )
@@ -180,8 +180,8 @@ function Component4() {
                 ref={imgRef}
                 className="relative w-1/2 [&>img]:inset-0 [&>img]:transition-opacity [&>img]:duration-200 [&>img]:ease-in">
                 <Image quality={100} src={imgConnect} alt="connect" className="inset-0 w-3/4" />
-                <Image quality={100} src={imgDiscover} alt="discover" className="absolute w-3/4 opacity-0" />
-                <Image quality={100} src={imgLearn} alt="learn" className="absolute w-3/4 opacity-0" />
+                <Image quality={100} src={imgDiscover} alt="discover" className="absolute w-3/4 p-8 opacity-0" />
+                <Image quality={100} src={imgLearn} alt="learn" className="absolute w-3/4 p-9 opacity-0" />
               </div>
               <div
                 ref={textRef}

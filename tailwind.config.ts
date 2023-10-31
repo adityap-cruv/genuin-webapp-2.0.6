@@ -131,11 +131,12 @@ module.exports = {
       container: {
         center: true,
         padding: {
-          // DEFAULT: '0rem',
-          // md: '1rem',
-          // lg: '2rem',
-          // xl: '3rem',
-          // '2xl': '',
+          DEFAULT: '1rem',
+        },
+        screens: {
+          lg: '992px',
+          xl: '1200px',
+          '2xl': '1400px',
         },
       },
       screens: {
