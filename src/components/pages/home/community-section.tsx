@@ -72,7 +72,7 @@ export function CommunitySection() {
         {communityList.map((item, index) => {
           return (
             <React.Fragment key={index}>
-              <div className="flex min-w-full snap-start flex-col gap-y-1 rounded-[20px] border-[1px] border-new-light-grey p-6 hover:border-2 hover:border-primary sm:min-w-max sm:max-w-md">
+              <div className="flex min-w-full snap-start flex-col gap-y-1 rounded-[20px] border-[1px] border-new-light-grey p-6 hover:border-2 hover:border-primary sm:min-w-max sm:max-w-md sm:snap-center">
                 <div className="flex w-full justify-between">
                   <Avatar className="h-20 w-20 rounded-full bg-red-40">
                     <AvatarImage src={item.profile_image} className="object-cover" />
