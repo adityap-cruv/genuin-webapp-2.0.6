@@ -18,5 +18,18 @@ export default async function Page() {
 }
 
 export async function generateMetadata(): Promise<Metadata> {
-  return { title: 'Welcome to Genuin!!!' }
+  return {
+    title: 'Learn, connect and engage—all under one roof.',
+    applicationName: 'genuin',
+    description:
+      'Discover videos that level up your life. Learn new things, share your knowledge, and create authentic connections.',
+    openGraph: {
+      url: 'https://begenuin.com',
+      images: [
+        {
+          url: 'https://media.begenuin.com/backend_assets/new_genuin_preview.png',
+        },
+      ],
+    },
+  }
 }

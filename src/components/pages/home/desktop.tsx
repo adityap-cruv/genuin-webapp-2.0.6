@@ -22,7 +22,8 @@ import icConversation from '@icons/home-page/icConversation.svg'
 import imgC5 from '@images/home-page/c5.png'
 import imgC5_2 from '@images/home-page/c5_2.png'
 import imgReviewerDp from '@images/home-page/reviewerDp.png'
-import { AspectRatio } from '@components/ui/aspect-ratio'
+import Link from 'next/link'
+import { MOBILE_DOWNLOAD_APP_LINK } from '@lib/constants'
 
 export function Desktop() {
   return (
@@ -69,9 +70,11 @@ function Component1() {
           Download Genuin to create communities, interact with your audience, and start conversations on the topics that
           really matter.
         </p>
-        <Button className="bg-new-off-black py-5 after:bg-new-dark-grey hover:bg-new-dark-grey">
-          <p className="mx-2 text-new-md text-new-off-white">Download Genuin</p>
-        </Button>
+        <Link href={MOBILE_DOWNLOAD_APP_LINK}>
+          <Button className="bg-new-off-black py-5 after:bg-new-dark-grey hover:bg-new-dark-grey">
+            <p className="mx-2 text-new-md text-new-off-white">Download Genuin</p>
+          </Button>
+        </Link>
         <Image className="w-4/5 translate-x-2 py-5 sm:w-1/2" src={imgC1Mobile} alt="genuin" />
       </div>
     </>
@@ -311,7 +314,7 @@ function Component5() {
         <h2 className="text-new-h2-mobile sm:text-new-h2">What our members say</h2>
         <div className=" flex flex-col rounded-[10px] border-[18px] border-[#E9CAF4] bg-new-off-black p-4 sm:w-4/5">
           <p className="font-bold text-new-off-white" style={{ fontSize: '28px' }}>
-            "Infinite community possibilies."
+            "Infinite community possibilities."
           </p>
           <div className="mt-5 flex w-full">
             <Image src={imgReviewerDp} alt="lauren hall" className="mr-4 h-12 w-12" />
