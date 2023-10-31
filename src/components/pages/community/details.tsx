@@ -1,6 +1,7 @@
+'use client'
 import { Avatar, AvatarFallback, AvatarImage } from '@components/ui/avatar'
 import { Button } from '@components/ui/button'
-import type { CommunityDetailsType } from '@lib/schemas/community-details'
+import type { CommunityDetailsType } from '@lib/schemas/community'
 import { checkAndAppendHttps, getAvatarFallback } from '@lib/utils'
 import icShare from '@icons/icShareBlue.svg'
 import Image from 'next/image'
@@ -10,7 +11,6 @@ import icLinkedIn from '@icons/icLinkedIn.svg'
 import icLink from '@icons/icLinkBlack.svg'
 import icTwitter from '@icons/icTwitterBlack.svg'
 import { Separator } from '@components/ui/separator'
-import { useRef } from 'react'
 import { PATH_NAME } from '@lib/utils/constants/path'
 
 let communityDetailsModule: CommunityDetailsType | null = null

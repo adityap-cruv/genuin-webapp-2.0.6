@@ -68,20 +68,20 @@ export function CommunitySection() {
 
   return (
     <div className="flex w-full flex-col gap-y-10">
-      <div ref={divRef} className="hide-scrollbar flex gap-x-4 overflow-x-auto sm:pl-5 ">
+      <div ref={divRef} className="hide-scrollbar scroll-snap-always flex snap-x gap-x-4 overflow-x-auto sm:pl-5 ">
         {communityList.map((item, index) => {
           return (
             <React.Fragment key={index}>
-              <div className="border-new-light-grey flex min-w-full flex-col gap-y-1 rounded-[20px] border-[1px] p-6 hover:border-2 hover:border-primary sm:min-w-max sm:max-w-md">
+              <div className="box-border flex min-w-full snap-start flex-col gap-y-1 rounded-[20px] border-[1px] border-new-light-grey p-6 hover:border-2 hover:border-primary hover:shadow-md sm:min-w-max sm:max-w-md sm:snap-center">
                 <div className="flex w-full justify-between">
                   <Avatar className="h-20 w-20 rounded-full bg-red-40">
                     <AvatarImage src={item.profile_image} className="object-cover" />
                     <AvatarFallback>
-                      <p className="text-new-off-white text-title-xl">{getAvatarFallback(item.name)}</p>
+                      <p className="text-title-xl text-new-off-white">{getAvatarFallback(item.name)}</p>
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex items-center gap-x-2">
-                    <Button size="sm">
+                    <Button size="sm" className="px-4">
                       <p className="text-title-md">Join</p>
                     </Button>
                     <Button variant="outline" outlineColor="genuin-blue" size="sm">
@@ -89,7 +89,7 @@ export function CommunitySection() {
                     </Button>
                   </div>
                 </div>
-                <p className="line-clamp-1  text-title-md">{item.name}</p>
+                <p className="mt-2 line-clamp-1 text-title-md">{item.name}</p>
                 <p className="line-clamp-2 text-body-lg sm:max-w-xs">{item.description}</p>
               </div>
             </React.Fragment>

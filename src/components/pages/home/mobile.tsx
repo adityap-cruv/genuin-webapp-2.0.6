@@ -43,8 +43,8 @@ function Component1() {
         Download Genuin to create communities, interact with your audience, and start conversations on the topics that
         really matter.
       </p>
-      <Button className="bg-new-off-black hover:bg-new-dark-grey after:bg-new-dark-grey my-2">
-        <p className="text-new-off-white mx-2 text-new-md">Download Genuin</p>
+      <Button className="my-2 bg-new-off-black after:bg-new-dark-grey hover:bg-new-dark-grey">
+        <p className="mx-2 text-new-md text-new-off-white">Download Genuin</p>
       </Button>
       <Image src={imgC1} alt="genuin" />
     </div>
@@ -54,7 +54,7 @@ function Component1() {
 function Component2() {
   return (
     <div className="my-10 flex flex-col justify-center">
-      <p className="my-4 w-full px-10 text-center text-new-index-title-mobile">
+      <p className="my-4 w-full px-10 text-center text-new-h2-mobile">
         <Image src={icAddButton} alt="add" className="mr-4 inline-block align-bottom" height={30} width={30} />
         Create and grow your own community
       </p>
@@ -66,7 +66,7 @@ function Component2() {
 function Component3() {
   return (
     <div className="my-10 flex flex-col gap-y-3">
-      <p className="text-center text-new-index-title-mobile">
+      <p className="text-center text-new-h2-mobile">
         Be part of the conversation with
         <Image
           src={icVideoAddButton}
@@ -89,7 +89,7 @@ function Component3() {
 function Component4() {
   return (
     <div className="my-10 mt-16">
-      <p className="text-center text-new-index-title-mobile">
+      <p className="text-center text-new-h2-mobile">
         Expand your horizons and add to the{' '}
         <Image src={icConversation} width={40} height={30} alt="conversation" className="inline-block align-baseline" />{' '}
         conversation
@@ -150,8 +150,8 @@ function Component5() {
       <p className="font-bold" style={{ fontSize: '32px' }}>
         What our members say
       </p>
-      <div className=" bg-new-off-black flex flex-col rounded-[10px] border-[18px] border-[#E9CAF4] p-4">
-        <p className="text-new-off-white font-bold" style={{ fontSize: '28px' }}>
+      <div className=" flex flex-col rounded-[10px] border-[18px] border-[#E9CAF4] bg-new-off-black p-4">
+        <p className="font-bold text-new-off-white" style={{ fontSize: '28px' }}>
           "Infinite community possibilies."
         </p>
         <div className="mt-5 flex items-center">
@@ -163,7 +163,7 @@ function Component5() {
         </div>
       </div>
       <Image src={imgC5} alt="genuin" />
-      <div className="text-new-off-white flex flex-col justify-between rounded-2xl bg-primary p-4">
+      <div className="flex flex-col justify-between rounded-2xl bg-primary p-4 text-new-off-white">
         <p className="text-new-md">
           I love following creators on Instagram and TikTok, but I always wished I could interact with people who share
           the same interests as me. On Genuin, I’m part of communities on everything from venture capital to books, and
