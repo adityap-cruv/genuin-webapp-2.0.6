@@ -30,7 +30,7 @@ export function NavBar() {
   return (
     <>
       <nav className="absolute top-0 z-10 m-auto hidden h-navbar w-full lg:flex ">
-        <div className={cn('flex h-full w-full items-center justify-between px-3 py-1 lg:container')}>
+        <div className={cn('container flex h-full w-full items-center justify-between py-1')}>
           <GenuinLogo.text variant="black" />
           <div className="flex items-center gap-x-4">
             <Button

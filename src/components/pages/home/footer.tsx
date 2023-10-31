@@ -58,7 +58,7 @@ export function Footer() {
             </Button>
           </div>
           <div
-            className="mt-5 flex justify-between gap-y-10 bg-new-off-black p-5 text-primary-foreground"
+            className="mt-5 flex items-center justify-between gap-y-10 bg-new-off-black p-5 text-primary-foreground"
             style={{ borderRadius: '20px 20px 0px 0px' }}>
             <GenuinLogo.text variant="light" />
             <p>© 2023 Genuin Inc.</p>

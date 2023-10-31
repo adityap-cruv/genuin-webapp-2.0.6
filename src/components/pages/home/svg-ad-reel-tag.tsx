@@ -7,7 +7,7 @@ export function SVGAdReelTag() {
         <foreignObject xmlns="http://www.w3.org/1999/xhtml" x="7" y="5" width="300" height="600">
           <div
             className="gen-ext"
-            data-tag-id="test-rohit"
+            data-tag-id="2454"
             data-company-id="1129"
             style={{ height: '596px', width: '298px', marginTop: '3px', margin: 'auto', marginBottom: '40px' }}></div>
         </foreignObject>
@@ -23,7 +23,7 @@ export function SVGAdReelTag() {
         </g>
         <rect x="191.479" y="17.5669" width="5.05122" height="5.05122" rx="2.52561" fill="#F8F8F8" />
       </svg>
-      <Script src="https://genuin-qa-media.s3.us-west-2.amazonaws.com/cxr/gen_ext.min.js" strategy='lazyOnload'/>
+      <Script src="https://media.begenuin.com/cxr/gen_ext.min.js" strategy="lazyOnload" />
     </>
   )
 }
