@@ -4,6 +4,6 @@ const Desktop = dynamic(async () => await import('./desktop').then((comp) => com
 const Mobile = dynamic(async () => await import('./mobile').then((comp) => comp.Mobile))
 
 export const MainComponent = ({ isMobile }: { isMobile: boolean }) => {
-  if (isMobile) return <Mobile />
+  // if (isMobile) return <Mobile />
   return <Desktop />
 }

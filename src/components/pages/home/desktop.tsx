@@ -189,7 +189,7 @@ function Component5() {
         <Image quality={100} src={imgC5} alt="genuin" className="w-2/5" />
       </div>
       <div className="flex w-full justify-between gap-x-10">
-        <Image className="w-full" quality={100} src={imgC5_2} alt="board" />
+        <Image className="w-1/3" quality={100} src={imgC5_2} alt="board" />
         <div className="flex flex-col justify-between rounded-2xl bg-primary p-10 text-new-off-white">
           <h5 className="text-new-h5">
             I love following creators on Instagram and TikTok, but I always wished I could interact with people who

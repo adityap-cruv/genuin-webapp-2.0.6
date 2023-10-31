@@ -1,7 +1,7 @@
 'use client'
 import { Avatar, AvatarFallback, AvatarImage } from '@components/ui/avatar'
 import { Button } from '@components/ui/button'
-import type { CommunityDetailsType } from '@lib/schemas/community-details'
+import type { CommunityDetailsType } from '@lib/schemas/community'
 import { checkAndAppendHttps, getAvatarFallback } from '@lib/utils'
 import icShare from '@icons/icShareBlue.svg'
 import Image from 'next/image'

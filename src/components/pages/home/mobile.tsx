@@ -54,7 +54,7 @@ function Component1() {
 function Component2() {
   return (
     <div className="my-10 flex flex-col justify-center">
-      <p className="my-4 w-full px-10 text-center text-new-index-title-mobile">
+      <p className="my-4 w-full px-10 text-center text-new-h2-mobile">
         <Image src={icAddButton} alt="add" className="mr-4 inline-block align-bottom" height={30} width={30} />
         Create and grow your own community
       </p>
@@ -66,7 +66,7 @@ function Component2() {
 function Component3() {
   return (
     <div className="my-10 flex flex-col gap-y-3">
-      <p className="text-center text-new-index-title-mobile">
+      <p className="text-center text-new-h2-mobile">
         Be part of the conversation with
         <Image
           src={icVideoAddButton}
@@ -89,7 +89,7 @@ function Component3() {
 function Component4() {
   return (
     <div className="my-10 mt-16">
-      <p className="text-center text-new-index-title-mobile">
+      <p className="text-center text-new-h2-mobile">
         Expand your horizons and add to the{' '}
         <Image src={icConversation} width={40} height={30} alt="conversation" className="inline-block align-baseline" />{' '}
         conversation

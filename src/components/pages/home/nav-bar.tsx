@@ -40,14 +40,14 @@ export function NavBar() {
               size="index-page">
               <p className="text-new-sm">We're hiring!</p>
             </Button>
-            <Button size="index-page" className="bg-new-off-black hover:bg-new-dark-grey after:bg-new-dark-grey">
-              <p className="text-new-off-white text-new-sm">Download Genuin</p>
+            <Button size="index-page" className="bg-new-off-black after:bg-new-dark-grey hover:bg-new-dark-grey">
+              <p className="text-new-sm text-new-off-white">Download Genuin</p>
             </Button>
           </div>
         </div>
       </nav>
       <nav className="absolute top-0 z-10 m-auto h-navbar w-full lg:hidden ">
-        <div className={cn('container flex h-full items-center justify-between py-1 pl-2')}>
+        <div className={cn('flex h-full items-center justify-between py-1 pl-2')}>
           <GenuinLogo.text variant="black" />
           <div className="flex items-center gap-x-2">
             <Sheet modal={false}>
@@ -60,8 +60,8 @@ export function NavBar() {
                   background: 'radial-gradient(123.19% 48.8% at 76.02% 69.05%, #E9CAF4 0%, #ADD8FB 100%)',
                 }}>
                 <div className="flex h-full min-w-full flex-col gap-y-1 py-7">
-                  <Button className="bg-new-off-black my-2 w-full">
-                    <p className="text-new-off-white text-new-md">Download Genuin</p>
+                  <Button className="my-2 w-full bg-new-off-black">
+                    <p className="text-new-md text-new-off-white">Download Genuin</p>
                   </Button>
                   <Link href="https://careers.begenuin.com">
                     <p className="font-semibold " style={{ fontSize: '28px', lineHeight: '120%' }}>

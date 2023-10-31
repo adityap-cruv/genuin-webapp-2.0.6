@@ -1,4 +1,4 @@
-import type { CommunityDetailsType } from '@lib/schemas/community-details'
+import type { CommunityDetailsType } from '@lib/schemas/community'
 
 interface Props {
   communityDetails: CommunityDetailsType
