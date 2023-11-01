@@ -50,14 +50,14 @@ function Component1() {
           <div className="w-[60%] flex-col justify-between">
             <h1 className="text-new-h1">Community, reimagined. Learn, connect and engage — all under one roof.</h1>
             <div className="mt-15 flex items-center gap-x-5">
-              <Image quality={100} src={qrImage} alt="Download Genuin!" />
+              <Image priority loading="eager" src={qrImage} alt="Download Genuin!" />
               <p className="text-left text-new-para-1">
                 Download Genuin to create communities, interact with your audience, and start conversations on the
                 topics that really matter.
               </p>
             </div>
           </div>
-          <Image className="w-[40%]" quality={100} src={imgC1} alt="genuin" />
+          <Image priority loading="eager" className="w-[40%]" src={imgC1} alt="genuin" />
         </div>
       </div>
       <div
@@ -75,7 +75,7 @@ function Component1() {
             <p className="mx-2 text-new-md text-new-off-white">Download Genuin</p>
           </Button>
         </Link>
-        <Image className="w-4/5 translate-x-2 py-5 sm:w-1/2" src={imgC1Mobile} alt="genuin" />
+        <Image priority loading="eager" className="w-4/5 translate-x-2 py-5 sm:w-1/2" src={imgC1Mobile} alt="genuin" />
       </div>
     </>
   )
@@ -86,17 +86,23 @@ function Component2() {
     <>
       <div className="my-20 hidden max-h-full w-full flex-col items-center justify-center gap-y-5  lg:flex ">
         <h2 className="-tracking-new max-w-lg text-center text-new-h2">
-          <Image src={icAddButton} alt="Add" className="align-toh2 mr-2 inline-block h-full" />
+          <Image priority loading="eager" src={icAddButton} alt="Add" className="align-toh2 mr-2 inline-block h-full" />
           Create and grow your own community
         </h2>
-        <Image quality={100} className="w-1/2" src={imgC2} alt="Create you community!" />
+        <Image priority loading="eager" className="w-1/2" src={imgC2} alt="Create you community!" />
       </div>
       <div className="flex flex-col items-center justify-center py-10 lg:hidden">
         <h2 className="w-full px-10 py-4 text-center text-new-h2-mobile sm:text-new-h2">
-          <Image src={icAddButton} alt="add" className="mr-2 inline-block w-8 align-top sm:mr-4 sm:w-11" />
+          <Image
+            priority
+            loading="eager"
+            src={icAddButton}
+            alt="add"
+            className="mr-2 inline-block w-8 align-top sm:mr-4 sm:w-11"
+          />
           Create and grow your own community
         </h2>
-        <Image src={imgC2Mobile} alt="genuin" className="py-4 sm:w-1/2 sm:translate-x-5" />
+        <Image priority loading="eager" src={imgC2Mobile} alt="genuin" className="py-4 sm:w-1/2 sm:translate-x-5" />
       </div>
     </>
   )
@@ -106,11 +112,17 @@ function Component3() {
   return (
     <>
       <div className="relative my-40 hidden max-h-full items-center justify-around px-6 xl:container lg:flex xl:px-0">
-        <Image className="w-1/3" quality={100} src={imgC3} alt="genuin" />
+        <Image priority loading="eager" className="w-1/3" src={imgC3} alt="genuin" />
         <div className="flex w-2/3 max-w-md flex-col gap-y-8">
           <h2 className="text-new-h2">
             Be part of the conversation with
-            <Image src={icVideoAddButton} alt="Add Video" className="ml-4 mr-3 inline-block align-bottom" />
+            <Image
+              priority
+              loading="eager"
+              src={icVideoAddButton}
+              alt="Add Video"
+              className="ml-4 mr-3 inline-block align-bottom"
+            />
             Loops
           </h2>
           <h5 className="text-new-h5">
@@ -123,14 +135,20 @@ function Component3() {
       <div className="my-20 flex flex-col items-center gap-y-8 px-5 lg:hidden">
         <h2 className="max-w-xl text-center text-new-h2-mobile sm:text-new-h2">
           Be part of the conversation with
-          <Image src={icVideoAddButton} alt="add" className="ml-3 mr-2 inline-block w-8 align-bottom sm:mr-4 sm:w-11" />
+          <Image
+            priority
+            loading="eager"
+            src={icVideoAddButton}
+            alt="add"
+            className="ml-3 mr-2 inline-block w-8 align-bottom sm:mr-4 sm:w-11"
+          />
           Loops
         </h2>
         <h5 className="flex w-4/5 text-center text-new-h5">
           Loops are interactive discussion spaces where you can join in with video, photo, voice recording and text
           responses.
         </h5>
-        <Image src={imgC3} alt="loops" className="translate-x-4 sm:w-1/2" />
+        <Image priority loading="eager" src={imgC3} alt="loops" className="translate-x-4 sm:w-1/2" />
       </div>
     </>
   )
@@ -174,7 +192,13 @@ function Component4() {
             <div className="flex h-1/5 items-center justify-center">
               <h2 className="max-w-2xl text-center text-new-h2">
                 Expand your horizons and add to the
-                <Image src={icConversation} alt="conversation" className="ml-3 mr-4 inline-block align-bottom" />
+                <Image
+                  priority
+                  loading="eager"
+                  src={icConversation}
+                  alt="conversation"
+                  className="ml-3 mr-4 inline-block align-bottom"
+                />
                 conversation
               </h2>
             </div>
@@ -182,9 +206,15 @@ function Component4() {
               <div
                 ref={imgRef}
                 className="relative w-1/2 [&>img]:inset-0 [&>img]:transition-opacity [&>img]:duration-200 [&>img]:ease-in">
-                <Image quality={100} src={imgConnect} alt="connect" className="inset-0 w-3/4" />
-                <Image quality={100} src={imgDiscover} alt="discover" className="absolute w-3/4 p-8 opacity-0" />
-                <Image quality={100} src={imgLearn} alt="learn" className="absolute w-3/4 p-9 opacity-0" />
+                <Image priority loading="eager" src={imgConnect} alt="connect" className="inset-0 w-3/4" />
+                <Image
+                  priority
+                  loading="eager"
+                  src={imgDiscover}
+                  alt="discover"
+                  className="absolute w-3/4 p-8 opacity-0"
+                />
+                <Image priority loading="eager" src={imgLearn} alt="learn" className="absolute w-3/4 p-9 opacity-0" />
               </div>
               <div
                 ref={textRef}
@@ -215,6 +245,8 @@ function Component4() {
         <h2 className="mb-10 max-w-2xl text-center text-new-h2-mobile sm:text-new-h2">
           Expand your horizons and add to the
           <Image
+            priority
+            loading="eager"
             src={icConversation}
             width={40}
             height={30}
@@ -235,7 +267,7 @@ function Component4() {
                 </div>
               </AccordionTrigger>
               <AccordionContent className="[&>div]:flex [&>div]:w-full [&>div]:justify-center">
-                <Image className="sm:w-1/2" src={imgConnect} alt="connect" />
+                <Image priority loading="eager" className="sm:w-1/2" src={imgConnect} alt="connect" />
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="discover" className="border-none ">
@@ -248,7 +280,7 @@ function Component4() {
                 </div>
               </AccordionTrigger>
               <AccordionContent className="[&>div]:flex [&>div]:w-full [&>div]:justify-center">
-                <Image className="sm:w-1/2" src={imgDiscover} alt="discover" />
+                <Image priority loading="eager" className="sm:w-1/2" src={imgDiscover} alt="discover" />
               </AccordionContent>
             </AccordionItem>
             <AccordionItem value="learn" className="border-none ">
@@ -262,7 +294,7 @@ function Component4() {
                 </div>
               </AccordionTrigger>
               <AccordionContent className="[&>div]:flex [&>div]:w-full [&>div]:justify-center">
-                <Image className="sm:w-1/2" src={imgLearn} alt="learn" />
+                <Image priority loading="eager" className="sm:w-1/2" src={imgLearn} alt="learn" />
               </AccordionContent>
             </AccordionItem>
           </Accordion>
@@ -280,9 +312,9 @@ function Component5() {
         <div className="my-10 mt-15 flex w-full justify-between gap-10">
           <div className="flex w-3/5 flex-col gap-y-10">
             <div className="-border-spacing-10 flex h-1/2 flex-col justify-around rounded-[10px] border-[18px] border-[#E9CAF4] bg-new-off-black p-8">
-              <h3 className="text-new-h3 text-new-off-white">"Infinite community possibilies."</h3>
+              <h3 className="text-new-h3 text-new-off-white">"Infinite community possibilities."</h3>
               <div className="mt-5 flex items-center">
-                <Image quality={100} src={imgReviewerDp} alt="lauren hall" className="mr-4 h-12 w-12" />
+                <Image priority loading="eager" src={imgReviewerDp} alt="lauren hall" className="mr-4 h-12 w-12" />
                 <p className="text-new-off-white">Lauren Hall, App Member</p>
               </div>
             </div>
@@ -294,10 +326,10 @@ function Component5() {
               <p className="mt-10 text-new-para-1">Esmé, Seattle, DIY Content Creator</p>
             </div>
           </div>
-          <Image quality={100} src={imgC5} alt="genuin" className="w-3/5 lg:w-2/5 2xl:w-1/3" />
+          <Image priority loading="eager" src={imgC5} alt="genuin" className="w-3/5 lg:w-2/5 2xl:w-1/3" />
         </div>
         <div className="flex w-full justify-between gap-x-10">
-          <Image className="w-1/3" quality={100} src={imgC5_2} alt="board" />
+          <Image priority loading="eager" className="w-1/3" src={imgC5_2} alt="board" />
           <div className="flex flex-col justify-between rounded-2xl bg-primary p-10 text-new-off-white">
             <h5 className="text-new-h5">
               I love following creators on Instagram and TikTok, but I always wished I could interact with people who
@@ -317,14 +349,14 @@ function Component5() {
             "Infinite community possibilities."
           </p>
           <div className="mt-5 flex w-full">
-            <Image src={imgReviewerDp} alt="lauren hall" className="mr-4 h-12 w-12" />
+            <Image priority loading="eager" src={imgReviewerDp} alt="lauren hall" className="mr-4 h-12 w-12" />
             <p className="text-new-off-white">
               Lauren Hall, <br />
               App Member
             </p>
           </div>
         </div>
-        <Image className="sm:w-1/2" src={imgC5} alt="genuin" />
+        <Image priority loading="eager" className="sm:w-1/2" src={imgC5} alt="genuin" />
         <div className="flex flex-col justify-between rounded-2xl bg-primary p-4 text-new-off-white sm:w-4/5">
           <p className="text-new-para-1">
             I love following creators on Instagram and TikTok, but I always wished I could interact with people who
@@ -335,7 +367,7 @@ function Component5() {
             Jamie Mars, <span style={{ fontWeight: 400 }}>Student & Future Investor</span>
           </p>
         </div>
-        <Image className="sm:w-1/2" src={imgC5_2} alt="genuin" />
+        <Image priority loading="eager" className="sm:w-1/2" src={imgC5_2} alt="genuin" />
       </div>
     </>
   )
@@ -358,7 +390,7 @@ function Component7() {
     <div className="my-10 flex max-h-full flex-col items-center gap-y-5 px-6 xl:container lg:my-20 xl:px-0">
       <h2 className="mb-10 text-new-h2-mobile sm:text-new-h2">Experience Genuin</h2>
       <SVGAdReelTag />
-      {/* <Image className="w-1/5" quality={100} src={imgC7} alt="genuin" /> */}
+      {/* <Image priority loading='eager' className="w-1/5"  src={imgC7} alt="genuin" /> */}
     </div>
   )
 }

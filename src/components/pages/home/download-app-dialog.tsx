@@ -27,7 +27,7 @@ interface Props {
 export function DownloadAppDialog({ children }: Props) {
   return (
     <Dialog>
-      <DialogTrigger>{children}</DialogTrigger>
+      <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <div className="m-8 w-80 text-center">
           <h3 className="text-new-h3">
