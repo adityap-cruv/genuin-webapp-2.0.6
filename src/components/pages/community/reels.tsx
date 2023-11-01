@@ -48,7 +48,7 @@ export function CommunityReels({ communityHandle }: CommunityReelsProps) {
             )
           })}
       </div>
-      {isFetched && <Comments communityHandle="genuincommunity" videoId="23" />}
+      {/* {isFetched && <Comments communityHandle="genuincommunity" videoId="23" />} */}
     </div>
   )
 }

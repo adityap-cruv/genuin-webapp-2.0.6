@@ -11,6 +11,6 @@ interface Props {
 }
 
 export function MainComponent({ communityDetails, isMobile }: Props) {
-  if (isMobile) return <MobileComponent communityDetails={communityDetails} />
+  // if (isMobile) return <MobileComponent communityDetails={communityDetails} />
   return <DesktopComponent communityDetails={communityDetails} />
 }

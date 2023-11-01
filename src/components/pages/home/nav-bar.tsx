@@ -7,7 +7,7 @@ import Link from 'next/link'
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@components/ui/sheet'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { DownloadAppDialog } from './download-app-dialog'
-import { MOBILE_DOWNLOAD_APP_LINK } from '@lib/constants'
+import { HIRING_LINK, MOBILE_DOWNLOAD_APP_LINK } from '@lib/constants'
 
 export function NavBar() {
   // const navRef = useRef<HTMLElement>(null)
@@ -35,7 +35,7 @@ export function NavBar() {
         <div className={cn('container flex h-full w-full items-center justify-between py-1')}>
           <GenuinLogo.text variant="black" />
           <div className="flex items-center gap-x-4">
-            <Link href="">
+            <Link href={HIRING_LINK}>
               <Button
                 variant="outline"
                 className="hover:bg-new-off-black hover:text-new-off-white"
@@ -67,11 +67,11 @@ export function NavBar() {
                 }}>
                 <div className="flex h-full min-w-full flex-col gap-y-1 py-7">
                   <div className="flex h-full min-w-full flex-col gap-y-4 py-7">
-                    <Link href={MOBILE_DOWNLOAD_APP_LINK}>
+                    <DownloadAppDialog>
                       <Button size="index-page" className="my-2 w-full bg-new-off-black hover:bg-new-dark-grey">
                         <p className="text-new-md text-new-off-white">Download Genuin</p>
                       </Button>
-                    </Link>
+                    </DownloadAppDialog>
                     <Link href="">
                       <h3 className="text-new-h3-mobile font-semibold">Careers</h3>
                     </Link>
