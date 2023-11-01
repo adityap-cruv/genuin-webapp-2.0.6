@@ -29,11 +29,7 @@ export function DownloadAppDialog({ children }: Props) {
   const URL_TO_PLAY_STORE = 'https://play.google.com/store/apps/details?id=com.begenuin.begenuin'
   return (
     <Dialog>
-    <DialogTrigger>
-      <Button size="index-page" className="bg-new-off-black hover:bg-new-dark-grey after:bg-new-dark-grey">
-        <p className="text-new-off-white text-new-sm">Download Genuin</p>
-      </Button>
-    </DialogTrigger>
+      <DialogTrigger asChild>{children}</DialogTrigger>
     <DialogContent className='rounded-20px'>
       <div className="m-8 text-center w-80">
         <h3 className="text-new-h3">Download <br />Genuin</h3>
