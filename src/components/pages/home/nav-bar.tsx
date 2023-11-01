@@ -13,6 +13,8 @@ import imagePlayStore from '@images/playStore.svg'
 import { DownloadAppForm } from './download-app-form'
 
 export function NavBar() {
+  const URL_TO_APP_STORE = 'https://apps.apple.com/US/app/id1511177838?mt=8'
+  const URL_TO_PLAY_STORE = 'https://play.google.com/store/apps/details?id=com.begenuin.begenuin'
   // const navRef = useRef<HTMLElement>(null)
 
   // useEffect(() => {
@@ -52,15 +54,19 @@ export function NavBar() {
                   <p className="text-new-off-white text-new-sm">Download Genuin</p>
                 </Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className='rounded-20px'>
                 <div className="m-8 text-center w-80">
-                  <h3 className="text-new-h3">Download <br/>Genuin</h3>
-                  <p className="text-new-para-1 m-4">Send the download link to <br/> your phone & email</p>
-                  <DownloadAppForm/>
-                  <p className="text-new-para-2-mobile mt-4 text-new-dark-grey">By clicking Send Link, I acknowledge that I have read the<br/> <a href='/privacy'>Privacy Policy</a> and agree to the <a href='/terms'>Terms of Service</a></p>
+                  <h3 className="text-new-h3">Download <br />Genuin</h3>
+                  <p className="text-new-para-1 m-4">Send the download link to <br /> your phone & email</p>
+                  <DownloadAppForm />
+                  <p className="text-new-para-2-mobile mt-4 text-new-dark-grey">By clicking Send Link, I acknowledge that I have read the<br /> <a href='/privacy' className='border-b'>Privacy Policy</a> and agree to the <a href='/terms' className='border-b'>Terms of Service</a></p>
                   <div className="mt-6 flex">
-                    <Image className="mx-2 w-full" src={imageAppStore} alt="app store" />
-                    <Image className="mx-2 w-full" src={imagePlayStore} alt="play store" />
+                    <a href={URL_TO_APP_STORE} target="_blank" rel="noopener noreferrer">
+                      <Image className="mx-2" src={imageAppStore} alt="app store" />
+                    </a>
+                    <a href={URL_TO_PLAY_STORE} target="_blank" rel="noopener noreferrer">
+                      <Image className="mx-2" src={imagePlayStore} alt="play store" />
+                    </a>
                   </div>
                 </div>
               </DialogContent>

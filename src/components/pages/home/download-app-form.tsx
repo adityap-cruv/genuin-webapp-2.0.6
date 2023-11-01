@@ -131,16 +131,14 @@ export function DownloadAppForm() {
                       <div className="w-1/4">
                         <div className="relative">
                           <div
-                            className="w-full py-2.5 px-4 border rounded-md cursor-pointer"
+                            className="w-full py-2.5 px-2 border rounded-md cursor-pointer relative"
                             onClick={toggleDropdown}
                           >
-                            <div className='items-center' 
-                            style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                  }}>
+                            <div className="items-center flex justify-around">
                               <FlagIcon code={selectedCountry.code as FlagIconCode} size={26} />
+                              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="6" viewBox="0 0 6 4" fill="none" className={isOpen ? 'transform rotate-180 transition-transform': ''}>
+                              <path d="M1 1L3 3L5 1" stroke="#16171A" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
                             </div>
                           </div>
 
@@ -169,13 +167,14 @@ export function DownloadAppForm() {
                         </div>
                       </div>
 
+
                       <div className="w-3/4">
                         <div className="relative">
                           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             {selectedCountry.dial_code}
                           </div>
                           <input
-                            className={`w-full pl-16 pr-4 py-2 border rounded-md focus:outline-none focus:border-blue-500 ${isInvalidNumber ? 'border-red' : 'border-gray'
+                            className={`w-full pl-14 pr-4 py-2 border rounded-md focus:outline-none focus:border-blue-500 ${isInvalidNumber ? 'border-red' : 'border-gray'
                               }`}
                             placeholder="Phone number"
                             onChange={(e) => numberChange(e.target.value)}
@@ -185,11 +184,11 @@ export function DownloadAppForm() {
                       </div>
                     </div>
                     {isInvalidNumber && (
-                      <div className="text-red mt-2">
+                      <div className="text-red text-cap-lg absolute">
                         Please enter a valid phone number.
                       </div>
                     )}
-                    <div className="relative mt-4">
+                    <div className="relative mt-6">
                       <input
                         type="email"
                         className={`w-full py-2 px-4 border rounded-md focus:outline-none focus:border-blue-500 ${isInvalidEmail ? 'border-red' : 'border-gray'
@@ -200,7 +199,7 @@ export function DownloadAppForm() {
                       />
                     </div>
                     {isInvalidEmail && (
-                      <div className="text-red mt-2">
+                      <div className="text-red text-cap-lg absolute">
                         Please enter a valid email.
                       </div>
                     )}
