@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "next dev -p 4005",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 4000",
     "lint": "next l int",
     "format": "prettier --write .",
     "lint:fix": "lint . --fix",
