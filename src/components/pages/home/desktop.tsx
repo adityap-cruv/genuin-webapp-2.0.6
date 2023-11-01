@@ -23,9 +23,6 @@ import icConversation from '@icons/home-page/icConversation.svg'
 import imgC5 from '@images/home-page/c5.png'
 import imgC5_2 from '@images/home-page/c5_2.png'
 import imgReviewerDp from '@images/home-page/reviewerDp.png'
-import Link from 'next/link'
-import { MOBILE_DOWNLOAD_APP_LINK } from '@lib/constants'
-import { Toaster } from '@components/ui/toaster'
 
 export function Desktop() {
   return (
@@ -46,7 +43,7 @@ function Component1() {
     <>
       <div
         id="initial-component"
-        className=" hidden h-full items-center pt-navbar lg:flex"
+        className="hidden h-[100vh] items-center pt-navbar lg:flex"
         style={{ background: 'radial-gradient(123.19% 48.8% at 76.02% 69.05%, #E9CAF4 0%, #ADD8FB 100%)' }}>
         <div className="container flex h-full w-full items-center justify-around">
           <div className="w-[60%] flex-col justify-between">
@@ -63,7 +60,7 @@ function Component1() {
         </div>
       </div>
       <div
-        className="flex min-h-full flex-col items-center justify-center gap-y-3 px-5 pt-navbar lg:hidden"
+        className="flex h-[100vh] min-h-full flex-col items-center justify-center gap-y-3 px-5 pt-navbar lg:hidden"
         style={{ background: 'radial-gradient(123.19% 48.8% at 76.02% 69.05%, #E9CAF4 0%, #ADD8FB 100%)' }}>
         <h1 className="flex justify-center py-5 text-center text-new-h1-mobile sm:text-new-h1 ">
           Community, reimagined.
