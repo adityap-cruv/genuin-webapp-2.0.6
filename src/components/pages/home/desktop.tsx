@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { CommunitySection } from './community-section'
 import { Button } from '@components/ui/button'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@components/ui/accordion'
+import { DownloadAppDialog } from './download-app-dialog'
 
 // all images import
 import imgC1 from '@images/home-page/c1.png'
@@ -70,11 +71,11 @@ function Component1() {
           Download Genuin to create communities, interact with your audience, and start conversations on the topics that
           really matter.
         </p>
-        <Link href={MOBILE_DOWNLOAD_APP_LINK}>
+        <DownloadAppDialog>
           <Button className="bg-new-off-black py-5 after:bg-new-dark-grey hover:bg-new-dark-grey">
             <p className="mx-2 text-new-md text-new-off-white">Download Genuin</p>
           </Button>
-        </Link>
+        </DownloadAppDialog>
         <Image priority loading="eager" className="w-4/5 translate-x-2 py-5 sm:w-1/2" src={imgC1Mobile} alt="genuin" />
       </div>
     </>

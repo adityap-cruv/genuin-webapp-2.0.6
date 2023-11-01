@@ -3,7 +3,6 @@ import { Button } from '@components/ui/button'
 import { GenuinLogo } from '@components/ui/genuin-logo'
 import Link from 'next/link'
 import { DownloadAppDialog } from './download-app-dialog'
-import { MOBILE_DOWNLOAD_APP_LINK } from '@lib/constants'
 
 export function Footer() {
   return (
@@ -54,14 +53,14 @@ export function Footer() {
         <div className="container flex h-full flex-col gap-y-6">
           <div className="mt-5 flex flex-col items-center justify-center gap-y-2">
             <p className="text-center text-new-h2-mobile text-new-off-white">Join the world of Genuin.</p>
-            <Link href={MOBILE_DOWNLOAD_APP_LINK}>
+            <DownloadAppDialog>
               <Button
                 size="index-page"
                 variant="default"
                 className="mt-3 bg-new-off-black after:bg-new-dark-grey hover:bg-new-dark-grey">
                 <p className="whitespace-nowrap text-new-md text-new-off-white">Download Genuin</p>
               </Button>
-            </Link>
+            </DownloadAppDialog>
           </div>
           <div
             className="mt-5 flex items-center justify-between gap-y-10 bg-new-off-black p-5 text-primary-foreground"
