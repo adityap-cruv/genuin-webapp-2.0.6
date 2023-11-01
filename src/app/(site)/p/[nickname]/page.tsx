@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: CompProps): Promise<Metadata>
     openGraph: {
       title: title,
       description: desc,
-      url: `${process.env.hostname}p/${data.nickname}`,
+      url: `${process.env.NEXT_PUBLIC_HOST_URL}/p/${data.nickname}`,
       images: [
         {
           url: data.profile_image
