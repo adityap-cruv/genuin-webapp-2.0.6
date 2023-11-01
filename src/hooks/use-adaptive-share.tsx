@@ -1,14 +1,26 @@
 import { isMobile } from 'react-device-detect'
 
 export function useAdaptiveShare() {
-  async function shareFn({ title, text }: { title?: string; text?: string }): Promise<boolean> {
+  async function shareFn({
+    title,
+    description,
+    shareLink,
+    toast = () => {},
+  }: {
+    title?: string
+    description?: string
+    shareLink?: string
+    toast: any
+  }): Promise<boolean> {
     if (window) {
+      const linkToCopy = shareLink ? shareLink : window.location.href
       if (isMobile && window.navigator.canShare()) {
-        await window.navigator.share({ url: window.location.href, title, text })
+        await window.navigator.share({ url: linkToCopy, title, text: description })
         return true
       }
       if (window.navigator.clipboard) {
-        await window.navigator.clipboard.writeText(window.location.href)
+        await window.navigator.clipboard.writeText(linkToCopy)
+        toast()
         return true
       }
     }

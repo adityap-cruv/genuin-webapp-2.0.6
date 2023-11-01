@@ -25,6 +25,7 @@ import imgC5_2 from '@images/home-page/c5_2.png'
 import imgReviewerDp from '@images/home-page/reviewerDp.png'
 import Link from 'next/link'
 import { MOBILE_DOWNLOAD_APP_LINK } from '@lib/constants'
+import { Toaster } from '@components/ui/toaster'
 
 export function Desktop() {
   return (

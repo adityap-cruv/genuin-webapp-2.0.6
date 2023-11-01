@@ -7,6 +7,9 @@ import React from 'react'
 import { useRef } from 'react'
 import { getAvatarFallback } from '@lib/utils'
 import Link from 'next/link'
+import { Toaster } from '@components/ui/toaster'
+import { useToast } from '@components/ui/use-toast'
+import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 
 export function CommunitySection() {
   const communityList = [
@@ -36,6 +39,8 @@ export function CommunitySection() {
     },
   ]
   const divRef = useRef<HTMLDivElement>(null)
+  const { toast } = useToast()
+  const { shareFn } = useAdaptiveShare()
 
   return (
     <div className="flex w-full flex-col gap-y-10">
@@ -59,9 +64,21 @@ export function CommunitySection() {
                         <p className="text-title-md">Join</p>
                       </Button>
                     </Link>
-                    <Button variant="outline" outlineColor="genuin-blue" size="sm">
+                    <Button
+                      variant="outline"
+                      outlineColor="genuin-blue"
+                      size="sm"
+                      onClick={() =>
+                        shareFn({
+                          title: 'Share this community.',
+                          description: 'Welcome to Genuin!!',
+                          shareLink: item.link,
+                          toast: toast({ title: 'Link Compied!', duration: 1000 }),
+                        })
+                      }>
                       <Image src={icShare} alt="share" />
                     </Button>
+                    <Toaster />
                   </div>
                 </div>
                 <p className="mt-2 line-clamp-1 text-title-md">{item.name}</p>
