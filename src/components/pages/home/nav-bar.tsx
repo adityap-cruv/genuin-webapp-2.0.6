@@ -6,11 +6,8 @@ import { HamBurgerMenuIcon } from '@components/ui/ham-burger'
 import Link from 'next/link'
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@components/ui/sheet'
 import { PATH_NAME } from '@lib/utils/constants/path'
-import { Dialog, DialogContent, DialogTrigger } from '@components/ui/dialog'
-import Image from 'next/image'
-import imageAppStore from '@images/appStore.svg'
-import imagePlayStore from '@images/playStore.svg'
-import { DownloadAppForm } from './download-app-form'
+import { DownloadAppDialog } from './download-app-dialog'
+import { MOBILE_DOWNLOAD_APP_LINK } from '@lib/constants'
 
 export function NavBar() {
   const URL_TO_APP_STORE = 'https://apps.apple.com/US/app/id1511177838?mt=8'
@@ -40,37 +37,20 @@ export function NavBar() {
         <div className={cn('container flex h-full w-full items-center justify-between py-1')}>
           <GenuinLogo.text variant="black" />
           <div className="flex items-center gap-x-4">
-            <Button
-              variant="outline"
-              className="hover:bg-new-off-black hover:text-new-off-white"
-              outlineColor="black"
-              size="index-page">
-              <p className="text-new-sm">We're hiring!</p>
-            </Button>
-
-            <Dialog>
-              <DialogTrigger>
-                <Button size="index-page" className="bg-new-off-black hover:bg-new-dark-grey after:bg-new-dark-grey">
-                  <p className="text-new-off-white text-new-sm">Download Genuin</p>
-                </Button>
-              </DialogTrigger>
-              <DialogContent className='rounded-20px'>
-                <div className="m-8 text-center w-80">
-                  <h3 className="text-new-h3">Download <br />Genuin</h3>
-                  <p className="text-new-para-1 m-4">Send the download link to <br /> your phone & email</p>
-                  <DownloadAppForm />
-                  <p className="text-new-para-2-mobile mt-4 text-new-dark-grey">By clicking Send Link, I acknowledge that I have read the<br /> <a href='/privacy' className='border-b'>Privacy Policy</a> and agree to the <a href='/terms' className='border-b'>Terms of Service</a></p>
-                  <div className="mt-6 flex">
-                    <a href={URL_TO_APP_STORE} target="_blank" rel="noopener noreferrer">
-                      <Image className="mx-2" src={imageAppStore} alt="app store" />
-                    </a>
-                    <a href={URL_TO_PLAY_STORE} target="_blank" rel="noopener noreferrer">
-                      <Image className="mx-2" src={imagePlayStore} alt="play store" />
-                    </a>
-                  </div>
-                </div>
-              </DialogContent>
-            </Dialog>
+            <Link href="">
+              <Button
+                variant="outline"
+                className="hover:bg-new-off-black hover:text-new-off-white"
+                outlineColor="black"
+                size="index-page">
+                <p className="text-new-sm">We're hiring!</p>
+              </Button>
+            </Link>
+            <DownloadAppDialog>
+              <Button size="index-page" className="bg-new-off-black after:bg-new-dark-grey hover:bg-new-dark-grey">
+                <p className="text-new-sm text-new-off-white">Download Genuin</p>
+              </Button>
+            </DownloadAppDialog>
           </div>
         </div>
       </nav>
@@ -89,10 +69,12 @@ export function NavBar() {
                 }}>
                 <div className="flex h-full min-w-full flex-col gap-y-1 py-7">
                   <div className="flex h-full min-w-full flex-col gap-y-4 py-7">
-                    <Button size="index-page" className="my-2 w-full bg-new-off-black hover:bg-new-dark-grey">
-                      <p className="text-new-md text-new-off-white">Download Genuin</p>
-                    </Button>
-                    <Link href="https://careers.begenuin.com">
+                    <Link href={MOBILE_DOWNLOAD_APP_LINK}>
+                      <Button size="index-page" className="my-2 w-full bg-new-off-black hover:bg-new-dark-grey">
+                        <p className="text-new-md text-new-off-white">Download Genuin</p>
+                      </Button>
+                    </Link>
+                    <Link href="">
                       <h3 className="text-new-h3-mobile font-semibold">Careers</h3>
                     </Link>
                     <Link href={PATH_NAME.terms}>
