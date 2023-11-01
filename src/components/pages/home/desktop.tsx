@@ -43,7 +43,7 @@ function Component1() {
     <>
       <div
         id="initial-component"
-        className="hidden h-[100vh] items-center pt-navbar lg:flex"
+        className="hidden min-h-full items-center pt-navbar lg:flex"
         style={{ background: 'radial-gradient(123.19% 48.8% at 76.02% 69.05%, #E9CAF4 0%, #ADD8FB 100%)' }}>
         <div className="container flex h-full w-full items-center justify-around">
           <div className="w-[60%] flex-col justify-between">

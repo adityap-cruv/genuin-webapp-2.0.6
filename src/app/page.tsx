@@ -9,7 +9,7 @@ import { cookies } from 'next/headers'
 export default async function Page() {
   const isMobile = cookies().get('mobile')?.value === 'true'
   return (
-    <main className="bg-new-off-white text-new-off-black">
+    <main id="indexPage" className="absolute inset-0 text-new-off-black">
       <NavBar />
       <MainComponent isMobile={isMobile} />
       <Footer />

@@ -206,6 +206,11 @@
     width: 10px;
   }
 
+  /* todo find better solution for this */
+  .index-page-background:has(#indexPage) {
+    background-color: #f8f8f8;
+  }
+
   ::-webkit-scrollbar {
     width: 10px;
     height: 10px;

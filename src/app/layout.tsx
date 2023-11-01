@@ -7,7 +7,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="icon" type="image/x-icon" href="/favicon.svg" />
       </head>
-      <body className="absolute inset-0 min-h-full min-w-full">
+      <body className="index-page-background absolute inset-0 min-h-full min-w-full">
         <ReactQueryProvider>{children}</ReactQueryProvider>
       </body>
     </html>
