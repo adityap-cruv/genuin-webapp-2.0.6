@@ -161,7 +161,7 @@ function Actions({ link = '', shareDescription = '', shareTitle = '', isLoop = f
           </DownloadDialog>
         </>
       )}
-      <ActionItem title="Share Video!" onClick={() => shareFn({ text: shareDescription, title: shareTitle })}>
+      <ActionItem title="Share Video!" onClick={() => shareFn({ description: shareDescription, title: shareTitle })}>
         <Image src={icShare} alt="share" height={20} width={20} />
       </ActionItem>
       {!isLoop && (

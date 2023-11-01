@@ -10,7 +10,7 @@ export function useAdaptiveShare() {
     title?: string
     description?: string
     shareLink?: string
-    toast: any
+    toast?: any
   }): Promise<boolean> {
     if (window) {
       const linkToCopy = shareLink ? shareLink : window.location.href
@@ -20,7 +20,7 @@ export function useAdaptiveShare() {
       }
       if (window.navigator.clipboard) {
         await window.navigator.clipboard.writeText(linkToCopy)
-        toast()
+        if (toast) toast()
         return true
       }
     }
