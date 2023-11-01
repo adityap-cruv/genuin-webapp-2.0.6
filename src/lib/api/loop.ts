@@ -7,7 +7,7 @@ export async function fetchLoopDetails(loopId: string) {
   return axios
     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/rt/details', { params: { chat_id: loopId } })
     .then((res) => {
-      return validateLoopDetails(res?.data?.data)
+      return res?.data?.data
     })
     .catch((e) => {
       throw new Error('Something went wrong!!')

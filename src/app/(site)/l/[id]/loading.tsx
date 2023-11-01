@@ -1,7 +1,6 @@
+'use client'
 import { Loader } from '@components/ui/loader'
 
-const Loading = () => {
+export default function Loading() {
   return <Loader size="lg" />
 }
-
-export default Loading

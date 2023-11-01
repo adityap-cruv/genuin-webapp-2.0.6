@@ -10,7 +10,7 @@ export async function fetchCommunityDetails(handle: string) {
         community_handle: handle,
       },
     })
-    .then((res) => validateCommunityDetails(res.data.data))
+    .then((res) => res.data.data)
     .catch((e) => {
       throw new Error('Something went wrong with community detail!')
     })

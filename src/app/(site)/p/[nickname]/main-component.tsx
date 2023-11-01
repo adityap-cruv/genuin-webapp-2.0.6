@@ -1,6 +1,6 @@
 'use client'
 import { Avatar, AvatarImage, AvatarFallback } from '@components/ui/avatar'
-import { getAvatarFallback } from '@lib/utils'
+import { abbreviateNumber, getAvatarFallback } from '@lib/utils'
 import { Button } from '@components/ui/button'
 import Image from 'next/image'
 import icMessage from '@icons/icMessage.svg'
@@ -19,7 +19,6 @@ interface CompProps {
 
 export const MainComponent = ({ profileData }: CompProps) => {
   const { isMd = !isMobile } = useResponsive()
-
   return (
     <>
       <NavBar variant="light" />
@@ -30,11 +29,11 @@ export const MainComponent = ({ profileData }: CompProps) => {
               <AvatarImage src={profileData?.profile_image}></AvatarImage>
               <AvatarFallback>{getAvatarFallback(profileData?.name)}</AvatarFallback>
             </Avatar>
-            <div className="w-full">{!isMd && <Stats />}</div>
+            <div className="w-full">{!isMd && <Stats profileData={profileData} />}</div>
           </div>
           <p className="line-clamp-1 text-title-lg">@{profileData?.nickname}</p>
           <p className="line-clamp-5 text-body-lg">{profileData?.bio || ''}</p>
-          {isMd && <Stats />}
+          {isMd && <Stats profileData={profileData} />}
           <div className="my-2">
             <Button variant="outline" size="sm" outlineColor="genuin-blue">
               <Image src={icMessage} alt="messsage" className="pr-1" />
@@ -51,20 +50,19 @@ export const MainComponent = ({ profileData }: CompProps) => {
   )
 }
 
-// todo create function to normalize the count
-function Stats() {
+function Stats({ profileData }: { profileData: any }) {
   return (
     <div className="m-1 ml-0 flex justify-evenly p-1 pl-0">
       <div>
-        <p className="text-title-lg">3.3k</p>
+        <p className="text-title-lg">{abbreviateNumber(profileData?.views) || 0}</p>
         <p className="text-cap-lg text-secondary">Views</p>
       </div>
       <div>
-        <p className="text-title-lg">3.3k</p>
+        <p className="text-title-lg">{abbreviateNumber(profileData?.videos) || 0}</p>
         <p className="text-cap-lg text-secondary">Videos</p>
       </div>
       <div>
-        <p className="text-title-lg">3.3k</p>
+        <p className="text-title-lg">{abbreviateNumber(profileData?.replies) || 0}</p>
         <p className="text-cap-lg text-secondary">Replies</p>
       </div>
     </div>
