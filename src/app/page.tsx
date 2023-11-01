@@ -24,6 +24,9 @@ export async function generateMetadata(): Promise<Metadata> {
     description:
       'Discover videos that level up your life. Learn new things, share your knowledge, and create authentic connections.',
     openGraph: {
+      title: 'Learn, connect and engage—all under one roof.',
+      description:
+        'Discover videos that level up your life. Learn new things, share your knowledge, and create authentic connections.',
       url: 'https://begenuin.com',
       images: [
         {

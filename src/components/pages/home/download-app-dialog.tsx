@@ -7,6 +7,9 @@ import { Dialog, DialogTrigger, DialogContent } from '@components/ui/dialog'
 import Image from 'next/image'
 import imageAppStore from '@images/appStore.svg'
 import imagePlayStore from '@images/playStore.svg'
+import Link from 'next/link'
+import { isMobile } from 'react-device-detect'
+import { MOBILE_DOWNLOAD_APP_LINK } from '@lib/constants'
 
 interface FormData {
   phone: string
@@ -23,11 +26,12 @@ interface Props {
 }
 
 // todo improve it's api implementation
-// todo change it adapt to mobile/desktop versions
 export function DownloadAppDialog({ children }: Props) {
   const URL_TO_APP_STORE = 'https://apps.apple.com/US/app/id1511177838?mt=8'
   const URL_TO_PLAY_STORE = 'https://play.google.com/store/apps/details?id=com.begenuin.begenuin'
-  return (
+  return isMobile ? (
+    <Link href={MOBILE_DOWNLOAD_APP_LINK}>{children}</Link>
+  ) : (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
     <DialogContent className='rounded-20px'>
