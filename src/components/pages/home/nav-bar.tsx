@@ -10,8 +10,6 @@ import { DownloadAppDialog } from './download-app-dialog'
 import { MOBILE_DOWNLOAD_APP_LINK } from '@lib/constants'
 
 export function NavBar() {
-  const URL_TO_APP_STORE = 'https://apps.apple.com/US/app/id1511177838?mt=8'
-  const URL_TO_PLAY_STORE = 'https://play.google.com/store/apps/details?id=com.begenuin.begenuin'
   // const navRef = useRef<HTMLElement>(null)
 
   // useEffect(() => {
