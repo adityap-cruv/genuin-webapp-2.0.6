@@ -23,7 +23,7 @@ async function fetchCommunityVideos(handle: string) {
         community_handle: handle,
       },
     })
-    .then((res) => validateVideoListData(res.data.data.feed))
+    .then((res) => res.data.data.feed)
     .catch((e) => {
       throw new Error('Something went wrong with community videos!')
     })
