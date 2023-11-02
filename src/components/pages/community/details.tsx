@@ -2,7 +2,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@components/ui/avatar'
 import { Button } from '@components/ui/button'
 import type { CommunityDetailsType } from '@lib/schemas/community'
-import { checkAndAppendHttps, getAvatarFallback } from '@lib/utils'
+import { checkAndAppendHttps, getAvatarFallback, isValidHTTPS } from '@lib/utils'
 import icShare from '@icons/icShareBlue.svg'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -187,7 +187,7 @@ function ListItem({
   return (
     <div className="flex items-center gap-x-1 rounded-sm p-1 hover:bg-monochrome-9">
       <Avatar className="h-9 w-9 bg-red-40">
-        <AvatarImage src={image} />
+        <AvatarImage src={isValidHTTPS(image??'')} />
         <AvatarFallback>
           <p className="text-title-md text-monochrome-white">{getAvatarFallback(title)}</p>
         </AvatarFallback>
@@ -205,7 +205,7 @@ function Leaders() {
   return (
     <div>
       <p className="my-2 text-title-md">Leader</p>
-      {communityDetailsModule?.moderators.map((moderator, index) => {
+      {communityDetailsModule?.leaders.map((moderator, index) => {
         return (
           <Link key={index} href={{ pathname: PATH_NAME.profile(moderator.nickname) }}>
             <ListItem
