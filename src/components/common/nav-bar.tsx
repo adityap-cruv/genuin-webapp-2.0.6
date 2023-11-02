@@ -1,7 +1,7 @@
 'use client'
 import { Button } from '@components/ui/button'
 import { GenuinLogo } from '@components/ui/genuin-logo'
-import { DownloadDialog } from './download-dialog'
+import { DownloadAppDialog } from '../pages/home/download-app-dialog'
 import { isMobile } from 'react-device-detect'
 import Link from 'next/link'
 import { cn } from '@lib/utils'
@@ -33,11 +33,11 @@ export function NavBar({ variant = 'light' }: Props) {
 
 function GetAppButton() {
   return !isMobile ? (
-    <DownloadDialog title="design get app form modal" subtitle="given to dev">
+    <DownloadAppDialog>
       <Button size="sm">
         <p className="line-clamp-1 text-title-sm text-monochrome-white">Get App</p>
       </Button>
-    </DownloadDialog>
+    </DownloadAppDialog>
   ) : (
     <Link href="https://begenuin.com/sg86n">
       <Button size="sm">
