@@ -29,7 +29,7 @@ async function fetchVideos(nickname: string, types: [VideoType?, VideoType?], pa
       },
     })
     .then((res) => {
-      return { videos: validateVideoListData(res.data.data.videos), end: res.data.data.end_of_videos || false }
+      return { videos: res.data.data.videos, end: res.data.data.end_of_videos || false }
     })
     .catch((e) => {
       throw new Error('Something went wrong with profile videos api.')
