@@ -60,12 +60,12 @@ function Component1() {
         </div>
       </div>
       <div
-        className="flex h-[100vh] min-h-full flex-col items-center justify-center gap-y-3 px-5 pt-navbar lg:hidden"
+        className="flex min-h-full flex-col items-center justify-center gap-y-4 px-5 pt-navbar lg:hidden"
         style={{ background: 'radial-gradient(123.19% 48.8% at 76.02% 69.05%, #E9CAF4 0%, #ADD8FB 100%)' }}>
-        <h1 className="flex justify-center py-5 text-center text-new-h1-mobile sm:text-new-h1 ">
+        <h1 className="flex max-w-xs  justify-center py-5 text-center text-new-h1-mobile sm:text-new-h1 ">
           Community, reimagined.
         </h1>
-        <p className="mx-3 text-center text-new-md sm:w-4/5">
+        <p className="mx-3 max-w-xs text-center text-new-md sm:w-4/5">
           Download Genuin to create communities, interact with your audience, and start conversations on the topics that
           really matter.
         </p>
@@ -85,19 +85,25 @@ function Component2() {
     <>
       <div className="my-20 hidden max-h-full w-full flex-col items-center justify-center gap-y-5  lg:flex ">
         <h2 className="-tracking-new max-w-lg text-center text-new-h2">
-          <Image priority loading="eager" src={icAddButton} alt="Add" className="align-toh2 mr-2 inline-block h-full" />
+          <Image
+            priority
+            loading="eager"
+            src={icAddButton}
+            alt="Add"
+            className="mr-2 inline-block h-full translate-y-1 align-top"
+          />
           Create and grow your own community
         </h2>
         <Image priority loading="eager" className="w-1/2" src={imgC2} alt="Create you community!" />
       </div>
       <div className="flex flex-col items-center justify-center py-10 lg:hidden">
-        <h2 className="w-full px-10 py-4 text-center text-new-h2-mobile sm:text-new-h2">
+        <h2 className="w-full max-w-sm px-10 py-4 text-center text-new-h2-mobile sm:text-new-h2">
           <Image
             priority
             loading="eager"
             src={icAddButton}
             alt="add"
-            className="mr-2 inline-block w-8 align-top sm:mr-4 sm:w-11"
+            className="mr-2 inline-block w-8 translate-y-1 align-top sm:mr-4 sm:w-11"
           />
           Create and grow your own community
         </h2>
@@ -132,14 +138,15 @@ function Component3() {
         </div>
       </div>
       <div className="my-20 flex flex-col items-center gap-y-8 px-5 lg:hidden">
-        <h2 className="max-w-xl text-center text-new-h2-mobile sm:text-new-h2">
-          Be part of the conversation with
+        <h2 className="max-w-xs text-center text-new-h2-mobile sm:max-w-sm sm:text-new-h2">
+          Be part of the conversation
+          <br /> with
           <Image
             priority
             loading="eager"
             src={icVideoAddButton}
             alt="add"
-            className="ml-3 mr-2 inline-block w-8 align-bottom sm:mr-4 sm:w-11"
+            className="ml-3 mr-2 inline-block w-8 translate-y-1 align-top sm:mr-4 sm:w-11 sm:translate-y-2"
           />
           Loops
         </h2>
@@ -241,8 +248,8 @@ function Component4() {
         </div>
       </div>
       <div className="my-20 mt-16 flex flex-col items-center px-5 lg:hidden">
-        <h2 className="mb-10 max-w-2xl text-center text-new-h2-mobile sm:text-new-h2">
-          Expand your horizons and add to the
+        <h2 className="mb-10 max-w-xs text-center text-new-h2-mobile sm:max-w-sm sm:text-new-h2">
+          Expand your horizons <br /> and add to the
           <Image
             priority
             loading="eager"
@@ -250,7 +257,7 @@ function Component4() {
             width={40}
             height={30}
             alt="conversation"
-            className="ml-3 mr-2 inline-block w-8 align-bottom sm:mr-4 sm:w-11"
+            className="ml-3 mr-2 inline-block w-8 translate-y-1 align-top sm:mr-4 sm:w-11 sm:translate-y-2"
           />
           conversation
         </h2>
@@ -259,7 +266,7 @@ function Component4() {
             <AccordionItem value="connect" className="border-none ">
               <AccordionTrigger className="items-baseline">
                 <div className="flex flex-col items-start">
-                  <h3 className="text-new-h3-mobile">Connect</h3>
+                  <h3 className="mb-2 text-new-h3-mobile">Connect</h3>
                   <p className="text-start text-new-para-1">
                     Meet new people, grow your audience, and discover new interests.
                   </p>
@@ -272,7 +279,7 @@ function Component4() {
             <AccordionItem value="discover" className="border-none ">
               <AccordionTrigger className="items-baseline">
                 <div className="flex flex-col items-start">
-                  <h3 className="text-new-h3-mobile">Discover</h3>
+                  <h3 className="mb-2 text-new-h3-mobile">Discover</h3>
                   <p className="text-start text-new-para-1">
                     Create Loops, interactive discussion spaces that combine video, photo, voice recording and text.
                   </p>
@@ -285,7 +292,7 @@ function Component4() {
             <AccordionItem value="learn" className="border-none ">
               <AccordionTrigger className="items-baseline">
                 <div className="flex flex-col items-start">
-                  <h3 className="text-new-h3-mobile">Learn</h3>
+                  <h3 className="mb-2 text-new-h3-mobile">Learn</h3>
                   <p className="text-start text-new-para-1">
                     Start conversations and invite your audience to contribute, too—a space to learn alongside and from
                     each other.
@@ -375,8 +382,10 @@ function Component5() {
 function Component6() {
   return (
     <div className="my-10 flex flex-col items-center lg:my-20">
-      <h2 className="my-6 text-new-h2-mobile sm:text-new-h2">Community sneak peak</h2>
-      <h5 className="mb-10 max-w-xl px-5 text-center text-new-h5-mobile sm:text-new-h5 lg:px-0">
+      <h2 className="my-6 max-w-[200px] text-center text-new-h2-mobile sm:max-w-[300px] sm:text-new-h2 lg:max-w-none">
+        Community sneak peak
+      </h2>
+      <h5 className="mb-10 max-w-[320px] text-center text-new-h5-mobile sm:max-w-xs sm:text-new-h5 lg:max-w-xl ">
         Take a look inside some of the communities you'll find in on Genuin and get inspired to start your own.
       </h5>
       <CommunitySection />
@@ -386,7 +395,7 @@ function Component6() {
 
 function Component7() {
   return (
-    <div className="my-10 flex max-h-full flex-col items-center gap-y-5 px-6 xl:container lg:my-20 xl:px-0">
+    <div className="my-10 flex min-h-full flex-col items-center gap-y-5 px-6 xl:container lg:my-20 xl:px-0">
       <h2 className="mb-10 text-new-h2-mobile sm:text-new-h2">Experience Genuin</h2>
       <SVGAdReelTag />
       {/* <Image priority loading='eager' className="w-1/5"  src={imgC7} alt="genuin" /> */}
