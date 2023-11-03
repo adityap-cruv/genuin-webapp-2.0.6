@@ -25,6 +25,10 @@ export function checkAndAppendHttps(link: string): string {
   return link.startsWith('http') || link.startsWith('https') ? link : 'https://' + link
 }
 
+export function isValidHTTPS(link: string): any {
+  return link.startsWith('http') || link.startsWith('https') ? link : null
+}
+
 export const abbreviateNumber = (value: number) => {
   let newValue = value.toString()
   if (value >= 1000) {

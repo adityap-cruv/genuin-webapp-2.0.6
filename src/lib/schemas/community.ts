@@ -59,7 +59,7 @@ const membersSchema = z.array(
 const CommunityDetailsSchema = z.object({
   info: infoSchema,
   popular_loops: popularLoopsSchema,
-  moderators: moderatorsSchema,
+  leaders: moderatorsSchema,
   members: membersSchema,
 })
 
