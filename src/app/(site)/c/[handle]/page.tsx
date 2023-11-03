@@ -11,6 +11,7 @@ interface Props {
 
 export default async function Component({ params }: Props) {
   const communityData = await fetchCommunityDetails(params.handle)
+  console.log("community", communityData)
   const mobileCookie = cookies().get('mobile')?.value
   return <MainComponent communityDetails={communityData} isMobile={mobileCookie === 'true'} />
 }
