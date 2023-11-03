@@ -51,7 +51,7 @@ export default function Player({
   showControls = true,
   sizeBox,
   playIfInViewPort,
-  shouldShowBackgroundBlurImage = true
+  shouldShowBackgroundBlurImage = true,
 }: Props) {
   const [playerControls, setPlayerControls] = useState({ play: shouldPlay, muted: true, loop })
   let height = 0
@@ -67,11 +67,16 @@ export default function Player({
       <div
         className={cn('relative flex h-full w-full snap-start snap-always items-center justify-center')}
         style={{ height }}>
-        {shouldShowBackgroundBlurImage && <div
-          className="absolute inset-0 z-[-1] h-full w-full bg-secondary bg-cover bg-center bg-no-repeat blur-2xl"
-          style={{ backgroundImage: `url(${videoData.video.thumbnail})` }}
-        />}
-        <div style={{ height: height, width: videoWidth }} onClick={(e) => console.log('clicked in inner player.')}>
+        {shouldShowBackgroundBlurImage && (
+          <div
+            className="absolute inset-0 z-[-1] h-full w-full bg-secondary bg-cover bg-center bg-no-repeat blur-2xl"
+            style={{ backgroundImage: `url(${videoData.video.thumbnail})` }}
+          />
+        )}
+        <div
+          className="relative"
+          style={{ height: height, width: videoWidth }}
+          onClick={(e) => console.log('clicked in inner player.')}>
           <InnerPlayer
             videoSizeBox={{ height, width: videoWidth }}
             videoSource={videoData.video.url}

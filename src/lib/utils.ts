@@ -47,3 +47,23 @@ export const abbreviateNumber = (value: number) => {
   }
   return newValue
 }
+
+type UrlObjType = {
+  pathname: string
+  query: { key: string; value: string | undefined }[]
+}
+
+export function replaceUrlWithoutReload(urlObj: UrlObjType) {
+  if (!window) return
+  const historyObj = window.history
+  const replaceUrlObj = new URL(window.location.href)
+  const searchParams = new URLSearchParams(replaceUrlObj.search)
+  urlObj.query.forEach((entry, index) => {
+    if (entry.value) {
+      searchParams.set(entry.key, entry.value)
+    }
+  })
+  replaceUrlObj.pathname = urlObj.pathname ?? ''
+  replaceUrlObj.search = searchParams.toString()
+  console.log('replace::', replaceUrlObj.href)
+}
