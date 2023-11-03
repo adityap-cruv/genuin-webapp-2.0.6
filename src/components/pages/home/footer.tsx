@@ -8,11 +8,11 @@ export function Footer() {
   return (
     <>
       <footer className="relative hidden bg-primary lg:block">
-        <div className="container flex h-full flex-col gap-y-6">
+        <div className="mx-20 flex h-full flex-col gap-y-6">
           <div className="flex w-full items-end pb-6 pt-7">
             <div className="flex w-full flex-col gap-y-8 pt-24">
               <h2 className="text-new-h2 text-new-off-white">Join the world of Genuin.</h2>
-              <h5 className="max-w-2xl text-new-h5 text-new-off-white">
+              <h5 className="mr-6 max-w-2xl text-new-h5 text-new-off-white">
                 Download the app to join communities and add to the conversation. Don’t see a community that speaks to
                 you? Start your own!
               </h5>
@@ -30,7 +30,7 @@ export function Footer() {
             className="flex flex-col gap-y-10 bg-new-off-black px-20 pb-8 pt-12 text-primary-foreground"
             style={{ borderRadius: '20px 20px 0px 0px' }}>
             <GenuinLogo.text variant="light" />
-            <div className="flex justify-between font-semibold" style={{ fontSize: '20px', lineHeight: '110%' }}>
+            <div className="flex justify-between text-new-para-1">
               <div>
                 <p>© 2023 Genuin Inc.</p>
               </div>
@@ -50,9 +50,9 @@ export function Footer() {
         </div>
       </footer>
       <footer className="relative bg-primary lg:hidden">
-        <div className="container flex h-full flex-col gap-y-6">
+        <div className="mx-2 flex h-full flex-col gap-y-6 sm:mx-15">
           <div className="mt-5 flex flex-col items-center justify-center gap-y-2">
-            <p className="text-center text-new-h2-mobile text-new-off-white">Join the world of Genuin.</p>
+            <p className="max-w-[230px] text-center text-new-h2-mobile text-new-off-white">Join the world of Genuin.</p>
             <DownloadAppDialog>
               <Button
                 size="index-page"
@@ -66,7 +66,7 @@ export function Footer() {
             className="mt-5 flex items-center justify-between gap-y-10 bg-new-off-black p-5 text-primary-foreground"
             style={{ borderRadius: '20px 20px 0px 0px' }}>
             <GenuinLogo.text variant="light" />
-            <p>© 2023 Genuin Inc.</p>
+            <p className="text-new-para-2-mobile sm:text-new-para-2">© 2023 Genuin Inc.</p>
           </div>
         </div>
       </footer>
