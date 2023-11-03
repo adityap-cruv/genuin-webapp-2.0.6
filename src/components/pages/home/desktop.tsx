@@ -97,13 +97,13 @@ function Component2() {
         <Image priority loading="eager" className="w-1/2" src={imgC2} alt="Create you community!" />
       </div>
       <div className="flex flex-col items-center justify-center py-10 lg:hidden">
-        <h2 className="w-full max-w-sm px-10 py-4 text-center text-new-h2-mobile sm:text-new-h2">
+        <h2 className="w-full max-w-sm py-4 text-center text-new-h2-mobile sm:text-new-h2">
           <Image
             priority
             loading="eager"
             src={icAddButton}
             alt="add"
-            className="mr-2 inline-block w-8 translate-y-1 align-top sm:mr-4 sm:w-11"
+            className="mr-2 inline-block w-8 translate-y-1 align-baseline sm:mr-4 sm:w-11"
           />
           Create and grow your own community
         </h2>
@@ -146,7 +146,7 @@ function Component3() {
             loading="eager"
             src={icVideoAddButton}
             alt="add"
-            className="ml-3 mr-2 inline-block w-8 translate-y-1 align-top sm:mr-4 sm:w-11 sm:translate-y-2"
+            className="ml-3 mr-2 inline-block w-8 translate-y-1 align-baseline sm:mr-4 sm:w-11"
           />
           Loops
         </h2>
@@ -248,8 +248,9 @@ function Component4() {
         </div>
       </div>
       <div className="my-20 mt-16 flex flex-col items-center px-5 lg:hidden">
-        <h2 className="mb-10 max-w-xs text-center text-new-h2-mobile sm:max-w-sm sm:text-new-h2">
-          Expand your horizons <br /> and add to the
+        <h2 className="mb-10 max-w-xs text-center text-new-h2-mobile sm:max-w-lg sm:text-new-h2">
+          Expand your horizons and add to the
+          <br />
           <Image
             priority
             loading="eager"
@@ -257,7 +258,7 @@ function Component4() {
             width={40}
             height={30}
             alt="conversation"
-            className="ml-3 mr-2 inline-block w-8 translate-y-1 align-top sm:mr-4 sm:w-11 sm:translate-y-2"
+            className="ml-3 mr-2 inline-block w-8 translate-y-1 align-baseline sm:mr-4 sm:w-11"
           />
           conversation
         </h2>
@@ -314,7 +315,7 @@ function Component5() {
   return (
     <>
       <div className="my-40 hidden w-full flex-col items-center px-6 xl:container lg:flex xl:px-0">
-        <h2 className="text-new-h2">What our members say</h2>
+        <h2 className="text-center text-new-h2">What our members say</h2>
         <div className="my-10 mt-15 flex w-full justify-between gap-10">
           <div className="flex w-3/5 flex-col gap-y-10">
             <div className="-border-spacing-10 flex h-1/2 flex-col justify-around rounded-[10px] border-[18px] border-[#E9CAF4] bg-new-off-black p-8">
@@ -349,7 +350,7 @@ function Component5() {
         </div>
       </div>
       <div className="my-20 flex min-h-full flex-col items-center gap-y-10 px-5 lg:hidden">
-        <h2 className="text-new-h2-mobile sm:text-new-h2">What our members say</h2>
+        <h2 className="text-center text-new-h2-mobile sm:text-new-h2">What our members say</h2>
         <div className=" flex flex-col rounded-[10px] border-[18px] border-[#E9CAF4] bg-new-off-black p-4 sm:w-4/5">
           <p className="font-bold text-new-off-white" style={{ fontSize: '28px' }}>
             "Infinite community possibilities."
