@@ -13,27 +13,50 @@ import { PATH_NAME } from '@lib/utils/constants/path'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import icReply from '@icons/icReply.svg'
 import icSave from '@icons/icSave.svg'
+import icMute from '@icons/player-controls/icMute.svg'
+import icUnmute from '@icons/player-controls/icUnmute.svg'
 import { VideoDataType } from '@lib/schemas/video'
+import { usePlayerControlStore } from '@lib/stores/common/player-control-store'
 
 interface Props {
   videoData?: VideoDataType
 }
 
 export function ControlLayer({ videoData }: Props) {
+  const { toggleMuted, muted } = usePlayerControlStore((state) => ({
+    toggleMuted: state.toggleMuted,
+    muted: state.muted,
+  }))
+
   if (videoData) {
     return (
-      <div className="absolute bottom-0 left-0 w-full p-2">
-        {videoData.video_type === 'rt' || videoData.loop ? (
-          <Loop videoData={videoData} />
-        ) : (
-          <Public videoData={videoData} />
-        )}
+      <div className="relative h-full w-full">
+        <Image
+          src={!muted ? icUnmute : icMute}
+          alt="volume-control"
+          className="absolute left-3 top-3 z-20 cursor-pointer"
+          onClick={(e) => {
+            toggleMuted()
+            e.stopPropagation()
+          }}
+        />
+        <div className="absolute bottom-0 left-0 w-full p-2">
+          {videoData.video_type === 'rt' || videoData.loop ? (
+            <Loop videoData={videoData} />
+          ) : (
+            <Public videoData={videoData} />
+          )}
+        </div>
       </div>
     )
   }
 }
 
-function Loop({ videoData }: Props) {
+interface LoopProps {
+  videoData?: VideoDataType
+}
+
+function Loop({ videoData }: LoopProps) {
   return (
     <div className="flex justify-between">
       <div className="flex w-4/5 flex-col justify-end">
@@ -86,7 +109,11 @@ function Loop({ videoData }: Props) {
   )
 }
 
-function Public({ videoData }: Props) {
+interface PublicProps {
+  videoData: VideoDataType
+}
+
+function Public({ videoData }: PublicProps) {
   return (
     <div className="flex justify-between">
       <div className="flex w-4/5 flex-col justify-end">

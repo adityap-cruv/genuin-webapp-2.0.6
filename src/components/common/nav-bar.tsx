@@ -7,6 +7,8 @@ import Link from 'next/link'
 import { cn } from '@lib/utils'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@components/ui/dropdown-menu'
 import { HamBurgerMenuIcon } from '@components/ui/ham-burger'
+import { HIRING_LINK, MOBILE_DOWNLOAD_APP_LINK } from '@lib/constants'
+import { PATH_NAME } from '@lib/utils/constants/path'
 
 interface Props {
   variant: 'light' | 'dark' | 'transparent'
@@ -18,7 +20,7 @@ export function NavBar({ variant = 'light' }: Props) {
     <nav
       className={cn(
         variant === 'dark' ? 'bg-monochrome-black' : undefined,
-        'fixed top-0 z-50 m-auto flex h-navbar w-full'
+        'fixed top-0 z-10 m-auto flex h-navbar w-full'
       )}>
       <div className={cn('container flex h-full items-center justify-between py-1')}>
         <GenuinLogo.adaptive variant={isVariantLight ? 'light' : 'dark'} />
@@ -39,7 +41,7 @@ function GetAppButton() {
       </Button>
     </DownloadAppDialog>
   ) : (
-    <Link href="https://begenuin.com/sg86n">
+    <Link href={MOBILE_DOWNLOAD_APP_LINK}>
       <Button size="sm">
         <p className="text-title-sm text-monochrome-white">Get App</p>
       </Button>
@@ -60,7 +62,7 @@ function BurgerMenu({ variant = 'dark' }: { variant?: 'light' | 'dark' }) {
           event.preventDefault()
         }}>
         <DropdownMenuItem>
-          <Link href="https://careers.begenuin.com" className="w-full">
+          <Link href={HIRING_LINK} className="w-full">
             <p className="text-right text-title-xl text-monochrome-white">Join Our Team</p>
           </Link>
         </DropdownMenuItem>
@@ -70,12 +72,12 @@ function BurgerMenu({ variant = 'dark' }: { variant?: 'light' | 'dark' }) {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem>
-          <Link href="/terms" className="w-full">
+          <Link href={PATH_NAME.terms} className="w-full">
             <p className="w-full text-right text-title-xl text-monochrome-white">Terms of Service</p>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem>
-          <Link href="/privacy" className="w-full">
+          <Link href={PATH_NAME.privacy} className="w-full">
             <p className="w-full text-right text-title-xl text-monochrome-white">Privacy Policy</p>
           </Link>
         </DropdownMenuItem>
