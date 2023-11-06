@@ -73,7 +73,7 @@ export function CommunitySection() {
                           title: 'Share this community.',
                           description: 'Welcome to Genuin!!',
                           shareLink: item.link,
-                          toast: toast({ title: 'Link Copied!', duration: 1000 }),
+                          toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                         })
                       }>
                       <Image src={icShare} alt="share" />
