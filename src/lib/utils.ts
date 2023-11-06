@@ -47,3 +47,31 @@ export const abbreviateNumber = (value: number) => {
   }
   return newValue
 }
+
+type UrlObjType = {
+  pathname: string
+  query: { key: string; value: string | undefined }[]
+}
+
+function getUrlToChange(urlObj: UrlObjType) {
+  const replaceUrlObj = new URL(window.location.href)
+  const searchParams = new URLSearchParams(replaceUrlObj.search)
+  urlObj.query.forEach((entry, index) => {
+    if (entry.value) {
+      searchParams.set(entry.key, entry.value)
+    }
+  })
+  replaceUrlObj.pathname = urlObj.pathname ?? ''
+  replaceUrlObj.search = searchParams.toString()
+  return replaceUrlObj.href
+}
+
+export function replaceUrlWithoutReload(urlObj: UrlObjType) {
+  if (!window) return
+  window.history.replaceState(null, '', getUrlToChange(urlObj))
+}
+
+export function pushUrlWithoutReload(urlObj: UrlObjType) {
+  if (!window) return
+  window.history.pushState(null, '', getUrlToChange(urlObj))
+}

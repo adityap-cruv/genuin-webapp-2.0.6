@@ -3,7 +3,6 @@ import Image from 'next/image'
 import imageAppStore from '@images/appStore.svg'
 import imagePlayStore from '@images/playStore.svg'
 import iconLogo from '@icons/icWithoutText.svg'
-import { useResponsive } from '@hooks/useResponsive'
 
 interface Props {
   children?: React.ReactNode
@@ -13,18 +12,15 @@ interface Props {
 }
 
 export function DownloadDialog({ children, subtitle, title, asChild = true }: Props) {
-  const { isSm } = useResponsive()
   return (
     <Dialog>
       <DialogTrigger asChild={asChild}>{children}</DialogTrigger>
       <DialogContent>
         <div className="flex h-full w-full flex-col items-center justify-center pt-6">
           <Image src={iconLogo} alt="genuin" className="mb-3" />
-          {isSm && (
-            <p style={{ fontSize: '40px' }} className="whitespace-nowrap text-center font-bold">
-              {title}
-            </p>
-          )}
+          <p style={{ fontSize: '40px' }} className="hidden whitespace-nowrap text-center font-bold sm:block">
+            {title}
+          </p>
           <p className="line-clamp-2 max-w-none break-all text-center font-semibold" style={{ fontSize: '20px' }}>
             {subtitle}
           </p>
