@@ -1,14 +1,13 @@
 'use client'
-import { useResponsive } from '@hooks/useResponsive'
 import dynamic from 'next/dynamic'
 import { cn } from '@lib/utils'
 import { Loader } from '@components/ui/loader'
 import { VideoDataType } from '@lib/schemas/video'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { usePlayerControlStore } from '@lib/stores/common/player-control-store'
 const InnerPlayer = dynamic(() => import('./inner-player').then((comp) => comp.InnerPlayer), {
-  loading: (loadingProp) => {
-    if (loadingProp.isLoading) return <Loader size="lg" />
-    return null
+  loading: (_) => {
+    return <Loader size="lg" />
   },
 })
 const ControlLayer = dynamic(() => import('./control-layer').then((comp) => comp.ControlLayer))
@@ -46,27 +45,38 @@ interface Props {
 
 export default function Player({
   videoData,
+  loop = true,
   shouldPlay = true,
-  loop = false,
   showControls = true,
-  sizeBox,
   playIfInViewPort,
   shouldShowBackgroundBlurImage = true,
 }: Props) {
-  const [playerControls, setPlayerControls] = useState({ play: shouldPlay, muted: true, loop })
-  let height = 0
-  if (sizeBox) {
-    height = sizeBox.height
-  } else {
-    height = useResponsive().height || 0
-  }
+  const { playerSizeBox, updateSizeBox } = usePlayerControlStore((state) => {
+    const updatePlayerSizeBox = state.updatePlayerSizeBox
+    if (!shouldPlay) {
+      state.pause()
+    }
+    return {
+      playerSizeBox: state.playerSizeBox,
+      updateSizeBox: updatePlayerSizeBox,
+    }
+  })
 
-  if (height && videoData) {
-    const videoWidth = height * (9 / 16)
+  useEffect(() => {
+    function resizeHandler() {
+      updateSizeBox(window.innerHeight, (window.innerHeight * 9) / 16)
+    }
+    resizeHandler()
+    window.addEventListener('resize', resizeHandler)
+    return window.removeEventListener('resize', resizeHandler)
+  }, [])
+
+  if (playerSizeBox.height && videoData) {
+    // const videoWidth = height * (9 / 16)
     return (
       <div
         className={cn('relative flex h-full w-full snap-start snap-always items-center justify-center')}
-        style={{ height }}>
+        style={{ height: playerSizeBox.height }}>
         {shouldShowBackgroundBlurImage && (
           <div
             className="absolute inset-0 z-[-1] h-full w-full bg-secondary bg-cover bg-center bg-no-repeat blur-2xl"
@@ -75,15 +85,13 @@ export default function Player({
         )}
         <div
           className="relative"
-          style={{ height: height, width: videoWidth }}
+          style={{ height: playerSizeBox.height, width: playerSizeBox.width }}
           onClick={(e) => console.log('clicked in inner player.')}>
           <InnerPlayer
-            videoSizeBox={{ height, width: videoWidth }}
+            videoSizeBox={{ height: playerSizeBox.height, width: playerSizeBox.width }}
             videoSource={videoData.video.url}
             poster={videoData.video.thumbnail}
-            muted={playerControls.muted}
-            loop={playerControls.loop}
-            shouldPlay={playerControls.play}
+            loop={loop}
             playIfInViewport={playIfInViewPort}
             onEnded={() => console.log('on Ended called..')}
             onPlay={() => console.log('on play called..')}

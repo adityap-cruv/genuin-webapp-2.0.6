@@ -10,7 +10,7 @@ import { getPaginatedAllVideos, getPaginatedGenuinVideos, getPaginatedLoopVideos
 import type { VideoDataType } from '@lib/schemas/video'
 import { useMotionValueEvent, useScroll } from 'framer-motion'
 import dynamic from 'next/dynamic'
-import { replaceUrlWithoutReload } from '@lib/utils'
+import { pushUrlWithoutReload, replaceUrlWithoutReload } from '@lib/utils'
 import { PATH_NAME } from '@lib/utils/constants/path'
 const PlayerModal = dynamic(() => import('@components/common/player-modal').then((comp) => comp.PlayerModal))
 
@@ -143,11 +143,10 @@ function Tile({ width = -1, videoDetails }: TileProps) {
     <PlayerModal videoDetails={videoDetails}>
       <div
         onClick={(e) => {
-          replaceUrlWithoutReload({
+          pushUrlWithoutReload({
             pathname: PATH_NAME.video(videoDetails.video.share_string),
             query: [{ key: 'l', value: videoDetails.loop?.share_string }],
           })
-          console.log('clicked..')
         }}
         className="relative p-[1px] duration-300 hover:scale-95 md:p-1">
         <Image

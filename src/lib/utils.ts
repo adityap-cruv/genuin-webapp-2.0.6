@@ -53,9 +53,7 @@ type UrlObjType = {
   query: { key: string; value: string | undefined }[]
 }
 
-export function replaceUrlWithoutReload(urlObj: UrlObjType) {
-  if (!window) return
-  const historyObj = window.history
+function getUrlToChange(urlObj: UrlObjType) {
   const replaceUrlObj = new URL(window.location.href)
   const searchParams = new URLSearchParams(replaceUrlObj.search)
   urlObj.query.forEach((entry, index) => {
@@ -65,5 +63,15 @@ export function replaceUrlWithoutReload(urlObj: UrlObjType) {
   })
   replaceUrlObj.pathname = urlObj.pathname ?? ''
   replaceUrlObj.search = searchParams.toString()
-  console.log('replace::', replaceUrlObj.href)
+  return replaceUrlObj.href
+}
+
+export function replaceUrlWithoutReload(urlObj: UrlObjType) {
+  if (!window) return
+  window.history.replaceState(null, '', getUrlToChange(urlObj))
+}
+
+export function pushUrlWithoutReload(urlObj: UrlObjType) {
+  if (!window) return
+  window.history.pushState(null, '', getUrlToChange(urlObj))
 }
