@@ -2,7 +2,7 @@
 import { Loader } from '@components/ui/loader'
 import dynamic from 'next/dynamic'
 import { getCommunityVideos } from '@lib/api/community'
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 
 const Player = dynamic(() => import('@components/common/player').then((comp) => comp.default), {
   loading: (state) => {
@@ -19,10 +19,21 @@ export function CommunityReels({ communityHandle }: CommunityReelsProps) {
   const divRef = useRef<HTMLDivElement>(null)
   const { data: videos, isLoading, isError, isFetched } = getCommunityVideos(communityHandle)
 
+  useEffect(() => {
+    const div = divRef.current
+    if (!div) return
+    function scrollHandler(event: Event) {
+      console.log('event::', event)
+    }
+
+    div.addEventListener('scroll', scrollHandler)
+    return div.removeEventListener('scroll', scrollHandler)
+  }, [])
+
   return (
     <div className="relative z-10">
       <div
-        className="hide-scrollbar relative h-full snap-y overflow-y-auto overflow-x-clip"
+        className="hide-scrollbar relative h-full snap-y snap-mandatory snap-always overflow-y-auto overflow-x-clip"
         ref={divRef}
         style={{
           width: (divRef.current?.parentElement?.getBoundingClientRect().height || 0) * (9 / 16),

@@ -75,9 +75,7 @@ export default function Player({
   if (height && videoData) {
     const videoWidth = height * (9 / 16)
     return (
-      <div
-        className={cn('relative flex h-full w-full snap-start snap-always items-center justify-center')}
-        style={{ height }}>
+      <div className={cn('relative flex h-full w-full snap-start items-center justify-center')} style={{ height }}>
         {shouldShowBackgroundBlurImage && (
           <div
             className="absolute inset-0 z-[-1] h-full w-full bg-secondary bg-cover bg-center bg-no-repeat blur-2xl"
