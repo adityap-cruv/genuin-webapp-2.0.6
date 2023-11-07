@@ -2,7 +2,7 @@
 
 import type { CommunityDetailsType } from '@lib/schemas/community'
 import dynamic from 'next/dynamic'
-const MobileComponent = dynamic(() => import('./mobile').then((comp) => comp.Mobile))
+const Mobile = dynamic(() => import('./mobile').then((comp) => comp.Mobile))
 const Desktop = dynamic(() => import('./desktop').then((comp) => comp.Desktop))
 
 interface Props {
@@ -11,6 +11,6 @@ interface Props {
 }
 
 export function MainComponent({ communityDetails, isMobile }: Props) {
-  if (isMobile) return <MobileComponent communityDetails={communityDetails} />
+  if (isMobile) return <Mobile communityDetails={communityDetails} />
   return <Desktop communityDetails={communityDetails} />
 }
