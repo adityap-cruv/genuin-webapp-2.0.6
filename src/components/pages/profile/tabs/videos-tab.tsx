@@ -1,6 +1,6 @@
 import { Loader } from '@components/ui/loader'
 import Image from 'next/image'
-import { useParams } from 'next/navigation'
+import { useRouter, useParams } from 'next/navigation'
 import { useSize } from '@hooks/useSize'
 import { useRef } from 'react'
 import icView from '@icons/icView.svg'
@@ -10,6 +10,8 @@ import { getPaginatedAllVideos, getPaginatedGenuinVideos, getPaginatedLoopVideos
 import type { VideoDataType } from '@lib/schemas/video'
 import { useMotionValueEvent, useScroll } from 'framer-motion'
 import dynamic from 'next/dynamic'
+import { pushUrlWithoutReload, replaceUrlWithoutReload } from '@lib/utils'
+import { PATH_NAME } from '@lib/utils/constants/path'
 const PlayerModal = dynamic(() => import('@components/common/player-modal').then((comp) => comp.PlayerModal))
 
 function getNickname() {
@@ -18,7 +20,7 @@ function getNickname() {
 
 // todo need have design of error screens for all tabs and implment it.
 // todo Work on optimizing this code.
-// todo solve pagination issue for small screens.
+// todo fetchNextPage is being called multiple times, solve it.
 function GenuinVideos() {
   const divRef = useRef<HTMLDivElement>(null)
   const { data, isLoading, isError, isFetchingNextPage, hasNextPage, fetchNextPage } = getPaginatedGenuinVideos(
@@ -139,7 +141,14 @@ type TileProps = {
 function Tile({ width = -1, videoDetails }: TileProps) {
   return (
     <PlayerModal videoDetails={videoDetails}>
-      <div className="relative p-[1px] duration-300 hover:scale-95 md:p-1">
+      <div
+        onClick={(e) => {
+          pushUrlWithoutReload({
+            pathname: PATH_NAME.video(videoDetails.video.share_string),
+            query: [{ key: 'l', value: videoDetails.loop?.share_string }],
+          })
+        }}
+        className="relative p-[1px] duration-300 hover:scale-95 md:p-1">
         <Image
           src={videoDetails.video.thumbnail || ''}
           alt={videoDetails.video.description || 'Genuin Video'}

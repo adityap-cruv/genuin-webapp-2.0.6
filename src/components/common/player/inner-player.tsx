@@ -1,13 +1,13 @@
 import OpenPlayerJS from 'openplayerjs'
 import { useInView } from 'framer-motion'
 import { DetailedHTMLProps, VideoHTMLAttributes, useCallback, useEffect, useRef, useState } from 'react'
+import { usePlayerControlStore } from '@lib/stores/common/player-control-store'
 
 // todo work on why player is sendding multiple request.
 interface Props extends DetailedHTMLProps<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement> {
   videoSizeBox: { width: number; height: number }
   videoSource?: string
-  shouldPlay: boolean
-  playIfInViewport?: boolean
+  isFirstElement?: boolean
 }
 
 export function InnerPlayer({
@@ -15,8 +15,6 @@ export function InnerPlayer({
   videoSource,
   poster,
   loop,
-  muted,
-  shouldPlay,
   onEnded,
   onPlay,
   onPlaying,
@@ -34,45 +32,10 @@ export function InnerPlayer({
     playing: false,
     player: null,
   })
-
-  // function getSourceType(source: string) {
-  //   return source.endsWith('.mp4') ? 'video/mp4' : 'application/x-mpegURL'
-  // }
-
-  // const sourceElements = Array.isArray(videoSource) ? (
-  //   videoSource.map((source, index) => {
-  //     if (source) return <source key={index} src={source} type={getSourceType(source)} />
-  //   })
-  // ) : (
-  //   <source src={videoSource} type={getSourceType(videoSource)} />
-  // )
-
-  // const playOrPause = useCallback(
-  //   function (player: OpenPlayerJS) {
-  //     if (typeof isInViewport === 'undefined') {
-  //       if (shouldPlay) {
-  //         player
-  //           .getMedia()
-  //           .play()
-  //           .then((_) => console.log('start playing'))
-  //           .catch((e) => console.log('something went wrong..', e))
-  //       } else {
-  //         player.pause()
-  //       }
-  //     } else {
-  //       if (shouldPlay && isInViewport) {
-  //         player
-  //           .getMedia()
-  //           .play()
-  //           .then((_) => console.log('start playing'))
-  //           .catch((e) => console.log('something went wrong..', e))
-  //       } else {
-  //         player.pause()
-  //       }
-  //     }
-  //   },
-  //   [localRef.current.player, playIfInViewport, isInViewport]
-  // )
+  const { shouldPlay, muted } = usePlayerControlStore((state) => ({
+    shouldPlay: state.shouldPlay,
+    muted: state.muted,
+  }))
 
   useEffect(() => {
     if (!videoRef.current) return
@@ -150,6 +113,112 @@ export function InnerPlayer({
           if (onCanPlay) onCanPlay(ev)
         }}
         onPause={onPause}
-        onEnded={onEnded}></video>
+        onEnded={onEnded}
+      />
+    )
+}
+
+export function ViewportPlayer({
+  videoSizeBox,
+  videoSource,
+  poster,
+  loop,
+  isFirstElement = false,
+  onEnded,
+  onPlay,
+  onPlaying,
+  onCanPlay,
+  onPause,
+  onError,
+}: Props) {
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const localRef = useRef<{
+    loaded: boolean
+    playing: boolean
+    player: OpenPlayerJS | null
+  }>({
+    loaded: false,
+    playing: false,
+    player: null,
+  })
+  const { shouldPlay, muted } = usePlayerControlStore((state) => ({
+    shouldPlay: state.shouldPlay,
+    muted: state.muted,
+  }))
+  const inView = useInView(videoRef, { amount: 0.95 })
+
+  useEffect(() => {
+    if (!videoRef.current) return
+    const player = new OpenPlayerJS(videoRef.current, {
+      controls: {
+        alwaysVisible: false,
+      },
+      mode: 'fill',
+      forceNative: true,
+      showLoaderOnInit: true,
+      onError: (e) => {},
+      hls: {
+        /**
+         * "startLevel" option typically relates to the initial
+         * quality or bitrate level at which a video stream should
+         * begin playing when adaptive streaming is employed.
+         */
+        startLevel: -1,
+        /**
+         * This will make sure that player will play on other thread rather than main thread.
+         */
+        enableWorker: true,
+        /**
+         * eme -> Encrypted Media Extensions (EME)
+         */
+        emeEnabled: true,
+      },
+    })
+    player.init().then((value) => {
+      player.load().then(() => {
+        if (isFirstElement) {
+          console.log('first time::', inView)
+          player.play()
+        }
+        localRef.current.player = player
+      })
+    })
+  }, [])
+
+  useEffect(() => {
+    const player = localRef.current.player
+    // console.log('inView::', player, inView)
+    if (inView && shouldPlay) {
+      player?.play().then(() => console.log('being played..'))
+    } else {
+      player?.pause()
+    }
+    // console.log('invew;:', inView, shouldPlay)
+  }, [inView, shouldPlay])
+
+  if (videoSource)
+    return (
+      <video
+        className="object-cover"
+        poster={poster}
+        ref={videoRef}
+        muted={muted}
+        loop={loop}
+        src={videoSource}
+        playsInline
+        style={{
+          height: videoSizeBox.height,
+          width: videoSizeBox.width,
+        }}
+        onPlay={onPlay}
+        onPlaying={onPlaying}
+        onError={onError}
+        onCanPlay={(ev) => {
+          localRef.current.loaded = true
+          if (onCanPlay) onCanPlay(ev)
+        }}
+        onPause={onPause}
+        onEnded={onEnded}
+      />
     )
 }

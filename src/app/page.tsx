@@ -31,7 +31,7 @@ export async function generateMetadata(): Promise<Metadata> {
       url: 'https://begenuin.com',
       images: [
         {
-          url: 'https://genuin-media.s3.amazonaws.com/backend_assets/new_genuin_preview.png',
+          url: 'https://media.begenuin.com/backend_assets/new_genuin_preview.png',
         },
       ],
     },

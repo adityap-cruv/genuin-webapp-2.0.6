@@ -1,4 +1,4 @@
-import { isMobile } from 'react-device-detect'
+import { isDesktop, isMobile } from 'react-device-detect'
 
 export function useAdaptiveShare() {
   async function shareFn({
@@ -18,7 +18,7 @@ export function useAdaptiveShare() {
         await window.navigator.share({ url: linkToCopy, title, text: description })
         return true
       }
-      if (window.navigator.clipboard) {
+      if (window.navigator.clipboard && isDesktop) {
         await window.navigator.clipboard.writeText(linkToCopy)
         if (toast) toast()
         return true
