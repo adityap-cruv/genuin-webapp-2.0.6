@@ -31,13 +31,13 @@ export function CommunityReels({ communityHandle }: CommunityReelsProps) {
         {isError && <div>Something went wrong with api.</div>}
         {videos?.length === 0 && <NoReelsAvailable />}
         {isFetched &&
-          videos &&
           videos.map((video: any, index: number) => {
             return (
               <Player
                 key={index}
-                shouldPlay={index === 0}
+                shouldPlay
                 videoData={video}
+                isFirstPlayerInList={index === 0}
                 sizeBox={{
                   height: divRef.current?.parentElement?.getBoundingClientRect().height || 0,
                   width: ((divRef.current?.parentElement?.getBoundingClientRect().height || 0) * 9) / 16,
