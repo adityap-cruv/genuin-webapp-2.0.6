@@ -31,8 +31,8 @@ const popularLoopsSchema = z.array(
   })
 )
 
-// Define a schema for the "moderators" array
-const moderatorsSchema = z.array(
+// Define a schema for the "leaders" array
+const leadersSchema = z.array(
   z.object({
     role: z.string(),
     name: z.string().nullable(),
@@ -59,7 +59,7 @@ const membersSchema = z.array(
 const CommunityDetailsSchema = z.object({
   info: infoSchema,
   popular_loops: popularLoopsSchema,
-  leaders: moderatorsSchema,
+  leaders: leadersSchema,
   members: membersSchema,
 })
 
