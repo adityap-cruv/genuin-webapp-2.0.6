@@ -205,14 +205,14 @@ function Leaders() {
   return (
     <div>
       <p className="my-2 text-title-md">Leader</p>
-      {communityDetailsModule?.leaders.map((moderator, index) => {
+      {communityDetailsModule?.leaders.map((leader, index) => {
         return (
-          <Link key={index} href={{ pathname: PATH_NAME.profile(moderator.nickname) }}>
+          <Link key={index} href={{ pathname: PATH_NAME.profile(leader.nickname) }}>
             <ListItem
-              title={moderator.name ?? ''}
-              subtitle={'@' + moderator.nickname}
-              description={moderator.description}
-              image={moderator.profile_image}
+              title={leader.name ?? ''}
+              subtitle={'@' + leader.nickname}
+              description={leader.description}
+              image={leader.profile_image}
             />
           </Link>
         )
