@@ -7,7 +7,7 @@ import { usePlayerControlStore } from '@lib/stores/common/player-control-store'
 interface Props extends DetailedHTMLProps<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement> {
   videoSizeBox: { width: number; height: number }
   videoSource?: string
-  playIfInViewport?: boolean
+  isFirstElement?: boolean
 }
 
 export function InnerPlayer({
@@ -15,7 +15,6 @@ export function InnerPlayer({
   videoSource,
   poster,
   loop,
-  playIfInViewport,
   onEnded,
   onPlay,
   onPlaying,
@@ -91,6 +90,111 @@ export function InnerPlayer({
       player.pause()
     }
   }, [shouldPlay])
+
+  if (videoSource)
+    return (
+      <video
+        className="object-cover"
+        poster={poster}
+        ref={videoRef}
+        muted={muted}
+        loop={loop}
+        src={videoSource}
+        playsInline
+        style={{
+          height: videoSizeBox.height,
+          width: videoSizeBox.width,
+        }}
+        onPlay={onPlay}
+        onPlaying={onPlaying}
+        onError={onError}
+        onCanPlay={(ev) => {
+          localRef.current.loaded = true
+          if (onCanPlay) onCanPlay(ev)
+        }}
+        onPause={onPause}
+        onEnded={onEnded}
+      />
+    )
+}
+
+export function ViewportPlayer({
+  videoSizeBox,
+  videoSource,
+  poster,
+  loop,
+  isFirstElement = false,
+  onEnded,
+  onPlay,
+  onPlaying,
+  onCanPlay,
+  onPause,
+  onError,
+}: Props) {
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const localRef = useRef<{
+    loaded: boolean
+    playing: boolean
+    player: OpenPlayerJS | null
+  }>({
+    loaded: false,
+    playing: false,
+    player: null,
+  })
+  const { shouldPlay, muted } = usePlayerControlStore((state) => ({
+    shouldPlay: state.shouldPlay,
+    muted: state.muted,
+  }))
+  const inView = useInView(videoRef, { amount: 0.95 })
+
+  useEffect(() => {
+    if (!videoRef.current) return
+    const player = new OpenPlayerJS(videoRef.current, {
+      controls: {
+        alwaysVisible: false,
+      },
+      mode: 'fill',
+      forceNative: true,
+      showLoaderOnInit: true,
+      onError: (e) => {},
+      hls: {
+        /**
+         * "startLevel" option typically relates to the initial
+         * quality or bitrate level at which a video stream should
+         * begin playing when adaptive streaming is employed.
+         */
+        startLevel: -1,
+        /**
+         * This will make sure that player will play on other thread rather than main thread.
+         */
+        enableWorker: true,
+        /**
+         * eme -> Encrypted Media Extensions (EME)
+         */
+        emeEnabled: true,
+      },
+    })
+    player.init().then((value) => {
+      player.load().then(() => {
+        if (isFirstElement) {
+          console.log('first time::', inView)
+          player.play()
+        }
+        localRef.current.player = player
+      })
+    })
+  }, [])
+
+  useEffect(() => {
+    const player = localRef.current.player
+    // console.log('inView::', player, inView)
+    if (inView && shouldPlay) {
+      player?.play().then(() => console.log('being played..'))
+    } else {
+      player?.pause()
+    }
+    // console.log('invew;:', inView, shouldPlay)
+  }, [inView, shouldPlay])
 
   if (videoSource)
     return (
