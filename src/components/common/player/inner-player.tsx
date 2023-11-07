@@ -1,12 +1,12 @@
 import OpenPlayerJS from 'openplayerjs'
 import { useInView } from 'framer-motion'
 import { DetailedHTMLProps, VideoHTMLAttributes, useCallback, useEffect, useRef, useState } from 'react'
+import { usePlayerControlStore } from '@lib/stores/common/player-control-store'
 
 // todo work on why player is sendding multiple request.
 interface Props extends DetailedHTMLProps<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement> {
   videoSizeBox: { width: number; height: number }
   videoSource?: string
-  shouldPlay: boolean
   playIfInViewport?: boolean
 }
 
@@ -15,8 +15,7 @@ export function InnerPlayer({
   videoSource,
   poster,
   loop,
-  muted,
-  shouldPlay,
+  playIfInViewport,
   onEnded,
   onPlay,
   onPlaying,
@@ -34,45 +33,10 @@ export function InnerPlayer({
     playing: false,
     player: null,
   })
-
-  // function getSourceType(source: string) {
-  //   return source.endsWith('.mp4') ? 'video/mp4' : 'application/x-mpegURL'
-  // }
-
-  // const sourceElements = Array.isArray(videoSource) ? (
-  //   videoSource.map((source, index) => {
-  //     if (source) return <source key={index} src={source} type={getSourceType(source)} />
-  //   })
-  // ) : (
-  //   <source src={videoSource} type={getSourceType(videoSource)} />
-  // )
-
-  // const playOrPause = useCallback(
-  //   function (player: OpenPlayerJS) {
-  //     if (typeof isInViewport === 'undefined') {
-  //       if (shouldPlay) {
-  //         player
-  //           .getMedia()
-  //           .play()
-  //           .then((_) => console.log('start playing'))
-  //           .catch((e) => console.log('something went wrong..', e))
-  //       } else {
-  //         player.pause()
-  //       }
-  //     } else {
-  //       if (shouldPlay && isInViewport) {
-  //         player
-  //           .getMedia()
-  //           .play()
-  //           .then((_) => console.log('start playing'))
-  //           .catch((e) => console.log('something went wrong..', e))
-  //       } else {
-  //         player.pause()
-  //       }
-  //     }
-  //   },
-  //   [localRef.current.player, playIfInViewport, isInViewport]
-  // )
+  const { shouldPlay, muted } = usePlayerControlStore((state) => ({
+    shouldPlay: state.shouldPlay,
+    muted: state.muted,
+  }))
 
   useEffect(() => {
     if (!videoRef.current) return
@@ -150,6 +114,7 @@ export function InnerPlayer({
           if (onCanPlay) onCanPlay(ev)
         }}
         onPause={onPause}
-        onEnded={onEnded}></video>
+        onEnded={onEnded}
+      />
     )
 }

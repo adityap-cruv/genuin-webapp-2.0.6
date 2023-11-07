@@ -1,51 +1,44 @@
 'use client'
-import { Button } from '@components/ui/button'
 import { GenuinLogo } from '@components/ui/genuin-logo'
-import { DownloadAppDialog } from '../pages/home/download-app-dialog'
-import { isMobile } from 'react-device-detect'
 import Link from 'next/link'
-import { cn } from '@lib/utils'
+import { cn, getAvatarFallback } from '@lib/utils'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@components/ui/dropdown-menu'
 import { HamBurgerMenuIcon } from '@components/ui/ham-burger'
-import { HIRING_LINK, MOBILE_DOWNLOAD_APP_LINK } from '@lib/constants'
-import { PATH_NAME } from '@lib/utils/constants/path'
+import { Avatar, AvatarFallback, AvatarImage } from '@components/ui/avatar'
 
 interface Props {
   variant: 'light' | 'dark' | 'transparent'
+  communityDetails: any
 }
 
-export function NavBar({ variant = 'light' }: Props) {
+export function NavBar({ variant = 'light', communityDetails }: Props) {
   const isVariantLight = variant === 'dark' || variant === 'transparent'
   return (
     <nav
       className={cn(
-        variant === 'dark' ? 'bg-monochrome-black' : undefined,
-        'fixed top-0 z-10 m-auto flex h-navbar w-full'
+        variant === 'dark' ? 'bg-monochrome-black' : 'bg-monochrome-white',
+        'fixed top-0 z-50 m-auto flex h-navbar w-full px-4'
       )}>
-      <div className={cn('container flex h-full items-center justify-between py-1')}>
-        <GenuinLogo.adaptive variant={isVariantLight ? 'light' : 'dark'} />
-        <div className="flex items-center">
-          <GetAppButton />
+      <div className={cn(' container relative flex h-full items-center justify-between py-1')}>
+        <div className=" absolute left-0">
+          <GenuinLogo.adaptive variant={isVariantLight ? 'light' : 'dark'} />
+        </div>
+        <div
+          className="absolute left-[50%] flex items-center justify-between"
+          style={{ transform: 'translate(-50%, 0)' }}>
+          <Avatar className="mx-2 h-6 w-6 bg-red-50">
+            <AvatarImage src={communityDetails?.info.profile_image} />
+            <AvatarFallback>
+              <p className="text-title-xl text-monochrome-white">{getAvatarFallback(communityDetails?.info.name)}</p>
+            </AvatarFallback>
+          </Avatar>
+          <p className="my-2 line-clamp-1 break-all text-title-sm">{communityDetails?.info.name}</p>
+        </div>
+        <div className=" absolute right-0">
           <BurgerMenu variant={isVariantLight ? 'light' : 'dark'} />
         </div>
       </div>
     </nav>
-  )
-}
-
-function GetAppButton() {
-  return !isMobile ? (
-    <DownloadAppDialog>
-      <Button size="sm">
-        <p className="line-clamp-1 text-title-sm text-monochrome-white">Get App</p>
-      </Button>
-    </DownloadAppDialog>
-  ) : (
-    <Link href={MOBILE_DOWNLOAD_APP_LINK}>
-      <Button size="sm">
-        <p className="text-title-sm text-monochrome-white">Get App</p>
-      </Button>
-    </Link>
   )
 }
 
@@ -62,7 +55,7 @@ function BurgerMenu({ variant = 'dark' }: { variant?: 'light' | 'dark' }) {
           event.preventDefault()
         }}>
         <DropdownMenuItem>
-          <Link href={HIRING_LINK} className="w-full">
+          <Link href="https://careers.begenuin.com" className="w-full">
             <p className="text-right text-title-xl text-monochrome-white">Join Our Team</p>
           </Link>
         </DropdownMenuItem>
@@ -72,12 +65,12 @@ function BurgerMenu({ variant = 'dark' }: { variant?: 'light' | 'dark' }) {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem>
-          <Link href={PATH_NAME.terms} className="w-full">
+          <Link href="/terms" className="w-full">
             <p className="w-full text-right text-title-xl text-monochrome-white">Terms of Service</p>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem>
-          <Link href={PATH_NAME.privacy} className="w-full">
+          <Link href="/privacy" className="w-full">
             <p className="w-full text-right text-title-xl text-monochrome-white">Privacy Policy</p>
           </Link>
         </DropdownMenuItem>
