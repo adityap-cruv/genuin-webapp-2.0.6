@@ -12,6 +12,7 @@ export async function fetchCommunityDetails(handle: string) {
     })
     .then((res) => res.data.data)
     .catch((e) => {
+      console.log(e)
       throw new Error('Something went wrong with community detail!')
     })
 }
@@ -25,6 +26,7 @@ async function fetchCommunityVideos(handle: string) {
     })
     .then((res) => res.data.data.feed)
     .catch((e) => {
+      console.log(e)
       throw new Error('Something went wrong with community videos!')
     })
 }
