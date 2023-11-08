@@ -13,13 +13,17 @@ interface CompProps {
 export default async function Component({ params }: CompProps) {
   const isMobile = cookies().get('mobile')?.value === 'true'
   const profileData = await fetchUserData(params.nickname)
-  return <MainComponent profileData={profileData} />
+  return <MainComponent profileData={profileData} isMobile={isMobile} />
 }
 
 export async function generateMetadata({ params }: CompProps): Promise<Metadata> {
   const data = await fetchUserData(params.nickname)
   const title = `${data.name} (@${data.nickname}) is on Genuin`
-  let desc = `${Boolean(data.name) && data.name.replace(/\s+/g, '') !== '' ? `${data.name.trim()} (@${data.nickname})` : `@${data.nickname}`} on Genuin`
+  let desc = `${
+    Boolean(data.name) && data.name.replace(/\s+/g, '') !== ''
+      ? `${data.name.trim()} (@${data.nickname})`
+      : `@${data.nickname}`
+  } on Genuin`
   if (data?.bio != '') {
     desc += ` | ${data.bio}`
   }
@@ -34,7 +38,7 @@ export async function generateMetadata({ params }: CompProps): Promise<Metadata>
       url: `${process.env.NEXT_PUBLIC_HOST_URL}/p/${data.nickname}`,
       images: [
         {
-          url: data.profile_image
+          url: data.profile_image,
         },
       ],
     },

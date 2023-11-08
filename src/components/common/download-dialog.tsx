@@ -12,6 +12,8 @@ interface Props {
 }
 
 export function DownloadDialog({ children, subtitle, title, asChild = true }: Props) {
+  const URL_TO_APP_STORE = 'https://apps.apple.com/US/app/id1511177838?mt=8'
+  const URL_TO_PLAY_STORE = 'https://play.google.com/store/apps/details?id=com.begenuin.begenuin'
   return (
     <Dialog>
       <DialogTrigger asChild={asChild}>{children}</DialogTrigger>
@@ -25,9 +27,13 @@ export function DownloadDialog({ children, subtitle, title, asChild = true }: Pr
             {subtitle}
           </p>
           <div className="mt-6 flex">
-            <Image className="mx-2 w-full" src={imageAppStore} alt="app store" />
-            <Image className="mx-2 w-full" src={imagePlayStore} alt="play store" />
-          </div>
+              <a href={URL_TO_APP_STORE} target="_blank" rel="noopener noreferrer">
+                <Image className="mx-2 h-10 w-auto" src={imageAppStore} alt="app store" />
+              </a>
+              <a href={URL_TO_PLAY_STORE} target="_blank" rel="noopener noreferrer">
+                <Image className="mx-2 h-10 w-auto" src={imagePlayStore} alt="play store" />
+              </a>
+            </div>
         </div>
       </DialogContent>
     </Dialog>

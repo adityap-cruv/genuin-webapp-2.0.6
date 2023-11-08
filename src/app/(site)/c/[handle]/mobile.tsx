@@ -15,6 +15,8 @@ import { PATH_NAME } from '@lib/utils/constants/path'
 import { NavBar } from './nav-bar'
 import { getCommunityLoops } from '@lib/api/community'
 import { Loader } from '@components/ui/loader'
+import { useAdaptiveShare } from '@hooks/use-adaptive-share'
+import { useToast } from '@components/ui/use-toast'
 
 let communityDetailsModule: CommunityDetailsType
 interface Props {
@@ -34,6 +36,9 @@ export function Mobile({ communityDetails }: Props) {
 }
 
 function ProfileDetails() {
+  const { shareFn } = useAdaptiveShare()
+  const { toast } = useToast()
+
   return (
     <div className="m-4 ">
       <div className="flex justify-between">
@@ -49,7 +54,17 @@ function ProfileDetails() {
           <Button variant="default" size="sm">
             <p className="mx-2 text-title-sm text-monochrome-white">Join</p>
           </Button>
-          <Button variant="outline" outlineColor="genuin-blue" size="sm" className="p-1">
+          <Button
+            variant="outline"
+            outlineColor="genuin-blue"
+            size="sm"
+            className="p-1"
+            onClick={() =>
+              shareFn({
+                shareLink: window.location.href,
+                toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
+              })
+            }>
             <Image src={icShare} alt="share" />
           </Button>
         </div>
@@ -151,14 +166,10 @@ function LoopItem({ loopDetails }: { loopDetails: any }) {
   const renderedImages = loopDetails.videos.map((item: any, index: any) => (
     <img
       key={index}
+      className=" absolute top-[50%] aspect-reel h-[80%] rounded"
       style={{
-        position: 'absolute',
-        top: '50%',
         right: `${rightValues[videosLength][index]}px`,
         transform: `translateY(-${transformValues[videosLength][index]}%)`,
-        height: '80%',
-        aspectRatio: '9/16',
-        borderRadius: '4px',
         zIndex: videosLength - index + 1,
         opacity: `${opacitValues[videosLength][index]}`,
       }}
@@ -186,7 +197,7 @@ function LoopItem({ loopDetails }: { loopDetails: any }) {
       <div
         className="relative mt-5 w-full rounded-lg border"
         style={{ backgroundColor: 'rgba(6, 69, 255, 0.05)', border: '1px solid rgba(6, 69, 255, 0.40)' }}>
-        <div style={{ display: 'flex', padding: '3%', width: '70%', alignItems: 'center' }}>
+        <div className="flex w-[70%] items-center p-[3%]">
           <Avatar className="h-12 w-12 bg-red-50">
             <AvatarImage src={loopDetails.profile_image} />
             <AvatarFallback>
@@ -196,17 +207,9 @@ function LoopItem({ loopDetails }: { loopDetails: any }) {
           <p className="ml-2 text-title-sm">{loopDetails.name}</p>
         </div>
         <div className="h-[60%] p-4" style={{ backgroundColor: 'rgba(6, 69, 255, 0.05)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '2%', width: '70%' }}>
+          <div className="mb-[2%] flex w-[70%] items-center">
             {loopDetails.owner.profile_image && (
-              <img
-                style={{
-                  height: '24px',
-                  width: '24px',
-                  borderRadius: '50%',
-                  zIndex: 2,
-                }}
-                src={loopDetails.owner.profile_image}
-              />
+              <img className=" z-10 h-6 w-6 rounded-full" src={loopDetails.owner.profile_image} />
             )}
             <p className="text-new-para-2-mobile">
               &nbsp;&nbsp;@{loopDetails.owner.nickname}
