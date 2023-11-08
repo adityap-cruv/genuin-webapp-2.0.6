@@ -28,7 +28,7 @@ export function CommunityDetails({ children, communityDetails }: Props) {
   communityDetailsModule = communityDetails
   if (communityDetails)
     return (
-      <div className="flex h-full w-full min-w-tablet justify-between md:gap-x-2 lg:gap-x-4">
+      <div className="mt-navbar flex h-body w-full min-w-tablet justify-between md:gap-x-2 lg:gap-x-4">
         <Left />
         {children}
         <Right />

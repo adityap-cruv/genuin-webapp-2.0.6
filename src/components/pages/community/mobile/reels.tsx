@@ -9,7 +9,7 @@ const Player = dynamic(() => import('@components/common/player').then((comp) => 
     return <Loader size="lg" />
   },
 })
-const Comments = dynamic(() => import('./comments').then((comp) => comp.Comments))
+
 interface CommunityReelsProps {
   communityHandle: string
 }
@@ -31,7 +31,7 @@ export function CommunityReels({ communityHandle }: CommunityReelsProps) {
   }, [])
 
   return (
-    <div className="relative z-10">
+    <div className="absolute left-0 top-0 z-10 h-full w-full overflow-clip">
       <div
         className="hide-scrollbar relative h-full snap-y snap-mandatory snap-always overflow-y-auto overflow-x-clip"
         ref={divRef}>
@@ -46,10 +46,6 @@ export function CommunityReels({ communityHandle }: CommunityReelsProps) {
                 shouldPlay
                 videoData={video}
                 isFirstPlayerInList={index === 0}
-                sizeBox={{
-                  height: divRef.current?.parentElement?.getBoundingClientRect().height || 0,
-                  width: ((divRef.current?.parentElement?.getBoundingClientRect().height || 0) * 9) / 16,
-                }}
                 loop
                 playIfInViewPort
                 showCommunityControl

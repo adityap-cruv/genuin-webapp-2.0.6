@@ -15,16 +15,23 @@ import icReply from '@icons/icReply.svg'
 import icSave from '@icons/icSave.svg'
 import icMute from '@icons/player-controls/icMute.svg'
 import icUnmute from '@icons/player-controls/icUnmute.svg'
+import icLoop from '@icons/icLoop.svg'
+import icRightArrow from '@icons/icRightArrow.svg'
 import { VideoDataType } from '@lib/schemas/video'
 import { usePlayerControlStore } from '@lib/stores/common/player-control-store'
 import { isMobile } from 'react-device-detect'
 import { useToast } from '@components/ui/use-toast'
 
+export const ControlLayer = {
+  default: DefaultLayer,
+  community: CommunityLayer,
+}
+
 interface Props {
   videoData?: VideoDataType
 }
 
-export function ControlLayer({ videoData }: Props) {
+function DefaultLayer({ videoData }: Props) {
   const { toggleMuted, muted } = usePlayerControlStore((state) => ({
     toggleMuted: state.toggleMuted,
     muted: state.muted,
@@ -52,6 +59,63 @@ export function ControlLayer({ videoData }: Props) {
       </div>
     )
   }
+}
+
+interface CommunityLayerProps {
+  videoData: VideoDataType
+}
+
+function CommunityLayer({ videoData }: CommunityLayerProps) {
+  const { toggleMuted, muted } = usePlayerControlStore((state) => ({
+    toggleMuted: state.toggleMuted,
+    muted: state.muted,
+  }))
+
+  if (videoData) {
+    return (
+      <div className="relative h-full w-full">
+        <Image
+          src={!muted ? icUnmute : icMute}
+          alt="volume-control"
+          className="absolute left-3 top-16 z-20 cursor-pointer sm:top-3"
+          onClick={(e) => {
+            toggleMuted()
+            e.stopPropagation()
+          }}
+        />
+        <div className="absolute bottom-0 left-0 w-full">
+          <Public videoData={videoData} />
+          <CommunityReelSection videoData={videoData} />
+        </div>
+      </div>
+    )
+  }
+}
+
+function CommunityReelSection({ videoData }: CommunityLayerProps) {
+  return (
+    <div className="mt-2 flex h-14 w-full items-center justify-between bg-monochrome-black/40 px-2">
+      <div className="flex items-center gap-x-2">
+        <Avatar className="bg-red-40">
+          <AvatarImage src={videoData.loop?.profile_image || ''} />
+          <AvatarFallback>{getAvatarFallback(videoData.loop?.name)}</AvatarFallback>
+        </Avatar>
+        <div className="flex flex-col">
+          <p className="line-clamp-1 max-w-[150px] text-title-sm text-monochrome-white">{videoData.loop?.name}</p>
+          <div className="flex items-center gap-x-2">
+            <Image src={icLoop} alt="loop" />
+            <p className="text-cap-lg text-monochrome-white/60">View Loop</p>
+          </div>
+        </div>
+      </div>
+      <div className="flex gap-x-2">
+        <Button size="sm">
+          <p className="text-title-sm text-monochrome-white">Subscribe</p>
+        </Button>
+        <Image src={icRightArrow} alt="right" />
+      </div>
+    </div>
+  )
 }
 
 interface LoopProps {
@@ -117,7 +181,7 @@ interface PublicProps {
 
 function Public({ videoData }: PublicProps) {
   return (
-    <div className="flex justify-between">
+    <div className="flex justify-between p-2">
       <div className="flex w-4/5 flex-col justify-end">
         <div className="flex items-center">
           <Link
@@ -132,9 +196,11 @@ function Public({ videoData }: PublicProps) {
             <p className="line-clamp-1 px-2 text-title-md text-monochrome-white">@{videoData?.owner.nickname}</p>
           </Link>
         </div>
-        <p className="line-clamp-3 h-min w-full py-2 text-body-sm text-monochrome-white">
-          {videoData?.video.description}
-        </p>
+        {videoData.video.description && (
+          <p className="line-clamp-3 h-min w-full py-2 text-body-sm text-monochrome-white">
+            {videoData?.video.description}
+          </p>
+        )}
       </div>
       {/* todo configure share title and description correctly */}
       <Actions

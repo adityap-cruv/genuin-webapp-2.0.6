@@ -1,3 +1,4 @@
+import { Metadata } from 'next'
 import './globals.css'
 import { ReactQueryProvider } from '@components/providers/reactQueryProvider'
 
@@ -12,4 +13,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </body>
     </html>
   )
+}
+
+export function generateMetadata(): Metadata {
+  return {
+    metadataBase: new URL('https://media.begenuin.com'),
+  }
 }
