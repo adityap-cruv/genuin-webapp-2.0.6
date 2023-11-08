@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+'use client'
 import { Avatar, AvatarFallback, AvatarImage } from '@components/ui/avatar'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
 import { Button } from '@components/ui/button'
@@ -12,10 +12,11 @@ import icLinkedIn from '@icons/icLinkedIn.svg'
 import icLink from '@icons/icLinkBlack.svg'
 import icTwitter from '@icons/icTwitterBlack.svg'
 import { PATH_NAME } from '@lib/utils/constants/path'
-import { useLoopDetailsMobile } from './use-loop-details-mobile'
 import { NavBar } from './nav-bar'
+import { getCommunityLoops } from '@lib/api/community'
+import { Loader } from '@components/ui/loader'
 
-let communityDetailsModule: CommunityDetailsType | null = null
+let communityDetailsModule: CommunityDetailsType
 interface Props {
   communityDetails: CommunityDetailsType
 }
@@ -89,18 +90,18 @@ function ProfileTabs() {
   return (
     <Tabs defaultValue="Loops">
       <TabsList className="sticky z-10 w-72">
-        <TabsTrigger value="Loops" className="text-title-md">
-          Loops
+        <TabsTrigger value="Loops">
+          <p className="text-title-md">Loops</p>
         </TabsTrigger>
-        <TabsTrigger value="About" className="text-title-md">
-          About
+        <TabsTrigger value="About">
+          <p className="text-title-md">About</p>
         </TabsTrigger>
-        <TabsTrigger value="Members" className="text-title-md">
-          Members
+        <TabsTrigger value="Members">
+          <p className="text-title-md">Members</p>
         </TabsTrigger>
       </TabsList>
       <TabsContent value="Loops" className="mx-4">
-        <MobileLoopItem />
+        <LoopTab />
       </TabsContent>
       <TabsContent value="About" className="mx-4">
         <Categories />
@@ -114,27 +115,20 @@ function ProfileTabs() {
   )
 }
 
-function MobileLoopItem() {
-  const [loopList, fetchLoops] = useLoopDetailsMobile(communityDetailsModule ? communityDetailsModule.info.handle : '')
-
-  useEffect(() => {
-    fetchLoops()
-  }, [])
-
+function LoopTab() {
+  const { isLoading, data: loops, isFetched } = getCommunityLoops(communityDetailsModule.info.handle)
   return (
     <div className="py-4">
-      {loopList.map((item, index) => {
-        return (
-          <div>
-            <LoopTab key={index} loopDetails={item} />
-          </div>
-        )
-      })}
+      {isLoading && <Loader size="sm" />}
+      {isFetched &&
+        loops.map((item: any, index: number) => {
+          return <LoopItem key={index} loopDetails={item} />
+        })}
     </div>
   )
 }
 
-export const LoopTab = ({ loopDetails }: any) => {
+function LoopItem({ loopDetails }: { loopDetails: any }) {
   const transformValues: any = {
     1: [50],
     2: [48, 52],
