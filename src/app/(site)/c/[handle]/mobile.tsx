@@ -15,6 +15,8 @@ import { PATH_NAME } from '@lib/utils/constants/path'
 import { NavBar } from './nav-bar'
 import { getCommunityLoops } from '@lib/api/community'
 import { Loader } from '@components/ui/loader'
+import { useAdaptiveShare } from '@hooks/use-adaptive-share'
+import { useToast } from '@components/ui/use-toast'
 
 let communityDetailsModule: CommunityDetailsType
 interface Props {
@@ -34,6 +36,9 @@ export function Mobile({ communityDetails }: Props) {
 }
 
 function ProfileDetails() {
+  const { shareFn } = useAdaptiveShare()
+  const { toast } = useToast()
+
   return (
     <div className="m-4 ">
       <div className="flex justify-between">
@@ -49,7 +54,17 @@ function ProfileDetails() {
           <Button variant="default" size="sm">
             <p className="mx-2 text-title-sm text-monochrome-white">Join</p>
           </Button>
-          <Button variant="outline" outlineColor="genuin-blue" size="sm" className="p-1">
+          <Button
+            variant="outline"
+            outlineColor="genuin-blue"
+            size="sm"
+            className="p-1"
+            onClick={() =>
+              shareFn({
+                shareLink: window.location.href,
+                toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
+              })
+            }>
             <Image src={icShare} alt="share" />
           </Button>
         </div>
@@ -151,7 +166,7 @@ function LoopItem({ loopDetails }: { loopDetails: any }) {
   const renderedImages = loopDetails.videos.map((item: any, index: any) => (
     <img
       key={index}
-      className=' absolute aspect-reel top-[50%] h-[80%] rounded'
+      className=" absolute top-[50%] aspect-reel h-[80%] rounded"
       style={{
         right: `${rightValues[videosLength][index]}px`,
         transform: `translateY(-${transformValues[videosLength][index]}%)`,

@@ -12,6 +12,10 @@ import icLink from '@icons/icLinkBlack.svg'
 import icTwitter from '@icons/icTwitterBlack.svg'
 import { Separator } from '@components/ui/separator'
 import { PATH_NAME } from '@lib/utils/constants/path'
+import { Toaster } from '@components/ui/toaster'
+import { DownloadDialog } from '@components/common/download-dialog'
+import { useToast } from '@components/ui/use-toast'
+import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 
 let communityDetailsModule: CommunityDetailsType | null = null
 
@@ -28,11 +32,15 @@ export function CommunityDetails({ children, communityDetails }: Props) {
         <Left />
         {children}
         <Right />
+        <Toaster />
       </div>
     )
 }
 
 function Left() {
+  const { shareFn } = useAdaptiveShare()
+  const { toast } = useToast()
+
   return (
     <div className="mx-2 mt-2 w-full overflow-y-auto">
       <Avatar className="h-20 w-20 bg-red-50">
@@ -45,10 +53,22 @@ function Left() {
       <p className="line-clamp-3 break-all text-body-sm">{communityDetailsModule?.info.description}</p>
       <Stats />
       <div className="my-2 flex items-center gap-x-2">
-        <Button variant="default" size="sm">
-          <p className="text-title-sm text-monochrome-white">Join</p>
-        </Button>
-        <Button variant="outline" outlineColor="genuin-blue" size="sm" className="p-1">
+        <DownloadDialog title="Get the Genuin app" subtitle="Get the app to join community" asChild={false}>
+          <Button variant="default" size="sm">
+            <p className="text-title-sm text-monochrome-white">Join</p>
+          </Button>
+        </DownloadDialog>
+        <Button
+          variant="outline"
+          outlineColor="genuin-blue"
+          size="sm"
+          className="p-1"
+          onClick={() =>
+            shareFn({
+              shareLink: window.location.href,
+              toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
+            })
+          }>
           <Image src={icShare} alt="share" />
         </Button>
       </div>
@@ -187,7 +207,7 @@ function ListItem({
   return (
     <div className="flex items-center gap-x-1 rounded-sm p-1 hover:bg-monochrome-9">
       <Avatar className="h-9 w-9 bg-red-40">
-        <AvatarImage src={isValidHTTPS(image??'')} />
+        <AvatarImage src={isValidHTTPS(image ?? '')} />
         <AvatarFallback>
           <p className="text-title-md text-monochrome-white">{getAvatarFallback(title)}</p>
         </AvatarFallback>
