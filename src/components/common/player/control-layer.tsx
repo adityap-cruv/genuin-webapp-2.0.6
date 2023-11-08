@@ -1,5 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@components/ui/avatar'
-import { checkAndAppendHttps, getAvatarFallback } from '@lib/utils'
+import { checkAndAppendHttps, generateDeepLink, getAvatarFallback, openGeneratedLink } from '@lib/utils'
 import Link from 'next/link'
 import { Button } from '@components/ui/button'
 import { Badge } from '@components/ui/badge'
@@ -19,6 +19,8 @@ import icLoop from '@icons/icLoop.svg'
 import icRightArrow from '@icons/icRightArrow.svg'
 import { VideoDataType } from '@lib/schemas/video'
 import { usePlayerControlStore } from '@lib/stores/common/player-control-store'
+import { isMobile } from 'react-device-detect'
+import { useToast } from '@components/ui/use-toast'
 
 export const ControlLayer = {
   default: DefaultLayer,
@@ -220,51 +222,180 @@ interface ActionsProps {
 
 function Actions({ link = '', shareDescription = '', shareTitle = '', isLoop = false }: ActionsProps) {
   const { shareFn } = useAdaptiveShare()
+  const { toast } = useToast()
 
   return (
-    <div className="flex flex-col">
-      {link && (
-        <Link href={checkAndAppendHttps(link)} target="_blank">
-          <ActionItem title="Click Here!">
-            <Image src={icLink} alt="link" height={20} width={20} />
-          </ActionItem>
-        </Link>
-      )}
-      {!isLoop && (
-        <DownloadDialog title="Get the Genuin app" subtitle="Get the app to save the video." asChild={false}>
-          <ActionItem title="Save this Video!">
-            <Image src={icSave} width={20} height={20} alt="Save video" />
-          </ActionItem>
-        </DownloadDialog>
-      )}
-      {isLoop && (
+    <>
+      {isMobile ? (
         <>
-          <DownloadDialog
-            title="Get the Genuin app"
-            subtitle="Get the app to watch the comments on this video."
-            asChild={false}>
-            <ActionItem title="See Comments!">
-              <Image src={icComment} alt="comments" height={20} width={20} />
+          <div className="flex flex-col">
+            {link && (
+              <Link href={checkAndAppendHttps(link)} target="_blank">
+                <ActionItem title="Click Here!">
+                  <Image src={icLink} alt="link" height={20} width={20} />
+                </ActionItem>
+              </Link>
+            )}
+            {!isLoop && (
+              <ActionItem
+                title="Save this Video!"
+                onClick={() => {
+                  generateDeepLink({
+                    action: 'save',
+                    contentType: 'pv',
+                    title: null,
+                    description: null,
+                    fromUserName: null,
+                    pathName: window.location.pathname,
+                    previewImage: null,
+                    sourceId: null,
+                    utmCampaign: 'share',
+                    utmMedium: 'web',
+                    utmSource: window.location.hostname,
+                    parentId: null,
+                  })
+                    .then((link) => openGeneratedLink(link))
+                    .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
+                }}>
+                <Image src={icSave} width={20} height={20} alt="Save video" />
+              </ActionItem>
+            )}
+            {isLoop && (
+              <>
+                <ActionItem
+                  title="See Comments!"
+                  onClick={() => {
+                    generateDeepLink({
+                      action: 'comment',
+                      contentType: 'loop',
+                      title: null,
+                      description: null,
+                      fromUserName: null,
+                      pathName: window.location.pathname,
+                      previewImage: null,
+                      sourceId: null,
+                      utmCampaign: 'share',
+                      utmMedium: 'web',
+                      utmSource: window.location.hostname,
+                      parentId: null,
+                    })
+                      .then((link) => openGeneratedLink(link))
+                      .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
+                  }}>
+                  <Image src={icComment} alt="comments" height={20} width={20} />
+                </ActionItem>
+
+                <ActionItem
+                  title="Subscribe to Loop!"
+                  onClick={() => {
+                    generateDeepLink({
+                      action: 'subscribe',
+                      contentType: 'loop',
+                      title: null,
+                      parentId: null,
+                      description: null,
+                      fromUserName: null,
+                      pathName: window.location.pathname,
+                      previewImage: null,
+                      sourceId: null,
+                      utmCampaign: 'share',
+                      utmMedium: 'web',
+                      utmSource: window.location.hostname,
+                    })
+                      .then((link) => openGeneratedLink(link))
+                      .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
+                  }}>
+                  <Image src={icSubscribe} alt="subscribe" height={18} width={18} />
+                </ActionItem>
+              </>
+            )}
+            <ActionItem
+              title="Share Video!"
+              onClick={() => shareFn({ description: shareDescription, title: shareTitle })}>
+              <Image src={icShare} alt="share" height={20} width={20} />
             </ActionItem>
-          </DownloadDialog>
-          <DownloadDialog title="Get the Genuin app" subtitle="Get the app to subscribe to Loop." asChild={false}>
-            <ActionItem title="Subscribe to Loop!">
-              <Image src={icSubscribe} alt="subscribe" height={18} width={18} />
+            {!isLoop && (
+              <ActionItem
+                title="Reply to Video!"
+                onClick={() => {
+                  generateDeepLink({
+                    action: 'reply',
+                    contentType: 'pv',
+                    title: null,
+                    description: null,
+                    fromUserName: null,
+                    pathName: window.location.pathname,
+                    previewImage: null,
+                    sourceId: null,
+                    utmCampaign: 'share',
+                    utmMedium: 'web',
+                    utmSource: window.location.hostname,
+                    parentId: null,
+                  })
+                    .then((link) => openGeneratedLink(link))
+                    .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
+                }}>
+                <Image src={icReply} height={20} width={20} alt="reply" />
+              </ActionItem>
+            )}
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="flex flex-col">
+            {link && (
+              <Link href={checkAndAppendHttps(link)} target="_blank">
+                <ActionItem title="Click Here!">
+                  <Image src={icLink} alt="link" height={20} width={20} />
+                </ActionItem>
+              </Link>
+            )}
+            {!isLoop && (
+              <DownloadDialog title="Get the Genuin app" subtitle="Get the app to save the video." asChild={false}>
+                <ActionItem title="Save this Video!">
+                  <Image src={icSave} width={20} height={20} alt="Save video" />
+                </ActionItem>
+              </DownloadDialog>
+            )}
+            {isLoop && (
+              <>
+                <DownloadDialog
+                  title="Get the Genuin app"
+                  subtitle="Get the app to watch the comments on this video."
+                  asChild={false}>
+                  <ActionItem title="See Comments!">
+                    <Image src={icComment} alt="comments" height={20} width={20} />
+                  </ActionItem>
+                </DownloadDialog>
+                <DownloadDialog title="Get the Genuin app" subtitle="Get the app to subscribe to Loop." asChild={false}>
+                  <ActionItem title="Subscribe to Loop!">
+                    <Image src={icSubscribe} alt="subscribe" height={18} width={18} />
+                  </ActionItem>
+                </DownloadDialog>
+              </>
+            )}
+            <ActionItem
+              title="Share Video!"
+              onClick={() =>
+                shareFn({
+                  description: shareDescription,
+                  title: shareTitle,
+                  toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
+                })
+              }>
+              <Image src={icShare} alt="share" height={20} width={20} />
             </ActionItem>
-          </DownloadDialog>
+            {!isLoop && (
+              <DownloadDialog title="Get the Genuin app" subtitle="Get the app to reply to video." asChild={false}>
+                <ActionItem title="Reply to Video!">
+                  <Image src={icReply} height={20} width={20} alt="reply" />
+                </ActionItem>
+              </DownloadDialog>
+            )}
+          </div>
         </>
       )}
-      <ActionItem title="Share Video!" onClick={() => shareFn({ description: shareDescription, title: shareTitle })}>
-        <Image src={icShare} alt="share" height={20} width={20} />
-      </ActionItem>
-      {!isLoop && (
-        <DownloadDialog title="Get the Genuin app" subtitle="Get the app to reply to video." asChild={false}>
-          <ActionItem title="Reply to Video!">
-            <Image src={icReply} height={20} width={20} alt="reply" />
-          </ActionItem>
-        </DownloadDialog>
-      )}
-    </div>
+    </>
   )
 }
 
