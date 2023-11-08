@@ -7,14 +7,21 @@ interface Props {
   params: {
     handle: string
   }
-  searchParams: {}
+  searchParams: {
+    details: string
+  }
 }
 
-export default async function Component({ params }: Props) {
+export default async function Component({ params, searchParams }: Props) {
   const communityData = await fetchCommunityDetails(params.handle)
-  console.log("community", communityData)
   const mobileCookie = cookies().get('mobile')?.value
-  return <MainComponent communityDetails={communityData} isMobile={mobileCookie === 'true'} />
+  return (
+    <MainComponent
+      communityDetails={communityData}
+      isMobile={mobileCookie === 'true'}
+      showDetailsPage={searchParams.details === 'true'}
+    />
+  )
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -22,6 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const title = `${communityData.info.name}`
   let desc = `${communityData.info.description}`
 
+ 
   return {
     title: title,
     applicationName: 'Genuin',

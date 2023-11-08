@@ -2,10 +2,14 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@components/ui/avatar'
 import { Button } from '@components/ui/button'
 import type { LoopDetailsType } from '@lib/schemas/loop/details'
-import { getAvatarFallback } from '@lib/utils'
+import { generateDeepLink, getAvatarFallback, openGeneratedLink } from '@lib/utils'
 import Image from 'next/image'
 import icShare from '@icons/icShareBlue.svg'
 import dynamic from 'next/dynamic'
+import { DownloadDialog } from '@components/common/download-dialog'
+import { Toaster } from '@components/ui/toaster'
+import { useToast } from '@components/ui/use-toast'
+import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 //todo configure loader for dynamic imports
 const Cohosts = dynamic(() => import('@components/pages/loop/cohosts').then((comp) => comp.Cohosts))
 const HorizontalVideosList = dynamic(() =>
@@ -14,10 +18,14 @@ const HorizontalVideosList = dynamic(() =>
 
 interface Props {
   loopDetails: LoopDetailsType
+  isMobile: any
 }
 // todo work on this when api gets updated.
 // todo optimize this page load.
-export function MainComponent({ loopDetails }: Props) {
+export function MainComponent({ loopDetails, isMobile }: Props) {
+  const { shareFn } = useAdaptiveShare()
+  const { toast } = useToast()
+
   if (loopDetails)
     return (
       <div className="flex h-full w-full flex-col gap-y-2 md:flex-row md:gap-x-2">
@@ -36,10 +44,49 @@ export function MainComponent({ loopDetails }: Props) {
             ]}
           />
           <div className="flex items-center gap-x-2">
-            <Button size="sm">
-              <p className="text-title-sm text-monochrome-white">Subscribe</p>
-            </Button>
-            <Button size="sm" variant="outline" outlineColor="genuin-blue">
+            {isMobile ? (
+              <>
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    generateDeepLink({
+                      action: 'subscribe',
+                      contentType: 'loop',
+                      description: null,
+                      title: null,
+                      previewImage: null,
+                      fromUserName: null,
+                      pathName: window.location.pathname,
+                      sourceId: loopDetails.share_string,
+                      utmCampaign: 'share',
+                      utmMedium: 'web',
+                      utmSource: window.location.hostname,
+                    })
+                      .then((generatedLink) => openGeneratedLink(generatedLink))
+                      .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
+                  }}>
+                  <p className="text-title-sm text-monochrome-white">Subscribe</p>
+                </Button>
+              </>
+            ) : (
+              <>
+                <DownloadDialog title="Get the Genuin app" subtitle="Get the app to Subscribe" asChild={false}>
+                  <Button size="sm">
+                    <p className="text-title-sm text-monochrome-white">Subscribe</p>
+                  </Button>
+                </DownloadDialog>
+              </>
+            )}
+            <Button
+              size="sm"
+              variant="outline"
+              outlineColor="genuin-blue"
+              onClick={() =>
+                shareFn({
+                  shareLink: window.location.href,
+                  toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
+                })
+              }>
               <Image src={icShare} alt="share" height={22} width={22} />
             </Button>
           </div>
@@ -48,6 +95,7 @@ export function MainComponent({ loopDetails }: Props) {
           <HorizontalVideosList loopId={loopDetails.share_string} />
           <Cohosts loopId={loopDetails.share_string} />
         </div>
+        <Toaster />
       </div>
     )
 }

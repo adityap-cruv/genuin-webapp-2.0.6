@@ -20,7 +20,7 @@ export function NavBar({ variant = 'light' }: Props) {
     <nav
       className={cn(
         variant === 'dark' ? 'bg-monochrome-black' : undefined,
-        'fixed top-0 z-10 m-auto flex h-navbar w-full'
+        'fixed left-0 top-0 z-10 m-auto flex h-navbar w-full'
       )}>
       <div className={cn('container flex h-full items-center justify-between py-1')}>
         <GenuinLogo.adaptive variant={isVariantLight ? 'light' : 'dark'} />
