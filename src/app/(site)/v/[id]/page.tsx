@@ -25,14 +25,14 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   const title = `${
     videoDetails?.video?.description ? videoDetails?.video?.description + ' • ' : ''
   }Watch and react on Genuin`
-  let shareLink = `${process.env.hostname}v/${videoDetails?.video?.share_string}`
+  let shareLink = `${process.env.NEXT_PUBLIC_HOST_URL}v/${videoDetails?.video?.share_string}`
   if (videoDetails?.loop?.share_string) {
     shareLink += `?l=${videoDetails?.loop?.share_string}`
   }
   const author = {
     '@type': 'Person',
     name: '@' + videoDetails?.owner?.nickname,
-    url: `${process.env.hostname}p/${videoDetails?.owner?.nickname}`,
+    url: `${process.env.NEXT_PUBLIC_HOST_URL}p/${videoDetails?.owner?.nickname}`,
   }
 
   return {

@@ -189,7 +189,7 @@ function Actions({ link = '', shareDescription = '', shareTitle = '', isLoop = f
                     parentId: null,
                   })
                     .then((link) => openGeneratedLink(link))
-                    .catch((e) => window.open(process.env.hostname))
+                    .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
                 }}>
                 <Image src={icSave} width={20} height={20} alt="Save video" />
               </ActionItem>
@@ -214,7 +214,7 @@ function Actions({ link = '', shareDescription = '', shareTitle = '', isLoop = f
                       parentId: null,
                     })
                       .then((link) => openGeneratedLink(link))
-                      .catch((e) => window.open(process.env.hostname))
+                      .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
                   }}>
                   <Image src={icComment} alt="comments" height={20} width={20} />
                 </ActionItem>
@@ -237,7 +237,7 @@ function Actions({ link = '', shareDescription = '', shareTitle = '', isLoop = f
                       utmSource: window.location.hostname,
                     })
                       .then((link) => openGeneratedLink(link))
-                      .catch((e) => window.open(process.env.hostname))
+                      .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
                   }}>
                   <Image src={icSubscribe} alt="subscribe" height={18} width={18} />
                 </ActionItem>
@@ -267,7 +267,7 @@ function Actions({ link = '', shareDescription = '', shareTitle = '', isLoop = f
                     parentId: null,
                   })
                     .then((link) => openGeneratedLink(link))
-                    .catch((e) => window.open(process.env.hostname))
+                    .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
                 }}>
                 <Image src={icReply} height={20} width={20} alt="reply" />
               </ActionItem>

@@ -136,6 +136,6 @@ export const generateDeepLink = async ({
     const res = await axios.post(`${process.env.apiurl}/api/v3/public/dynamic_link`, finalPayload)
     return res?.data?.data?.shortLink
   } catch (e) {
-    return process.env.hostname
+    return process.env.NEXT_PUBLIC_HOST_URL
   }
 }

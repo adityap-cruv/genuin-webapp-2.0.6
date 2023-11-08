@@ -64,7 +64,7 @@ export const MainComponent = ({ profileData, isMobile }: CompProps) => {
                       fromUserName: null,
                     })
                       .then((generatedLink) => openGeneratedLink(generatedLink))
-                      .catch((e) => window.open(process.env.hostname))
+                      .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
                   }}>
                   <Image src={icMessage} alt="messsage" className="pr-1" />
                   <p className="text-title-sm text-primary">Message</p>
