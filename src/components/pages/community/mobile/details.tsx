@@ -30,28 +30,31 @@ export function ProfileDetails({ communityDetails }: Props) {
   return (
     <>
       <DetailsNavbar variant="light" communityDetails={communityDetails} />
-      <div className="mt-navbar h-body p-4">
-        <div className="flex justify-between">
-          <Avatar className="h-20 w-20 bg-red-50">
-            <AvatarImage src={communityDetailsModule?.info.profile_image} />
-            <AvatarFallback>
-              <p className="text-title-xl text-monochrome-white">
-                {getAvatarFallback(communityDetailsModule?.info.name)}
-              </p>
-            </AvatarFallback>
-          </Avatar>
-          <div className="my-2 flex items-center gap-x-2">
-            <Button variant="default" size="sm">
-              <p className="mx-2 text-title-sm text-monochrome-white">Join</p>
-            </Button>
-            <Button variant="outline" outlineColor="genuin-blue" size="sm" className="p-1">
-              <Image src={icShare} alt="share" />
-            </Button>
+      <div className="mt-navbar h-body">
+        <div className="px-4">
+          <div className="flex justify-between">
+            <Avatar className="h-20 w-20 bg-red-50">
+              <AvatarImage src={communityDetailsModule?.info.profile_image} />
+              <AvatarFallback>
+                <p className="text-title-xl text-monochrome-white">
+                  {getAvatarFallback(communityDetailsModule?.info.name)}
+                </p>
+              </AvatarFallback>
+            </Avatar>
+            <div className="my-2 flex items-center gap-x-2">
+              <Button variant="default" size="sm">
+                <p className="mx-2 text-title-sm text-monochrome-white">Join</p>
+              </Button>
+              <Button variant="outline" outlineColor="genuin-blue" size="sm" className="p-1">
+                <Image src={icShare} alt="share" />
+              </Button>
+            </div>
           </div>
+          <p className="my-2 line-clamp-1 break-all text-title-md">{communityDetailsModule?.info.name}</p>
+          <p className="my-2 line-clamp-3 break-all text-body-sm">{communityDetailsModule?.info.description}</p>
+          <Stats />
         </div>
-        <p className="my-2 line-clamp-1 break-all text-title-md">{communityDetailsModule?.info.name}</p>
-        <p className="my-2 line-clamp-3 break-all text-body-sm">{communityDetailsModule?.info.description}</p>
-        <Stats />
+        <ProfileTabs />
       </div>
     </>
   )
@@ -85,7 +88,7 @@ function Stats() {
 function ProfileTabs() {
   return (
     <Tabs defaultValue="Loops">
-      <TabsList className="sticky z-10 w-72">
+      <TabsList className="sticky z-10 flex max-w-min">
         <TabsTrigger value="Loops">
           <p className="text-title-md">Loops</p>
         </TabsTrigger>
