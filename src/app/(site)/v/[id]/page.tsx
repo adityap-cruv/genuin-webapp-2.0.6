@@ -1,6 +1,7 @@
 import { Metadata } from 'next'
 import { MainComponent } from './main-component'
 import { fetchVideoDetails } from '@lib/api/video'
+import { PATH_NAME } from '@lib/utils/constants/path'
 
 interface PageProps {
   params: {
@@ -25,14 +26,14 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   const title = `${
     videoDetails?.video?.description ? videoDetails?.video?.description + ' • ' : ''
   }Watch and react on Genuin`
-  let shareLink = `${process.env.hostname}v/${videoDetails?.video?.share_string}`
+  let shareLink = `${process.env.NEXT_PUBLIC_HOST_URL}${PATH_NAME.video(videoDetails?.video?.share_string)}`
   if (videoDetails?.loop?.share_string) {
     shareLink += `?l=${videoDetails?.loop?.share_string}`
   }
   const author = {
     '@type': 'Person',
     name: '@' + videoDetails?.owner?.nickname,
-    url: `${process.env.hostname}p/${videoDetails?.owner?.nickname}`,
+    url: `${process.env.NEXT_PUBLIC_HOST_URL}${PATH_NAME.profile(videoDetails?.video?.share_string)}`,
   }
 
   return {

@@ -63,7 +63,7 @@ export function MainComponent({ loopDetails, isMobile }: Props) {
                       utmSource: window.location.hostname,
                     })
                       .then((generatedLink) => openGeneratedLink(generatedLink))
-                      .catch((e) => window.open(process.env.hostname))
+                      .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
                   }}>
                   <p className="text-title-sm text-monochrome-white">Subscribe</p>
                 </Button>
