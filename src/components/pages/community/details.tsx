@@ -24,7 +24,7 @@ export function CommunityDetails({ children, communityDetails }: Props) {
   communityDetailsModule = communityDetails
   if (communityDetails)
     return (
-      <div className="flex h-full w-full min-w-tablet justify-between md:gap-x-2 lg:gap-x-4">
+      <div className="mt-navbar flex h-body w-full min-w-tablet justify-between md:gap-x-2 lg:gap-x-4">
         <Left />
         {children}
         <Right />
@@ -187,7 +187,7 @@ function ListItem({
   return (
     <div className="flex items-center gap-x-1 rounded-sm p-1 hover:bg-monochrome-9">
       <Avatar className="h-9 w-9 bg-red-40">
-        <AvatarImage src={isValidHTTPS(image??'')} />
+        <AvatarImage src={isValidHTTPS(image ?? '')} />
         <AvatarFallback>
           <p className="text-title-md text-monochrome-white">{getAvatarFallback(title)}</p>
         </AvatarFallback>

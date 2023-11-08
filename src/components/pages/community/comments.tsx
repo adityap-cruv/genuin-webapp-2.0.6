@@ -3,7 +3,6 @@ import { useRef } from 'react'
 import { Button } from '@components/ui/button'
 import Image from 'next/image'
 import icComment from '@icons/icCommentSecondary.svg'
-import { useEffect } from 'react'
 
 interface Props {
   communityHandle: string

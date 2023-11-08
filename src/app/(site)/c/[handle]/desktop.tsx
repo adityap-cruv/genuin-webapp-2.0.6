@@ -1,6 +1,7 @@
 import dynamic from 'next/dynamic'
 import type { CommunityDetailsType } from '@lib/schemas/community'
 import { Loader } from '@components/ui/loader'
+import { NavBar } from '@components/common/nav-bar'
 const CommunityDetails = dynamic(
   () => import('@components/pages/community/details').then((comp) => comp.CommunityDetails),
   {
@@ -21,8 +22,11 @@ interface Props {
 
 export function Desktop({ communityDetails }: Props) {
   return (
-    <CommunityDetails communityDetails={communityDetails}>
-      <CommunityReels communityHandle={communityDetails.info.handle} />
-    </CommunityDetails>
+    <>
+      <NavBar variant="light" />
+      <CommunityDetails communityDetails={communityDetails}>
+        <CommunityReels communityHandle={communityDetails.info.handle} />
+      </CommunityDetails>
+    </>
   )
 }
