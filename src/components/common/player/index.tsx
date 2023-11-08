@@ -15,7 +15,8 @@ const ViewportPlayer = dynamic(() => import('./inner-player').then((comp) => com
     return <Loader size="lg" />
   },
 })
-const ControlLayer = dynamic(() => import('./control-layer').then((comp) => comp.ControlLayer))
+const ControlLayer = dynamic(() => import('./control-layer').then((comp) => comp.ControlLayer.default))
+const CommunityControlLayer = dynamic(() => import('./control-layer').then((comp) => comp.ControlLayer.community))
 
 interface Props {
   videoData?: VideoDataType
@@ -52,6 +53,11 @@ interface Props {
    * defaults to false.
    */
   isFirstPlayerInList?: boolean
+  /**
+   * This flag is only for community videos.
+   * @default false
+   */
+  showCommunityControl?: boolean
 }
 
 export default function Player({
@@ -62,6 +68,7 @@ export default function Player({
   sizeBox,
   playIfInViewPort,
   shouldShowBackgroundBlurImage = true,
+  showCommunityControl = false,
   isFirstPlayerInList = false,
 }: Props) {
   const [playerControls, setPlayerControls] = useState({ play: shouldPlay, muted: true, loop })
@@ -75,9 +82,7 @@ export default function Player({
   if (height && videoData) {
     const videoWidth = height * (9 / 16)
     return (
-      <div
-        className={cn('relative flex h-full w-full snap-start snap-always items-center justify-center')}
-        style={{ height }}>
+      <div className={cn('relative flex h-full w-full snap-start items-center justify-center')} style={{ height }}>
         {shouldShowBackgroundBlurImage && (
           <div
             className="absolute inset-0 z-[-1] h-full w-full bg-secondary bg-cover bg-center bg-no-repeat blur-2xl"
@@ -120,7 +125,13 @@ export default function Player({
             />
           )}
           <div className="absolute left-0 top-0 h-full w-full">
-            {showControls && <ControlLayer videoData={videoData} />}
+            {showControls ? (
+              showCommunityControl ? (
+                <CommunityControlLayer videoData={videoData} />
+              ) : (
+                <ControlLayer videoData={videoData} />
+              )
+            ) : undefined}
           </div>
         </div>
       </div>

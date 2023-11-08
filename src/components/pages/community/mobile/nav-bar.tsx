@@ -5,13 +5,19 @@ import { cn, getAvatarFallback } from '@lib/utils'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@components/ui/dropdown-menu'
 import { HamBurgerMenuIcon } from '@components/ui/ham-burger'
 import { Avatar, AvatarFallback, AvatarImage } from '@components/ui/avatar'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+
+export const NavBar = {
+  details: Details,
+  reels: Reels,
+}
 
 interface Props {
   variant: 'light' | 'dark' | 'transparent'
   communityDetails: any
 }
 
-export function NavBar({ variant = 'light', communityDetails }: Props) {
+function Details({ variant = 'light', communityDetails }: Props) {
   const isVariantLight = variant === 'dark' || variant === 'transparent'
   return (
     <nav
@@ -76,5 +82,42 @@ function BurgerMenu({ variant = 'dark' }: { variant?: 'light' | 'dark' }) {
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
+  )
+}
+
+interface ReelsProps {
+  communityDetails: any
+}
+
+function Reels({ communityDetails }: ReelsProps) {
+  const pathname = usePathname()
+  const router = useRouter()
+  return (
+    <nav className={'fixed top-0 z-50 m-auto flex h-navbar w-full px-4'}>
+      <div className={' container relative flex h-full items-center justify-between py-1'}>
+        <div className="absolute left-0">
+          <GenuinLogo.adaptive variant="light" />
+        </div>
+        <div
+          onClick={(e) => {
+            router.push(pathname + '?details=true')
+          }}
+          className="absolute left-[50%] flex max-w-[150px] items-center justify-between rounded-full bg-monochrome-black/20"
+          style={{ transform: 'translate(-50%, 0)' }}>
+          <Avatar className="mx-2 h-6 w-6 bg-red-50">
+            <AvatarImage src={communityDetails?.info.profile_image} />
+            <AvatarFallback>
+              <p className="text-title-xl text-monochrome-white">{getAvatarFallback(communityDetails?.info.name)}</p>
+            </AvatarFallback>
+          </Avatar>
+          <p className="my-2 line-clamp-1 break-all text-title-sm text-monochrome-white">
+            {communityDetails?.info.name}
+          </p>
+        </div>
+        <div className=" absolute right-0">
+          <BurgerMenu variant="light" />
+        </div>
+      </div>
+    </nav>
   )
 }
