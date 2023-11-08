@@ -28,6 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const communityData = await fetchCommunityDetails(params.handle)
   const title = `${communityData.info.name}`
   let desc = `${communityData.info.description}`
+
  
   return {
     title: title,
