@@ -10,6 +10,7 @@ import { DownloadDialog } from '@components/common/download-dialog'
 import { Toaster } from '@components/ui/toaster'
 import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
+import { useResponsive } from '@hooks/useResponsive'
 //todo configure loader for dynamic imports
 const Cohosts = dynamic(() => import('@components/pages/loop/cohosts').then((comp) => comp.Cohosts))
 const HorizontalVideosList = dynamic(() =>
@@ -25,6 +26,7 @@ interface Props {
 export function MainComponent({ loopDetails, isMobile }: Props) {
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
+  const { isMd = !isMobile } = useResponsive()
   const ld_description = `${
     loopDetails.group &&
     loopDetails.group.group_description !== null &&
@@ -38,19 +40,34 @@ export function MainComponent({ loopDetails, isMobile }: Props) {
     return (
       <div className="flex h-full w-full flex-col gap-y-2 md:flex-row md:gap-x-2">
         <div className="w-full  md:max-w-[20%]">
-          <Avatar className="h-20 w-20 bg-red-40">
-            <AvatarImage src={loopDetails.group.dp || undefined} />
-            <AvatarFallback>{getAvatarFallback(loopDetails.group.group_name || undefined)}</AvatarFallback>
-          </Avatar>
+          <div className="flex items-center">
+            <Avatar className="h-20 w-20 bg-red-40">
+              <AvatarImage src={loopDetails.group.dp || undefined} />
+              <AvatarFallback>{getAvatarFallback(loopDetails.group.group_name || undefined)}</AvatarFallback>
+            </Avatar>
+            <div className="w-full pl-5">
+              {!isMd && (
+                <Stats
+                  statsData={[
+                    { key: 'views', value: loopDetails.group.no_of_views },
+                    { key: 'Videos', value: loopDetails.group.no_of_videos },
+                    { key: 'Subscribers', value: loopDetails.group.no_of_subscribers },
+                  ]}
+                />
+              )}
+            </div>
+          </div>
           <p className="line-clamp-1 break-all text-title-lg">{loopDetails.group.group_name}</p>
           <p className="line-clamp-3 break-all text-body-lg">{loopDetails.group.group_description}</p>
-          <Stats
-            statsData={[
-              { key: 'views', value: loopDetails.group.no_of_views },
-              { key: 'Videos', value: loopDetails.group.no_of_videos },
-              { key: 'Subscribers', value: loopDetails.group.no_of_subscribers },
-            ]}
-          />
+          {isMd && (
+            <Stats
+              statsData={[
+                { key: 'views', value: loopDetails.group.no_of_views },
+                { key: 'Videos', value: loopDetails.group.no_of_videos },
+                { key: 'Subscribers', value: loopDetails.group.no_of_subscribers },
+              ]}
+            />
+          )}
           <div className="flex items-center gap-x-2">
             {isMobile ? (
               <>
