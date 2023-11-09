@@ -170,6 +170,7 @@ function Loop({ videoData }: LoopProps) {
         shareTitle={videoData?.video.description ?? ''}
         shareDescription={videoData?.video.description ?? ''}
         isLoop={true}
+        videoData={videoData}
       />
     </div>
   )
@@ -208,6 +209,7 @@ function Public({ videoData }: PublicProps) {
         shareTitle={videoData?.video.description ?? ''}
         shareDescription={videoData?.video.description ?? ''}
         isLoop={false}
+        videoData={videoData}
       />
     </div>
   )
@@ -216,11 +218,12 @@ function Public({ videoData }: PublicProps) {
 interface ActionsProps {
   link: string
   shareTitle: string
+  videoData?: VideoDataType
   shareDescription: string
   isLoop?: boolean
 }
 
-function Actions({ link = '', shareDescription = '', shareTitle = '', isLoop = false }: ActionsProps) {
+function Actions({ link = '', shareDescription = '', shareTitle = '', isLoop = false, videoData }: ActionsProps) {
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
 
@@ -248,11 +251,11 @@ function Actions({ link = '', shareDescription = '', shareTitle = '', isLoop = f
                     fromUserName: null,
                     pathName: window.location.pathname,
                     previewImage: null,
-                    sourceId: null,
+                    sourceId: videoData?.video.id,
                     utmCampaign: 'share',
                     utmMedium: 'web',
                     utmSource: window.location.hostname,
-                    parentId: null,
+                    parentId: videoData?.loop?.share_string,
                   })
                     .then((link) => openGeneratedLink(link))
                     .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
@@ -273,11 +276,11 @@ function Actions({ link = '', shareDescription = '', shareTitle = '', isLoop = f
                       fromUserName: null,
                       pathName: window.location.pathname,
                       previewImage: null,
-                      sourceId: null,
+                      sourceId: videoData?.video.id,
                       utmCampaign: 'share',
                       utmMedium: 'web',
                       utmSource: window.location.hostname,
-                      parentId: null,
+                      parentId: videoData?.loop?.share_string,
                     })
                       .then((link) => openGeneratedLink(link))
                       .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
@@ -292,12 +295,12 @@ function Actions({ link = '', shareDescription = '', shareTitle = '', isLoop = f
                       action: 'subscribe',
                       contentType: 'loop',
                       title: null,
-                      parentId: null,
+                      parentId: videoData?.loop?.share_string,
                       description: null,
                       fromUserName: null,
                       pathName: window.location.pathname,
                       previewImage: null,
-                      sourceId: null,
+                      sourceId: videoData?.video.id,
                       utmCampaign: 'share',
                       utmMedium: 'web',
                       utmSource: window.location.hostname,
@@ -326,11 +329,11 @@ function Actions({ link = '', shareDescription = '', shareTitle = '', isLoop = f
                     fromUserName: null,
                     pathName: window.location.pathname,
                     previewImage: null,
-                    sourceId: null,
+                    sourceId: videoData?.video.id,
                     utmCampaign: 'share',
                     utmMedium: 'web',
                     utmSource: window.location.hostname,
-                    parentId: null,
+                    parentId: videoData?.loop?.share_string,
                   })
                     .then((link) => openGeneratedLink(link))
                     .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))

@@ -25,6 +25,14 @@ interface Props {
 export function MainComponent({ loopDetails, isMobile }: Props) {
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
+  const ld_description = `${
+    loopDetails.group &&
+    loopDetails.group.group_description !== null &&
+    loopDetails.group.group_description !== undefined &&
+    loopDetails.group.group_description.replace(/\s+/g, '') !== ''
+      ? loopDetails.group.group_description + ' | '
+      : ''
+  } • Join ${loopDetails.group.group_name} to talk about it`
 
   if (loopDetails)
     return (
@@ -52,8 +60,8 @@ export function MainComponent({ loopDetails, isMobile }: Props) {
                     generateDeepLink({
                       action: 'subscribe',
                       contentType: 'loop',
-                      description: null,
-                      title: null,
+                      description: ld_description,
+                      title: loopDetails.group.group_name,
                       previewImage: null,
                       fromUserName: null,
                       pathName: window.location.pathname,
