@@ -2,7 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@components/ui/avatar'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
 import { Button } from '@components/ui/button'
 import type { CommunityDetailsType } from '@lib/schemas/community'
-import { checkAndAppendHttps, getAvatarFallback, isValidHTTPS } from '@lib/utils'
+import { checkAndAppendHttps, generateDeepLink, getAvatarFallback, isValidHTTPS, openGeneratedLink } from '@lib/utils'
 import Image from 'next/image'
 import icShare from '@icons/icShareBlue.svg'
 import Link from 'next/link'
@@ -14,6 +14,8 @@ import { PATH_NAME } from '@lib/utils/constants/path'
 import { getCommunityLoops } from '@lib/api/community'
 import { Loader } from '@components/ui/loader'
 import dynamic from 'next/dynamic'
+import { useToast } from '@components/ui/use-toast'
+import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 const DetailsNavbar = dynamic(() =>
   import('@components/pages/community/mobile/nav-bar').then((comp) => comp.NavBar.details)
 )
@@ -26,6 +28,8 @@ interface Props {
 
 export function ProfileDetails({ communityDetails }: Props) {
   communityDetailsModule = communityDetails
+  const { shareFn } = useAdaptiveShare()
+  const { toast } = useToast()
 
   return (
     <>
@@ -42,10 +46,39 @@ export function ProfileDetails({ communityDetails }: Props) {
               </AvatarFallback>
             </Avatar>
             <div className="my-2 flex items-center gap-x-2">
-              <Button variant="default" size="sm">
+              <Button
+                variant="default"
+                size="sm"
+                onClick={() => {
+                  generateDeepLink({
+                    action: 'join',
+                    contentType: 'community',
+                    description: `Find your people. Find what you love. | Join ${communityDetailsModule?.info.name} to talk about it`,
+                    title: `join ${communityDetailsModule?.info.name}`,
+                    previewImage: null,
+                    fromUserName: null,
+                    pathName: window.location.pathname,
+                    sourceId: communityDetailsModule.info.handle,
+                    utmCampaign: 'share',
+                    utmMedium: 'web',
+                    utmSource: window.location.hostname,
+                  })
+                    .then((generatedLink) => openGeneratedLink(generatedLink))
+                    .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
+                }}>
                 <p className="mx-2 text-title-sm text-monochrome-white">Join</p>
               </Button>
-              <Button variant="outline" outlineColor="genuin-blue" size="sm" className="p-1">
+              <Button
+                variant="outline"
+                outlineColor="genuin-blue"
+                size="sm"
+                className="p-1"
+                onClick={() =>
+                  shareFn({
+                    shareLink: window.location.href,
+                    toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
+                  })
+                }>
                 <Image src={icShare} alt="share" />
               </Button>
             </div>
