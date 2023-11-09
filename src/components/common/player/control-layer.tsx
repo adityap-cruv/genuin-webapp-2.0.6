@@ -43,7 +43,7 @@ function DefaultLayer({ videoData }: Props) {
         <Image
           src={!muted ? icUnmute : icMute}
           alt="volume-control"
-          className="absolute left-3 top-3 z-20 cursor-pointer"
+          className="absolute left-3 top-16 z-20 cursor-pointer sm:top-3"
           onClick={(e) => {
             toggleMuted()
             e.stopPropagation()

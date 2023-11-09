@@ -3,6 +3,8 @@ import { Loader } from '@components/ui/loader'
 import dynamic from 'next/dynamic'
 import { getCommunityVideos } from '@lib/api/community'
 import { useEffect, useRef } from 'react'
+import { useMotionValueEvent, useScroll } from 'framer-motion'
+import { isError } from '@tanstack/react-query'
 
 const Player = dynamic(() => import('@components/common/player').then((comp) => comp.default), {
   loading: (state) => {
@@ -17,49 +19,65 @@ interface CommunityReelsProps {
 //todo create error in api component
 export function CommunityReels({ communityHandle }: CommunityReelsProps) {
   const divRef = useRef<HTMLDivElement>(null)
-  const { data: videos, isLoading, isError, isFetched } = getCommunityVideos(communityHandle)
-
-  useEffect(() => {
-    const div = divRef.current
-    if (!div) return
-    function scrollHandler(event: Event) {
-      console.log('event::', event)
+  const { data, isLoading, isError, isFetched, fetchNextPage, isFetchingNextPage } = getCommunityVideos(communityHandle)
+  const { scrollYProgress } = useScroll({ container: divRef })
+  const videos = data?.pages.flatMap((item) => item.videos)
+  useMotionValueEvent(scrollYProgress, 'change', (latest) => {
+    if (isFetchingNextPage) return
+    if (Number(latest.toFixed(1)) >= 0.9) {
+      fetchNextPage()
     }
-
-    div.addEventListener('scroll', scrollHandler)
-    return div.removeEventListener('scroll', scrollHandler)
-  }, [])
+  })
 
   return (
     <div className="relative z-10">
       <div
         className="hide-scrollbar relative h-full snap-y snap-mandatory snap-always overflow-y-auto overflow-x-clip"
         ref={divRef}>
-        {isLoading && <Loader size="lg" className="h-full w-full" />}
-        {isError && <div>Something went wrong with api.</div>}
-        {videos?.length === 0 && <NoReelsAvailable />}
-        {isFetched &&
-          videos.map((video: any, index: number) => {
-            return (
-              <Player
-                key={index}
-                shouldPlay
-                videoData={video}
-                isFirstPlayerInList={index === 0}
-                sizeBox={{
-                  height: divRef.current?.parentElement?.getBoundingClientRect().height || 0,
-                  width: ((divRef.current?.parentElement?.getBoundingClientRect().height || 0) * 9) / 16,
-                }}
-                loop
-                playIfInViewPort
-                showCommunityControl
-              />
-            )
-          })}
+        <InnerReelList videos={videos} isLoading={isLoading} divRef={divRef} />
       </div>
       {/* {isFetched && <Comments communityHandle="genuincommunity" videoId="23" />} */}
     </div>
   )
+}
+
+interface InnerReelListProps {
+  videos?: any[]
+  isLoading: boolean
+  divRef: React.RefObject<HTMLDivElement>
+}
+function InnerReelList({ videos, isLoading, divRef }: InnerReelListProps) {
+  if (isLoading) {
+    return (
+      <Loader
+        size="lg"
+        style={{
+          height: divRef.current?.parentElement?.getBoundingClientRect().height || 0,
+          width: ((divRef.current?.parentElement?.getBoundingClientRect().height || 0) * 9) / 16,
+        }}
+      />
+    )
+  }
+  if (!videos?.length) {
+    return <NoReelsAvailable />
+  }
+  return videos.map((video, index) => {
+    return (
+      <Player
+        key={index}
+        shouldPlay
+        videoData={video}
+        isFirstPlayerInList={index === 0}
+        sizeBox={{
+          height: divRef.current?.parentElement?.getBoundingClientRect().height || 0,
+          width: ((divRef.current?.parentElement?.getBoundingClientRect().height || 0) * 9) / 16,
+        }}
+        loop
+        playIfInViewPort
+        showCommunityControl
+      />
+    )
+  })
 }
 
 function NoReelsAvailable() {
