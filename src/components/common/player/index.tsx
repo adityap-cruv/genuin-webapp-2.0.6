@@ -5,6 +5,8 @@ import { cn } from '@lib/utils'
 import { Loader } from '@components/ui/loader'
 import { VideoDataType } from '@lib/schemas/video'
 import { useState } from 'react'
+import { isMobile } from 'react-device-detect'
+import { usePlayerControlStore } from '@lib/stores/common/player-control-store'
 const InnerPlayer = dynamic(() => import('./inner-player').then((comp) => comp.InnerPlayer), {
   loading: (_) => {
     return <Loader size="lg" />
@@ -72,6 +74,8 @@ export default function Player({
   isFirstPlayerInList = false,
 }: Props) {
   const [playerControls, setPlayerControls] = useState({ play: shouldPlay, muted: true, loop })
+  const togglePlayPauseStatus = usePlayerControlStore((state) => state.toggleShouldPlay)
+
   let height = 0
   if (sizeBox) {
     height = sizeBox.height
@@ -124,7 +128,17 @@ export default function Player({
               onError={(e) => {}}
             />
           )}
-          <div className="absolute left-0 top-0 h-full w-full">
+          <div
+            onClick={
+              // this action will only execute if end device is mobile
+              isMobile
+                ? (e) => {
+                    togglePlayPauseStatus()
+                    e.stopPropagation()
+                  }
+                : undefined
+            }
+            className="absolute left-0 top-0 h-full w-full">
             {showControls ? (
               showCommunityControl ? (
                 <CommunityControlLayer videoData={videoData} />

@@ -22,6 +22,8 @@ import { usePlayerControlStore } from '@lib/stores/common/player-control-store'
 import { isMobile } from 'react-device-detect'
 import { useToast } from '@components/ui/use-toast'
 import { Progress } from '@components/ui/progress'
+import icPlay from '@icons/player-controls/icPlay.svg'
+import icPause from '@icons/player-controls/icPause.svg'
 
 export const ControlLayer = {
   default: DefaultLayer,
@@ -76,9 +78,11 @@ interface CommunityLayerProps {
 }
 
 function CommunityLayer({ videoData }: CommunityLayerProps) {
-  const { toggleMuted, muted } = usePlayerControlStore((state) => ({
+  const { toggleMuted, muted, shouldPlay, toggleShouldPlay } = usePlayerControlStore((state) => ({
     toggleMuted: state.toggleMuted,
     muted: state.muted,
+    shouldPlay: state.shouldPlay,
+    toggleShouldPlay: state.toggleShouldPlay,
   }))
 
   if (videoData) {
@@ -87,9 +91,18 @@ function CommunityLayer({ videoData }: CommunityLayerProps) {
         <Image
           src={!muted ? icUnmute : icMute}
           alt="volume-control"
-          className="absolute left-3 top-16 z-20 cursor-pointer sm:top-3"
+          className="absolute right-3 top-16 z-20 cursor-pointer sm:top-3"
           onClick={(e) => {
             toggleMuted()
+            e.stopPropagation()
+          }}
+        />
+        <Image
+          src={shouldPlay ? icPause : icPlay}
+          alt="volume-control"
+          className="absolute left-3 top-16 z-20 hidden cursor-pointer sm:top-3 sm:block"
+          onClick={(e) => {
+            toggleShouldPlay()
             e.stopPropagation()
           }}
         />

@@ -7,6 +7,7 @@ interface PlayerControlStoreType {
   toggleMuted: () => void
   play: () => void
   pause: () => void
+  toggleShouldPlay: () => void
   playerSizeBox: { height: number; width: number }
   updatePlayerSizeBox: (height: number, width: number) => void
   duration: number
@@ -27,6 +28,11 @@ export const usePlayerControlStore = create<PlayerControlStoreType>((set) => {
     },
     pause() {
       set({ shouldPlay: false })
+    },
+    toggleShouldPlay() {
+      set((state) => ({
+        shouldPlay: !state.shouldPlay,
+      }))
     },
     playerSizeBox: { height: 0, width: 0 },
     updatePlayerSizeBox(height, width) {
