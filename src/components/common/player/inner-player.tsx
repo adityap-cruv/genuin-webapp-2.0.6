@@ -1,6 +1,14 @@
 import OpenPlayerJS from 'openplayerjs'
 import { useInView } from 'framer-motion'
-import { DetailedHTMLProps, VideoHTMLAttributes, useCallback, useEffect, useRef, useState } from 'react'
+import {
+  DetailedHTMLProps,
+  ReactEventHandler,
+  VideoHTMLAttributes,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import { usePlayerControlStore } from '@lib/stores/common/player-control-store'
 
 // todo work on why player is sendding multiple request.
@@ -32,9 +40,11 @@ export function InnerPlayer({
     playing: false,
     player: null,
   })
-  const { shouldPlay, muted } = usePlayerControlStore((state) => ({
+  const { shouldPlay, muted, setCurrentTime, setDuration } = usePlayerControlStore((state) => ({
     shouldPlay: state.shouldPlay,
     muted: state.muted,
+    setDuration: state.setDuration,
+    setCurrentTime: state.setCurrentTime,
   }))
 
   useEffect(() => {
@@ -91,6 +101,15 @@ export function InnerPlayer({
     }
   }, [shouldPlay])
 
+  const onDurationChangeEventHandler: ReactEventHandler<HTMLVideoElement> = (event) => {
+    setDuration(event.currentTarget.duration)
+  }
+
+  const onTimeUpdateEventHandler: ReactEventHandler<HTMLVideoElement> = (event) => {
+    console.log('event::', event.currentTarget.currentTime)
+    setCurrentTime(event.currentTarget.currentTime)
+  }
+
   if (videoSource)
     return (
       <video
@@ -112,6 +131,8 @@ export function InnerPlayer({
           localRef.current.loaded = true
           if (onCanPlay) onCanPlay(ev)
         }}
+        onDurationChange={onDurationChangeEventHandler}
+        onTimeUpdate={onTimeUpdateEventHandler}
         onPause={onPause}
         onEnded={onEnded}
       />
