@@ -91,27 +91,31 @@ function Right() {
 }
 
 function Categories() {
-  return (
-    <div>
-      <p className="my-2 text-title-md">Categories</p>
+  if (communityDetailsModule?.info.categories && communityDetailsModule.info.categories.length !== 0) {
+    return (
       <div>
-        {communityDetailsModule?.info.categories.map((cat, index) => {
-          return (
-            <p key={index} className="mx-1 my-1 inline-block rounded-full bg-monochrome-9 p-1 px-2 text-body-sm">
-              <span className="line-clamp-1 break-all">{cat}</span>
-            </p>
-          )
-        })}
+        <p className="my-2 text-title-md">Categories</p>
+        <div>
+          {communityDetailsModule?.info.categories.map((cat, index) => {
+            return (
+              <p key={index} className="mx-1 my-1 inline-block rounded-full bg-monochrome-9 p-1 px-2 text-body-sm">
+                <span className="line-clamp-1 break-all">{cat}</span>
+              </p>
+            )
+          })}
+        </div>
       </div>
-    </div>
-  )
+    )
+  }
 }
 
 function Links() {
   const links = communityDetailsModule?.info.links
   return (
     <div>
-      <p className="my-2 text-title-md">Links</p>
+      {(links?.instagram_url || links?.linkedin_url || links?.social_web_url || links?.twitter_url) && (
+        <p className="my-2 text-title-md">Links</p>
+      )}
       <div className="flex">
         {links?.instagram_url && (
           <div className="mx-1 rounded-md bg-monochrome-9 p-1">

@@ -17,9 +17,9 @@ export function HorizontalVideosList({ loopId }: { loopId: string }) {
       if (!isFetchingNextPage) fetchNextPage()
     }
   })
-
+  
   return (
-    <div className="relative h-1/3 w-full">
+    <div className="relative h-40 w-full">
       <div className="h-full w-full overflow-y-hidden overflow-x-scroll scroll-smooth whitespace-nowrap" ref={divRef}>
         {isLoading && <Loader size="md" />}
         {data &&
