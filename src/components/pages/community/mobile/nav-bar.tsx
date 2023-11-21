@@ -35,7 +35,7 @@ function Details({ variant = 'light', communityDetails }: Props) {
           <Avatar className="mx-2 h-6 w-6 bg-red-50">
             <AvatarImage src={communityDetails?.info.profile_image} />
             <AvatarFallback>
-              <p className="text-title-xl text-monochrome-white">{getAvatarFallback(communityDetails?.info.name)}</p>
+              <p className="text-title-sm text-monochrome-white">{getAvatarFallback(communityDetails?.info.name)}</p>
             </AvatarFallback>
           </Avatar>
           <p className="my-2 line-clamp-1 break-all text-title-sm">{communityDetails?.info.name}</p>

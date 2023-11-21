@@ -43,7 +43,11 @@ export function MainComponent({ loopDetails, isMobile }: Props) {
           <div className="flex items-center">
             <Avatar className="h-20 w-20 bg-red-40">
               <AvatarImage src={loopDetails.group.dp || undefined} />
-              <AvatarFallback>{getAvatarFallback(loopDetails.group.group_name || undefined)}</AvatarFallback>
+              <AvatarFallback>
+                <p className="text-title-xl text-new-off-white">
+                  {getAvatarFallback(loopDetails.group.group_name || undefined)}
+                </p>
+              </AvatarFallback>
             </Avatar>
             <div className="w-full pl-5">
               {!isMd && (
