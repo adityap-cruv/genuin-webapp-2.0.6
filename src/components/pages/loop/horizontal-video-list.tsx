@@ -4,6 +4,8 @@ import { getLoopVideos } from '@lib/api/loop'
 import { Loader } from '@components/ui/loader'
 import Image from 'next/image'
 import dynamic from 'next/dynamic'
+import { pushUrlWithoutReload } from '@lib/utils'
+import { PATH_NAME } from '@lib/utils/constants/path'
 const PlayerModal = dynamic(() => import('@components/common/player-modal').then((comp) => comp.PlayerModal))
 
 // todo we can create hook which accepts containerRef, callback to be called, and direction in which we should call callback.
@@ -17,7 +19,7 @@ export function HorizontalVideosList({ loopId }: { loopId: string }) {
       if (!isFetchingNextPage) fetchNextPage()
     }
   })
-  
+
   return (
     <div className="relative h-40 w-full">
       <div className="h-full w-full overflow-y-hidden overflow-x-scroll scroll-smooth whitespace-nowrap" ref={divRef}>
@@ -33,6 +35,12 @@ export function HorizontalVideosList({ loopId }: { loopId: string }) {
                     style={{
                       height: divRef.current?.getBoundingClientRect().height,
                       width: (divRef.current?.getBoundingClientRect().height ?? 0) * (9 / 16),
+                    }}
+                    onClick={(e) => {
+                      pushUrlWithoutReload({
+                        pathname: PATH_NAME.video(item.video.share_string),
+                        query: [{ key: 'l', value: item.loop.share_string }],
+                      })
                     }}>
                     <Image
                       src={item.video.thumbnail || ''}

@@ -35,9 +35,11 @@ interface Props {
 }
 
 function DefaultLayer({ videoData }: Props) {
-  const { toggleMuted, muted } = usePlayerControlStore((state) => ({
+  const { toggleMuted, muted, shouldPlay, toggleShouldPlay } = usePlayerControlStore((state) => ({
     toggleMuted: state.toggleMuted,
     muted: state.muted,
+    shouldPlay: state.shouldPlay,
+    toggleShouldPlay: state.toggleShouldPlay,
   }))
 
   if (videoData) {
@@ -46,9 +48,18 @@ function DefaultLayer({ videoData }: Props) {
         <Image
           src={!muted ? icUnmute : icMute}
           alt="volume-control"
-          className="absolute left-3 top-16 z-20 cursor-pointer sm:top-3"
+          className="absolute right-3 top-16 z-20 cursor-pointer sm:top-3"
           onClick={(e) => {
             toggleMuted()
+            e.stopPropagation()
+          }}
+        />
+        <Image
+          src={shouldPlay ? icPause : icPlay}
+          alt="volume-control"
+          className="absolute left-3 top-16 z-20 cursor-pointer sm:top-3"
+          onClick={(e) => {
+            toggleShouldPlay()
             e.stopPropagation()
           }}
         />

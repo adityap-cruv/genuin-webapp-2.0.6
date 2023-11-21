@@ -58,7 +58,6 @@ export async function fetchCommunityLoops(handle: string) {
       },
     })
     .then((res) => {
-      console.log('res:', res)
       return res.data.data?.loops
     })
     .catch((e) => {

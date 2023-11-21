@@ -106,7 +106,6 @@ export function InnerPlayer({
   }
 
   const onTimeUpdateEventHandler: ReactEventHandler<HTMLVideoElement> = (event) => {
-    console.log('event::', event.currentTarget.currentTime)
     setCurrentTime(event.currentTarget.currentTime)
   }
 
@@ -198,7 +197,6 @@ export function ViewportPlayer({
     player.init().then((value) => {
       player.load().then(() => {
         if (isFirstElement) {
-          console.log('first time::', inView)
           player.play()
         }
         localRef.current.player = player
