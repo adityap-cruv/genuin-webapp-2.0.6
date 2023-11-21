@@ -21,6 +21,7 @@ import { VideoDataType } from '@lib/schemas/video'
 import { usePlayerControlStore } from '@lib/stores/common/player-control-store'
 import { isMobile } from 'react-device-detect'
 import { useToast } from '@components/ui/use-toast'
+import { Progress } from '@components/ui/progress'
 
 export const ControlLayer = {
   default: DefaultLayer,
@@ -49,16 +50,25 @@ function DefaultLayer({ videoData }: Props) {
             e.stopPropagation()
           }}
         />
-        <div className="absolute bottom-0 left-0 w-full p-2">
-          {videoData.video_type === 'rt' || videoData.loop ? (
-            <Loop videoData={videoData} />
-          ) : (
-            <Public videoData={videoData} />
-          )}
+        <div className="absolute bottom-0 left-0 w-full">
+          <div className="w-full p-2">
+            {videoData.video_type === 'rt' || videoData.loop ? (
+              <Loop videoData={videoData} />
+            ) : (
+              <Public videoData={videoData} />
+            )}
+          </div>
+          <PlayerProgressBar />
         </div>
       </div>
     )
   }
+}
+
+function PlayerProgressBar() {
+  const currentTime = usePlayerControlStore((state) => state.currentTime)
+  const duration = usePlayerControlStore((state) => state.duration)
+  return <Progress value={Math.round((currentTime / duration) * 100)} />
 }
 
 interface CommunityLayerProps {

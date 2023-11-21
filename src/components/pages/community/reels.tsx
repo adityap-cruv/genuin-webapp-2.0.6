@@ -2,9 +2,10 @@
 import { Loader } from '@components/ui/loader'
 import dynamic from 'next/dynamic'
 import { getCommunityVideos } from '@lib/api/community'
-import { useEffect, useRef } from 'react'
+import { useRef } from 'react'
 import { useMotionValueEvent, useScroll } from 'framer-motion'
-import { isError } from '@tanstack/react-query'
+import Image from 'next/image'
+import noLoopImage from '@images/noLoopImage.svg'
 
 const Player = dynamic(() => import('@components/common/player').then((comp) => comp.default), {
   loading: (state) => {
@@ -59,7 +60,18 @@ function InnerReelList({ videos, isLoading, divRef }: InnerReelListProps) {
     )
   }
   if (!videos?.length) {
-    return <NoReelsAvailable />
+    return (
+      <div
+        className="flex h-full flex-col items-center justify-center px-14"
+        style={{ width: ((divRef.current?.parentElement?.getBoundingClientRect().height || 0) * 9) / 16 }}>
+        <Image src={noLoopImage} alt="no loops found" />
+        <p className="pt-4 text-title-lg">No Loops... yet!</p>
+        <p className="pt-2 text-center text-body-sm text-secondary">
+          Loops are dynamic discussion spaces centered around specific themes. Members can share videos, get reactions,
+          and enjoy engaging comments from the community.
+        </p>
+      </div>
+    )
   }
   return videos.map((video, index) => {
     return (
@@ -78,8 +90,4 @@ function InnerReelList({ videos, isLoading, divRef }: InnerReelListProps) {
       />
     )
   })
-}
-
-function NoReelsAvailable() {
-  return <div>No reels available.</div>
 }
