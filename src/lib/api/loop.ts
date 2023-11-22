@@ -62,5 +62,5 @@ async function fetchLoopCohosts(chat_id: string, type: string) {
 }
 
 export function getLoopCohosts(chat_id: string, type: string) {
-  return useQuery({ queryKey: ['loop', 'cohosts', 'users'], queryFn: () => fetchLoopCohosts(chat_id, type) })
+  return useQuery({ queryKey: ['loop', 'cohosts', 'users', chat_id, type], queryFn: () => fetchLoopCohosts(chat_id, type) })
 }
