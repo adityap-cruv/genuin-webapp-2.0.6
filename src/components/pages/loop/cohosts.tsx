@@ -7,7 +7,8 @@ import { getAvatarFallback } from '@lib/utils'
 
 // todo configure error here.
 export function Cohosts({ loopId }: { loopId: string }) {
-  const { data, isLoading, isError } = getLoopCohosts(loopId)
+  const { data, isLoading, isError } = getLoopCohosts(loopId, 'members')
+  console.log(loopId)
   return (
     <div className="h-2/3 pt-3">
       <p className="text-title-lg">Co-Hosts</p>
@@ -15,13 +16,13 @@ export function Cohosts({ loopId }: { loopId: string }) {
       {isError && <div>Something went wrong...</div>}
       {data && (
         <div className="grid h-full w-full columns-2 grid-cols-2 overflow-auto pb-11 md:grid-cols-3 xl:grid-cols-4">
-          {data.members.map((member, index) => (
-            <Link key={index} href={{ pathname: PATH_NAME.profile(member.nickname) }}>
+          {data.map((item: any, index: any) => (
+            <Link key={index} href={{ pathname: PATH_NAME.profile(item.user.nickname) }}>
               <CohostTile
-                image={member.profile_image ?? ''}
-                subtitle={member.bio ?? ''}
-                title={'@' + member.nickname}
-                userName={member.name ?? 'Un Known'}
+                image={item.user.profile_image || ''}
+                subtitle={item.user.bio || ''}
+                title={'@' + item.user.nickname}
+                userName={item.user.name ?? 'Unknown'}
               />
             </Link>
           ))}
