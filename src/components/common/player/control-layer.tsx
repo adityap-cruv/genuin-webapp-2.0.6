@@ -3,10 +3,9 @@ import { checkAndAppendHttps, generateDeepLink, getAvatarFallback, openGenerated
 import Link from 'next/link'
 import { Button } from '@components/ui/button'
 import { Badge } from '@components/ui/badge'
-import icLink from '@icons/icLink.svg'
-import icShare from '@icons/icShare.svg'
+import icShare from '@icons/player-controls/icShare.svg'
 import icSubscribe from '@icons/icSubscribe.svg'
-import icComment from '@icons/icComment.svg'
+import icComment from '@icons/player-controls/icComment.svg'
 import Image from 'next/image'
 import { DownloadDialog } from '../download-dialog'
 import { PATH_NAME } from '@lib/utils/constants/path'
@@ -24,6 +23,10 @@ import { useToast } from '@components/ui/use-toast'
 import { Progress } from '@components/ui/progress'
 import icPlay from '@icons/player-controls/icPlay.svg'
 import icPause from '@icons/player-controls/icPause.svg'
+import icLinkout from '@icons/player-controls/icLinkout.svg'
+import icSpark from '@icons/player-controls/icBulb.svg'
+import icRepost from '@icons/player-controls/icRepost.svg'
+import ic3Dot from '@icons/player-controls/3Dot.svg'
 
 export const ControlLayer = {
   default: DefaultLayer,
@@ -269,10 +272,16 @@ function Actions({ link = '', shareDescription = '', shareTitle = '', isLoop = f
             {link && (
               <Link href={checkAndAppendHttps(link)} target="_blank">
                 <ActionItem title="Click Here!">
-                  <Image src={icLink} alt="link" height={20} width={20} />
+                  <Image src={icLinkout} alt="link" height={32} width={32} />
                 </ActionItem>
               </Link>
             )}
+            <ActionItem title="Repost the video!">
+              <Image src={icRepost} height={32} width={32} alt="repost" />
+            </ActionItem>
+            <ActionItem title="Give spark!">
+              <Image src={icSpark} height={32} width={32} alt="spark" />
+            </ActionItem>
             {!isLoop && (
               <ActionItem
                 title="Save this Video!"
@@ -296,7 +305,7 @@ function Actions({ link = '', shareDescription = '', shareTitle = '', isLoop = f
                     })
                     .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
                 }}>
-                <Image src={icSave} width={20} height={20} alt="Save video" />
+                <Image src={icSave} width={32} height={32} alt="Save video" />
               </ActionItem>
             )}
             {isLoop && (
@@ -323,10 +332,9 @@ function Actions({ link = '', shareDescription = '', shareTitle = '', isLoop = f
                       })
                       .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
                   }}>
-                  <Image src={icComment} alt="comments" height={20} width={20} />
+                  <Image src={icComment} alt="comments" height={32} width={32} />
                 </ActionItem>
-
-                <ActionItem
+                {/* <ActionItem
                   title="Subscribe to Loop!"
                   onClick={() => {
                     generateDeepLink({
@@ -349,13 +357,13 @@ function Actions({ link = '', shareDescription = '', shareTitle = '', isLoop = f
                       .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
                   }}>
                   <Image src={icSubscribe} alt="subscribe" height={18} width={18} />
-                </ActionItem>
+                </ActionItem> */}
               </>
             )}
             <ActionItem
               title="Share Video!"
               onClick={async () => await shareFn({ description: shareDescription, title: shareTitle })}>
-              <Image src={icShare} alt="share" height={20} width={20} />
+              <Image src={icShare} alt="share" height={32} width={32} />
             </ActionItem>
             {!isLoop && (
               <ActionItem
@@ -380,25 +388,38 @@ function Actions({ link = '', shareDescription = '', shareTitle = '', isLoop = f
                     })
                     .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
                 }}>
-                <Image src={icReply} height={20} width={20} alt="reply" />
+                <Image src={icReply} height={32} width={32} alt="reply" />
               </ActionItem>
             )}
+            <ActionItem title="more options!">
+              <Image src={ic3Dot} alt="more options" height={32} width={32} />
+            </ActionItem>
           </div>
         </>
       ) : (
         <>
           <div className="flex flex-col">
-            {link && (
+            <DownloadDialog title="Get the Genuin app" subtitle="Get the app to repost the video." asChild={false}>
+              <ActionItem title="Repost the video!">
+                <Image src={icRepost} alt="repost" height={32} width={32} />
+              </ActionItem>
+            </DownloadDialog>
+            <DownloadDialog title="Get the Genuin app" subtitle="Get the app to give spark to video.">
+              <ActionItem title="Give spark!">
+                <Image src={icSpark} height={32} width={32} alt="spark" />
+              </ActionItem>
+            </DownloadDialog>
+            {true && (
               <Link href={checkAndAppendHttps(link)} target="_blank">
                 <ActionItem title="Click Here!">
-                  <Image src={icLink} alt="link" height={20} width={20} />
+                  <Image src={icLinkout} alt="link" height={32} width={32} />
                 </ActionItem>
               </Link>
             )}
-            {!isLoop && (
+            {true && (
               <DownloadDialog title="Get the Genuin app" subtitle="Get the app to save the video." asChild={false}>
                 <ActionItem title="Save this Video!">
-                  <Image src={icSave} width={20} height={20} alt="Save video" />
+                  <Image src={icSave} width={32} height={32} alt="Save video" />
                 </ActionItem>
               </DownloadDialog>
             )}
@@ -409,14 +430,14 @@ function Actions({ link = '', shareDescription = '', shareTitle = '', isLoop = f
                   subtitle="Get the app to watch the comments on this video."
                   asChild={false}>
                   <ActionItem title="See Comments!">
-                    <Image src={icComment} alt="comments" height={20} width={20} />
+                    <Image src={icComment} alt="comments" height={32} width={32} />
                   </ActionItem>
                 </DownloadDialog>
-                <DownloadDialog title="Get the Genuin app" subtitle="Get the app to subscribe to Loop." asChild={false}>
+                {/* <DownloadDialog title="Get the Genuin app" subtitle="Get the app to subscribe to Loop." asChild={false}>
                   <ActionItem title="Subscribe to Loop!">
                     <Image src={icSubscribe} alt="subscribe" height={18} width={18} />
                   </ActionItem>
-                </DownloadDialog>
+                </DownloadDialog> */}
               </>
             )}
             <ActionItem
@@ -428,15 +449,20 @@ function Actions({ link = '', shareDescription = '', shareTitle = '', isLoop = f
                   toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                 })
               }>
-              <Image src={icShare} alt="share" height={20} width={20} />
+              <Image src={icShare} alt="share" height={32} width={32} />
             </ActionItem>
             {!isLoop && (
               <DownloadDialog title="Get the Genuin app" subtitle="Get the app to reply to video." asChild={false}>
                 <ActionItem title="Reply to Video!">
-                  <Image src={icReply} height={20} width={20} alt="reply" />
+                  <Image src={icReply} height={32} width={32} alt="reply" />
                 </ActionItem>
               </DownloadDialog>
             )}
+            <DownloadDialog title="Get the Genuin app" subtitle="Get the app to report video.">
+              <ActionItem title="More options!">
+                <Image src={ic3Dot} height={32} width={32} alt="More Options!" />
+              </ActionItem>
+            </DownloadDialog>
           </div>
         </>
       )}
@@ -450,10 +476,7 @@ interface ActionItemProps extends React.HTMLAttributes<HTMLDivElement> {
 
 function ActionItem({ children, onClick, title }: ActionItemProps) {
   return (
-    <div
-      onClick={onClick}
-      title={title}
-      className="mt-3 cursor-pointer rounded-full bg-monochrome-white/10 p-3 hover:bg-monochrome-white/40">
+    <div onClick={onClick} title={title} className="my-2 cursor-pointer">
       {children}
     </div>
   )
