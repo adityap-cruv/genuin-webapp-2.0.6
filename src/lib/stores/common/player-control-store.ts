@@ -1,7 +1,6 @@
 import { create } from 'zustand'
-import { devtools } from 'zustand/middleware'
 
-interface PlayerControlStoreType {
+type PlayerControlStoreType = {
   shouldPlay: boolean
   muted: boolean
   toggleMuted: () => void

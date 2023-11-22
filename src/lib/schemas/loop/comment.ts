@@ -33,6 +33,6 @@ export function validateCommentList(data: any) {
   try {
     return CommentListSchema.parse(data)
   } catch (e) {
-    throw new Error('Something went wrong with comments fetching api. Error is::' + e)
+    throw new Error('Something went wrong with comments fetching api. Error is::', e as ErrorOptions | undefined)
   }
 }

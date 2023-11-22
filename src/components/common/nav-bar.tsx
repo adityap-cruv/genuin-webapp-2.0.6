@@ -58,7 +58,7 @@ function BurgerMenu({ variant = 'dark' }: { variant?: 'light' | 'dark' }) {
       <DropdownMenuContent
         className="bg-monochrome-black/90 px-3"
         onInteractOutside={(event) => {
-          //todo think about it what to do when user clicks outside
+          // todo think about it what to do when user clicks outside
           event.preventDefault()
         }}>
         <DropdownMenuItem>

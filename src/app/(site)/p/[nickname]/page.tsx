@@ -1,4 +1,4 @@
-import { Metadata } from 'next'
+import { type Metadata } from 'next'
 import { MainComponent } from './main-component'
 import { cookies } from 'next/headers'
 import { fetchUserData } from '@lib/api/profile'
@@ -7,7 +7,7 @@ interface CompProps {
   params: {
     nickname: string
   }
-  searchParams: {}
+  searchParams: Record<string, unknown>
 }
 
 export default async function Component({ params }: CompProps) {
@@ -24,16 +24,16 @@ export async function generateMetadata({ params }: CompProps): Promise<Metadata>
       ? `${data.name.trim()} (@${data.nickname})`
       : `@${data.nickname}`
   } on Genuin`
-  if (data?.bio != '') {
+  if (data?.bio !== '') {
     desc += ` | ${data.bio}`
   }
 
   return {
-    title: title,
+    title,
     applicationName: 'Genuin',
     description: desc,
     openGraph: {
-      title: title,
+      title,
       description: desc,
       url: `${process.env.NEXT_PUBLIC_HOST_URL}/p/${data.nickname}`,
       images: [

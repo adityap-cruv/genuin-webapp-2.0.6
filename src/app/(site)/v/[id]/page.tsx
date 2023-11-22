@@ -1,4 +1,4 @@
-import { Metadata } from 'next'
+import { type Metadata } from 'next'
 import { MainComponent } from './main-component'
 import { fetchVideoDetails } from '@lib/api/video'
 import { PATH_NAME } from '@lib/utils/constants/path'
@@ -37,12 +37,12 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   }
 
   return {
-    title: title,
+    title,
     applicationName: 'genuin',
-    description: description,
+    description,
     openGraph: {
-      title: title,
-      description: description,
+      title,
+      description,
       url: shareLink,
       images: [{ url: `${videoDetails?.video?.thumbnail}/#primaryimage` }],
     },

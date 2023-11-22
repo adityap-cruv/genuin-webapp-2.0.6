@@ -7,26 +7,26 @@ import { useMotionValueEvent, useScroll } from 'framer-motion'
 import Image from 'next/image'
 import noLoopImage from '@images/noLoopImage.svg'
 
-const Player = dynamic(() => import('@components/common/player').then((comp) => comp.default), {
+const Player = dynamic(async () => await import('@components/common/player').then((comp) => comp.default), {
   loading: (state) => {
     return <Loader size="lg" />
   },
 })
-const Comments = dynamic(() => import('./comments').then((comp) => comp.Comments))
+// const Comments = dynamic(async () => await import('./comments').then((comp) => comp.Comments))
 interface CommunityReelsProps {
   communityHandle: string
 }
 
-//todo create error in api component
+// todo create error in api component
 export function CommunityReels({ communityHandle }: CommunityReelsProps) {
   const divRef = useRef<HTMLDivElement>(null)
-  const { data, isLoading, isError, isFetched, fetchNextPage, isFetchingNextPage } = getCommunityVideos(communityHandle)
+  const { data, isLoading, fetchNextPage, isFetchingNextPage } = getCommunityVideos(communityHandle)
   const { scrollYProgress } = useScroll({ container: divRef })
   const videos = data?.pages.flatMap((item) => item.videos)
   useMotionValueEvent(scrollYProgress, 'change', (latest) => {
     if (isFetchingNextPage) return
     if (Number(latest.toFixed(1)) >= 0.9) {
-      fetchNextPage()
+      void fetchNextPage()
     }
   })
 
@@ -53,8 +53,8 @@ function InnerReelList({ videos, isLoading, divRef }: InnerReelListProps) {
       <Loader
         size="lg"
         style={{
-          height: divRef.current?.parentElement?.getBoundingClientRect().height || 0,
-          width: ((divRef.current?.parentElement?.getBoundingClientRect().height || 0) * 9) / 16,
+          height: divRef.current?.parentElement?.getBoundingClientRect().height ?? 0,
+          width: ((divRef.current?.parentElement?.getBoundingClientRect().height ?? 0) * 9) / 16,
         }}
       />
     )
@@ -63,7 +63,7 @@ function InnerReelList({ videos, isLoading, divRef }: InnerReelListProps) {
     return (
       <div
         className="flex h-full flex-col items-center justify-center px-14"
-        style={{ width: ((divRef.current?.parentElement?.getBoundingClientRect().height || 0) * 9) / 16 }}>
+        style={{ width: ((divRef.current?.parentElement?.getBoundingClientRect().height ?? 0) * 9) / 16 }}>
         <Image src={noLoopImage} alt="no loops found" />
         <p className="pt-4 text-title-lg">No Loops... yet!</p>
         <p className="pt-2 text-center text-body-sm text-secondary">
@@ -81,8 +81,8 @@ function InnerReelList({ videos, isLoading, divRef }: InnerReelListProps) {
         videoData={video}
         isFirstPlayerInList={index === 0}
         sizeBox={{
-          height: divRef.current?.parentElement?.getBoundingClientRect().height || 0,
-          width: ((divRef.current?.parentElement?.getBoundingClientRect().height || 0) * 9) / 16,
+          height: divRef.current?.parentElement?.getBoundingClientRect().height ?? 0,
+          width: ((divRef.current?.parentElement?.getBoundingClientRect().height ?? 0) * 9) / 16,
         }}
         loop
         playIfInViewPort

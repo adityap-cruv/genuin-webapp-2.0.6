@@ -13,7 +13,7 @@ export function useAdaptiveShare() {
     toast?: any
   }): Promise<boolean> {
     if (window) {
-      const linkToCopy = shareLink ? shareLink : window.location.href
+      const linkToCopy = shareLink ?? window.location.href
       if (isMobile) {
         await window.navigator.share({ url: linkToCopy, title, text: description })
         return true

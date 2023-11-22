@@ -17,7 +17,7 @@ import icMute from '@icons/player-controls/icMute.svg'
 import icUnmute from '@icons/player-controls/icUnmute.svg'
 import icLoop from '@icons/icLoop.svg'
 import icRightArrow from '@icons/icRightArrow.svg'
-import { VideoDataType } from '@lib/schemas/video'
+import { type VideoDataType } from '@lib/schemas/video'
 import { usePlayerControlStore } from '@lib/stores/common/player-control-store'
 import { isMobile } from 'react-device-detect'
 import { useToast } from '@components/ui/use-toast'
@@ -131,7 +131,7 @@ function CommunityReelSection({ videoData }: CommunityLayerProps) {
     <div className="mt-2 flex h-14 w-full items-center justify-between bg-monochrome-black/40 px-2">
       <div className="flex items-center gap-x-2">
         <Avatar className="bg-red-40">
-          <AvatarImage src={videoData.loop?.profile_image || ''} />
+          <AvatarImage src={videoData.loop?.profile_image ?? ''} />
           <AvatarFallback>{getAvatarFallback(videoData.loop?.name)}</AvatarFallback>
         </Avatar>
         <div className="flex flex-col">
@@ -291,7 +291,9 @@ function Actions({ link = '', shareDescription = '', shareTitle = '', isLoop = f
                     utmSource: window.location.hostname,
                     parentId: videoData?.loop?.share_string,
                   })
-                    .then((link) => openGeneratedLink(link))
+                    .then((link) => {
+                      openGeneratedLink(link)
+                    })
                     .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
                 }}>
                 <Image src={icSave} width={20} height={20} alt="Save video" />
@@ -316,7 +318,9 @@ function Actions({ link = '', shareDescription = '', shareTitle = '', isLoop = f
                       utmSource: window.location.hostname,
                       parentId: videoData?.loop?.share_string,
                     })
-                      .then((link) => openGeneratedLink(link))
+                      .then((link) => {
+                        openGeneratedLink(link)
+                      })
                       .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
                   }}>
                   <Image src={icComment} alt="comments" height={20} width={20} />
@@ -339,7 +343,9 @@ function Actions({ link = '', shareDescription = '', shareTitle = '', isLoop = f
                       utmMedium: 'web',
                       utmSource: window.location.hostname,
                     })
-                      .then((link) => openGeneratedLink(link))
+                      .then((link) => {
+                        openGeneratedLink(link)
+                      })
                       .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
                   }}>
                   <Image src={icSubscribe} alt="subscribe" height={18} width={18} />
@@ -348,7 +354,7 @@ function Actions({ link = '', shareDescription = '', shareTitle = '', isLoop = f
             )}
             <ActionItem
               title="Share Video!"
-              onClick={() => shareFn({ description: shareDescription, title: shareTitle })}>
+              onClick={async () => await shareFn({ description: shareDescription, title: shareTitle })}>
               <Image src={icShare} alt="share" height={20} width={20} />
             </ActionItem>
             {!isLoop && (
@@ -369,7 +375,9 @@ function Actions({ link = '', shareDescription = '', shareTitle = '', isLoop = f
                     utmSource: window.location.hostname,
                     parentId: videoData?.loop?.share_string,
                   })
-                    .then((link) => openGeneratedLink(link))
+                    .then((link) => {
+                      openGeneratedLink(link)
+                    })
                     .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
                 }}>
                 <Image src={icReply} height={20} width={20} alt="reply" />
@@ -413,8 +421,8 @@ function Actions({ link = '', shareDescription = '', shareTitle = '', isLoop = f
             )}
             <ActionItem
               title="Share Video!"
-              onClick={() =>
-                shareFn({
+              onClick={async () =>
+                await shareFn({
                   description: shareDescription,
                   title: shareTitle,
                   toast: () => toast({ title: 'Link Copied!', duration: 1000 }),

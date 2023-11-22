@@ -5,7 +5,7 @@ import { getCommunityVideos } from '@lib/api/community'
 import { useRef } from 'react'
 import { useMotionValueEvent, useScroll } from 'framer-motion'
 
-const Player = dynamic(() => import('@components/common/player').then((comp) => comp.default), {
+const Player = dynamic(async () => await import('@components/common/player').then((comp) => comp.default), {
   loading: (state) => {
     return <Loader size="lg" />
   },
@@ -15,16 +15,16 @@ interface CommunityReelsProps {
   communityHandle: string
 }
 
-//todo create error in api component
+// todo create error in api component
 export function CommunityReels({ communityHandle }: CommunityReelsProps) {
   const divRef = useRef<HTMLDivElement>(null)
-  const { data, isLoading, isError, isFetched, fetchNextPage, isFetchingNextPage } = getCommunityVideos(communityHandle)
+  const { data, isLoading, fetchNextPage, isFetchingNextPage } = getCommunityVideos(communityHandle)
   const { scrollYProgress } = useScroll({ container: divRef })
   const videos = data?.pages.flatMap((item) => item.videos)
   useMotionValueEvent(scrollYProgress, 'change', (latest) => {
     if (isFetchingNextPage) return
     if (Number(latest.toFixed(1)) >= 0.9) {
-      fetchNextPage()
+      void fetchNextPage()
     }
   })
 
@@ -51,8 +51,8 @@ function InnerReelList({ videos, isLoading, divRef }: InnerReelListProps) {
       <Loader
         size="lg"
         style={{
-          height: divRef.current?.parentElement?.getBoundingClientRect().height || 0,
-          width: ((divRef.current?.parentElement?.getBoundingClientRect().height || 0) * 9) / 16,
+          height: divRef.current?.parentElement?.getBoundingClientRect().height ?? 0,
+          width: ((divRef.current?.parentElement?.getBoundingClientRect().height ?? 0) * 9) / 16,
         }}
       />
     )

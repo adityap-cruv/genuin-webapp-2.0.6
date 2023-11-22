@@ -63,8 +63,8 @@ function Left() {
           outlineColor="genuin-blue"
           size="sm"
           className="p-1"
-          onClick={() =>
-            shareFn({
+          onClick={async () =>
+            await shareFn({
               shareLink: window.location.href,
               toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
             })
@@ -113,7 +113,7 @@ function Links() {
   const links = communityDetailsModule?.info.links
   return (
     <div>
-      {(links?.instagram_url || links?.linkedin_url || links?.social_web_url || links?.twitter_url) && (
+      {(links?.instagram_url ?? links?.linkedin_url ?? links?.social_web_url ?? links?.twitter_url) && (
         <p className="my-2 text-title-md">Links</p>
       )}
       <div className="flex">

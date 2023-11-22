@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Button } from '@components/ui/button'
 import axios from 'axios'
 import { Countries } from './countries'
-import { FlagIcon, FlagIconCode } from 'react-flag-kit' // Import Flag from react-flag-kit
+import { FlagIcon, type FlagIconCode } from 'react-flag-kit' // Import Flag from react-flag-kit
 import { Dialog, DialogTrigger, DialogContent } from '@components/ui/dialog'
 import Image from 'next/image'
 import imageAppStore from '@images/appStore.svg'
@@ -34,23 +34,38 @@ export function DownloadAppDialog({ children }: Props) {
   ) : (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-    <DialogContent className='rounded-20px'>
-      <div className="m-8 text-center w-80">
-        <h3 className="text-new-h3">Download <br />Genuin</h3>
-        <p className="text-new-para-1 m-4">Send the download link to <br /> your phone & email</p>
-        <DownloadAppForm />
-        <p className="text-new-para-2-mobile mt-4 text-new-dark-grey">By clicking Send Link, I acknowledge that I have read the<br /> <a href='/privacy' className='border-b'>Privacy Policy</a> and agree to the <a href='/terms' className='border-b'>Terms of Service</a></p>
-        <div className="mt-6 flex">
-          <a href={URL_TO_APP_STORE} target="_blank" rel="noopener noreferrer">
-            <Image className="mx-2" src={imageAppStore} alt="app store" />
-          </a>
-          <a href={URL_TO_PLAY_STORE} target="_blank" rel="noopener noreferrer">
-            <Image className="mx-2" src={imagePlayStore} alt="play store" />
-          </a>
+      <DialogContent className="rounded-20px">
+        <div className="m-8 w-80 text-center">
+          <h3 className="text-new-h3">
+            Download <br />
+            Genuin
+          </h3>
+          <p className="m-4 text-new-para-1">
+            Send the download link to <br /> your phone & email
+          </p>
+          <DownloadAppForm />
+          <p className="mt-4 text-new-para-2-mobile text-new-dark-grey">
+            By clicking Send Link, I acknowledge that I have read the
+            <br />{' '}
+            <a href="/privacy" className="border-b">
+              Privacy Policy
+            </a>{' '}
+            and agree to the{' '}
+            <a href="/terms" className="border-b">
+              Terms of Service
+            </a>
+          </p>
+          <div className="mt-6 flex">
+            <a href={URL_TO_APP_STORE} target="_blank" rel="noopener noreferrer">
+              <Image className="mx-2" src={imageAppStore} alt="app store" />
+            </a>
+            <a href={URL_TO_PLAY_STORE} target="_blank" rel="noopener noreferrer">
+              <Image className="mx-2" src={imagePlayStore} alt="play store" />
+            </a>
+          </div>
         </div>
-      </div>
-    </DialogContent>
-  </Dialog>
+      </DialogContent>
+    </Dialog>
   )
 }
 
@@ -136,7 +151,6 @@ function DownloadAppForm() {
           setIsLinkSent(true)
         }
       } catch (e) {
-        console.error(e)
         setIsError(true)
       }
 
@@ -162,37 +176,40 @@ function DownloadAppForm() {
                 ) : (
                   <>
                     <div className="flex items-center space-x-4">
-
                       <div className="w-1/4">
                         <div className="relative">
                           <div
-                            className="w-full py-2.5 px-2 border rounded-md cursor-pointer relative"
-                            onClick={toggleDropdown}
-                          >
-                            <div className="items-center flex justify-around">
+                            className="relative w-full cursor-pointer rounded-md border px-2 py-2.5"
+                            onClick={toggleDropdown}>
+                            <div className="flex items-center justify-around">
                               <FlagIcon code={selectedCountry.code as FlagIconCode} size={26} />
-                              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="6" viewBox="0 0 6 4" fill="none" className={isOpen ? 'transform rotate-180 transition-transform': ''}>
-                              <path d="M1 1L3 3L5 1" stroke="#16171A" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="12"
+                                height="6"
+                                viewBox="0 0 6 4"
+                                fill="none"
+                                className={isOpen ? 'rotate-180 transform transition-transform' : ''}>
+                                <path d="M1 1L3 3L5 1" stroke="#16171A" strokeLinecap="round" strokeLinejoin="round" />
+                              </svg>
                             </div>
                           </div>
 
                           {isOpen && (
-                            <ul className="absolute overflow-y-auto w-80 bg-new-off-white h-60 z-10 mt-2 bg-white border rounded-md shadow-lg">
+                            <ul className="bg-white absolute z-10 mt-2 h-60 w-80 overflow-y-auto rounded-md border bg-new-off-white shadow-lg">
                               {Countries.map((country) => (
                                 <li
                                   key={country.code}
-                                  className="cursor-pointer p-2 hover:bg-blue-100 text-start"
+                                  className="hover:bg-blue-100 cursor-pointer p-2 text-start"
                                   onClick={() => {
-                                    setSelectedCountry(country);
-                                    toggleDropdown();
+                                    setSelectedCountry(country)
+                                    toggleDropdown()
                                   }}
                                   style={{
                                     display: 'flex',
                                     alignItems: 'center',
                                     justifyContent: 'flex-start',
-                                  }}
-                                >
+                                  }}>
                                   <FlagIcon code={country.code as FlagIconCode} size={20} /> &nbsp;&nbsp;
                                   {country.name} ({country.dial_code})
                                 </li>
@@ -202,47 +219,51 @@ function DownloadAppForm() {
                         </div>
                       </div>
 
-
                       <div className="w-3/4">
                         <div className="relative">
-                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                             {selectedCountry.dial_code}
                           </div>
                           <input
-                            className={`w-full pl-14 pr-4 py-2 border rounded-md focus:outline-none focus:border-blue-500 ${isInvalidNumber ? 'border-red' : 'border-gray'
-                              }`}
+                            className={`focus:border-blue-500 w-full rounded-md border py-2 pl-14 pr-4 focus:outline-none ${
+                              isInvalidNumber ? 'border-red' : 'border-gray'
+                            }`}
                             placeholder="Phone number"
-                            onChange={(e) => numberChange(e.target.value)}
-                            onBlur={(e) => validatePhoneNumber(e.target.value)}
+                            onChange={(e) => {
+                              numberChange(e.target.value)
+                            }}
+                            onBlur={(e) => {
+                              validatePhoneNumber(e.target.value)
+                            }}
                           />
                         </div>
                       </div>
                     </div>
                     {isInvalidNumber && (
-                      <div className="text-red text-cap-lg absolute">
-                        Please enter a valid phone number.
-                      </div>
+                      <div className="absolute text-cap-lg text-red">Please enter a valid phone number.</div>
                     )}
                     <div className="relative mt-6">
                       <input
                         type="email"
-                        className={`w-full py-2 px-4 border rounded-md focus:outline-none focus:border-blue-500 ${isInvalidEmail ? 'border-red' : 'border-gray'
-                          }`}
+                        className={`focus:border-blue-500 w-full rounded-md border px-4 py-2 focus:outline-none ${
+                          isInvalidEmail ? 'border-red' : 'border-gray'
+                        }`}
                         placeholder="Email"
-                        onChange={(e) => emailChange(e.target.value)}
-                        onBlur={(e) => validateEmail(e.target.value)}
+                        onChange={(e) => {
+                          emailChange(e.target.value)
+                        }}
+                        onBlur={(e) => {
+                          validateEmail(e.target.value)
+                        }}
                       />
                     </div>
-                    {isInvalidEmail && (
-                      <div className="text-red text-cap-lg absolute">
-                        Please enter a valid email.
-                      </div>
-                    )}
+                    {isInvalidEmail && <div className="absolute text-cap-lg text-red">Please enter a valid email.</div>}
                     <Button
-                      className="mt-6 w-full hover:bg-monochrome-black bg-new-off-black rounded-md py-2 px-4"
-                      onClick={onSendLink}
-                      disabled={disableSubmit}
-                    >
+                      className="mt-6 w-full rounded-md bg-new-off-black px-4 py-2 hover:bg-monochrome-black"
+                      onClick={async () => {
+                        await onSendLink()
+                      }}
+                      disabled={disableSubmit}>
                       Send link
                     </Button>
                   </>

@@ -1,14 +1,6 @@
 import OpenPlayerJS from 'openplayerjs'
 import { useInView } from 'framer-motion'
-import {
-  DetailedHTMLProps,
-  ReactEventHandler,
-  VideoHTMLAttributes,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react'
+import { type DetailedHTMLProps, type ReactEventHandler, type VideoHTMLAttributes, useEffect, useRef } from 'react'
 import { usePlayerControlStore } from '@lib/stores/common/player-control-store'
 
 // todo work on why player is sendding multiple request.
@@ -74,14 +66,18 @@ export function InnerPlayer({
         emeEnabled: true,
       },
     })
-    player.init().then((value) => {
-      player.load().then(() => {
+    void player.init().then((value) => {
+      void player.load().then(() => {
         if (shouldPlay) {
           player
             .getMedia()
             .play()
-            .then((_) => console.log('start playing'))
-            .catch((e) => console.log('something went wrong..', e))
+            .then((_) => {
+              // console.log('start playing')
+            })
+            .catch((e) => {
+              // console.log('something went wrong..', e)
+            })
         }
         localRef.current.player = player
       })
@@ -94,8 +90,12 @@ export function InnerPlayer({
     if (shouldPlay && localRef.current.loaded) {
       player
         .play()
-        .then(() => console.log('starts playing from use effect.'))
-        .catch((e) => console.error('error from use effect', e))
+        .then(() => {
+          // console.log('starts playing from use effect.')
+        })
+        .catch((e) => {
+          // console.error('error from use effect', e)
+        })
     } else {
       player.pause()
     }
@@ -194,10 +194,10 @@ export function ViewportPlayer({
         emeEnabled: true,
       },
     })
-    player.init().then((value) => {
-      player.load().then(() => {
+    void player.init().then((value) => {
+      void player.load().then(() => {
         if (isFirstElement) {
-          player.play()
+          void player.play()
         }
         localRef.current.player = player
       })
@@ -208,7 +208,9 @@ export function ViewportPlayer({
     const player = localRef.current.player
     // console.log('inView::', player, inView)
     if (inView && shouldPlay) {
-      player?.play().then(() => console.log('being played..'))
+      void player?.play().then(() => {
+        // console.log('being played..')
+      })
     } else {
       player?.pause()
     }

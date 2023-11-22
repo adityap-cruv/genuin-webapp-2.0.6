@@ -4,10 +4,10 @@ import { Button } from '@components/ui/button'
 import { GenuinLogo } from '@components/ui/genuin-logo'
 import { HamBurgerMenuIcon } from '@components/ui/ham-burger'
 import Link from 'next/link'
-import { Sheet, SheetContent, SheetTrigger, SheetClose } from '@components/ui/sheet'
+import { Sheet, SheetContent, SheetTrigger } from '@components/ui/sheet'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { DownloadAppDialog } from './download-app-dialog'
-import { HIRING_LINK, MOBILE_DOWNLOAD_APP_LINK } from '@lib/constants'
+import { HIRING_LINK } from '@lib/constants'
 
 export function NavBar() {
   // const navRef = useRef<HTMLElement>(null)

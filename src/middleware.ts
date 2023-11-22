@@ -1,11 +1,12 @@
-import { NextRequest, NextResponse, userAgent } from 'next/server'
+import type { NextRequest } from 'next/server'
+import { NextResponse, userAgent } from 'next/server'
 import MobileDetect from 'mobile-detect'
 
 export function middleware(request: NextRequest) {
   // detects if it's mobile or not
   const isMobile = Boolean(new MobileDetect(userAgent(request).ua).mobile())
   request.cookies.set('mobile', '' + isMobile)
-  return NextResponse.next({ request: request })
+  return NextResponse.next({ request })
 }
 
 export const config = {

@@ -1,6 +1,6 @@
-import { RefObject, useEffect, useState } from 'react'
+import { type RefObject, useEffect, useState } from 'react'
 
-interface ReturnProps {
+type ReturnProps = {
   height: number
   width: number
   windowWidth: number
@@ -26,7 +26,9 @@ export function useSize(elementRef: RefObject<Element | null>): ReturnProps {
   useEffect(() => {
     handleResize()
     window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
+    return () => {
+      window.removeEventListener('resize', handleResize)
+    }
   }, [])
 
   return {

@@ -2,12 +2,14 @@
 import type { CommunityDetailsType } from '@lib/schemas/community'
 import dynamic from 'next/dynamic'
 import { Loader } from '@components/ui/loader'
-const Details = dynamic(() => import('@components/pages/community/mobile/details').then((comp) => comp.ProfileDetails))
-const ReelsNavbar = dynamic(() =>
-  import('@components/pages/community/mobile/nav-bar').then((comp) => comp.NavBar.reels)
+const Details = dynamic(
+  async () => await import('@components/pages/community/mobile/details').then((comp) => comp.ProfileDetails)
+)
+const ReelsNavbar = dynamic(
+  async () => await import('@components/pages/community/mobile/nav-bar').then((comp) => comp.NavBar.reels)
 )
 const CommunityReels = dynamic(
-  () => import('@components/pages/community/mobile/reels').then((comp) => comp.CommunityReels),
+  async () => await import('@components/pages/community/mobile/reels').then((comp) => comp.CommunityReels),
   {
     loading(loadingProps) {
       return <Loader size="lg" />
