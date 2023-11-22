@@ -1,9 +1,8 @@
 'use client'
 import type { VideoDataType } from '@lib/schemas/video'
-import { ReactNode } from 'react'
+import { type ReactNode } from 'react'
 import Player from './player'
 import { PlayerDialog, PlayerDialogContent, PlayerDialogTrigger } from '@components/custom/player-dialog'
-import { useRouter } from 'next/navigation'
 
 interface Props {
   children: ReactNode

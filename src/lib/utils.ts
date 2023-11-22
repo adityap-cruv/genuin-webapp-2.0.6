@@ -60,7 +60,7 @@ export const abbreviateNumber = (value: number) => {
 
 type UrlObjType = {
   pathname: string
-  query: { key: string; value: string | undefined }[]
+  query: Array<{ key: string; value: string | undefined }>
 }
 
 function getUrlToChange(urlObj: UrlObjType) {
@@ -106,7 +106,7 @@ export const generateDeepLink = async ({
   pathName,
   fromUserName,
   parentId,
-} : any) => {
+}: any) => {
   const queryParams = {}
   if (utmCampaign) {
     Object.assign(queryParams, { utm_campaign: utmCampaign })

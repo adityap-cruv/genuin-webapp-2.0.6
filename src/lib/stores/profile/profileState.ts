@@ -1,23 +1,31 @@
 import { create } from 'zustand'
 
-interface ProfileStateProps {
-  profileData: {}
+type ProfileStateProps = {
+  profileData: Record<string, unknown>
   setProfileData: (data: any) => void
   allVideos: []
-  setAllVideos: (data: Array<any>) => void
+  setAllVideos: (data: any[]) => void
   genuinVideos: []
-  setGenuinVideos: (data: Array<any>) => void
+  setGenuinVideos: (data: any[]) => void
   loopVideos: []
-  setLoopVideos: (data: Array<any>) => void
+  setLoopVideos: (data: any[]) => void
 }
 
 export const useProfileStore = create<ProfileStateProps>((set) => ({
   profileData: {},
-  setProfileData: (data) => set(() => ({ profileData: data })),
+  setProfileData: (data) => {
+    set(() => ({ profileData: data }))
+  },
   allVideos: [],
-  setAllVideos: (data) => set(() => ({ allVideos: data }) as ProfileStateProps),
+  setAllVideos: (data) => {
+    set(() => ({ allVideos: data }) as any)
+  },
   genuinVideos: [],
-  setGenuinVideos: (data) => set(() => ({ genuinVideos: data }) as ProfileStateProps),
+  setGenuinVideos: (data) => {
+    set(() => ({ genuinVideos: data }) as any)
+  },
   loopVideos: [],
-  setLoopVideos: (data) => set(() => ({ loopVideos: data }) as ProfileStateProps),
+  setLoopVideos: (data) => {
+    set(() => ({ loopVideos: data }) as any)
+  },
 }))

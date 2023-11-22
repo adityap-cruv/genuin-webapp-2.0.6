@@ -1,8 +1,6 @@
 'use client'
-import { cva, VariantProps } from 'class-variance-authority'
+import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@lib/utils'
-import { isMobile } from 'react-device-detect'
-import { useResponsive } from '@hooks/useResponsive'
 import Link from 'next/link'
 
 const logoVariant = cva('', {
@@ -15,7 +13,7 @@ const logoVariant = cva('', {
   },
 })
 
-interface Logoprops extends VariantProps<typeof logoVariant> {}
+type Logoprops = Record<string, unknown> & VariantProps<typeof logoVariant>
 
 function Logo({ variant = 'dark' }: Logoprops) {
   return (

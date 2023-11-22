@@ -62,7 +62,6 @@ export function validateVideoListData(videoListData: any) {
   try {
     return VideoDataListSchema.parse(videoListData)
   } catch (e) {
-    console.log('error::', e)
     throw new Error('parsing array of video went wrong.')
   }
 }

@@ -6,16 +6,15 @@ import Image from 'next/image'
 import icMessage from '@icons/icMessage.svg'
 import icShare from '@icons/icShareBlue.svg'
 import { useResponsive } from '@hooks/useResponsive'
-import { isMobile } from 'react-device-detect'
 import dynamic from 'next/dynamic'
 import { DownloadDialog } from '@components/common/download-dialog'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
-const ProfileTabs = dynamic(() =>
-  import('@components/pages/profile/tabs/profile-tabs').then((comp) => comp.ProfileTabs)
+const ProfileTabs = dynamic(
+  async () => await import('@components/pages/profile/tabs/profile-tabs').then((comp) => comp.ProfileTabs)
 )
-const NavBar = dynamic(() => import('@components/common/nav-bar').then((comp) => comp.NavBar))
+const NavBar = dynamic(async () => await import('@components/common/nav-bar').then((comp) => comp.NavBar))
 
 interface CompProps {
   profileData: any
@@ -63,7 +62,9 @@ export const MainComponent = ({ profileData, isMobile }: CompProps) => {
                       utmSource: window.location.hostname,
                       fromUserName: null,
                     })
-                      .then((generatedLink) => openGeneratedLink(generatedLink))
+                      .then((generatedLink) => {
+                        openGeneratedLink(generatedLink)
+                      })
                       .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
                   }}>
                   <Image src={icMessage} alt="messsage" className="pr-1" />
@@ -85,8 +86,8 @@ export const MainComponent = ({ profileData, isMobile }: CompProps) => {
               size="sm"
               outlineColor="genuin-blue"
               className="mx-2"
-              onClick={() =>
-                shareFn({
+              onClick={async () =>
+                await shareFn({
                   shareLink: window.location.href,
                   toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                 })

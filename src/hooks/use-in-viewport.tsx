@@ -1,4 +1,4 @@
-import { useEffect, useState, RefObject } from 'react'
+import { useEffect, useState, type RefObject } from 'react'
 
 /**
  * @param ref Reference of element.

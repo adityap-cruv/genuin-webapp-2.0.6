@@ -23,8 +23,8 @@ import { Loader } from '@components/ui/loader'
 import dynamic from 'next/dynamic'
 import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
-const DetailsNavbar = dynamic(() =>
-  import('@components/pages/community/mobile/nav-bar').then((comp) => comp.NavBar.details)
+const DetailsNavbar = dynamic(async () =>
+  await import('@components/pages/community/mobile/nav-bar').then((comp) => comp.NavBar.details)
 )
 
 let communityDetailsModule: CommunityDetailsType
@@ -70,7 +70,7 @@ export function ProfileDetails({ communityDetails }: Props) {
                     utmMedium: 'web',
                     utmSource: window.location.hostname,
                   })
-                    .then((generatedLink) => openGeneratedLink(generatedLink))
+                    .then((generatedLink) => { openGeneratedLink(generatedLink); })
                     .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
                 }}>
                 <p className="mx-2 text-title-sm text-monochrome-white">Join</p>
@@ -80,8 +80,8 @@ export function ProfileDetails({ communityDetails }: Props) {
                 outlineColor="genuin-blue"
                 size="sm"
                 className="p-1"
-                onClick={() =>
-                  shareFn({
+                onClick={async () =>
+                  await shareFn({
                     shareLink: window.location.href,
                     toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                   })

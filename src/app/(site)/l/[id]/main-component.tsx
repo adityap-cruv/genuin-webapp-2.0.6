@@ -1,8 +1,8 @@
 'use client'
 import type { LoopDetailsType } from '@lib/schemas/loop/details'
 import dynamic from 'next/dynamic'
-const Mobile = dynamic(() => import('./mobile').then((comp) => comp.Mobile))
-const Desktop = dynamic(() => import('./desktop').then((comp) => comp.Desktop))
+const Mobile = dynamic(async () => await import('./mobile').then((comp) => comp.Mobile))
+const Desktop = dynamic(async () => await import('./desktop').then((comp) => comp.Desktop))
 interface Props {
   loopDetails: LoopDetailsType
   isMobile: any

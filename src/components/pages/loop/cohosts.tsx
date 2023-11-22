@@ -18,8 +18,8 @@ export function Cohosts({ loopId }: { loopId: string }) {
           {data.members.map((member, index) => (
             <Link key={index} href={{ pathname: PATH_NAME.profile(member.nickname) }}>
               <CohostTile
-                image={member.profile_image || ''}
-                subtitle={member.bio || ''}
+                image={member.profile_image ?? ''}
+                subtitle={member.bio ?? ''}
                 title={'@' + member.nickname}
                 userName={member.name ?? 'Un Known'}
               />

@@ -4,7 +4,7 @@ interface Props {
   children: React.ReactNode
 }
 
-export default function ({ children }: Props) {
+export default function Layout({ children }: Props) {
   return (
     <main
       className="absolute inset-0 h-full w-full"
