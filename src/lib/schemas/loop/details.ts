@@ -30,6 +30,12 @@ const Group = z.object({
   no_of_subscribers: z.number(),
 })
 
+const Community = z.object({
+  name: z.string(),
+  handle: z.string(),
+  dp: z.string()
+})
+
 const LoopDetailsSchema = z.object({
   chat_id: z.string(),
   type: z.number(),
@@ -40,6 +46,7 @@ const LoopDetailsSchema = z.object({
   updated_at: z.string(),
   share_string: z.string(),
   share_url: z.string(),
+  community: Community,
   owner: Owner,
   preview_image: z.string(),
   group: Group,
