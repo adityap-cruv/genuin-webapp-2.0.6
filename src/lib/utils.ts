@@ -15,6 +15,15 @@ export function getAvatarFallback(str: string | undefined) {
   return ans.toUpperCase()
 }
 
+export function getAvatarUrl(avatarUrl : any) {
+  if (avatarUrl) {
+    return isValidHTTPS(avatarUrl)
+      ? avatarUrl
+      : `https://media.qa.begenuin.com/backend_assets/lottie/${avatarUrl}.png`
+  }
+  return null
+}
+
 /**
  * @returns {Boolean} if requesting client is mobile or not
  */

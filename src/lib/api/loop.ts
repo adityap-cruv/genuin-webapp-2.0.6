@@ -44,19 +44,23 @@ export function getLoopVideos(loopId: string) {
   })
 }
 
-async function fetchLoopCohosts(loopId: string) {
+async function fetchLoopCohosts(chat_id: string, type: string) {
   return axios
     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/rt/users', {
-      params: { chat_id: loopId },
+      params: {
+        type: type,
+        page_number: 0,
+        chat_id: chat_id,
+      }
     })
     .then((res) => {
-      return validateLoopCohosts(res.data.data)
+      return res.data.data
     })
     .catch((e) => {
       throw new Error('Something went wrong in fetching videos.')
     })
 }
 
-export function getLoopCohosts(loopId: string) {
-  return useQuery({ queryKey: ['loop', 'cohosts', 'users'], queryFn: () => fetchLoopCohosts(loopId) })
+export function getLoopCohosts(chat_id: string, type: string) {
+  return useQuery({ queryKey: ['loop', 'cohosts', 'users'], queryFn: () => fetchLoopCohosts(chat_id, type) })
 }
