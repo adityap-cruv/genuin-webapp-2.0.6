@@ -3,22 +3,24 @@ import { useResponsive } from '@hooks/useResponsive'
 import dynamic from 'next/dynamic'
 import { cn } from '@lib/utils'
 import { Loader } from '@components/ui/loader'
-import { VideoDataType } from '@lib/schemas/video'
+import { type VideoDataType } from '@lib/schemas/video'
 import { useState } from 'react'
 import { isMobile } from 'react-device-detect'
 import { usePlayerControlStore } from '@lib/stores/common/player-control-store'
-const InnerPlayer = dynamic(() => import('./inner-player').then((comp) => comp.InnerPlayer), {
+const InnerPlayer = dynamic(async () => await import('./inner-player').then((comp) => comp.InnerPlayer), {
   loading: (_) => {
     return <Loader size="lg" />
   },
 })
-const ViewportPlayer = dynamic(() => import('./inner-player').then((comp) => comp.ViewportPlayer), {
+const ViewportPlayer = dynamic(async () => await import('./inner-player').then((comp) => comp.ViewportPlayer), {
   loading: (_) => {
     return <Loader size="lg" />
   },
 })
-const ControlLayer = dynamic(() => import('./control-layer').then((comp) => comp.ControlLayer.default))
-const CommunityControlLayer = dynamic(() => import('./control-layer').then((comp) => comp.ControlLayer.community))
+const ControlLayer = dynamic(async () => await import('./control-layer').then((comp) => comp.ControlLayer.default))
+const CommunityControlLayer = dynamic(
+  async () => await import('./control-layer').then((comp) => comp.ControlLayer.community)
+)
 
 interface Props {
   videoData?: VideoDataType
@@ -80,7 +82,7 @@ export default function Player({
   if (sizeBox) {
     height = sizeBox.height
   } else {
-    height = useResponsive().height || 0
+    height = useResponsive().height ?? 0
   }
 
   if (height && videoData) {
@@ -95,8 +97,10 @@ export default function Player({
         )}
         <div
           className="relative"
-          style={{ height: height, width: videoWidth }}
-          onClick={(e) => console.log('clicked in inner player.')}>
+          style={{ height, width: videoWidth }}
+          onClick={(e) => {
+            // console.log('clicked in inner player.');
+          }}>
           {playIfInViewPort ? (
             <ViewportPlayer
               videoSizeBox={{ height, width: videoWidth }}
@@ -105,11 +109,21 @@ export default function Player({
               muted={playerControls.muted}
               loop={playerControls.loop}
               isFirstElement={isFirstPlayerInList}
-              onEnded={() => console.log('on Ended called..')}
-              onPlay={() => console.log('on play called..')}
-              onPlaying={() => console.log('on playing')}
-              onCanPlay={() => console.log('can play')}
-              onPause={() => console.log('on pause')}
+              onEnded={() => {
+                console.log('on Ended called..')
+              }}
+              onPlay={() => {
+                console.log('on play called..')
+              }}
+              onPlaying={() => {
+                console.log('on playing')
+              }}
+              onCanPlay={() => {
+                console.log('can play')
+              }}
+              onPause={() => {
+                console.log('on pause')
+              }}
               onError={(e) => {}}
             />
           ) : (
@@ -120,11 +134,21 @@ export default function Player({
               muted={playerControls.muted}
               loop={playerControls.loop}
               // shouldPlay={playerControls.play}
-              onEnded={() => console.log('on Ended called..')}
-              onPlay={() => console.log('on play called..')}
-              onPlaying={() => console.log('on playing')}
-              onCanPlay={() => console.log('can play')}
-              onPause={() => console.log('on pause')}
+              onEnded={() => {
+                console.log('on Ended called..')
+              }}
+              onPlay={() => {
+                console.log('on play called..')
+              }}
+              onPlaying={() => {
+                console.log('on playing')
+              }}
+              onCanPlay={() => {
+                console.log('can play')
+              }}
+              onPause={() => {
+                console.log('on pause')
+              }}
               onError={(e) => {}}
             />
           )}

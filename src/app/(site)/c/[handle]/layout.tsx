@@ -5,7 +5,7 @@ interface Props {
   children: React.ReactNode
 }
 
-//todo fix navbar for this page.
+// todo fix navbar for this page.
 export default function Layout({ children }: Props) {
   const isMobile = cookies().get('mobile')?.value === 'true'
   return (

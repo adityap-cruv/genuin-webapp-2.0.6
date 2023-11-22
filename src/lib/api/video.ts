@@ -1,8 +1,7 @@
-import { validateVideoData } from '@lib/schemas/video'
 import axios from 'axios'
 
 export async function fetchVideoDetails(videoId: string) {
-  return axios
+  return await axios
     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/video_details', {
       params: {
         video_share_string: videoId,

@@ -11,10 +11,10 @@ import { Toaster } from '@components/ui/toaster'
 import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useResponsive } from '@hooks/useResponsive'
-//todo configure loader for dynamic imports
-const Cohosts = dynamic(() => import('@components/pages/loop/cohosts').then((comp) => comp.Cohosts))
-const HorizontalVideosList = dynamic(() =>
-  import('@components/pages/loop/horizontal-video-list').then((comp) => comp.HorizontalVideosList)
+// todo configure loader for dynamic imports
+const Cohosts = dynamic(async () => await import('@components/pages/loop/cohosts').then((comp) => comp.Cohosts))
+const HorizontalVideosList = dynamic(
+  async () => await import('@components/pages/loop/horizontal-video-list').then((comp) => comp.HorizontalVideosList)
 )
 
 interface Props {
@@ -27,9 +27,8 @@ export function MainComponent({ loopDetails, isMobile }: Props) {
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
   const { isMd = !isMobile } = useResponsive()
-  const ld_description = `${
-    loopDetails.group &&
-    loopDetails.group.group_description !== null &&
+  const ldDescription = `${
+    loopDetails.group?.group_description !== null &&
     loopDetails.group.group_description !== undefined &&
     loopDetails.group.group_description.replace(/\s+/g, '') !== ''
       ? loopDetails.group.group_description + ' | '
@@ -42,10 +41,10 @@ export function MainComponent({ loopDetails, isMobile }: Props) {
         <div className="w-full  md:max-w-[20%]">
           <div className="flex items-center">
             <Avatar className="h-20 w-20 bg-red-40">
-              <AvatarImage src={loopDetails.group.dp || undefined} />
+              <AvatarImage src={loopDetails.group.dp ?? undefined} />
               <AvatarFallback>
                 <p className="text-title-xl text-new-off-white">
-                  {getAvatarFallback(loopDetails.group.group_name || undefined)}
+                  {getAvatarFallback(loopDetails.group.group_name ?? undefined)}
                 </p>
               </AvatarFallback>
             </Avatar>
@@ -81,7 +80,7 @@ export function MainComponent({ loopDetails, isMobile }: Props) {
                     generateDeepLink({
                       action: 'subscribe',
                       contentType: 'loop',
-                      description: ld_description,
+                      description: ldDescription,
                       title: loopDetails.group.group_name,
                       previewImage: null,
                       fromUserName: null,
@@ -91,7 +90,9 @@ export function MainComponent({ loopDetails, isMobile }: Props) {
                       utmMedium: 'web',
                       utmSource: window.location.hostname,
                     })
-                      .then((generatedLink) => openGeneratedLink(generatedLink))
+                      .then((generatedLink) => {
+                        openGeneratedLink(generatedLink)
+                      })
                       .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
                   }}>
                   <p className="text-title-sm text-monochrome-white">Subscribe</p>
@@ -110,8 +111,8 @@ export function MainComponent({ loopDetails, isMobile }: Props) {
               size="sm"
               variant="outline"
               outlineColor="genuin-blue"
-              onClick={() =>
-                shareFn({
+              onClick={async () =>
+                await shareFn({
                   shareLink: window.location.href,
                   toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                 })
@@ -136,7 +137,7 @@ function Stats({
    * Here statsData accept array of object in which you pass key the statTitle, and
    * value which accepts value of stat
    */
-  statsData: { key: string; value: number }[]
+  statsData: Array<{ key: string; value: number }>
 }) {
   return (
     <div className="m-1 ml-0 flex justify-between p-1 pl-0">

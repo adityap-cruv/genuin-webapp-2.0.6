@@ -1,4 +1,4 @@
-import { Metadata } from 'next'
+import { type Metadata } from 'next'
 import { NavBar } from '@components/pages/home/nav-bar'
 import { Footer } from '@components/pages/home/footer'
 import { MainComponent } from '@components/pages/home/main-component'

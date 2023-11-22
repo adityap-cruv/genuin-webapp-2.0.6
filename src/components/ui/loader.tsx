@@ -1,10 +1,10 @@
 import { cn } from '@lib/utils'
-import { DetailedHTMLProps, HTMLAttributes } from 'react'
+import { type DetailedHTMLProps, type HTMLAttributes } from 'react'
 import { cva } from 'class-variance-authority'
 
-interface Props extends DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement> {
+type Props = {
   size: 'sm' | 'md' | 'lg' | 'xl'
-}
+} & DetailedHTMLProps<HTMLAttributes<HTMLDivElement>, HTMLDivElement>
 
 const loaderVariant = cva('animate-spin rounded-full border-4 border-primary', {
   variants: {

@@ -5,7 +5,7 @@ import { cn, getAvatarFallback } from '@lib/utils'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@components/ui/dropdown-menu'
 import { HamBurgerMenuIcon } from '@components/ui/ham-burger'
 import { Avatar, AvatarFallback, AvatarImage } from '@components/ui/avatar'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 
 export const NavBar = {
   details: Details,
@@ -57,7 +57,7 @@ function BurgerMenu({ variant = 'dark' }: { variant?: 'light' | 'dark' }) {
       <DropdownMenuContent
         className="bg-monochrome-black/90 px-3"
         onInteractOutside={(event) => {
-          //todo think about it what to do when user clicks outside
+          // todo think about it what to do when user clicks outside
           event.preventDefault()
         }}>
         <DropdownMenuItem>

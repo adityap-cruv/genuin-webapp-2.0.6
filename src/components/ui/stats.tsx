@@ -1,9 +1,9 @@
-interface Props {
+type Props = {
   /**
    * Here statsData accept array of object in which you pass key the statTitle, and
    * value which accepts value of stat
    */
-  statsData: { key: string; value: number }[]
+  statsData: Array<{ key: string; value: number }>
 }
 
 export function Stats({ statsData }: Props) {

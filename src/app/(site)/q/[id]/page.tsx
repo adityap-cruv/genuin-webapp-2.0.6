@@ -1,4 +1,4 @@
-import { Metadata } from 'next'
+import { type Metadata } from 'next'
 import { MainComponent } from './main-component'
 import { fetchQuestionDetails } from '@lib/api/question'
 
@@ -6,7 +6,7 @@ interface Props {
   params: {
     id: string
   }
-  searchParams: {}
+  searchParams: Record<string, unknown>
 }
 
 export default async function Component({ params }: Props) {
@@ -20,16 +20,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const desc = 'Answer this trending question on Genuin'
 
   return {
-    title: title,
+    title,
     applicationName: 'Genuin',
     description: desc,
     openGraph: {
-      title: title,
+      title,
       description: desc,
       url: `${process.env.NEXT_PUBLIC_HOST_URL}/q/${questionDetails.question_id}`,
       images: [
         {
-          url: questionDetails.preview_image
+          url: questionDetails.preview_image,
         },
       ],
     },

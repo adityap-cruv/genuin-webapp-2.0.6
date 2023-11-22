@@ -3,8 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@components/ui/avatar'
 import { Button } from '@components/ui/button'
 import { LeftScrollButtonIcon, RightScrollButtonIcon } from './horizontal-scroll-icons'
 import icShare from '@icons/icShareBlue.svg'
-import React from 'react'
-import { useRef } from 'react'
+import React, { useRef } from 'react'
 import { getAvatarFallback } from '@lib/utils'
 import Link from 'next/link'
 import { Toaster } from '@components/ui/toaster'
@@ -68,8 +67,8 @@ export function CommunitySection() {
                       variant="outline"
                       outlineColor="genuin-blue"
                       size="sm"
-                      onClick={() =>
-                        shareFn({
+                      onClick={async () =>
+                        await shareFn({
                           title: 'Share this community.',
                           description: 'Welcome to Genuin!!',
                           shareLink: item.link,
