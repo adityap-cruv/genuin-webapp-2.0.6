@@ -167,14 +167,14 @@ function Tile({ width = -1, videoDetails }: TileProps) {
                 </div>
                 <Image src={icLoop} alt="loop" height={24} width={24} />
               </div>
-              <div className="line-clamp-2 w-1/2 break-all text-title-sm text-secondary-foreground">
+              <div className="line-clamp-2  p-3 text-left break-all text-title-sm text-secondary-foreground">
                 {videoDetails.loop?.name}
               </div>
             </div>
           )}
           {videoDetails.video_type === 'public_video' && (
             <div className="flex h-full items-end">
-              <div className="flex items-center">
+              <div className="flex items-center p-2">
                 <Image src={icVideoBubble} alt="replies" />
                 <p className="text-title-sm text-secondary-foreground">&nbsp;{videoDetails.video.reply_count || 0}</p>
                 <Image src={icView} alt="view" />

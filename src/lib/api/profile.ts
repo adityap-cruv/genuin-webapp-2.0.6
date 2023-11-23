@@ -52,13 +52,25 @@ export function getPaginatedAllVideos(nickname: string) {
 export function getPaginatedLoopVideos(nickname: string) {
   return useInfiniteQuery({
     queryKey: ['loop', 'videos'],
-    queryFn: ({ pageParam }) => fetchVideos(nickname, ['rt'], pageParam),
+    queryFn: async ({ pageParam }) => await fetchVideos(nickname, ['rt'], pageParam),
+    getNextPageParam(lastPage, allPages) {
+      if (lastPage.end) {
+        return
+      }
+      return allPages.length
+    }
   })
 }
 
 export function getPaginatedGenuinVideos(nickname: string) {
   return useInfiniteQuery({
     queryKey: ['genuin', 'videos'],
-    queryFn: ({ pageParam }) => fetchVideos(nickname, ['public_video'], pageParam),
+    queryFn: async ({ pageParam }) => await fetchVideos(nickname, ['public_video'], pageParam),
+    getNextPageParam(lastPage, allPages) {
+      if (lastPage.end) {
+        return
+      }
+      return allPages.length
+    }
   })
 }

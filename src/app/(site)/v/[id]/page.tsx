@@ -44,7 +44,7 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
       title: title,
       description: description,
       url: shareLink,
-      images: [{ url: `${videoDetails?.video?.thumbnail}/#primaryimage` }],
+      images: [{ url: `${videoDetails?.video?.thumbnail}#primaryimage` }],
     },
   }
 }

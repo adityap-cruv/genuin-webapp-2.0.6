@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: CompProps): Promise<Metadata>
       url: `${process.env.NEXT_PUBLIC_HOST_URL}/p/${data.nickname}`,
       images: [
         {
-          url: data.profile_image,
+          url: data.preview_image,
         },
       ],
     },
