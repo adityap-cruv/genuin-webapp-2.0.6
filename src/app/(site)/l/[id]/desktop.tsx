@@ -12,10 +12,10 @@ import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useResponsive } from '@hooks/useResponsive'
 import { isMobile } from 'react-device-detect'
-//todo configure loader for dynamic imports
-const Cohosts = dynamic(() => import('@components/pages/loop/cohosts').then((comp) => comp.Cohosts))
-const HorizontalVideosList = dynamic(() =>
-  import('@components/pages/loop/horizontal-video-list').then((comp) => comp.HorizontalVideosList)
+// todo configure loader for dynamic imports
+const Cohosts = dynamic(async () => await import('@components/pages/loop/cohosts').then((comp) => comp.Cohosts))
+const HorizontalVideosList = dynamic(async () =>
+  await import('@components/pages/loop/horizontal-video-list').then((comp) => comp.HorizontalVideosList)
 )
 
 interface Props {
@@ -49,8 +49,8 @@ export function Desktop({ loopDetails }: Props) {
               </AvatarFallback>
             </Avatar>
           </div>
-          <p className="line-clamp-1 break-all text-title-lg">{loopDetails.group.group_name}</p>
-          <p className="line-clamp-3 break-all text-body-lg">{loopDetails.group.group_description}</p>
+          <p className="line-clamp-1 text-title-lg">{loopDetails.group.group_name}</p>
+          <p className="line-clamp-3 text-body-lg">{loopDetails.group.group_description}</p>
             <Stats
               statsData={[
                 { key: 'views', value: loopDetails.group.no_of_views },
@@ -77,7 +77,7 @@ export function Desktop({ loopDetails }: Props) {
                       utmMedium: 'web',
                       utmSource: window.location.hostname,
                     })
-                      .then((generatedLink) => openGeneratedLink(generatedLink))
+                      .then((generatedLink) => { openGeneratedLink(generatedLink); })
                       .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
                   }}>
                   <p className="text-title-sm text-monochrome-white">Subscribe</p>
@@ -96,8 +96,8 @@ export function Desktop({ loopDetails }: Props) {
               size="sm"
               variant="outline"
               outlineColor="genuin-blue"
-              onClick={() =>
-                shareFn({
+              onClick={async () =>
+                await shareFn({
                   shareLink: window.location.href,
                   toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                 })
@@ -122,7 +122,7 @@ export function Desktop({ loopDetails }: Props) {
      * Here statsData accept array of object in which you pass key the statTitle, and
      * value which accepts value of stat
      */
-    statsData: { key: string; value: number }[]
+    statsData: Array<{ key: string; value: number }>
   }) {
     return (
       <div className="m-1 ml-0 flex justify-between p-1 pl-0">
