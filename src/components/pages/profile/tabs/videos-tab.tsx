@@ -126,7 +126,7 @@ function TabBody({ videos, hasNextPage, fetchingNextPage }: TabBodyProps) {
         })}
       </div>
       <div className="flex h-52 w-full items-center justify-center">
-        {!hasNextPage && <p>All Caught up!!!</p>}
+        {/* {!hasNextPage && <p>All Caught up!!!</p>} */}
         {fetchingNextPage && <Loader size="md" />}
       </div>
     </>
