@@ -36,7 +36,7 @@ async function fetchVideos(nickname: string, types: [VideoType?, VideoType?], pa
 
 export function getPaginatedAllVideos(nickname: string) {
   return useInfiniteQuery({
-    queryKey: ['all', 'videos'],
+    queryKey: ['all', 'videos', nickname, ['public_video', 'rt']],
     queryFn: async ({ pageParam }) => await fetchVideos(nickname, ['public_video', 'rt'], pageParam),
     getNextPageParam(lastPage, allPages) {
       if (lastPage.end) {
@@ -49,14 +49,26 @@ export function getPaginatedAllVideos(nickname: string) {
 
 export function getPaginatedLoopVideos(nickname: string) {
   return useInfiniteQuery({
-    queryKey: ['loop', 'videos'],
+    queryKey: ['loop', 'videos', nickname, ['rt']],
     queryFn: async ({ pageParam }) => await fetchVideos(nickname, ['rt'], pageParam),
+    getNextPageParam(lastPage, allPages) {
+      if (lastPage.end) {
+        return
+      }
+      return allPages.length
+    }
   })
 }
 
 export function getPaginatedGenuinVideos(nickname: string) {
   return useInfiniteQuery({
-    queryKey: ['genuin', 'videos'],
+    queryKey: ['genuin', 'videos', nickname, ['public_video']],
     queryFn: async ({ pageParam }) => await fetchVideos(nickname, ['public_video'], pageParam),
+    getNextPageParam(lastPage, allPages) {
+      if (lastPage.end) {
+        return
+      }
+      return allPages.length
+    }
   })
 }

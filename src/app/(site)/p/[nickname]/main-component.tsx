@@ -31,9 +31,9 @@ export const MainComponent = ({ profileData, isMobile }: CompProps) => {
       <div className="container mt-body flex h-body w-full flex-col overflow-auto overflow-x-clip md:flex-row md:overflow-clip ">
         <div className="mx-2 my-3 w-full md:w-1/3">
           <div className="flex items-center">
-            <Avatar className="bg-slate-500 h-20 w-20">
+            <Avatar className="bg-slate-500 h-20 w-20 bg-red-40">
               <AvatarImage src={profileData?.profile_image}></AvatarImage>
-              <AvatarFallback>{getAvatarFallback(profileData?.name)}</AvatarFallback>
+              <AvatarFallback className='text-white text-title-lg'>{getAvatarFallback(profileData?.name)}</AvatarFallback>
             </Avatar>
             <div className="w-full">{!isMd && <Stats profileData={profileData} />}</div>
           </div>

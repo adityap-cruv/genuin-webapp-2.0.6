@@ -43,8 +43,8 @@ export function Mobile({ loopDetails }: Props) {
     return (
       <div className="flex h-full w-full flex-col gap-y-2 md:flex-row md:gap-x-2">
         <div className="w-full  md:max-w-[20%]">
-          <p className="line-clamp-1 break-all text-title-xl">{loopDetails.group.group_name}</p>
-          <p className="line-clamp-3 break-all py-2 text-body-lg">{loopDetails.group.group_description}</p>
+          <p className="line-clamp-1 text-title-xl">{loopDetails.group.group_name}</p>
+          <p className="line-clamp-3 py-2 text-body-lg">{loopDetails.group.group_description}</p>
 
           <div className=" my-3 rounded border-solid p-4" style={{ border: '1px solid grey' }}>
             <div className="flex">
@@ -111,7 +111,9 @@ export function Mobile({ loopDetails }: Props) {
                   utmMedium: 'web',
                   utmSource: window.location.hostname,
                 })
-                  .then((generatedLink) => openGeneratedLink(generatedLink))
+                  .then((generatedLink) => {
+                    openGeneratedLink(generatedLink)
+                  })
                   .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
               }}>
               <p className="text-title-sm text-monochrome-white">Subscribe</p>
@@ -125,8 +127,8 @@ export function Mobile({ loopDetails }: Props) {
               size="sm"
               variant="outline"
               outlineColor="genuin-blue"
-              onClick={() =>
-                shareFn({
+              onClick={async () =>
+                await shareFn({
                   shareLink: window.location.href,
                   toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                 })
@@ -200,7 +202,7 @@ function Stats({
    * Here statsData accept array of object in which you pass key the statTitle, and
    * value which accepts value of stat
    */
-  statsData: { key: string; value: number }[]
+  statsData: Array<{ key: string; value: number }>
 }) {
   return (
     <div className="mt-2 flex justify-start">
@@ -231,38 +233,37 @@ function HorizontalVideosList({ loopId }: { loopId: string }) {
     <div className="relative mt-4 h-full w-full">
       <div className="grid grid-cols-2 gap-4">
         {isLoading && <Loader size="md" />}
-        {data &&
-          data.pages
-            .flatMap((page) => page.videos)
-            .map((item, index) => (
-              <PlayerModal key={index} videoDetails={item}>
-                <div
-                  className="relative duration-300 hover:scale-95"
-                  style={{
-                    height: '320px',
-                    // width: '169px'
-                  }}>
-                  <Image
-                    src={item.video.thumbnail || ''}
-                    alt={item.video.description || ''}
-                    className="h-full w-full rounded-xl object-fill"
-                    fill
-                  />
-                  {/* <p className="absolute left-2 top-2 text-title-sm text-monochrome-white">
+        {data?.pages
+          .flatMap((page) => page.videos)
+          .map((item, index) => (
+            <PlayerModal key={index} videoDetails={item}>
+              <div
+                className="relative duration-300 hover:scale-95"
+                style={{
+                  height: '320px',
+                  // width: '169px'
+                }}>
+                <Image
+                  src={item.video.thumbnail || ''}
+                  alt={item.video.description || ''}
+                  className="h-full w-full rounded-xl object-fill"
+                  fill
+                />
+                {/* <p className="absolute left-2 top-2 text-title-sm text-monochrome-white">
                     {item.video?.metadata.duration + 's'}
                   </p> */}
-                  <div className="bg-red-400 absolute bottom-2 left-2 flex h-6 w-6 items-center">
-                    <Avatar className="h-full w-full bg-red-40">
-                      <AvatarImage src={getAvatarUrl(item.owner.profile_image)} />
-                      <AvatarFallback>
-                        <p className="text-white text-title-sm">{getAvatarFallback(item.owner.nickname)}</p>
-                      </AvatarFallback>
-                    </Avatar>
-                    <p className="ml-1 text-body-sm text-monochrome-white">@{item.owner.nickname}</p>
-                  </div>
+                <div className="bg-red-400 absolute bottom-2 left-2 flex h-6 w-6 items-center">
+                  <Avatar className="h-full w-full bg-red-40">
+                    <AvatarImage src={getAvatarUrl(item.owner.profile_image)} />
+                    <AvatarFallback>
+                      <p className="text-white text-title-sm">{getAvatarFallback(item.owner.nickname)}</p>
+                    </AvatarFallback>
+                  </Avatar>
+                  <p className="ml-1 text-body-sm text-monochrome-white">@{item.owner.nickname}</p>
                 </div>
-              </PlayerModal>
-            ))}
+              </div>
+            </PlayerModal>
+          ))}
       </div>
       {hasNextPage && (
         <div className="absolute right-0 top-0 z-10 h-full w-24 bg-gradient-to-l from-monochrome-white to-transparent opacity-90" />

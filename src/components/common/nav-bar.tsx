@@ -67,7 +67,7 @@ function BurgerMenu({ variant = 'dark' }: { variant?: 'light' | 'dark' }) {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem>
-          <Link href="https://begenuin.com/content_demo?value=rt_123f373977001407" className="w-full">
+          <Link href="https://begenuin.com/l/123f373977001407" className="w-full">
             <p className="w-full text-right text-title-xl text-monochrome-white">Life at Genuin</p>
           </Link>
         </DropdownMenuItem>

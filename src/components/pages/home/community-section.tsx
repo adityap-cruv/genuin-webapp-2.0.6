@@ -9,6 +9,7 @@ import Link from 'next/link'
 import { Toaster } from '@components/ui/toaster'
 import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
+import { isMobile } from 'react-device-detect'
 
 export function CommunitySection() {
   const communityList = [
@@ -48,8 +49,9 @@ export function CommunitySection() {
           return (
             <React.Fragment key={index}>
               <div
+                onClick={() => (window.location.href = item.link)}
                 style={{ WebkitBoxSizing: 'border-box' }}
-                className="m-4 box-border flex min-w-full snap-center flex-col gap-y-1 rounded-[20px] border-2 border-transparent p-6 outline outline-1 outline-new-light-grey hover:border-2 hover:border-primary hover:shadow-md hover:outline-0 sm:min-w-max sm:max-w-md">
+                className={`m-4 box-border flex min-w-full snap-center flex-col gap-y-1 rounded-[20px] border-2 border-transparent p-6 outline outline-1 outline-new-light-grey hover:border-2 ${!isMobile && 'hover:border-primary hover:shadow-md'} hover:outline-0 sm:min-w-max sm:max-w-md`}>
                 <div className="flex w-full justify-between">
                   <Avatar className="h-20 w-20 rounded-full bg-red-40">
                     <AvatarImage src={item.profile_image} className="object-cover" />
@@ -58,7 +60,7 @@ export function CommunitySection() {
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex items-center gap-x-2">
-                    <Link href={item.link} target="_blank">
+                    <Link href={item.link}>
                       <Button size="sm" className="px-4">
                         <p className="text-title-md">Join</p>
                       </Button>
@@ -67,14 +69,16 @@ export function CommunitySection() {
                       variant="outline"
                       outlineColor="genuin-blue"
                       size="sm"
-                      onClick={async () =>
+                      onClick={async (e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
                         await shareFn({
                           title: 'Share this community.',
                           description: 'Welcome to Genuin!!',
                           shareLink: item.link,
                           toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                         })
-                      }>
+                      }}>
                       <Image src={icShare} alt="share" />
                     </Button>
                     <Toaster />
