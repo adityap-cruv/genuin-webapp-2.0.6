@@ -26,8 +26,7 @@ export function Desktop({ loopDetails }: Props) {
     
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
-  const ld_description = `${
-    loopDetails.group &&
+  const ldDescription = `${
     loopDetails.group.group_description !== null &&
     loopDetails.group.group_description !== undefined &&
     loopDetails.group.group_description.replace(/\s+/g, '') !== ''
@@ -41,10 +40,10 @@ export function Desktop({ loopDetails }: Props) {
         <div className="w-full  md:max-w-[20%]">
           <div className="flex items-center">
             <Avatar className="h-20 w-20 bg-red-40">
-              <AvatarImage src={loopDetails.group.dp || undefined} />
+              <AvatarImage src={loopDetails.group.dp ?? undefined} />
               <AvatarFallback>
                 <p className="text-title-xl text-new-off-white">
-                  {getAvatarFallback(loopDetails.group.group_name || undefined)}
+                  {getAvatarFallback(loopDetails.group.group_name ?? undefined)}
                 </p>
               </AvatarFallback>
             </Avatar>
@@ -67,7 +66,7 @@ export function Desktop({ loopDetails }: Props) {
                     generateDeepLink({
                       action: 'subscribe',
                       contentType: 'loop',
-                      description: ld_description,
+                      description: ldDescription,
                       title: loopDetails.group.group_name,
                       previewImage: null,
                       fromUserName: null,
