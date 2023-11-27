@@ -145,9 +145,11 @@ function CommunityReelSection({ videoData }: CommunityLayerProps) {
         </div>
       </div>
       <div className="flex gap-x-2">
-        <Button size="sm">
-          <p className="text-title-sm text-monochrome-white">Subscribe</p>
-        </Button>
+        <DownloadDialog title="Get the Genuin app" subtitle="Get the app to subscribe loop" asChild={false}>
+          <Button size="sm">
+            <p className="text-title-sm text-monochrome-white">Subscribe</p>
+          </Button>
+        </DownloadDialog>
         <Image src={icRightArrow} alt="right" />
       </div>
     </div>
@@ -162,18 +164,14 @@ function Loop({ videoData }: LoopProps) {
   return (
     <div className="flex justify-between">
       <div className="flex w-4/5 flex-col justify-end">
-        <Link
-          className="hover:opacity-60"
-          href={{
-            pathname: PATH_NAME.profile(videoData?.owner.nickname),
-          }}>
-          <Badge variant="default" className="mb-2 cursor-pointer">
+        <a href={PATH_NAME.profile(videoData?.owner.nickname)}>
+          <Badge variant="default" className="mb-2 cursor-pointer hover:opacity-60">
             <p className="text-title-sm text-monochrome-white">
               @{videoData?.owner.nickname}
               <span>&nbsp;added</span>
             </p>
           </Badge>
-        </Link>
+        </a>
         <div className="flex items-center">
           <Link
             className="flex cursor-pointer items-center hover:opacity-60"

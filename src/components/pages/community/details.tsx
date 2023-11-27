@@ -49,8 +49,8 @@ function Left() {
           <p className="text-title-xl text-monochrome-white">{getAvatarFallback(communityDetailsModule?.info.name)}</p>
         </AvatarFallback>
       </Avatar>
-      <p className="line-clamp-1 break-all text-title-xl">{communityDetailsModule?.info.name}</p>
-      <p className="line-clamp-3 break-all text-body-sm">{communityDetailsModule?.info.description}</p>
+      <p className="line-clamp-1 text-title-xl">{communityDetailsModule?.info.name}</p>
+      <p className="line-clamp-3 text-body-sm">{communityDetailsModule?.info.description}</p>
       <Stats />
       <div className="my-2 flex items-center gap-x-2">
         <DownloadDialog title="Get the Genuin app" subtitle="Get the app to join community" asChild={false}>

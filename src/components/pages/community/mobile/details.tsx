@@ -2,7 +2,14 @@ import { Avatar, AvatarFallback, AvatarImage } from '@components/ui/avatar'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
 import { Button } from '@components/ui/button'
 import type { CommunityDetailsType } from '@lib/schemas/community'
-import { checkAndAppendHttps, generateDeepLink, getAvatarFallback, isValidHTTPS, openGeneratedLink } from '@lib/utils'
+import {
+  checkAndAppendHttps,
+  generateDeepLink,
+  getAvatarFallback,
+  getAvatarUrl,
+  isValidHTTPS,
+  openGeneratedLink,
+} from '@lib/utils'
 import Image from 'next/image'
 import icShare from '@icons/icShareBlue.svg'
 import Link from 'next/link'
@@ -201,7 +208,6 @@ function LoopItem({ loopDetails }: { loopDetails: any }) {
       alt={`frontimage${index}`}
     />
   ))
-
   function getSubscribersCountString(count: any) {
     let str = ' + '
     if (!count) return
@@ -218,9 +224,9 @@ function LoopItem({ loopDetails }: { loopDetails: any }) {
       <div
         className="relative mt-5 w-full rounded-lg border"
         style={{ backgroundColor: 'rgba(6, 69, 255, 0.05)', border: '1px solid rgba(6, 69, 255, 0.40)' }}>
-        <div style={{ display: 'flex', padding: '3%', width: '70%', alignItems: 'center' }}>
+        <div className="flex w-[70%] items-center p-[3%]">
           <Avatar className="h-12 w-12 bg-red-50">
-            <AvatarImage src={loopDetails.profile_image} />
+            <AvatarImage src={getAvatarUrl(loopDetails.profile_image)} />
             <AvatarFallback>
               <p className="text-title-xl text-monochrome-white">{getAvatarFallback(loopDetails.name)}</p>
             </AvatarFallback>
@@ -228,17 +234,16 @@ function LoopItem({ loopDetails }: { loopDetails: any }) {
           <p className="ml-2 text-title-sm">{loopDetails.name}</p>
         </div>
         <div className="h-[60%] p-4" style={{ backgroundColor: 'rgba(6, 69, 255, 0.05)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '2%', width: '70%' }}>
+          <div className="mb-[2%] flex w-[70%] items-center">
             {loopDetails.owner.profile_image && (
-              <img
-                style={{
-                  height: '24px',
-                  width: '24px',
-                  borderRadius: '50%',
-                  zIndex: 2,
-                }}
-                src={loopDetails.owner.profile_image}
-              />
+              <>
+                <Avatar className="h-6 w-6 bg-red-50">
+                  <AvatarImage src={getAvatarUrl(loopDetails.owner.profile_image)} />
+                  <AvatarFallback>
+                    <p className="text-title-xl text-monochrome-white">{getAvatarFallback(loopDetails.owner.name)}</p>
+                  </AvatarFallback>
+                </Avatar>
+              </>
             )}
             <p className="text-new-para-2-mobile">
               &nbsp;&nbsp;@{loopDetails.owner.nickname}
