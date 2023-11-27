@@ -10,25 +10,22 @@ import { DownloadDialog } from '@components/common/download-dialog'
 import { Toaster } from '@components/ui/toaster'
 import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
-import { useResponsive } from '@hooks/useResponsive'
 import { isMobile } from 'react-device-detect'
 // todo configure loader for dynamic imports
 const Cohosts = dynamic(async () => await import('@components/pages/loop/cohosts').then((comp) => comp.Cohosts))
-const HorizontalVideosList = dynamic(async () =>
-  await import('@components/pages/loop/horizontal-video-list').then((comp) => comp.HorizontalVideosList)
+const HorizontalVideosList = dynamic(
+  async () => await import('@components/pages/loop/horizontal-video-list').then((comp) => comp.HorizontalVideosList)
 )
 
 interface Props {
-    loopDetails: LoopDetailsType
-  }
+  loopDetails: LoopDetailsType
+}
 
 export function Desktop({ loopDetails }: Props) {
-    
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
-  const ld_description = `${
-    loopDetails.group &&
-    loopDetails.group.group_description !== null &&
+  const ldDescription = `${
+    loopDetails.group?.group_description !== null &&
     loopDetails.group.group_description !== undefined &&
     loopDetails.group.group_description.replace(/\s+/g, '') !== ''
       ? loopDetails.group.group_description + ' | '
@@ -41,23 +38,23 @@ export function Desktop({ loopDetails }: Props) {
         <div className="w-full  md:max-w-[20%]">
           <div className="flex items-center">
             <Avatar className="h-20 w-20 bg-red-40">
-              <AvatarImage src={loopDetails.group.dp || undefined} />
+              <AvatarImage src={loopDetails.group.dp ?? undefined} />
               <AvatarFallback>
                 <p className="text-title-xl text-new-off-white">
-                  {getAvatarFallback(loopDetails.group.group_name || undefined)}
+                  {getAvatarFallback(loopDetails.group.group_name ?? undefined)}
                 </p>
               </AvatarFallback>
             </Avatar>
           </div>
           <p className="line-clamp-1 text-title-lg">{loopDetails.group.group_name}</p>
           <p className="line-clamp-3 text-body-lg">{loopDetails.group.group_description}</p>
-            <Stats
-              statsData={[
-                { key: 'views', value: loopDetails.group.no_of_views },
-                { key: 'Videos', value: loopDetails.group.no_of_videos },
-                { key: 'Subscribers', value: loopDetails.group.no_of_subscribers },
-              ]}
-            />
+          <Stats
+            statsData={[
+              { key: 'views', value: loopDetails.group.no_of_views },
+              { key: 'Videos', value: loopDetails.group.no_of_videos },
+              { key: 'Subscribers', value: loopDetails.group.no_of_subscribers },
+            ]}
+          />
           <div className="flex items-center gap-x-2">
             {isMobile ? (
               <>
@@ -67,7 +64,7 @@ export function Desktop({ loopDetails }: Props) {
                     generateDeepLink({
                       action: 'subscribe',
                       contentType: 'loop',
-                      description: ld_description,
+                      description: ldDescription,
                       title: loopDetails.group.group_name,
                       previewImage: null,
                       fromUserName: null,
@@ -77,7 +74,9 @@ export function Desktop({ loopDetails }: Props) {
                       utmMedium: 'web',
                       utmSource: window.location.hostname,
                     })
-                      .then((generatedLink) => { openGeneratedLink(generatedLink); })
+                      .then((generatedLink) => {
+                        openGeneratedLink(generatedLink)
+                      })
                       .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
                   }}>
                   <p className="text-title-sm text-monochrome-white">Subscribe</p>
@@ -113,27 +112,27 @@ export function Desktop({ loopDetails }: Props) {
         <Toaster />
       </div>
     )
-  }
+}
 
-  function Stats({
-    statsData,
-  }: {
-    /**
-     * Here statsData accept array of object in which you pass key the statTitle, and
-     * value which accepts value of stat
-     */
-    statsData: Array<{ key: string; value: number }>
-  }) {
-    return (
-      <div className="m-1 ml-0 flex justify-between p-1 pl-0">
-        {statsData.map((obj, index) => {
-          return (
-            <div key={index} className="flex flex-col items-center">
-              <p className="text-title-lg">{obj.value}</p>
-              <p className="text-cap-lg text-secondary">{obj.key}</p>
-            </div>
-          )
-        })}
-      </div>
-    )
-  }
+function Stats({
+  statsData,
+}: {
+  /**
+   * Here statsData accept array of object in which you pass key the statTitle, and
+   * value which accepts value of stat
+   */
+  statsData: Array<{ key: string; value: number }>
+}) {
+  return (
+    <div className="m-1 ml-0 flex justify-between p-1 pl-0">
+      {statsData.map((obj, index) => {
+        return (
+          <div key={index} className="flex flex-col items-center">
+            <p className="text-title-lg">{obj.value}</p>
+            <p className="text-cap-lg text-secondary">{obj.key}</p>
+          </div>
+        )
+      })}
+    </div>
+  )
+}

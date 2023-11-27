@@ -42,13 +42,13 @@ export function getLoopVideos(loopId: string) {
   })
 }
 
-async function fetchLoopCohosts(chat_id: string, type: string) {
+async function fetchLoopCohosts(chatId: string, type: string) {
   return await axios
     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/rt/users', {
       params: {
         type,
-        chat_id,
-      }
+        chat_id: chatId,
+      },
     })
     .then((res) => {
       return res.data.data
@@ -58,7 +58,9 @@ async function fetchLoopCohosts(chat_id: string, type: string) {
     })
 }
 
-export function getLoopCohosts(chat_id: string, type: string) {
-  return useQuery({ queryKey: ['loop', 'cohosts', 'users', chat_id, type], queryFn: async () => await fetchLoopCohosts(chat_id, type) })
+export function getLoopCohosts(chatId: string, type: string) {
+  return useQuery({
+    queryKey: ['loop', 'cohosts', 'users'],
+    queryFn: async () => await fetchLoopCohosts(chatId, type),
+  })
 }
-
