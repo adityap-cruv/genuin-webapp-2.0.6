@@ -10,6 +10,7 @@ import { Toaster } from '@components/ui/toaster'
 import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { isMobile } from 'react-device-detect'
+import { useInViewport } from '@hooks/use-in-viewport'
 
 export function CommunitySection() {
   const communityList = [
@@ -39,12 +40,17 @@ export function CommunitySection() {
     },
   ]
   const divRef = useRef<HTMLDivElement>(null)
+  const firstDivRef = useRef<HTMLDivElement>(null)
+  const lastDivRef = useRef<HTMLDivElement>(null)
   const { toast } = useToast()
   const { shareFn } = useAdaptiveShare()
-
+  const isAtFirst = useInViewport(firstDivRef)
+  const isAtLast = useInViewport(lastDivRef)
+  
   return (
     <div className="flex w-full flex-col gap-y-10">
       <div ref={divRef} className="hide-scrollbar scroll-snap-always flex snap-x overflow-x-auto px-4 sm:px-0 sm:pl-5 ">
+        <div ref={firstDivRef} style={{width: '2px'}} />
         {communityList.map((item, index) => {
           return (
             <React.Fragment key={index}>
@@ -90,11 +96,13 @@ export function CommunitySection() {
             </React.Fragment>
           )
         })}
+        <div ref={lastDivRef} style={{width: '2px'}} />
       </div>
       <div className="flex justify-between px-3">
         <Button
           variant="outline"
           className="border-none"
+          style={{visibility: isAtFirst ? 'hidden' : 'visible'}}
           onClick={(e) => {
             const div = divRef.current
             if (!div) return
@@ -105,6 +113,7 @@ export function CommunitySection() {
         <Button
           variant="outline"
           className="border-none"
+          style={{visibility: isAtLast ? 'hidden' : 'visible'}}
           onClick={(e) => {
             const div = divRef.current
             if (!div) return
