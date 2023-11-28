@@ -11,7 +11,7 @@ import { Toaster } from '@components/ui/toaster'
 import dynamic from 'next/dynamic'
 import { NavBar } from '@components/common/nav-bar'
 const ProfileTabs = dynamic(
-  async () => await import('@components/pages/profile/tabs/profile-tabs').then((comp) => comp.ProfileTabs)
+  async () => await import('@components/pages/profile/tabs/profile-tabs').then((comp) => comp.ProfileTabs.desktop)
 )
 
 interface CompProps {

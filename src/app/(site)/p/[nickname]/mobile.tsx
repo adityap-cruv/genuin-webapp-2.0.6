@@ -10,7 +10,7 @@ import dynamic from 'next/dynamic'
 import { Loader } from '@components/ui/loader'
 const NavBar = dynamic(async () => await import('@components/common/nav-bar').then((comp) => comp.NavBar))
 const ProfileTabs = dynamic(
-  async () => await import('@components/pages/profile/tabs/profile-tabs').then((comp) => comp.ProfileTabs),
+  async () => await import('@components/pages/profile/tabs/profile-tabs').then((comp) => comp.ProfileTabs.mobile),
   {
     loading({ isLoading }) {
       return <Loader size="md" />
