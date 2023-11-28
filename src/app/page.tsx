@@ -13,7 +13,7 @@ export default async function Page() {
     <main id="indexPage" className="absolute inset-0 text-new-off-black">
       <NavBar />
       <MainComponent isMobile={isMobile} />
-      <Footer />
+      <Footer isMobile={isMobile} />
     </main>
   )
 }
