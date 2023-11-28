@@ -184,13 +184,13 @@ function Loops() {
       <p className="my-2 text-title-md">Popular Loops</p>
       {communityDetailsModule?.popular_loops.map((loop, index) => {
         return (
-          <Link key={index} href={{ pathname: PATH_NAME.loop(loop.share_string) }}>
+          <a key={index} href={PATH_NAME.loop(loop.share_string)}>
             <ListItem
               title={loop.name}
               image={loop.profile_image ?? undefined}
               subtitle={loop.subscriber_count + (loop.subscriber_count === 1 ? ' Subscriber' : ' Subscribers')}
             />
-          </Link>
+          </a>
         )
       })}
     </div>

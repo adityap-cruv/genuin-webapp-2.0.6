@@ -14,7 +14,7 @@ export default function Error({ error, reset }: { error: Error; reset: () => voi
   if (error)
     return (
       <>
-        <NavBar variant="transparent" />
+        <NavBar variant="transparent" isMobile={isMobile} />
         <div
           className="flex min-h-full items-center justify-center text-center"
           style={{
@@ -25,7 +25,7 @@ export default function Error({ error, reset }: { error: Error; reset: () => voi
             <div className="flex w-full flex-col items-center">
               <h2 className="text-new-h2-mobile text-monochrome-white">Sorry, this page isn't available.</h2>
               <h5 className="m-8 text-new-h5-mobile text-monochrome-white">
-                The link you followed may be broken, or the page may have been removed. Go to{' '}
+                Something went wrong!
                 <a href="/">Genuin Home Page.</a>
               </h5>
 
@@ -37,7 +37,7 @@ export default function Error({ error, reset }: { error: Error; reset: () => voi
             </div>
           ) : (
             <div className="flex w-[70%] flex-col items-center">
-              <h2 className="text-new-h2 text-monochrome-white">Sorry, this page isn't available.</h2>
+              <h2 className="text-new-h2 text-monochrome-white">Something went wrong!</h2>
               <h5 className="m-8 text-new-h5 text-monochrome-white">
                 The link you followed may be broken, or the page may have been removed. Go to{' '}
                 <a href="/">Genuin Home Page.</a>

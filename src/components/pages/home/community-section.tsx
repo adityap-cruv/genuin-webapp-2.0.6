@@ -57,7 +57,7 @@ export function CommunitySection() {
               <div
                 onClick={() => (window.location.href = item.link)}
                 style={{ WebkitBoxSizing: 'border-box' }}
-                className={`m-4 box-border flex min-w-full snap-center flex-col gap-y-1 rounded-[20px] border-2 border-transparent p-6 outline outline-1 outline-new-light-grey hover:border-2 ${!isMobile && 'hover:border-primary hover:shadow-md'} hover:outline-0 sm:min-w-max sm:max-w-md`}>
+                className={`m-4 box-border flex min-w-full snap-center flex-col gap-y-1 rounded-[20px] border-2 border-transparent p-6 outline outline-1 outline-new-light-grey hover:border-2 ${!isMobile && 'hover:border-primary hover:shadow-md hover:outline-0'} sm:min-w-max sm:max-w-md`}>
                 <div className="flex w-full justify-between">
                   <Avatar className="h-20 w-20 rounded-full bg-red-40">
                     <AvatarImage src={item.profile_image} className="object-cover" />
@@ -100,9 +100,9 @@ export function CommunitySection() {
       </div>
       <div className="flex justify-between px-3">
         <Button
+        disabled={isAtFirst}
           variant="outline"
           className="border-none"
-          style={{visibility: isAtFirst ? 'hidden' : 'visible'}}
           onClick={(e) => {
             const div = divRef.current
             if (!div) return
@@ -111,9 +111,9 @@ export function CommunitySection() {
           <LeftScrollButtonIcon disabled={false} />
         </Button>
         <Button
+        disabled={isAtLast}
           variant="outline"
           className="border-none"
-          style={{visibility: isAtLast ? 'hidden' : 'visible'}}
           onClick={(e) => {
             const div = divRef.current
             if (!div) return

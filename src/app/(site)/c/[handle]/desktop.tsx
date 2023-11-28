@@ -26,7 +26,7 @@ interface Props {
 export function Desktop({ communityDetails }: Props) {
   return (
     <>
-      <NavBar variant="light" />
+      <NavBar variant="light" isMobile={false} />
       <CommunityDetails communityDetails={communityDetails}>
         <CommunityReels communityHandle={communityDetails.info.handle} />
       </CommunityDetails>
