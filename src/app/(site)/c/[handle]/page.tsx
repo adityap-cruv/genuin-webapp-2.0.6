@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title,
     applicationName: 'Genuin',
-    description: desc,
+    description: desc || '',
     openGraph: {
       title,
       description: desc,
