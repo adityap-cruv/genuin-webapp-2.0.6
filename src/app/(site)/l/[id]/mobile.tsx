@@ -30,9 +30,8 @@ export function Mobile({ loopDetails }: Props) {
   loopDetailsModule = loopDetails
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
-  const ld_description = `${
-    loopDetails.group &&
-    loopDetails.group.group_description !== null &&
+  const ldDescription = `${
+    loopDetails.group?.group_description !== null &&
     loopDetails.group.group_description !== undefined &&
     loopDetails.group.group_description.replace(/\s+/g, '') !== ''
       ? loopDetails.group.group_description + ' | '
@@ -57,7 +56,7 @@ export function Mobile({ loopDetails }: Props) {
                         <AvatarImage src={getAvatarUrl(loopDetails.owner.profile_image)} />
                         <AvatarFallback>
                           <p className="text-white text-cap-lg">
-                            {getAvatarFallback(loopDetails.owner.name || undefined)}
+                            {getAvatarFallback(loopDetails.owner.name ?? undefined)}
                           </p>
                         </AvatarFallback>
                       </Avatar>
@@ -101,7 +100,7 @@ export function Mobile({ loopDetails }: Props) {
                 generateDeepLink({
                   action: 'subscribe',
                   contentType: 'loop',
-                  description: ld_description,
+                  description: ldDescription,
                   title: loopDetails.group.group_name,
                   previewImage: null,
                   fromUserName: null,
@@ -225,7 +224,7 @@ function HorizontalVideosList({ loopId }: { loopId: string }) {
 
   useMotionValueEvent(scrollYProgress, 'change', (latest) => {
     if (Number(latest.toPrecision(2)) > 0.8) {
-      if (!isFetchingNextPage) fetchNextPage()
+      if (!isFetchingNextPage) void fetchNextPage()
     }
   })
 

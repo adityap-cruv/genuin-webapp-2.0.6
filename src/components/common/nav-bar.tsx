@@ -33,6 +33,7 @@ export function NavBar({ variant = 'light' }: Props) {
   )
 }
 
+// todo This Component is creating hydration error take measures to solve this hydration issue.
 function GetAppButton() {
   return !isMobile ? (
     <DownloadAppDialog>
