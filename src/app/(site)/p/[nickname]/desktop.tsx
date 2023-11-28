@@ -28,12 +28,12 @@ export function Desktop({ profileData }: CompProps) {
         <div className="my-3 w-full px-2 md:w-1/3 md:px-0">
           <div className="flex w-full items-center justify-between md:flex-col md:items-start">
             <Avatar className="bg-slate-500 h-20 w-20 bg-red-40">
-              <AvatarImage src={profileData?.profile_image}></AvatarImage>
+              <AvatarImage src={profileData?.profile_image} />
               <AvatarFallback className="text-white text-title-lg">
                 {getAvatarFallback(profileData?.name)}
               </AvatarFallback>
             </Avatar>
-            <div className="mx-4 block w-full max-w-xs md:hidden ">
+            <div className="mx-4 block md:hidden">
               <Stats profileData={profileData} />
             </div>
           </div>
@@ -73,16 +73,16 @@ export function Desktop({ profileData }: CompProps) {
 
 function Stats({ profileData }: { profileData: any }) {
   return (
-    <div className="m-1 ml-0 flex justify-between p-1 pl-0">
-      <div>
+    <div className="m-1 ml-0 flex max-w-[250px]  justify-between gap-x-10 p-1 pl-0">
+      <div className="flex flex-col items-center">
         <p className="text-title-lg">{abbreviateNumber(profileData?.views) || 0}</p>
         <p className="text-cap-lg text-secondary">Views</p>
       </div>
-      <div>
+      <div className="flex flex-col items-center">
         <p className="text-title-lg">{abbreviateNumber(profileData?.videos) || 0}</p>
         <p className="text-cap-lg text-secondary">Videos</p>
       </div>
-      <div>
+      <div className="flex flex-col items-center">
         <p className="text-title-lg">{abbreviateNumber(profileData?.replies) || 0}</p>
         <p className="text-cap-lg text-secondary">Replies</p>
       </div>

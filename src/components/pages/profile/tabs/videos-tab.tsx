@@ -123,6 +123,12 @@ function TabBody({ videos, hasNextPage, fetchingNextPage }: TabBodyProps) {
   let tileWidth = width / 4
   if (windowWidth < 1024) tileWidth = width / 3
 
+  if (videos.length === 0) {
+    return (
+      <div className="flex h-full w-full items-center justify-center text-title-lg text-secondary">No videos yet</div>
+    )
+  }
+
   return (
     <>
       <div ref={divRef} className="inline-grid w-full grid-cols-3 lg:grid-cols-4">
@@ -131,10 +137,11 @@ function TabBody({ videos, hasNextPage, fetchingNextPage }: TabBodyProps) {
           return <Tile key={index} width={tileWidth} videoDetails={video} />
         })}
       </div>
-      <div className="flex h-52 w-full items-center justify-center">
-        {/* {!hasNextPage && <p>All Caught up!!!</p>} */}
-        {fetchingNextPage && <Loader size="md" />}
-      </div>
+      {fetchingNextPage && (
+        <div className="flex h-52 w-full items-center justify-center">
+          <Loader size="md" />
+        </div>
+      )}
     </>
   )
 }

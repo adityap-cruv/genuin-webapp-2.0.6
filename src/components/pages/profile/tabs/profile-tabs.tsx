@@ -4,7 +4,7 @@ import { VideosTab } from './videos-tab'
 
 export function ProfileTabs() {
   return (
-    <Tabs defaultValue="all" className="h-full w-full">
+    <Tabs defaultValue="all" className="h-body w-full">
       <TabsList className="sticky top-[74px] z-[2]">
         <TabsTrigger value="all">
           <TabIcons.all />
