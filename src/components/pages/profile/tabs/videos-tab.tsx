@@ -25,9 +25,7 @@ function getNickname() {
 // todo fetchNextPage is being called multiple times, solve it.
 function GenuinVideos() {
   const divRef = useRef<HTMLDivElement>(null)
-  const { data, isLoading, isError, isFetchingNextPage, hasNextPage, fetchNextPage } = getPaginatedGenuinVideos(
-    getNickname()
-  )
+  const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } = getPaginatedGenuinVideos(getNickname())
   const { scrollYProgress } = useScroll({ container: divRef })
 
   useMotionValueEvent(scrollYProgress, 'change', (latest) => {
@@ -38,7 +36,6 @@ function GenuinVideos() {
   return (
     <div ref={divRef} className="md:h-full md:overflow-y-auto">
       {isLoading && <Loader size="md" />}
-      {isError && <div>Something went wrong in loop videos.</div>}
       {data && (
         <TabBody
           videos={data?.pages.flatMap((page: { videos: any }) => page.videos)}
@@ -52,9 +49,7 @@ function GenuinVideos() {
 
 function LoopVideos() {
   const divRef = useRef<HTMLDivElement>(null)
-  const { data, isLoading, isError, hasNextPage, fetchNextPage, isFetchingNextPage } = getPaginatedLoopVideos(
-    getNickname()
-  )
+  const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } = getPaginatedLoopVideos(getNickname())
 
   const { scrollYProgress } = useScroll({ container: divRef })
 
@@ -66,7 +61,6 @@ function LoopVideos() {
   return (
     <div ref={divRef} className="md:h-full md:overflow-y-auto">
       {isLoading && <Loader size="md" />}
-      {isError && <div>Something went wrong in loop videos.</div>}
       {data && (
         <TabBody
           videos={data?.pages.flatMap((page: { videos: any }) => page.videos)}
@@ -80,9 +74,7 @@ function LoopVideos() {
 
 function AllVideos() {
   const divRef = useRef<HTMLDivElement>(null)
-  const { data, isLoading, isError, hasNextPage, isFetchingNextPage, fetchNextPage } = getPaginatedAllVideos(
-    getNickname()
-  )
+  const { data, isLoading, hasNextPage, isFetchingNextPage, fetchNextPage } = getPaginatedAllVideos(getNickname())
   const { scrollYProgress } = useScroll({ container: divRef })
 
   useMotionValueEvent(scrollYProgress, 'change', (latest) => {
@@ -94,7 +86,6 @@ function AllVideos() {
   return (
     <div ref={divRef} className="md:h-full md:overflow-y-auto">
       {isLoading && <Loader size="md" />}
-      {isError && <div>Something went wrong in all videos.</div>}
       {data && (
         <TabBody
           videos={data?.pages.flatMap((page) => page.videos)}
@@ -169,7 +160,7 @@ function Tile({ width = -1, videoDetails }: TileProps) {
                 </div>
                 <Image src={icLoop} alt="loop" height={24} width={24} />
               </div>
-              <div className="line-clamp-2 p-3 text-left break-all text-title-sm text-secondary-foreground">
+              <div className="line-clamp-2 break-all p-3 text-left text-title-sm text-secondary-foreground">
                 {videoDetails.loop?.name}
               </div>
             </div>

@@ -4,7 +4,6 @@ import Link from 'next/link'
 import { Button } from '@components/ui/button'
 import { Badge } from '@components/ui/badge'
 import icShare from '@icons/player-controls/icShare.svg'
-import icSubscribe from '@icons/icSubscribe.svg'
 import icComment from '@icons/player-controls/icComment.svg'
 import Image from 'next/image'
 import { DownloadDialog } from '../download-dialog'
@@ -258,10 +257,10 @@ interface ActionsProps {
   isLoop?: boolean
 }
 
+// todo we can improve thsis code bye creating new file.
 function Actions({ link = '', shareDescription = '', shareTitle = '', isLoop = false, videoData }: ActionsProps) {
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
-
   return (
     <>
       {isMobile ? (
@@ -397,6 +396,13 @@ function Actions({ link = '', shareDescription = '', shareTitle = '', isLoop = f
       ) : (
         <>
           <div className="flex flex-col">
+            {link && (
+              <Link href={checkAndAppendHttps(link)} target="_blank">
+                <ActionItem title="Click Here!">
+                  <Image src={icLinkout} alt="link" height={32} width={32} />
+                </ActionItem>
+              </Link>
+            )}
             <DownloadDialog title="Get the Genuin app" subtitle="Get the app to repost the video." asChild={false}>
               <ActionItem title="Repost the video!">
                 <Image src={icRepost} alt="repost" height={32} width={32} />
@@ -407,14 +413,7 @@ function Actions({ link = '', shareDescription = '', shareTitle = '', isLoop = f
                 <Image src={icSpark} height={32} width={32} alt="spark" />
               </ActionItem>
             </DownloadDialog>
-            {true && (
-              <Link href={checkAndAppendHttps(link)} target="_blank">
-                <ActionItem title="Click Here!">
-                  <Image src={icLinkout} alt="link" height={32} width={32} />
-                </ActionItem>
-              </Link>
-            )}
-            {true && (
+            {!isLoop && (
               <DownloadDialog title="Get the Genuin app" subtitle="Get the app to save the video." asChild={false}>
                 <ActionItem title="Save this Video!">
                   <Image src={icSave} width={32} height={32} alt="Save video" />
