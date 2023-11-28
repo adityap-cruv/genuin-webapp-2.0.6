@@ -15,8 +15,6 @@ export function useResponsive() {
     }
   }, [])
 
-  if (sizeBox.width === -1 || sizeBox.height === -1) return {}
-
   return {
     isSm: sizeBox.width >= 640,
     isMd: sizeBox.width >= 768,

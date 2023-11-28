@@ -1,10 +1,12 @@
 import { NavBar } from '@components/common/nav-bar'
+import { cookies } from 'next/headers'
 
 interface Props {
   children: React.ReactNode
 }
 
 export default function Layout({ children }: Props) {
+  const isMobile = cookies().get('mobile')?.value === 'true'
   return (
     <main
       className="absolute inset-0 h-full w-full"
@@ -12,7 +14,7 @@ export default function Layout({ children }: Props) {
         background:
           'transparent radial-gradient(closest-side at 50% 50%, #00189f 0%, #000000 100%) 0% 0% no-repeat padding-box',
       }}>
-      <NavBar variant="transparent" />
+      <NavBar variant="transparent" isMobile={isMobile} />
       <section className="container mt-navbar h-body w-full overflow-clip">{children}</section>
     </main>
   )

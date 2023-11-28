@@ -2,7 +2,6 @@
 import { Button } from '@components/ui/button'
 import { GenuinLogo } from '@components/ui/genuin-logo'
 import { DownloadAppDialog } from '../pages/home/download-app-dialog'
-import { isMobile } from 'react-device-detect'
 import Link from 'next/link'
 import { cn } from '@lib/utils'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@components/ui/dropdown-menu'
@@ -12,20 +11,21 @@ import { PATH_NAME } from '@lib/utils/constants/path'
 
 interface Props {
   variant: 'light' | 'dark' | 'transparent'
+  isMobile: boolean
 }
 
-export function NavBar({ variant = 'light' }: Props) {
+export function NavBar({ variant = 'light', isMobile }: Props) {
   const isVariantLight = variant === 'dark' || variant === 'transparent'
   return (
     <nav
       className={cn(
-        variant === 'dark' ? 'bg-monochrome-black' : undefined,
+        variant === 'dark' ? 'bg-monochrome-black' : 'bg-monochrome-white',
         'fixed left-0 top-0 z-10 m-auto flex h-navbar w-full'
       )}>
       <div className={cn('container flex h-full items-center justify-between py-1')}>
         <GenuinLogo.adaptive variant={isVariantLight ? 'light' : 'dark'} />
         <div className="flex items-center">
-          <GetAppButton />
+          <GetAppButton isMobile={isMobile} />
           <BurgerMenu variant={isVariantLight ? 'light' : 'dark'} />
         </div>
       </div>
@@ -33,20 +33,23 @@ export function NavBar({ variant = 'light' }: Props) {
   )
 }
 
-// todo This Component is creating hydration error take measures to solve this hydration issue.
-function GetAppButton() {
-  return !isMobile ? (
-    <DownloadAppDialog>
-      <Button size="sm">
-        <p className="line-clamp-1 text-title-sm text-monochrome-white">Get App</p>
-      </Button>
-    </DownloadAppDialog>
-  ) : (
+type GetAppButtonType = {
+  isMobile: boolean
+}
+
+function GetAppButton({ isMobile }: GetAppButtonType) {
+  return isMobile ? (
     <Link href={MOBILE_DOWNLOAD_APP_LINK}>
       <Button size="sm">
         <p className="text-title-sm text-monochrome-white">Get App</p>
       </Button>
     </Link>
+  ) : (
+    <DownloadAppDialog>
+      <Button size="sm">
+        <p className="line-clamp-1 text-title-sm text-monochrome-white">Get App</p>
+      </Button>
+    </DownloadAppDialog>
   )
 }
 
