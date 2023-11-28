@@ -23,7 +23,7 @@ export function Desktop({ profileData }: CompProps) {
   const { toast } = useToast()
   return (
     <>
-      <NavBar variant="light" />
+      <NavBar variant="light" isMobile={false} />
       <div className="mt-body flex h-body w-full flex-col overflow-auto overflow-x-clip md:container md:flex-row md:overflow-clip ">
         <div className="my-3 w-full px-2 md:w-1/3 md:px-0">
           <div className="flex w-full items-center justify-between md:flex-col md:items-start">

@@ -27,7 +27,7 @@ export function Mobile({ profileData }: CompProps) {
   const { toast } = useToast()
   return (
     <>
-      <NavBar variant="light" />
+      <NavBar variant="light" isMobile />
       <div className="my-3 mt-body h-body w-full">
         <div className="px-2">
           <div className="flex w-full items-center justify-between">

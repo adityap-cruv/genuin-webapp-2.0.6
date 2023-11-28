@@ -14,7 +14,7 @@ export default function NotFound() {
   // return <div>not found develop this page.</div>
   return (
     <>
-      <NavBar variant="transparent" />
+      <NavBar variant="transparent" isMobile={isMobile} />
       <div
         className="flex min-h-full items-center justify-center text-center"
         style={{
