@@ -19,7 +19,7 @@ export function NavBar({ variant = 'light' }: Props) {
   return (
     <nav
       className={cn(
-        variant === 'dark' ? 'bg-monochrome-black' : undefined,
+        variant === 'dark' ? 'bg-monochrome-black' : 'bg-monochrome-white',
         'fixed left-0 top-0 z-10 m-auto flex h-navbar w-full'
       )}>
       <div className={cn('container flex h-full items-center justify-between py-1')}>
@@ -33,7 +33,7 @@ export function NavBar({ variant = 'light' }: Props) {
   )
 }
 
-// todo This Component is creating hydration error take measures to solve this hydration issue.
+// todo This Component is causing hydration error take measures to solve this hydration issue.
 function GetAppButton() {
   return !isMobile ? (
     <DownloadAppDialog>
