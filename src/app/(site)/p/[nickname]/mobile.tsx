@@ -84,19 +84,18 @@ export function Mobile({ profileData }: CompProps) {
   )
 }
 
-// todo this component is happening multiple times in desktop and mobile we can combine both of it.
 function Stats({ profileData }: { profileData: any }) {
   return (
-    <div className="flex w-full justify-between">
-      <div>
+    <div className="flex w-full justify-between pl-4">
+      <div className="flex flex-col items-center">
         <p className="text-title-lg">{abbreviateNumber(profileData?.views) || 0}</p>
         <p className="text-cap-lg text-secondary">Views</p>
       </div>
-      <div>
+      <div className="flex flex-col items-center">
         <p className="text-title-lg">{abbreviateNumber(profileData?.videos) || 0}</p>
         <p className="text-cap-lg text-secondary">Videos</p>
       </div>
-      <div>
+      <div className="flex flex-col items-center">
         <p className="text-title-lg">{abbreviateNumber(profileData?.replies) || 0}</p>
         <p className="text-cap-lg text-secondary">Replies</p>
       </div>
