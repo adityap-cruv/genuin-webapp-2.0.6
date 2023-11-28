@@ -12,24 +12,36 @@ import { useMotionValueEvent, useScroll } from 'framer-motion'
 import dynamic from 'next/dynamic'
 import { pushUrlWithoutReload } from '@lib/utils'
 import { PATH_NAME } from '@lib/utils/constants/path'
+import { useResponsive } from '@hooks/useResponsive'
 const PlayerModal = dynamic(
   async () => await import('@components/common/player-modal').then((comp) => comp.PlayerModal)
 )
+
+export const VideosTab = {
+  genuin: GenuinVideos,
+  loop: LoopVideos,
+  all: AllVideos,
+}
 
 function getNickname() {
   return useParams().nickname as string
 }
 
-// todo need have design of error screens for all tabs and implment it.
+const SCROLL_LIMIT = 0.9
+const PRECISION_COUNT = 6
+
+// todo need have design of error screens for all tabs and implement it.
 // todo Work on optimizing this code.
 // todo fetchNextPage is being called multiple times, solve it.
 function GenuinVideos() {
   const divRef = useRef<HTMLDivElement>(null)
   const { data, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } = getPaginatedGenuinVideos(getNickname())
-  const { scrollYProgress } = useScroll({ container: divRef })
+  const { isMd } = useResponsive()
+  // if screen size is medium or more then it will take divRef as container. It has been done to work with infinite scroll feature.
+  const { scrollYProgress } = useScroll({ container: isMd ? divRef : undefined })
 
   useMotionValueEvent(scrollYProgress, 'change', (latest) => {
-    if (Number(latest.toPrecision(6)) > 0.9 && !isFetchingNextPage) {
+    if (Number(latest.toPrecision(PRECISION_COUNT)) > SCROLL_LIMIT && !isFetchingNextPage) {
       void fetchNextPage()
     }
   })
@@ -50,11 +62,11 @@ function GenuinVideos() {
 function LoopVideos() {
   const divRef = useRef<HTMLDivElement>(null)
   const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } = getPaginatedLoopVideos(getNickname())
-
-  const { scrollYProgress } = useScroll({ container: divRef })
+  const { isMd } = useResponsive()
+  const { scrollYProgress } = useScroll({ container: isMd ? divRef : undefined })
 
   useMotionValueEvent(scrollYProgress, 'change', (latest) => {
-    if (Number(latest.toPrecision(6)) > 0.9 && !isFetchingNextPage) {
+    if (Number(latest.toPrecision(PRECISION_COUNT)) > SCROLL_LIMIT && !isFetchingNextPage) {
       void fetchNextPage()
     }
   })
@@ -75,10 +87,11 @@ function LoopVideos() {
 function AllVideos() {
   const divRef = useRef<HTMLDivElement>(null)
   const { data, isLoading, hasNextPage, isFetchingNextPage, fetchNextPage } = getPaginatedAllVideos(getNickname())
-  const { scrollYProgress } = useScroll({ container: divRef })
+  const { isMd } = useResponsive()
+  const { scrollYProgress } = useScroll({ container: isMd ? divRef : undefined })
 
   useMotionValueEvent(scrollYProgress, 'change', (latest) => {
-    if (Number(latest.toPrecision(6)) > 0.9 && !isFetchingNextPage) {
+    if (Number(latest.toPrecision(PRECISION_COUNT)) > SCROLL_LIMIT && !isFetchingNextPage) {
       void fetchNextPage()
     }
   })
@@ -110,6 +123,12 @@ function TabBody({ videos, hasNextPage, fetchingNextPage }: TabBodyProps) {
   let tileWidth = width / 4
   if (windowWidth < 1024) tileWidth = width / 3
 
+  if (videos.length === 0) {
+    return (
+      <div className="flex h-full w-full items-center justify-center text-title-lg text-secondary">No videos yet</div>
+    )
+  }
+
   return (
     <>
       <div ref={divRef} className="inline-grid w-full grid-cols-3 lg:grid-cols-4">
@@ -118,10 +137,11 @@ function TabBody({ videos, hasNextPage, fetchingNextPage }: TabBodyProps) {
           return <Tile key={index} width={tileWidth} videoDetails={video} />
         })}
       </div>
-      <div className="flex h-52 w-full items-center justify-center">
-        {/* {!hasNextPage && <p>All Caught up!!!</p>} */}
-        {fetchingNextPage && <Loader size="md" />}
-      </div>
+      {fetchingNextPage && (
+        <div className="flex h-52 w-full items-center justify-center">
+          <Loader size="md" />
+        </div>
+      )}
     </>
   )
 }
@@ -160,7 +180,7 @@ function Tile({ width = -1, videoDetails }: TileProps) {
                 </div>
                 <Image src={icLoop} alt="loop" height={24} width={24} />
               </div>
-              <div className="line-clamp-2 break-all p-3 text-left text-title-sm text-secondary-foreground">
+              <div className="ml-1 line-clamp-2 break-all text-left text-title-sm text-secondary-foreground">
                 {videoDetails.loop?.name}
               </div>
             </div>
@@ -179,10 +199,4 @@ function Tile({ width = -1, videoDetails }: TileProps) {
       </div>
     </PlayerModal>
   )
-}
-
-export const VideosTab = {
-  genuin: GenuinVideos,
-  loop: LoopVideos,
-  all: AllVideos,
 }

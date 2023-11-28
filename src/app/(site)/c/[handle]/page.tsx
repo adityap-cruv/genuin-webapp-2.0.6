@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const title = `${communityData.info.name}`
   const desc = `${communityData.info.description}`
 
- 
+
   return {
     title,
     applicationName: 'Genuin',
@@ -38,6 +38,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title,
       description: desc,
       url: `${process.env.NEXT_PUBLIC_HOST_URL}/c/${params.handle}`,
+      images: [
+        { url: communityData.info.preview_image }
+      ]
     },
   }
 }

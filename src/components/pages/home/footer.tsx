@@ -3,8 +3,13 @@ import { Button } from '@components/ui/button'
 import { GenuinLogo } from '@components/ui/genuin-logo'
 import Link from 'next/link'
 import { DownloadAppDialog } from './download-app-dialog'
+import { MOBILE_DOWNLOAD_APP_LINK } from '@lib/constants'
 
-export function Footer() {
+type Props = {
+  isMobile: boolean
+}
+
+export function Footer({ isMobile }: Props) {
   return (
     <>
       <footer className="relative hidden bg-primary lg:block">
@@ -17,14 +22,7 @@ export function Footer() {
                 you? Start your own!
               </h5>
             </div>
-            <DownloadAppDialog>
-              <Button
-                size="index-page"
-                variant="default"
-                className="bg-new-off-black after:bg-new-dark-grey hover:bg-new-dark-grey">
-                <p className="whitespace-nowrap text-new-md text-new-off-white">Download Genuin</p>
-              </Button>
-            </DownloadAppDialog>
+            <DownloadButton isMobile={isMobile} />
           </div>
           <div
             className="flex flex-col gap-y-10 bg-new-off-black px-20 pb-8 pt-12 text-primary-foreground"
@@ -53,14 +51,9 @@ export function Footer() {
         <div className="mx-2 flex h-full flex-col gap-y-6 sm:mx-15">
           <div className="mt-5 flex flex-col items-center justify-center gap-y-2">
             <p className="max-w-[230px] text-center text-new-h2-mobile text-new-off-white">Join the world of Genuin.</p>
-            <DownloadAppDialog>
-              <Button
-                size="index-page"
-                variant="default"
-                className="mt-3 bg-new-off-black after:bg-new-dark-grey hover:bg-new-dark-grey">
-                <p className="whitespace-nowrap text-new-md text-new-off-white">Download Genuin</p>
-              </Button>
-            </DownloadAppDialog>
+            <div className="mt-3">
+              <DownloadButton isMobile={isMobile} />
+            </div>
           </div>
           <div
             className="mt-5 flex items-center justify-between gap-y-10 bg-new-off-black p-5 text-primary-foreground"
@@ -71,5 +64,31 @@ export function Footer() {
         </div>
       </footer>
     </>
+  )
+}
+
+type DownloadButtonProps = {
+  isMobile: boolean
+}
+
+function DownloadButton({ isMobile }: DownloadButtonProps) {
+  return isMobile ? (
+    <Link href={MOBILE_DOWNLOAD_APP_LINK}>
+      <Button
+        size="index-page"
+        variant="default"
+        className="bg-new-off-black after:bg-new-dark-grey hover:bg-new-dark-grey">
+        <p className="whitespace-nowrap text-new-md text-new-off-white">Download Genuin</p>
+      </Button>
+    </Link>
+  ) : (
+    <DownloadAppDialog>
+      <Button
+        size="index-page"
+        variant="default"
+        className="bg-new-off-black after:bg-new-dark-grey hover:bg-new-dark-grey">
+        <p className="whitespace-nowrap text-new-md text-new-off-white">Download Genuin</p>
+      </Button>
+    </DownloadAppDialog>
   )
 }
