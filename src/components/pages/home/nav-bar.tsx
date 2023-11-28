@@ -56,16 +56,16 @@ export function NavBar() {
         <div className={cn('flex h-full items-center justify-between py-1 pl-2')}>
           <GenuinLogo.text variant="black" />
           <div className="flex items-center gap-x-2">
-            <Sheet modal={false}>
+            <Sheet modal={true}>
               <SheetTrigger>
                 <HamBurgerMenuIcon toggleToClose={false} />
               </SheetTrigger>
               <SheetContent
-                className="w-full border-none"
+                className="min-h-full w-full border-none"
                 style={{
                   background: 'radial-gradient(123.19% 48.8% at 76.02% 69.05%, #E9CAF4 0%, #ADD8FB 100%)',
                 }}>
-                <div className="flex h-full min-w-full flex-col gap-y-1 py-7">
+                <div className="flex h-full min-w-full flex-col gap-y-1 pt-7">
                   <div className="flex h-full min-w-full flex-col gap-y-4 py-7">
                     <DownloadAppDialog>
                       <Button size="index-page" className="my-2 w-full bg-new-off-black hover:bg-new-dark-grey">
@@ -82,6 +82,7 @@ export function NavBar() {
                       <h3 className="text-new-h3-mobile font-semibold">Privacy Policy</h3>
                     </Link>
                   </div>
+                  <p className="text-new-para-1-mobile">© 2023 Genuin Inc.</p>
                 </div>
               </SheetContent>
             </Sheet>
