@@ -46,7 +46,7 @@ function GenuinVideos() {
     }
   })
   return (
-    <div ref={divRef} className="md:h-full md:overflow-y-auto">
+    <div ref={divRef} className="h-full overflow-y-auto">
       {isLoading && <Loader size="md" />}
       {data && (
         <TabBody
@@ -71,7 +71,7 @@ function LoopVideos() {
     }
   })
   return (
-    <div ref={divRef} className="md:h-full md:overflow-y-auto">
+    <div ref={divRef} className="h-full overflow-y-auto">
       {isLoading && <Loader size="md" />}
       {data && (
         <TabBody
@@ -97,7 +97,7 @@ function AllVideos() {
   })
 
   return (
-    <div ref={divRef} className="md:h-full md:overflow-y-auto">
+    <div ref={divRef} className="h-full overflow-y-auto">
       {isLoading && <Loader size="md" />}
       {data && (
         <TabBody
