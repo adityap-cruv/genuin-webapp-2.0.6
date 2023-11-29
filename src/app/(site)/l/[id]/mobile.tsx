@@ -1,8 +1,7 @@
 'use client'
-import { Avatar, AvatarFallback, AvatarImage } from '@components/ui/avatar'
 import { Button } from '@components/ui/button'
 import type { LoopDetailsType } from '@lib/schemas/loop/details'
-import { generateDeepLink, getAvatarFallback, getAvatarUrl, openGeneratedLink } from '@lib/utils'
+import { generateDeepLink, openGeneratedLink } from '@lib/utils'
 import Image from 'next/image'
 import icShare from '@icons/icShareBlue.svg'
 import { Toaster } from '@components/ui/toaster'
@@ -16,6 +15,7 @@ import { Loader } from '@components/ui/loader'
 import { PlayerModal } from '@components/common/player-modal'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
+import { CustomAvatar } from '@components/custom/custom-avatar'
 
 let loopDetailsModule: LoopDetailsType
 
@@ -50,14 +50,12 @@ export function Mobile({ loopDetails }: Props) {
                 <Link href={{ pathname: PATH_NAME.profile(loopDetails.owner.nickname) }}>
                   <div className="my-2 flex items-center">
                     <div className="bg-red-400 h-6 w-6">
-                      <Avatar className="h-full w-full bg-red-40">
-                        <AvatarImage src={getAvatarUrl(loopDetails.owner.profile_image)} />
-                        <AvatarFallback>
-                          <p className="text-white text-cap-lg">
-                            {getAvatarFallback(loopDetails.owner.name ?? undefined)}
-                          </p>
-                        </AvatarFallback>
-                      </Avatar>
+                      <CustomAvatar
+                        className="h-full w-full bg-red-40"
+                        fallbackString={loopDetails.owner.name ?? ''}
+                        imageUrl={loopDetails.owner.profile_image ?? ''}
+                        isAvatar={loopDetails.owner.is_avatar}
+                      />
                     </div>
                     <p className="ml-1 text-title-sm">@{loopDetails.owner.name}</p>
                   </div>
@@ -69,13 +67,12 @@ export function Mobile({ loopDetails }: Props) {
                 <Link href={{ pathname: PATH_NAME.community(loopDetails.community.handle) }}>
                   <div className="my-2 flex items-center">
                     <div className="bg-red-400 h-6 w-6">
-                      {/* Similar note here for Avatar styling */}
-                      <Avatar className="h-full w-full bg-red-40">
-                        <AvatarImage src={getAvatarUrl(loopDetails.community.dp)} />
-                        <AvatarFallback>
-                          <p className="text-white text-cap-lg">{getAvatarFallback(loopDetails.community.name)}</p>
-                        </AvatarFallback>
-                      </Avatar>
+                      <CustomAvatar
+                        className="h-full w-full bg-red-40"
+                        imageUrl={loopDetails.community.dp}
+                        fallbackString={loopDetails.community.name}
+                        isAvatar={false}
+                      />
                     </div>
                     <p className="ml-1 text-title-sm">{loopDetails.community.name}</p>
                   </div>
@@ -182,7 +179,8 @@ function LoopSubscribers({ loopId }: any) {
                 image={item.user.profile_image || ''}
                 subtitle={item.user.bio || ''}
                 title={'@' + item.user.nickname}
-                userName={item.user.name ?? 'Un Known'}
+                userName={item.user.name ?? 'Unknown'}
+                isAvatar={item.user.is_avatar}
               />
             </Link>
           ))}
@@ -250,12 +248,12 @@ function HorizontalVideosList({ loopId }: { loopId: string }) {
                     {item.video?.metadata.duration + 's'}
                   </p> */}
                 <div className="bg-red-400 absolute bottom-2 left-2 flex h-6 w-6 items-center">
-                  <Avatar className="h-full w-full bg-red-40">
-                    <AvatarImage src={getAvatarUrl(item.owner.profile_image)} />
-                    <AvatarFallback>
-                      <p className="text-white text-title-sm">{getAvatarFallback(item.owner.nickname)}</p>
-                    </AvatarFallback>
-                  </Avatar>
+                  <CustomAvatar
+                    className="h-full w-full bg-red-40"
+                    imageUrl={item.owner.profile_image}
+                    isAvatar={item.owner.is_avatar}
+                    fallbackString={item.owner.nickname}
+                  />
                   <p className="ml-1 text-body-sm text-monochrome-white">@{item.owner.nickname}</p>
                 </div>
               </div>
@@ -283,7 +281,8 @@ function Cohosts({ loopId }: { loopId: string }) {
                 image={item.user.profile_image || ''}
                 subtitle={item.user.bio || ''}
                 title={'@' + item.user.nickname}
-                userName={item.user.name ?? 'Un Known'}
+                userName={item.user.name ?? 'Unknown'}
+                isAvatar={item.user.is_avatar}
               />
             </Link>
           ))}
@@ -298,17 +297,13 @@ interface CohostTileProps {
   title: string
   subtitle: string
   userName: string
+  isAvatar: boolean
 }
 
-function CohostTile({ image, title, subtitle, userName }: CohostTileProps) {
+function CohostTile({ image, title, subtitle, userName, isAvatar }: CohostTileProps) {
   return (
     <div className="flex items-center gap-x-1 rounded-sm p-1 hover:bg-monochrome-9">
-      <Avatar className="h-12 w-12 bg-red-40">
-        <AvatarImage src={getAvatarUrl(image)} />
-        <AvatarFallback>
-          <p className="text-title-md text-monochrome-white">{getAvatarFallback(userName)}</p>
-        </AvatarFallback>
-      </Avatar>
+      <CustomAvatar className="h-12 w-12 bg-red-40" fallbackString={userName} imageUrl={image} isAvatar={isAvatar} />
       <div className="mx-2">
         <p className="line-clamp-1 text-title-sm">{title}</p>
         {userName && <p className="line-clamp-1 text-title-sm">{userName}</p>}

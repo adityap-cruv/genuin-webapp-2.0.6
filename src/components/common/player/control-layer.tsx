@@ -1,5 +1,4 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@components/ui/avatar'
-import { checkAndAppendHttps, generateDeepLink, getAvatarFallback, openGeneratedLink } from '@lib/utils'
+import { checkAndAppendHttps, generateDeepLink, openGeneratedLink } from '@lib/utils'
 import Link from 'next/link'
 import { Button } from '@components/ui/button'
 import { Badge } from '@components/ui/badge'
@@ -26,6 +25,7 @@ import icLinkout from '@icons/player-controls/icLinkout.svg'
 import icSpark from '@icons/player-controls/icBulb.svg'
 import icRepost from '@icons/player-controls/icRepost.svg'
 import ic3Dot from '@icons/player-controls/3Dot.svg'
+import { CustomAvatar } from '@components/custom/custom-avatar'
 
 export const ControlLayer = {
   default: DefaultLayer,
@@ -132,10 +132,12 @@ function CommunityReelSection({ videoData }: CommunityLayerProps) {
   return (
     <div className="mt-2 flex h-14 w-full items-center justify-between bg-monochrome-black/40 px-2">
       <div className="flex items-center gap-x-2">
-        <Avatar className="bg-red-40">
-          <AvatarImage src={videoData.loop?.profile_image ?? ''} />
-          <AvatarFallback>{getAvatarFallback(videoData.loop?.name)}</AvatarFallback>
-        </Avatar>
+        <CustomAvatar
+          className="bg-red-40"
+          imageUrl={videoData.loop?.profile_image ?? ''}
+          fallbackString={videoData.loop?.name ?? ''}
+          isAvatar={false}
+        />
         <div className="flex flex-col">
           <p className="line-clamp-1 max-w-[150px] text-title-sm text-monochrome-white">{videoData.loop?.name}</p>
           <div className="flex items-center gap-x-2">
@@ -176,12 +178,12 @@ function Loop({ videoData }: LoopProps) {
           <Link
             className="flex cursor-pointer items-center hover:opacity-60"
             href={{ pathname: PATH_NAME.loop(videoData?.loop?.share_string) }}>
-            <Avatar className="bg-red-40">
-              <AvatarImage src={videoData?.loop?.profile_image ?? undefined} />
-              <AvatarFallback>
-                <p className="text-title-lg">{getAvatarFallback(videoData?.loop?.name)}</p>
-              </AvatarFallback>
-            </Avatar>
+            <CustomAvatar
+              className="bg-red-40"
+              imageUrl={videoData?.loop?.profile_image ?? ''}
+              fallbackString={videoData?.loop?.name ?? ''}
+              isAvatar={false}
+            />
             <p className="line-clamp-1 px-2 text-title-md text-monochrome-white">{videoData?.loop?.name}</p>
           </Link>
           <Link
@@ -222,12 +224,12 @@ function Public({ videoData }: PublicProps) {
           <Link
             className="flex cursor-pointer items-center hover:opacity-60"
             href={{ pathname: PATH_NAME.profile(videoData?.owner.nickname) }}>
-            <Avatar className="bg-red-40">
-              <AvatarImage src={videoData?.owner.profile_image ?? undefined} />
-              <AvatarFallback>
-                <p className="text-title-lg">{getAvatarFallback(videoData?.owner?.username)}</p>
-              </AvatarFallback>
-            </Avatar>
+            <CustomAvatar
+              className="bg-red-40"
+              imageUrl={videoData.owner.profile_image ?? ''}
+              fallbackString={videoData.owner.username ?? ''}
+              isAvatar={videoData.owner.is_avatar}
+            />
             <p className="line-clamp-1 px-2 text-title-md text-monochrome-white">@{videoData?.owner.nickname}</p>
           </Link>
         </div>
