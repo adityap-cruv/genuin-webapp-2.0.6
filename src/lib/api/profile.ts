@@ -56,7 +56,7 @@ export function getPaginatedLoopVideos(nickname: string) {
         return
       }
       return allPages.length
-    }
+    },
   })
 }
 
@@ -69,6 +69,6 @@ export function getPaginatedGenuinVideos(nickname: string) {
         return
       }
       return allPages.length
-    }
+    },
   })
 }

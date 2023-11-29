@@ -6,7 +6,7 @@ import { Loader } from '@components/ui/loader'
 import { type VideoDataType } from '@lib/schemas/video'
 import { useState } from 'react'
 import { isMobile } from 'react-device-detect'
-import { usePlayerControlStore } from '@lib/stores/common/player-control-store'
+import { usePlayerControlStore } from './player-control-store'
 const InnerPlayer = dynamic(async () => await import('./inner-player').then((comp) => comp.InnerPlayer), {
   loading: (_) => {
     return <Loader size="lg" />

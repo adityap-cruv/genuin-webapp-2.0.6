@@ -2,7 +2,7 @@ import { Loader } from '@components/ui/loader'
 import Image from 'next/image'
 import { useParams } from 'next/navigation'
 import { useSize } from '@hooks/useSize'
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import icView from '@icons/icView.svg'
 import icVideoBubble from '@icons/icVideoBubble.svg'
 import icLoop from '@icons/icLoop.svg'
@@ -13,9 +13,8 @@ import dynamic from 'next/dynamic'
 import { pushUrlWithoutReload } from '@lib/utils'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { useResponsive } from '@hooks/useResponsive'
-const PlayerModal = dynamic(
-  async () => await import('@components/common/player-modal').then((comp) => comp.PlayerModal)
-)
+import { useTabsStore } from './tabs-store'
+const PlayerListModal = dynamic(async () => await import('./player-list-modal').then((comp) => comp.PlayerListModal))
 
 export const VideosTab = {
   genuin: GenuinVideos,
@@ -119,9 +118,16 @@ interface TabBodyProps {
 function TabBody({ videos, hasNextPage, fetchingNextPage }: TabBodyProps) {
   const divRef = useRef<HTMLDivElement>(null)
   const { width, windowWidth } = useSize(divRef)
+  const setVideos = useTabsStore((state) => state.setVideos)
+  const setCurrentIndex = useTabsStore((state) => state.setCurrentIndex)
+
   // calculate tile width
   let tileWidth = width / 4
   if (windowWidth < 1024) tileWidth = width / 3
+
+  useEffect(() => {
+    setVideos(videos)
+  }, [videos])
 
   if (videos.length === 0) {
     return (
@@ -134,7 +140,16 @@ function TabBody({ videos, hasNextPage, fetchingNextPage }: TabBodyProps) {
       <div ref={divRef} className="inline-grid w-full grid-cols-3 lg:grid-cols-4">
         {videos.map((video, index) => {
           // const isLoop = video.video_type === 'rt'
-          return <Tile key={index} width={tileWidth} videoDetails={video} />
+          return (
+            <Tile
+              key={index}
+              width={tileWidth}
+              videoDetails={video}
+              onClick={() => {
+                setCurrentIndex(index)
+              }}
+            />
+          )
         })}
       </div>
       {fetchingNextPage && (
@@ -149,17 +164,19 @@ function TabBody({ videos, hasNextPage, fetchingNextPage }: TabBodyProps) {
 type TileProps = {
   width: number
   videoDetails: VideoDataType
+  onClick?: () => void
 }
 
-function Tile({ width = -1, videoDetails }: TileProps) {
+function Tile({ width = -1, videoDetails, onClick }: TileProps) {
   return (
-    <PlayerModal videoDetails={videoDetails}>
+    <PlayerListModal>
       <div
         onClick={(e) => {
           pushUrlWithoutReload({
             pathname: PATH_NAME.video(videoDetails.video.share_string),
             query: [{ key: 'l', value: videoDetails.loop?.share_string }],
           })
+          onClick?.()
         }}
         className="relative p-[1px] duration-300 hover:scale-95 md:p-1">
         <Image
@@ -197,6 +214,6 @@ function Tile({ width = -1, videoDetails }: TileProps) {
           )}
         </div>
       </div>
-    </PlayerModal>
+    </PlayerListModal>
   )
 }
