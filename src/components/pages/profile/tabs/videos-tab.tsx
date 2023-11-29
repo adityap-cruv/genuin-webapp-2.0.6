@@ -157,6 +157,12 @@ function TabBody({ videos, hasNextPage, fetchingNextPage }: TabBodyProps) {
                 return { ...x }
               })
             }}
+            closeModal={() => {
+              setModalState((x) => {
+                x.isOpen = false
+                return { ...x }
+              })
+            }}
           />
         )}
       </div>

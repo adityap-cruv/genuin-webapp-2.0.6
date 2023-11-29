@@ -67,6 +67,12 @@ export function HorizontalVideosList({ loopId }: { loopId: string }) {
                   return { ...x }
                 })
               }}
+              closeModal={() => {
+                setModalState((x) => {
+                  x.isOpen = false
+                  return { ...x }
+                })
+              }}
             />
           )}
         </div>

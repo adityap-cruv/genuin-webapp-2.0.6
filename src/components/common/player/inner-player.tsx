@@ -82,7 +82,7 @@ export function InnerPlayer({
         localRef.current.player = player
       })
     })
-  }, [])
+  }, [videoSource])
 
   useEffect(() => {
     const player = localRef.current.player

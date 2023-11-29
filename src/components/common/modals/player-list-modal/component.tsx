@@ -1,12 +1,13 @@
 'use client'
 import { useEffect, type ReactNode } from 'react'
-import Player from '@components/common/player'
 import { PlayerDialog, PlayerDialogContent } from '@components/custom/player-dialog'
 import Image from 'next/image'
 import icArrowUp from '@icons/player-controls/icArrowUp.svg'
 import icArrowDown from '@icons/player-controls/icArrowDown.svg'
 import { usePlayerListModalStore } from './store'
 import { type VideoDataListType } from '@lib/schemas/video'
+import dynamic from 'next/dynamic'
+const Player = dynamic(async () => await import('@components/common/player').then((comp) => comp.default))
 
 interface Props {
   /**
@@ -23,9 +24,13 @@ interface Props {
    * @returns
    */
   onOpenChange: (open: boolean) => void
+  /**
+   * Function to close modal.
+   */
+  closeModal?: () => void
 }
 
-export function Component({ videosData, startIndex, onOpenChange }: Props) {
+export function Component({ videosData, startIndex, onOpenChange, closeModal }: Props) {
   const { currentIndex, setCurrentIndex, videos, setVideosData } = usePlayerListModalStore((state) => ({
     currentIndex: state.currentIndex,
     setCurrentIndex: state.setCurrentIndex,
@@ -42,6 +47,16 @@ export function Component({ videosData, startIndex, onOpenChange }: Props) {
   useEffect(() => {
     setCurrentIndex(startIndex)
   }, [startIndex])
+
+  useEffect(() => {
+    function handlePopState() {
+      closeModal?.()
+    }
+    window.addEventListener('popstate', handlePopState)
+    return () => {
+      window.removeEventListener('popstate', handlePopState)
+    }
+  }, [])
 
   return (
     <PlayerDialog open onOpenChange={onOpenChange}>
