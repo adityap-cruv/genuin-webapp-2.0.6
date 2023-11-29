@@ -8,7 +8,6 @@ import { getAvatarFallback } from '@lib/utils'
 // todo configure error here.
 export function Cohosts({ loopId }: { loopId: string }) {
   const { data, isLoading, isError } = getLoopCohosts(loopId, 'members')
-  console.log(loopId)
   return (
     <div className="h-2/3 pt-3">
       <p className="text-title-lg">Co-Hosts</p>
