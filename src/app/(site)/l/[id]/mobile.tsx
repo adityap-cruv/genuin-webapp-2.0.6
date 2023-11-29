@@ -2,16 +2,13 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@components/ui/avatar'
 import { Button } from '@components/ui/button'
 import type { LoopDetailsType } from '@lib/schemas/loop/details'
-import { generateDeepLink, getAvatarFallback, getAvatarUrl, isValidHTTPS, openGeneratedLink } from '@lib/utils'
+import { generateDeepLink, getAvatarFallback, getAvatarUrl, openGeneratedLink } from '@lib/utils'
 import Image from 'next/image'
 import icShare from '@icons/icShareBlue.svg'
-import dynamic from 'next/dynamic'
-import { DownloadDialog } from '@components/common/download-dialog'
 import { Toaster } from '@components/ui/toaster'
 import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
-import { isMobile } from 'react-device-detect'
 import { useRef } from 'react'
 import { useMotionValueEvent, useScroll } from 'framer-motion'
 import { getLoopCohosts, getLoopVideos } from '@lib/api/loop'
@@ -26,6 +23,7 @@ interface Props {
   loopDetails: LoopDetailsType
 }
 
+// todo this page needs to be decoupled.
 export function Mobile({ loopDetails }: Props) {
   loopDetailsModule = loopDetails
   const { shareFn } = useAdaptiveShare()
@@ -243,8 +241,8 @@ function HorizontalVideosList({ loopId }: { loopId: string }) {
                   // width: '169px'
                 }}>
                 <Image
-                  src={item.video.thumbnail || ''}
-                  alt={item.video.description || ''}
+                  src={item.video.thumbnail ?? ''}
+                  alt={item.video.description ?? ''}
                   className="h-full w-full rounded-xl object-fill"
                   fill
                 />

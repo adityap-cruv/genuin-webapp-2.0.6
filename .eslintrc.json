@@ -16,7 +16,9 @@
   "plugins": [
     "react",
     "@tanstack/query",
-    "@tanstack/eslint-plugin-query"
+    "@tanstack/eslint-plugin-query",
+    "@next/eslint-plugin-next",
+    "eslint-plugin-react"
   ],
   "rules": {
     "@typescript-eslint/no-unused-vars": "warn",

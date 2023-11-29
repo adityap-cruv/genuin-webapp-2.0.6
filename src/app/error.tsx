@@ -14,7 +14,7 @@ export default function Error({ error, reset }: { error: Error; reset: () => voi
   if (error)
     return (
       <>
-        <NavBar variant="transparent" isMobile={isMobile} />
+        <NavBar variant="transparent" isMobile={false} />
         <div
           className="flex min-h-full items-center justify-center text-center"
           style={{

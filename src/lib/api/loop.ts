@@ -1,4 +1,3 @@
-import { validateLoopCohosts } from '@lib/schemas/loop/cohosts'
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 

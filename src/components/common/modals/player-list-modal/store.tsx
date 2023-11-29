@@ -8,7 +8,7 @@ type TabsStoreType = {
   setVideos: (newVideos: VideoDataListType) => void
 }
 
-export const useTabsStore = create<TabsStoreType>((set) => {
+export const usePlayerListModalStore = create<TabsStoreType>((set) => {
   return {
     currentIndex: -1,
     setCurrentIndex(newIndex) {

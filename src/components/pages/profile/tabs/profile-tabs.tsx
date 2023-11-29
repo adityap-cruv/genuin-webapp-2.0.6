@@ -10,7 +10,7 @@ export const ProfileTabs = {
 // todo there is issue of scroll component we can not assign container as state variables work on solving that.
 export function Desktop() {
   return (
-    <Tabs defaultValue="all" className="h-body w-full">
+    <Tabs defaultValue="all" className="h-full w-full">
       <TabsList className="sticky top-0 z-[2] md:top-[74px]">
         <TabsTrigger value="all">
           <TabIcons.all />

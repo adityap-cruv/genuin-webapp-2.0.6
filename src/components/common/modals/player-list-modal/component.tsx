@@ -1,25 +1,50 @@
 'use client'
-import { type ReactNode } from 'react'
+import { useEffect, type ReactNode } from 'react'
 import Player from '@components/common/player'
-import { PlayerDialog, PlayerDialogContent, PlayerDialogTrigger } from '@components/custom/player-dialog'
+import { PlayerDialog, PlayerDialogContent } from '@components/custom/player-dialog'
 import Image from 'next/image'
 import icArrowUp from '@icons/player-controls/icArrowUp.svg'
 import icArrowDown from '@icons/player-controls/icArrowDown.svg'
-import { useTabsStore } from './tabs-store'
+import { usePlayerListModalStore } from './store'
+import { type VideoDataListType } from '@lib/schemas/video'
 
 interface Props {
-  children: ReactNode
+  /**
+   * List of videos.
+   */
+  videosData: VideoDataListType
+  /**
+   * This is index from videosData.
+   */
+  startIndex: number
+  /**
+   * This function is mendatory because it will help to close the modal.
+   * @param open
+   * @returns
+   */
+  onOpenChange: (open: boolean) => void
 }
 
-export function PlayerListModal({ children }: Props) {
-  const currentIndex = useTabsStore((state) => state.currentIndex)
-  const setCurrentIndex = useTabsStore((state) => state.setCurrentIndex)
-  const videos = useTabsStore((state) => state.videos)
+export function Component({ videosData, startIndex, onOpenChange }: Props) {
+  const { currentIndex, setCurrentIndex, videos, setVideosData } = usePlayerListModalStore((state) => ({
+    currentIndex: state.currentIndex,
+    setCurrentIndex: state.setCurrentIndex,
+    videos: state.videos,
+    setVideosData: state.setVideos,
+  }))
+
   const videoDetails = videos[currentIndex]
 
+  useEffect(() => {
+    setVideosData(videosData)
+  }, [videosData])
+
+  useEffect(() => {
+    setCurrentIndex(startIndex)
+  }, [startIndex])
+
   return (
-    <PlayerDialog>
-      <PlayerDialogTrigger>{children}</PlayerDialogTrigger>
+    <PlayerDialog open onOpenChange={onOpenChange}>
       <PlayerDialogContent>
         <div className="flex items-center">
           <Player videoData={videoDetails} shouldPlay shouldShowBackgroundBlurImage={false} loop />
