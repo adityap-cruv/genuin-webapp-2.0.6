@@ -96,7 +96,7 @@ export function CommunitySection() {
             </React.Fragment>
           )
         })}
-        <div ref={lastDivRef} style={{width: '2px'}} />
+        <div ref={lastDivRef} style={{width: '2px'}}>&nbsp;</div>
       </div>
       <div className="flex justify-between px-3">
         <Button
