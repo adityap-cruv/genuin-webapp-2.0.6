@@ -38,6 +38,7 @@ export function Desktop() {
 function Mobile() {
   return (
     <Tabs defaultValue="all" className="h-body w-full">
+      <div>
         <TabsList className="sticky top-[74px] z-[2]">
           <TabsTrigger value="all">
             <TabIcons.all />
@@ -58,6 +59,7 @@ function Mobile() {
         <TabsContent value="loop">
           <VideosTab.loop />
         </TabsContent>
+      </div>
     </Tabs>
   )
 }
