@@ -169,9 +169,12 @@ function LoopSubscribers({ loopId }: any) {
   const { data, isLoading, isError } = getLoopCohosts(loopDetailsModule.chat_id, 'subscribers')
   return (
     <div className="h-full pt-3">
-      {isLoading && <Loader size="md" />}
+      {isLoading && <Loader className='pt-32' size="md" />}
       {isError && <div>Something went wrong...</div>}
-      {data && (
+      {data && data.length === 0 && (
+        <div className="flex pt-32 items-center justify-center text-title-md text-secondary">No subscribers yet</div>
+      )}
+      {data && data.length !== 0 && (
         <div className="h-full w-full overflow-auto">
           {data.map((item: any, index: any) => (
             <Link key={index} href={{ pathname: PATH_NAME.profile(item.user.nickname) }}>
@@ -226,8 +229,11 @@ function HorizontalVideosList({ loopId }: { loopId: string }) {
 
   return (
     <div className="relative mt-4 h-full w-full">
+      {isLoading && <Loader className='pt-32' size="md" />}
+      {data?.pages.flatMap((page) => page.videos).length === 0 && (
+        <div className="flex items-center pt-32 justify-center text-title-md text-secondary">No videos available</div>
+      )}
       <div className="grid grid-cols-2 gap-4">
-        {isLoading && <Loader size="md" />}
         {data?.pages
           .flatMap((page) => page.videos)
           .map((item, index) => (
@@ -261,7 +267,7 @@ function HorizontalVideosList({ loopId }: { loopId: string }) {
           ))}
       </div>
       {hasNextPage && (
-        <div className="absolute right-0 top-0 z-10 h-full w-24 bg-gradient-to-l from-monochrome-white to-transparent opacity-90" />
+        <div className="botom-0 absolute z-10 h-2 w-full bg-gradient-to-l from-monochrome-white to-transparent opacity-90" />
       )}
     </div>
   )
@@ -271,9 +277,12 @@ function Cohosts({ loopId }: { loopId: string }) {
   const { data, isLoading, isError } = getLoopCohosts(loopDetailsModule.chat_id, 'members')
   return (
     <div className="h-full pt-3">
-      {isLoading && <Loader size="md" />}
+      {isLoading && <Loader className='pt-32' size="md" />}
       {isError && <div>Something went wrong...</div>}
-      {data && (
+      {data && data.length === 0 && (
+        <div className="flex pt-32 items-center justify-center text-title-md text-secondary">No collaborators yet</div>
+      )}
+      {data && data.length !== 0 && (
         <div className="h-full w-full overflow-auto">
           {data.map((item: any, index: any) => (
             <Link key={index} href={{ pathname: PATH_NAME.profile(item.user.nickname) }}>
