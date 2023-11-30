@@ -25,7 +25,7 @@ export function useVideoSizeBox(considerNavbar: boolean = false): VideoSizeBoxTy
       const windowWidth = window.innerWidth
       let videoWidth = (windowHeight * 9) / 16
 
-      if (videoWidth > windowWidth) {
+      if (videoWidth > windowWidth || windowWidth < 400) {
         videoWidth = windowWidth
       }
 

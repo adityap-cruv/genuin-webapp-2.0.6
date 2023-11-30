@@ -65,11 +65,11 @@ export function Component({ videosData, startIndex, onOpenChange, closeModal }: 
     }
   }, [])
 
-  if (sizeBox)
-    return (
-      <PlayerDialog modal open onOpenChange={onOpenChange}>
-        <PlayerDialogContent>
-          <div className="flex h-full w-full items-center">
+  return (
+    <PlayerDialog modal open onOpenChange={onOpenChange}>
+      <PlayerDialogContent>
+        <div className="flex h-full w-full items-center">
+          {sizeBox && (
             <div style={{ height: sizeBox.height, width: sizeBox.width }}>
               <Player
                 sizeBox={sizeBox}
@@ -79,32 +79,33 @@ export function Component({ videosData, startIndex, onOpenChange, closeModal }: 
                 loop
               />
             </div>
-            <div className="hidden flex-col gap-y-4 pl-4 md:flex">
-              {currentIndex !== 0 && (
-                <NavigationButton
-                  onClick={() => {
-                    if (currentIndex - 1 > -1) {
-                      setCurrentIndex(currentIndex - 1)
-                    }
-                  }}>
-                  <Image src={icArrowUp} alt="up" className="h-6 w-6" />
-                </NavigationButton>
-              )}
-              {currentIndex !== videos.length - 1 && (
-                <NavigationButton
-                  onClick={() => {
-                    if (currentIndex + 1 < videos.length) {
-                      setCurrentIndex(currentIndex + 1)
-                    }
-                  }}>
-                  <Image src={icArrowDown} alt="down" className="h-6 w-6" />
-                </NavigationButton>
-              )}
-            </div>
+          )}
+          <div className="hidden flex-col gap-y-4 pl-4 md:flex">
+            {currentIndex !== 0 && (
+              <NavigationButton
+                onClick={() => {
+                  if (currentIndex - 1 > -1) {
+                    setCurrentIndex(currentIndex - 1)
+                  }
+                }}>
+                <Image src={icArrowUp} alt="up" className="h-6 w-6" />
+              </NavigationButton>
+            )}
+            {currentIndex !== videos.length - 1 && (
+              <NavigationButton
+                onClick={() => {
+                  if (currentIndex + 1 < videos.length) {
+                    setCurrentIndex(currentIndex + 1)
+                  }
+                }}>
+                <Image src={icArrowDown} alt="down" className="h-6 w-6" />
+              </NavigationButton>
+            )}
           </div>
-        </PlayerDialogContent>
-      </PlayerDialog>
-    )
+        </div>
+      </PlayerDialogContent>
+    </PlayerDialog>
+  )
 }
 
 type NavigationButtonProps = {
