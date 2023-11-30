@@ -140,10 +140,12 @@ function CommunityReelSection({ videoData }: CommunityLayerProps) {
         />
         <div className="flex flex-col">
           <p className="line-clamp-1 max-w-[150px] text-title-sm text-monochrome-white">{videoData.loop?.name}</p>
-          <div className="flex items-center gap-x-2">
-            <Image src={icLoop} alt="loop" />
-            <p className="text-cap-lg text-monochrome-white/60">View Loop</p>
-          </div>
+          <Link href={{ pathname: PATH_NAME.loop(videoData?.loop?.share_string) }}>
+            <div className="flex items-center gap-x-2">
+              <Image src={icLoop} alt="loop" />
+              <p className="text-cap-lg text-monochrome-white/60">View Loop</p>
+            </div>
+          </Link>
         </div>
       </div>
       <div className="flex gap-x-2">
