@@ -26,6 +26,8 @@ const VideoInfoSchema = z.object({
   metadata: VideoMetadataSchema.optional(),
   view_count: z.number().nullish(),
   reply_count: z.number().nullish(),
+  no_of_sparks: z.number().nullish(),
+  no_of_comments: z.number().nullish()
 })
 
 const LoopInfoSchema = z.object({
