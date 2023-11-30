@@ -16,21 +16,27 @@ import { DownloadDialog } from '@components/common/download-dialog'
 import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { CustomAvatar } from '@components/custom/custom-avatar'
+import { CommunityReels } from './reels'
+import { useVideoSizeBox } from '@hooks/use-video-size-box'
 
 let communityDetailsModule: CommunityDetailsType | null = null
 
 interface Props {
-  children: React.ReactNode
+  children?: React.ReactNode
   communityDetails: CommunityDetailsType
 }
 
 export function CommunityDetails({ children, communityDetails }: Props) {
   communityDetailsModule = communityDetails
-  if (communityDetails)
+  const sizeBox = useVideoSizeBox(true)
+
+  if (communityDetails && sizeBox)
     return (
-      <div className="mt-navbar flex h-body w-full min-w-tablet justify-between md:gap-x-2 lg:gap-x-4">
+      <div className="mt-navbar grid h-body w-full min-w-tablet grid-flow-col ">
         <Left />
-        {children}
+        <div className="block" style={{ width: sizeBox.width, height: sizeBox.height }}>
+          <CommunityReels communityHandle={communityDetails.info.handle} sizeBox={sizeBox} />
+        </div>
         <Right />
         <Toaster />
       </div>
@@ -42,7 +48,7 @@ function Left() {
   const { toast } = useToast()
 
   return (
-    <div className="mx-2 mt-2 w-full overflow-y-auto">
+    <div className="overflow-y-auto px-4">
       <CustomAvatar
         className="h-20 w-20 bg-red-50"
         imageUrl={communityDetailsModule?.info.profile_image ?? ''}
@@ -83,7 +89,7 @@ function Left() {
 
 function Right() {
   return (
-    <div className="ml-2 w-full">
+    <div className="px-4">
       <Leaders />
       <Members />
     </div>

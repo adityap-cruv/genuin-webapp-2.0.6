@@ -5,13 +5,13 @@ import { usePlayerControlStore } from './player-control-store'
 
 // todo work on why player is sendding multiple request.
 interface Props extends DetailedHTMLProps<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement> {
-  videoSizeBox: { width: number; height: number }
+  // videoSizeBox: { width: number; height: number }
   videoSource?: string
   isFirstElement?: boolean
 }
 
 export function InnerPlayer({
-  videoSizeBox,
+  // videoSizeBox,
   videoSource,
   poster,
   loop,
@@ -112,17 +112,17 @@ export function InnerPlayer({
   if (videoSource)
     return (
       <video
-        className="object-cover"
+        className="h-full w-full object-cover"
         poster={poster}
         ref={videoRef}
         muted={muted}
         loop={loop}
         src={videoSource}
         playsInline
-        style={{
-          height: videoSizeBox.height,
-          width: videoSizeBox.width,
-        }}
+        // style={{
+        //   height: videoSizeBox.height,
+        //   width: videoSizeBox.width,
+        // }}
         onPlay={onPlay}
         onPlaying={onPlaying}
         onError={onError}
@@ -139,7 +139,6 @@ export function InnerPlayer({
 }
 
 export function ViewportPlayer({
-  videoSizeBox,
   videoSource,
   poster,
   loop,
@@ -220,17 +219,17 @@ export function ViewportPlayer({
   if (videoSource)
     return (
       <video
-        className="object-cover"
+        className="h-full w-full object-cover"
         poster={poster}
         ref={videoRef}
         muted={muted}
         loop={loop}
         src={videoSource}
         playsInline
-        style={{
-          height: videoSizeBox.height,
-          width: videoSizeBox.width,
-        }}
+        // style={{
+        //   height: videoSizeBox.height,
+        //   width: videoSizeBox.width,
+        // }}
         onPlay={onPlay}
         onPlaying={onPlaying}
         onError={onError}
