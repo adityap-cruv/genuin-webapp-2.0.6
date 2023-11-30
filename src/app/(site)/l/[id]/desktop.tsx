@@ -1,8 +1,6 @@
 'use client'
-import { Avatar, AvatarFallback, AvatarImage } from '@components/ui/avatar'
 import { Button } from '@components/ui/button'
 import type { LoopDetailsType } from '@lib/schemas/loop/details'
-import { getAvatarFallback } from '@lib/utils'
 import Image from 'next/image'
 import icShare from '@icons/icShareBlue.svg'
 import dynamic from 'next/dynamic'
@@ -10,6 +8,7 @@ import { Toaster } from '@components/ui/toaster'
 import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { DownloadDialog } from '@components/common/download-dialog'
+import { CustomAvatar } from '@components/custom/custom-avatar'
 const Cohosts = dynamic(async () => await import('@components/pages/loop/cohosts').then((comp) => comp.Cohosts))
 const HorizontalVideosList = dynamic(
   async () => await import('@components/pages/loop/horizontal-video-list').then((comp) => comp.HorizontalVideosList)
@@ -28,14 +27,12 @@ export function Desktop({ loopDetails }: Props) {
       <div className="flex h-full w-full flex-col gap-y-2 md:flex-row md:gap-x-2">
         <div className="w-full  md:max-w-[20%]">
           <div className="flex items-center">
-            <Avatar className="h-20 w-20 bg-red-40">
-              <AvatarImage src={loopDetails.group.dp ?? undefined} />
-              <AvatarFallback>
-                <p className="text-title-xl text-new-off-white">
-                  {getAvatarFallback(loopDetails.group.group_name ?? undefined)}
-                </p>
-              </AvatarFallback>
-            </Avatar>
+            <CustomAvatar
+              className="h-20 w-20"
+              fallbackString={loopDetails.group.group_name ?? ''}
+              imageUrl={loopDetails.group.dp ?? ''}
+              isAvatar={false}
+            />
           </div>
           <p className="line-clamp-1 text-title-lg">{loopDetails.group.group_name}</p>
           <p className="line-clamp-3 text-body-lg">{loopDetails.group.group_description}</p>

@@ -1,5 +1,4 @@
-import { Avatar, AvatarImage, AvatarFallback } from '@components/ui/avatar'
-import { getAvatarFallback, abbreviateNumber, generateDeepLink, openGeneratedLink } from '@lib/utils'
+import { abbreviateNumber, generateDeepLink, openGeneratedLink } from '@lib/utils'
 import { Button } from '@components/ui/button'
 import Image from 'next/image'
 import icMessage from '@icons/icMessage.svg'
@@ -8,6 +7,7 @@ import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
 import dynamic from 'next/dynamic'
 import { Loader } from '@components/ui/loader'
+import { CustomAvatar } from '@components/custom/custom-avatar'
 const NavBar = dynamic(async () => await import('@components/common/nav-bar').then((comp) => comp.NavBar))
 const ProfileTabs = dynamic(
   async () => await import('@components/pages/profile/tabs/profile-tabs').then((comp) => comp.ProfileTabs.mobile),
@@ -31,12 +31,12 @@ export function Mobile({ profileData }: CompProps) {
       <div className="my-3 mt-body h-body w-full">
         <div className="px-2">
           <div className="flex w-full items-center justify-between">
-            <Avatar className="bg-slate-500 h-20 w-20 bg-red-40">
-              <AvatarImage src={profileData?.profile_image}></AvatarImage>
-              <AvatarFallback className="text-white text-title-lg">
-                {getAvatarFallback(profileData?.name)}
-              </AvatarFallback>
-            </Avatar>
+            <CustomAvatar
+              imageUrl={profileData?.name}
+              isAvatar={profileData?.is_avatar}
+              fallbackString={profileData?.name}
+              className="h-20 w-20"
+            />
             <Stats profileData={profileData} />
           </div>
           <p className="line-clamp-1 pt-2 text-title-lg">@{profileData?.nickname}</p>
