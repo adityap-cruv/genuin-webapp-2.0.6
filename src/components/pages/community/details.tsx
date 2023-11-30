@@ -44,7 +44,7 @@ function Left() {
   return (
     <div className="mx-2 mt-2 w-full overflow-y-auto">
       <CustomAvatar
-        className="-20 w-20 bg-red-50"
+        className="h-20 w-20 bg-red-50"
         imageUrl={communityDetailsModule?.info.profile_image ?? ''}
         isAvatar={false}
         fallbackString={communityDetailsModule?.info.name ?? ''}

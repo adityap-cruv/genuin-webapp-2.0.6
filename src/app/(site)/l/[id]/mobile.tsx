@@ -51,7 +51,7 @@ export function Mobile({ loopDetails }: Props) {
                   <div className="my-2 flex items-center">
                     <div className="bg-red-400 h-6 w-6">
                       <CustomAvatar
-                        className="h-full w-full bg-red-40"
+                        className="h-full w-full"
                         fallbackString={loopDetails.owner.name ?? ''}
                         imageUrl={loopDetails.owner.profile_image ?? ''}
                         isAvatar={loopDetails.owner.is_avatar}
@@ -68,7 +68,7 @@ export function Mobile({ loopDetails }: Props) {
                   <div className="my-2 flex items-center">
                     <div className="bg-red-400 h-6 w-6">
                       <CustomAvatar
-                        className="h-full w-full bg-red-40"
+                        className="h-full w-full"
                         imageUrl={loopDetails.community.dp}
                         fallbackString={loopDetails.community.name}
                         isAvatar={false}
