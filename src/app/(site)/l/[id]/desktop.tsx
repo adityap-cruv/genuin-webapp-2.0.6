@@ -2,16 +2,14 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@components/ui/avatar'
 import { Button } from '@components/ui/button'
 import type { LoopDetailsType } from '@lib/schemas/loop/details'
-import { generateDeepLink, getAvatarFallback, openGeneratedLink } from '@lib/utils'
+import { getAvatarFallback } from '@lib/utils'
 import Image from 'next/image'
 import icShare from '@icons/icShareBlue.svg'
 import dynamic from 'next/dynamic'
-import { DownloadDialog } from '@components/common/download-dialog'
 import { Toaster } from '@components/ui/toaster'
 import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
-import { isMobile } from 'react-device-detect'
-// todo configure loader for dynamic imports
+import { DownloadDialog } from '@components/common/download-dialog'
 const Cohosts = dynamic(async () => await import('@components/pages/loop/cohosts').then((comp) => comp.Cohosts))
 const HorizontalVideosList = dynamic(
   async () => await import('@components/pages/loop/horizontal-video-list').then((comp) => comp.HorizontalVideosList)
@@ -24,13 +22,6 @@ interface Props {
 export function Desktop({ loopDetails }: Props) {
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
-  const ldDescription = `${
-    loopDetails.group?.group_description !== null &&
-    loopDetails.group.group_description !== undefined &&
-    loopDetails.group.group_description.replace(/\s+/g, '') !== ''
-      ? loopDetails.group.group_description + ' | '
-      : ''
-  } • Join ${loopDetails.group.group_name} to talk about it`
 
   if (loopDetails)
     return (
@@ -56,41 +47,11 @@ export function Desktop({ loopDetails }: Props) {
             ]}
           />
           <div className="flex items-center gap-x-2">
-            {isMobile ? (
-              <>
-                <Button
-                  size="sm"
-                  onClick={() => {
-                    generateDeepLink({
-                      action: 'subscribe',
-                      contentType: 'loop',
-                      description: ldDescription,
-                      title: loopDetails.group.group_name,
-                      previewImage: null,
-                      fromUserName: null,
-                      pathName: window.location.pathname,
-                      sourceId: loopDetails.share_string,
-                      utmCampaign: 'share',
-                      utmMedium: 'web',
-                      utmSource: window.location.hostname,
-                    })
-                      .then((generatedLink) => {
-                        openGeneratedLink(generatedLink)
-                      })
-                      .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
-                  }}>
-                  <p className="text-title-sm text-monochrome-white">Subscribe</p>
-                </Button>
-              </>
-            ) : (
-              <>
-                <DownloadDialog title="Get the Genuin app" subtitle="Get the app to Subscribe" asChild={false}>
-                  <Button size="sm">
-                    <p className="text-title-sm text-monochrome-white">Subscribe</p>
-                  </Button>
-                </DownloadDialog>
-              </>
-            )}
+            <DownloadDialog title="Get the Genuin app" subtitle="Get the app to Subscribe" asChild={true}>
+              <Button size="sm">
+                <p className="text-title-sm text-monochrome-white">Subscribe</p>
+              </Button>
+            </DownloadDialog>
             <Button
               size="sm"
               variant="outline"

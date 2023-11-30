@@ -8,21 +8,26 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { HamBurgerMenuIcon } from '@components/ui/ham-burger'
 import { HIRING_LINK, MOBILE_DOWNLOAD_APP_LINK } from '@lib/constants'
 import { PATH_NAME } from '@lib/utils/constants/path'
+import { type VariantProps, cva } from 'class-variance-authority'
 
-interface Props {
-  variant: 'light' | 'dark' | 'transparent'
+const navbarVariant = cva('fixed left-0 top-0 z-10 m-auto flex h-navbar w-full', {
+  variants: {
+    variant: {
+      light: 'bg-monochrome-white',
+      dark: 'bg-monochrome-black',
+      transparent: 'bg-transparent',
+    },
+  },
+})
+type Props = VariantProps<typeof navbarVariant> & {
   isMobile: boolean
 }
 
-export function NavBar({ variant = 'light', isMobile }: Props) {
+export function NavBar({ variant, isMobile }: Props) {
   const isVariantLight = variant === 'dark' || variant === 'transparent'
   return (
-    <nav
-      className={cn(
-        variant === 'dark' ? 'bg-monochrome-black' : 'bg-monochrome-white',
-        'fixed left-0 top-0 z-10 m-auto flex h-navbar w-full'
-      )}>
-      <div className={cn('container flex h-full items-center justify-between py-1')}>
+    <nav className={cn(navbarVariant({ variant }))}>
+      <div className={'container flex h-full items-center justify-between py-1'}>
         <GenuinLogo.adaptive variant={isVariantLight ? 'light' : 'dark'} />
         <div className="flex items-center">
           <GetAppButton isMobile={isMobile} />

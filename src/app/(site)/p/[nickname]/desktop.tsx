@@ -1,5 +1,4 @@
-import { Avatar, AvatarImage, AvatarFallback } from '@components/ui/avatar'
-import { getAvatarFallback, abbreviateNumber } from '@lib/utils'
+import { abbreviateNumber } from '@lib/utils'
 import { Button } from '@components/ui/button'
 import Image from 'next/image'
 import icMessage from '@icons/icMessage.svg'
@@ -10,8 +9,9 @@ import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
 import dynamic from 'next/dynamic'
 import { NavBar } from '@components/common/nav-bar'
+import { CustomAvatar } from '@components/custom/custom-avatar'
 const ProfileTabs = dynamic(
-  async () => await import('@components/pages/profile/tabs/profile-tabs').then((comp) => comp.ProfileTabs)
+  async () => await import('@components/pages/profile/tabs/profile-tabs').then((comp) => comp.ProfileTabs.desktop)
 )
 
 interface CompProps {
@@ -27,12 +27,12 @@ export function Desktop({ profileData }: CompProps) {
       <div className="mt-body flex h-body w-full flex-col overflow-auto overflow-x-clip md:container md:flex-row md:overflow-clip ">
         <div className="my-3 w-full px-2 md:w-1/3 md:px-0">
           <div className="flex w-full items-center justify-between md:flex-col md:items-start">
-            <Avatar className="bg-slate-500 h-20 w-20 bg-red-40">
-              <AvatarImage src={profileData?.profile_image} />
-              <AvatarFallback className="text-white text-title-lg">
-                {getAvatarFallback(profileData?.name)}
-              </AvatarFallback>
-            </Avatar>
+            <CustomAvatar
+              className="bg-slate-500 h-20 w-20 bg-red-40"
+              fallbackString={profileData?.name}
+              imageUrl={profileData?.profile_image}
+              isAvatar={profileData?.is_avatar}
+            />
             <div className="mx-4 block md:hidden">
               <Stats profileData={profileData} />
             </div>

@@ -1,8 +1,7 @@
 'use client'
-import { Avatar, AvatarFallback, AvatarImage } from '@components/ui/avatar'
 import { Button } from '@components/ui/button'
 import type { CommunityDetailsType } from '@lib/schemas/community'
-import { checkAndAppendHttps, getAvatarFallback, isValidHTTPS } from '@lib/utils'
+import { checkAndAppendHttps } from '@lib/utils'
 import icShare from '@icons/icShareBlue.svg'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -16,6 +15,7 @@ import { Toaster } from '@components/ui/toaster'
 import { DownloadDialog } from '@components/common/download-dialog'
 import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
+import { CustomAvatar } from '@components/custom/custom-avatar'
 
 let communityDetailsModule: CommunityDetailsType | null = null
 
@@ -43,12 +43,12 @@ function Left() {
 
   return (
     <div className="mx-2 mt-2 w-full overflow-y-auto">
-      <Avatar className="h-20 w-20 bg-red-50">
-        <AvatarImage src={communityDetailsModule?.info.profile_image} />
-        <AvatarFallback>
-          <p className="text-title-xl text-monochrome-white">{getAvatarFallback(communityDetailsModule?.info.name)}</p>
-        </AvatarFallback>
-      </Avatar>
+      <CustomAvatar
+        className="-20 w-20 bg-red-50"
+        imageUrl={communityDetailsModule?.info.profile_image ?? ''}
+        isAvatar={false}
+        fallbackString={communityDetailsModule?.info.name ?? ''}
+      />
       <p className="line-clamp-1 text-title-xl">{communityDetailsModule?.info.name}</p>
       <p className="line-clamp-3 text-body-sm">{communityDetailsModule?.info.description}</p>
       <Stats />
@@ -210,12 +210,7 @@ function ListItem({
 }) {
   return (
     <div className="flex items-center gap-x-1 rounded-sm p-1 hover:bg-monochrome-9">
-      <Avatar className="h-9 w-9 bg-red-40">
-        <AvatarImage src={isValidHTTPS(image ?? '')} />
-        <AvatarFallback>
-          <p className="text-title-md text-monochrome-white">{getAvatarFallback(title)}</p>
-        </AvatarFallback>
-      </Avatar>
+      <CustomAvatar className="h-9 w-9 bg-red-40" imageUrl={image ?? ''} fallbackString={title} isAvatar={false} />
       <div>
         <p className="line-clamp-1 text-title-sm">{title}</p>
         {subtitle && <p className="line-clamp-1 text-cap-lg text-monochrome-black/60">{subtitle}</p>}

@@ -2,7 +2,7 @@ import { Loader } from '@components/ui/loader'
 import Image from 'next/image'
 import { useParams } from 'next/navigation'
 import { useSize } from '@hooks/useSize'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import icView from '@icons/icView.svg'
 import icVideoBubble from '@icons/icVideoBubble.svg'
 import icLoop from '@icons/icLoop.svg'
@@ -13,8 +13,8 @@ import dynamic from 'next/dynamic'
 import { pushUrlWithoutReload } from '@lib/utils'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { useResponsive } from '@hooks/useResponsive'
-const PlayerModal = dynamic(
-  async () => await import('@components/common/player-modal').then((comp) => comp.PlayerModal)
+const PlayerListModal = dynamic(
+  async () => await import('@components/common/modals/player-list-modal').then((comp) => comp.PlayerListModal)
 )
 
 export const VideosTab = {
@@ -119,6 +119,8 @@ interface TabBodyProps {
 function TabBody({ videos, hasNextPage, fetchingNextPage }: TabBodyProps) {
   const divRef = useRef<HTMLDivElement>(null)
   const { width, windowWidth } = useSize(divRef)
+  const [modalState, setModalState] = useState({ isOpen: false, currentIndex: -1 })
+
   // calculate tile width
   let tileWidth = width / 4
   if (windowWidth < 1024) tileWidth = width / 3
@@ -133,9 +135,36 @@ function TabBody({ videos, hasNextPage, fetchingNextPage }: TabBodyProps) {
     <>
       <div ref={divRef} className="inline-grid w-full grid-cols-3 lg:grid-cols-4">
         {videos.map((video, index) => {
-          // const isLoop = video.video_type === 'rt'
-          return <Tile key={index} width={tileWidth} videoDetails={video} />
+          return (
+            <Tile
+              key={index}
+              width={tileWidth}
+              videoDetails={video}
+              onClick={(index) => {
+                setModalState({ currentIndex: index, isOpen: true })
+              }}
+              tileIndex={index}
+            />
+          )
         })}
+        {modalState.isOpen && (
+          <PlayerListModal
+            videosData={videos}
+            startIndex={modalState.currentIndex}
+            onOpenChange={(open) => {
+              setModalState((x) => {
+                x.isOpen = open
+                return { ...x }
+              })
+            }}
+            closeModal={() => {
+              setModalState((x) => {
+                x.isOpen = false
+                return { ...x }
+              })
+            }}
+          />
+        )}
       </div>
       {fetchingNextPage && (
         <div className="flex h-52 w-full items-center justify-center">
@@ -149,54 +178,55 @@ function TabBody({ videos, hasNextPage, fetchingNextPage }: TabBodyProps) {
 type TileProps = {
   width: number
   videoDetails: VideoDataType
+  onClick?: (index: number) => void
+  tileIndex: number
 }
 
-function Tile({ width = -1, videoDetails }: TileProps) {
+function Tile({ width = -1, videoDetails, onClick, tileIndex }: TileProps) {
   return (
-    <PlayerModal videoDetails={videoDetails}>
-      <div
-        onClick={(e) => {
-          pushUrlWithoutReload({
-            pathname: PATH_NAME.video(videoDetails.video.share_string),
-            query: [{ key: 'l', value: videoDetails.loop?.share_string }],
-          })
-        }}
-        className="relative p-[1px] duration-300 hover:scale-95 md:p-1">
-        <Image
-          src={videoDetails.video.thumbnail ?? ''}
-          alt={videoDetails.video.description ?? 'Genuin Video'}
-          className="bg-secondary object-cover"
-          height={width * (16 / 9)}
-          width={width}
-          priority={true}
-        />
-        <div className="absolute left-0 top-0 h-full w-full p-1.5">
-          {videoDetails.video_type === 'rt' && (
-            <div className="flex h-full flex-col justify-between">
-              <div className="flex justify-between">
-                <div className="flex items-center">
-                  <Image src={icView} alt="views" />
-                  <p className="text-title-sm text-secondary-foreground">{videoDetails.video.view_count ?? 0}</p>
-                </div>
-                <Image src={icLoop} alt="loop" height={24} width={24} />
+    <div
+      onClick={() => {
+        pushUrlWithoutReload({
+          pathname: PATH_NAME.video(videoDetails.video.share_string),
+          query: [{ key: 'l', value: videoDetails.loop?.share_string }],
+        })
+        onClick?.(tileIndex)
+      }}
+      className="relative cursor-pointer p-[1px] duration-300 hover:scale-95 md:p-1">
+      <Image
+        src={videoDetails.video.thumbnail ?? ''}
+        alt={videoDetails.video.description ?? 'Genuin Video'}
+        className="bg-secondary object-cover"
+        height={width * (16 / 9)}
+        width={width}
+        priority={true}
+      />
+      <div className="absolute left-0 top-0 h-full w-full p-1.5">
+        {videoDetails.video_type === 'rt' && (
+          <div className="flex h-full flex-col justify-between">
+            <div className="flex justify-between">
+              <div className="flex items-center">
+                <Image src={icView} alt="views" />
+                <p className="text-title-sm text-secondary-foreground">{videoDetails.video.view_count ?? 0}</p>
               </div>
-              <div className="ml-1 line-clamp-2 break-all text-left text-title-sm text-secondary-foreground">
-                {videoDetails.loop?.name}
-              </div>
+              <Image src={icLoop} alt="loop" height={24} width={24} />
             </div>
-          )}
-          {videoDetails.video_type === 'public_video' && (
-            <div className="flex h-full items-end">
-              <div className="flex items-center p-2">
-                <Image src={icVideoBubble} alt="replies" />
-                <p className="text-title-sm text-secondary-foreground">&nbsp;{videoDetails.video.reply_count ?? 0}</p>
-                <Image src={icView} alt="view" />
-                <p className="text-title-sm text-secondary-foreground">&nbsp;{videoDetails.video.view_count ?? 0}</p>
-              </div>
+            <div className="ml-1 line-clamp-2 break-all text-left text-title-sm text-secondary-foreground">
+              {videoDetails.loop?.name}
             </div>
-          )}
-        </div>
+          </div>
+        )}
+        {videoDetails.video_type === 'public_video' && (
+          <div className="flex h-full items-end">
+            <div className="flex items-center p-2">
+              <Image src={icVideoBubble} alt="replies" />
+              <p className="text-title-sm text-secondary-foreground">&nbsp;{videoDetails.video.reply_count ?? 0}</p>
+              <Image src={icView} alt="view" />
+              <p className="text-title-sm text-secondary-foreground">&nbsp;{videoDetails.video.view_count ?? 0}</p>
+            </div>
+          </div>
+        )}
       </div>
-    </PlayerModal>
+    </div>
   )
 }

@@ -1,7 +1,7 @@
 import OpenPlayerJS from 'openplayerjs'
 import { useInView } from 'framer-motion'
 import { type DetailedHTMLProps, type ReactEventHandler, type VideoHTMLAttributes, useEffect, useRef } from 'react'
-import { usePlayerControlStore } from '@lib/stores/common/player-control-store'
+import { usePlayerControlStore } from './player-control-store'
 
 // todo work on why player is sendding multiple request.
 interface Props extends DetailedHTMLProps<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement> {
@@ -82,7 +82,7 @@ export function InnerPlayer({
         localRef.current.player = player
       })
     })
-  }, [])
+  }, [videoSource])
 
   useEffect(() => {
     const player = localRef.current.player

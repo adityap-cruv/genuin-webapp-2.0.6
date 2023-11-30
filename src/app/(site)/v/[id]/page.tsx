@@ -30,11 +30,11 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   if (videoDetails?.loop?.share_string) {
     shareLink += `?l=${videoDetails?.loop?.share_string}`
   }
-  const author = {
-    '@type': 'Person',
-    name: '@' + videoDetails?.owner?.nickname,
-    url: `${process.env.NEXT_PUBLIC_HOST_URL}${PATH_NAME.profile(videoDetails?.video?.share_string)}`,
-  }
+  // const author = {
+  //   '@type': 'Person',
+  //   name: '@' + videoDetails?.owner?.nickname,
+  //   url: `${process.env.NEXT_PUBLIC_HOST_URL}${PATH_NAME.profile(videoDetails?.video?.share_string)}`,
+  // }
 
   return {
     title,
