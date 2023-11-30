@@ -8,10 +8,13 @@ interface Props {
   children?: React.ReactNode
   title: React.ReactNode
   subtitle: React.ReactNode
+  /**
+   * Pass true if you're using button inside trigger.
+   */
   asChild?: boolean
 }
 
-export function DownloadDialog({ children, subtitle, title, asChild = true }: Props) {
+export function DownloadDialog({ children, subtitle, title, asChild = false }: Props) {
   const URL_TO_APP_STORE = 'https://apps.apple.com/US/app/id1511177838?mt=8'
   const URL_TO_PLAY_STORE = 'https://play.google.com/store/apps/details?id=com.begenuin.begenuin'
   return (
@@ -27,13 +30,13 @@ export function DownloadDialog({ children, subtitle, title, asChild = true }: Pr
             {subtitle}
           </p>
           <div className="mt-6 flex">
-              <a href={URL_TO_APP_STORE} target="_blank" rel="noopener noreferrer">
-                <Image className="mx-2 h-10 w-auto" src={imageAppStore} alt="app store" />
-              </a>
-              <a href={URL_TO_PLAY_STORE} target="_blank" rel="noopener noreferrer">
-                <Image className="mx-2 h-10 w-auto" src={imagePlayStore} alt="play store" />
-              </a>
-            </div>
+            <a href={URL_TO_APP_STORE} target="_blank" rel="noopener noreferrer">
+              <Image className="mx-2 h-10 w-auto" src={imageAppStore} alt="app store" />
+            </a>
+            <a href={URL_TO_PLAY_STORE} target="_blank" rel="noopener noreferrer">
+              <Image className="mx-2 h-10 w-auto" src={imagePlayStore} alt="play store" />
+            </a>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

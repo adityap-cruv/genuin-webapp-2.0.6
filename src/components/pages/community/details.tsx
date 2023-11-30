@@ -53,7 +53,7 @@ function Left() {
       <p className="line-clamp-3 text-body-sm">{communityDetailsModule?.info.description}</p>
       <Stats />
       <div className="my-2 flex items-center gap-x-2">
-        <DownloadDialog title="Get the Genuin app" subtitle="Get the app to join community" asChild={false}>
+        <DownloadDialog title="Get the Genuin app" subtitle="Get the app to join community" asChild>
           <Button variant="default" size="sm">
             <p className="text-title-sm text-monochrome-white">Join</p>
           </Button>

@@ -147,7 +147,7 @@ function CommunityReelSection({ videoData }: CommunityLayerProps) {
         </div>
       </div>
       <div className="flex gap-x-2">
-        <DownloadDialog title="Get the Genuin app" subtitle="Get the app to subscribe loop" asChild={false}>
+        <DownloadDialog title="Get the Genuin app" subtitle="Get the app to subscribe loop" asChild>
           <Button size="sm">
             <p className="text-title-sm text-monochrome-white">Subscribe</p>
           </Button>
@@ -405,7 +405,7 @@ function Actions({ link = '', shareDescription = '', shareTitle = '', isLoop = f
                 </ActionItem>
               </Link>
             )}
-            <DownloadDialog title="Get the Genuin app" subtitle="Get the app to repost the video." asChild={false}>
+            <DownloadDialog title="Get the Genuin app" subtitle="Get the app to repost the video.">
               <ActionItem title="Repost the video!">
                 <Image src={icRepost} alt="repost" height={32} width={32} />
               </ActionItem>
@@ -416,7 +416,7 @@ function Actions({ link = '', shareDescription = '', shareTitle = '', isLoop = f
               </ActionItem>
             </DownloadDialog>
             {!isLoop && (
-              <DownloadDialog title="Get the Genuin app" subtitle="Get the app to save the video." asChild={false}>
+              <DownloadDialog title="Get the Genuin app" subtitle="Get the app to save the video.">
                 <ActionItem title="Save this Video!">
                   <Image src={icSave} width={32} height={32} alt="Save video" />
                 </ActionItem>
@@ -424,15 +424,12 @@ function Actions({ link = '', shareDescription = '', shareTitle = '', isLoop = f
             )}
             {isLoop && (
               <>
-                <DownloadDialog
-                  title="Get the Genuin app"
-                  subtitle="Get the app to watch the comments on this video."
-                  asChild={false}>
+                <DownloadDialog title="Get the Genuin app" subtitle="Get the app to watch the comments on this video.">
                   <ActionItem title="See Comments!">
                     <Image src={icComment} alt="comments" height={32} width={32} />
                   </ActionItem>
                 </DownloadDialog>
-                {/* <DownloadDialog title="Get the Genuin app" subtitle="Get the app to subscribe to Loop." asChild={false}>
+                {/* <DownloadDialog title="Get the Genuin app" subtitle="Get the app to subscribe to Loop.">
                   <ActionItem title="Subscribe to Loop!">
                     <Image src={icSubscribe} alt="subscribe" height={18} width={18} />
                   </ActionItem>
@@ -451,7 +448,7 @@ function Actions({ link = '', shareDescription = '', shareTitle = '', isLoop = f
               <Image src={icShare} alt="share" height={32} width={32} />
             </ActionItem>
             {!isLoop && (
-              <DownloadDialog title="Get the Genuin app" subtitle="Get the app to reply to video." asChild={false}>
+              <DownloadDialog title="Get the Genuin app" subtitle="Get the app to reply to video.">
                 <ActionItem title="Reply to Video!">
                   <Image src={icReply} height={32} width={32} alt="reply" />
                 </ActionItem>
