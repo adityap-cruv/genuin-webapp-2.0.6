@@ -246,7 +246,7 @@ function Public({ videoData }: PublicProps) {
         link={videoData?.video.link ?? ''}
         shareTitle={videoData?.video.description ?? ''}
         shareDescription={videoData?.video.description ?? ''}
-        isLoop={false}
+        isLoop={!!videoData.loop}
         videoData={videoData}
       />
     </div>
