@@ -10,14 +10,6 @@ const CommunityDetails = dynamic(
     },
   }
 )
-const CommunityReels = dynamic(
-  async () => await import('@components/pages/community/reels').then((comp) => comp.CommunityReels),
-  {
-    loading: (_) => {
-      return <Loader size="md" />
-    },
-  }
-)
 
 interface Props {
   communityDetails: CommunityDetailsType
@@ -27,9 +19,7 @@ export function Desktop({ communityDetails }: Props) {
   return (
     <>
       <NavBar variant="light" isMobile={false} />
-      <CommunityDetails communityDetails={communityDetails}>
-        <CommunityReels communityHandle={communityDetails.info.handle} />
-      </CommunityDetails>
+      <CommunityDetails communityDetails={communityDetails}></CommunityDetails>
     </>
   )
 }
