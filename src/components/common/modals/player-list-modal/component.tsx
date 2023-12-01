@@ -7,7 +7,13 @@ import icArrowDown from '@icons/player-controls/icArrowDown.svg'
 import { usePlayerListModalStore } from './store'
 import { type VideoDataListType } from '@lib/schemas/video'
 import dynamic from 'next/dynamic'
-const Player = dynamic(async () => await import('@components/common/player').then((comp) => comp.default))
+import { useVideoSizeBox } from '@hooks/use-video-size-box'
+import { Loader } from '@components/ui/loader'
+const Player = dynamic(async () => await import('@components/common/player').then((comp) => comp.default), {
+  loading(loadingProps) {
+    return <Loader size="lg" />
+  },
+})
 
 interface Props {
   /**
@@ -37,6 +43,7 @@ export function Component({ videosData, startIndex, onOpenChange, closeModal }: 
     videos: state.videos,
     setVideosData: state.setVideos,
   }))
+  const sizeBox = useVideoSizeBox(false)
 
   const videoDetails = videos[currentIndex]
 
@@ -59,11 +66,21 @@ export function Component({ videosData, startIndex, onOpenChange, closeModal }: 
   }, [])
 
   return (
-    <PlayerDialog open onOpenChange={onOpenChange}>
+    <PlayerDialog modal open onOpenChange={onOpenChange}>
       <PlayerDialogContent>
-        <div className="flex items-center">
-          <Player videoData={videoDetails} shouldPlay shouldShowBackgroundBlurImage={false} loop />
-          <div className="flex flex-col gap-y-4 pl-4">
+        <div className="flex h-full w-full items-center">
+          {sizeBox && (
+            <div style={{ height: sizeBox.height, width: sizeBox.width }}>
+              <Player
+                sizeBox={sizeBox}
+                videoData={videoDetails}
+                shouldPlay
+                shouldShowBackgroundBlurImage={false}
+                loop
+              />
+            </div>
+          )}
+          <div className="hidden flex-col gap-y-4 pl-4 md:flex">
             {currentIndex !== 0 && (
               <NavigationButton
                 onClick={() => {
