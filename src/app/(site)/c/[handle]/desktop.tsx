@@ -19,7 +19,7 @@ export function Desktop({ communityDetails }: Props) {
   return (
     <>
       <NavBar variant="light" isMobile={false} />
-      <CommunityDetails communityDetails={communityDetails}></CommunityDetails>
+      <CommunityDetails communityDetails={communityDetails} />
     </>
   )
 }

@@ -112,7 +112,7 @@ export function InnerPlayer({
   if (videoSource)
     return (
       <video
-        className="h-full w-full object-cover"
+        className="absolute h-full w-full object-cover"
         poster={poster}
         ref={videoRef}
         muted={muted}
@@ -219,7 +219,7 @@ export function ViewportPlayer({
   if (videoSource)
     return (
       <video
-        className="h-full w-full object-cover"
+        className="absolute h-full w-full object-cover"
         poster={poster}
         ref={videoRef}
         muted={muted}

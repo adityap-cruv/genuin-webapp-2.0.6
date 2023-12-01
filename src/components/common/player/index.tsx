@@ -1,11 +1,12 @@
 'use client'
 import dynamic from 'next/dynamic'
-import { cn } from '@lib/utils'
 import { Loader } from '@components/ui/loader'
 import { type VideoDataType } from '@lib/schemas/video'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { isMobile } from 'react-device-detect'
 import { usePlayerControlStore } from './player-control-store'
+import { Comments } from './comments'
+
 const InnerPlayer = dynamic(async () => await import('./inner-player').then((comp) => comp.InnerPlayer), {
   loading: (_) => {
     return <Loader size="lg" />
@@ -61,6 +62,10 @@ interface Props {
    * @default false
    */
   showCommunityControl?: boolean
+  /**
+   * Pass true if you want to show comments.
+   */
+  shouldShowComments?: boolean
 }
 
 // todo optimize this component.
@@ -75,12 +80,14 @@ export default function Player({
   showCommunityControl = false,
   isFirstPlayerInList = false,
 }: Props) {
+  // todo fix this warning
   const [playerControls, setPlayerControls] = useState({ play: shouldPlay, muted: true, loop })
   const togglePlayPauseStatus = usePlayerControlStore((state) => state.toggleShouldPlay)
+  const containerRef = useRef<HTMLDivElement | null>(null)
 
   if (videoData) {
     return (
-      <div className="relative flex h-full w-full snap-start items-center justify-center">
+      <div className="relative flex h-full w-full snap-start items-center justify-center overflow-clip">
         {shouldShowBackgroundBlurImage && (
           <div
             className="absolute inset-0 z-0 h-full w-full bg-secondary bg-cover bg-center bg-no-repeat blur-2xl"
@@ -88,11 +95,9 @@ export default function Player({
           />
         )}
         <div
-          className="relative"
-          style={{ width: sizeBox?.width, height: sizeBox?.height }}
-          onClick={(e) => {
-            // console.log('clicked in inner player.');
-          }}>
+          ref={containerRef}
+          className="relative overflow-hidden"
+          style={{ width: sizeBox?.width, height: sizeBox?.height }}>
           {playIfInViewPort ? (
             <ViewportPlayer
               videoSource={videoData.video.url}
@@ -161,6 +166,7 @@ export default function Player({
               )
             ) : undefined}
           </div>
+          <Comments container={containerRef} videoId={videoData.video.share_string} />
         </div>
       </div>
     )

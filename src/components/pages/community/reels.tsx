@@ -13,7 +13,7 @@ const Player = dynamic(async () => await import('@components/common/player').the
     return <Loader size="lg" />
   },
 })
-// const Comments = dynamic(async () => await import('./comments').then((comp) => comp.Comments))
+
 type CommunityReelsProps = {
   communityHandle: string
   sizeBox: VideoSizeBoxType
@@ -32,9 +32,11 @@ export function CommunityReels({ communityHandle, sizeBox }: CommunityReelsProps
     }
   })
 
+  // todo here id reel-list is given to block scroll when user open comments. find better way to do it.
   return (
     <div className="z-10 h-full w-full">
       <div
+        id="reel-list"
         className="hide-scrollbar relative h-full w-full snap-y snap-mandatory snap-always overflow-y-auto overflow-x-clip"
         ref={divRef}>
         <InnerReelList videos={videos} isLoading={isLoading} sizeBox={sizeBox} />
