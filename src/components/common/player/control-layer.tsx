@@ -1,4 +1,4 @@
-import { checkAndAppendHttps, generateDeepLink, openGeneratedLink } from '@lib/utils'
+import { abbreviateNumber, checkAndAppendHttps, generateDeepLink, openGeneratedLink } from '@lib/utils'
 import Link from 'next/link'
 import { Button } from '@components/ui/button'
 import { Badge } from '@components/ui/badge'
@@ -282,6 +282,9 @@ function Actions({ link = '', shareDescription = '', shareTitle = '', isLoop = f
             </ActionItem>
             <ActionItem title="Give spark!">
               <Image src={icSpark} height={32} width={32} alt="spark" />
+              <p className="flex justify-center text-body-sm text-monochrome-white">
+                {videoData?.video.no_of_sparks === null ? 0 : abbreviateNumber(videoData?.video.no_of_sparks ?? 0)}
+              </p>
             </ActionItem>
             {!isLoop && (
               <ActionItem
@@ -334,6 +337,11 @@ function Actions({ link = '', shareDescription = '', shareTitle = '', isLoop = f
                       .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
                   }}>
                   <Image src={icComment} alt="comments" height={32} width={32} />
+                  <p className="flex justify-center text-body-sm text-monochrome-white">
+                    {videoData?.video.no_of_comments === null
+                      ? 0
+                      : abbreviateNumber(videoData?.video.no_of_comments ?? 0)}
+                  </p>
                 </ActionItem>
                 {/* <ActionItem
                   title="Subscribe to Loop!"
@@ -415,6 +423,9 @@ function Actions({ link = '', shareDescription = '', shareTitle = '', isLoop = f
             <DownloadDialog title="Get the Genuin app" subtitle="Get the app to give spark to video.">
               <ActionItem title="Give spark!">
                 <Image src={icSpark} height={32} width={32} alt="spark" />
+                <p className="flex justify-center text-body-sm text-monochrome-white">
+                  {videoData?.video.no_of_sparks === null ? 0 : abbreviateNumber(videoData?.video.no_of_sparks ?? 0)}
+                </p>
               </ActionItem>
             </DownloadDialog>
             {!isLoop && (
@@ -432,6 +443,11 @@ function Actions({ link = '', shareDescription = '', shareTitle = '', isLoop = f
                   asChild={false}>
                   <ActionItem title="See Comments!">
                     <Image src={icComment} alt="comments" height={32} width={32} />
+                    <p className="flex justify-center text-body-sm text-monochrome-white">
+                      {videoData?.video.no_of_comments === null
+                        ? 0
+                        : abbreviateNumber(videoData?.video.no_of_comments ?? 0)}
+                    </p>
                   </ActionItem>
                 </DownloadDialog>
                 {/* <DownloadDialog title="Get the Genuin app" subtitle="Get the app to subscribe to Loop." asChild={false}>
