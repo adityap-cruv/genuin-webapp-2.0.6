@@ -1,4 +1,4 @@
-import { checkAndAppendHttps, generateDeepLink, openGeneratedLink } from '@lib/utils'
+import { abbreviateNumber, checkAndAppendHttps, generateDeepLink, openGeneratedLink } from '@lib/utils'
 import icShare from '@icons/player-controls/icShare.svg'
 import icComment from '@icons/player-controls/icComment.svg'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
@@ -57,6 +57,9 @@ export function Actions({
               </ActionItem>
               <ActionItem title="Give spark!">
                 <Image src={icSpark} height={32} width={32} alt="spark" />
+                <p className="flex justify-center text-body-sm text-monochrome-white">
+                  {videoData?.video.no_of_sparks === null ? 0 : abbreviateNumber(videoData?.video.no_of_sparks ?? 0)}
+                </p>
               </ActionItem>
               {!isLoop && (
                 <ActionItem
@@ -109,6 +112,11 @@ export function Actions({
                         .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
                     }}>
                     <Image src={icComment} alt="comments" height={32} width={32} />
+                    <p className="flex justify-center text-body-sm text-monochrome-white">
+                      {videoData?.video.no_of_comments === null
+                        ? 0
+                        : abbreviateNumber(videoData?.video.no_of_comments ?? 0)}
+                    </p>
                   </ActionItem>
                 </>
               )}
@@ -166,6 +174,9 @@ export function Actions({
               <DownloadDialog title="Get the Genuin app" subtitle="Get the app to give spark to video.">
                 <ActionItem title="Give spark!">
                   <Image src={icSpark} height={32} width={32} alt="spark" />
+                  <p className="flex justify-center text-body-sm text-monochrome-white">
+                    {videoData?.video.no_of_sparks === null ? 0 : abbreviateNumber(videoData?.video.no_of_sparks ?? 0)}
+                  </p>
                 </ActionItem>
               </DownloadDialog>
               {!isLoop && (
@@ -182,6 +193,11 @@ export function Actions({
                   }}
                   title="See Comments!">
                   <Image src={icComment} alt="comments" height={32} width={32} />
+                  <p className="flex justify-center text-body-sm text-monochrome-white">
+                    {videoData?.video.no_of_comments === null
+                      ? 0
+                      : abbreviateNumber(videoData?.video.no_of_comments ?? 0)}
+                  </p>
                 </ActionItem>
               )}
               <ActionItem
