@@ -34,7 +34,7 @@ export function CommunityDetails({ children, communityDetails }: Props) {
     return (
       <div className="mt-navbar grid h-body w-full min-w-tablet grid-flow-col ">
         <Left />
-        <div className="block" style={{ width: sizeBox.width, height: sizeBox.height }}>
+        <div style={{ width: sizeBox.width, height: sizeBox.height }}>
           <CommunityReels communityHandle={communityDetails.info.handle} sizeBox={sizeBox} />
         </div>
         <Right />
@@ -48,7 +48,7 @@ function Left() {
   const { toast } = useToast()
 
   return (
-    <div className="overflow-y-auto px-4">
+    <div className="z-0 overflow-y-auto px-4">
       <CustomAvatar
         className="h-20 w-20 bg-red-50"
         imageUrl={communityDetailsModule?.info.profile_image ?? ''}
@@ -89,7 +89,7 @@ function Left() {
 
 function Right() {
   return (
-    <div className="px-4">
+    <div className="z-0 px-4">
       <Leaders />
       <Members />
     </div>

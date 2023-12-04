@@ -8,8 +8,8 @@ import { Toaster } from '@components/ui/toaster'
 import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { isMobile } from 'react-device-detect'
-import { useInViewport } from '@hooks/use-in-viewport'
 import { CustomAvatar } from '@components/custom/custom-avatar'
+import { useInView } from 'framer-motion'
 
 export function CommunitySection() {
   const communityList = [
@@ -43,8 +43,10 @@ export function CommunitySection() {
   const lastDivRef = useRef<HTMLDivElement>(null)
   const { toast } = useToast()
   const { shareFn } = useAdaptiveShare()
-  const isAtFirst = useInViewport(firstDivRef)
-  const isAtLast = useInViewport(lastDivRef)
+  // const isAtFirst = useInViewport(firstDivRef)
+  // const isAtLast = useInViewport(lastDivRef)
+  const isAtFirst = useInView(firstDivRef)
+  const isAtLast = useInView(lastDivRef)
 
   const [scrollLeft, setScrollLeft] = useState(0)
   const [totalWidth, setTotalWidth] = useState(0)
@@ -89,7 +91,9 @@ export function CommunitySection() {
   return (
     <div className="flex w-full flex-col gap-y-10">
       <div ref={divRef} className="hide-scrollbar scroll-snap-always flex snap-x overflow-x-auto px-4 sm:px-0 sm:pl-5 ">
-        <div ref={firstDivRef} style={{ width: '2px' }} />
+        <div ref={firstDivRef} style={{ width: '2px' }}>
+          &nbsp;
+        </div>
         {communityList.map((item, index) => {
           return (
             <React.Fragment key={index}>
@@ -143,7 +147,6 @@ export function CommunitySection() {
       </div>
       <div className="flex justify-between px-3">
         <Button
-          disabled={isAtFirst}
           variant="outline"
           className="border-none"
           onClick={(e) => {
@@ -151,7 +154,7 @@ export function CommunitySection() {
             if (!div) return
             div.scrollBy({ left: -div.getBoundingClientRect().width, behavior: 'smooth' })
           }}>
-          <LeftScrollButtonIcon disabled={false} />
+          <LeftScrollButtonIcon disabled={isAtFirst} />
         </Button>
         <Button
           disabled={scrollLeft + window.innerWidth >= totalWidth ?? isAtLast}
@@ -162,7 +165,7 @@ export function CommunitySection() {
             if (!div) return
             div.scrollBy({ left: div.getBoundingClientRect().width, behavior: 'smooth' })
           }}>
-          <RightScrollButtonIcon disabled={false} />
+          <RightScrollButtonIcon disabled={isAtLast} />
         </Button>
       </div>
     </div>
