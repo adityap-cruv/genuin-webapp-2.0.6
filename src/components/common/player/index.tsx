@@ -166,7 +166,7 @@ export default function Player({
               )
             ) : undefined}
           </div>
-          <Comments container={containerRef} videoId={videoData.video.share_string} />
+          {/* <Comments container={containerRef} videoId={videoData.video.share_string} /> */}
         </div>
       </div>
     )
