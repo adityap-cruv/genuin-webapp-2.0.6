@@ -2,7 +2,7 @@ import Image from 'next/image'
 import { Button } from '@components/ui/button'
 import { LeftScrollButtonIcon, RightScrollButtonIcon } from './horizontal-scroll-icons'
 import icShare from '@icons/icShareBlue.svg'
-import React, { useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { Toaster } from '@components/ui/toaster'
 import { useToast } from '@components/ui/use-toast'
@@ -47,6 +47,46 @@ export function CommunitySection() {
   // const isAtLast = useInViewport(lastDivRef)
   const isAtFirst = useInView(firstDivRef)
   const isAtLast = useInView(lastDivRef)
+
+  const [scrollLeft, setScrollLeft] = useState(0)
+  const [totalWidth, setTotalWidth] = useState(0)
+
+  const calculateTotalWidth = () => {
+    let totalWidth = 0
+    if (divRef.current) {
+      Array.from(divRef.current.childNodes).forEach((childNode: any) => {
+        if (childNode instanceof HTMLElement) {
+          totalWidth += childNode.getBoundingClientRect().width
+        }
+      })
+    }
+    setTotalWidth(totalWidth)
+    return totalWidth
+  }
+
+  useEffect(() => {
+    calculateTotalWidth()
+  }, [communityList])
+
+  const updateScroll = () => {
+    if (divRef.current) {
+      setScrollLeft(divRef.current.scrollLeft)
+    }
+  }
+
+  useEffect(() => {
+    const handleScroll = () => {
+      updateScroll()
+    }
+    if (divRef.current) {
+      divRef.current.addEventListener('scroll', handleScroll)
+    }
+    return () => {
+      if (divRef.current) {
+        divRef.current.removeEventListener('scroll', handleScroll)
+      }
+    }
+  }, [])
 
   return (
     <div className="flex w-full flex-col gap-y-10">
@@ -117,6 +157,7 @@ export function CommunitySection() {
           <LeftScrollButtonIcon disabled={isAtFirst} />
         </Button>
         <Button
+          disabled={scrollLeft + window.innerWidth >= totalWidth ?? isAtLast}
           variant="outline"
           className="border-none"
           onClick={(e) => {
