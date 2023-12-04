@@ -230,7 +230,7 @@ function LoopItem({ loopDetails }: { loopDetails: any }) {
           <div className="mb-[2%] flex w-[70%] items-center">
             {loopDetails.owner.profile_image && (
               <CustomAvatar
-                className="-6 w-6 bg-red-50"
+                className="h-6 w-6 bg-red-50"
                 imageUrl={loopDetails.owner.profile_image ?? ''}
                 isAvatar={loopDetails.owner.is_avatar}
                 fallbackString={loopDetails.owner.name ?? ''}
