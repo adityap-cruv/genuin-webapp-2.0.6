@@ -187,18 +187,20 @@ export function Actions({
                 </DownloadDialog>
               )}
               {isLoop && (
-                <ActionItem
-                  onClick={(e) => {
-                    commentsIsOpen ? closeComments() : openComments(videoData?.video.share_string)
-                  }}
-                  title="See Comments!">
-                  <Image src={icComment} alt="comments" height={32} width={32} />
-                  <p className="flex justify-center text-body-sm text-monochrome-white">
-                    {videoData?.video.no_of_comments === null
-                      ? 0
-                      : abbreviateNumber(videoData?.video.no_of_comments ?? 0)}
-                  </p>
-                </ActionItem>
+                <DownloadDialog title="Get the Genuin app" subtitle="Get the app to comment.">
+                  <ActionItem
+                    onClick={(e) => {
+                      commentsIsOpen ? closeComments() : openComments(videoData?.video.share_string)
+                    }}
+                    title="See Comments!">
+                    <Image src={icComment} alt="comments" height={32} width={32} />
+                    <p className="flex justify-center text-body-sm text-monochrome-white">
+                      {videoData?.video.no_of_comments === null
+                        ? 0
+                        : abbreviateNumber(videoData?.video.no_of_comments ?? 0)}
+                    </p>
+                  </ActionItem>
+                </DownloadDialog>
               )}
               <ActionItem
                 title="Share Video!"
