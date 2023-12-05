@@ -1,10 +1,9 @@
-import { validateLoopCohosts } from '@lib/schemas/loop/cohosts'
-import { validateLoopDetails } from '@lib/schemas/loop/details'
+import { validateCommentList } from '@lib/schemas/loop/comment'
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 
 export async function fetchLoopDetails(loopId: string) {
-  return axios
+  return await axios
     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/rt/details', { params: { chat_id: loopId } })
     .then((res) => {
       return res?.data?.data
@@ -15,7 +14,7 @@ export async function fetchLoopDetails(loopId: string) {
 }
 
 async function fetchLoopVideos(loopId: string, pageNo = 0) {
-  return axios
+  return await axios
     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/rt/videos_v2', {
       params: {
         share_string: loopId,
@@ -26,14 +25,13 @@ async function fetchLoopVideos(loopId: string, pageNo = 0) {
       return { videos: res.data.data.videos, end: res.data.data.end_of_videos ?? false }
     })
     .catch((e) => {
-      console.log('error::', e)
       throw new Error('Somethig went wrong with loop videos fetching api.')
     })
 }
 
 export function getLoopVideos(loopId: string) {
   return useInfiniteQuery({
-    queryFn: ({ pageParam }) => fetchLoopVideos(loopId, pageParam),
+    queryFn: async ({ pageParam }) => await fetchLoopVideos(loopId, pageParam),
     queryKey: ['loop', 'videos', 'paginated'],
     getNextPageParam: (lastPage, pages) => {
       if (lastPage.end) {
@@ -44,19 +42,49 @@ export function getLoopVideos(loopId: string) {
   })
 }
 
-async function fetchLoopCohosts(loopId: string) {
-  return axios
+async function fetchLoopCohosts(chatId: string, type: string) {
+  return await axios
     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/rt/users', {
-      params: { chat_id: loopId },
+      params: {
+        type,
+        chat_id: chatId,
+      },
     })
     .then((res) => {
-      return validateLoopCohosts(res.data.data)
+      return res.data.data
     })
     .catch((e) => {
       throw new Error('Something went wrong in fetching videos.')
     })
 }
 
-export function getLoopCohosts(loopId: string) {
-  return useQuery({ queryKey: ['loop', 'cohosts', 'users'], queryFn: () => fetchLoopCohosts(loopId) })
+export function getLoopCohosts(chatId: string, type: string) {
+  return useQuery({
+    queryKey: ['loop', 'cohosts', 'users'],
+    queryFn: async () => await fetchLoopCohosts(chatId, type),
+  })
+}
+
+async function fetchLoopVideoComments(videoShareString: string) {
+  return await axios
+    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/rt/page_comments', {
+      params: {
+        loop_video_ss: videoShareString,
+        page: 0,
+      },
+    })
+    .then((res) => {
+      return validateCommentList(res.data.data)
+    })
+    .catch((e) => {
+      console.log('something went wrong with comments api.')
+      throw new Error('Something went wrong with comments api!')
+    })
+}
+
+export function getLoopVideoComments(videoShareString: string) {
+  return useQuery({
+    queryFn: async () => await fetchLoopVideoComments(videoShareString),
+    queryKey: ['comments', videoShareString],
+  })
 }

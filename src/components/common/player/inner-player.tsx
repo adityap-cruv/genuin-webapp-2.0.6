@@ -1,25 +1,17 @@
 import OpenPlayerJS from 'openplayerjs'
 import { useInView } from 'framer-motion'
-import {
-  DetailedHTMLProps,
-  ReactEventHandler,
-  VideoHTMLAttributes,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react'
-import { usePlayerControlStore } from '@lib/stores/common/player-control-store'
+import { type DetailedHTMLProps, type ReactEventHandler, type VideoHTMLAttributes, useEffect, useRef } from 'react'
+import { usePlayerControlStore } from './player-control-store'
 
 // todo work on why player is sendding multiple request.
 interface Props extends DetailedHTMLProps<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement> {
-  videoSizeBox: { width: number; height: number }
+  // videoSizeBox: { width: number; height: number }
   videoSource?: string
   isFirstElement?: boolean
 }
 
 export function InnerPlayer({
-  videoSizeBox,
+  // videoSizeBox,
   videoSource,
   poster,
   loop,
@@ -74,19 +66,23 @@ export function InnerPlayer({
         emeEnabled: true,
       },
     })
-    player.init().then((value) => {
-      player.load().then(() => {
+    void player.init().then((value) => {
+      void player.load().then(() => {
         if (shouldPlay) {
           player
             .getMedia()
             .play()
-            .then((_) => console.log('start playing'))
-            .catch((e) => console.log('something went wrong..', e))
+            .then((_) => {
+              // console.log('start playing')
+            })
+            .catch((e) => {
+              // console.log('something went wrong..', e)
+            })
         }
         localRef.current.player = player
       })
     })
-  }, [])
+  }, [videoSource])
 
   useEffect(() => {
     const player = localRef.current.player
@@ -94,8 +90,12 @@ export function InnerPlayer({
     if (shouldPlay && localRef.current.loaded) {
       player
         .play()
-        .then(() => console.log('starts playing from use effect.'))
-        .catch((e) => console.error('error from use effect', e))
+        .then(() => {
+          // console.log('starts playing from use effect.')
+        })
+        .catch((e) => {
+          // console.error('error from use effect', e)
+        })
     } else {
       player.pause()
     }
@@ -106,24 +106,23 @@ export function InnerPlayer({
   }
 
   const onTimeUpdateEventHandler: ReactEventHandler<HTMLVideoElement> = (event) => {
-    console.log('event::', event.currentTarget.currentTime)
     setCurrentTime(event.currentTarget.currentTime)
   }
 
   if (videoSource)
     return (
       <video
-        className="object-cover"
+        className="absolute h-full w-full object-cover"
         poster={poster}
         ref={videoRef}
         muted={muted}
         loop={loop}
         src={videoSource}
         playsInline
-        style={{
-          height: videoSizeBox.height,
-          width: videoSizeBox.width,
-        }}
+        // style={{
+        //   height: videoSizeBox.height,
+        //   width: videoSizeBox.width,
+        // }}
         onPlay={onPlay}
         onPlaying={onPlaying}
         onError={onError}
@@ -140,7 +139,6 @@ export function InnerPlayer({
 }
 
 export function ViewportPlayer({
-  videoSizeBox,
   videoSource,
   poster,
   loop,
@@ -195,11 +193,10 @@ export function ViewportPlayer({
         emeEnabled: true,
       },
     })
-    player.init().then((value) => {
-      player.load().then(() => {
+    void player.init().then((value) => {
+      void player.load().then(() => {
         if (isFirstElement) {
-          console.log('first time::', inView)
-          player.play()
+          void player.play()
         }
         localRef.current.player = player
       })
@@ -210,7 +207,9 @@ export function ViewportPlayer({
     const player = localRef.current.player
     // console.log('inView::', player, inView)
     if (inView && shouldPlay) {
-      player?.play().then(() => console.log('being played..'))
+      void player?.play().then(() => {
+        // console.log('being played..')
+      })
     } else {
       player?.pause()
     }
@@ -220,17 +219,17 @@ export function ViewportPlayer({
   if (videoSource)
     return (
       <video
-        className="object-cover"
+        className="absolute h-full w-full object-cover"
         poster={poster}
         ref={videoRef}
         muted={muted}
         loop={loop}
         src={videoSource}
         playsInline
-        style={{
-          height: videoSizeBox.height,
-          width: videoSizeBox.width,
-        }}
+        // style={{
+        //   height: videoSizeBox.height,
+        //   width: videoSizeBox.width,
+        // }}
         onPlay={onPlay}
         onPlaying={onPlaying}
         onError={onError}

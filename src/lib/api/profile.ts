@@ -1,26 +1,24 @@
-import { validateVideoListData } from '@lib/schemas/video'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import axios from 'axios'
 
 export async function fetchUserData(nickname: string) {
-  return axios
+  return await axios
     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/user/details', {
       params: {
-        nickname: nickname,
+        nickname,
       },
     })
     .then((res) => {
       return res.data.data
     })
     .catch((e) => {
-      console.log('next public url:', process.env.NEXT_PUBLIC_API_URL, e)
       throw new Error('Something went wrong in profile details api.')
     })
 }
 
 type VideoType = 'rt' | 'public_video'
 async function fetchVideos(nickname: string, types: [VideoType?, VideoType?], pageNo = 0) {
-  return axios
+  return await axios
     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/profile_videos_v2', {
       params: {
         user_id: nickname,
@@ -38,8 +36,8 @@ async function fetchVideos(nickname: string, types: [VideoType?, VideoType?], pa
 
 export function getPaginatedAllVideos(nickname: string) {
   return useInfiniteQuery({
-    queryKey: ['all', 'videos'],
-    queryFn: ({ pageParam }) => fetchVideos(nickname, ['public_video', 'rt'], pageParam),
+    queryKey: ['all', 'videos', nickname, ['public_video', 'rt']],
+    queryFn: async ({ pageParam }) => await fetchVideos(nickname, ['public_video', 'rt'], pageParam),
     getNextPageParam(lastPage, allPages) {
       if (lastPage.end) {
         return
@@ -51,26 +49,26 @@ export function getPaginatedAllVideos(nickname: string) {
 
 export function getPaginatedLoopVideos(nickname: string) {
   return useInfiniteQuery({
-    queryKey: ['loop', 'videos'],
+    queryKey: ['loop', 'videos', nickname, ['rt']],
     queryFn: async ({ pageParam }) => await fetchVideos(nickname, ['rt'], pageParam),
     getNextPageParam(lastPage, allPages) {
       if (lastPage.end) {
         return
       }
       return allPages.length
-    }
+    },
   })
 }
 
 export function getPaginatedGenuinVideos(nickname: string) {
   return useInfiniteQuery({
-    queryKey: ['genuin', 'videos'],
+    queryKey: ['genuin', 'videos', nickname, ['public_video']],
     queryFn: async ({ pageParam }) => await fetchVideos(nickname, ['public_video'], pageParam),
     getNextPageParam(lastPage, allPages) {
       if (lastPage.end) {
         return
       }
       return allPages.length
-    }
+    },
   })
 }

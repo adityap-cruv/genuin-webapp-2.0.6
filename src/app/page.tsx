@@ -1,4 +1,4 @@
-import { Metadata } from 'next'
+import { type Metadata } from 'next'
 import { NavBar } from '@components/pages/home/nav-bar'
 import { Footer } from '@components/pages/home/footer'
 import { MainComponent } from '@components/pages/home/main-component'
@@ -13,7 +13,7 @@ export default async function Page() {
     <main id="indexPage" className="absolute inset-0 text-new-off-black">
       <NavBar />
       <MainComponent isMobile={isMobile} />
-      <Footer />
+      <Footer isMobile={isMobile} />
     </main>
   )
 }

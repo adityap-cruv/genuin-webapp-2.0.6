@@ -1,11 +1,11 @@
 'use client'
 import { GenuinLogo } from '@components/ui/genuin-logo'
 import Link from 'next/link'
-import { cn, getAvatarFallback } from '@lib/utils'
+import { cn } from '@lib/utils'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@components/ui/dropdown-menu'
 import { HamBurgerMenuIcon } from '@components/ui/ham-burger'
-import { Avatar, AvatarFallback, AvatarImage } from '@components/ui/avatar'
-import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
+import { CustomAvatar } from '@components/custom/custom-avatar'
 
 export const NavBar = {
   details: Details,
@@ -32,12 +32,12 @@ function Details({ variant = 'light', communityDetails }: Props) {
         <div
           className="absolute left-[50%] flex items-center justify-between"
           style={{ transform: 'translate(-50%, 0)' }}>
-          <Avatar className="mx-2 h-6 w-6 bg-red-50">
-            <AvatarImage src={communityDetails?.info.profile_image} />
-            <AvatarFallback>
-              <p className="text-title-sm text-monochrome-white">{getAvatarFallback(communityDetails?.info.name)}</p>
-            </AvatarFallback>
-          </Avatar>
+          <CustomAvatar
+            className="mx-2 h-6 w-6 bg-red-50"
+            imageUrl={communityDetails?.info.profile_image}
+            fallbackString={communityDetails?.info.name}
+            isAvatar={false}
+          />
           <p className="my-2 line-clamp-1 break-all text-title-sm">{communityDetails?.info.name}</p>
         </div>
         <div className=" absolute right-0">
@@ -57,7 +57,7 @@ function BurgerMenu({ variant = 'dark' }: { variant?: 'light' | 'dark' }) {
       <DropdownMenuContent
         className="bg-monochrome-black/90 px-3"
         onInteractOutside={(event) => {
-          //todo think about it what to do when user clicks outside
+          // todo think about it what to do when user clicks outside
           event.preventDefault()
         }}>
         <DropdownMenuItem>
@@ -66,7 +66,7 @@ function BurgerMenu({ variant = 'dark' }: { variant?: 'light' | 'dark' }) {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem>
-          <Link href="https://begenuin.com/content_demo?value=rt_123f373977001407" className="w-full">
+          <Link href="https://begenuin.com/l/123f373977001407" className="w-full">
             <p className="w-full text-right text-title-xl text-monochrome-white">Life at Genuin</p>
           </Link>
         </DropdownMenuItem>
@@ -104,12 +104,12 @@ function Reels({ communityDetails }: ReelsProps) {
           }}
           className="absolute left-[50%] flex max-w-[150px] items-center justify-between rounded-full bg-monochrome-black/20"
           style={{ transform: 'translate(-50%, 0)' }}>
-          <Avatar className="mx-2 h-6 w-6 bg-red-50">
-            <AvatarImage src={communityDetails?.info.profile_image} />
-            <AvatarFallback>
-              <p className="text-title-xl text-monochrome-white">{getAvatarFallback(communityDetails?.info.name)}</p>
-            </AvatarFallback>
-          </Avatar>
+          <CustomAvatar
+            className="mx-2 h-6 w-6 bg-red-50"
+            imageUrl={communityDetails?.info.profile_image}
+            fallbackString={communityDetails?.info.name}
+            isAvatar={false}
+          />
           <p className="my-2 line-clamp-1 break-all text-title-sm text-monochrome-white">
             {communityDetails?.info.name}
           </p>

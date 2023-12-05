@@ -6,13 +6,11 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function getAvatarFallback(str: string | undefined) {
-  if (!str) return 'U'
-  const strArray = str?.split(' ')
-  let ans = ''
-  ans += strArray[0]?.charAt(0)
-  if (strArray[1]) ans += strArray[1].charAt(0)
-  return ans.toUpperCase()
+export function getAvatarUrl(avatarUrl: any) {
+  if (avatarUrl) {
+    return isValidHTTPS(avatarUrl) ? avatarUrl : `https://media.qa.begenuin.com/backend_assets/lottie/${avatarUrl}.png`
+  }
+  return null
 }
 
 /**
@@ -51,7 +49,7 @@ export const abbreviateNumber = (value: number) => {
 
 type UrlObjType = {
   pathname: string
-  query: { key: string; value: string | undefined }[]
+  query: Array<{ key: string; value: string | undefined }>
 }
 
 function getUrlToChange(urlObj: UrlObjType) {
@@ -97,7 +95,7 @@ export const generateDeepLink = async ({
   pathName,
   fromUserName,
   parentId,
-} : any) => {
+}: any) => {
   const queryParams = {}
   if (utmCampaign) {
     Object.assign(queryParams, { utm_campaign: utmCampaign })

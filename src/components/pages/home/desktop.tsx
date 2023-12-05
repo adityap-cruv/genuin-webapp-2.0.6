@@ -1,6 +1,5 @@
 import { useRef } from 'react'
 import { useMotionValueEvent, useScroll } from 'framer-motion'
-import { SVGAdReelTag } from './svg-ad-reel-tag'
 import Image from 'next/image'
 import { CommunitySection } from './community-section'
 import { Button } from '@components/ui/button'
@@ -394,12 +393,12 @@ function Component6() {
   )
 }
 
-function Component7() {
-  return (
-    <div className="my-10 flex min-h-full flex-col items-center gap-y-5 px-6 xl:container lg:my-20 xl:px-0">
-      <h2 className="mb-10 text-new-h2-mobile sm:text-new-h2">Experience Genuin</h2>
-      <SVGAdReelTag />
-      {/* <Image priority loading='eager' className="w-1/5"  src={imgC7} alt="genuin" /> */}
-    </div>
-  )
-}
+// function Component7() {
+//   return (
+//     <div className="my-10 flex min-h-full flex-col items-center gap-y-5 px-6 xl:container lg:my-20 xl:px-0">
+//       <h2 className="mb-10 text-new-h2-mobile sm:text-new-h2">Experience Genuin</h2>
+//       <SVGAdReelTag />
+//       {/* <Image priority loading='eager' className="w-1/5"  src={imgC7} alt="genuin" /> */}
+//     </div>
+//   )
+// }

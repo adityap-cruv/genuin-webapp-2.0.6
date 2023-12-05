@@ -1,8 +1,7 @@
 'use client'
-import { Avatar, AvatarFallback, AvatarImage } from '@components/ui/avatar'
 import { Button } from '@components/ui/button'
 import type { CommunityDetailsType } from '@lib/schemas/community'
-import { checkAndAppendHttps, getAvatarFallback, isValidHTTPS } from '@lib/utils'
+import { checkAndAppendHttps } from '@lib/utils'
 import icShare from '@icons/icShareBlue.svg'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -16,21 +15,28 @@ import { Toaster } from '@components/ui/toaster'
 import { DownloadDialog } from '@components/common/download-dialog'
 import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
+import { CustomAvatar } from '@components/custom/custom-avatar'
+import { CommunityReels } from './reels'
+import { useVideoSizeBox } from '@hooks/use-video-size-box'
 
 let communityDetailsModule: CommunityDetailsType | null = null
 
 interface Props {
-  children: React.ReactNode
+  children?: React.ReactNode
   communityDetails: CommunityDetailsType
 }
 
 export function CommunityDetails({ children, communityDetails }: Props) {
   communityDetailsModule = communityDetails
-  if (communityDetails)
+  const sizeBox = useVideoSizeBox(true)
+
+  if (communityDetails && sizeBox)
     return (
-      <div className="mt-navbar flex h-body w-full min-w-tablet justify-between md:gap-x-2 lg:gap-x-4">
+      <div className="mt-navbar grid h-body w-full min-w-tablet grid-flow-col ">
         <Left />
-        {children}
+        <div style={{ width: sizeBox.width, height: sizeBox.height }}>
+          <CommunityReels communityHandle={communityDetails.info.handle} sizeBox={sizeBox} />
+        </div>
         <Right />
         <Toaster />
       </div>
@@ -42,18 +48,18 @@ function Left() {
   const { toast } = useToast()
 
   return (
-    <div className="mx-2 mt-2 w-full overflow-y-auto">
-      <Avatar className="h-20 w-20 bg-red-50">
-        <AvatarImage src={communityDetailsModule?.info.profile_image} />
-        <AvatarFallback>
-          <p className="text-title-xl text-monochrome-white">{getAvatarFallback(communityDetailsModule?.info.name)}</p>
-        </AvatarFallback>
-      </Avatar>
-      <p className="line-clamp-1 break-all text-title-xl">{communityDetailsModule?.info.name}</p>
-      <p className="line-clamp-3 break-all text-body-sm">{communityDetailsModule?.info.description}</p>
+    <div className="z-0 overflow-y-auto px-4">
+      <CustomAvatar
+        className="h-20 w-20 bg-red-50"
+        imageUrl={communityDetailsModule?.info.profile_image ?? ''}
+        isAvatar={false}
+        fallbackString={communityDetailsModule?.info.name ?? ''}
+      />
+      <p className="line-clamp-1 text-title-xl">{communityDetailsModule?.info.name}</p>
+      <p className="line-clamp-3 text-body-sm">{communityDetailsModule?.info.description}</p>
       <Stats />
       <div className="my-2 flex items-center gap-x-2">
-        <DownloadDialog title="Get the Genuin app" subtitle="Get the app to join community" asChild={false}>
+        <DownloadDialog title="Get the Genuin app" subtitle="Get the app to join community" asChild>
           <Button variant="default" size="sm">
             <p className="text-title-sm text-monochrome-white">Join</p>
           </Button>
@@ -63,8 +69,8 @@ function Left() {
           outlineColor="genuin-blue"
           size="sm"
           className="p-1"
-          onClick={() =>
-            shareFn({
+          onClick={async () =>
+            await shareFn({
               shareLink: window.location.href,
               toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
             })
@@ -83,7 +89,7 @@ function Left() {
 
 function Right() {
   return (
-    <div className="ml-2 w-full">
+    <div className="z-0 px-4">
       <Leaders />
       <Members />
     </div>
@@ -113,7 +119,7 @@ function Links() {
   const links = communityDetailsModule?.info.links
   return (
     <div>
-      {(links?.instagram_url || links?.linkedin_url || links?.social_web_url || links?.twitter_url) && (
+      {(links?.instagram_url ?? links?.linkedin_url ?? links?.social_web_url ?? links?.twitter_url) && (
         <p className="my-2 text-title-md">Links</p>
       )}
       <div className="flex">
@@ -184,13 +190,13 @@ function Loops() {
       <p className="my-2 text-title-md">Popular Loops</p>
       {communityDetailsModule?.popular_loops.map((loop, index) => {
         return (
-          <Link key={index} href={{ pathname: PATH_NAME.loop(loop.share_string) }}>
+          <a key={index} href={PATH_NAME.loop(loop.share_string)}>
             <ListItem
               title={loop.name}
               image={loop.profile_image ?? undefined}
               subtitle={loop.subscriber_count + (loop.subscriber_count === 1 ? ' Subscriber' : ' Subscribers')}
             />
-          </Link>
+          </a>
         )
       })}
     </div>
@@ -210,12 +216,7 @@ function ListItem({
 }) {
   return (
     <div className="flex items-center gap-x-1 rounded-sm p-1 hover:bg-monochrome-9">
-      <Avatar className="h-9 w-9 bg-red-40">
-        <AvatarImage src={isValidHTTPS(image ?? '')} />
-        <AvatarFallback>
-          <p className="text-title-md text-monochrome-white">{getAvatarFallback(title)}</p>
-        </AvatarFallback>
-      </Avatar>
+      <CustomAvatar className="h-9 w-9 bg-red-40" imageUrl={image ?? ''} fallbackString={title} isAvatar={false} />
       <div>
         <p className="line-clamp-1 text-title-sm">{title}</p>
         {subtitle && <p className="line-clamp-1 text-cap-lg text-monochrome-black/60">{subtitle}</p>}

@@ -1,8 +1,7 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@components/ui/avatar'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
 import { Button } from '@components/ui/button'
 import type { CommunityDetailsType } from '@lib/schemas/community'
-import { checkAndAppendHttps, generateDeepLink, getAvatarFallback, isValidHTTPS, openGeneratedLink } from '@lib/utils'
+import { checkAndAppendHttps, generateDeepLink, openGeneratedLink } from '@lib/utils'
 import Image from 'next/image'
 import icShare from '@icons/icShareBlue.svg'
 import Link from 'next/link'
@@ -16,8 +15,9 @@ import { Loader } from '@components/ui/loader'
 import dynamic from 'next/dynamic'
 import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
-const DetailsNavbar = dynamic(() =>
-  import('@components/pages/community/mobile/nav-bar').then((comp) => comp.NavBar.details)
+import { CustomAvatar } from '@components/custom/custom-avatar'
+const DetailsNavbar = dynamic(
+  async () => await import('@components/pages/community/mobile/nav-bar').then((comp) => comp.NavBar.details)
 )
 
 let communityDetailsModule: CommunityDetailsType
@@ -37,14 +37,12 @@ export function ProfileDetails({ communityDetails }: Props) {
       <div className="mt-navbar h-body">
         <div className="px-4">
           <div className="flex justify-between">
-            <Avatar className="h-20 w-20 bg-red-50">
-              <AvatarImage src={communityDetailsModule?.info.profile_image} />
-              <AvatarFallback>
-                <p className="text-title-xl text-monochrome-white">
-                  {getAvatarFallback(communityDetailsModule?.info.name)}
-                </p>
-              </AvatarFallback>
-            </Avatar>
+            <CustomAvatar
+              imageUrl={communityDetailsModule?.info.profile_image}
+              fallbackString={communityDetailsModule?.info.name}
+              isAvatar={false}
+              className="h-20 w-20 bg-red-50"
+            />
             <div className="my-2 flex items-center gap-x-2">
               <Button
                 variant="default"
@@ -63,7 +61,9 @@ export function ProfileDetails({ communityDetails }: Props) {
                     utmMedium: 'web',
                     utmSource: window.location.hostname,
                   })
-                    .then((generatedLink) => openGeneratedLink(generatedLink))
+                    .then((generatedLink) => {
+                      openGeneratedLink(generatedLink)
+                    })
                     .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
                 }}>
                 <p className="mx-2 text-title-sm text-monochrome-white">Join</p>
@@ -73,8 +73,8 @@ export function ProfileDetails({ communityDetails }: Props) {
                 outlineColor="genuin-blue"
                 size="sm"
                 className="p-1"
-                onClick={() =>
-                  shareFn({
+                onClick={async () =>
+                  await shareFn({
                     shareLink: window.location.href,
                     toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                   })
@@ -201,7 +201,6 @@ function LoopItem({ loopDetails }: { loopDetails: any }) {
       alt={`frontimage${index}`}
     />
   ))
-
   function getSubscribersCountString(count: any) {
     let str = ' + '
     if (!count) return
@@ -218,26 +217,23 @@ function LoopItem({ loopDetails }: { loopDetails: any }) {
       <div
         className="relative mt-5 w-full rounded-lg border"
         style={{ backgroundColor: 'rgba(6, 69, 255, 0.05)', border: '1px solid rgba(6, 69, 255, 0.40)' }}>
-        <div style={{ display: 'flex', padding: '3%', width: '70%', alignItems: 'center' }}>
-          <Avatar className="h-12 w-12 bg-red-50">
-            <AvatarImage src={loopDetails.profile_image} />
-            <AvatarFallback>
-              <p className="text-title-xl text-monochrome-white">{getAvatarFallback(loopDetails.name)}</p>
-            </AvatarFallback>
-          </Avatar>
+        <div className="flex w-[70%] items-center p-[3%]">
+          <CustomAvatar
+            className="h-12 w-12 bg-red-50"
+            imageUrl={loopDetails.profile_image}
+            isAvatar={false}
+            fallbackString={loopDetails.name}
+          />
           <p className="ml-2 text-title-sm">{loopDetails.name}</p>
         </div>
         <div className="h-[60%] p-4" style={{ backgroundColor: 'rgba(6, 69, 255, 0.05)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '2%', width: '70%' }}>
+          <div className="mb-[2%] flex w-[70%] items-center">
             {loopDetails.owner.profile_image && (
-              <img
-                style={{
-                  height: '24px',
-                  width: '24px',
-                  borderRadius: '50%',
-                  zIndex: 2,
-                }}
-                src={loopDetails.owner.profile_image}
+              <CustomAvatar
+                className="-6 w-6 bg-red-50"
+                imageUrl={loopDetails.owner.profile_image ?? ''}
+                isAvatar={loopDetails.owner.is_avatar}
+                fallbackString={loopDetails.owner.name ?? ''}
               />
             )}
             <p className="text-new-para-2-mobile">
@@ -345,12 +341,12 @@ function ListItem({
 }) {
   return (
     <div className="flex items-center gap-x-1 rounded-sm p-1 hover:bg-monochrome-9">
-      <Avatar className="h-12 w-12 bg-red-40">
-        <AvatarImage src={isValidHTTPS(image ?? '')} />
-        <AvatarFallback>
-          <p className="text-title-md text-monochrome-white">{getAvatarFallback(title)}</p>
-        </AvatarFallback>
-      </Avatar>
+      <CustomAvatar
+        className="h-12 w-12 bg-red-40"
+        imageUrl={image ?? ''}
+        fallbackString={title ?? ''}
+        isAvatar={false}
+      />
       <div className="mx-2">
         <p className="line-clamp-1 text-title-sm">{title}</p>
         {subtitle && <p className="line-clamp-1 text-cap-lg text-monochrome-black/60">{subtitle}</p>}

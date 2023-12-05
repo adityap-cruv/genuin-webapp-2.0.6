@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import { VariantProps, cva } from 'class-variance-authority'
+import { type VariantProps, cva } from 'class-variance-authority'
 import { cn } from '@lib/utils'
 
 const burgerVariants = cva('', {
@@ -12,11 +12,11 @@ const burgerVariants = cva('', {
   },
 })
 
-interface Props extends VariantProps<typeof burgerVariants> {
-  onOpen?: Function
-  onClose?: Function
+type Props = {
+  onOpen?: () => void
+  onClose?: () => void
   toggleToClose?: boolean
-}
+} & VariantProps<typeof burgerVariants>
 
 export function HamBurgerMenuIcon({
   variant = 'dark',

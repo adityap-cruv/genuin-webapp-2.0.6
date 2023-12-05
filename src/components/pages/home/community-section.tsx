@@ -1,15 +1,15 @@
 import Image from 'next/image'
-import { Avatar, AvatarFallback, AvatarImage } from '@components/ui/avatar'
 import { Button } from '@components/ui/button'
 import { LeftScrollButtonIcon, RightScrollButtonIcon } from './horizontal-scroll-icons'
 import icShare from '@icons/icShareBlue.svg'
-import React, { useRef } from 'react'
-import { getAvatarFallback } from '@lib/utils'
+import React, { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { Toaster } from '@components/ui/toaster'
 import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { isMobile } from 'react-device-detect'
+import { CustomAvatar } from '@components/custom/custom-avatar'
+import { useInView } from 'framer-motion'
 
 export function CommunitySection() {
   const communityList = [
@@ -39,26 +39,77 @@ export function CommunitySection() {
     },
   ]
   const divRef = useRef<HTMLDivElement>(null)
+  const firstDivRef = useRef<HTMLDivElement>(null)
+  const lastDivRef = useRef<HTMLDivElement>(null)
   const { toast } = useToast()
   const { shareFn } = useAdaptiveShare()
+  // const isAtFirst = useInViewport(firstDivRef)
+  // const isAtLast = useInViewport(lastDivRef)
+  const isAtFirst = useInView(firstDivRef)
+  const isAtLast = useInView(lastDivRef)
+
+  const [scrollLeft, setScrollLeft] = useState(0)
+  const [totalWidth, setTotalWidth] = useState(0)
+
+  const calculateTotalWidth = () => {
+    let totalWidth = 0
+    if (divRef.current) {
+      Array.from(divRef.current.childNodes).forEach((childNode: any) => {
+        if (childNode instanceof HTMLElement) {
+          totalWidth += childNode.getBoundingClientRect().width
+        }
+      })
+    }
+    setTotalWidth(totalWidth)
+    return totalWidth
+  }
+
+  useEffect(() => {
+    calculateTotalWidth()
+  }, [communityList])
+
+  const updateScroll = () => {
+    if (divRef.current) {
+      setScrollLeft(divRef.current.scrollLeft)
+    }
+  }
+
+  useEffect(() => {
+    const handleScroll = () => {
+      updateScroll()
+    }
+    if (divRef.current) {
+      divRef.current.addEventListener('scroll', handleScroll)
+    }
+    return () => {
+      if (divRef.current) {
+        divRef.current.removeEventListener('scroll', handleScroll)
+      }
+    }
+  }, [])
 
   return (
     <div className="flex w-full flex-col gap-y-10">
       <div ref={divRef} className="hide-scrollbar scroll-snap-always flex snap-x overflow-x-auto px-4 sm:px-0 sm:pl-5 ">
+        <div ref={firstDivRef} style={{ width: '2px' }}>
+          &nbsp;
+        </div>
         {communityList.map((item, index) => {
           return (
             <React.Fragment key={index}>
               <div
                 onClick={() => (window.location.href = item.link)}
                 style={{ WebkitBoxSizing: 'border-box' }}
-                className={`m-4 box-border flex min-w-full snap-center flex-col gap-y-1 rounded-[20px] border-2 border-transparent p-6 outline outline-1 outline-new-light-grey hover:border-2 ${!isMobile && 'hover:border-primary hover:shadow-md'} hover:outline-0 sm:min-w-max sm:max-w-md`}>
+                className={`m-4 box-border flex min-w-full snap-center flex-col gap-y-1 rounded-[20px] border-2 border-transparent p-6 outline outline-1 outline-new-light-grey hover:border-2 ${
+                  !isMobile && 'hover:border-primary hover:shadow-md hover:outline-0'
+                } sm:min-w-max sm:max-w-md`}>
                 <div className="flex w-full justify-between">
-                  <Avatar className="h-20 w-20 rounded-full bg-red-40">
-                    <AvatarImage src={item.profile_image} className="object-cover" />
-                    <AvatarFallback>
-                      <p className="text-title-xl text-new-off-white">{getAvatarFallback(item.name)}</p>
-                    </AvatarFallback>
-                  </Avatar>
+                  <CustomAvatar
+                    className="h-20 w-20 rounded-full bg-red-40"
+                    imageUrl={item.profile_image}
+                    isAvatar={false}
+                    fallbackString={item.name}
+                  />
                   <div className="flex items-center gap-x-2">
                     <Link href={item.link}>
                       <Button size="sm" className="px-4">
@@ -90,6 +141,9 @@ export function CommunitySection() {
             </React.Fragment>
           )
         })}
+        <div ref={lastDivRef} style={{ width: '2px' }}>
+          &nbsp;
+        </div>
       </div>
       <div className="flex justify-between px-3">
         <Button
@@ -100,9 +154,10 @@ export function CommunitySection() {
             if (!div) return
             div.scrollBy({ left: -div.getBoundingClientRect().width, behavior: 'smooth' })
           }}>
-          <LeftScrollButtonIcon disabled={false} />
+          <LeftScrollButtonIcon disabled={isAtFirst} />
         </Button>
         <Button
+          disabled={scrollLeft + window.innerWidth >= totalWidth ?? isAtLast}
           variant="outline"
           className="border-none"
           onClick={(e) => {
@@ -110,7 +165,7 @@ export function CommunitySection() {
             if (!div) return
             div.scrollBy({ left: div.getBoundingClientRect().width, behavior: 'smooth' })
           }}>
-          <RightScrollButtonIcon disabled={false} />
+          <RightScrollButtonIcon disabled={isAtLast} />
         </Button>
       </div>
     </div>

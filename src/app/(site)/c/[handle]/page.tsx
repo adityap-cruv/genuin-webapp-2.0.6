@@ -1,7 +1,7 @@
 import { fetchCommunityDetails } from '@lib/api/community'
 import { cookies } from 'next/headers'
 import { MainComponent } from './main-component'
-import { Metadata } from 'next'
+import { type Metadata } from 'next'
 
 interface Props {
   params: {
@@ -27,17 +27,20 @@ export default async function Component({ params, searchParams }: Props) {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const communityData = await fetchCommunityDetails(params.handle)
   const title = `${communityData.info.name}`
-  let desc = `${communityData.info.description}`
+  const desc = `${communityData.info.description}`
 
- 
+
   return {
-    title: title,
+    title,
     applicationName: 'Genuin',
-    description: desc,
+    description: desc || '',
     openGraph: {
-      title: title,
+      title,
       description: desc,
       url: `${process.env.NEXT_PUBLIC_HOST_URL}/c/${params.handle}`,
+      images: [
+        { url: communityData.info.preview_image }
+      ]
     },
   }
 }
