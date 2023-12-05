@@ -169,10 +169,10 @@ function LoopSubscribers({ loopId }: any) {
   const { data, isLoading, isError } = getLoopCohosts(loopDetailsModule.chat_id, 'subscribers')
   return (
     <div className="h-full pt-3">
-      {isLoading && <Loader className='pt-32' size="md" />}
+      {isLoading && <Loader className="pt-32" size="md" />}
       {isError && <div>Something went wrong...</div>}
       {data && data.length === 0 && (
-        <div className="flex pt-32 items-center justify-center text-title-md text-secondary">No subscribers yet</div>
+        <div className="flex items-center justify-center pt-32 text-title-md text-secondary">No subscribers yet</div>
       )}
       {data && data.length !== 0 && (
         <div className="h-full w-full overflow-auto">
@@ -216,6 +216,7 @@ function Stats({
   )
 }
 
+// todo check where is divRef.
 function HorizontalVideosList({ loopId }: { loopId: string }) {
   const divRef = useRef<HTMLDivElement>(null)
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getLoopVideos(loopId)
@@ -229,9 +230,9 @@ function HorizontalVideosList({ loopId }: { loopId: string }) {
 
   return (
     <div className="relative mt-4 h-full w-full">
-      {isLoading && <Loader className='pt-32' size="md" />}
+      {isLoading && <Loader className="pt-32" size="md" />}
       {data?.pages.flatMap((page) => page.videos).length === 0 && (
-        <div className="flex items-center pt-32 justify-center text-title-md text-secondary">No videos available</div>
+        <div className="flex items-center justify-center pt-32 text-title-md text-secondary">No videos available</div>
       )}
       <div className="grid grid-cols-2 gap-4">
         {data?.pages
@@ -277,10 +278,10 @@ function Cohosts({ loopId }: { loopId: string }) {
   const { data, isLoading, isError } = getLoopCohosts(loopDetailsModule.chat_id, 'members')
   return (
     <div className="h-full pt-3">
-      {isLoading && <Loader className='pt-32' size="md" />}
+      {isLoading && <Loader className="pt-32" size="md" />}
       {isError && <div>Something went wrong...</div>}
       {data && data.length === 0 && (
-        <div className="flex pt-32 items-center justify-center text-title-md text-secondary">No collaborators yet</div>
+        <div className="flex items-center justify-center pt-32 text-title-md text-secondary">No collaborators yet</div>
       )}
       {data && data.length !== 0 && (
         <div className="h-full w-full overflow-auto">

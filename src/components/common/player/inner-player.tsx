@@ -1,5 +1,5 @@
 import OpenPlayerJS from 'openplayerjs'
-import { useInView } from 'framer-motion'
+import { inView, useInView } from 'framer-motion'
 import { type DetailedHTMLProps, type ReactEventHandler, type VideoHTMLAttributes, useEffect, useRef } from 'react'
 import { usePlayerControlStore } from './player-control-store'
 
@@ -21,6 +21,7 @@ export function InnerPlayer({
   onCanPlay,
   onPause,
   onError,
+  ...props
 }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const localRef = useRef<{
@@ -134,6 +135,7 @@ export function InnerPlayer({
         onTimeUpdate={onTimeUpdateEventHandler}
         onPause={onPause}
         onEnded={onEnded}
+        {...props}
       />
     )
 }
@@ -149,6 +151,7 @@ export function ViewportPlayer({
   onCanPlay,
   onPause,
   onError,
+  ...props
 }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const localRef = useRef<{
@@ -239,6 +242,7 @@ export function ViewportPlayer({
         }}
         onPause={onPause}
         onEnded={onEnded}
+        {...props}
       />
     )
 }
