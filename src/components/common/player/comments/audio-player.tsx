@@ -48,6 +48,7 @@ export function AudioPlayer({ url, waveWidth, waveHeight, pipeWidth, gapWidth, c
     }
   }, [shouldPlay])
 
+  // console.log('progress::', progress)
   return (
     <div ref={elementRef} className="flex rounded-xl border-2 border-monochrome-9 p-2">
       <button
@@ -61,18 +62,19 @@ export function AudioPlayer({ url, waveWidth, waveHeight, pipeWidth, gapWidth, c
         onTimeUpdate={(e) => {
           setProgress((x) => {
             x.currentTime = audioRef.current?.currentTime ?? 0
-            return { ...x }
-          })
-        }}
-        onDurationChange={(e) => {
-          setProgress((x) => {
             x.duration = audioRef.current?.duration ?? 0
             return { ...x }
           })
         }}
+        // onDurationChange={(e) => {
+        //   console.log('e::', e)
+        //   setProgress((x) => {
+        //     x.duration = audioRef.current?.duration ?? 0
+        //     return { ...x }
+        //   })
+        // }}
         ref={audioRef}
         src={url}
-        loop
       />
       <div>
         <div

@@ -1,4 +1,4 @@
-import { validateCommentList } from '@lib/schemas/loop/comment'
+import { type CommentListType, validateCommentList } from '@lib/schemas/loop/comment'
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 
@@ -65,26 +65,37 @@ export function getLoopCohosts(chatId: string, type: string) {
   })
 }
 
-async function fetchLoopVideoComments(videoShareString: string) {
-  return await axios
-    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/rt/page_comments', {
-      params: {
-        loop_video_ss: videoShareString,
-        page: 0,
-      },
-    })
-    .then((res) => {
-      return validateCommentList(res.data.data)
-    })
-    .catch((e) => {
-      console.log('something went wrong with comments api.')
-      throw new Error('Something went wrong with comments api!')
-    })
-}
-
 export function getLoopVideoComments(videoShareString: string) {
-  return useQuery({
-    queryFn: async () => await fetchLoopVideoComments(videoShareString),
+  let promise: Promise<{ comments: CommentListType; page: number }> | null = null
+  return useInfiniteQuery({
+    queryFn: async ({ pageParam }) => {
+      if (!promise) {
+        const nextPage = pageParam ?? 0
+        promise = axios
+          .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/rt/page_comments', {
+            params: {
+              loop_video_ss: videoShareString,
+              page: nextPage,
+            },
+          })
+          .then((res) => {
+            return { comments: validateCommentList(res.data.data), page: nextPage + 1 }
+          })
+          .catch((e) => {
+            throw new Error('Something went wrong with comments api!')
+          })
+          .finally(() => {
+            promise = null
+          })
+      }
+      return await promise
+    },
+    getNextPageParam(lastPage) {
+      if (lastPage.comments.length === 0) {
+        return undefined
+      }
+      return lastPage.page
+    },
     queryKey: ['comments', videoShareString],
   })
 }
