@@ -92,24 +92,7 @@ export function Actions({
                   <ActionItem
                     title="See Comments!"
                     onClick={() => {
-                      generateDeepLink({
-                        action: 'comment',
-                        contentType: 'loop',
-                        title: null,
-                        description: null,
-                        fromUserName: null,
-                        pathName: window.location.pathname,
-                        previewImage: null,
-                        sourceId: videoData?.video.id,
-                        utmCampaign: 'share',
-                        utmMedium: 'web',
-                        utmSource: window.location.hostname,
-                        parentId: videoData?.loop?.share_string,
-                      })
-                        .then((link) => {
-                          openGeneratedLink(link)
-                        })
-                        .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
+                      commentsIsOpen ? closeComments() : openComments(videoData?.video.share_string)
                     }}>
                     <Image src={icComment} alt="comments" height={32} width={32} />
                     <p className="flex justify-center text-body-sm text-monochrome-white">
@@ -187,20 +170,18 @@ export function Actions({
                 </DownloadDialog>
               )}
               {isLoop && (
-                <DownloadDialog title="Get the Genuin app" subtitle="Get the app to comment.">
-                  <ActionItem
-                    onClick={(e) => {
-                      commentsIsOpen ? closeComments() : openComments(videoData?.video.share_string)
-                    }}
-                    title="See Comments!">
-                    <Image src={icComment} alt="comments" height={32} width={32} />
-                    <p className="flex justify-center text-body-sm text-monochrome-white">
-                      {videoData?.video.no_of_comments === null
-                        ? 0
-                        : abbreviateNumber(videoData?.video.no_of_comments ?? 0)}
-                    </p>
-                  </ActionItem>
-                </DownloadDialog>
+                <ActionItem
+                  onClick={(e) => {
+                    commentsIsOpen ? closeComments() : openComments(videoData?.video.share_string)
+                  }}
+                  title="See Comments!">
+                  <Image src={icComment} alt="comments" height={32} width={32} />
+                  <p className="flex justify-center text-body-sm text-monochrome-white">
+                    {videoData?.video.no_of_comments === null
+                      ? 0
+                      : abbreviateNumber(videoData?.video.no_of_comments ?? 0)}
+                  </p>
+                </ActionItem>
               )}
               <ActionItem
                 title="Share Video!"
