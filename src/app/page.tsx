@@ -3,6 +3,7 @@ import { NavBar } from '@components/pages/home/nav-bar'
 import { Footer } from '@components/pages/home/footer'
 import { MainComponent } from '@components/pages/home/main-component'
 import { cookies } from 'next/headers'
+import Script from 'next/script'
 
 // todo configure eslint plugin
 // todo work on parallel routing for developing mobile and desktop components differently
@@ -14,6 +15,16 @@ export default async function Page() {
       <NavBar />
       <MainComponent isMobile={isMobile} />
       <Footer isMobile={isMobile} />
+      <Script src={`https://www.googletagmanager.com/gtag/js?id=${process.env.GA_MEASUREMENT_ID}`} />
+      <Script id="google-analytics">
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+ 
+          gtag('config', '${process.env.GA_MEASUREMENT_ID}');
+        `}
+      </Script>
     </main>
   )
 }
