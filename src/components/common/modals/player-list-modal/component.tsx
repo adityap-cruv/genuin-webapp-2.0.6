@@ -68,11 +68,15 @@ export function Component({ videosData, startIndex, onOpenChange, closeModal }: 
   }, [])
 
   useEffect(() => {
-    if (currentIndex !== -1)
+    if (currentIndex !== -1) {
+      const query = videoDetails.loop?.share_string ?
+        [{ key: 'l', value: videoDetails.loop?.share_string ?? null }] :
+        []
       replaceUrlWithoutReload({
         pathname: PATH_NAME.video(videoDetails.video.share_string),
-        query: [{ key: 'l', value: videoDetails?.loop?.share_string ?? '' }],
+        query
       })
+    }
   }, [currentIndex])
 
   return (
