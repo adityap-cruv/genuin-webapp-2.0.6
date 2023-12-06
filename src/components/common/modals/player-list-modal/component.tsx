@@ -9,6 +9,8 @@ import { type VideoDataListType } from '@lib/schemas/video'
 import dynamic from 'next/dynamic'
 import { useVideoSizeBox } from '@hooks/use-video-size-box'
 import { Loader } from '@components/ui/loader'
+import { replaceUrlWithoutReload } from '@lib/utils'
+import { PATH_NAME } from '@lib/utils/constants/path'
 const Player = dynamic(async () => await import('@components/common/player').then((comp) => comp.default), {
   loading(loadingProps) {
     return <Loader size="lg" />
@@ -64,6 +66,14 @@ export function Component({ videosData, startIndex, onOpenChange, closeModal }: 
       window.removeEventListener('popstate', handlePopState)
     }
   }, [])
+
+  useEffect(() => {
+    if (currentIndex !== -1)
+      replaceUrlWithoutReload({
+        pathname: PATH_NAME.video(videoDetails.video.share_string),
+        query: [{ key: 'l', value: videoDetails.loop?.share_string ?? null }],
+      })
+  }, [currentIndex])
 
   return (
     <PlayerDialog modal open onOpenChange={onOpenChange}>
