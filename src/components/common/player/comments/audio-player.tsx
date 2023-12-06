@@ -45,12 +45,12 @@ export function AudioPlayer({ url, commentShareString, onClick }: Props) {
   }, [shouldPlay])
 
   useEffect(() => {
-    const _netWidth = getComputedStyle(elementRef.current!).width
-    const _btnWidth = getComputedStyle(btnRef.current!).width
+    if (!elementRef.current || !btnRef.current) return;
+    const _netWidth = getComputedStyle(elementRef.current).width
+    const _btnWidth = getComputedStyle(btnRef.current).width
     const netWidth = +_netWidth.substring(0, _netWidth.length - 2)
     const btnWidth = +_btnWidth.substring(0, _btnWidth.length - 2)
     const width = netWidth - 8 - btnWidth - 30
-    console.log({ width, btnWidth, netWidth })
     setWaveWidth(width)
   }, [])
 
