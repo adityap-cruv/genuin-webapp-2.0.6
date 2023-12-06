@@ -14,6 +14,7 @@ COPY postcss.config.js ./postcss.config.js
 COPY .eslintrc.json ./.eslintrc.json
 COPY .prettierrc.json ./.prettierrc.json
 COPY .env ./.env
+COPY .env.production.local ./.env.production.local
 
 # Install project dependencies
 RUN npm install
