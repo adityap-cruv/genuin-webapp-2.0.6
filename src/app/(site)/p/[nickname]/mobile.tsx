@@ -32,7 +32,7 @@ export function Mobile({ profileData }: CompProps) {
         <div className="px-2">
           <div className="flex w-full items-center justify-between">
             <CustomAvatar
-              imageUrl={profileData?.name}
+              imageUrl={profileData?.profile_image}
               isAvatar={profileData?.is_avatar}
               fallbackString={profileData?.name}
               className="h-20 w-20"
