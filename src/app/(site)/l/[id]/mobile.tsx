@@ -57,7 +57,7 @@ export function Mobile({ loopDetails }: Props) {
                         isAvatar={loopDetails.owner.is_avatar}
                       />
                     </div>
-                    <p className="ml-1 text-title-sm">@{loopDetails.owner.name}</p>
+                    <p className="ml-1 text-title-sm">@{loopDetails.owner.nickname}</p>
                   </div>
                 </Link>
               </div>

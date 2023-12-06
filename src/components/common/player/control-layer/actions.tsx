@@ -68,8 +68,8 @@ export function Actions({
                     generateDeepLink({
                       action: 'save',
                       contentType: 'pv',
-                      title: null,
-                      description: null,
+                      title: '',
+                      description: '',
                       fromUserName: null,
                       pathName: window.location.pathname,
                       previewImage: null,
@@ -115,8 +115,8 @@ export function Actions({
                     generateDeepLink({
                       action: 'reply',
                       contentType: 'pv',
-                      title: null,
-                      description: null,
+                      title: '',
+                      description: '',
                       fromUserName: null,
                       pathName: window.location.pathname,
                       previewImage: null,

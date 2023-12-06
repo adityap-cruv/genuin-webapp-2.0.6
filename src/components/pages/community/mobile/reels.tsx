@@ -22,7 +22,7 @@ export function CommunityReels({ communityHandle }: CommunityReelsProps) {
   const { data, isLoading, fetchNextPage, isFetchingNextPage } = getCommunityVideos(communityHandle)
   const { scrollYProgress } = useScroll({ container: divRef })
   const videos = data?.pages.flatMap((item) => item.videos)
-  const sizeBox = useVideoSizeBox(true)
+  const sizeBox = useVideoSizeBox(false)
 
   useMotionValueEvent(scrollYProgress, 'change', (latest) => {
     if (isFetchingNextPage) return
