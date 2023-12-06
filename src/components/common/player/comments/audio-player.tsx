@@ -10,33 +10,29 @@ type Props = {
   onEnded?: () => void
   onTimeUpdate?: (e: React.SyntheticEvent<HTMLAudioElement, Event>) => void
   onDuration?: (e: React.SyntheticEvent<HTMLAudioElement, Event>) => void
-  waveWidth: number
-  waveHeight: number
-  pipeWidth: number
-  gapWidth: number
   onClick: () => void
   commentShareString: string
 }
 
-export function AudioPlayer({ url, waveWidth, waveHeight, pipeWidth, gapWidth, commentShareString, onClick }: Props) {
+export function AudioPlayer({ url, commentShareString, onClick }: Props) {
+  const [waveWidth, setWaveWidth] = useState(170)
+  const waveHeight = waveWidth * (40 / 170)
+  const pipeWidth = Math.min(5, waveWidth * (5 / 170))
+  const gapWidth = Math.min(2, waveWidth * (2 / 170))
   const audioRef = useRef<HTMLAudioElement>(null)
   const elementRef = useRef<HTMLDivElement>(null)
+  const btnRef = useRef<HTMLButtonElement>(null)
   const [progress, setProgress] = useState({ currentTime: 0, duration: 0 })
   const totalProgressWidth = (progress.duration ? progress.currentTime / progress.duration : 0) * waveWidth
   const elementIsInView = useInView(elementRef, { amount: 0.5 })
   const activeCommentIndex = useCommentsStore((state) => state.activeCommentIndex)
   const shouldPlay = activeCommentIndex === commentShareString && elementIsInView
 
-  // useEffect(() => {
-  //   console.log('total::', totalProgressWidth)
-  // }, [progress])
-  // console.log('progress::', progress)
-
   const pipeHeights = useMemo(() => {
     return Array(500)
       .fill(0)
       .map(() => Math.min(0.7, Math.max(Math.random(), 0.2)))
-  }, []).slice(0, waveWidth / (1.2 * pipeWidth))
+  }, []).slice(0, Math.floor(waveWidth / (gapWidth + pipeWidth)))
 
   useEffect(() => {
     const element = audioRef.current
@@ -48,15 +44,24 @@ export function AudioPlayer({ url, waveWidth, waveHeight, pipeWidth, gapWidth, c
     }
   }, [shouldPlay])
 
-  // console.log('progress::', progress)
+  useEffect(() => {
+    const _netWidth = getComputedStyle(elementRef.current!).width
+    const _btnWidth = getComputedStyle(btnRef.current!).width
+    const netWidth = +_netWidth.substring(0, _netWidth.length - 2)
+    const btnWidth = +_btnWidth.substring(0, _btnWidth.length - 2)
+    const width = netWidth - 8 - btnWidth - 30
+    console.log({ width, btnWidth, netWidth })
+    setWaveWidth(width)
+  }, [])
+
   return (
-    <div ref={elementRef} className="flex rounded-xl border-2 border-monochrome-9 p-2">
-      <button
-        className="pr-4"
-        onClick={() => {
-          onClick?.()
-        }}>
-        <Image src={!shouldPlay ? audioCommentPlay : audioCommentPause} alt="volume-control" />
+    <div ref={elementRef} className="flex w-full rounded-xl border-2 border-monochrome-9 p-2">
+      <button ref={btnRef} style={{ marginRight: '16px' }} onClick={onClick}>
+        <Image
+          style={{ minHeight: '15px', minWidth: '15px' }}
+          src={!shouldPlay ? audioCommentPlay : audioCommentPause}
+          alt="volume-control"
+        />
       </button>
       <audio
         onTimeUpdate={(e) => {
@@ -66,13 +71,7 @@ export function AudioPlayer({ url, waveWidth, waveHeight, pipeWidth, gapWidth, c
             return { ...x }
           })
         }}
-        // onDurationChange={(e) => {
-        //   console.log('e::', e)
-        //   setProgress((x) => {
-        //     x.duration = audioRef.current?.duration ?? 0
-        //     return { ...x }
-        //   })
-        // }}
+        style={{ position: 'absolute', zIndex: -1 }}
         ref={audioRef}
         src={url}
       />
@@ -91,7 +90,6 @@ export function AudioPlayer({ url, waveWidth, waveHeight, pipeWidth, gapWidth, c
               pipeWidth,
               Math.max(0, totalProgressWidth - gapWidthPassed - pipeWidthPassed)
             )
-
             return (
               <div key={i}>
                 <div
