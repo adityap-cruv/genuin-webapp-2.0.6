@@ -23,7 +23,7 @@ function Details({ variant = 'light', communityDetails }: Props) {
     <nav
       className={cn(
         variant === 'dark' ? 'bg-monochrome-black' : 'bg-monochrome-white',
-        'fixed top-0 z-50 m-auto flex h-navbar w-full px-4'
+        'fixed top-0 z-10 m-auto flex h-navbar w-full px-4'
       )}>
       <div className={cn(' container relative flex h-full items-center justify-between py-1')}>
         <div className=" absolute left-0">

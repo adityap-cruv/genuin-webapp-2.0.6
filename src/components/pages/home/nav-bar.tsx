@@ -10,25 +10,6 @@ import { DownloadAppDialog } from './download-app-dialog'
 import { HIRING_LINK } from '@lib/constants'
 
 export function NavBar() {
-  // const navRef = useRef<HTMLElement>(null)
-
-  // useEffect(() => {
-  //   /**
-  //    * here in this login navbar will be transparent if initial-component is in viewport
-  //    */
-  //   const stop = inView(
-  //     '#initial-component',
-  //     () => {
-  //       navRef.current?.classList.remove('bg-monochrome-white', 'shadow-lg')
-  //       return (entry) => {
-  //         navRef.current?.classList.add('bg-monochrome-white', 'shadow-lg')
-  //       }
-  //     },
-  //     { amount: 'some' }
-  //   )
-  //   return () => stop()
-  // }, [])
-
   return (
     <>
       <nav className="absolute top-0 z-10 m-auto hidden h-navbar w-full lg:flex ">
