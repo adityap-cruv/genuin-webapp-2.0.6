@@ -61,7 +61,7 @@ function getUrlToChange(urlObj: UrlObjType) {
     }
   })
   replaceUrlObj.pathname = urlObj.pathname ?? ''
-  replaceUrlObj.search = searchParams.toString()
+  replaceUrlObj.search = urlObj.query.length > 0 ? searchParams.toString() : ''
   return replaceUrlObj.href
 }
 

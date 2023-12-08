@@ -133,7 +133,7 @@ function CommentItem({ comment }: { comment: CommentType }) {
         imageUrl={comment.owner?.profile_image}
         isAvatar={comment.owner.is_avatar}
       />
-      <div className="flex flex-col items-start gap-y-1">
+      <div className="flex flex-col items-start gap-y-1 w-full">
         <p className="text-title-md">@{comment.owner.nickname}</p>
         <UI comment={comment} />
       </div>
@@ -170,10 +170,6 @@ const Comment = {
       <AudioPlayer
         commentShareString={comment.comment.share_string}
         url={comment.comment.url ?? ''}
-        waveWidth={170}
-        waveHeight={50}
-        pipeWidth={5}
-        gapWidth={2}
         onClick={() => {
           if (activeCommentIndex === comment.comment.share_string) {
             setActiveCommentIndex('')
