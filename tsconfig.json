@@ -38,6 +38,9 @@
       ],
       "@images/*": [
         "./public/images/*"
+      ],
+      "@analytics/*": [
+        "./src/services/analytics/*"
       ]
     }
   },
