@@ -1,8 +1,9 @@
+// TODO: change optional ot non-optional params.
 export const PATH_NAME = {
-  loop: (id?: string) => `/l/${id}`,
-  video: (id?: string) => `/v/${id}`,
-  profile: (id?: string) => `/p/${id}`,
-  community: (id?: string) => `/c/${id}`,
+  loop: (id?: string) => `/app/loop/${id}`,
+  video: (id?: string) => `/app/video/${id}`,
+  profile: (id?: string) => `/app/profile/${id}`,
+  community: (id?: string) => `/app/community/${id}`,
   terms: `/terms`,
   privacy: `/privacy`,
 }
