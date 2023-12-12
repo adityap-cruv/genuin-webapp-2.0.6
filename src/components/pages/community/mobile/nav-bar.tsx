@@ -1,5 +1,5 @@
 'use client'
-import { GenuinLogo } from '@components/ui/genuin-logo'
+import { GenuinAdaptiveLogo } from '@components/ui/genuin-logo'
 import Link from 'next/link'
 import { cn } from '@lib/utils'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@components/ui/dropdown-menu'
@@ -27,7 +27,7 @@ function Details({ variant = 'light', communityDetails }: Props) {
       )}>
       <div className={cn(' container relative flex h-full items-center justify-between py-1')}>
         <div className=" absolute left-0">
-          <GenuinLogo.adaptive variant={isVariantLight ? 'light' : 'dark'} />
+          <GenuinAdaptiveLogo variant={isVariantLight ? 'light' : 'dark'} />
         </div>
         <div
           className="absolute left-[50%] flex items-center justify-between"
@@ -96,7 +96,7 @@ function Reels({ communityDetails }: ReelsProps) {
     <nav className={'fixed top-0 z-50 m-auto flex h-navbar w-full px-4'}>
       <div className={' container relative flex h-full items-center justify-between py-1'}>
         <div className="absolute left-0">
-          <GenuinLogo.adaptive variant="light" />
+          <GenuinAdaptiveLogo variant="light" />
         </div>
         <div
           onClick={(e) => {

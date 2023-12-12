@@ -1,4 +1,4 @@
-import { Config } from 'tailwindcss'
+import { type Config } from 'tailwindcss'
 import * as defaultTheme from 'tailwindcss/defaultTheme'
 module.exports = {
   darkMode: ['class'],
@@ -128,6 +128,13 @@ module.exports = {
         body: 'calc(100% - 74px)',
         navbar: '74px',
       },
+      flexGrow: {
+        3: '3',
+        4: '4',
+        5: '5',
+        6: '6',
+        9: '9',
+      },
       container: {
         center: true,
         padding: {
@@ -156,6 +163,9 @@ module.exports = {
       minWidth: {
         tablet: '768px',
         lg: '1074px',
+      },
+      maxWidth: {
+        1440: '1440px',
       },
       keyframes: {
         'accordion-down': {

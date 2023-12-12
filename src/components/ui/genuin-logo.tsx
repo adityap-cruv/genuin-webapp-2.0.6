@@ -15,7 +15,7 @@ const logoVariant = cva('', {
 
 type Logoprops = Record<string, unknown> & VariantProps<typeof logoVariant>
 
-function Logo({ variant = 'dark' }: Logoprops) {
+export function GenuinLogo({ variant = 'dark' }: Logoprops) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -35,7 +35,7 @@ function Logo({ variant = 'dark' }: Logoprops) {
   )
 }
 
-function Symbol({ variant = 'dark' }: Logoprops) {
+export function GenuinSymbol({ variant = 'dark' }: Logoprops) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -48,7 +48,7 @@ function Symbol({ variant = 'dark' }: Logoprops) {
   )
 }
 
-function Text({ variant = 'dark' }: Logoprops) {
+export function GenuinText({ variant = 'dark' }: Logoprops) {
   return (
     <Link href={'/'} className="hover:opacity-80">
       <svg
@@ -69,7 +69,7 @@ function Text({ variant = 'dark' }: Logoprops) {
   )
 }
 
-function AdaptiveLogo({ variant = 'dark' }: Logoprops) {
+export function GenuinAdaptiveLogo({ variant = 'dark' }: Logoprops) {
   return (
     <Link href={'/'} className="hover:opacity-50">
       <svg
@@ -91,11 +91,4 @@ function AdaptiveLogo({ variant = 'dark' }: Logoprops) {
       </svg>
     </Link>
   )
-}
-
-export const GenuinLogo = {
-  symbol: Symbol,
-  logo: Logo,
-  adaptive: AdaptiveLogo,
-  text: Text,
 }

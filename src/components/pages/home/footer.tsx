@@ -1,6 +1,6 @@
 'use client'
 import { Button } from '@components/ui/button'
-import { GenuinLogo } from '@components/ui/genuin-logo'
+import { GenuinText } from '@components/ui/genuin-logo'
 import Link from 'next/link'
 import { DownloadAppDialog } from './download-app-dialog'
 import { MOBILE_DOWNLOAD_APP_LINK } from '@lib/constants'
@@ -27,7 +27,7 @@ export function Footer({ isMobile }: Props) {
           <div
             className="flex flex-col gap-y-10 bg-new-off-black px-20 pb-8 pt-12 text-primary-foreground"
             style={{ borderRadius: '20px 20px 0px 0px' }}>
-            <GenuinLogo.text variant="light" />
+            <GenuinText variant="light" />
             <div className="flex justify-between text-new-para-1">
               <div>
                 <p>© 2023 Genuin Inc.</p>
@@ -58,7 +58,7 @@ export function Footer({ isMobile }: Props) {
           <div
             className="mt-5 flex items-center justify-between gap-y-10 bg-new-off-black p-5 text-primary-foreground"
             style={{ borderRadius: '20px 20px 0px 0px' }}>
-            <GenuinLogo.text variant="light" />
+            <GenuinText variant="light" />
             <p className="text-new-para-2-mobile sm:text-new-para-2">© 2023 Genuin Inc.</p>
           </div>
         </div>

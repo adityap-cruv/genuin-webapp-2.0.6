@@ -1,7 +1,7 @@
 'use client'
 import { cn } from '@lib/utils'
 import { Button } from '@components/ui/button'
-import { GenuinLogo } from '@components/ui/genuin-logo'
+import { GenuinText } from '@components/ui/genuin-logo'
 import { HamBurgerMenuIcon } from '@components/ui/ham-burger'
 import Link from 'next/link'
 import { Sheet, SheetContent, SheetTrigger } from '@components/ui/sheet'
@@ -14,7 +14,7 @@ export function NavBar() {
     <>
       <nav className="absolute top-0 z-10 m-auto hidden h-navbar w-full lg:flex ">
         <div className={cn('container flex h-full w-full items-center justify-between py-1')}>
-          <GenuinLogo.text variant="black" />
+          <GenuinText variant="black" />
           <div className="flex items-center gap-x-4">
             <Link href={HIRING_LINK}>
               <Button
@@ -35,7 +35,7 @@ export function NavBar() {
       </nav>
       <nav className="absolute top-0 z-10 m-auto h-navbar w-full lg:hidden ">
         <div className={cn('flex h-full items-center justify-between py-1 pl-2')}>
-          <GenuinLogo.text variant="black" />
+          <GenuinText variant="black" />
           <div className="flex items-center gap-x-2">
             <Sheet modal={true}>
               <SheetTrigger>
