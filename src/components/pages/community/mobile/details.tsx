@@ -213,7 +213,7 @@ function LoopItem({ loopDetails }: { loopDetails: any }) {
   }
 
   return (
-    <a href={`/l/${loopDetails.share_string}?v=${loopDetails.videos[0].share_string}`}>
+    <Link href={`/l/${loopDetails.share_string}?v=${loopDetails.videos[0].share_string}`}>
       <div
         className="relative mt-5 w-full rounded-lg border"
         style={{ backgroundColor: 'rgba(6, 69, 255, 0.05)', border: '1px solid rgba(6, 69, 255, 0.40)' }}>
@@ -245,7 +245,7 @@ function LoopItem({ loopDetails }: { loopDetails: any }) {
         </div>
         {renderedImages}
       </div>
-    </a>
+    </Link>
   )
 }
 
