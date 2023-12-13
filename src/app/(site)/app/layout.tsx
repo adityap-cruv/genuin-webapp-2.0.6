@@ -3,7 +3,7 @@ import { SideBar } from './side-bar'
 import { TopBar } from './top-bar'
 import { cookies } from 'next/headers'
 
-export default function AppLayout({ children }: { children: { mobile: any; desktop: any } }) {
+export default function AppLayout(props: any) {
   const isMobile = cookies().get('mobile')?.value === 'true'
   if (!isMobile)
     return (
@@ -13,9 +13,9 @@ export default function AppLayout({ children }: { children: { mobile: any; deskt
           <section className="lg:flex-[2]">
             <SideBar />
           </section>
-          <section className="flex-[10] rounded-bl-lg">{children.desktop}</section>
+          <section className="flex-[10] rounded-bl-lg">{props.desktop}</section>
         </section>
       </main>
     )
-  return <main>{children.mobile}</main>
+  return <main>{props.mobile}</main>
 }
