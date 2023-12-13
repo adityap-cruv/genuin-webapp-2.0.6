@@ -17,12 +17,12 @@ const CommunityReels = dynamic(
   }
 )
 
-interface Props {
+type Props = {
   communityDetails: CommunityDetailsType
   showDetails: boolean
 }
 
-export function Mobile({ communityDetails, showDetails }: Props) {
+export default function Main({ communityDetails, showDetails }: Props) {
   if (showDetails) {
     return <Details communityDetails={communityDetails} />
   }

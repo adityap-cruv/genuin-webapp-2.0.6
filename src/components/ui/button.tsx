@@ -17,10 +17,11 @@ const buttonVariants = cva(
         black: 'border-new-off-black ',
       },
       size: {
-        default: 'h-10 px-2 py-2',
+        default: 'px-2 py-2',
         sm: 'rounded-md p-2 py-2',
         lg: 'h rounded-md px-8',
         'index-page': 'px-4 py-3',
+        custom: '',
       },
     },
     defaultVariants: {
@@ -38,7 +39,7 @@ export interface ButtonProps
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, outlineColor, ...props }, ref) => {
-    return <button className={cn(buttonVariants({ variant, size, className, outlineColor }))} ref={ref} {...props} />
+    return <button className={cn(buttonVariants({ variant, size, outlineColor }), className)} ref={ref} {...props} />
   }
 )
 Button.displayName = 'Button'
