@@ -1,3 +1,4 @@
+import { validateCommunityDetails } from '@lib/schemas/community'
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 
@@ -8,7 +9,7 @@ export async function fetchCommunityDetails(handle: string) {
         community_handle: handle,
       },
     })
-    .then((res) => res.data.data)
+    .then((res) => validateCommunityDetails(res.data.data))
     .catch((e) => {
       throw new Error('Something went wrong with community detail!')
     })
