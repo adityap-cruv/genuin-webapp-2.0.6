@@ -9,16 +9,18 @@ import { Toaster } from '@components/ui/toaster'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import CustomDecorativeList from '@components/custom/custom-decorative-list'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@components/ui/accordion'
+import { getAllCommunities, getAllLoops, getPaginatedLoopVideos } from '@lib/api/profile'
+import { Loader } from '@components/ui/loader'
+import { useState } from 'react'
 
 interface CompProps {
   profileData: any
 }
 
 export function MainComponent({ profileData }: CompProps) {
+  const { data, isLoading, isError } = getAllCommunities(profileData?.nickname)
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
-  const communities = ['Community 1', 'Community 2']
-  const loops = ['NY Techfund 2024', 'Wine Tasting']
 
   return (
     <>
@@ -31,7 +33,7 @@ export function MainComponent({ profileData }: CompProps) {
             isAvatar={profileData?.is_avatar}
           />
           <div className="flex items-center py-1">
-            <p className="line-clamp-1 text-title-lg">{profileData?.name}</p>
+            <p className="line-clamp-1 pr-2 text-title-lg">{profileData?.name}</p>
             <p className="line-clamp-1 text-body-sm text-monochrome">@{profileData?.nickname}</p>
           </div>
           <p className="text-new-para-3 py-1">{profileData?.bio}</p>
@@ -50,32 +52,42 @@ export function MainComponent({ profileData }: CompProps) {
             <p className="pl-2 text-title-sm text-blue">Share</p>
           </Button>
         </div>
-        {communities.map((item: any, index: any) => (
-          <div key={index}>
-            &nbsp;
+        {isLoading && <Loader size="md" />}
+        {isError && <div>Something went wrong...</div>}
+        {data && data.length !== 0 && (
+          <>
             <Accordion type="single" defaultValue="connect" collapsible>
-              <AccordionItem value="connect" className="border-none ">
-                <AccordionTrigger className="m-0 p-0">
-                  <div className="flex items-center">
-                    <CustomAvatar
-                      className="bg-slate-500 h-11 w-11 bg-red-40"
-                      fallbackString={profileData?.name}
-                      imageUrl={profileData?.profile_image}
-                      isAvatar={profileData?.is_avatar}
-                    />
-                    <div className="mx-2">
-                      <p className="line-clamp-1 text-left text-title-md">{item}</p>
-                      <p className="line-clamp-1 text-new-para-2 text-monochrome">Visible to approved members only</p>
-                    </div>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent>
-                  <CustomDecorativeList loopList={loops} />
-                </AccordionContent>
-              </AccordionItem>
+              {data.map((item: any, index: any) => (
+                <div key={index}>
+                  &nbsp;
+                  <AccordionItem value={item.handle} className="border-none ">
+                    <AccordionTrigger className="m-0 p-0">
+                      <div className="flex items-center">
+                        <CustomAvatar
+                          className="bg-slate-500 h-11 w-11 bg-red-40"
+                          fallbackString={item?.name}
+                          imageUrl={item?.dp}
+                          isAvatar={false}
+                        />
+                        <div className="mx-2">
+                          <p className="line-clamp-1 text-left text-title-md">{item.name}</p>
+                          <p className="line-clamp-1 text-new-para-2 text-monochrome">
+                            Visible to approved members only
+                          </p>
+                        </div>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                      <CustomDecorativeList>
+                        <CommunityDetails userId={profileData?.nickname} communityId={item.id} />
+                      </CustomDecorativeList>
+                    </AccordionContent>
+                  </AccordionItem>
+                </div>
+              ))}
             </Accordion>
-          </div>
-        ))}
+          </>
+        )}
       </div>
       <Toaster />
     </>
@@ -98,5 +110,70 @@ function Stats({ profileData }: { profileData: any }) {
         <p className="px-1 text-cap-lg text-secondary">Communities</p>
       </div>
     </div>
+  )
+}
+
+function CommunityDetails({ userId, communityId }: any) {
+  const { data, isLoading, isError } = getAllLoops(userId, communityId)
+
+  return (
+    <>
+      &nbsp;
+      {isLoading && <Loader size="md" />}
+      {isError && <div>Something went wrong...</div>}
+      {data && data.length === 0 && <>No items</>}
+      {data && data.length !== 0 && (
+        <>
+          {data.map((item: any, index: any) => (
+            <li className="relative my-4 w-full rounded-lg bg-monochrome-9 p-4 pb-2" key={index}>
+              <LoopDetails userId={userId} loopDetails={item} />
+            </li>
+          ))}
+        </>
+      )}
+    </>
+  )
+}
+
+function LoopDetails({ userId, loopDetails }: any) {
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getPaginatedLoopVideos(
+    userId,
+    loopDetails.share_string
+  )
+
+  const [videoCount, setVideoCount] = useState(Math.max(0, loopDetails.video_count - 10))
+
+  const handleSeeMoreClick = () => {
+    void fetchNextPage()
+    if (videoCount > 0) {
+      setVideoCount((prevVideosCount) => Math.max(0, prevVideosCount - 10))
+    }
+  }
+
+  return (
+    <>
+      <p className="text-title-sm">{loopDetails.name}</p>
+      {isLoading && <Loader size="md" />}
+      {data?.pages.flatMap((page) => page.videos).length === 0 && (
+        <div className="flex items-center justify-center pt-32 text-title-md text-secondary">No videos available</div>
+      )}
+      <div className="my-2 grid w-full grid-cols-4 gap-2 md:grid-cols-8">
+        {data?.pages
+          .flatMap((page) => page)
+          .map((video, index) => (
+            <div key={video.id} className="flex flex-col items-center">
+              <img src={video.thumbnail} alt={`Video Thumbnail ${index}`} className="aspect-reel rounded" />
+            </div>
+          ))}
+      </div>
+      {isFetchingNextPage && <Loader size="md" />}
+      {hasNextPage && (
+        <p
+          className="text-blue-500 flex w-full cursor-pointer justify-center pt-2 text-cap-lg text-monochrome"
+          onClick={handleSeeMoreClick}>
+          See {videoCount} More
+        </p>
+      )}
+    </>
   )
 }
