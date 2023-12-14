@@ -126,7 +126,7 @@ function CommunityDetails({ userId, communityId }: any) {
         <>
           {data.map((item: any, index: any) => (
             <li className="relative my-4 w-full rounded-lg bg-monochrome-9 p-4 pb-2" key={index}>
-              <LoopDetails userId={userId} loopDetails={item} />
+              <LoopVideos userId={userId} loopDetails={item} />
             </li>
           ))}
         </>
@@ -135,7 +135,7 @@ function CommunityDetails({ userId, communityId }: any) {
   )
 }
 
-function LoopDetails({ userId, loopDetails }: any) {
+function LoopVideos({ userId, loopDetails }: any) {
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getPaginatedLoopVideos(
     userId,
     loopDetails.share_string
