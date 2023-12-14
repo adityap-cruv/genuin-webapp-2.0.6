@@ -1,6 +1,5 @@
 import { type Metadata } from 'next'
 import { MainComponent } from './main-component'
-import { cookies } from 'next/headers'
 import { fetchUserData } from '@lib/api/profile'
 
 interface CompProps {
@@ -11,9 +10,8 @@ interface CompProps {
 }
 
 export default async function Component({ params }: CompProps) {
-  const isMobile = cookies().get('mobile')?.value === 'true'
   const profileData = await fetchUserData(params.nickname)
-  return <MainComponent profileData={profileData} isMobile={isMobile} />
+  return <MainComponent profileData={profileData} />
 }
 
 export async function generateMetadata({ params }: CompProps): Promise<Metadata> {
