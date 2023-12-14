@@ -1,6 +1,4 @@
 type LayoutProps = {
-  mobile: any
-  desktop: any
   children: any
 }
 

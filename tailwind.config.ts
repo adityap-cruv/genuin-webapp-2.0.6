@@ -181,6 +181,9 @@ module.exports = {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
       },
+      linearGradientColors: {
+        'black-70': ['rgba(17, 17, 17, 0.00)', 'rgba(17, 17, 17, 0.70)'],
+      },
       letterSpacing: {},
     },
   },

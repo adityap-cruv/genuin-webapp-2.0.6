@@ -18,7 +18,7 @@ interface Props {
 export function Desktop({ communityDetails }: Props) {
   return (
     <>
-      <NavBar variant="light" isMobile={false} />
+      {/* <NavBar variant="light" isMobile={false} /> */}
       <CommunityDetails communityDetails={communityDetails} />
     </>
   )
