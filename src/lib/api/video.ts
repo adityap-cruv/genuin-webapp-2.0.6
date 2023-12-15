@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { validateVideoData } from '@lib/schemas/video'
 
 export async function fetchVideoDetails(videoId: string) {
   return await axios
@@ -8,8 +9,8 @@ export async function fetchVideoDetails(videoId: string) {
       },
     })
     .then((res) => {
-      // return validateVideoData(res.data.data)
-      return res.data.data
+      return validateVideoData(res.data.data)
+      // return res.data.data
     })
     .catch((e) => {
       throw new Error('Something went wrong with video details api.')
