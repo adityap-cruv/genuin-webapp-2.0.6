@@ -12,22 +12,22 @@ export function SideBar() {
   return (
     <nav className="flex h-full w-fit flex-col border-r border-monochrome-9  transition-[width] lg:w-full">
       <span className="px-1 py-4">
-        <Link href="/app/home">
+        <Link href="/home">
           <Item title="Home" isActive={pathName.includes('home')}>
             <HomeIcon isActive={pathName.includes('home')} />
           </Item>
         </Link>
-        <Link href="/app/popular">
+        <Link href="/popular">
           <Item title="Popular" isActive={pathName.includes('popular')}>
             <PopularIcon isActive={pathName.includes('popular')} />
           </Item>
         </Link>
-        <Link href="/app/latest">
+        <Link href="/latest">
           <Item title="Latest" isActive={pathName.includes('latest')}>
             <LatestIcon isActive={pathName.includes('latest')} />
           </Item>
         </Link>
-        <Link href="/app/search">
+        <Link href="/search">
           <Item title="Search" isActive={pathName.includes('search')}>
             <SearchIcon isActive={pathName.includes('search')} />
           </Item>
