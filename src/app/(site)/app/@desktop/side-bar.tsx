@@ -2,33 +2,52 @@
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { type ReactNode } from 'react'
-import { HomeIcon, LatestIcon, PopularIcon, SearchIcon } from '@icons/side-bar-icons'
+import { HomeIcon, LatestIcon, MoreIcon, PopularIcon, SearchIcon } from '@icons/side-bar-icons'
 import { cn } from '@lib/utils'
+import { PATH_NAME } from '@lib/utils/constants/path'
+import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
 
 export function SideBar() {
   const pathName = usePathname()
   return (
-    <nav className="flex h-full w-fit flex-col border-r border-monochrome-9 px-1 py-4 transition-[width] lg:w-full">
-      <Link href="/app/home">
-        <Item title="Home" isActive={pathName.includes('home')}>
-          <HomeIcon isActive={pathName.includes('home')} />
-        </Item>
-      </Link>
-      <Link href="/app/popular">
-        <Item title="Popular" isActive={pathName.includes('popular')}>
-          <PopularIcon isActive={pathName.includes('popular')} />
-        </Item>
-      </Link>
-      <Link href="/app/latest">
-        <Item title="Latest" isActive={pathName.includes('latest')}>
-          <LatestIcon isActive={pathName.includes('latest')} />
-        </Item>
-      </Link>
-      <Link href="/app/search">
-        <Item title="Search" isActive={pathName.includes('search')}>
-          <SearchIcon isActive={pathName.includes('search')} />
-        </Item>
-      </Link>
+    <nav className="flex h-full w-fit flex-col border-r border-monochrome-9  transition-[width] lg:w-full">
+      <span className="px-1 py-4">
+        <Link href="/app/home">
+          <Item title="Home" isActive={pathName.includes('home')}>
+            <HomeIcon isActive={pathName.includes('home')} />
+          </Item>
+        </Link>
+        <Link href="/app/popular">
+          <Item title="Popular" isActive={pathName.includes('popular')}>
+            <PopularIcon isActive={pathName.includes('popular')} />
+          </Item>
+        </Link>
+        <Link href="/app/latest">
+          <Item title="Latest" isActive={pathName.includes('latest')}>
+            <LatestIcon isActive={pathName.includes('latest')} />
+          </Item>
+        </Link>
+        <Link href="/app/search">
+          <Item title="Search" isActive={pathName.includes('search')}>
+            <SearchIcon isActive={pathName.includes('search')} />
+          </Item>
+        </Link>
+        <Popover>
+          <PopoverTrigger className="w-full">
+            <Item title="More">
+              <MoreIcon />
+            </Item>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-1" side="bottom" align="start">
+            <Link href={PATH_NAME.terms}>
+              <p className="rounded-md p-3 text-title-lg font-semibold hover:bg-monochrome-6/10">Terms of Service</p>
+            </Link>
+            <Link href={PATH_NAME.privacy}>
+              <p className="rounded-md p-3 text-title-lg font-semibold hover:bg-monochrome-6/10">Privacy Policy</p>
+            </Link>
+          </PopoverContent>
+        </Popover>
+      </span>
     </nav>
   )
 }

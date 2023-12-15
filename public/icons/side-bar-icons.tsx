@@ -72,3 +72,42 @@ export function SearchIcon({ isActive }: Props) {
     </svg>
   )
 }
+
+export function MoreIcon() {
+  return (
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <g filter="url(#filter0_d_42556_59248)">
+        <path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M6 19C7.65685 19 9 17.6569 9 16C9 14.3431 7.65685 13 6 13C4.34315 13 3 14.3431 3 16C3 17.6569 4.34315 19 6 19ZM16 19C17.6569 19 19 17.6569 19 16C19 14.3431 17.6569 13 16 13C14.3431 13 13 14.3431 13 16C13 17.6569 14.3431 19 16 19ZM29 16C29 17.6569 27.6569 19 26 19C24.3431 19 23 17.6569 23 16C23 14.3431 24.3431 13 26 13C27.6569 13 29 14.3431 29 16Z"
+          fill="black"
+        />
+      </g>
+      <defs>
+        <filter
+          id="filter0_d_42556_59248"
+          x="0"
+          y="10"
+          width="32"
+          height="12"
+          filterUnits="userSpaceOnUse"
+          colorInterpolationFilters="sRGB">
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
+          <feColorMatrix
+            in="SourceAlpha"
+            type="matrix"
+            values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+            result="hardAlpha"
+          />
+          <feOffset />
+          <feGaussianBlur stdDeviation="1.5" />
+          <feComposite in2="hardAlpha" operator="out" />
+          <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0" />
+          <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_42556_59248" />
+          <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_42556_59248" result="shape" />
+        </filter>
+      </defs>
+    </svg>
+  )
+}
