@@ -1,9 +1,10 @@
-
 /**
  * Add only <li></li> elements in it.
- * @param param0 
- * @returns 
+ * @param param0
+ * @returns
  */
+
+// TODO: Work on this component make it fully separated.
 export default function CustomDecorativeList({ children }: any) {
   return (
     <div>

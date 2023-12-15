@@ -1,7 +1,6 @@
+'use client'
 import { fetchCommunityDetails } from '@lib/api/community'
-import { cookies } from 'next/headers'
-import { MainComponent } from './main-component'
-import { type Metadata } from 'next'
+import { Root } from './root'
 
 interface Props {
   params: {
@@ -14,14 +13,7 @@ interface Props {
 
 export default async function Component({ params, searchParams }: Props) {
   const communityData = await fetchCommunityDetails(params.handle)
-  const mobileCookie = cookies().get('mobile')?.value
-  return (
-    <MainComponent
-      communityDetails={communityData}
-      isMobile={mobileCookie === 'true'}
-      showDetailsPage={searchParams.details === 'true'}
-    />
-  )
+  return <Root communityDetails={communityData} />
 }
 
 // export async function generateMetadata({ params }: Props): Promise<Metadata> {
