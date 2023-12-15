@@ -47,6 +47,19 @@ export function getPaginatedAllVideos(nickname: string) {
   })
 }
 
+export function getPaginatedLoopVideos(nickname: string) {
+  return useInfiniteQuery({
+    queryKey: ['loop', 'videos', nickname, ['rt']],
+    queryFn: async ({ pageParam }) => await fetchVideos(nickname, ['rt'], pageParam),
+    getNextPageParam(lastPage, allPages) {
+      if (lastPage.end) {
+        return
+      }
+      return allPages.length
+    },
+  })
+}
+
 export function getPaginatedGenuinVideos(nickname: string) {
   return useInfiniteQuery({
     queryKey: ['genuin', 'videos', nickname, ['public_video']],
@@ -107,9 +120,6 @@ export function getAllLoops(nickname: string, communityId: string) {
   })
 }
 
-
-
-
 async function fetchCommunityLoopVideos(nickname: string, loopId: string , pageNo = 0) {
   return await axios
     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/profile/contributed_loop_videos', {
@@ -127,7 +137,7 @@ async function fetchCommunityLoopVideos(nickname: string, loopId: string , pageN
     })
 }
 
-export function getPaginatedLoopVideos(nickname: string, loopId: string) {
+export function getAllLoopVideos(nickname: string, loopId: string) {
   return useInfiniteQuery({
     queryKey: ['videos', nickname, loopId],
     queryFn: async ({ pageParam }) => await fetchCommunityLoopVideos(nickname, loopId, pageParam),
