@@ -91,7 +91,7 @@ async function fetchCommunities(nickname: string) {
 
 export function getAllCommunities(nickname: string) {
   return useQuery({
-    queryKey: ['communities', nickname ],
+    queryKey: ['communities', nickname],
     queryFn: async () => await fetchCommunities(nickname),
   })
 }
@@ -115,12 +115,12 @@ async function fetchCommunityLoops(nickname: string, communityId: string) {
 
 export function getAllLoops(nickname: string, communityId: string) {
   return useQuery({
-    queryKey: ['communityLoops', nickname, communityId ],
+    queryKey: ['communityLoops', nickname, communityId],
     queryFn: async () => await fetchCommunityLoops(nickname, communityId),
   })
 }
 
-async function fetchCommunityLoopVideos(nickname: string, loopId: string , pageNo = 0) {
+async function fetchCommunityLoopVideos(nickname: string, loopId: string, pageNo = 0) {
   return await axios
     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/profile/contributed_loop_videos', {
       params: {

@@ -1,9 +1,3 @@
-type LayoutProps = {
-  mobile: any
-  desktop: any
-  children: any
-}
-
-export default function Layout(props: LayoutProps) {
+export default function Layout(props: any) {
   return <div>layout</div>
 }
