@@ -1,4 +1,4 @@
-import { useInfiniteQuery } from '@tanstack/react-query'
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 
 export async function fetchUserData(nickname: string) {
@@ -47,10 +47,10 @@ export function getPaginatedAllVideos(nickname: string) {
   })
 }
 
-export function getPaginatedLoopVideos(nickname: string) {
+export function getPaginatedGenuinVideos(nickname: string) {
   return useInfiniteQuery({
-    queryKey: ['loop', 'videos', nickname, ['rt']],
-    queryFn: async ({ pageParam }) => await fetchVideos(nickname, ['rt'], pageParam),
+    queryKey: ['genuin', 'videos', nickname, ['public_video']],
+    queryFn: async ({ pageParam }) => await fetchVideos(nickname, ['public_video'], pageParam),
     getNextPageParam(lastPage, allPages) {
       if (lastPage.end) {
         return
@@ -60,10 +60,77 @@ export function getPaginatedLoopVideos(nickname: string) {
   })
 }
 
-export function getPaginatedGenuinVideos(nickname: string) {
+async function fetchCommunities(nickname: string) {
+  return await axios
+    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/profile/contributed_communities', {
+      params: {
+        user_id: nickname,
+        page: 0,
+      },
+    })
+    .then((res) => {
+      return res.data.data.videos
+    })
+    .catch((e) => {
+      throw new Error('Something went wrong with contributed_communities api.')
+    })
+}
+
+export function getAllCommunities(nickname: string) {
+  return useQuery({
+    queryKey: ['communities', nickname ],
+    queryFn: async () => await fetchCommunities(nickname),
+  })
+}
+
+async function fetchCommunityLoops(nickname: string, communityId: string) {
+  return await axios
+    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/profile/contributed_community_loops', {
+      params: {
+        user_id: nickname,
+        community_id: communityId,
+        page: 0,
+      },
+    })
+    .then((res) => {
+      return res.data.data.videos
+    })
+    .catch((e) => {
+      throw new Error('Something went wrong with contributed_community_loops api.')
+    })
+}
+
+export function getAllLoops(nickname: string, communityId: string) {
+  return useQuery({
+    queryKey: ['communityLoops', nickname, communityId ],
+    queryFn: async () => await fetchCommunityLoops(nickname, communityId),
+  })
+}
+
+
+
+
+async function fetchCommunityLoopVideos(nickname: string, loopId: string , pageNo = 0) {
+  return await axios
+    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/profile/contributed_loop_videos', {
+      params: {
+        user_id: nickname,
+        loop_id: loopId,
+        page: pageNo,
+      },
+    })
+    .then((res) => {
+      return res.data.data.videos
+    })
+    .catch((e) => {
+      throw new Error('Something went wrong with contributed_loop_videos api.')
+    })
+}
+
+export function getPaginatedLoopVideos(nickname: string, loopId: string) {
   return useInfiniteQuery({
-    queryKey: ['genuin', 'videos', nickname, ['public_video']],
-    queryFn: async ({ pageParam }) => await fetchVideos(nickname, ['public_video'], pageParam),
+    queryKey: ['videos', nickname, loopId],
+    queryFn: async ({ pageParam }) => await fetchCommunityLoopVideos(nickname, loopId, pageParam),
     getNextPageParam(lastPage, allPages) {
       if (lastPage.end) {
         return
