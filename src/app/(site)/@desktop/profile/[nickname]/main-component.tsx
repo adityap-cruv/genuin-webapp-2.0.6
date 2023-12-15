@@ -9,7 +9,7 @@ import { Toaster } from '@components/ui/toaster'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import CustomDecorativeList from '@components/custom/custom-decorative-list'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@components/ui/accordion'
-import { getAllCommunities, getAllLoops, getPaginatedLoopVideos } from '@lib/api/profile'
+import { getAllCommunities, getAllLoops, getAllLoopVideos } from '@lib/api/profile'
 import { Loader } from '@components/ui/loader'
 import { useState } from 'react'
 
@@ -136,7 +136,7 @@ function CommunityDetails({ userId, communityId }: any) {
 }
 
 function LoopVideos({ userId, loopDetails }: any) {
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getPaginatedLoopVideos(
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getAllLoopVideos(
     userId,
     loopDetails.share_string
   )
