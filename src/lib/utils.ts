@@ -82,6 +82,7 @@ export const openGeneratedLink = (link = '') => {
   element.click()
 }
 
+//  TODO This function line can be reduced and validation can be automated.
 export const generateDeepLink = async ({
   utmCampaign,
   utmSource,

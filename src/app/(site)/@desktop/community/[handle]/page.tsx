@@ -1,4 +1,3 @@
-'use client'
 import { fetchCommunityDetails } from '@lib/api/community'
 import { Root } from './root'
 

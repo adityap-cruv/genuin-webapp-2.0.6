@@ -5,7 +5,8 @@ import { type VideoDataType } from '@lib/schemas/video'
 import { useState, useRef } from 'react'
 import { isMobile } from 'react-device-detect'
 import { usePlayerControlStore } from './player-control-store'
-import { Comments } from './comments'
+
+const CommentSheet = dynamic(async () => await import('./comments').then((comp) => comp.CommentSheet))
 
 const InnerPlayer = dynamic(async () => await import('./inner-player').then((comp) => comp.InnerPlayer), {
   loading: (_) => {
@@ -79,6 +80,7 @@ export default function Player({
   shouldShowBackgroundBlurImage = true,
   showCommunityControl = false,
   isFirstPlayerInList = false,
+  shouldShowComments = true,
 }: Props) {
   // todo fix this warning
   const [playerControls, setPlayerControls] = useState({ play: shouldPlay, muted: true, loop })
@@ -166,7 +168,7 @@ export default function Player({
               )
             ) : undefined}
           </div>
-          <Comments container={containerRef} videoId={videoData.video.share_string} />
+          {shouldShowComments && <CommentSheet container={containerRef} videoId={videoData.video.share_string} />}
         </div>
       </div>
     )
