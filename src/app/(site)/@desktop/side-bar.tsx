@@ -6,11 +6,9 @@ import { HomeIcon, LatestIcon, MoreIcon, PopularIcon, SearchIcon } from '@icons/
 import { cn } from '@lib/utils'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
-import { CustomAvatar } from '@components/custom/custom-avatar'
-import { useRecentCommunitiesStore } from '@lib/stores/recent-communities'
+import { RecentCommunities } from './recent-communities'
 
 export function SideBar() {
-  const communities = useRecentCommunitiesStore((state) => state.communities)
   const pathName = usePathname()
   return (
     <nav className="flex h-full w-fit flex-col border-r border-monochrome-9  transition-[width] lg:w-full">
@@ -50,50 +48,9 @@ export function SideBar() {
             </Link>
           </PopoverContent>
         </Popover>
-        {communities.length > 0 && <RecentCommunities communities={communities} />}
+        <RecentCommunities />
       </span>
     </nav>
-  )
-}
-
-// Causing hydration issue fix it.
-function RecentCommunities({ communities }: { communities: any[] }) {
-  const pathName = usePathname()
-  return (
-    <>
-      <hr className="mb-4 mt-1 border border-monochrome-black/10" />
-      <p className="hidden pb-1 text-title-lg font-semibold text-monochrome lg:block">Recent Communities</p>
-      {communities.map((item: any, index: any) => {
-        const communityPathName = '/community/' + item.handle
-        return (
-          <Link key={index} href={{ pathname: communityPathName }}>
-            <CommunityItem title={item.name} isActive={pathName.includes(communityPathName)}>
-              <CustomAvatar
-                imageUrl={item.profileImage}
-                fallbackString={item.name}
-                isAvatar={false}
-                className="h-8 w-8"
-              />
-            </CommunityItem>
-          </Link>
-        )
-      })}
-    </>
-  )
-}
-
-function CommunityItem({ children, title, isActive }: ItemProps) {
-  return (
-    <div className="flex w-full max-w-full items-center gap-x-2 rounded-md px-3 py-1 hover:bg-monochrome-6/10">
-      {children}
-      <p
-        className={cn(
-          'hidden break-all text-title-lg font-semibold lg:line-clamp-1',
-          isActive ? 'text-primary' : 'text-new-off-black'
-        )}>
-        {title}
-      </p>
-    </div>
   )
 }
 
@@ -109,7 +66,7 @@ function Item({ title, isActive, children }: ItemProps) {
       {children}
       <p
         className={cn(
-          'hidden break-all text-title-lg font-semibold lg:line-clamp-1',
+          'hidden break-all text-title-lg font-semibold lg:block',
           isActive ? 'text-primary' : 'text-new-off-black'
         )}>
         {title}
