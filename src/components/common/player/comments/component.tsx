@@ -12,6 +12,7 @@ import { type CommentListType, type CommentType } from '@lib/schemas/loop/commen
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import dynamic from 'next/dynamic'
 import { useMotionValueEvent, useScroll } from 'framer-motion'
+import { ReadMore } from '@components/common/read-more'
 const CommentPlayer = dynamic(async () => await import('./video-player').then((comp) => comp.CommentPlayer))
 const AudioPlayer = dynamic(async () => await import('./audio-player').then((comp) => comp.AudioPlayer))
 
@@ -178,7 +179,7 @@ const Comment = {
     )
   },
   text({ comment }: any) {
-    return <p className="text-body-sm">{comment.comment.text}</p>
+    return <ReadMore className="text-body-sm" text={comment.comment.text} />
   },
 }
 

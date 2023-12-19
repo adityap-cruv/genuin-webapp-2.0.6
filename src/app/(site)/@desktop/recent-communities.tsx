@@ -9,9 +9,9 @@ import { useRecentCommunitiesStore } from '@lib/stores/recent-communities'
 export function RecentCommunities() {
   const communities = useRecentCommunitiesStore((state) => state.communities)
   const pathName = usePathname()
-  if (communities && communities.length > 0)
+  if (communities.length > 0)
     return (
-      <div>
+      <>
         <hr className="mb-4 mt-1 border border-monochrome-black/10" />
         <p className="hidden w-full pb-1 text-title-lg font-semibold text-monochrome lg:line-clamp-1">
           Recent Communities
@@ -31,7 +31,7 @@ export function RecentCommunities() {
             </Link>
           )
         })}
-      </div>
+      </>
     )
 }
 

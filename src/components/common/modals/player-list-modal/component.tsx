@@ -11,13 +11,13 @@ import { useVideoSizeBox } from '@hooks/use-video-size-box'
 import { Loader } from '@components/ui/loader'
 import { replaceUrlWithoutReload } from '@lib/utils'
 import { PATH_NAME } from '@lib/utils/constants/path'
-const Player = dynamic(async () => await import('@components/common/player').then((comp) => comp.default), {
+const Player = dynamic(async () => await import('@components/common/player').then((comp) => comp.Player.desktop), {
   loading(loadingProps) {
     return <Loader size="lg" />
   },
 })
 
-interface Props {
+type Props = {
   /**
    * List of videos.
    */

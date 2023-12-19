@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import { Button } from '@components/ui/button'
-import { Badge } from '@components/ui/badge'
 import Image from 'next/image'
 import { DownloadDialog } from '@components/common/download-dialog'
 import { PATH_NAME } from '@lib/utils/constants/path'
@@ -14,18 +13,19 @@ import { Progress } from '@components/ui/progress'
 import icPlay from '@icons/player-controls/icPlay.svg'
 import icPause from '@icons/player-controls/icPause.svg'
 import { CustomAvatar } from '@components/custom/custom-avatar'
+import { Badge } from '@components/ui/badge'
 import { Actions } from './actions'
 
 export const ControlLayer = {
-  default: DefaultLayer,
-  community: CommunityLayer,
+  desktop: Desktop,
+  mobile: Mobile,
 }
 
 interface Props {
   videoData: VideoDataType
 }
 
-function DefaultLayer({ videoData }: Props) {
+function Desktop({ videoData }: Props) {
   const { toggleMuted, muted, shouldPlay, toggleShouldPlay } = usePlayerControlStore((state) => ({
     toggleMuted: state.toggleMuted,
     muted: state.muted,
@@ -54,14 +54,14 @@ function DefaultLayer({ videoData }: Props) {
             e.stopPropagation()
           }}
         />
-        <div className="absolute bottom-0 left-0 w-full">
-          <div className="w-full p-2">
-            {videoData.video_type === 'rt' || videoData.loop ? (
-              <Loop videoData={videoData} />
-            ) : (
-              <Public videoData={videoData} />
-            )}
-          </div>
+        <div className="absolute bottom-0 right-0 pr-2">
+          <Actions.desktop
+            link={videoData?.video.link ?? ''}
+            shareTitle={videoData?.video.description ?? ''}
+            shareDescription={videoData?.video.description ?? ''}
+            isLoop={!!videoData.loop}
+            videoData={videoData}
+          />
           <PlayerProgressBar />
         </div>
       </div>
@@ -69,7 +69,7 @@ function DefaultLayer({ videoData }: Props) {
   }
 }
 
-function CommunityLayer({ videoData }: Props) {
+function Mobile({ videoData }: Props) {
   const { toggleMuted, muted, shouldPlay, toggleShouldPlay } = usePlayerControlStore((state) => ({
     toggleMuted: state.toggleMuted,
     muted: state.muted,
@@ -99,7 +99,7 @@ function CommunityLayer({ videoData }: Props) {
           }}
         />
         <div className="absolute bottom-0 left-0 w-full">
-          <Public videoData={videoData} />
+          <Loop videoData={videoData} />
           <CommunityReelSection videoData={videoData} />
         </div>
       </div>
@@ -139,11 +139,7 @@ function CommunityReelSection({ videoData }: Props) {
   )
 }
 
-interface LoopProps {
-  videoData?: VideoDataType
-}
-
-function Loop({ videoData }: LoopProps) {
+function Loop({ videoData }: { videoData?: VideoDataType }) {
   return (
     <div className="flex justify-between">
       <div className="flex w-4/5 flex-col justify-end">
@@ -182,50 +178,11 @@ function Loop({ videoData }: LoopProps) {
         </p>
       </div>
       {/* todo configure share title and description correctly */}
-      <Actions
+      <Actions.mobile
         link={videoData?.video.link ?? ''}
         shareTitle={videoData?.video.description ?? ''}
         shareDescription={videoData?.video.description ?? ''}
         isLoop={true}
-        videoData={videoData}
-      />
-    </div>
-  )
-}
-
-interface PublicProps {
-  videoData: VideoDataType
-}
-
-function Public({ videoData }: PublicProps) {
-  return (
-    <div className="flex justify-between p-2">
-      <div className="flex w-4/5 flex-col justify-end">
-        <div className="flex items-center">
-          <Link
-            className="flex cursor-pointer items-center hover:opacity-60"
-            href={{ pathname: PATH_NAME.profile(videoData?.owner.nickname) }}>
-            <CustomAvatar
-              className="bg-red-40"
-              imageUrl={videoData.owner.profile_image ?? ''}
-              fallbackString={videoData.owner.username ?? ''}
-              isAvatar={videoData.owner.is_avatar}
-            />
-            <p className="line-clamp-1 px-2 text-title-md text-monochrome-white">@{videoData?.owner.nickname}</p>
-          </Link>
-        </div>
-        {videoData.video.description && (
-          <p className="line-clamp-3 h-min w-full py-2 text-body-sm text-monochrome-white">
-            {videoData?.video.description}
-          </p>
-        )}
-      </div>
-      {/* todo configure share title and description correctly */}
-      <Actions
-        link={videoData?.video.link ?? ''}
-        shareTitle={videoData?.video.description ?? ''}
-        shareDescription={videoData?.video.description ?? ''}
-        isLoop={!!videoData.loop}
         videoData={videoData}
       />
     </div>

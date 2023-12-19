@@ -6,8 +6,10 @@ import { HomeIcon, LatestIcon, MoreIcon, PopularIcon, SearchIcon } from '@icons/
 import { cn } from '@lib/utils'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
-import { RecentCommunities } from './recent-communities'
-
+import dynamic from 'next/dynamic'
+const RecentCommunities = dynamic(
+  async () => await import('./recent-communities').then((comp) => comp.RecentCommunities)
+)
 export function SideBar() {
   const pathName = usePathname()
   return (

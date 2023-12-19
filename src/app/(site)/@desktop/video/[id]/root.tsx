@@ -1,5 +1,4 @@
 'use client'
-import Player from '@components/common/player'
 import { useVideoSizeBox } from '@hooks/use-video-size-box'
 import { type VideoDataType } from '@lib/schemas/video'
 import { Loader } from '@components/ui/loader'
@@ -14,6 +13,8 @@ import icAudioRecord from '@icons/audioRecord.svg'
 import icVideoRecord from '@icons/videoRecord.svg'
 import { DownloadDialog } from '@components/common/download-dialog'
 import { Comments } from '@components/common/player/comments'
+import dynamic from 'next/dynamic'
+const Player = dynamic(async () => await import('@components/common/player').then((comp) => comp.Player.desktop))
 
 type Props = {
   videoDetails: VideoDataType
@@ -25,7 +26,7 @@ export function Root({ videoDetails }: Props) {
     return (
       <div className="flex h-full w-full pl-6">
         <div style={{ width: sizeBox.width }}>
-          <Player shouldPlay sizeBox={sizeBox} videoData={videoDetails} loop shouldShowComments={false} />
+          <Player shouldPlay sizeBox={sizeBox} videoData={videoDetails} loop />
         </div>
         <div className="relative flex h-full flex-1 flex-col p-6 pb-0">
           <span className="flex items-center gap-x-2">
@@ -89,10 +90,9 @@ export function Root({ videoDetails }: Props) {
                 <Image src={icVideoRecord} alt="audio record" className="h-8 w-8" />
               </button>
             </DownloadDialog>
-            sp
           </div>
         </div>
       </div>
     )
-  return <Loader size={'lg'} />
+  return <Loader size="lg" />
 }
