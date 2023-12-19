@@ -7,13 +7,13 @@ import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
 import { CustomAvatar } from '@components/custom/custom-avatar'
-import CustomDecorativeList from '@components/custom/custom-decorative-list'
+import CustomDecorativeList from '@components/custom/decorative-list'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@components/ui/accordion'
 import { getAllCommunities, getAllLoops, getAllLoopVideos } from '@lib/api/profile'
 import { Loader } from '@components/ui/loader'
 import { useState } from 'react'
 import icSpark from '@icons/player-controls/icBulb.svg'
-import { MobileNavBar } from '@components/common/mobile-nav-bar'
+import { TopBar } from '../../top-bar'
 
 interface CompProps {
   profileData: any
@@ -25,8 +25,8 @@ export function MainComponent({ profileData }: CompProps) {
 
   return (
     <>
-      <MobileNavBar variant={'light'} />
-      <div className="h-full mt-navbar w-full p-4">
+      <TopBar variant={'light'} />
+      <div className="h-full w-full p-4">
         <div>
           <div className="flex items-center justify-between">
             <CustomAvatar

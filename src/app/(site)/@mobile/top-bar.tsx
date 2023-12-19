@@ -10,10 +10,10 @@ import { usePathname } from 'next/navigation'
 import { PopularIcon, HomeIcon, LatestIcon, SearchIcon } from '@icons/side-bar-icons'
 import { cva, type VariantProps } from 'class-variance-authority'
 
-const navVariant = cva('sticky top-0 flex h-[76px] w-full items-center justify-between  px-2', {
+const navVariant = cva('sticky top-0 flex z-10 h-[76px] w-full items-center justify-between  px-2', {
   variants: {
     variant: {
-      light: 'border-b-2 border-monochrome-9',
+      light: 'border-b-2 border-monochrome-9 bg-monochrome-white',
       trasparent: 'bg-gradient-to-b from-opacity-0 to-opacity-70 ',
     },
   },
