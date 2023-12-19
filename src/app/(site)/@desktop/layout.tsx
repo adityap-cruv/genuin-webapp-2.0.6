@@ -3,7 +3,7 @@ import { TopBar } from './top-bar'
 
 export default function AppLayout(props: any) {
   return (
-    <main className="absolute inset-0 flex h-full min-h-max w-full min-w-max flex-col items-center overflow-clip">
+    <main className="absolute inset-0 flex h-full min-h-max w-full flex-col items-center overflow-clip">
       <TopBar />
       <section className="flex h-body w-full max-w-1440">
         <section className="lg:flex-[2]">
