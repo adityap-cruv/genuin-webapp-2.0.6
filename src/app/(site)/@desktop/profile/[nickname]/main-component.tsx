@@ -13,6 +13,7 @@ import { getAllCommunities, getAllLoops, getAllLoopVideos } from '@lib/api/profi
 import { Loader } from '@components/ui/loader'
 import { useState } from 'react'
 import icSpark from '@icons/player-controls/icBulb.svg'
+import { Shimmer } from '@components/ui/shimmer'
 
 interface CompProps {
   profileData: any
@@ -88,36 +89,38 @@ function CommunityList({ usernickname }: any) {
   return (
     <>
       {isLoading && <Loader size="md" />}
-      <Accordion type="single" defaultValue="connect" collapsible>
-        {data?.pages
-          .flatMap((page) => page.list)
-          .map((item, index) => (
-            <div key={index}>
-              &nbsp;
-              <AccordionItem value={item.handle} className="border-none ">
-                <AccordionTrigger className="m-0 p-0">
-                  <div className="flex items-center">
-                    <CustomAvatar
-                      className="bg-slate-500 h-11 w-11 bg-red-40"
-                      fallbackString={item?.name}
-                      imageUrl={item?.dp}
-                      isAvatar={false}
-                    />
-                    <div className="mx-2">
-                      <p className="line-clamp-1 text-left text-title-md">{item.name}</p>
-                      <p className="line-clamp-1 text-new-para-2 text-monochrome">Visible to approved members only</p>
+      {data && (
+        <Accordion type="single" defaultValue={data?.pages[0]?.list[0]?.handle} collapsible>
+          {data?.pages
+            .flatMap((page) => page.list)
+            .map((item, index) => (
+              <div key={index}>
+                &nbsp;
+                <AccordionItem value={item.handle} className="border-none ">
+                  <AccordionTrigger className="m-0 p-0">
+                    <div className="flex items-center">
+                      <CustomAvatar
+                        className="bg-slate-500 h-11 w-11 bg-red-40"
+                        fallbackString={item?.name}
+                        imageUrl={item?.dp}
+                        isAvatar={false}
+                      />
+                      <div className="mx-2">
+                        <p className="line-clamp-1 text-left text-title-md">{item.name}</p>
+                        <p className="line-clamp-1 text-new-para-2 text-monochrome">Visible to approved members only</p>
+                      </div>
                     </div>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent>
-                  <DecorativeList>
-                    <CommunityDetails userId={usernickname} communityId={item.id} />
-                  </DecorativeList>
-                </AccordionContent>
-              </AccordionItem>
-            </div>
-          ))}
-      </Accordion>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <DecorativeList>
+                      <CommunityDetails userId={usernickname} communityId={item.id} />
+                    </DecorativeList>
+                  </AccordionContent>
+                </AccordionItem>
+              </div>
+            ))}
+        </Accordion>
+      )}
       {isFetchingNextPage && <Loader size="md" />}
       {hasNextPage && (
         <p
@@ -139,7 +142,11 @@ function CommunityDetails({ userId, communityId }: any) {
   return (
     <>
       &nbsp;
-      {isLoading && <Loader size="md" />}
+      {isLoading && (
+        <li className="profile-loop-li relative my-4 w-full rounded-lg bg-monochrome-9 p-4">
+          <Shimmer className="h-6 w-40" />
+        </li>
+      )}
       {data?.pages
         .flatMap((page) => page.list)
         .map((item: any, index: any) => (
@@ -177,11 +184,15 @@ function LoopVideos({ userId, loopDetails }: any) {
   return (
     <>
       <p className="text-title-sm">{loopDetails.name}</p>
-      {isLoading && <Loader size="md" />}
       {data?.pages.flatMap((page) => page.list).length === 0 && (
         <div className="flex items-center justify-center pt-32 text-title-md text-secondary">No videos available</div>
       )}
       <div className="my-2 grid w-full grid-cols-4 gap-2 md:grid-cols-8">
+        {isLoading && (
+          <div className="relative flex flex-col items-center">
+            <Shimmer className="aspect-reel h-full rounded" />
+          </div>
+        )}
         {data?.pages
           .flatMap((page) => page.list)
           .map((video, index) => (
@@ -195,8 +206,14 @@ function LoopVideos({ userId, loopDetails }: any) {
               </div>
             </div>
           ))}
+        {isFetchingNextPage &&
+          Array.from({ length: Math.max(0, loopDetails.video_count - videoCount) }).map((_, index) => (
+            <div key={`shimmer-${index}`} className="relative flex flex-col items-center">
+              <Shimmer className="aspect-reel h-full rounded" />
+            </div>
+          ))}
       </div>
-      {isFetchingNextPage && <Loader size="md" />}
+
       {hasNextPage && (
         <p
           className="text-blue-500 flex w-full cursor-pointer justify-center pt-2 text-cap-lg text-monochrome"

@@ -4,9 +4,10 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
 export function MainComponent() {
   return (
     <>
-      Search
-      {/* <Input placeholder="Email" /> */}
       <div className="h-full w-full overflow-auto p-4">
+        <div className='mx-3 w-1/3 relative'>
+          <Input className="rounded-full border-0 bg-monochrome-9" />
+        </div>
         <SearchTabs />
       </div>
     </>
@@ -15,7 +16,7 @@ export function MainComponent() {
 
 function SearchTabs() {
   return (
-    <Tabs defaultValue="Loops">
+    <Tabs defaultValue="Top">
       <TabsList className="flex max-w-min">
         <TabsTrigger value="Top">
           <p className="text-title-md">Top</p>
@@ -53,5 +54,17 @@ function SearchTabs() {
 }
 
 function VideosTab() {
-  return <>Videos</>
+  const itemList = ['item1', 'item2', 'item3', 'item4', 'item5', 'item6', 'item6']
+
+  return (
+    <>
+      <div className="my-2 grid w-full grid-cols-5 gap-2">
+        {itemList.map((item, index) => (
+          <div key={index} className="relative flex items-center">
+            <div className="aspect-reel w-full rounded bg-blue-10"></div>
+          </div>
+        ))}
+      </div>
+    </>
+  )
 }
