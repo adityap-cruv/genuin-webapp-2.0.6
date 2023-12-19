@@ -35,7 +35,7 @@ export function CommentPlayer({ videoSource, poster, commentShareString, onClick
       controls: {
         alwaysVisible: false,
       },
-      mode: 'fill',
+      mode: 'fit',
       forceNative: true,
       showLoaderOnInit: true,
       onError: (e) => {},
@@ -78,9 +78,9 @@ export function CommentPlayer({ videoSource, poster, commentShareString, onClick
 
   if (videoSource)
     return (
-      <div className="relative cursor-pointer" onClick={onClick}>
+      <div className="cursor-pointe relative w-[40%]" onClick={onClick}>
         <video
-          className="h-full w-full  rounded-2xl object-cover transition-all"
+          className="w-full  rounded-2xl object-cover transition-all"
           poster={poster}
           ref={videoRef}
           src={videoSource}

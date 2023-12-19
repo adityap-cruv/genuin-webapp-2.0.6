@@ -6,7 +6,7 @@ import { useRef } from 'react'
 import { useMotionValueEvent, useScroll } from 'framer-motion'
 import { useVideoSizeBox, type VideoSizeBoxType } from '@hooks/use-video-size-box'
 
-const Player = dynamic(async () => await import('@components/common/player').then((comp) => comp.default), {
+const Player = dynamic(async () => await import('@components/common/player').then((comp) => comp.Player.mobile), {
   loading: (state) => {
     return <Loader size="lg" />
   },
@@ -66,7 +66,6 @@ function InnerReelList({ videos, isLoading, sizeBox }: InnerReelListProps) {
         isFirstPlayerInList={index === 0}
         loop
         playIfInViewPort
-        showCommunityControl
       />
     )
   })

@@ -1,3 +1,3 @@
-import { Comments } from './component'
+import { Sheet as CommentSheet, CommentBody as Comments } from './component'
 
-export { Comments }
+export { CommentSheet, Comments }

@@ -6,13 +6,13 @@ import { CommentSheet, CommentSheetContent, CommentSheetPortal } from '@componen
 import { X } from 'lucide-react'
 import { usePlayerControlStore } from '../player-control-store'
 import { useCommentsStore } from './store'
-import { useResponsive } from '@hooks/useResponsive'
 import { getLoopVideoComments } from '@lib/api/loop'
 import { Loader } from '@components/ui/loader'
 import { type CommentListType, type CommentType } from '@lib/schemas/loop/comment'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import dynamic from 'next/dynamic'
 import { useMotionValueEvent, useScroll } from 'framer-motion'
+import { ReadMore } from '@components/common/read-more'
 const CommentPlayer = dynamic(async () => await import('./video-player').then((comp) => comp.CommentPlayer))
 const AudioPlayer = dynamic(async () => await import('./audio-player').then((comp) => comp.AudioPlayer))
 
@@ -21,7 +21,7 @@ type Props = {
   videoId: string
 }
 
-export function Comments({ container, videoId }: Props) {
+export function Sheet({ container, videoId }: Props) {
   const { isOpen, close, currentVideoId } = useCommentsStore((state) => ({
     isOpen: state.modalIsOpen,
     close: state.closeModal,
@@ -31,8 +31,6 @@ export function Comments({ container, videoId }: Props) {
     pauseVideo: state.pause,
     playVideo: state.play,
   }))
-  // todo find better solution then this
-  const { isSm } = useResponsive()
   const shouldOpen = isOpen && currentVideoId === videoId
 
   useEffect(() => {
@@ -49,7 +47,7 @@ export function Comments({ container, videoId }: Props) {
     <CommentSheet open={shouldOpen} modal={false}>
       <CommentSheetPortal container={container.current}>
         <CommentSheetContent
-          side={isSm ? 'right' : 'bottom'}
+          side="bottom"
           onInteractOutside={() => {
             close()
           }}>
@@ -71,7 +69,7 @@ export function Comments({ container, videoId }: Props) {
   )
 }
 
-function CommentBody({ videoId }: { videoId: string }) {
+export function CommentBody({ videoId }: { videoId: string }) {
   const { isLoading, data, isError, isFetchingNextPage, fetchNextPage } = getLoopVideoComments(videoId)
   const comments = data?.pages.flatMap((item) => {
     return item.comments
@@ -89,7 +87,7 @@ function CommentBody({ videoId }: { videoId: string }) {
   }
   if (comments?.length === 0) return <NoComments />
   return (
-    <div className="h-body">
+    <div className="h-full">
       {comments && (
         <CommentList comments={comments} isFetchingNextPage={isFetchingNextPage} fetchNextPage={fetchNextPage} />
       )}
@@ -133,7 +131,7 @@ function CommentItem({ comment }: { comment: CommentType }) {
         imageUrl={comment.owner?.profile_image}
         isAvatar={comment.owner.is_avatar}
       />
-      <div className="flex flex-col items-start gap-y-1 w-full">
+      <div className="flex w-full flex-col items-start gap-y-1">
         <p className="text-title-md">@{comment.owner.nickname}</p>
         <UI comment={comment} />
       </div>
@@ -181,7 +179,7 @@ const Comment = {
     )
   },
   text({ comment }: any) {
-    return <p className="text-body-sm">{comment.comment.text}</p>
+    return <ReadMore className="text-body-sm" text={comment.comment.text} />
   },
 }
 

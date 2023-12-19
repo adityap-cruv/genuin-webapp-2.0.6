@@ -18,8 +18,8 @@ const buttonVariants = cva(
       },
       size: {
         default: 'px-2 py-2',
-        sm: 'rounded-md p-2 py-2',
-        lg: 'h rounded-md px-8',
+        sm: 'rounded-md p-2',
+        lg: 'rounded-md px-8',
         'index-page': 'px-4 py-3',
         custom: '',
       },
@@ -31,6 +31,7 @@ const buttonVariants = cva(
   }
 )
 
+// TODO: Create this component more generalized.
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {

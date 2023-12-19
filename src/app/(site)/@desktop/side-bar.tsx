@@ -6,7 +6,10 @@ import { HomeIcon, LatestIcon, MoreIcon, PopularIcon, SearchIcon } from '@icons/
 import { cn } from '@lib/utils'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
-
+import dynamic from 'next/dynamic'
+const RecentCommunities = dynamic(
+  async () => await import('./recent-communities').then((comp) => comp.RecentCommunities)
+)
 export function SideBar() {
   const pathName = usePathname()
   return (
@@ -47,6 +50,7 @@ export function SideBar() {
             </Link>
           </PopoverContent>
         </Popover>
+        <RecentCommunities />
       </span>
     </nav>
   )
@@ -60,10 +64,13 @@ type ItemProps = {
 
 function Item({ title, isActive, children }: ItemProps) {
   return (
-    <div className="flex w-full items-center gap-x-3 rounded-md p-3 hover:bg-monochrome-6/10">
+    <div className="flex w-full max-w-full items-center gap-x-3 rounded-md p-3 hover:bg-monochrome-6/10">
       {children}
       <p
-        className={cn('hidden text-title-lg font-semibold lg:block', isActive ? 'text-primary' : 'text-new-off-black')}>
+        className={cn(
+          'hidden break-all text-title-lg font-semibold lg:block',
+          isActive ? 'text-primary' : 'text-new-off-black'
+        )}>
         {title}
       </p>
     </div>

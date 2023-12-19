@@ -1,0 +1,54 @@
+<svg width="382" height="48" viewBox="0 0 382 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g filter="url(#filter0_b_5_3)">
+    <path
+      d="M0 16C0 7.16344 7.16344 0 16 0H161.848C166.315 0 170.578 1.86713 173.607 5.14988L191 24L173.607 42.8501C170.578 46.1329 166.315 48 161.848 48H16C7.16346 48 0 40.8366 0 32V16Z"
+      fill="black"
+      fill-opacity="0.4"
+    />
+    <path
+      d="M16 0.5H161.848C166.175 0.5 170.305 2.30879 173.239 5.48894L190.32 24L173.239 42.5111C170.305 45.6912 166.175 47.5 161.848 47.5H16C7.4396 47.5 0.5 40.5604 0.5 32V16C0.5 7.43959 7.43959 0.5 16 0.5Z"
+      stroke="white"
+      stroke-opacity="0.4"
+    />
+  </g>
+  <g filter="url(#filter1_b_5_3)">
+    <path
+      d="M382 32C382 40.8366 374.837 48 366 48L220.152 48C215.685 48 211.422 46.1329 208.393 42.8501L191 24L208.393 5.14986C211.422 1.86712 215.685 -1.45397e-05 220.152 -1.41492e-05L366 -1.39877e-06C374.837 -6.26249e-07 382 7.16344 382 16L382 32Z"
+      fill="black"
+      fill-opacity="0.4"
+    />
+    <path
+      d="M366 47.5L220.152 47.5C215.825 47.5 211.695 45.6912 208.761 42.511L191.68 24L208.761 5.48893C211.695 2.30877 215.825 0.499985 220.152 0.499986L366 0.499999C374.56 0.499999 381.5 7.43959 381.5 16L381.5 32C381.5 40.5604 374.56 47.5 366 47.5Z"
+      stroke="white"
+      stroke-opacity="0.4"
+    />
+  </g>
+  <defs>
+    <filter
+      id="filter0_b_5_3"
+      x="-50"
+      y="-50"
+      width="291"
+      height="148"
+      filterUnits="userSpaceOnUse"
+      color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix" />
+      <feGaussianBlur in="BackgroundImageFix" stdDeviation="25" />
+      <feComposite in2="SourceAlpha" operator="in" result="effect1_backgroundBlur_5_3" />
+      <feBlend mode="normal" in="SourceGraphic" in2="effect1_backgroundBlur_5_3" result="shape" />
+    </filter>
+    <filter
+      id="filter1_b_5_3"
+      x="141"
+      y="-50"
+      width="291"
+      height="148"
+      filterUnits="userSpaceOnUse"
+      color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix" />
+      <feGaussianBlur in="BackgroundImageFix" stdDeviation="25" />
+      <feComposite in2="SourceAlpha" operator="in" result="effect1_backgroundBlur_5_3" />
+      <feBlend mode="normal" in="SourceGraphic" in2="effect1_backgroundBlur_5_3" result="shape" />
+    </filter>
+  </defs>
+</svg>
