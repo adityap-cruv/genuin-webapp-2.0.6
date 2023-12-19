@@ -5,7 +5,6 @@ import { cn } from '@lib/utils'
 import { type ReactNode } from 'react'
 import { useRecentCommunitiesStore } from '@lib/stores/recent-communities'
 
-// TODO: Causing hydration issue fix it.
 export function RecentCommunities() {
   const communities = useRecentCommunitiesStore((state) => state.communities)
   const pathName = usePathname()
@@ -19,7 +18,7 @@ export function RecentCommunities() {
         {communities.map((item, index) => {
           const communityPathName = '/community/' + item.handle
           return (
-            <Link key={index} href={{ pathname: communityPathName }}>
+            <Link key={item.handle} href={{ pathname: communityPathName }}>
               <CommunityItem title={item.name} isActive={pathName.includes(communityPathName)}>
                 <CustomAvatar
                   imageUrl={item.profileImage}

@@ -8,7 +8,8 @@ import { PATH_NAME } from '@lib/utils/constants/path'
 import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
 import dynamic from 'next/dynamic'
 const RecentCommunities = dynamic(
-  async () => await import('./recent-communities').then((comp) => comp.RecentCommunities)
+  async () => await import('./recent-communities').then((comp) => comp.RecentCommunities),
+  { ssr: false }
 )
 export function SideBar() {
   const pathName = usePathname()

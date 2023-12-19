@@ -19,7 +19,7 @@ const Player = dynamic(async () => await import('@components/common/player').the
 type Props = {
   videoDetails: VideoDataType
 }
-
+// TODO: Fix comment component bug. scrolling issue.
 export function Root({ videoDetails }: Props) {
   const sizeBox = useVideoSizeBox(true)
   if (sizeBox)
