@@ -1,14 +1,16 @@
 import { cn } from '@lib/utils'
-type Props = { isActive: boolean; className?: string }
+import { type ComponentProps } from 'react'
+type Props = { isActive: boolean; className?: string } & ComponentProps<'svg'>
 
-export function PopularIcon({ isActive, className }: Props) {
+export function PopularIcon({ isActive, className, ...props }: Props) {
   return (
     <svg
       width="32"
       height="32"
       viewBox="0 0 40 40"
       className={cn(isActive ? 'fill-primary' : 'fill-monochrome-black', className)}
-      xmlns="http://www.w3.org/2000/svg">
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}>
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -18,14 +20,15 @@ export function PopularIcon({ isActive, className }: Props) {
   )
 }
 
-export function HomeIcon({ isActive, className }: Props) {
+export function HomeIcon({ isActive, className, ...props }: Props) {
   return (
     <svg
       className={cn(isActive ? 'fill-primary' : 'fill-monochrome-black', className)}
       width="32"
       height="32"
       viewBox="0 0 40 40"
-      xmlns="http://www.w3.org/2000/svg">
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}>
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -35,14 +38,15 @@ export function HomeIcon({ isActive, className }: Props) {
   )
 }
 
-export function LatestIcon({ isActive, className }: Props) {
+export function LatestIcon({ isActive, className, ...props }: Props) {
   return (
     <svg
       width="32"
       className={cn(isActive ? 'fill-primary' : 'fill-monochrome-black', className)}
       height="32"
       viewBox="0 0 40 40"
-      xmlns="http://www.w3.org/2000/svg">
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}>
       <path
         fillRule="evenodd"
         clipRule="evenodd"
@@ -52,9 +56,9 @@ export function LatestIcon({ isActive, className }: Props) {
   )
 }
 
-export function SearchIcon({ isActive }: Props) {
+export function SearchIcon({ isActive, ...props }: Props) {
   return (
-    <svg width="32" height="32" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width="32" height="32" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
       <path
         d="M5.02685 21.9307C5.68889 23.4885 6.65129 24.9007 7.85908 26.0865C9.06688 27.2724 10.4964 28.2088 12.0661 28.8422C13.6358 29.4756 15.3148 29.7936 17.0074 29.7781C18.7 29.7626 20.3729 29.4138 21.9307 28.7518C23.4885 28.0897 24.9007 27.1273 26.0865 25.9195C27.2724 24.7117 28.2088 23.2822 28.8421 21.7125C29.4755 20.1428 29.7935 18.4638 29.778 16.7712C29.7625 15.0786 29.4138 13.4057 28.7517 11.8479C28.0897 10.2901 27.1273 8.87794 25.9195 7.69207C24.7117 6.5062 23.2822 5.56984 21.7125 4.93645C20.1428 4.30305 18.4638 3.98503 16.7712 4.00054C15.0786 4.01605 13.4057 4.36478 11.8479 5.02683C10.2901 5.68888 8.87791 6.65128 7.69205 7.85908C6.50618 9.06688 5.56982 10.4964 4.93643 12.0661C4.30305 13.6358 3.98503 15.3148 4.00054 17.0074C4.01605 18.7 4.36479 20.3729 5.02685 21.9307Z"
         strokeWidth="2"
@@ -65,6 +69,27 @@ export function SearchIcon({ isActive }: Props) {
       <path
         d="M26.0039 26.0024L36.0005 36.0004"
         stroke={isActive ? '#0645FF' : 'black'}
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
+export function WhiteSearchIcon({ ...props }: Props) {
+  return (
+    <svg width="32" height="32" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+      <path
+        d="M5.02685 21.9307C5.68889 23.4885 6.65129 24.9007 7.85908 26.0865C9.06688 27.2724 10.4964 28.2088 12.0661 28.8422C13.6358 29.4756 15.3148 29.7936 17.0074 29.7781C18.7 29.7626 20.3729 29.4138 21.9307 28.7518C23.4885 28.0897 24.9007 27.1273 26.0865 25.9195C27.2724 24.7117 28.2088 23.2822 28.8421 21.7125C29.4755 20.1428 29.7935 18.4638 29.778 16.7712C29.7625 15.0786 29.4138 13.4057 28.7517 11.8479C28.0897 10.2901 27.1273 8.87794 25.9195 7.69207C24.7117 6.5062 23.2822 5.56984 21.7125 4.93645C20.1428 4.30305 18.4638 3.98503 16.7712 4.00054C15.0786 4.01605 13.4057 4.36478 11.8479 5.02683C10.2901 5.68888 8.87791 6.65128 7.69205 7.85908C6.50618 9.06688 5.56982 10.4964 4.93643 12.0661C4.30305 13.6358 3.98503 15.3148 4.00054 17.0074C4.01605 18.7 4.36479 20.3729 5.02685 21.9307Z"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        stroke="white"
+      />
+      <path
+        d="M26.0039 26.0024L36.0005 36.0004"
+        stroke="white"
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"

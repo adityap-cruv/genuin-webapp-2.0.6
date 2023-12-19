@@ -9,43 +9,71 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { PopularIcon, HomeIcon, LatestIcon, SearchIcon } from '@icons/side-bar-icons'
 import { cva, type VariantProps } from 'class-variance-authority'
+import { Search, X } from 'lucide-react'
 
 const navVariant = cva('sticky top-0 flex z-10 h-[76px] w-full items-center justify-between  px-2', {
   variants: {
     variant: {
       light: 'border-b-2 border-monochrome-9 bg-monochrome-white',
-      trasparent: 'bg-gradient-to-b from-opacity-0 to-opacity-70 ',
+      trasparent: 'bg-transparent',
     },
   },
 })
 
-type Props = VariantProps<typeof navVariant> & {
+type Props = {
   className?: string
-}
+  /**
+   * Pass true if you want to show close icon on top right corner.
+   * If you show close icon than notice that on click of it will go back one page.
+   * @default false
+   */
+  showClose?: boolean
+} & VariantProps<typeof navVariant>
 
-export function TopBar({ variant = 'light', className }: Props) {
+export function TopBar({ variant = 'light', className, showClose = false }: Props) {
   return (
-    <nav className={cn(navVariant({ variant }), className)}>
-      <span className="bg-[linear-gradient(180deg, rgba(17, 17, 17, 0.00) 0%, rgba(17, 17, 17, 0.70) 100%)] flex items-center">
-        <Menu />
-        <GenuinSymbol variant="black" />
+    <nav className={cn(navVariant({ variant }), className, 'bg-gradient-to-b from-monochrome-2/40 to-transparent')}>
+      <span className="flex items-center ">
+        <Menu hamBurgerVariant={variant === 'trasparent' ? 'light' : 'dark'} />
+        <GenuinSymbol variant={variant === 'trasparent' ? 'light' : 'black'} />
       </span>
       <span className="flex items-center gap-x-2">
-        <Button className="bg-new-off-black hover:bg-new-dark-grey">
+        <Button
+          className={
+            variant === 'light'
+              ? 'bg-new-off-black hover:bg-new-dark-grey'
+              : 'bg-new-off-white text-new-off-black hover:bg-new-off-black hover:text-new-off-white'
+          }>
           <p className="text-body-sm">Download Genuin</p>
         </Button>
-        <SearchIcon isActive={false} />
+        {showClose ? (
+          <X
+            className={cn(
+              'h-6 w-6',
+              variant === 'light' ? 'stroke-new-off-black' : 'stroke-new-off-white stroke-[3px]'
+            )}
+          />
+        ) : (
+          <Search
+            className={cn(
+              'h-7 w-7',
+              variant === 'light'
+                ? 'stroke-new-off-black'
+                : 'rounded-full bg-monochrome-black/20 stroke-new-off-white p-1.5'
+            )}
+          />
+        )}
       </span>
     </nav>
   )
 }
 
-function Menu() {
+function Menu({ hamBurgerVariant = 'dark' }: { hamBurgerVariant: 'dark' | 'light' }) {
   const pathName = usePathname()
   return (
     <Sheet>
       <SheetTrigger>
-        <HamBurgerMenuIcon toggleToClose={false} />
+        <HamBurgerMenuIcon toggleToClose={false} variant={hamBurgerVariant} />
       </SheetTrigger>
       <SheetContent side="left" className="w-full border-none">
         <span>
