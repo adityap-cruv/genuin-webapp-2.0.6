@@ -73,16 +73,16 @@ export function getPaginatedGenuinVideos(nickname: string) {
   })
 }
 
-async function fetchCommunities(nickname: string) {
+async function fetchCommunities(nickname: string, pageNo = 0) {
   return await axios
     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/profile/contributed_communities', {
       params: {
         user_id: nickname,
-        page: 0,
+        page: pageNo,
       },
     })
     .then((res) => {
-      return res.data.data.videos
+      return res.data.data
     })
     .catch((e) => {
       throw new Error('Something went wrong with contributed_communities api.')
@@ -90,23 +90,29 @@ async function fetchCommunities(nickname: string) {
 }
 
 export function getAllCommunities(nickname: string) {
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: ['communities', nickname],
-    queryFn: async () => await fetchCommunities(nickname),
+    queryFn: async ({pageParam}) => await fetchCommunities(nickname, pageParam),
+    getNextPageParam(lastPage, allPages) {
+      if (lastPage.end_page) {
+        return
+      }
+      return allPages.length
+    }
   })
 }
 
-async function fetchCommunityLoops(nickname: string, communityId: string) {
+async function fetchCommunityLoops(nickname: string, communityId: string, pageNo = 0) {
   return await axios
     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/profile/contributed_community_loops', {
       params: {
         user_id: nickname,
         community_id: communityId,
-        page: 0,
+        page: pageNo,
       },
     })
     .then((res) => {
-      return res.data.data.videos
+      return res.data.data
     })
     .catch((e) => {
       throw new Error('Something went wrong with contributed_community_loops api.')
@@ -114,9 +120,15 @@ async function fetchCommunityLoops(nickname: string, communityId: string) {
 }
 
 export function getAllLoops(nickname: string, communityId: string) {
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: ['communityLoops', nickname, communityId],
-    queryFn: async () => await fetchCommunityLoops(nickname, communityId),
+    queryFn: async ({pageParam}) => await fetchCommunityLoops(nickname, communityId, pageParam),
+    getNextPageParam(lastPage, allPages) {
+      if (lastPage.end_page) {
+        return
+      }
+      return allPages.length
+    }
   })
 }
 
@@ -130,7 +142,7 @@ async function fetchCommunityLoopVideos(nickname: string, loopId: string, pageNo
       },
     })
     .then((res) => {
-      return res.data.data.videos
+      return res.data.data
     })
     .catch((e) => {
       throw new Error('Something went wrong with contributed_loop_videos api.')
@@ -142,7 +154,7 @@ export function getAllLoopVideos(nickname: string, loopId: string) {
     queryKey: ['videos', nickname, loopId],
     queryFn: async ({ pageParam }) => await fetchCommunityLoopVideos(nickname, loopId, pageParam),
     getNextPageParam(lastPage, allPages) {
-      if (lastPage.end) {
+      if (lastPage.end_page) {
         return
       }
       return allPages.length

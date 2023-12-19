@@ -1,3 +1,5 @@
+import { MainComponent } from './main-component'
+
 export default function Page() {
-  return <div>hello world. search.</div>
+  return <MainComponent />
 }
