@@ -7,7 +7,7 @@ import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
 import { CustomAvatar } from '@components/custom/custom-avatar'
-import CustomDecorativeList from '@components/custom/decorative-list'
+import { DecorativeList } from '@components/custom/decorative-list'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@components/ui/accordion'
 import { getAllCommunities, getAllLoops, getAllLoopVideos } from '@lib/api/profile'
 import { Loader } from '@components/ui/loader'
@@ -110,9 +110,9 @@ function CommunityList({ usernickname }: any) {
                   </div>
                 </AccordionTrigger>
                 <AccordionContent>
-                  <CustomDecorativeList>
+                  <DecorativeList>
                     <CommunityDetails userId={usernickname} communityId={item.id} />
-                  </CustomDecorativeList>
+                  </DecorativeList>
                 </AccordionContent>
               </AccordionItem>
             </div>

@@ -7,7 +7,7 @@ import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { Button } from '@components/ui/button'
 import icShare from '@icons/icShareBlue.svg'
-import CustomDecorativeList from '@components/custom/custom-decorative-list'
+import { DecorativeList } from '@components/custom/decorative-list'
 import Image from 'next/image'
 import icAudioRecord from '@icons/audioRecord.svg'
 import icVideoRecord from '@icons/videoRecord.svg'
@@ -64,11 +64,11 @@ export function Root({ videoDetails }: Props) {
                 </Button>
               </span>
             </span>
-            <CustomDecorativeList>
+            <DecorativeList>
               <li className="relative w-full rounded-md border border-monochrome-9 bg-monochrome-10">
                 <p className="line-clamp-1 break-all px-6 py-3 text-body-sm font-medium">{videoDetails.loop?.name}</p>
               </li>
-            </CustomDecorativeList>
+            </DecorativeList>
           </div>
           <span className="sticky top-0">
             <hr className="mt-6 border border-monochrome-black/10" />
