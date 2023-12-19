@@ -1,24 +1,26 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from 'react'
 
 /**
  * Add only <li></li> elements in it.
  * @param param0
  * @returns
  */
-export default function CustomDecorativeList({ children }: any) {
+export function DecorativeList({ children }: any) {
   const [lastLiHeight, setLastLiHeight] = useState(0)
   const ul = useRef<HTMLUListElement>(null)
   useEffect(() => {
-    function onChange() { 
+    function onChange() {
       const li = ul.current?.querySelector('li:last-child')
       if (li) {
-        const height = getComputedStyle(li).height;
+        const height = getComputedStyle(li).height
         setLastLiHeight(+height.substring(0, height.length - 2))
       }
     }
     const obs = new ResizeObserver(onChange)
     if (ul.current) obs.observe(ul.current)
-    return () => { obs.disconnect() }
+    return () => {
+      obs.disconnect()
+    }
   }, [ul])
   return (
     <div>
@@ -52,7 +54,9 @@ export default function CustomDecorativeList({ children }: any) {
           position: 'relative',
           height: 'fit-content',
           paddingLeft: '0.87em',
-          borderImage: `linear-gradient(to bottom, #e7e7e7 calc(100% - ${lastLiHeight/2}px - 9.5px), transparent 50%) 1`
+          borderImage: `linear-gradient(to bottom, #e7e7e7 calc(100% - ${
+            lastLiHeight / 2
+          }px - 9.5px), transparent 50%) 1`,
         }}>
         {children}
       </ul>
