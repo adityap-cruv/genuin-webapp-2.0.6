@@ -8,7 +8,8 @@ import { PATH_NAME } from '@lib/utils/constants/path'
 import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
 import dynamic from 'next/dynamic'
 const RecentCommunities = dynamic(
-  async () => await import('./recent-communities').then((comp) => comp.RecentCommunities)
+  async () => await import('./recent-communities').then((comp) => comp.RecentCommunities),
+  { ssr: false }
 )
 export function SideBar() {
   const pathName = usePathname()
@@ -16,22 +17,22 @@ export function SideBar() {
     <nav className="flex h-full w-fit flex-col border-r border-monochrome-9  transition-[width] lg:w-full">
       <span className="px-1 py-4">
         <Link href={PATH_NAME.home()}>
-          <Item title="Home" isActive={pathName.includes('home')}>
+          <Item title="Home" isActive={pathName === PATH_NAME.home()}>
             <HomeIcon isActive={pathName.includes('home')} />
           </Item>
         </Link>
         <Link href={PATH_NAME.popular()}>
-          <Item title="Popular" isActive={pathName.includes('popular')}>
+          <Item title="Popular" isActive={pathName === PATH_NAME.popular()}>
             <PopularIcon isActive={pathName.includes('popular')} />
           </Item>
         </Link>
         <Link href={PATH_NAME.latest()}>
-          <Item title="Latest" isActive={pathName.includes('latest')}>
+          <Item title="Latest" isActive={pathName === PATH_NAME.latest()}>
             <LatestIcon isActive={pathName.includes('latest')} />
           </Item>
         </Link>
         <Link href={PATH_NAME.search()}>
-          <Item title="Search" isActive={pathName.includes('search')}>
+          <Item title="Search" isActive={pathName === PATH_NAME.search()}>
             <SearchIcon isActive={pathName.includes('search')} />
           </Item>
         </Link>
