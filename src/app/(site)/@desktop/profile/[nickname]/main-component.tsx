@@ -188,11 +188,12 @@ function LoopVideos({ userId, loopDetails }: any) {
         <div className="flex items-center justify-center pt-32 text-title-md text-secondary">No videos available</div>
       )}
       <div className="my-2 grid w-full grid-cols-4 gap-2 md:grid-cols-8">
-        {isLoading && (
-          <div className="relative flex flex-col items-center">
-            <Shimmer className="aspect-reel h-full rounded" />
-          </div>
-        )}
+        {isLoading &&
+          Array.from({ length: 8 }).map((_, index) => (
+            <div key={`shimmer-${index}`} className="relative flex flex-col items-center">
+              <Shimmer className="aspect-reel w-full rounded" />
+            </div>
+          ))}
         {data?.pages
           .flatMap((page) => page.list)
           .map((video, index) => (
