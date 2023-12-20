@@ -5,8 +5,8 @@ export function TopBar() {
   return (
     <>
       <div
-        style={{ backgroundColor: 'rgba(248, 248, 248, 0.80)' }}
-        className="flex w-full justify-center border-b border-monochrome-9 sm:flex">
+        style={{ backgroundColor: 'rgba(249, 249, 249)' }}
+        className="z-20 flex w-full justify-center border-b border-monochrome-9 sm:flex">
         <nav className="sticky top-0 flex h-[76px] w-full max-w-1440 items-center justify-between px-2">
           <GenuinLogo variant="black" />
           <div className="flex gap-x-3">
