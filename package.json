@@ -44,8 +44,6 @@
     "react-device-detect": "^2.2.3",
     "react-dom": "18.2.0",
     "react-flag-kit": "^1.1.1",
-    "rudder-sdk-js": "^2.45.1",
-    "sharp": "^0.32.6",
     "tailwind-merge": "^1.14.0",
     "tailwindcss-animate": "^1.0.7",
     "zod": "^3.22.2",

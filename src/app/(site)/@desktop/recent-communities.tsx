@@ -4,6 +4,7 @@ import { CustomAvatar } from '@components/custom/custom-avatar'
 import { cn } from '@lib/utils'
 import { type ReactNode } from 'react'
 import { useRecentCommunitiesStore } from '@lib/stores/recent-communities'
+import { PATH_NAME } from '@lib/utils/constants/path'
 
 export function RecentCommunities() {
   const communities = useRecentCommunitiesStore((state) => state.communities)
@@ -19,7 +20,7 @@ export function RecentCommunities() {
           const communityPathName = '/community/' + item.handle
           return (
             <Link key={item.handle} href={{ pathname: communityPathName }}>
-              <CommunityItem title={item.name} isActive={pathName.includes(communityPathName)}>
+              <CommunityItem title={item.name} isActive={pathName === PATH_NAME.community(item.handle)}>
                 <CustomAvatar
                   imageUrl={item.profileImage}
                   fallbackString={item.name}
