@@ -1,9 +1,7 @@
-import { abbreviateNumber, checkAndAppendHttps, generateDeepLink, openGeneratedLink } from '@lib/utils'
+import { abbreviateNumber, checkAndAppendHttps } from '@lib/utils'
 import icShare from '@icons/player-controls/icShare.svg'
 import icComment from '@icons/player-controls/icComment.svg'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
-import icReply from '@icons/icReply.svg'
-import icSave from '@icons/icSave.svg'
 import { useToast } from '@components/ui/use-toast'
 import icLinkout from '@icons/player-controls/icLinkout.svg'
 import icSpark from '@icons/player-controls/icBulb.svg'
@@ -20,7 +18,6 @@ interface ActionsProps {
   shareTitle: string
   videoData?: VideoDataType
   shareDescription: string
-  isLoop?: boolean
 }
 
 export const Actions = {
@@ -28,7 +25,8 @@ export const Actions = {
   desktop: Desktop,
 }
 
-function Mobile({ link = '', shareDescription = '', shareTitle = '', isLoop = false, videoData }: ActionsProps) {
+// TODO: Fix their is bug when text length is bigger than devicesize fix it.
+function Mobile({ link = '', shareDescription = '', shareTitle = '', videoData }: ActionsProps) {
   const { shareFn } = useAdaptiveShare()
   const { openComments, closeComments, commentsIsOpen } = useCommentsStore((state) => ({
     openComments: state.openModal,
@@ -38,7 +36,7 @@ function Mobile({ link = '', shareDescription = '', shareTitle = '', isLoop = fa
 
   if (videoData) {
     return (
-      <div className="flex flex-col">
+      <div>
         {link && (
           <Link href={checkAndAppendHttps(link)} target="_blank">
             <ActionItem title="Click Here!">
@@ -55,77 +53,21 @@ function Mobile({ link = '', shareDescription = '', shareTitle = '', isLoop = fa
             {videoData?.video.no_of_sparks === null ? 0 : abbreviateNumber(videoData?.video.no_of_sparks ?? 0)}
           </p>
         </ActionItem>
-        {!isLoop && (
-          <ActionItem
-            title="Save this Video!"
-            onClick={() => {
-              generateDeepLink({
-                action: 'save',
-                contentType: 'pv',
-                title: '',
-                description: '',
-                fromUserName: null,
-                pathName: window.location.pathname,
-                previewImage: null,
-                sourceId: videoData?.video.id,
-                utmCampaign: 'share',
-                utmMedium: 'web',
-                utmSource: window.location.hostname,
-                parentId: videoData?.loop?.share_string,
-              })
-                .then((link) => {
-                  openGeneratedLink(link)
-                })
-                .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
-            }}>
-            <Image src={icSave} width={32} height={32} alt="Save video" />
-          </ActionItem>
-        )}
-        {isLoop && (
-          <>
-            <ActionItem
-              title="See Comments!"
-              onClick={() => {
-                commentsIsOpen ? closeComments() : openComments(videoData?.video.share_string)
-              }}>
-              <Image src={icComment} alt="comments" height={32} width={32} />
-              <p className="flex justify-center text-body-sm text-monochrome-white">
-                {videoData?.video.no_of_comments === null ? 0 : abbreviateNumber(videoData?.video.no_of_comments ?? 0)}
-              </p>
-            </ActionItem>
-          </>
-        )}
+        <ActionItem
+          title="See Comments!"
+          onClick={() => {
+            commentsIsOpen ? closeComments() : openComments(videoData?.video.share_string)
+          }}>
+          <Image src={icComment} alt="comments" height={32} width={32} />
+          <p className="flex justify-center text-body-sm text-monochrome-white">
+            {videoData?.video.no_of_comments === null ? 0 : abbreviateNumber(videoData?.video.no_of_comments ?? 0)}
+          </p>
+        </ActionItem>
         <ActionItem
           title="Share Video!"
           onClick={async () => await shareFn({ description: shareDescription, title: shareTitle })}>
           <Image src={icShare} alt="share" height={32} width={32} />
         </ActionItem>
-        {!isLoop && (
-          <ActionItem
-            title="Reply to Video!"
-            onClick={() => {
-              generateDeepLink({
-                action: 'reply',
-                contentType: 'pv',
-                title: '',
-                description: '',
-                fromUserName: null,
-                pathName: window.location.pathname,
-                previewImage: null,
-                sourceId: videoData?.video.id,
-                utmCampaign: 'share',
-                utmMedium: 'web',
-                utmSource: window.location.hostname,
-                parentId: videoData?.loop?.share_string,
-              })
-                .then((link) => {
-                  openGeneratedLink(link)
-                })
-                .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
-            }}>
-            <Image src={icReply} height={32} width={32} alt="reply" />
-          </ActionItem>
-        )}
         <ActionItem title="more options!">
           <Image src={ic3Dot} alt="more options" height={32} width={32} />
         </ActionItem>
@@ -134,14 +76,14 @@ function Mobile({ link = '', shareDescription = '', shareTitle = '', isLoop = fa
   }
 }
 
-function Desktop({ link = '', shareDescription = '', shareTitle = '', isLoop = false, videoData }: ActionsProps) {
+function Desktop({ link = '', shareDescription = '', shareTitle = '', videoData }: ActionsProps) {
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
-  const { openComments, closeComments, commentsIsOpen } = useCommentsStore((state) => ({
-    openComments: state.openModal,
-    closeComments: state.closeModal,
-    commentsIsOpen: state.modalIsOpen,
-  }))
+  // const { openComments, closeComments, commentsIsOpen } = useCommentsStore((state) => ({
+  //   openComments: state.openModal,
+  //   closeComments: state.closeModal,
+  //   commentsIsOpen: state.modalIsOpen,
+  // }))
 
   if (videoData) {
     return (
@@ -166,25 +108,6 @@ function Desktop({ link = '', shareDescription = '', shareTitle = '', isLoop = f
             </p>
           </ActionItem>
         </DownloadDialog>
-        {!isLoop && (
-          <DownloadDialog title="Get the Genuin app" subtitle="Get the app to save the video.">
-            <ActionItem title="Save this Video!">
-              <Image src={icSave} width={32} height={32} alt="Save video" />
-            </ActionItem>
-          </DownloadDialog>
-        )}
-        {isLoop && (
-          <ActionItem
-            onClick={(e) => {
-              commentsIsOpen ? closeComments() : openComments(videoData?.video.share_string)
-            }}
-            title="See Comments!">
-            <Image src={icComment} alt="comments" height={32} width={32} />
-            <p className="flex justify-center text-body-sm text-monochrome-white">
-              {videoData?.video.no_of_comments === null ? 0 : abbreviateNumber(videoData?.video.no_of_comments ?? 0)}
-            </p>
-          </ActionItem>
-        )}
         <ActionItem
           title="Share Video!"
           onClick={async () =>
@@ -196,13 +119,6 @@ function Desktop({ link = '', shareDescription = '', shareTitle = '', isLoop = f
           }>
           <Image src={icShare} alt="share" height={32} width={32} />
         </ActionItem>
-        {!isLoop && (
-          <DownloadDialog title="Get the Genuin app" subtitle="Get the app to reply to video.">
-            <ActionItem title="Reply to Video!">
-              <Image src={icReply} height={32} width={32} alt="reply" />
-            </ActionItem>
-          </DownloadDialog>
-        )}
         <DownloadDialog title="Get the Genuin app" subtitle="Get the app to report video.">
           <ActionItem title="More options!">
             <Image src={ic3Dot} height={32} width={32} alt="More Options!" />

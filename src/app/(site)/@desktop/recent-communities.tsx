@@ -4,8 +4,8 @@ import { CustomAvatar } from '@components/custom/custom-avatar'
 import { cn } from '@lib/utils'
 import { type ReactNode } from 'react'
 import { useRecentCommunitiesStore } from '@lib/stores/recent-communities'
+import { PATH_NAME } from '@lib/utils/constants/path'
 
-// TODO: Causing hydration issue fix it.
 export function RecentCommunities() {
   const communities = useRecentCommunitiesStore((state) => state.communities)
   const pathName = usePathname()
@@ -19,8 +19,8 @@ export function RecentCommunities() {
         {communities.map((item, index) => {
           const communityPathName = '/community/' + item.handle
           return (
-            <Link key={index} href={{ pathname: communityPathName }}>
-              <CommunityItem title={item.name} isActive={pathName.includes(communityPathName)}>
+            <Link key={item.handle} href={{ pathname: communityPathName }}>
+              <CommunityItem title={item.name} isActive={pathName === PATH_NAME.community(item.handle)}>
                 <CustomAvatar
                   imageUrl={item.profileImage}
                   fallbackString={item.name}

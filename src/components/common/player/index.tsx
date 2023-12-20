@@ -110,25 +110,6 @@ function Mobile({
           <div className="absolute left-0 top-0 h-full w-full">
             <MobileControlLayer videoData={videoData} />
           </div>
-          {/* <div
-            onClick={
-              // this action will only execute if end device is mobile
-              isMobile
-                ? (e) => {
-                    togglePlayPauseStatus()
-                    e.stopPropagation()
-                  }
-                : undefined
-            }
-            className="absolute left-0 top-0 h-full w-full">
-            {showControls ? (
-              showCommunityControl ? (
-                <CommunityControlLayer videoData={videoData} />
-              ) : (
-                <ControlLayer videoData={videoData} />
-              )
-            ) : undefined}
-          </div> */}
           <CommentSheet container={containerRef} videoId={videoData.video.share_string} />
         </div>
       </div>
@@ -183,25 +164,6 @@ function Desktop({
           <div className="absolute left-0 top-0 h-full w-full">
             <DesktopControlLayer videoData={videoData} />
           </div>
-          {/* <div
-            onClick={
-              // this action will only execute if end device is mobile
-              isMobile
-                ? (e) => {
-                    togglePlayPauseStatus()
-                    e.stopPropagation()
-                  }
-                : undefined
-            }
-            className="absolute left-0 top-0 h-full w-full">
-            {showControls ? (
-              showCommunityControl ? (
-                <CommunityControlLayer videoData={videoData} />
-              ) : (
-                <ControlLayer videoData={videoData} />
-              )
-            ) : undefined}
-          </div> */}
         </div>
       </div>
     )

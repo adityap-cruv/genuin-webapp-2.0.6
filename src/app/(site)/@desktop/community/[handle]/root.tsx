@@ -1,17 +1,7 @@
 'use client'
-import dynamic from 'next/dynamic'
 import type { CommunityDetailsType } from '@lib/schemas/community'
-import { Loader } from '@components/ui/loader'
 import { useRecentCommunitiesStore } from '@lib/stores/recent-communities'
-import { useEffect } from 'react'
-const CommunityDetails = dynamic(
-  async () => await import('@components/pages/community/details').then((comp) => comp.CommunityDetails),
-  {
-    loading: (_) => {
-      return <Loader size="md" />
-    },
-  }
-)
+import { useEffect, useRef } from 'react'
 
 interface Props {
   communityDetails: CommunityDetailsType
@@ -19,6 +9,7 @@ interface Props {
 
 export function Root({ communityDetails }: Props) {
   const addCommunity = useRecentCommunitiesStore((state) => state.addCommunity)
+  const navRef = useRef<HTMLElement>(null)
   useEffect(() => {
     addCommunity({
       handle: communityDetails.info.handle,
@@ -27,5 +18,7 @@ export function Root({ communityDetails }: Props) {
     })
   }, [])
 
-  return <CommunityDetails communityDetails={communityDetails} />
+  return (
+    <nav ref={navRef} className="z-1 sticky top-0 h-10 w-full -translate-y-full bg-red transition-all animate-in"></nav>
+  )
 }

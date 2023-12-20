@@ -1,4 +1,6 @@
-interface PageProps {
+import { fetchVideoDetails } from '@lib/api/video'
+import { Root } from './root'
+type PageProps = {
   params: {
     id: string
   }
@@ -8,9 +10,9 @@ interface PageProps {
 }
 
 export default async function Component({ params, searchParams }: PageProps) {
-  // const videoData = await fetchVideoDetails(params.id)
+  const videoData = await fetchVideoDetails(params.id)
 
-  return <div>This is main mobile component.</div>
+  return <Root videoData={videoData} />
 }
 
 // export async function generateMetadata({ params, searchParams }: PageProps): Promise<Metadata> {
