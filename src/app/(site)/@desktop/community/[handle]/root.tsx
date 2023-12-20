@@ -16,7 +16,7 @@ interface Props {
 export function Root({ communityDetails }: Props) {
   const addCommunity = useRecentCommunitiesStore((state) => state.addCommunity)
   const detailsDivRef = useRef<HTMLDivElement>(null)
-  const detailsInView = useInView(detailsDivRef, { amount: 0.9 })
+  const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
 
   useEffect(() => {
     addCommunity({
@@ -28,9 +28,15 @@ export function Root({ communityDetails }: Props) {
 
   return (
     <>
-      <TopBar defaultOpen={false} isOpen={!detailsInView} />
-      <main className="absolute inset-0 h-full w-full overflow-auto pl-6 pt-6">
-        <div ref={detailsDivRef}>
+      <TopBar
+        defaultOpen={false}
+        isOpen={!detailsInView}
+        communityName={communityDetails.info.name}
+        communityProfileImage={communityDetails.info.profile_image}
+        communtiyHandle={communityDetails.info.handle}
+      />
+      <main className="absolute inset-0 h-full w-full overflow-auto pl-6 ">
+        <div ref={detailsDivRef} className="pt-6">
           <CustomAvatar
             isAvatar={false}
             imageUrl={communityDetails.info.profile_image}
@@ -40,19 +46,19 @@ export function Root({ communityDetails }: Props) {
           <p className="py-2 text-title-xl">{communityDetails.info.name}</p>
           <Stats communityDetails={communityDetails} />
           <p className="line-clamp-2 w-1/2 break-all pb-4 pt-2">{communityDetails.info.description}</p>
-          <span className="flex h-8 gap-x-2">
+          <span className="flex gap-x-2">
             <Button size="custom">
-              <p className="px-4 py-1 text-body-sm">Join Community</p>
+              <p className="px-4 py-2 text-body-sm">Join Community</p>
             </Button>
             <Button variant="outline" size="custom" className="border-2 border-primary p-0.5">
               <Image src={icShare} alt="share" className="h-6 w-6" />
             </Button>
           </span>
         </div>
-        <span className="flex h-full w-full">
-          <div className="h-full flex-1 bg-red"></div>
-          <div className="h-full flex-1 bg-blue"></div>
-        </span>
+        <div className="flex h-full w-full">
+          <div className="h-[200%] flex-1 bg-red"></div>
+          <div className="sticky top-0 h-full flex-1 bg-blue"></div>
+        </div>
       </main>
     </>
   )
