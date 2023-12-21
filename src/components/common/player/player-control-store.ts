@@ -7,8 +7,7 @@ type PlayerControlStoreType = {
   play: () => void
   pause: () => void
   toggleShouldPlay: () => void
-  playerSizeBox: { height: number; width: number }
-  updatePlayerSizeBox: (height: number, width: number) => void
+  setShouldPlay: (shouldPlay: boolean) => void
   duration: number
   setDuration: (duration: number) => void
   setCurrentTime: (currentTime: number) => void
@@ -33,9 +32,8 @@ export const usePlayerControlStore = create<PlayerControlStoreType>((set) => {
         shouldPlay: !state.shouldPlay,
       }))
     },
-    playerSizeBox: { height: 0, width: 0 },
-    updatePlayerSizeBox(height, width) {
-      set({ playerSizeBox: { height, width } })
+    setShouldPlay(shouldPlay) {
+      set({ shouldPlay })
     },
     duration: 0,
     setDuration(duration) {

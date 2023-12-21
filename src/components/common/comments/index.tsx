@@ -1,83 +1,23 @@
-import { Button } from '@components/ui/button'
-import Image from 'next/image'
-import icComment from '@icons/icCommentSecondary.svg'
-import { useRef, useEffect } from 'react'
-import { CommentSheet, CommentSheetContent, CommentSheetPortal } from '@components/custom/comment-sheet'
-import { X } from 'lucide-react'
-import { usePlayerControlStore } from '../player-control-store'
-import { useCommentsStore } from './store'
+import { useMotionValueEvent, useScroll } from 'framer-motion'
+import { ReadMore } from '@components/common/read-more'
 import { getLoopVideoComments } from '@lib/api/loop'
 import { Loader } from '@components/ui/loader'
 import { type CommentListType, type CommentType } from '@lib/schemas/loop/comment'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import dynamic from 'next/dynamic'
-import { useMotionValueEvent, useScroll } from 'framer-motion'
-import { ReadMore } from '@components/common/read-more'
+import { Button } from '@components/ui/button'
+import Image from 'next/image'
+import icComment from '@icons/icCommentSecondary.svg'
+import { useRef } from 'react'
+import { useCommentStore } from './store'
 const CommentPlayer = dynamic(async () => await import('./video-player').then((comp) => comp.CommentPlayer))
 const AudioPlayer = dynamic(async () => await import('./audio-player').then((comp) => comp.AudioPlayer))
 
-type Props = {
-  container: React.MutableRefObject<HTMLDivElement | null>
-  videoId: string
-}
-
-export function Sheet({ container, videoId }: Props) {
-  const { isOpen, close, currentVideoId } = useCommentsStore((state) => ({
-    isOpen: state.modalIsOpen,
-    close: state.closeModal,
-    currentVideoId: state.currentVideoId,
-  }))
-  const { pauseVideo, playVideo } = usePlayerControlStore((state) => ({
-    pauseVideo: state.pause,
-    playVideo: state.play,
-  }))
-  const shouldOpen = isOpen && currentVideoId === videoId
-
-  useEffect(() => {
-    if (shouldOpen) {
-      document.getElementById('reel-list')?.classList.add('!overflow-y-hidden')
-      pauseVideo()
-    } else {
-      document.getElementById('reel-list')?.classList.remove('!overflow-y-hidden')
-      playVideo()
-    }
-  }, [shouldOpen])
-
-  return (
-    <CommentSheet open={shouldOpen} modal={false}>
-      <CommentSheetPortal container={container.current}>
-        <CommentSheetContent
-          side="bottom"
-          onInteractOutside={() => {
-            close()
-          }}>
-          <div className="h-full w-full rounded-t-[18px] bg-background sm:rounded-t-none">
-            <div className="flex w-full items-center justify-between p-3">
-              <p className="text-title-lg">Comments</p>
-              <X
-                className="h-6 w-6 cursor-pointer stroke-secondary"
-                onClick={() => {
-                  close()
-                }}
-              />
-            </div>
-            <CommentBody videoId={videoId} />
-          </div>
-        </CommentSheetContent>
-      </CommentSheetPortal>
-    </CommentSheet>
-  )
-}
-
-export function CommentBody({ videoId }: { videoId: string }) {
+export function Comments({ videoId }: { videoId: string }) {
   const { isLoading, data, isError, isFetchingNextPage, fetchNextPage } = getLoopVideoComments(videoId)
   const comments = data?.pages.flatMap((item) => {
     return item.comments
   })
-
-  // useEffect(() => {
-  //   if (!scrollDivRef.current) return
-  // }, [scrollDivRef.current])
 
   if (isLoading) {
     return <Loader size="md" />
@@ -97,7 +37,6 @@ export function CommentBody({ videoId }: { videoId: string }) {
 
 type CommentListProps = {
   comments: CommentListType
-  // hasNextPage: boolean
   isFetchingNextPage: boolean
   fetchNextPage: any
 }
@@ -141,9 +80,8 @@ function CommentItem({ comment }: { comment: CommentType }) {
 
 const Comment = {
   video({ comment }: { comment: CommentType }) {
-    const setActiveCommentIndex = useCommentsStore((state) => state.setActiveCommentIndex)
-    const activeCommentIndex = useCommentsStore((state) => state.activeCommentIndex)
-
+    const setActiveCommentIndex = useCommentStore((state) => state.setActiveCommentIndex)
+    const activeCommentIndex = useCommentStore((state) => state.activeCommentIndex)
     if (comment)
       return (
         <CommentPlayer
@@ -162,8 +100,8 @@ const Comment = {
       )
   },
   audio({ comment }: { comment: CommentType }) {
-    const setActiveCommentIndex = useCommentsStore((state) => state.setActiveCommentIndex)
-    const activeCommentIndex = useCommentsStore((state) => state.activeCommentIndex)
+    const setActiveCommentIndex = useCommentStore((state) => state.setActiveCommentIndex)
+    const activeCommentIndex = useCommentStore((state) => state.activeCommentIndex)
     return (
       <AudioPlayer
         commentShareString={comment.comment.share_string}
@@ -189,8 +127,8 @@ function NoComments() {
       <Image src={icComment} alt="comment!" />
       <p className="mt-2 text-title-lg">No comments yet</p>
       <p className="text-body-lg">Be the first one to comment</p>
-      <Button className="mt-2">
-        <p className="m-2 text-title-lg text-monochrome-white">Get app to Comment</p>
+      <Button className="mt-2" size="custom">
+        <p className="text-title-lg text-monochrome-white">Get app to Comment</p>
       </Button>
     </div>
   )

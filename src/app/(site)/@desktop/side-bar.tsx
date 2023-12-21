@@ -2,10 +2,11 @@
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { type ReactNode } from 'react'
-import { HomeIcon, LatestIcon, MoreIcon, PopularIcon, SearchIcon } from '@icons/side-bar-icons'
+import { HomeIcon, LatestIcon, MoreIcon, PopularIcon } from '@icons/side-bar-icons'
 import { cn } from '@lib/utils'
 import { PATH_NAME } from '@lib/utils/constants/path'
-import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
+// import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
+import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@components/ui/tooltip'
 import dynamic from 'next/dynamic'
 const RecentCommunities = dynamic(
   async () => await import('./recent-communities').then((comp) => comp.RecentCommunities),
@@ -14,43 +15,53 @@ const RecentCommunities = dynamic(
 export function SideBar() {
   const pathName = usePathname()
   return (
-    <nav className="flex h-full w-fit flex-col  transition-[width] lg:w-full">
+    <nav className=" flex h-full w-fit  flex-col border border-monochrome-9 transition-[width] lg:w-full lg:border-none">
       <span className="px-1 py-4">
-        <Link href={PATH_NAME.home()}>
+        <Link href={{ pathname: PATH_NAME.home() }}>
           <Item title="Home" isActive={pathName === PATH_NAME.home()}>
             <HomeIcon isActive={pathName.includes('home')} />
           </Item>
         </Link>
-        <Link href={PATH_NAME.popular()}>
+        <Link href={{ pathname: PATH_NAME.popular() }}>
           <Item title="Popular" isActive={pathName === PATH_NAME.popular()}>
             <PopularIcon isActive={pathName.includes('popular')} />
           </Item>
         </Link>
-        <Link href={PATH_NAME.latest()}>
+        <Link href={{ pathname: PATH_NAME.latest() }}>
           <Item title="Latest" isActive={pathName === PATH_NAME.latest()}>
             <LatestIcon isActive={pathName.includes('latest')} />
           </Item>
         </Link>
-        <Link href={PATH_NAME.search()}>
+        {/* <Link href={PATH_NAME.search()}>
           <Item title="Search" isActive={pathName === PATH_NAME.search()}>
             <SearchIcon isActive={pathName.includes('search')} />
           </Item>
-        </Link>
-        <Popover>
-          <PopoverTrigger className="w-full">
-            <Item title="More">
-              <MoreIcon />
-            </Item>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-1" side="bottom" align="start">
-            <Link href={PATH_NAME.terms}>
-              <p className="rounded-md p-3 text-title-lg font-semibold hover:bg-monochrome-6/10">Terms of Service</p>
-            </Link>
-            <Link href={PATH_NAME.privacy}>
-              <p className="rounded-md p-3 text-title-lg font-semibold hover:bg-monochrome-6/10">Privacy Policy</p>
-            </Link>
-          </PopoverContent>
-        </Popover>
+        </Link> */}
+        <TooltipProvider>
+          <Tooltip delayDuration={300}>
+            <TooltipTrigger className="w-full">
+              <Item title="More">
+                <MoreIcon />
+              </Item>
+            </TooltipTrigger>
+            <TooltipContent className="w-auto p-1" side="bottom" align="start">
+              <Link href={{ pathname: PATH_NAME.terms }}>
+                <p
+                  style={{ fontSize: '20px', lineHeight: '32px', fontWeight: 600 }}
+                  className="rounded-md p-3 hover:bg-monochrome-6/10">
+                  Terms of Service
+                </p>
+              </Link>
+              <Link href={{ pathname: PATH_NAME.privacy }}>
+                <p
+                  style={{ fontSize: '20px', lineHeight: '32px', fontWeight: 600 }}
+                  className="rounded-md p-3 hover:bg-monochrome-6/10">
+                  Privacy Policy
+                </p>
+              </Link>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
         <RecentCommunities />
       </span>
     </nav>
@@ -63,15 +74,14 @@ type ItemProps = {
   children: ReactNode
 }
 
+// TODO: remove hard coding of font styles
 function Item({ title, isActive, children }: ItemProps) {
   return (
     <div className="flex w-full max-w-full items-center gap-x-3 rounded-md p-3 hover:bg-monochrome-6/10">
       {children}
       <p
-        className={cn(
-          'hidden break-all text-title-lg font-semibold lg:block',
-          isActive ? 'text-primary' : 'text-new-off-black'
-        )}>
+        className={cn('hidden break-all lg:block', isActive ? 'text-primary' : 'text-new-off-black')}
+        style={{ fontSize: '20px', lineHeight: '32px', fontWeight: 600 }}>
         {title}
       </p>
     </div>

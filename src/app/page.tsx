@@ -8,6 +8,7 @@ import Script from 'next/script'
 // todo configure eslint plugin
 // todo work on parallel routing for developing mobile and desktop components differently
 // todo create skeleton for everything and pages.
+// TODO: optimize uses of dynamic function.
 export default async function Page() {
   const isMobile = cookies().get('mobile')?.value === 'true'
   return (

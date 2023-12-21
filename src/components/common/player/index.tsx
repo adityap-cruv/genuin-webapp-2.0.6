@@ -2,10 +2,10 @@
 import dynamic from 'next/dynamic'
 import { Loader } from '@components/ui/loader'
 import { type VideoDataType } from '@lib/schemas/video'
-import { useState, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { usePlayerControlStore } from './player-control-store'
 
-const CommentSheet = dynamic(async () => await import('./comments').then((comp) => comp.CommentSheet))
+const CommentSheet = dynamic(async () => await import('./comment-sheet').then((comp) => comp.CommentSheet))
 const InnerPlayer = dynamic(async () => await import('./inner-player').then((comp) => comp.InnerPlayer), {
   loading: (_) => {
     return <Loader size="lg" />
@@ -41,7 +41,7 @@ type Props = {
   /**
    * default: true
    */
-  showControls?: boolean
+  // showControls?: boolean
   /**
    * Sizebox is mandatory. To get sizebox see hooke useVideoSizeBox.
    * Tip: Please don't render withour sizebox
@@ -67,16 +67,17 @@ function Mobile({
   videoData,
   shouldPlay = true,
   loop = false,
-  showControls = true,
   sizeBox,
   playIfInViewPort,
   shouldShowBackgroundBlurImage = true,
   isFirstPlayerInList = false,
 }: Props) {
-  // todo fix this warning
-  const [playerControls, setPlayerControls] = useState({ play: shouldPlay, muted: true, loop })
-  const togglePlayPauseStatus = usePlayerControlStore((state) => state.toggleShouldPlay)
   const containerRef = useRef<HTMLDivElement | null>(null)
+  const setShouldPlay = usePlayerControlStore((state) => state.setShouldPlay)
+
+  useEffect(() => {
+    setShouldPlay(shouldPlay)
+  }, [shouldPlay])
 
   if (videoData) {
     return (
@@ -95,17 +96,11 @@ function Mobile({
             <ViewportPlayer
               videoSource={videoData.video.url}
               poster={videoData.video.thumbnail}
-              muted={playerControls.muted}
-              loop={playerControls.loop}
               isFirstElement={isFirstPlayerInList}
+              loop={loop}
             />
           ) : (
-            <InnerPlayer
-              videoSource={videoData.video.url}
-              poster={videoData.video.thumbnail}
-              muted={playerControls.muted}
-              loop={playerControls.loop}
-            />
+            <InnerPlayer videoSource={videoData.video.url} poster={videoData.video.thumbnail} />
           )}
           <div className="absolute left-0 top-0 h-full w-full">
             <MobileControlLayer videoData={videoData} />
@@ -119,18 +114,19 @@ function Mobile({
 
 function Desktop({
   videoData,
-  shouldPlay = true,
   loop = false,
-  showControls = true,
+  shouldPlay = true,
   sizeBox,
   playIfInViewPort,
   shouldShowBackgroundBlurImage = true,
   isFirstPlayerInList = false,
 }: Props) {
-  // todo fix this warning
-  const [playerControls, setPlayerControls] = useState({ play: shouldPlay, muted: true, loop })
-  const togglePlayPauseStatus = usePlayerControlStore((state) => state.toggleShouldPlay)
   const containerRef = useRef<HTMLDivElement | null>(null)
+  const setShouldPlay = usePlayerControlStore((state) => state.setShouldPlay)
+
+  useEffect(() => {
+    setShouldPlay(shouldPlay)
+  }, [shouldPlay])
 
   if (videoData) {
     return (
@@ -149,17 +145,10 @@ function Desktop({
             <ViewportPlayer
               videoSource={videoData.video.url}
               poster={videoData.video.thumbnail}
-              muted={playerControls.muted}
-              loop={playerControls.loop}
               isFirstElement={isFirstPlayerInList}
             />
           ) : (
-            <InnerPlayer
-              videoSource={videoData.video.url}
-              poster={videoData.video.thumbnail}
-              muted={playerControls.muted}
-              loop={playerControls.loop}
-            />
+            <InnerPlayer loop={loop} videoSource={videoData.video.url} poster={videoData.video.thumbnail} />
           )}
           <div className="absolute left-0 top-0 h-full w-full">
             <DesktopControlLayer videoData={videoData} />

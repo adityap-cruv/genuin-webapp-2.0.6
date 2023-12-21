@@ -10,19 +10,17 @@ type Props = {
 // TODO: Fix comment component bug. scrolling issue.
 export function Root({ videoDetails }: Props) {
   const sizeBox = useVideoSizeBox(true)
-  const { data, hasNextPage, isError, isFetchingNextPage, isLoading } = getPaginatedLoopVideos('kavik')
-  const videos = data?.pages.flatMap((item) => item.videos)
 
-  if (sizeBox && videos)
+  if (sizeBox)
     return (
       <div className="h-full w-full pl-6">
         <Feed.desktop
           sizeBox={sizeBox}
-          hasNextPage={hasNextPage}
-          isError={isError}
-          isFetchingNextPage={isFetchingNextPage}
-          isLoading={isLoading}
-          videos={videos}
+          hasNextPage={false}
+          isError={false}
+          isFetchingNextPage={false}
+          isLoading={false}
+          videos={[videoDetails]}
         />
       </div>
     )

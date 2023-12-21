@@ -9,9 +9,9 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { PopularIcon, HomeIcon, LatestIcon, SearchIcon } from '@icons/side-bar-icons'
 import { cva, type VariantProps } from 'class-variance-authority'
-import { Search, X } from 'lucide-react'
+import { PATH_NAME } from '@lib/utils/constants/path'
 
-const navVariant = cva('sticky top-0 flex z-10 h-[76px] w-full items-center justify-between  px-2', {
+const navVariant = cva('sticky top-0 flex z-20 h-[76px] w-full items-center justify-between  px-2', {
   variants: {
     variant: {
       light: 'border-b-2 border-monochrome-9 bg-monochrome-white',
@@ -77,24 +77,24 @@ function Menu({ hamBurgerVariant = 'dark' }: { hamBurgerVariant: 'dark' | 'light
       </SheetTrigger>
       <SheetContent side="left" className="w-full border-none">
         <span>
-          <Link href="/app/home">
-            <MenuItem title="Home" isActive={pathName.includes('home')}>
-              <HomeIcon isActive={pathName.includes('home')} />
+          <Link href={{ pathname: PATH_NAME.home() }}>
+            <MenuItem title="Home" isActive={pathName === PATH_NAME.home()}>
+              <HomeIcon isActive={pathName === PATH_NAME.home()} />
             </MenuItem>
           </Link>
-          <Link href="/app/popular">
-            <MenuItem title="Popular" isActive={pathName.includes('popular')}>
-              <PopularIcon isActive={pathName.includes('popular')} />
+          <Link href={{ pathname: PATH_NAME.popular() }}>
+            <MenuItem title="Popular" isActive={pathName === PATH_NAME.popular()}>
+              <PopularIcon isActive={pathName === PATH_NAME.popular()} />
             </MenuItem>
           </Link>
-          <Link href="/app/latest">
-            <MenuItem title="Latest" isActive={pathName.includes('latest')}>
-              <LatestIcon isActive={pathName.includes('latest')} />
+          <Link href={{ pathname: PATH_NAME.latest() }}>
+            <MenuItem title="Latest" isActive={pathName === PATH_NAME.latest()}>
+              <LatestIcon isActive={pathName === PATH_NAME.latest()} />
             </MenuItem>
           </Link>
-          <Link href="/app/search">
+          <Link href={{ pathname: PATH_NAME.search() }}>
             <MenuItem title="Search" isActive={pathName.includes('search')}>
-              <SearchIcon isActive={pathName.includes('search')} />
+              <SearchIcon isActive={pathName === PATH_NAME.search()} />
             </MenuItem>
           </Link>
         </span>

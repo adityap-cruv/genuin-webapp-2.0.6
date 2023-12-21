@@ -1,7 +1,7 @@
 import { useRef, useEffect } from 'react'
 import OpenPlayerJS from 'openplayerjs'
 import { useInView } from 'framer-motion'
-import { useCommentsStore } from './store'
+import { useCommentStore } from './store'
 import Image from 'next/image'
 import icPlay from '@icons/player-controls/icPlay.svg'
 
@@ -26,7 +26,7 @@ export function CommentPlayer({ videoSource, poster, commentShareString, onClick
     player: null,
   })
   const elementIsInView = useInView(videoRef, { amount: 'some' })
-  const activeCommentIndex = useCommentsStore((state) => state.activeCommentIndex)
+  const activeCommentIndex = useCommentStore((state) => state.activeCommentIndex)
   const shouldPlay = activeCommentIndex === commentShareString && elementIsInView
 
   useEffect(() => {

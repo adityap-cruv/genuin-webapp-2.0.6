@@ -3,7 +3,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import audioCommentPlay from '@icons/audio/play.svg'
 import audioCommentPause from '@icons/audio/pause.svg'
 import { useInView } from 'framer-motion'
-import { useCommentsStore } from './store'
+import { useCommentStore } from './store'
 
 type Props = {
   url: string
@@ -14,6 +14,7 @@ type Props = {
   commentShareString: string
 }
 
+// TODO: optimize this component.
 export function AudioPlayer({ url, commentShareString, onClick }: Props) {
   const [waveWidth, setWaveWidth] = useState(170)
   const waveHeight = waveWidth * (40 / 170)
@@ -25,7 +26,7 @@ export function AudioPlayer({ url, commentShareString, onClick }: Props) {
   const [progress, setProgress] = useState({ currentTime: 0, duration: 0 })
   const totalProgressWidth = (progress.duration ? progress.currentTime / progress.duration : 0) * waveWidth
   const elementIsInView = useInView(elementRef, { amount: 0.5 })
-  const activeCommentIndex = useCommentsStore((state) => state.activeCommentIndex)
+  const activeCommentIndex = useCommentStore((state) => state.activeCommentIndex)
   const shouldPlay = activeCommentIndex === commentShareString && elementIsInView
 
   const pipeHeights = useMemo(() => {
@@ -45,7 +46,7 @@ export function AudioPlayer({ url, commentShareString, onClick }: Props) {
   }, [shouldPlay])
 
   useEffect(() => {
-    if (!elementRef.current || !btnRef.current) return;
+    if (!elementRef.current || !btnRef.current) return
     const _netWidth = getComputedStyle(elementRef.current).width
     const _btnWidth = getComputedStyle(btnRef.current).width
     const netWidth = +_netWidth.substring(0, _netWidth.length - 2)
