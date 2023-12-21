@@ -1,5 +1,5 @@
 import OpenPlayerJS from 'openplayerjs'
-import { inView, useInView } from 'framer-motion'
+import { useInView } from 'framer-motion'
 import { type DetailedHTMLProps, type ReactEventHandler, type VideoHTMLAttributes, useEffect, useRef } from 'react'
 import { usePlayerControlStore } from './player-control-store'
 
@@ -229,10 +229,6 @@ export function ViewportPlayer({
         loop={loop}
         src={videoSource}
         playsInline
-        // style={{
-        //   height: videoSizeBox.height,
-        //   width: videoSizeBox.width,
-        // }}
         onPlay={onPlay}
         onPlaying={onPlaying}
         onError={onError}

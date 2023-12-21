@@ -10,10 +10,14 @@ import icVideoRecord from '@icons/videoRecord.svg'
 import { DownloadDialog } from '@components/common/download-dialog'
 import { Comments } from '@components/common/player/comments'
 import { useFeedListStore } from './store'
-import { Loader } from '@components/ui/loader'
 
 export function DesktopDetails() {
-  const videoDetails = useFeedListStore((state) => state.currentVideoDetails)
+  const { videoList, currentIndex } = useFeedListStore((state) => ({
+    videoList: state.videoList,
+    currentIndex: state.currentIndex,
+  }))
+  const videoDetails = videoList[currentIndex]
+
   if (videoDetails)
     return (
       <div className="relative flex h-full flex-1 flex-col p-6 pb-0">
@@ -82,5 +86,4 @@ export function DesktopDetails() {
         </div>
       </div>
     )
-  return <Loader size="md" />
 }

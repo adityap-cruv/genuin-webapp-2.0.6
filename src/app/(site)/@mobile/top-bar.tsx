@@ -46,7 +46,7 @@ export function TopBar({ variant = 'light', className, showClose = false }: Prop
           }>
           <p className="text-body-sm">Download Genuin</p>
         </Button>
-        {showClose ? (
+        {/* {showClose ? (
           <X
             className={cn(
               'h-6 w-6',
@@ -62,7 +62,7 @@ export function TopBar({ variant = 'light', className, showClose = false }: Prop
                 : 'rounded-full bg-monochrome-black/20 stroke-new-off-white p-1.5'
             )}
           />
-        )}
+        )} */}
       </span>
     </nav>
   )
