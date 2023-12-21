@@ -11,9 +11,10 @@ import { DecorativeList } from '@components/custom/decorative-list'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@components/ui/accordion'
 import { getAllCommunities, getAllLoops, getAllLoopVideos } from '@lib/api/profile'
 import { Loader } from '@components/ui/loader'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import icSpark from '@icons/player-controls/icBulb.svg'
 import { Shimmer } from '@components/ui/shimmer'
+import { useInView } from 'framer-motion'
 
 interface CompProps {
   profileData: any
@@ -85,18 +86,22 @@ function CommunityList({ usernickname }: any) {
   const handleSeeMoreClick = () => {
     void fetchNextPage()
   }
+  // const divRef = useRef<HTMLDivElement>(null)
+  // const isVisible = useInView(divRef)
+
+  const itemHandles = data?.pages.flatMap((page) => page.list).map((item) => item.handle)
 
   return (
     <>
       {isLoading && <Loader size="md" />}
       {data && (
-        <Accordion type="single" defaultValue={data?.pages[0]?.list[0]?.handle} collapsible>
+        <Accordion type="multiple" value={itemHandles}>
           {data?.pages
             .flatMap((page) => page.list)
             .map((item, index) => (
               <div key={index}>
                 &nbsp;
-                <AccordionItem value={item.handle} className="border-none ">
+                <AccordionItem value={item.handle} className="border-none">
                   <AccordionTrigger className="m-0 p-0">
                     <div className="flex items-center">
                       <CustomAvatar
@@ -214,7 +219,6 @@ function LoopVideos({ userId, loopDetails }: any) {
             </div>
           ))}
       </div>
-
       {hasNextPage && (
         <p
           className="text-blue-500 flex w-full cursor-pointer justify-center pt-2 text-cap-lg text-monochrome"
