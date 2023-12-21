@@ -13,7 +13,7 @@ export function RecentCommunities() {
     return (
       <>
         <hr className="mb-4 mt-1 border border-monochrome-black/10" />
-        <p className="hidden w-full pb-1 text-title-lg font-semibold text-monochrome lg:line-clamp-1">
+        <p className="hidden w-full break-all pb-1 text-title-lg font-semibold text-monochrome lg:line-clamp-1">
           Recent Communities
         </p>
         {communities.map((item, index) => {

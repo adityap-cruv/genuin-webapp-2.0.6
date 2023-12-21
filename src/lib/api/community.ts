@@ -10,6 +10,7 @@ export async function fetchCommunityDetails(handle: string) {
     })
     .then((res) => res.data.data)
     .catch((e) => {
+      console.log('e::', e)
       throw new Error('Something went wrong with community detail!')
     })
 }
