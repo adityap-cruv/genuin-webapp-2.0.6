@@ -105,7 +105,11 @@ function Mobile({
           <div className="absolute left-0 top-0 h-full w-full">
             <MobileControlLayer videoData={videoData} />
           </div>
-          <CommentSheet container={containerRef} videoId={videoData.video.share_string} />
+          <CommentSheet
+            container={containerRef}
+            videoId={videoData.video.share_string}
+            noOfComments={videoData.video.no_of_comments ?? 0}
+          />
         </div>
       </div>
     )

@@ -2,7 +2,6 @@
 import { useVideoSizeBox } from '@hooks/use-video-size-box'
 import { type VideoDataType } from '@lib/schemas/video'
 import { Feed } from '@components/common/feed'
-import { getPaginatedLoopVideos } from '@lib/api/profile'
 
 type Props = {
   videoDetails: VideoDataType
@@ -10,7 +9,6 @@ type Props = {
 // TODO: Fix comment component bug. scrolling issue.
 export function Root({ videoDetails }: Props) {
   const sizeBox = useVideoSizeBox(true)
-
   if (sizeBox)
     return (
       <div className="h-full w-full pl-6">

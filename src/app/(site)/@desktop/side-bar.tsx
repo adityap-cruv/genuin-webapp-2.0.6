@@ -5,13 +5,16 @@ import { type ReactNode } from 'react'
 import { HomeIcon, LatestIcon, MoreIcon, PopularIcon } from '@icons/side-bar-icons'
 import { cn } from '@lib/utils'
 import { PATH_NAME } from '@lib/utils/constants/path'
-// import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
-import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@components/ui/tooltip'
+import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
+// import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@components/ui/tooltip'
 import dynamic from 'next/dynamic'
+// import { Popover } from '@components/ui/popover'
 const RecentCommunities = dynamic(
   async () => await import('./recent-communities').then((comp) => comp.RecentCommunities),
   { ssr: false }
 )
+
+// TODO: Improve active states on all items.
 export function SideBar() {
   const pathName = usePathname()
   return (
@@ -19,17 +22,17 @@ export function SideBar() {
       <span className="px-1 py-4">
         <Link href={{ pathname: PATH_NAME.home() }}>
           <Item title="Home" isActive={pathName === PATH_NAME.home()}>
-            <HomeIcon isActive={pathName.includes('home')} />
+            <HomeIcon isActive={pathName === PATH_NAME.home()} />
           </Item>
         </Link>
         <Link href={{ pathname: PATH_NAME.popular() }}>
           <Item title="Popular" isActive={pathName === PATH_NAME.popular()}>
-            <PopularIcon isActive={pathName.includes('popular')} />
+            <PopularIcon isActive={pathName === PATH_NAME.popular()} />
           </Item>
         </Link>
         <Link href={{ pathname: PATH_NAME.latest() }}>
           <Item title="Latest" isActive={pathName === PATH_NAME.latest()}>
-            <LatestIcon isActive={pathName.includes('latest')} />
+            <LatestIcon isActive={pathName === PATH_NAME.latest()} />
           </Item>
         </Link>
         {/* <Link href={PATH_NAME.search()}>
@@ -37,31 +40,34 @@ export function SideBar() {
             <SearchIcon isActive={pathName.includes('search')} />
           </Item>
         </Link> */}
-        <TooltipProvider>
-          <Tooltip delayDuration={300}>
-            <TooltipTrigger className="w-full">
-              <Item title="More">
-                <MoreIcon />
-              </Item>
-            </TooltipTrigger>
-            <TooltipContent className="w-auto p-1" side="bottom" align="start">
-              <Link href={{ pathname: PATH_NAME.terms }}>
-                <p
-                  style={{ fontSize: '20px', lineHeight: '32px', fontWeight: 600 }}
-                  className="rounded-md p-3 hover:bg-monochrome-6/10">
-                  Terms of Service
-                </p>
-              </Link>
-              <Link href={{ pathname: PATH_NAME.privacy }}>
-                <p
-                  style={{ fontSize: '20px', lineHeight: '32px', fontWeight: 600 }}
-                  className="rounded-md p-3 hover:bg-monochrome-6/10">
-                  Privacy Policy
-                </p>
-              </Link>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <Popover>
+          <PopoverTrigger className="w-full">
+            <Item title="More">
+              <MoreIcon isActive={false} />
+            </Item>
+          </PopoverTrigger>
+          <PopoverContent
+            sideOffset={-6}
+            className="rounded-3xl p-1 shadow-lg shadow-monochrome-3/40"
+            side="bottom"
+            align="start"
+            alignOffset={10}>
+            <Link href={{ pathname: PATH_NAME.terms }}>
+              <p
+                style={{ fontSize: '20px', lineHeight: '32px', fontWeight: 600 }}
+                className="rounded-md p-3 hover:bg-monochrome-6/10">
+                Terms and Conditions
+              </p>
+            </Link>
+            <Link href={{ pathname: PATH_NAME.privacy }}>
+              <p
+                style={{ fontSize: '20px', lineHeight: '32px', fontWeight: 600 }}
+                className="rounded-md p-3 hover:bg-monochrome-6/10">
+                Privacy Policy
+              </p>
+            </Link>
+          </PopoverContent>
+        </Popover>
         <RecentCommunities />
       </span>
     </nav>
