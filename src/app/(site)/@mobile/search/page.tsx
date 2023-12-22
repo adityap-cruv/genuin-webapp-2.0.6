@@ -1,3 +1,5 @@
-export default function Layout(props: any) {
-  return <div>layout</div>
+import { MainComponent } from './main-component'
+
+export default function Page() {
+  return <MainComponent />
 }
