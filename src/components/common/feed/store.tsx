@@ -5,7 +5,6 @@ type FeedListStoreType = {
   videoList: VideoDataType[]
   setVideoList: (list: VideoDataType[]) => void
   currentIndex: number
-  currentVideoDetails: VideoDataType | undefined
   setCurrentIndex: (index: number) => void
 }
 
@@ -16,13 +15,8 @@ export const useFeedListStore = create<FeedListStoreType>((set) => {
       set({ videoList: list })
     },
     currentIndex: 0,
-    currentVideoDetails: undefined,
     setCurrentIndex(index) {
-      set((state) => {
-        state.currentVideoDetails = state.videoList[index]
-        state.currentIndex = index
-        return state
-      })
+      set({ currentIndex: index })
     },
   }
 })

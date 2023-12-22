@@ -8,12 +8,16 @@ import Image from 'next/image'
 import icAudioRecord from '@icons/audioRecord.svg'
 import icVideoRecord from '@icons/videoRecord.svg'
 import { DownloadDialog } from '@components/common/download-dialog'
-import { Comments } from '@components/common/player/comments'
+// import { Comments } from '@components/common/player/comment-sheet'
 import { useFeedListStore } from './store'
-import { Loader } from '@components/ui/loader'
 
 export function DesktopDetails() {
-  const videoDetails = useFeedListStore((state) => state.currentVideoDetails)
+  const { videoList, currentIndex } = useFeedListStore((state) => ({
+    videoList: state.videoList,
+    currentIndex: state.currentIndex,
+  }))
+  const videoDetails = videoList[currentIndex]
+
   if (videoDetails)
     return (
       <div className="relative flex h-full flex-1 flex-col p-6 pb-0">
@@ -54,8 +58,11 @@ export function DesktopDetails() {
           </span>
           <DecorativeList>
             <div className="h-2 w-full" />
-            <li className="relative w-full rounded-md border border-monochrome-9 bg-monochrome-10">
+            <li className="relative flex w-full items-center justify-between rounded-md border border-monochrome-9 bg-monochrome-10 ">
               <p className="line-clamp-1 break-all px-6 py-3 text-body-sm font-medium">{videoDetails.loop?.name}</p>
+              <p className="pr-4 text-cap-lg text-primary" style={{ fontWeight: 500 }}>
+                View Loop
+              </p>
             </li>
           </DecorativeList>
         </div>
@@ -64,9 +71,7 @@ export function DesktopDetails() {
           <p className="px-4 py-3 text-body-lg text-secondary">Comments (COMMENTS_NUMBER)</p>
           <hr className="border border-monochrome-black/10" />
         </span>
-        <div className="h-full overflow-clip pb-16">
-          <Comments videoId={videoDetails.video.share_string} />
-        </div>
+        <div className="h-full overflow-clip pb-16">{/* <Comments videoId={videoDetails.video.share_string} /> */}</div>
         <div className="absolute bottom-0 left-0 h-16 w-full border-t-2 border-t-monochrome-9 bg-monochrome-10 py-3 shadow-md">
           <DownloadDialog title="Get the Genuin app" subtitle="Get the app to comment on this video." asChild>
             <button className="flex w-full flex-1 items-center gap-x-4 pl-6">
@@ -82,5 +87,4 @@ export function DesktopDetails() {
         </div>
       </div>
     )
-  return <Loader size="md" />
 }

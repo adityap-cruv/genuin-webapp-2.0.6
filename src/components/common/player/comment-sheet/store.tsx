@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-type CommentsStoreType = {
+type CommentSheetStoreType = {
   modalIsOpen: boolean
   /**
    * This variable is used for opening modal.
@@ -9,14 +9,9 @@ type CommentsStoreType = {
   openModal: (videoId: string) => void
   closeModal: () => void
   comments: any[]
-  /**
-   * This variable is used for playing comment if user clicks on it.
-   */
-  activeCommentIndex: string
-  setActiveCommentIndex: (index: string) => void
 }
 
-export const useCommentsStore = create<CommentsStoreType>((set) => {
+export const useCommentSheetStore = create<CommentSheetStoreType>((set) => {
   return {
     modalIsOpen: false,
     currentVideoId: '',
@@ -28,8 +23,5 @@ export const useCommentsStore = create<CommentsStoreType>((set) => {
     },
     comments: [],
     activeCommentIndex: '',
-    setActiveCommentIndex(index) {
-      set({ activeCommentIndex: index })
-    },
   }
 })
