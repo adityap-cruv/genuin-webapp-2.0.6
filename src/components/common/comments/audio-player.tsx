@@ -17,7 +17,7 @@ type Props = {
 // TODO: optimize this component.
 export function AudioPlayer({ url, commentShareString, onClick }: Props) {
   const [waveWidth, setWaveWidth] = useState(170)
-  const waveHeight = waveWidth * (40 / 170)
+  const waveHeight = waveWidth * (1 / 7)
   const pipeWidth = Math.min(5, waveWidth * (5 / 170))
   const gapWidth = Math.min(2, waveWidth * (2 / 170))
   const audioRef = useRef<HTMLAudioElement>(null)
@@ -56,27 +56,27 @@ export function AudioPlayer({ url, commentShareString, onClick }: Props) {
   }, [])
 
   return (
-    <div ref={elementRef} className="flex w-full rounded-xl border-2 border-monochrome-9 p-2">
-      <button ref={btnRef} style={{ marginRight: '16px' }} onClick={onClick}>
-        <Image
-          style={{ minHeight: '15px', minWidth: '15px' }}
-          src={!shouldPlay ? audioCommentPlay : audioCommentPause}
-          alt="volume-control"
+    <div className="w-full pr-6">
+      <div ref={elementRef} className="flex w-full rounded-xl border-2 border-monochrome-9 p-2">
+        <button ref={btnRef} style={{ marginRight: '16px' }} onClick={onClick}>
+          <Image
+            style={{ minHeight: '15px', minWidth: '15px' }}
+            src={!shouldPlay ? audioCommentPlay : audioCommentPause}
+            alt="volume-control"
+          />
+        </button>
+        <audio
+          onTimeUpdate={(e) => {
+            setProgress((x) => {
+              x.currentTime = audioRef.current?.currentTime ?? 0
+              x.duration = audioRef.current?.duration ?? 0
+              return { ...x }
+            })
+          }}
+          style={{ position: 'absolute', zIndex: -1 }}
+          ref={audioRef}
+          src={url}
         />
-      </button>
-      <audio
-        onTimeUpdate={(e) => {
-          setProgress((x) => {
-            x.currentTime = audioRef.current?.currentTime ?? 0
-            x.duration = audioRef.current?.duration ?? 0
-            return { ...x }
-          })
-        }}
-        style={{ position: 'absolute', zIndex: -1 }}
-        ref={audioRef}
-        src={url}
-      />
-      <div>
         <div
           className="flex items-center justify-between"
           style={{

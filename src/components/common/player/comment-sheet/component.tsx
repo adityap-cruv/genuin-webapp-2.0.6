@@ -8,9 +8,10 @@ import { Comments } from '@components/common/comments'
 type Props = {
   container: React.MutableRefObject<HTMLDivElement | null>
   videoId: string
+  noOfComments: number
 }
 
-export function Sheet({ container, videoId }: Props) {
+export function Sheet({ container, videoId, noOfComments }: Props) {
   const { isOpen, close, currentVideoId } = useCommentSheetStore((state) => ({
     isOpen: state.modalIsOpen,
     close: state.closeModal,
@@ -42,7 +43,7 @@ export function Sheet({ container, videoId }: Props) {
           }}>
           <div className="h-full w-full rounded-t-[18px] bg-background sm:rounded-t-none">
             <div className="flex w-full items-center justify-between p-3">
-              <p className="text-title-lg">Comments</p>
+              <p className="text-title-lg">Comments{noOfComments !== 0 ? `(${noOfComments})` : ''}</p>
               <X
                 className="h-6 w-6 cursor-pointer stroke-secondary"
                 onClick={() => {
@@ -50,7 +51,7 @@ export function Sheet({ container, videoId }: Props) {
                 }}
               />
             </div>
-            <Comments videoId={videoId} />
+            <Comments.withApi videoId={videoId} />
           </div>
         </CommentSheetContent>
       </CommentSheetPortal>

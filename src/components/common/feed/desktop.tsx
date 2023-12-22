@@ -3,7 +3,7 @@ import { type VideoDataType } from '@lib/schemas/video'
 import dynamic from 'next/dynamic'
 import { DesktopDetails } from './desktop-details'
 import { useFeedListStore } from './store'
-import { type UIEvent, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 const DesktopPlayer = dynamic(async () => await import('@components/common/player').then((comp) => comp.Player.desktop))
 
 type DesktopProps = {
@@ -14,21 +14,34 @@ type DesktopProps = {
   isError: boolean
   hasNextPage?: boolean
   isFetchingNextPage: boolean
+  fetchNextPage?: () => void
 }
 
-export function Desktop({ sizeBox, hasNextPage, isError, isFetchingNextPage, isLoading, videos }: DesktopProps) {
+// TODO: Implement the logic for calling next page.
+export function Desktop({
+  sizeBox,
+  fetchNextPage,
+  hasNextPage,
+  isError,
+  isFetchingNextPage,
+  isLoading,
+  videos,
+}: DesktopProps) {
   const scrollDivRef = useRef<HTMLDivElement>(null)
   const { setNewVideos, videoList, setCurrentIndex } = useFeedListStore((state) => ({
     setNewVideos: state.setVideoList,
     videoList: state.videoList,
     setCurrentIndex: state.setCurrentIndex,
+    currentIndex: state.currentIndex,
   }))
+
+  // useEffect(() => {
+  //   if(currentIndex >= )
+  // }, [currentIndex])
 
   useEffect(() => {
     setNewVideos(videos)
   }, [videos])
-
-  function updateCurrentIndex(index: number) {}
 
   useEffect(() => {
     const divElement = scrollDivRef.current
@@ -38,8 +51,6 @@ export function Desktop({ sizeBox, hasNextPage, isError, isFetchingNextPage, isL
       if (localTimeout) return
       localTimeout = setTimeout(() => {
         setCurrentIndex(Math.floor(this.scrollTop / this.clientHeight))
-
-        // updateCurrentIndex(Math.floor(this.scrollTop / this.clientHeight))
         localTimeout = null
       }, 200)
     }
@@ -76,11 +87,3 @@ export function Desktop({ sizeBox, hasNextPage, isError, isFetchingNextPage, isL
       </div>
     )
 }
-
-// function ListItem({ index, sizeBox, item }: { index: number; sizeBox: VideoSizeBoxType; item: VideoDataType }) {
-//   const spanRef = useRef<HTMLSpanElement>(null)
-//   const setCurrentIndex = useFeedListStore((state) => state.setCurrentIndex)
-
-//   return (
-//     )
-// }
