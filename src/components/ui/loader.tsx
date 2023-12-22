@@ -19,8 +19,8 @@ const loaderVariant = cva('animate-spin rounded-full border-4 border-primary', {
 
 export function Loader({ size = 'sm', className, style }: Props) {
   return (
-    <div className={cn(className, 'flex h-full w-full items-center justify-center')} style={style}>
+    <span className={cn(className, 'flex h-full w-full items-center justify-center')} style={style}>
       <div className={cn(loaderVariant({ size }), 'border-l-transparent border-t-transparent')} />
-    </div>
+    </span>
   )
 }

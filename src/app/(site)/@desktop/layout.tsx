@@ -6,10 +6,10 @@ export default function AppLayout(props: any) {
     <main className="absolute inset-0 flex h-full min-h-max w-full flex-col items-center overflow-clip">
       <TopBar />
       <section className="flex h-body w-full max-w-1440">
-        <section className="lg:flex-[2]">
+        <section className="lg:flex-[3]">
           <SideBar />
         </section>
-        <section className="relative flex-[10]">{props.children}</section>
+        <section className="relative lg:flex-[9]">{props.children}</section>
       </section>
     </main>
   )

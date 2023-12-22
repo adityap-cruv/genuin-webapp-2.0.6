@@ -92,13 +92,13 @@ async function fetchCommunities(nickname: string, pageNo = 0) {
 export function getAllCommunities(nickname: string) {
   return useInfiniteQuery({
     queryKey: ['communities', nickname],
-    queryFn: async ({pageParam}) => await fetchCommunities(nickname, pageParam),
+    queryFn: async ({ pageParam }) => await fetchCommunities(nickname, pageParam),
     getNextPageParam(lastPage, allPages) {
       if (lastPage.end_page) {
         return
       }
       return allPages.length
-    }
+    },
   })
 }
 
@@ -122,13 +122,13 @@ async function fetchCommunityLoops(nickname: string, communityId: string, pageNo
 export function getAllLoops(nickname: string, communityId: string) {
   return useInfiniteQuery({
     queryKey: ['communityLoops', nickname, communityId],
-    queryFn: async ({pageParam}) => await fetchCommunityLoops(nickname, communityId, pageParam),
+    queryFn: async ({ pageParam }) => await fetchCommunityLoops(nickname, communityId, pageParam),
     getNextPageParam(lastPage, allPages) {
       if (lastPage.end_page) {
         return
       }
       return allPages.length
-    }
+    },
   })
 }
 

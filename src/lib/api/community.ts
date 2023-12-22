@@ -10,7 +10,6 @@ export async function fetchCommunityDetails(handle: string) {
     })
     .then((res) => res.data.data)
     .catch((e) => {
-      console.log('e::', e)
       throw new Error('Something went wrong with community detail!')
     })
 }
@@ -47,6 +46,7 @@ export function getCommunityVideos(handle: string) {
   })
 }
 
+//  TODO Add Pagination.
 export async function fetchCommunityLoops(handle: string) {
   return await axios
     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/community/loops', {

@@ -74,7 +74,9 @@ export function AnimatedInfinityView({ community, loop }: Props) {
               <p className="line-clamp-1 w-full break-all text-body-sm font-medium text-monochrome-white">
                 {localState.communityName}
               </p>
-              <p className="line-clamp-1 w-full text-cap-lg font-medium text-monochrome-white/60">Browse Community</p>
+              <p className="w-full whitespace-nowrap text-cap-lg font-medium text-monochrome-white/60">
+                Browse Community
+              </p>
             </span>
           </span>
         </Link>

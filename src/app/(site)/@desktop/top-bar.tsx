@@ -4,10 +4,8 @@ import { Button } from '@components/ui/button'
 export function TopBar() {
   return (
     <>
-      <div
-        style={{ backgroundColor: 'rgba(249, 249, 249)' }}
-        className="z-20 flex w-full justify-center border-b border-monochrome-9 sm:flex">
-        <nav className="sticky top-0 flex h-[76px] w-full max-w-1440 items-center justify-between px-2">
+      <div className="z-20 flex w-full justify-center border-b border-monochrome-9  bg-new-off-white sm:flex">
+        <nav className="sticky top-0 flex h-[76px] w-full max-w-[1536px] items-center justify-between px-2">
           <GenuinLogo variant="black" />
           <div className="flex gap-x-3">
             <Button variant="outline" className="hover:bg-new-off-black hover:text-new-off-white">

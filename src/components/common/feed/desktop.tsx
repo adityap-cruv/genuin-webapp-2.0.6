@@ -3,63 +3,87 @@ import { type VideoDataType } from '@lib/schemas/video'
 import dynamic from 'next/dynamic'
 import { DesktopDetails } from './desktop-details'
 import { useFeedListStore } from './store'
-import { type UseInfiniteQueryResult } from '@tanstack/react-query'
 import { useEffect, useRef } from 'react'
-import { useInView } from 'framer-motion'
 const DesktopPlayer = dynamic(async () => await import('@components/common/player').then((comp) => comp.Player.desktop))
 
 type DesktopProps = {
   sizeBox: VideoSizeBoxType
-  queryFuncResult: UseInfiniteQueryResult
+  // queryFuncResult: UseInfiniteQueryResult
+  videos: VideoDataType[]
+  isLoading: boolean
+  isError: boolean
+  hasNextPage?: boolean
+  isFetchingNextPage: boolean
+  fetchNextPage?: () => void
 }
 
-export function Desktop({ sizeBox, queryFuncResult }: DesktopProps) {
-  const { data: videoPages, isLoading, isError, hasNextPage, isFetchingNextPage } = queryFuncResult
-
+// TODO: Implement the logic for calling next page.
+export function Desktop({
+  sizeBox,
+  fetchNextPage,
+  hasNextPage,
+  isError,
+  isFetchingNextPage,
+  isLoading,
+  videos,
+}: DesktopProps) {
+  const scrollDivRef = useRef<HTMLDivElement>(null)
   const { setNewVideos, videoList, setCurrentIndex } = useFeedListStore((state) => ({
     setNewVideos: state.setVideoList,
     videoList: state.videoList,
     setCurrentIndex: state.setCurrentIndex,
+    currentIndex: state.currentIndex,
   }))
 
-  useEffect(() => {
-    const newList = videoPages?.pages.flatMap((item: any) => {
-      return item.videos as VideoDataType[]
-    })
-    if (newList) setNewVideos(newList)
-  }, [videoPages])
+  // useEffect(() => {
+  //   if(currentIndex >= )
+  // }, [currentIndex])
 
-  return (
-    <>
-      <div
-        style={{ width: sizeBox.width, height: sizeBox.height }}
-        className="snap-y snap-mandatory overflow-auto scroll-smooth">
-        {videoList.map((item, index) => {
-          return <ListItem index={index} key={index} item={item} sizeBox={sizeBox} />
-        })}
+  useEffect(() => {
+    setNewVideos(videos)
+  }, [videos])
+
+  useEffect(() => {
+    const divElement = scrollDivRef.current
+    if (!divElement) return
+    let localTimeout: any = null
+    function scrollHandler(this: HTMLDivElement, e: Event) {
+      if (localTimeout) return
+      localTimeout = setTimeout(() => {
+        setCurrentIndex(Math.floor(this.scrollTop / this.clientHeight))
+        localTimeout = null
+      }, 200)
+    }
+
+    divElement.addEventListener('scroll', scrollHandler)
+    return () => {
+      divElement.removeEventListener('scroll', scrollHandler)
+    }
+  }, [scrollDivRef])
+
+  if (videoList)
+    return (
+      <div className="flex h-full w-full">
+        <div
+          ref={scrollDivRef}
+          style={{ width: sizeBox.width, height: sizeBox.height }}
+          className="snap-y snap-mandatory snap-always overflow-x-clip overflow-y-scroll">
+          {videoList.map((item, index) => {
+            return (
+              <div key={index}>
+                <DesktopPlayer
+                  playIfInViewPort
+                  isFirstPlayerInList={index === 0}
+                  shouldPlay
+                  sizeBox={sizeBox}
+                  videoData={item}
+                  loop
+                />
+              </div>
+            )
+          })}
+        </div>
+        <DesktopDetails />
       </div>
-      <DesktopDetails />
-    </>
-  )
-}
-
-function ListItem({ index, sizeBox, item }: { index: number; sizeBox: VideoSizeBoxType; item: VideoDataType }) {
-  const spanRef = useRef<HTMLSpanElement>(null)
-  const inView = useInView(spanRef, { amount: 0.9 })
-  const setCurrentIndex = useFeedListStore((state) => state.setCurrentIndex)
-  useEffect(() => {
-    if (inView) setCurrentIndex(index)
-  }, [inView])
-  return (
-    <span ref={spanRef} className="snap-start">
-      <DesktopPlayer
-        playIfInViewPort
-        isFirstPlayerInList={index === 0}
-        shouldPlay
-        sizeBox={sizeBox}
-        videoData={item}
-        loop
-      />
-    </span>
-  )
+    )
 }

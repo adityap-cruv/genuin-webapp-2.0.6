@@ -11,7 +11,7 @@ import { type VideoDataType } from '@lib/schemas/video'
 import Link from 'next/link'
 import Image from 'next/image'
 import { DownloadDialog } from '@components/common/download-dialog'
-import { useCommentsStore } from '../comments/store'
+import { useCommentSheetStore } from '../comment-sheet/store'
 
 interface ActionsProps {
   link: string
@@ -28,7 +28,7 @@ export const Actions = {
 // TODO: Fix their is bug when text length is bigger than devicesize fix it.
 function Mobile({ link = '', shareDescription = '', shareTitle = '', videoData }: ActionsProps) {
   const { shareFn } = useAdaptiveShare()
-  const { openComments, closeComments, commentsIsOpen } = useCommentsStore((state) => ({
+  const { openComments, closeComments, commentsIsOpen } = useCommentSheetStore((state) => ({
     openComments: state.openModal,
     closeComments: state.closeModal,
     commentsIsOpen: state.modalIsOpen,
