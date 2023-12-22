@@ -1,7 +1,6 @@
 import { fetchLoopDetails } from '@lib/api/loop'
 import { MainComponent } from './main-component'
 import { type Metadata } from 'next'
-import { cookies } from 'next/headers'
 
 interface Props {
   params: {
@@ -11,9 +10,8 @@ interface Props {
 }
 
 export default async function Component({ params }: Props) {
-  const isMobile = cookies().get('mobile')?.value === 'true'
   const loopDetails = await fetchLoopDetails(params.id)
-  return <MainComponent loopDetails={loopDetails} isMobile={isMobile} />
+  return <MainComponent loopDetails={loopDetails}/>
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

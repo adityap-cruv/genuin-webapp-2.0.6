@@ -8,12 +8,26 @@ import { Button } from '@components/ui/button'
 import Image from 'next/image'
 import icShare from '@icons/icShareBlue.svg'
 import { useInView } from 'framer-motion'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
+import Link from 'next/link'
+import { Loader } from '@components/ui/loader'
+import { getCommunityLoops } from '@lib/api/community'
+import { checkAndAppendHttps } from '@lib/utils'
+import icInstagram from '@icons/icInstagramBlack.svg'
+import icLinkedIn from '@icons/icLinkedIn.svg'
+import icLink from '@icons/icLinkBlack.svg'
+import icTwitter from '@icons/icTwitterBlack.svg'
+import { PATH_NAME } from '@lib/utils/constants/path'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@components/ui/accordion'
 
 interface Props {
   communityDetails: CommunityDetailsType
 }
 
+let communityDetailsModule: CommunityDetailsType
+
 export function Root({ communityDetails }: Props) {
+  communityDetailsModule = communityDetails
   const addCommunity = useRecentCommunitiesStore((state) => state.addCommunity)
   const detailsDivRef = useRef<HTMLDivElement>(null)
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
@@ -28,14 +42,14 @@ export function Root({ communityDetails }: Props) {
 
   return (
     <>
-      <TopBar
+      {/* <TopBar
         defaultOpen={false}
         isOpen={!detailsInView}
         communityName={communityDetails.info.name}
         communityProfileImage={communityDetails.info.profile_image}
         communtiyHandle={communityDetails.info.handle}
-      />
-      <main className="absolute inset-0 h-full w-full overflow-auto pl-6 ">
+      /> */}
+      <main className="absolute inset-0 h-full w-full overflow-auto pl-6 hide-scrollbar">
         <div ref={detailsDivRef} className="pt-6">
           <CustomAvatar
             isAvatar={false}
@@ -46,7 +60,7 @@ export function Root({ communityDetails }: Props) {
           <p className="py-2 text-title-xl">{communityDetails.info.name}</p>
           <Stats communityDetails={communityDetails} />
           <p className="line-clamp-2 w-1/2 break-all pb-4 pt-2">{communityDetails.info.description}</p>
-          <span className="flex gap-x-2">
+          <span className="flex items-center gap-x-2">
             <Button size="custom">
               <p className="px-4 py-2 text-body-sm">Join Community</p>
             </Button>
@@ -55,31 +69,326 @@ export function Root({ communityDetails }: Props) {
             </Button>
           </span>
         </div>
-        <div className="flex h-full w-full">
-          <div className="h-[200%] flex-1 bg-red"></div>
-          <div className="sticky top-0 h-full flex-1 bg-blue"></div>
+        <div className="grid h-full w-full grid-cols-2 gap-4 overflow-hidden">
+          <div className="overflow-auto scroll-smooth snap-proximity snap-y">
+            <CommunityDetailsTabs />
+          </div>
+
+          <div className='overflow-auto scroll-smooth snap-proximity snap-y'>
+            <Categories />
+            <Links />
+            <Guidelines />
+            <Leaders />
+          </div>
         </div>
       </main>
     </>
   )
 }
 
+function CommunityDetailsTabs() {
+  return (
+    <Tabs defaultValue="Loops">
+      <TabsList className="sticky flex max-w-min">
+        <TabsTrigger value="Loops">
+          <p className="text-title-md">Loops</p>
+        </TabsTrigger>
+        <TabsTrigger value="Members">
+          <p className="text-title-md">Members</p>
+        </TabsTrigger>
+      </TabsList>
+      <TabsContent value="Loops">
+        <LoopTab />
+      </TabsContent>
+      <TabsContent value="Members">
+        <Members />
+      </TabsContent>
+    </Tabs>
+  )
+}
+
+function LoopTab() {
+  const { isLoading, data: loops, isFetched } = getCommunityLoops(communityDetailsModule.info.handle)
+  return (
+    <div>
+      {isLoading && <Loader size="sm" />}
+      {isFetched &&
+        loops.map((item: any, index: number) => {
+          return <LoopItem key={index} loopDetails={item} />
+        })}
+    </div>
+  )
+}
+
+function LoopItem({ loopDetails }: { loopDetails: any }) {
+  const transformValues: any = {
+    1: [50],
+    2: [48, 52],
+    3: [46, 50, 54],
+  }
+
+  const rightValues: any = {
+    1: [20],
+    2: [24, 16],
+    3: [28, 20, 12],
+  }
+
+  const opacitValues: any = {
+    1: [1],
+    2: [1, 0.5],
+    3: [1, 0.66, 0.4],
+  }
+
+  const videosLength = loopDetails.videos.length
+  const renderedImages = loopDetails.videos.map((item: any, index: any) => (
+    <img
+      key={index}
+      style={{
+        position: 'absolute',
+        top: '50%',
+        right: `${rightValues[videosLength][index]}px`,
+        transform: `translateY(-${transformValues[videosLength][index]}%)`,
+        height: '80%',
+        aspectRatio: '9/16',
+        borderRadius: '4px',
+        zIndex: videosLength - index + 1,
+        opacity: `${opacitValues[videosLength][index]}`,
+      }}
+      // onError={(e) => {
+      //   e.target.src = icPreviewImage.src
+      // }}
+      src={item.thumbnail}
+      alt={`frontimage${index}`}
+    />
+  ))
+  function getSubscribersCountString(count: any) {
+    let str = ' + '
+    if (!count) return
+    if (count === 1) {
+      str += count + ' subscriber'
+    } else {
+      str += count + ' subscribers'
+    }
+    return str
+  }
+
+  return (
+    <Link href={`/l/${loopDetails.share_string}?v=${loopDetails.videos[0].share_string}`}>
+      <div
+        className="relative mt-5 w-full rounded-lg border"
+        style={{ backgroundColor: '#FFF', border: '1px solid #E7E7E7' }}>
+        <div className="w-[70%] items-center p-[3%]">
+          <p className="ml-2 text-title-sm">{loopDetails.name}</p>
+          {/* <p className="ml-2 text-body-sm text-monochrome">{loopDetails.description}</p> */}
+        </div>
+        <div className="h-[60%] p-4" style={{ backgroundColor: '#F9F9F9' }}>
+          <div className="mb-[2%] flex w-[70%] items-center">
+            {loopDetails.owner.profile_image && (
+              <CustomAvatar
+                className="h-6 w-6 bg-red-50"
+                imageUrl={loopDetails.owner.profile_image ?? ''}
+                isAvatar={loopDetails.owner.is_avatar}
+                fallbackString={loopDetails.owner.name ?? ''}
+              />
+            )}
+            <p className="text-new-para-2-mobile">
+              &nbsp;&nbsp;@{loopDetails.owner.nickname}
+              {getSubscribersCountString(loopDetails.subscriber_count)}
+            </p>
+          </div>
+          <p className="w-[70%] text-new-para-2-mobile">{loopDetails.description}</p>
+        </div>
+        {renderedImages}
+      </div>
+    </Link>
+  )
+}
+
+function Categories() {
+  return (
+    <div>
+      <p className="my-2 mt-4 text-title-md">Categories</p>
+      <div>
+        {communityDetailsModule?.info.categories.map((cat, index) => {
+          return (
+            <p key={index} className="my-1 mr-1 inline-block rounded-full bg-monochrome-9 p-2 px-4 text-body-sm">
+              <span className="line-clamp-1 break-all">{cat}</span>
+            </p>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+function Links() {
+  const links = communityDetailsModule?.info.links
+  return (
+    <div>
+      <p className="my-2 mt-4 text-title-md">Links</p>
+      <div className="flex">
+        {links?.instagram_url && (
+          <div className="mx-1 rounded-md bg-monochrome-9 p-1">
+            <Link href={checkAndAppendHttps(links.instagram_url)} target="_blank">
+              <Image src={icInstagram} alt="instagram" />
+            </Link>
+          </div>
+        )}
+        {links?.linkedin_url && (
+          <div className="mx-1 rounded-md bg-monochrome-9 p-1">
+            <Link href={checkAndAppendHttps(links.linkedin_url)} target="_blank">
+              <Image src={icLinkedIn} alt="linkedin" />
+            </Link>
+          </div>
+        )}
+        {links?.twitter_url && (
+          <div className="mx-1 rounded-md bg-monochrome-9 p-1">
+            <Link href={checkAndAppendHttps(links.twitter_url)} target="_blank">
+              <Image src={icTwitter} alt="twitter" />
+            </Link>
+          </div>
+        )}
+        {links?.social_web_url && (
+          <div className="mx-1 rounded-md bg-monochrome-9 p-1">
+            <Link href={checkAndAppendHttps(links.social_web_url)} target="_blank">
+              <div className="flex">
+                <Image src={icLink} alt="web-site" />
+                <p className="text-body-sm">&nbsp;{links.social_web_url}</p>
+              </div>
+            </Link>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function Guidelines() {
+  return (
+    <div>
+      <p className="my-2 mt-4 text-title-md">Guidelines</p>
+      <>
+        <Accordion type="single" collapsible>
+          <AccordionItem value={'item.handle'} className="border-none">
+            <AccordionTrigger className="my-1 p-0">
+              <p className="line-clamp-1 text-left text-body-sm">1. Do not sell products or services here</p>
+            </AccordionTrigger>
+            <AccordionContent>
+              <p className="line-clamp-3 text-left text-body-sm">
+                Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the
+                industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and
+                scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap
+                into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the
+                release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing
+                software like Aldus PageMaker including versions of Lorem Ipsum.
+              </p>
+            </AccordionContent>
+          </AccordionItem>
+
+          <AccordionItem value={'item.handle-2'} className="border-none">
+            <AccordionTrigger className="my-1 p-0">
+              <p className="line-clamp-1 text-left text-body-sm">1. Do not sell products or services here</p>
+            </AccordionTrigger>
+            <AccordionContent>
+              <p className="line-clamp-3 text-left text-body-sm">
+                Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the
+                industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and
+                scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap
+                into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the
+                release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing
+                software like Aldus PageMaker including versions of Lorem Ipsum.
+              </p>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+      </>
+    </div>
+  )
+}
+
+function Leaders() {
+  return (
+    <div>
+      <p className="my-2 mt-4 text-title-md">Leader</p>
+      {communityDetailsModule?.leaders.map((moderator, index) => {
+        return (
+          <Link key={index} href={{ pathname: PATH_NAME.profile(moderator.nickname) }}>
+            <ListItem
+              title={moderator.name ?? ''}
+              subtitle={'@' + moderator.nickname}
+              description={moderator.description}
+              image={moderator.profile_image}
+            />
+          </Link>
+        )
+      })}
+    </div>
+  )
+}
+
+function ListItem({
+  title,
+  subtitle,
+  description,
+  image,
+}: {
+  title: string
+  subtitle?: string
+  description?: string
+  image?: string
+}) {
+  return (
+    <div className="flex items-center gap-x-1 rounded-sm p-1 hover:bg-monochrome-9">
+      <CustomAvatar
+        className="h-12 w-12 bg-red-40"
+        imageUrl={image ?? ''}
+        fallbackString={title ?? ''}
+        isAvatar={false}
+      />
+      <div className="mx-2">
+        <p className="line-clamp-1 text-title-sm">{title}</p>
+        {subtitle && <p className="line-clamp-1 text-cap-lg text-monochrome-black/60">{subtitle}</p>}
+        {description && <p className="line-clamp-2 text-cap-lg">{description}</p>}
+      </div>
+    </div>
+  )
+}
+
+function Members() {
+  return (
+    <div className="my-2">
+      {communityDetailsModule?.members.map((member, index) => {
+        return (
+          <Link key={index} href={{ pathname: PATH_NAME.profile(member.nickname) }}>
+            <ListItem
+              title={member.name}
+              subtitle={'@' + member.nickname}
+              description={member.description ?? ''}
+              image={member.profile_image}
+            />
+          </Link>
+        )
+      })}
+    </div>
+  )
+}
+
 function Stats({ communityDetails }: { communityDetails: CommunityDetailsType }) {
   return (
     <div className="flex items-center">
-      <span className="px-1">
+      <span className="pr-4">
         <span className="text-title-md text-monochrome-black">{communityDetails?.info.count.member}</span>
         <span className="text-cap-lg text-secondary">
           &nbsp;{communityDetails?.info.count.member === 1 ? 'Member' : 'Members'}
         </span>
       </span>
-      <span className="px-1">
+      <span className="pr-4">
         <span className="text-title-md text-monochrome-black">{communityDetails?.info.count.loop}</span>
         <span className="text-cap-lg text-secondary">
           &nbsp;{communityDetails?.info.count.loop === 1 ? 'Loop' : 'Loops'}
         </span>
       </span>
-      <span className="px-1">
+      <span className="pr-4">
         <span className="text-title-md text-monochrome-black">{communityDetails?.info.count.video}</span>
         <span className="text-cap-lg text-secondary">
           &nbsp;{communityDetails?.info.count.video === 1 ? 'Video' : 'Videos'}

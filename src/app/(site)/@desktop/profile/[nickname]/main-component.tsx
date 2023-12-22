@@ -15,6 +15,8 @@ import { useRef, useState } from 'react'
 import icSpark from '@icons/player-controls/icBulb.svg'
 import { Shimmer } from '@components/ui/shimmer'
 import { useInView } from 'framer-motion'
+import Link from 'next/link'
+import { PATH_NAME } from '@lib/utils/constants/path'
 
 interface CompProps {
   profileData: any
@@ -86,10 +88,19 @@ function CommunityList({ usernickname }: any) {
   const handleSeeMoreClick = () => {
     void fetchNextPage()
   }
-  // const divRef = useRef<HTMLDivElement>(null)
-  // const isVisible = useInView(divRef)
 
-  const itemHandles = data?.pages.flatMap((page) => page.list).map((item) => item.handle)
+  const [selectedItems, setSelectedItems] = useState<string[]>([])
+  let itemHandles = data?.pages.flatMap((page) => page.list).map((item) => item.handle);
+
+  const handleAccordionItemClick = (handle: string) => {
+    const isSelected = itemHandles?.includes(handle);
+  
+    if (isSelected) {
+      itemHandles = itemHandles?.filter((item) => item !== handle);
+    } else {
+      itemHandles?.push(handle);
+    }
+  };
 
   return (
     <>
@@ -101,7 +112,12 @@ function CommunityList({ usernickname }: any) {
             .map((item, index) => (
               <div key={index}>
                 &nbsp;
-                <AccordionItem value={item.handle} className="border-none">
+                <AccordionItem
+                  value={item.handle}
+                  className="border-none"
+                  onClick={() => {
+                    handleAccordionItemClick(item.handle)
+                  }}>
                   <AccordionTrigger className="m-0 p-0">
                     <div className="flex items-center">
                       <CustomAvatar
@@ -188,7 +204,9 @@ function LoopVideos({ userId, loopDetails }: any) {
 
   return (
     <>
-      <p className="text-title-sm">{loopDetails.name}</p>
+      <Link href={{ pathname: PATH_NAME.loop(loopDetails.share_string) }}>
+        <p className="text-title-sm">{loopDetails.name}</p>
+      </Link>
       {data?.pages.flatMap((page) => page.list).length === 0 && (
         <div className="flex items-center justify-center pt-32 text-title-md text-secondary">No videos available</div>
       )}
