@@ -43,7 +43,7 @@ type ItemProps = {
 
 function CommunityItem({ children, title, isActive }: ItemProps) {
   return (
-    <div className="flex w-full max-w-full items-center gap-x-2 rounded-md px-3 py-1 hover:bg-monochrome-6/10">
+    <div className="flex w-full max-w-full items-center gap-x-2 rounded-md p-2 hover:bg-monochrome-6/10">
       {children}
       <p className={cn('break-all text-title-lg font-semibold', isActive ? 'text-primary' : 'text-new-off-black')}>
         {title}
