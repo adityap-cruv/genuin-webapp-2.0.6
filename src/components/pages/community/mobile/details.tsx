@@ -16,6 +16,7 @@ import dynamic from 'next/dynamic'
 import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { CustomAvatar } from '@components/custom/custom-avatar'
+import { TopBar } from '../../../../app/(site)/@mobile/top-bar'
 const DetailsNavbar = dynamic(
   async () => await import('@components/pages/community/mobile/nav-bar').then((comp) => comp.NavBar.details)
 )
@@ -33,9 +34,9 @@ export function ProfileDetails({ communityDetails }: Props) {
 
   return (
     <>
-      <DetailsNavbar variant="light" communityDetails={communityDetails} />
-      <div className="mt-navbar h-body">
-        <div className="px-4">
+      <TopBar/>
+      <div className="h-full">
+        <div className="px-4 py-2">
           <div className="flex justify-between">
             <CustomAvatar
               imageUrl={communityDetailsModule?.info.profile_image}
@@ -66,7 +67,7 @@ export function ProfileDetails({ communityDetails }: Props) {
                     })
                     .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
                 }}>
-                <p className="mx-2 text-title-sm text-monochrome-white">Join</p>
+                <p className="mx-2 text-title-sm text-monochrome-white">Join Community</p>
               </Button>
               <Button
                 variant="outline"
@@ -121,7 +122,7 @@ function Stats() {
 function ProfileTabs() {
   return (
     <Tabs defaultValue="Loops">
-      <TabsList className="sticky z-10 flex max-w-min">
+      <TabsList className="sticky flex max-w-min">
         <TabsTrigger value="Loops">
           <p className="text-title-md">Loops</p>
         </TabsTrigger>
