@@ -13,7 +13,7 @@ import { getAllCommunities, getAllLoops, getAllLoopVideos } from '@lib/api/profi
 import { Loader } from '@components/ui/loader'
 import { useState } from 'react'
 import icSpark from '@icons/player-controls/icBulb.svg'
-import { TopBar } from '../../top-bar'
+import { TopBar } from '@components/layouts/mobile/top-bar'
 import { Shimmer } from '@components/ui/shimmer'
 
 interface CompProps {

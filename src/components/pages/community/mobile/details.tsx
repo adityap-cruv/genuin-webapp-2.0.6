@@ -16,7 +16,7 @@ import dynamic from 'next/dynamic'
 import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { CustomAvatar } from '@components/custom/custom-avatar'
-import { TopBar } from '../../../../app/(site)/@mobile/top-bar'
+import { TopBar } from '../../../layouts/mobile/top-bar'
 const DetailsNavbar = dynamic(
   async () => await import('@components/pages/community/mobile/nav-bar').then((comp) => comp.NavBar.details)
 )
@@ -34,7 +34,7 @@ export function ProfileDetails({ communityDetails }: Props) {
 
   return (
     <>
-      <TopBar/>
+      <TopBar />
       <div className="h-full">
         <div className="px-4 py-2">
           <div className="flex justify-between">

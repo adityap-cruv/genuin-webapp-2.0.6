@@ -11,6 +11,7 @@ import { useVideoSizeBox } from '@hooks/use-video-size-box'
 
 export function Root() {
   const videoSizeBox = useVideoSizeBox(true)
+
   if (videoSizeBox)
     return (
       <main className="h-full w-full">

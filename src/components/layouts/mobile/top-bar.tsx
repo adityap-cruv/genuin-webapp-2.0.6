@@ -17,7 +17,7 @@ const navVariant = cva('sticky top-0 flex z-20 h-[76px] w-full items-center just
   variants: {
     variant: {
       light: 'border-b-2 border-monochrome-9 bg-monochrome-white',
-      trasparent: 'bg-transparent',
+      trasparent: 'bg-transparent bg-gradient-to-b from-monochrome-2/40 to-transparent',
     },
   },
 })
@@ -34,7 +34,7 @@ type Props = {
 
 export function TopBar({ variant = 'light', className, showClose = false }: Props) {
   return (
-    <nav className={cn(navVariant({ variant }), className, 'bg-gradient-to-b from-monochrome-2/40 to-transparent')}>
+    <nav className={cn(navVariant({ variant }), className)}>
       <span className="flex items-center ">
         <Menu hamBurgerVariant={variant === 'trasparent' ? 'light' : 'dark'} />
         <GenuinSymbol variant={variant === 'trasparent' ? 'light' : 'black'} />
