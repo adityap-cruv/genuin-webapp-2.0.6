@@ -42,7 +42,7 @@ export function MainComponent({ profileData }: CompProps) {
               @{profileData?.nickname}
             </p>
           </div>
-          <p className="py-1 text-body-sm" style={{ fontWeight: 500, lineHeight: '24px' }}>
+          <p className="py-1 line-clamp-3 text-body-sm" style={{ fontWeight: 500, lineHeight: '24px' }}>
             {profileData?.bio}
           </p>
           <Stats profileData={profileData} />
