@@ -12,6 +12,7 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { X } from 'lucide-react'
 import { RecentCommunities } from './recent-communities'
+import { DownloadAppDialog } from '@components/pages/home/download-app-dialog'
 
 const navVariant = cva('sticky top-0 flex z-20 h-[76px] w-full items-center justify-between  px-2', {
   variants: {
@@ -37,17 +38,21 @@ export function TopBar({ variant = 'light', className, showClose = false }: Prop
     <nav className={cn(navVariant({ variant }), className)}>
       <span className="flex items-center ">
         <Menu hamBurgerVariant={variant === 'trasparent' ? 'light' : 'dark'} />
-        <GenuinSymbol variant={variant === 'trasparent' ? 'light' : 'black'} />
+        <Link href={{ pathname: '/' }}>
+          <GenuinSymbol variant={variant === 'trasparent' ? 'light' : 'black'} />
+        </Link>
       </span>
       <span className="flex items-center gap-x-2">
-        <Button
-          className={
-            variant === 'light'
-              ? 'bg-new-off-black hover:bg-new-dark-grey'
-              : 'bg-new-off-white text-new-off-black hover:bg-new-off-black hover:text-new-off-white'
-          }>
-          <p className="text-body-sm">Download Genuin</p>
-        </Button>
+        <DownloadAppDialog>
+          <Button
+            className={
+              variant === 'light'
+                ? 'bg-new-off-black hover:bg-new-dark-grey'
+                : 'bg-new-off-white text-new-off-black hover:bg-new-off-black hover:text-new-off-white'
+            }>
+            <p className="text-body-sm">Download Genuin</p>
+          </Button>
+        </DownloadAppDialog>
         {/* {showClose ? (
           <X
             className={cn(

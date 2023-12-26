@@ -25,7 +25,8 @@ interface Props {
   children: React.ReactNode
 }
 
-// todo improve it's api implementation
+// TODO: improve it's api implementation
+// TODO: Causing hydration issue fix it.
 export function DownloadAppDialog({ children }: Props) {
   const URL_TO_APP_STORE = 'https://apps.apple.com/US/app/id1511177838?mt=8'
   const URL_TO_PLAY_STORE = 'https://play.google.com/store/apps/details?id=com.begenuin.begenuin'

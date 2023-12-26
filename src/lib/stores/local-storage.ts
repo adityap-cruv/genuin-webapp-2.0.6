@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { v4 } from 'uuid'
+import { uuid } from 'uuidv4'
 
 type LocalStorageType = {
   userId: string
@@ -9,7 +9,7 @@ type LocalStorageType = {
 export const useLocalStorage = create(
   persist<LocalStorageType>(
     (set) => {
-      return { userId: v4() }
+      return { userId: uuid() }
     },
     { name: '_user_id_' }
   )

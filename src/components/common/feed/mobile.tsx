@@ -13,7 +13,7 @@ type MobileProps = {
   isError: boolean
   hasNextPage?: boolean
   isFetchingNextPage: boolean
-  fetchNextPage: () => void
+  fetchNextPage?: () => void
 }
 
 export function Mobile({
