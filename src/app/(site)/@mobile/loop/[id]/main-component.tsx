@@ -16,7 +16,7 @@ import { PlayerModal } from '@components/common/player-modal'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { CustomAvatar } from '@components/custom/custom-avatar'
-import { TopBar } from '../../top-bar'
+import { TopBar } from '@components/layouts/mobile/top-bar'
 import icQuestion from '@icons/icQuestion.svg'
 
 let loopDetailsModule: LoopDetailsType
@@ -47,7 +47,7 @@ export function MainComponent({ loopDetails }: Props) {
             <p className="line-clamp-1 text-title-xl">{loopDetails.group.group_name}</p>
             <p className="line-clamp-3 py-2 text-body-lg">{loopDetails.group.group_description}</p>
 
-            <div className=" my-3 border-solid rounded-lg border border-monochrome-9 p-4">
+            <div className=" my-3 rounded-lg border border-solid border-monochrome-9 p-4">
               <div className="flex">
                 <div className="flex flex-1 flex-col items-start">
                   <p className="text-body-sm text-secondary">Created by</p>

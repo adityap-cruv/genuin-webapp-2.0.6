@@ -25,9 +25,14 @@ let firstTimeRight = true
 export function AnimatedInfinityView({ community, loop }: Props) {
   const leftControls = useAnimationControls()
   const rightControls = useAnimationControls()
-  const [localState, setLocalState] = useState({ loopName: community.handle, communityName: loop.shareString })
+  const [localState, setLocalState] = useState({
+    loopName: community.handle,
+    communityName: loop.shareString,
+    communityDp: community.profileImage,
+  })
 
   useEffect(() => {
+    if (!leftControls) return
     if (firstTimeLeft) {
       void leftControls.start({ rotateX: '0deg', transition: { ease: 'linear', duration: 0.4, repeat: 0 } })
       firstTimeLeft = false
@@ -36,6 +41,7 @@ export function AnimatedInfinityView({ community, loop }: Props) {
         () => {
           setLocalState((x) => {
             x.communityName = community.handle
+            x.communityDp = community.profileImage
             return { ...x }
           })
           void leftControls.start({ rotateX: '0deg', transition: { ease: 'linear', duration: 0.4, repeat: 0 } })
@@ -46,6 +52,7 @@ export function AnimatedInfinityView({ community, loop }: Props) {
   }, [community.handle])
 
   useEffect(() => {
+    if (!rightControls) return
     if (firstTimeRight) {
       void rightControls.start({ rotateX: '0deg', transition: { ease: 'linear', duration: 0.4, repeat: 0 } })
       firstTimeRight = false
@@ -69,7 +76,12 @@ export function AnimatedInfinityView({ community, loop }: Props) {
         <Link href={{ pathname: PATH_NAME.community(community.handle) }}>
           <Image src={infynityLeft} alt="bar" className="w-full" />
           <span className="absolute inset-0 flex h-full w-full items-center gap-x-2 pl-2">
-            <CustomAvatar imageUrl="" isAvatar={false} fallbackString="no" className="h-6 w-6" />
+            <CustomAvatar
+              imageUrl={localState.communityDp}
+              isAvatar={false}
+              fallbackString={localState.communityName}
+              className="h-6 w-6"
+            />
             <span className="pr-5">
               <p className="line-clamp-1 w-full break-all text-body-sm font-medium text-monochrome-white">
                 {localState.communityName}

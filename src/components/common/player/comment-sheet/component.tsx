@@ -42,8 +42,8 @@ export function Sheet({ container, videoId, noOfComments }: Props) {
             close()
           }}>
           <div className="h-full w-full rounded-t-[18px] bg-background sm:rounded-t-none">
-            <div className="flex w-full items-center justify-between p-3">
-              <p className="text-title-lg">Comments{noOfComments !== 0 ? `(${noOfComments})` : ''}</p>
+            <div className="flex h-12 w-full items-center justify-between border-b border-monochrome-9 px-3 ">
+              <p className="text-body-lg text-secondary">Comments{noOfComments !== 0 ? `(${noOfComments})` : ''}</p>
               <X
                 className="h-6 w-6 cursor-pointer stroke-secondary"
                 onClick={() => {
@@ -51,7 +51,9 @@ export function Sheet({ container, videoId, noOfComments }: Props) {
                 }}
               />
             </div>
-            <Comments.withApi videoId={videoId} />
+            <div style={{ height: 'calc(100% - 60px)' }}>
+              <Comments.withApi videoId={videoId} />
+            </div>
           </div>
         </CommentSheetContent>
       </CommentSheetPortal>

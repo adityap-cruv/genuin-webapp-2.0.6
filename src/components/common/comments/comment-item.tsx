@@ -3,6 +3,8 @@ import { useCommentStore } from './store'
 import { ReadMore } from '@components/common/read-more'
 import dynamic from 'next/dynamic'
 import { type CommentType } from '@lib/schemas/loop/comment'
+import Link from 'next/link'
+import { PATH_NAME } from '@lib/utils/constants/path'
 
 const CommentPlayer = dynamic(async () => await import('./video-player').then((comp) => comp.CommentPlayer))
 const AudioPlayer = dynamic(async () => await import('./audio-player').then((comp) => comp.AudioPlayer))
@@ -18,7 +20,9 @@ export function CommentItem({ comment }: { comment: CommentType }) {
         isAvatar={comment.owner.is_avatar}
       />
       <div className="flex w-full flex-col items-start gap-y-1">
-        <p className="text-title-md">@{comment.owner.nickname}</p>
+        <Link href={{ pathname: PATH_NAME.profile(comment.owner.nickname) }}>
+          <p className="text-title-md">@{comment.owner.nickname}</p>
+        </Link>
         <UI comment={comment} />
       </div>
     </div>

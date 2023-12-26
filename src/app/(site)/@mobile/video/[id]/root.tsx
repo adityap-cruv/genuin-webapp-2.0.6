@@ -2,7 +2,7 @@
 import { useVideoSizeBox } from '@hooks/use-video-size-box'
 import { type VideoDataType } from '@lib/schemas/video'
 import dynamic from 'next/dynamic'
-import { TopBar } from '../../top-bar'
+import { TopBar } from '@components/layouts/mobile/top-bar'
 const Feed = dynamic(async () => await import('@components/common/feed').then((comp) => comp.Feed.mobile))
 
 export function Root({ videoData }: { videoData: VideoDataType }) {
