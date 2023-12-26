@@ -2,19 +2,19 @@
 import { abbreviateNumber } from '@lib/utils'
 import { Button } from '@components/ui/button'
 import Image from 'next/image'
-import icShare from '@icons/icShareBlue.svg'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { DecorativeList } from '@components/custom/decorative-list'
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@components/ui/accordion'
 import { getAllCommunities, getAllLoops, getAllLoopVideos } from '@lib/api/profile'
 import { Loader } from '@components/ui/loader'
 import { useState } from 'react'
 import icSpark from '@icons/player-controls/icBulb.svg'
 import { TopBar } from '@components/layouts/mobile/top-bar'
 import { Shimmer } from '@components/ui/shimmer'
+import Link from 'next/link'
+import { PATH_NAME } from '@lib/utils/constants/path'
 
 interface CompProps {
   profileData: any
@@ -70,7 +70,7 @@ export function MainComponent({ profileData }: CompProps) {
               @{profileData?.nickname}
             </p>
           </div>
-          <p className="line-clamp-3 py-1 text-body-sm" style={{ lineHeight: '24px' }}>
+          <p className="line-clamp-2 py-1 text-body-sm" style={{ lineHeight: '24px' }}>
             {profileData?.bio}
           </p>
           <Stats profileData={profileData} />
@@ -112,43 +112,40 @@ function CommunityList({ usernickname }: any) {
     <>
       {isLoading && <Loader size="md" />}
       {data && (
-        <Accordion type="single" defaultValue={data?.pages[0]?.list[0]?.handle} collapsible>
+        <div>
           {data?.pages
             .flatMap((page) => page.list)
             .map((item, index) => (
               <div key={index}>
                 &nbsp;
-                <AccordionItem value={item.handle} className="border-none ">
-                  <AccordionTrigger className="m-0 p-0">
-                    <div className="flex items-center">
-                      <CustomAvatar
-                        className="bg-slate-500 h-11 w-11 bg-red-40"
-                        fallbackString={item?.name}
-                        imageUrl={item?.dp}
-                        isAvatar={false}
-                      />
-                      <div className="mx-2 flex items-center justify-between">
-                        <p className="line-clamp-1 text-left text-title-sm">{item.name}</p>
-                        {/* <Button size='custom' variant="default">
-                          <p className="text-title-sm py-1.5 px-4">join</p>
-                        </Button> */}
-                      </div>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <DecorativeList>
-                      <CommunityDetails userId={usernickname} communityId={item.id} />
-                    </DecorativeList>
-                  </AccordionContent>
-                </AccordionItem>
+                <div className="flex items-center">
+                  <CustomAvatar
+                    className="bg-slate-500 h-11 w-11 bg-red-40"
+                    fallbackString={item?.name}
+                    imageUrl={item?.dp}
+                    isAvatar={false}
+                  />
+                  <div className="mx-2 flex w-full items-center justify-between">
+                    <Link href={{ pathname: PATH_NAME.community(item.handle) }}>
+                      <p className="line-clamp-1 text-left text-title-sm">{item.name}</p>
+                    </Link>
+
+                    <Button size="custom" variant="default">
+                      <p className="px-4 py-1.5 text-title-sm">join</p>
+                    </Button>
+                  </div>
+                </div>
+                <DecorativeList>
+                  <CommunityDetails userId={usernickname} communityId={item.id} />
+                </DecorativeList>
               </div>
             ))}
-        </Accordion>
+        </div>
       )}
       {isFetchingNextPage && <Loader size="md" />}
       {hasNextPage && (
         <p
-          className="text-blue-500 flex w-full cursor-pointer justify-center pt-2 text-cap-lg text-monochrome"
+          className="text-blue-500 flex w-full cursor-pointer justify-center p-5 text-cap-lg text-monochrome"
           onClick={handleSeeMoreClick}>
           See More Communities
         </p>
@@ -167,7 +164,9 @@ function CommunityDetails({ userId, communityId }: any) {
     <>
       &nbsp;
       {isLoading && (
-        <li className="profile-loop-li relative my-4 w-full rounded-lg bg-monochrome-9 p-4">
+        <li
+          className="profile-loop-li relative my-4 w-full rounded-lg bg-monochrome-9 p-4"
+          style={{ backgroundColor: '#F9F9F9' }}>
           <Shimmer className="h-4 w-24" />
           <div className="my-2 grid w-full grid-cols-3 gap-2">
             {Array.from({ length: 3 }).map((_, index) => (
@@ -181,7 +180,10 @@ function CommunityDetails({ userId, communityId }: any) {
       {data?.pages
         .flatMap((page) => page.list)
         .map((item: any, index: any) => (
-          <li className="profile-loop-li relative my-4 w-full rounded-lg bg-monochrome-9 p-4 pb-2" key={index}>
+          <li
+            className="profile-loop-li relative my-4 w-full rounded-lg border border-monochrome-9 p-4 pb-2"
+            key={index}
+            style={{ backgroundColor: '#F9F9F9' }}>
             <LoopVideos userId={userId} loopDetails={item} />
           </li>
         ))}
@@ -214,7 +216,9 @@ function LoopVideos({ userId, loopDetails }: any) {
 
   return (
     <>
-      <p className="text-title-sm">{loopDetails.name}</p>
+      <Link href={{ pathname: PATH_NAME.loop(loopDetails.share_string) }}>
+        <p className="text-title-sm">{loopDetails.name}</p>
+      </Link>
       {data?.pages.flatMap((page) => page.list).length === 0 && (
         <div className="flex items-center justify-center pt-32 text-title-md text-secondary">No videos available</div>
       )}

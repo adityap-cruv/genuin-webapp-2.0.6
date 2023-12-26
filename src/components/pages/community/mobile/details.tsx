@@ -93,19 +93,19 @@ export function ProfileDetails({ communityDetails }: Props) {
 function Stats() {
   return (
     <div className="flex items-center">
-      <span className="px-1">
+      <span className="pr-2">
         <span className="text-title-md text-monochrome-black">{communityDetailsModule?.info.count.member}</span>
         <span className="text-cap-lg text-secondary">
           &nbsp;{communityDetailsModule?.info.count.member === 1 ? 'Member' : 'Members'}
         </span>
       </span>
-      <span className="px-1">
+      <span className="pr-2">
         <span className="text-title-md text-monochrome-black">{communityDetailsModule?.info.count.loop}</span>
         <span className="text-cap-lg text-secondary">
           &nbsp;{communityDetailsModule?.info.count.loop === 1 ? 'Loop' : 'Loops'}
         </span>
       </span>
-      <span className="px-1">
+      <span className="pr-2">
         <span className="text-title-md text-monochrome-black">{communityDetailsModule?.info.count.video}</span>
         <span className="text-cap-lg text-secondary">
           &nbsp;{communityDetailsModule?.info.count.video === 1 ? 'Video' : 'Videos'}
@@ -211,7 +211,7 @@ function LoopItem({ loopDetails }: { loopDetails: any }) {
 
   return (
     <Link href={`/l/${loopDetails.share_string}?v=${loopDetails.videos[0].share_string}`}>
-      <div className="relative my-2 w-full rounded-lg border border-monochrome-9 bg-monochrome-white">
+      <div className="relative my-4 w-full rounded-lg border border-monochrome-9 bg-monochrome-white">
         <div className="w-[70%] items-center p-[3%]">
           <p className="text-title-sm">{loopDetails.name}</p>
           <p className="text-body-sm text-monochrome-4">
@@ -273,6 +273,9 @@ function Categories() {
   return (
     <div>
       <p className="my-2 text-title-md">Categories</p>
+      {communityDetailsModule?.info.categories.length === 0 && (
+        <div className="flex items-center justify-center text-title-md text-secondary">No categories available</div>
+      )}
       <div>
         {communityDetailsModule?.info.categories.map((cat, index) => {
           return (
@@ -291,6 +294,9 @@ function Links() {
   return (
     <div>
       <p className="my-2 text-title-md">Links</p>
+      {!links?.instagram_url && !links?.linkedin_url && !links?.twitter_url && !links?.social_web_url && (
+        <div className="flex items-center justify-center text-title-md text-secondary">No links available</div>
+      )}
       <div className="flex">
         {links?.instagram_url && (
           <div className="mx-1 rounded-md bg-monochrome-9 p-1">
@@ -368,9 +374,9 @@ function ListItem({
         isAvatar={false}
       />
       <div className="mx-2">
-        <p className="line-clamp-1 text-title-sm">{title}</p>
-        {subtitle && <p className="line-clamp-1 text-cap-lg text-monochrome-black/60">{subtitle}</p>}
-        {description && <p className="line-clamp-2 text-cap-lg">{description}</p>}
+        <p className="line-clamp-1 text-title-sm">{subtitle}</p>
+        {subtitle && <p className="line-clamp-1 text-title-sm">{title}</p>}
+        {description && <p className="line-clamp-2 text-cap-lg text-monochrome">{description}</p>}
       </div>
     </div>
   )

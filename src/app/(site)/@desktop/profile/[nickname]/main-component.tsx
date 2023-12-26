@@ -8,13 +8,11 @@ import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { DecorativeList } from '@components/custom/decorative-list'
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@components/ui/accordion'
 import { getAllCommunities, getAllLoops, getAllLoopVideos } from '@lib/api/profile'
 import { Loader } from '@components/ui/loader'
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import icSpark from '@icons/player-controls/icBulb.svg'
 import { Shimmer } from '@components/ui/shimmer'
-import { useInView } from 'framer-motion'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 
@@ -42,7 +40,7 @@ export function MainComponent({ profileData }: CompProps) {
               @{profileData?.nickname}
             </p>
           </div>
-          <p className="py-1 line-clamp-3 text-body-sm" style={{ fontWeight: 500, lineHeight: '24px' }}>
+          <p className="line-clamp-2 break-all py-1 text-body-sm" style={{ fontWeight: 500, lineHeight: '24px' }}>
             {profileData?.bio}
           </p>
           <Stats profileData={profileData} />
@@ -106,48 +104,41 @@ function CommunityList({ usernickname }: any) {
   const handleSeeMoreClick = () => {
     void fetchNextPage()
   }
-  const itemHandles = data?.pages.flatMap((page) => page.list).map((item) => item.handle)
 
   return (
     <>
       {isLoading && <Loader size="md" />}
       {data && (
-        <Accordion type="multiple" value={itemHandles}>
+        <div>
           {data?.pages
             .flatMap((page) => page.list)
             .map((item, index) => (
-              <div key={index}>
-                &nbsp;
-                <AccordionItem value={item.handle} className="border-none">
-                  <AccordionTrigger className="m-0 p-0">
-                    <div className="flex items-center">
-                      <CustomAvatar
-                        className="bg-slate-500 h-11 w-11 bg-red-40"
-                        fallbackString={item?.name}
-                        imageUrl={item?.dp}
-                        isAvatar={false}
-                      />
-                      <div className="mx-2">
-                        <p
-                          className="line-clamp-1 text-left text-title-md"
-                          style={{ fontWeight: 600, fontSize: '20px' }}>
-                          {item.name}
-                        </p>
-                        <p className="line-clamp-1 text-start text-body-sm text-monochrome" style={{ fontWeight: 500 }}>
-                          Visible to approved members only
-                        </p>
-                      </div>
+              <div key={index} className="my-6">
+                <div className="flex items-center">
+                  <CustomAvatar
+                    className="bg-slate-500 h-11 w-11 bg-red-40"
+                    fallbackString={item?.name}
+                    imageUrl={item?.dp}
+                    isAvatar={false}
+                  />
+                  <Link href={{ pathname: PATH_NAME.community(item.handle) }}>
+                    <div className="mx-2">
+                      <p className="line-clamp-1 text-left text-title-md" style={{ fontWeight: 600, fontSize: '20px' }}>
+                        {item.name}
+                      </p>
+                      <p className="line-clamp-1 text-start text-body-sm text-monochrome" style={{ fontWeight: 500 }}>
+                        Visible to approved members only
+                      </p>
                     </div>
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <DecorativeList>
-                      <CommunityDetails userId={usernickname} communityId={item.id} />
-                    </DecorativeList>
-                  </AccordionContent>
-                </AccordionItem>
+                  </Link>
+                </div>
+
+                <DecorativeList>
+                  <CommunityDetails userId={usernickname} communityId={item.id} />
+                </DecorativeList>
               </div>
             ))}
-        </Accordion>
+        </div>
       )}
       {isFetchingNextPage && <Loader size="md" />}
       {hasNextPage && (
@@ -171,7 +162,9 @@ function CommunityDetails({ userId, communityId }: any) {
     <>
       &nbsp;
       {isLoading && (
-        <li className="profile-loop-li relative my-4 w-full rounded-lg bg-monochrome-9 p-4">
+        <li
+          className="profile-loop-li relative my-4 w-full rounded-lg border border-monochrome-9 p-4"
+          style={{ backgroundColor: '#F9F9F9' }}>
           <Shimmer className="h-6 w-40" />
           <div className="my-2 grid w-full grid-cols-4 gap-2 md:grid-cols-8">
             {Array.from({ length: 8 }).map((_, index) => (
@@ -185,7 +178,10 @@ function CommunityDetails({ userId, communityId }: any) {
       {data?.pages
         .flatMap((page) => page.list)
         .map((item: any, index: any) => (
-          <li className="profile-loop-li relative my-4 w-full rounded-lg bg-monochrome-9 p-4 pb-2" key={index}>
+          <li
+            className="profile-loop-li relative my-4 w-full rounded-lg border border-monochrome-9 p-4 pb-2"
+            style={{ backgroundColor: '#F9F9F9' }}
+            key={index}>
             <LoopVideos userId={userId} loopDetails={item} />
           </li>
         ))}

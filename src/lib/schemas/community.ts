@@ -55,9 +55,19 @@ const membersSchema = z.array(
   })
 )
 
+const guidelineSchema = z.array(
+  z.object({
+    description: z.string(),
+    guideline_id: z.number(),
+    id: z.number(),
+    position: z.number(),
+    title: z.string()
+  })
+)
 // Define the main schema for the entire object
 const CommunityDetailsSchema = z.object({
   info: infoSchema,
+  guidelines : guidelineSchema,
   popular_loops: popularLoopsSchema,
   leaders: leadersSchema,
   members: membersSchema,

@@ -43,13 +43,13 @@ export function Root({ communityDetails }: Props) {
 
   return (
     <>
-      {/* <TopBar
+      <TopBar
         defaultOpen={false}
         isOpen={!detailsInView}
         communityName={communityDetails.info.name}
         communityProfileImage={communityDetails.info.profile_image}
         communtiyHandle={communityDetails.info.handle}
-      /> */}
+      />
       <main className="hide-scrollbar absolute inset-0 h-full w-full overflow-auto px-6">
         <div ref={detailsDivRef} className="pt-6">
           <CustomAvatar
@@ -60,7 +60,7 @@ export function Root({ communityDetails }: Props) {
           />
           <p className="py-2 text-title-xl">{communityDetails.info.name}</p>
           <Stats communityDetails={communityDetails} />
-          <p className="line-clamp-2 w-1/2 break-all pb-4 pt-2">{communityDetails.info.description}</p>
+          <p className="mb-4 line-clamp-2 w-1/2 break-all pt-2">{communityDetails.info.description}</p>
           <span className="flex items-center gap-x-2">
             <Button size="custom">
               <p className="px-4 py-2 text-body-sm" style={{ fontWeight: 500 }}>
@@ -72,7 +72,7 @@ export function Root({ communityDetails }: Props) {
             </Button>
           </span>
         </div>
-        <div className="grid h-full w-full grid-cols-2 gap-4 overflow-hidden">
+        <div className="grid w-full grid-cols-2 gap-4 overflow-hidden" style={{ height: 'calc(100% - 56px)' }}>
           <div className="snap-y snap-proximity overflow-auto scroll-smooth">
             <CommunityDetailsTabs />
           </div>
@@ -80,7 +80,7 @@ export function Root({ communityDetails }: Props) {
           <div className="snap-y snap-proximity overflow-auto scroll-smooth">
             <Categories />
             <Links />
-            <Guidelines />
+            {/* {communityDetails?.guidelines.length !== 0 && <Guidelines />} */}
             <Leaders />
           </div>
         </div>
@@ -321,37 +321,22 @@ function Guidelines() {
       <p className="my-2 mt-4 text-title-md">Guidelines</p>
       <>
         <Accordion type="single" collapsible>
-          <AccordionItem value={'item.handle'} className="border-none">
-            <AccordionTrigger className="my-1 p-0">
-              <p className="line-clamp-1 text-left text-body-sm">1. Do not sell products or services here</p>
-            </AccordionTrigger>
-            <AccordionContent>
-              <p className="line-clamp-3 text-left text-body-sm">
-                Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the
-                industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and
-                scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap
-                into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the
-                release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing
-                software like Aldus PageMaker including versions of Lorem Ipsum.
-              </p>
-            </AccordionContent>
-          </AccordionItem>
-
-          <AccordionItem value={'item.handle-2'} className="border-none">
-            <AccordionTrigger className="my-1 p-0">
-              <p className="line-clamp-1 text-left text-body-sm">1. Do not sell products or services here</p>
-            </AccordionTrigger>
-            <AccordionContent>
-              <p className="line-clamp-3 text-left text-body-sm">
-                Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the
-                industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and
-                scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap
-                into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the
-                release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing
-                software like Aldus PageMaker including versions of Lorem Ipsum.
-              </p>
-            </AccordionContent>
-          </AccordionItem>
+          {communityDetailsModule?.guidelines.map((guideline: any, index: any) => {
+            return (
+              <div key={index}>
+                <AccordionItem value={guideline.title} className="border-none">
+                  <AccordionTrigger className="my-1 p-0">
+                    <p className="line-clamp-1 text-left text-body-sm">
+                      {index + 1}. {guideline.title}
+                    </p>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <p className="line-clamp-3 text-left text-body-sm text-monochrome">{guideline.description}</p>
+                  </AccordionContent>
+                </AccordionItem>
+              </div>
+            )
+          })}
         </Accordion>
       </>
     </div>
@@ -398,9 +383,9 @@ function ListItem({
         isAvatar={false}
       />
       <div className="mx-2">
-        <p className="line-clamp-1 text-title-sm">{title}</p>
-        {subtitle && <p className="line-clamp-1 text-cap-lg text-monochrome-black/60">{subtitle}</p>}
-        {description && <p className="line-clamp-2 text-cap-lg">{description}</p>}
+        <p className="line-clamp-1 text-body-sm">{title}</p>
+        {subtitle && <p className="line-clamp-1 text-body-sm text-monochrome-black/60" style={{ fontWeight: 500 }}>{subtitle}</p>}
+        {description && <p className="line-clamp-2 text-body-sm" style={{ fontWeight: 500 }}>{description}</p>}
       </div>
     </div>
   )
