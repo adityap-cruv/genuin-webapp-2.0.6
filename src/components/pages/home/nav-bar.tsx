@@ -16,18 +16,27 @@ export function NavBar() {
         <div className={cn('container flex h-full w-full items-center justify-between py-1')}>
           <GenuinText variant="black" />
           <div className="flex items-center gap-x-4">
+            <Link href={{ pathname: PATH_NAME.home() }}>
+              <p className="pr-4 text-new-para-2 transition-all hover:underline" style={{ fontWeight: 600 }}>
+                Explore Genuin
+              </p>
+            </Link>
             <Link href={HIRING_LINK}>
               <Button
                 variant="outline"
                 className="hover:bg-new-off-black hover:text-new-off-white"
                 outlineColor="black"
                 size="index-page">
-                <p className="text-new-sm">We're hiring!</p>
+                <p className="text-new-sm" style={{ fontWeight: 600 }}>
+                  We're hiring!
+                </p>
               </Button>
             </Link>
             <DownloadAppDialog>
               <Button size="index-page" className="bg-new-off-black after:bg-new-dark-grey hover:bg-new-dark-grey">
-                <p className="text-new-sm text-new-off-white">Download Genuin</p>
+                <p className="text-new-sm text-new-off-white" style={{ fontWeight: 600 }}>
+                  Download Genuin
+                </p>
               </Button>
             </DownloadAppDialog>
           </div>
