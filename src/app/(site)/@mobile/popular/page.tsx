@@ -1,3 +1,10 @@
-export default function Layout(props: any) {
-  return <div>layout</div>
+import { Root } from './root'
+type Props = {
+  searchParams: {
+    brand_id?: string
+  }
+}
+
+export default function Page({ searchParams }: Props) {
+  return <Root />
 }

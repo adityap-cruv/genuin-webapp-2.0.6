@@ -39,11 +39,18 @@ const LoopInfoSchema = z.object({
   preview_image: z.string().url().nullish(),
 })
 
+const CommunityInfoSchema = z.object({
+  dp: z.string().optional(),
+  handle: z.string(),
+  name: z.string().optional(),
+})
+
 const VideoDataSchema = z.object({
   video_type: z.enum(['rt', 'public_video']).optional(),
   owner: OwnerSchema,
   video: VideoInfoSchema,
   loop: LoopInfoSchema.optional(),
+  community: CommunityInfoSchema,
 })
 
 const VideoDataListSchema = z.array(VideoDataSchema)

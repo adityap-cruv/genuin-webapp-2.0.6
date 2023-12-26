@@ -8,6 +8,7 @@ export const PATH_NAME = {
   popular: () => `/popular`,
   latest: () => `/latest`,
   search: () => `/search`,
+  careers: () => 'https://careers.begenuin.com',
   terms: `/terms`,
   privacy: `/privacy`,
 }

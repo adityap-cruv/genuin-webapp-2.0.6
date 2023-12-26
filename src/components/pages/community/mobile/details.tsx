@@ -15,7 +15,7 @@ import { Loader } from '@components/ui/loader'
 import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { CustomAvatar } from '@components/custom/custom-avatar'
-import { TopBar } from '../../../../app/(site)/@mobile/top-bar'
+import { TopBar } from '../../../layouts/mobile/top-bar'
 
 let communityDetailsModule: CommunityDetailsType
 
@@ -30,7 +30,7 @@ export function ProfileDetails({ communityDetails }: Props) {
 
   return (
     <>
-      <TopBar/>
+      <TopBar />
       <div className="h-full">
         <div className="px-4 py-2">
           <div className="flex justify-between">

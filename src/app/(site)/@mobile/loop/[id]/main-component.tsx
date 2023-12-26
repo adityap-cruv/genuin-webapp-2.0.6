@@ -16,7 +16,7 @@ import { PlayerModal } from '@components/common/player-modal'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { CustomAvatar } from '@components/custom/custom-avatar'
-import { TopBar } from '../../top-bar'
+import { TopBar } from '@components/layouts/mobile/top-bar'
 import icQuestion from '@icons/icQuestion.svg'
 
 let loopDetailsModule: LoopDetailsType
