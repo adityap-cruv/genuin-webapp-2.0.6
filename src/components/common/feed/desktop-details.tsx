@@ -110,10 +110,15 @@ function InfoArea({ videoDetails }: { videoDetails: VideoDataType }) {
       <div className="pt-3">
         <span className="flex items-center justify-between">
           <span className="flex items-center gap-x-3">
-            <CustomAvatar imageUrl="" fallbackString="no" isAvatar={false} className="h-11 w-11" />
-            <div>
-              <p className="line-clamp-1 w-full break-all text-body-lg">COMMUNITY_NAME</p>
-            </div>
+            <CustomAvatar
+              imageUrl={videoDetails.community.dp ?? ''}
+              fallbackString={videoDetails.community.name ?? ''}
+              isAvatar={false}
+              className="h-11 w-11"
+            />
+            <Link href={{ pathname: PATH_NAME.community(videoDetails.community.handle) }}>
+              <p className="line-clamp-1 w-full break-all text-body-lg">{videoDetails.community.name}</p>
+            </Link>
           </span>
           <span className="flex h-min items-center gap-x-3">
             <Button size="custom">

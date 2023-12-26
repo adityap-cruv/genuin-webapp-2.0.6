@@ -28,16 +28,18 @@ export function Desktop({
   videos,
 }: DesktopProps) {
   const scrollDivRef = useRef<HTMLDivElement>(null)
-  const { setNewVideos, videoList, setCurrentIndex } = useFeedListStore((state) => ({
+  const { setNewVideos, videoList, setCurrentIndex, currentIndex } = useFeedListStore((state) => ({
     setNewVideos: state.setVideoList,
     videoList: state.videoList,
     setCurrentIndex: state.setCurrentIndex,
     currentIndex: state.currentIndex,
   }))
 
-  // useEffect(() => {
-  //   if(currentIndex >= )
-  // }, [currentIndex])
+  useEffect(() => {
+    if (currentIndex > videoList.length - 3 && !isFetchingNextPage) {
+      fetchNextPage?.()
+    }
+  }, [currentIndex])
 
   useEffect(() => {
     setNewVideos(videos)
@@ -67,7 +69,7 @@ export function Desktop({
         <div
           ref={scrollDivRef}
           style={{ width: sizeBox.width, height: sizeBox.height }}
-          className="snap-y snap-mandatory snap-always overflow-x-clip overflow-y-scroll">
+          className="hide-scrollbar snap-y snap-mandatory snap-always overflow-x-clip overflow-y-scroll">
           {videoList.map((item, index) => {
             return (
               <div key={index}>
