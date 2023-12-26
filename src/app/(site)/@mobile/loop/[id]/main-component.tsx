@@ -43,11 +43,10 @@ export function MainComponent({ loopDetails }: Props) {
       <>
         <TopBar />
         <div className="flex h-full w-full flex-col gap-y-2 p-4 md:flex-row md:gap-x-2">
-          <div className="w-full  md:max-w-[20%]">
+          <div className="w-full">
             <p className="line-clamp-1 text-title-xl">{loopDetails.group.group_name}</p>
             <p className="line-clamp-3 py-2 text-body-lg">{loopDetails.group.group_description}</p>
-
-            <div className=" my-3 border-solid rounded-lg border border-monochrome-9 p-4">
+            <div className=" my-3 rounded-lg border border-solid border-monochrome-9 p-4">
               <div className="flex">
                 <div className="flex flex-1 flex-col items-start">
                   <p className="text-body-sm text-secondary">Created by</p>
@@ -94,7 +93,7 @@ export function MainComponent({ loopDetails }: Props) {
 
             <div className="flex items-center gap-x-2">
               <Button
-                size="sm"
+                size="custom"
                 onClick={() => {
                   generateDeepLink({
                     action: 'subscribe',
@@ -114,27 +113,27 @@ export function MainComponent({ loopDetails }: Props) {
                     })
                     .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
                 }}>
-                <p className="text-title-sm text-monochrome-white">Subscribe</p>
+                <p className="px-4 py-2 text-body-sm" style={{ fontWeight: 500 }}>
+                  Subscribe
+                </p>
               </Button>
-
-              <Button variant="outline" className="border-primary px-4">
+              <Button size="custom" variant="outline" className="border-primary px-4">
                 <span className="flex items-center">
                   <Image src={icQuestion} alt="question" />
-                  <p className="text-body-sm font-medium text-primary">Q&A</p>
+                  <p className="py-2 text-body-sm text-primary">Q&A</p>
                 </span>
               </Button>
-
               <Button
-                size="sm"
                 variant="outline"
-                outlineColor="genuin-blue"
+                size="custom"
+                className=" border-primary p-1"
                 onClick={async () =>
                   await shareFn({
                     shareLink: window.location.href,
                     toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                   })
                 }>
-                <Image src={icShare} alt="share" height={22} width={22} />
+                <Image src={icShare} alt="share" className="h-7 w-7" />
               </Button>
             </div>
           </div>
@@ -161,7 +160,7 @@ function LoopTabs() {
         </TabsTrigger>
       </TabsList>
       <TabsContent value="Loops">
-        <HorizontalVideosList loopId={loopDetailsModule.share_string} />
+        <LoopVideosList loopId={loopDetailsModule.share_string} />
       </TabsContent>
       <TabsContent value="About">
         <Cohosts loopId={loopDetailsModule.share_string} />
@@ -225,7 +224,7 @@ function Stats({
 }
 
 // todo check where is divRef.
-function HorizontalVideosList({ loopId }: { loopId: string }) {
+function LoopVideosList({ loopId }: { loopId: string }) {
   const divRef = useRef<HTMLDivElement>(null)
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getLoopVideos(loopId)
   const { scrollYProgress } = useScroll({ container: divRef })
@@ -275,6 +274,7 @@ function HorizontalVideosList({ loopId }: { loopId: string }) {
             </PlayerModal>
           ))}
       </div>
+      {isFetchingNextPage && <Loader size="md" />}
       {hasNextPage && (
         <div className="botom-0 absolute z-10 h-2 w-full bg-gradient-to-l from-monochrome-white to-transparent opacity-90" />
       )}
@@ -320,7 +320,7 @@ interface CohostTileProps {
 
 function CohostTile({ image, title, subtitle, userName, isAvatar }: CohostTileProps) {
   return (
-    <div className="flex items-center gap-x-1 rounded-sm p-1 hover:bg-monochrome-9">
+    <div className="flex items-center gap-x-1 p-2 rounded-lg hover:bg-monochrome-10">
       <CustomAvatar className="h-12 w-12 bg-red-40" fallbackString={userName} imageUrl={image} isAvatar={isAvatar} />
       <div className="mx-2">
         <p className="line-clamp-1 text-title-sm">{title}</p>

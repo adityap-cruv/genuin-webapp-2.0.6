@@ -13,7 +13,7 @@ import { PATH_NAME } from '@lib/utils/constants/path'
 import { X } from 'lucide-react'
 import { RecentCommunities } from './recent-communities'
 
-const navVariant = cva('sticky top-0 flex z-20 h-[76px] w-full items-center justify-between  px-2', {
+const navVariant = cva('sticky top-0 flex z-40 h-[76px] w-full items-center justify-between  px-2', {
   variants: {
     variant: {
       light: 'border-b-2 border-monochrome-9 bg-monochrome-white',

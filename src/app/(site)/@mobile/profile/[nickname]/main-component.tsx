@@ -36,7 +36,7 @@ export function MainComponent({ profileData }: CompProps) {
               imageUrl={profileData?.profile_image}
               isAvatar={profileData?.is_avatar}
             />
-            <div className="flex">
+            {/* <div className="flex">
               <Button
                 className="mr-2"
                 variant="outline"
@@ -62,10 +62,17 @@ export function MainComponent({ profileData }: CompProps) {
                 }>
                 <Image src={icShare} alt="share" height={22} width={22} />
               </Button>
-            </div>
+            </div> */}
           </div>
-          <p className="line-clamp-1 pr-2 text-title-lg">{profileData?.name}</p>
-          <p className="line-clamp-3 py-1 text-new-para-2">{profileData?.bio}</p>
+          <div className="flex items-center">
+            <p className="line-clamp-1 pr-2 text-title-md">{profileData?.name}</p>
+            <p className="line-clamp-1 text-body-sm text-monochrome" style={{ fontWeight: 500 }}>
+              @{profileData?.nickname}
+            </p>
+          </div>
+          <p className="line-clamp-3 py-1 text-body-sm" style={{ lineHeight: '24px' }}>
+            {profileData?.bio}
+          </p>
           <Stats profileData={profileData} />
         </div>
         <CommunityList usernickname={profileData?.nickname} />
@@ -120,9 +127,11 @@ function CommunityList({ usernickname }: any) {
                         imageUrl={item?.dp}
                         isAvatar={false}
                       />
-                      <div className="mx-2">
-                        <p className="line-clamp-1 text-left text-title-md">{item.name}</p>
-                        <p className="line-clamp-1 text-new-para-2 text-monochrome">Visible to approved members only</p>
+                      <div className="mx-2 flex items-center justify-between">
+                        <p className="line-clamp-1 text-left text-title-sm">{item.name}</p>
+                        {/* <Button size='custom' variant="default">
+                          <p className="text-title-sm py-1.5 px-4">join</p>
+                        </Button> */}
                       </div>
                     </div>
                   </AccordionTrigger>
@@ -160,6 +169,13 @@ function CommunityDetails({ userId, communityId }: any) {
       {isLoading && (
         <li className="profile-loop-li relative my-4 w-full rounded-lg bg-monochrome-9 p-4">
           <Shimmer className="h-4 w-24" />
+          <div className="my-2 grid w-full grid-cols-3 gap-2">
+            {Array.from({ length: 3 }).map((_, index) => (
+              <div key={`shimmer-${index}`} className="relative flex flex-col items-center">
+                <Shimmer className="aspect-reel w-full rounded" />
+              </div>
+            ))}
+          </div>
         </li>
       )}
       {data?.pages
@@ -212,7 +228,7 @@ function LoopVideos({ userId, loopDetails }: any) {
         {data?.pages
           .flatMap((page) => page.list)
           .map((video, index) => (
-            <div key={video.id} className="relative flex flex-col items-center">
+            <div key={video.id} className="relative flex aspect-reel min-w-full flex-col items-center">
               <img src={video.thumbnail} alt={`Video Thumbnail ${index}`} className="aspect-reel rounded" />
               <div className="absolute bottom-0 left-0 m-1 flex items-center justify-center">
                 <Image src={icSpark} alt="share" height={15} width={15} />
@@ -222,11 +238,12 @@ function LoopVideos({ userId, loopDetails }: any) {
               </div>
             </div>
           ))}
-        {isFetchingNextPage && (
-          <div className="relative flex flex-col items-center">
-            <Shimmer className="aspect-reel h-full rounded" />
-          </div>
-        )}
+        {isFetchingNextPage &&
+          Array.from({ length: Math.max(0, loopDetails.video_count - videoCount) }).map((_, index) => (
+            <div key={`shimmer-${index}`} className="relative flex flex-col items-center">
+              <Shimmer className="aspect-reel h-full rounded" />
+            </div>
+          ))}
       </div>
       {hasNextPage && (
         <p
