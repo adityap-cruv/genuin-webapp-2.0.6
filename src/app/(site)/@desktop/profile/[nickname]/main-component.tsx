@@ -38,13 +38,17 @@ export function MainComponent({ profileData }: CompProps) {
           />
           <div className="flex items-center py-1">
             <p className="line-clamp-1 pr-2 text-title-lg">{profileData?.name}</p>
-            <p className="line-clamp-1 text-body-sm text-monochrome">@{profileData?.nickname}</p>
+            <p className="line-clamp-1 text-body-sm text-monochrome" style={{ fontWeight: 500 }}>
+              @{profileData?.nickname}
+            </p>
           </div>
-          <p className="text-new-para-3 py-1">{profileData?.bio}</p>
+          <p className="py-1 line-clamp-3 text-body-sm" style={{ fontWeight: 500, lineHeight: '24px' }}>
+            {profileData?.bio}
+          </p>
           <Stats profileData={profileData} />
           <Button
             variant="outline"
-            size="sm"
+            size="custom"
             outlineColor="genuin-blue"
             onClick={async () =>
               await shareFn({
@@ -52,8 +56,10 @@ export function MainComponent({ profileData }: CompProps) {
                 toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
               })
             }>
-            <Image src={icShare} alt="share" height={22} width={22} />
-            <p className="pl-2 text-title-sm text-blue">Share</p>
+            <span className="flex items-center p-1.5 pr-4">
+              <Image src={icShare} alt="share" height={24} width={24} />
+              <p className="pl-2 text-title-sm text-blue">Share</p>
+            </span>
           </Button>
         </div>
         <CommunityList usernickname={profileData?.nickname} />
@@ -67,16 +73,28 @@ function Stats({ profileData }: { profileData: any }) {
   return (
     <div className="m-1 ml-0 flex max-w-[250px]  justify-between gap-x-6 p-1 pl-0">
       <div className="flex items-center">
-        <p className="text-title-md">{abbreviateNumber(profileData?.views) || 0}</p>
-        <p className="px-1 text-cap-lg text-secondary">Views</p>
+        <p className="text-body-lg" style={{ fontWeight: 700 }}>
+          {abbreviateNumber(profileData?.views) || 0}
+        </p>
+        <p className="px-1 text-body-sm text-secondary" style={{ fontWeight: 500 }}>
+          Views
+        </p>
       </div>
       <div className="flex items-center">
-        <p className="text-title-md">{abbreviateNumber(profileData?.videos) || 0}</p>
-        <p className="px-1 text-cap-lg text-secondary">Posts</p>
+        <p className="text-body-lg" style={{ fontWeight: 700 }}>
+          {abbreviateNumber(profileData?.videos) || 0}
+        </p>
+        <p className="px-1 text-body-sm text-secondary" style={{ fontWeight: 500 }}>
+          Posts
+        </p>
       </div>
       <div className="flex items-center">
-        <p className="text-title-md">{abbreviateNumber(profileData?.no_of_community) || 0}</p>
-        <p className="px-1 text-cap-lg text-secondary">Communities</p>
+        <p className="text-body-lg" style={{ fontWeight: 700 }}>
+          {abbreviateNumber(profileData?.no_of_community) || 0}
+        </p>
+        <p className="px-1 text-body-sm text-secondary" style={{ fontWeight: 500 }}>
+          Communities
+        </p>
       </div>
     </div>
   )
@@ -88,19 +106,7 @@ function CommunityList({ usernickname }: any) {
   const handleSeeMoreClick = () => {
     void fetchNextPage()
   }
-
-  const [selectedItems, setSelectedItems] = useState<string[]>([])
-  let itemHandles = data?.pages.flatMap((page) => page.list).map((item) => item.handle);
-
-  const handleAccordionItemClick = (handle: string) => {
-    const isSelected = itemHandles?.includes(handle);
-  
-    if (isSelected) {
-      itemHandles = itemHandles?.filter((item) => item !== handle);
-    } else {
-      itemHandles?.push(handle);
-    }
-  };
+  const itemHandles = data?.pages.flatMap((page) => page.list).map((item) => item.handle)
 
   return (
     <>
@@ -112,12 +118,7 @@ function CommunityList({ usernickname }: any) {
             .map((item, index) => (
               <div key={index}>
                 &nbsp;
-                <AccordionItem
-                  value={item.handle}
-                  className="border-none"
-                  onClick={() => {
-                    handleAccordionItemClick(item.handle)
-                  }}>
+                <AccordionItem value={item.handle} className="border-none">
                   <AccordionTrigger className="m-0 p-0">
                     <div className="flex items-center">
                       <CustomAvatar
@@ -127,8 +128,14 @@ function CommunityList({ usernickname }: any) {
                         isAvatar={false}
                       />
                       <div className="mx-2">
-                        <p className="line-clamp-1 text-left text-title-md">{item.name}</p>
-                        <p className="line-clamp-1 text-new-para-2 text-monochrome">Visible to approved members only</p>
+                        <p
+                          className="line-clamp-1 text-left text-title-md"
+                          style={{ fontWeight: 600, fontSize: '20px' }}>
+                          {item.name}
+                        </p>
+                        <p className="line-clamp-1 text-start text-body-sm text-monochrome" style={{ fontWeight: 500 }}>
+                          Visible to approved members only
+                        </p>
                       </div>
                     </div>
                   </AccordionTrigger>
@@ -145,7 +152,7 @@ function CommunityList({ usernickname }: any) {
       {isFetchingNextPage && <Loader size="md" />}
       {hasNextPage && (
         <p
-          className="text-blue-500 flex w-full cursor-pointer justify-center pt-2 text-cap-lg text-monochrome"
+          className="text-blue-500 flex w-full cursor-pointer justify-center p-2 text-cap-lg text-monochrome"
           onClick={handleSeeMoreClick}>
           See More Communities
         </p>
@@ -166,6 +173,13 @@ function CommunityDetails({ userId, communityId }: any) {
       {isLoading && (
         <li className="profile-loop-li relative my-4 w-full rounded-lg bg-monochrome-9 p-4">
           <Shimmer className="h-6 w-40" />
+          <div className="my-2 grid w-full grid-cols-4 gap-2 md:grid-cols-8">
+            {Array.from({ length: 8 }).map((_, index) => (
+              <div key={`shimmer-${index}`} className="relative flex flex-col items-center">
+                <Shimmer className="aspect-reel w-full rounded" />
+              </div>
+            ))}
+          </div>
         </li>
       )}
       {data?.pages
@@ -220,7 +234,7 @@ function LoopVideos({ userId, loopDetails }: any) {
         {data?.pages
           .flatMap((page) => page.list)
           .map((video, index) => (
-            <div key={video.id} className="relative flex flex-col items-center">
+            <div key={video.id} className="relative flex aspect-reel min-w-full flex-col items-center">
               <img src={video.thumbnail} alt={`Video Thumbnail ${index}`} className="aspect-reel rounded" />
               <div className="absolute bottom-0 left-0 m-1 flex items-center justify-center">
                 <Image src={icSpark} alt="share" height={15} width={15} />

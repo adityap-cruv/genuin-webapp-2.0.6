@@ -1,7 +1,7 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
 import { Button } from '@components/ui/button'
 import type { CommunityDetailsType } from '@lib/schemas/community'
-import { checkAndAppendHttps, generateDeepLink, openGeneratedLink } from '@lib/utils'
+import { abbreviateNumber, checkAndAppendHttps, generateDeepLink, openGeneratedLink, timeAgo } from '@lib/utils'
 import Image from 'next/image'
 import icShare from '@icons/icShareBlue.svg'
 import Link from 'next/link'
@@ -12,14 +12,10 @@ import icTwitter from '@icons/icTwitterBlack.svg'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { getCommunityLoops } from '@lib/api/community'
 import { Loader } from '@components/ui/loader'
-import dynamic from 'next/dynamic'
 import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { TopBar } from '../../../layouts/mobile/top-bar'
-const DetailsNavbar = dynamic(
-  async () => await import('@components/pages/community/mobile/nav-bar').then((comp) => comp.NavBar.details)
-)
 
 let communityDetailsModule: CommunityDetailsType
 
@@ -126,11 +122,11 @@ function ProfileTabs() {
         <TabsTrigger value="Loops">
           <p className="text-title-md">Loops</p>
         </TabsTrigger>
-        <TabsTrigger value="About">
-          <p className="text-title-md">About</p>
-        </TabsTrigger>
         <TabsTrigger value="Members">
           <p className="text-title-md">Members</p>
+        </TabsTrigger>
+        <TabsTrigger value="About">
+          <p className="text-title-md">About</p>
         </TabsTrigger>
       </TabsList>
       <TabsContent value="Loops" className="mx-4">
@@ -202,47 +198,70 @@ function LoopItem({ loopDetails }: { loopDetails: any }) {
       alt={`frontimage${index}`}
     />
   ))
-  function getSubscribersCountString(count: any) {
+  function getCollaboratorsCountString(count: any) {
     let str = ' + '
     if (!count) return
     if (count === 1) {
-      str += count + ' subscriber'
+      str += count + ' collaborator'
     } else {
-      str += count + ' subscribers'
+      str += count + ' collaborators'
     }
     return str
   }
 
   return (
     <Link href={`/l/${loopDetails.share_string}?v=${loopDetails.videos[0].share_string}`}>
-      <div
-        className="relative mt-5 w-full rounded-lg border"
-        style={{ backgroundColor: 'rgba(6, 69, 255, 0.05)', border: '1px solid rgba(6, 69, 255, 0.40)' }}>
-        <div className="flex w-[70%] items-center p-[3%]">
-          <CustomAvatar
-            className="h-12 w-12 bg-red-50"
-            imageUrl={loopDetails.profile_image}
-            isAvatar={false}
-            fallbackString={loopDetails.name}
-          />
-          <p className="ml-2 text-title-sm">{loopDetails.name}</p>
+      <div className="relative my-2 w-full rounded-lg border border-monochrome-9 bg-monochrome-white">
+        <div className="w-[70%] items-center p-[3%]">
+          <p className="text-title-sm">{loopDetails.name}</p>
+          <p className="text-body-sm text-monochrome-4">
+            {loopDetails.videos[0].owner} posted ∙ {timeAgo(loopDetails.videos[0].created_at)}
+          </p>
         </div>
-        <div className="h-[60%] p-4" style={{ backgroundColor: 'rgba(6, 69, 255, 0.05)' }}>
-          <div className="mb-[2%] flex w-[70%] items-center">
-            {loopDetails.owner.profile_image && (
-              <CustomAvatar
-                className="h-6 w-6 bg-red-50"
-                imageUrl={loopDetails.owner.profile_image ?? ''}
-                isAvatar={loopDetails.owner.is_avatar}
-                fallbackString={loopDetails.owner.name ?? ''}
-              />
+        <div className="h-[60%] p-4 border rounded-b-lg border-monochrome-8" style={{ backgroundColor: '#F9F9F9' }}>
+          <div className="flex w-[70%] items-center">
+            {loopDetails.collaborators.length !== 0 && (
+              <div className="relative flex">
+                {loopDetails.collaborators[0] && (
+                  <CustomAvatar
+                    className="z-20 h-6 w-6 bg-red-50 border-2 border-monochrome-white"
+                    imageUrl={loopDetails.collaborators[0].profile_image ?? ''}
+                    isAvatar={loopDetails.collaborators[0].is_avatar}
+                    fallbackString={loopDetails.collaborators[0].nickname ?? ''}
+                  />
+                )}
+                {loopDetails.collaborators[1] && (
+                  <CustomAvatar
+                    className="absolute left-3 z-10 h-6 w-6 bg-red-50 border-2 border-monochrome-white"
+                    imageUrl={loopDetails.collaborators[1].profile_image ?? ''}
+                    isAvatar={loopDetails.collaborators[1].is_avatar}
+                    fallbackString={loopDetails.collaborators[1].nickname ?? ''}
+                  />
+                )}
+                {loopDetails.collaborators[2] && (
+                  <CustomAvatar
+                    className="absolute left-6 h-6 w-6 bg-red-50 border-2 border-monochrome-white"
+                    imageUrl={loopDetails.collaborators[2].profile_image ?? ''}
+                    isAvatar={loopDetails.collaborators[2].is_avatar}
+                    fallbackString={loopDetails.collaborators[2].nickname ?? ''}
+                  />
+                )}
+              </div>
             )}
-            <p className="text-new-para-2-mobile">
-              &nbsp;&nbsp;@{loopDetails.owner.nickname}
-              {getSubscribersCountString(loopDetails.subscriber_count)}
+            <p
+              className={`text-body-sm text-monochrome-4 ${loopDetails.collaborators.length !== 0 && 'ml-7'} ${
+                loopDetails.collaborators.length === 2 && 'ml-6'
+              }`}
+              style={{ fontWeight: 500 }}>
+              @{loopDetails.owner.nickname}
+              {getCollaboratorsCountString(loopDetails.member_count)}
             </p>
           </div>
-          <p className="w-[70%] text-new-para-2-mobile">{loopDetails.description}</p>
+          <p className="my-[2%] w-[70%] text-body-sm line-clamp-3 text-monochrome-4">{loopDetails.description}</p>
+          <p className="w-[70%] text-body-sm text-monochrome-4" style={{ fontWeight: 500 }}>
+            {abbreviateNumber(loopDetails.subscriber_count)} subscribers ∙ {abbreviateNumber(loopDetails.view_count)}{' '}
+            views
+          </p>
         </div>
         {renderedImages}
       </div>
@@ -341,7 +360,7 @@ function ListItem({
   image?: string
 }) {
   return (
-    <div className="flex items-center gap-x-1 rounded-sm p-1 hover:bg-monochrome-9">
+    <div className="flex items-center gap-x-1 rounded-lg p-2 hover:bg-monochrome-10">
       <CustomAvatar
         className="h-12 w-12 bg-red-40"
         imageUrl={image ?? ''}

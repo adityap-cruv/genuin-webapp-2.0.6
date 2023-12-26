@@ -12,11 +12,12 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
 import Link from 'next/link'
 import { Loader } from '@components/ui/loader'
 import { getCommunityLoops } from '@lib/api/community'
-import { checkAndAppendHttps } from '@lib/utils'
+import { abbreviateNumber, checkAndAppendHttps, timeAgo } from '@lib/utils'
 import icInstagram from '@icons/icInstagramBlack.svg'
 import icLinkedIn from '@icons/icLinkedIn.svg'
 import icLink from '@icons/icLinkBlack.svg'
 import icTwitter from '@icons/icTwitterBlack.svg'
+import noLoopsImage from '@images/noLoopImage.svg'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@components/ui/accordion'
 
@@ -49,7 +50,7 @@ export function Root({ communityDetails }: Props) {
         communityProfileImage={communityDetails.info.profile_image}
         communtiyHandle={communityDetails.info.handle}
       /> */}
-      <main className="absolute inset-0 h-full w-full overflow-auto pl-6 hide-scrollbar">
+      <main className="hide-scrollbar absolute inset-0 h-full w-full overflow-auto px-6">
         <div ref={detailsDivRef} className="pt-6">
           <CustomAvatar
             isAvatar={false}
@@ -62,19 +63,21 @@ export function Root({ communityDetails }: Props) {
           <p className="line-clamp-2 w-1/2 break-all pb-4 pt-2">{communityDetails.info.description}</p>
           <span className="flex items-center gap-x-2">
             <Button size="custom">
-              <p className="px-4 py-2 text-body-sm">Join Community</p>
+              <p className="px-4 py-2 text-body-sm" style={{ fontWeight: 500 }}>
+                Join Community
+              </p>
             </Button>
-            <Button variant="outline" size="custom" className="border-2 border-primary p-0.5">
+            <Button variant="outline" size="custom" className="border-2 border-primary p-1">
               <Image src={icShare} alt="share" className="h-6 w-6" />
             </Button>
           </span>
         </div>
         <div className="grid h-full w-full grid-cols-2 gap-4 overflow-hidden">
-          <div className="overflow-auto scroll-smooth snap-proximity snap-y">
+          <div className="snap-y snap-proximity overflow-auto scroll-smooth">
             <CommunityDetailsTabs />
           </div>
 
-          <div className='overflow-auto scroll-smooth snap-proximity snap-y'>
+          <div className="snap-y snap-proximity overflow-auto scroll-smooth">
             <Categories />
             <Links />
             <Guidelines />
@@ -109,13 +112,28 @@ function CommunityDetailsTabs() {
 
 function LoopTab() {
   const { isLoading, data: loops, isFetched } = getCommunityLoops(communityDetailsModule.info.handle)
+
   return (
     <div>
       {isLoading && <Loader size="sm" />}
-      {isFetched &&
-        loops.map((item: any, index: number) => {
-          return <LoopItem key={index} loopDetails={item} />
-        })}
+      {isFetched && (
+        <>
+          {loops.length === 0 ? (
+            <div className="flex flex-col items-center justify-center" style={{ backgroundColor: '#F9F9F9' }}>
+              <Image src={noLoopsImage} alt="share" />
+              <p className="text-title-lg">No Loops... yet!</p>
+              <p className="w-96 text-center text-body-sm text-monochrome">
+                Loops are dynamic discussion spaces centered around specific themes. Members can share videos, get
+                reactions, and enjoy engaging comments from the community.
+              </p>
+            </div>
+          ) : (
+            loops.map((item: any, index: number) => {
+              return <LoopItem key={index} loopDetails={item} />
+            })
+          )}
+        </>
+      )}
     </div>
   )
 }
@@ -161,42 +179,70 @@ function LoopItem({ loopDetails }: { loopDetails: any }) {
       alt={`frontimage${index}`}
     />
   ))
-  function getSubscribersCountString(count: any) {
+  function getCollaboratorsCountString(count: any) {
     let str = ' + '
     if (!count) return
     if (count === 1) {
-      str += count + ' subscriber'
+      str += count + ' collaborator'
     } else {
-      str += count + ' subscribers'
+      str += count + ' collaborators'
     }
     return str
   }
 
   return (
     <Link href={`/l/${loopDetails.share_string}?v=${loopDetails.videos[0].share_string}`}>
-      <div
-        className="relative mt-5 w-full rounded-lg border"
-        style={{ backgroundColor: '#FFF', border: '1px solid #E7E7E7' }}>
+      <div className="relative my-5 w-full rounded-lg border border-monochrome-9 bg-monochrome-white">
         <div className="w-[70%] items-center p-[3%]">
-          <p className="ml-2 text-title-sm">{loopDetails.name}</p>
-          {/* <p className="ml-2 text-body-sm text-monochrome">{loopDetails.description}</p> */}
+          <p className="text-title-sm">{loopDetails.name}</p>
+          <p className="text-body-sm text-monochrome-4">
+            {loopDetails.videos[0].owner} posted ∙ {timeAgo(loopDetails.videos[0].created_at)}
+          </p>
         </div>
-        <div className="h-[60%] p-4" style={{ backgroundColor: '#F9F9F9' }}>
-          <div className="mb-[2%] flex w-[70%] items-center">
-            {loopDetails.owner.profile_image && (
-              <CustomAvatar
-                className="h-6 w-6 bg-red-50"
-                imageUrl={loopDetails.owner.profile_image ?? ''}
-                isAvatar={loopDetails.owner.is_avatar}
-                fallbackString={loopDetails.owner.name ?? ''}
-              />
+        <div className="h-[60%] rounded-b-lg border border-monochrome-8 p-4" style={{ backgroundColor: '#F9F9F9' }}>
+          <div className="flex w-[70%] items-center">
+            {loopDetails.collaborators.length !== 0 && (
+              <div className="relative flex">
+                {loopDetails.collaborators[0] && (
+                  <CustomAvatar
+                    className="z-20 h-6 w-6 border-2 border-monochrome-white bg-red-50"
+                    imageUrl={loopDetails.collaborators[0].profile_image ?? ''}
+                    isAvatar={loopDetails.collaborators[0].is_avatar}
+                    fallbackString={loopDetails.collaborators[0].nickname ?? ''}
+                  />
+                )}
+                {loopDetails.collaborators[1] && (
+                  <CustomAvatar
+                    className="absolute left-3 z-10 h-6 w-6 border-2 border-monochrome-white bg-red-50"
+                    imageUrl={loopDetails.collaborators[1].profile_image ?? ''}
+                    isAvatar={loopDetails.collaborators[1].is_avatar}
+                    fallbackString={loopDetails.collaborators[1].nickname ?? ''}
+                  />
+                )}
+                {loopDetails.collaborators[2] && (
+                  <CustomAvatar
+                    className="absolute left-6 h-6 w-6 border-2 border-monochrome-white bg-red-50"
+                    imageUrl={loopDetails.collaborators[2].profile_image ?? ''}
+                    isAvatar={loopDetails.collaborators[2].is_avatar}
+                    fallbackString={loopDetails.collaborators[2].nickname ?? ''}
+                  />
+                )}
+              </div>
             )}
-            <p className="text-new-para-2-mobile">
-              &nbsp;&nbsp;@{loopDetails.owner.nickname}
-              {getSubscribersCountString(loopDetails.subscriber_count)}
+            <p
+              className={`text-body-sm text-monochrome-4 ${loopDetails.collaborators.length !== 0 && 'ml-7'} ${
+                loopDetails.collaborators.length === 2 && 'ml-6'
+              }`}
+              style={{ fontWeight: 500 }}>
+              @{loopDetails.owner.nickname}
+              {getCollaboratorsCountString(loopDetails.member_count)}
             </p>
           </div>
-          <p className="w-[70%] text-new-para-2-mobile">{loopDetails.description}</p>
+          <p className="my-[2%] line-clamp-3 w-[70%] text-body-sm text-monochrome-4">{loopDetails.description}</p>
+          <p className="w-[70%] text-body-sm text-monochrome-4" style={{ fontWeight: 500 }}>
+            {abbreviateNumber(loopDetails.subscriber_count)} subscribers ∙ {abbreviateNumber(loopDetails.view_count)}{' '}
+            views
+          </p>
         </div>
         {renderedImages}
       </div>
@@ -208,6 +254,9 @@ function Categories() {
   return (
     <div>
       <p className="my-2 mt-4 text-title-md">Categories</p>
+      {communityDetailsModule?.info.categories.length === 0 && (
+        <div className="flex items-center justify-center text-title-md text-secondary">No categories available</div>
+      )}
       <div>
         {communityDetailsModule?.info.categories.map((cat, index) => {
           return (
@@ -226,6 +275,9 @@ function Links() {
   return (
     <div>
       <p className="my-2 mt-4 text-title-md">Links</p>
+      {!links?.instagram_url && !links?.linkedin_url && !links?.twitter_url && !links?.social_web_url && (
+        <div className="flex items-center justify-center text-title-md text-secondary">No links available</div>
+      )}
       <div className="flex">
         {links?.instagram_url && (
           <div className="mx-1 rounded-md bg-monochrome-9 p-1">
@@ -338,7 +390,7 @@ function ListItem({
   image?: string
 }) {
   return (
-    <div className="flex items-center gap-x-1 rounded-sm p-1 hover:bg-monochrome-9">
+    <div className="flex items-center gap-x-1 rounded-lg p-2 hover:bg-monochrome-10">
       <CustomAvatar
         className="h-12 w-12 bg-red-40"
         imageUrl={image ?? ''}
@@ -357,6 +409,9 @@ function ListItem({
 function Members() {
   return (
     <div className="my-2">
+      {communityDetailsModule?.members.length === 0 && (
+        <div className="flex items-center justify-center pt-32 text-title-md text-secondary">No members available</div>
+      )}
       {communityDetailsModule?.members.map((member, index) => {
         return (
           <Link key={index} href={{ pathname: PATH_NAME.profile(member.nickname) }}>
@@ -378,19 +433,19 @@ function Stats({ communityDetails }: { communityDetails: CommunityDetailsType })
     <div className="flex items-center">
       <span className="pr-4">
         <span className="text-title-md text-monochrome-black">{communityDetails?.info.count.member}</span>
-        <span className="text-cap-lg text-secondary">
+        <span className="text-body-sm text-secondary" style={{ fontWeight: 500 }}>
           &nbsp;{communityDetails?.info.count.member === 1 ? 'Member' : 'Members'}
         </span>
       </span>
       <span className="pr-4">
         <span className="text-title-md text-monochrome-black">{communityDetails?.info.count.loop}</span>
-        <span className="text-cap-lg text-secondary">
+        <span className="text-body-sm text-secondary" style={{ fontWeight: 500 }}>
           &nbsp;{communityDetails?.info.count.loop === 1 ? 'Loop' : 'Loops'}
         </span>
       </span>
       <span className="pr-4">
         <span className="text-title-md text-monochrome-black">{communityDetails?.info.count.video}</span>
-        <span className="text-cap-lg text-secondary">
+        <span className="text-body-sm text-secondary" style={{ fontWeight: 500 }}>
           &nbsp;{communityDetails?.info.count.video === 1 ? 'Video' : 'Videos'}
         </span>
       </span>

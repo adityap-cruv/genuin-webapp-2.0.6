@@ -30,11 +30,13 @@ export function MainComponent({ loopDetails }: Props) {
           loopName={loopDetails.group.group_name ?? ''}
           shareString={loopDetails.share_string}
         /> */}
-        <main className="absolute inset-0 h-full w-full overflow-auto pl-6 hide-scrollbar">
+        <main className="hide-scrollbar absolute inset-0 h-full w-full overflow-auto pl-6">
           <span className="w-1/2">
-            <p className="text-title-lg font-semibold mt-6">{loopDetails.group.group_name}</p>
-            <p className="my-2 line-clamp-2 w-1/2 text-body-sm font-medium">{loopDetails.group.group_description}</p>
-            <div className="my-2 w-1/2 rounded-lg border border-monochrome-9 p-4">
+            <p className="mt-6 text-title-xl">{loopDetails.group.group_name}</p>
+            <p className="my-2 line-clamp-2 w-1/2 text-body-sm" style={{ fontWeight: 500 }}>
+              {loopDetails.group.group_description}
+            </p>
+            <div className="my-4 w-1/2 rounded-xl border border-monochrome-9 p-4">
               <span className="flex" ref={detailsDivRef}>
                 <span className="flex-1">
                   <p className="text-body-sm text-monochrome">Created by</p>
@@ -44,7 +46,7 @@ export function MainComponent({ loopDetails }: Props) {
                         fallbackString={loopDetails.owner.name ?? ''}
                         imageUrl={loopDetails.owner.profile_image ?? ''}
                         isAvatar={loopDetails.owner.is_avatar}
-                        className='h-8 w-8'
+                        className="h-8 w-8"
                       />
                       <p className="ml-1 text-title-sm">@{loopDetails.owner.nickname}</p>
                     </div>
@@ -58,7 +60,7 @@ export function MainComponent({ loopDetails }: Props) {
                         imageUrl={loopDetails.community.dp}
                         fallbackString={loopDetails.community.name}
                         isAvatar={false}
-                        className='h-8 w-8'
+                        className="h-8 w-8"
                       />
                       <p className="ml-1 text-title-sm">{loopDetails.community.name}</p>
                     </div>
@@ -73,26 +75,28 @@ export function MainComponent({ loopDetails }: Props) {
                 ]}
               />
             </div>
-            <span className="my-2 flex gap-x-3">
-              <Button className="px-4">
-                <p>Subscribe</p>
+            <span className="my-2 flex items-center gap-x-3">
+              <Button size="custom">
+                <p className="px-4 py-2 text-body-sm" style={{ fontWeight: 500 }}>
+                  Subscribe
+                </p>
               </Button>
-              <Button variant="outline" className="border-primary px-4">
+              <Button size="custom" variant="outline" className="border-primary px-4">
                 <span className="flex items-center">
                   <Image src={icQuestion} alt="question" />
-                  <p className="text-body-sm font-medium text-primary">Q&A</p>
+                  <p className="py-2 text-body-sm text-primary">Q&A</p>
                 </span>
               </Button>
-              <Button variant="outline" className="border-primary">
-                <Image src={icShare} alt="share" />
+              <Button variant="outline" size="custom" className=" border-primary p-1">
+                <Image src={icShare} alt="share" className="h-7 w-7" />
               </Button>
             </span>
           </span>
           <div className="grid h-full w-full grid-cols-2 gap-4 overflow-hidden">
-            <div className="overflow-auto scroll-smooth snap-proximity snap-y">
+            <div className="snap-y snap-proximity overflow-auto scroll-smooth">
               <LoopVideos loopId={loopDetails.share_string} />
             </div>
-            <div className="overflow-auto scroll-smooth snap-proximity snap-y">
+            <div className="snap-y snap-proximity overflow-auto scroll-smooth">
               <Cohosts chatId={loopDetails.chat_id} />
               <LoopSubscribers chatId={loopDetails.chat_id} />
             </div>
@@ -116,11 +120,11 @@ function LoopVideos({ loopId }: any) {
       {data?.pages.flatMap((page) => page.videos).length === 0 && (
         <div className="flex items-center justify-center pt-32 text-title-md text-secondary">No videos available</div>
       )}
-      <div className="grid grid-cols-2 gap-4 my-4">
+      <div className="my-4 grid grid-cols-2 gap-4">
         {data?.pages
           .flatMap((page) => page.videos)
           .map((item, index) => (
-            <div key={index} className="relative aspect-reel w-full duration-300 hover:scale-95">
+            <div key={index} className="relative aspect-reel w-full duration-300 hover:cursor-pointer">
               <Image
                 src={item.video.thumbnail ?? ''}
                 alt={item.video.description ?? ''}
@@ -148,7 +152,7 @@ function LoopVideos({ loopId }: any) {
       {isFetchingNextPage && <Loader size="md" />}
       {hasNextPage && (
         <p
-          className="text-blue-500 flex w-full cursor-pointer justify-center pt-2 text-cap-lg text-monochrome"
+          className="text-blue-500 flex w-full cursor-pointer justify-center py-4 text-cap-lg text-monochrome"
           onClick={handleSeeMoreClick}>
           See More
         </p>
@@ -225,12 +229,12 @@ interface CohostTileProps {
 
 function CohostTile({ image, title, subtitle, userName, isAvatar }: CohostTileProps) {
   return (
-    <div className="flex items-center gap-x-1 rounded-sm p-1 hover:bg-monochrome-9">
+    <div className="flex items-center gap-x-1 p-2 rounded-lg hover:bg-monochrome-10">
       <CustomAvatar className="h-12 w-12 bg-red-40" fallbackString={userName} imageUrl={image} isAvatar={isAvatar} />
       <div className="mx-2">
         <p className="line-clamp-1 text-body-sm">{title}</p>
-        {userName && <p className="line-clamp-1 text-new-para-2-mobile">{userName}</p>}
-        {subtitle && <p className="line-clamp-1 text-new-para-2-mobile text-monochrome-black/60">{subtitle}</p>}
+        {userName && <p className="line-clamp-1 text-body-sm" style={{ fontWeight: 500 }}>{userName}</p>}
+        {subtitle && <p className="line-clamp-1 text-body-sm text-monochrome-black/60" style={{ fontWeight: 500 }}>{subtitle}</p>}
       </div>
     </div>
   )
@@ -246,12 +250,12 @@ function Stats({
   statsData: Array<{ key: string; value: number }>
 }) {
   return (
-    <div className="flex justify-start gap-x-4 pt-4">
+    <div className="flex justify-start gap-x-4 pt-3">
       {statsData.map((obj, index) => {
         return (
           <div key={index} className="flex items-center gap-x-1">
             <p className="text-title-lg">{obj.value}</p>
-            <p className="text-body-sm text-monochrome">{obj.key}</p>
+            <p className="text-body-sm text-monochrome" style={{ fontWeight: 500 }}>{obj.key}</p>
           </div>
         )
       })}
