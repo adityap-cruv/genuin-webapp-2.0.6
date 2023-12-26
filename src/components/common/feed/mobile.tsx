@@ -13,20 +13,38 @@ type MobileProps = {
   isError: boolean
   hasNextPage?: boolean
   isFetchingNextPage: boolean
+  fetchNextPage: () => void
 }
 
-export function Mobile({ videos, isError, isFetchingNextPage, isLoading, sizeBox, hasNextPage }: MobileProps) {
+export function Mobile({
+  videos,
+  fetchNextPage,
+  isError,
+  isFetchingNextPage,
+  isLoading,
+  sizeBox,
+  hasNextPage,
+}: MobileProps) {
   const scrollDivRef = useRef<HTMLDivElement>(null)
-  const { setCurrentIndex, setVideoList } = useFeedListStore((state) => ({
+  const { setCurrentIndex, setVideoList, currentIndex, videoList } = useFeedListStore((state) => ({
     setCurrentIndex: state.setCurrentIndex,
     setVideoList: state.setVideoList,
+    currentIndex: state.currentIndex,
+    videoList: state.videoList,
   }))
+
+  useEffect(() => {
+    if (!isFetchingNextPage && videoList.length - 3 <= currentIndex) {
+      fetchNextPage?.()
+    }
+  }, [currentIndex])
 
   useEffect(() => {
     const element = scrollDivRef.current
     if (!element) return
     function handleScroll(this: HTMLDivElement, e: Event) {
-      setCurrentIndex(Math.floor(this.scrollTop / this.clientHeight))
+      const newIndex = Math.floor(this.scrollTop / this.clientHeight)
+      setCurrentIndex(newIndex)
     }
 
     element.addEventListener('scroll', handleScroll)
@@ -65,9 +83,9 @@ function InfinityViewBox() {
       <span className="absolute bottom-0 w-full">
         <AnimatedInfinityView
           community={{
-            name: 'Testing',
-            handle: 'testing',
-            profileImage: 'no available',
+            name: videoDetails.community.name ?? '',
+            handle: videoDetails.community.handle,
+            profileImage: videoDetails.community.dp ?? '',
           }}
           loop={{
             name: videoDetails.loop?.name ?? '',

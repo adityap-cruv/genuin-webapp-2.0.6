@@ -1,5 +1,10 @@
 import { Root } from './root'
+type Props = {
+  searchParams: {
+    brand_id?: string
+  }
+}
 
-export default function Page() {
+export default function Page({ searchParams }: Props) {
   return <Root />
 }

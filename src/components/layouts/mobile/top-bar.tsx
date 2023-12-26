@@ -7,7 +7,7 @@ import { type ReactNode } from 'react'
 import { cn } from '@lib/utils'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { PopularIcon, HomeIcon, LatestIcon, SearchIcon } from '@icons/side-bar-icons'
+import { PopularIcon, HomeIcon, LatestIcon } from '@icons/side-bar-icons'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { X } from 'lucide-react'
@@ -98,11 +98,11 @@ function Menu({ hamBurgerVariant = 'dark' }: { hamBurgerVariant: 'dark' | 'light
                 <LatestIcon isActive={pathName === PATH_NAME.latest()} />
               </MenuItem>
             </Link>
-            <Link href={{ pathname: PATH_NAME.search() }}>
+            {/* <Link href={{ pathname: PATH_NAME.search() }}>
               <MenuItem title="Search" isActive={pathName.includes('search')}>
                 <SearchIcon isActive={pathName === PATH_NAME.search()} />
               </MenuItem>
-            </Link>
+            </Link> */}
             <RecentCommunities />
           </div>
           <div className="text-monochrome">
