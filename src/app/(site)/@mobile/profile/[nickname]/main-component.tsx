@@ -2,8 +2,6 @@
 import { abbreviateNumber } from '@lib/utils'
 import { Button } from '@components/ui/button'
 import Image from 'next/image'
-import { useAdaptiveShare } from '@hooks/use-adaptive-share'
-import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { DecorativeList } from '@components/custom/decorative-list'
@@ -21,8 +19,6 @@ interface CompProps {
 }
 
 export function MainComponent({ profileData }: CompProps) {
-  const { shareFn } = useAdaptiveShare()
-  const { toast } = useToast()
 
   return (
     <>
@@ -64,7 +60,7 @@ export function MainComponent({ profileData }: CompProps) {
               </Button>
             </div> */}
           </div>
-          <div className="flex items-center">
+          <div className="flex items-center mt-2">
             <p className="line-clamp-1 pr-2 text-title-md">{profileData?.name}</p>
             <p className="line-clamp-1 text-body-sm text-monochrome" style={{ fontWeight: 500 }}>
               @{profileData?.nickname}
@@ -134,7 +130,7 @@ function CommunityList({ usernickname }: any) {
                 </div>
               </div>
               <DecorativeList>
-                <CommunityDetails userId={usernickname} communityId={item.id} />
+                <CommunityDetails userId={usernickname} communityHandle={item.handle} />
               </DecorativeList>
             </div>
           ))}
@@ -152,15 +148,14 @@ function CommunityList({ usernickname }: any) {
   )
 }
 
-function CommunityDetails({ userId, communityId }: any) {
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getAllLoops(userId, communityId)
+function CommunityDetails({ userId, communityHandle }: { userId: string; communityHandle: string }) {
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getAllLoops(userId, communityHandle)
   const handleSeeMoreClick = () => {
     void fetchNextPage()
   }
 
   return (
     <>
-      &nbsp;
       {isLoading && (
         <li
           className="profile-loop-li relative my-4 w-full rounded-lg bg-monochrome-9 p-4"
@@ -179,7 +174,7 @@ function CommunityDetails({ userId, communityId }: any) {
         .flatMap((page) => page.loops)
         .map((item: any, index: any) => (
           <li
-            className="profile-loop-li relative my-4 w-full rounded-lg border border-monochrome-9 p-4 pb-2"
+            className="profile-loop-li relative mb-2 w-full rounded-lg border border-monochrome-9 p-4 pb-2"
             key={index}
             style={{ backgroundColor: '#F9F9F9' }}>
             <LoopVideos userId={userId} loopDetails={item} />
