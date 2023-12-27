@@ -70,6 +70,7 @@ export function Mobile({
               playIfInViewPort
               isFirstPlayerInList={index === 0}
               shouldPlay
+              loop
               sizeBox={sizeBox}
               videoData={item}
             />
