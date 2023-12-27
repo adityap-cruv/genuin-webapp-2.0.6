@@ -38,7 +38,7 @@ export function TopBar({ variant = 'light', className, showClose = false }: Prop
     <nav className={cn(navVariant({ variant }), className)}>
       <span className="flex items-center ">
         <Menu hamBurgerVariant={variant === 'trasparent' ? 'light' : 'dark'} />
-        <Link href={{ pathname: '/' }}>
+        <Link href={{ pathname: PATH_NAME.home() }}>
           <GenuinSymbol variant={variant === 'trasparent' ? 'light' : 'black'} />
         </Link>
       </span>

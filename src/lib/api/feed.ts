@@ -5,10 +5,11 @@ type FeedOptionsType = {
   userID: string
   feedType: 'popular' | 'lattest' | 'home'
   pageRef?: any
-  brandId?: string
+  brandId?: string | null
 }
 
 async function fetchFeed(options: FeedOptionsType) {
+  if (!options.brandId) options.brandId = null
   return await axios
     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/feed', {
       params: {

@@ -13,14 +13,18 @@ export function RecentCommunities() {
     return (
       <>
         <hr className="mb-4 mt-1 border border-monochrome-black/10" />
-        <p className="hidden w-full break-all pb-1 text-title-lg font-semibold text-monochrome lg:line-clamp-1">
+        <p className="hidden w-full break-all pb-1 pl-1 text-title-lg font-semibold text-monochrome lg:line-clamp-1">
           Recent Communities
         </p>
         {communities.map((item, index) => {
-          const communityPathName = '/community/' + item.handle
           return (
-            <Link key={item.handle} href={{ pathname: communityPathName }}>
-              <CommunityItem title={item.name} isActive={pathName === PATH_NAME.community(item.handle)}>
+            <Link
+              key={item.handle}
+              href={{
+                pathname: PATH_NAME.community(item.handle),
+                query: { feed: '1' },
+              }}>
+              <CommunityItem title={'@' + item.handle} isActive={pathName === PATH_NAME.community(item.handle)}>
                 <CustomAvatar
                   imageUrl={item.profileImage}
                   fallbackString={item.name}

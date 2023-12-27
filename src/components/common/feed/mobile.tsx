@@ -64,7 +64,16 @@ export function Mobile({
         style={{ width: sizeBox.width, height: sizeBox.height }}
         className="hide-scrollbar snap-y snap-mandatory snap-always overflow-x-clip overflow-y-scroll scroll-smooth">
         {videos.map((item, index) => {
-          return <Player key={index} isFirstPlayerInList={index === 0} shouldPlay sizeBox={sizeBox} videoData={item} />
+          return (
+            <Player
+              key={index}
+              playIfInViewPort
+              isFirstPlayerInList={index === 0}
+              shouldPlay
+              sizeBox={sizeBox}
+              videoData={item}
+            />
+          )
         })}
       </div>
       <InfinityViewBox />
