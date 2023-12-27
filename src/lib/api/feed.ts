@@ -3,7 +3,7 @@ import axios from 'axios'
 
 type FeedOptionsType = {
   userID: string
-  feedType: 'popular' | 'lattest'
+  feedType: 'popular' | 'lattest' | 'home'
   pageRef?: any
   brandId?: string
 }
@@ -12,14 +12,14 @@ async function fetchFeed(options: FeedOptionsType) {
   return await axios
     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/feed', {
       params: {
-        userID: options.userID,
-        pageRef: options.pageRef,
+        anonymous_user_uuid: options.userID,
+        ref: options.pageRef,
         brand_id: options.brandId,
         feed_type: options.feedType,
       },
     })
     .then((res) => {
-      return { reels: res.data.data.reels, pageRef: res.data.data.pageRef }
+      return { reels: res.data.data.list, pageRef: res.data.data.ref }
     })
     .catch((e) => {
       throw new Error('Something went wrong feed api.')

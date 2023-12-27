@@ -11,10 +11,9 @@ import { DecorativeList } from '@components/custom/decorative-list'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@components/ui/accordion'
 import { getAllCommunities, getAllLoops, getAllLoopVideos } from '@lib/api/profile'
 import { Loader } from '@components/ui/loader'
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import icSpark from '@icons/player-controls/icBulb.svg'
 import { Shimmer } from '@components/ui/shimmer'
-import { useInView } from 'framer-motion'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 
@@ -42,7 +41,7 @@ export function MainComponent({ profileData }: CompProps) {
               @{profileData?.nickname}
             </p>
           </div>
-          <p className="py-1 line-clamp-3 text-body-sm" style={{ fontWeight: 500, lineHeight: '24px' }}>
+          <p className="line-clamp-3 py-1 text-body-sm" style={{ fontWeight: 500, lineHeight: '24px' }}>
             {profileData?.bio}
           </p>
           <Stats profileData={profileData} />
@@ -106,7 +105,7 @@ function CommunityList({ usernickname }: any) {
   const handleSeeMoreClick = () => {
     void fetchNextPage()
   }
-  const itemHandles = data?.pages.flatMap((page) => page.list).map((item) => item.handle)
+  const itemHandles = data?.pages.flatMap((page) => page.communities).map((item) => item.handle)
 
   return (
     <>
@@ -114,7 +113,7 @@ function CommunityList({ usernickname }: any) {
       {data && (
         <Accordion type="multiple" value={itemHandles}>
           {data?.pages
-            .flatMap((page) => page.list)
+            .flatMap((page) => page.communities)
             .map((item, index) => (
               <div key={index}>
                 &nbsp;
@@ -183,7 +182,7 @@ function CommunityDetails({ userId, communityId }: any) {
         </li>
       )}
       {data?.pages
-        .flatMap((page) => page.list)
+        .flatMap((page) => page.loops)
         .map((item: any, index: any) => (
           <li className="profile-loop-li relative my-4 w-full rounded-lg bg-monochrome-9 p-4 pb-2" key={index}>
             <LoopVideos userId={userId} loopDetails={item} />
@@ -221,7 +220,7 @@ function LoopVideos({ userId, loopDetails }: any) {
       <Link href={{ pathname: PATH_NAME.loop(loopDetails.share_string) }}>
         <p className="text-title-sm">{loopDetails.name}</p>
       </Link>
-      {data?.pages.flatMap((page) => page.list).length === 0 && (
+      {data?.pages.flatMap((page) => page.videos).length === 0 && (
         <div className="flex items-center justify-center pt-32 text-title-md text-secondary">No videos available</div>
       )}
       <div className="my-2 grid w-full grid-cols-4 gap-2 md:grid-cols-8">
@@ -232,7 +231,7 @@ function LoopVideos({ userId, loopDetails }: any) {
             </div>
           ))}
         {data?.pages
-          .flatMap((page) => page.list)
+          .flatMap((page) => page.videos)
           .map((video, index) => (
             <div key={video.id} className="relative flex aspect-reel min-w-full flex-col items-center">
               <img src={video.thumbnail} alt={`Video Thumbnail ${index}`} className="aspect-reel rounded" />

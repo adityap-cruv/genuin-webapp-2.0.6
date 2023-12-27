@@ -5,7 +5,7 @@ export async function fetchVideoDetails(videoId: string) {
   return await axios
     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/video_details', {
       params: {
-        video_share_string: videoId,
+        video_id: { share_string: videoId },
       },
     })
     .then((res) => {
