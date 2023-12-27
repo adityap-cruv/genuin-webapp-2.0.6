@@ -210,7 +210,7 @@ function LoopItem({ loopDetails }: { loopDetails: any }) {
   }
 
   return (
-    <Link href={`/l/${loopDetails.share_string}?v=${loopDetails.videos[0].share_string}`}>
+    <Link href={{ pathname: PATH_NAME.loop() }}>
       <div className="relative my-2 w-full rounded-lg border border-monochrome-9 bg-monochrome-white">
         <div className="w-[70%] items-center p-[3%]">
           <p className="text-title-sm">{loopDetails.name}</p>
@@ -218,13 +218,13 @@ function LoopItem({ loopDetails }: { loopDetails: any }) {
             {loopDetails.videos[0].owner} posted ∙ {timeAgo(loopDetails.videos[0].created_at)}
           </p>
         </div>
-        <div className="h-[60%] p-4 border rounded-b-lg border-monochrome-8" style={{ backgroundColor: '#F9F9F9' }}>
+        <div className="h-[60%] rounded-b-lg border border-monochrome-8 p-4" style={{ backgroundColor: '#F9F9F9' }}>
           <div className="flex w-[70%] items-center">
             {loopDetails.collaborators.length !== 0 && (
               <div className="relative flex">
                 {loopDetails.collaborators[0] && (
                   <CustomAvatar
-                    className="z-20 h-6 w-6 bg-red-50 border-2 border-monochrome-white"
+                    className="z-20 h-6 w-6 border-2 border-monochrome-white bg-red-50"
                     imageUrl={loopDetails.collaborators[0].profile_image ?? ''}
                     isAvatar={loopDetails.collaborators[0].is_avatar}
                     fallbackString={loopDetails.collaborators[0].nickname ?? ''}
@@ -232,7 +232,7 @@ function LoopItem({ loopDetails }: { loopDetails: any }) {
                 )}
                 {loopDetails.collaborators[1] && (
                   <CustomAvatar
-                    className="absolute left-3 z-10 h-6 w-6 bg-red-50 border-2 border-monochrome-white"
+                    className="absolute left-3 z-10 h-6 w-6 border-2 border-monochrome-white bg-red-50"
                     imageUrl={loopDetails.collaborators[1].profile_image ?? ''}
                     isAvatar={loopDetails.collaborators[1].is_avatar}
                     fallbackString={loopDetails.collaborators[1].nickname ?? ''}
@@ -240,7 +240,7 @@ function LoopItem({ loopDetails }: { loopDetails: any }) {
                 )}
                 {loopDetails.collaborators[2] && (
                   <CustomAvatar
-                    className="absolute left-6 h-6 w-6 bg-red-50 border-2 border-monochrome-white"
+                    className="absolute left-6 h-6 w-6 border-2 border-monochrome-white bg-red-50"
                     imageUrl={loopDetails.collaborators[2].profile_image ?? ''}
                     isAvatar={loopDetails.collaborators[2].is_avatar}
                     fallbackString={loopDetails.collaborators[2].nickname ?? ''}
@@ -257,7 +257,7 @@ function LoopItem({ loopDetails }: { loopDetails: any }) {
               {getCollaboratorsCountString(loopDetails.member_count)}
             </p>
           </div>
-          <p className="my-[2%] w-[70%] text-body-sm line-clamp-3 text-monochrome-4">{loopDetails.description}</p>
+          <p className="my-[2%] line-clamp-3 w-[70%] text-body-sm text-monochrome-4">{loopDetails.description}</p>
           <p className="w-[70%] text-body-sm text-monochrome-4" style={{ fontWeight: 500 }}>
             {abbreviateNumber(loopDetails.subscriber_count)} subscribers ∙ {abbreviateNumber(loopDetails.view_count)}{' '}
             views
