@@ -48,21 +48,21 @@ export function SideBar() {
           </PopoverTrigger>
           <PopoverContent
             sideOffset={-6}
-            className="rounded-3xl p-1 shadow-lg shadow-monochrome-3/40"
+            className=" rounded-2xl p-2 shadow-lg shadow-monochrome-3/40"
             side="bottom"
             align="start"
-            alignOffset={10}>
+            >
             <Link href={{ pathname: PATH_NAME.terms }}>
               <p
                 style={{ fontSize: '20px', lineHeight: '32px', fontWeight: 600 }}
-                className="rounded-md p-3 hover:bg-monochrome-6/10">
+                className="rounded-md p-2 hover:bg-monochrome-6/10">
                 Terms and Conditions
               </p>
             </Link>
             <Link href={{ pathname: PATH_NAME.privacy }}>
               <p
                 style={{ fontSize: '20px', lineHeight: '32px', fontWeight: 600 }}
-                className="rounded-md p-3 hover:bg-monochrome-6/10">
+                className="rounded-md p-2 hover:bg-monochrome-6/10">
                 Privacy Policy
               </p>
             </Link>

@@ -24,12 +24,12 @@ export function MainComponent({ loopDetails }: Props) {
   if (loopDetails)
     return (
       <>
-        {/* <TopBar
+        <TopBar
           defaultOpen={false}
           isOpen={!detailsInView}
           loopName={loopDetails.group.group_name ?? ''}
           shareString={loopDetails.share_string}
-        /> */}
+        />
         <main className="hide-scrollbar absolute inset-0 h-full w-full overflow-auto pl-6">
           <span className="w-1/2">
             <p className="mt-6 text-title-xl">{loopDetails.group.group_name}</p>
@@ -92,11 +92,11 @@ export function MainComponent({ loopDetails }: Props) {
               </Button>
             </span>
           </span>
-          <div className="grid h-full w-full grid-cols-2 gap-4 overflow-hidden">
+          <div className="grid w-full grid-cols-2 gap-4 overflow-hidden" style={{ height: 'calc(100% - 56px)' }}>
             <div className="snap-y snap-proximity overflow-auto scroll-smooth">
               <LoopVideos loopId={loopDetails.share_string} />
             </div>
-            <div className="snap-y snap-proximity overflow-auto scroll-smooth">
+            <div className="snap-y snap-proximity overflow-auto scroll-smooth py-2">
               <Cohosts chatId={loopDetails.chat_id} />
               <LoopSubscribers chatId={loopDetails.chat_id} />
             </div>
@@ -200,7 +200,7 @@ function LoopSubscribers({ chatId }: any) {
       <p className="my-2 text-title-md">Subscribers</p>
       {isLoading && <Loader size="md" />}
       {isError && <div>Something went wrong...</div>}
-      {subscribers.length === 0 && (
+      {subscribers && subscribers.length === 0 && (
         <div className="flex items-center justify-center text-title-md text-secondary">No subscribers yet</div>
       )}
       {subscribers && subscribers.length !== 0 && (

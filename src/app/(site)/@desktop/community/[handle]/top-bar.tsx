@@ -62,12 +62,12 @@ export function TopBar({
         />
         <p className="text-title-lg font-semibold">{communityName}</p>
       </span>
-      <span className="flex gap-x-2">
+      <span className="flex items-center gap-x-2">
         <Button size="custom">
           <p className="px-4 py-2 text-body-sm">Join Community</p>
         </Button>
-        <Button variant="outline" size="custom" className="border-2 border-primary p-0.5">
-          <Image src={icShare} alt="share" className="h-6 w-6" />
+        <Button variant="outline" size="custom" className="border border-primary p-0.5">
+          <Image src={icShare} alt="share" className="h-7 w-7" />
         </Button>
       </span>
     </motion.div>

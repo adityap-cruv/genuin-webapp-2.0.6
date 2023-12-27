@@ -15,6 +15,9 @@ import { getLoopVideoComments } from '@lib/api/loop'
 import { type RefObject, useRef } from 'react'
 import { Loader } from '@components/ui/loader'
 import { useMotionValueEvent, useScroll } from 'framer-motion'
+import { useAdaptiveShare } from '@hooks/use-adaptive-share'
+import { useToast } from '@components/ui/use-toast'
+import { Toaster } from '@components/ui/toaster'
 
 export function DesktopDetails() {
   const { videoList, currentIndex } = useFeedListStore((state) => ({
@@ -87,6 +90,8 @@ function CommentBox({ shareString, parentRef }: { shareString: string; parentRef
 }
 
 function InfoArea({ videoDetails }: { videoDetails: VideoDataType }) {
+  const { shareFn } = useAdaptiveShare()
+  const { toast } = useToast()
   return (
     <>
       <span className="flex items-center gap-x-2">
@@ -121,10 +126,24 @@ function InfoArea({ videoDetails }: { videoDetails: VideoDataType }) {
             </Link>
           </span>
           <span className="flex h-min items-center gap-x-3">
-            <Button size="custom">
-              <p className="whitespace-nowrap px-4 py-2 text-body-sm font-medium">Join Community</p>
-            </Button>
-            <Button size="custom" variant="outline" className="min-w-max border-2 border-primary p-1 ">
+            <DownloadDialog
+              title="Get the Genuin app"
+              subtitle={<>Get the app to join the <br/><span className='font-bold'>@{videoDetails.community.handle}</span> community.</>}
+              asChild>
+              <Button size="custom">
+                <p className="whitespace-nowrap px-4 py-2 text-body-sm font-medium">Join Community</p>
+              </Button>
+            </DownloadDialog>
+            <Button
+              size="custom"
+              variant="outline"
+              className="min-w-max border-2 border-primary p-1 "
+              onClick={async () =>
+                await shareFn({
+                  shareLink: window.location.host + PATH_NAME.community(videoDetails.community.handle),
+                  toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
+                })
+              }>
               <Image src={icShare} alt="share" className="h-5 w-5" />
             </Button>
           </span>
@@ -141,6 +160,7 @@ function InfoArea({ videoDetails }: { videoDetails: VideoDataType }) {
           </Link>
         </DecorativeList>
       </div>
+      <Toaster />
     </>
   )
 }
