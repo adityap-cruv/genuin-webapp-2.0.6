@@ -19,7 +19,7 @@ export function RecentCommunities() {
         {communities.map((item, index) => {
           return (
             <Link key={item.handle} href={{ pathname: PATH_NAME.community(item.handle), query: { feed: 1 } }}>
-              <CommunityItem title={'@' + item.handle} isActive={pathName === PATH_NAME.community(item.handle)}>
+              <CommunityItem title={item.name} isActive={pathName === PATH_NAME.community(item.handle)}>
                 <CustomAvatar
                   imageUrl={item.profileImage}
                   fallbackString={item.name}
