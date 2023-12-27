@@ -134,7 +134,7 @@ function CommunityList({ usernickname }: any) {
                 </div>
 
                 <DecorativeList>
-                  <CommunityDetails userId={usernickname} communityId={item.id} />
+                  <CommunityDetails userId={usernickname} communityHandle={item.handle} />
                 </DecorativeList>
               </div>
             ))}
@@ -152,8 +152,8 @@ function CommunityList({ usernickname }: any) {
   )
 }
 
-function CommunityDetails({ userId, communityId }: any) {
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getAllLoops(userId, communityId)
+function CommunityDetails({ userId, communityHandle }: { userId: string; communityHandle: string }) {
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getAllLoops(userId, communityHandle)
   const handleSeeMoreClick = () => {
     void fetchNextPage()
   }

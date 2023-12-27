@@ -18,11 +18,16 @@ import icLinkedIn from '@icons/icLinkedIn.svg'
 import icLink from '@icons/icLinkBlack.svg'
 import icTwitter from '@icons/icTwitterBlack.svg'
 import noLoopsImage from '@images/noLoopImage.svg'
+import lockIcon from '@images/lockIcon.svg'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@components/ui/accordion'
+import { DownloadDialog } from '@components/common/download-dialog'
+import { useAdaptiveShare } from '@hooks/use-adaptive-share'
+import { useToast } from '@components/ui/use-toast'
+import { Toaster } from '@components/ui/toaster'
 
 interface Props {
-  communityDetails: CommunityDetailsType,
+  communityDetails: CommunityDetailsType
 }
 
 let communityDetailsModule: CommunityDetailsType
@@ -32,6 +37,8 @@ export function RootDetails({ communityDetails }: Props) {
   const addCommunity = useRecentCommunitiesStore((state) => state.addCommunity)
   const detailsDivRef = useRef<HTMLDivElement>(null)
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
+  const { shareFn } = useAdaptiveShare()
+  const { toast } = useToast()
 
   useEffect(() => {
     addCommunity({
@@ -60,31 +67,73 @@ export function RootDetails({ communityDetails }: Props) {
           />
           <p className="py-2 text-title-xl">{communityDetails.info.name}</p>
           <Stats communityDetails={communityDetails} />
-          <p className="mb-4 line-clamp-2 w-1/2 break-all pt-2">{communityDetails.info.description}</p>
+          <p
+            className="mb-4 mt-2 line-clamp-2 w-1/2 break-all text-title-sm"
+            style={{ fontWeight: 500, lineHeight: '24px' }}>
+            {communityDetails.info.description}
+          </p>
           <span className="flex items-center gap-x-2">
-            <Button size="custom">
-              <p className="px-4 py-2 text-body-sm" style={{ fontWeight: 500 }}>
-                Join Community
-              </p>
-            </Button>
-            <Button variant="outline" size="custom" className="border-2 border-primary p-1">
+            <DownloadDialog
+              title="Get the Genuin app"
+              subtitle={
+                <>
+                  Get the app to join the <br />
+                  <span className="font-bold">@{communityDetails.info.handle}</span> community.
+                </>
+              }
+              asChild>
+              <Button size="custom">
+                <p className="px-4 py-2 text-body-sm" style={{ fontWeight: 500 }}>
+                  Join Community
+                </p>
+              </Button>
+            </DownloadDialog>
+            <Button
+              variant="outline"
+              size="custom"
+              className="border-2 border-primary p-1"
+              onClick={async () =>
+                await shareFn({
+                  shareLink: window.location.href,
+                  toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
+                })
+              }>
               <Image src={icShare} alt="share" className="h-6 w-6" />
             </Button>
           </span>
         </div>
+        {/* //TODO have to add is_private community */}
+        {/* <div
+          className="mt-4 flex w-full items-center justify-center overflow-hidden"
+          style={{ height: 'calc(100% - 56px)', backgroundColor: '#F9F9F9' }}>
+          <div className="flex flex-col items-center justify-center">
+            <Image src={lockIcon} alt="share" className="h-16 w-16" />
+            <p className="text-title-lg" style={{ fontWeight: 600 }}>
+              This community is private
+            </p>
+            <p className="text-center text-body-sm" style={{ fontWeight: 500 }}>
+              Join this community to see and interact
+              <br /> with their posts
+            </p>
+          </div>
+        </div> */}
         <div className="grid w-full grid-cols-2 gap-4 overflow-hidden" style={{ height: 'calc(100% - 56px)' }}>
           <div className="snap-y snap-proximity overflow-auto scroll-smooth">
             <CommunityDetailsTabs />
           </div>
 
           <div className="snap-y snap-proximity overflow-auto scroll-smooth">
-            <Categories />
-            <Links />
-            {/* {communityDetails?.guidelines.length !== 0 && <Guidelines />} */}
-            <Leaders />
+            {communityDetails.info.categories.length !== 0 && <Categories />}
+            {communityDetails.info.links?.instagram_url &&
+              communityDetails.info.links?.linkedin_url &&
+              communityDetails.info.links?.twitter_url &&
+              communityDetails.info.links?.social_web_url && <Links />}
+            {communityDetails.guidelines && <Guidelines />}
+            {communityDetails.leaders.length !== 0 && <Leaders />}
           </div>
         </div>
       </main>
+      <Toaster />
     </>
   )
 }
@@ -100,7 +149,7 @@ function CommunityDetailsTabs() {
           <p className="text-title-md">Members</p>
         </TabsTrigger>
       </TabsList>
-      <TabsContent value="Loops">
+      <TabsContent value="Loops" className="mr-2">
         <LoopTab />
       </TabsContent>
       <TabsContent value="Members">
@@ -156,19 +205,15 @@ function LoopItem({ loopDetails }: { loopDetails: any }) {
     2: [1, 0.5],
     3: [1, 0.66, 0.4],
   }
-
+  // TODO on video click open video
   const videosLength = loopDetails.videos.length
   const renderedImages = loopDetails.videos.map((item: any, index: any) => (
     <img
       key={index}
+      className="absolute top-[50%] aspect-reel h-[80%] rounded"
       style={{
-        position: 'absolute',
-        top: '50%',
         right: `${rightValues[videosLength][index]}px`,
         transform: `translateY(-${transformValues[videosLength][index]}%)`,
-        height: '80%',
-        aspectRatio: '9/16',
-        borderRadius: '4px',
         zIndex: videosLength - index + 1,
         opacity: `${opacitValues[videosLength][index]}`,
       }}
@@ -205,9 +250,17 @@ function LoopItem({ loopDetails }: { loopDetails: any }) {
           <div className="flex w-[70%] items-center">
             {loopDetails.collaborators.length !== 0 && (
               <div className="relative flex">
-                {loopDetails.collaborators[0] && (
+                {loopDetails.owner.profile_image && (
                   <CustomAvatar
                     className="z-20 h-6 w-6 border-2 border-monochrome-white bg-red-50"
+                    imageUrl={loopDetails.owner.profile_image ?? ''}
+                    isAvatar={loopDetails.owner.is_avatar}
+                    fallbackString={loopDetails.owner.name ?? ''}
+                  />
+                )}
+                {loopDetails.collaborators[0] && (
+                  <CustomAvatar
+                    className="absolute left-3 z-10 h-6 w-6 border-2 border-monochrome-white bg-red-50"
                     imageUrl={loopDetails.collaborators[0].profile_image ?? ''}
                     isAvatar={loopDetails.collaborators[0].is_avatar}
                     fallbackString={loopDetails.collaborators[0].nickname ?? ''}
@@ -215,24 +268,16 @@ function LoopItem({ loopDetails }: { loopDetails: any }) {
                 )}
                 {loopDetails.collaborators[1] && (
                   <CustomAvatar
-                    className="absolute left-3 z-10 h-6 w-6 border-2 border-monochrome-white bg-red-50"
+                    className="absolute left-6 h-6 w-6 border-2 border-monochrome-white bg-red-50"
                     imageUrl={loopDetails.collaborators[1].profile_image ?? ''}
                     isAvatar={loopDetails.collaborators[1].is_avatar}
                     fallbackString={loopDetails.collaborators[1].nickname ?? ''}
                   />
                 )}
-                {loopDetails.collaborators[2] && (
-                  <CustomAvatar
-                    className="absolute left-6 h-6 w-6 border-2 border-monochrome-white bg-red-50"
-                    imageUrl={loopDetails.collaborators[2].profile_image ?? ''}
-                    isAvatar={loopDetails.collaborators[2].is_avatar}
-                    fallbackString={loopDetails.collaborators[2].nickname ?? ''}
-                  />
-                )}
               </div>
             )}
             <p
-              className={`text-body-sm text-monochrome-4 ${loopDetails.collaborators.length !== 0 && 'ml-7'} ${
+              className={`text-body-sm line-clamp-1 text-monochrome-4 ${loopDetails.collaborators.length !== 0 && 'ml-7'} ${
                 loopDetails.collaborators.length === 2 && 'ml-6'
               }`}
               style={{ fontWeight: 500 }}>
@@ -256,9 +301,6 @@ function Categories() {
   return (
     <div>
       <p className="my-2 mt-4 text-title-md">Categories</p>
-      {communityDetailsModule?.info.categories.length === 0 && (
-        <div className="flex items-center justify-center text-title-md text-secondary">No categories available</div>
-      )}
       <div>
         {communityDetailsModule?.info.categories.map((cat, index) => {
           return (
@@ -277,9 +319,6 @@ function Links() {
   return (
     <div>
       <p className="my-2 mt-4 text-title-md">Links</p>
-      {!links?.instagram_url && !links?.linkedin_url && !links?.twitter_url && !links?.social_web_url && (
-        <div className="flex items-center justify-center text-title-md text-secondary">No links available</div>
-      )}
       <div className="flex">
         {links?.instagram_url && (
           <div className="mx-1 rounded-md bg-monochrome-9 p-1">
@@ -328,12 +367,14 @@ function Guidelines() {
               <div key={index}>
                 <AccordionItem value={guideline.title} className="border-none">
                   <AccordionTrigger className="my-1 p-0">
-                    <p className="line-clamp-1 text-left text-body-sm">
+                    <p className="line-clamp-1 text-left text-body-sm" style={{ fontWeight: 500 }}>
                       {index + 1}. {guideline.title}
                     </p>
                   </AccordionTrigger>
-                  <AccordionContent>
-                    <p className="line-clamp-3 text-left text-body-sm text-monochrome">{guideline.description}</p>
+                  <AccordionContent className="w-[80%] pl-4">
+                    <p className="line-clamp-2 text-left text-body-sm text-monochrome" style={{ fontWeight: 500 }}>
+                      {guideline.description}
+                    </p>
                   </AccordionContent>
                 </AccordionItem>
               </div>
@@ -385,14 +426,14 @@ function ListItem({
         isAvatar={false}
       />
       <div className="mx-2">
-        <p className="line-clamp-1 text-body-sm">{title}</p>
+        <p className="line-clamp-1 text-body-sm">{subtitle}</p>
         {subtitle && (
-          <p className="line-clamp-1 text-body-sm text-monochrome-black/60" style={{ fontWeight: 500 }}>
-            {subtitle}
+          <p className="line-clamp-1 text-body-sm" style={{ fontWeight: 500 }}>
+            {title}
           </p>
         )}
         {description && (
-          <p className="line-clamp-2 text-body-sm" style={{ fontWeight: 500 }}>
+          <p className="line-clamp-1 text-body-sm text-monochrome" style={{ fontWeight: 500 }}>
             {description}
           </p>
         )}

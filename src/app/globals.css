@@ -212,15 +212,15 @@
   }
 
   ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 50px;
   }
 
   ::-webkit-scrollbar-thumb {
     border-radius: 8px;
     border: 2px solid white;
     /* should match background, can't be transparent */
-    background-color: hsla(var(--secondary));
+    background-color: #c3c3c3;
   }
 
   ::-webkit-scrollbar-track {
