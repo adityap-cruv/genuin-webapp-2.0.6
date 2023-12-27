@@ -54,6 +54,10 @@ export function Mobile({
   }, [scrollDivRef.current])
 
   useEffect(() => {
+    setCurrentIndex(0)
+  }, [])
+
+  useEffect(() => {
     setVideoList(videos)
   }, [videos])
 

@@ -128,7 +128,12 @@ function InfoArea({ videoDetails }: { videoDetails: VideoDataType }) {
           <span className="flex h-min items-center gap-x-3">
             <DownloadDialog
               title="Get the Genuin app"
-              subtitle={<>Get the app to join the <br/><span className='font-bold'>@{videoDetails.community.handle}</span> community.</>}
+              subtitle={
+                <>
+                  Get the app to join the <br />
+                  <span className="font-bold">{videoDetails.community.name}</span> community.
+                </>
+              }
               asChild>
               <Button size="custom">
                 <p className="whitespace-nowrap px-4 py-2 text-body-sm font-medium">Join Community</p>
