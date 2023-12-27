@@ -163,17 +163,19 @@ function LoopVideos({ loopId }: any) {
 
 function Cohosts({ chatId }: any) {
   const { data, isLoading, isError } = getLoopCohosts(chatId, 'members')
+  const cohosts = data?.users
+
   return (
     <div>
       <p className="my-2 text-title-md">Collaborators</p>
       {isLoading && <Loader size="md" />}
       {isError && <div>Something went wrong...</div>}
-      {data && data.length === 0 && (
+      {cohosts && cohosts.length === 0 && (
         <div className="flex items-center justify-center text-title-md text-secondary">No collaborators yet</div>
       )}
-      {data && data.length !== 0 && (
+      {cohosts && cohosts.length !== 0 && (
         <div className="h-full w-full overflow-auto">
-          {data.map((item: any, index: any) => (
+          {cohosts.map((item: any, index: any) => (
             <Link key={index} href={{ pathname: PATH_NAME.profile(item.user.nickname) }}>
               <CohostTile
                 image={item.user.profile_image || ''}
@@ -192,17 +194,18 @@ function Cohosts({ chatId }: any) {
 
 function LoopSubscribers({ chatId }: any) {
   const { data, isLoading, isError } = getLoopSubscribers(chatId, 'subscribers')
+  const subscribers = data?.users
   return (
     <div>
       <p className="my-2 text-title-md">Subscribers</p>
       {isLoading && <Loader size="md" />}
       {isError && <div>Something went wrong...</div>}
-      {data && data.length === 0 && (
+      {subscribers.length === 0 && (
         <div className="flex items-center justify-center text-title-md text-secondary">No subscribers yet</div>
       )}
-      {data && data.length !== 0 && (
+      {subscribers && subscribers.length !== 0 && (
         <div className="h-full w-full overflow-auto">
-          {data.map((item: any, index: any) => (
+          {subscribers.map((item: any, index: any) => (
             <Link key={index} href={{ pathname: PATH_NAME.profile(item.user.nickname) }}>
               <CohostTile
                 image={item.user.profile_image || ''}
@@ -229,12 +232,20 @@ interface CohostTileProps {
 
 function CohostTile({ image, title, subtitle, userName, isAvatar }: CohostTileProps) {
   return (
-    <div className="flex items-center gap-x-1 p-2 rounded-lg hover:bg-monochrome-10">
+    <div className="flex items-center gap-x-1 rounded-lg p-2 hover:bg-monochrome-10">
       <CustomAvatar className="h-12 w-12 bg-red-40" fallbackString={userName} imageUrl={image} isAvatar={isAvatar} />
       <div className="mx-2">
         <p className="line-clamp-1 text-body-sm">{title}</p>
-        {userName && <p className="line-clamp-1 text-body-sm" style={{ fontWeight: 500 }}>{userName}</p>}
-        {subtitle && <p className="line-clamp-1 text-body-sm text-monochrome-black/60" style={{ fontWeight: 500 }}>{subtitle}</p>}
+        {userName && (
+          <p className="line-clamp-1 text-body-sm" style={{ fontWeight: 500 }}>
+            {userName}
+          </p>
+        )}
+        {subtitle && (
+          <p className="line-clamp-1 text-body-sm text-monochrome-black/60" style={{ fontWeight: 500 }}>
+            {subtitle}
+          </p>
+        )}
       </div>
     </div>
   )
@@ -255,7 +266,9 @@ function Stats({
         return (
           <div key={index} className="flex items-center gap-x-1">
             <p className="text-title-lg">{obj.value}</p>
-            <p className="text-body-sm text-monochrome" style={{ fontWeight: 500 }}>{obj.key}</p>
+            <p className="text-body-sm text-monochrome" style={{ fontWeight: 500 }}>
+              {obj.key}
+            </p>
           </div>
         )
       })}

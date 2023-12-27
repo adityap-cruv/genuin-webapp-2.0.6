@@ -111,7 +111,7 @@ function CommunityList({ usernickname }: any) {
       {data && (
         <div>
           {data?.pages
-            .flatMap((page) => page.list)
+            .flatMap((page) => page.communities)
             .map((item, index) => (
               <div key={index} className="my-6">
                 <div className="flex items-center">
@@ -176,7 +176,7 @@ function CommunityDetails({ userId, communityId }: any) {
         </li>
       )}
       {data?.pages
-        .flatMap((page) => page.list)
+        .flatMap((page) => page.loops)
         .map((item: any, index: any) => (
           <li
             className="profile-loop-li relative my-4 w-full rounded-lg border border-monochrome-9 p-4 pb-2"
@@ -217,7 +217,7 @@ function LoopVideos({ userId, loopDetails }: any) {
       <Link href={{ pathname: PATH_NAME.loop(loopDetails.share_string) }}>
         <p className="text-title-sm">{loopDetails.name}</p>
       </Link>
-      {data?.pages.flatMap((page) => page.list).length === 0 && (
+      {data?.pages.flatMap((page) => page.videos).length === 0 && (
         <div className="flex items-center justify-center pt-32 text-title-md text-secondary">No videos available</div>
       )}
       <div className="my-2 grid w-full grid-cols-4 gap-2 md:grid-cols-8">
@@ -228,7 +228,7 @@ function LoopVideos({ userId, loopDetails }: any) {
             </div>
           ))}
         {data?.pages
-          .flatMap((page) => page.list)
+          .flatMap((page) => page.videos)
           .map((video, index) => (
             <div key={video.id} className="relative flex aspect-reel min-w-full flex-col items-center">
               <img src={video.thumbnail} alt={`Video Thumbnail ${index}`} className="aspect-reel rounded" />

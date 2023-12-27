@@ -4,7 +4,9 @@ import axios from 'axios'
 
 export async function fetchLoopDetails(loopId: string) {
   return await axios
-    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/rt/details', { params: { chat_id: loopId } })
+    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/rt/details', {
+      params: { loop_id: { share_string: loopId } },
+    })
     .then((res) => {
       return res?.data?.data
     })
@@ -13,16 +15,16 @@ export async function fetchLoopDetails(loopId: string) {
     })
 }
 
-async function fetchLoopVideos(loopId: string, pageNo = 0) {
+async function fetchLoopVideos(loopId: string, ref: any) {
   return await axios
     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/rt/videos_v2', {
       params: {
-        share_string: loopId,
-        page: pageNo,
+        loop_id: { share_string: loopId },
+        ref,
       },
     })
     .then((res) => {
-      return { videos: res.data.data.videos, end: res.data.data.end_of_videos ?? false }
+      return { videos: res.data.data.list, end: res.data.data.end_page ?? false, ref: res.data.data.ref }
     })
     .catch((e) => {
       throw new Error('Somethig went wrong with loop videos fetching api.')
@@ -37,35 +39,39 @@ export function getLoopVideos(loopId: string) {
       if (lastPage.end) {
         return
       }
-      return pages.length
+      return lastPage.ref
     },
   })
 }
 
-async function fetchLoopCohosts(chatId: string, type: string) {
+// TODO: Check for ref and pagination is enabled or not.
+type UserType = 'subscribers' | 'members'
+async function fetchLoopCohosts(chatId: string, type: UserType) {
   return await axios
     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/rt/users', {
       params: {
         type,
-        chat_id: chatId,
+        loop_id: { share_string: chatId },
+        ref: undefined,
       },
     })
     .then((res) => {
-      return res.data.data
+      const resData = res.data.data
+      return { users: resData?.list, ref: resData.ref, end: resData.end_page }
     })
     .catch((e) => {
       throw new Error('Something went wrong in fetching videos.')
     })
 }
 
-export function getLoopCohosts(chatId: string, type: string) {
+export function getLoopCohosts(chatId: string, type: UserType) {
   return useQuery({
     queryKey: ['cohosts'],
     queryFn: async () => await fetchLoopCohosts(chatId, type),
   })
 }
 
-export function getLoopSubscribers(chatId: string, type: string) {
+export function getLoopSubscribers(chatId: string, type: UserType) {
   return useQuery({
     queryKey: ['users'],
     queryFn: async () => await fetchLoopCohosts(chatId, type),
@@ -73,20 +79,20 @@ export function getLoopSubscribers(chatId: string, type: string) {
 }
 
 export function getLoopVideoComments(videoShareString: string) {
-  let promise: Promise<{ comments: CommentListType; page: number }> | null = null
+  let promise: Promise<{ comments: CommentListType; ref: any; end: boolean }> | null = null
   return useInfiniteQuery({
     queryFn: async ({ pageParam }) => {
       if (!promise) {
-        const nextPage = pageParam ?? 0
         promise = axios
           .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/rt/page_comments', {
             params: {
-              loop_video_ss: videoShareString,
-              page: nextPage,
+              loop_id: { share_string: videoShareString },
+              ref: pageParam,
             },
           })
           .then((res) => {
-            return { comments: validateCommentList(res.data.data), page: nextPage + 1 }
+            const resData = res.data.data
+            return { comments: validateCommentList(resData.list), ref: resData.ref, end: resData.end_page }
           })
           .catch((e) => {
             throw new Error('Something went wrong with comments api!')
@@ -98,10 +104,10 @@ export function getLoopVideoComments(videoShareString: string) {
       return await promise
     },
     getNextPageParam(lastPage) {
-      if (lastPage.comments.length === 0) {
-        return undefined
+      if (lastPage.end) {
+        return
       }
-      return lastPage.page
+      return lastPage.ref
     },
     queryKey: ['comments', videoShareString],
   })

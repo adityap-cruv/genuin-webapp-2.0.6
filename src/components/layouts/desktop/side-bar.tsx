@@ -18,7 +18,7 @@ const RecentCommunities = dynamic(
 export function SideBar() {
   const pathName = usePathname()
   return (
-    <nav className=" flex h-full w-fit  flex-col border border-monochrome-9 transition-[width] lg:w-full lg:border-none">
+    <nav className="flex h-full w-fit  flex-col border border-monochrome-9 transition-[width] lg:w-full lg:border-none">
       <span className="px-1 py-4">
         <Link href={{ pathname: PATH_NAME.home() }}>
           <Item title="Home" isActive={pathName === PATH_NAME.home()}>

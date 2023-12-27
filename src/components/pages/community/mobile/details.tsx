@@ -210,8 +210,8 @@ function LoopItem({ loopDetails }: { loopDetails: any }) {
   }
 
   return (
-    <Link href={{ pathname: PATH_NAME.loop(loopDetails.share_string) }}>
-      <div className="relative my-4 w-full rounded-lg border border-monochrome-9 bg-monochrome-white">
+    <Link href={{ pathname: PATH_NAME.loop() }}>
+      <div className="relative my-2 w-full rounded-lg border border-monochrome-9 bg-monochrome-white">
         <div className="w-[70%] items-center p-[3%]">
           <p className="text-title-sm">{loopDetails.name}</p>
           {loopDetails.videos.length !== 0 && (
