@@ -200,7 +200,7 @@ function LoopSubscribers({ chatId }: any) {
       <p className="my-2 text-title-md">Subscribers</p>
       {isLoading && <Loader size="md" />}
       {isError && <div>Something went wrong...</div>}
-      {subscribers.length === 0 && (
+      {subscribers && subscribers.length === 0 && (
         <div className="flex items-center justify-center text-title-md text-secondary">No subscribers yet</div>
       )}
       {subscribers && subscribers.length !== 0 && (
