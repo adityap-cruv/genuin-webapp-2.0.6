@@ -9,7 +9,7 @@ export function TopBar() {
   return (
     <>
       <div className="z-20 flex w-full justify-center border-b border-monochrome-9  bg-new-off-white sm:flex">
-        <nav className="sticky top-0 flex h-[76px] w-full max-w-[1536px] items-center justify-between px-2">
+        <nav className="sticky top-0 flex h-[76px] w-full items-center justify-between px-2 xl:container">
           <Link href={{ pathname: '/' }}>
             <GenuinLogo variant="black" />
           </Link>
