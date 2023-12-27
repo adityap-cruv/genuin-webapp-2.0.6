@@ -16,6 +16,7 @@ import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { TopBar } from '../../../layouts/mobile/top-bar'
+import lockIcon from '@images/lockIcon.svg'
 
 let communityDetailsModule: CommunityDetailsType
 
@@ -81,10 +82,25 @@ export function ProfileDetails({ communityDetails }: Props) {
             </div>
           </div>
           <p className="my-2 line-clamp-1 break-all text-title-md">{communityDetailsModule?.info.name}</p>
-          <p className="my-2 line-clamp-3 break-all text-body-sm">{communityDetailsModule?.info.description}</p>
+          <p className="my-2 line-clamp-2 break-all text-body-sm">{communityDetailsModule?.info.description}</p>
           <Stats />
         </div>
         <ProfileTabs />
+        {/* //TODO have to add is_private community */}
+        {/* <div
+          className="mt-4 flex w-full items-center justify-center overflow-hidden"
+          style={{ height: 'calc(100% - 56px)', backgroundColor: '#F9F9F9' }}>
+          <div className="flex flex-col items-center justify-center">
+            <Image src={lockIcon} alt="share" className="h-16 w-16" />
+            <p className="text-title-lg" style={{ fontWeight: 600 }}>
+              This community is private
+            </p>
+            <p className="text-center text-body-sm" style={{ fontWeight: 500 }}>
+              Join this community to see and interact
+              <br /> with their posts
+            </p>
+          </div>
+        </div> */}
       </div>
     </>
   )
@@ -117,7 +133,7 @@ function Stats() {
 
 function ProfileTabs() {
   return (
-    <Tabs defaultValue="Loops">
+    <Tabs defaultValue="Loops" className="">
       <TabsList className="sticky flex max-w-min">
         <TabsTrigger value="Loops">
           <p className="text-title-md">Loops</p>
@@ -133,11 +149,14 @@ function ProfileTabs() {
         <LoopTab />
       </TabsContent>
       <TabsContent value="About" className="mx-4">
-        <Categories />
-        <Links />
-        <Leaders />
+        {communityDetailsModule.info.categories.length !== 0 && <Categories />}
+        {communityDetailsModule.info.links?.instagram_url &&
+          communityDetailsModule.info.links?.linkedin_url &&
+          communityDetailsModule.info.links?.twitter_url &&
+          communityDetailsModule.info.links?.social_web_url && <Links />}
+        {communityDetailsModule.leaders.length !== 0 && <Leaders />}
       </TabsContent>
-      <TabsContent value="Members" className="mx-4">
+      <TabsContent value="Members" className="m-4">
         <Members />
       </TabsContent>
     </Tabs>
@@ -211,7 +230,7 @@ function LoopItem({ loopDetails }: { loopDetails: any }) {
 
   return (
     <Link href={{ pathname: PATH_NAME.loop() }}>
-      <div className="relative my-2 w-full rounded-lg border border-monochrome-9 bg-monochrome-white">
+      <div className="relative my-4 w-full rounded-lg border border-monochrome-9 bg-monochrome-white">
         <div className="w-[70%] items-center p-[3%]">
           <p className="text-title-sm">{loopDetails.name}</p>
           {loopDetails.videos.length !== 0 && (
@@ -227,25 +246,25 @@ function LoopItem({ loopDetails }: { loopDetails: any }) {
                 {loopDetails.collaborators[0] && (
                   <CustomAvatar
                     className="z-20 h-6 w-6 border-2 border-monochrome-white bg-red-50"
-                    imageUrl={loopDetails.collaborators[0].profile_image ?? ''}
-                    isAvatar={loopDetails.collaborators[0].is_avatar}
-                    fallbackString={loopDetails.collaborators[0].nickname ?? ''}
+                    imageUrl={loopDetails.owner.profile_image ?? ''}
+                    isAvatar={loopDetails.owner.is_avatar}
+                    fallbackString={loopDetails.owner.name ?? ''}
                   />
                 )}
                 {loopDetails.collaborators[1] && (
                   <CustomAvatar
                     className="absolute left-3 z-10 h-6 w-6 border-2 border-monochrome-white bg-red-50"
-                    imageUrl={loopDetails.collaborators[1].profile_image ?? ''}
-                    isAvatar={loopDetails.collaborators[1].is_avatar}
-                    fallbackString={loopDetails.collaborators[1].nickname ?? ''}
+                    imageUrl={loopDetails.collaborators[0].profile_image ?? ''}
+                    isAvatar={loopDetails.collaborators[0].is_avatar}
+                    fallbackString={loopDetails.collaborators[0].nickname ?? ''}
                   />
                 )}
                 {loopDetails.collaborators[2] && (
                   <CustomAvatar
                     className="absolute left-6 h-6 w-6 border-2 border-monochrome-white bg-red-50"
-                    imageUrl={loopDetails.collaborators[2].profile_image ?? ''}
-                    isAvatar={loopDetails.collaborators[2].is_avatar}
-                    fallbackString={loopDetails.collaborators[2].nickname ?? ''}
+                    imageUrl={loopDetails.collaborators[1].profile_image ?? ''}
+                    isAvatar={loopDetails.collaborators[1].is_avatar}
+                    fallbackString={loopDetails.collaborators[1].nickname ?? ''}
                   />
                 )}
               </div>
@@ -259,7 +278,7 @@ function LoopItem({ loopDetails }: { loopDetails: any }) {
               {getCollaboratorsCountString(loopDetails.member_count)}
             </p>
           </div>
-          <p className="my-[2%] line-clamp-3 w-[70%] text-body-sm text-monochrome-4">{loopDetails.description}</p>
+          <p className="my-[2%] line-clamp-2 w-[70%] text-body-sm text-monochrome-4">{loopDetails.description}</p>
           <p className="w-[70%] text-body-sm text-monochrome-4" style={{ fontWeight: 500 }}>
             {abbreviateNumber(loopDetails.subscriber_count)} subscribers ∙ {abbreviateNumber(loopDetails.view_count)}{' '}
             views
@@ -387,7 +406,7 @@ function ListItem({
 function Members() {
   return (
     <div>
-      <p className="my-2 text-title-md">Members</p>
+      {/* <p className="my-2 text-title-md">Members</p> */}
       {communityDetailsModule?.members.map((member, index) => {
         return (
           <Link key={index} href={{ pathname: PATH_NAME.profile(member.nickname) }}>
