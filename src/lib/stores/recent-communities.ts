@@ -24,11 +24,11 @@ export const useRecentCommunitiesStore = create(
             if (alreadyInList > -1) {
               return { communities }
             }
-            if (communities.length < 5) {
+            if (communities.length < 3) {
               communities.push(community)
             } else {
               communities.unshift(community)
-              if (communities.length > 5) {
+              if (communities.length > 3) {
                 communities.pop()
               }
             }
