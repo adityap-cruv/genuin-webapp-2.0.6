@@ -9,17 +9,17 @@ import { PATH_NAME } from '@lib/utils/constants/path'
 export function RecentCommunities() {
   const communities = useRecentCommunitiesStore((state) => state.communities)
   const pathName = usePathname()
+
   if (communities.length > 0)
     return (
-      <>
-        <hr className="mb-4 mt-1 border border-monochrome-black/10" />
-        <p className="hidden w-full break-all pb-1 text-title-lg font-semibold text-monochrome lg:line-clamp-1">
+      <div className="mt-4 h-full w-full border-t border-monochrome-black/10 pt-4">
+        <p className="w-full break-all pb-1 text-title-lg font-semibold text-monochrome lg:line-clamp-1">
           Recent Communities
         </p>
         {communities.map((item, index) => {
           return (
-            <Link key={item.handle} href={{ pathname: PATH_NAME.community(item.handle) }}>
-              <CommunityItem title={item.name} isActive={pathName === PATH_NAME.community(item.handle)}>
+            <Link key={item.handle} href={{ pathname: PATH_NAME.community(item.handle), query: { feed: 1 } }}>
+              <CommunityItem title={'@' + item.handle} isActive={pathName === PATH_NAME.community(item.handle)}>
                 <CustomAvatar
                   imageUrl={item.profileImage}
                   fallbackString={item.name}
@@ -30,7 +30,7 @@ export function RecentCommunities() {
             </Link>
           )
         })}
-      </>
+      </div>
     )
 }
 

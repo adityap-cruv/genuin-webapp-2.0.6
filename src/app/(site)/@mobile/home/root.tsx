@@ -15,7 +15,7 @@ export function Root({ brandId }: { brandId?: string }) {
     isFetchingNextPage,
     hasNextPage,
     fetchNextPage,
-  } = getFeed({ feedType: 'popular', userID: userId, brandId })
+  } = getFeed({ feedType: 'home', userID: userId, brandId })
   const videos = videoPages?.pages.flatMap((item) => item.reels)
   const sizeBox = useVideoSizeBox()
 

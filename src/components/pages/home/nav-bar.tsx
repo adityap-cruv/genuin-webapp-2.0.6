@@ -1,7 +1,7 @@
 'use client'
 import { cn } from '@lib/utils'
 import { Button } from '@components/ui/button'
-import { GenuinText } from '@components/ui/genuin-logo'
+import { GenuinLogo, GenuinText } from '@components/ui/genuin-logo'
 import { HamBurgerMenuIcon } from '@components/ui/ham-burger'
 import Link from 'next/link'
 import { Sheet, SheetContent, SheetTrigger } from '@components/ui/sheet'
@@ -14,7 +14,9 @@ export function NavBar() {
     <>
       <nav className="absolute top-0 z-10 m-auto hidden h-navbar w-full lg:flex ">
         <div className={cn('container flex h-full w-full items-center justify-between py-1')}>
-          <GenuinText variant="black" />
+          <Link href="/">
+            <GenuinLogo variant="black" />
+          </Link>
           <div className="flex items-center gap-x-4">
             <Link href={{ pathname: PATH_NAME.home() }}>
               <p className="pr-4 text-new-para-2 transition-all hover:underline" style={{ fontWeight: 600 }}>
