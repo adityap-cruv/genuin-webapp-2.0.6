@@ -176,7 +176,7 @@ function LoopItem({ loopDetails }: { loopDetails: any }) {
       //   e.target.src = icPreviewImage.src
       // }}
       src={item.thumbnail}
-      alt={`frontimage${index}`}
+      alt={index}
     />
   ))
   function getCollaboratorsCountString(count: any) {
@@ -191,13 +191,15 @@ function LoopItem({ loopDetails }: { loopDetails: any }) {
   }
 
   return (
-    <Link href={`/l/${loopDetails.share_string}?v=${loopDetails.videos[0].share_string}`}>
+    <Link href={{ pathname: PATH_NAME.loop(loopDetails.share_string) }}>
       <div className="relative my-5 w-full rounded-lg border border-monochrome-9 bg-monochrome-white">
         <div className="w-[70%] items-center p-[3%]">
           <p className="text-title-sm">{loopDetails.name}</p>
-          <p className="text-body-sm text-monochrome-4">
-            {loopDetails.videos[0].owner} posted ∙ {timeAgo(loopDetails.videos[0].created_at)}
-          </p>
+          {loopDetails.videos.length !== 0 && (
+            <p className="text-body-sm text-monochrome-4">
+              {loopDetails.videos[0].owner} posted ∙ {timeAgo(loopDetails.videos[0].created_at)}
+            </p>
+          )}
         </div>
         <div className="h-[60%] rounded-b-lg border border-monochrome-8 p-4" style={{ backgroundColor: '#F9F9F9' }}>
           <div className="flex w-[70%] items-center">
@@ -238,7 +240,7 @@ function LoopItem({ loopDetails }: { loopDetails: any }) {
               {getCollaboratorsCountString(loopDetails.member_count)}
             </p>
           </div>
-          <p className="my-[2%] line-clamp-3 w-[70%] text-body-sm text-monochrome-4">{loopDetails.description}</p>
+          <p className="my-[2%] line-clamp-2 w-[70%] text-body-sm text-monochrome-4">{loopDetails.description}</p>
           <p className="w-[70%] text-body-sm text-monochrome-4" style={{ fontWeight: 500 }}>
             {abbreviateNumber(loopDetails.subscriber_count)} subscribers ∙ {abbreviateNumber(loopDetails.view_count)}{' '}
             views
@@ -384,8 +386,16 @@ function ListItem({
       />
       <div className="mx-2">
         <p className="line-clamp-1 text-body-sm">{title}</p>
-        {subtitle && <p className="line-clamp-1 text-body-sm text-monochrome-black/60" style={{ fontWeight: 500 }}>{subtitle}</p>}
-        {description && <p className="line-clamp-2 text-body-sm" style={{ fontWeight: 500 }}>{description}</p>}
+        {subtitle && (
+          <p className="line-clamp-1 text-body-sm text-monochrome-black/60" style={{ fontWeight: 500 }}>
+            {subtitle}
+          </p>
+        )}
+        {description && (
+          <p className="line-clamp-2 text-body-sm" style={{ fontWeight: 500 }}>
+            {description}
+          </p>
+        )}
       </div>
     </div>
   )
