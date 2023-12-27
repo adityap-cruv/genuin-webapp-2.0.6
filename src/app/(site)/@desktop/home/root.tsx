@@ -14,7 +14,7 @@ export function Root({ brandId }: { brandId?: string }) {
   const videoSizeBox = useVideoSizeBox(true)
   const userId = useLocalStorage((state) => state.userId)
   const { data, isError, fetchNextPage, isFetchingNextPage, isLoading } = getFeed({
-    feedType: 'popular',
+    feedType: 'home',
     userID: userId,
     brandId,
   })

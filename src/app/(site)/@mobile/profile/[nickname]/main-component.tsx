@@ -103,7 +103,7 @@ function Stats({ profileData }: { profileData: any }) {
 
 function CommunityList({ usernickname }: any) {
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getAllCommunities(usernickname)
-
+  const communities = data?.pages.flatMap((item) => item.communities)
   const handleSeeMoreClick = () => {
     void fetchNextPage()
   }
@@ -111,38 +111,36 @@ function CommunityList({ usernickname }: any) {
   return (
     <>
       {isLoading && <Loader size="md" />}
-      {data && (
-        <Accordion type="single" defaultValue={data?.pages[0]?.list[0]?.handle} collapsible>
-          {data?.pages
-            .flatMap((page) => page.list)
-            .map((item, index) => (
-              <div key={index}>
-                &nbsp;
-                <AccordionItem value={item.handle} className="border-none ">
-                  <AccordionTrigger className="m-0 p-0">
-                    <div className="flex items-center">
-                      <CustomAvatar
-                        className="bg-slate-500 h-11 w-11 bg-red-40"
-                        fallbackString={item?.name}
-                        imageUrl={item?.dp}
-                        isAvatar={false}
-                      />
-                      <div className="mx-2 flex items-center justify-between">
-                        <p className="line-clamp-1 text-left text-title-sm">{item.name}</p>
-                        {/* <Button size='custom' variant="default">
+      {communities && (
+        <Accordion type="single" defaultValue={communities[0].handle} collapsible>
+          {communities.map((item, index) => (
+            <div key={index}>
+              &nbsp;
+              <AccordionItem value={item.handle} className="border-none ">
+                <AccordionTrigger className="m-0 p-0">
+                  <div className="flex items-center">
+                    <CustomAvatar
+                      className="bg-slate-500 h-11 w-11 bg-red-40"
+                      fallbackString={item?.name}
+                      imageUrl={item?.dp}
+                      isAvatar={false}
+                    />
+                    <div className="mx-2 flex items-center justify-between">
+                      <p className="line-clamp-1 text-left text-title-sm">{item.name}</p>
+                      {/* <Button size='custom' variant="default">
                           <p className="text-title-sm py-1.5 px-4">join</p>
                         </Button> */}
-                      </div>
                     </div>
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <DecorativeList>
-                      <CommunityDetails userId={usernickname} communityId={item.id} />
-                    </DecorativeList>
-                  </AccordionContent>
-                </AccordionItem>
-              </div>
-            ))}
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <DecorativeList>
+                    <CommunityDetails userId={usernickname} communityId={item.id} />
+                  </DecorativeList>
+                </AccordionContent>
+              </AccordionItem>
+            </div>
+          ))}
         </Accordion>
       )}
       {isFetchingNextPage && <Loader size="md" />}
@@ -179,7 +177,7 @@ function CommunityDetails({ userId, communityId }: any) {
         </li>
       )}
       {data?.pages
-        .flatMap((page) => page.list)
+        .flatMap((page) => page.loops)
         .map((item: any, index: any) => (
           <li className="profile-loop-li relative my-4 w-full rounded-lg bg-monochrome-9 p-4 pb-2" key={index}>
             <LoopVideos userId={userId} loopDetails={item} />
@@ -215,7 +213,7 @@ function LoopVideos({ userId, loopDetails }: any) {
   return (
     <>
       <p className="text-title-sm">{loopDetails.name}</p>
-      {data?.pages.flatMap((page) => page.list).length === 0 && (
+      {data?.pages.flatMap((page) => page.videos).length === 0 && (
         <div className="flex items-center justify-center pt-32 text-title-md text-secondary">No videos available</div>
       )}
       <div className="my-2 grid w-full grid-cols-3 gap-2">
@@ -226,7 +224,7 @@ function LoopVideos({ userId, loopDetails }: any) {
             </div>
           ))}
         {data?.pages
-          .flatMap((page) => page.list)
+          .flatMap((page) => page.videos)
           .map((video, index) => (
             <div key={video.id} className="relative flex aspect-reel min-w-full flex-col items-center">
               <img src={video.thumbnail} alt={`Video Thumbnail ${index}`} className="aspect-reel rounded" />
