@@ -31,7 +31,6 @@ export function RootFeed({ communityDetails }: Props) {
           sizeBox={videoSizeBox}
           videos={videos}
         />
-        Feed community
       </main>
     )
 }
