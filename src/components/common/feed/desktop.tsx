@@ -41,6 +41,11 @@ export function Desktop({
     }
   }, [currentIndex])
 
+  // TODO improvement pending
+  useEffect(() => {
+    setCurrentIndex(0)
+  }, [])
+
   useEffect(() => {
     setNewVideos(videos)
   }, [videos])

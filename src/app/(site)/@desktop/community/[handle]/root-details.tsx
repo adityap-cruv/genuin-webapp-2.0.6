@@ -1,121 +1,95 @@
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
-import { Button } from '@components/ui/button'
+'use client'
 import type { CommunityDetailsType } from '@lib/schemas/community'
-import { abbreviateNumber, checkAndAppendHttps, generateDeepLink, openGeneratedLink, timeAgo } from '@lib/utils'
+import { useRecentCommunitiesStore } from '@lib/stores/recent-communities'
+import { useEffect, useRef } from 'react'
+import { CustomAvatar } from '@components/custom/custom-avatar'
+import { TopBar } from './top-bar'
+import { Button } from '@components/ui/button'
 import Image from 'next/image'
 import icShare from '@icons/icShareBlue.svg'
+import { useInView } from 'framer-motion'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
 import Link from 'next/link'
+import { Loader } from '@components/ui/loader'
+import { getCommunityLoops } from '@lib/api/community'
+import { abbreviateNumber, checkAndAppendHttps, timeAgo } from '@lib/utils'
 import icInstagram from '@icons/icInstagramBlack.svg'
 import icLinkedIn from '@icons/icLinkedIn.svg'
 import icLink from '@icons/icLinkBlack.svg'
 import icTwitter from '@icons/icTwitterBlack.svg'
+import noLoopsImage from '@images/noLoopImage.svg'
 import { PATH_NAME } from '@lib/utils/constants/path'
-import { getCommunityLoops } from '@lib/api/community'
-import { Loader } from '@components/ui/loader'
-import { useToast } from '@components/ui/use-toast'
-import { useAdaptiveShare } from '@hooks/use-adaptive-share'
-import { CustomAvatar } from '@components/custom/custom-avatar'
-import { TopBar } from '../../../layouts/mobile/top-bar'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@components/ui/accordion'
+
+interface Props {
+  communityDetails: CommunityDetailsType,
+}
 
 let communityDetailsModule: CommunityDetailsType
 
-interface Props {
-  communityDetails: CommunityDetailsType
-}
-
-export function ProfileDetails({ communityDetails }: Props) {
+export function RootDetails({ communityDetails }: Props) {
   communityDetailsModule = communityDetails
-  const { shareFn } = useAdaptiveShare()
-  const { toast } = useToast()
+  const addCommunity = useRecentCommunitiesStore((state) => state.addCommunity)
+  const detailsDivRef = useRef<HTMLDivElement>(null)
+  const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
+
+  useEffect(() => {
+    addCommunity({
+      handle: communityDetails.info.handle,
+      name: communityDetails.info.name,
+      profileImage: communityDetails.info.profile_image,
+    })
+  }, [])
 
   return (
     <>
-      <TopBar />
-      <div className="h-full">
-        <div className="px-4 py-2">
-          <div className="flex justify-between">
-            <CustomAvatar
-              imageUrl={communityDetailsModule?.info.profile_image}
-              fallbackString={communityDetailsModule?.info.name}
-              isAvatar={false}
-              className="h-20 w-20 bg-red-50"
-            />
-            <div className="my-2 flex items-center gap-x-2">
-              <Button
-                variant="default"
-                size="sm"
-                onClick={() => {
-                  generateDeepLink({
-                    action: 'join',
-                    contentType: 'community',
-                    description: `Find your people. Find what you love. | Join ${communityDetailsModule?.info.name} to talk about it`,
-                    title: `join ${communityDetailsModule?.info.name}`,
-                    previewImage: null,
-                    fromUserName: null,
-                    pathName: window.location.pathname,
-                    sourceId: communityDetailsModule.info.handle,
-                    utmCampaign: 'share',
-                    utmMedium: 'web',
-                    utmSource: window.location.hostname,
-                  })
-                    .then((generatedLink) => {
-                      openGeneratedLink(generatedLink)
-                    })
-                    .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
-                }}>
-                <p className="mx-2 text-title-sm text-monochrome-white">Join Community</p>
-              </Button>
-              <Button
-                variant="outline"
-                outlineColor="genuin-blue"
-                size="sm"
-                className="p-1"
-                onClick={async () =>
-                  await shareFn({
-                    shareLink: window.location.href,
-                    toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
-                  })
-                }>
-                <Image src={icShare} alt="share" />
-              </Button>
-            </div>
-          </div>
-          <p className="my-2 line-clamp-1 break-all text-title-md">{communityDetailsModule?.info.name}</p>
-          <p className="my-2 line-clamp-3 break-all text-body-sm">{communityDetailsModule?.info.description}</p>
-          <Stats />
+      <TopBar
+        defaultOpen={false}
+        isOpen={!detailsInView}
+        communityName={communityDetails.info.name}
+        communityProfileImage={communityDetails.info.profile_image}
+        communtiyHandle={communityDetails.info.handle}
+      />
+      <main className="hide-scrollbar absolute inset-0 h-full w-full overflow-auto px-6">
+        <div ref={detailsDivRef} className="pt-6">
+          <CustomAvatar
+            isAvatar={false}
+            imageUrl={communityDetails.info.profile_image}
+            fallbackString={communityDetails.info.name}
+            className="h-20 w-20"
+          />
+          <p className="py-2 text-title-xl">{communityDetails.info.name}</p>
+          <Stats communityDetails={communityDetails} />
+          <p className="mb-4 line-clamp-2 w-1/2 break-all pt-2">{communityDetails.info.description}</p>
+          <span className="flex items-center gap-x-2">
+            <Button size="custom">
+              <p className="px-4 py-2 text-body-sm" style={{ fontWeight: 500 }}>
+                Join Community
+              </p>
+            </Button>
+            <Button variant="outline" size="custom" className="border-2 border-primary p-1">
+              <Image src={icShare} alt="share" className="h-6 w-6" />
+            </Button>
+          </span>
         </div>
-        <ProfileTabs />
-      </div>
+        <div className="grid w-full grid-cols-2 gap-4 overflow-hidden" style={{ height: 'calc(100% - 56px)' }}>
+          <div className="snap-y snap-proximity overflow-auto scroll-smooth">
+            <CommunityDetailsTabs />
+          </div>
+
+          <div className="snap-y snap-proximity overflow-auto scroll-smooth">
+            <Categories />
+            <Links />
+            {/* {communityDetails?.guidelines.length !== 0 && <Guidelines />} */}
+            <Leaders />
+          </div>
+        </div>
+      </main>
     </>
   )
 }
 
-function Stats() {
-  return (
-    <div className="flex items-center">
-      <span className="pr-2">
-        <span className="text-title-md text-monochrome-black">{communityDetailsModule?.info.count.member}</span>
-        <span className="text-cap-lg text-secondary">
-          &nbsp;{communityDetailsModule?.info.count.member === 1 ? 'Member' : 'Members'}
-        </span>
-      </span>
-      <span className="pr-2">
-        <span className="text-title-md text-monochrome-black">{communityDetailsModule?.info.count.loop}</span>
-        <span className="text-cap-lg text-secondary">
-          &nbsp;{communityDetailsModule?.info.count.loop === 1 ? 'Loop' : 'Loops'}
-        </span>
-      </span>
-      <span className="pr-2">
-        <span className="text-title-md text-monochrome-black">{communityDetailsModule?.info.count.video}</span>
-        <span className="text-cap-lg text-secondary">
-          &nbsp;{communityDetailsModule?.info.count.video === 1 ? 'Video' : 'Videos'}
-        </span>
-      </span>
-    </div>
-  )
-}
-
-function ProfileTabs() {
+function CommunityDetailsTabs() {
   return (
     <Tabs defaultValue="Loops">
       <TabsList className="sticky flex max-w-min">
@@ -125,19 +99,11 @@ function ProfileTabs() {
         <TabsTrigger value="Members">
           <p className="text-title-md">Members</p>
         </TabsTrigger>
-        <TabsTrigger value="About">
-          <p className="text-title-md">About</p>
-        </TabsTrigger>
       </TabsList>
-      <TabsContent value="Loops" className="mx-4">
+      <TabsContent value="Loops">
         <LoopTab />
       </TabsContent>
-      <TabsContent value="About" className="mx-4">
-        <Categories />
-        <Links />
-        <Leaders />
-      </TabsContent>
-      <TabsContent value="Members" className="mx-4">
+      <TabsContent value="Members">
         <Members />
       </TabsContent>
     </Tabs>
@@ -146,13 +112,28 @@ function ProfileTabs() {
 
 function LoopTab() {
   const { isLoading, data: loops, isFetched } = getCommunityLoops(communityDetailsModule.info.handle)
+
   return (
-    <div className="py-4">
+    <div>
       {isLoading && <Loader size="sm" />}
-      {isFetched &&
-        loops.map((item: any, index: number) => {
-          return <LoopItem key={index} loopDetails={item} />
-        })}
+      {isFetched && (
+        <>
+          {loops.length === 0 ? (
+            <div className="flex flex-col items-center justify-center" style={{ backgroundColor: '#F9F9F9' }}>
+              <Image src={noLoopsImage} alt="share" />
+              <p className="text-title-lg">No Loops... yet!</p>
+              <p className="w-96 text-center text-body-sm text-monochrome">
+                Loops are dynamic discussion spaces centered around specific themes. Members can share videos, get
+                reactions, and enjoy engaging comments from the community.
+              </p>
+            </div>
+          ) : (
+            loops.map((item: any, index: number) => {
+              return <LoopItem key={index} loopDetails={item} />
+            })
+          )}
+        </>
+      )}
     </div>
   )
 }
@@ -195,7 +176,7 @@ function LoopItem({ loopDetails }: { loopDetails: any }) {
       //   e.target.src = icPreviewImage.src
       // }}
       src={item.thumbnail}
-      alt={`frontimage${index}`}
+      alt={index}
     />
   ))
   function getCollaboratorsCountString(count: any) {
@@ -210,8 +191,8 @@ function LoopItem({ loopDetails }: { loopDetails: any }) {
   }
 
   return (
-    <Link href={{ pathname: PATH_NAME.loop() }}>
-      <div className="relative my-2 w-full rounded-lg border border-monochrome-9 bg-monochrome-white">
+    <Link href={{ pathname: PATH_NAME.loop(loopDetails.share_string) }}>
+      <div className="relative my-5 w-full rounded-lg border border-monochrome-9 bg-monochrome-white">
         <div className="w-[70%] items-center p-[3%]">
           <p className="text-title-sm">{loopDetails.name}</p>
           {loopDetails.videos.length !== 0 && (
@@ -259,7 +240,7 @@ function LoopItem({ loopDetails }: { loopDetails: any }) {
               {getCollaboratorsCountString(loopDetails.member_count)}
             </p>
           </div>
-          <p className="my-[2%] line-clamp-3 w-[70%] text-body-sm text-monochrome-4">{loopDetails.description}</p>
+          <p className="my-[2%] line-clamp-2 w-[70%] text-body-sm text-monochrome-4">{loopDetails.description}</p>
           <p className="w-[70%] text-body-sm text-monochrome-4" style={{ fontWeight: 500 }}>
             {abbreviateNumber(loopDetails.subscriber_count)} subscribers ∙ {abbreviateNumber(loopDetails.view_count)}{' '}
             views
@@ -274,14 +255,14 @@ function LoopItem({ loopDetails }: { loopDetails: any }) {
 function Categories() {
   return (
     <div>
-      <p className="my-2 text-title-md">Categories</p>
+      <p className="my-2 mt-4 text-title-md">Categories</p>
       {communityDetailsModule?.info.categories.length === 0 && (
         <div className="flex items-center justify-center text-title-md text-secondary">No categories available</div>
       )}
       <div>
         {communityDetailsModule?.info.categories.map((cat, index) => {
           return (
-            <p key={index} className="mx-1 my-1 inline-block rounded-full bg-monochrome-9 p-2 px-4 text-body-sm">
+            <p key={index} className="my-1 mr-1 inline-block rounded-full bg-monochrome-9 p-2 px-4 text-body-sm">
               <span className="line-clamp-1 break-all">{cat}</span>
             </p>
           )
@@ -295,7 +276,7 @@ function Links() {
   const links = communityDetailsModule?.info.links
   return (
     <div>
-      <p className="my-2 text-title-md">Links</p>
+      <p className="my-2 mt-4 text-title-md">Links</p>
       {!links?.instagram_url && !links?.linkedin_url && !links?.twitter_url && !links?.social_web_url && (
         <div className="flex items-center justify-center text-title-md text-secondary">No links available</div>
       )}
@@ -336,10 +317,38 @@ function Links() {
   )
 }
 
+function Guidelines() {
+  return (
+    <div>
+      <p className="my-2 mt-4 text-title-md">Guidelines</p>
+      <>
+        <Accordion type="single" collapsible>
+          {communityDetailsModule?.guidelines.map((guideline: any, index: any) => {
+            return (
+              <div key={index}>
+                <AccordionItem value={guideline.title} className="border-none">
+                  <AccordionTrigger className="my-1 p-0">
+                    <p className="line-clamp-1 text-left text-body-sm">
+                      {index + 1}. {guideline.title}
+                    </p>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <p className="line-clamp-3 text-left text-body-sm text-monochrome">{guideline.description}</p>
+                  </AccordionContent>
+                </AccordionItem>
+              </div>
+            )
+          })}
+        </Accordion>
+      </>
+    </div>
+  )
+}
+
 function Leaders() {
   return (
     <div>
-      <p className="my-2 text-title-md">Leader</p>
+      <p className="my-2 mt-4 text-title-md">Leader</p>
       {communityDetailsModule?.leaders.map((moderator, index) => {
         return (
           <Link key={index} href={{ pathname: PATH_NAME.profile(moderator.nickname) }}>
@@ -376,9 +385,17 @@ function ListItem({
         isAvatar={false}
       />
       <div className="mx-2">
-        <p className="line-clamp-1 text-title-sm">{subtitle}</p>
-        {subtitle && <p className="line-clamp-1 text-title-sm">{title}</p>}
-        {description && <p className="line-clamp-2 text-cap-lg text-monochrome">{description}</p>}
+        <p className="line-clamp-1 text-body-sm">{title}</p>
+        {subtitle && (
+          <p className="line-clamp-1 text-body-sm text-monochrome-black/60" style={{ fontWeight: 500 }}>
+            {subtitle}
+          </p>
+        )}
+        {description && (
+          <p className="line-clamp-2 text-body-sm" style={{ fontWeight: 500 }}>
+            {description}
+          </p>
+        )}
       </div>
     </div>
   )
@@ -386,8 +403,10 @@ function ListItem({
 
 function Members() {
   return (
-    <div>
-      <p className="my-2 text-title-md">Members</p>
+    <div className="my-2">
+      {communityDetailsModule?.members.length === 0 && (
+        <div className="flex items-center justify-center pt-32 text-title-md text-secondary">No members available</div>
+      )}
       {communityDetailsModule?.members.map((member, index) => {
         return (
           <Link key={index} href={{ pathname: PATH_NAME.profile(member.nickname) }}>
@@ -400,6 +419,31 @@ function Members() {
           </Link>
         )
       })}
+    </div>
+  )
+}
+
+function Stats({ communityDetails }: { communityDetails: CommunityDetailsType }) {
+  return (
+    <div className="flex items-center">
+      <span className="pr-4">
+        <span className="text-title-md text-monochrome-black">{communityDetails?.info.count.member}</span>
+        <span className="text-body-sm text-secondary" style={{ fontWeight: 500 }}>
+          &nbsp;{communityDetails?.info.count.member === 1 ? 'Member' : 'Members'}
+        </span>
+      </span>
+      <span className="pr-4">
+        <span className="text-title-md text-monochrome-black">{communityDetails?.info.count.loop}</span>
+        <span className="text-body-sm text-secondary" style={{ fontWeight: 500 }}>
+          &nbsp;{communityDetails?.info.count.loop === 1 ? 'Loop' : 'Loops'}
+        </span>
+      </span>
+      <span className="pr-4">
+        <span className="text-title-md text-monochrome-black">{communityDetails?.info.count.video}</span>
+        <span className="text-body-sm text-secondary" style={{ fontWeight: 500 }}>
+          &nbsp;{communityDetails?.info.count.video === 1 ? 'Video' : 'Videos'}
+        </span>
+      </span>
     </div>
   )
 }

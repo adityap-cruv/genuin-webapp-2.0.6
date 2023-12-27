@@ -48,10 +48,14 @@ function Component1() {
         style={{ background: 'radial-gradient(123.19% 48.8% at 76.02% 69.05%, #E9CAF4 0%, #ADD8FB 100%)' }}>
         <div className="container flex h-full w-full items-center justify-around">
           <div className="w-[60%] flex-col justify-between">
-            <h1 className="text-new-h1">Community, reimagined. Learn, connect and engage — all under one roof.</h1>
+            <h1 className="text-new-h1">
+              Community,
+              <br /> reimagined. Learn, connect and engage
+              <br /> — all under one roof.
+            </h1>
             <div className="mt-15 flex items-center gap-x-5">
               <Image priority loading="eager" src={qrImage} alt="Download Genuin!" />
-              <p className="text-left text-new-para-1">
+              <p className="max-w-md text-left text-new-para-1">
                 Download Genuin to create communities, interact with your audience, and start conversations on the
                 topics that really matter.
               </p>
