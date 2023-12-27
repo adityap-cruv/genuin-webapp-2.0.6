@@ -17,9 +17,8 @@ export function RecentCommunities() {
           Recent Communities
         </p>
         {communities.map((item, index) => {
-          const communityPathName = '/community/' + item.handle
           return (
-            <Link key={item.handle} href={{ pathname: communityPathName }}>
+            <Link key={item.handle} href={{ pathname: PATH_NAME.community(item.handle) }}>
               <CommunityItem title={item.name} isActive={pathName === PATH_NAME.community(item.handle)}>
                 <CustomAvatar
                   imageUrl={item.profileImage}

@@ -6,13 +6,13 @@ interface Props {
     handle: string
   }
   searchParams: {
-    details: string
+    feed: string
   }
 }
 
 export default async function Component({ params, searchParams }: Props) {
   const communityData = await fetchCommunityDetails(params.handle)
-  return <Root communityDetails={communityData} />
+  return <Root communityDetails={communityData} showFeed={searchParams.feed === '1'}/>
 }
 
 // export async function generateMetadata({ params }: Props): Promise<Metadata> {
