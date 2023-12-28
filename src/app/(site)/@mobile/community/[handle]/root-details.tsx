@@ -9,10 +9,9 @@ const Details = dynamic(
 
 type Props = {
   communityDetails: CommunityDetailsType
-  showDetails: boolean
 }
 
-export default function Main({ communityDetails }: Props) {
+export function RootDetails({ communityDetails }: Props) {
   const addCommunity = useRecentCommunitiesStore((state) => state.addCommunity)
 
   useEffect(() => {

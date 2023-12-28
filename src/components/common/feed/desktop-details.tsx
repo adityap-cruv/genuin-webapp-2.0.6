@@ -122,7 +122,7 @@ function InfoArea({ videoDetails }: { videoDetails: VideoDataType }) {
               className="h-11 w-11"
             />
             <Link href={{ pathname: PATH_NAME.community(videoDetails.community.handle) }}>
-              <p className="line-clamp-1 w-full break-all text-title-3-bold">{videoDetails.community.name}</p>
+              <p className="line-clamp-1 w-full break-all pr-2 text-title-3-bold">{videoDetails.community.name}</p>
             </Link>
           </span>
           <span className="flex h-min items-center gap-x-3">
@@ -156,9 +156,9 @@ function InfoArea({ videoDetails }: { videoDetails: VideoDataType }) {
         <DecorativeList>
           <div className="h-2 w-full" />
           <Link href={{ pathname: PATH_NAME.loop(videoDetails.loop?.share_string) }}>
-            <li className="relative flex w-full items-center justify-between rounded-md border border-monochrome-9 bg-monochrome-10 ">
-              <p className="line-clamp-1 break-all px-6 py-3 text-body-1-demi">{videoDetails.loop?.name}</p>
-              <p className="pr-4  text-cap-1-med text-primary">View Loop</p>
+            <li className="relative flex h-full w-full items-center justify-between rounded-md border border-monochrome-9 bg-monochrome-10 p-4 ">
+              <p className="line-clamp-1 w-full break-all pr-2 text-body-1-demi">{videoDetails.loop?.name}</p>
+              <p className="whitespace-nowrap text-cap-1-med text-primary">View Loop</p>
             </li>
           </Link>
         </DecorativeList>
@@ -170,7 +170,7 @@ function InfoArea({ videoDetails }: { videoDetails: VideoDataType }) {
 
 function CommentInput() {
   return (
-    <div className="absolute bottom-0 left-0 h-16 w-full border-t-2 border-t-monochrome-9 bg-monochrome-10 py-3 shadow-md">
+    <div className="sticky bottom-0 left-0 h-16 w-full border-t-2 border-t-monochrome-9 bg-monochrome-10 py-3 shadow-md">
       <DownloadDialog title="Get the Genuin app" subtitle="Get the app to comment on this video." asChild>
         <button className="flex w-full flex-1 items-center gap-x-4 pl-6">
           <div
