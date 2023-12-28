@@ -5,6 +5,10 @@ import dynamic from 'next/dynamic'
 import { type CommentType } from '@lib/schemas/loop/comment'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
+import { getTimeAgo } from '@lib/utils'
+import icMore from '@icons/icHorizotalDotsSecondary.svg'
+import Image from 'next/image'
+import icSpark from '@icons/icSparkBlack.svg'
 
 const CommentPlayer = dynamic(async () => await import('./video-player').then((comp) => comp.CommentPlayer))
 const AudioPlayer = dynamic(async () => await import('./audio-player').then((comp) => comp.AudioPlayer))
@@ -12,19 +16,29 @@ const AudioPlayer = dynamic(async () => await import('./audio-player').then((com
 export function CommentItem({ comment }: { comment: CommentType }) {
   const UI = Comment[comment.comment.type]
   return (
-    <div className="flex items-start gap-x-2 py-2">
-      <CustomAvatar
-        className="bg-slate-500 h-6 w-6 bg-red-40"
-        fallbackString={comment?.owner.nickname}
-        imageUrl={comment.owner?.profile_image}
-        isAvatar={comment.owner.is_avatar}
-      />
-      <div className="flex w-full flex-col items-start gap-y-1">
-        <Link href={{ pathname: PATH_NAME.profile(comment.owner.nickname) }}>
-          <p className="text-body-1-bold">@{comment.owner.nickname}</p>
-        </Link>
+    <div className="flex w-full flex-col gap-y-2 py-2 pr-6">
+      <span className="flex items-center justify-between">
+        <span className="flex items-center gap-x-2">
+          <CustomAvatar
+            className="bg-slate-500 h-6 w-6 bg-red-40"
+            fallbackString={comment?.owner.nickname}
+            imageUrl={comment.owner?.profile_image}
+            isAvatar={comment.owner.is_avatar}
+          />
+          <Link href={{ pathname: PATH_NAME.profile(comment.owner.nickname) }}>
+            <p className="text-body-1-bold hover:underline">@{comment.owner.nickname}</p>
+          </Link>
+          <p className="text-cap-1-demi text-monochrome">{getTimeAgo(comment.comment.created_at)}</p>
+        </span>
+        <Image src={icMore} alt="" className="h-5 w-5" />
+      </span>
+      <span className="h-full w-full pl-6">
         <UI comment={comment} />
-      </div>
+        <span className="flex items-center pt-2">
+          <Image src={icSpark} alt="" className="h-4 w-4" />
+          <p className="text-cap-1-med">{comment.comment.no_of_sparks}</p>
+        </span>
+      </span>
     </div>
   )
 }

@@ -12,7 +12,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
 import Link from 'next/link'
 import { Loader } from '@components/ui/loader'
 import { getCommunityLoops } from '@lib/api/community'
-import { abbreviateNumber, checkAndAppendHttps, timeAgo } from '@lib/utils'
+import { abbreviateNumber, checkAndAppendHttps, getTimeAgo } from '@lib/utils'
 import icInstagram from '@icons/icInstagramBlack.svg'
 import icLinkedIn from '@icons/icLinkedIn.svg'
 import icLink from '@icons/icLinkBlack.svg'
@@ -241,7 +241,7 @@ function LoopItem({ loopDetails }: { loopDetails: any }) {
           <p className="text-body-1-bold">{loopDetails.name}</p>
           {loopDetails.videos.length !== 0 && (
             <p className="text-body-1-demi text-monochrome-4">
-              {loopDetails.videos[0].owner} posted ∙ {timeAgo(loopDetails.videos[0].created_at)}
+              {loopDetails.videos[0].owner} posted ∙ {getTimeAgo(loopDetails.videos[0].created_at)}
             </p>
           )}
         </div>
