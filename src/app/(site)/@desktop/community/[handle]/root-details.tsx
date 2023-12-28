@@ -12,7 +12,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
 import Link from 'next/link'
 import { Loader } from '@components/ui/loader'
 import { getCommunityLoops } from '@lib/api/community'
-import { abbreviateNumber, checkAndAppendHttps, timeAgo } from '@lib/utils'
+import { abbreviateNumber, checkAndAppendHttps, getTimeAgo } from '@lib/utils'
 import icInstagram from '@icons/icInstagramBlack.svg'
 import icLinkedIn from '@icons/icLinkedIn.svg'
 import icLink from '@icons/icLinkBlack.svg'
@@ -31,6 +31,7 @@ interface Props {
 
 let communityDetailsModule: CommunityDetailsType
 
+// TODO: Separate this component.
 export function RootDetails({ communityDetails }: Props) {
   communityDetailsModule = communityDetails
   const addCommunity = useRecentCommunitiesStore((state) => state.addCommunity)
@@ -64,13 +65,12 @@ export function RootDetails({ communityDetails }: Props) {
             fallbackString={communityDetails.info.name}
             className="h-20 w-20"
           />
-          <p className="py-2 text-title-xl">{communityDetails.info.name}</p>
+          <span className="flex items-center gap-x-2 py-2">
+            <p className="text-title-1-bold">{communityDetails.info.name}</p>
+            <p className="text-body-1-med text-secondary">@{communityDetails.info.handle}</p>
+          </span>
           <Stats communityDetails={communityDetails} />
-          <p
-            className="mb-4 mt-2 line-clamp-2 w-1/2 break-all text-title-sm"
-            style={{ fontWeight: 500, lineHeight: '24px' }}>
-            {communityDetails.info.description}
-          </p>
+          <p className="mb-4 mt-2 line-clamp-2 w-1/2 break-all text-body-1-med">{communityDetails.info.description}</p>
           <span className="flex items-center gap-x-2">
             <DownloadDialog
               title="Get the Genuin app"
@@ -82,9 +82,7 @@ export function RootDetails({ communityDetails }: Props) {
               }
               asChild>
               <Button size="custom">
-                <p className="px-4 py-2 text-body-sm" style={{ fontWeight: 500 }}>
-                  Join Community
-                </p>
+                <p className="px-4 py-2 text-title-3-demi">Join Community</p>
               </Button>
             </DownloadDialog>
             <Button
@@ -101,7 +99,7 @@ export function RootDetails({ communityDetails }: Props) {
             </Button>
           </span>
         </div>
-        {/* //TODO have to add is_private community */}
+        {/* // TODO: have to add is_private community */}
         {/* <div
           className="mt-4 flex w-full items-center justify-center overflow-hidden"
           style={{ height: 'calc(100% - 56px)', backgroundColor: '#F9F9F9' }}>
@@ -121,6 +119,7 @@ export function RootDetails({ communityDetails }: Props) {
             <CommunityDetailsTabs />
           </div>
 
+          {/* // TODO: Improve this code. Links should not conditioned like this. */}
           <div className="snap-y snap-proximity overflow-auto scroll-smooth">
             {communityDetails.info.categories.length !== 0 && <Categories />}
             {communityDetails.info.links?.instagram_url &&
@@ -142,10 +141,10 @@ function CommunityDetailsTabs() {
     <Tabs defaultValue="Loops">
       <TabsList className="sticky flex max-w-min">
         <TabsTrigger value="Loops">
-          <p className="text-title-md">Loops</p>
+          <p className="text-title-3-bold">Loops</p>
         </TabsTrigger>
         <TabsTrigger value="Members">
-          <p className="text-title-md">Members</p>
+          <p className="text-title-3-bold">Members</p>
         </TabsTrigger>
       </TabsList>
       <TabsContent value="Loops" className="mr-2">
@@ -158,6 +157,7 @@ function CommunityDetailsTabs() {
   )
 }
 
+// TODO: Improve this component.
 function LoopTab() {
   const { isLoading, data: loops, isFetched } = getCommunityLoops(communityDetailsModule.info.handle)
 
@@ -169,8 +169,8 @@ function LoopTab() {
           {loops.length === 0 ? (
             <div className="flex flex-col items-center justify-center" style={{ backgroundColor: '#F9F9F9' }}>
               <Image src={noLoopsImage} alt="share" />
-              <p className="text-title-lg">No Loops... yet!</p>
-              <p className="w-96 text-center text-body-sm text-monochrome">
+              <p className="text-title-2-bold">No Loops... yet!</p>
+              <p className="w-96 text-center text-body-1-demi text-monochrome">
                 Loops are dynamic discussion spaces centered around specific themes. Members can share videos, get
                 reactions, and enjoy engaging comments from the community.
               </p>
@@ -238,10 +238,10 @@ function LoopItem({ loopDetails }: { loopDetails: any }) {
     <Link href={{ pathname: PATH_NAME.loop(loopDetails.share_string) }}>
       <div className="relative my-5 w-full rounded-lg border border-monochrome-9 bg-monochrome-white">
         <div className="w-[70%] items-center p-[3%]">
-          <p className="text-title-sm">{loopDetails.name}</p>
+          <p className="text-body-1-bold">{loopDetails.name}</p>
           {loopDetails.videos.length !== 0 && (
-            <p className="text-body-sm text-monochrome-4">
-              {loopDetails.videos[0].owner} posted ∙ {timeAgo(loopDetails.videos[0].created_at)}
+            <p className="text-body-1-demi text-monochrome-4">
+              {loopDetails.videos[0].owner} posted ∙ {getTimeAgo(loopDetails.videos[0].created_at)}
             </p>
           )}
         </div>
@@ -276,7 +276,7 @@ function LoopItem({ loopDetails }: { loopDetails: any }) {
               </div>
             )}
             <p
-              className={`line-clamp-1 text-body-sm text-monochrome-4 ${
+              className={`line-clamp-1 text-body-1-med text-monochrome-4 ${
                 loopDetails.collaborators.length !== 0 && 'ml-7'
               } ${loopDetails.collaborators.length === 2 && 'ml-6'}`}
               style={{ fontWeight: 500 }}>
@@ -284,8 +284,8 @@ function LoopItem({ loopDetails }: { loopDetails: any }) {
               {getCollaboratorsCountString(loopDetails.member_count)}
             </p>
           </div>
-          <p className="my-[2%] line-clamp-2 w-[70%] text-body-sm text-monochrome-4">{loopDetails.description}</p>
-          <p className="w-[70%] text-body-sm text-monochrome-4" style={{ fontWeight: 500 }}>
+          <p className="my-[2%] line-clamp-2 w-[70%] text-body-1-demi text-monochrome-4">{loopDetails.description}</p>
+          <p className="w-[70%] text-body-1-med text-monochrome-4" style={{ fontWeight: 500 }}>
             {abbreviateNumber(loopDetails.subscriber_count)} subscribers ∙ {abbreviateNumber(loopDetails.view_count)}{' '}
             views
           </p>
@@ -299,11 +299,11 @@ function LoopItem({ loopDetails }: { loopDetails: any }) {
 function Categories() {
   return (
     <div>
-      <p className="my-2 mt-4 text-title-md">Categories</p>
+      <p className="my-2 mt-4 text-title-3-bold">Categories</p>
       <div>
         {communityDetailsModule?.info.categories.map((cat, index) => {
           return (
-            <p key={index} className="my-1 mr-1 inline-block rounded-full bg-monochrome-9 p-2 px-4 text-body-sm">
+            <p key={index} className="my-1 mr-1 inline-block rounded-full bg-monochrome-9 p-2 px-4 text-body-1-med">
               <span className="line-clamp-1 break-all">{cat}</span>
             </p>
           )
@@ -345,7 +345,7 @@ function Links() {
             <Link href={checkAndAppendHttps(links.social_web_url)} target="_blank">
               <div className="flex">
                 <Image src={icLink} alt="web-site" />
-                <p className="text-body-sm">&nbsp;{links.social_web_url}</p>
+                <p className="text-body-1-med">&nbsp;{links.social_web_url}</p>
               </div>
             </Link>
           </div>
@@ -358,7 +358,7 @@ function Links() {
 function Guidelines() {
   return (
     <div>
-      <p className="my-2 mt-4 text-title-md">Guidelines</p>
+      <p className="my-2 mt-4 text-title-3-bold">Guidelines</p>
       <>
         <Accordion type="single" collapsible>
           {communityDetailsModule?.guidelines.map((guideline: any, index: any) => {
@@ -366,14 +366,12 @@ function Guidelines() {
               <div key={index}>
                 <AccordionItem value={guideline.title} className="border-none">
                   <AccordionTrigger className="my-1 p-0">
-                    <p className="line-clamp-1 text-left text-body-sm" style={{ fontWeight: 500 }}>
+                    <p className="line-clamp-1 text-left text-body-1-med">
                       {index + 1}. {guideline.title}
                     </p>
                   </AccordionTrigger>
                   <AccordionContent className="w-[80%] pl-4">
-                    <p className="line-clamp-2 text-left text-body-sm text-monochrome" style={{ fontWeight: 500 }}>
-                      {guideline.description}
-                    </p>
+                    <p className="line-clamp-2 text-left  text-monochrome">{guideline.description}</p>
                   </AccordionContent>
                 </AccordionItem>
               </div>
@@ -405,6 +403,7 @@ function Leaders() {
   )
 }
 
+// TODO: Create Common component for this item.
 function ListItem({
   title,
   subtitle,
@@ -425,14 +424,14 @@ function ListItem({
         isAvatar={false}
       />
       <div className="mx-2">
-        <p className="line-clamp-1 text-body-sm">{subtitle}</p>
-        {subtitle && (
-          <p className="line-clamp-1 text-body-sm" style={{ fontWeight: 500 }}>
+        <p className="line-clamp-1 text-body-1-demi">{subtitle}</p>
+        {title && (
+          <p className="line-clamp-1 text-body-1-med" style={{ fontWeight: 500 }}>
             {title}
           </p>
         )}
         {description && (
-          <p className="line-clamp-1 text-body-sm text-monochrome" style={{ fontWeight: 500 }}>
+          <p className="line-clamp-1 text-body-1-med text-monochrome" style={{ fontWeight: 500 }}>
             {description}
           </p>
         )}
@@ -466,23 +465,23 @@ function Members() {
 function Stats({ communityDetails }: { communityDetails: CommunityDetailsType }) {
   return (
     <div className="flex items-center">
-      <span className="pr-4">
-        <span className="text-title-md text-monochrome-black">{communityDetails?.info.count.member}</span>
-        <span className="text-body-sm text-secondary" style={{ fontWeight: 500 }}>
+      <span className="flex items-center pr-4">
+        <p className="text-title-3-bold text-monochrome-black">{communityDetails?.info.count.member}</p>
+        <p className="text-body-1-med text-secondary" style={{ fontWeight: 500 }}>
           &nbsp;{communityDetails?.info.count.member === 1 ? 'Member' : 'Members'}
-        </span>
+        </p>
       </span>
-      <span className="pr-4">
-        <span className="text-title-md text-monochrome-black">{communityDetails?.info.count.loop}</span>
-        <span className="text-body-sm text-secondary" style={{ fontWeight: 500 }}>
+      <span className="flex items-center pr-4">
+        <p className="text-title-3-bold text-monochrome-black">{communityDetails?.info.count.loop}</p>
+        <p className="text-body-1-med text-secondary" style={{ fontWeight: 500 }}>
           &nbsp;{communityDetails?.info.count.loop === 1 ? 'Loop' : 'Loops'}
-        </span>
+        </p>
       </span>
-      <span className="pr-4">
-        <span className="text-title-md text-monochrome-black">{communityDetails?.info.count.video}</span>
-        <span className="text-body-sm text-secondary" style={{ fontWeight: 500 }}>
+      <span className="flex items-center pr-4">
+        <p className="text-title-3-bold text-monochrome-black">{communityDetails?.info.count.video}</p>
+        <p className="text-body-1-med text-secondary" style={{ fontWeight: 500 }}>
           &nbsp;{communityDetails?.info.count.video === 1 ? 'Video' : 'Videos'}
-        </span>
+        </p>
       </span>
     </div>
   )

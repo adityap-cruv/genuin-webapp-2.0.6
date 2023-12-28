@@ -83,8 +83,8 @@ export function NoComments() {
   return (
     <div className="flex h-full w-full flex-col items-center justify-center">
       <Image src={icComment} alt="comment!" />
-      <p className="mt-2 text-title-lg">No comments yet</p>
-      <p className="text-body-lg">Be the first one to comment</p>
+      <p className="mt-2 text-title-2-bold">No comments yet</p>
+      <p className="text-body-1-demi">Be the first one to comment</p>
     </div>
   )
 }

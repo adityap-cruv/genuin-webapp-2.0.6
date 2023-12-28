@@ -80,7 +80,7 @@ export function CommentPlayer({ videoSource, poster, commentShareString, onClick
     return (
       <div className="cursor-pointe relative w-[40%]" onClick={onClick}>
         <video
-          className="w-full  rounded-2xl object-cover transition-all"
+          className="h-full w-full rounded-2xl object-cover transition-all"
           poster={poster}
           ref={videoRef}
           src={videoSource}

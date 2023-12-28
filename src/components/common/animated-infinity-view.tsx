@@ -26,8 +26,8 @@ export function AnimatedInfinityView({ community, loop }: Props) {
   const leftControls = useAnimationControls()
   const rightControls = useAnimationControls()
   const [localState, setLocalState] = useState({
-    loopName: community.handle,
-    communityName: loop.shareString,
+    loopName: loop.name,
+    communityName: community.name,
     communityDp: community.profileImage,
   })
 

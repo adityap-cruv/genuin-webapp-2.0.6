@@ -19,7 +19,7 @@ const DialogContent = React.forwardRef<
   <DialogPortal>
     <DialogPrimitive.Content
       ref={ref}
-      className={cn('group fixed inset-0 z-10 w-full bg-monochrome-black/80', className)}
+      className={cn('group fixed inset-0 z-20 w-full bg-monochrome-black/80', className)}
       {...props}>
       <DialogPrimitive.Close className="absolute right-3 top-3 z-20 transition-opacity disabled:pointer-events-none">
         <X

@@ -139,5 +139,10 @@ function Loop({ videoData }: { videoData?: VideoDataType }) {
 function PlayerProgressBar() {
   const currentTime = usePlayerControlStore((state) => state.currentTime)
   const duration = usePlayerControlStore((state) => state.duration)
-  return <Progress value={Math.round((currentTime / duration) * 100)} className="absolute bottom-0 left-0 h-[2px]" />
+  return (
+    <Progress
+      value={Math.round((currentTime / duration) * 100)}
+      className="absolute bottom-0 left-0 h-[2px] transition-[width]"
+    />
+  )
 }

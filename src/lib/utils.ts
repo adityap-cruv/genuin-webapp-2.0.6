@@ -6,9 +6,9 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function timeAgo(createdAt: any) {
-  const currentDate:any = new Date()
-  const createdAtDate:any = new Date(createdAt)
+export function getTimeAgo(createdAt: any) {
+  const currentDate: any = new Date()
+  const createdAtDate: any = new Date(createdAt)
 
   const timeDifference = currentDate - createdAtDate
   const seconds = Math.floor(timeDifference / 1000)
