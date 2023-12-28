@@ -6,7 +6,7 @@ import { Sheet, SheetClose, SheetContent, SheetTrigger } from '@components/ui/sh
 import { type ReactNode } from 'react'
 import { cn } from '@lib/utils'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { PopularIcon, HomeIcon, LatestIcon } from '@icons/side-bar-icons'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { PATH_NAME } from '@lib/utils/constants/path'
@@ -34,25 +34,31 @@ type Props = {
 } & VariantProps<typeof navVariant>
 
 export function TopBar({ variant = 'light', className, showClose = false }: Props) {
+  // TODO: Remove this line of code.
+  const showTopbar = useSearchParams().get('embed') !== '1'
   return (
     <nav className={cn(navVariant({ variant }), className)}>
       <span className="flex items-center ">
         <Menu hamBurgerVariant={variant === 'trasparent' ? 'light' : 'dark'} />
-        <Link href={{ pathname: PATH_NAME.home() }}>
-          <GenuinSymbol variant={variant === 'trasparent' ? 'light' : 'black'} />
-        </Link>
+        {showTopbar && (
+          <Link href={{ pathname: PATH_NAME.home() }}>
+            <GenuinSymbol variant={variant === 'trasparent' ? 'light' : 'black'} />
+          </Link>
+        )}
       </span>
       <span className="flex items-center gap-x-2">
-        <DownloadAppDialog>
-          <Button
-            className={
-              variant === 'light'
-                ? 'bg-new-off-black hover:bg-new-dark-grey'
-                : 'bg-new-off-white text-new-off-black hover:bg-new-off-black hover:text-new-off-white'
-            }>
-            <p className="text-body-sm">Download Genuin</p>
-          </Button>
-        </DownloadAppDialog>
+        {showTopbar && (
+          <DownloadAppDialog>
+            <Button
+              className={
+                variant === 'light'
+                  ? 'bg-new-off-black hover:bg-new-dark-grey'
+                  : 'bg-new-off-white text-new-off-black hover:bg-new-off-black hover:text-new-off-white'
+              }>
+              <p className="text-body-sm">Download Genuin</p>
+            </Button>
+          </DownloadAppDialog>
+        )}
         {/* {showClose ? (
           <X
             className={cn(
