@@ -29,13 +29,13 @@ export function DesktopDetails() {
 
   if (videoDetails)
     return (
-      <div className="relative flex-1 overflow-x-clip pb-16">
+      <div className="relative flex-1 overflow-x-clip bg-monochrome-white pb-16">
         <div ref={scrollDivRef} className="flex h-full flex-col overflow-auto overflow-x-clip">
           <div className="w-full p-6 pb-4">
             <InfoArea videoDetails={videoDetails} />
           </div>
           <div className="sticky top-0 z-10">
-            <p className="text-title-3-demi border-b border-t border-monochrome-black/10 bg-monochrome-white px-4 py-3 text-secondary">
+            <p className="border-b border-t border-monochrome-black/10 bg-monochrome-white px-4 py-3 text-title-3-demi text-secondary">
               Comments {videoDetails.video.no_of_comments !== 0 ? `(${videoDetails.video.no_of_comments})` : ''}
             </p>
           </div>
@@ -106,12 +106,12 @@ function InfoArea({ videoDetails }: { videoDetails: VideoDataType }) {
         </Link>
       </span>
       <div className="pb-6 pt-2">
-        <p className="text-title-3-med line-clamp-2 w-5/6 overflow-hidden break-all">
+        <p className="line-clamp-2 w-5/6 overflow-hidden break-all text-title-3-med">
           {videoDetails.video.description}
         </p>
       </div>
       <hr className=" border border-monochrome-black/10" />
-      <p className="text-title-3-bold pt-6">Posted in</p>
+      <p className="pt-6 text-title-3-bold">Posted in</p>
       <div className="pt-3">
         <span className="flex items-center justify-between">
           <span className="flex items-center gap-x-3">
@@ -122,7 +122,7 @@ function InfoArea({ videoDetails }: { videoDetails: VideoDataType }) {
               className="h-11 w-11"
             />
             <Link href={{ pathname: PATH_NAME.community(videoDetails.community.handle) }}>
-              <p className="text-title-3-bold line-clamp-1 w-full break-all">{videoDetails.community.name}</p>
+              <p className="line-clamp-1 w-full break-all text-title-3-bold">{videoDetails.community.name}</p>
             </Link>
           </span>
           <span className="flex h-min items-center gap-x-3">
@@ -136,7 +136,7 @@ function InfoArea({ videoDetails }: { videoDetails: VideoDataType }) {
               }
               asChild>
               <Button size="custom">
-                <p className="text-title-3-demi whitespace-nowrap px-4 py-1">Join Community</p>
+                <p className="whitespace-nowrap px-4 py-1 text-title-3-demi">Join Community</p>
               </Button>
             </DownloadDialog>
             <Button
@@ -157,8 +157,8 @@ function InfoArea({ videoDetails }: { videoDetails: VideoDataType }) {
           <div className="h-2 w-full" />
           <Link href={{ pathname: PATH_NAME.loop(videoDetails.loop?.share_string) }}>
             <li className="relative flex w-full items-center justify-between rounded-md border border-monochrome-9 bg-monochrome-10 ">
-              <p className="text-body-1-demi line-clamp-1 break-all px-6 py-3">{videoDetails.loop?.name}</p>
-              <p className="text-cap-1-med  pr-4 text-primary">View Loop</p>
+              <p className="line-clamp-1 break-all px-6 py-3 text-body-1-demi">{videoDetails.loop?.name}</p>
+              <p className="pr-4  text-cap-1-med text-primary">View Loop</p>
             </li>
           </Link>
         </DecorativeList>
@@ -170,13 +170,13 @@ function InfoArea({ videoDetails }: { videoDetails: VideoDataType }) {
 
 function CommentInput() {
   return (
-    <div className="sticky bottom-0 left-0 h-16 w-full border-t-2 border-t-monochrome-9 bg-monochrome-10 py-3 shadow-md">
+    <div className="absolute bottom-0 left-0 h-16 w-full border-t-2 border-t-monochrome-9 bg-monochrome-10 py-3 shadow-md">
       <DownloadDialog title="Get the Genuin app" subtitle="Get the app to comment on this video." asChild>
         <button className="flex w-full flex-1 items-center gap-x-4 pl-6">
           <div
             placeholder="Add a comment"
             className="h-full w-2/3 rounded-full border-2 border-monochrome-9 bg-monochrome-white py-2 pl-6">
-            <p className="text-title-3-demi text-start text-monochrome">Add a Comment</p>
+            <p className="text-start text-title-3-demi text-monochrome">Add a Comment</p>
           </div>
           <Image src={icAudioRecord} alt="audio record" className="h-8 w-8" />
           <Image src={icVideoRecord} alt="audio record" className="h-8 w-8" />

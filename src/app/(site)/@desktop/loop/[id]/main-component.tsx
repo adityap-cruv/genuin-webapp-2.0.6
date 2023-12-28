@@ -12,6 +12,7 @@ import { Loader } from '@components/ui/loader'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { PlayerListModal } from '@components/common/modals/player-list-modal'
+import { FeedModal } from '@components/common/modals/feed-modal'
 
 interface Props {
   loopDetails: LoopDetailsType
@@ -121,29 +122,31 @@ function LoopVideos({ loopId }: any) {
         {data?.pages
           .flatMap((page) => page.videos)
           .map((item, index) => (
-            <div key={index} className="relative aspect-reel w-full duration-300 hover:cursor-pointer">
-              <Image
-                src={item.video.thumbnail ?? ''}
-                alt={item.video.description ?? ''}
-                className="h-full w-full rounded-xl object-fill"
-                fill
-              />
-              {/* <p className="absolute left-2 top-2 text-title-sm text-monochrome-white">
+            <FeedModal key={index} videos={data?.pages.flatMap((page) => page.videos)}>
+              <div key={index} className="relative aspect-reel w-full duration-300 hover:cursor-pointer">
+                <Image
+                  src={item.video.thumbnail ?? ''}
+                  alt={item.video.description ?? ''}
+                  className="h-full w-full rounded-xl object-fill"
+                  fill
+                />
+                {/* <p className="absolute left-2 top-2 text-title-sm text-monochrome-white">
                   {item.video?.metadata.duration + 's'}
                 </p> */}
-              <div className="absolute bottom-2 left-2">
-                <div className="flex h-6 w-6 items-center">
-                  <CustomAvatar
-                    className="h-full w-full bg-red-40"
-                    imageUrl={item.owner.profile_image}
-                    isAvatar={item.owner.is_avatar}
-                    fallbackString={item.owner.nickname}
-                  />
-                  <p className="ml-1 text-body-1-bold text-monochrome-white">@{item.owner.nickname}</p>
+                <div className="absolute bottom-2 left-2">
+                  <div className="flex h-6 w-6 items-center">
+                    <CustomAvatar
+                      className="h-full w-full bg-red-40"
+                      imageUrl={item.owner.profile_image}
+                      isAvatar={item.owner.is_avatar}
+                      fallbackString={item.owner.nickname}
+                    />
+                    <p className="ml-1 text-body-1-bold text-monochrome-white">@{item.owner.nickname}</p>
+                  </div>
+                  <p className="ml-1 line-clamp-2 text-body-1-demi text-monochrome-white">{item.video.description}</p>
                 </div>
-                <p className="ml-1 line-clamp-2 text-body-1-demi text-monochrome-white">{item.video.description}</p>
               </div>
-            </div>
+            </FeedModal>
           ))}
       </div>
       {isFetchingNextPage && <Loader size="md" />}
