@@ -35,7 +35,7 @@ export function DesktopDetails() {
             <InfoArea videoDetails={videoDetails} />
           </div>
           <div className="sticky top-0 z-10">
-            <p className="border-b border-t border-monochrome-black/10 bg-monochrome-white px-4 py-3 text-body-lg text-secondary">
+            <p className="text-title-3-demi border-b border-t border-monochrome-black/10 bg-monochrome-white px-4 py-3 text-secondary">
               Comments {videoDetails.video.no_of_comments !== 0 ? `(${videoDetails.video.no_of_comments})` : ''}
             </p>
           </div>
@@ -106,12 +106,12 @@ function InfoArea({ videoDetails }: { videoDetails: VideoDataType }) {
         </Link>
       </span>
       <div className="pb-6 pt-2">
-        <p className="line-clamp-2 w-5/6 overflow-hidden break-all text-body-lg font-medium">
+        <p className="text-title-3-med line-clamp-2 w-5/6 overflow-hidden break-all">
           {videoDetails.video.description}
         </p>
       </div>
       <hr className=" border border-monochrome-black/10" />
-      <p className="pt-6 text-title-md">Posted in</p>
+      <p className="text-title-3-bold pt-6">Posted in</p>
       <div className="pt-3">
         <span className="flex items-center justify-between">
           <span className="flex items-center gap-x-3">
@@ -122,7 +122,7 @@ function InfoArea({ videoDetails }: { videoDetails: VideoDataType }) {
               className="h-11 w-11"
             />
             <Link href={{ pathname: PATH_NAME.community(videoDetails.community.handle) }}>
-              <p className="line-clamp-1 w-full break-all text-body-lg">{videoDetails.community.name}</p>
+              <p className="text-title-3-bold line-clamp-1 w-full break-all">{videoDetails.community.name}</p>
             </Link>
           </span>
           <span className="flex h-min items-center gap-x-3">
@@ -136,7 +136,7 @@ function InfoArea({ videoDetails }: { videoDetails: VideoDataType }) {
               }
               asChild>
               <Button size="custom">
-                <p className="whitespace-nowrap px-4 py-2 text-body-sm font-medium">Join Community</p>
+                <p className="text-title-3-demi whitespace-nowrap px-4 py-1">Join Community</p>
               </Button>
             </DownloadDialog>
             <Button
@@ -157,10 +157,8 @@ function InfoArea({ videoDetails }: { videoDetails: VideoDataType }) {
           <div className="h-2 w-full" />
           <Link href={{ pathname: PATH_NAME.loop(videoDetails.loop?.share_string) }}>
             <li className="relative flex w-full items-center justify-between rounded-md border border-monochrome-9 bg-monochrome-10 ">
-              <p className="line-clamp-1 break-all px-6 py-3 text-body-sm font-medium">{videoDetails.loop?.name}</p>
-              <p className="pr-4 text-cap-lg text-primary" style={{ fontWeight: 500 }}>
-                View Loop
-              </p>
+              <p className="text-body-1-demi line-clamp-1 break-all px-6 py-3">{videoDetails.loop?.name}</p>
+              <p className="text-cap-1-med  pr-4 text-primary">View Loop</p>
             </li>
           </Link>
         </DecorativeList>
@@ -178,7 +176,7 @@ function CommentInput() {
           <div
             placeholder="Add a comment"
             className="h-full w-2/3 rounded-full border-2 border-monochrome-9 bg-monochrome-white py-2 pl-6">
-            <p className="text-start text-body-lg text-monochrome">Add a Comment</p>
+            <p className="text-title-3-demi text-start text-monochrome">Add a Comment</p>
           </div>
           <Image src={icAudioRecord} alt="audio record" className="h-8 w-8" />
           <Image src={icVideoRecord} alt="audio record" className="h-8 w-8" />

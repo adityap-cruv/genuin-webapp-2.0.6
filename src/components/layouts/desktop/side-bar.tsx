@@ -50,8 +50,7 @@ export function SideBar() {
             sideOffset={-6}
             className=" rounded-2xl p-2 shadow-lg shadow-monochrome-3/40"
             side="bottom"
-            align="start"
-            >
+            align="start">
             <Link href={{ pathname: PATH_NAME.terms }}>
               <p
                 style={{ fontSize: '20px', lineHeight: '32px', fontWeight: 600 }}
@@ -86,8 +85,10 @@ function Item({ title, isActive, children }: ItemProps) {
     <div className="flex w-full max-w-full items-center gap-x-3 rounded-md p-3 hover:bg-monochrome-6/10">
       {children}
       <p
-        className={cn('hidden break-all lg:block', isActive ? 'text-primary' : 'text-new-off-black')}
-        style={{ fontSize: '20px', lineHeight: '32px', fontWeight: 600 }}>
+        className={cn(
+          'hidden break-all !text-title-2-demi lg:block',
+          isActive ? 'text-primary' : 'text-new-off-black'
+        )}>
         {title}
       </p>
     </div>

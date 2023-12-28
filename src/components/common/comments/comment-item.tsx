@@ -21,7 +21,7 @@ export function CommentItem({ comment }: { comment: CommentType }) {
       />
       <div className="flex w-full flex-col items-start gap-y-1">
         <Link href={{ pathname: PATH_NAME.profile(comment.owner.nickname) }}>
-          <p className="text-title-md">@{comment.owner.nickname}</p>
+          <p className="text-body-1-bold">@{comment.owner.nickname}</p>
         </Link>
         <UI comment={comment} />
       </div>
@@ -68,6 +68,6 @@ const Comment = {
     )
   },
   text({ comment }: any) {
-    return <ReadMore className="text-body-sm" text={comment.comment.text} />
+    return <ReadMore className="text-body-1-med" text={comment.comment.text} />
   },
 }

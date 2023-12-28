@@ -13,7 +13,7 @@ export function RecentCommunities() {
     return (
       <>
         <hr className="mb-4 mt-1 border border-monochrome-black/10" />
-        <p className="hidden w-full break-all pb-1 pl-1 text-title-lg font-semibold text-monochrome lg:line-clamp-1">
+        <p className="hidden w-full break-all pb-1 pl-1 text-title-2-demi text-monochrome lg:line-clamp-1">
           Recent Communities
         </p>
         {communities.map((item, index) => {
@@ -47,11 +47,11 @@ type ItemProps = {
 
 function CommunityItem({ children, title, isActive }: ItemProps) {
   return (
-    <div className="flex w-full max-w-full items-center gap-x-2 rounded-md p-3 hover:bg-monochrome-6/10">
+    <div className="flex w-full max-w-full items-center gap-x-2 rounded-md p-3 text-title-2-demi hover:bg-monochrome-6/10">
       {children}
       <p
         className={cn(
-          'hidden break-all text-title-lg font-semibold lg:line-clamp-1',
+          'hidden break-all !text-title-2-demi lg:line-clamp-1',
           isActive ? 'text-primary' : 'text-new-off-black'
         )}>
         {title}

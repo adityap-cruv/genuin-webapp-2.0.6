@@ -88,6 +88,19 @@ module.exports = {
       // },
     },
     fontSize: {
+      // New Typography developed by design team for new web.
+      'title-1-bold': ['24px', { fontWeight: 700, lineHeight: '32px' }],
+      'title-2-bold': ['20px', { fontWeight: 700, lineHeight: '32px' }],
+      'title-2-demi': ['20px', { fontWeight: 600, lineHeight: '32px' }],
+      'title-3-bold': ['17px', { fontWeight: 700, lineHeight: '24px' }],
+      'title-3-demi': ['17px', { fontWeight: 600, lineHeight: '24px' }],
+      'title-3-med': ['17px', { fontWeight: 500, lineHeight: '24px' }],
+      'body-1-bold': ['15px', { fontWeight: 700, lineHeight: '20px' }],
+      'body-1-demi': ['15px', { fontWeight: 600, lineHeight: '20px' }],
+      'body-1-med': ['15px', { fontWeight: 500, lineHeight: '20px' }],
+      'cap-1-bold': ['12px', { fontWeight: 700, lineHeight: '16px' }],
+      'cap-1-demi': ['12px', { fontWeight: 600, lineHeight: '16px' }],
+      'cap-1-med': ['12px', { fontWeight: 500, lineHeight: '16px' }],
       // TODO: Scrap this fonts after using sanity and changing all fonts
       'title-sm': ['15px', { fontWeight: 700, lineHeight: '20px' }], // 15px
       'title-md': ['17px', { fontWeight: 700, lineHeight: '24px' }], // 17px

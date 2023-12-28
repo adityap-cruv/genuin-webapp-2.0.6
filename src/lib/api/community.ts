@@ -10,6 +10,14 @@ export async function fetchCommunityDetails(handle: string) {
     })
     .then((res) => res.data.data)
     .catch((e) => {
+      // TODO:
+      /**
+       * Here in this api one request is being made undexpectedly.
+       * Which is "/api/v3/public/community/details?community_id[handle]=cow_face"
+       * Figure out why this error happening and solve the issue.
+       * @example Community handle: @kvkic
+       */
+      console.log('error::', e)
       throw new Error('Something went wrong with community detail!')
     })
 }

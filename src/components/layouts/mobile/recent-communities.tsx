@@ -13,7 +13,7 @@ export function RecentCommunities() {
   if (communities.length > 0)
     return (
       <div className="mt-4 h-full w-full border-t border-monochrome-black/10 pt-4">
-        <p className="w-full break-all pb-1 pl-1 text-title-lg font-semibold text-monochrome lg:line-clamp-1">
+        <p className="w-full break-all pb-1 pl-1 text-title-2-demi text-monochrome lg:line-clamp-1">
           Recent Communities
         </p>
         {communities.map((item, index) => {
