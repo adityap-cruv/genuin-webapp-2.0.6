@@ -15,6 +15,7 @@ import icSpark from '@icons/player-controls/icBulb.svg'
 import { Shimmer } from '@components/ui/shimmer'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
+import { PlayerModal } from '@components/common/player-modal'
 
 interface CompProps {
   profileData: any
@@ -126,13 +127,9 @@ function CommunityList({ usernickname }: any) {
                       <p className="line-clamp-1 text-left text-title-md" style={{ fontWeight: 600, fontSize: '20px' }}>
                         {item.name}
                       </p>
-                      <p className="line-clamp-1 text-start text-body-sm text-monochrome" style={{ fontWeight: 500 }}>
-                        Visible to approved members only
-                      </p>
                     </div>
                   </Link>
                 </div>
-
                 <DecorativeList>
                   <CommunityDetails userId={usernickname} communityHandle={item.handle} />
                 </DecorativeList>
@@ -202,6 +199,7 @@ function LoopVideos({ userId, loopDetails }: any) {
     userId,
     loopDetails.share_string
   )
+  const videos = data?.pages.flatMap((item) => item.videos)
 
   const [videoCount, setVideoCount] = useState(Math.max(0, loopDetails.video_count - 10))
 
@@ -217,7 +215,7 @@ function LoopVideos({ userId, loopDetails }: any) {
       <Link href={{ pathname: PATH_NAME.loop(loopDetails.share_string) }}>
         <p className="text-title-sm">{loopDetails.name}</p>
       </Link>
-      {data?.pages.flatMap((page) => page.videos).length === 0 && (
+      {videos?.length === 0 && (
         <div className="flex items-center justify-center pt-32 text-title-md text-secondary">No videos available</div>
       )}
       <div className="my-2 grid w-full grid-cols-4 gap-2 md:grid-cols-8">
@@ -227,9 +225,8 @@ function LoopVideos({ userId, loopDetails }: any) {
               <Shimmer className="aspect-reel w-full rounded" />
             </div>
           ))}
-        {data?.pages
-          .flatMap((page) => page.videos)
-          .map((video, index) => (
+        {videos?.map((video, index) => (
+          <PlayerModal videoDetails={video} key={index}>
             <div key={video.id} className="relative flex aspect-reel min-w-full flex-col items-center">
               <img src={video.thumbnail} alt={`Video Thumbnail ${index}`} className="aspect-reel rounded" />
               <div className="absolute bottom-0 left-0 m-1 flex items-center justify-center">
@@ -239,7 +236,8 @@ function LoopVideos({ userId, loopDetails }: any) {
                 </p>
               </div>
             </div>
-          ))}
+          </PlayerModal>
+        ))}
         {isFetchingNextPage &&
           Array.from({ length: Math.max(0, loopDetails.video_count - videoCount) }).map((_, index) => (
             <div key={`shimmer-${index}`} className="relative flex flex-col items-center">

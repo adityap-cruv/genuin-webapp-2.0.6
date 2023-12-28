@@ -88,6 +88,7 @@ module.exports = {
       // },
     },
     fontSize: {
+      // TODO: Scrap this fonts after using sanity and changing all fonts
       'title-sm': ['15px', { fontWeight: 700, lineHeight: '20px' }], // 15px
       'title-md': ['17px', { fontWeight: 700, lineHeight: '24px' }], // 17px
       'title-lg': ['20px', { fontWeight: 700, lineHeight: '32px' }], // 20px
@@ -98,7 +99,7 @@ module.exports = {
       'cap-bold-lg': ['12px', { fontWeight: 700, lineHeight: '16px' }], // 12px
       'cap-sm': ['10px', { fontWeight: 600, lineHeight: '16px' }],
       'cap-lg': ['12px', { fontWeight: 600, lineHeight: '16px' }],
-      // This is for new typography
+      // This typography is only used for index page.
       'new-h1': ['60px', { fontWeight: 700, lineHeight: '110%', letterSpacing: '-1.8px' }],
       'new-h2': ['48px', { fontWeight: 700, lineHeight: '110%', letterSpacing: '-1.44px' }],
       'new-h3': ['40px', { fontWeight: 700, lineHeight: '110%', letterSpacing: '-1.2px' }],

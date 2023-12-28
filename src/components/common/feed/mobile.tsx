@@ -54,6 +54,10 @@ export function Mobile({
   }, [scrollDivRef.current])
 
   useEffect(() => {
+    setCurrentIndex(0)
+  }, [])
+
+  useEffect(() => {
     setVideoList(videos)
   }, [videos])
 
@@ -70,6 +74,7 @@ export function Mobile({
               playIfInViewPort
               isFirstPlayerInList={index === 0}
               shouldPlay
+              loop
               sizeBox={sizeBox}
               videoData={item}
             />

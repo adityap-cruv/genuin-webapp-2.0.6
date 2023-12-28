@@ -18,7 +18,6 @@ import icLinkedIn from '@icons/icLinkedIn.svg'
 import icLink from '@icons/icLinkBlack.svg'
 import icTwitter from '@icons/icTwitterBlack.svg'
 import noLoopsImage from '@images/noLoopImage.svg'
-import lockIcon from '@images/lockIcon.svg'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@components/ui/accordion'
 import { DownloadDialog } from '@components/common/download-dialog'
@@ -78,7 +77,7 @@ export function RootDetails({ communityDetails }: Props) {
               subtitle={
                 <>
                   Get the app to join the <br />
-                  <span className="font-bold">@{communityDetails.info.handle}</span> community.
+                  <span className="font-bold">{communityDetails.info.name}</span> community.
                 </>
               }
               asChild>
@@ -277,9 +276,9 @@ function LoopItem({ loopDetails }: { loopDetails: any }) {
               </div>
             )}
             <p
-              className={`text-body-sm line-clamp-1 text-monochrome-4 ${loopDetails.collaborators.length !== 0 && 'ml-7'} ${
-                loopDetails.collaborators.length === 2 && 'ml-6'
-              }`}
+              className={`line-clamp-1 text-body-sm text-monochrome-4 ${
+                loopDetails.collaborators.length !== 0 && 'ml-7'
+              } ${loopDetails.collaborators.length === 2 && 'ml-6'}`}
               style={{ fontWeight: 500 }}>
               @{loopDetails.owner.nickname}
               {getCollaboratorsCountString(loopDetails.member_count)}
