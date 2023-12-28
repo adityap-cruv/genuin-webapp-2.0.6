@@ -38,7 +38,7 @@ export function getCommunityVideos(handle: string) {
       }
       return await promise
     },
-    queryKey: ['community', 'videos'],
+    queryKey: ['community', 'videos', handle],
     getNextPageParam: (lastPage) => {
       if (lastPage.end) return
       return lastPage.ref
@@ -64,7 +64,7 @@ export async function fetchCommunityLoops(handle: string) {
 }
 
 export function getCommunityLoops(handle: string) {
-  return useQuery({ queryFn: async () => await fetchCommunityLoops(handle), queryKey: ['community', 'loops'] })
+  return useQuery({ queryFn: async () => await fetchCommunityLoops(handle), queryKey: ['community', 'loops', handle] })
 }
 
 // async function fetchVideoComments(handle: string) {

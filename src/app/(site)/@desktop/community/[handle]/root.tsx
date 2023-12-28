@@ -9,9 +9,6 @@ interface Props {
 }
 
 export function Root({ communityDetails, showFeed }: Props) {
-  if (showFeed) {
-    return <RootFeed communityDetails={communityDetails}/>
-  }
-
+  if (showFeed) return <RootFeed communityDetails={communityDetails} />
   return <RootDetails communityDetails={communityDetails} />
 }
