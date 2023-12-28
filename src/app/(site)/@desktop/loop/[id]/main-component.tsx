@@ -3,15 +3,15 @@ import { Button } from '@components/ui/button'
 import type { LoopDetailsType } from '@lib/schemas/loop/details'
 import Image from 'next/image'
 import icShare from '@icons/icShareBlue.svg'
-import icQuestion from '@icons/icQuestion.svg'
 import { CustomAvatar } from '@components/custom/custom-avatar'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { useInView } from 'framer-motion'
 import { TopBar } from './top-bar'
 import { getLoopCohosts, getLoopSubscribers, getLoopVideos } from '@lib/api/loop'
 import { Loader } from '@components/ui/loader'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
+import { PlayerListModal } from '@components/common/modals/player-list-modal'
 
 interface Props {
   loopDetails: LoopDetailsType
@@ -32,14 +32,12 @@ export function MainComponent({ loopDetails }: Props) {
         />
         <main className="hide-scrollbar absolute inset-0 h-full w-full overflow-auto pl-6">
           <span className="w-1/2">
-            <p className="mt-6 text-title-xl">{loopDetails.group.group_name}</p>
-            <p className="my-2 line-clamp-2 w-1/2 text-body-sm" style={{ fontWeight: 500 }}>
-              {loopDetails.group.group_description}
-            </p>
+            <p className="mt-6 text-title-1-bold">{loopDetails.group.group_name}</p>
+            <p className="my-2 line-clamp-2 w-1/2 text-body-1-med">{loopDetails.group.group_description}</p>
             <div className="my-4 w-1/2 rounded-xl border border-monochrome-9 p-4">
               <span className="flex" ref={detailsDivRef}>
                 <span className="flex-1">
-                  <p className="text-body-sm text-monochrome">Created by</p>
+                  <p className="text-body-1-demi text-monochrome">Created by</p>
                   <Link href={{ pathname: PATH_NAME.profile(loopDetails.owner.nickname) }}>
                     <div className="my-2 flex items-center">
                       <CustomAvatar
@@ -48,12 +46,12 @@ export function MainComponent({ loopDetails }: Props) {
                         isAvatar={loopDetails.owner.is_avatar}
                         className="h-8 w-8"
                       />
-                      <p className="ml-1 text-title-sm">@{loopDetails.owner.nickname}</p>
+                      <p className="ml-1 text-body-1-bold">@{loopDetails.owner.nickname}</p>
                     </div>
                   </Link>
                 </span>
                 <span className="flex-1">
-                  <p className="text-body-sm text-monochrome">Posted in</p>
+                  <p className="text-body-1-demi text-monochrome">Posted in</p>
                   <Link href={{ pathname: PATH_NAME.community(loopDetails.community.handle) }}>
                     <div className="my-2 flex items-center">
                       <CustomAvatar
@@ -62,7 +60,7 @@ export function MainComponent({ loopDetails }: Props) {
                         isAvatar={false}
                         className="h-8 w-8"
                       />
-                      <p className="ml-1 text-title-sm">{loopDetails.community.name}</p>
+                      <p className="ml-1 text-body-1-bold">{loopDetails.community.name}</p>
                     </div>
                   </Link>
                 </span>
@@ -76,19 +74,18 @@ export function MainComponent({ loopDetails }: Props) {
               />
             </div>
             <span className="my-2 flex items-center gap-x-3">
-              <Button size="custom">
-                <p className="px-4 py-2 text-body-sm" style={{ fontWeight: 500 }}>
-                  Subscribe
-                </p>
+              <Button size="custom" className="px-4 py-1">
+                <p className="text-title-3-demi">Subscribe</p>
               </Button>
-              <Button size="custom" variant="outline" className="border-primary px-4">
+              {/* Hidden by requirement. */}
+              {/* <Button size="custom" variant="outline" className="border-primary px-4">
                 <span className="flex items-center">
                   <Image src={icQuestion} alt="question" />
                   <p className="py-2 text-body-sm text-primary">Q&A</p>
                 </span>
-              </Button>
-              <Button variant="outline" size="custom" className=" border-primary p-1">
-                <Image src={icShare} alt="share" className="h-7 w-7" />
+              </Button> */}
+              <Button variant="outline" size="custom" className="border-2 border-primary p-1">
+                <Image src={icShare} alt="share" className="h-4 w-4" />
               </Button>
             </span>
           </span>
@@ -115,7 +112,7 @@ function LoopVideos({ loopId }: any) {
 
   return (
     <div className="h-full w-full overflow-y-auto">
-      <p className="my-2 text-title-md">Posts</p>
+      <p className="my-2 text-title-3-bold">Posts</p>
       {isLoading && <Loader size="md" />}
       {data?.pages.flatMap((page) => page.videos).length === 0 && (
         <div className="flex items-center justify-center pt-32 text-title-md text-secondary">No videos available</div>
@@ -142,9 +139,9 @@ function LoopVideos({ loopId }: any) {
                     isAvatar={item.owner.is_avatar}
                     fallbackString={item.owner.nickname}
                   />
-                  <p className="ml-1 text-body-sm text-monochrome-white">@{item.owner.nickname}</p>
+                  <p className="ml-1 text-body-1-bold text-monochrome-white">@{item.owner.nickname}</p>
                 </div>
-                <p className="ml-1 line-clamp-2 text-body-sm text-monochrome-white">{item.video.description}</p>
+                <p className="ml-1 line-clamp-2 text-body-1-demi text-monochrome-white">{item.video.description}</p>
               </div>
             </div>
           ))}
@@ -161,19 +158,16 @@ function LoopVideos({ loopId }: any) {
   )
 }
 
+// TODO: get clarification from jimitbhai.
 function Cohosts({ chatId }: any) {
-  const { data, isLoading, isError } = getLoopCohosts(chatId, 'members')
+  const { data, isLoading } = getLoopCohosts(chatId, 'members')
   const cohosts = data?.users
 
-  return (
-    <div>
-      <p className="my-2 text-title-md">Collaborators</p>
-      {isLoading && <Loader size="md" />}
-      {isError && <div>Something went wrong...</div>}
-      {cohosts && cohosts.length === 0 && (
-        <div className="flex items-center justify-center text-title-md text-secondary">No collaborators yet</div>
-      )}
-      {cohosts && cohosts.length !== 0 && (
+  if (cohosts && cohosts.length !== 0)
+    return (
+      <div>
+        <p className="my-2 text-title-md">Collaborators</p>
+        {isLoading && <Loader size="md" />}
         <div className="h-full w-full overflow-auto">
           {cohosts.map((item: any, index: any) => (
             <Link key={index} href={{ pathname: PATH_NAME.profile(item.user.nickname) }}>
@@ -187,9 +181,8 @@ function Cohosts({ chatId }: any) {
             </Link>
           ))}
         </div>
-      )}
-    </div>
-  )
+      </div>
+    )
 }
 
 function LoopSubscribers({ chatId }: any) {
@@ -197,9 +190,8 @@ function LoopSubscribers({ chatId }: any) {
   const subscribers = data?.users
   return (
     <div>
-      <p className="my-2 text-title-md">Subscribers</p>
+      <p className="my-2 text-title-3-bold">Subscribers</p>
       {isLoading && <Loader size="md" />}
-      {isError && <div>Something went wrong...</div>}
       {subscribers && subscribers.length === 0 && (
         <div className="flex items-center justify-center text-title-md text-secondary">No subscribers yet</div>
       )}
@@ -265,10 +257,8 @@ function Stats({
       {statsData.map((obj, index) => {
         return (
           <div key={index} className="flex items-center gap-x-1">
-            <p className="text-title-lg">{obj.value}</p>
-            <p className="text-body-sm text-monochrome" style={{ fontWeight: 500 }}>
-              {obj.key}
-            </p>
+            <p className="text-title-2-bold">{obj.value}</p>
+            <p className="text-body-1-med text-monochrome">{obj.key}</p>
           </div>
         )
       })}
