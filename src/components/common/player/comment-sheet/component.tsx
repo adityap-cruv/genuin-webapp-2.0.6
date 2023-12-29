@@ -2,8 +2,12 @@ import { CommentSheet, CommentSheetContent, CommentSheetPortal } from '@componen
 import { X } from 'lucide-react'
 import { usePlayerControlStore } from '../player-control-store'
 import { useCommentSheetStore } from './store'
-import { use, useEffect } from 'react'
+import { useEffect } from 'react'
 import { Comments } from '@components/common/comments'
+import { DownloadDialog } from '@components/common/download-dialog'
+import Image from 'next/image'
+import icAudioRecord from '@icons/audioRecord.svg'
+import icVideoRecord from '@icons/videoRecord.svg'
 
 type Props = {
   container: React.MutableRefObject<HTMLDivElement | null>
@@ -55,8 +59,27 @@ export function Sheet({ container, videoId, noOfComments }: Props) {
               <Comments.withApi videoId={videoId} />
             </div>
           </div>
+          <CommentInput />
         </CommentSheetContent>
       </CommentSheetPortal>
     </CommentSheet>
+  )
+}
+
+function CommentInput() {
+  return (
+    <div className="sticky bottom-0 left-0 h-16 w-full border-t-2 border-t-monochrome-9 bg-monochrome-10 px-2 py-3 shadow-md">
+      <DownloadDialog title="Get the Genuin app" subtitle="Get the app to comment on this video." asChild>
+        <div className="flex w-full flex-1 items-center gap-x-4">
+          <div
+            placeholder="Add a comment"
+            className="h-full w-2/3 rounded-full border-2 border-monochrome-9 bg-monochrome-white py-2 pl-6">
+            <p className="text-start text-title-3-demi text-monochrome">Add a Comment</p>
+          </div>
+          <Image src={icAudioRecord} alt="audio record" className="h-8 w-8" />
+          <Image src={icVideoRecord} alt="audio record" className="h-8 w-8" />
+        </div>
+      </DownloadDialog>
+    </div>
   )
 }
