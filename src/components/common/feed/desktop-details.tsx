@@ -39,7 +39,7 @@ export function DesktopDetails() {
               Comments {videoDetails.video.no_of_comments !== 0 ? `(${videoDetails.video.no_of_comments})` : ''}
             </p>
           </div>
-          <div className="h-full pb-20 pl-6 pt-2">
+          <div className="h-full px-6 pb-20 pt-2">
             <CommentBox shareString={videoDetails.video.share_string} parentRef={scrollDivRef} />
           </div>
         </div>

@@ -70,7 +70,7 @@ function CommentList({ comments, isFetchingNextPage, fetchNextPage }: CommentLis
     }
   })
   return (
-    <div ref={scrollDivRef} className="h-full overflow-x-clip overflow-y-scroll px-4">
+    <div ref={scrollDivRef} className="h-full overflow-x-clip overflow-y-scroll px-2 sm:px-4">
       {comments.map((comment, index) => {
         return <CommentItem key={index} comment={comment} />
       })}

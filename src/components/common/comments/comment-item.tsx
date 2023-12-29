@@ -16,7 +16,7 @@ const AudioPlayer = dynamic(async () => await import('./audio-player').then((com
 export function CommentItem({ comment }: { comment: CommentType }) {
   const UI = Comment[comment.comment.type]
   return (
-    <div className="flex w-full flex-col gap-y-2 py-2 pr-6">
+    <div className="flex w-full flex-col gap-y-2 py-2">
       <span className="flex items-center justify-between">
         <span className="flex items-center gap-x-2">
           <CustomAvatar
