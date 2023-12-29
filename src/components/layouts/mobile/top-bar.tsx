@@ -88,7 +88,7 @@ function Menu({ hamBurgerVariant = 'dark' }: { hamBurgerVariant: 'dark' | 'light
       <SheetTrigger>
         <HamBurgerMenuIcon toggleToClose={false} variant={hamBurgerVariant} />
       </SheetTrigger>
-      <SheetContent showDefaultClose={false} side="left" className="w-full border-none">
+      <SheetContent showDefaultClose={false} side="left" className="w-full border-none shadow-none outline-none">
         <SheetClose className="shadow-none outline-none">
           <X strokeWidth="3px" className="h-6 w-6 stroke-new-off-black" />
         </SheetClose>
