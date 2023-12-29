@@ -44,15 +44,21 @@ function Mobile({ link = '', shareDescription = '', shareTitle = '', videoData }
             </ActionItem>
           </Link>
         )}
-        <ActionItem title="Repost the video!">
-          <Image src={icRepost} height={32} width={32} alt="repost" />
-        </ActionItem>
-        <ActionItem title="Give spark!">
-          <Image src={icSpark} height={32} width={32} alt="spark" />
-          <p className="flex justify-center text-body-sm text-monochrome-white">
-            {videoData?.video.no_of_sparks === null ? 0 : abbreviateNumber(videoData?.video.no_of_sparks ?? 0)}
-          </p>
-        </ActionItem>
+        <span className=" flex flex-col">
+          <DownloadDialog subtitle={<>Get the app to repost this video to a loop.</>} title={<>Get the Genuin app</>}>
+            <ActionItem title="Repost the video!">
+              <Image src={icRepost} height={32} width={32} alt="repost" />
+            </ActionItem>
+          </DownloadDialog>
+          <DownloadDialog title={<>Get the Genuin app.</>} subtitle={<>Get the app to give spark to this video.</>}>
+            <ActionItem title="Give spark!">
+              <Image src={icSpark} height={32} width={32} alt="spark" />
+              <p className="flex justify-center text-body-sm text-monochrome-white">
+                {videoData?.video.no_of_sparks === null ? 0 : abbreviateNumber(videoData?.video.no_of_sparks ?? 0)}
+              </p>
+            </ActionItem>
+          </DownloadDialog>
+        </span>
         <ActionItem
           title="See Comments!"
           onClick={() => {

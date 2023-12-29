@@ -163,11 +163,21 @@ export function ViewportPlayer({
     playing: false,
     player: null,
   })
-  const { shouldPlay, muted } = usePlayerControlStore((state) => ({
+  const { shouldPlay, muted, setCurrentTime, setDuration } = usePlayerControlStore((state) => ({
     shouldPlay: state.shouldPlay,
     muted: state.muted,
+    setCurrentTime: state.setCurrentTime,
+    setDuration: state.setDuration,
   }))
   const inView = useInView(videoRef, { amount: 0.95 })
+
+  const onDurationChangeEventHandler: ReactEventHandler<HTMLVideoElement> = (event) => {
+    setDuration(event.currentTarget.duration)
+  }
+
+  const onTimeUpdateEventHandler: ReactEventHandler<HTMLVideoElement> = (event) => {
+    setCurrentTime(event.currentTarget.currentTime)
+  }
 
   useEffect(() => {
     if (!videoRef.current) return
@@ -238,6 +248,8 @@ export function ViewportPlayer({
         }}
         onPause={onPause}
         onEnded={onEnded}
+        onTimeUpdate={onTimeUpdateEventHandler}
+        onDurationChange={onDurationChangeEventHandler}
         {...props}
       />
     )

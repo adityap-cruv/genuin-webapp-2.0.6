@@ -11,6 +11,7 @@ import icPause from '@icons/player-controls/icPause.svg'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { Actions } from './actions'
 import { ReadMore } from '@components/common/read-more'
+import { useEffect } from 'react'
 
 export const ControlLayer = {
   desktop: Desktop,
@@ -141,10 +142,8 @@ function Loop({ videoData }: { videoData?: VideoDataType }) {
 function PlayerProgressBar() {
   const currentTime = usePlayerControlStore((state) => state.currentTime)
   const duration = usePlayerControlStore((state) => state.duration)
-  return (
-    <Progress
-      value={Math.round((currentTime / duration) * 100)}
-      className="absolute bottom-0 left-0 h-[2px] transition-[width]"
-    />
-  )
+  let progressValue = 0
+  if (duration !== 0) progressValue = Math.round((currentTime / duration) * 100)
+
+  return <Progress value={progressValue} className="absolute bottom-0 left-0 h-[2px] transition-[width]" />
 }
