@@ -73,12 +73,17 @@ function Mobile({ link = '', shareDescription = '', shareTitle = '', videoData }
         <ActionItem
           title="Share Video!"
           onClick={(e) => {
-            e.stopPropagation()
             void window.navigator.share({
               text: videoData.video?.description ?? '',
               title: 'Share this video',
               url: window.location.hostname + PATH_NAME.video(videoData.video.share_string),
             })
+            e.stopPropagation()
+            // void window.navigator.share({
+            //   text: videoData.video?.description ?? '',
+            //   title: 'Share this video',
+            //   url: window.location.hostname + PATH_NAME.video(videoData.video.share_string),
+            // })
             // await shareFn({ description: shareDescription, title: shareTitle })
           }}>
           <Image src={icShare} alt="share" height={32} width={32} />
