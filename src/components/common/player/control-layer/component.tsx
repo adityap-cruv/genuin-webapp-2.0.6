@@ -93,7 +93,7 @@ function Mobile({ videoData }: Props) {
             e.stopPropagation()
           }}
         />
-        <div className="absolute bottom-12 left-0 w-full">
+        <div className="absolute bottom-14 left-0 w-full">
           <Loop videoData={videoData} />
         </div>
         <PlayerProgressBar />
@@ -105,7 +105,7 @@ function Mobile({ videoData }: Props) {
 function Loop({ videoData }: { videoData?: VideoDataType }) {
   if (videoData)
     return (
-      <div className="flex justify-between px-2">
+      <div className="flex justify-between  px-2">
         <div className="flex w-4/5 flex-col justify-end">
           <div className="flex items-center">
             <Link
@@ -120,10 +120,12 @@ function Loop({ videoData }: { videoData?: VideoDataType }) {
               <p className="line-clamp-1 px-2 text-title-md text-monochrome-white">@{videoData.owner.nickname}</p>
             </Link>
           </div>
-          <ReadMore
-            text={videoData?.video.description ?? ''}
-            className="w-full py-2 text-body-sm text-monochrome-white"
-          />
+          <span className="py-2">
+            <ReadMore
+              text={videoData?.video.description ?? ''}
+              className="line-clamp-2 w-full break-all text-body-sm text-monochrome-white"
+            />
+          </span>
         </div>
         {/* TODO: configure share title and description correctly */}
         <Actions.mobile
