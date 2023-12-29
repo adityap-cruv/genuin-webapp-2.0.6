@@ -2,7 +2,7 @@ import { CommentSheet, CommentSheetContent, CommentSheetPortal } from '@componen
 import { X } from 'lucide-react'
 import { usePlayerControlStore } from '../player-control-store'
 import { useCommentSheetStore } from './store'
-import { useEffect } from 'react'
+import { use, useEffect } from 'react'
 import { Comments } from '@components/common/comments'
 
 type Props = {
