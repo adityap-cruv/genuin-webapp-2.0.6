@@ -12,6 +12,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { DownloadDialog } from '@components/common/download-dialog'
 import { useCommentSheetStore } from '../comment-sheet/store'
+import { PATH_NAME } from '@lib/utils/constants/path'
 
 interface ActionsProps {
   link: string
@@ -71,7 +72,15 @@ function Mobile({ link = '', shareDescription = '', shareTitle = '', videoData }
         </ActionItem>
         <ActionItem
           title="Share Video!"
-          onClick={async () => await shareFn({ description: shareDescription, title: shareTitle })}>
+          onClick={(e) => {
+            e.stopPropagation()
+            void window.navigator.share({
+              text: videoData.video?.description ?? '',
+              title: 'Share this video',
+              url: window.location.hostname + PATH_NAME.video(videoData.video.share_string),
+            })
+            // await shareFn({ description: shareDescription, title: shareTitle })
+          }}>
           <Image src={icShare} alt="share" height={32} width={32} />
         </ActionItem>
         <ActionItem title="more options!">
