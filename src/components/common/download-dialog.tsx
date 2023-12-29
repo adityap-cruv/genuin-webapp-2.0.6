@@ -21,7 +21,7 @@ export function DownloadDialog({ children, subtitle, title, asChild = false }: P
     <Dialog>
       <DialogTrigger asChild={asChild}>{children}</DialogTrigger>
       <DialogContent>
-        <div className="flex h-full w-full flex-col items-center justify-center pt-6">
+        <div className="flex h-full w-full flex-col items-center justify-center px-4 pt-6">
           <Image src={iconLogo} alt="genuin" className="mb-3" />
           <p style={{ fontSize: '40px' }} className="hidden whitespace-nowrap text-center font-bold sm:block">
             {title}
