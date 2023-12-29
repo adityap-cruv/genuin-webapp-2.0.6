@@ -11,7 +11,6 @@ import icPause from '@icons/player-controls/icPause.svg'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { Actions } from './actions'
 import { ReadMore } from '@components/common/read-more'
-import { useEffect } from 'react'
 
 export const ControlLayer = {
   desktop: Desktop,
