@@ -100,7 +100,7 @@ function Mobile({
               loop={loop}
             />
           ) : (
-            <InnerPlayer videoSource={videoData.video.url} poster={videoData.video.thumbnail} />
+            <InnerPlayer loop={loop} videoSource={videoData.video.url} poster={videoData.video.thumbnail} />
           )}
           <div className="absolute left-0 top-0 h-full w-full">
             <MobileControlLayer videoData={videoData} />
@@ -150,6 +150,7 @@ function Desktop({
               videoSource={videoData.video.url}
               poster={videoData.video.thumbnail}
               isFirstElement={isFirstPlayerInList}
+              loop={loop}
             />
           ) : (
             <InnerPlayer loop={loop} videoSource={videoData.video.url} poster={videoData.video.thumbnail} />

@@ -60,11 +60,11 @@ export function TopBar({
           isAvatar={false}
           className="h-8 w-8"
         />
-        <p className="text-title-lg font-semibold">{communityName}</p>
+        <p className="text-title-2-demi">{communityName}</p>
       </span>
       <span className="flex items-center gap-x-2">
         <Button size="custom">
-          <p className="px-4 py-2 text-body-sm">Join Community</p>
+          <p className="px-4 py-2 text-body-1-demi">Join Community</p>
         </Button>
         <Button variant="outline" size="custom" className="border border-primary p-0.5">
           <Image src={icShare} alt="share" className="h-7 w-7" />

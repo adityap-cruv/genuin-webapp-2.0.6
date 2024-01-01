@@ -2,8 +2,10 @@ import { type VideoSizeBoxType } from '@hooks/use-video-size-box'
 import { AnimatedInfinityView } from '@components/common/animated-infinity-view'
 import dynamic from 'next/dynamic'
 import { type VideoDataType } from '@lib/schemas/video'
+import { cn } from '@lib/utils'
 import { useFeedListStore } from './store'
 import { useEffect, useRef } from 'react'
+import { useCommentSheetStore } from '../player/comment-sheet/store'
 const Player = dynamic(async () => await import('@components/common/player').then((comp) => comp.Player.mobile))
 
 type MobileProps = {
@@ -32,6 +34,8 @@ export function Mobile({
     currentIndex: state.currentIndex,
     videoList: state.videoList,
   }))
+  // # If comment sheet is open than element should not be scrolled..
+  const commentIsOpen = useCommentSheetStore((state) => state.modalIsOpen)
 
   useEffect(() => {
     if (!isFetchingNextPage && videoList.length - 3 <= currentIndex) {
@@ -54,6 +58,10 @@ export function Mobile({
   }, [scrollDivRef.current])
 
   useEffect(() => {
+    setCurrentIndex(0)
+  }, [])
+
+  useEffect(() => {
     setVideoList(videos)
   }, [videos])
 
@@ -62,7 +70,10 @@ export function Mobile({
       <div
         ref={scrollDivRef}
         style={{ width: sizeBox.width, height: sizeBox.height }}
-        className="hide-scrollbar snap-y snap-mandatory snap-always overflow-x-clip overflow-y-scroll scroll-smooth">
+        className={cn(
+          'hide-scrollbar snap-y snap-mandatory snap-always overflow-x-clip  scroll-smooth',
+          !commentIsOpen ? 'overflow-y-scroll' : 'overflow-y-hidden'
+        )}>
         {videos.map((item, index) => {
           return (
             <Player
@@ -70,6 +81,7 @@ export function Mobile({
               playIfInViewPort
               isFirstPlayerInList={index === 0}
               shouldPlay
+              loop
               sizeBox={sizeBox}
               videoData={item}
             />

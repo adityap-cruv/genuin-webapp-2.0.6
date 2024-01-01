@@ -70,7 +70,7 @@ function CommentList({ comments, isFetchingNextPage, fetchNextPage }: CommentLis
     }
   })
   return (
-    <div ref={scrollDivRef} className="h-full overflow-x-clip overflow-y-scroll px-4">
+    <div ref={scrollDivRef} className="h-full overflow-x-clip overflow-y-scroll px-2 sm:px-4">
       {comments.map((comment, index) => {
         return <CommentItem key={index} comment={comment} />
       })}
@@ -83,8 +83,8 @@ export function NoComments() {
   return (
     <div className="flex h-full w-full flex-col items-center justify-center">
       <Image src={icComment} alt="comment!" />
-      <p className="mt-2 text-title-lg">No comments yet</p>
-      <p className="text-body-lg">Be the first one to comment</p>
+      <p className="mt-2 text-title-2-bold">No comments yet</p>
+      <p className="text-body-1-demi">Be the first one to comment</p>
     </div>
   )
 }

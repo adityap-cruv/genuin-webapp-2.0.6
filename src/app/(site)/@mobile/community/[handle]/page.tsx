@@ -1,18 +1,24 @@
 import { fetchCommunityDetails } from '@lib/api/community'
-import Main from './main'
+import { RootFeed } from './root-feed'
+import { RootDetails } from './root-details'
 
 type Props = {
   params: {
     handle: string
   }
   searchParams: {
-    details: string
+    feed: string
   }
 }
 
 export default async function Component({ params, searchParams }: Props) {
-  const communityData = await fetchCommunityDetails(params.handle)
-  return <Main communityDetails={communityData} showDetails={searchParams.details === 'true'} />
+  if (searchParams.feed === '1') return <RootFeed handle={params.handle} />
+  return <Details handle={params.handle} />
+}
+
+async function Details({ handle }: { handle: string }) {
+  const communityData = await fetchCommunityDetails(handle)
+  return <RootDetails communityDetails={communityData} />
 }
 
 // export async function generateMetadata({ params }: Props): Promise<Metadata> {

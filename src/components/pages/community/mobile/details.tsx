@@ -1,7 +1,7 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
 import { Button } from '@components/ui/button'
 import type { CommunityDetailsType } from '@lib/schemas/community'
-import { abbreviateNumber, checkAndAppendHttps, generateDeepLink, openGeneratedLink, timeAgo } from '@lib/utils'
+import { abbreviateNumber, checkAndAppendHttps, generateDeepLink, getTimeAgo, openGeneratedLink } from '@lib/utils'
 import Image from 'next/image'
 import icShare from '@icons/icShareBlue.svg'
 import Link from 'next/link'
@@ -235,7 +235,7 @@ function LoopItem({ loopDetails }: { loopDetails: any }) {
           <p className="text-title-sm">{loopDetails.name}</p>
           {loopDetails.videos.length !== 0 && (
             <p className="text-body-sm text-monochrome-4">
-              {loopDetails.videos[0].owner} posted ∙ {timeAgo(loopDetails.videos[0].created_at)}
+              {loopDetails.videos[0].owner} posted ∙ {getTimeAgo(loopDetails.videos[0].created_at)}
             </p>
           )}
         </div>

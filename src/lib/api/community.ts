@@ -10,6 +10,14 @@ export async function fetchCommunityDetails(handle: string) {
     })
     .then((res) => res.data.data)
     .catch((e) => {
+      // TODO:
+      /**
+       * Here in this api one request is being made undexpectedly.
+       * Which is "/api/v3/public/community/details?community_id[handle]=cow_face"
+       * Figure out why this error happening and solve the issue.
+       * @example Community handle: @kvkic
+       */
+      console.log('error::', e)
       throw new Error('Something went wrong with community detail!')
     })
 }
@@ -38,7 +46,7 @@ export function getCommunityVideos(handle: string) {
       }
       return await promise
     },
-    queryKey: ['community', 'videos'],
+    queryKey: ['community', 'videos', handle],
     getNextPageParam: (lastPage) => {
       if (lastPage.end) return
       return lastPage.ref
@@ -64,7 +72,7 @@ export async function fetchCommunityLoops(handle: string) {
 }
 
 export function getCommunityLoops(handle: string) {
-  return useQuery({ queryFn: async () => await fetchCommunityLoops(handle), queryKey: ['community', 'loops'] })
+  return useQuery({ queryFn: async () => await fetchCommunityLoops(handle), queryKey: ['community', 'loops', handle] })
 }
 
 // async function fetchVideoComments(handle: string) {
