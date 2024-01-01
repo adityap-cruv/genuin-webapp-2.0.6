@@ -5,29 +5,37 @@ export async function fetchCommunityDetails(handle: string) {
   return await axios
     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/community/details', {
       params: {
-        community_handle: handle,
+        community_id: { handle },
       },
     })
     .then((res) => res.data.data)
     .catch((e) => {
+      // TODO:
+      /**
+       * Here in this api one request is being made undexpectedly.
+       * Which is "/api/v3/public/community/details?community_id[handle]=cow_face"
+       * Figure out why this error happening and solve the issue.
+       * @example Community handle: @kvkic
+       */
+      console.log('error::', e)
       throw new Error('Something went wrong with community detail!')
     })
 }
 
 export function getCommunityVideos(handle: string) {
-  let promise: null | Promise<{ videos: any; ref: any }> = null
+  let promise: null | Promise<{ videos: any; ref: any; end?: boolean }> = null
   return useInfiniteQuery({
     queryFn: async ({ pageParam }) => {
       if (!promise) {
         promise = axios
           .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/community/videos', {
             params: {
-              community_handle: handle,
+              community_id: { handle },
               ref: pageParam,
             },
           })
           .then((res) => {
-            return { videos: res.data.data.feed, ref: res.data.data.ref }
+            return { videos: res.data.data.list, ref: res.data.data.ref, end: res.data.data.end_page }
           })
           .catch((e) => {
             throw new Error('Something went wrong with community videos!')
@@ -38,23 +46,25 @@ export function getCommunityVideos(handle: string) {
       }
       return await promise
     },
-    queryKey: ['community', 'videos'],
+    queryKey: ['community', 'videos', handle],
     getNextPageParam: (lastPage) => {
-      if (!lastPage.videos?.length || !lastPage.ref) return
+      if (lastPage.end) return
       return lastPage.ref
     },
   })
 }
 
+//  TODO: Add Pagination.
+// TODO: Check for pagination
 export async function fetchCommunityLoops(handle: string) {
   return await axios
     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/community/loops', {
       params: {
-        community_handle: handle,
+        community_id: { handle },
       },
     })
     .then((res) => {
-      return res.data.data?.loops
+      return res.data.data?.list
     })
     .catch((e) => {
       throw new Error('Something went wrong with loop detail!')
@@ -62,7 +72,7 @@ export async function fetchCommunityLoops(handle: string) {
 }
 
 export function getCommunityLoops(handle: string) {
-  return useQuery({ queryFn: async () => await fetchCommunityLoops(handle), queryKey: ['community', 'loops'] })
+  return useQuery({ queryFn: async () => await fetchCommunityLoops(handle), queryKey: ['community', 'loops', handle] })
 }
 
 // async function fetchVideoComments(handle: string) {

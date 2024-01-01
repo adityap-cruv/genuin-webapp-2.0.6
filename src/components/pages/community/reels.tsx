@@ -8,7 +8,7 @@ import Image from 'next/image'
 import noLoopImage from '@images/noLoopImage.svg'
 import { type VideoSizeBoxType } from '@hooks/use-video-size-box'
 
-const Player = dynamic(async () => await import('@components/common/player').then((comp) => comp.default), {
+const Player = dynamic(async () => await import('@components/common/player').then((comp) => comp.Player.desktop), {
   loading: (state) => {
     return <Loader size="lg" />
   },
@@ -77,7 +77,6 @@ function InnerReelList({ videos, isLoading, sizeBox }: InnerReelListProps) {
         isFirstPlayerInList={index === 0}
         loop
         playIfInViewPort
-        showCommunityControl
       />
     )
   })

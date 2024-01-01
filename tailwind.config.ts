@@ -1,4 +1,4 @@
-import { Config } from 'tailwindcss'
+import { type Config } from 'tailwindcss'
 import * as defaultTheme from 'tailwindcss/defaultTheme'
 module.exports = {
   darkMode: ['class'],
@@ -88,6 +88,20 @@ module.exports = {
       // },
     },
     fontSize: {
+      // New Typography developed by design team for new web.
+      'title-1-bold': ['24px', { fontWeight: 700, lineHeight: '32px' }],
+      'title-2-bold': ['20px', { fontWeight: 700, lineHeight: '32px' }],
+      'title-2-demi': ['20px', { fontWeight: 600, lineHeight: '32px' }],
+      'title-3-bold': ['17px', { fontWeight: 700, lineHeight: '24px' }],
+      'title-3-demi': ['17px', { fontWeight: 600, lineHeight: '24px' }],
+      'title-3-med': ['17px', { fontWeight: 500, lineHeight: '24px' }],
+      'body-1-bold': ['15px', { fontWeight: 700, lineHeight: '20px' }],
+      'body-1-demi': ['15px', { fontWeight: 600, lineHeight: '20px' }],
+      'body-1-med': ['15px', { fontWeight: 500, lineHeight: '20px' }],
+      'cap-1-bold': ['12px', { fontWeight: 700, lineHeight: '16px' }],
+      'cap-1-demi': ['12px', { fontWeight: 600, lineHeight: '16px' }],
+      'cap-1-med': ['12px', { fontWeight: 500, lineHeight: '16px' }],
+      // TODO: Scrap this fonts after using sanity and changing all fonts
       'title-sm': ['15px', { fontWeight: 700, lineHeight: '20px' }], // 15px
       'title-md': ['17px', { fontWeight: 700, lineHeight: '24px' }], // 17px
       'title-lg': ['20px', { fontWeight: 700, lineHeight: '32px' }], // 20px
@@ -98,7 +112,7 @@ module.exports = {
       'cap-bold-lg': ['12px', { fontWeight: 700, lineHeight: '16px' }], // 12px
       'cap-sm': ['10px', { fontWeight: 600, lineHeight: '16px' }],
       'cap-lg': ['12px', { fontWeight: 600, lineHeight: '16px' }],
-      // This is for new typography
+      // This typography is only used for index page.
       'new-h1': ['60px', { fontWeight: 700, lineHeight: '110%', letterSpacing: '-1.8px' }],
       'new-h2': ['48px', { fontWeight: 700, lineHeight: '110%', letterSpacing: '-1.44px' }],
       'new-h3': ['40px', { fontWeight: 700, lineHeight: '110%', letterSpacing: '-1.2px' }],
@@ -127,6 +141,13 @@ module.exports = {
       height: {
         body: 'calc(100% - 74px)',
         navbar: '74px',
+      },
+      flexGrow: {
+        3: '3',
+        4: '4',
+        5: '5',
+        6: '6',
+        9: '9',
       },
       container: {
         center: true,
@@ -157,6 +178,9 @@ module.exports = {
         tablet: '768px',
         lg: '1074px',
       },
+      maxWidth: {
+        1440: '1440px',
+      },
       keyframes: {
         'accordion-down': {
           from: { height: '0' },
@@ -170,6 +194,9 @@ module.exports = {
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+      },
+      linearGradientColors: {
+        'black-70': ['rgba(17, 17, 17, 0.00)', 'rgba(17, 17, 17, 0.70)'],
       },
       letterSpacing: {},
     },

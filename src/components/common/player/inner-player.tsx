@@ -1,5 +1,5 @@
 import OpenPlayerJS from 'openplayerjs'
-import { inView, useInView } from 'framer-motion'
+import { useInView } from 'framer-motion'
 import { type DetailedHTMLProps, type ReactEventHandler, type VideoHTMLAttributes, useEffect, useRef } from 'react'
 import { usePlayerControlStore } from './player-control-store'
 
@@ -163,11 +163,21 @@ export function ViewportPlayer({
     playing: false,
     player: null,
   })
-  const { shouldPlay, muted } = usePlayerControlStore((state) => ({
+  const { shouldPlay, muted, setCurrentTime, setDuration } = usePlayerControlStore((state) => ({
     shouldPlay: state.shouldPlay,
     muted: state.muted,
+    setCurrentTime: state.setCurrentTime,
+    setDuration: state.setDuration,
   }))
   const inView = useInView(videoRef, { amount: 0.95 })
+
+  const onDurationChangeEventHandler: ReactEventHandler<HTMLVideoElement> = (event) => {
+    setDuration(event.currentTarget.duration)
+  }
+
+  const onTimeUpdateEventHandler: ReactEventHandler<HTMLVideoElement> = (event) => {
+    setCurrentTime(event.currentTarget.currentTime)
+  }
 
   useEffect(() => {
     if (!videoRef.current) return
@@ -229,10 +239,6 @@ export function ViewportPlayer({
         loop={loop}
         src={videoSource}
         playsInline
-        // style={{
-        //   height: videoSizeBox.height,
-        //   width: videoSizeBox.width,
-        // }}
         onPlay={onPlay}
         onPlaying={onPlaying}
         onError={onError}
@@ -242,6 +248,8 @@ export function ViewportPlayer({
         }}
         onPause={onPause}
         onEnded={onEnded}
+        onTimeUpdate={onTimeUpdateEventHandler}
+        onDurationChange={onDurationChangeEventHandler}
         {...props}
       />
     )

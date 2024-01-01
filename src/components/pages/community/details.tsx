@@ -32,7 +32,7 @@ export function CommunityDetails({ children, communityDetails }: Props) {
 
   if (communityDetails && sizeBox)
     return (
-      <div className="mt-navbar grid h-body w-full min-w-tablet grid-flow-col ">
+      <div className="grid w-full min-w-tablet grid-flow-col ">
         <Left />
         <div style={{ width: sizeBox.width, height: sizeBox.height }}>
           <CommunityReels communityHandle={communityDetails.info.handle} sizeBox={sizeBox} />

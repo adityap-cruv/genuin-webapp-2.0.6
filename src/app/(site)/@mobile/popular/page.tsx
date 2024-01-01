@@ -1,0 +1,18 @@
+import { Root } from './root'
+import { type Metadata } from 'next'
+
+type Props = {
+  searchParams: {
+    brand_id?: string
+  }
+}
+
+export default function Page({ searchParams }: Props) {
+  return <Root />
+}
+
+export function generateMetadata(): Metadata {
+  return {
+    title: 'Popular | Welcome to Genuin!',
+  }
+}

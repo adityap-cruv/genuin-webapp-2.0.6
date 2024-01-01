@@ -7,14 +7,15 @@ import { CustomAvatar } from '@components/custom/custom-avatar'
 // todo configure error here.
 export function Cohosts({ loopId }: { loopId: string }) {
   const { data, isLoading, isError } = getLoopCohosts(loopId, 'members')
+  const cohosts = data?.users
   return (
     <div className="h-2/3 pt-3">
       <p className="text-title-lg">Co-Hosts</p>
       {isLoading && <Loader size="md" />}
       {isError && <div>Something went wrong...</div>}
-      {data && (
+      {cohosts && (
         <div className="grid h-full w-full columns-2 grid-cols-2 overflow-auto pb-11 md:grid-cols-3 xl:grid-cols-4">
-          {data.map((item: any, index: any) => (
+          {cohosts.map((item: any, index: any) => (
             <Link key={index} href={{ pathname: PATH_NAME.profile(item.user.nickname) }}>
               <CohostTile
                 image={item.user.profile_image || ''}

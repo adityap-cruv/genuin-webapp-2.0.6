@@ -17,13 +17,11 @@ const sheetVariants = cva(
     variants: {
       side: {
         bottom:
-          'inset-x-0 h-5/6 bottom-0 data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom',
-        right:
-          'inset-y-0 right-0 w-3/4 data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right sm:max-w-sm',
+          'inset-x-0 h-[95%] bottom-0 data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom',
       },
     },
     defaultVariants: {
-      side: 'right',
+      side: 'bottom',
     },
   }
 )
