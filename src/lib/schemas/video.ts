@@ -28,6 +28,7 @@ const VideoInfoSchema = z.object({
   reply_count: z.number().nullish(),
   no_of_sparks: z.number().nullish(),
   no_of_comments: z.number().nullish(),
+  slug: z.string(),
 })
 
 const LoopInfoSchema = z.object({
