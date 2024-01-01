@@ -10,11 +10,13 @@ import { CustomAvatar } from '@components/custom/custom-avatar'
 import { DecorativeList } from '@components/custom/decorative-list'
 import { getAllCommunities, getAllLoops, getAllLoopVideos } from '@lib/api/profile'
 import { Loader } from '@components/ui/loader'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import icSpark from '@icons/player-controls/icBulb.svg'
 import { Shimmer } from '@components/ui/shimmer'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
+import { useInView } from 'framer-motion'
+import { TopBar } from './top-bar'
 import { PlayerModal } from '@components/common/player-modal'
 
 interface CompProps {
@@ -24,19 +26,27 @@ interface CompProps {
 export function MainComponent({ profileData }: CompProps) {
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
+  const detailsDivRef = useRef<HTMLDivElement>(null)
+  const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
 
   return (
     <>
-      <div className="h-full w-full overflow-auto p-4">
-        <div className="w-1/2">
+      <TopBar
+        defaultOpen={false}
+        isOpen={!detailsInView}
+        profileImage={profileData?.profile_image}
+        profileName={profileData?.name}
+      />
+      <div className="hide-scrollbar absolute inset-0 h-full w-full overflow-auto px-4">
+        <div className="mt-4 w-1/2">
           <CustomAvatar
             className="bg-slate-500 h-20 w-20 bg-red-40"
             fallbackString={profileData?.name}
             imageUrl={profileData?.profile_image}
             isAvatar={profileData?.is_avatar}
           />
-          <div className="flex items-center py-1">
-            <p className="line-clamp-1 pr-2 text-title-lg">{profileData?.name}</p>
+          <div className="flex items-center py-1" ref={detailsDivRef}>
+            <p className="line-clamp-1 pr-2 text-title-xl">{profileData?.name}</p>
             <p className="line-clamp-1 text-body-sm text-monochrome" style={{ fontWeight: 500 }}>
               @{profileData?.nickname}
             </p>
@@ -49,19 +59,21 @@ export function MainComponent({ profileData }: CompProps) {
             variant="outline"
             size="custom"
             outlineColor="genuin-blue"
+            className="my-1"
             onClick={async () =>
               await shareFn({
                 shareLink: window.location.href,
                 toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
               })
             }>
-            <span className="flex items-center p-1.5 pr-4">
+            <span className="flex items-center p-1">
               <Image src={icShare} alt="share" height={24} width={24} />
-              <p className="pl-2 text-title-sm text-blue">Share</p>
             </span>
           </Button>
         </div>
-        <CommunityList usernickname={profileData?.nickname} />
+        <div className="w-full overflow-hidden" style={{ height: 'calc(100% - 56px)' }}>
+          <CommunityList usernickname={profileData?.nickname} />
+        </div>
       </div>
       <Toaster />
     </>
@@ -107,14 +119,14 @@ function CommunityList({ usernickname }: any) {
   }
 
   return (
-    <>
+    <div className="h-full w-full overflow-y-auto">
       {isLoading && <Loader size="md" />}
       {data && (
         <div>
           {data?.pages
             .flatMap((page) => page.communities)
             .map((item, index) => (
-              <div key={index} className="my-6">
+              <div key={index} className="my-4">
                 <div className="flex items-center">
                   <CustomAvatar
                     className="bg-slate-500 h-11 w-11 bg-red-40"
@@ -124,7 +136,9 @@ function CommunityList({ usernickname }: any) {
                   />
                   <Link href={{ pathname: PATH_NAME.community(item.handle) }}>
                     <div className="mx-2">
-                      <p className="line-clamp-1 text-left text-title-md" style={{ fontWeight: 600, fontSize: '20px' }}>
+                      <p
+                        className="line-clamp-1 text-left"
+                        style={{ fontWeight: 600, fontSize: '20px', lineHeight: '24px' }}>
                         {item.name}
                       </p>
                     </div>
@@ -140,12 +154,12 @@ function CommunityList({ usernickname }: any) {
       {isFetchingNextPage && <Loader size="md" />}
       {hasNextPage && (
         <p
-          className="text-blue-500 flex w-full cursor-pointer justify-center p-2 text-cap-lg text-monochrome"
+          className="text-blue-500 flex w-full cursor-pointer justify-center pb-4 text-cap-lg text-monochrome"
           onClick={handleSeeMoreClick}>
           See More Communities
         </p>
       )}
-    </>
+    </div>
   )
 }
 
@@ -213,7 +227,9 @@ function LoopVideos({ userId, loopDetails }: any) {
   return (
     <>
       <Link href={{ pathname: PATH_NAME.loop(loopDetails.share_string) }}>
-        <p className="text-title-sm">{loopDetails.name}</p>
+        <p className="mb-3 text-title-sm" style={{ lineHeight: '24px' }}>
+          {loopDetails.name}
+        </p>
       </Link>
       {videos?.length === 0 && (
         <div className="flex items-center justify-center pt-32 text-title-md text-secondary">No videos available</div>

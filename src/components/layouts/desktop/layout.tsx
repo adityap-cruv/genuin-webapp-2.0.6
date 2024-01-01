@@ -6,8 +6,8 @@ export function Layout(props: any) {
   const showTopbar = cookies().get('embed')?.value === '1'
   return (
     <main className="absolute inset-0 flex h-full min-h-max w-full flex-col items-center overflow-clip">
-      {!showTopbar && <TopBar />}
-      <section className="flex h-full w-full xl:container">
+      {showTopbar && <TopBar />}
+      <section className="flex h-body w-full xl:container overflow-clip">
         <section className="flex-[1] lg:flex-[3]">
           <SideBar />
         </section>
