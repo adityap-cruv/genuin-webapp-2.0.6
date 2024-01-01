@@ -19,17 +19,17 @@ export function getTimeAgo(createdAt: any) {
   const years = Math.floor(months / 12)
 
   if (years > 0) {
-    return years + 'y ago'
+    return years + 'y'
   } else if (months > 0) {
-    return months + 'm ago'
+    return months + 'm'
   } else if (days > 0) {
-    return days + 'd ago'
+    return days + 'd'
   } else if (hours > 0) {
-    return hours + 'h ago'
+    return hours + 'h'
   } else if (minutes > 0) {
-    return minutes + 'min ago'
+    return minutes + 'min'
   } else {
-    return seconds + 's ago'
+    return seconds + 's'
   }
 }
 

@@ -4,20 +4,17 @@ import type { LoopDetailsType } from '@lib/schemas/loop/details'
 import { generateDeepLink, openGeneratedLink } from '@lib/utils'
 import Image from 'next/image'
 import icShare from '@icons/icShareBlue.svg'
-import { Toaster } from '@components/ui/toaster'
 import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
-import { useRef } from 'react'
-import { useMotionValueEvent, useScroll } from 'framer-motion'
-import { getLoopCohosts, getLoopVideos } from '@lib/api/loop'
+import { getLoopCohosts } from '@lib/api/loop'
 import { Loader } from '@components/ui/loader'
-import { PlayerModal } from '@components/common/player-modal'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { TopBar } from '@components/layouts/mobile/top-bar'
 import icQuestion from '@icons/icQuestion.svg'
+import { LoopVideos } from '@components/common/loop-videos'
 
 let loopDetailsModule: LoopDetailsType
 
@@ -117,12 +114,12 @@ export function MainComponent({ loopDetails }: Props) {
                   Subscribe
                 </p>
               </Button>
-              <Button size="custom" variant="outline" className="border-primary px-4">
+              {/* <Button size="custom" variant="outline" className="border-primary px-4">
                 <span className="flex items-center">
                   <Image src={icQuestion} alt="question" />
                   <p className="py-2 text-body-sm text-primary">Q&A</p>
                 </span>
-              </Button>
+              </Button> */}
               <Button
                 variant="outline"
                 size="custom"
@@ -139,7 +136,6 @@ export function MainComponent({ loopDetails }: Props) {
           </div>
 
           <LoopTabs />
-          <Toaster />
         </div>
       </>
     )
@@ -160,7 +156,7 @@ function LoopTabs() {
         </TabsTrigger>
       </TabsList>
       <TabsContent value="Loops">
-        <LoopVideosList loopId={loopDetailsModule.share_string} />
+        <LoopVideos loopId={loopDetailsModule.share_string} />
       </TabsContent>
       <TabsContent value="About">
         <Cohosts loopId={loopDetailsModule.share_string} />
@@ -220,65 +216,6 @@ function Stats({
           </div>
         )
       })}
-    </div>
-  )
-}
-
-// todo check where is divRef.
-function LoopVideosList({ loopId }: { loopId: string }) {
-  const divRef = useRef<HTMLDivElement>(null)
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getLoopVideos(loopId)
-  const { scrollYProgress } = useScroll({ container: divRef })
-
-  useMotionValueEvent(scrollYProgress, 'change', (latest) => {
-    if (Number(latest.toPrecision(2)) > 0.8) {
-      if (!isFetchingNextPage) void fetchNextPage()
-    }
-  })
-
-  return (
-    <div className="relative mt-4 h-full w-full">
-      {isLoading && <Loader className="pt-32" size="md" />}
-      {data?.pages.flatMap((page) => page.videos).length === 0 && (
-        <div className="flex items-center justify-center pt-32 text-title-md text-secondary">No videos available</div>
-      )}
-      <div className="grid grid-cols-2 gap-4">
-        {data?.pages
-          .flatMap((page) => page.videos)
-          .map((item, index) => (
-            <PlayerModal key={index} videoDetails={item}>
-              <div className="relative aspect-reel w-full duration-300 hover:scale-95">
-                <Image
-                  src={item.video.thumbnail ?? ''}
-                  alt={item.video.description ?? ''}
-                  className="h-full w-full rounded-xl object-fill"
-                  fill
-                />
-                {/* <p className="absolute left-2 top-2 text-title-sm text-monochrome-white">
-                    {item.video?.metadata.duration + 's'}
-                  </p> */}
-                <div className="absolute bottom-2 left-2">
-                  <div className="flex h-6 w-6 items-center">
-                    <CustomAvatar
-                      className="h-full w-full bg-red-40"
-                      imageUrl={item.owner.profile_image}
-                      isAvatar={item.owner.is_avatar}
-                      fallbackString={item.owner.nickname}
-                    />
-                    <p className="ml-1 text-body-sm text-monochrome-white">@{item.owner.nickname}</p>
-                  </div>
-                  <p className="ml-1 line-clamp-2 text-left text-body-sm text-monochrome-white">
-                    {item.video.description}
-                  </p>
-                </div>
-              </div>
-            </PlayerModal>
-          ))}
-      </div>
-      {isFetchingNextPage && <Loader size="md" />}
-      {hasNextPage && (
-        <div className="botom-0 absolute z-10 h-2 w-full bg-gradient-to-l from-monochrome-white to-transparent opacity-90" />
-      )}
     </div>
   )
 }

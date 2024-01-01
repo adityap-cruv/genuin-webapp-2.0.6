@@ -4,21 +4,27 @@ import type { LoopDetailsType } from '@lib/schemas/loop/details'
 import Image from 'next/image'
 import icShare from '@icons/icShareBlue.svg'
 import { CustomAvatar } from '@components/custom/custom-avatar'
-import { useRef, useState } from 'react'
+import { useRef } from 'react'
 import { useInView } from 'framer-motion'
 import { TopBar } from './top-bar'
-import { getLoopCohosts, getLoopSubscribers, getLoopVideos } from '@lib/api/loop'
+import { getLoopCohosts, getLoopSubscribers } from '@lib/api/loop'
 import { Loader } from '@components/ui/loader'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
-import { PlayerListModal } from '@components/common/modals/player-list-modal'
-import { FeedModal } from '@components/common/modals/feed-modal'
+import { ListItem } from '@components/common/list-item'
+import { LoopVideos } from '@components/common/loop-videos'
+import { DownloadDialog } from '@components/common/download-dialog'
+import { useAdaptiveShare } from '@hooks/use-adaptive-share'
+import { useToast } from '@components/ui/use-toast'
+import { Toaster } from '@components/ui/toaster'
 
 interface Props {
   loopDetails: LoopDetailsType
 }
 
 export function MainComponent({ loopDetails }: Props) {
+  const { shareFn } = useAdaptiveShare()
+  const { toast } = useToast()
   const detailsDivRef = useRef<HTMLDivElement>(null)
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
 
@@ -34,8 +40,8 @@ export function MainComponent({ loopDetails }: Props) {
         <main className="hide-scrollbar absolute inset-0 h-full w-full overflow-auto pl-6">
           <span className="w-1/2">
             <p className="mt-6 text-title-1-bold">{loopDetails.group.group_name}</p>
-            <p className="my-2 line-clamp-2 w-1/2 text-body-1-med">{loopDetails.group.group_description}</p>
-            <div className="my-4 w-1/2 rounded-xl border border-monochrome-9 p-4">
+            <p className="my-1 line-clamp-2 w-1/2 text-body-1-med">{loopDetails.group.group_description}</p>
+            <div className="my-3 w-1/2 rounded-xl border border-monochrome-9 p-4">
               <span className="flex" ref={detailsDivRef}>
                 <span className="flex-1">
                   <p className="text-body-1-demi text-monochrome">Created by</p>
@@ -75,9 +81,19 @@ export function MainComponent({ loopDetails }: Props) {
               />
             </div>
             <span className="my-2 flex items-center gap-x-3">
-              <Button size="custom" className="px-4 py-1">
-                <p className="text-title-3-demi">Subscribe</p>
-              </Button>
+              <DownloadDialog
+                title="Get the Genuin app"
+                subtitle={
+                  <>
+                    Get the app to subscribe to<span className="font-bold"> {loopDetails.group.group_name}</span> Loop.
+                  </>
+                }
+                asChild>
+                <Button size="custom">
+                  <p className="px-4 py-1 text-title-3-demi">Subscribe</p>
+                </Button>
+              </DownloadDialog>
+
               {/* Hidden by requirement. */}
               {/* <Button size="custom" variant="outline" className="border-primary px-4">
                 <span className="flex items-center">
@@ -85,85 +101,39 @@ export function MainComponent({ loopDetails }: Props) {
                   <p className="py-2 text-body-sm text-primary">Q&A</p>
                 </span>
               </Button> */}
-              <Button variant="outline" size="custom" className="border-2 border-primary p-1">
-                <Image src={icShare} alt="share" className="h-4 w-4" />
+
+              <Button
+                variant="outline"
+                size="custom"
+                className="border border-primary p-0.5"
+                onClick={async () =>
+                  await shareFn({
+                    shareLink: window.location.href,
+                    toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
+                  })
+                }>
+                <Image src={icShare} alt="share" className="h-6 w-6" />
               </Button>
             </span>
           </span>
           <div className="grid w-full grid-cols-2 gap-4 overflow-hidden" style={{ height: 'calc(100% - 56px)' }}>
-            <div className="snap-y snap-proximity overflow-auto scroll-smooth">
+            <div className="h-full snap-y snap-proximity overflow-auto scroll-smooth">
               <LoopVideos loopId={loopDetails.share_string} />
             </div>
             <div className="snap-y snap-proximity overflow-auto scroll-smooth py-2">
-              <Cohosts chatId={loopDetails.chat_id} />
-              <LoopSubscribers chatId={loopDetails.chat_id} />
+              <Cohosts loopId={loopDetails.share_string} />
+              <LoopSubscribers loopId={loopDetails.share_string} />
             </div>
           </div>
+          <Toaster />
         </main>
       </>
     )
 }
 
-function LoopVideos({ loopId }: any) {
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getLoopVideos(loopId)
-
-  const handleSeeMoreClick = () => {
-    void fetchNextPage()
-  }
-
-  return (
-    <div className="h-full w-full overflow-y-auto">
-      <p className="my-2 text-title-3-bold">Posts</p>
-      {isLoading && <Loader size="md" />}
-      {data?.pages.flatMap((page) => page.videos).length === 0 && (
-        <div className="flex items-center justify-center pt-32 text-title-md text-secondary">No videos available</div>
-      )}
-      <div className="my-4 grid grid-cols-2 gap-4">
-        {data?.pages
-          .flatMap((page) => page.videos)
-          .map((item, index) => (
-            <FeedModal key={index} videos={data?.pages.flatMap((page) => page.videos)}>
-              <div key={index} className="relative aspect-reel w-full duration-300 hover:cursor-pointer">
-                <Image
-                  src={item.video.thumbnail ?? ''}
-                  alt={item.video.description ?? ''}
-                  className="h-full w-full rounded-xl object-fill"
-                  fill
-                />
-                {/* <p className="absolute left-2 top-2 text-title-sm text-monochrome-white">
-                  {item.video?.metadata.duration + 's'}
-                </p> */}
-                <div className="absolute bottom-2 left-2">
-                  <div className="flex h-6 w-6 items-center">
-                    <CustomAvatar
-                      className="h-full w-full bg-red-40"
-                      imageUrl={item.owner.profile_image}
-                      isAvatar={item.owner.is_avatar}
-                      fallbackString={item.owner.nickname}
-                    />
-                    <p className="ml-1 text-body-1-bold text-monochrome-white">@{item.owner.nickname}</p>
-                  </div>
-                  <p className="ml-1 line-clamp-2 text-body-1-demi text-monochrome-white">{item.video.description}</p>
-                </div>
-              </div>
-            </FeedModal>
-          ))}
-      </div>
-      {isFetchingNextPage && <Loader size="md" />}
-      {hasNextPage && (
-        <p
-          className="text-blue-500 flex w-full cursor-pointer justify-center py-4 text-cap-lg text-monochrome"
-          onClick={handleSeeMoreClick}>
-          See More
-        </p>
-      )}
-    </div>
-  )
-}
-
 // TODO: get clarification from jimitbhai.
-function Cohosts({ chatId }: any) {
-  const { data, isLoading } = getLoopCohosts(chatId, 'members')
+function Cohosts({ loopId }: any) {
+  const { data, isLoading } = getLoopCohosts(loopId, 'members')
   const cohosts = data?.users
 
   if (cohosts && cohosts.length !== 0)
@@ -174,12 +144,11 @@ function Cohosts({ chatId }: any) {
         <div className="h-full w-full overflow-auto">
           {cohosts.map((item: any, index: any) => (
             <Link key={index} href={{ pathname: PATH_NAME.profile(item.user.nickname) }}>
-              <CohostTile
-                image={item.user.profile_image || ''}
-                subtitle={item.user.bio || ''}
+              <ListItem
                 title={'@' + item.user.nickname}
-                userName={item.user.name ?? 'Unknown'}
-                isAvatar={item.user.is_avatar}
+                subtitle={item.user.name ?? ''}
+                description={item.user.bio || ''}
+                image={item.user.profile_image || ''}
               />
             </Link>
           ))}
@@ -188,62 +157,29 @@ function Cohosts({ chatId }: any) {
     )
 }
 
-function LoopSubscribers({ chatId }: any) {
-  const { data, isLoading, isError } = getLoopSubscribers(chatId, 'subscribers')
+function LoopSubscribers({ loopId }: any) {
+  const { data, isLoading } = getLoopSubscribers(loopId, 'subscribers')
   const subscribers = data?.users
-  return (
-    <div>
-      <p className="my-2 text-title-3-bold">Subscribers</p>
-      {isLoading && <Loader size="md" />}
-      {subscribers && subscribers.length === 0 && (
-        <div className="flex items-center justify-center text-title-md text-secondary">No subscribers yet</div>
-      )}
-      {subscribers && subscribers.length !== 0 && (
+
+  if (subscribers && subscribers.length !== 0)
+    return (
+      <div>
+        <p className="my-2 text-title-3-bold">Subscribers</p>
+        {isLoading && <Loader size="md" />}
         <div className="h-full w-full overflow-auto">
           {subscribers.map((item: any, index: any) => (
             <Link key={index} href={{ pathname: PATH_NAME.profile(item.user.nickname) }}>
-              <CohostTile
-                image={item.user.profile_image || ''}
-                subtitle={item.user.bio || ''}
+              <ListItem
                 title={'@' + item.user.nickname}
-                userName={item.user.name ?? 'Unknown'}
-                isAvatar={item.user.is_avatar}
+                subtitle={item.user.name ?? ''}
+                description={item.user.bio || ''}
+                image={item.user.profile_image || ''}
               />
             </Link>
           ))}
         </div>
-      )}
-    </div>
-  )
-}
-
-interface CohostTileProps {
-  image: string
-  title: string
-  subtitle: string
-  userName: string
-  isAvatar: boolean
-}
-
-function CohostTile({ image, title, subtitle, userName, isAvatar }: CohostTileProps) {
-  return (
-    <div className="flex items-center gap-x-1 rounded-lg p-2 hover:bg-monochrome-10">
-      <CustomAvatar className="h-12 w-12 bg-red-40" fallbackString={userName} imageUrl={image} isAvatar={isAvatar} />
-      <div className="mx-2">
-        <p className="line-clamp-1 text-body-sm">{title}</p>
-        {userName && (
-          <p className="line-clamp-1 text-body-sm" style={{ fontWeight: 500 }}>
-            {userName}
-          </p>
-        )}
-        {subtitle && (
-          <p className="line-clamp-1 text-body-sm text-monochrome-black/60" style={{ fontWeight: 500 }}>
-            {subtitle}
-          </p>
-        )}
       </div>
-    </div>
-  )
+    )
 }
 
 function Stats({

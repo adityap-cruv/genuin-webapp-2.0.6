@@ -4,6 +4,9 @@ import { motion, useAnimationControls } from 'framer-motion'
 import { useEffect } from 'react'
 import Image from 'next/image'
 import icShare from '@icons/icShareBlue.svg'
+import { DownloadDialog } from '@components/common/download-dialog'
+import { useToast } from '@components/ui/use-toast'
+import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 
 type Props = {
   /**
@@ -28,6 +31,8 @@ export function TopBar({
   ...props
 }: Props) {
   const navAnimationControl = useAnimationControls()
+  const { shareFn } = useAdaptiveShare()
+  const { toast } = useToast()
 
   useEffect(() => {
     if (defaultOpen || isOpen) {
@@ -63,10 +68,29 @@ export function TopBar({
         <p className="text-title-2-demi">{communityName}</p>
       </span>
       <span className="flex items-center gap-x-2">
-        <Button size="custom">
-          <p className="px-4 py-2 text-body-1-demi">Join Community</p>
-        </Button>
-        <Button variant="outline" size="custom" className="border border-primary p-0.5">
+        <DownloadDialog
+          title="Get the Genuin app"
+          subtitle={
+            <>
+              Get the app to join the <br />
+              <span className="font-bold">{communityName}</span> community.
+            </>
+          }
+          asChild>
+          <Button size="custom">
+            <p className="px-4 py-2 text-body-1-demi">Join Community</p>
+          </Button>
+        </DownloadDialog>
+        <Button
+          variant="outline"
+          size="custom"
+          className="border border-primary p-0.5"
+          onClick={async () =>
+            await shareFn({
+              shareLink: window.location.href,
+              toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
+            })
+          }>
           <Image src={icShare} alt="share" className="h-7 w-7" />
         </Button>
       </span>
