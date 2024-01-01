@@ -107,7 +107,11 @@ function Desktop({ link = '', shareDescription = '', shareTitle = '', videoData 
 
   if (videoData) {
     return (
-      <div className="flex flex-col">
+      <div
+        className="flex flex-col"
+        onClick={(e) => {
+          e.stopPropagation()
+        }}>
         {link && (
           <Link href={checkAndAppendHttps(link)} target="_blank">
             <ActionItem title="Click Here!">
@@ -130,13 +134,14 @@ function Desktop({ link = '', shareDescription = '', shareTitle = '', videoData 
         </DownloadDialog>
         <ActionItem
           title="Share Video!"
-          onClick={async () =>
+          onClick={async () => {
             await shareFn({
               description: shareDescription,
               title: shareTitle,
+              shareLink: window.location.hostname + PATH_NAME.video(videoData.video.share_string),
               toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
             })
-          }>
+          }}>
           <Image src={icShare} alt="share" height={32} width={32} />
         </ActionItem>
         <DownloadDialog title="Get the Genuin app" subtitle="Get the app to report video.">
