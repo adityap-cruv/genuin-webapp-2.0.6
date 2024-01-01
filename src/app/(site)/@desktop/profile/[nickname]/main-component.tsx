@@ -31,9 +31,14 @@ export function MainComponent({ profileData }: CompProps) {
 
   return (
     <>
-      <TopBar defaultOpen={false} isOpen={!detailsInView} profileImage={profileData?.profile_image} profileName={profileData?.name} />
+      <TopBar
+        defaultOpen={false}
+        isOpen={!detailsInView}
+        profileImage={profileData?.profile_image}
+        profileName={profileData?.name}
+      />
       <div className="hide-scrollbar absolute inset-0 h-full w-full overflow-auto px-4">
-        <div className="w-1/2 mt-4">
+        <div className="mt-4 w-1/2">
           <CustomAvatar
             className="bg-slate-500 h-20 w-20 bg-red-40"
             fallbackString={profileData?.name}
@@ -54,7 +59,7 @@ export function MainComponent({ profileData }: CompProps) {
             variant="outline"
             size="custom"
             outlineColor="genuin-blue"
-            className='my-1'
+            className="my-1"
             onClick={async () =>
               await shareFn({
                 shareLink: window.location.href,
@@ -114,7 +119,7 @@ function CommunityList({ usernickname }: any) {
   }
 
   return (
-    <div className='h-full w-full overflow-y-auto'>
+    <div className="h-full w-full overflow-y-auto">
       {isLoading && <Loader size="md" />}
       {data && (
         <div>

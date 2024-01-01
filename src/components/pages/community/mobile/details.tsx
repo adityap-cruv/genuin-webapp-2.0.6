@@ -1,7 +1,7 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
 import { Button } from '@components/ui/button'
 import type { CommunityDetailsType } from '@lib/schemas/community'
-import { abbreviateNumber, checkAndAppendHttps, generateDeepLink, getTimeAgo, openGeneratedLink } from '@lib/utils'
+import { checkAndAppendHttps, generateDeepLink, openGeneratedLink } from '@lib/utils'
 import Image from 'next/image'
 import icShare from '@icons/icShareBlue.svg'
 import Link from 'next/link'
@@ -10,13 +10,12 @@ import icLinkedIn from '@icons/icLinkedIn.svg'
 import icLink from '@icons/icLinkBlack.svg'
 import icTwitter from '@icons/icTwitterBlack.svg'
 import { PATH_NAME } from '@lib/utils/constants/path'
-import { getCommunityLoops } from '@lib/api/community'
-import { Loader } from '@components/ui/loader'
 import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { TopBar } from '../../../layouts/mobile/top-bar'
 import lockIcon from '@images/lockIcon.svg'
+import LoopTab from '@components/common/community-loop-tab'
 
 let communityDetailsModule: CommunityDetailsType
 
@@ -33,7 +32,7 @@ export function ProfileDetails({ communityDetails }: Props) {
     <>
       <TopBar />
       <div className="h-full">
-        <div className="px-4 py-2">
+        <div className="px-4 py-2 pt-4">
           <div className="flex justify-between">
             <CustomAvatar
               imageUrl={communityDetailsModule?.info.profile_image}
@@ -81,8 +80,8 @@ export function ProfileDetails({ communityDetails }: Props) {
               </Button>
             </div>
           </div>
-          <p className="my-2 line-clamp-1 break-all text-title-md">{communityDetailsModule?.info.name}</p>
-          <p className="my-2 line-clamp-2 break-all text-body-sm">{communityDetailsModule?.info.description}</p>
+          <p className="my-1 line-clamp-1 break-all text-title-md">{communityDetailsModule?.info.name}</p>
+          <p className="my-1 line-clamp-2 break-all text-body-sm">{communityDetailsModule?.info.description}</p>
           <Stats />
         </div>
         <ProfileTabs />
@@ -109,19 +108,19 @@ export function ProfileDetails({ communityDetails }: Props) {
 function Stats() {
   return (
     <div className="flex items-center">
-      <span className="pr-2">
+      <span className="pr-4">
         <span className="text-title-md text-monochrome-black">{communityDetailsModule?.info.count.member}</span>
         <span className="text-cap-lg text-secondary">
           &nbsp;{communityDetailsModule?.info.count.member === 1 ? 'Member' : 'Members'}
         </span>
       </span>
-      <span className="pr-2">
+      <span className="pr-4">
         <span className="text-title-md text-monochrome-black">{communityDetailsModule?.info.count.loop}</span>
         <span className="text-cap-lg text-secondary">
           &nbsp;{communityDetailsModule?.info.count.loop === 1 ? 'Loop' : 'Loops'}
         </span>
       </span>
-      <span className="pr-2">
+      <span className="pr-4">
         <span className="text-title-md text-monochrome-black">{communityDetailsModule?.info.count.video}</span>
         <span className="text-cap-lg text-secondary">
           &nbsp;{communityDetailsModule?.info.count.video === 1 ? 'Video' : 'Videos'}
@@ -146,7 +145,7 @@ function ProfileTabs() {
         </TabsTrigger>
       </TabsList>
       <TabsContent value="Loops" className="mx-4">
-        <LoopTab />
+        <LoopTab communityHandle={communityDetailsModule.info.handle} />
       </TabsContent>
       <TabsContent value="About" className="mx-4">
         {communityDetailsModule.info.categories.length !== 0 && <Categories />}
@@ -160,133 +159,6 @@ function ProfileTabs() {
         <Members />
       </TabsContent>
     </Tabs>
-  )
-}
-
-function LoopTab() {
-  const { isLoading, data: loops, isFetched } = getCommunityLoops(communityDetailsModule.info.handle)
-  return (
-    <div className="py-4">
-      {isLoading && <Loader size="sm" />}
-      {isFetched &&
-        loops.map((item: any, index: number) => {
-          return <LoopItem key={index} loopDetails={item} />
-        })}
-    </div>
-  )
-}
-
-function LoopItem({ loopDetails }: { loopDetails: any }) {
-  const transformValues: any = {
-    1: [50],
-    2: [48, 52],
-    3: [46, 50, 54],
-  }
-
-  const rightValues: any = {
-    1: [20],
-    2: [24, 16],
-    3: [28, 20, 12],
-  }
-
-  const opacitValues: any = {
-    1: [1],
-    2: [1, 0.5],
-    3: [1, 0.66, 0.4],
-  }
-
-  const videosLength = loopDetails.videos.length
-  const renderedImages = loopDetails.videos.map((item: any, index: any) => (
-    <img
-      key={index}
-      style={{
-        position: 'absolute',
-        top: '50%',
-        right: `${rightValues[videosLength][index]}px`,
-        transform: `translateY(-${transformValues[videosLength][index]}%)`,
-        height: '80%',
-        aspectRatio: '9/16',
-        borderRadius: '4px',
-        zIndex: videosLength - index + 1,
-        opacity: `${opacitValues[videosLength][index]}`,
-      }}
-      // onError={(e) => {
-      //   e.target.src = icPreviewImage.src
-      // }}
-      src={item.thumbnail}
-      alt={`frontimage${index}`}
-    />
-  ))
-  function getCollaboratorsCountString(count: any) {
-    let str = ' + '
-    if (!count) return
-    if (count === 1) {
-      str += count + ' collaborator'
-    } else {
-      str += count + ' collaborators'
-    }
-    return str
-  }
-
-  return (
-    <Link href={{ pathname: PATH_NAME.loop() }}>
-      <div className="relative my-4 w-full rounded-lg border border-monochrome-9 bg-monochrome-white">
-        <div className="w-[70%] items-center p-[3%]">
-          <p className="text-title-sm">{loopDetails.name}</p>
-          {loopDetails.videos.length !== 0 && (
-            <p className="text-body-sm text-monochrome-4">
-              {loopDetails.videos[0].owner} posted ∙ {getTimeAgo(loopDetails.videos[0].created_at)}
-            </p>
-          )}
-        </div>
-        <div className="h-[60%] rounded-b-lg border border-monochrome-8 p-4" style={{ backgroundColor: '#F9F9F9' }}>
-          <div className="flex w-[70%] items-center">
-            {loopDetails.collaborators.length !== 0 && (
-              <div className="relative flex">
-                {loopDetails.collaborators[0] && (
-                  <CustomAvatar
-                    className="z-20 h-6 w-6 border-2 border-monochrome-white bg-red-50"
-                    imageUrl={loopDetails.owner.profile_image ?? ''}
-                    isAvatar={loopDetails.owner.is_avatar}
-                    fallbackString={loopDetails.owner.name ?? ''}
-                  />
-                )}
-                {loopDetails.collaborators[1] && (
-                  <CustomAvatar
-                    className="absolute left-3 z-10 h-6 w-6 border-2 border-monochrome-white bg-red-50"
-                    imageUrl={loopDetails.collaborators[0].profile_image ?? ''}
-                    isAvatar={loopDetails.collaborators[0].is_avatar}
-                    fallbackString={loopDetails.collaborators[0].nickname ?? ''}
-                  />
-                )}
-                {loopDetails.collaborators[2] && (
-                  <CustomAvatar
-                    className="absolute left-6 h-6 w-6 border-2 border-monochrome-white bg-red-50"
-                    imageUrl={loopDetails.collaborators[1].profile_image ?? ''}
-                    isAvatar={loopDetails.collaborators[1].is_avatar}
-                    fallbackString={loopDetails.collaborators[1].nickname ?? ''}
-                  />
-                )}
-              </div>
-            )}
-            <p
-              className={`text-body-sm text-monochrome-4 ${loopDetails.collaborators.length !== 0 && 'ml-7'} ${
-                loopDetails.collaborators.length === 2 && 'ml-6'
-              }`}
-              style={{ fontWeight: 500 }}>
-              @{loopDetails.owner.nickname}
-              {getCollaboratorsCountString(loopDetails.member_count)}
-            </p>
-          </div>
-          <p className="my-[2%] line-clamp-2 w-[70%] text-body-sm text-monochrome-4">{loopDetails.description}</p>
-          <p className="w-[70%] text-body-sm text-monochrome-4" style={{ fontWeight: 500 }}>
-            {abbreviateNumber(loopDetails.subscriber_count)} subscribers ∙ {abbreviateNumber(loopDetails.view_count)}{' '}
-            views
-          </p>
-        </div>
-        {renderedImages}
-      </div>
-    </Link>
   )
 }
 
@@ -397,7 +269,7 @@ function ListItem({
       <div className="mx-2">
         <p className="line-clamp-1 text-title-sm">{subtitle}</p>
         {subtitle && <p className="line-clamp-1 text-title-sm">{title}</p>}
-        {description && <p className="line-clamp-2 text-cap-lg text-monochrome">{description}</p>}
+        {description && <p className="line-clamp-1 text-cap-lg text-monochrome">{description}</p>}
       </div>
     </div>
   )
@@ -407,6 +279,9 @@ function Members() {
   return (
     <div>
       {/* <p className="my-2 text-title-md">Members</p> */}
+      {communityDetailsModule?.members.length === 0 && (
+        <div className="flex items-center justify-center pt-32 text-title-md text-secondary">No members available</div>
+      )}
       {communityDetailsModule?.members.map((member, index) => {
         return (
           <Link key={index} href={{ pathname: PATH_NAME.profile(member.nickname) }}>

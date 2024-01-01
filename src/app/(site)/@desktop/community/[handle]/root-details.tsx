@@ -10,20 +10,19 @@ import icShare from '@icons/icShareBlue.svg'
 import { useInView } from 'framer-motion'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
 import Link from 'next/link'
-import { Loader } from '@components/ui/loader'
-import { getCommunityLoops } from '@lib/api/community'
-import { abbreviateNumber, checkAndAppendHttps, getTimeAgo } from '@lib/utils'
+import { checkAndAppendHttps } from '@lib/utils'
 import icInstagram from '@icons/icInstagramBlack.svg'
 import icLinkedIn from '@icons/icLinkedIn.svg'
 import icLink from '@icons/icLinkBlack.svg'
 import icTwitter from '@icons/icTwitterBlack.svg'
-import noLoopsImage from '@images/noLoopImage.svg'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@components/ui/accordion'
 import { DownloadDialog } from '@components/common/download-dialog'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
+import LoopTab from '@components/common/community-loop-tab'
+import { ListItem } from '@components/common/list-item'
 
 interface Props {
   communityDetails: CommunityDetailsType
@@ -82,20 +81,20 @@ export function RootDetails({ communityDetails }: Props) {
               }
               asChild>
               <Button size="custom">
-                <p className="px-4 py-2 text-title-3-demi">Join Community</p>
+                <p className="px-4 py-2 text-body-1-demi">Join Community</p>
               </Button>
             </DownloadDialog>
             <Button
               variant="outline"
               size="custom"
-              className="border-2 border-primary p-1"
+              className="border border-primary p-0.5"
               onClick={async () =>
                 await shareFn({
                   shareLink: window.location.href,
                   toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                 })
               }>
-              <Image src={icShare} alt="share" className="h-6 w-6" />
+              <Image src={icShare} alt="share" className="h-7 w-7" />
             </Button>
           </span>
         </div>
@@ -148,151 +147,12 @@ function CommunityDetailsTabs() {
         </TabsTrigger>
       </TabsList>
       <TabsContent value="Loops" className="mr-2">
-        <LoopTab />
+        <LoopTab communityHandle={communityDetailsModule.info.handle} />
       </TabsContent>
       <TabsContent value="Members">
         <Members />
       </TabsContent>
     </Tabs>
-  )
-}
-
-// TODO: Improve this component.
-function LoopTab() {
-  const { isLoading, data: loops, isFetched } = getCommunityLoops(communityDetailsModule.info.handle)
-
-  return (
-    <div>
-      {isLoading && <Loader size="sm" />}
-      {isFetched && (
-        <>
-          {loops.length === 0 ? (
-            <div className="flex flex-col items-center justify-center" style={{ backgroundColor: '#F9F9F9' }}>
-              <Image src={noLoopsImage} alt="share" />
-              <p className="text-title-2-bold">No Loops... yet!</p>
-              <p className="w-96 text-center text-body-1-demi text-monochrome">
-                Loops are dynamic discussion spaces centered around specific themes. Members can share videos, get
-                reactions, and enjoy engaging comments from the community.
-              </p>
-            </div>
-          ) : (
-            loops.map((item: any, index: number) => {
-              return <LoopItem key={index} loopDetails={item} />
-            })
-          )}
-        </>
-      )}
-    </div>
-  )
-}
-
-function LoopItem({ loopDetails }: { loopDetails: any }) {
-  const transformValues: any = {
-    1: [50],
-    2: [48, 52],
-    3: [46, 50, 54],
-  }
-
-  const rightValues: any = {
-    1: [20],
-    2: [24, 16],
-    3: [28, 20, 12],
-  }
-
-  const opacitValues: any = {
-    1: [1],
-    2: [1, 0.5],
-    3: [1, 0.66, 0.4],
-  }
-  // TODO on video click open video
-  const videosLength = loopDetails.videos.length
-  const renderedImages = loopDetails.videos.map((item: any, index: any) => (
-    <img
-      key={index}
-      className="absolute top-[50%] aspect-reel h-[80%] rounded"
-      style={{
-        right: `${rightValues[videosLength][index]}px`,
-        transform: `translateY(-${transformValues[videosLength][index]}%)`,
-        zIndex: videosLength - index + 1,
-        opacity: `${opacitValues[videosLength][index]}`,
-      }}
-      // onError={(e) => {
-      //   e.target.src = icPreviewImage.src
-      // }}
-      src={item.thumbnail}
-      alt={index}
-    />
-  ))
-  function getCollaboratorsCountString(count: any) {
-    let str = ' + '
-    if (!count) return
-    if (count === 1) {
-      str += count + ' collaborator'
-    } else {
-      str += count + ' collaborators'
-    }
-    return str
-  }
-
-  return (
-    <Link href={{ pathname: PATH_NAME.loop(loopDetails.share_string) }}>
-      <div className="relative my-5 w-full rounded-lg border border-monochrome-9 bg-monochrome-white">
-        <div className="w-[70%] items-center p-[3%]">
-          <p className="text-body-1-bold">{loopDetails.name}</p>
-          {loopDetails.videos.length !== 0 && (
-            <p className="text-body-1-demi text-monochrome-4">
-              {loopDetails.videos[0].owner} posted ∙ {getTimeAgo(loopDetails.videos[0].created_at)}
-            </p>
-          )}
-        </div>
-        <div className="h-[60%] rounded-b-lg border border-monochrome-8 p-4" style={{ backgroundColor: '#F9F9F9' }}>
-          <div className="flex w-[70%] items-center">
-            {loopDetails.collaborators.length !== 0 && (
-              <div className="relative flex">
-                {loopDetails.owner.profile_image && (
-                  <CustomAvatar
-                    className="z-20 h-6 w-6 border-2 border-monochrome-white bg-red-50"
-                    imageUrl={loopDetails.owner.profile_image ?? ''}
-                    isAvatar={loopDetails.owner.is_avatar}
-                    fallbackString={loopDetails.owner.name ?? ''}
-                  />
-                )}
-                {loopDetails.collaborators[0] && (
-                  <CustomAvatar
-                    className="absolute left-3 z-10 h-6 w-6 border-2 border-monochrome-white bg-red-50"
-                    imageUrl={loopDetails.collaborators[0].profile_image ?? ''}
-                    isAvatar={loopDetails.collaborators[0].is_avatar}
-                    fallbackString={loopDetails.collaborators[0].nickname ?? ''}
-                  />
-                )}
-                {loopDetails.collaborators[1] && (
-                  <CustomAvatar
-                    className="absolute left-6 h-6 w-6 border-2 border-monochrome-white bg-red-50"
-                    imageUrl={loopDetails.collaborators[1].profile_image ?? ''}
-                    isAvatar={loopDetails.collaborators[1].is_avatar}
-                    fallbackString={loopDetails.collaborators[1].nickname ?? ''}
-                  />
-                )}
-              </div>
-            )}
-            <p
-              className={`line-clamp-1 text-body-1-med text-monochrome-4 ${
-                loopDetails.collaborators.length !== 0 && 'ml-7'
-              } ${loopDetails.collaborators.length === 2 && 'ml-6'}`}
-              style={{ fontWeight: 500 }}>
-              @{loopDetails.owner.nickname}
-              {getCollaboratorsCountString(loopDetails.member_count)}
-            </p>
-          </div>
-          <p className="my-[2%] line-clamp-2 w-[70%] text-body-1-demi text-monochrome-4">{loopDetails.description}</p>
-          <p className="w-[70%] text-body-1-med text-monochrome-4" style={{ fontWeight: 500 }}>
-            {abbreviateNumber(loopDetails.subscriber_count)} subscribers ∙ {abbreviateNumber(loopDetails.view_count)}{' '}
-            views
-          </p>
-        </div>
-        {renderedImages}
-      </div>
-    </Link>
   )
 }
 
@@ -399,43 +259,6 @@ function Leaders() {
           </Link>
         )
       })}
-    </div>
-  )
-}
-
-// TODO: Create Common component for this item.
-function ListItem({
-  title,
-  subtitle,
-  description,
-  image,
-}: {
-  title: string
-  subtitle?: string
-  description?: string
-  image?: string
-}) {
-  return (
-    <div className="flex items-center gap-x-1 rounded-lg p-2 hover:bg-monochrome-10">
-      <CustomAvatar
-        className="h-12 w-12 bg-red-40"
-        imageUrl={image ?? ''}
-        fallbackString={title ?? ''}
-        isAvatar={false}
-      />
-      <div className="mx-2">
-        <p className="line-clamp-1 text-body-1-demi">{subtitle}</p>
-        {title && (
-          <p className="line-clamp-1 text-body-1-med" style={{ fontWeight: 500 }}>
-            {title}
-          </p>
-        )}
-        {description && (
-          <p className="line-clamp-1 text-body-1-med text-monochrome" style={{ fontWeight: 500 }}>
-            {description}
-          </p>
-        )}
-      </div>
     </div>
   )
 }

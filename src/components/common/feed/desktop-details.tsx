@@ -131,7 +131,7 @@ function InfoArea({ videoDetails }: { videoDetails: VideoDataType }) {
               subtitle={
                 <>
                   Get the app to join the <br />
-                  <span className="font-bold">{videoDetails.community.name}</span> community.
+                  <span className="font-bold">@{videoDetails.community.handle}</span> community.
                 </>
               }
               asChild>

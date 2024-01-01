@@ -13,13 +13,14 @@ import { TopBar } from '@components/layouts/mobile/top-bar'
 import { Shimmer } from '@components/ui/shimmer'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
+import { PlayerModal } from '@components/common/player-modal'
+import { DownloadDialog } from '@components/common/download-dialog'
 
 interface CompProps {
   profileData: any
 }
 
 export function MainComponent({ profileData }: CompProps) {
-
   return (
     <>
       <TopBar variant={'light'} />
@@ -60,7 +61,7 @@ export function MainComponent({ profileData }: CompProps) {
               </Button>
             </div> */}
           </div>
-          <div className="flex items-center mt-2">
+          <div className="mt-2 flex items-center">
             <p className="line-clamp-1 pr-2 text-title-md">{profileData?.name}</p>
             <p className="line-clamp-1 text-body-sm text-monochrome" style={{ fontWeight: 500 }}>
               @{profileData?.nickname}
@@ -124,9 +125,19 @@ function CommunityList({ usernickname }: any) {
                     <p className="line-clamp-1 text-left text-title-sm">{item.name}</p>
                   </Link>
 
-                  <Button size="custom" variant="default">
-                    <p className="px-4 py-1.5 text-title-sm">join</p>
-                  </Button>
+                  <DownloadDialog
+                    title="Get the Genuin app"
+                    subtitle={
+                      <>
+                        Get the app to join the <br />
+                        <span className="font-bold">@{item.handle}</span> community.
+                      </>
+                    }
+                    asChild>
+                    <Button size="custom" variant="default">
+                      <p className="px-4 py-1.5 text-title-sm">join</p>
+                    </Button>
+                  </DownloadDialog>
                 </div>
               </div>
               <DecorativeList>
@@ -225,15 +236,17 @@ function LoopVideos({ userId, loopDetails }: any) {
         {data?.pages
           .flatMap((page) => page.videos)
           .map((video, index) => (
-            <div key={video.id} className="relative flex aspect-reel min-w-full flex-col items-center">
-              <img src={video.thumbnail} alt={`Video Thumbnail ${index}`} className="aspect-reel rounded" />
-              <div className="absolute bottom-0 left-0 m-1 flex items-center justify-center">
-                <Image src={icSpark} alt="share" height={15} width={15} />
-                <p className="text-new-para-2-mobile text-monochrome-white">
-                  {abbreviateNumber(video.no_of_sparks) || 0}
-                </p>
+            <PlayerModal videoDetails={video} key={index}>
+              <div key={video.id} className="relative flex aspect-reel min-w-full flex-col items-center">
+                <img src={video.thumbnail} alt={`Video Thumbnail ${index}`} className="aspect-reel rounded" />
+                <div className="absolute bottom-0 left-0 m-1 flex items-center justify-center">
+                  <Image src={icSpark} alt="share" height={15} width={15} />
+                  <p className="text-new-para-2-mobile text-monochrome-white">
+                    {abbreviateNumber(video.no_of_sparks) || 0}
+                  </p>
+                </div>
               </div>
-            </div>
+            </PlayerModal>
           ))}
         {isFetchingNextPage &&
           Array.from({ length: Math.max(0, loopDetails.video_count - videoCount) }).map((_, index) => (

@@ -4,6 +4,9 @@ import { useEffect } from 'react'
 import Image from 'next/image'
 import icShare from '@icons/icShareBlue.svg'
 import icQuestion from '@icons/icQuestion.svg'
+import { DownloadDialog } from '@components/common/download-dialog'
+import { useAdaptiveShare } from '@hooks/use-adaptive-share'
+import { useToast } from '@components/ui/use-toast'
 
 type Props = {
   /**
@@ -20,6 +23,8 @@ type Props = {
 
 export function TopBar({ defaultOpen = true, isOpen = false, loopName, shareString, ...props }: Props) {
   const navAnimationControl = useAnimationControls()
+  const { shareFn } = useAdaptiveShare()
+  const { toast } = useToast()
 
   useEffect(() => {
     if (defaultOpen || isOpen) {
@@ -48,18 +53,39 @@ export function TopBar({ defaultOpen = true, isOpen = false, loopName, shareStri
       <span className="flex items-center gap-x-2">
         <p className="text-title-lg font-semibold">{loopName}</p>
       </span>
-      <span className="my-2 flex gap-x-3">
-        <Button className="px-4">
-          <p>Subscribe</p>
-        </Button>
-        <Button variant="outline" className="border-primary px-4">
-          <span className="flex items-center">
-            <Image src={icQuestion} alt="question" />
-            <p className="text-body-sm font-medium text-primary">Q&A</p>
-          </span>
-        </Button>
-        <Button variant="outline"  className="border-primary">
-          <Image src={icShare} alt="share" />
+      <span className="my-2 flex items-center gap-x-3">
+        <DownloadDialog
+          title="Get the Genuin app"
+          subtitle={
+            <>
+              Get the app to subscribe to<span className="font-bold"> {loopName}</span> Loop.
+            </>
+          }
+          asChild>
+          <Button size="custom">
+            <p className="px-4 py-1 text-title-3-demi">Subscribe</p>
+          </Button>
+        </DownloadDialog>
+
+        {/* Hidden by requirement. */}
+        {/* <Button size="custom" variant="outline" className="border-primary px-4">
+                <span className="flex items-center">
+                  <Image src={icQuestion} alt="question" />
+                  <p className="py-2 text-body-sm text-primary">Q&A</p>
+                </span>
+              </Button> */}
+
+        <Button
+          variant="outline"
+          size="custom"
+          className="border border-primary p-0.5"
+          onClick={async () =>
+            await shareFn({
+              shareLink: window.location.href,
+              toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
+            })
+          }>
+          <Image src={icShare} alt="share" className="h-6 w-6" />
         </Button>
       </span>
     </motion.div>
