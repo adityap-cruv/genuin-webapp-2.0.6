@@ -1,15 +1,12 @@
-'use client'
 import { TopBar } from './top-bar'
 import { SideBar } from './side-bar'
-import { useSearchParams } from 'next/navigation'
+import { cookies } from 'next/headers'
 
 export function Layout(props: any) {
-  // TODO: Remove this code.
-  const showTopbar = useSearchParams().get('embed') !== '1'
-
+  const showTopbar = cookies().get('embed')?.value === '1'
   return (
     <main className="absolute inset-0 flex h-full min-h-max w-full flex-col items-center overflow-clip">
-      {showTopbar && <TopBar />}
+      {!showTopbar && <TopBar />}
       <section className="flex h-full w-full xl:container">
         <section className="flex-[1] lg:flex-[3]">
           <SideBar />
