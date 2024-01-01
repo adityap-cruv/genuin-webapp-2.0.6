@@ -73,7 +73,10 @@ function Mobile({
   isFirstPlayerInList = false,
 }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null)
-  const setShouldPlay = usePlayerControlStore((state) => state.setShouldPlay)
+  const { setShouldPlay, toggleShouldPlay } = usePlayerControlStore((state) => ({
+    setShouldPlay: state.setShouldPlay,
+    toggleShouldPlay: state.toggleShouldPlay,
+  }))
 
   useEffect(() => {
     setShouldPlay(shouldPlay)
@@ -81,7 +84,11 @@ function Mobile({
 
   if (videoData) {
     return (
-      <div className="relative flex h-full w-full snap-start items-center justify-center overflow-clip">
+      <div
+        onClick={(e) => {
+          toggleShouldPlay()
+        }}
+        className="relative flex h-full w-full snap-start items-center justify-center overflow-clip">
         {shouldShowBackgroundBlurImage && (
           <div
             className="absolute inset-0 z-0 h-full w-full bg-secondary bg-cover bg-center bg-no-repeat blur-2xl"
@@ -126,7 +133,10 @@ function Desktop({
   isFirstPlayerInList = false,
 }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null)
-  const setShouldPlay = usePlayerControlStore((state) => state.setShouldPlay)
+  const { setShouldPlay, toggleShouldPlay } = usePlayerControlStore((state) => ({
+    setShouldPlay: state.setShouldPlay,
+    toggleShouldPlay: state.toggleShouldPlay,
+  }))
 
   useEffect(() => {
     setShouldPlay(shouldPlay)
@@ -144,6 +154,9 @@ function Desktop({
         <div
           ref={containerRef}
           className="relative overflow-hidden"
+          onClick={(e) => {
+            toggleShouldPlay()
+          }}
           style={{ width: sizeBox?.width, height: sizeBox?.height }}>
           {playIfInViewPort ? (
             <ViewportPlayer
