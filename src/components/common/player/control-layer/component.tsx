@@ -1,16 +1,15 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { PATH_NAME } from '@lib/utils/constants/path'
-import icMute from '@icons/player-controls/icMute.svg'
-import icUnmute from '@icons/player-controls/icUnmute.svg'
 import { type VideoDataType } from '@lib/schemas/video'
 import { usePlayerControlStore } from '../player-control-store'
 import { Progress } from '@components/ui/progress'
 import icPlay from '@icons/player-controls/icPlay.svg'
-import icPause from '@icons/player-controls/icPause.svg'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { Actions } from './actions'
 import { ReadMore } from '@components/common/read-more'
+import { cn } from '@lib/utils'
+import { AnimatedMuteIcon } from './animated-mute-icon'
 
 export const ControlLayer = {
   desktop: Desktop,
@@ -32,24 +31,31 @@ function Desktop({ videoData }: Props) {
   if (videoData) {
     return (
       <div className="relative h-full w-full">
-        <Image
-          src={!muted ? icUnmute : icMute}
-          alt="volume-control"
-          className="absolute right-3 top-16 z-20 cursor-pointer sm:top-3"
-          onClick={(e) => {
-            toggleMuted()
-            e.stopPropagation()
-          }}
-        />
-        <Image
-          src={shouldPlay ? icPause : icPlay}
-          alt="volume-control"
-          className="absolute left-3 top-16 z-20 cursor-pointer sm:top-3"
-          onClick={(e) => {
-            toggleShouldPlay()
-            e.stopPropagation()
-          }}
-        />
+        <div className="absolute inset-0 flex h-full w-full items-center justify-center">
+          <div
+            className={cn(
+              'rounded-full bg-monochrome-black/40 p-2 transition-all duration-300 ',
+              !shouldPlay ? 'scale-125 opacity-100 ease-in' : 'scale-100 opacity-0 ease-out'
+            )}>
+            <Image
+              src={icPlay}
+              alt="volume-control"
+              className={cn('pointer-events-none z-10 cursor-pointer rounded-full')}
+            />
+          </div>
+        </div>
+        {muted && (
+          <div
+            onClick={(e) => {
+              e.stopPropagation()
+              toggleMuted()
+            }}
+            className="absolute inset-0 h-full w-full">
+            <span className="absolute inset-0 left-6 top-6 h-fit w-fit cursor-pointer">
+              <AnimatedMuteIcon />
+            </span>
+          </div>
+        )}
         <div className="absolute bottom-0 right-0 pr-2">
           <Actions.desktop
             link={videoData?.video.link ?? ''}
@@ -64,36 +70,43 @@ function Desktop({ videoData }: Props) {
   }
 }
 
+// TODO: Copy youtubes behavior.
 function Mobile({ videoData }: Props) {
-  const { toggleMuted, muted, shouldPlay, toggleShouldPlay } = usePlayerControlStore((state) => ({
+  const { toggleMuted, muted, shouldPlay } = usePlayerControlStore((state) => ({
     toggleMuted: state.toggleMuted,
     muted: state.muted,
     shouldPlay: state.shouldPlay,
-    toggleShouldPlay: state.toggleShouldPlay,
   }))
 
   if (videoData) {
     return (
       <div className="relative h-full w-full">
-        <Image
-          src={!muted ? icUnmute : icMute}
-          alt="volume-control"
-          className="absolute right-3 top-16 z-10 cursor-pointer"
-          onClick={(e) => {
-            toggleMuted()
-            e.stopPropagation()
-          }}
-        />
-        <Image
-          src={shouldPlay ? icPause : icPlay}
-          alt="volume-control"
-          className="absolute left-3 top-16 z-10 cursor-pointer"
-          onClick={(e) => {
-            toggleShouldPlay()
-            e.stopPropagation()
-          }}
-        />
-        <div className="absolute bottom-14 left-0 w-full">
+        {muted && (
+          <div
+            onClick={(e) => {
+              e.stopPropagation()
+              toggleMuted()
+            }}
+            className="absolute z-[6] h-full w-full">
+            <span className="absolute left-5 top-14">
+              <AnimatedMuteIcon />
+            </span>
+          </div>
+        )}
+        <div className="absolute flex h-full w-full items-center justify-center">
+          <div
+            className={cn(
+              ' rounded-full bg-monochrome-black/40 p-2 transition-all duration-300 ',
+              !shouldPlay ? 'scale-125 opacity-100 ease-in' : 'scale-100 opacity-0 ease-out'
+            )}>
+            <Image
+              src={icPlay}
+              alt="volume-control"
+              className={cn('pointer-events-none z-10 cursor-pointer rounded-full')}
+            />
+          </div>
+        </div>
+        <div className="absolute bottom-12 left-0 z-[5] w-full">
           <Loop videoData={videoData} />
         </div>
         <PlayerProgressBar />

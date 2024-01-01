@@ -45,7 +45,7 @@ export function Sheet({ container, videoId, noOfComments }: Props) {
           onInteractOutside={() => {
             close()
           }}>
-          <div className="h-full w-full rounded-t-[18px] bg-background sm:rounded-t-none">
+          <div className="h-full w-full rounded-t-[18px] bg-background outline-none sm:rounded-t-none">
             <div className="flex h-12 w-full items-center justify-between border-b border-monochrome-9 px-3 ">
               <p className="text-body-lg text-secondary">Comments{noOfComments !== 0 ? `(${noOfComments})` : ''}</p>
               <X
