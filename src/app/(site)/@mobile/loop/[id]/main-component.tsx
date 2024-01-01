@@ -7,7 +7,7 @@ import icShare from '@icons/icShareBlue.svg'
 import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
-import { getLoopCohosts } from '@lib/api/loop'
+import { getLoopCollaborators, getLoopSubscribers } from '@lib/api/loop'
 import { Loader } from '@components/ui/loader'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
@@ -110,27 +110,28 @@ export function MainComponent({ loopDetails }: Props) {
                     })
                     .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
                 }}>
-                <p className="px-4 py-2 text-body-sm" style={{ fontWeight: 500 }}>
-                  Subscribe
-                </p>
+                <p className="px-4 py-1 text-title-3-demi">Subscribe</p>
               </Button>
+
+              {/* Hidden by requirement. */}
               {/* <Button size="custom" variant="outline" className="border-primary px-4">
                 <span className="flex items-center">
                   <Image src={icQuestion} alt="question" />
                   <p className="py-2 text-body-sm text-primary">Q&A</p>
                 </span>
               </Button> */}
+
               <Button
                 variant="outline"
                 size="custom"
-                className=" border-primary p-1"
+                className="border border-primary p-0.5"
                 onClick={async () =>
                   await shareFn({
                     shareLink: window.location.href,
                     toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                   })
                 }>
-                <Image src={icShare} alt="share" className="h-7 w-7" />
+                <Image src={icShare} alt="share" className="h-6 w-6" />
               </Button>
             </div>
           </div>
@@ -159,7 +160,7 @@ function LoopTabs() {
         <LoopVideos loopId={loopDetailsModule.share_string} />
       </TabsContent>
       <TabsContent value="About">
-        <Cohosts loopId={loopDetailsModule.share_string} />
+        <LoopCollaborators loopId={loopDetailsModule.share_string} />
       </TabsContent>
       <TabsContent value="Members">
         <LoopSubscribers loopId={loopDetailsModule.share_string} />
@@ -169,7 +170,7 @@ function LoopTabs() {
 }
 
 function LoopSubscribers({ loopId }: any) {
-  const { data, isLoading, isError } = getLoopCohosts(loopDetailsModule.chat_id, 'subscribers')
+  const { data, isLoading, isError } = getLoopSubscribers(loopId, 'subscribers')
   const subscribers = data?.users
   return (
     <div className="h-full pt-3">
@@ -220,9 +221,8 @@ function Stats({
   )
 }
 
-// TODO: manage data in better way
-function Cohosts({ loopId }: { loopId: string }) {
-  const { data, isLoading, isError } = getLoopCohosts(loopDetailsModule.chat_id, 'members')
+function LoopCollaborators({ loopId }: { loopId: string }) {
+  const { data, isLoading, isError } = getLoopCollaborators(loopId, 'members')
   const cohosts = data?.users
   return (
     <div className="h-full pt-3">

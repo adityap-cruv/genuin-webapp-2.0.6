@@ -7,7 +7,7 @@ import { CustomAvatar } from '@components/custom/custom-avatar'
 import { useRef } from 'react'
 import { useInView } from 'framer-motion'
 import { TopBar } from './top-bar'
-import { getLoopCohosts, getLoopSubscribers } from '@lib/api/loop'
+import { getLoopCollaborators, getLoopSubscribers } from '@lib/api/loop'
 import { Loader } from '@components/ui/loader'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
@@ -121,7 +121,7 @@ export function MainComponent({ loopDetails }: Props) {
               <LoopVideos loopId={loopDetails.share_string} />
             </div>
             <div className="snap-y snap-proximity overflow-auto scroll-smooth py-2">
-              <Cohosts loopId={loopDetails.share_string} />
+              <LoopCollaborators loopId={loopDetails.share_string} />
               <LoopSubscribers loopId={loopDetails.share_string} />
             </div>
           </div>
@@ -131,9 +131,8 @@ export function MainComponent({ loopDetails }: Props) {
     )
 }
 
-// TODO: get clarification from jimitbhai.
-function Cohosts({ loopId }: any) {
-  const { data, isLoading } = getLoopCohosts(loopId, 'members')
+function LoopCollaborators({ loopId }: any) {
+  const { data, isLoading } = getLoopCollaborators(loopId, 'members')
   const cohosts = data?.users
 
   if (cohosts && cohosts.length !== 0)
