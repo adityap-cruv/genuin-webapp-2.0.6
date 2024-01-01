@@ -88,13 +88,8 @@ function Mobile({
         onClick={(e) => {
           toggleShouldPlay()
         }}
-        className="relative flex h-full w-full snap-start items-center justify-center overflow-clip">
-        {shouldShowBackgroundBlurImage && (
-          <div
-            className="absolute inset-0 z-0 h-full w-full bg-secondary bg-cover bg-center bg-no-repeat blur-2xl"
-            style={{ backgroundImage: `url(${videoData.video.thumbnail})` }}
-          />
-        )}
+        style={{ backgroundImage: `url(${videoData.video.thumbnail})` }}
+        className="relative flex h-full w-full snap-start items-center justify-center overflow-clip bg-cover bg-center bg-no-repeat">
         <div
           ref={containerRef}
           className="relative overflow-hidden"

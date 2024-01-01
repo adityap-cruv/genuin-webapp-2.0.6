@@ -9,6 +9,7 @@ import { getTimeAgo } from '@lib/utils'
 import icMore from '@icons/icHorizotalDotsSecondary.svg'
 import Image from 'next/image'
 import icSpark from '@icons/icSparkBlack.svg'
+import { DownloadDialog } from '../download-dialog'
 
 const CommentPlayer = dynamic(async () => await import('./video-player').then((comp) => comp.CommentPlayer))
 const AudioPlayer = dynamic(async () => await import('./audio-player').then((comp) => comp.AudioPlayer))
@@ -34,10 +35,12 @@ export function CommentItem({ comment }: { comment: CommentType }) {
       </span>
       <span className="h-full w-full pl-6">
         <UI comment={comment} />
-        <span className="flex items-center pt-2">
-          <Image src={icSpark} alt="" className="h-4 w-4" />
-          <p className="text-cap-1-med">{comment.comment.no_of_sparks}</p>
-        </span>
+        <DownloadDialog subtitle="Get app to sparkl this comment." title="Get the Genuin app">
+          <span className="flex items-center pt-2">
+            <Image src={icSpark} alt="" className="h-4 w-4" />
+            <p className="text-cap-1-med">{comment.comment.no_of_sparks}</p>
+          </span>
+        </DownloadDialog>
       </span>
     </div>
   )
