@@ -64,7 +64,7 @@ async function fetchLoopCohosts(chatId: string, type: UserType) {
     })
 }
 
-export function getLoopCohosts(chatId: string, type: UserType) {
+export function getLoopCollaborators(chatId: string, type: UserType) {
   return useQuery({
     queryKey: ['cohosts'],
     queryFn: async () => await fetchLoopCohosts(chatId, type),

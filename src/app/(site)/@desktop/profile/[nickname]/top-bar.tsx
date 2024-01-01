@@ -5,6 +5,8 @@ import Image from 'next/image'
 import icShare from '@icons/icShareBlue.svg'
 import icQuestion from '@icons/icQuestion.svg'
 import { CustomAvatar } from '@components/custom/custom-avatar'
+import { useToast } from '@components/ui/use-toast'
+import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 
 type Props = {
   /**
@@ -21,6 +23,8 @@ type Props = {
 
 export function TopBar({ defaultOpen = true, isOpen = false, profileImage, profileName, ...props }: Props) {
   const navAnimationControl = useAnimationControls()
+  const { shareFn } = useAdaptiveShare()
+  const { toast } = useToast()
 
   useEffect(() => {
     if (defaultOpen || isOpen) {
@@ -48,9 +52,21 @@ export function TopBar({ defaultOpen = true, isOpen = false, profileImage, profi
       {...props}>
       <span className="flex items-center gap-x-2">
         <CustomAvatar imageUrl={profileImage} fallbackString={profileName} isAvatar={false} className="h-8 w-8" />
-        <p className="text-title-lg" style={{ fontWeight: 600 }}>{profileName}</p>
+        <p className="text-title-lg" style={{ fontWeight: 600 }}>
+          {profileName}
+        </p>
       </span>
-      <Button variant="outline" size="custom" outlineColor="genuin-blue" className="my-1">
+      <Button
+        variant="outline"
+        size="custom"
+        outlineColor="genuin-blue"
+        className="my-1"
+        onClick={async () =>
+          await shareFn({
+            shareLink: window.location.href,
+            toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
+          })
+        }>
         <span className="flex items-center p-1">
           <Image src={icShare} alt="share" height={24} width={24} />
         </span>

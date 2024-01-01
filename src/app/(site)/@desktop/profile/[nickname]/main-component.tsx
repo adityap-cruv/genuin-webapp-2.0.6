@@ -126,7 +126,7 @@ function CommunityList({ usernickname }: any) {
           {data?.pages
             .flatMap((page) => page.communities)
             .map((item, index) => (
-              <div key={index} className="my-4">
+              <div key={index} className="my-6">
                 <div className="flex items-center">
                   <CustomAvatar
                     className="bg-slate-500 h-11 w-11 bg-red-40"
