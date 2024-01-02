@@ -33,6 +33,7 @@ const VideoInfoSchema = z.object({
 
 const LoopInfoSchema = z.object({
   share_string: z.string(),
+  slug: z.string(),
   name: z.string().optional(),
   description: z.string().nullish(),
   profile_image: z.string().url().nullish(),
@@ -44,13 +45,14 @@ const CommunityInfoSchema = z.object({
   dp: z.string().optional(),
   handle: z.string(),
   name: z.string().optional(),
+  slug: z.string(),
 })
 
 const VideoDataSchema = z.object({
   video_type: z.enum(['rt', 'public_video']).optional(),
   owner: OwnerSchema,
   video: VideoInfoSchema,
-  loop: LoopInfoSchema.optional(),
+  loop: LoopInfoSchema,
   community: CommunityInfoSchema,
 })
 

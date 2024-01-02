@@ -7,8 +7,8 @@ import { PATH_NAME } from '@lib/utils/constants/path'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { isMobile } from 'react-device-detect'
 
-export function LoopVideos({ loopId }: any) {
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getLoopVideos(loopId)
+export function LoopVideos({ slug }: { slug: string }) {
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getLoopVideos(slug)
 
   const handleSeeMoreClick = () => {
     void fetchNextPage()

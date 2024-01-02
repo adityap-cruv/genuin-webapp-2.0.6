@@ -14,8 +14,7 @@ import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { TopBar } from '../../../layouts/mobile/top-bar'
-import lockIcon from '@images/lockIcon.svg'
-import LoopTab from '@components/common/community-loop-tab'
+import { CommunityLoopTab } from '@components/common/community-loop-tab'
 
 let communityDetailsModule: CommunityDetailsType
 
@@ -145,7 +144,7 @@ function ProfileTabs() {
         </TabsTrigger>
       </TabsList>
       <TabsContent value="Loops" className="mx-4">
-        <LoopTab communityHandle={communityDetailsModule.info.handle} />
+        <CommunityLoopTab communitySlug={communityDetailsModule.info.slug} />
       </TabsContent>
       <TabsContent value="About" className="mx-4">
         {communityDetailsModule.info.categories.length !== 0 && <Categories />}

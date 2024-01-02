@@ -3,7 +3,7 @@ import { fetchVideoDetails } from '@lib/api/video'
 
 type PageProps = {
   params: {
-    id: string
+    slug: string
   }
   searchParams: {
     l: string
@@ -11,7 +11,7 @@ type PageProps = {
 }
 
 export default async function Component({ params, searchParams }: PageProps) {
-  const videoData = await fetchVideoDetails(params.id)
+  const videoData = await fetchVideoDetails(params.slug)
   return (
     <main className="h-full w-full">
       <Root videoDetails={videoData} />

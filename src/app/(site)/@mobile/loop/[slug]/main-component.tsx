@@ -7,13 +7,12 @@ import icShare from '@icons/icShareBlue.svg'
 import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
-import { getLoopCollaborators, getLoopSubscribers } from '@lib/api/loop'
+import { getLoopSubscribers } from '@lib/api/loop'
 import { Loader } from '@components/ui/loader'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { TopBar } from '@components/layouts/mobile/top-bar'
-import icQuestion from '@icons/icQuestion.svg'
 import { LoopVideos } from '@components/common/loop-videos'
 
 let loopDetailsModule: LoopDetailsType
@@ -64,12 +63,12 @@ export function MainComponent({ loopDetails }: Props) {
                 <div className="flex flex-1 flex-col items-start">
                   <p className="text-body-sm text-secondary">Posted in</p>
                   {/* todo change to community data */}
-                  <Link href={{ pathname: PATH_NAME.community(loopDetails.community.handle) }}>
+                  <Link href={{ pathname: PATH_NAME.community(loopDetails.community.slug) }}>
                     <div className="my-2 flex items-center">
                       <div className="bg-red-400 h-6 w-6">
                         <CustomAvatar
                           className="h-full w-full"
-                          imageUrl={loopDetails.community.dp}
+                          imageUrl={loopDetails.community.dp ?? ''}
                           fallbackString={loopDetails.community.name}
                           isAvatar={false}
                         />
@@ -157,10 +156,10 @@ function LoopTabs() {
         </TabsTrigger>
       </TabsList>
       <TabsContent value="Loops">
-        <LoopVideos loopId={loopDetailsModule.share_string} />
+        <LoopVideos slug={loopDetailsModule.chat_slug} />
       </TabsContent>
       <TabsContent value="About">
-        <LoopCollaborators loopId={loopDetailsModule.share_string} />
+        <Cohosts slug={loopDetailsModule.chat_slug} />
       </TabsContent>
       <TabsContent value="Members">
         <LoopSubscribers loopId={loopDetailsModule.share_string} />
@@ -221,8 +220,9 @@ function Stats({
   )
 }
 
-function LoopCollaborators({ loopId }: { loopId: string }) {
-  const { data, isLoading, isError } = getLoopCollaborators(loopId, 'members')
+// TODO: manage data in better way
+function Cohosts({ slug }: { slug: string }) {
+  const { data, isLoading, isError } = getLoopCohosts(slug, 'members')
   const cohosts = data?.users
   return (
     <div className="h-full pt-3">

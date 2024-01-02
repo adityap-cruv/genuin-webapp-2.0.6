@@ -107,10 +107,12 @@ function InfinityViewBox() {
             name: videoDetails.community.name ?? '',
             handle: videoDetails.community.handle,
             profileImage: videoDetails.community.dp ?? '',
+            slug: videoDetails.community.slug,
           }}
           loop={{
-            name: videoDetails.loop?.name ?? '',
-            shareString: videoDetails.loop?.share_string ?? '',
+            name: videoDetails.loop.name ?? '',
+            shareString: videoDetails.loop.share_string,
+            slug: videoDetails.loop.slug,
           }}
         />
       </span>

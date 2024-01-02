@@ -2,10 +2,10 @@ import { type CommentListType, validateCommentList } from '@lib/schemas/loop/com
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 
-export async function fetchLoopDetails(loopId: string) {
+export async function fetchLoopDetails(slug: string) {
   return await axios
     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/rt/details', {
-      params: { loop_id: { share_string: loopId } },
+      params: { loop_id: { slug } },
     })
     .then((res) => {
       return res?.data?.data
@@ -15,11 +15,11 @@ export async function fetchLoopDetails(loopId: string) {
     })
 }
 
-async function fetchLoopVideos(loopId: string, ref: any) {
+async function fetchLoopVideos(slug: string, ref: any) {
   return await axios
     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/rt/videos_v2', {
       params: {
-        loop_id: { share_string: loopId },
+        loop_id: { slug },
         ref,
       },
     })
@@ -31,9 +31,9 @@ async function fetchLoopVideos(loopId: string, ref: any) {
     })
 }
 
-export function getLoopVideos(loopId: string) {
+export function getLoopVideos(slug: string) {
   return useInfiniteQuery({
-    queryFn: async ({ pageParam }) => await fetchLoopVideos(loopId, pageParam),
+    queryFn: async ({ pageParam }) => await fetchLoopVideos(slug, pageParam),
     queryKey: ['loop', 'videos', 'paginated'],
     getNextPageParam: (lastPage, pages) => {
       if (lastPage.end) {
@@ -46,12 +46,12 @@ export function getLoopVideos(loopId: string) {
 
 // TODO: Check for ref and pagination is enabled or not.
 type UserType = 'subscribers' | 'members'
-async function fetchLoopCohosts(chatId: string, type: UserType) {
+async function fetchLoopCohosts(slug: string, type: UserType) {
   return await axios
     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/rt/users', {
       params: {
         type,
-        loop_id: { share_string: chatId },
+        loop_id: { slug },
         ref: undefined,
       },
     })
@@ -64,20 +64,21 @@ async function fetchLoopCohosts(chatId: string, type: UserType) {
     })
 }
 
-export function getLoopCollaborators(chatId: string, type: UserType) {
+export function getLoopCohosts(slug: string, type: UserType) {
   return useQuery({
     queryKey: ['cohosts'],
-    queryFn: async () => await fetchLoopCohosts(chatId, type),
+    queryFn: async () => await fetchLoopCohosts(slug, type),
   })
 }
 
-export function getLoopSubscribers(chatId: string, type: UserType) {
+export function getLoopSubscribers(slug: string, type: UserType) {
   return useQuery({
     queryKey: ['users'],
-    queryFn: async () => await fetchLoopCohosts(chatId, type),
+    queryFn: async () => await fetchLoopCohosts(slug, type),
   })
 }
 
+// TODO: check this loop_id or video_id.
 export function getLoopVideoComments(videoShareString: string) {
   let promise: Promise<{ comments: CommentListType; ref: any; end: boolean }> | null = null
   return useInfiniteQuery({
