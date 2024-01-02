@@ -6,19 +6,25 @@ import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { isMobile } from 'react-device-detect'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import icPlay from '@icons/player-controls/icPlay.svg'
+import { useMotionValueEvent, useScroll } from 'framer-motion'
 
 export function LoopVideos({ slug }: { slug: string }) {
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getLoopVideos(slug)
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
 
-  const handleSeeMoreClick = () => {
-    void fetchNextPage()
-  }
+  const scrollDivRef = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({ container: scrollDivRef, layoutEffect: false })
+
+  useMotionValueEvent(scrollYProgress, 'change', (latest) => {
+    if (Number(latest.toFixed(1)) > 0.8 && !isFetchingNextPage) {
+      void fetchNextPage()
+    }
+  })
 
   return (
-    <div className="h-full w-full overflow-y-auto">
+    <div ref={scrollDivRef} className="h-full w-full overflow-y-auto">
       {!isMobile && <p className="my-2 text-title-3-bold">Posts</p>}
       {isLoading && <Loader size="md" />}
       {data?.pages.flatMap((page) => page.videos).length === 0 && (
@@ -68,13 +74,6 @@ export function LoopVideos({ slug }: { slug: string }) {
           ))}
       </div>
       {isFetchingNextPage && <Loader size="md" />}
-      {hasNextPage && (
-        <p
-          className="text-blue-500 flex w-full cursor-pointer justify-center py-4 text-cap-lg text-monochrome"
-          onClick={handleSeeMoreClick}>
-          See More
-        </p>
-      )}
     </div>
   )
 }

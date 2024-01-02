@@ -15,7 +15,7 @@ import icSpark from '@icons/player-controls/icBulb.svg'
 import { Shimmer } from '@components/ui/shimmer'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
-import { useInView } from 'framer-motion'
+import { useInView, useMotionValueEvent, useScroll } from 'framer-motion'
 import { TopBar } from './top-bar'
 import { PlayerModal } from '@components/common/player-modal'
 
@@ -116,12 +116,17 @@ function CommunityList({ usernickname }: any) {
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getAllCommunities(usernickname)
   const communities = data?.pages.flatMap((page) => page.communities)
 
-  const handleSeeMoreClick = () => {
-    void fetchNextPage()
-  }
+  const scrollDivRef = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({ container: scrollDivRef, layoutEffect: false })
+
+  useMotionValueEvent(scrollYProgress, 'change', (latest) => {
+    if (Number(latest.toFixed(1)) > 0.8 && !isFetchingNextPage) {
+      void fetchNextPage()
+    }
+  })
 
   return (
-    <div className="h-full w-full overflow-y-auto">
+    <div ref={scrollDivRef} className="h-full w-full overflow-y-auto">
       {isLoading && <Loader size="md" />}
       {data && (
         <div>
@@ -152,13 +157,6 @@ function CommunityList({ usernickname }: any) {
         </div>
       )}
       {isFetchingNextPage && <Loader size="md" />}
-      {hasNextPage && (
-        <p
-          className="text-blue-500 flex w-full cursor-pointer justify-center pb-4 text-cap-lg text-monochrome"
-          onClick={handleSeeMoreClick}>
-          See More Communities
-        </p>
-      )}
     </div>
   )
 }
