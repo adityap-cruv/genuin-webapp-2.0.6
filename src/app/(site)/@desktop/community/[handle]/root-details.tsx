@@ -269,6 +269,18 @@ function Members() {
       {communityDetailsModule?.members.length === 0 && (
         <div className="flex items-center justify-center pt-32 text-title-md text-secondary">No members available</div>
       )}
+      {communityDetailsModule?.leaders.map((moderator, index) => {
+        return (
+          <Link key={index} href={{ pathname: PATH_NAME.profile(moderator.nickname) }}>
+            <ListItem
+              title={moderator.name ?? ''}
+              subtitle={'@' + moderator.nickname}
+              description={moderator.description}
+              image={moderator.profile_image}
+            />
+          </Link>
+        )
+      })}
       {communityDetailsModule?.members.map((member, index) => {
         return (
           <Link key={index} href={{ pathname: PATH_NAME.profile(member.nickname) }}>

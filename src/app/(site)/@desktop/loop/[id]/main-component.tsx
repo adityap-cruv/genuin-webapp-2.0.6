@@ -144,8 +144,8 @@ function LoopCollaborators({ loopId }: any) {
           {cohosts.map((item: any, index: any) => (
             <Link key={index} href={{ pathname: PATH_NAME.profile(item.user.nickname) }}>
               <ListItem
-                title={'@' + item.user.nickname}
-                subtitle={item.user.name ?? ''}
+                title={item.user.name ?? ''}
+                subtitle={'@' + item.user.nickname}
                 description={item.user.bio || ''}
                 image={item.user.profile_image || ''}
               />
@@ -169,8 +169,8 @@ function LoopSubscribers({ loopId }: any) {
           {subscribers.map((item: any, index: any) => (
             <Link key={index} href={{ pathname: PATH_NAME.profile(item.user.nickname) }}>
               <ListItem
-                title={'@' + item.user.nickname}
-                subtitle={item.user.name ?? ''}
+                title={item.user.name ?? ''}
+                subtitle={'@' + item.user.nickname}
                 description={item.user.bio || ''}
                 image={item.user.profile_image || ''}
               />

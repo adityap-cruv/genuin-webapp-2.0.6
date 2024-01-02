@@ -83,7 +83,7 @@ async function fetchCommunities(nickname: string, ref: any) {
     })
     .then((res) => {
       const resData = res.data.data
-      return { communities: resData?.list, ref: resData?.ref, end: resData?.end }
+      return { communities: resData?.list, ref: resData?.ref, end: resData?.end_page }
     })
     .catch((e) => {
       throw new Error('Something went wrong with contributed_communities api.')

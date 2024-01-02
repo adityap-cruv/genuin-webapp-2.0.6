@@ -6,9 +6,12 @@ import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { isMobile } from 'react-device-detect'
+import { useState } from 'react'
+import icPlay from '@icons/player-controls/icPlay.svg'
 
 export function LoopVideos({ loopId }: any) {
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getLoopVideos(loopId)
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
 
   const handleSeeMoreClick = () => {
     void fetchNextPage()
@@ -26,12 +29,21 @@ export function LoopVideos({ loopId }: any) {
           .flatMap((page) => page.videos)
           .map((item, index) => (
             <FeedModal key={index} videos={data?.pages.flatMap((page) => page.videos)}>
-              <div key={index} className="relative aspect-reel w-full duration-300 hover:cursor-pointer">
+              <div
+                key={index}
+                className="relative flex aspect-reel w-full items-center justify-center duration-300 hover:cursor-pointer">
                 <Image
                   src={item.video.thumbnail ?? ''}
                   alt={item.video.description ?? ''}
                   className="h-full w-full rounded-xl object-fill"
                   fill
+                  onMouseEnter={() => {
+                    setSelectedIndex(index)
+                  }}
+                  onMouseLeave={() => {
+                    setSelectedIndex(null)
+                  }}
+                  style={{ filter: selectedIndex === index ? 'brightness(60%)' : 'brightness(100%)' }}
                 />
                 {/* <p className="absolute left-2 top-2 text-title-sm text-monochrome-white">
                     {item.video?.metadata.duration + 's'}
@@ -50,6 +62,7 @@ export function LoopVideos({ loopId }: any) {
                   </Link>
                   <p className="ml-1 line-clamp-2 text-body-1-demi text-monochrome-white">{item.video.description}</p>
                 </div>
+                {selectedIndex === index && <Image src={icPlay} alt="play" className="absolute" height={40} />}
               </div>
             </FeedModal>
           ))}

@@ -261,7 +261,7 @@ interface CohostTileProps {
 function CohostTile({ image, title, subtitle, userName, isAvatar }: CohostTileProps) {
   return (
     <div className="flex items-center gap-x-1 rounded-lg p-2 hover:bg-monochrome-10">
-      <CustomAvatar className="h-12 w-12 bg-red-40" fallbackString={userName} imageUrl={image} isAvatar={isAvatar} />
+      <CustomAvatar className="h-12 w-12 bg-red-40" fallbackString={title} imageUrl={image} isAvatar={isAvatar} />
       <div className="mx-2">
         <p className="line-clamp-1 text-title-sm">{title}</p>
         {userName && <p className="line-clamp-1 text-title-sm">{userName}</p>}

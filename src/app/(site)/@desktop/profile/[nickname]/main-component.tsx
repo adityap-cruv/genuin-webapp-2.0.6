@@ -113,6 +113,7 @@ function Stats({ profileData }: { profileData: any }) {
 
 function CommunityList({ usernickname }: any) {
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getAllCommunities(usernickname)
+  const communities = data?.pages.flatMap((page) => page.communities)
 
   const handleSeeMoreClick = () => {
     void fetchNextPage()
@@ -123,32 +124,30 @@ function CommunityList({ usernickname }: any) {
       {isLoading && <Loader size="md" />}
       {data && (
         <div>
-          {data?.pages
-            .flatMap((page) => page.communities)
-            .map((item, index) => (
-              <div key={index} className="my-6">
-                <div className="flex items-center">
-                  <CustomAvatar
-                    className="bg-slate-500 h-11 w-11 bg-red-40"
-                    fallbackString={item?.name}
-                    imageUrl={item?.dp}
-                    isAvatar={false}
-                  />
-                  <Link href={{ pathname: PATH_NAME.community(item.handle) }}>
-                    <div className="mx-2">
-                      <p
-                        className="line-clamp-1 text-left"
-                        style={{ fontWeight: 600, fontSize: '20px', lineHeight: '24px' }}>
-                        {item.name}
-                      </p>
-                    </div>
-                  </Link>
-                </div>
-                <DecorativeList>
-                  <CommunityDetails userId={usernickname} communityHandle={item.handle} />
-                </DecorativeList>
+          {communities?.map((item, index) => (
+            <div key={index} className="my-6">
+              <div className="flex items-center">
+                <CustomAvatar
+                  className="bg-slate-500 h-11 w-11 bg-red-40"
+                  fallbackString={item?.name}
+                  imageUrl={item?.dp}
+                  isAvatar={false}
+                />
+                <Link href={{ pathname: PATH_NAME.community(item.handle) }}>
+                  <div className="mx-2">
+                    <p
+                      className="line-clamp-1 text-left"
+                      style={{ fontWeight: 600, fontSize: '20px', lineHeight: '24px' }}>
+                      {item.name}
+                    </p>
+                  </div>
+                </Link>
               </div>
-            ))}
+              <DecorativeList>
+                <CommunityDetails userId={usernickname} communityHandle={item.handle} />
+              </DecorativeList>
+            </div>
+          ))}
         </div>
       )}
       {isFetchingNextPage && <Loader size="md" />}
