@@ -4,7 +4,7 @@ import { RootDetails } from './root-details'
 
 type Props = {
   params: {
-    handle: string
+    slug: string
   }
   searchParams: {
     feed: string
@@ -12,12 +12,12 @@ type Props = {
 }
 
 export default async function Component({ params, searchParams }: Props) {
-  if (searchParams.feed === '1') return <RootFeed handle={params.handle} />
-  return <Details handle={params.handle} />
+  if (searchParams.feed === '1') return <RootFeed slug={params.slug} />
+  return <Details slug={params.slug} />
 }
 
-async function Details({ handle }: { handle: string }) {
-  const communityData = await fetchCommunityDetails(handle)
+async function Details({ slug }: { slug: string }) {
+  const communityData = await fetchCommunityDetails(slug)
   return <RootDetails communityDetails={communityData} />
 }
 

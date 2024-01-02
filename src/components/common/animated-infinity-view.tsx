@@ -13,10 +13,12 @@ type Props = {
     name: string
     handle: string
     profileImage: string
+    slug: string
   }
   loop: {
     shareString: string
     name: string
+    slug: string
   }
 }
 
@@ -73,7 +75,7 @@ export function AnimatedInfinityView({ community, loop }: Props) {
   return (
     <span className="mb-2 flex px-1">
       <motion.div initial={{ rotateX: '90deg' }} animate={leftControls} className=" relative flex-1">
-        <Link href={{ pathname: PATH_NAME.community(community.handle) }}>
+        <Link href={{ pathname: PATH_NAME.community(community.slug) }}>
           <Image src={infynityLeft} alt="bar" className="w-full" />
           <span className="absolute inset-0 flex h-full w-full items-center gap-x-2 pl-2">
             <CustomAvatar
@@ -94,7 +96,7 @@ export function AnimatedInfinityView({ community, loop }: Props) {
         </Link>
       </motion.div>
       <motion.div initial={{ rotateX: '90deg' }} animate={rightControls} className="relative flex-1">
-        <Link href={{ pathname: PATH_NAME.loop(loop.shareString) }}>
+        <Link href={{ pathname: PATH_NAME.loop(loop.slug) }}>
           <Image src={infynityRight} alt="bar" className="w-full" />
           <span className="absolute inset-0 block w-full flex-1 justify-end">
             <span className="flex h-full items-center justify-end">

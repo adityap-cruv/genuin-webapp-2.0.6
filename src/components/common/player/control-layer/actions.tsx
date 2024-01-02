@@ -28,7 +28,7 @@ export const Actions = {
 
 // TODO: Fix their is bug when text length is bigger than devicesize fix it.
 function Mobile({ link = '', shareDescription = '', shareTitle = '', videoData }: ActionsProps) {
-  const { shareFn } = useAdaptiveShare()
+  // const { shareFn } = useAdaptiveShare()
   const { openComments, closeComments, commentsIsOpen } = useCommentSheetStore((state) => ({
     openComments: state.openModal,
     closeComments: state.closeModal,
@@ -76,13 +76,13 @@ function Mobile({ link = '', shareDescription = '', shareTitle = '', videoData }
             void window.navigator.share({
               text: videoData.video?.description ?? '',
               title: 'Share this video',
-              url: window.location.hostname + PATH_NAME.video(videoData.video.share_string),
+              url: window.location.hostname + PATH_NAME.video(videoData.video.slug),
             })
             e.stopPropagation()
             // void window.navigator.share({
             //   text: videoData.video?.description ?? '',
             //   title: 'Share this video',
-            //   url: window.location.hostname + PATH_NAME.video(videoData.video.share_string),
+            //   url: window.location.hostname + PATH_NAME.video(videoData.video.slug),
             // })
             // await shareFn({ description: shareDescription, title: shareTitle })
           }}>
@@ -138,7 +138,7 @@ function Desktop({ link = '', shareDescription = '', shareTitle = '', videoData 
             await shareFn({
               description: shareDescription,
               title: shareTitle,
-              shareLink: window.location.hostname + PATH_NAME.video(videoData.video.share_string),
+              shareLink: window.location.hostname + PATH_NAME.video(videoData.video.slug),
               toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
             })
           }}>

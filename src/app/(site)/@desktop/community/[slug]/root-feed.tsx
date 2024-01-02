@@ -10,12 +10,12 @@ const Feed = dynamic(async () => await import('@components/common/feed').then((c
 })
 
 interface Props {
-  handle: string
+  slug: string
 }
 
-export function RootFeed({ handle }: Props) {
+export function RootFeed({ slug }: Props) {
   const videoSizeBox = useVideoSizeBox(true)
-  const { data, isError, fetchNextPage, isFetchingNextPage, isLoading } = getCommunityVideos(handle)
+  const { data, isError, fetchNextPage, isFetchingNextPage, isLoading } = getCommunityVideos(slug)
   const videos = data?.pages.flatMap((item) => item.videos)
 
   if (videoSizeBox && videos)

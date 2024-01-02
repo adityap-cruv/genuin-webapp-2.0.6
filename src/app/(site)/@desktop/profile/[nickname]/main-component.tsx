@@ -23,6 +23,7 @@ interface CompProps {
   profileData: any
 }
 
+// TODO: separate this component.
 export function MainComponent({ profileData }: CompProps) {
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
@@ -167,7 +168,6 @@ function CommunityDetails({ userId, communityHandle }: { userId: string; communi
   const handleSeeMoreClick = () => {
     void fetchNextPage()
   }
-
   return (
     <>
       &nbsp;
@@ -207,11 +207,12 @@ function CommunityDetails({ userId, communityHandle }: { userId: string; communi
   )
 }
 
-function LoopVideos({ userId, loopDetails }: any) {
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getAllLoopVideos(
-    userId,
-    loopDetails.share_string
-  )
+type LoopVideosProps = {
+  userId: string
+  loopDetails: any
+}
+function LoopVideos({ userId, loopDetails }: LoopVideosProps) {
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getAllLoopVideos(userId, loopDetails.slug)
   const videos = data?.pages.flatMap((item) => item.videos)
 
   const [videoCount, setVideoCount] = useState(Math.max(0, loopDetails.video_count - 10))
@@ -225,7 +226,7 @@ function LoopVideos({ userId, loopDetails }: any) {
 
   return (
     <>
-      <Link href={{ pathname: PATH_NAME.loop(loopDetails.share_string) }}>
+      <Link href={{ pathname: PATH_NAME.loop(loopDetails.slug) }}>
         <p className="mb-3 text-title-sm" style={{ lineHeight: '24px' }}>
           {loopDetails.name}
         </p>

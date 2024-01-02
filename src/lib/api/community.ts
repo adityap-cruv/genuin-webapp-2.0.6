@@ -1,11 +1,11 @@
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 
-export async function fetchCommunityDetails(handle: string) {
+export async function fetchCommunityDetails(slug: string) {
   return await axios
     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/community/details', {
       params: {
-        community_id: { handle },
+        community_id: { slug },
       },
     })
     .then((res) => res.data.data)
@@ -22,7 +22,7 @@ export async function fetchCommunityDetails(handle: string) {
     })
 }
 
-export function getCommunityVideos(handle: string) {
+export function getCommunityVideos(slug: string) {
   let promise: null | Promise<{ videos: any; ref: any; end?: boolean }> = null
   return useInfiniteQuery({
     queryFn: async ({ pageParam }) => {
@@ -30,7 +30,7 @@ export function getCommunityVideos(handle: string) {
         promise = axios
           .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/community/videos', {
             params: {
-              community_id: { handle },
+              community_id: { slug },
               ref: pageParam,
             },
           })
@@ -46,7 +46,7 @@ export function getCommunityVideos(handle: string) {
       }
       return await promise
     },
-    queryKey: ['community', 'videos', handle],
+    queryKey: ['community', 'videos', slug],
     getNextPageParam: (lastPage) => {
       if (lastPage.end) return
       return lastPage.ref
@@ -56,11 +56,11 @@ export function getCommunityVideos(handle: string) {
 
 //  TODO: Add Pagination.
 // TODO: Check for pagination
-export async function fetchCommunityLoops(handle: string) {
+export async function fetchCommunityLoops(slug: string) {
   return await axios
     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/community/loops', {
       params: {
-        community_id: { handle },
+        community_id: { slug },
       },
     })
     .then((res) => {
@@ -71,8 +71,8 @@ export async function fetchCommunityLoops(handle: string) {
     })
 }
 
-export function getCommunityLoops(handle: string) {
-  return useQuery({ queryFn: async () => await fetchCommunityLoops(handle), queryKey: ['community', 'loops', handle] })
+export function getCommunityLoops(slug: string) {
+  return useQuery({ queryFn: async () => await fetchCommunityLoops(slug), queryKey: ['community', 'loops', slug] })
 }
 
 // async function fetchVideoComments(handle: string) {

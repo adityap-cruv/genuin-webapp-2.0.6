@@ -21,7 +21,7 @@ import { DownloadDialog } from '@components/common/download-dialog'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
-import LoopTab from '@components/common/community-loop-tab'
+import { CommunityLoopTab } from '@components/common/community-loop-tab'
 import { ListItem } from '@components/common/list-item'
 
 interface Props {
@@ -44,6 +44,7 @@ export function RootDetails({ communityDetails }: Props) {
       handle: communityDetails.info.handle,
       name: communityDetails.info.name,
       profileImage: communityDetails.info.profile_image,
+      slug: communityDetails.info.slug,
     })
   }, [])
 
@@ -147,7 +148,7 @@ function CommunityDetailsTabs() {
         </TabsTrigger>
       </TabsList>
       <TabsContent value="Loops" className="mr-2">
-        <LoopTab communityHandle={communityDetailsModule.info.handle} />
+        <CommunityLoopTab communitySlug={communityDetailsModule.info.slug} />
       </TabsContent>
       <TabsContent value="Members">
         <Members />

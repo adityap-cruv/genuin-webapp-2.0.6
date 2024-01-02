@@ -33,11 +33,13 @@ const Group = z.object({
 const Community = z.object({
   name: z.string(),
   handle: z.string(),
-  dp: z.string()
+  dp: z.string().nullish(),
+  slug: z.string(),
 })
 
 const LoopDetailsSchema = z.object({
   chat_id: z.string(),
+  chat_slug: z.string(),
   type: z.number(),
   settings: z.object({
     discoverable: z.boolean(),

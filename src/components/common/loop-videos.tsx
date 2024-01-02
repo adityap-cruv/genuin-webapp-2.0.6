@@ -9,8 +9,8 @@ import { isMobile } from 'react-device-detect'
 import { useState } from 'react'
 import icPlay from '@icons/player-controls/icPlay.svg'
 
-export function LoopVideos({ loopId }: any) {
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getLoopVideos(loopId)
+export function LoopVideos({ slug }: { slug: string }) {
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getLoopVideos(slug)
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
 
   const handleSeeMoreClick = () => {

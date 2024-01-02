@@ -121,7 +121,7 @@ function CommunityList({ usernickname }: any) {
                   isAvatar={false}
                 />
                 <div className="mx-2 flex w-full items-center justify-between">
-                  <Link href={{ pathname: PATH_NAME.community(item.handle) }}>
+                  <Link href={{ pathname: PATH_NAME.community(item.slug) }}>
                     <p className="line-clamp-1 text-left text-title-sm">{item.name}</p>
                   </Link>
 
@@ -204,10 +204,7 @@ function CommunityDetails({ userId, communityHandle }: { userId: string; communi
 }
 
 function LoopVideos({ userId, loopDetails }: any) {
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getAllLoopVideos(
-    userId,
-    loopDetails.share_string
-  )
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getAllLoopVideos(userId, loopDetails.slug)
 
   const [videoCount, setVideoCount] = useState(Math.max(0, loopDetails.video_count - 10))
 
@@ -220,7 +217,7 @@ function LoopVideos({ userId, loopDetails }: any) {
 
   return (
     <>
-      <Link href={{ pathname: PATH_NAME.loop(loopDetails.share_string) }}>
+      <Link href={{ pathname: PATH_NAME.loop(loopDetails.slug) }}>
         <p className="text-title-sm">{loopDetails.name}</p>
       </Link>
       {data?.pages.flatMap((page) => page.videos).length === 0 && (

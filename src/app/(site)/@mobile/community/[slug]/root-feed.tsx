@@ -10,8 +10,8 @@ const Feed = dynamic(async () => await import('@components/common/feed').then((c
   },
 })
 
-export function RootFeed({ handle }: { handle: string }) {
-  const { data, isFetching, isError, isLoading, fetchNextPage, isFetchingNextPage } = getCommunityVideos(handle)
+export function RootFeed({ slug }: { slug: string }) {
+  const { data, isFetching, isError, isLoading, fetchNextPage, isFetchingNextPage } = getCommunityVideos(slug)
   const videoSizeBox = useVideoSizeBox(false)
   const videos = data?.pages.flatMap((item) => item.videos)
   if (videos && videoSizeBox)
@@ -26,6 +26,7 @@ export function RootFeed({ handle }: { handle: string }) {
           isError={isError}
           isLoading={isLoading}
           isFetchingNextPage={isFetchingNextPage}
+          fetchNextPage={fetchNextPage}
         />
       </main>
     )

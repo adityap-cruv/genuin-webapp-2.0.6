@@ -19,6 +19,7 @@ export function RootDetails({ communityDetails }: Props) {
       handle: communityDetails.info.handle,
       name: communityDetails.info.name,
       profileImage: communityDetails.info.profile_image,
+      slug: communityDetails.info.slug,
     })
   }, [])
 

@@ -34,7 +34,7 @@ export function HorizontalVideosList({ loopId }: { loopId: string }) {
               className="relative mx-1 inline-block h-full cursor-pointer duration-300 hover:scale-95"
               onClick={(e) => {
                 pushUrlWithoutReload({
-                  pathname: PATH_NAME.video(item.video.share_string),
+                  pathname: PATH_NAME.video(item.video.slug),
                   query: [{ key: 'l', value: item.loop?.share_string }],
                 })
                 setModalState({ isOpen: true, clickedIndex: index })
