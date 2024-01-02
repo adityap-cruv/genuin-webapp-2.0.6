@@ -2,7 +2,7 @@ import { fetchVideoDetails } from '@lib/api/video'
 import { Root } from './root'
 type PageProps = {
   params: {
-    id: string
+    slug: string
   }
   searchParams: {
     l: string
@@ -10,7 +10,7 @@ type PageProps = {
 }
 
 export default async function Component({ params, searchParams }: PageProps) {
-  const videoData = await fetchVideoDetails(params.id)
+  const videoData = await fetchVideoDetails(params.slug)
 
   return <Root videoData={videoData} />
 }

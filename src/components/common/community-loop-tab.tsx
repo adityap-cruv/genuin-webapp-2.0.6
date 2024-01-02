@@ -7,32 +7,32 @@ import Image from 'next/image'
 import Link from 'next/link'
 import noLoopsImage from '@images/noLoopImage.svg'
 
-export default function LoopTab({ communityHandle }: { communityHandle: string }) {
-  const { isLoading, data: loops, isFetched } = getCommunityLoops(communityHandle)
-
-  return (
-    <div className='h-full'>
-      {isLoading && <Loader size="sm" />}
-      {isFetched && (
-        <>
-          {loops.length === 0 ? (
-            <div className="mt-4 flex flex-col items-center justify-center" style={{ backgroundColor: '#F9F9F9' }}>
-              <Image src={noLoopsImage} alt="share" />
-              <p className="text-title-2-bold">No Loops... yet!</p>
-              <p className="w-96 text-center text-body-1-demi text-monochrome">
-                Loops are dynamic discussion spaces centered around specific themes. Members can share videos, get
-                reactions, and enjoy engaging comments from the community.
-              </p>
-            </div>
-          ) : (
-            loops.map((item: any, index: number) => {
-              return <LoopItem key={index} loopDetails={item} />
-            })
-          )}
-        </>
-      )}
-    </div>
-  )
+export function CommunityLoopTab({ communitySlug }: { communitySlug: string }) {
+  const { isLoading, data: loops, isFetched } = getCommunityLoops(communitySlug)
+  if (loops)
+    return (
+      <div className="h-full">
+        {isLoading && <Loader size="sm" />}
+        {isFetched && (
+          <>
+            {loops.length === 0 ? (
+              <div className="mt-4 flex flex-col items-center justify-center" style={{ backgroundColor: '#F9F9F9' }}>
+                <Image src={noLoopsImage} alt="share" />
+                <p className="text-title-2-bold">No Loops... yet!</p>
+                <p className="w-96 text-center text-body-1-demi text-monochrome">
+                  Loops are dynamic discussion spaces centered around specific themes. Members can share videos, get
+                  reactions, and enjoy engaging comments from the community.
+                </p>
+              </div>
+            ) : (
+              loops.map((item: any, index: number) => {
+                return <LoopItem key={index} loopDetails={item} />
+              })
+            )}
+          </>
+        )}
+      </div>
+    )
 }
 
 function LoopItem({ loopDetails }: { loopDetails: any }) {
@@ -84,7 +84,7 @@ function LoopItem({ loopDetails }: { loopDetails: any }) {
   }
 
   return (
-    <Link href={{ pathname: PATH_NAME.loop(loopDetails.share_string) }}>
+    <Link href={{ pathname: PATH_NAME.loop(loopDetails.slug) }}>
       <div className="relative my-4 w-full rounded-lg border border-monochrome-9 bg-monochrome-white">
         <div className="w-[70%] items-center p-[3%]">
           <p className="text-body-1-bold">{loopDetails.name}</p>

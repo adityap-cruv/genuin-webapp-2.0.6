@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-type CommunityType = { name: string; handle: string; profileImage: string }
+type CommunityType = { name: string; handle: string; profileImage: string; slug: string }
 
 type RecentCommunityType = {
   communities: CommunityType[]

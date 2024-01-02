@@ -128,7 +128,12 @@ function TabBody({ videos, hasNextPage, fetchingNextPage }: TabBodyProps) {
 
   if (videos.length === 0) {
     return (
-      <div className={`flex h-full ${isMobile && 'pt-40'} w-full items-center justify-center text-title-lg text-secondary`}>No videos yet</div>
+      <div
+        className={`flex h-full ${
+          isMobile && 'pt-40'
+        } w-full items-center justify-center text-title-lg text-secondary`}>
+        No videos yet
+      </div>
     )
   }
 
@@ -188,8 +193,8 @@ function Tile({ width = -1, videoDetails, onClick, tileIndex }: TileProps) {
     <div
       onClick={() => {
         pushUrlWithoutReload({
-          pathname: PATH_NAME.video(videoDetails.video.share_string),
-          query: [{ key: 'l', value: videoDetails.loop?.share_string }],
+          pathname: PATH_NAME.video(videoDetails.video.slug),
+          query: [{ key: 'l', value: videoDetails.loop.share_string }],
         })
         onClick?.(tileIndex)
       }}

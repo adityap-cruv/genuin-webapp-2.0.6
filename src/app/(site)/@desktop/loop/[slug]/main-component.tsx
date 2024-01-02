@@ -7,7 +7,7 @@ import { CustomAvatar } from '@components/custom/custom-avatar'
 import { useRef } from 'react'
 import { useInView } from 'framer-motion'
 import { TopBar } from './top-bar'
-import { getLoopCollaborators, getLoopSubscribers } from '@lib/api/loop'
+import { getLoopCohosts, getLoopSubscribers } from '@lib/api/loop'
 import { Loader } from '@components/ui/loader'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
@@ -22,6 +22,7 @@ interface Props {
   loopDetails: LoopDetailsType
 }
 
+// TODO: Improve this component.
 export function MainComponent({ loopDetails }: Props) {
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
@@ -59,10 +60,10 @@ export function MainComponent({ loopDetails }: Props) {
                 </span>
                 <span className="flex-1">
                   <p className="text-body-1-demi text-monochrome">Posted in</p>
-                  <Link href={{ pathname: PATH_NAME.community(loopDetails.community.handle) }}>
+                  <Link href={{ pathname: PATH_NAME.community(loopDetails.community.slug) }}>
                     <div className="my-2 flex items-center">
                       <CustomAvatar
-                        imageUrl={loopDetails.community.dp}
+                        imageUrl={loopDetails.community.dp ?? ''}
                         fallbackString={loopDetails.community.name}
                         isAvatar={false}
                         className="h-8 w-8"
@@ -118,11 +119,11 @@ export function MainComponent({ loopDetails }: Props) {
           </span>
           <div className="grid w-full grid-cols-2 gap-4 overflow-hidden" style={{ height: 'calc(100% - 56px)' }}>
             <div className="h-full snap-y snap-proximity overflow-auto scroll-smooth">
-              <LoopVideos loopId={loopDetails.share_string} />
+              <LoopVideos slug={loopDetails.chat_slug} />
             </div>
             <div className="snap-y snap-proximity overflow-auto scroll-smooth py-2">
-              <LoopCollaborators loopId={loopDetails.share_string} />
-              <LoopSubscribers loopId={loopDetails.share_string} />
+              <Cohosts slug={loopDetails.chat_slug} />
+              <LoopSubscribers slug={loopDetails.chat_slug} />
             </div>
           </div>
           <Toaster />
@@ -131,8 +132,9 @@ export function MainComponent({ loopDetails }: Props) {
     )
 }
 
-function LoopCollaborators({ loopId }: any) {
-  const { data, isLoading } = getLoopCollaborators(loopId, 'members')
+// TODO: get clarification from jimitbhai.
+function Cohosts({ slug }: { slug: string }) {
+  const { data, isLoading } = getLoopCohosts(slug, 'members')
   const cohosts = data?.users
 
   if (cohosts && cohosts.length !== 0)
@@ -156,8 +158,8 @@ function LoopCollaborators({ loopId }: any) {
     )
 }
 
-function LoopSubscribers({ loopId }: any) {
-  const { data, isLoading } = getLoopSubscribers(loopId, 'subscribers')
+function LoopSubscribers({ slug }: { slug: string }) {
+  const { data, isLoading } = getLoopSubscribers(slug, 'subscribers')
   const subscribers = data?.users
 
   if (subscribers && subscribers.length !== 0)

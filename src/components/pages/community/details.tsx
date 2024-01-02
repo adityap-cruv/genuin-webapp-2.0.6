@@ -26,6 +26,7 @@ interface Props {
   communityDetails: CommunityDetailsType
 }
 
+// TODO: check this component if it's being used anywhere and than remove it. If not being used.
 export function CommunityDetails({ children, communityDetails }: Props) {
   communityDetailsModule = communityDetails
   const sizeBox = useVideoSizeBox(true)

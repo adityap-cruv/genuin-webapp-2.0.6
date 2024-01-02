@@ -21,10 +21,10 @@ export function RecentCommunities() {
             <Link
               key={item.handle}
               href={{
-                pathname: PATH_NAME.community(item.handle),
+                pathname: PATH_NAME.community(item.slug),
                 query: { feed: '1' },
               }}>
-              <CommunityItem title={item.name} isActive={pathName === PATH_NAME.community(item.handle)}>
+              <CommunityItem title={item.name} isActive={pathName === PATH_NAME.community(item.slug)}>
                 <CustomAvatar
                   imageUrl={item.profileImage}
                   fallbackString={item.name}
