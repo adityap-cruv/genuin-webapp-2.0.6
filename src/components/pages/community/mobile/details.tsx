@@ -131,7 +131,7 @@ function Stats() {
 
 function ProfileTabs() {
   return (
-    <Tabs defaultValue="Loops" className="">
+    <Tabs defaultValue="Loops" className="h-full">
       <TabsList className="sticky flex max-w-min">
         <TabsTrigger value="Loops">
           <p className="text-title-md">Loops</p>
@@ -143,16 +143,14 @@ function ProfileTabs() {
           <p className="text-title-md">About</p>
         </TabsTrigger>
       </TabsList>
-      <TabsContent value="Loops" className="mx-4">
+      <hr className="border-t border-monochrome-9" />
+      <TabsContent value="Loops" className="mx-4 h-full">
         <CommunityLoopTab communitySlug={communityDetailsModule.info.slug} />
       </TabsContent>
       <TabsContent value="About" className="mx-4">
-        {communityDetailsModule.info.categories.length !== 0 && <Categories />}
-        {communityDetailsModule.info.links?.instagram_url &&
-          communityDetailsModule.info.links?.linkedin_url &&
-          communityDetailsModule.info.links?.twitter_url &&
-          communityDetailsModule.info.links?.social_web_url && <Links />}
-        {communityDetailsModule.leaders.length !== 0 && <Leaders />}
+        <Categories />
+        <Links />
+        <Leaders />
       </TabsContent>
       <TabsContent value="Members" className="m-4">
         <Members />
@@ -162,89 +160,92 @@ function ProfileTabs() {
 }
 
 function Categories() {
-  return (
-    <div>
-      <p className="my-2 text-title-md">Categories</p>
-      {communityDetailsModule?.info.categories.length === 0 && (
-        <div className="flex items-center justify-center text-title-md text-secondary">No categories available</div>
-      )}
+  if (communityDetailsModule.info.categories.length !== 0)
+    return (
       <div>
-        {communityDetailsModule?.info.categories.map((cat, index) => {
-          return (
-            <p key={index} className="mx-1 my-1 inline-block rounded-full bg-monochrome-9 p-2 px-4 text-body-sm">
-              <span className="line-clamp-1 break-all">{cat}</span>
-            </p>
-          )
-        })}
+        <p className="my-2 text-title-md">Categories</p>
+        {communityDetailsModule?.info.categories.length === 0 && (
+          <div className="flex items-center justify-center text-title-md text-secondary">No categories available</div>
+        )}
+        <div>
+          {communityDetailsModule?.info.categories.map((cat, index) => {
+            return (
+              <p key={index} className="mx-1 my-1 inline-block rounded-full bg-monochrome-9 p-2 px-4 text-body-sm">
+                <span className="line-clamp-1 break-all">{cat}</span>
+              </p>
+            )
+          })}
+        </div>
       </div>
-    </div>
-  )
+    )
 }
 
 function Links() {
   const links = communityDetailsModule?.info.links
-  return (
-    <div>
-      <p className="my-2 text-title-md">Links</p>
-      {!links?.instagram_url && !links?.linkedin_url && !links?.twitter_url && !links?.social_web_url && (
-        <div className="flex items-center justify-center text-title-md text-secondary">No links available</div>
-      )}
-      <div className="flex">
-        {links?.instagram_url && (
-          <div className="mx-1 rounded-md bg-monochrome-9 p-1">
-            <Link href={checkAndAppendHttps(links.instagram_url)} target="_blank">
-              <Image src={icInstagram} alt="instagram" />
-            </Link>
-          </div>
+  if (links?.instagram_url ?? links?.linkedin_url ?? links?.twitter_url ?? links?.social_web_url)
+    return (
+      <div>
+        <p className="my-2 text-title-md">Links</p>
+        {!links?.instagram_url && !links?.linkedin_url && !links?.twitter_url && !links?.social_web_url && (
+          <div className="flex items-center justify-center text-title-md text-secondary">No links available</div>
         )}
-        {links?.linkedin_url && (
-          <div className="mx-1 rounded-md bg-monochrome-9 p-1">
-            <Link href={checkAndAppendHttps(links.linkedin_url)} target="_blank">
-              <Image src={icLinkedIn} alt="linkedin" />
-            </Link>
-          </div>
-        )}
-        {links?.twitter_url && (
-          <div className="mx-1 rounded-md bg-monochrome-9 p-1">
-            <Link href={checkAndAppendHttps(links.twitter_url)} target="_blank">
-              <Image src={icTwitter} alt="twitter" />
-            </Link>
-          </div>
-        )}
-        {links?.social_web_url && (
-          <div className="mx-1 rounded-md bg-monochrome-9 p-1">
-            <Link href={checkAndAppendHttps(links.social_web_url)} target="_blank">
-              <div className="flex">
-                <Image src={icLink} alt="web-site" />
-                <p className="text-body-sm">&nbsp;{links.social_web_url}</p>
-              </div>
-            </Link>
-          </div>
-        )}
+        <div className="flex">
+          {links?.instagram_url && (
+            <div className="mx-1 flex items-center rounded-md bg-monochrome-9 p-1">
+              <Link href={checkAndAppendHttps(links.instagram_url)} target="_blank">
+                <Image src={icInstagram} alt="instagram" />
+              </Link>
+            </div>
+          )}
+          {links?.linkedin_url && (
+            <div className="mx-1 flex items-center rounded-md bg-monochrome-9 p-1">
+              <Link href={checkAndAppendHttps(links.linkedin_url)} target="_blank">
+                <Image src={icLinkedIn} alt="linkedin" />
+              </Link>
+            </div>
+          )}
+          {links?.twitter_url && (
+            <div className="mx-1 flex items-center rounded-md bg-monochrome-9 p-1">
+              <Link href={checkAndAppendHttps(links.twitter_url)} target="_blank">
+                <Image src={icTwitter} alt="twitter" />
+              </Link>
+            </div>
+          )}
+          {links?.social_web_url && (
+            <div className="mx-1 flex items-center rounded-md bg-monochrome-9 p-1">
+              <Link href={checkAndAppendHttps(links.social_web_url)} target="_blank">
+                <div className="flex">
+                  <Image src={icLink} alt="web-site" />
+                  <p className="text-body-sm">&nbsp;{links.social_web_url}</p>
+                </div>
+              </Link>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
-  )
+    )
 }
 
 function Leaders() {
-  return (
-    <div>
-      <p className="my-2 text-title-md">Leader</p>
-      {communityDetailsModule?.leaders.map((moderator, index) => {
-        return (
-          <Link key={index} href={{ pathname: PATH_NAME.profile(moderator.nickname) }}>
-            <ListItem
-              title={moderator.name ?? ''}
-              subtitle={'@' + moderator.nickname}
-              description={moderator.description}
-              image={moderator.profile_image}
-              isAvatar={moderator.is_avatar}
-            />
-          </Link>
-        )
-      })}
-    </div>
-  )
+  if (communityDetailsModule.leaders.length !== 0)
+    return (
+      <div>
+        <p className="my-2 text-title-md">Leader</p>
+        {communityDetailsModule?.leaders.map((moderator, index) => {
+          return (
+            <Link key={index} href={{ pathname: PATH_NAME.profile(moderator.nickname) }}>
+              <ListItem
+                title={moderator.name ?? ''}
+                subtitle={'@' + moderator.nickname}
+                description={moderator.description}
+                image={moderator.profile_image}
+                isAvatar={moderator.is_avatar}
+              />
+            </Link>
+          )
+        })}
+      </div>
+    )
 }
 
 function ListItem({
@@ -281,9 +282,19 @@ function Members() {
   return (
     <div>
       {/* <p className="my-2 text-title-md">Members</p> */}
-      {communityDetailsModule?.members.length === 0 && (
-        <div className="flex items-center justify-center pt-32 text-title-md text-secondary">No members available</div>
-      )}
+      {communityDetailsModule?.leaders.map((moderator, index) => {
+        return (
+          <Link key={index} href={{ pathname: PATH_NAME.profile(moderator.nickname) }}>
+            <ListItem
+              title={moderator.name ?? ''}
+              subtitle={'@' + moderator.nickname}
+              description={moderator.description}
+              image={moderator.profile_image}
+              isAvatar={moderator.is_avatar}
+            />
+          </Link>
+        )
+      })}
       {communityDetailsModule?.members.map((member, index) => {
         return (
           <Link key={index} href={{ pathname: PATH_NAME.profile(member.nickname) }}>

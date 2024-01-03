@@ -63,15 +63,15 @@ export function RootDetails({ communityDetails }: Props) {
             isAvatar={false}
             imageUrl={communityDetails.info.profile_image}
             fallbackString={communityDetails.info.name}
-            className="h-20 w-20"
+            className="h-20 w-20 text-new-h2 font-medium"
           />
           <span className="flex items-center gap-x-2 py-2">
             <p className="text-title-1-bold">{communityDetails.info.name}</p>
             <p className="text-body-1-med text-secondary">@{communityDetails.info.handle}</p>
           </span>
+          <p className="mb-2 line-clamp-2 w-1/2 break-all text-body-1-med">{communityDetails.info.description}</p>
           <Stats communityDetails={communityDetails} />
-          <p className="mb-4 mt-2 line-clamp-2 w-1/2 break-all text-body-1-med">{communityDetails.info.description}</p>
-          <span className="flex items-center gap-x-2">
+          <span className="my-2 flex items-center gap-x-2">
             <DownloadDialog
               title="Get the Genuin app"
               subtitle={
@@ -115,19 +115,15 @@ export function RootDetails({ communityDetails }: Props) {
           </div>
         </div> */}
         <div className="grid w-full grid-cols-2 gap-4 overflow-hidden" style={{ height: 'calc(100% - 56px)' }}>
-          <div className="snap-y snap-proximity overflow-auto scroll-smooth">
+          <div className="snap-y snap-proximity overflow-auto overflow-x-hidden scroll-smooth">
             <CommunityDetailsTabs />
           </div>
 
-          {/* // TODO: Improve this code. Links should not conditioned like this. */}
           <div className="snap-y snap-proximity overflow-auto scroll-smooth">
-            {communityDetails.info.categories.length !== 0 && <Categories />}
-            {communityDetails.info.links?.instagram_url &&
-              communityDetails.info.links?.linkedin_url &&
-              communityDetails.info.links?.twitter_url &&
-              communityDetails.info.links?.social_web_url && <Links />}
-            {communityDetails.guidelines && <Guidelines />}
-            {communityDetails.leaders.length !== 0 && <Leaders />}
+            <Categories />
+            <Links />
+            <Guidelines />
+            <Leaders />
           </div>
         </div>
       </main>
@@ -138,8 +134,8 @@ export function RootDetails({ communityDetails }: Props) {
 
 function CommunityDetailsTabs() {
   return (
-    <Tabs defaultValue="Loops">
-      <TabsList className="sticky flex max-w-min">
+    <Tabs defaultValue="Loops" style={{ height: 'calc(100% - 42px)' }}>
+      <TabsList className="flex max-w-min">
         <TabsTrigger value="Loops">
           <p className="text-title-3-bold">Loops</p>
         </TabsTrigger>
@@ -147,7 +143,8 @@ function CommunityDetailsTabs() {
           <p className="text-title-3-bold">Members</p>
         </TabsTrigger>
       </TabsList>
-      <TabsContent value="Loops" className="mr-2">
+      <hr className="border-t border-monochrome-9" />
+      <TabsContent value="Loops" className="mr-2 h-full">
         <CommunityLoopTab communitySlug={communityDetailsModule.info.slug} />
       </TabsContent>
       <TabsContent value="Members">
@@ -158,119 +155,120 @@ function CommunityDetailsTabs() {
 }
 
 function Categories() {
-  return (
-    <div>
-      <p className="my-2 mt-4 text-title-3-bold">Categories</p>
+  if (communityDetailsModule.info.categories.length !== 0)
+    return (
       <div>
-        {communityDetailsModule?.info.categories.map((cat, index) => {
-          return (
-            <p key={index} className="my-1 mr-1 inline-block rounded-full bg-monochrome-9 p-2 px-4 text-body-1-med">
-              <span className="line-clamp-1 break-all">{cat}</span>
-            </p>
-          )
-        })}
+        <p className="my-2 mt-4 text-title-3-bold">Categories</p>
+        <div>
+          {communityDetailsModule?.info.categories.map((cat, index) => {
+            return (
+              <p key={index} className="my-1 mr-1 inline-block rounded-full bg-monochrome-9 p-2 px-4 text-body-1-med">
+                <span className="line-clamp-1 break-all">{cat}</span>
+              </p>
+            )
+          })}
+        </div>
       </div>
-    </div>
-  )
+    )
 }
 
 function Links() {
   const links = communityDetailsModule?.info.links
-  return (
-    <div>
-      <p className="my-2 mt-4 text-title-md">Links</p>
-      <div className="flex">
-        {links?.instagram_url && (
-          <div className="mx-1 rounded-md bg-monochrome-9 p-1">
-            <Link href={checkAndAppendHttps(links.instagram_url)} target="_blank">
-              <Image src={icInstagram} alt="instagram" />
-            </Link>
-          </div>
-        )}
-        {links?.linkedin_url && (
-          <div className="mx-1 rounded-md bg-monochrome-9 p-1">
-            <Link href={checkAndAppendHttps(links.linkedin_url)} target="_blank">
-              <Image src={icLinkedIn} alt="linkedin" />
-            </Link>
-          </div>
-        )}
-        {links?.twitter_url && (
-          <div className="mx-1 rounded-md bg-monochrome-9 p-1">
-            <Link href={checkAndAppendHttps(links.twitter_url)} target="_blank">
-              <Image src={icTwitter} alt="twitter" />
-            </Link>
-          </div>
-        )}
-        {links?.social_web_url && (
-          <div className="mx-1 rounded-md bg-monochrome-9 p-1">
-            <Link href={checkAndAppendHttps(links.social_web_url)} target="_blank">
-              <div className="flex">
-                <Image src={icLink} alt="web-site" />
-                <p className="text-body-1-med">&nbsp;{links.social_web_url}</p>
-              </div>
-            </Link>
-          </div>
-        )}
+  if (links?.instagram_url ?? links?.linkedin_url ?? links?.twitter_url ?? links?.social_web_url)
+    return (
+      <div>
+        <p className="my-2 mt-4 text-title-md">Links</p>
+        <div className="flex">
+          {links?.instagram_url && (
+            <div className="mx-1 flex items-center rounded-md bg-monochrome-9 p-1">
+              <Link href={checkAndAppendHttps(links.instagram_url)} target="_blank">
+                <Image src={icInstagram} alt="instagram" />
+              </Link>
+            </div>
+          )}
+          {links?.linkedin_url && (
+            <div className="mx-1 flex items-center rounded-md bg-monochrome-9 p-1">
+              <Link href={checkAndAppendHttps(links.linkedin_url)} target="_blank">
+                <Image src={icLinkedIn} alt="linkedin" />
+              </Link>
+            </div>
+          )}
+          {links?.twitter_url && (
+            <div className="mx-1 flex items-center rounded-md bg-monochrome-9 p-1">
+              <Link href={checkAndAppendHttps(links.twitter_url)} target="_blank">
+                <Image src={icTwitter} alt="twitter" />
+              </Link>
+            </div>
+          )}
+          {links?.social_web_url && (
+            <div className="mx-1 flex items-center rounded-md bg-monochrome-9 p-1">
+              <Link href={checkAndAppendHttps(links.social_web_url)} target="_blank">
+                <div className="flex">
+                  <Image src={icLink} alt="web-site" />
+                  <p className="text-body-1-med">&nbsp;{links.social_web_url}</p>
+                </div>
+              </Link>
+            </div>
+          )}
+        </div>
       </div>
-    </div>
-  )
+    )
 }
 
 function Guidelines() {
-  return (
-    <div>
-      <p className="my-2 mt-4 text-title-3-bold">Guidelines</p>
-      <>
-        <Accordion type="single" collapsible>
-          {communityDetailsModule?.guidelines.map((guideline: any, index: any) => {
-            return (
-              <div key={index}>
-                <AccordionItem value={guideline.title} className="border-none">
-                  <AccordionTrigger className="my-1 p-0">
-                    <p className="line-clamp-1 text-left text-body-1-med">
-                      {index + 1}. {guideline.title}
-                    </p>
-                  </AccordionTrigger>
-                  <AccordionContent className="w-[80%] pl-4">
-                    <p className="line-clamp-2 text-left  text-monochrome">{guideline.description}</p>
-                  </AccordionContent>
-                </AccordionItem>
-              </div>
-            )
-          })}
-        </Accordion>
-      </>
-    </div>
-  )
+  if (communityDetailsModule.guidelines)
+    return (
+      <div>
+        <p className="my-2 mt-4 text-title-3-bold">Guidelines</p>
+        <>
+          <Accordion type="single" collapsible>
+            {communityDetailsModule?.guidelines.map((guideline: any, index: any) => {
+              return (
+                <div key={index}>
+                  <AccordionItem value={guideline.title} className="border-none">
+                    <AccordionTrigger className="my-1 p-0">
+                      <p className="line-clamp-1 text-left text-body-1-med">
+                        {index + 1}. {guideline.title}
+                      </p>
+                    </AccordionTrigger>
+                    <AccordionContent className="w-[80%] pl-4">
+                      <p className="line-clamp-2 text-left  text-monochrome">{guideline.description}</p>
+                    </AccordionContent>
+                  </AccordionItem>
+                </div>
+              )
+            })}
+          </Accordion>
+        </>
+      </div>
+    )
 }
 
 function Leaders() {
-  return (
-    <div>
-      <p className="my-2 mt-4 text-title-md">Leader</p>
-      {communityDetailsModule?.leaders.map((moderator, index) => {
-        return (
-          <Link key={index} href={{ pathname: PATH_NAME.profile(moderator.nickname) }}>
-            <ListItem
-              title={moderator.name ?? ''}
-              subtitle={'@' + moderator.nickname}
-              description={moderator.description}
-              image={moderator.profile_image}
-              isAvatar={moderator.is_avatar}
-            />
-          </Link>
-        )
-      })}
-    </div>
-  )
+  if (communityDetailsModule.leaders.length !== 0)
+    return (
+      <div>
+        <p className="my-2 mt-4 text-title-md">Leader</p>
+        {communityDetailsModule?.leaders.map((moderator, index) => {
+          return (
+            <Link key={index} href={{ pathname: PATH_NAME.profile(moderator.nickname) }}>
+              <ListItem
+                title={moderator.name ?? ''}
+                subtitle={'@' + moderator.nickname}
+                description={moderator.description}
+                image={moderator.profile_image}
+                isAvatar={moderator.is_avatar}
+              />
+            </Link>
+          )
+        })}
+      </div>
+    )
 }
 
 function Members() {
   return (
-    <div className="my-2">
-      {communityDetailsModule?.members.length === 0 && (
-        <div className="flex items-center justify-center pt-32 text-title-md text-secondary">No members available</div>
-      )}
+    <div className="py-2">
       {communityDetailsModule?.leaders.map((moderator, index) => {
         return (
           <Link key={index} href={{ pathname: PATH_NAME.profile(moderator.nickname) }}>
