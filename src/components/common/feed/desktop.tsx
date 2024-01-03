@@ -100,7 +100,7 @@ export function Desktop({
 type SinglePlayerProps = {
   videoDetails: VideoDataType
   sizeBox: VideoSizeBoxType
-  className: string
+  className?: string
 }
 
 export function SinglePlayer({ sizeBox, videoDetails, className }: SinglePlayerProps) {

@@ -1,3 +1,3 @@
-import { Component } from './component'
+import { Desktop } from './desktop'
 
-export const PlayerModal = Component
+export const PlayerModal = { desktop: Desktop }

@@ -1,6 +1,5 @@
 import { Loader } from '@components/ui/loader'
 import { getLoopVideos } from '@lib/api/loop'
-import { PlayerModal } from './modals/player-modal'
 import Image from 'next/image'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
@@ -9,11 +8,12 @@ import { isMobile } from 'react-device-detect'
 import { useRef, useState } from 'react'
 import icPlay from '@icons/player-controls/icPlay.svg'
 import { useMotionValueEvent, useScroll } from 'framer-motion'
+import { PlayerModal } from '../../../../../components/common/modals/player-modal'
 
 export function LoopVideos({ slug }: { slug: string }) {
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getLoopVideos(slug)
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
+  const { data, isLoading, fetchNextPage, isError, isFetchingNextPage } = getLoopVideos(slug)
   const videos = data?.pages.flatMap((item) => item.videos)
+  const [modalControl, setModalControl] = useState({ open: false, startIndex: -1 })
   const scrollDivRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ container: scrollDivRef, layoutEffect: false })
 
@@ -24,6 +24,7 @@ export function LoopVideos({ slug }: { slug: string }) {
   })
 
   // TODO: Add shimmer in images.
+  // TODO: Remove this component from here. and put it  in better location.
   return (
     <div ref={scrollDivRef} className="h-full w-full overflow-y-auto">
       {!isMobile && <p className="my-2 text-title-3-bold">Posts</p>}
@@ -35,23 +36,20 @@ export function LoopVideos({ slug }: { slug: string }) {
         {videos?.map((item, index) => (
           <div
             key={index}
-            className="relative flex aspect-reel w-full items-center justify-center duration-300 hover:cursor-pointer">
+            onClick={() => {
+              setModalControl((x) => {
+                x.open = true
+                x.startIndex = index
+                return { ...x }
+              })
+            }}
+            className="group/video relative flex aspect-reel w-full items-center justify-center duration-300 hover:cursor-pointer">
             <Image
               src={item.video.thumbnail ?? ''}
               alt={item.video.description ?? ''}
               className="h-full w-full rounded-xl object-fill"
               fill
-              onMouseEnter={() => {
-                setSelectedIndex(index)
-              }}
-              onMouseLeave={() => {
-                setSelectedIndex(null)
-              }}
-              style={{ filter: selectedIndex === index ? 'brightness(60%)' : 'brightness(100%)' }}
             />
-            {/* <p className="absolute left-2 top-2 text-title-sm text-monochrome-white">
-                    {item.video?.metadata.duration + 's'}
-                  </p> */}
             <div className="absolute bottom-2 left-2">
               <Link href={{ pathname: PATH_NAME.profile(item.owner.nickname) }}>
                 <div className="flex h-6 w-6 items-center">
@@ -66,11 +64,29 @@ export function LoopVideos({ slug }: { slug: string }) {
               </Link>
               <p className="ml-1 line-clamp-2 text-body-1-demi text-monochrome-white">{item.video.description}</p>
             </div>
-            {selectedIndex === index && <Image src={icPlay} alt="play" className="absolute" height={40} />}
+            <div className="absolute inset-0  hidden h-full w-full items-center justify-center rounded-lg bg-monochrome-black/40 group-hover/video:flex">
+              <Image src={icPlay} alt="" />
+            </div>
           </div>
         ))}
       </div>
       {isFetchingNextPage && <Loader size="md" />}
+      {videos && (
+        <PlayerModal.desktop
+          videos={videos}
+          close={() => {
+            setModalControl((x) => {
+              x.open = false
+              return { ...x }
+            })
+          }}
+          fetchNextVideos={fetchNextPage}
+          isError={isError}
+          open={modalControl.open}
+          isFetchingNextPage={isFetchingNextPage}
+          startIndex={modalControl.startIndex}
+        />
+      )}
     </div>
   )
 }

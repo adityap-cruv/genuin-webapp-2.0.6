@@ -7,8 +7,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import noLoopsImage from '@images/noLoopImage.svg'
 import icPlay from '@icons/player-controls/icPlay.svg'
-import { useState } from 'react'
 
+// TODO: remove this component from here and put at better location
 export function CommunityLoopTab({ communitySlug }: { communitySlug: string }) {
   const { isLoading, data: loops, isFetched } = getCommunityLoops(communitySlug)
   if (loops)
@@ -38,7 +38,6 @@ export function CommunityLoopTab({ communitySlug }: { communitySlug: string }) {
 }
 
 function LoopItem({ loopDetails }: { loopDetails: any }) {
-  const [hovered, setHovered] = useState<boolean | null>(null)
   const transformValues: any = {
     1: [50],
     2: [48, 52],
@@ -71,12 +70,6 @@ function LoopItem({ loopDetails }: { loopDetails: any }) {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-      }}
-      onMouseEnter={() => {
-        setHovered(true)
-      }}
-      onMouseLeave={() => {
-        setHovered(false)
       }}>
       <img
         className="rounded"
@@ -85,9 +78,8 @@ function LoopItem({ loopDetails }: { loopDetails: any }) {
         // }}
         src={item.thumbnail}
         alt={index}
-        style={{ filter: hovered ? 'brightness(60%)' : 'brightness(100%)' }}
       />
-      {hovered && <Image src={icPlay} alt="play" className="absolute" />}
+      <Image src={icPlay} alt="play" className="absolute" />
     </div>
   ))
   function getCollaboratorsCountString(count: any) {

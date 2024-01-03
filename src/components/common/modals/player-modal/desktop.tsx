@@ -14,10 +14,11 @@ import { SinglePlayer } from '@components/common/feed/desktop'
 import icUpArrow from '@icons/player-controls/icArrowUp.svg'
 import icDownArrow from '@icons/player-controls/icArrowDown.svg'
 import Image from 'next/image'
+import { Loader } from '@components/ui/loader'
 
 type Props = {
   children?: React.ReactNode
-  videos: VideoDataType[]
+  videos?: VideoDataType[]
   /**
    * Index to start playing video from.
    * @default 0
@@ -32,14 +33,16 @@ type Props = {
    */
   open: boolean
   close: () => void
+  isLoading: boolean
 }
 
-export function Component({
+export function Desktop({
   children,
   open = false,
   startIndex = 0,
   videos,
   close,
+  isLoading,
   isFetchingNextPage,
   isError,
   fetchNextVideos,
@@ -52,34 +55,27 @@ export function Component({
   }))
 
   useEffect(() => {
-    setStateVideos(videos)
+    if (videos) setStateVideos(videos)
   }, [videos])
 
   useEffect(() => {
     setCurrentIndex(startIndex)
   }, [startIndex])
 
-  // useEffect(() => {
-  //   let timeOut: NodeJS.Timeout | null
-  //   function wheelHandler(e: WheelEvent) {
-  //     if (!timeOut) {
-  //       timeOut = setTimeout(() => {
-  //         if (e.deltaY > 0) {
-  //           setCurrentIndex(currentIndex + 1)
-  //         }
-  //         if (e.deltaY < 0) {
-  //           setCurrentIndex(currentIndex - 1)
-  //         }
-  //         timeOut = null
-  //       }, 200)
-  //     }
-  //   }
+  useEffect(() => {
+    if (videos && !isFetchingNextPage && currentIndex >= videos?.length - 2) fetchNextVideos()
+  }, [currentIndex])
 
-  //   window.addEventListener('wheel', wheelHandler)
-  //   return () => {
-  //     window.removeEventListener('wheel', wheelHandler)
-  //   }
-  // }, [])
+  function InnerContent() {
+    if (isLoading) return <Loader size="md" />
+    if (videoSizeBox && videos)
+      return (
+        <SinglePlayer
+          videoDetails={videos[currentIndex]}
+          sizeBox={{ height: videoSizeBox.video.height, width: videoSizeBox.video.width }}
+        />
+      )
+  }
 
   return (
     <CustomDialog open={open}>
@@ -87,7 +83,9 @@ export function Component({
       <CustomDialogContent showDefaultClose={false}>
         {videoSizeBox && (
           <span className="flex items-center gap-x-6">
-            <div style={{ width: videoSizeBox.modal.width, height: videoSizeBox.modal.height }} className="relative">
+            <div
+              style={{ width: videoSizeBox.modal.width, height: videoSizeBox.modal.height }}
+              className="relative overflow-clip rounded-2xl bg-monochrome-white">
               <CustomDialogClose
                 onClick={() => {
                   close?.()
@@ -95,11 +93,7 @@ export function Component({
                 className="absolute right-4 top-4 z-10">
                 <X className="h-6 w-6" />
               </CustomDialogClose>
-              <SinglePlayer
-                videoDetails={videos[currentIndex]}
-                className="overflow-clip rounded-2xl"
-                sizeBox={{ height: videoSizeBox.video.height, width: videoSizeBox.video.width }}
-              />
+              <InnerContent />
             </div>
             <span className="flex flex-col gap-y-4">
               <button

@@ -14,7 +14,7 @@ import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { TopBar } from '../../../layouts/mobile/top-bar'
-import { CommunityLoopTab } from '@components/common/community-loop-tab'
+import { CommunityLoopTab } from './community-loop-tab'
 
 let communityDetailsModule: CommunityDetailsType
 

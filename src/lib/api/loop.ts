@@ -34,7 +34,7 @@ async function fetchLoopVideos(slug: string, ref: any) {
 export function getLoopVideos(slug: string) {
   return useInfiniteQuery({
     queryFn: async ({ pageParam }) => await fetchLoopVideos(slug, pageParam),
-    queryKey: ['loop', 'videos', 'paginated'],
+    queryKey: ['loop', 'videos', 'paginated', slug],
     getNextPageParam: (lastPage, pages) => {
       if (lastPage.end) {
         return
