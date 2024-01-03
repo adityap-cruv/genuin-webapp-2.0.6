@@ -256,6 +256,7 @@ function Leaders() {
               subtitle={'@' + moderator.nickname}
               description={moderator.description}
               image={moderator.profile_image}
+              isAvatar={moderator.is_avatar}
             />
           </Link>
         )
@@ -270,6 +271,19 @@ function Members() {
       {communityDetailsModule?.members.length === 0 && (
         <div className="flex items-center justify-center pt-32 text-title-md text-secondary">No members available</div>
       )}
+      {communityDetailsModule?.leaders.map((moderator, index) => {
+        return (
+          <Link key={index} href={{ pathname: PATH_NAME.profile(moderator.nickname) }}>
+            <ListItem
+              title={moderator.name ?? ''}
+              subtitle={'@' + moderator.nickname}
+              description={moderator.description}
+              image={moderator.profile_image}
+              isAvatar={moderator.is_avatar}
+            />
+          </Link>
+        )
+      })}
       {communityDetailsModule?.members.map((member, index) => {
         return (
           <Link key={index} href={{ pathname: PATH_NAME.profile(member.nickname) }}>
@@ -278,6 +292,7 @@ function Members() {
               subtitle={'@' + member.nickname}
               description={member.description ?? ''}
               image={member.profile_image}
+              isAvatar={member.is_avatar}
             />
           </Link>
         )

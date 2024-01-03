@@ -196,6 +196,7 @@ function Loops() {
               title={loop.name}
               image={loop.profile_image ?? undefined}
               subtitle={loop.subscriber_count + (loop.subscriber_count === 1 ? ' Subscriber' : ' Subscribers')}
+              isAvatar={false}
             />
           </a>
         )
@@ -209,15 +210,17 @@ function ListItem({
   subtitle,
   description,
   image,
+  isAvatar
 }: {
   title: string
   subtitle?: string
   description?: string
   image?: string
+  isAvatar: boolean
 }) {
   return (
     <div className="flex items-center gap-x-1 rounded-sm p-1 hover:bg-monochrome-9">
-      <CustomAvatar className="h-9 w-9 bg-red-40" imageUrl={image ?? ''} fallbackString={title} isAvatar={false} />
+      <CustomAvatar className="h-9 w-9 bg-red-40" imageUrl={image ?? ''} fallbackString={title} isAvatar={isAvatar} />
       <div>
         <p className="line-clamp-1 text-title-sm">{title}</p>
         {subtitle && <p className="line-clamp-1 text-cap-lg text-monochrome-black/60">{subtitle}</p>}
@@ -239,6 +242,7 @@ function Leaders() {
               subtitle={'@' + leader.nickname}
               description={leader.description}
               image={leader.profile_image}
+              isAvatar={leader.is_avatar}
             />
           </Link>
         )
@@ -259,6 +263,7 @@ function Members() {
               subtitle={'@' + member.nickname}
               description={member.description ?? ''}
               image={member.profile_image}
+              isAvatar={member.is_avatar}
             />
           </Link>
         )

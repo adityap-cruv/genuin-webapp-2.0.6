@@ -6,16 +6,25 @@ import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { isMobile } from 'react-device-detect'
+import { useRef, useState } from 'react'
+import icPlay from '@icons/player-controls/icPlay.svg'
+import { useMotionValueEvent, useScroll } from 'framer-motion'
 
 export function LoopVideos({ slug }: { slug: string }) {
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getLoopVideos(slug)
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
 
-  const handleSeeMoreClick = () => {
-    void fetchNextPage()
-  }
+  const scrollDivRef = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({ container: scrollDivRef, layoutEffect: false })
+
+  useMotionValueEvent(scrollYProgress, 'change', (latest) => {
+    if (Number(latest.toFixed(1)) > 0.8 && !isFetchingNextPage) {
+      void fetchNextPage()
+    }
+  })
 
   return (
-    <div className="h-full w-full overflow-y-auto">
+    <div ref={scrollDivRef} className="h-full w-full overflow-y-auto">
       {!isMobile && <p className="my-2 text-title-3-bold">Posts</p>}
       {isLoading && <Loader size="md" />}
       {data?.pages.flatMap((page) => page.videos).length === 0 && (
@@ -26,12 +35,21 @@ export function LoopVideos({ slug }: { slug: string }) {
           .flatMap((page) => page.videos)
           .map((item, index) => (
             <FeedModal key={index} videos={data?.pages.flatMap((page) => page.videos)}>
-              <div key={index} className="relative aspect-reel w-full duration-300 hover:cursor-pointer">
+              <div
+                key={index}
+                className="relative flex aspect-reel w-full items-center justify-center duration-300 hover:cursor-pointer">
                 <Image
                   src={item.video.thumbnail ?? ''}
                   alt={item.video.description ?? ''}
                   className="h-full w-full rounded-xl object-fill"
                   fill
+                  onMouseEnter={() => {
+                    setSelectedIndex(index)
+                  }}
+                  onMouseLeave={() => {
+                    setSelectedIndex(null)
+                  }}
+                  style={{ filter: selectedIndex === index ? 'brightness(60%)' : 'brightness(100%)' }}
                 />
                 {/* <p className="absolute left-2 top-2 text-title-sm text-monochrome-white">
                     {item.video?.metadata.duration + 's'}
@@ -50,18 +68,12 @@ export function LoopVideos({ slug }: { slug: string }) {
                   </Link>
                   <p className="ml-1 line-clamp-2 text-body-1-demi text-monochrome-white">{item.video.description}</p>
                 </div>
+                {selectedIndex === index && <Image src={icPlay} alt="play" className="absolute" height={40} />}
               </div>
             </FeedModal>
           ))}
       </div>
       {isFetchingNextPage && <Loader size="md" />}
-      {hasNextPage && (
-        <p
-          className="text-blue-500 flex w-full cursor-pointer justify-center py-4 text-cap-lg text-monochrome"
-          onClick={handleSeeMoreClick}>
-          See More
-        </p>
-      )}
     </div>
   )
 }

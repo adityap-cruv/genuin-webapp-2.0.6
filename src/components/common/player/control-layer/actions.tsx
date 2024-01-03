@@ -13,6 +13,7 @@ import Image from 'next/image'
 import { DownloadDialog } from '@components/common/download-dialog'
 import { useCommentSheetStore } from '../comment-sheet/store'
 import { PATH_NAME } from '@lib/utils/constants/path'
+import { format } from 'url'
 
 interface ActionsProps {
   link: string
@@ -73,10 +74,15 @@ function Mobile({ link = '', shareDescription = '', shareTitle = '', videoData }
         <ActionItem
           title="Share Video!"
           onClick={(e) => {
+            const url = {
+              pathname: PATH_NAME.video(videoData.video.slug),
+              query: { community: videoData.community.handle, loop: videoData.loop.slug },
+            }
+            const shareUrl = format(url)
             void window.navigator.share({
               text: videoData.video?.description ?? '',
               title: 'Share this video',
-              url: window.location.hostname + PATH_NAME.video(videoData.video.slug),
+              url: shareUrl,
             })
             e.stopPropagation()
             // void window.navigator.share({
@@ -135,10 +141,15 @@ function Desktop({ link = '', shareDescription = '', shareTitle = '', videoData 
         <ActionItem
           title="Share Video!"
           onClick={async () => {
+            const url = {
+              pathname: PATH_NAME.video(videoData.video.slug),
+              query: { community: videoData.community.handle, loop: videoData.loop.slug },
+            }
+            const shareUrl = window.location.hostname + format(url)
             await shareFn({
               description: shareDescription,
               title: shareTitle,
-              shareLink: window.location.hostname + PATH_NAME.video(videoData.video.slug),
+              shareLink: shareUrl,
               toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
             })
           }}>

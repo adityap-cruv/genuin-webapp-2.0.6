@@ -6,6 +6,8 @@ import { PATH_NAME } from '@lib/utils/constants/path'
 import Image from 'next/image'
 import Link from 'next/link'
 import noLoopsImage from '@images/noLoopImage.svg'
+import icPlay from '@icons/player-controls/icPlay.svg'
+import { useState } from 'react'
 
 export function CommunityLoopTab({ communitySlug }: { communitySlug: string }) {
   const { isLoading, data: loops, isFetched } = getCommunityLoops(communitySlug)
@@ -36,6 +38,7 @@ export function CommunityLoopTab({ communitySlug }: { communitySlug: string }) {
 }
 
 function LoopItem({ loopDetails }: { loopDetails: any }) {
+  const [hovered, setHovered] = useState<boolean | null>(null)
   const transformValues: any = {
     1: [50],
     2: [48, 52],
@@ -56,21 +59,36 @@ function LoopItem({ loopDetails }: { loopDetails: any }) {
   // TODO on video click open video
   const videosLength = loopDetails.videos.length
   const renderedImages = loopDetails.videos.map((item: any, index: any) => (
-    <img
+    <div
       key={index}
-      className="absolute top-[50%] aspect-reel h-[80%] rounded"
+      className="absolute top-[50%] flex aspect-reel h-[80%] items-center justify-center rounded"
       style={{
         right: `${rightValues[videosLength][index]}px`,
         transform: `translateY(-${transformValues[videosLength][index]}%)`,
         zIndex: videosLength - index + 1,
         opacity: `${opacitValues[videosLength][index]}`,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
       }}
-      // onError={(e) => {
-      //   e.target.src = icPreviewImage.src
-      // }}
-      src={item.thumbnail}
-      alt={index}
-    />
+      onMouseEnter={() => {
+        setHovered(true)
+      }}
+      onMouseLeave={() => {
+        setHovered(false)
+      }}>
+      <img
+        className="rounded"
+        // onError={(e) => {
+        //   e.target.src = icPreviewImage.src
+        // }}
+        src={item.thumbnail}
+        alt={index}
+        style={{ filter: hovered ? 'brightness(60%)' : 'brightness(100%)' }}
+      />
+      {hovered && <Image src={icPlay} alt="play" className="absolute" />}
+    </div>
   ))
   function getCollaboratorsCountString(count: any) {
     let str = ' + '
