@@ -25,8 +25,8 @@ export function MainComponent({ profileData }: CompProps) {
   return (
     <>
       <TopBar variant={'light'} />
-      <div className="h-full w-full p-4">
-        <div>
+      <div className="h-full w-full">
+        <div className="p-4">
           <div className="flex items-center justify-between">
             <CustomAvatar
               className="bg-slate-500 h-20 w-20 bg-red-40"
@@ -63,16 +63,25 @@ export function MainComponent({ profileData }: CompProps) {
             </div> */}
           </div>
           <div className="mt-2 flex items-center">
-            <p className="line-clamp-1 pr-2 text-title-md">{profileData?.name}</p>
-            <p className="line-clamp-1 text-body-sm text-monochrome" style={{ fontWeight: 500 }}>
-              @{profileData?.nickname}
-            </p>
+            {profileData?.name ? (
+              <>
+                <p className="line-clamp-1 pr-2 text-title-md">{profileData?.name}</p>
+                <p className="line-clamp-1 text-body-sm text-monochrome" style={{ fontWeight: 500 }}>
+                  @{profileData?.nickname}
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="line-clamp-1 pr-2 text-title-md">@{profileData?.nickname}</p>
+              </>
+            )}
           </div>
           <p className="line-clamp-2 py-1 text-body-sm" style={{ lineHeight: '24px' }}>
             {profileData?.bio}
           </p>
           <Stats profileData={profileData} />
         </div>
+        <hr className="border-t border-monochrome-9" />
         <CommunityList usernickname={profileData?.nickname} />
       </div>
       <Toaster />
@@ -102,9 +111,6 @@ function Stats({ profileData }: { profileData: any }) {
 function CommunityList({ usernickname }: any) {
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getAllCommunities(usernickname)
   const communities = data?.pages.flatMap((item) => item.communities)
-  const handleSeeMoreClick = () => {
-    void fetchNextPage()
-  }
 
   const scrollDivRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ container: scrollDivRef, layoutEffect: false })
@@ -115,12 +121,22 @@ function CommunityList({ usernickname }: any) {
     }
   })
 
-  return (
-    <div ref={scrollDivRef} className="h-full w-full overflow-y-auto">
-      {isLoading && <Loader size="md" />}
-      {communities && (
+  if (isLoading || isFetchingNextPage) return <Loader size="md" />
+
+  if (communities && communities?.length === 0)
+    return (
+      <div
+        className="flex h-full w-full items-center justify-center pt-2 text-title-3-bold text-monochrome"
+        style={{ backgroundColor: '#F9F9F9' }}>
+        No posts yet
+      </div>
+    )
+
+  if (communities && communities?.length !== 0)
+    return (
+      <div ref={scrollDivRef} className="h-full w-full p-4">
         <div>
-          {communities.map((item, index) => (
+          {communities?.map((item, index) => (
             <div key={index}>
               &nbsp;
               <div className="flex items-center">
@@ -145,7 +161,7 @@ function CommunityList({ usernickname }: any) {
                     }
                     asChild>
                     <Button size="custom" variant="default">
-                      <p className="px-4 py-1.5 text-title-sm">join</p>
+                      <p className="px-4 py-1.5 text-title-sm">Join</p>
                     </Button>
                   </DownloadDialog>
                 </div>
@@ -156,10 +172,8 @@ function CommunityList({ usernickname }: any) {
             </div>
           ))}
         </div>
-      )}
-      {isFetchingNextPage && <Loader size="md" />}
-    </div>
-  )
+      </div>
+    )
 }
 
 function CommunityDetails({ userId, communityHandle }: { userId: string; communityHandle: string }) {

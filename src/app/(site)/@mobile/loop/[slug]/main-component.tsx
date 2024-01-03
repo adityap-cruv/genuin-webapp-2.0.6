@@ -267,13 +267,13 @@ function CohostTile({ image, title, subtitle, userName, isAvatar }: CohostTilePr
     <div className="flex items-center gap-x-1 rounded-lg p-2 hover:bg-monochrome-10">
       <CustomAvatar className="h-12 w-12 bg-red-40" fallbackString={title} imageUrl={image} isAvatar={isAvatar} />
       <div className="mx-2">
-        <p className="line-clamp-1 text-title-sm">{title}</p>
+        <p className="text-body-1-bold line-clamp-1">{title}</p>
         {userName && (
-          <p className="line-clamp-1 text-title-sm" style={{ fontWeight: 600 }}>
+          <p className="text-body-1-demi line-clamp-1">
             {userName}
           </p>
         )}
-        {subtitle && <p className="line-clamp-1 text-cap-lg text-monochrome-black/60">{subtitle}</p>}
+        {subtitle && <p className="text-cap-1-demi line-clamp-1 text-monochrome-black/60">{subtitle}</p>}
       </div>
     </div>
   )

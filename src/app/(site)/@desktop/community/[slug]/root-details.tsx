@@ -119,7 +119,7 @@ export function RootDetails({ communityDetails }: Props) {
             <CommunityDetailsTabs />
           </div>
 
-          <div className="snap-y snap-proximity overflow-auto scroll-smooth">
+          <div className="snap-y snap-proximity overflow-auto overflow-x-hidden scroll-smooth">
             <Categories />
             <Links />
             <Guidelines />

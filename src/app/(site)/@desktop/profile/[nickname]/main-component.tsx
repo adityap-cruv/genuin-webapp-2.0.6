@@ -37,6 +37,7 @@ export function MainComponent({ profileData }: CompProps) {
         isOpen={!detailsInView}
         profileImage={profileData?.profile_image}
         profileName={profileData?.name}
+        profileNickname={profileData?.nickname}
         isAvatar={profileData?.is_avatar}
       />
       <div className="hide-scrollbar absolute inset-0 h-full w-full overflow-auto px-4">
@@ -48,12 +49,20 @@ export function MainComponent({ profileData }: CompProps) {
             isAvatar={profileData?.is_avatar}
           />
           <div className="flex items-center py-1" ref={detailsDivRef}>
-            <p className="line-clamp-1 pr-2 text-title-xl">{profileData?.name}</p>
-            <p className="line-clamp-1 text-body-sm text-monochrome" style={{ fontWeight: 500 }}>
-              @{profileData?.nickname}
-            </p>
+            {profileData?.name ? (
+              <>
+                <p className="line-clamp-1 pr-2 text-title-1-bold">{profileData?.name}</p>
+                <p className="line-clamp-1 text-body-sm text-monochrome" style={{ fontWeight: 500 }}>
+                  @{profileData?.nickname}
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="line-clamp-1 pr-2 text-title-1-bold">@{profileData?.nickname}</p>
+              </>
+            )}
           </div>
-          <p className="line-clamp-2 break-all py-1 text-body-sm" style={{ fontWeight: 500, lineHeight: '24px' }}>
+          <p className="my-1 line-clamp-2 break-all text-body-sm" style={{ fontWeight: 500, lineHeight: '24px' }}>
             {profileData?.bio}
           </p>
           <Stats profileData={profileData} />
@@ -116,7 +125,6 @@ function Stats({ profileData }: { profileData: any }) {
 function CommunityList({ usernickname }: any) {
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getAllCommunities(usernickname)
   const communities = data?.pages.flatMap((page) => page.communities)
-
   const scrollDivRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ container: scrollDivRef, layoutEffect: false })
 
@@ -126,10 +134,20 @@ function CommunityList({ usernickname }: any) {
     }
   })
 
-  return (
-    <div ref={scrollDivRef} className="h-full w-full overflow-y-auto">
-      {isLoading && <Loader size="md" />}
-      {data && (
+  if (isLoading || isFetchingNextPage) return <Loader size="md" />
+
+  if (communities && communities?.length === 0)
+    return (
+      <div
+        className="flex h-full w-full items-center justify-center pt-2 text-title-3-bold text-monochrome"
+        style={{ backgroundColor: '#F9F9F9' }}>
+        No posts yet
+      </div>
+    )
+
+  if (communities && communities?.length !== 0)
+    return (
+      <div ref={scrollDivRef} className="h-full w-full overflow-y-auto">
         <div>
           {communities?.map((item, index) => (
             <div key={index} className="my-6">
@@ -140,7 +158,7 @@ function CommunityList({ usernickname }: any) {
                   imageUrl={item?.dp}
                   isAvatar={false}
                 />
-                <Link href={{ pathname: PATH_NAME.community(item.handle) }}>
+                <Link href={{ pathname: PATH_NAME.community(item.slug) }}>
                   <div className="mx-2">
                     <p
                       className="line-clamp-1 text-left"
@@ -156,10 +174,8 @@ function CommunityList({ usernickname }: any) {
             </div>
           ))}
         </div>
-      )}
-      {isFetchingNextPage && <Loader size="md" />}
-    </div>
-  )
+      </div>
+    )
 }
 
 function CommunityDetails({ userId, communityHandle }: { userId: string; communityHandle: string }) {
@@ -169,7 +185,6 @@ function CommunityDetails({ userId, communityHandle }: { userId: string; communi
   }
   return (
     <>
-      &nbsp;
       {isLoading && (
         <li
           className="profile-loop-li relative my-4 w-full rounded-lg border border-monochrome-9 p-4"
@@ -188,7 +203,7 @@ function CommunityDetails({ userId, communityHandle }: { userId: string; communi
         .flatMap((page) => page.loops)
         .map((item: any, index: any) => (
           <li
-            className="profile-loop-li relative my-4 w-full rounded-lg border border-monochrome-9 p-4 pb-2"
+            className="profile-loop-li relative mb-4 w-full rounded-lg border border-monochrome-9 p-4 pb-2"
             style={{ backgroundColor: '#F9F9F9' }}
             key={index}>
             <LoopVideos userId={userId} loopDetails={item} />
