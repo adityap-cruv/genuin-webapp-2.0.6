@@ -256,6 +256,7 @@ function Leaders() {
               subtitle={'@' + moderator.nickname}
               description={moderator.description}
               image={moderator.profile_image}
+              isAvatar={moderator.is_avatar}
             />
           </Link>
         )
@@ -278,6 +279,7 @@ function Members() {
               subtitle={'@' + moderator.nickname}
               description={moderator.description}
               image={moderator.profile_image}
+              isAvatar={moderator.is_avatar}
             />
           </Link>
         )
@@ -290,6 +292,7 @@ function Members() {
               subtitle={'@' + member.nickname}
               description={member.description ?? ''}
               image={member.profile_image}
+              isAvatar={member.is_avatar}
             />
           </Link>
         )

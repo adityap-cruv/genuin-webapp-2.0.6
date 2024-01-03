@@ -37,6 +37,7 @@ export function MainComponent({ profileData }: CompProps) {
         isOpen={!detailsInView}
         profileImage={profileData?.profile_image}
         profileName={profileData?.name}
+        isAvatar={profileData?.is_avatar}
       />
       <div className="hide-scrollbar absolute inset-0 h-full w-full overflow-auto px-4">
         <div className="mt-4 w-1/2">

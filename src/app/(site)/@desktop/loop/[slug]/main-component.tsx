@@ -152,6 +152,7 @@ function Cohosts({ slug }: { slug: string }) {
                 subtitle={'@' + item.user.nickname}
                 description={item.user.bio || ''}
                 image={item.user.profile_image || ''}
+                isAvatar={item.user.is_avatar || ''}
               />
             </Link>
           ))}
@@ -177,6 +178,7 @@ function LoopSubscribers({ slug }: { slug: string }) {
                 subtitle={'@' + item.user.nickname}
                 description={item.user.bio || ''}
                 image={item.user.profile_image || ''}
+                isAvatar={item.user.is_avatar || ''}
               />
             </Link>
           ))}
