@@ -1,3 +1,3 @@
 import { Component } from './component'
 
-export const FeedModal = Component
+export const PlayerModal = Component

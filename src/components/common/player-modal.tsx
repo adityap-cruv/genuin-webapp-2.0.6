@@ -11,6 +11,7 @@ interface Props {
   videoDetails: VideoDataType
 }
 
+// TODO: check this component usage and scrap this component.
 export function PlayerModal({ children, videoDetails }: Props) {
   const sizeBox = useVideoSizeBox(false)
   if (sizeBox)
