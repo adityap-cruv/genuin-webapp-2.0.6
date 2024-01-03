@@ -15,7 +15,7 @@ import icSpark from '@icons/player-controls/icBulb.svg'
 import { Shimmer } from '@components/ui/shimmer'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
-import { useInView } from 'framer-motion'
+import { useInView, useMotionValueEvent, useScroll } from 'framer-motion'
 import { TopBar } from './top-bar'
 import { PlayerModal } from '@components/common/player-modal'
 
@@ -37,6 +37,7 @@ export function MainComponent({ profileData }: CompProps) {
         isOpen={!detailsInView}
         profileImage={profileData?.profile_image}
         profileName={profileData?.name}
+        isAvatar={profileData?.is_avatar}
       />
       <div className="hide-scrollbar absolute inset-0 h-full w-full overflow-auto px-4">
         <div className="mt-4 w-1/2">
@@ -114,52 +115,49 @@ function Stats({ profileData }: { profileData: any }) {
 
 function CommunityList({ usernickname }: any) {
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getAllCommunities(usernickname)
+  const communities = data?.pages.flatMap((page) => page.communities)
 
-  const handleSeeMoreClick = () => {
-    void fetchNextPage()
-  }
+  const scrollDivRef = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({ container: scrollDivRef, layoutEffect: false })
+
+  useMotionValueEvent(scrollYProgress, 'change', (latest) => {
+    if (Number(latest.toFixed(1)) > 0.8 && !isFetchingNextPage) {
+      void fetchNextPage()
+    }
+  })
 
   return (
-    <div className="h-full w-full overflow-y-auto">
+    <div ref={scrollDivRef} className="h-full w-full overflow-y-auto">
       {isLoading && <Loader size="md" />}
       {data && (
         <div>
-          {data?.pages
-            .flatMap((page) => page.communities)
-            .map((item, index) => (
-              <div key={index} className="my-6">
-                <div className="flex items-center">
-                  <CustomAvatar
-                    className="bg-slate-500 h-11 w-11 bg-red-40"
-                    fallbackString={item?.name}
-                    imageUrl={item?.dp}
-                    isAvatar={false}
-                  />
-                  <Link href={{ pathname: PATH_NAME.community(item.slug) }}>
-                    <div className="mx-2">
-                      <p
-                        className="line-clamp-1 text-left"
-                        style={{ fontWeight: 600, fontSize: '20px', lineHeight: '24px' }}>
-                        {item.name}
-                      </p>
-                    </div>
-                  </Link>
-                </div>
-                <DecorativeList>
-                  <CommunityDetails userId={usernickname} communityHandle={item.handle} />
-                </DecorativeList>
+          {communities?.map((item, index) => (
+            <div key={index} className="my-6">
+              <div className="flex items-center">
+                <CustomAvatar
+                  className="bg-slate-500 h-11 w-11 bg-red-40"
+                  fallbackString={item?.name}
+                  imageUrl={item?.dp}
+                  isAvatar={false}
+                />
+                <Link href={{ pathname: PATH_NAME.community(item.handle) }}>
+                  <div className="mx-2">
+                    <p
+                      className="line-clamp-1 text-left"
+                      style={{ fontWeight: 600, fontSize: '20px', lineHeight: '24px' }}>
+                      {item.name}
+                    </p>
+                  </div>
+                </Link>
               </div>
-            ))}
+              <DecorativeList>
+                <CommunityDetails userId={usernickname} communityHandle={item.handle} />
+              </DecorativeList>
+            </div>
+          ))}
         </div>
       )}
       {isFetchingNextPage && <Loader size="md" />}
-      {hasNextPage && (
-        <p
-          className="text-blue-500 flex w-full cursor-pointer justify-center pb-4 text-cap-lg text-monochrome"
-          onClick={handleSeeMoreClick}>
-          See More Communities
-        </p>
-      )}
     </div>
   )
 }

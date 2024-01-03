@@ -5,11 +5,13 @@ export function ListItem({
   subtitle,
   description,
   image,
+  isAvatar
 }: {
   title: string
   subtitle?: string
   description?: string
   image?: string
+  isAvatar: boolean
 }) {
   return (
     <div className="flex items-center gap-x-1 rounded-lg p-2 hover:bg-monochrome-10">
@@ -17,7 +19,7 @@ export function ListItem({
         className="h-12 w-12 bg-red-40"
         imageUrl={image ?? ''}
         fallbackString={title ?? ''}
-        isAvatar={false}
+        isAvatar={isAvatar}
       />
       <div className="mx-2">
         <p className="line-clamp-1 text-body-1-demi">{subtitle}</p>

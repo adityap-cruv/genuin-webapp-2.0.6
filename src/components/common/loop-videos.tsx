@@ -6,20 +6,26 @@ import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { isMobile } from 'react-device-detect'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import icPlay from '@icons/player-controls/icPlay.svg'
+import { useMotionValueEvent, useScroll } from 'framer-motion'
 
 export function LoopVideos({ slug }: { slug: string }) {
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getLoopVideos(slug)
-  const videos = data?.pages.flatMap((page) => page.videos)
-  const [modalControl, setModalControl] = useState({ open: false, startIndex: 0 })
-  const handleSeeMoreClick = () => {
-    void fetchNextPage()
-  }
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
+  const videos = data?.pages.flatMap((item) => item.videos)
+  const scrollDivRef = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({ container: scrollDivRef, layoutEffect: false })
+
+  useMotionValueEvent(scrollYProgress, 'change', (latest) => {
+    if (Number(latest.toFixed(1)) > 0.8 && !isFetchingNextPage) {
+      void fetchNextPage()
+    }
+  })
 
   // TODO: Add shimmer in images.
   return (
-    <div className="h-full w-full overflow-y-auto">
+    <div ref={scrollDivRef} className="h-full w-full overflow-y-auto">
       {!isMobile && <p className="my-2 text-title-3-bold">Posts</p>}
       {isLoading && <Loader size="md" />}
       {videos?.length === 0 && (
@@ -29,16 +35,23 @@ export function LoopVideos({ slug }: { slug: string }) {
         {videos?.map((item, index) => (
           <div
             key={index}
-            onClick={() => {
-              setModalControl({ open: true, startIndex: index })
-            }}
-            className="group/video relative aspect-reel w-full duration-300 hover:cursor-pointer">
+            className="relative flex aspect-reel w-full items-center justify-center duration-300 hover:cursor-pointer">
             <Image
               src={item.video.thumbnail ?? ''}
               alt={item.video.description ?? ''}
-              className="h-full w-full rounded-xl bg-secondary object-fill"
+              className="h-full w-full rounded-xl object-fill"
               fill
+              onMouseEnter={() => {
+                setSelectedIndex(index)
+              }}
+              onMouseLeave={() => {
+                setSelectedIndex(null)
+              }}
+              style={{ filter: selectedIndex === index ? 'brightness(60%)' : 'brightness(100%)' }}
             />
+            {/* <p className="absolute left-2 top-2 text-title-sm text-monochrome-white">
+                    {item.video?.metadata.duration + 's'}
+                  </p> */}
             <div className="absolute bottom-2 left-2">
               <Link href={{ pathname: PATH_NAME.profile(item.owner.nickname) }}>
                 <div className="flex h-6 w-6 items-center">
@@ -53,36 +66,11 @@ export function LoopVideos({ slug }: { slug: string }) {
               </Link>
               <p className="ml-1 line-clamp-2 text-body-1-demi text-monochrome-white">{item.video.description}</p>
             </div>
-            <div className="absolute inset-0 z-10 flex h-full w-full items-center justify-center rounded-xl group-hover/video:bg-monochrome-black/40">
-              <Image src={icPlay} alt="" className="hidden group-hover/video:block" />
-            </div>
+            {selectedIndex === index && <Image src={icPlay} alt="play" className="absolute" height={40} />}
           </div>
         ))}
       </div>
       {isFetchingNextPage && <Loader size="md" />}
-      {hasNextPage && (
-        <p
-          className="text-blue-500 flex w-full cursor-pointer justify-center py-4 text-cap-lg text-monochrome"
-          onClick={handleSeeMoreClick}>
-          See More
-        </p>
-      )}
-      {videos && (
-        <PlayerModal
-          fetchNextVideos={fetchNextPage}
-          videos={videos}
-          isError={false}
-          isFetchingNextPage={false}
-          open={modalControl.open}
-          startIndex={modalControl.startIndex}
-          close={() => {
-            setModalControl((x) => {
-              x.open = false
-              return { ...x }
-            })
-          }}
-        />
-      )}
     </div>
   )
 }

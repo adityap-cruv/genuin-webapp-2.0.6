@@ -7,7 +7,7 @@ import { CustomAvatar } from '@components/custom/custom-avatar'
 import { DecorativeList } from '@components/custom/decorative-list'
 import { getAllCommunities, getAllLoops, getAllLoopVideos } from '@lib/api/profile'
 import { Loader } from '@components/ui/loader'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import icSpark from '@icons/player-controls/icBulb.svg'
 import { TopBar } from '@components/layouts/mobile/top-bar'
 import { Shimmer } from '@components/ui/shimmer'
@@ -15,6 +15,7 @@ import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { PlayerModal } from '@components/common/player-modal'
 import { DownloadDialog } from '@components/common/download-dialog'
+import { useMotionValueEvent, useScroll } from 'framer-motion'
 
 interface CompProps {
   profileData: any
@@ -105,8 +106,17 @@ function CommunityList({ usernickname }: any) {
     void fetchNextPage()
   }
 
+  const scrollDivRef = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({ container: scrollDivRef, layoutEffect: false })
+
+  useMotionValueEvent(scrollYProgress, 'change', (latest) => {
+    if (Number(latest.toFixed(1)) > 0.8 && !isFetchingNextPage) {
+      void fetchNextPage()
+    }
+  })
+
   return (
-    <>
+    <div ref={scrollDivRef} className="h-full w-full overflow-y-auto">
       {isLoading && <Loader size="md" />}
       {communities && (
         <div>
@@ -148,14 +158,7 @@ function CommunityList({ usernickname }: any) {
         </div>
       )}
       {isFetchingNextPage && <Loader size="md" />}
-      {hasNextPage && (
-        <p
-          className="text-blue-500 flex w-full cursor-pointer justify-center p-5 text-cap-lg text-monochrome"
-          onClick={handleSeeMoreClick}>
-          See More Communities
-        </p>
-      )}
-    </>
+    </div>
   )
 }
 

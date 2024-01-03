@@ -238,6 +238,7 @@ function Leaders() {
               subtitle={'@' + moderator.nickname}
               description={moderator.description}
               image={moderator.profile_image}
+              isAvatar={moderator.is_avatar}
             />
           </Link>
         )
@@ -251,11 +252,13 @@ function ListItem({
   subtitle,
   description,
   image,
+  isAvatar,
 }: {
   title: string
   subtitle?: string
   description?: string
   image?: string
+  isAvatar: boolean
 }) {
   return (
     <div className="flex items-center gap-x-1 rounded-lg p-2 hover:bg-monochrome-10">
@@ -263,7 +266,7 @@ function ListItem({
         className="h-12 w-12 bg-red-40"
         imageUrl={image ?? ''}
         fallbackString={title ?? ''}
-        isAvatar={false}
+        isAvatar={isAvatar}
       />
       <div className="mx-2">
         <p className="line-clamp-1 text-title-sm">{subtitle}</p>
@@ -289,6 +292,7 @@ function Members() {
               subtitle={'@' + member.nickname}
               description={member.description ?? ''}
               image={member.profile_image}
+              isAvatar={member.is_avatar}
             />
           </Link>
         )

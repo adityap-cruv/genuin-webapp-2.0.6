@@ -107,12 +107,14 @@ export function MainComponent({ loopDetails }: Props) {
                 variant="outline"
                 size="custom"
                 className="border border-primary p-0.5"
-                onClick={async () =>
+                onClick={async () => {
+                  const currentURL = new URL(window.location.href)
+                  currentURL.searchParams.set('community', `${loopDetails.community.handle}`)
                   await shareFn({
-                    shareLink: window.location.href,
+                    shareLink: currentURL.href,
                     toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                   })
-                }>
+                }}>
                 <Image src={icShare} alt="share" className="h-6 w-6" />
               </Button>
             </span>
@@ -146,10 +148,11 @@ function Cohosts({ slug }: { slug: string }) {
           {cohosts.map((item: any, index: any) => (
             <Link key={index} href={{ pathname: PATH_NAME.profile(item.user.nickname) }}>
               <ListItem
-                title={'@' + item.user.nickname}
-                subtitle={item.user.name ?? ''}
+                title={item.user.name ?? ''}
+                subtitle={'@' + item.user.nickname}
                 description={item.user.bio || ''}
                 image={item.user.profile_image || ''}
+                isAvatar={item.user.is_avatar || ''}
               />
             </Link>
           ))}
@@ -171,10 +174,11 @@ function LoopSubscribers({ slug }: { slug: string }) {
           {subscribers.map((item: any, index: any) => (
             <Link key={index} href={{ pathname: PATH_NAME.profile(item.user.nickname) }}>
               <ListItem
-                title={'@' + item.user.nickname}
-                subtitle={item.user.name ?? ''}
+                title={item.user.name ?? ''}
+                subtitle={'@' + item.user.nickname}
                 description={item.user.bio || ''}
                 image={item.user.profile_image || ''}
+                isAvatar={item.user.is_avatar || ''}
               />
             </Link>
           ))}

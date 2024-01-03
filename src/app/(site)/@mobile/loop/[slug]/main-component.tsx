@@ -124,12 +124,14 @@ export function MainComponent({ loopDetails }: Props) {
                 variant="outline"
                 size="custom"
                 className="border border-primary p-0.5"
-                onClick={async () =>
+                onClick={async () => {
+                  const currentURL = new URL(window.location.href)
+                  currentURL.searchParams.set('community', `${loopDetails.community.handle}`)
                   await shareFn({
-                    shareLink: window.location.href,
+                    shareLink: currentURL.href,
                     toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                   })
-                }>
+                }}>
                 <Image src={icShare} alt="share" className="h-6 w-6" />
               </Button>
             </div>
@@ -261,7 +263,7 @@ interface CohostTileProps {
 function CohostTile({ image, title, subtitle, userName, isAvatar }: CohostTileProps) {
   return (
     <div className="flex items-center gap-x-1 rounded-lg p-2 hover:bg-monochrome-10">
-      <CustomAvatar className="h-12 w-12 bg-red-40" fallbackString={userName} imageUrl={image} isAvatar={isAvatar} />
+      <CustomAvatar className="h-12 w-12 bg-red-40" fallbackString={title} imageUrl={image} isAvatar={isAvatar} />
       <div className="mx-2">
         <p className="line-clamp-1 text-title-sm">{title}</p>
         {userName && <p className="line-clamp-1 text-title-sm">{userName}</p>}
