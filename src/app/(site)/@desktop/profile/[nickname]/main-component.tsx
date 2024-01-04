@@ -73,7 +73,7 @@ export function MainComponent({ profileData }: CompProps) {
             className="my-1"
             onClick={async () =>
               await shareFn({
-                shareLink: window.location.href,
+                shareLink: window.location.href + '?utm_source=app_web',
                 toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
               })
             }>

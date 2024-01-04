@@ -91,7 +91,7 @@ export function RootDetails({ communityDetails }: Props) {
               className="border border-primary p-0.5"
               onClick={async () =>
                 await shareFn({
-                  shareLink: window.location.href,
+                  shareLink: window.location.href + '?utm_source=app_web',
                   toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                 })
               }>

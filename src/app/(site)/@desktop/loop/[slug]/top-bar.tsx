@@ -19,9 +19,10 @@ type Props = {
   isOpen: boolean
   loopName: string
   shareString: string
+  communitySlug: string
 }
 
-export function TopBar({ defaultOpen = true, isOpen = false, loopName, shareString, ...props }: Props) {
+export function TopBar({ defaultOpen = true, isOpen = false, loopName, shareString, communitySlug, ...props }: Props) {
   const navAnimationControl = useAnimationControls()
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
@@ -79,12 +80,15 @@ export function TopBar({ defaultOpen = true, isOpen = false, loopName, shareStri
           variant="outline"
           size="custom"
           className="border border-primary p-0.5"
-          onClick={async () =>
+          onClick={async () => {
+            const currentURL = new URL(window.location.href)
+            currentURL.searchParams.set('community_id', `${communitySlug}`)
+            currentURL.searchParams.set('utm_source', 'app_web')
             await shareFn({
-              shareLink: window.location.href,
+              shareLink: currentURL.href,
               toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
             })
-          }>
+          }}>
           <Image src={icShare} alt="share" className="h-6 w-6" />
         </Button>
       </span>

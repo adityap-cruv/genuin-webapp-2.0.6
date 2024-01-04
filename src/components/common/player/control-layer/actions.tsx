@@ -76,7 +76,7 @@ function Mobile({ link = '', shareDescription = '', shareTitle = '', videoData }
           onClick={(e) => {
             const url = {
               pathname: PATH_NAME.video(videoData.video.slug),
-              query: { community: videoData.community.handle, loop: videoData.loop.slug },
+              query: { community_id: videoData.community.slug, loop_id: videoData.loop.slug },
             }
             const shareUrl = format(url)
             void window.navigator.share({
@@ -143,7 +143,7 @@ function Desktop({ link = '', shareDescription = '', shareTitle = '', videoData 
           onClick={async () => {
             const url = {
               pathname: PATH_NAME.video(videoData.video.slug),
-              query: { community: videoData.community.handle, loop: videoData.loop.slug },
+              query: { community_id: videoData.community.slug, loop_id: videoData.loop.slug, utm_source: 'app_web' },
             }
             const shareUrl = window.location.hostname + format(url)
             await shareFn({

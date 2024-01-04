@@ -126,7 +126,8 @@ export function MainComponent({ loopDetails }: Props) {
                 className="border border-primary p-0.5"
                 onClick={async () => {
                   const currentURL = new URL(window.location.href)
-                  currentURL.searchParams.set('community', `${loopDetails.community.handle}`)
+                  currentURL.searchParams.set('community_id', `${loopDetails.community.slug}`)
+                  currentURL.searchParams.set('utm_source', 'app_web')
                   await shareFn({
                     shareLink: currentURL.href,
                     toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
@@ -267,13 +268,9 @@ function CohostTile({ image, title, subtitle, userName, isAvatar }: CohostTilePr
     <div className="flex items-center gap-x-1 rounded-lg p-2 hover:bg-monochrome-10">
       <CustomAvatar className="h-12 w-12 bg-red-40" fallbackString={title} imageUrl={image} isAvatar={isAvatar} />
       <div className="mx-2">
-        <p className="text-body-1-bold line-clamp-1">{title}</p>
-        {userName && (
-          <p className="text-body-1-demi line-clamp-1">
-            {userName}
-          </p>
-        )}
-        {subtitle && <p className="text-cap-1-demi line-clamp-1 text-monochrome-black/60">{subtitle}</p>}
+        <p className="line-clamp-1 text-body-1-bold">{title}</p>
+        {userName && <p className="line-clamp-1 text-body-1-demi">{userName}</p>}
+        {subtitle && <p className="line-clamp-1 text-cap-1-demi text-monochrome-black/60">{subtitle}</p>}
       </div>
     </div>
   )

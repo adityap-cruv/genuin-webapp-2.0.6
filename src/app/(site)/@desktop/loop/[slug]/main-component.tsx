@@ -37,6 +37,7 @@ export function MainComponent({ loopDetails }: Props) {
           isOpen={!detailsInView}
           loopName={loopDetails.group.group_name ?? ''}
           shareString={loopDetails.share_string}
+          communitySlug={loopDetails.community.slug}
         />
         <main className="hide-scrollbar absolute inset-0 h-full w-full overflow-auto pl-6">
           <span className="w-1/2">
@@ -109,7 +110,8 @@ export function MainComponent({ loopDetails }: Props) {
                 className="border border-primary p-0.5"
                 onClick={async () => {
                   const currentURL = new URL(window.location.href)
-                  currentURL.searchParams.set('community', `${loopDetails.community.handle}`)
+                  currentURL.searchParams.set('community_id', `${loopDetails.community.slug}`)
+                  currentURL.searchParams.set('utm_source', 'app_web')
                   await shareFn({
                     shareLink: currentURL.href,
                     toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
