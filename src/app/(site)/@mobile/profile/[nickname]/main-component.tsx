@@ -146,6 +146,7 @@ function Links({ profileData }: CompProps) {
 }
 
 function Stats({ profileData }: { profileData: any }) {
+  console.log(profileData)
   return (
     <div className="m-1 ml-0 flex max-w-[250px]  justify-between gap-x-2 p-1 pl-0">
       <div className="flex items-center">

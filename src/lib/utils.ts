@@ -56,6 +56,7 @@ export function isValidHTTPS(link: string): any {
 }
 
 export const abbreviateNumber = (value: number) => {
+  console.log(value)
   let newValue = value.toString()
   if (value >= 1000) {
     const suffixes = ['', 'k', 'm', 'b', 't']
