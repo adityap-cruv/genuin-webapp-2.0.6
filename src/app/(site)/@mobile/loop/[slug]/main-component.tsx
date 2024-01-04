@@ -14,6 +14,9 @@ import { PATH_NAME } from '@lib/utils/constants/path'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { TopBar } from '@components/layouts/mobile/top-bar'
 import { LoopVideos } from '@components/common/loop-videos'
+import { useRef } from 'react'
+import { useInView } from 'framer-motion'
+import { TopStickyBar } from '../../../@desktop/loop/[slug]/top-bar'
 
 let loopDetailsModule: LoopDetailsType
 
@@ -24,6 +27,8 @@ interface Props {
 // todo this page needs to be decoupled.
 export function MainComponent({ loopDetails }: Props) {
   loopDetailsModule = loopDetails
+  const detailsDivRef = useRef<HTMLDivElement>(null)
+  const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
   const ldDescription = `${
@@ -38,10 +43,19 @@ export function MainComponent({ loopDetails }: Props) {
     return (
       <>
         <TopBar />
-        <div className="flex h-full w-full flex-col gap-y-2 p-4 md:flex-row md:gap-x-2">
+        <TopStickyBar.mobile
+          defaultOpen={false}
+          isOpen={!detailsInView}
+          loopName={loopDetails.group.group_name ?? ''}
+          shareString={loopDetails.share_string}
+          communitySlug={loopDetails.community.slug}
+        />
+        <div className="hide-scrollbar absolute inset-0 mt-navbar flex h-full w-full flex-col gap-y-2 overflow-auto p-4 md:flex-row md:gap-x-2">
           <div className="w-full">
-            <p className="line-clamp-1 text-title-xl">{loopDetails.group.group_name}</p>
-            <p className="line-clamp-3 py-2 text-body-lg">{loopDetails.group.group_description}</p>
+            <div ref={detailsDivRef}>
+              <p className="line-clamp-1 text-title-xl">{loopDetails.group.group_name}</p>
+              <p className="my-2 line-clamp-2 break-words text-body-lg">{loopDetails.group.group_description}</p>
+            </div>
             <div className=" my-3 rounded-lg border border-solid border-monochrome-9 p-4">
               <div className="flex">
                 <div className="flex flex-1 flex-col items-start">

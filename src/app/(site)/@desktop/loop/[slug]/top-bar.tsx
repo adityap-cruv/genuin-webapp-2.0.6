@@ -22,7 +22,12 @@ type Props = {
   communitySlug: string
 }
 
-export function TopBar({ defaultOpen = true, isOpen = false, loopName, shareString, communitySlug, ...props }: Props) {
+export const TopStickyBar = {
+  mobile: Mobile,
+  desktop: Desktop,
+}
+
+function Desktop({ defaultOpen = true, isOpen = false, loopName, shareString, communitySlug, ...props }: Props) {
   const navAnimationControl = useAnimationControls()
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
@@ -91,6 +96,40 @@ export function TopBar({ defaultOpen = true, isOpen = false, loopName, shareStri
           }}>
           <Image src={icShare} alt="share" className="h-6 w-6" />
         </Button>
+      </span>
+    </motion.div>
+  )
+}
+
+function Mobile({ defaultOpen = true, isOpen = false, loopName, shareString, communitySlug, ...props }: Props) {
+  const navAnimationControl = useAnimationControls()
+
+  useEffect(() => {
+    if (defaultOpen || isOpen) {
+      open()
+    }
+    if (!isOpen) {
+      close()
+    }
+  }, [defaultOpen, isOpen])
+
+  function open() {
+    void navAnimationControl.start({ translateY: 0, transition: { duration: 0.2, ease: 'linear' } })
+  }
+
+  function close() {
+    void navAnimationControl.start({ translateY: '-100%', transition: { duration: 0.2, ease: 'linear' } })
+  }
+  return (
+    <motion.div
+      animate={navAnimationControl}
+      initial={{
+        translateY: '-100%',
+      }}
+      className="sticky top-0 z-10 flex h-14 w-full items-center justify-between border-b border-monochrome-9 bg-monochrome-white px-6"
+      {...props}>
+      <span className="flex items-center gap-x-2">
+        <p className="text-title-lg font-semibold">{loopName}</p>
       </span>
     </motion.div>
   )

@@ -16,7 +16,7 @@ import { Shimmer } from '@components/ui/shimmer'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { useInView, useMotionValueEvent, useScroll } from 'framer-motion'
-import { TopBar } from './top-bar'
+import { TopStickyBar } from './top-bar'
 import { PlayerModal } from '@components/common/player-modal'
 
 interface CompProps {
@@ -32,7 +32,7 @@ export function MainComponent({ profileData }: CompProps) {
 
   return (
     <>
-      <TopBar
+      <TopStickyBar.desktop
         defaultOpen={false}
         isOpen={!detailsInView}
         profileImage={profileData?.profile_image}

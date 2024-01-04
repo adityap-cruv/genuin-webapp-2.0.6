@@ -6,7 +6,7 @@ import icShare from '@icons/icShareBlue.svg'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { useRef } from 'react'
 import { useInView } from 'framer-motion'
-import { TopBar } from './top-bar'
+import { TopStickyBar } from './top-bar'
 import { getLoopCohosts, getLoopSubscribers } from '@lib/api/loop'
 import { Loader } from '@components/ui/loader'
 import Link from 'next/link'
@@ -32,7 +32,7 @@ export function MainComponent({ loopDetails }: Props) {
   if (loopDetails)
     return (
       <>
-        <TopBar
+        <TopStickyBar.desktop
           defaultOpen={false}
           isOpen={!detailsInView}
           loopName={loopDetails.group.group_name ?? ''}
@@ -42,7 +42,7 @@ export function MainComponent({ loopDetails }: Props) {
         <main className="hide-scrollbar absolute inset-0 h-full w-full overflow-auto pl-6">
           <span className="w-1/2">
             <p className="mt-6 text-title-1-bold">{loopDetails.group.group_name}</p>
-            <p className="my-1 line-clamp-2 w-1/2 text-body-1-med">{loopDetails.group.group_description}</p>
+            <p className="my-1 line-clamp-2 w-1/2 break-words text-body-1-med">{loopDetails.group.group_description}</p>
             <div className="my-3 w-1/2 rounded-xl border border-monochrome-9 p-4">
               <span className="flex" ref={detailsDivRef}>
                 <span className="flex-1">
