@@ -15,6 +15,9 @@ import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { TopBar } from '../../../layouts/mobile/top-bar'
 import { CommunityLoopTab } from '@components/common/community-loop-tab'
+import { useRef } from 'react'
+import { useInView } from 'framer-motion'
+import { TopStickyBar } from '../../../../app/(site)/@desktop/community/[slug]/top-bar'
 
 let communityDetailsModule: CommunityDetailsType
 
@@ -24,13 +27,22 @@ interface Props {
 
 export function ProfileDetails({ communityDetails }: Props) {
   communityDetailsModule = communityDetails
+  const detailsDivRef = useRef<HTMLDivElement>(null)
+  const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
 
   return (
     <>
       <TopBar />
-      <div className="h-full">
+      <TopStickyBar.mobile
+        defaultOpen={false}
+        isOpen={!detailsInView}
+        communityName={communityDetails.info.name}
+        communityProfileImage={communityDetails.info.profile_image}
+        communtiyHandle={communityDetails.info.handle}
+      />
+      <div className="hide-scrollbar absolute mt-navbar inset-0 h-full w-full overflow-auto">
         <div className="px-4 py-2 pt-4">
           <div className="flex justify-between">
             <CustomAvatar
@@ -71,7 +83,7 @@ export function ProfileDetails({ communityDetails }: Props) {
                 className="p-1"
                 onClick={async () =>
                   await shareFn({
-                    shareLink: window.location.href,
+                    shareLink: window.location.href + '?utm_source=app_web',
                     toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                   })
                 }>
@@ -79,8 +91,10 @@ export function ProfileDetails({ communityDetails }: Props) {
               </Button>
             </div>
           </div>
-          <p className="my-1 line-clamp-1 break-all text-title-md">{communityDetailsModule?.info.name}</p>
-          <p className="my-1 line-clamp-2 break-all text-body-sm">{communityDetailsModule?.info.description}</p>
+          <div ref={detailsDivRef}>
+            <p className="my-1 line-clamp-1 break-all text-title-md">{communityDetailsModule?.info.name}</p>
+            <p className="my-1 line-clamp-2 break-all text-body-sm">{communityDetailsModule?.info.description}</p>
+          </div>
           <Stats />
         </div>
         <ProfileTabs />

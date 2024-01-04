@@ -3,7 +3,7 @@ import type { CommunityDetailsType } from '@lib/schemas/community'
 import { useRecentCommunitiesStore } from '@lib/stores/recent-communities'
 import { useEffect, useRef } from 'react'
 import { CustomAvatar } from '@components/custom/custom-avatar'
-import { TopBar } from './top-bar'
+import { TopStickyBar } from './top-bar'
 import { Button } from '@components/ui/button'
 import Image from 'next/image'
 import icShare from '@icons/icShareBlue.svg'
@@ -50,7 +50,7 @@ export function RootDetails({ communityDetails }: Props) {
 
   return (
     <>
-      <TopBar
+      <TopStickyBar.desktop
         defaultOpen={false}
         isOpen={!detailsInView}
         communityName={communityDetails.info.name}
@@ -91,7 +91,7 @@ export function RootDetails({ communityDetails }: Props) {
               className="border border-primary p-0.5"
               onClick={async () =>
                 await shareFn({
-                  shareLink: window.location.href,
+                  shareLink: window.location.href + '?utm_source=app_web',
                   toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                 })
               }>

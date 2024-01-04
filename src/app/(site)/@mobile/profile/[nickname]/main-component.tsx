@@ -15,17 +15,28 @@ import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { PlayerModal } from '@components/common/player-modal'
 import { DownloadDialog } from '@components/common/download-dialog'
-import { useMotionValueEvent, useScroll } from 'framer-motion'
+import { useInView, useMotionValueEvent, useScroll } from 'framer-motion'
+import { TopStickyBar } from '../../../@desktop/profile/[nickname]/top-bar'
 
 interface CompProps {
   profileData: any
 }
 
 export function MainComponent({ profileData }: CompProps) {
+  const detailsDivRef = useRef<HTMLDivElement>(null)
+  const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
   return (
     <>
       <TopBar variant={'light'} />
-      <div className="h-full w-full">
+      <TopStickyBar.mobile
+        defaultOpen={false}
+        isOpen={!detailsInView}
+        profileImage={profileData?.profile_image}
+        profileName={profileData?.name}
+        profileNickname={profileData?.nickname}
+        isAvatar={profileData?.is_avatar}
+      />
+      <div className="hide-scrollbar absolute inset-0 mt-navbar h-full w-full overflow-auto">
         <div className="p-4">
           <div className="flex items-center justify-between">
             <CustomAvatar
@@ -62,7 +73,7 @@ export function MainComponent({ profileData }: CompProps) {
               </Button>
             </div> */}
           </div>
-          <div className="mt-2 flex items-center">
+          <div ref={detailsDivRef} className="mt-2 flex items-center">
             {profileData?.name ? (
               <>
                 <p className="line-clamp-1 pr-2 text-title-md">{profileData?.name}</p>
