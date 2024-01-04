@@ -96,7 +96,7 @@ function Stats({ profileData }: { profileData: any }) {
     <div className="m-1 ml-0 flex max-w-[250px]  justify-between gap-x-6 p-1 pl-0">
       <div className="flex items-center">
         <p className="text-body-lg" style={{ fontWeight: 700 }}>
-          {abbreviateNumber(profileData?.views) || 0}
+          {abbreviateNumber(profileData?.no_of_views) || 0}
         </p>
         <p className="px-1 text-body-sm text-secondary" style={{ fontWeight: 500 }}>
           Views
@@ -104,7 +104,7 @@ function Stats({ profileData }: { profileData: any }) {
       </div>
       <div className="flex items-center">
         <p className="text-body-lg" style={{ fontWeight: 700 }}>
-          {abbreviateNumber(profileData?.videos) || 0}
+          {abbreviateNumber(profileData?.no_of_videos) || 0}
         </p>
         <p className="px-1 text-body-sm text-secondary" style={{ fontWeight: 500 }}>
           Posts
@@ -112,7 +112,7 @@ function Stats({ profileData }: { profileData: any }) {
       </div>
       <div className="flex items-center">
         <p className="text-body-lg" style={{ fontWeight: 700 }}>
-          {abbreviateNumber(profileData?.no_of_community) || 0}
+          {abbreviateNumber(profileData?.no_of_communities) || 0}
         </p>
         <p className="px-1 text-body-sm text-secondary" style={{ fontWeight: 500 }}>
           Communities
