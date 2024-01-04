@@ -87,7 +87,7 @@ function Desktop({ defaultOpen = true, isOpen = false, loopName, shareString, co
           className="border border-primary p-0.5"
           onClick={async () => {
             const currentURL = new URL(window.location.href)
-            currentURL.searchParams.set('community_id', `${communitySlug}`)
+            currentURL.searchParams.set('community_id', `${shareString}`)
             currentURL.searchParams.set('utm_source', 'app_web')
             await shareFn({
               shareLink: currentURL.href,

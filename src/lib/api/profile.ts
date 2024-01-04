@@ -78,6 +78,7 @@ async function fetchCommunities(nickname: string, ref: any) {
     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/profile/contributed_communities', {
       params: {
         user_id: { nickname },
+        limit: 10,
         ref,
       },
     })
@@ -108,6 +109,7 @@ async function fetchCommunityLoops(nickname: string, communityHandle: string, re
     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/profile/contributed_community_loops', {
       params: {
         user_id: { nickname },
+        limit: -1,
         community_id: { handle: communityHandle },
         ref,
       },
@@ -139,6 +141,7 @@ async function fetchCommunityLoopVideos(nickname: string, loopSlug: string, ref:
     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/profile/contributed_loop_videos', {
       params: {
         user_id: { nickname },
+        limit: ref ? 16 : 8,
         loop_id: { slug: loopSlug },
         ref,
       },

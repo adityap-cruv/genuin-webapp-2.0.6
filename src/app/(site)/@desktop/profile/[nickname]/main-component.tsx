@@ -1,5 +1,5 @@
 'use client'
-import { abbreviateNumber } from '@lib/utils'
+import { abbreviateNumber, checkAndAppendHttps } from '@lib/utils'
 import { Button } from '@components/ui/button'
 import Image from 'next/image'
 import icShare from '@icons/icShareBlue.svg'
@@ -12,6 +12,10 @@ import { getAllCommunities, getAllLoops, getAllLoopVideos } from '@lib/api/profi
 import { Loader } from '@components/ui/loader'
 import { useRef, useState } from 'react'
 import icSpark from '@icons/player-controls/icBulb.svg'
+import icInstagram from '@icons/icInstagramBlack.svg'
+import icTiktok from '@icons/icTiktok.svg'
+import icLinkedIn from '@icons/icLinkedIn.svg'
+import icTwitter from '@icons/icTwitterBlack.svg'
 import { Shimmer } from '@components/ui/shimmer'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
@@ -25,8 +29,6 @@ interface CompProps {
 
 // TODO: separate this component.
 export function MainComponent({ profileData }: CompProps) {
-  const { shareFn } = useAdaptiveShare()
-  const { toast } = useToast()
   const detailsDivRef = useRef<HTMLDivElement>(null)
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
 
@@ -66,29 +68,67 @@ export function MainComponent({ profileData }: CompProps) {
             {profileData?.bio}
           </p>
           <Stats profileData={profileData} />
-          <Button
-            variant="outline"
-            size="custom"
-            outlineColor="genuin-blue"
-            className="my-1"
-            onClick={async () =>
-              await shareFn({
-                shareLink: window.location.href + '?utm_source=app_web',
-                toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
-              })
-            }>
-            <span className="flex items-center p-1">
-              <Image src={icShare} alt="share" height={24} width={24} />
-            </span>
-          </Button>
+          <Links profileData={profileData} />
         </div>
-        <div className="w-full overflow-hidden" style={{ height: 'calc(100% - 56px)' }}>
-          <CommunityList usernickname={profileData?.nickname} />
-        </div>
+        <CommunityList usernickname={profileData?.nickname} />
       </div>
       <Toaster />
     </>
   )
+}
+
+function Links({ profileData }: CompProps) {
+  const links = profileData?.social_links
+  const { shareFn } = useAdaptiveShare()
+  const { toast } = useToast()
+  if (links?.facebook ?? links?.instagram ?? links?.linkedin ?? links?.tiktok ?? links?.twitter)
+    return (
+      <div className="my-2 flex">
+        {links?.instagram && (
+          <div className="mr-2 flex items-center rounded-md bg-monochrome-9 p-1">
+            <Link href={checkAndAppendHttps(links.instagram)} target="_blank">
+              <Image src={icInstagram} alt="instagram" />
+            </Link>
+          </div>
+        )}
+        {links?.linkedin && (
+          <div className="mr-2 flex items-center rounded-md bg-monochrome-9 p-1">
+            <Link href={checkAndAppendHttps(links.linkedin)} target="_blank">
+              <Image src={icLinkedIn} alt="linkedin" />
+            </Link>
+          </div>
+        )}
+        {links?.tiktok && (
+          <div className="mr-2 flex items-center rounded-md bg-monochrome-9 p-1 px-2">
+            <Link href={checkAndAppendHttps(links.tiktok)} target="_blank">
+              <Image src={icTiktok} alt="linkedin" />
+            </Link>
+          </div>
+        )}
+        {links?.twitter && (
+          <div className="mr-2 flex items-center rounded-md bg-monochrome-9 p-1">
+            <Link href={checkAndAppendHttps(links.twitter)} target="_blank">
+              <Image src={icTwitter} alt="twitter" />
+            </Link>
+          </div>
+        )}
+        <Button
+          variant="outline"
+          size="custom"
+          outlineColor="genuin-blue"
+          className="mx-1"
+          onClick={async () =>
+            await shareFn({
+              shareLink: window.location.href + '?utm_source=app_web',
+              toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
+            })
+          }>
+          <span className="flex items-center p-1">
+            <Image src={icShare} alt="share" height={24} width={24} />
+          </span>
+        </Button>
+      </div>
+    )
 }
 
 function Stats({ profileData }: { profileData: any }) {
@@ -96,7 +136,7 @@ function Stats({ profileData }: { profileData: any }) {
     <div className="m-1 ml-0 flex max-w-[250px]  justify-between gap-x-6 p-1 pl-0">
       <div className="flex items-center">
         <p className="text-body-lg" style={{ fontWeight: 700 }}>
-          {abbreviateNumber(profileData?.views) || 0}
+          {abbreviateNumber(profileData?.no_of_views) || 0}
         </p>
         <p className="px-1 text-body-sm text-secondary" style={{ fontWeight: 500 }}>
           Views
@@ -104,7 +144,7 @@ function Stats({ profileData }: { profileData: any }) {
       </div>
       <div className="flex items-center">
         <p className="text-body-lg" style={{ fontWeight: 700 }}>
-          {abbreviateNumber(profileData?.videos) || 0}
+          {abbreviateNumber(profileData?.no_of_videos) || 0}
         </p>
         <p className="px-1 text-body-sm text-secondary" style={{ fontWeight: 500 }}>
           Posts
@@ -112,7 +152,7 @@ function Stats({ profileData }: { profileData: any }) {
       </div>
       <div className="flex items-center">
         <p className="text-body-lg" style={{ fontWeight: 700 }}>
-          {abbreviateNumber(profileData?.no_of_community) || 0}
+          {abbreviateNumber(profileData?.no_of_communities) || 0}
         </p>
         <p className="px-1 text-body-sm text-secondary" style={{ fontWeight: 500 }}>
           Communities
@@ -138,51 +178,53 @@ function CommunityList({ usernickname }: any) {
 
   if (communities && communities?.length === 0)
     return (
-      <div
-        className="flex h-full w-full items-center justify-center pt-2 text-title-3-bold text-monochrome"
-        style={{ backgroundColor: '#F9F9F9' }}>
-        No posts yet
+      <div className="w-full overflow-hidden">
+        <div
+          className="flex h-full w-full items-center justify-center pt-2 text-title-3-bold text-monochrome"
+          style={{ backgroundColor: '#F9F9F9' }}>
+          No posts yet
+        </div>
       </div>
     )
 
   if (communities && communities?.length !== 0)
     return (
-      <div ref={scrollDivRef} className="h-full w-full overflow-y-auto">
-        <div>
-          {communities?.map((item, index) => (
-            <div key={index} className="my-6">
-              <div className="flex items-center">
-                <CustomAvatar
-                  className="bg-slate-500 h-11 w-11 bg-red-40"
-                  fallbackString={item?.name}
-                  imageUrl={item?.dp}
-                  isAvatar={false}
-                />
-                <Link href={{ pathname: PATH_NAME.community(item.slug) }}>
-                  <div className="mx-2">
-                    <p
-                      className="line-clamp-1 text-left"
-                      style={{ fontWeight: 600, fontSize: '20px', lineHeight: '24px' }}>
-                      {item.name}
-                    </p>
-                  </div>
-                </Link>
+      <div className="w-full overflow-hidden" style={{ height: 'calc(100% - 56px)' }}>
+        <div ref={scrollDivRef} className="h-full w-full overflow-y-auto">
+          <div>
+            {communities?.map((item, index) => (
+              <div key={index} className="my-6">
+                <div className="flex items-center">
+                  <CustomAvatar
+                    className="bg-slate-500 h-11 w-11 bg-red-40"
+                    fallbackString={item?.name}
+                    imageUrl={item?.dp}
+                    isAvatar={false}
+                  />
+                  <Link href={{ pathname: PATH_NAME.community(item.slug) }}>
+                    <div className="mx-2">
+                      <p
+                        className="line-clamp-1 text-left"
+                        style={{ fontWeight: 600, fontSize: '20px', lineHeight: '24px' }}>
+                        {item.name}
+                      </p>
+                    </div>
+                  </Link>
+                </div>
+                <DecorativeList>
+                  <CommunityDetails userId={usernickname} communityHandle={item.handle} />
+                </DecorativeList>
               </div>
-              <DecorativeList>
-                <CommunityDetails userId={usernickname} communityHandle={item.handle} />
-              </DecorativeList>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     )
 }
 
 function CommunityDetails({ userId, communityHandle }: { userId: string; communityHandle: string }) {
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getAllLoops(userId, communityHandle)
-  const handleSeeMoreClick = () => {
-    void fetchNextPage()
-  }
+  const { data, isLoading, isFetchingNextPage } = getAllLoops(userId, communityHandle)
+
   return (
     <>
       {isLoading && (
@@ -210,13 +252,6 @@ function CommunityDetails({ userId, communityHandle }: { userId: string; communi
           </li>
         ))}
       {isFetchingNextPage && <Loader size="md" />}
-      {hasNextPage && (
-        <p
-          className="text-blue-500 flex w-full cursor-pointer justify-center pt-2 text-cap-lg text-monochrome"
-          onClick={handleSeeMoreClick}>
-          See More Loops
-        </p>
-      )}
     </>
   )
 }
@@ -229,22 +264,22 @@ function LoopVideos({ userId, loopDetails }: LoopVideosProps) {
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getAllLoopVideos(userId, loopDetails.slug)
   const videos = data?.pages.flatMap((item) => item.videos)
 
-  const [videoCount, setVideoCount] = useState(Math.max(0, loopDetails.video_count - 10))
+  const [videoCount, setVideoCount] = useState(Math.max(0, loopDetails.video_count - 8))
 
   const handleSeeMoreClick = () => {
     void fetchNextPage()
     if (videoCount > 0) {
-      setVideoCount((prevVideosCount) => Math.max(0, prevVideosCount - 10))
+      setVideoCount((prevVideosCount) => Math.max(0, prevVideosCount - 16))
     }
   }
 
   return (
     <>
-      <Link href={{ pathname: PATH_NAME.loop(loopDetails.slug) }}>
+      <a href={PATH_NAME.loop(loopDetails.slug)}>
         <p className="mb-3 text-title-sm" style={{ lineHeight: '24px' }}>
           {loopDetails.name}
         </p>
-      </Link>
+      </a>
       {videos?.length === 0 && (
         <div className="flex items-center justify-center pt-32 text-title-md text-secondary">No videos available</div>
       )}
@@ -275,7 +310,7 @@ function LoopVideos({ userId, loopDetails }: LoopVideosProps) {
             </div>
           ))}
       </div>
-      {hasNextPage && (
+      {hasNextPage && videoCount !== 0 && (
         <p
           className="text-blue-500 flex w-full cursor-pointer justify-center pt-2 text-cap-lg text-monochrome"
           onClick={handleSeeMoreClick}>

@@ -1,8 +1,7 @@
 'use client'
-import { abbreviateNumber } from '@lib/utils'
+import { abbreviateNumber, checkAndAppendHttps } from '@lib/utils'
 import { Button } from '@components/ui/button'
 import Image from 'next/image'
-import { Toaster } from '@components/ui/toaster'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { DecorativeList } from '@components/custom/decorative-list'
 import { getAllCommunities, getAllLoops, getAllLoopVideos } from '@lib/api/profile'
@@ -17,12 +16,21 @@ import { PlayerModal } from '@components/common/player-modal'
 import { DownloadDialog } from '@components/common/download-dialog'
 import { useInView, useMotionValueEvent, useScroll } from 'framer-motion'
 import { TopStickyBar } from '../../../@desktop/profile/[nickname]/top-bar'
+import icInstagram from '@icons/icInstagramBlack.svg'
+import icLinkedIn from '@icons/icLinkedIn.svg'
+import icTwitter from '@icons/icTwitterBlack.svg'
+import icShare from '@icons/icShareBlue.svg'
+import { useAdaptiveShare } from '@hooks/use-adaptive-share'
+import { useToast } from '@components/ui/use-toast'
+import icTiktok from '@icons/icTiktok.svg'
 
 interface CompProps {
   profileData: any
 }
 
 export function MainComponent({ profileData }: CompProps) {
+  const { shareFn } = useAdaptiveShare()
+  const { toast } = useToast()
   const detailsDivRef = useRef<HTMLDivElement>(null)
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
   return (
@@ -45,8 +53,8 @@ export function MainComponent({ profileData }: CompProps) {
               imageUrl={profileData?.profile_image}
               isAvatar={profileData?.is_avatar}
             />
-            {/* <div className="flex">
-              <Button
+            <div className="flex">
+              {/* <Button
                 className="mr-2"
                 variant="outline"
                 size="sm"
@@ -58,20 +66,20 @@ export function MainComponent({ profileData }: CompProps) {
                   })
                 }>
                 <p className="text-title-sm text-blue">Edit Profile</p>
-              </Button>
+              </Button> */}
               <Button
                 variant="outline"
                 size="sm"
                 outlineColor="genuin-blue"
                 onClick={async () =>
                   await shareFn({
-                    shareLink: window.location.href,
+                    shareLink: window.location.href + '?utm_source=app_web',
                     toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                   })
                 }>
                 <Image src={icShare} alt="share" height={22} width={22} />
               </Button>
-            </div> */}
+            </div>
           </div>
           <div ref={detailsDivRef} className="mt-2 flex items-center">
             {profileData?.name ? (
@@ -87,32 +95,69 @@ export function MainComponent({ profileData }: CompProps) {
               </>
             )}
           </div>
-          <p className="line-clamp-2 py-1 text-body-sm" style={{ lineHeight: '24px' }}>
+          <p className="line-clamp-2 my-1 text-body-sm" style={{ lineHeight: '24px' }}>
             {profileData?.bio}
           </p>
           <Stats profileData={profileData} />
+          <Links profileData={profileData} />
         </div>
-        <hr className="border-t border-monochrome-9" />
+        <hr className="my-1 border-t border-monochrome-9" />
         <CommunityList usernickname={profileData?.nickname} />
       </div>
-      <Toaster />
     </>
   )
+}
+
+function Links({ profileData }: CompProps) {
+  const links = profileData?.social_links
+  if (links?.facebook ?? links?.instagram ?? links?.linkedin ?? links?.tiktok ?? links?.twitter)
+    return (
+      <div className="mt-2 flex">
+        {links?.instagram && (
+          <div className="mr-2 flex items-center rounded-md bg-monochrome-9 p-1">
+            <Link href={checkAndAppendHttps(links.instagram)} target="_blank">
+              <Image src={icInstagram} alt="instagram" />
+            </Link>
+          </div>
+        )}
+        {links?.linkedin && (
+          <div className="mr-2 flex items-center rounded-md bg-monochrome-9 p-1">
+            <Link href={checkAndAppendHttps(links.linkedin)} target="_blank">
+              <Image src={icLinkedIn} alt="linkedin" />
+            </Link>
+          </div>
+        )}
+        {links?.tiktok && (
+          <div className="mr-2 flex items-center rounded-md bg-monochrome-9 p-1 px-2">
+            <Link href={checkAndAppendHttps(links.tiktok)} target="_blank">
+              <Image src={icTiktok} alt="linkedin" />
+            </Link>
+          </div>
+        )}
+        {links?.twitter && (
+          <div className="mr-2 flex items-center rounded-md bg-monochrome-9 p-1">
+            <Link href={checkAndAppendHttps(links.twitter)} target="_blank">
+              <Image src={icTwitter} alt="twitter" />
+            </Link>
+          </div>
+        )}
+      </div>
+    )
 }
 
 function Stats({ profileData }: { profileData: any }) {
   return (
     <div className="m-1 ml-0 flex max-w-[250px]  justify-between gap-x-2 p-1 pl-0">
       <div className="flex items-center">
-        <p className="text-title-md">{abbreviateNumber(profileData?.views) || 0}</p>
+        <p className="text-title-md">{abbreviateNumber(profileData?.no_of_views) || 0}</p>
         <p className="px-1 text-cap-lg text-secondary">Views</p>
       </div>
       <div className="flex items-center">
-        <p className="text-title-md">{abbreviateNumber(profileData?.videos) || 0}</p>
+        <p className="text-title-md">{abbreviateNumber(profileData?.no_of_videos) || 0}</p>
         <p className="px-1 text-cap-lg text-secondary">Posts</p>
       </div>
       <div className="flex items-center">
-        <p className="text-title-md">{abbreviateNumber(profileData?.no_of_community) || 0}</p>
+        <p className="text-title-md">{abbreviateNumber(profileData?.no_of_communities) || 0}</p>
         <p className="px-1 text-cap-lg text-secondary">Communities</p>
       </div>
     </div>
@@ -188,10 +233,7 @@ function CommunityList({ usernickname }: any) {
 }
 
 function CommunityDetails({ userId, communityHandle }: { userId: string; communityHandle: string }) {
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getAllLoops(userId, communityHandle)
-  const handleSeeMoreClick = () => {
-    void fetchNextPage()
-  }
+  const { data, isLoading, isFetchingNextPage } = getAllLoops(userId, communityHandle)
 
   return (
     <>
@@ -220,13 +262,6 @@ function CommunityDetails({ userId, communityHandle }: { userId: string; communi
           </li>
         ))}
       {isFetchingNextPage && <Loader size="md" />}
-      {hasNextPage && (
-        <p
-          className="text-blue-500 flex w-full cursor-pointer justify-center pt-2 text-cap-lg text-monochrome"
-          onClick={handleSeeMoreClick}>
-          See More Loops
-        </p>
-      )}
     </>
   )
 }
@@ -234,20 +269,20 @@ function CommunityDetails({ userId, communityHandle }: { userId: string; communi
 function LoopVideos({ userId, loopDetails }: any) {
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getAllLoopVideos(userId, loopDetails.slug)
 
-  const [videoCount, setVideoCount] = useState(Math.max(0, loopDetails.video_count - 10))
+  const [videoCount, setVideoCount] = useState(Math.max(0, loopDetails.video_count - 8))
 
   const handleSeeMoreClick = () => {
     void fetchNextPage()
     if (videoCount > 0) {
-      setVideoCount((prevVideosCount) => Math.max(0, prevVideosCount - 10))
+      setVideoCount((prevVideosCount) => Math.max(0, prevVideosCount - 16))
     }
   }
 
   return (
     <>
-      <Link href={{ pathname: PATH_NAME.loop(loopDetails.slug) }}>
+      <a href={PATH_NAME.loop(loopDetails.slug)}>
         <p className="text-title-sm">{loopDetails.name}</p>
-      </Link>
+      </a>
       {data?.pages.flatMap((page) => page.videos).length === 0 && (
         <div className="flex items-center justify-center pt-32 text-title-md text-secondary">No videos available</div>
       )}

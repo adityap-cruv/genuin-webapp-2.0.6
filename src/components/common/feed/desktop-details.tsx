@@ -146,7 +146,7 @@ function InfoArea({ videoDetails }: { videoDetails: VideoDataType }) {
               onClick={async () =>
                 await shareFn({
                   shareLink:
-                    window.location.host + PATH_NAME.community(videoDetails.community.slug) + '&utm_source=app_web',
+                    window.location.host + PATH_NAME.community(videoDetails.community.share_string) + '&utm_source=app_web',
                   toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                 })
               }>
@@ -156,12 +156,12 @@ function InfoArea({ videoDetails }: { videoDetails: VideoDataType }) {
         </span>
         <DecorativeList>
           <div className="h-2 w-full" />
-          <Link href={{ pathname: PATH_NAME.loop(videoDetails.loop.slug) }}>
+          <a href={PATH_NAME.loop(videoDetails.loop.slug)}>
             <li className="relative flex h-full w-full items-center justify-between rounded-md border border-monochrome-9 bg-monochrome-10 p-4 ">
               <p className="line-clamp-1 w-full break-all pr-2 text-body-1-demi">{videoDetails.loop?.name}</p>
               <p className="whitespace-nowrap text-cap-1-med text-primary">View Loop</p>
             </li>
-          </Link>
+          </a>
         </DecorativeList>
       </div>
       <Toaster />
