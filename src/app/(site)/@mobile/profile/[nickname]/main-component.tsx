@@ -95,7 +95,7 @@ export function MainComponent({ profileData }: CompProps) {
               </>
             )}
           </div>
-          <p className="line-clamp-2 my-1 text-body-sm" style={{ lineHeight: '24px' }}>
+          <p className="my-1 line-clamp-2 text-body-sm" style={{ lineHeight: '24px' }}>
             {profileData?.bio}
           </p>
           <Stats profileData={profileData} />
@@ -146,7 +146,6 @@ function Links({ profileData }: CompProps) {
 }
 
 function Stats({ profileData }: { profileData: any }) {
-  console.log(profileData)
   return (
     <div className="m-1 ml-0 flex max-w-[250px]  justify-between gap-x-2 p-1 pl-0">
       <div className="flex items-center">
@@ -166,7 +165,7 @@ function Stats({ profileData }: { profileData: any }) {
 }
 
 function CommunityList({ usernickname }: any) {
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getAllCommunities(usernickname)
+  const { data, isLoading, fetchNextPage, isFetchingNextPage } = getAllCommunities(usernickname)
   const communities = data?.pages.flatMap((item) => item.communities)
 
   const scrollDivRef = useRef<HTMLDivElement>(null)
@@ -316,7 +315,7 @@ function LoopVideos({ userId, loopDetails }: any) {
             </div>
           ))}
       </div>
-      {hasNextPage && (
+      {hasNextPage && videoCount !== 0 && (
         <p
           className="text-blue-500 flex w-full cursor-pointer justify-center pt-2 text-cap-lg text-monochrome"
           onClick={handleSeeMoreClick}>

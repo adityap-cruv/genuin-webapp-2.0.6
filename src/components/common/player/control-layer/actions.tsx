@@ -51,13 +51,13 @@ function Mobile({ link = '', shareDescription = '', shareTitle = '', videoData }
             title="Repost the video!"
             onClick={() => {
               generateDeepLink({
-                action: 'join',
-                contentType: 'community',
+                action: 'repost',
+                contentType: 'video',
                 description: ``,
                 title: ``,
                 previewImage: null,
                 fromUserName: null,
-                pathName: window.location.pathname,
+                pathName: PATH_NAME.video(videoData.video.slug),
                 sourceId: '',
                 utmCampaign: 'share',
                 utmMedium: 'web',
@@ -72,24 +72,22 @@ function Mobile({ link = '', shareDescription = '', shareTitle = '', videoData }
           </ActionItem>
           <ActionItem
             title="Give spark!"
-            onClick={() => {
-              generateDeepLink({
-                action: 'join',
-                contentType: 'community',
-                description: ``,
-                title: ``,
-                previewImage: null,
-                fromUserName: null,
-                pathName: window.location.pathname,
-                sourceId: '',
-                utmCampaign: 'share',
-                utmMedium: 'web',
-                utmSource: window.location.hostname,
+            onClick={(e) => {
+              const url = {
+                pathname: PATH_NAME.video(videoData.video.slug),
+                query: {
+                  community_id: videoData.community.share_string,
+                  loop_id: videoData.loop.share_string,
+                  utm_source: 'app_web',
+                },
+              }
+              const shareUrl = format(url)
+              void window.navigator.share({
+                text: videoData.video?.description ?? '',
+                title: 'Share this video',
+                url: shareUrl,
               })
-                .then((generatedLink) => {
-                  openGeneratedLink(generatedLink)
-                })
-                .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
+              e.stopPropagation()
             }}>
             <Image src={icSpark} height={32} width={32} alt="spark" />
             <p className="flex justify-center text-body-sm text-monochrome-white">
@@ -112,7 +110,11 @@ function Mobile({ link = '', shareDescription = '', shareTitle = '', videoData }
           onClick={(e) => {
             const url = {
               pathname: PATH_NAME.video(videoData.video.slug),
-              query: { community_id: videoData.community.slug, loop_id: videoData.loop.slug, utm_source: 'app_web' },
+              query: {
+                community_id: videoData.community.share_string,
+                loop_id: videoData.loop.share_string,
+                utm_source: 'app_web',
+              },
             }
             const shareUrl = format(url)
             void window.navigator.share({
@@ -179,7 +181,11 @@ function Desktop({ link = '', shareDescription = '', shareTitle = '', videoData 
           onClick={async () => {
             const url = {
               pathname: PATH_NAME.video(videoData.video.slug),
-              query: { community_id: videoData.community.share_string, loop_id: videoData.loop.share_string, utm_source: 'app_web' },
+              query: {
+                community_id: videoData.community.share_string,
+                loop_id: videoData.loop.share_string,
+                utm_source: 'app_web',
+              },
             }
             const shareUrl = window.location.hostname + format(url)
             await shareFn({

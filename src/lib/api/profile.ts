@@ -1,5 +1,6 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
 import axios from 'axios'
+import { isMobile } from 'react-device-detect'
 
 export async function fetchUserData(nickname: string) {
   return await axios
@@ -137,11 +138,12 @@ export function getAllLoops(nickname: string, communityId: string) {
 }
 
 async function fetchCommunityLoopVideos(nickname: string, loopSlug: string, ref: any) {
+  const limit = isMobile ? (ref ? 6 : 5) : (ref ? 16 : 8);
   return await axios
     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/profile/contributed_loop_videos', {
       params: {
         user_id: { nickname },
-        limit: ref ? 16 : 8,
+        limit,
         loop_id: { slug: loopSlug },
         ref,
       },
