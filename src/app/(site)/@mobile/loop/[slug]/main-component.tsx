@@ -157,30 +157,63 @@ function LoopTabs() {
           <p className="text-title-md">Subscribers</p>
         </TabsTrigger>
       </TabsList>
+      <hr className="border-t border-monochrome-9" />
       <TabsContent value="Loops">
         <LoopVideos slug={loopDetailsModule.chat_slug} />
       </TabsContent>
       <TabsContent value="About">
-        <Cohosts slug={loopDetailsModule.chat_slug} />
+        <LoopCollaborators slug={loopDetailsModule.chat_slug} />
       </TabsContent>
       <TabsContent value="Members">
-        <LoopSubscribers loopId={loopDetailsModule.share_string} />
+        <LoopSubscribers slug={loopDetailsModule.chat_slug} />
       </TabsContent>
     </Tabs>
   )
 }
 
-function LoopSubscribers({ loopId }: any) {
-  const { data, isLoading, isError } = getLoopSubscribers(loopId, 'subscribers')
+function LoopCollaborators({ slug }: { slug: string }) {
+  const { data, isLoading } = getLoopCohosts(slug, 'members')
+  const cohosts = data?.users
+
+  if (isLoading) return <Loader className="pt-32" size="md" />
+
+  if (cohosts && cohosts.length === 0)
+    return (
+      <div className="flex items-center justify-center pt-32 text-title-md text-secondary">No collaborators yet</div>
+    )
+
+  if (cohosts && cohosts.length !== 0)
+    return (
+      <div className="h-full pt-3">
+        <div className="h-full w-full overflow-auto">
+          {cohosts.map((item: any, index: any) => (
+            <Link key={index} href={{ pathname: PATH_NAME.profile(item.user.nickname) }}>
+              <CohostTile
+                image={item.user.profile_image || ''}
+                subtitle={item.user.bio || ''}
+                title={'@' + item.user.nickname}
+                userName={item.user.name ?? 'Unknown'}
+                isAvatar={item.user.is_avatar}
+              />
+            </Link>
+          ))}
+        </div>
+      </div>
+    )
+}
+
+function LoopSubscribers({ slug }: any) {
+  const { data, isLoading } = getLoopSubscribers(slug, 'subscribers')
   const subscribers = data?.users
-  return (
-    <div className="h-full pt-3">
-      {isLoading && <Loader className="pt-32" size="md" />}
-      {isError && <div>Something went wrong...</div>}
-      {subscribers && subscribers.length === 0 && (
-        <div className="flex items-center justify-center pt-32 text-title-md text-secondary">No subscribers yet</div>
-      )}
-      {subscribers && subscribers.length !== 0 && (
+
+  if (isLoading) return <Loader className="pt-32" size="md" />
+
+  if (subscribers && subscribers.length === 0)
+    return <div className="flex items-center justify-center pt-32 text-title-md text-secondary">No subscribers yet</div>
+
+  if (subscribers && subscribers.length !== 0)
+    return (
+      <div className="h-full pt-3">
         <div className="h-full w-full overflow-auto">
           {subscribers.map((item: any, index: any) => (
             <Link key={index} href={{ pathname: PATH_NAME.profile(item.user.nickname) }}>
@@ -194,9 +227,8 @@ function LoopSubscribers({ loopId }: any) {
             </Link>
           ))}
         </div>
-      )}
-    </div>
-  )
+      </div>
+    )
 }
 
 function Stats({
@@ -222,36 +254,6 @@ function Stats({
   )
 }
 
-// TODO: manage data in better way
-function Cohosts({ slug }: { slug: string }) {
-  const { data, isLoading, isError } = getLoopCohosts(slug, 'members')
-  const cohosts = data?.users
-  return (
-    <div className="h-full pt-3">
-      {isLoading && <Loader className="pt-32" size="md" />}
-      {isError && <div>Something went wrong...</div>}
-      {cohosts && cohosts.length === 0 && (
-        <div className="flex items-center justify-center pt-32 text-title-md text-secondary">No collaborators yet</div>
-      )}
-      {cohosts && cohosts.length !== 0 && (
-        <div className="h-full w-full overflow-auto">
-          {cohosts.map((item: any, index: any) => (
-            <Link key={index} href={{ pathname: PATH_NAME.profile(item.user.nickname) }}>
-              <CohostTile
-                image={item.user.profile_image || ''}
-                subtitle={item.user.bio || ''}
-                title={'@' + item.user.nickname}
-                userName={item.user.name ?? 'Unknown'}
-                isAvatar={item.user.is_avatar}
-              />
-            </Link>
-          ))}
-        </div>
-      )}
-    </div>
-  )
-}
-
 interface CohostTileProps {
   image: string
   title: string
@@ -265,9 +267,13 @@ function CohostTile({ image, title, subtitle, userName, isAvatar }: CohostTilePr
     <div className="flex items-center gap-x-1 rounded-lg p-2 hover:bg-monochrome-10">
       <CustomAvatar className="h-12 w-12 bg-red-40" fallbackString={title} imageUrl={image} isAvatar={isAvatar} />
       <div className="mx-2">
-        <p className="line-clamp-1 text-title-sm">{title}</p>
-        {userName && <p className="line-clamp-1 text-title-sm">{userName}</p>}
-        {subtitle && <p className="line-clamp-1 text-cap-lg text-monochrome-black/60">{subtitle}</p>}
+        <p className="text-body-1-bold line-clamp-1">{title}</p>
+        {userName && (
+          <p className="text-body-1-demi line-clamp-1">
+            {userName}
+          </p>
+        )}
+        {subtitle && <p className="text-cap-1-demi line-clamp-1 text-monochrome-black/60">{subtitle}</p>}
       </div>
     </div>
   )

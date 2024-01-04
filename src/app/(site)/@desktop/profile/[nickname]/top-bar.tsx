@@ -19,10 +19,19 @@ type Props = {
   isOpen: boolean
   profileImage: string
   profileName: string
+  profileNickname: string
   isAvatar: boolean
 }
 
-export function TopBar({ defaultOpen = true, isOpen = false, profileImage, profileName, isAvatar, ...props }: Props) {
+export function TopBar({
+  defaultOpen = true,
+  isOpen = false,
+  profileImage,
+  profileName,
+  profileNickname,
+  isAvatar,
+  ...props
+}: Props) {
   const navAnimationControl = useAnimationControls()
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
@@ -53,9 +62,11 @@ export function TopBar({ defaultOpen = true, isOpen = false, profileImage, profi
       {...props}>
       <span className="flex items-center gap-x-2">
         <CustomAvatar imageUrl={profileImage} fallbackString={profileName} isAvatar={isAvatar} className="h-8 w-8" />
-        <p className="text-title-lg" style={{ fontWeight: 600 }}>
-          {profileName}
-        </p>
+        {profileName ? (
+          <p className="text-title-2-demi">{profileName}</p>
+        ) : (
+          <p className="text-title-2-demi text-monochrome">@{profileNickname}</p>
+        )}
       </span>
       <Button
         variant="outline"

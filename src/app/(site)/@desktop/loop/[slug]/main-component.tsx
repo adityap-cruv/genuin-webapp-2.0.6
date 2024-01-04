@@ -124,7 +124,7 @@ export function MainComponent({ loopDetails }: Props) {
               <LoopVideos slug={loopDetails.chat_slug} />
             </div>
             <div className="snap-y snap-proximity overflow-auto scroll-smooth py-2">
-              <Cohosts slug={loopDetails.chat_slug} />
+              <LoopCollaborators slug={loopDetails.chat_slug} />
               <LoopSubscribers slug={loopDetails.chat_slug} />
             </div>
           </div>
@@ -134,16 +134,24 @@ export function MainComponent({ loopDetails }: Props) {
     )
 }
 
-// TODO: get clarification from jimitbhai.
-function Cohosts({ slug }: { slug: string }) {
+function LoopCollaborators({ slug }: { slug: string }) {
   const { data, isLoading } = getLoopCohosts(slug, 'members')
   const cohosts = data?.users
+
+  if (isLoading) return <Loader size="md" />
+
+  if (cohosts && cohosts.length === 0)
+    return (
+      <>
+        <p className="my-2 text-title-md">Collaborators</p>
+        <div className="flex items-center justify-center text-title-md text-secondary">No collaborators yet</div>
+      </>
+    )
 
   if (cohosts && cohosts.length !== 0)
     return (
       <div>
         <p className="my-2 text-title-md">Collaborators</p>
-        {isLoading && <Loader size="md" />}
         <div className="h-full w-full overflow-auto">
           {cohosts.map((item: any, index: any) => (
             <Link key={index} href={{ pathname: PATH_NAME.profile(item.user.nickname) }}>
@@ -165,11 +173,20 @@ function LoopSubscribers({ slug }: { slug: string }) {
   const { data, isLoading } = getLoopSubscribers(slug, 'subscribers')
   const subscribers = data?.users
 
+  if (isLoading) return <Loader size="md" />
+
+  if (subscribers && subscribers.length === 0)
+    return (
+      <>
+        <p className="my-2 text-title-3-bold">Subscribers</p>
+        <div className="flex items-center justify-center text-title-md text-secondary">No subscribers yet</div>
+      </>
+    )
+
   if (subscribers && subscribers.length !== 0)
     return (
       <div>
         <p className="my-2 text-title-3-bold">Subscribers</p>
-        {isLoading && <Loader size="md" />}
         <div className="h-full w-full overflow-auto">
           {subscribers.map((item: any, index: any) => (
             <Link key={index} href={{ pathname: PATH_NAME.profile(item.user.nickname) }}>
