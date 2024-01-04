@@ -140,7 +140,7 @@ export function MainComponent({ loopDetails }: Props) {
                 className="border border-primary p-0.5"
                 onClick={async () => {
                   const currentURL = new URL(window.location.href)
-                  currentURL.searchParams.set('community_id', `${loopDetails.community.slug}`)
+                  currentURL.searchParams.set('community_id', `${loopDetails.community.share_string}`)
                   currentURL.searchParams.set('utm_source', 'app_web')
                   await shareFn({
                     shareLink: currentURL.href,

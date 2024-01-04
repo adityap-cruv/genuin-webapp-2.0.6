@@ -36,7 +36,7 @@ export function MainComponent({ loopDetails }: Props) {
           defaultOpen={false}
           isOpen={!detailsInView}
           loopName={loopDetails.group.group_name ?? ''}
-          shareString={loopDetails.share_string}
+          shareString={loopDetails.community.share_string}
           communitySlug={loopDetails.community.slug}
         />
         <main className="hide-scrollbar absolute inset-0 h-full w-full overflow-auto pl-6">
@@ -110,7 +110,7 @@ export function MainComponent({ loopDetails }: Props) {
                 className="border border-primary p-0.5"
                 onClick={async () => {
                   const currentURL = new URL(window.location.href)
-                  currentURL.searchParams.set('community_id', `${loopDetails.community.slug}`)
+                  currentURL.searchParams.set('community_id', `${loopDetails.community.share_string}`)
                   currentURL.searchParams.set('utm_source', 'app_web')
                   await shareFn({
                     shareLink: currentURL.href,

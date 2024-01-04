@@ -70,7 +70,7 @@ function Desktop({
         {profileName ? (
           <p className="text-title-2-demi">{profileName}</p>
         ) : (
-          <p className="text-title-2-demi text-monochrome">@{profileNickname}</p>
+          <p className="text-title-2-demi">@{profileNickname}</p>
         )}
       </span>
       <Button
@@ -132,7 +132,7 @@ function Mobile({
         {profileName ? (
           <p className="text-title-2-demi">{profileName}</p>
         ) : (
-          <p className="text-title-2-demi text-monochrome">@{profileNickname}</p>
+          <p className="text-title-2-demi">@{profileNickname}</p>
         )}
       </span>
     </motion.div>

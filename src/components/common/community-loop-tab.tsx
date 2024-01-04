@@ -15,7 +15,7 @@ export function CommunityLoopTab({ communitySlug }: { communitySlug: string }) {
 
   if (loops && loops.length === 0)
     return (
-      <div className="flex h-full">
+      <div className="flex h-1/2">
         <div className="mt-4 flex flex-col items-center justify-center" style={{ backgroundColor: '#F9F9F9' }}>
           <Image src={noLoopsImage} alt="share" />
           <p className="text-title-2-bold">No Loops... yet!</p>
@@ -102,7 +102,7 @@ function LoopItem({ loopDetails }: { loopDetails: any }) {
   }
 
   return (
-    <Link href={{ pathname: PATH_NAME.loop(loopDetails.slug) }}>
+    <a href={PATH_NAME.loop(loopDetails.slug)}>
       <div className="py-2">
         <div className="relative w-full rounded-lg border border-monochrome-9 bg-monochrome-white">
           <div className="w-[70%] items-center p-[3%]">
@@ -159,6 +159,6 @@ function LoopItem({ loopDetails }: { loopDetails: any }) {
           {renderedImages}
         </div>
       </div>
-    </Link>
+    </a>
   )
 }
