@@ -104,11 +104,11 @@ function Stats({ profileData }: { profileData: any }) {
   return (
     <div className="m-1 ml-0 flex max-w-[250px]  justify-between gap-x-2 p-1 pl-0">
       <div className="flex items-center">
-        <p className="text-title-md">{abbreviateNumber(profileData?.views) || 0}</p>
+        <p className="text-title-md">{abbreviateNumber(profileData?.no_of_views) || 0}</p>
         <p className="px-1 text-cap-lg text-secondary">Views</p>
       </div>
       <div className="flex items-center">
-        <p className="text-title-md">{abbreviateNumber(profileData?.videos) || 0}</p>
+        <p className="text-title-md">{abbreviateNumber(profileData?.no_of_videos) || 0}</p>
         <p className="px-1 text-cap-lg text-secondary">Posts</p>
       </div>
       <div className="flex items-center">
