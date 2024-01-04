@@ -101,6 +101,7 @@ export function MainComponent({ profileData }: CompProps) {
 }
 
 function Stats({ profileData }: { profileData: any }) {
+  console.log(profileData)
   return (
     <div className="m-1 ml-0 flex max-w-[250px]  justify-between gap-x-2 p-1 pl-0">
       <div className="flex items-center">
@@ -112,7 +113,7 @@ function Stats({ profileData }: { profileData: any }) {
         <p className="px-1 text-cap-lg text-secondary">Posts</p>
       </div>
       <div className="flex items-center">
-        <p className="text-title-md">{abbreviateNumber(profileData?.no_of_community) || 0}</p>
+        <p className="text-title-md">{abbreviateNumber(profileData?.no_of_communities) || 0}</p>
         <p className="px-1 text-cap-lg text-secondary">Communities</p>
       </div>
     </div>
