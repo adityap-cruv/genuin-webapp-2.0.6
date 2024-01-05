@@ -236,7 +236,7 @@ function CommunityList({ usernickname }: any) {
                 </div>
               </div>
               <DecorativeList>
-                <CommunityDetails userId={usernickname} communityHandle={item.handle} />
+                <CommunityDetails userId={usernickname} communitySlug={item.slug} />
               </DecorativeList>
             </div>
           ))}
@@ -245,8 +245,8 @@ function CommunityList({ usernickname }: any) {
     )
 }
 
-function CommunityDetails({ userId, communityHandle }: { userId: string; communityHandle: string }) {
-  const { data, isLoading, isFetchingNextPage } = getAllLoops(userId, communityHandle)
+function CommunityDetails({ userId, communitySlug }: { userId: string; communitySlug: string }) {
+  const { data, isLoading, isFetchingNextPage } = getAllLoops(userId, communitySlug)
 
   return (
     <>

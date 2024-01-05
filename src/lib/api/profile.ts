@@ -123,10 +123,10 @@ async function fetchCommunityLoops(nickname: string, communitySlug: string, ref:
 }
 
 // TODO: make it type safe api.
-export function getAllLoops(nickname: string, communityId: string) {
+export function getAllLoops(nickname: string, communitySlug: string) {
   return useInfiniteQuery({
-    queryKey: ['communityLoops', nickname, communityId],
-    queryFn: async ({ pageParam }) => await fetchCommunityLoops(nickname, communityId, pageParam),
+    queryKey: ['communityLoops', nickname, communitySlug],
+    queryFn: async ({ pageParam }) => await fetchCommunityLoops(nickname, communitySlug, pageParam),
     getNextPageParam(lastPage, allPages) {
       if (lastPage.end) {
         return
@@ -137,7 +137,7 @@ export function getAllLoops(nickname: string, communityId: string) {
 }
 
 async function fetchCommunityLoopVideos(nickname: string, loopSlug: string, ref: any) {
-  const limit = isMobile ? (ref ? 6 : 3) : (ref ? 16 : 8);
+  const limit = isMobile ? (ref ? 6 : 3) : ref ? 16 : 8
   return await axios
     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/profile/contributed_loop_videos', {
       params: {
