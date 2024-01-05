@@ -74,6 +74,7 @@ export function LoopVideos({ slug }: { slug: string }) {
       {videos && (
         <PlayerModal.desktop
           videos={videos}
+          isLoading={false}
           close={() => {
             setModalControl((x) => {
               x.open = false
