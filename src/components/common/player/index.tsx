@@ -4,6 +4,7 @@ import { Loader } from '@components/ui/loader'
 import { type VideoDataType } from '@lib/schemas/video'
 import { useEffect, useRef } from 'react'
 import { usePlayerControlStore } from './player-control-store'
+import { useCommentStore } from '../comments/store'
 
 const CommentSheet = dynamic(async () => await import('./comment-sheet').then((comp) => comp.CommentSheet))
 const InnerPlayer = dynamic(async () => await import('./inner-player').then((comp) => comp.InnerPlayer), {
@@ -128,14 +129,22 @@ function Desktop({
   isFirstPlayerInList = false,
 }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null)
-  const { setShouldPlay, toggleShouldPlay } = usePlayerControlStore((state) => ({
+  const { setShouldPlay, stateShouldPlay } = usePlayerControlStore((state) => ({
     setShouldPlay: state.setShouldPlay,
-    toggleShouldPlay: state.toggleShouldPlay,
+    stateShouldPlay: state.shouldPlay,
+  }))
+  const { activeComment, setActiveComment } = useCommentStore((state) => ({
+    activeComment: state.activeCommentIndex,
+    setActiveComment: state.setActiveCommentIndex,
   }))
 
   useEffect(() => {
     setShouldPlay(shouldPlay)
   }, [shouldPlay])
+
+  useEffect(() => {
+    setShouldPlay(activeComment === '')
+  }, [activeComment])
 
   if (videoData) {
     return (
@@ -150,7 +159,10 @@ function Desktop({
           ref={containerRef}
           className="relative overflow-hidden"
           onClick={(e) => {
-            toggleShouldPlay()
+            if (!stateShouldPlay) {
+              setActiveComment('')
+            }
+            setShouldPlay(!stateShouldPlay)
           }}
           style={{ width: sizeBox?.width, height: sizeBox?.height }}>
           {playIfInViewPort ? (

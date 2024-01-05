@@ -15,6 +15,7 @@ type Props = {
   noOfComments: number
 }
 
+// Sheet is only used in mobile component for now.
 export function Sheet({ container, videoId, noOfComments }: Props) {
   const { isOpen, close, currentVideoId } = useCommentSheetStore((state) => ({
     isOpen: state.modalIsOpen,

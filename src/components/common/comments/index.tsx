@@ -43,17 +43,6 @@ type WithoutApiProps = {
   hasNextPage?: boolean
 }
 
-function WithoutApi({ comments }: WithoutApiProps) {
-  // if (comments.length === 0) return <NoComments />
-  return (
-    <>
-      {comments.map((item, index) => (
-        <CommentItem key={index} comment={item} />
-      ))}
-    </>
-  )
-}
-
 type CommentListProps = {
   comments: CommentListType
   isFetchingNextPage: boolean
@@ -76,6 +65,18 @@ function CommentList({ comments, isFetchingNextPage, fetchNextPage }: CommentLis
       })}
       {isFetchingNextPage && <Loader className="h-40 w-full" size="md" />}
     </div>
+  )
+}
+
+// without api component is only used in desktop-details.tsx.
+function WithoutApi({ comments }: WithoutApiProps) {
+  // if (comments.length === 0) return <NoComments />
+  return (
+    <>
+      {comments.map((item, index) => (
+        <CommentItem key={index} comment={item} />
+      ))}
+    </>
   )
 }
 
