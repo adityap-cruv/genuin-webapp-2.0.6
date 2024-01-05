@@ -21,7 +21,6 @@ import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { useInView, useMotionValueEvent, useScroll } from 'framer-motion'
 import { TopStickyBar } from './top-bar'
-import { PlayerModal } from '@components/common/player-modal'
 import { DownloadDialog } from '@components/common/download-dialog'
 
 interface CompProps {
@@ -175,7 +174,7 @@ function CommunityList({ usernickname }: any) {
     }
   })
 
-  if (isLoading || isFetchingNextPage) return <Loader size="md" />
+  if (isLoading) return <Loader size="md" />
 
   if (communities && communities?.length === 0)
     return (
@@ -277,6 +276,7 @@ type LoopVideosProps = {
   userId: string
   loopDetails: any
 }
+
 function LoopVideos({ userId, loopDetails }: LoopVideosProps) {
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getAllLoopVideos(userId, loopDetails.slug)
   const videos = data?.pages.flatMap((item) => item.videos)
@@ -290,6 +290,41 @@ function LoopVideos({ userId, loopDetails }: LoopVideosProps) {
     }
   }
 
+  function InnerComponent() {
+    if (isLoading)
+      return Array.from({ length: 8 }).map((_, index) => (
+        <div key={`shimmer-${index}`} className="relative flex flex-col items-center">
+          <Shimmer className="aspect-reel w-full rounded" />
+        </div>
+      ))
+
+    if (videos && videos.length === 0)
+      return (
+        <div className="flex items-center justify-center pt-32 text-title-md text-secondary">No videos available</div>
+      )
+    if (videos)
+      return videos?.map((video, index) => (
+        <>
+          <div key={video.id} className="relative flex aspect-reel min-w-full flex-col items-center">
+            <img src={video.thumbnail} alt={`Video Thumbnail ${index}`} className="aspect-reel rounded" />
+            <div className="absolute bottom-0 left-0 m-1 flex items-center justify-center">
+              <Image src={icSpark} alt="share" height={15} width={15} />
+              <p className="text-new-para-2-mobile text-monochrome-white">
+                {abbreviateNumber(video.no_of_sparks) || 0}
+              </p>
+            </div>
+          </div>
+          {isFetchingNextPage &&
+            Array.from({ length: Math.max(0, loopDetails.video_count - videoCount) }).map((_, index) => (
+              <div key={`shimmer-${index}`} className="relative flex flex-col items-center">
+                <Shimmer className="aspect-reel h-full rounded" />
+              </div>
+            ))}
+        </>
+      ))
+  }
+
+  // TODO: replace <a></a> with <Link></Link>
   return (
     <>
       <a href={PATH_NAME.loop(loopDetails.slug)}>
@@ -301,31 +336,7 @@ function LoopVideos({ userId, loopDetails }: LoopVideosProps) {
         <div className="flex items-center justify-center pt-32 text-title-md text-secondary">No videos available</div>
       )}
       <div className="my-2 grid w-full grid-cols-4 gap-2 md:grid-cols-8">
-        {isLoading &&
-          Array.from({ length: 8 }).map((_, index) => (
-            <div key={`shimmer-${index}`} className="relative flex flex-col items-center">
-              <Shimmer className="aspect-reel w-full rounded" />
-            </div>
-          ))}
-        {videos?.map((video, index) => (
-          <PlayerModal videoDetails={video} key={index}>
-            <div key={video.id} className="relative flex aspect-reel min-w-full flex-col items-center">
-              <img src={video.thumbnail} alt={`Video Thumbnail ${index}`} className="aspect-reel rounded" />
-              <div className="absolute bottom-0 left-0 m-1 flex items-center justify-center">
-                <Image src={icSpark} alt="share" height={15} width={15} />
-                <p className="text-new-para-2-mobile text-monochrome-white">
-                  {abbreviateNumber(video.no_of_sparks) || 0}
-                </p>
-              </div>
-            </div>
-          </PlayerModal>
-        ))}
-        {isFetchingNextPage &&
-          Array.from({ length: Math.max(0, loopDetails.video_count - videoCount) }).map((_, index) => (
-            <div key={`shimmer-${index}`} className="relative flex flex-col items-center">
-              <Shimmer className="aspect-reel h-full rounded" />
-            </div>
-          ))}
+        <InnerComponent />
       </div>
       {hasNextPage && videoCount !== 0 && (
         <p

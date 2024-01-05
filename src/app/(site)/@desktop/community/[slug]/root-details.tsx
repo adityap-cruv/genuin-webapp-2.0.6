@@ -21,7 +21,7 @@ import { DownloadDialog } from '@components/common/download-dialog'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
-import { CommunityLoopTab } from '@components/common/community-loop-tab'
+import { CommunityLoopTab } from './community-loop-tab'
 import { ListItem } from '@components/common/list-item'
 
 interface Props {

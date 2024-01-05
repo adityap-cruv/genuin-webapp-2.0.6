@@ -14,7 +14,7 @@ import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { TopBar } from '../../../layouts/mobile/top-bar'
-import { CommunityLoopTab } from '@components/common/community-loop-tab'
+import { CommunityLoopTab } from './community-loop-tab'
 import { useRef } from 'react'
 import { useInView } from 'framer-motion'
 import { TopStickyBar } from '../../../../app/(site)/@desktop/community/[slug]/top-bar'
@@ -42,7 +42,7 @@ export function ProfileDetails({ communityDetails }: Props) {
         communityProfileImage={communityDetails.info.profile_image}
         communtiyHandle={communityDetails.info.handle}
       />
-      <div className="hide-scrollbar absolute mt-navbar inset-0 h-full w-full overflow-auto">
+      <div className="hide-scrollbar absolute inset-0 mt-navbar h-full w-full overflow-auto">
         <div className="px-4 py-2 pt-4">
           <div className="flex justify-between">
             <CustomAvatar

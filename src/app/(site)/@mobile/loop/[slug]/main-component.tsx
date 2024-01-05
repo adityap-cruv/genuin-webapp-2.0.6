@@ -13,10 +13,10 @@ import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { TopBar } from '@components/layouts/mobile/top-bar'
-import { LoopVideos } from '@components/common/loop-videos'
 import { useRef } from 'react'
 import { useInView } from 'framer-motion'
 import { TopStickyBar } from '../../../@desktop/loop/[slug]/top-bar'
+import { LoopVideos } from './loop-videos'
 
 let loopDetailsModule: LoopDetailsType
 

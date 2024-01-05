@@ -63,8 +63,8 @@ function Desktop({ videoData }: Props) {
             shareDescription={videoData?.video.description ?? ''}
             videoData={videoData}
           />
-          <PlayerProgressBar />
         </div>
+        <PlayerProgressBar />
       </div>
     )
   }

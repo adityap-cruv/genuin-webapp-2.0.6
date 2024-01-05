@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic'
 import { DesktopDetails } from './desktop-details'
 import { useFeedListStore } from './store'
 import { useEffect, useRef } from 'react'
+import { cn } from '@lib/utils'
 const DesktopPlayer = dynamic(async () => await import('@components/common/player').then((comp) => comp.Player.desktop))
 
 type DesktopProps = {
@@ -15,9 +16,9 @@ type DesktopProps = {
   hasNextPage?: boolean
   isFetchingNextPage: boolean
   fetchNextPage?: () => void
+  className?: string
 }
 
-// TODO: Implement the logic for calling next page.
 export function Desktop({
   sizeBox,
   fetchNextPage,
@@ -26,6 +27,7 @@ export function Desktop({
   isFetchingNextPage,
   isLoading,
   videos,
+  className,
 }: DesktopProps) {
   const scrollDivRef = useRef<HTMLDivElement>(null)
   const { setNewVideos, videoList, setCurrentIndex, currentIndex } = useFeedListStore((state) => ({
@@ -70,7 +72,7 @@ export function Desktop({
 
   if (videoList)
     return (
-      <div className="flex h-full w-full">
+      <div className={cn('flex h-full w-full', className)}>
         <div
           ref={scrollDivRef}
           style={{ width: sizeBox.width, height: sizeBox.height }}
@@ -90,7 +92,24 @@ export function Desktop({
             )
           })}
         </div>
-        <DesktopDetails />
+        <DesktopDetails videoDetails={videoList[currentIndex]} />
       </div>
     )
+}
+
+type SinglePlayerProps = {
+  videoDetails: VideoDataType
+  sizeBox: VideoSizeBoxType
+  className?: string
+}
+
+export function SinglePlayer({ sizeBox, videoDetails, className }: SinglePlayerProps) {
+  return (
+    <div className={cn('flex h-full w-full', className)}>
+      <div style={{ width: sizeBox.width, height: sizeBox.height }} className="hide-scrollbar overflow-x-clip">
+        <DesktopPlayer shouldPlay sizeBox={sizeBox} videoData={videoDetails} loop />
+      </div>
+      <DesktopDetails videoDetails={videoDetails} />
+    </div>
+  )
 }

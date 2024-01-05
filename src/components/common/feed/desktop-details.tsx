@@ -9,7 +9,6 @@ import icAudioRecord from '@icons/audioRecord.svg'
 import icVideoRecord from '@icons/videoRecord.svg'
 import { DownloadDialog } from '@components/common/download-dialog'
 import { Comments, NoComments } from '@components/common/comments'
-import { useFeedListStore } from './store'
 import { type VideoDataType } from '@lib/schemas/video'
 import { getLoopVideoComments } from '@lib/api/loop'
 import { type RefObject, useRef } from 'react'
@@ -19,12 +18,10 @@ import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
 
-export function DesktopDetails() {
-  const { videoList, currentIndex } = useFeedListStore((state) => ({
-    videoList: state.videoList,
-    currentIndex: state.currentIndex,
-  }))
-  const videoDetails = videoList[currentIndex]
+type DesktopDetailsProps = {
+  videoDetails: VideoDataType
+}
+export function DesktopDetails({ videoDetails }: DesktopDetailsProps) {
   const scrollDivRef = useRef<HTMLDivElement>(null)
 
   if (videoDetails)
