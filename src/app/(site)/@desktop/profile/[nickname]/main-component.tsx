@@ -10,7 +10,7 @@ import { CustomAvatar } from '@components/custom/custom-avatar'
 import { DecorativeList } from '@components/custom/decorative-list'
 import { getAllCommunities, getAllLoops, getAllLoopVideos } from '@lib/api/profile'
 import { Loader } from '@components/ui/loader'
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import icSpark from '@icons/player-controls/icBulb.svg'
 import icInstagram from '@icons/icInstagramBlack.svg'
 import icTiktok from '@icons/icTiktok.svg'
@@ -21,6 +21,7 @@ import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { useInView, useMotionValueEvent, useScroll } from 'framer-motion'
 import { TopStickyBar } from './top-bar'
+import icPlay from '@icons/player-controls/icPlay.svg'
 import { DownloadDialog } from '@components/common/download-dialog'
 
 interface CompProps {
@@ -155,7 +156,7 @@ function Stats({ profileData }: { profileData: any }) {
     <div className="m-1 ml-0 flex max-w-[250px]  justify-between gap-x-6 p-1 pl-0">
       <div className="flex items-center">
         <p className="text-body-lg" style={{ fontWeight: 700 }}>
-          {abbreviateNumber(profileData?.no_of_views) || 0}
+          {abbreviateNumber(profileData?.no_of_views) ?? 0}
         </p>
         <p className="px-1 text-body-sm text-secondary" style={{ fontWeight: 500 }}>
           Views
@@ -163,7 +164,7 @@ function Stats({ profileData }: { profileData: any }) {
       </div>
       <div className="flex items-center">
         <p className="text-body-lg" style={{ fontWeight: 700 }}>
-          {abbreviateNumber(profileData?.no_of_videos) || 0}
+          {abbreviateNumber(profileData?.no_of_videos) ?? 0}
         </p>
         <p className="px-1 text-body-sm text-secondary" style={{ fontWeight: 500 }}>
           Posts
@@ -171,7 +172,7 @@ function Stats({ profileData }: { profileData: any }) {
       </div>
       <div className="flex items-center">
         <p className="text-body-lg" style={{ fontWeight: 700 }}>
-          {abbreviateNumber(profileData?.no_of_communities) || 0}
+          {abbreviateNumber(profileData?.no_of_communities) ?? 0}
         </p>
         <p className="px-1 text-body-sm text-secondary" style={{ fontWeight: 500 }}>
           Communities
@@ -182,11 +183,10 @@ function Stats({ profileData }: { profileData: any }) {
 }
 
 function CommunityList({ usernickname }: any) {
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getAllCommunities(usernickname)
+  const { data, isLoading, fetchNextPage, isFetchingNextPage } = getAllCommunities(usernickname)
   const communities = data?.pages.flatMap((page) => page.communities)
   const scrollDivRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ container: scrollDivRef, layoutEffect: false })
-
   useMotionValueEvent(scrollYProgress, 'change', (latest) => {
     if (Number(latest.toFixed(1)) > 0.8 && !isFetchingNextPage) {
       void fetchNextPage()
@@ -246,7 +246,7 @@ function CommunityList({ usernickname }: any) {
                   </div>
                 </div>
                 <DecorativeList>
-                  <CommunityDetails userId={usernickname} communityHandle={item.handle} />
+                  <CommunityDetails userId={usernickname} communitySlug={item.slug} />
                 </DecorativeList>
               </div>
             ))}
@@ -256,9 +256,8 @@ function CommunityList({ usernickname }: any) {
     )
 }
 
-function CommunityDetails({ userId, communityHandle }: { userId: string; communityHandle: string }) {
-  const { data, isLoading, isFetchingNextPage } = getAllLoops(userId, communityHandle)
-
+function CommunityDetails({ userId, communitySlug }: { userId: string; communitySlug: string }) {
+  const { data, isLoading, isFetchingNextPage } = getAllLoops(userId, communitySlug)
   return (
     <>
       <div className="h-3"></div>
@@ -324,13 +323,18 @@ function LoopVideos({ userId, loopDetails }: LoopVideosProps) {
     if (videos)
       return videos?.map((video, index) => (
         <>
-          <div key={video.id} className="relative flex aspect-reel min-w-full flex-col items-center">
-            <img src={video.thumbnail} alt={`Video Thumbnail ${index}`} className="aspect-reel rounded" />
+          <div
+            key={video.id}
+            className="group/vidcard relative flex aspect-reel min-w-full flex-col items-center bg-secondary hover:cursor-pointer">
+            <img src={video.thumbnail} alt={video.description} className="aspect-reel rounded" />
             <div className="absolute bottom-0 left-0 m-1 flex items-center justify-center">
               <Image src={icSpark} alt="share" height={15} width={15} />
               <p className="text-new-para-2-mobile text-monochrome-white">
-                {abbreviateNumber(video.no_of_sparks) || 0}
+                {abbreviateNumber(video.no_of_sparks) ?? 0}
               </p>
+            </div>
+            <div className="absolute inset-0 hidden h-full w-full items-center justify-center bg-monochrome-black/40 group-hover/vidcard:flex">
+              <Image src={icPlay} alt="" />
             </div>
           </div>
           {isFetchingNextPage &&

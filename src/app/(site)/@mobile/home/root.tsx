@@ -25,6 +25,7 @@ export function Root({ brandId }: { brandId?: string }) {
         <TopBar variant="trasparent" />
         <span className="absolute inset-0">
           <Feed
+            startIndex={0}
             fetchNextPage={fetchNextPage}
             sizeBox={sizeBox}
             isError={isError}

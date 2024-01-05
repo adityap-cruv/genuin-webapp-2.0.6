@@ -27,6 +27,7 @@ export function RootFeed({ slug }: { slug: string }) {
           isLoading={isLoading}
           isFetchingNextPage={isFetchingNextPage}
           fetchNextPage={fetchNextPage}
+          startIndex={0}
         />
       </main>
     )

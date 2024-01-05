@@ -13,6 +13,7 @@ import { PATH_NAME } from '@lib/utils/constants/path'
 import { X } from 'lucide-react'
 import { RecentCommunities } from './recent-communities'
 import { DownloadAppDialog } from '@components/pages/home/download-app-dialog'
+import { MOBILE_DOWNLOAD_APP_LINK } from '@lib/constants'
 
 const navVariant = cva('sticky top-0 flex z-40 h-[76px] w-full items-center justify-between  px-2', {
   variants: {
@@ -31,9 +32,10 @@ type Props = {
    * @default false
    */
   showClose?: boolean
+  onClose?: () => void
 } & VariantProps<typeof navVariant>
 
-export function TopBar({ variant = 'light', className, showClose = false }: Props) {
+export function TopBar({ variant = 'light', className, showClose = false, onClose }: Props) {
   // TODO: Remove this line of code.
   const showTopbar = useSearchParams().get('embed') !== '1'
   return (
@@ -48,7 +50,7 @@ export function TopBar({ variant = 'light', className, showClose = false }: Prop
       </span>
       <span className="flex items-center gap-x-2">
         {showTopbar && (
-          <DownloadAppDialog>
+          <Link href={MOBILE_DOWNLOAD_APP_LINK} target="_blank">
             <Button
               className={
                 variant === 'light'
@@ -57,7 +59,18 @@ export function TopBar({ variant = 'light', className, showClose = false }: Prop
               }>
               <p className="text-body-sm">Download Genuin</p>
             </Button>
-          </DownloadAppDialog>
+          </Link>
+        )}
+        {showClose && (
+          <X
+            onClick={() => {
+              onClose?.()
+            }}
+            className={cn(
+              'h-6 w-6',
+              variant === 'light' ? 'stroke-new-off-black' : 'stroke-new-off-white stroke-[3px]'
+            )}
+          />
         )}
         {/* {showClose ? (
           <X
