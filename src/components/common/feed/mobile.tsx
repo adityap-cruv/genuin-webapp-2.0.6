@@ -6,6 +6,7 @@ import { cn } from '@lib/utils'
 import { useFeedListStore } from './store'
 import { useEffect, useRef } from 'react'
 import { useCommentSheetStore } from '../player/comment-sheet/store'
+import { useVideoSizeBoxMobile } from '@hooks/use-video-size-box-mobile'
 const Player = dynamic(async () => await import('@components/common/player').then((comp) => comp.Player.mobile))
 
 type MobileProps = {
@@ -18,13 +19,13 @@ type MobileProps = {
   fetchNextPage?: () => void
 }
 
+// TODO: remove props sizebox
 export function Mobile({
   videos,
   fetchNextPage,
   isError,
   isFetchingNextPage,
   isLoading,
-  sizeBox,
   hasNextPage,
 }: MobileProps) {
   const scrollDivRef = useRef<HTMLDivElement>(null)
@@ -34,6 +35,7 @@ export function Mobile({
     currentIndex: state.currentIndex,
     videoList: state.videoList,
   }))
+  const sizeBox = useVideoSizeBoxMobile()
   // # If comment sheet is open than element should not be scrolled..
   const commentIsOpen = useCommentSheetStore((state) => state.modalIsOpen)
 
@@ -65,6 +67,7 @@ export function Mobile({
     setVideoList(videos)
   }, [videos])
 
+  if(sizeBox)
   return (
     <div className="relative block overflow-clip">
       <div
