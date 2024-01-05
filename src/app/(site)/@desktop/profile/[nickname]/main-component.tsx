@@ -163,7 +163,7 @@ function Stats({ profileData }: { profileData: any }) {
 }
 
 function CommunityList({ usernickname }: any) {
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getAllCommunities(usernickname)
+  const { data, isLoading, fetchNextPage, isFetchingNextPage } = getAllCommunities(usernickname)
   const communities = data?.pages.flatMap((page) => page.communities)
   const scrollDivRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ container: scrollDivRef, layoutEffect: false })

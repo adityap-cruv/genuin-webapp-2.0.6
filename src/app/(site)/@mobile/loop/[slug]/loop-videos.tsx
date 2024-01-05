@@ -10,7 +10,7 @@ import { useMotionValueEvent, useScroll } from 'framer-motion'
 import { PlayerModal } from '@components/common/modals/player-modal'
 
 export function LoopVideos({ slug }: { slug: string }) {
-  const { data, isLoading, fetchNextPage, isError, isFetchingNextPage } = getLoopVideos(slug)
+  const { data, isLoading, fetchNextPage, isFetchingNextPage } = getLoopVideos(slug)
   const videos = data?.pages.flatMap((item) => item.videos)
   const [modalControl, setModalControl] = useState({ open: false, startIndex: -1 })
   const scrollDivRef = useRef<HTMLDivElement>(null)

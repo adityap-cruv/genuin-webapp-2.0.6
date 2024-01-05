@@ -26,6 +26,7 @@ export function Root({ brandId }: { brandId?: string }) {
         <span className="absolute inset-0">
           <Feed
             fetchNextPage={fetchNextPage}
+            startIndex={0}
             sizeBox={sizeBox}
             isError={isError}
             isFetchingNextPage={isFetchingNextPage}

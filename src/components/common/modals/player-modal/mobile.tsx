@@ -59,7 +59,12 @@ export function Mobile({
   }, [currentIndex])
 
   function InnerContent() {
-    if (isLoading) return <Loader size="md" />
+    if (isLoading)
+      return (
+        <div style={{ width: videoSizeBox?.width, height: videoSizeBox?.height }} className="bg-monochrome-white">
+          <Loader size="md" />
+        </div>
+      )
     if (videoSizeBox && videos)
       return (
         <Feed.mobile

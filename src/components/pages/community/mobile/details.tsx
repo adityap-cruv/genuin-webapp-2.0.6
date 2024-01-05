@@ -98,7 +98,7 @@ export function ProfileDetails({ communityDetails }: Props) {
           <Stats />
         </div>
         <ProfileTabs />
-        {/* //TODO have to add is_private community */}
+        {/* // TODO: have to add is_private community */}
         {/* <div
           className="mt-4 flex w-full items-center justify-center overflow-hidden"
           style={{ height: 'calc(100% - 56px)', backgroundColor: '#F9F9F9' }}>
