@@ -10,7 +10,7 @@ import { CustomAvatar } from '@components/custom/custom-avatar'
 import { DecorativeList } from '@components/custom/decorative-list'
 import { getAllCommunities, getAllLoops, getAllLoopVideos } from '@lib/api/profile'
 import { Loader } from '@components/ui/loader'
-import { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import icSpark from '@icons/player-controls/icBulb.svg'
 import icInstagram from '@icons/icInstagramBlack.svg'
 import icTiktok from '@icons/icTiktok.svg'
@@ -23,6 +23,8 @@ import { useInView, useMotionValueEvent, useScroll } from 'framer-motion'
 import { TopStickyBar } from './top-bar'
 import icPlay from '@icons/player-controls/icPlay.svg'
 import { DownloadDialog } from '@components/common/download-dialog'
+import { type CommunityMiniObj, useCommunityListStore, type LoopMiniObj, type VideoMiniObj } from './store'
+import { PlayerModal } from '@components/common/modals/player-modal'
 
 interface CompProps {
   profileData: any
@@ -184,7 +186,16 @@ function Stats({ profileData }: { profileData: any }) {
 
 function CommunityList({ usernickname }: any) {
   const { data, isLoading, fetchNextPage, isFetchingNextPage } = getAllCommunities(usernickname)
-  const communities = data?.pages.flatMap((page) => page.communities)
+  const { addCommunities, communities } = useCommunityListStore((state) => ({
+    addCommunities: state.addCommunities,
+    communities: state.communities,
+  }))
+
+  useEffect(() => {
+    const dataToAdd = data?.pages.flatMap((page) => page.communities as CommunityMiniObj[])
+    if (dataToAdd) addCommunities(dataToAdd)
+  }, [data])
+
   const scrollDivRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ container: scrollDivRef, layoutEffect: false })
   useMotionValueEvent(scrollYProgress, 'change', (latest) => {
@@ -211,13 +222,13 @@ function CommunityList({ usernickname }: any) {
       <div className="w-full overflow-hidden" style={{ height: 'calc(100% - 56px)' }}>
         <div ref={scrollDivRef} className="h-full w-full overflow-y-auto">
           <div>
-            {communities?.map((item, index) => (
+            {communities?.map((item: CommunityMiniObj, index) => (
               <div key={index} className="my-6">
                 <div className="flex items-center">
                   <CustomAvatar
                     className="bg-slate-500 h-11 w-11 bg-red-40"
-                    fallbackString={item?.name}
-                    imageUrl={item?.dp}
+                    fallbackString={item.name}
+                    imageUrl={item.dp ?? ''}
                     isAvatar={false}
                   />
                   <div className="flex w-full items-center justify-between">
@@ -246,18 +257,52 @@ function CommunityList({ usernickname }: any) {
                   </div>
                 </div>
                 <DecorativeList>
-                  <CommunityDetails userId={usernickname} communitySlug={item.slug} />
+                  <CommunityDetails userId={usernickname} community={item} />
                 </DecorativeList>
               </div>
             ))}
           </div>
         </div>
+        <PlayerModalWrapper />
       </div>
     )
 }
 
-function CommunityDetails({ userId, communitySlug }: { userId: string; communitySlug: string }) {
-  const { data, isLoading, isFetchingNextPage } = getAllLoops(userId, communitySlug)
+function PlayerModalWrapper() {
+  const { close, currentVideoShareString, videoList } = useCommunityListStore((state) => ({
+    close: state.close,
+    currentVideoShareString: state.currentVideoShareString,
+    videoList: state.videoList,
+  }))
+
+  useEffect(() => {
+    const shareStringList = videoList.flatMap((video) => video.shareString)
+    if (currentVideoShareString) shareStringList.indexOf(currentVideoShareString)
+  }, [currentVideoShareString])
+
+  return (
+    <PlayerModal.desktop
+      isLoading={true}
+      videos={[]}
+      close={close}
+      fetchNextVideos={() => {}}
+      isError={false}
+      isFetchingNextPage={false}
+      open={Boolean(currentVideoShareString)}
+      startIndex={0}
+    />
+  )
+}
+
+function CommunityDetails({ userId, community }: { userId: string; community: CommunityMiniObj }) {
+  const { data, isLoading, isFetchingNextPage } = getAllLoops(userId, community.slug)
+  const addLoops = useCommunityListStore((state) => state.addLoops)
+
+  useEffect(() => {
+    const dataToAdd = data?.pages.flatMap((page) => page.loops as LoopMiniObj[])
+    if (dataToAdd) addLoops(community, dataToAdd)
+  }, [data])
+
   return (
     <>
       <div className="h-3"></div>
@@ -275,16 +320,14 @@ function CommunityDetails({ userId, communitySlug }: { userId: string; community
           </div>
         </li>
       )}
-      {data?.pages
-        .flatMap((page) => page.loops)
-        .map((item: any, index: any) => (
-          <li
-            className="profile-loop-li relative mb-4 w-full rounded-lg border border-monochrome-9 p-4 pb-2"
-            style={{ backgroundColor: '#F9F9F9' }}
-            key={index}>
-            <LoopVideos userId={userId} loopDetails={item} />
-          </li>
-        ))}
+      {community.loops?.map((item: any, index: any) => (
+        <li
+          className="profile-loop-li relative mb-4 w-full rounded-lg border border-monochrome-9 p-4 pb-2"
+          style={{ backgroundColor: '#F9F9F9' }}
+          key={index}>
+          <LoopVideos userId={userId} loop={item} community={community} />
+        </li>
+      ))}
       {isFetchingNextPage && <Loader size="md" />}
     </>
   )
@@ -292,14 +335,24 @@ function CommunityDetails({ userId, communitySlug }: { userId: string; community
 
 type LoopVideosProps = {
   userId: string
-  loopDetails: any
+  loop: LoopMiniObj
+  community: CommunityMiniObj
 }
 
-function LoopVideos({ userId, loopDetails }: LoopVideosProps) {
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getAllLoopVideos(userId, loopDetails.slug)
-  const videos = data?.pages.flatMap((item) => item.videos)
+function LoopVideos({ userId, loop, community }: LoopVideosProps) {
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getAllLoopVideos(userId, loop.slug)
 
-  const [videoCount, setVideoCount] = useState(Math.max(0, loopDetails.video_count - 8))
+  const { addVideos, open } = useCommunityListStore((state) => ({
+    addVideos: state.addVideos,
+    open: state.open,
+  }))
+
+  useEffect(() => {
+    const dataToAdd = data?.pages.flatMap((item) => item.videos as VideoMiniObj[])
+    if (dataToAdd) addVideos(community, loop, dataToAdd)
+  }, [data])
+
+  const [videoCount, setVideoCount] = useState(Math.max(0, loop.video_count - 8))
 
   const handleSeeMoreClick = () => {
     void fetchNextPage()
@@ -316,17 +369,21 @@ function LoopVideos({ userId, loopDetails }: LoopVideosProps) {
         </div>
       ))
 
-    if (videos && videos.length === 0)
+    if (loop.videos && loop.videos.length === 0)
       return (
         <div className="flex items-center justify-center pt-32 text-title-md text-secondary">No videos available</div>
       )
-    if (videos)
-      return videos?.map((video, index) => (
-        <>
+
+    if (loop.videos)
+      return loop.videos.map((video, index) => (
+        <React.Fragment key={index}>
           <div
+            onClick={() => {
+              open(video.share_string)
+            }}
             key={video.id}
             className="group/vidcard relative flex aspect-reel min-w-full flex-col items-center bg-secondary hover:cursor-pointer">
-            <img src={video.thumbnail} alt={video.description} className="aspect-reel rounded" />
+            <img src={video.thumbnail} className="aspect-reel rounded" />
             <div className="absolute bottom-0 left-0 m-1 flex items-center justify-center">
               <Image src={icSpark} alt="share" height={15} width={15} />
               <p className="text-new-para-2-mobile text-monochrome-white">
@@ -338,26 +395,23 @@ function LoopVideos({ userId, loopDetails }: LoopVideosProps) {
             </div>
           </div>
           {isFetchingNextPage &&
-            Array.from({ length: Math.max(0, loopDetails.video_count - videoCount) }).map((_, index) => (
+            Array.from({ length: Math.max(0, loop.video_count - videoCount) }).map((_, index) => (
               <div key={`shimmer-${index}`} className="relative flex flex-col items-center">
                 <Shimmer className="aspect-reel h-full rounded" />
               </div>
             ))}
-        </>
+        </React.Fragment>
       ))
   }
 
   // TODO: replace <a></a> with <Link></Link>
   return (
     <>
-      <a href={PATH_NAME.loop(loopDetails.slug)}>
+      <a href={PATH_NAME.loop(loop.slug)}>
         <p className="mb-3 text-title-sm" style={{ lineHeight: '24px' }}>
-          {loopDetails.name}
+          {loop.name}
         </p>
       </a>
-      {videos?.length === 0 && (
-        <div className="flex items-center justify-center pt-32 text-title-md text-secondary">No videos available</div>
-      )}
       <div className="my-2 grid w-full grid-cols-4 gap-2 md:grid-cols-8">
         <InnerComponent />
       </div>
