@@ -10,7 +10,7 @@ export function useVideoSizeBox(considerNavbar: boolean = false): VideoSizeBoxTy
 
   useEffect(() => {
     function handleResize(event?: UIEvent) {
-      const windowHeight = considerNavbar ? window.innerHeight - 74 : window.innerHeight
+      const windowHeight = considerNavbar ? window.innerHeight - 77 : window.innerHeight
       const windowWidth = window.innerWidth
       let videoWidth = (windowHeight * 9) / 16
 

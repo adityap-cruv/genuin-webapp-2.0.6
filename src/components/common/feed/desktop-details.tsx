@@ -143,7 +143,7 @@ function InfoArea({ videoDetails }: { videoDetails: VideoDataType }) {
               onClick={async () =>
                 await shareFn({
                   shareLink:
-                    window.location.host + PATH_NAME.community(videoDetails.community.share_string) + '&utm_source=app_web',
+                    window.location.host + PATH_NAME.community(videoDetails.community.slug) + '&utm_source=app_web',
                   toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                 })
               }>
