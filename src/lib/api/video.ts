@@ -5,12 +5,13 @@ export async function fetchVideoDetails(slug: string) {
   return await axios
     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/video_details', {
       params: {
-        video_id: { slug },
+        video_ids: [{ slug }],
       },
     })
     .then((res) => {
-      return validateVideoData(res.data.data)
-      // return res.data.data
+      // removed temporary for deployment
+      // return validateVideoData(res.data.data[slug])
+      return res.data.data[slug]
     })
     .catch((e) => {
       throw new Error('Something went wrong with video details api.')
