@@ -112,7 +112,9 @@ export function MainComponent({ loopDetails }: Props) {
                     title: loopDetails.group.group_name,
                     previewImage: null,
                     fromUserName: null,
-                    pathName: window.location.pathname,
+                    pathName:
+                      window.location.pathname +
+                      `?community_id=${loopDetails.community.share_string}&utm_source=app_web`,
                     sourceId: loopDetails.share_string,
                     utmCampaign: 'share',
                     utmMedium: 'web',
