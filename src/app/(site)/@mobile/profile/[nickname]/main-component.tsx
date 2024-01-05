@@ -1,5 +1,5 @@
 'use client'
-import { abbreviateNumber, checkAndAppendHttps } from '@lib/utils'
+import { abbreviateNumber, checkAndAppendHttps, generateDeepLink, openGeneratedLink } from '@lib/utils'
 import { Button } from '@components/ui/button'
 import Image from 'next/image'
 import { CustomAvatar } from '@components/custom/custom-avatar'
@@ -13,7 +13,6 @@ import { Shimmer } from '@components/ui/shimmer'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { PlayerModal } from '@components/common/player-modal'
-import { DownloadDialog } from '@components/common/download-dialog'
 import { useInView, useMotionValueEvent, useScroll } from 'framer-motion'
 import { TopStickyBar } from '../../../@desktop/profile/[nickname]/top-bar'
 import icInstagram from '@icons/icInstagramBlack.svg'
@@ -113,13 +112,6 @@ function Links({ profileData }: CompProps) {
   if (links?.facebook ?? links?.instagram ?? links?.linkedin ?? links?.tiktok ?? links?.twitter)
     return (
       <div className="mt-2 flex">
-        {links?.instagram && (
-          <div className="mr-2 flex items-center rounded-md bg-monochrome-9 p-1">
-            <Link href={checkAndAppendHttps(links.instagram)} target="_blank">
-              <Image src={icInstagram} alt="instagram" />
-            </Link>
-          </div>
-        )}
         {links?.linkedin && (
           <div className="mr-2 flex items-center rounded-md bg-monochrome-9 p-1">
             <Link href={checkAndAppendHttps(links.linkedin)} target="_blank">
@@ -127,10 +119,10 @@ function Links({ profileData }: CompProps) {
             </Link>
           </div>
         )}
-        {links?.tiktok && (
-          <div className="mr-2 flex items-center rounded-md bg-monochrome-9 p-1 px-2">
-            <Link href={checkAndAppendHttps(links.tiktok)} target="_blank">
-              <Image src={icTiktok} alt="linkedin" />
+        {links?.instagram && (
+          <div className="mr-2 flex items-center rounded-md bg-monochrome-9 p-1">
+            <Link href={checkAndAppendHttps(links.instagram)} target="_blank">
+              <Image src={icInstagram} alt="instagram" />
             </Link>
           </div>
         )}
@@ -138,6 +130,13 @@ function Links({ profileData }: CompProps) {
           <div className="mr-2 flex items-center rounded-md bg-monochrome-9 p-1">
             <Link href={checkAndAppendHttps(links.twitter)} target="_blank">
               <Image src={icTwitter} alt="twitter" />
+            </Link>
+          </div>
+        )}
+        {links?.tiktok && (
+          <div className="mr-2 flex items-center rounded-md bg-monochrome-9 p-1 px-2">
+            <Link href={checkAndAppendHttps(links.tiktok)} target="_blank">
+              <Image src={icTiktok} alt="linkedin" />
             </Link>
           </div>
         )}
@@ -207,19 +206,30 @@ function CommunityList({ usernickname }: any) {
                     <p className="line-clamp-1 text-left text-title-sm">{item.name}</p>
                   </Link>
 
-                  <DownloadDialog
-                    title="Get the Genuin app"
-                    subtitle={
-                      <>
-                        Get the app to join the <br />
-                        <span className="font-bold">@{item.handle}</span> community.
-                      </>
-                    }
-                    asChild>
-                    <Button size="custom" variant="default">
-                      <p className="px-4 py-1.5 text-title-sm">Join</p>
-                    </Button>
-                  </DownloadDialog>
+                  <Button
+                    size="custom"
+                    variant="default"
+                    onClick={() => {
+                      generateDeepLink({
+                        action: 'join',
+                        contentType: 'community',
+                        description: `Find your people. Find what you love. | Join ${item.name} to talk about it`,
+                        title: `join ${item.name}`,
+                        previewImage: null,
+                        fromUserName: null,
+                        pathName: PATH_NAME.community(item.slug),
+                        sourceId: item.handle,
+                        utmCampaign: 'share',
+                        utmMedium: 'web',
+                        utmSource: window.location.hostname,
+                      })
+                        .then((generatedLink) => {
+                          openGeneratedLink(generatedLink)
+                        })
+                        .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
+                    }}>
+                    <p className="px-4 py-1.5 text-title-sm">Join</p>
+                  </Button>
                 </div>
               </div>
               <DecorativeList>
@@ -237,6 +247,7 @@ function CommunityDetails({ userId, communityHandle }: { userId: string; communi
 
   return (
     <>
+      <div className="h-3"></div>
       {isLoading && (
         <li
           className="profile-loop-li relative my-4 w-full rounded-lg bg-monochrome-9 p-4"
@@ -269,12 +280,12 @@ function CommunityDetails({ userId, communityHandle }: { userId: string; communi
 function LoopVideos({ userId, loopDetails }: any) {
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getAllLoopVideos(userId, loopDetails.slug)
 
-  const [videoCount, setVideoCount] = useState(Math.max(0, loopDetails.video_count - 8))
+  const [videoCount, setVideoCount] = useState(Math.max(0, loopDetails.video_count - 3))
 
   const handleSeeMoreClick = () => {
     void fetchNextPage()
     if (videoCount > 0) {
-      setVideoCount((prevVideosCount) => Math.max(0, prevVideosCount - 16))
+      setVideoCount((prevVideosCount) => Math.max(0, prevVideosCount - 6))
     }
   }
 

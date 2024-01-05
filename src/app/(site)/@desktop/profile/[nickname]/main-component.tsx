@@ -22,6 +22,7 @@ import { PATH_NAME } from '@lib/utils/constants/path'
 import { useInView, useMotionValueEvent, useScroll } from 'framer-motion'
 import { TopStickyBar } from './top-bar'
 import { PlayerModal } from '@components/common/player-modal'
+import { DownloadDialog } from '@components/common/download-dialog'
 
 interface CompProps {
   profileData: any
@@ -84,13 +85,6 @@ function Links({ profileData }: CompProps) {
   if (links?.facebook ?? links?.instagram ?? links?.linkedin ?? links?.tiktok ?? links?.twitter)
     return (
       <div className="my-2 flex">
-        {links?.instagram && (
-          <div className="mr-2 flex items-center rounded-md bg-monochrome-9 p-1">
-            <Link href={checkAndAppendHttps(links.instagram)} target="_blank">
-              <Image src={icInstagram} alt="instagram" />
-            </Link>
-          </div>
-        )}
         {links?.linkedin && (
           <div className="mr-2 flex items-center rounded-md bg-monochrome-9 p-1">
             <Link href={checkAndAppendHttps(links.linkedin)} target="_blank">
@@ -98,10 +92,10 @@ function Links({ profileData }: CompProps) {
             </Link>
           </div>
         )}
-        {links?.tiktok && (
-          <div className="mr-2 flex items-center rounded-md bg-monochrome-9 p-1 px-2">
-            <Link href={checkAndAppendHttps(links.tiktok)} target="_blank">
-              <Image src={icTiktok} alt="linkedin" />
+        {links?.instagram && (
+          <div className="mr-2 flex items-center rounded-md bg-monochrome-9 p-1">
+            <Link href={checkAndAppendHttps(links.instagram)} target="_blank">
+              <Image src={icInstagram} alt="instagram" />
             </Link>
           </div>
         )}
@@ -109,6 +103,13 @@ function Links({ profileData }: CompProps) {
           <div className="mr-2 flex items-center rounded-md bg-monochrome-9 p-1">
             <Link href={checkAndAppendHttps(links.twitter)} target="_blank">
               <Image src={icTwitter} alt="twitter" />
+            </Link>
+          </div>
+        )}
+        {links?.tiktok && (
+          <div className="mr-2 flex items-center rounded-md bg-monochrome-9 p-1 px-2">
+            <Link href={checkAndAppendHttps(links.tiktok)} target="_blank">
+              <Image src={icTiktok} alt="linkedin" />
             </Link>
           </div>
         )}
@@ -201,15 +202,30 @@ function CommunityList({ usernickname }: any) {
                     imageUrl={item?.dp}
                     isAvatar={false}
                   />
-                  <Link href={{ pathname: PATH_NAME.community(item.slug) }}>
-                    <div className="mx-2">
-                      <p
-                        className="line-clamp-1 text-left"
-                        style={{ fontWeight: 600, fontSize: '20px', lineHeight: '24px' }}>
-                        {item.name}
-                      </p>
-                    </div>
-                  </Link>
+                  <div className="flex w-full items-center justify-between">
+                    <Link href={{ pathname: PATH_NAME.community(item.slug) }}>
+                      <div className="mx-2">
+                        <p
+                          className="line-clamp-1 text-left"
+                          style={{ fontWeight: 600, fontSize: '20px', lineHeight: '24px' }}>
+                          {item.name}
+                        </p>
+                      </div>
+                    </Link>
+                    <DownloadDialog
+                      title="Get the Genuin app"
+                      subtitle={
+                        <>
+                          Get the app to join the <br />
+                          <span className="font-bold">@{item.handle}</span> community.
+                        </>
+                      }
+                      asChild>
+                      <Button size="custom" variant="default">
+                        <p className="px-4 py-1.5 text-title-sm">Join</p>
+                      </Button>
+                    </DownloadDialog>
+                  </div>
                 </div>
                 <DecorativeList>
                   <CommunityDetails userId={usernickname} communityHandle={item.handle} />
@@ -227,6 +243,7 @@ function CommunityDetails({ userId, communityHandle }: { userId: string; communi
 
   return (
     <>
+      <div className="h-3"></div>
       {isLoading && (
         <li
           className="profile-loop-li relative my-4 w-full rounded-lg border border-monochrome-9 p-4"
