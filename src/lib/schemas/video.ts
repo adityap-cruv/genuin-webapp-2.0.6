@@ -42,6 +42,7 @@ const LoopInfoSchema = z.object({
 })
 
 const CommunityInfoSchema = z.object({
+  share_string: z.string(),
   dp: z.string().optional(),
   handle: z.string(),
   name: z.string().optional(),

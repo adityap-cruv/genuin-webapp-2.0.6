@@ -6,7 +6,7 @@ import icShare from '@icons/icShareBlue.svg'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { useRef } from 'react'
 import { useInView } from 'framer-motion'
-import { TopBar } from './top-bar'
+import { TopStickyBar } from './top-bar'
 import { getLoopCohosts, getLoopSubscribers } from '@lib/api/loop'
 import { Loader } from '@components/ui/loader'
 import Link from 'next/link'
@@ -32,16 +32,17 @@ export function MainComponent({ loopDetails }: Props) {
   if (loopDetails)
     return (
       <>
-        <TopBar
+        <TopStickyBar.desktop
           defaultOpen={false}
           isOpen={!detailsInView}
           loopName={loopDetails.group.group_name ?? ''}
-          shareString={loopDetails.share_string}
+          shareString={loopDetails.community.share_string}
+          communitySlug={loopDetails.community.slug}
         />
         <main className="hide-scrollbar absolute inset-0 h-full w-full overflow-auto pl-6">
           <span className="w-1/2">
             <p className="mt-6 text-title-1-bold">{loopDetails.group.group_name}</p>
-            <p className="my-1 line-clamp-2 w-1/2 text-body-1-med">{loopDetails.group.group_description}</p>
+            <p className="my-1 line-clamp-2 w-1/2 break-words text-body-1-med">{loopDetails.group.group_description}</p>
             <div className="my-3 w-1/2 rounded-xl border border-monochrome-9 p-4">
               <span className="flex" ref={detailsDivRef}>
                 <span className="flex-1">
@@ -109,7 +110,8 @@ export function MainComponent({ loopDetails }: Props) {
                 className="border border-primary p-0.5"
                 onClick={async () => {
                   const currentURL = new URL(window.location.href)
-                  currentURL.searchParams.set('community', `${loopDetails.community.handle}`)
+                  currentURL.searchParams.set('community_id', `${loopDetails.community.share_string}`)
+                  currentURL.searchParams.set('utm_source', 'app_web')
                   await shareFn({
                     shareLink: currentURL.href,
                     toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
@@ -124,7 +126,7 @@ export function MainComponent({ loopDetails }: Props) {
               <LoopVideos slug={loopDetails.chat_slug} />
             </div>
             <div className="snap-y snap-proximity overflow-auto scroll-smooth py-2">
-              <Cohosts slug={loopDetails.chat_slug} />
+              <LoopCollaborators slug={loopDetails.chat_slug} />
               <LoopSubscribers slug={loopDetails.chat_slug} />
             </div>
           </div>
@@ -134,16 +136,24 @@ export function MainComponent({ loopDetails }: Props) {
     )
 }
 
-// TODO: get clarification from jimitbhai.
-function Cohosts({ slug }: { slug: string }) {
+function LoopCollaborators({ slug }: { slug: string }) {
   const { data, isLoading } = getLoopCohosts(slug, 'members')
   const cohosts = data?.users
+
+  if (isLoading) return <Loader size="md" />
+
+  if (cohosts && cohosts.length === 0)
+    return (
+      <>
+        <p className="my-2 text-title-md">Collaborators</p>
+        <div className="flex items-center justify-center text-title-md text-secondary">No collaborators yet</div>
+      </>
+    )
 
   if (cohosts && cohosts.length !== 0)
     return (
       <div>
         <p className="my-2 text-title-md">Collaborators</p>
-        {isLoading && <Loader size="md" />}
         <div className="h-full w-full overflow-auto">
           {cohosts.map((item: any, index: any) => (
             <Link key={index} href={{ pathname: PATH_NAME.profile(item.user.nickname) }}>
@@ -165,11 +175,20 @@ function LoopSubscribers({ slug }: { slug: string }) {
   const { data, isLoading } = getLoopSubscribers(slug, 'subscribers')
   const subscribers = data?.users
 
+  if (isLoading) return <Loader size="md" />
+
+  if (subscribers && subscribers.length === 0)
+    return (
+      <>
+        <p className="my-2 text-title-3-bold">Subscribers</p>
+        <div className="flex items-center justify-center text-title-md text-secondary">No subscribers yet</div>
+      </>
+    )
+
   if (subscribers && subscribers.length !== 0)
     return (
       <div>
         <p className="my-2 text-title-3-bold">Subscribers</p>
-        {isLoading && <Loader size="md" />}
         <div className="h-full w-full overflow-auto">
           {subscribers.map((item: any, index: any) => (
             <Link key={index} href={{ pathname: PATH_NAME.profile(item.user.nickname) }}>

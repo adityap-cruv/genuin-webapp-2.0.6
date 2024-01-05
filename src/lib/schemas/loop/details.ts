@@ -31,6 +31,7 @@ const Group = z.object({
 })
 
 const Community = z.object({
+  share_string: z.string(),
   name: z.string(),
   handle: z.string(),
   dp: z.string().nullish(),

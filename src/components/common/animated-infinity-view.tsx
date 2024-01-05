@@ -96,7 +96,7 @@ export function AnimatedInfinityView({ community, loop }: Props) {
         </Link>
       </motion.div>
       <motion.div initial={{ rotateX: '90deg' }} animate={rightControls} className="relative flex-1">
-        <Link href={{ pathname: PATH_NAME.loop(loop.slug) }}>
+        <a href={PATH_NAME.loop(loop.slug)}>
           <Image src={infynityRight} alt="bar" className="w-full" />
           <span className="absolute inset-0 block w-full flex-1 justify-end">
             <span className="flex h-full items-center justify-end">
@@ -108,7 +108,7 @@ export function AnimatedInfinityView({ community, loop }: Props) {
               </div>
             </span>
           </span>
-        </Link>
+        </a>
       </motion.div>
     </span>
   )
