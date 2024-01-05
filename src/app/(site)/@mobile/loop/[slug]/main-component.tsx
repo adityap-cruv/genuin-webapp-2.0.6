@@ -50,7 +50,7 @@ export function MainComponent({ loopDetails }: Props) {
           shareString={loopDetails.share_string}
           communitySlug={loopDetails.community.slug}
         />
-        <div className="hide-scrollbar absolute inset-0 mt-navbar flex h-full w-full flex-col gap-y-2 overflow-auto p-4 md:flex-row md:gap-x-2">
+        <div className="hide-scrollbar absolute inset-0 mt-navbar flex w-full flex-col gap-y-2 overflow-auto p-4 md:flex-row md:gap-x-2" style={{ height: 'calc(100% - 74px)' }}>
           <div className="w-full">
             <div ref={detailsDivRef}>
               <p className="line-clamp-1 text-title-xl">{loopDetails.group.group_name}</p>

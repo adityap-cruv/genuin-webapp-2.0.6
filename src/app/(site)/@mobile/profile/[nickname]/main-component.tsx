@@ -43,7 +43,9 @@ export function MainComponent({ profileData }: CompProps) {
         profileNickname={profileData?.nickname}
         isAvatar={profileData?.is_avatar}
       />
-      <div className="hide-scrollbar absolute inset-0 mt-navbar h-full w-full overflow-auto">
+      <div
+        className="hide-scrollbar absolute inset-0 mt-navbar w-full overflow-auto"
+        style={{ height: 'calc(100% - 74px)' }}>
         <div className="p-4">
           <div className="flex items-center justify-between">
             <CustomAvatar
@@ -180,10 +182,12 @@ function CommunityList({ usernickname }: any) {
 
   if (communities && communities?.length === 0)
     return (
-      <div
-        className="flex h-full w-full items-center justify-center pt-2 text-title-3-bold text-monochrome"
-        style={{ backgroundColor: '#F9F9F9' }}>
-        No posts yet
+      <div className="w-full overflow-hidden" style={{ height: 'calc(100% - 280px)' }}>
+        <div
+          className="flex h-full w-full items-center justify-center pt-2 text-title-3-bold text-monochrome"
+          style={{ backgroundColor: '#F9F9F9' }}>
+          No posts yet
+        </div>
       </div>
     )
 
@@ -193,7 +197,6 @@ function CommunityList({ usernickname }: any) {
         <div>
           {communities?.map((item, index) => (
             <div key={index}>
-              &nbsp;
               <div className="flex items-center">
                 <CustomAvatar
                   className="bg-slate-500 h-11 w-11 bg-red-40"
