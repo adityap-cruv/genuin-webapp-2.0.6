@@ -4,14 +4,13 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { CustomAvatar } from '@components/custom/custom-avatar'
-import { isMobile } from 'react-device-detect'
 import { useRef, useState } from 'react'
 import icPlay from '@icons/player-controls/icPlay.svg'
 import { useMotionValueEvent, useScroll } from 'framer-motion'
-import { PlayerModal } from '../../../../../components/common/modals/player-modal'
+import { PlayerModal } from '@components/common/modals/player-modal'
 
 export function LoopVideos({ slug }: { slug: string }) {
-  const { data, isLoading, fetchNextPage, isError, isFetchingNextPage } = getLoopVideos(slug)
+  const { data, isLoading, fetchNextPage, isFetchingNextPage } = getLoopVideos(slug)
   const videos = data?.pages.flatMap((item) => item.videos)
   const [modalControl, setModalControl] = useState({ open: false, startIndex: -1 })
   const scrollDivRef = useRef<HTMLDivElement>(null)
@@ -27,7 +26,6 @@ export function LoopVideos({ slug }: { slug: string }) {
   // TODO: Remove this component from here. and put it  in better location.
   return (
     <div ref={scrollDivRef} className="h-full w-full overflow-y-auto">
-      {!isMobile && <p className="my-2 text-title-3-bold">Posts</p>}
       {isLoading && <Loader size="md" />}
       {videos?.length === 0 && (
         <div className="flex items-center justify-center pt-32 text-title-md text-secondary">No videos available</div>
@@ -70,6 +68,21 @@ export function LoopVideos({ slug }: { slug: string }) {
           </div>
         ))}
       </div>
+      <PlayerModal.mobile
+        close={() => {
+          setModalControl((x) => {
+            x.open = false
+            return { ...x }
+          })
+        }}
+        fetchNextVideos={fetchNextPage}
+        isError={false}
+        isFetchingNextPage={isFetchingNextPage}
+        isLoading={isLoading}
+        open={modalControl.open}
+        startIndex={modalControl.startIndex}
+        videos={videos}
+      />
       {isFetchingNextPage && <Loader size="md" />}
     </div>
   )

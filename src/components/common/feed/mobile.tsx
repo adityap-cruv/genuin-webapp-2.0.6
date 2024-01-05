@@ -16,6 +16,11 @@ type MobileProps = {
   hasNextPage?: boolean
   isFetchingNextPage: boolean
   fetchNextPage?: () => void
+  /**
+   * pass this number if you want to start from particular index.
+   * @default 0
+   */
+  startIndex: number
 }
 
 export function Mobile({
@@ -26,6 +31,7 @@ export function Mobile({
   isLoading,
   sizeBox,
   hasNextPage,
+  startIndex,
 }: MobileProps) {
   const scrollDivRef = useRef<HTMLDivElement>(null)
   const { setCurrentIndex, setVideoList, currentIndex, videoList } = useFeedListStore((state) => ({
@@ -58,7 +64,12 @@ export function Mobile({
   }, [scrollDivRef.current])
 
   useEffect(() => {
-    setCurrentIndex(0)
+    setCurrentIndex(startIndex)
+  }, [])
+
+  useEffect(() => {
+    const element = scrollDivRef.current
+    element?.scroll({ top: element.clientHeight * startIndex, behavior: 'instant' })
   }, [])
 
   useEffect(() => {
@@ -76,15 +87,16 @@ export function Mobile({
         )}>
         {videos.map((item, index) => {
           return (
-            <Player
-              key={index}
-              playIfInViewPort
-              isFirstPlayerInList={index === 0}
-              shouldPlay
-              loop
-              sizeBox={sizeBox}
-              videoData={item}
-            />
+            <div key={index} style={{ width: sizeBox.width, height: sizeBox.height }}>
+              <Player
+                playIfInViewPort
+                isFirstPlayerInList={index === 0}
+                shouldPlay
+                loop
+                sizeBox={sizeBox}
+                videoData={item}
+              />
+            </div>
           )
         })}
       </div>

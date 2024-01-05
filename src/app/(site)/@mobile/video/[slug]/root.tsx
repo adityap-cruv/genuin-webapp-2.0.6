@@ -13,7 +13,14 @@ export function Root({ videoData }: { videoData: VideoDataType }) {
         <span className="absolute top-0 w-full">
           <TopBar variant="trasparent" />
         </span>
-        <Feed isError={false} isFetchingNextPage={false} isLoading={false} sizeBox={sizeBox} videos={[videoData]} />
+        <Feed
+          startIndex={0}
+          isError={false}
+          isFetchingNextPage={false}
+          isLoading={false}
+          sizeBox={sizeBox}
+          videos={[videoData]}
+        />
       </main>
     )
 }
