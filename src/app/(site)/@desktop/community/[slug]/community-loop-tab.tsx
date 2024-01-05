@@ -51,7 +51,7 @@ export function CommunityLoopTab({ communitySlug }: { communitySlug: string }) {
 
 function NoLoops() {
   return (
-    <div className="mt-4 flex flex-col items-center justify-center" style={{ backgroundColor: '#F9F9F9' }}>
+    <div className="flex h-full flex-col items-center justify-center" style={{ backgroundColor: '#F9F9F9' }}>
       <Image src={noLoopsImage} alt="share" />
       <p className="text-title-2-bold">No Loops... yet!</p>
       <p className="w-96 text-center text-body-1-demi text-monochrome">

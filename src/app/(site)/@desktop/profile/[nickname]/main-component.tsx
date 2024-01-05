@@ -10,7 +10,7 @@ import { CustomAvatar } from '@components/custom/custom-avatar'
 import { DecorativeList } from '@components/custom/decorative-list'
 import { getAllCommunities, getAllLoops, getAllLoopVideos } from '@lib/api/profile'
 import { Loader } from '@components/ui/loader'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import icSpark from '@icons/player-controls/icBulb.svg'
 import icInstagram from '@icons/icInstagramBlack.svg'
 import icTiktok from '@icons/icTiktok.svg'
@@ -32,6 +32,25 @@ export function MainComponent({ profileData }: CompProps) {
   const detailsDivRef = useRef<HTMLDivElement>(null)
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
 
+  const divRef = useRef<HTMLDivElement>(null)
+  // const [divHeight, setDivHeight] = useState(0)
+
+  // useEffect(() => {
+  //   const updateHeight = () => {
+  //     if (divRef.current) {
+  //       const height = divRef.current.getBoundingClientRect().height
+  //       setDivHeight(height)
+  //     }
+  //   }
+  //   updateHeight()
+  //   window.addEventListener('resize', updateHeight)
+  //   return () => {
+  //     window.removeEventListener('resize', updateHeight)
+  //   }
+  // }, [divRef])
+
+  // console.log(divHeight)
+
   return (
     <>
       <TopStickyBar.desktop
@@ -43,7 +62,7 @@ export function MainComponent({ profileData }: CompProps) {
         isAvatar={profileData?.is_avatar}
       />
       <div className="hide-scrollbar absolute inset-0 h-full w-full overflow-auto px-4">
-        <div className="mt-4 w-1/2">
+        <div className="mt-4 w-1/2" ref={divRef}>
           <CustomAvatar
             className="bg-slate-500 h-20 w-20 bg-red-40"
             fallbackString={profileData?.name}
@@ -178,7 +197,7 @@ function CommunityList({ usernickname }: any) {
 
   if (communities && communities?.length === 0)
     return (
-      <div className="w-full overflow-hidden">
+      <div className="w-full overflow-hidden" style={{ height: `calc(100% - 250px)` }}>
         <div
           className="flex h-full w-full items-center justify-center pt-2 text-title-3-bold text-monochrome"
           style={{ backgroundColor: '#F9F9F9' }}>
