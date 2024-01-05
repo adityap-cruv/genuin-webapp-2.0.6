@@ -70,8 +70,9 @@ export function MainComponent({ profileData }: CompProps) {
               </Button> */}
               <Button
                 variant="outline"
-                size="sm"
+                size="custom"
                 outlineColor="genuin-blue"
+                className="p-1.5"
                 onClick={async () =>
                   await shareFn({
                     shareLink: window.location.href + '?utm_source=app_web',
