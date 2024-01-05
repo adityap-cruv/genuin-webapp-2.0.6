@@ -42,7 +42,7 @@ export function ProfileDetails({ communityDetails }: Props) {
         communityProfileImage={communityDetails.info.profile_image}
         communtiyHandle={communityDetails.info.handle}
       />
-      <div className="hide-scrollbar absolute inset-0 mt-navbar h-full w-full overflow-auto">
+      <div className="hide-scrollbar absolute inset-0 mt-navbar w-full overflow-auto" style={{ height: 'calc(100% - 74px)' }}>
         <div className="px-4 py-2 pt-4">
           <div className="flex justify-between">
             <CustomAvatar

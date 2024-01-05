@@ -43,7 +43,7 @@ export function MainComponent({ profileData }: CompProps) {
         profileNickname={profileData?.nickname}
         isAvatar={profileData?.is_avatar}
       />
-      <div className="hide-scrollbar absolute inset-0 mt-navbar h-full w-full overflow-auto">
+      <div className="hide-scrollbar absolute inset-0 mt-navbar w-full overflow-auto" style={{ height: 'calc(100% - 74px)' }}>
         <div className="p-4">
           <div className="flex items-center justify-between">
             <CustomAvatar
@@ -193,7 +193,6 @@ function CommunityList({ usernickname }: any) {
         <div>
           {communities?.map((item, index) => (
             <div key={index}>
-              &nbsp;
               <div className="flex items-center">
                 <CustomAvatar
                   className="bg-slate-500 h-11 w-11 bg-red-40"
