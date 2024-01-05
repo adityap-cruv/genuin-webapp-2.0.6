@@ -136,7 +136,7 @@ function Stats({ profileData }: { profileData: any }) {
     <div className="m-1 ml-0 flex max-w-[250px]  justify-between gap-x-6 p-1 pl-0">
       <div className="flex items-center">
         <p className="text-body-lg" style={{ fontWeight: 700 }}>
-          {abbreviateNumber(profileData?.no_of_views) || 0}
+          {abbreviateNumber(profileData?.no_of_views) ?? 0}
         </p>
         <p className="px-1 text-body-sm text-secondary" style={{ fontWeight: 500 }}>
           Views
@@ -144,7 +144,7 @@ function Stats({ profileData }: { profileData: any }) {
       </div>
       <div className="flex items-center">
         <p className="text-body-lg" style={{ fontWeight: 700 }}>
-          {abbreviateNumber(profileData?.no_of_videos) || 0}
+          {abbreviateNumber(profileData?.no_of_videos) ?? 0}
         </p>
         <p className="px-1 text-body-sm text-secondary" style={{ fontWeight: 500 }}>
           Posts
@@ -152,7 +152,7 @@ function Stats({ profileData }: { profileData: any }) {
       </div>
       <div className="flex items-center">
         <p className="text-body-lg" style={{ fontWeight: 700 }}>
-          {abbreviateNumber(profileData?.no_of_communities) || 0}
+          {abbreviateNumber(profileData?.no_of_communities) ?? 0}
         </p>
         <p className="px-1 text-body-sm text-secondary" style={{ fontWeight: 500 }}>
           Communities
@@ -310,7 +310,7 @@ function LoopVideos({ userId, loopDetails }: LoopVideosProps) {
             <div className="absolute bottom-0 left-0 m-1 flex items-center justify-center">
               <Image src={icSpark} alt="share" height={15} width={15} />
               <p className="text-new-para-2-mobile text-monochrome-white">
-                {abbreviateNumber(video.no_of_sparks) || 0}
+                {abbreviateNumber(video.no_of_sparks) ?? 0}
               </p>
             </div>
           </div>
