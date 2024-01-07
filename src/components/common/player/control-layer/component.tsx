@@ -88,7 +88,7 @@ function Mobile({ videoData }: Props) {
               toggleMuted()
             }}
             className="absolute z-[6] h-full w-full">
-            <span className="absolute left-5 top-14">
+            <span className="absolute left-4 top-20">
               <AnimatedMuteIcon />
             </span>
           </div>
@@ -106,7 +106,7 @@ function Mobile({ videoData }: Props) {
             />
           </div>
         </div>
-        <div className="absolute bottom-12 left-0 z-[5] w-full">
+        <div className="absolute bottom-16 left-0 z-[5] w-full">
           <Loop videoData={videoData} />
         </div>
         <PlayerProgressBar />
@@ -118,7 +118,7 @@ function Mobile({ videoData }: Props) {
 function Loop({ videoData }: { videoData?: VideoDataType }) {
   if (videoData)
     return (
-      <div className="flex justify-between  px-2">
+      <div className="flex justify-between px-2">
         <div className="flex w-4/5 flex-col justify-end">
           <div className="flex items-center">
             <Link

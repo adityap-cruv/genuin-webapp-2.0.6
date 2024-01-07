@@ -142,14 +142,6 @@ function LoopCollaborators({ slug }: { slug: string }) {
 
   if (isLoading) return <Loader size="md" />
 
-  if (cohosts && cohosts.length === 0)
-    return (
-      <>
-        <p className="my-2 text-title-md">Collaborators</p>
-        <div className="flex items-center justify-center text-title-md text-secondary">No collaborators yet</div>
-      </>
-    )
-
   if (cohosts && cohosts.length !== 0)
     return (
       <div>
@@ -176,14 +168,6 @@ function LoopSubscribers({ slug }: { slug: string }) {
   const subscribers = data?.users
 
   if (isLoading) return <Loader size="md" />
-
-  if (subscribers && subscribers.length === 0)
-    return (
-      <>
-        <p className="my-2 text-title-3-bold">Subscribers</p>
-        <div className="flex items-center justify-center text-title-md text-secondary">No subscribers yet</div>
-      </>
-    )
 
   if (subscribers && subscribers.length !== 0)
     return (
