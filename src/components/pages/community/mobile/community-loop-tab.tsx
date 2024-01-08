@@ -139,7 +139,7 @@ function LoopItem({ loopDetails, openModal }: { loopDetails: any; openModal: (sl
 
 function NoLoops() {
   return (
-    <div className="flex h-1/2">
+    <div className="flex h-full">
       <div className="mt-4 flex flex-col items-center justify-center" style={{ backgroundColor: '#F9F9F9' }}>
         <Image src={noLoopsImage} alt="share" />
         <p className="text-title-2-bold">No Loops... yet!</p>
