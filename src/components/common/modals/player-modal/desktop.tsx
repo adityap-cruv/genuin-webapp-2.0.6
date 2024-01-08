@@ -15,6 +15,7 @@ import icUpArrow from '@icons/player-controls/icArrowUp.svg'
 import icDownArrow from '@icons/player-controls/icArrowDown.svg'
 import Image from 'next/image'
 import { Loader } from '@components/ui/loader'
+import { cn } from '@lib/utils'
 
 type Props = {
   children?: React.ReactNode
@@ -99,24 +100,26 @@ export function Desktop({
               <InnerContent />
             </div>
             <span className="flex flex-col gap-y-4">
-              {currentIndex !== 0 && (
-                <button
-                  onClick={() => {
-                    setCurrentIndex(currentIndex - 1)
-                  }}
-                  className="rounded-full bg-monochrome-white/10 p-2 hover:bg-monochrome-white/20">
-                  <Image src={icUpArrow} alt="" />
-                </button>
-              )}
-              {currentIndex !== videos?.length - 1 && (
-                <button
-                  onClick={() => {
-                    setCurrentIndex(currentIndex + 1)
-                  }}
-                  className="rounded-full bg-monochrome-white/10 p-2 hover:bg-monochrome-white/20">
-                  <Image src={icDownArrow} alt="" />
-                </button>
-              )}
+              <button
+                onClick={() => {
+                  setCurrentIndex(currentIndex - 1)
+                }}
+                className={cn(
+                  'rounded-full bg-monochrome-white/10 p-2 hover:bg-monochrome-white/20',
+                  currentIndex === 0 ? 'opacity-40' : undefined
+                )}>
+                <Image src={icUpArrow} alt="" />
+              </button>
+              <button
+                onClick={() => {
+                  setCurrentIndex(currentIndex + 1)
+                }}
+                className={cn(
+                  'rounded-full bg-monochrome-white/10 p-2 hover:bg-monochrome-white/20',
+                  currentIndex === videos?.length - 1 ? 'opacity-40' : undefined
+                )}>
+                <Image src={icDownArrow} alt="" />
+              </button>
             </span>
           </span>
         )}

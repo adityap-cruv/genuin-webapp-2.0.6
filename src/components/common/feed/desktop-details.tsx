@@ -29,7 +29,7 @@ export function DesktopDetails({ videoDetails }: DesktopDetailsProps) {
 
   if (videoDetails)
     return (
-      <div className="relative h-full flex-1 overflow-x-clip bg-monochrome-white pl-2">
+      <div className="relative flex h-full flex-1 flex-col overflow-x-clip bg-monochrome-white pb-16 pl-2">
         <div className="border-b border-monochrome-black/10 p-4">
           <span className="flex items-center gap-x-2">
             <CustomAvatar
@@ -42,7 +42,7 @@ export function DesktopDetails({ videoDetails }: DesktopDetailsProps) {
               <Link href={PATH_NAME.profile(videoDetails.owner.nickname)}>
                 <p className="text-body-lg">@{videoDetails.owner.nickname}</p>
               </Link>
-              <p className="text-body-1-demi text-secondary">{getTimeAgo(videoDetails.video.created_at)}</p>
+              <p className="text-body-1-demi text-secondary">{getTimeAgo(videoDetails.video.created_at) + ' ago'}</p>
             </span>
           </span>
           {videoDetails.video.description && (
@@ -51,12 +51,12 @@ export function DesktopDetails({ videoDetails }: DesktopDetailsProps) {
             </p>
           )}
         </div>
-        <div ref={scrollDivRef} className="flex h-full flex-col overflow-auto overflow-x-clip pb-16">
+        <div ref={scrollDivRef} className="flex h-full flex-col overflow-auto overflow-x-clip">
           <div className="p-4">
             <p className="text-title-3-bold">Posted in</p>
             <div className="pt-3">
               <span className="flex items-center justify-between">
-                <span className="flex items-center gap-x-3">
+                <span className="flex flex-1 items-center gap-x-3">
                   <CustomAvatar
                     imageUrl={videoDetails.community.dp ?? ''}
                     fallbackString={videoDetails.community.name ?? ''}
@@ -64,12 +64,10 @@ export function DesktopDetails({ videoDetails }: DesktopDetailsProps) {
                     className="h-11 w-11"
                   />
                   <Link href={{ pathname: PATH_NAME.community(videoDetails.community.slug) }}>
-                    <p className="line-clamp-1 w-full break-all pr-2 text-title-3-bold">
-                      {videoDetails.community.name}
-                    </p>
+                    <p className="line-clamp-1 break-all pr-2 text-title-3-bold">{videoDetails.community.name}</p>
                   </Link>
                 </span>
-                <span className="flex h-min items-center gap-x-3">
+                <span className="flex h-min flex-1 items-center gap-x-3">
                   <DownloadDialog
                     title="Get the Genuin app"
                     subtitle={
@@ -149,7 +147,7 @@ function CommentBox({ shareString, parentRef }: { shareString: string; parentRef
 
   if (comments && comments?.length !== 0)
     return (
-      <div className="h-auto overflow-visible pb-40">
+      <div className="h-full overflow-visible pb-40">
         <Comments.withoutApi
           comments={comments}
           fetchNextPage={() => {}}
