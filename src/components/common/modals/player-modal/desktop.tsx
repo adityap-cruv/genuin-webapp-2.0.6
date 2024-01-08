@@ -84,7 +84,7 @@ export function Desktop({
     <CustomDialog open={open}>
       <CustomDialogTrigger>{children}</CustomDialogTrigger>
       <CustomDialogContent showDefaultClose={false}>
-        {videoSizeBox && (
+        {videoSizeBox && videos && (
           <span className="flex items-center gap-x-6">
             <div
               style={{ width: videoSizeBox.modal.width, height: videoSizeBox.modal.height }}
@@ -99,20 +99,24 @@ export function Desktop({
               <InnerContent />
             </div>
             <span className="flex flex-col gap-y-4">
-              <button
-                onClick={() => {
-                  setCurrentIndex(currentIndex - 1)
-                }}
-                className="rounded-full bg-monochrome-white/10 p-2 hover:bg-monochrome-white/20">
-                <Image src={icUpArrow} alt="" />
-              </button>
-              <button
-                onClick={() => {
-                  setCurrentIndex(currentIndex + 1)
-                }}
-                className="rounded-full bg-monochrome-white/10 p-2 hover:bg-monochrome-white/20">
-                <Image src={icDownArrow} alt="" />
-              </button>
+              {currentIndex !== 0 && (
+                <button
+                  onClick={() => {
+                    setCurrentIndex(currentIndex - 1)
+                  }}
+                  className="rounded-full bg-monochrome-white/10 p-2 hover:bg-monochrome-white/20">
+                  <Image src={icUpArrow} alt="" />
+                </button>
+              )}
+              {currentIndex !== videos?.length - 1 && (
+                <button
+                  onClick={() => {
+                    setCurrentIndex(currentIndex + 1)
+                  }}
+                  className="rounded-full bg-monochrome-white/10 p-2 hover:bg-monochrome-white/20">
+                  <Image src={icDownArrow} alt="" />
+                </button>
+              )}
             </span>
           </span>
         )}
