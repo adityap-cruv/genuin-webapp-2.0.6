@@ -25,7 +25,7 @@ type Props = {
    */
   startIndex: number
   fetchNextVideos: () => void
-  fetchPreviousVideos: (index: number) => void
+  fetchPreviousVideos?: (index: number) => void
   isFetchingNextPage: boolean
   isError: boolean
   /**
@@ -65,7 +65,7 @@ export function Desktop({
   }, [startIndex])
 
   useEffect(() => {
-    if (currentIndex === 1) fetchPreviousVideos(currentIndex)
+    if (currentIndex === 1) fetchPreviousVideos?.(currentIndex)
     if (videos && !isFetchingNextPage && currentIndex >= videos?.length - 2) fetchNextVideos()
   }, [currentIndex])
 
