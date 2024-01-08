@@ -8,7 +8,7 @@ import {
 import { useVideoSizeBoxModal } from '@hooks/use-video-size-box-modal'
 import { useEffect } from 'react'
 import { type VideoDataType } from '@lib/schemas/video'
-import { Underline, X } from 'lucide-react'
+import { X } from 'lucide-react'
 import { useFeedModalStore } from './store'
 import { SinglePlayer } from '@components/common/feed/desktop'
 import icUpArrow from '@icons/player-controls/icArrowUp.svg'

@@ -42,7 +42,7 @@ export function DesktopDetails({ videoDetails }: DesktopDetailsProps) {
               <Link href={PATH_NAME.profile(videoDetails.owner.nickname)}>
                 <p className="text-body-lg">@{videoDetails.owner.nickname}</p>
               </Link>
-              <p className="text-body-1-demi text-secondary">{getTimeAgo(videoDetails.video.created_at)}</p>
+              <p className="text-body-1-demi text-secondary">{getTimeAgo(videoDetails.video.created_at) + ' ago'}</p>
             </span>
           </span>
           {videoDetails.video.description && (
