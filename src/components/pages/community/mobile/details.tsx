@@ -42,7 +42,9 @@ export function ProfileDetails({ communityDetails }: Props) {
         communityProfileImage={communityDetails.info.profile_image}
         communtiyHandle={communityDetails.info.handle}
       />
-      <div className="hide-scrollbar absolute inset-0 mt-navbar w-full overflow-auto" style={{ height: 'calc(100% - 74px)' }}>
+      <div
+        className="hide-scrollbar absolute inset-0 mt-navbar w-full overflow-auto"
+        style={{ height: 'calc(100% - 74px)' }}>
         <div className="px-4 py-2 pt-4">
           <div className="flex justify-between">
             <CustomAvatar
@@ -284,9 +286,9 @@ function ListItem({
         isAvatar={isAvatar}
       />
       <div className="mx-2">
-        <p className="line-clamp-1 text-title-sm">{subtitle}</p>
-        {subtitle && <p className="line-clamp-1 text-title-sm">{title}</p>}
-        {description && <p className="line-clamp-1 text-cap-lg text-monochrome">{description}</p>}
+        <p className="line-clamp-1 text-body-1-bold">{subtitle}</p>
+        {subtitle && <p className="line-clamp-1 text-body-1-demi">{title}</p>}
+        {description && <p className="line-clamp-1 text-cap-1-demi text-monochrome">{description}</p>}
       </div>
     </div>
   )
