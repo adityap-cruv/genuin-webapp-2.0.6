@@ -222,7 +222,7 @@ function CommunityList({ usernickname }: any) {
                         previewImage: null,
                         fromUserName: null,
                         pathName: PATH_NAME.community(item.slug),
-                        sourceId: item.handle,
+                        // sourceId: item.handle,
                         utmCampaign: 'share',
                         utmMedium: 'web',
                         utmSource: window.location.hostname,
