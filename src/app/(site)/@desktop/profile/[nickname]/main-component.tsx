@@ -194,8 +194,8 @@ function CommunityList({ usernickname }: any) {
   }))
 
   useEffect(() => {
-    const dataToAdd = data?.pages.flatMap((page) => page.communities as CommunityMiniObj[])
-    if (dataToAdd) addCommunities(dataToAdd)
+    const pageLength = data?.pages.length
+    if (pageLength) addCommunities(data?.pages[pageLength - 1]?.communities as CommunityMiniObj[])
   }, [data])
 
   const scrollDivRef = useRef<HTMLDivElement>(null)
@@ -349,8 +349,8 @@ function CommunityDetails({ userId, community }: { userId: string; community: Co
   const addLoops = useCommunityListStore((state) => state.addLoops)
 
   useEffect(() => {
-    const dataToAdd = data?.pages.flatMap((page) => page.loops as LoopMiniObj[])
-    if (dataToAdd) addLoops(community, dataToAdd)
+    const pageLength = data?.pages.length
+    if (pageLength) addLoops(community, data?.pages[pageLength - 1].loops as LoopMiniObj[])
   }, [data])
 
   return (
@@ -398,8 +398,8 @@ function LoopVideos({ userId, loop, community }: LoopVideosProps) {
   }))
 
   useEffect(() => {
-    const dataToAdd = data?.pages.flatMap((item) => item.videos as VideoMiniObj[])
-    if (dataToAdd) addVideos(community, loop, dataToAdd)
+    const pageLength = data?.pages.length
+    if (pageLength) addVideos(community, loop, data?.pages[pageLength - 1]?.videos as VideoMiniObj[])
   }, [data])
 
   const [videoCount, setVideoCount] = useState(Math.max(0, loop.video_count - 8))

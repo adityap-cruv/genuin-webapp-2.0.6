@@ -56,7 +56,7 @@ export function isValidHTTPS(link: string): any {
 }
 
 export const abbreviateNumber = (value: number) => {
-  if (!value) return
+  if (!value) return 0
   let newValue = value.toString()
   if (value >= 1000) {
     const suffixes = ['', 'k', 'm', 'b', 't']
@@ -154,10 +154,10 @@ export const generateDeepLink = async ({
   // }
 
   if (community) {
-    Object.assign(queryParams, { community: community })
+    Object.assign(queryParams, { community })
   }
   if (loop) {
-    Object.assign(queryParams, { loop: loop })
+    Object.assign(queryParams, { loop })
   }
   const finalPayload = {
     query_params: queryParams,

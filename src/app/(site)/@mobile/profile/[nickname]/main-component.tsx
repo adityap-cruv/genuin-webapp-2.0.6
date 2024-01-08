@@ -239,8 +239,8 @@ function CommunityList({ usernickname, scrollYProgress }: any) {
   }))
 
   useEffect(() => {
-    const communities = data?.pages.flatMap((item) => item.communities)
-    if (communities) addCommunities(communities)
+    const pageLength = data?.pages.length
+    if (pageLength) addCommunities(data?.pages[pageLength - 1]?.communities)
   }, [data])
 
   useMotionValueEvent(scrollYProgress, 'change', (latest: any) => {
@@ -320,8 +320,8 @@ function CommunityDetails({ userId, community }: { userId: string; community: Co
   const addLoops = useCommunityListStore((state) => state.addLoops)
 
   useEffect(() => {
-    const loops = data?.pages.flatMap((page) => page.loops)
-    if (loops) addLoops(community, loops)
+    const pageLength = data?.pages.length
+    if (pageLength) addLoops(community, data?.pages[pageLength - 1].loops)
   }, [data])
 
   return (
@@ -370,8 +370,8 @@ function LoopVideos({
   }))
 
   useEffect(() => {
-    const videos = data?.pages.flatMap((item) => item.videos)
-    if (videos) addVideos(community, loopDetails, videos)
+    const pageLength = data?.pages.length
+    if (pageLength) addVideos(community, loopDetails, data?.pages[pageLength - 1]?.videos)
   }, [data])
 
   const [videoCount, setVideoCount] = useState(Math.max(0, loopDetails.video_count - 3))
