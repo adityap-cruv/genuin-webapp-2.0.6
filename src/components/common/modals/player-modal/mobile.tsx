@@ -7,6 +7,7 @@ import { Loader } from '@components/ui/loader'
 import { Feed } from '@components/common/feed'
 import { useVideoSizeBox } from '@hooks/use-video-size-box'
 import { TopBar } from '@components/layouts/mobile/top-bar'
+import { useVideoSizeBoxMobile } from '@hooks/use-video-size-box-mobile'
 
 type Props = {
   children?: React.ReactNode
@@ -39,7 +40,7 @@ export function Mobile({
   isError,
   fetchNextVideos,
 }: Props) {
-  const videoSizeBox = useVideoSizeBox(false)
+  const videoSizeBox = useVideoSizeBoxMobile()
   const { currentIndex, setCurrentIndex, setStateVideos } = useFeedModalStore((state) => ({
     currentIndex: state.currentIndex,
     setCurrentIndex: state.setCurrentIndex,
@@ -72,8 +73,8 @@ export function Mobile({
           videos={videos}
           isFetchingNextPage={false}
           isLoading={false}
-          sizeBox={{ height: videoSizeBox.height, width: videoSizeBox.width }}
           startIndex={startIndex}
+          sizeBox={videoSizeBox}
         />
       )
   }

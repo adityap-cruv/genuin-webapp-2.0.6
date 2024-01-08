@@ -58,10 +58,11 @@ function Mobile({ link = '', shareDescription = '', shareTitle = '', videoData }
                 previewImage: null,
                 fromUserName: null,
                 pathName: PATH_NAME.video(videoData.video.slug),
-                sourceId: '',
                 utmCampaign: 'share',
                 utmMedium: 'web',
                 utmSource: window.location.hostname,
+                community:videoData.community.share_string,
+                loop: videoData.loop.share_string
               })
                 .then((generatedLink) => {
                   openGeneratedLink(generatedLink)
@@ -73,21 +74,39 @@ function Mobile({ link = '', shareDescription = '', shareTitle = '', videoData }
           <ActionItem
             title="Give spark!"
             onClick={(e) => {
-              const url = {
-                pathname: PATH_NAME.video(videoData.video.slug),
-                query: {
-                  community: videoData.community.share_string,
-                  loop: videoData.loop.share_string,
-                  utm_source: 'app_web',
-                },
-              }
-              const shareUrl = format(url)
-              void window.navigator.share({
-                text: videoData.video?.description ?? '',
-                title: 'Share this video',
-                url: shareUrl,
+              // const url = {
+              //   pathname: PATH_NAME.video(videoData.video.slug),
+              //   query: {
+              //     community: videoData.community.share_string,
+              //     loop: videoData.loop.share_string,
+              //     utm_source: 'app_web',
+              //   },
+              // }
+              // const shareUrl = format(url)
+              // void window.navigator.share({
+              //   text: videoData.video?.description ?? '',
+              //   title: 'Share this video',
+              //   url: shareUrl,
+              // })
+              // e.stopPropagation()
+              generateDeepLink({
+                action: 'spark',
+                contentType: 'video',
+                description: ``,
+                title: ``,
+                previewImage: null,
+                fromUserName: null,
+                pathName: PATH_NAME.video(videoData.video.slug),
+                utmCampaign: 'share',
+                utmMedium: 'web',
+                utmSource: window.location.hostname,
+                community:videoData.community.share_string,
+                loop: videoData.loop.share_string
               })
-              e.stopPropagation()
+                .then((generatedLink) => {
+                  openGeneratedLink(generatedLink)
+                })
+                .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
             }}>
             <Image src={icSpark} height={32} width={32} alt="spark" />
             <p className="flex justify-center text-body-sm text-monochrome-white">

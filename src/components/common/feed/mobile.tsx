@@ -33,6 +33,7 @@ export function Mobile({
   isLoading,
   hasNextPage,
   startIndex,
+  sizeBox,
 }: MobileProps) {
   const scrollDivRef = useRef<HTMLDivElement>(null)
   const { setCurrentIndex, setVideoList, currentIndex, videoList } = useFeedListStore((state) => ({
@@ -41,7 +42,6 @@ export function Mobile({
     currentIndex: state.currentIndex,
     videoList: state.videoList,
   }))
-  const sizeBox = useVideoSizeBoxMobile()
   // # If comment sheet is open than element should not be scrolled..
   const commentIsOpen = useCommentSheetStore((state) => state.modalIsOpen)
 
@@ -78,34 +78,34 @@ export function Mobile({
     setVideoList(videos)
   }, [videos])
 
-  if(sizeBox)
-  return (
-    <div className="relative block overflow-clip">
-      <div
-        ref={scrollDivRef}
-        style={{ width: sizeBox.width, height: sizeBox.height }}
-        className={cn(
-          'hide-scrollbar snap-y snap-mandatory snap-always overflow-x-clip  scroll-smooth',
-          !commentIsOpen ? 'overflow-y-scroll' : 'overflow-y-hidden'
-        )}>
-        {videos.map((item, index) => {
-          return (
-            <div key={index} style={{ width: sizeBox.width, height: sizeBox.height }}>
-              <Player
-                playIfInViewPort
-                isFirstPlayerInList={index === 0}
-                shouldPlay
-                loop
-                sizeBox={sizeBox}
-                videoData={item}
-              />
-            </div>
-          )
-        })}
+  if (videos)
+    return (
+      <div className="relative block overflow-clip">
+        <div
+          ref={scrollDivRef}
+          style={{ height: sizeBox.height, width: sizeBox.width }}
+          className={cn(
+            'hide-scrollbar snap-y snap-mandatory snap-always overflow-x-clip  scroll-smooth',
+            !commentIsOpen ? 'overflow-y-scroll' : 'overflow-y-hidden'
+          )}>
+          {videos.map((item, index) => {
+            return (
+              <div key={index} style={{ width: sizeBox.width, height: sizeBox.height }}>
+                <Player
+                  playIfInViewPort
+                  isFirstPlayerInList={index === 0}
+                  shouldPlay
+                  loop
+                  sizeBox={sizeBox}
+                  videoData={item}
+                />
+              </div>
+            )
+          })}
+        </div>
+        <InfinityViewBox />
       </div>
-      <InfinityViewBox />
-    </div>
-  )
+    )
 }
 
 function InfinityViewBox() {

@@ -253,7 +253,7 @@ function CommunityList({ usernickname }: any) {
                       }
                       asChild>
                       <Button size="custom" variant="default">
-                        <p className="px-4 py-1.5 text-title-sm">Join</p>
+                        <p className="px-4 py-1.5 text-title-3-demi">Join</p>
                       </Button>
                     </DownloadDialog>
                   </div>
