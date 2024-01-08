@@ -5,6 +5,7 @@ import { type VideoDataType } from '@lib/schemas/video'
 import { useEffect, useRef } from 'react'
 import { usePlayerControlStore } from './player-control-store'
 import { useCommentStore } from '../comments/store'
+import { useHasUserFocus } from '@hooks/use-has-user-focus'
 
 const CommentSheet = dynamic(async () => await import('./comment-sheet').then((comp) => comp.CommentSheet))
 const InnerPlayer = dynamic(async () => await import('./inner-player').then((comp) => comp.InnerPlayer), {
@@ -74,6 +75,7 @@ function Mobile({
   isFirstPlayerInList = false,
 }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null)
+  const hasFocus = useHasUserFocus()
   const { setShouldPlay, toggleShouldPlay } = usePlayerControlStore((state) => ({
     setShouldPlay: state.setShouldPlay,
     toggleShouldPlay: state.toggleShouldPlay,
@@ -82,6 +84,10 @@ function Mobile({
   useEffect(() => {
     setShouldPlay(shouldPlay)
   }, [shouldPlay])
+
+  useEffect(() => {
+    hasFocus ? setShouldPlay(shouldPlay) : setShouldPlay(false)
+  }, [hasFocus])
 
   if (videoData) {
     return (
@@ -129,6 +135,7 @@ function Desktop({
   isFirstPlayerInList = false,
 }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null)
+  const hasFocus = useHasUserFocus()
   const { setShouldPlay, stateShouldPlay } = usePlayerControlStore((state) => ({
     setShouldPlay: state.setShouldPlay,
     stateShouldPlay: state.shouldPlay,
@@ -145,6 +152,10 @@ function Desktop({
   useEffect(() => {
     setShouldPlay(activeComment === '')
   }, [activeComment])
+
+  useEffect(() => {
+    hasFocus ? setShouldPlay(shouldPlay && activeComment === '') : setShouldPlay(false)
+  }, [hasFocus])
 
   if (videoData) {
     return (
