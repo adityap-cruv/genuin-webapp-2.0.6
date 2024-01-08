@@ -115,10 +115,11 @@ export function MainComponent({ loopDetails }: Props) {
                     previewImage: null,
                     fromUserName: null,
                     pathName: window.location.pathname,
-                    sourceId: loopDetails.share_string,
+                    // sourceId: loopDetails.share_string,
                     utmCampaign: 'share',
                     utmMedium: 'web',
                     utmSource: window.location.hostname,
+                    community: loopDetails.community.share_string
                   })
                     .then((generatedLink) => {
                       openGeneratedLink(generatedLink)

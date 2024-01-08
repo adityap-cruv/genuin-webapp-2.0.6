@@ -58,10 +58,11 @@ function Mobile({ link = '', shareDescription = '', shareTitle = '', videoData }
                 previewImage: null,
                 fromUserName: null,
                 pathName: PATH_NAME.video(videoData.video.slug),
-                sourceId: '',
                 utmCampaign: 'share',
                 utmMedium: 'web',
                 utmSource: window.location.hostname,
+                community:videoData.community.share_string,
+                loop: videoData.loop.share_string
               })
                 .then((generatedLink) => {
                   openGeneratedLink(generatedLink)
