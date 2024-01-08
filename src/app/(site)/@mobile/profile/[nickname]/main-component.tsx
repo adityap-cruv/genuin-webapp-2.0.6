@@ -35,6 +35,9 @@ export function MainComponent({ profileData }: CompProps) {
   const { toast } = useToast()
   const detailsDivRef = useRef<HTMLDivElement>(null)
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
+  const scrollDivRef = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({ container: scrollDivRef, layoutEffect: false })
+
   return (
     <>
       <TopBar variant={'light'} />
@@ -47,6 +50,7 @@ export function MainComponent({ profileData }: CompProps) {
         isAvatar={profileData?.is_avatar}
       />
       <div
+        ref={scrollDivRef}
         className="hide-scrollbar absolute inset-0 mt-navbar w-full overflow-auto"
         style={{ height: 'calc(100% - 74px)' }}>
         <div className="p-4">
@@ -107,7 +111,7 @@ export function MainComponent({ profileData }: CompProps) {
           <Links profileData={profileData} />
         </div>
         <hr className="my-1 border-t border-monochrome-9" />
-        <CommunityList usernickname={profileData?.nickname} />
+        <CommunityList usernickname={profileData?.nickname} scrollYProgress={scrollYProgress} />
       </div>
       <PlayerModalWrapper />
     </>
@@ -227,7 +231,7 @@ function Stats({ profileData }: { profileData: any }) {
   )
 }
 
-function CommunityList({ usernickname }: any) {
+function CommunityList({ usernickname, scrollYProgress }: any) {
   const { data, isLoading, fetchNextPage, isFetchingNextPage } = getAllCommunities(usernickname)
   const { addCommunities, communities } = useCommunityListStore((state) => ({
     addCommunities: state.addCommunities,
@@ -239,32 +243,26 @@ function CommunityList({ usernickname }: any) {
     if (communities) addCommunities(communities)
   }, [data])
 
-  const scrollDivRef = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({ container: scrollDivRef, layoutEffect: false })
-
-  useMotionValueEvent(scrollYProgress, 'change', (latest) => {
+  useMotionValueEvent(scrollYProgress, 'change', (latest: any) => {
     if (Number(latest.toFixed(1)) > 0.8 && !isFetchingNextPage) {
       void fetchNextPage()
     }
   })
 
-  if (isLoading || isFetchingNextPage) return <Loader size="md" />
-
-  if (communities && communities?.length === 0)
-    return (
-      <div className="w-full overflow-hidden" style={{ height: 'calc(100% - 280px)' }}>
-        <div
-          className="flex h-full w-full items-center justify-center pt-2 text-title-3-bold text-monochrome"
-          style={{ backgroundColor: '#F9F9F9' }}>
-          No posts yet
+  return (
+    <div className="h-full w-full p-4">
+      {isLoading && <Loader size="md" />}
+      {communities && communities?.length === 0 && (
+        <div className="w-full overflow-hidden" style={{ height: 'calc(100% - 280px)' }}>
+          <div
+            className="flex h-full w-full items-center justify-center pt-2 text-title-3-bold text-monochrome"
+            style={{ backgroundColor: '#F9F9F9' }}>
+            No posts yet
+          </div>
         </div>
-      </div>
-    )
-
-  if (communities && communities?.length !== 0)
-    return (
-      <div ref={scrollDivRef} className="h-full w-full p-4">
-        <div>
+      )}
+      {communities && communities?.length !== 0 && (
+        <div className="h-full">
           {communities?.map((item, index) => (
             <div key={index}>
               <div className="flex items-center">
@@ -311,8 +309,10 @@ function CommunityList({ usernickname }: any) {
             </div>
           ))}
         </div>
-      </div>
-    )
+      )}
+      {isFetchingNextPage && <Loader size="md" />}
+    </div>
+  )
 }
 
 function CommunityDetails({ userId, community }: { userId: string; community: CommunityMiniObj }) {
