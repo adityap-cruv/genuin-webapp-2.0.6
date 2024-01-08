@@ -110,7 +110,7 @@ function Mobile({
           </div>
           <CommentSheet
             container={containerRef}
-            videoId={videoData.video.share_string}
+            videoDetails={videoData}
             noOfComments={videoData.video.no_of_comments ?? 0}
           />
         </div>
