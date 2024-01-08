@@ -276,7 +276,7 @@ function CommunityList({ usernickname }: any) {
                 />
                 <div className="mx-2 flex w-full items-center justify-between">
                   <Link href={{ pathname: PATH_NAME.community(item.slug) }}>
-                    <p className="line-clamp-1 text-left text-title-sm">{item.name}</p>
+                    <p className="line-clamp-1 break-all text-left text-title-sm">{item.name}</p>
                   </Link>
 
                   <Button
@@ -291,7 +291,7 @@ function CommunityList({ usernickname }: any) {
                         previewImage: null,
                         fromUserName: null,
                         pathName: PATH_NAME.community(item.slug),
-                        sourceId: item.handle,
+                        // sourceId: item.handle,
                         utmCampaign: 'share',
                         utmMedium: 'web',
                         utmSource: window.location.hostname,
@@ -386,7 +386,7 @@ function LoopVideos({
   return (
     <>
       <a href={PATH_NAME.loop(loopDetails.slug)}>
-        <p className="text-title-sm">{loopDetails.name}</p>
+        <p className="break-all text-title-sm">{loopDetails.name}</p>
       </a>
       {data?.pages.flatMap((page) => page.videos).length === 0 && (
         <div className="flex items-center justify-center pt-32 text-title-md text-secondary">No videos available</div>

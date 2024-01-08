@@ -116,14 +116,16 @@ export const generateDeepLink = async ({
   utmSource,
   utmMedium,
   action,
-  sourceId,
+  // sourceId,
   contentType,
   title,
   description,
   previewImage,
   pathName,
   fromUserName,
-  parentId,
+  // parentId,
+  community,
+  loop
 }: any) => {
   const queryParams = {}
   if (utmCampaign) {
@@ -138,17 +140,24 @@ export const generateDeepLink = async ({
   if (action) {
     Object.assign(queryParams, { action })
   }
-  if (sourceId) {
-    Object.assign(queryParams, { source_id: sourceId })
-  }
+  // if (sourceId) {
+  //   Object.assign(queryParams, { source_id: sourceId })
+  // }
   if (contentType) {
     Object.assign(queryParams, { content_type: contentType })
   }
   if (fromUserName) {
     Object.assign(queryParams, { from_username: fromUserName })
   }
-  if (parentId) {
-    Object.assign(queryParams, { parent_id: parentId })
+  // if (parentId) {
+  //   Object.assign(queryParams, { parent_id: parentId })
+  // }
+
+  if (community) {
+    Object.assign(queryParams, { community: community })
+  }
+  if (loop) {
+    Object.assign(queryParams, { loop: loop })
   }
   const finalPayload = {
     query_params: queryParams,

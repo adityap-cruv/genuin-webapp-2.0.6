@@ -114,13 +114,12 @@ export function MainComponent({ loopDetails }: Props) {
                     title: loopDetails.group.group_name,
                     previewImage: null,
                     fromUserName: null,
-                    pathName:
-                      window.location.pathname +
-                      `?community_id=${loopDetails.community.share_string}&utm_source=app_web`,
-                    sourceId: loopDetails.share_string,
+                    pathName: window.location.pathname,
+                    // sourceId: loopDetails.share_string,
                     utmCampaign: 'share',
                     utmMedium: 'web',
                     utmSource: window.location.hostname,
+                    community: loopDetails.community.share_string
                   })
                     .then((generatedLink) => {
                       openGeneratedLink(generatedLink)
@@ -144,7 +143,7 @@ export function MainComponent({ loopDetails }: Props) {
                 className="border border-primary p-0.5"
                 onClick={async () => {
                   const currentURL = new URL(window.location.href)
-                  currentURL.searchParams.set('community_id', `${loopDetails.community.share_string}`)
+                  currentURL.searchParams.set('community', `${loopDetails.community.share_string}`)
                   currentURL.searchParams.set('utm_source', 'app_web')
                   await shareFn({
                     shareLink: currentURL.href,

@@ -66,7 +66,6 @@ export function ProfileDetails({ communityDetails }: Props) {
                     previewImage: null,
                     fromUserName: null,
                     pathName: window.location.pathname,
-                    sourceId: communityDetailsModule.info.handle,
                     utmCampaign: 'share',
                     utmMedium: 'web',
                     utmSource: window.location.hostname,
