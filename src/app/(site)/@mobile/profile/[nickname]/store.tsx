@@ -41,7 +41,7 @@ type CommunityListType = {
   currentIndex: number
   endIndex: number
   setCurrentIndex: (index: number) => void
-  // fetchNextPage: () => void
+  fetchNextPage: () => void
   // fetchPreviousPage: () => void
   setVideoDetails: (shareStrings: Array<{ share_string: string }>) => Promise<void>
   addCommunities: (list: Array<Omit<CommunityMiniObj, 'loops'>>) => void
@@ -70,7 +70,7 @@ export const useCommunityListStore = create<CommunityListType>((set) => {
     setCurrentIndex(index) {
       set((state) => {
         const videoList = state.videoList
-        index + 15 > videoList.length ? (state.endIndex = videoList.length) : (state.endIndex = index + 15)
+        index + 10 > videoList.length ? (state.endIndex = videoList.length) : (state.endIndex = index + 15)
         index - 5 > 0 ? (state.startIndex = index - 5) : (state.startIndex = 0)
         void state.setVideoDetails(
           videoList.slice(state.startIndex, state.endIndex).map((item) => ({ share_string: item.shareString }))
@@ -79,17 +79,17 @@ export const useCommunityListStore = create<CommunityListType>((set) => {
         return state
       })
     },
-    // fetchNextPage() {
-    //   set((state) => {
-    //     const videoList = state.videoList
-    //     const oldEndIndex = state.endIndex
-    //     oldEndIndex + 10 > videoList.length ? (state.endIndex = videoList.length) : (state.endIndex += 10)
-    //     void state.setVideoDetails(
-    //       videoList.slice(oldEndIndex, state.endIndex).map((item) => ({ share_string: item.shareString }))
-    //     )
-    //     return state
-    //   })
-    // },
+    fetchNextPage() {
+      set((state) => {
+        const videoList = state.videoList
+        const oldEndIndex = state.endIndex
+        oldEndIndex + 10 > videoList.length ? (state.endIndex = videoList.length) : (state.endIndex += 10)
+        void state.setVideoDetails(
+          videoList.slice(oldEndIndex, state.endIndex).map((item) => ({ share_string: item.shareString }))
+        )
+        return state
+      })
+    },
     // fetchPreviousPage() {
     //   set((state) => {
     //     const videoList = state.videoList
