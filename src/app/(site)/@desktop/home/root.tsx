@@ -2,6 +2,7 @@
 import { Loader } from '@components/ui/loader'
 import { useVideoSizeBox } from '@hooks/use-video-size-box'
 import { getFeed } from '@lib/api/feed'
+import { useEffect } from 'react'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import dynamic from 'next/dynamic'
 import { useSearchParams } from 'next/navigation'
@@ -22,6 +23,7 @@ export function Root({ brandId }: { brandId?: string }) {
     brandId,
   })
   const videos = data?.pages.flatMap((item) => item.reels)
+
   if (videoSizeBox && videos)
     return (
       <main className="h-full w-full">
