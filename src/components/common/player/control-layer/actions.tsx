@@ -76,8 +76,8 @@ function Mobile({ link = '', shareDescription = '', shareTitle = '', videoData }
               const url = {
                 pathname: PATH_NAME.video(videoData.video.slug),
                 query: {
-                  community_id: videoData.community.share_string,
-                  loop_id: videoData.loop.share_string,
+                  community: videoData.community.share_string,
+                  loop: videoData.loop.share_string,
                   utm_source: 'app_web',
                 },
               }
@@ -111,8 +111,8 @@ function Mobile({ link = '', shareDescription = '', shareTitle = '', videoData }
             const url = {
               pathname: PATH_NAME.video(videoData.video.slug),
               query: {
-                community_id: videoData.community.share_string,
-                loop_id: videoData.loop.share_string,
+                community: videoData.community.share_string,
+                loop: videoData.loop.share_string,
                 utm_source: 'app_web',
               },
             }
@@ -182,8 +182,8 @@ function Desktop({ link = '', shareDescription = '', shareTitle = '', videoData 
             const url = {
               pathname: PATH_NAME.video(videoData.video.slug),
               query: {
-                community_id: videoData.community.share_string,
-                loop_id: videoData.loop.share_string,
+                community: videoData.community.share_string,
+                loop: videoData.loop.share_string,
                 utm_source: 'app_web',
               },
             }
