@@ -206,23 +206,20 @@ function CommunityList({ usernickname }: any) {
     }
   })
 
-  if (isLoading) return <Loader size="md" />
-
-  if (communities && communities?.length === 0)
-    return (
-      <div className="w-full overflow-hidden" style={{ height: `calc(100% - 250px)` }}>
-        <div
-          className="flex h-full w-full items-center justify-center pt-2 text-title-3-bold text-monochrome"
-          style={{ backgroundColor: '#F9F9F9' }}>
-          No posts yet
-        </div>
-      </div>
-    )
-
-  if (communities && communities?.length !== 0)
-    return (
-      <div className="w-full overflow-hidden" style={{ height: 'calc(100% - 56px)' }}>
-        <div ref={scrollDivRef} className="h-full w-full overflow-y-auto">
+  return (
+    <div className="w-full overflow-hidden" style={{ height: 'calc(100% - 56px)' }}>
+      <div ref={scrollDivRef} className="h-full w-full overflow-y-auto">
+        {isLoading && <Loader size="md" />}
+        {communities && communities?.length === 0 && (
+          <div className="w-full overflow-hidden" style={{ height: `calc(100% - 250px)` }}>
+            <div
+              className="flex h-full w-full items-center justify-center pt-2 text-title-3-bold text-monochrome"
+              style={{ backgroundColor: '#F9F9F9' }}>
+              No posts yet
+            </div>
+          </div>
+        )}
+        {communities && communities?.length !== 0 && (
           <div>
             {communities?.map((item: CommunityMiniObj, index) => (
               <div key={index} className="my-6">
@@ -264,10 +261,12 @@ function CommunityList({ usernickname }: any) {
               </div>
             ))}
           </div>
-        </div>
-        <PlayerModalWrapper />
+        )}
+        {isFetchingNextPage && <Loader size="md" />}
       </div>
-    )
+      <PlayerModalWrapper />
+    </div>
+  )
 }
 
 function PlayerModalWrapper() {
