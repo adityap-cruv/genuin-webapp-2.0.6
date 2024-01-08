@@ -17,6 +17,7 @@ import { useMotionValueEvent, useScroll } from 'framer-motion'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
+import { getTimeAgo } from '@lib/utils'
 
 type DesktopDetailsProps = {
   videoDetails: VideoDataType
@@ -98,9 +99,12 @@ function InfoArea({ videoDetails }: { videoDetails: VideoDataType }) {
           imageUrl={videoDetails.owner.profile_image ?? ''}
           className="h-9 w-9"
         />
-        <Link href={PATH_NAME.profile(videoDetails.owner.nickname)}>
-          <p className="text-body-lg">@{videoDetails.owner.nickname}</p>
-        </Link>
+        <span className="flex items-center gap-x-1">
+          <Link href={PATH_NAME.profile(videoDetails.owner.nickname)}>
+            <p className="text-body-lg">@{videoDetails.owner.nickname}</p>
+          </Link>
+          <p className="text-body-1-demi text-secondary">{getTimeAgo(videoDetails.video.created_at)}</p>
+        </span>
       </span>
       <div className="pb-6 pt-2">
         <p className="line-clamp-2 w-5/6 overflow-hidden break-all text-title-3-med">
