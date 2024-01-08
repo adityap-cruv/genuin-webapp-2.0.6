@@ -125,25 +125,16 @@ function PlayerModalWrapper() {
     feedStartIndex: 0,
   })
 
-  const {
-    close,
-    currentVideoShareString,
-    fetchNextPage,
-    videoList,
-    setCurrentIndex,
-    startIndex,
-    endIndex,
-    currentIndex,
-  } = useCommunityListStore((state) => ({
-    close: state.close,
-    currentVideoShareString: state.currentVideoShareString,
-    videoList: state.videoList,
-    setCurrentIndex: state.setCurrentIndex,
-    startIndex: state.startIndex,
-    endIndex: state.endIndex,
-    currentIndex: state.currentIndex,
-    fetchNextPage: state.fetchNextPage,
-  }))
+  const { close, currentVideoShareString, videoList, setCurrentIndex, startIndex, endIndex } = useCommunityListStore(
+    (state) => ({
+      close: state.close,
+      currentVideoShareString: state.currentVideoShareString,
+      videoList: state.videoList,
+      setCurrentIndex: state.setCurrentIndex,
+      startIndex: state.startIndex,
+      endIndex: state.endIndex,
+    })
+  )
 
   useEffect(() => {
     if (currentVideoShareString) {
