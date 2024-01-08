@@ -71,7 +71,7 @@ function CommentBox({ shareString, parentRef }: { shareString: string; parentRef
       <div className="h-full overflow-visible">
         <Comments.withoutApi
           comments={comments}
-          fetchNextPage={() => {}}
+          fetchNextPage={() => { }}
           hasNextPage={hasNextPage}
           isError={isError}
           isFetchingNextPage={isFetchingNextPage}
@@ -143,7 +143,7 @@ function InfoArea({ videoDetails }: { videoDetails: VideoDataType }) {
               onClick={async () =>
                 await shareFn({
                   shareLink:
-                    window.location.host + PATH_NAME.community(videoDetails.community.slug) + '&utm_source=app_web',
+                    window.location.host + PATH_NAME.community(videoDetails.community.slug) + '?utm_source=app_web',
                   toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                 })
               }>
