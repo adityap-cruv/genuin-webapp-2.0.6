@@ -124,8 +124,8 @@ export const generateDeepLink = async ({
   pathName,
   fromUserName,
   // parentId,
-  communityId,
-  loopId
+  community,
+  loop
 }: any) => {
   const queryParams = {}
   if (utmCampaign) {
@@ -153,11 +153,11 @@ export const generateDeepLink = async ({
   //   Object.assign(queryParams, { parent_id: parentId })
   // }
 
-  if (communityId) {
-    Object.assign(queryParams, { community: communityId })
+  if (community) {
+    Object.assign(queryParams, { community })
   }
-  if (loopId) {
-    Object.assign(queryParams, { loop: loopId })
+  if (loop) {
+    Object.assign(queryParams, { loop })
   }
   const finalPayload = {
     query_params: queryParams,
