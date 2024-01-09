@@ -21,15 +21,13 @@ export function DownloadDialog({ children, subtitle, title, asChild = false }: P
     <Dialog>
       <DialogTrigger asChild={asChild}>{children}</DialogTrigger>
       <DialogContent>
-        <div className="flex h-full w-full flex-col items-center justify-center pt-6">
+        <div className="flex h-full w-full flex-col items-center justify-center px-4 pt-6">
           <Image src={iconLogo} alt="genuin" className="mb-3" />
           <p style={{ fontSize: '40px' }} className="hidden whitespace-nowrap text-center font-bold sm:block">
             {title}
           </p>
-          <p className="line-clamp-2 max-w-none break-all text-center font-semibold" style={{ fontSize: '20px' }}>
-            {subtitle}
-          </p>
-          <div className="mt-6 flex">
+          <p className="line-clamp-2 max-w-none text-center text-title-2-demi">{subtitle}</p>
+          <div className="mt-6 flex gap-x-2">
             <a href={URL_TO_APP_STORE} target="_blank" rel="noopener noreferrer">
               <Image className="mx-2 h-10 w-auto" src={imageAppStore} alt="app store" />
             </a>

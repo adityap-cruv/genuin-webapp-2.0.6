@@ -6,7 +6,7 @@ import { useRef } from 'react'
 import { useMotionValueEvent, useScroll } from 'framer-motion'
 import { useVideoSizeBox, type VideoSizeBoxType } from '@hooks/use-video-size-box'
 
-const Player = dynamic(async () => await import('@components/common/player').then((comp) => comp.default), {
+const Player = dynamic(async () => await import('@components/common/player').then((comp) => comp.Player.mobile), {
   loading: (state) => {
     return <Loader size="lg" />
   },
@@ -16,7 +16,6 @@ interface CommunityReelsProps {
   communityHandle: string
 }
 
-// todo create error in api component
 export function CommunityReels({ communityHandle }: CommunityReelsProps) {
   const divRef = useRef<HTMLDivElement>(null)
   const { data, isLoading, fetchNextPage, isFetchingNextPage } = getCommunityVideos(communityHandle)
@@ -33,7 +32,7 @@ export function CommunityReels({ communityHandle }: CommunityReelsProps) {
 
   if (sizeBox)
     return (
-      <div className="absolute left-0 top-0 z-10 h-full w-full overflow-clip">
+      <div className="absolute inset-0 z-10 h-full w-full overflow-clip">
         <div
           className="hide-scrollbar relative h-full snap-y snap-mandatory snap-always overflow-y-auto overflow-x-clip"
           ref={divRef}>
@@ -66,7 +65,6 @@ function InnerReelList({ videos, isLoading, sizeBox }: InnerReelListProps) {
         isFirstPlayerInList={index === 0}
         loop
         playIfInViewPort
-        showCommunityControl
       />
     )
   })

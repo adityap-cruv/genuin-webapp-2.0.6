@@ -6,6 +6,33 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+export function getTimeAgo(createdAt: any) {
+  const currentDate: any = new Date()
+  const createdAtDate: any = new Date(createdAt)
+
+  const timeDifference = currentDate - createdAtDate
+  const seconds = Math.floor(timeDifference / 1000)
+  const minutes = Math.floor(seconds / 60)
+  const hours = Math.floor(minutes / 60)
+  const days = Math.floor(hours / 24)
+  const months = Math.floor(days / 30.44)
+  const years = Math.floor(months / 12)
+
+  if (years > 0) {
+    return years + 'y'
+  } else if (months > 0) {
+    return months + 'm'
+  } else if (days > 0) {
+    return days + 'd'
+  } else if (hours > 0) {
+    return hours + 'h'
+  } else if (minutes > 0) {
+    return minutes + 'min'
+  } else {
+    return seconds + 's'
+  }
+}
+
 export function getAvatarUrl(avatarUrl: any) {
   if (avatarUrl) {
     return isValidHTTPS(avatarUrl) ? avatarUrl : `https://media.qa.begenuin.com/backend_assets/lottie/${avatarUrl}.png`
@@ -29,6 +56,7 @@ export function isValidHTTPS(link: string): any {
 }
 
 export const abbreviateNumber = (value: number) => {
+  if (!value) return 0
   let newValue = value.toString()
   if (value >= 1000) {
     const suffixes = ['', 'k', 'm', 'b', 't']
@@ -61,7 +89,7 @@ function getUrlToChange(urlObj: UrlObjType) {
     }
   })
   replaceUrlObj.pathname = urlObj.pathname ?? ''
-  replaceUrlObj.search = searchParams.toString()
+  replaceUrlObj.search = urlObj.query.length > 0 ? searchParams.toString() : ''
   return replaceUrlObj.href
 }
 
@@ -82,19 +110,22 @@ export const openGeneratedLink = (link = '') => {
   element.click()
 }
 
+//  TODO This function line can be reduced and validation can be automated.
 export const generateDeepLink = async ({
   utmCampaign,
   utmSource,
   utmMedium,
   action,
-  sourceId,
+  // sourceId,
   contentType,
   title,
   description,
   previewImage,
   pathName,
   fromUserName,
-  parentId,
+  // parentId,
+  community,
+  loop
 }: any) => {
   const queryParams = {}
   if (utmCampaign) {
@@ -109,17 +140,24 @@ export const generateDeepLink = async ({
   if (action) {
     Object.assign(queryParams, { action })
   }
-  if (sourceId) {
-    Object.assign(queryParams, { source_id: sourceId })
-  }
+  // if (sourceId) {
+  //   Object.assign(queryParams, { source_id: sourceId })
+  // }
   if (contentType) {
     Object.assign(queryParams, { content_type: contentType })
   }
   if (fromUserName) {
     Object.assign(queryParams, { from_username: fromUserName })
   }
-  if (parentId) {
-    Object.assign(queryParams, { parent_id: parentId })
+  // if (parentId) {
+  //   Object.assign(queryParams, { parent_id: parentId })
+  // }
+
+  if (community) {
+    Object.assign(queryParams, { community })
+  }
+  if (loop) {
+    Object.assign(queryParams, { loop })
   }
   const finalPayload = {
     query_params: queryParams,

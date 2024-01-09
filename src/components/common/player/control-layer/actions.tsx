@@ -2,9 +2,6 @@ import { abbreviateNumber, checkAndAppendHttps, generateDeepLink, openGeneratedL
 import icShare from '@icons/player-controls/icShare.svg'
 import icComment from '@icons/player-controls/icComment.svg'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
-import icReply from '@icons/icReply.svg'
-import icSave from '@icons/icSave.svg'
-import { isMobile } from 'react-device-detect'
 import { useToast } from '@components/ui/use-toast'
 import icLinkout from '@icons/player-controls/icLinkout.svg'
 import icSpark from '@icons/player-controls/icBulb.svg'
@@ -14,26 +11,26 @@ import { type VideoDataType } from '@lib/schemas/video'
 import Link from 'next/link'
 import Image from 'next/image'
 import { DownloadDialog } from '@components/common/download-dialog'
-import { useCommentsStore } from '../comments/store'
+import { useCommentSheetStore } from '../comment-sheet/store'
+import { PATH_NAME } from '@lib/utils/constants/path'
+import { format } from 'url'
 
 interface ActionsProps {
   link: string
   shareTitle: string
   videoData?: VideoDataType
   shareDescription: string
-  isLoop?: boolean
 }
 
-export function Actions({
-  link = '',
-  shareDescription = '',
-  shareTitle = '',
-  isLoop = false,
-  videoData,
-}: ActionsProps) {
-  const { shareFn } = useAdaptiveShare()
-  const { toast } = useToast()
-  const { openComments, closeComments, commentsIsOpen } = useCommentsStore((state) => ({
+export const Actions = {
+  mobile: Mobile,
+  desktop: Desktop,
+}
+
+// TODO: Fix their is bug when text length is bigger than devicesize fix it.
+function Mobile({ link = '', shareDescription = '', shareTitle = '', videoData }: ActionsProps) {
+  // const { shareFn } = useAdaptiveShare()
+  const { openComments, closeComments, commentsIsOpen } = useCommentSheetStore((state) => ({
     openComments: state.openModal,
     closeComments: state.closeModal,
     commentsIsOpen: state.modalIsOpen,

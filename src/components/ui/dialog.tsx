@@ -24,7 +24,7 @@ const DialogContent = React.forwardRef<
       {...props}>
       <div
         style={{ minHeight: 'min-content' }}
-        className="fixed bottom-0 z-50 grid w-full justify-center bg-background p-6 shadow-lg duration-300 group-data-[state=open]:animate-in group-data-[state=closed]:animate-out group-data-[state=closed]:fade-out-0 group-data-[state=open]:fade-in-0 group-data-[state=closed]:zoom-out-95 group-data-[state=open]:zoom-in-95 group-data-[state=closed]:slide-out-to-left-1/2 group-data-[state=closed]:slide-out-to-top-[48%] group-data-[state=open]:slide-in-from-left-1/2 group-data-[state=open]:slide-in-from-top-[48%] sm:left-[50%] sm:top-[50%] sm:w-fit sm:max-w-lg sm:translate-x-[-50%] sm:translate-y-[-50%] sm:rounded-lg">
+        className="fixed bottom-0 z-50 grid w-full justify-center rounded-t-2xl bg-monochrome-white p-6 shadow-lg duration-300 group-data-[state=open]:animate-in group-data-[state=closed]:animate-out group-data-[state=closed]:fade-out-0 group-data-[state=open]:fade-in-0 group-data-[state=closed]:zoom-out-95 group-data-[state=open]:zoom-in-95 group-data-[state=closed]:slide-out-to-left-1/2 group-data-[state=closed]:slide-out-to-top-[48%] group-data-[state=open]:slide-in-from-left-1/2 group-data-[state=open]:slide-in-from-top-[48%] sm:left-[50%] sm:top-[50%]  sm:max-w-md sm:translate-x-[-50%] sm:translate-y-[-50%] sm:rounded-lg">
         <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm transition-opacity disabled:pointer-events-none">
           <X className="h-6 w-6" />
           <span className="sr-only">Close</span>
@@ -58,4 +58,6 @@ const DialogDescription = React.forwardRef<
 >(({ className, ...props }, ref) => <DialogPrimitive.Description ref={ref} className={cn(className)} {...props} />)
 DialogDescription.displayName = DialogPrimitive.Description.displayName
 
-export { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription }
+const DialogClose = DialogPrimitive.Close
+
+export { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription, DialogClose }

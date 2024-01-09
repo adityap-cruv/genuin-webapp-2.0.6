@@ -8,5 +8,6 @@
     "plaintext",
     "typescriptreact"
   ],
-  "svg.preview.background": "dark-transparent"
+  "svg.preview.background": "dark-transparent",
+  "cmake.configureOnOpen": false
 }

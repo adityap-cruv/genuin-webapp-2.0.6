@@ -15,7 +15,7 @@ const logoVariant = cva('', {
 
 type Logoprops = Record<string, unknown> & VariantProps<typeof logoVariant>
 
-function Logo({ variant = 'dark' }: Logoprops) {
+export function GenuinLogo({ variant = 'dark' }: Logoprops) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -35,20 +35,20 @@ function Logo({ variant = 'dark' }: Logoprops) {
   )
 }
 
-function Symbol({ variant = 'dark' }: Logoprops) {
+export function GenuinSymbol({ variant = 'dark' }: Logoprops) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="144"
+      width="40"
       height="40"
-      viewBox="0 0 144 40"
+      viewBox="0 0 40 40"
       className={cn(logoVariant({ variant }))}>
       <path d="M19.8048 4.00781C10.9692 4.00781 3.84036 11.1011 3.8048 19.9367C3.77813 27.1012 8.45369 33.1812 14.9248 35.2523C17.9648 36.2212 21.2981 34.8523 22.6581 31.9634C23.0848 31.0567 23.3248 30.0434 23.3248 28.9678V28.6656C23.3248 28.39 23.0492 28.1945 22.7915 28.2923C21.8048 28.6478 20.7381 28.8345 19.627 28.8078C14.827 28.71 10.9604 24.7189 11.0048 19.9189C11.0492 15.1011 14.9781 11.2078 19.8048 11.2078C24.667 11.2078 28.6048 15.1456 28.6048 20.0078V28.9678C28.6048 30.7723 28.2137 32.4878 27.5204 34.0256C32.4626 31.3056 35.8048 26.0434 35.8048 20.0078C35.8048 11.1723 28.6404 4.00781 19.8048 4.00781Z" />
     </svg>
   )
 }
 
-function Text({ variant = 'dark' }: Logoprops) {
+export function GenuinText({ variant = 'dark' }: Logoprops) {
   return (
     <Link href={'/'} className="hover:opacity-80">
       <svg
@@ -69,7 +69,7 @@ function Text({ variant = 'dark' }: Logoprops) {
   )
 }
 
-function AdaptiveLogo({ variant = 'dark' }: Logoprops) {
+export function GenuinAdaptiveLogo({ variant = 'dark' }: Logoprops) {
   return (
     <Link href={'/'} className="hover:opacity-50">
       <svg
@@ -91,11 +91,4 @@ function AdaptiveLogo({ variant = 'dark' }: Logoprops) {
       </svg>
     </Link>
   )
-}
-
-export const GenuinLogo = {
-  symbol: Symbol,
-  logo: Logo,
-  adaptive: AdaptiveLogo,
-  text: Text,
 }

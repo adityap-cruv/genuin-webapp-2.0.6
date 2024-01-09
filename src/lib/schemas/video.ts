@@ -27,11 +27,13 @@ const VideoInfoSchema = z.object({
   view_count: z.number().nullish(),
   reply_count: z.number().nullish(),
   no_of_sparks: z.number().nullish(),
-  no_of_comments: z.number().nullish()
+  no_of_comments: z.number().nullish(),
+  slug: z.string(),
 })
 
 const LoopInfoSchema = z.object({
   share_string: z.string(),
+  slug: z.string(),
   name: z.string().optional(),
   description: z.string().nullish(),
   profile_image: z.string().url().nullish(),
@@ -39,11 +41,20 @@ const LoopInfoSchema = z.object({
   preview_image: z.string().url().nullish(),
 })
 
+const CommunityInfoSchema = z.object({
+  share_string: z.string(),
+  dp: z.string().optional(),
+  handle: z.string(),
+  name: z.string().optional(),
+  slug: z.string(),
+})
+
 const VideoDataSchema = z.object({
   video_type: z.enum(['rt', 'public_video']).optional(),
   owner: OwnerSchema,
   video: VideoInfoSchema,
-  loop: LoopInfoSchema.optional(),
+  loop: LoopInfoSchema,
+  community: CommunityInfoSchema,
 })
 
 const VideoDataListSchema = z.array(VideoDataSchema)

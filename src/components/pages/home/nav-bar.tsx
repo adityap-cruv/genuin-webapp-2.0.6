@@ -1,7 +1,7 @@
 'use client'
 import { cn } from '@lib/utils'
 import { Button } from '@components/ui/button'
-import { GenuinLogo } from '@components/ui/genuin-logo'
+import { GenuinLogo, GenuinText } from '@components/ui/genuin-logo'
 import { HamBurgerMenuIcon } from '@components/ui/ham-burger'
 import Link from 'next/link'
 import { Sheet, SheetContent, SheetTrigger } from '@components/ui/sheet'
@@ -10,43 +10,35 @@ import { DownloadAppDialog } from './download-app-dialog'
 import { HIRING_LINK } from '@lib/constants'
 
 export function NavBar() {
-  // const navRef = useRef<HTMLElement>(null)
-
-  // useEffect(() => {
-  //   /**
-  //    * here in this login navbar will be transparent if initial-component is in viewport
-  //    */
-  //   const stop = inView(
-  //     '#initial-component',
-  //     () => {
-  //       navRef.current?.classList.remove('bg-monochrome-white', 'shadow-lg')
-  //       return (entry) => {
-  //         navRef.current?.classList.add('bg-monochrome-white', 'shadow-lg')
-  //       }
-  //     },
-  //     { amount: 'some' }
-  //   )
-  //   return () => stop()
-  // }, [])
-
   return (
     <>
       <nav className="absolute top-0 z-10 m-auto hidden h-navbar w-full lg:flex ">
         <div className={cn('container flex h-full w-full items-center justify-between py-1')}>
-          <GenuinLogo.text variant="black" />
+          <Link href="/">
+            <GenuinLogo variant="black" />
+          </Link>
           <div className="flex items-center gap-x-4">
+            <Link href={{ pathname: PATH_NAME.home() }}>
+              <p className="pr-4 text-new-para-2 transition-all hover:underline" style={{ fontWeight: 600 }}>
+                Explore Genuin
+              </p>
+            </Link>
             <Link href={HIRING_LINK}>
               <Button
                 variant="outline"
                 className="hover:bg-new-off-black hover:text-new-off-white"
                 outlineColor="black"
                 size="index-page">
-                <p className="text-new-sm">We're hiring!</p>
+                <p className="text-new-sm" style={{ fontWeight: 600 }}>
+                  We're hiring!
+                </p>
               </Button>
             </Link>
             <DownloadAppDialog>
               <Button size="index-page" className="bg-new-off-black after:bg-new-dark-grey hover:bg-new-dark-grey">
-                <p className="text-new-sm text-new-off-white">Download Genuin</p>
+                <p className="text-new-sm text-new-off-white" style={{ fontWeight: 600 }}>
+                  Download Genuin
+                </p>
               </Button>
             </DownloadAppDialog>
           </div>
@@ -54,7 +46,7 @@ export function NavBar() {
       </nav>
       <nav className="absolute top-0 z-10 m-auto h-navbar w-full lg:hidden ">
         <div className={cn('flex h-full items-center justify-between py-1 pl-2')}>
-          <GenuinLogo.text variant="black" />
+          <GenuinText variant="black" />
           <div className="flex items-center gap-x-2">
             <Sheet modal={true}>
               <SheetTrigger>

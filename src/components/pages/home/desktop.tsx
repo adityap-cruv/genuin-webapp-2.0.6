@@ -5,6 +5,7 @@ import { CommunitySection } from './community-section'
 import { Button } from '@components/ui/button'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@components/ui/accordion'
 import { DownloadAppDialog } from './download-app-dialog'
+import Link from 'next/link'
 
 // all images import
 import imgC1 from '@images/home-page/c1.png'
@@ -22,6 +23,7 @@ import icConversation from '@icons/home-page/icConversation.svg'
 import imgC5 from '@images/home-page/c5.png'
 import imgC5_2 from '@images/home-page/c5_2.png'
 import imgReviewerDp from '@images/home-page/reviewerDp.png'
+import { PATH_NAME } from '@lib/utils/constants/path'
 
 export function Desktop() {
   return (
@@ -46,10 +48,14 @@ function Component1() {
         style={{ background: 'radial-gradient(123.19% 48.8% at 76.02% 69.05%, #E9CAF4 0%, #ADD8FB 100%)' }}>
         <div className="container flex h-full w-full items-center justify-around">
           <div className="w-[60%] flex-col justify-between">
-            <h1 className="text-new-h1">Community, reimagined. Learn, connect and engage — all under one roof.</h1>
+            <h1 className="text-new-h1">
+              Community,
+              <br /> reimagined. Learn, connect and engage
+              <br /> — all under one roof.
+            </h1>
             <div className="mt-15 flex items-center gap-x-5">
               <Image priority loading="eager" src={qrImage} alt="Download Genuin!" />
-              <p className="text-left text-new-para-1">
+              <p className="max-w-md text-left text-new-para-1">
                 Download Genuin to create communities, interact with your audience, and start conversations on the
                 topics that really matter.
               </p>
@@ -68,11 +74,18 @@ function Component1() {
           Download Genuin to create communities, interact with your audience, and start conversations on the topics that
           really matter.
         </p>
-        <DownloadAppDialog>
-          <Button className="bg-new-off-black py-5 after:bg-new-dark-grey hover:bg-new-dark-grey">
-            <p className="mx-2 text-new-md text-new-off-white">Download Genuin</p>
-          </Button>
-        </DownloadAppDialog>
+        <div className="flex flex-col gap-y-4">
+          <DownloadAppDialog>
+            <Button size="custom" className="bg-new-off-black px-5 py-4 after:bg-new-dark-grey hover:bg-new-dark-grey">
+              <p className="text-new-md text-new-off-white">Download Genuin</p>
+            </Button>
+          </DownloadAppDialog>
+          <Link href={{ pathname: PATH_NAME.home() }}>
+            <Button size="custom" variant="outline" className="w-full px-5 py-4">
+              <p className="text-new-md">Explore Genuin</p>
+            </Button>
+          </Link>
+        </div>
         <Image priority loading="eager" className="w-4/5 translate-x-2 py-5 sm:w-1/2" src={imgC1Mobile} alt="genuin" />
       </div>
     </>

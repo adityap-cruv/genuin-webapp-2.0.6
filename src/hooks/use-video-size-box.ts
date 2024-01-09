@@ -8,20 +8,9 @@ export type VideoSizeBoxType = {
 export function useVideoSizeBox(considerNavbar: boolean = false): VideoSizeBoxType | null {
   const [videoSizeBox, setVideoSizeBox] = useState<VideoSizeBoxType | null>(null)
 
-  // useEffect(() => {
-  //   console.log('video size box::', videoSizeBox)
-  // }, [videoSizeBox])
-
-  // function getMaxWidth(windowWidth: number) {
-  //   if (windowWidth > 1400) {
-  //     return windowWidth * 0.28
-  //   }
-  //   return windowWidth * 0.33
-  // }
-
   useEffect(() => {
     function handleResize(event?: UIEvent) {
-      const windowHeight = considerNavbar ? window.innerHeight - 74 : window.innerHeight
+      const windowHeight = considerNavbar ? window.innerHeight - 77 : window.innerHeight
       const windowWidth = window.innerWidth
       let videoWidth = (windowHeight * 9) / 16
 

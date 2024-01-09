@@ -25,7 +25,8 @@ interface Props {
   children: React.ReactNode
 }
 
-// todo improve it's api implementation
+// TODO: improve it's api implementation
+// TODO: Causing hydration issue fix it.
 export function DownloadAppDialog({ children }: Props) {
   const URL_TO_APP_STORE = 'https://apps.apple.com/US/app/id1511177838?mt=8'
   const URL_TO_PLAY_STORE = 'https://play.google.com/store/apps/details?id=com.begenuin.begenuin'
@@ -55,13 +56,13 @@ export function DownloadAppDialog({ children }: Props) {
               Terms of Service
             </a>
           </p>
-          <div className="mt-6 flex">
-            <a href={URL_TO_APP_STORE} target="_blank" rel="noopener noreferrer">
+          <div className="mt-6 flex w-full items-center justify-center">
+            <Link href={URL_TO_APP_STORE} target="_blank" rel="noopener noreferrer">
               <Image className="mx-2" src={imageAppStore} alt="app store" />
-            </a>
-            <a href={URL_TO_PLAY_STORE} target="_blank" rel="noopener noreferrer">
+            </Link>
+            <Link href={URL_TO_PLAY_STORE} target="_blank" rel="noopener noreferrer">
               <Image className="mx-2" src={imagePlayStore} alt="play store" />
-            </a>
+            </Link>
           </div>
         </div>
       </DialogContent>

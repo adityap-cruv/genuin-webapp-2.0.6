@@ -3,10 +3,13 @@ import { NavBar } from '@components/pages/home/nav-bar'
 import { Footer } from '@components/pages/home/footer'
 import { MainComponent } from '@components/pages/home/main-component'
 import { cookies } from 'next/headers'
+import Script from 'next/script'
 
-// todo configure eslint plugin
-// todo work on parallel routing for developing mobile and desktop components differently
-// todo create skeleton for everything and pages.
+// TODO: configure eslint plugin
+// TODO: work on parallel routing for developing mobile and desktop components differently
+// TODO: create skeleton for everything and pages.
+// TODO: optimize uses of dynamic function.
+// TODO: check react-device-detect dependency and than remove it. as it is not needed anymore.
 export default async function Page() {
   const isMobile = cookies().get('mobile')?.value === 'true'
   return (
@@ -14,6 +17,15 @@ export default async function Page() {
       <NavBar />
       <MainComponent isMobile={isMobile} />
       <Footer isMobile={isMobile} />
+      <Script src={`https://www.googletagmanager.com/gtag/js?id=${process.env.GA_MEASUREMENT_ID}`} />
+      <Script id="google-analytics">
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', '${process.env.GA_MEASUREMENT_ID}');
+        `}
+      </Script>
     </main>
   )
 }

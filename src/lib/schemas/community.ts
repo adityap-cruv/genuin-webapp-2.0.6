@@ -4,7 +4,8 @@ import { z } from 'zod'
 const infoSchema = z.object({
   handle: z.string(),
   name: z.string(),
-  description: z.string(),
+  slug: z.string(),
+  description: z.string().nullish(),
   links: z.object({
     instagram_url: z.string().nullable(),
     twitter_url: z.string().nullable(),
@@ -18,6 +19,7 @@ const infoSchema = z.object({
   }),
   profile_image: z.string(),
   categories: z.array(z.string()),
+  share_string: z.string(),
 })
 
 // Define a schema for the "popular_loops" array
@@ -55,9 +57,19 @@ const membersSchema = z.array(
   })
 )
 
+const guidelineSchema = z.array(
+  z.object({
+    description: z.string(),
+    guideline_id: z.number(),
+    id: z.number(),
+    position: z.number(),
+    title: z.string(),
+  })
+)
 // Define the main schema for the entire object
 const CommunityDetailsSchema = z.object({
   info: infoSchema,
+  guidelines: guidelineSchema,
   popular_loops: popularLoopsSchema,
   leaders: leadersSchema,
   members: membersSchema,

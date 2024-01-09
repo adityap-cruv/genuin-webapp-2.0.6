@@ -1,6 +1,6 @@
 'use client'
 import { Button } from '@components/ui/button'
-import { GenuinLogo } from '@components/ui/genuin-logo'
+import { GenuinAdaptiveLogo } from '@components/ui/genuin-logo'
 import { DownloadAppDialog } from '../pages/home/download-app-dialog'
 import Link from 'next/link'
 import { cn } from '@lib/utils'
@@ -28,7 +28,7 @@ export function NavBar({ variant, isMobile }: Props) {
   return (
     <nav className={cn(navbarVariant({ variant }))}>
       <div className={'container flex h-full items-center justify-between py-1'}>
-        <GenuinLogo.adaptive variant={isVariantLight ? 'light' : 'dark'} />
+        <GenuinAdaptiveLogo variant={isVariantLight ? 'light' : 'dark'} />
         <div className="flex items-center">
           <GetAppButton isMobile={isMobile} />
           <BurgerMenu variant={isVariantLight ? 'light' : 'dark'} />
