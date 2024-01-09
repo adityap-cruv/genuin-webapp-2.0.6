@@ -78,7 +78,9 @@ export function DesktopDetails({ videoDetails }: DesktopDetailsProps) {
                     }
                     asChild>
                     <Button size="custom">
-                      <p className="whitespace-nowrap px-4 py-1 text-title-3-demi">Join Community</p>
+                      <p className="whitespace-nowrap px-4 py-1 text-body-1-demi" style={{ lineHeight: '24px' }}>
+                        Join Community
+                      </p>
                     </Button>
                   </DownloadDialog>
                   <Button
@@ -134,11 +136,10 @@ function CommentBox({ shareString, parentRef }: { shareString: string; parentRef
     isLoading,
   } = getLoopVideoComments(shareString)
   const comments = commentPages?.pages.flatMap((item) => item.comments)
-  const { scrollYProgress } = useScroll({ container: parentRef })
+  const { scrollYProgress } = useScroll({ container: parentRef, layoutEffect: false })
 
   useMotionValueEvent(scrollYProgress, 'change', (value) => {
     value = Number(value.toFixed(1))
-    console.log("Scroll Val", value)
     if (value >= 0.8) void fetchNextPage()
   })
 

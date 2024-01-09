@@ -89,7 +89,7 @@ export function Desktop({
           <span className="flex items-center gap-x-6">
             <div
               style={{ width: videoSizeBox.modal.width, height: videoSizeBox.modal.height }}
-              className="relative overflow-clip rounded-2xl bg-monochrome-white">
+              className="relative overflow-clip rounded-2xl min-w-[800px] bg-monochrome-white">
               <CustomDialogClose
                 onClick={() => {
                   close?.()
