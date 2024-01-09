@@ -138,6 +138,7 @@ function CommentBox({ shareString, parentRef }: { shareString: string; parentRef
 
   useMotionValueEvent(scrollYProgress, 'change', (value) => {
     value = Number(value.toFixed(1))
+    console.log("Scroll Val", value)
     if (value >= 0.8) void fetchNextPage()
   })
 
