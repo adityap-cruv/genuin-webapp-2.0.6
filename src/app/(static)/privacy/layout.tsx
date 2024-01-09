@@ -8,7 +8,7 @@ interface Props {
 export default function Layout({ children }: Props) {
   const isMobile = cookies().get('mobile')?.value === 'true'
   return (
-    <main>
+    <main className="h-full overflow-auto">
       <NavBar variant="dark" isMobile={isMobile} />
       <section className="container mt-navbar h-body">{children}</section>
     </main>

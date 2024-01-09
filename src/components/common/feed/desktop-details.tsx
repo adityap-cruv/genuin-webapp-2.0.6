@@ -67,7 +67,7 @@ export function DesktopDetails({ videoDetails }: DesktopDetailsProps) {
                     <p className="line-clamp-1 break-all pr-2 text-title-3-bold">{videoDetails.community.name}</p>
                   </Link>
                 </span>
-                <span className="flex h-min flex-1 items-center gap-x-3">
+                <span className="flex h-min flex-1 items-center justify-end gap-x-3">
                   <DownloadDialog
                     title="Get the Genuin app"
                     subtitle={
