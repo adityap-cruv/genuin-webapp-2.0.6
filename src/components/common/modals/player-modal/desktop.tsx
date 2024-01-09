@@ -15,6 +15,7 @@ import icUpArrow from '@icons/player-controls/icArrowUp.svg'
 import icDownArrow from '@icons/player-controls/icArrowDown.svg'
 import Image from 'next/image'
 import { Loader } from '@components/ui/loader'
+import { cn } from '@lib/utils'
 
 type Props = {
   children?: React.ReactNode
@@ -84,7 +85,7 @@ export function Desktop({
     <CustomDialog open={open}>
       <CustomDialogTrigger>{children}</CustomDialogTrigger>
       <CustomDialogContent showDefaultClose={false}>
-        {videoSizeBox && (
+        {videoSizeBox && videos && (
           <span className="flex items-center gap-x-6">
             <div
               style={{ width: videoSizeBox.modal.width, height: videoSizeBox.modal.height }}
@@ -103,14 +104,20 @@ export function Desktop({
                 onClick={() => {
                   setCurrentIndex(currentIndex - 1)
                 }}
-                className="rounded-full bg-monochrome-white/10 p-2 hover:bg-monochrome-white/20">
+                className={cn(
+                  'rounded-full bg-monochrome-white/10 p-2 hover:bg-monochrome-white/20',
+                  currentIndex === 0 ? 'opacity-40' : undefined
+                )}>
                 <Image src={icUpArrow} alt="" />
               </button>
               <button
                 onClick={() => {
                   setCurrentIndex(currentIndex + 1)
                 }}
-                className="rounded-full bg-monochrome-white/10 p-2 hover:bg-monochrome-white/20">
+                className={cn(
+                  'rounded-full bg-monochrome-white/10 p-2 hover:bg-monochrome-white/20',
+                  currentIndex === videos?.length - 1 ? 'opacity-40' : undefined
+                )}>
                 <Image src={icDownArrow} alt="" />
               </button>
             </span>

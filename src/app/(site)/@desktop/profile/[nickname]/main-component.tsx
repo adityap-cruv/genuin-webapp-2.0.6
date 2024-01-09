@@ -194,8 +194,8 @@ function CommunityList({ usernickname }: any) {
   }))
 
   useEffect(() => {
-    const dataToAdd = data?.pages.flatMap((page) => page.communities as CommunityMiniObj[])
-    if (dataToAdd) addCommunities(dataToAdd)
+    const pageLength = data?.pages.length
+    if (pageLength) addCommunities(data?.pages[pageLength - 1]?.communities as CommunityMiniObj[])
   }, [data])
 
   const scrollDivRef = useRef<HTMLDivElement>(null)
@@ -206,23 +206,20 @@ function CommunityList({ usernickname }: any) {
     }
   })
 
-  if (isLoading) return <Loader size="md" />
-
-  if (communities && communities?.length === 0)
-    return (
-      <div className="w-full overflow-hidden" style={{ height: `calc(100% - 250px)` }}>
-        <div
-          className="flex h-full w-full items-center justify-center pt-2 text-title-3-bold text-monochrome"
-          style={{ backgroundColor: '#F9F9F9' }}>
-          No posts yet
-        </div>
-      </div>
-    )
-
-  if (communities && communities?.length !== 0)
-    return (
-      <div className="w-full overflow-hidden" style={{ height: 'calc(100% - 56px)' }}>
-        <div ref={scrollDivRef} className="h-full w-full overflow-y-auto">
+  return (
+    <div className="w-full overflow-hidden" style={{ height: 'calc(100% - 56px)' }}>
+      <div ref={scrollDivRef} className="h-full w-full overflow-y-auto">
+        {isLoading && <Loader size="md" />}
+        {communities && communities?.length === 0 && (
+          <div className="w-full overflow-hidden" style={{ height: `calc(100% - 250px)` }}>
+            <div
+              className="flex h-full w-full items-center justify-center pt-2 text-title-3-bold text-monochrome"
+              style={{ backgroundColor: '#F9F9F9' }}>
+              No posts yet
+            </div>
+          </div>
+        )}
+        {communities && communities?.length !== 0 && (
           <div>
             {communities?.map((item: CommunityMiniObj, index) => (
               <div key={index} className="my-6">
@@ -264,10 +261,12 @@ function CommunityList({ usernickname }: any) {
               </div>
             ))}
           </div>
-        </div>
-        <PlayerModalWrapper />
+        )}
+        {isFetchingNextPage && <Loader size="md" />}
       </div>
-    )
+      <PlayerModalWrapper />
+    </div>
+  )
 }
 
 function PlayerModalWrapper() {
@@ -350,8 +349,8 @@ function CommunityDetails({ userId, community }: { userId: string; community: Co
   const addLoops = useCommunityListStore((state) => state.addLoops)
 
   useEffect(() => {
-    const dataToAdd = data?.pages.flatMap((page) => page.loops as LoopMiniObj[])
-    if (dataToAdd) addLoops(community, dataToAdd)
+    const pageLength = data?.pages.length
+    if (pageLength) addLoops(community, data?.pages[pageLength - 1].loops as LoopMiniObj[])
   }, [data])
 
   return (
@@ -399,8 +398,8 @@ function LoopVideos({ userId, loop, community }: LoopVideosProps) {
   }))
 
   useEffect(() => {
-    const dataToAdd = data?.pages.flatMap((item) => item.videos as VideoMiniObj[])
-    if (dataToAdd) addVideos(community, loop, dataToAdd)
+    const pageLength = data?.pages.length
+    if (pageLength) addVideos(community, loop, data?.pages[pageLength - 1]?.videos as VideoMiniObj[])
   }, [data])
 
   const [videoCount, setVideoCount] = useState(Math.max(0, loop.video_count - 8))

@@ -29,13 +29,13 @@ export function CommentItem({ comment }: { comment: CommentType }) {
           <Link href={{ pathname: PATH_NAME.profile(comment.owner.nickname) }}>
             <p className="text-body-1-bold hover:underline">@{comment.owner.nickname}</p>
           </Link>
-          <p className="text-cap-1-demi text-monochrome">{getTimeAgo(comment.comment.created_at)}</p>
+          <p className="text-cap-1-demi text-monochrome">{getTimeAgo(comment.comment.created_at) + ' ago'}</p>
         </span>
-        <Image src={icMore} alt="" className="h-5 w-5" />
+        {/* <Image src={icMore} alt="" className="h-5 w-5" /> */}
       </span>
       <span className="h-full w-full pl-6">
         <UI comment={comment} />
-        <DownloadDialog subtitle="Get app to sparkl this comment." title="Get the Genuin app">
+        <DownloadDialog subtitle="Get app to spark this comment." title="Get the Genuin app">
           <span className="flex items-center pt-2">
             <Image src={icSpark} alt="" className="h-4 w-4" />
             <p className="text-cap-1-med">{comment.comment.no_of_sparks}</p>

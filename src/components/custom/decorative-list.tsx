@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { isMobile, isSafari } from 'react-device-detect'
 
 /**
  * Add only <li></li> elements in it.
@@ -54,9 +55,9 @@ export function DecorativeList({ children }: any) {
           position: 'relative',
           height: 'fit-content',
           paddingLeft: '0.87em',
-          borderImage: `linear-gradient(to bottom, #e7e7e7 calc(100% - ${
-            lastLiHeight / 2
-          }px - 9.5px), transparent 50%) 1`,
+          borderImage: `linear-gradient(to bottom, #e7e7e7 calc(100% - ${lastLiHeight / 2}px - ${
+            isSafari ? (isMobile ? '18px' : '25px') : '9.5px'
+          }), transparent 50%) 1`,
         }}>
         {children}
       </ul>

@@ -35,6 +35,9 @@ export function MainComponent({ profileData }: CompProps) {
   const { toast } = useToast()
   const detailsDivRef = useRef<HTMLDivElement>(null)
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
+  const scrollDivRef = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({ container: scrollDivRef, layoutEffect: false })
+
   return (
     <>
       <TopBar variant={'light'} />
@@ -47,6 +50,7 @@ export function MainComponent({ profileData }: CompProps) {
         isAvatar={profileData?.is_avatar}
       />
       <div
+        ref={scrollDivRef}
         className="hide-scrollbar absolute inset-0 mt-navbar w-full overflow-auto"
         style={{ height: 'calc(100% - 74px)' }}>
         <div className="p-4">
@@ -107,7 +111,7 @@ export function MainComponent({ profileData }: CompProps) {
           <Links profileData={profileData} />
         </div>
         <hr className="my-1 border-t border-monochrome-9" />
-        <CommunityList usernickname={profileData?.nickname} />
+        <CommunityList usernickname={profileData?.nickname} scrollYProgress={scrollYProgress} />
       </div>
       <PlayerModalWrapper />
     </>
@@ -125,25 +129,16 @@ function PlayerModalWrapper() {
     feedStartIndex: 0,
   })
 
-  const {
-    close,
-    currentVideoShareString,
-    fetchNextPage,
-    videoList,
-    setCurrentIndex,
-    startIndex,
-    endIndex,
-    currentIndex,
-  } = useCommunityListStore((state) => ({
-    close: state.close,
-    currentVideoShareString: state.currentVideoShareString,
-    videoList: state.videoList,
-    setCurrentIndex: state.setCurrentIndex,
-    startIndex: state.startIndex,
-    endIndex: state.endIndex,
-    currentIndex: state.currentIndex,
-    fetchNextPage: state.fetchNextPage,
-  }))
+  const { close, currentVideoShareString, videoList, setCurrentIndex, startIndex, endIndex } = useCommunityListStore(
+    (state) => ({
+      close: state.close,
+      currentVideoShareString: state.currentVideoShareString,
+      videoList: state.videoList,
+      setCurrentIndex: state.setCurrentIndex,
+      startIndex: state.startIndex,
+      endIndex: state.endIndex,
+    })
+  )
 
   useEffect(() => {
     if (currentVideoShareString) {
@@ -236,7 +231,7 @@ function Stats({ profileData }: { profileData: any }) {
   )
 }
 
-function CommunityList({ usernickname }: any) {
+function CommunityList({ usernickname, scrollYProgress }: any) {
   const { data, isLoading, fetchNextPage, isFetchingNextPage } = getAllCommunities(usernickname)
   const { addCommunities, communities } = useCommunityListStore((state) => ({
     addCommunities: state.addCommunities,
@@ -244,36 +239,30 @@ function CommunityList({ usernickname }: any) {
   }))
 
   useEffect(() => {
-    const communities = data?.pages.flatMap((item) => item.communities)
-    if (communities) addCommunities(communities)
+    const pageLength = data?.pages.length
+    if (pageLength) addCommunities(data?.pages[pageLength - 1]?.communities)
   }, [data])
 
-  const scrollDivRef = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({ container: scrollDivRef, layoutEffect: false })
-
-  useMotionValueEvent(scrollYProgress, 'change', (latest) => {
+  useMotionValueEvent(scrollYProgress, 'change', (latest: any) => {
     if (Number(latest.toFixed(1)) > 0.8 && !isFetchingNextPage) {
       void fetchNextPage()
     }
   })
 
-  if (isLoading || isFetchingNextPage) return <Loader size="md" />
-
-  if (communities && communities?.length === 0)
-    return (
-      <div className="w-full overflow-hidden" style={{ height: 'calc(100% - 280px)' }}>
-        <div
-          className="flex h-full w-full items-center justify-center pt-2 text-title-3-bold text-monochrome"
-          style={{ backgroundColor: '#F9F9F9' }}>
-          No posts yet
+  return (
+    <div className="h-full w-full p-4">
+      {isLoading && <Loader size="md" />}
+      {communities && communities?.length === 0 && (
+        <div className="w-full overflow-hidden" style={{ height: 'calc(100% - 280px)' }}>
+          <div
+            className="flex h-full w-full items-center justify-center pt-2 text-title-3-bold text-monochrome"
+            style={{ backgroundColor: '#F9F9F9' }}>
+            No posts yet
+          </div>
         </div>
-      </div>
-    )
-
-  if (communities && communities?.length !== 0)
-    return (
-      <div ref={scrollDivRef} className="h-full w-full p-4">
-        <div>
+      )}
+      {communities && communities?.length !== 0 && (
+        <div className="h-full">
           {communities?.map((item, index) => (
             <div key={index}>
               <div className="flex items-center">
@@ -285,7 +274,7 @@ function CommunityList({ usernickname }: any) {
                 />
                 <div className="mx-2 flex w-full items-center justify-between">
                   <Link href={{ pathname: PATH_NAME.community(item.slug) }}>
-                    <p className="line-clamp-1 text-left text-title-sm">{item.name}</p>
+                    <p className="line-clamp-1 break-all text-left text-title-sm">{item.name}</p>
                   </Link>
 
                   <Button
@@ -320,8 +309,10 @@ function CommunityList({ usernickname }: any) {
             </div>
           ))}
         </div>
-      </div>
-    )
+      )}
+      {isFetchingNextPage && <Loader size="md" />}
+    </div>
+  )
 }
 
 function CommunityDetails({ userId, community }: { userId: string; community: CommunityMiniObj }) {
@@ -329,8 +320,8 @@ function CommunityDetails({ userId, community }: { userId: string; community: Co
   const addLoops = useCommunityListStore((state) => state.addLoops)
 
   useEffect(() => {
-    const loops = data?.pages.flatMap((page) => page.loops)
-    if (loops) addLoops(community, loops)
+    const pageLength = data?.pages.length
+    if (pageLength) addLoops(community, data?.pages[pageLength - 1].loops)
   }, [data])
 
   return (
@@ -379,8 +370,8 @@ function LoopVideos({
   }))
 
   useEffect(() => {
-    const videos = data?.pages.flatMap((item) => item.videos)
-    if (videos) addVideos(community, loopDetails, videos)
+    const pageLength = data?.pages.length
+    if (pageLength) addVideos(community, loopDetails, data?.pages[pageLength - 1]?.videos)
   }, [data])
 
   const [videoCount, setVideoCount] = useState(Math.max(0, loopDetails.video_count - 3))
@@ -395,7 +386,7 @@ function LoopVideos({
   return (
     <>
       <a href={PATH_NAME.loop(loopDetails.slug)}>
-        <p className="text-title-sm">{loopDetails.name}</p>
+        <p className="break-all text-title-sm">{loopDetails.name}</p>
       </a>
       {data?.pages.flatMap((page) => page.videos).length === 0 && (
         <div className="flex items-center justify-center pt-32 text-title-md text-secondary">No videos available</div>
