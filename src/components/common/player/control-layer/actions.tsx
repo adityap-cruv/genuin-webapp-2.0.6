@@ -38,190 +38,194 @@ function Mobile({ link = '', shareDescription = '', shareTitle = '', videoData }
 
   if (videoData) {
     return (
-      <div>
-        {link && (
-          <Link href={checkAndAppendHttps(link)} target="_blank">
-            <ActionItem title="Click Here!">
-              <Image src={icLinkout} alt="link" height={32} width={32} />
-            </ActionItem>
-          </Link>
+      <>
+        {isMobile ? (
+          <>
+            <div className="flex flex-col">
+              {link && (
+                <Link href={checkAndAppendHttps(link)} target="_blank">
+                  <ActionItem title="Click Here!">
+                    <Image src={icLinkout} alt="link" height={32} width={32} />
+                  </ActionItem>
+                </Link>
+              )}
+              <ActionItem title="Repost the video!">
+                <Image src={icRepost} height={32} width={32} alt="repost" />
+              </ActionItem>
+              <ActionItem title="Give spark!">
+                <Image src={icSpark} height={32} width={32} alt="spark" />
+                <p className="flex justify-center text-body-sm text-monochrome-white">
+                  {videoData?.video.no_of_sparks === null ? 0 : abbreviateNumber(videoData?.video.no_of_sparks ?? 0)}
+                </p>
+              </ActionItem>
+              {!isLoop && (
+                <ActionItem
+                  title="Save this Video!"
+                  onClick={() => {
+                    generateDeepLink({
+                      action: 'save',
+                      contentType: 'pv',
+                      title: '',
+                      description: '',
+                      fromUserName: null,
+                      pathName: window.location.pathname,
+                      previewImage: null,
+                      sourceId: videoData?.video.id,
+                      utmCampaign: 'share',
+                      utmMedium: 'web',
+                      utmSource: window.location.hostname,
+                      parentId: videoData?.loop?.share_string,
+                    })
+                      .then((link) => {
+                        openGeneratedLink(link)
+                      })
+                      .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
+                  }}>
+                  <Image src={icSave} width={32} height={32} alt="Save video" />
+                </ActionItem>
+              )}
+              {isLoop && (
+                <>
+                  <ActionItem
+                    title="See Comments!"
+                    onClick={() => {
+                      generateDeepLink({
+                        action: 'comment',
+                        contentType: 'loop',
+                        title: '',
+                        description: '',
+                        fromUserName: null,
+                        pathName: window.location.pathname,
+                        previewImage: null,
+                        sourceId: videoData?.video.id,
+                        utmCampaign: 'share',
+                        utmMedium: 'web',
+                        utmSource: window.location.hostname,
+                        parentId: videoData?.loop?.share_string,
+                      })
+                        .then((link) => {
+                          openGeneratedLink(link)
+                        })
+                        .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
+                    }}>
+                    <Image src={icComment} alt="comments" height={32} width={32} />
+                    <p className="flex justify-center text-body-sm text-monochrome-white">
+                      {videoData?.video.no_of_comments === null
+                        ? 0
+                        : abbreviateNumber(videoData?.video.no_of_comments ?? 0)}
+                    </p>
+                  </ActionItem>
+                </>
+              )}
+              <ActionItem
+                title="Share Video!"
+                onClick={async () => await shareFn({ description: shareDescription, title: shareTitle })}>
+                <Image src={icShare} alt="share" height={32} width={32} />
+              </ActionItem>
+              {!isLoop && (
+                <ActionItem
+                  title="Reply to Video!"
+                  onClick={() => {
+                    generateDeepLink({
+                      action: 'reply',
+                      contentType: 'pv',
+                      title: '',
+                      description: '',
+                      fromUserName: null,
+                      pathName: window.location.pathname,
+                      previewImage: null,
+                      sourceId: videoData?.video.id,
+                      utmCampaign: 'share',
+                      utmMedium: 'web',
+                      utmSource: window.location.hostname,
+                      parentId: videoData?.loop?.share_string,
+                    })
+                      .then((link) => {
+                        openGeneratedLink(link)
+                      })
+                      .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
+                  }}>
+                  <Image src={icReply} height={32} width={32} alt="reply" />
+                </ActionItem>
+              )}
+              <ActionItem title="more options!">
+                <Image src={ic3Dot} alt="more options" height={32} width={32} />
+              </ActionItem>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="flex flex-col">
+              {link && (
+                <Link href={checkAndAppendHttps(link)} target="_blank">
+                  <ActionItem title="Click Here!">
+                    <Image src={icLinkout} alt="link" height={32} width={32} />
+                  </ActionItem>
+                </Link>
+              )}
+              <DownloadDialog title="Get the Genuin app" subtitle="Get the app to repost the video.">
+                <ActionItem title="Repost the video!">
+                  <Image src={icRepost} alt="repost" height={32} width={32} />
+                </ActionItem>
+              </DownloadDialog>
+              <DownloadDialog title="Get the Genuin app" subtitle="Get the app to give spark to video.">
+                <ActionItem title="Give spark!">
+                  <Image src={icSpark} height={32} width={32} alt="spark" />
+                  <p className="flex justify-center text-body-sm text-monochrome-white">
+                    {videoData?.video.no_of_sparks === null ? 0 : abbreviateNumber(videoData?.video.no_of_sparks ?? 0)}
+                  </p>
+                </ActionItem>
+              </DownloadDialog>
+              {!isLoop && (
+                <DownloadDialog title="Get the Genuin app" subtitle="Get the app to save the video.">
+                  <ActionItem title="Save this Video!">
+                    <Image src={icSave} width={32} height={32} alt="Save video" />
+                  </ActionItem>
+                </DownloadDialog>
+              )}
+              {isLoop && (
+                <DownloadDialog title="Get the Genuin app" subtitle="Get the app to comment.">
+                  <ActionItem
+                    onClick={(e) => {
+                      commentsIsOpen ? closeComments() : openComments(videoData?.video.share_string)
+                    }}
+                    title="See Comments!">
+                    <Image src={icComment} alt="comments" height={32} width={32} />
+                    <p className="flex justify-center text-body-sm text-monochrome-white">
+                      {videoData?.video.no_of_comments === null
+                        ? 0
+                        : abbreviateNumber(videoData?.video.no_of_comments ?? 0)}
+                    </p>
+                  </ActionItem>
+                </DownloadDialog>
+              )}
+              <ActionItem
+                title="Share Video!"
+                onClick={async () =>
+                  await shareFn({
+                    description: shareDescription,
+                    title: shareTitle,
+                    toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
+                  })
+                }>
+                <Image src={icShare} alt="share" height={32} width={32} />
+              </ActionItem>
+              {!isLoop && (
+                <DownloadDialog title="Get the Genuin app" subtitle="Get the app to reply to video.">
+                  <ActionItem title="Reply to Video!">
+                    <Image src={icReply} height={32} width={32} alt="reply" />
+                  </ActionItem>
+                </DownloadDialog>
+              )}
+              <DownloadDialog title="Get the Genuin app" subtitle="Get the app to report video.">
+                <ActionItem title="More options!">
+                  <Image src={ic3Dot} height={32} width={32} alt="More Options!" />
+                </ActionItem>
+              </DownloadDialog>
+            </div>
+          </>
         )}
-        <span className=" flex flex-col">
-          <ActionItem
-            title="Repost the video!"
-            onClick={() => {
-              generateDeepLink({
-                action: 'repost',
-                contentType: 'video',
-                description: ``,
-                title: ``,
-                previewImage: null,
-                fromUserName: null,
-                pathName: PATH_NAME.video(videoData.video.slug),
-                utmCampaign: 'share',
-                utmMedium: 'web',
-                utmSource: window.location.hostname,
-                community:videoData.community.share_string,
-                loop: videoData.loop.share_string
-              })
-                .then((generatedLink) => {
-                  openGeneratedLink(generatedLink)
-                })
-                .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
-            }}>
-            <Image src={icRepost} height={32} width={32} alt="repost" />
-          </ActionItem>
-          <ActionItem
-            title="Give spark!"
-            onClick={(e) => {
-              // const url = {
-              //   pathname: PATH_NAME.video(videoData.video.slug),
-              //   query: {
-              //     community: videoData.community.share_string,
-              //     loop: videoData.loop.share_string,
-              //     utm_source: 'app_web',
-              //   },
-              // }
-              // const shareUrl = format(url)
-              // void window.navigator.share({
-              //   text: videoData.video?.description ?? '',
-              //   title: 'Share this video',
-              //   url: shareUrl,
-              // })
-              // e.stopPropagation()
-              generateDeepLink({
-                action: 'spark',
-                contentType: 'video',
-                description: ``,
-                title: ``,
-                previewImage: null,
-                fromUserName: null,
-                pathName: PATH_NAME.video(videoData.video.slug),
-                utmCampaign: 'share',
-                utmMedium: 'web',
-                utmSource: window.location.hostname,
-                community:videoData.community.share_string,
-                loop: videoData.loop.share_string
-              })
-                .then((generatedLink) => {
-                  openGeneratedLink(generatedLink)
-                })
-                .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
-            }}>
-            <Image src={icSpark} height={32} width={32} alt="spark" />
-            <p className="flex justify-center text-body-sm text-monochrome-white">
-              {videoData?.video.no_of_sparks === null ? 0 : abbreviateNumber(videoData?.video.no_of_sparks ?? 0)}
-            </p>
-          </ActionItem>
-        </span>
-        <ActionItem
-          title="See Comments!"
-          onClick={() => {
-            commentsIsOpen ? closeComments() : openComments(videoData?.video.share_string)
-          }}>
-          <Image src={icComment} alt="comments" height={32} width={32} />
-          <p className="flex justify-center text-body-sm text-monochrome-white">
-            {videoData?.video.no_of_comments === null ? 0 : abbreviateNumber(videoData?.video.no_of_comments ?? 0)}
-          </p>
-        </ActionItem>
-        <ActionItem
-          title="Share Video!"
-          onClick={(e) => {
-            const url = {
-              pathname: PATH_NAME.video(videoData.video.slug),
-              query: {
-                community: videoData.community.share_string,
-                loop: videoData.loop.share_string,
-                utm_source: 'app_web',
-              },
-            }
-            const shareUrl = format(url)
-            void window.navigator.share({
-              text: videoData.video?.description ?? '',
-              title: 'Share this video',
-              url: shareUrl,
-            })
-            e.stopPropagation()
-            // void window.navigator.share({
-            //   text: videoData.video?.description ?? '',
-            //   title: 'Share this video',
-            //   url: window.location.hostname + PATH_NAME.video(videoData.video.slug),
-            // })
-            // await shareFn({ description: shareDescription, title: shareTitle })
-          }}>
-          <Image src={icShare} alt="share" height={32} width={32} />
-        </ActionItem>
-        <ActionItem title="more options!">
-          <Image src={ic3Dot} alt="more options" height={32} width={32} />
-        </ActionItem>
-      </div>
-    )
-  }
-}
-
-function Desktop({ link = '', shareDescription = '', shareTitle = '', videoData }: ActionsProps) {
-  const { shareFn } = useAdaptiveShare()
-  const { toast } = useToast()
-  // const { openComments, closeComments, commentsIsOpen } = useCommentsStore((state) => ({
-  //   openComments: state.openModal,
-  //   closeComments: state.closeModal,
-  //   commentsIsOpen: state.modalIsOpen,
-  // }))
-
-  if (videoData) {
-    return (
-      <div
-        className="flex flex-col"
-        onClick={(e) => {
-          e.stopPropagation()
-        }}>
-        {link && (
-          <Link href={checkAndAppendHttps(link)} target="_blank">
-            <ActionItem title="Click Here!">
-              <Image src={icLinkout} alt="link" height={32} width={32} />
-            </ActionItem>
-          </Link>
-        )}
-        <DownloadDialog title="Get the Genuin app" subtitle="Get the app to repost the video.">
-          <ActionItem title="Repost the video!">
-            <Image src={icRepost} alt="repost" height={32} width={32} />
-          </ActionItem>
-        </DownloadDialog>
-        <DownloadDialog title="Get the Genuin app" subtitle="Get the app to give spark to video.">
-          <ActionItem title="Give spark!">
-            <Image src={icSpark} height={32} width={32} alt="spark" />
-            <p className="flex justify-center text-body-sm text-monochrome-white">
-              {videoData?.video.no_of_sparks === null ? 0 : abbreviateNumber(videoData?.video.no_of_sparks ?? 0)}
-            </p>
-          </ActionItem>
-        </DownloadDialog>
-        <ActionItem
-          title="Share Video!"
-          onClick={async () => {
-            const url = {
-              pathname: PATH_NAME.video(videoData.video.slug),
-              query: {
-                community: videoData.community.share_string,
-                loop: videoData.loop.share_string,
-                utm_source: 'app_web',
-              },
-            }
-            const shareUrl = window.location.hostname + format(url)
-            await shareFn({
-              description: shareDescription,
-              title: shareTitle,
-              shareLink: shareUrl,
-              toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
-            })
-          }}>
-          <Image src={icShare} alt="share" height={32} width={32} />
-        </ActionItem>
-        <DownloadDialog title="Get the Genuin app" subtitle="Get the app to report video.">
-          <ActionItem title="More options!">
-            <Image src={ic3Dot} height={32} width={32} alt="More Options!" />
-          </ActionItem>
-        </DownloadDialog>
-      </div>
+      </>
     )
   }
 }
