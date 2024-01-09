@@ -44,6 +44,7 @@ export function Mobile({
   }))
   // # If comment sheet is open than element should not be scrolled..
   const commentIsOpen = useCommentSheetStore((state) => state.modalIsOpen)
+  const videoSizeBox = useVideoSizeBoxMobile()
 
   useEffect(() => {
     if (!isFetchingNextPage && videoList.length - 3 <= currentIndex) {
@@ -78,25 +79,25 @@ export function Mobile({
     setVideoList(videos)
   }, [videos])
 
-  if (videos)
+  if (videos && videoSizeBox)
     return (
       <div className="relative block overflow-clip">
         <div
           ref={scrollDivRef}
-          style={{ height: sizeBox.height, width: sizeBox.width }}
+          style={{ height: videoSizeBox.height, width: videoSizeBox.width }}
           className={cn(
             'hide-scrollbar snap-y snap-mandatory snap-always overflow-x-clip  scroll-smooth',
             !commentIsOpen ? 'overflow-y-scroll' : 'overflow-y-hidden'
           )}>
           {videos.map((item, index) => {
             return (
-              <div key={index} style={{ width: sizeBox.width, height: sizeBox.height }}>
+              <div key={index} style={{ width: videoSizeBox.width, height: videoSizeBox.height }}>
                 <Player
                   playIfInViewPort
                   isFirstPlayerInList={index === 0}
                   shouldPlay
                   loop
-                  sizeBox={sizeBox}
+                  sizeBox={videoSizeBox}
                   videoData={item}
                 />
               </div>

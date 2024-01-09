@@ -5,7 +5,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const isMobile = cookies().get('mobile')?.value === 'true'
 
   return (
-    <main>
+    <main className='overflow-auto h-full'>
       <NavBar variant="dark" isMobile={isMobile} />
       <section className="container mt-navbar">{children}</section>
     </main>
