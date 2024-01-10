@@ -14,6 +14,7 @@ import { DownloadDialog } from '@components/common/download-dialog'
 import { useCommentSheetStore } from '../comment-sheet/store'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { format } from 'url'
+import { analyticsService } from '../../../../services/analytics_service'
 
 interface ActionsProps {
   link: string
@@ -61,8 +62,8 @@ function Mobile({ link = '', shareDescription = '', shareTitle = '', videoData }
                 utmCampaign: 'share',
                 utmMedium: 'web',
                 utmSource: window.location.hostname,
-                community:videoData.community.share_string,
-                loop: videoData.loop.share_string
+                community: videoData.community.share_string,
+                loop: videoData.loop.share_string,
               })
                 .then((generatedLink) => {
                   openGeneratedLink(generatedLink)
@@ -100,8 +101,8 @@ function Mobile({ link = '', shareDescription = '', shareTitle = '', videoData }
                 utmCampaign: 'share',
                 utmMedium: 'web',
                 utmSource: window.location.hostname,
-                community:videoData.community.share_string,
-                loop: videoData.loop.share_string
+                community: videoData.community.share_string,
+                loop: videoData.loop.share_string,
               })
                 .then((generatedLink) => {
                   openGeneratedLink(generatedLink)
@@ -126,7 +127,15 @@ function Mobile({ link = '', shareDescription = '', shareTitle = '', videoData }
         </ActionItem>
         <ActionItem
           title="Share Video!"
-          onClick={(e) => {
+          onClick={async (e) => {
+            await analyticsService({
+              eventDetails: {
+                video_share_string: videoData.video.share_string,
+                loop_share_string: videoData.loop.share_string,
+                page: window.location.href,
+              },
+              eventName: 'video_shared',
+            })
             const url = {
               pathname: PATH_NAME.video(videoData.video.slug),
               query: {
@@ -198,6 +207,14 @@ function Desktop({ link = '', shareDescription = '', shareTitle = '', videoData 
         <ActionItem
           title="Share Video!"
           onClick={async () => {
+            await analyticsService({
+              eventDetails: {
+                video_share_string: videoData.video.share_string,
+                loop_share_string: videoData.loop.share_string,
+                page: window.location.href,
+              },
+              eventName: 'video_shared',
+            })
             const url = {
               pathname: PATH_NAME.video(videoData.video.slug),
               query: {

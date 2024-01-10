@@ -16,6 +16,7 @@ import icDownArrow from '@icons/player-controls/icArrowDown.svg'
 import Image from 'next/image'
 import { Loader } from '@components/ui/loader'
 import { cn } from '@lib/utils'
+import { analyticsService } from '../../../../services/analytics_service'
 
 type Props = {
   children?: React.ReactNode
@@ -101,8 +102,16 @@ export function Desktop({
             </div>
             <span className="flex flex-col gap-y-4">
               <button
-                onClick={() => {
+                onClick={async () => {
                   setCurrentIndex(currentIndex - 1)
+                  await analyticsService({
+                    eventDetails: {
+                      video_share_string: videos[currentIndex].video.share_string,
+                      loop_share_string: videos[currentIndex].loop.share_string,
+                      page: window.location.href,
+                    },
+                    eventName: 'swipe_up',
+                  })
                 }}
                 className={cn(
                   'rounded-full bg-monochrome-white/10 p-2 hover:bg-monochrome-white/20',
@@ -111,8 +120,16 @@ export function Desktop({
                 <Image src={icUpArrow} alt="" />
               </button>
               <button
-                onClick={() => {
+                onClick={async () => {
                   setCurrentIndex(currentIndex + 1)
+                  await analyticsService({
+                    eventDetails: {
+                      video_share_string: videos[currentIndex].video.share_string,
+                      loop_share_string: videos[currentIndex].loop.share_string,
+                      page: window.location.href,
+                    },
+                    eventName: 'swipe_down',
+                  })
                 }}
                 className={cn(
                   'rounded-full bg-monochrome-white/10 p-2 hover:bg-monochrome-white/20',

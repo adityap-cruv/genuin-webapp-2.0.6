@@ -5,6 +5,7 @@ import { DesktopDetails } from './desktop-details'
 import { useFeedListStore } from './store'
 import { useEffect, useRef } from 'react'
 import { cn } from '@lib/utils'
+import { analyticsService } from '../../../services/analytics_service'
 const DesktopPlayer = dynamic(async () => await import('@components/common/player').then((comp) => comp.Player.desktop))
 
 type DesktopProps = {
@@ -59,7 +60,27 @@ export function Desktop({
     function scrollHandler(this: HTMLDivElement, e: Event) {
       if (localTimeout) return
       localTimeout = setTimeout(() => {
-        setCurrentIndex(Math.floor(this.scrollTop / this.clientHeight))
+        const indexChange = Math.floor(this.scrollTop / this.clientHeight)
+        if (indexChange > currentIndex) {
+          void analyticsService({
+            eventDetails: {
+              video_share_string: videos[currentIndex].video.share_string,
+              loop_share_string: videos[currentIndex].loop.share_string,
+              page: window.location.href,
+            },
+            eventName: 'swipe_up',
+          })
+        } else if (indexChange < currentIndex) {
+          void analyticsService({
+            eventDetails: {
+              video_share_string: videos[currentIndex].video.share_string,
+              loop_share_string: videos[currentIndex].loop.share_string,
+              page: window.location.href,
+            },
+            eventName: 'swipe_down',
+          })
+        }
+        setCurrentIndex(indexChange)
         localTimeout = null
       }, 200)
     }
@@ -68,7 +89,7 @@ export function Desktop({
     return () => {
       divElement.removeEventListener('scroll', scrollHandler)
     }
-  }, [scrollDivRef])
+  }, [scrollDivRef, currentIndex])
 
   if (videoList)
     return (
