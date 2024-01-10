@@ -7,6 +7,7 @@ import { useFeedListStore } from './store'
 import { useEffect, useRef } from 'react'
 import { useCommentSheetStore } from '../player/comment-sheet/store'
 import { useVideoSizeBoxMobile } from '@hooks/use-video-size-box-mobile'
+import { analyticsService } from '../../../services/analytics_service'
 const Player = dynamic(async () => await import('@components/common/player').then((comp) => comp.Player.mobile))
 
 type MobileProps = {
@@ -57,6 +58,25 @@ export function Mobile({
     if (!element) return
     function handleScroll(this: HTMLDivElement, e: Event) {
       const newIndex = Math.floor(this.scrollTop / this.clientHeight)
+      if (newIndex > currentIndex) {
+        void analyticsService({
+          eventDetails: {
+            video_share_string: videos[currentIndex].video.share_string,
+            loop_share_string: videos[currentIndex].loop.share_string,
+            page: window.location.href,
+          },
+          eventName: 'swipe_up',
+        })
+      } else if (newIndex < currentIndex) {
+        void analyticsService({
+          eventDetails: {
+            video_share_string: videos[currentIndex].video.share_string,
+            loop_share_string: videos[currentIndex].loop.share_string,
+            page: window.location.href,
+          },
+          eventName: 'swipe_down',
+        })
+      }
       setCurrentIndex(newIndex)
     }
 
