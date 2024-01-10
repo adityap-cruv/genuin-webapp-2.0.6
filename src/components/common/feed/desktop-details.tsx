@@ -92,7 +92,7 @@ export function DesktopDetails({ videoDetails }: DesktopDetailsProps) {
                         shareLink:
                           window.location.host +
                           PATH_NAME.community(videoDetails.community.slug) +
-                          '&utm_source=app_web',
+                          '?utm_source=app_web',
                         toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                       })
                     }>
