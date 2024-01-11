@@ -17,25 +17,25 @@ export function CommunitySection() {
       profile_image: 'https://media.begenuin.com/webapp_assets/community/travel_hacks.png',
       name: 'Travel Hacks & Tips 👀✈️',
       description: "The best travel tips & tricks you've learned & tried… 👋🏼",
-      link: 'https://begenuin.com/c/travelhacks',
+      link: 'https://begenuin.com/community/travel-hacks-tips',
     },
     {
       profile_image: 'https://media.begenuin.com/webapp_assets/community/tech_founders.png',
       name: 'Tech Founders 📈',
       description: 'A space for tech founders to come together & discuss founder life 🎢',
-      link: 'https://begenuin.com/c/techfounders',
+      link: 'https://begenuin.com/community/tech-founders',
     },
     {
       profile_image: 'https://media.begenuin.com/webapp_assets/community/diy_lovers.png',
       name: 'DIY Lovers 🔨',
       description: 'For people who want to share DIY hacks, tips & tricks ⚒️🎨👷‍♀️',
-      link: 'https://begenuin.com/c/diylovers',
+      link: 'https://begenuin.com/community/diy-lovers',
     },
     {
       profile_image: 'https://media.begenuin.com/webapp_assets/community/flower_arranging.png',
       name: 'Flower Arranging 🌻',
       description: 'A community for people who love flower arranging — and those who want to learn 🌸🌻',
-      link: 'https://begenuin.com/c/flowerarranging',
+      link: 'https://begenuin.com/community/flower-arranging',
     },
   ]
   const divRef = useRef<HTMLDivElement>(null)
