@@ -177,7 +177,6 @@ function PlayerModalWrapper() {
 
 function Links({ profileData }: CompProps) {
   const links = profileData?.social_links
-  if (links?.facebook ?? links?.instagram ?? links?.linkedin ?? links?.tiktok ?? links?.twitter)
     return (
       <div className="mt-2 flex">
         {links?.linkedin && (
