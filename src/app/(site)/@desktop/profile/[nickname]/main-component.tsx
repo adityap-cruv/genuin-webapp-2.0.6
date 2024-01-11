@@ -105,54 +105,53 @@ function Links({ profileData }: CompProps) {
   const links = profileData?.social_links
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
-  if (links?.facebook ?? links?.instagram ?? links?.linkedin ?? links?.tiktok ?? links?.twitter)
-    return (
-      <div className="my-2 flex">
-        {links?.linkedin && (
-          <div className="mr-2 flex items-center rounded-md bg-monochrome-9 p-1">
-            <Link href={checkAndAppendHttps(links.linkedin)} target="_blank">
-              <Image src={icLinkedIn} alt="linkedin" />
-            </Link>
-          </div>
-        )}
-        {links?.instagram && (
-          <div className="mr-2 flex items-center rounded-md bg-monochrome-9 p-1">
-            <Link href={checkAndAppendHttps(links.instagram)} target="_blank">
-              <Image src={icInstagram} alt="instagram" />
-            </Link>
-          </div>
-        )}
-        {links?.twitter && (
-          <div className="mr-2 flex items-center rounded-md bg-monochrome-9 p-1">
-            <Link href={checkAndAppendHttps(links.twitter)} target="_blank">
-              <Image src={icTwitter} alt="twitter" />
-            </Link>
-          </div>
-        )}
-        {links?.tiktok && (
-          <div className="mr-2 flex items-center rounded-md bg-monochrome-9 p-1 px-2">
-            <Link href={checkAndAppendHttps(links.tiktok)} target="_blank">
-              <Image src={icTiktok} alt="linkedin" />
-            </Link>
-          </div>
-        )}
-        <Button
-          variant="outline"
-          size="custom"
-          outlineColor="genuin-blue"
-          className="mx-1"
-          onClick={async () =>
-            await shareFn({
-              shareLink: window.location.href + '?utm_source=app_web',
-              toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
-            })
-          }>
-          <span className="flex items-center p-1">
-            <Image src={icShare} alt="share" height={24} width={24} />
-          </span>
-        </Button>
-      </div>
-    )
+  return (
+    <div className="my-2 flex">
+      {links?.linkedin && (
+        <div className="mr-2 flex items-center rounded-md bg-monochrome-9 p-1">
+          <Link href={checkAndAppendHttps(links.linkedin)} target="_blank">
+            <Image src={icLinkedIn} alt="linkedin" />
+          </Link>
+        </div>
+      )}
+      {links?.instagram && (
+        <div className="mr-2 flex items-center rounded-md bg-monochrome-9 p-1">
+          <Link href={checkAndAppendHttps(links.instagram)} target="_blank">
+            <Image src={icInstagram} alt="instagram" />
+          </Link>
+        </div>
+      )}
+      {links?.twitter && (
+        <div className="mr-2 flex items-center rounded-md bg-monochrome-9 p-1">
+          <Link href={checkAndAppendHttps(links.twitter)} target="_blank">
+            <Image src={icTwitter} alt="twitter" />
+          </Link>
+        </div>
+      )}
+      {links?.tiktok && (
+        <div className="mr-2 flex items-center rounded-md bg-monochrome-9 p-1 px-2">
+          <Link href={checkAndAppendHttps(links.tiktok)} target="_blank">
+            <Image src={icTiktok} alt="linkedin" />
+          </Link>
+        </div>
+      )}
+      <Button
+        variant="outline"
+        size="custom"
+        outlineColor="genuin-blue"
+        className="mx-1"
+        onClick={async () =>
+          await shareFn({
+            shareLink: window.location.href + '?utm_source=app_web',
+            toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
+          })
+        }>
+        <span className="flex items-center p-1">
+          <Image src={icShare} alt="share" height={24} width={24} />
+        </span>
+      </Button>
+    </div>
+  )
 }
 
 function Stats({ profileData }: { profileData: any }) {
