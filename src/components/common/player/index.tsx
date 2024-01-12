@@ -97,6 +97,7 @@ function Mobile({
         }}
         style={{ backgroundImage: `url(${videoData.video.thumbnail})` }}
         className="relative flex h-full w-full snap-start items-center justify-center overflow-clip bg-cover bg-center bg-no-repeat">
+        <div className="absolute top-0 z-10 h-24 w-full bg-gradient-to-b from-[#111111b3] to-[#11111100]"></div>
         <div
           ref={containerRef}
           className="relative overflow-hidden"
@@ -119,6 +120,7 @@ function Mobile({
             videoDetails={videoData}
             noOfComments={videoData.video.no_of_comments ?? 0}
           />
+          <div className="absolute bottom-0 h-48 w-full bg-gradient-to-t from-[#111111b3] to-[#11111100]"></div>
         </div>
       </div>
     )

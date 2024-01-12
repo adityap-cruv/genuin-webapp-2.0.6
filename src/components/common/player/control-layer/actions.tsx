@@ -129,12 +129,13 @@ function Mobile({ link = '', shareDescription = '', shareTitle = '', videoData }
           title="Share Video!"
           onClick={async (e) => {
             await analyticsService({
-              eventDetails: {
-                video_share_string: videoData.video.share_string,
-                loop_share_string: videoData.loop.share_string,
-                page: window.location.href,
+              properties: {
+                content_category: 'loop',
+                content_id: videoData.video.id,
+                event_record_screen: 'feed',
+                event_target_screen: 'none',
               },
-              eventName: 'video_shared',
+              eventName: 'Video Shared',
             })
             const url = {
               pathname: PATH_NAME.video(videoData.video.slug),
@@ -208,12 +209,13 @@ function Desktop({ link = '', shareDescription = '', shareTitle = '', videoData 
           title="Share Video!"
           onClick={async () => {
             await analyticsService({
-              eventDetails: {
-                video_share_string: videoData.video.share_string,
-                loop_share_string: videoData.loop.share_string,
-                page: window.location.href,
+              properties: {
+                content_category: 'loop',
+                content_id: videoData.video.id,
+                event_record_screen: 'feed',
+                event_target_screen: 'none',
               },
-              eventName: 'video_shared',
+              eventName: 'Video Shared',
             })
             const url = {
               pathname: PATH_NAME.video(videoData.video.slug),

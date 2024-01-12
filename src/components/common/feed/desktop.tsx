@@ -6,6 +6,7 @@ import { useFeedListStore } from './store'
 import { useEffect, useRef } from 'react'
 import { cn } from '@lib/utils'
 import { analyticsService } from '../../../services/analytics_service'
+import { usePlayerControlStore } from '../player/player-control-store'
 const DesktopPlayer = dynamic(async () => await import('@components/common/player').then((comp) => comp.Player.desktop))
 
 type DesktopProps = {
@@ -37,6 +38,10 @@ export function Desktop({
     setCurrentIndex: state.setCurrentIndex,
     currentIndex: state.currentIndex,
   }))
+  const currentTime = usePlayerControlStore((state) => state.currentTime)
+  const duration = usePlayerControlStore((state) => state.duration)
+  const progressValue = duration === 0 ? 0 : Math.round((currentTime / duration) * 100)
+  let isCrossed = progressValue > 50
 
   useEffect(() => {
     if (currentIndex > videoList.length - 3 && !isFetchingNextPage) {
@@ -59,26 +64,60 @@ export function Desktop({
     let localTimeout: any = null
     function scrollHandler(this: HTMLDivElement, e: Event) {
       if (localTimeout) return
-      localTimeout = setTimeout(() => {
+      localTimeout = setTimeout(async () => {
         const indexChange = Math.floor(this.scrollTop / this.clientHeight)
-        if (indexChange > currentIndex) {
-          void analyticsService({
-            eventDetails: {
-              video_share_string: videos[currentIndex].video.share_string,
-              loop_share_string: videos[currentIndex].loop.share_string,
-              page: window.location.href,
+        if (indexChange > currentIndex && isCrossed) {
+          await analyticsService({
+            properties: {
+              content_category: 'loop',
+              content_id: videos[currentIndex].video.id,
+              event_record_screen: 'feed',
+              event_target_screen: 'none',
+              video_length: duration,
+              video_view_length: Math.round(currentTime),
             },
-            eventName: 'swipe_up',
+            eventName: 'Swipe Up',
           })
-        } else if (indexChange < currentIndex) {
-          void analyticsService({
-            eventDetails: {
-              video_share_string: videos[currentIndex].video.share_string,
-              loop_share_string: videos[currentIndex].loop.share_string,
-              page: window.location.href,
+
+          await analyticsService({
+            properties: {
+              content_category: 'loop',
+              content_id: videos[currentIndex].video.id,
+              event_record_screen: 'feed',
+              event_target_screen: 'none',
+              video_length: duration,
+              video_view_length: Math.round(currentTime),
             },
-            eventName: 'swipe_down',
+            eventName: 'Video Watched',
           })
+
+          isCrossed = false
+        } else if (indexChange < currentIndex && isCrossed) {
+          await analyticsService({
+            properties: {
+              content_category: 'loop',
+              content_id: videos[currentIndex].video.id,
+              event_record_screen: 'feed',
+              event_target_screen: 'none',
+              video_length: duration,
+              video_view_length: Math.round(currentTime),
+            },
+            eventName: 'Swipe Down',
+          })
+
+          await analyticsService({
+            properties: {
+              content_category: 'loop',
+              content_id: videos[currentIndex].video.id,
+              event_record_screen: 'feed',
+              event_target_screen: 'none',
+              video_length: duration,
+              video_view_length: Math.round(currentTime),
+            },
+            eventName: 'Video Watched',
+          })
+
+          isCrossed = false
         }
         setCurrentIndex(indexChange)
         localTimeout = null
@@ -89,7 +128,7 @@ export function Desktop({
     return () => {
       divElement.removeEventListener('scroll', scrollHandler)
     }
-  }, [scrollDivRef, currentIndex])
+  }, [scrollDivRef, currentIndex, isCrossed])
 
   if (videoList)
     return (

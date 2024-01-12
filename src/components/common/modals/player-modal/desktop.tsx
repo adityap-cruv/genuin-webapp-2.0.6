@@ -17,6 +17,7 @@ import Image from 'next/image'
 import { Loader } from '@components/ui/loader'
 import { cn } from '@lib/utils'
 import { analyticsService } from '../../../../services/analytics_service'
+import { usePlayerControlStore } from '@components/common/player/player-control-store'
 
 type Props = {
   children?: React.ReactNode
@@ -82,6 +83,12 @@ export function Desktop({
       )
   }
 
+  // TODO check why multiple times component renders
+  //   const currentTime = usePlayerControlStore((state) => state.currentTime)
+  //   const duration = usePlayerControlStore((state) => state.duration)
+  //   const progressValue = duration === 0 ? 0 : Math.round((currentTime / duration) * 100)
+  //   const isCrossed = progressValue > 50
+
   return (
     <CustomDialog open={open}>
       <CustomDialogTrigger>{children}</CustomDialogTrigger>
@@ -90,7 +97,7 @@ export function Desktop({
           <span className="flex items-center gap-x-6">
             <div
               style={{ width: videoSizeBox.modal.width, height: videoSizeBox.modal.height }}
-              className="relative overflow-clip rounded-2xl min-w-[800px] bg-monochrome-white">
+              className="relative min-w-[800px] overflow-clip rounded-2xl bg-monochrome-white">
               <CustomDialogClose
                 onClick={() => {
                   close?.()
@@ -104,14 +111,17 @@ export function Desktop({
               <button
                 onClick={async () => {
                   setCurrentIndex(currentIndex - 1)
-                  await analyticsService({
-                    eventDetails: {
-                      video_share_string: videos[currentIndex].video.share_string,
-                      loop_share_string: videos[currentIndex].loop.share_string,
-                      page: window.location.href,
-                    },
-                    eventName: 'swipe_up',
-                  })
+                  // await analyticsService({
+                  //   properties: {
+                  //     content_category: 'loop',
+                  //     content_id: videos[currentIndex].video.id,
+                  //     event_record_screen: 'feed',
+                  //     event_target_screen: 'none',
+                  //     video_length: duration,
+                  //     video_view_length: Math.round(currentTime),
+                  //   },
+                  //   eventName: 'Swipe Up',
+                  // })
                 }}
                 className={cn(
                   'rounded-full bg-monochrome-white/10 p-2 hover:bg-monochrome-white/20',
@@ -122,14 +132,17 @@ export function Desktop({
               <button
                 onClick={async () => {
                   setCurrentIndex(currentIndex + 1)
-                  await analyticsService({
-                    eventDetails: {
-                      video_share_string: videos[currentIndex].video.share_string,
-                      loop_share_string: videos[currentIndex].loop.share_string,
-                      page: window.location.href,
-                    },
-                    eventName: 'swipe_down',
-                  })
+                  // await analyticsService({
+                  //   properties: {
+                  //     content_category: 'loop',
+                  //     content_id: videos[currentIndex].video.id,
+                  //     event_record_screen: 'feed',
+                  //     event_target_screen: 'none',
+                  //     video_length: duration,
+                  //     video_view_length: Math.round(currentTime),
+                  //   },
+                  //   eventName: 'Swipe Down',
+                  // })
                 }}
                 className={cn(
                   'rounded-full bg-monochrome-white/10 p-2 hover:bg-monochrome-white/20',

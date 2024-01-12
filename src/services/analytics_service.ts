@@ -31,7 +31,7 @@ import {
   }
   void fetchGeoDetails();
   
-  export const analyticsService = async ({ eventName, eventDetails }: { eventName: string; eventDetails: any }): Promise<void> => {
+  export const analyticsService = async ({ eventName, properties }: { eventName: string; properties: any }): Promise<void> => {
   
     const deviceType = isDesktop ? 'desktop' : isMobile ? 'mobile' : isTablet ? 'tablet' : '';
     const osType = isMacOs ? 'macos' : isWindows ? 'windows' : isIOS ? 'ios' : isChromium ? 'chromium' : isAndroid ? 'android' : 'linux';
@@ -42,14 +42,6 @@ import {
       geoip,
     };
   
-    const userDetails = {};
-  
-    const payLoad: any = {
-      event_details: eventDetails,
-      user_details: userDetails,
-      device_details: deviceDetails,
-    };
-  
-    void rudderStackTrack(eventName, payLoad)
+    void rudderStackTrack(eventName, properties)
   };
   
