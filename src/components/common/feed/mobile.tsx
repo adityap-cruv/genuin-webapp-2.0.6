@@ -7,8 +7,6 @@ import { useFeedListStore } from './store'
 import { useEffect, useRef } from 'react'
 import { useCommentSheetStore } from '../player/comment-sheet/store'
 import { useVideoSizeBoxMobile } from '@hooks/use-video-size-box-mobile'
-import { analyticsService } from '../../../services/analytics_service'
-import { usePlayerControlStore } from '../player/player-control-store'
 const Player = dynamic(async () => await import('@components/common/player').then((comp) => comp.Player.mobile))
 
 type MobileProps = {
@@ -48,11 +46,6 @@ export function Mobile({
   const commentIsOpen = useCommentSheetStore((state) => state.modalIsOpen)
   const videoSizeBox = useVideoSizeBoxMobile()
 
-  const currentTime = usePlayerControlStore((state) => state.currentTime)
-  const duration = usePlayerControlStore((state) => state.duration)
-  const progressValue = duration === 0 ? 0 : Math.round((currentTime / duration) * 100)
-  let isCrossed = progressValue > 50
-
   useEffect(() => {
     if (!isFetchingNextPage && videoList.length - 3 <= currentIndex) {
       fetchNextPage?.()
@@ -62,61 +55,8 @@ export function Mobile({
   useEffect(() => {
     const element = scrollDivRef.current
     if (!element) return
-    async function handleScroll(this: HTMLDivElement, e: Event) {
+    function handleScroll(this: HTMLDivElement, e: Event) {
       const newIndex = Math.floor(this.scrollTop / this.clientHeight)
-      if (newIndex > currentIndex && isCrossed) {
-        await analyticsService({
-          properties: {
-            content_category: 'loop',
-            content_id: videos[currentIndex].video.id,
-            event_record_screen: 'feed',
-            event_target_screen: 'none',
-            video_length: duration,
-            video_view_length: Math.round(currentTime),
-          },
-          eventName: 'Swipe Up',
-        })
-
-        await analyticsService({
-          properties: {
-            content_category: 'loop',
-            content_id: videos[currentIndex].video.id,
-            event_record_screen: 'feed',
-            event_target_screen: 'none',
-            video_length: duration,
-            video_view_length: Math.round(currentTime),
-          },
-          eventName: 'Video Watched',
-        })
-
-        isCrossed = false
-      } else if (newIndex < currentIndex && isCrossed) {
-        await analyticsService({
-          properties: {
-            content_category: 'loop',
-            content_id: videos[currentIndex].video.id,
-            event_record_screen: 'feed',
-            event_target_screen: 'none',
-            video_length: duration,
-            video_view_length: Math.round(currentTime),
-          },
-          eventName: 'Swipe Down',
-        })
-
-        await analyticsService({
-          properties: {
-            content_category: 'loop',
-            content_id: videos[currentIndex].video.id,
-            event_record_screen: 'feed',
-            event_target_screen: 'none',
-            video_length: duration,
-            video_view_length: Math.round(currentTime),
-          },
-          eventName: 'Video Watched',
-        })
-
-        isCrossed = false
-      }
       setCurrentIndex(newIndex)
     }
 
@@ -124,7 +64,7 @@ export function Mobile({
     return () => {
       element.removeEventListener('scroll', handleScroll)
     }
-  }, [scrollDivRef.current, isCrossed])
+  }, [scrollDivRef.current])
 
   useEffect(() => {
     setCurrentIndex(startIndex)

@@ -1,4 +1,6 @@
 import { create } from 'zustand'
+import { analyticsService } from '../../../services/analytics_service'
+import { useFeedListStore } from '../feed/store'
 
 type PlayerControlStoreType = {
   shouldPlay: boolean
@@ -41,7 +43,25 @@ export const usePlayerControlStore = create<PlayerControlStoreType>((set) => {
     },
     currentTime: 0,
     setCurrentTime(currentTime) {
-      set((state) => ({ currentTime }))
+      set((state) => {
+        const { videoList, currentIndex } = useFeedListStore.getState()
+
+        const progressValue = Math.round((currentTime / state.duration) * 100)
+        if(progressValue > 95 && state.duration !== 0){
+          void analyticsService({
+            eventName: 'Video Ended',
+            properties: {
+              content_category: 'loop',
+              content_id: videoList[currentIndex].video.id,
+              event_record_screen: 'feed',
+              event_target_screen: 'none',
+              video_length: state.duration,
+              video_view_length: currentTime,
+            },
+          })
+        }
+        return { currentTime }
+      })
     },
   }
 })
