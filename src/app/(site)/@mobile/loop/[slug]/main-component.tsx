@@ -198,7 +198,7 @@ function LoopCollaborators({ slug }: { slug: string }) {
   if (cohosts && cohosts.length === 0)
     return (
       <div className="flex h-full w-full items-center justify-center pt-32 text-title-3-bold text-monochrome">
-        No collaborators
+        No collaborators yet
       </div>
     )
 
@@ -231,7 +231,7 @@ function LoopSubscribers({ slug }: any) {
   if (subscribers && subscribers.length === 0)
     return (
       <div className="flex h-full w-full items-center justify-center pt-32 text-title-3-bold text-monochrome">
-        No subscribers
+        No subscribers yet
       </div>
     )
 
