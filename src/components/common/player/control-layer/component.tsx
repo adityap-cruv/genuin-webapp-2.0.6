@@ -130,13 +130,13 @@ function Loop({ videoData }: { videoData?: VideoDataType }) {
                 fallbackString={videoData.loop?.name ?? ''}
                 isAvatar={videoData?.owner.is_avatar}
               />
-              <p className="line-clamp-1 px-2 text-title-md text-monochrome-white">@{videoData.owner.nickname}</p>
+              <p className="line-clamp-1 px-2 text-title-3-bold text-monochrome-white">@{videoData.owner.nickname}</p>
             </Link>
           </div>
           <span className="py-2">
             <ReadMore
               text={videoData?.video.description ?? ''}
-              className="line-clamp-2 w-full break-all text-body-sm text-monochrome-white"
+              className="line-clamp-2 w-full break-all text-body-1-demi text-monochrome-white"
             />
           </span>
         </div>

@@ -241,7 +241,7 @@ function DownloadAppForm() {
                       </div>
                     </div>
                     {isInvalidNumber && (
-                      <div className="absolute text-cap-lg text-red">Please enter a valid phone number.</div>
+                      <div className="absolute text-cap-1-demi text-red">Please enter a valid phone number.</div>
                     )}
                     <div className="relative mt-6">
                       <input
@@ -258,7 +258,9 @@ function DownloadAppForm() {
                         }}
                       />
                     </div>
-                    {isInvalidEmail && <div className="absolute text-cap-lg text-red">Please enter a valid email.</div>}
+                    {isInvalidEmail && (
+                      <div className="absolute text-cap-1-demi text-red">Please enter a valid email.</div>
+                    )}
                     <Button
                       className="mt-6 w-full rounded-md bg-new-off-black px-4 py-2 hover:bg-monochrome-black"
                       onClick={async () => {

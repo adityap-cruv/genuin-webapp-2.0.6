@@ -100,7 +100,7 @@ export function MainComponent({ loopDetails }: Props) {
               {/* <Button size="custom" variant="outline" className="border-primary px-4">
                 <span className="flex items-center">
                   <Image src={icQuestion} alt="question" />
-                  <p className="py-2 text-body-sm text-primary">Q&A</p>
+                  <p className="py-2 text-body-1-demi text-primary">Q&A</p>
                 </span>
               </Button> */}
 
@@ -145,7 +145,7 @@ function LoopCollaborators({ slug }: { slug: string }) {
   if (cohosts && cohosts.length !== 0)
     return (
       <div>
-        <p className="my-2 text-title-md">Collaborators</p>
+        <p className="my-2 text-title-3-bold">Collaborators</p>
         <div className="h-full w-full overflow-auto">
           {cohosts.map((item: any, index: any) => (
             <Link key={index} href={{ pathname: PATH_NAME.profile(item.user.nickname) }}>

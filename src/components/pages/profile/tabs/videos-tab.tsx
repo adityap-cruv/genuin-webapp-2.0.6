@@ -131,7 +131,7 @@ function TabBody({ videos, hasNextPage, fetchingNextPage }: TabBodyProps) {
       <div
         className={`flex h-full ${
           isMobile && 'pt-40'
-        } w-full items-center justify-center text-title-lg text-secondary`}>
+        } w-full items-center justify-center text-title-2-bold text-secondary`}>
         No videos yet
       </div>
     )
@@ -213,11 +213,11 @@ function Tile({ width = -1, videoDetails, onClick, tileIndex }: TileProps) {
             <div className="flex justify-between">
               <div className="flex items-center">
                 <Image src={icView} alt="views" />
-                <p className="text-title-sm text-secondary-foreground">{videoDetails.video.view_count ?? 0}</p>
+                <p className="text-body-1-bold text-secondary-foreground">{videoDetails.video.view_count ?? 0}</p>
               </div>
               <Image src={icLoop} alt="loop" height={24} width={24} />
             </div>
-            <div className="ml-1 line-clamp-2 break-all text-left text-title-sm text-secondary-foreground">
+            <div className="ml-1 line-clamp-2 break-all text-left text-body-1-bold text-secondary-foreground">
               {videoDetails.loop?.name}
             </div>
           </div>
@@ -226,9 +226,9 @@ function Tile({ width = -1, videoDetails, onClick, tileIndex }: TileProps) {
           <div className="flex h-full items-end">
             <div className="flex items-center p-2">
               <Image src={icVideoBubble} alt="replies" />
-              <p className="text-title-sm text-secondary-foreground">&nbsp;{videoDetails.video.reply_count ?? 0}</p>
+              <p className="text-body-1-bold text-secondary-foreground">&nbsp;{videoDetails.video.reply_count ?? 0}</p>
               <Image src={icView} alt="view" />
-              <p className="text-title-sm text-secondary-foreground">&nbsp;{videoDetails.video.view_count ?? 0}</p>
+              <p className="text-body-1-bold text-secondary-foreground">&nbsp;{videoDetails.video.view_count ?? 0}</p>
             </div>
           </div>
         )}

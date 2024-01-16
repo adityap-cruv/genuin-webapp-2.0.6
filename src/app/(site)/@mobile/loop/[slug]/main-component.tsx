@@ -55,13 +55,13 @@ export function MainComponent({ loopDetails }: Props) {
           style={{ height: 'calc(100% - 74px)' }}>
           <div className="w-full">
             <div ref={detailsDivRef}>
-              <p className="line-clamp-1 text-title-xl">{loopDetails.group.group_name}</p>
-              <p className="my-2 line-clamp-2 break-words text-body-lg">{loopDetails.group.group_description}</p>
+              <p className="line-clamp-1 text-title-1-bold">{loopDetails.group.group_name}</p>
+              <p className="my-2 line-clamp-2 break-words text-title-3-demi">{loopDetails.group.group_description}</p>
             </div>
             <div className=" my-3 rounded-lg border border-solid border-monochrome-9 p-4">
               <div className="flex">
                 <div className="flex flex-1 flex-col items-start">
-                  <p className="text-body-sm text-secondary">Created by</p>
+                  <p className="text-body-1-demi text-secondary">Created by</p>
                   <Link href={{ pathname: PATH_NAME.profile(loopDetails.owner.nickname) }}>
                     <div className="my-2 flex items-center">
                       <div className="bg-red-400 h-6 w-6">
@@ -72,12 +72,12 @@ export function MainComponent({ loopDetails }: Props) {
                           isAvatar={loopDetails.owner.is_avatar}
                         />
                       </div>
-                      <p className="ml-1 text-title-sm">@{loopDetails.owner.nickname}</p>
+                      <p className="text-body-1 ml-1">@{loopDetails.owner.nickname}</p>
                     </div>
                   </Link>
                 </div>
                 <div className="flex flex-1 flex-col items-start">
-                  <p className="text-body-sm text-secondary">Posted in</p>
+                  <p className="text-body-1-demi text-secondary">Posted in</p>
                   {/* todo change to community data */}
                   <Link href={{ pathname: PATH_NAME.community(loopDetails.community.slug) }}>
                     <div className="my-2 flex items-center">
@@ -89,7 +89,7 @@ export function MainComponent({ loopDetails }: Props) {
                           isAvatar={false}
                         />
                       </div>
-                      <p className="ml-1 text-title-sm">{loopDetails.community.name}</p>
+                      <p className="ml-1 text-body-1-bold">{loopDetails.community.name}</p>
                     </div>
                   </Link>
                 </div>
@@ -119,7 +119,7 @@ export function MainComponent({ loopDetails }: Props) {
                     utmCampaign: 'share',
                     utmMedium: 'web',
                     utmSource: window.location.hostname,
-                    community: loopDetails.community.share_string
+                    community: loopDetails.community.share_string,
                   })
                     .then((generatedLink) => {
                       openGeneratedLink(generatedLink)
@@ -133,7 +133,7 @@ export function MainComponent({ loopDetails }: Props) {
               {/* <Button size="custom" variant="outline" className="border-primary px-4">
                 <span className="flex items-center">
                   <Image src={icQuestion} alt="question" />
-                  <p className="py-2 text-body-sm text-primary">Q&A</p>
+                  <p className="py-2 text-body-1-demi text-primary">Q&A</p>
                 </span>
               </Button> */}
 
@@ -166,13 +166,13 @@ function LoopTabs() {
     <Tabs defaultValue="Loops">
       <TabsList className="sticky flex max-w-min">
         <TabsTrigger value="Loops">
-          <p className="text-title-md">Posts</p>
+          <p className="text-title-3-bold">Posts</p>
         </TabsTrigger>
         <TabsTrigger value="About">
-          <p className="text-title-md">Collaborators</p>
+          <p className="text-title-3-bold">Collaborators</p>
         </TabsTrigger>
         <TabsTrigger value="Members">
-          <p className="text-title-md">Subscribers</p>
+          <p className="text-title-3-bold">Subscribers</p>
         </TabsTrigger>
       </TabsList>
       <hr className="border-t border-monochrome-9" />
@@ -269,8 +269,8 @@ function Stats({
       {statsData.map((obj, index) => {
         return (
           <div key={index} className="flex items-center">
-            <p className="mr-1 text-title-lg">{obj.value}</p>
-            <p className="mr-4 text-body-sm text-secondary">{obj.key}</p>
+            <p className="mr-1 text-title-2-bold">{obj.value}</p>
+            <p className="mr-4 text-body-1-demi text-secondary">{obj.key}</p>
           </div>
         )
       })}

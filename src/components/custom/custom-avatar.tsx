@@ -12,7 +12,7 @@ export function CustomAvatar({ isAvatar = false, imageUrl, className, fallbackSt
   return (
     <Avatar className={cn(className, 'flex items-center justify-center bg-red-40')}>
       <AvatarImage src={isAvatar ? getAvatarUrl(imageUrl) : imageUrl} />
-      <AvatarFallback className="text-title-lg text-monochrome-white">
+      <AvatarFallback className="text-title-2-bold text-monochrome-white">
         {getAvatarFallback(fallbackString)}
       </AvatarFallback>
     </Avatar>

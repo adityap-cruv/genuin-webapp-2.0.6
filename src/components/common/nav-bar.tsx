@@ -46,13 +46,13 @@ function GetAppButton({ isMobile }: GetAppButtonType) {
   return isMobile ? (
     <Link href={MOBILE_DOWNLOAD_APP_LINK}>
       <Button size="sm">
-        <p className="text-title-sm text-monochrome-white">Get App</p>
+        <p className="text-body-1-bold text-monochrome-white">Get App</p>
       </Button>
     </Link>
   ) : (
     <DownloadAppDialog>
       <Button size="sm">
-        <p className="line-clamp-1 text-title-sm text-monochrome-white">Get App</p>
+        <p className="line-clamp-1 text-body-1-bold text-monochrome-white">Get App</p>
       </Button>
     </DownloadAppDialog>
   )
@@ -72,22 +72,22 @@ function BurgerMenu({ variant = 'dark' }: { variant?: 'light' | 'dark' }) {
         }}>
         <DropdownMenuItem>
           <Link href={HIRING_LINK} className="w-full">
-            <p className="text-right text-title-xl text-monochrome-white">Join Our Team</p>
+            <p className="text-right text-title-1-bold text-monochrome-white">Join Our Team</p>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem>
           <Link href="https://begenuin.com/l/123f373977001407" className="w-full">
-            <p className="w-full text-right text-title-xl text-monochrome-white">Life at Genuin</p>
+            <p className="w-full text-right text-title-1-bold text-monochrome-white">Life at Genuin</p>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem>
           <Link href={PATH_NAME.terms} className="w-full">
-            <p className="w-full text-right text-title-xl text-monochrome-white">Terms of Service</p>
+            <p className="w-full text-right text-title-1-bold text-monochrome-white">Terms of Service</p>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem>
           <Link href={PATH_NAME.privacy} className="w-full">
-            <p className="w-full text-right text-title-xl text-monochrome-white">Privacy Policy</p>
+            <p className="w-full text-right text-title-1-bold text-monochrome-white">Privacy Policy</p>
           </Link>
         </DropdownMenuItem>
       </DropdownMenuContent>

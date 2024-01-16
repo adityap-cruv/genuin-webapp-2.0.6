@@ -31,7 +31,7 @@ export default function Error({ error, reset }: { error: Error; reset: () => voi
 
               <DownloadAppDialog>
                 <Button className="px-6 py-6">
-                  <p className="mx-2 text-title-lg text-new-off-white">Download Genuin</p>
+                  <p className="mx-2 text-title-2-bold text-new-off-white">Download Genuin</p>
                 </Button>
               </DownloadAppDialog>
             </div>

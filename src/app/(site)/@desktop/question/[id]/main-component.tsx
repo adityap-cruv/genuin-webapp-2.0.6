@@ -27,7 +27,7 @@ export function MainComponent({ questionDetails }: Props) {
             <div className="mt-6">
               <DownloadAppDialog>
                 <Button className="px-6 py-6">
-                  <p className="mx-2 text-title-lg text-new-off-white">Get App</p>
+                  <p className="mx-2 text-title-2-bold text-new-off-white">Get App</p>
                 </Button>
               </DownloadAppDialog>
             </div>

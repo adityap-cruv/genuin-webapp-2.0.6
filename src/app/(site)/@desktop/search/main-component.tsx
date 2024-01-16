@@ -22,19 +22,19 @@ function SearchTabs() {
     <Tabs defaultValue="Top">
       <TabsList className="flex max-w-min">
         <TabsTrigger value="Top">
-          <p className="text-title-md">Top</p>
+          <p className="text-title-3-bold">Top</p>
         </TabsTrigger>
         <TabsTrigger value="Videos">
-          <p className="text-title-md">Videos</p>
+          <p className="text-title-3-bold">Videos</p>
         </TabsTrigger>
         <TabsTrigger value="Communities">
-          <p className="text-title-md">Communities</p>
+          <p className="text-title-3-bold">Communities</p>
         </TabsTrigger>
         <TabsTrigger value="Loops">
-          <p className="text-title-md">Loops</p>
+          <p className="text-title-3-bold">Loops</p>
         </TabsTrigger>
         <TabsTrigger value="People">
-          <p className="text-title-md">People</p>
+          <p className="text-title-3-bold">People</p>
         </TabsTrigger>
       </TabsList>
       <TabsContent value="Top" className="mx-4">
@@ -103,19 +103,19 @@ function Communities() {
                   isAvatar={false}
                 />
                 <div className="mx-2">
-                  <p className="line-clamp-1 text-title-sm">{community.name}</p>
-                  <p className="line-clamp-1 text-body-sm text-monochrome">
+                  <p className="line-clamp-1 text-body-1-bold">{community.name}</p>
+                  <p className="line-clamp-1 text-body-1-demi text-monochrome">
                     {abbreviateNumber(community.members)} members
                   </p>
                 </div>
               </div>
               <div>
                 <Button variant="default" size="sm" className="px-4">
-                  <p className="text-body-sm text-monochrome-white">Join</p>
+                  <p className="text-body-1-demi text-monochrome-white">Join</p>
                 </Button>
               </div>
             </div>
-            <p className="line-clamp-2 pt-2 text-body-sm">{community.description}</p>
+            <p className="line-clamp-2 pt-2 text-body-1-demi">{community.description}</p>
           </div>
         ))}
       </div>

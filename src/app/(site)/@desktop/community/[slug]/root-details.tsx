@@ -105,10 +105,10 @@ export function RootDetails({ communityDetails }: Props) {
           style={{ height: 'calc(100% - 56px)', backgroundColor: '#F9F9F9' }}>
           <div className="flex flex-col items-center justify-center">
             <Image src={lockIcon} alt="share" className="h-16 w-16" />
-            <p className="text-title-lg" style={{ fontWeight: 600 }}>
+            <p className="text-title-2-bold" style={{ fontWeight: 600 }}>
               This community is private
             </p>
-            <p className="text-center text-body-sm" style={{ fontWeight: 500 }}>
+            <p className="text-center text-body-1-med">
               Join this community to see and interact
               <br /> with their posts
             </p>
@@ -177,7 +177,7 @@ function Links() {
   if (links?.instagram_url ?? links?.linkedin_url ?? links?.twitter_url ?? links?.social_web_url)
     return (
       <div>
-        <p className="my-2 mt-4 text-title-md">Links</p>
+        <p className="my-2 mt-4 text-title-3-bold">Links</p>
         <div className="flex">
           {links?.instagram_url && (
             <div className="mx-1 flex items-center rounded-md bg-monochrome-9 p-1">
@@ -248,7 +248,7 @@ function Leaders() {
   if (communityDetailsModule.leaders.length !== 0)
     return (
       <div>
-        <p className="my-2 mt-4 text-title-md">Leader</p>
+        <p className="my-2 mt-4 text-title-3-bold">Leader</p>
         {communityDetailsModule?.leaders.map((moderator, index) => {
           return (
             <Link key={index} href={{ pathname: PATH_NAME.profile(moderator.nickname) }}>

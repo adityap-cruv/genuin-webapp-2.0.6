@@ -50,7 +50,9 @@ export function Sheet({ container, videoDetails, noOfComments }: Props) {
           }}>
           <div className="h-full w-full rounded-t-[18px] bg-background outline-none sm:rounded-t-none">
             <div className="flex h-12 w-full items-center justify-between border-b border-monochrome-9 px-3 ">
-              <p className="text-body-lg text-secondary">Comments{noOfComments !== 0 ? `(${noOfComments})` : ''}</p>
+              <p className="text-title-3-demi text-secondary">
+                Comments{noOfComments !== 0 ? `(${noOfComments})` : ''}
+              </p>
               <X
                 className="h-6 w-6 cursor-pointer stroke-secondary"
                 onClick={() => {

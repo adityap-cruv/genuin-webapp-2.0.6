@@ -71,7 +71,7 @@ export function CommunitySection() {
                   <div className="flex items-center gap-x-2">
                     <Link href={item.link}>
                       <Button size="sm" className="px-4">
-                        <p className="text-title-md">Join</p>
+                        <p className="text-title-3-bold">Join</p>
                       </Button>
                     </Link>
                     <Button
@@ -93,8 +93,8 @@ export function CommunitySection() {
                     <Toaster />
                   </div>
                 </div>
-                <p className="mt-2 line-clamp-1 text-title-md">{item.name}</p>
-                <p className="line-clamp-2 text-body-lg sm:max-w-xs">{item.description}</p>
+                <p className="mt-2 line-clamp-1 text-title-3-bold">{item.name}</p>
+                <p className="line-clamp-2 text-title-3-demi sm:max-w-xs">{item.description}</p>
               </div>
             </React.Fragment>
           )
