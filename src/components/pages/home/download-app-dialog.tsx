@@ -8,7 +8,6 @@ import Image from 'next/image'
 import imageAppStore from '@images/appStore.svg'
 import imagePlayStore from '@images/playStore.svg'
 import Link from 'next/link'
-import { isMobile } from 'react-device-detect'
 import { MOBILE_DOWNLOAD_APP_LINK } from '@lib/constants'
 
 interface FormData {
@@ -23,11 +22,12 @@ const initialFormData: FormData = {
 
 interface Props {
   children: React.ReactNode
+  isMobile: boolean
 }
 
 // TODO: improve it's api implementation
 // TODO: Causing hydration issue fix it.
-export function DownloadAppDialog({ children }: Props) {
+export function DownloadAppDialog({ children, isMobile }: Props) {
   const URL_TO_APP_STORE = 'https://apps.apple.com/US/app/id1511177838?mt=8'
   const URL_TO_PLAY_STORE = 'https://play.google.com/store/apps/details?id=com.begenuin.begenuin'
   return isMobile ? (

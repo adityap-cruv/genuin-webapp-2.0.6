@@ -7,7 +7,6 @@ import Link from 'next/link'
 import { Toaster } from '@components/ui/toaster'
 import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
-import { isMobile } from 'react-device-detect'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { useInView } from 'framer-motion'
 
@@ -58,9 +57,7 @@ export function CommunitySection() {
               <div
                 onClick={() => (window.location.href = item.link)}
                 style={{ WebkitBoxSizing: 'border-box' }}
-                className={`m-4 box-border flex min-w-full snap-center flex-col gap-y-1 rounded-[20px] border-2 border-transparent p-6 outline outline-1 outline-new-light-grey hover:border-2 ${
-                  !isMobile && 'hover:border-primary hover:shadow-md hover:outline-0'
-                } sm:min-w-max sm:max-w-md`}>
+                className={`m-4 box-border flex min-w-full snap-center flex-col gap-y-1 rounded-[20px] border-2 border-transparent p-6 outline outline-1 outline-new-light-grey hover:border-2 hover:border-primary hover:shadow-md hover:outline-0 sm:min-w-max sm:max-w-md`}>
                 <div className="flex w-full justify-between">
                   <CustomAvatar
                     className="h-20 w-20 rounded-full bg-red-40"

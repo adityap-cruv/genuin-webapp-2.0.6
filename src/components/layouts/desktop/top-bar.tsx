@@ -24,7 +24,7 @@ export function TopBar() {
                 </p>
               </Button>
             </Link>
-            <DownloadAppDialog>
+            <DownloadAppDialog isMobile={false}>
               <Button variant="default" size={'custom'} className="bg-new-off-black px-4 py-3 hover:bg-new-dark-grey">
                 <p className="text-new-para-2" style={{ fontWeight: 600 }}>
                   Download Genuin

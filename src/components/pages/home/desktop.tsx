@@ -75,7 +75,7 @@ function Component1() {
           really matter.
         </p>
         <div className="flex flex-col gap-y-4">
-          <DownloadAppDialog>
+          <DownloadAppDialog isMobile>
             <Button size="custom" className="bg-new-off-black px-5 py-4 after:bg-new-dark-grey hover:bg-new-dark-grey">
               <p className="text-new-md text-new-off-white">Download Genuin</p>
             </Button>

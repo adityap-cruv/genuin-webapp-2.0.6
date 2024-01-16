@@ -6,7 +6,6 @@ import { cookies } from 'next/headers'
 import Script from 'next/script'
 
 // TODO: configure eslint plugin
-// TODO: work on parallel routing for developing mobile and desktop components differently
 // TODO: create skeleton for everything and pages.
 // TODO: optimize uses of dynamic function.
 // TODO: check react-device-detect dependency and than remove it. as it is not needed anymore.

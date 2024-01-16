@@ -13,7 +13,6 @@ import dynamic from 'next/dynamic'
 import { pushUrlWithoutReload } from '@lib/utils'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { useResponsive } from '@hooks/useResponsive'
-import { isMobile } from 'react-device-detect'
 const PlayerListModal = dynamic(
   async () => await import('@components/common/modals/player-list-modal').then((comp) => comp.PlayerListModal)
 )
@@ -48,7 +47,7 @@ function GenuinVideos() {
   })
   return (
     <div ref={divRef} className="h-full overflow-y-auto">
-      {isLoading && <Loader className={`${isMobile && 'pt-40'}`} size="md" />}
+      {isLoading && <Loader className="pt-40 sm:pt-0" size="md" />}
       {data && (
         <TabBody
           videos={data?.pages.flatMap((page: { videos: any }) => page.videos)}
@@ -73,7 +72,7 @@ function LoopVideos() {
   })
   return (
     <div ref={divRef} className="h-full overflow-y-auto">
-      {isLoading && <Loader className={`${isMobile && 'pt-40'}`} size="md" />}
+      {isLoading && <Loader className="pt-40 sm:pt-0" size="md" />}
       {data && (
         <TabBody
           videos={data?.pages.flatMap((page: { videos: any }) => page.videos)}
@@ -99,7 +98,7 @@ function AllVideos() {
 
   return (
     <div ref={divRef} className="h-full overflow-y-auto">
-      {isLoading && <Loader className={`${isMobile && 'pt-40'}`} size="md" />}
+      {isLoading && <Loader className="pt-40 sm:pt-0" size="md" />}
       {data && (
         <TabBody
           videos={data?.pages.flatMap((page) => page.videos)}
@@ -128,10 +127,7 @@ function TabBody({ videos, hasNextPage, fetchingNextPage }: TabBodyProps) {
 
   if (videos.length === 0) {
     return (
-      <div
-        className={`flex h-full ${
-          isMobile && 'pt-40'
-        } w-full items-center justify-center text-title-2-bold text-secondary`}>
+      <div className={`flex h-full w-full items-center justify-center pt-40 text-title-2-bold text-secondary sm:pt-0`}>
         No videos yet
       </div>
     )
