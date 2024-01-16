@@ -37,12 +37,8 @@ type CommunityListType = {
   communities: CommunityMiniObj[]
   videoList: Array<{ shareString: string; details: null | VideoDataType }>
   currentVideoShareString: string | null
-  startIndex: number
-  currentIndex: number
-  endIndex: number
-  setCurrentIndex: (index: number) => void
-  fetchNextPage: () => void
-  fetchPreviousPage: () => void
+  activeIndex: number
+  setActiveIndex: (newIndex: number) => void
   setVideoDetails: (shareStrings: Array<{ share_string: string }>) => Promise<void>
   addCommunities: (list: Array<Omit<CommunityMiniObj, 'loops'>>) => void
   addLoops: (communityObj: CommunityMiniObj | number, list: Array<Omit<LoopMiniObj, 'videos'>>) => void
@@ -56,51 +52,47 @@ type CommunityListType = {
 export const useCommunityListStore = create<CommunityListType>((set) => {
   return {
     open(shareString) {
-      set({ currentVideoShareString: shareString })
+      set((state) => {
+        const shareStrings = state.videoList.flatMap((item) => item.shareString)
+        const newActiveIndex = shareStrings.indexOf(shareString)
+        if (!state.videoList[newActiveIndex].details) {
+          const startIndex = newActiveIndex - 5 > -1 ? newActiveIndex - 5 : 0
+          const endIndex = newActiveIndex + 5 >= shareStrings.length ? shareStrings.length - 1 : newActiveIndex + 5
+          void state.setVideoDetails(shareStrings.slice(startIndex, endIndex).map((item) => ({ share_string: item })))
+        }
+        return { activeIndex: newActiveIndex, currentVideoShareString: shareString }
+      })
     },
     close() {
       set({ currentVideoShareString: null })
     },
+    activeIndex: 0,
+    setActiveIndex(newIndex) {
+      set((state) => {
+        const oldIndex = state.activeIndex
+        if (oldIndex > newIndex) {
+          const checkIndex = newIndex - 2 > -1 ? newIndex - 2 : 0
+          if (!state.videoList[checkIndex].details)
+            void state.setVideoDetails(
+              state.videoList
+                .slice(newIndex - 7 > -1 ? newIndex - 7 : 0, newIndex - 1)
+                .map((item) => ({ share_string: item.shareString }))
+            )
+        } else {
+          const checkIndex = newIndex + 2 < state.videoList.length ? newIndex + 2 : state.videoList.length - 1
+          if (!state.videoList[checkIndex].details)
+            void state.setVideoDetails(
+              state.videoList
+                .slice(checkIndex, checkIndex + 5 < state.videoList.length ? checkIndex + 5 : state.videoList.length)
+                .map((item) => ({ share_string: item.shareString }))
+            )
+        }
+        return { activeIndex: newIndex }
+      })
+    },
     videoList: [],
     currentVideoShareString: '',
     communities: [],
-    startIndex: 0,
-    currentIndex: 0,
-    endIndex: -1,
-    setCurrentIndex(index) {
-      set((state) => {
-        const videoList = state.videoList
-        index + 5 > videoList.length ? (state.endIndex = videoList.length) : (state.endIndex = index + 5)
-        index - 5 > 0 ? (state.startIndex = index - 5) : (state.startIndex = 0)
-        void state.setVideoDetails(
-          videoList.slice(state.startIndex, state.endIndex).map((item) => ({ share_string: item.shareString }))
-        )
-        state.currentIndex = index
-        return state
-      })
-    },
-    fetchNextPage() {
-      set((state) => {
-        const videoList = state.videoList
-        const oldEndIndex = state.endIndex
-        oldEndIndex + 10 > videoList.length ? (state.endIndex = videoList.length) : (state.endIndex += 10)
-        void state.setVideoDetails(
-          videoList.slice(oldEndIndex, state.endIndex).map((item) => ({ share_string: item.shareString }))
-        )
-        return state
-      })
-    },
-    fetchPreviousPage() {
-      set((state) => {
-        const videoList = state.videoList
-        const oldStartIndex = state.startIndex
-        oldStartIndex - 10 > -1 ? (state.startIndex -= 10) : (state.startIndex = 0)
-        void state.setVideoDetails(
-          videoList.slice(state.startIndex, oldStartIndex).map((item) => ({ share_string: item.shareString }))
-        )
-        return state
-      })
-    },
     async setVideoDetails(shareStrings) {
       if (shareStrings.length > 0) {
         const videoDetailsList = await fetchVideoDetailsByShareString(shareStrings)

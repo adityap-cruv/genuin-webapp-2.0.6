@@ -25,8 +25,6 @@ import icPlay from '@icons/player-controls/icPlay.svg'
 import { DownloadDialog } from '@components/common/download-dialog'
 import { type CommunityMiniObj, useCommunityListStore, type LoopMiniObj, type VideoMiniObj } from './store'
 import { PlayerModal } from '@components/common/modals/player-modal'
-import { type VideoDataType } from '@lib/schemas/video'
-import { start } from 'repl'
 
 interface CompProps {
   profileData: any
@@ -269,78 +267,30 @@ function CommunityList({ usernickname }: any) {
 }
 
 function PlayerModalWrapper() {
-  const [feedState, setFeedState] = useState<{
-    isLoading: boolean
-    feedList: VideoDataType[]
-    feedStartIndex: number
-  }>({
-    isLoading: true,
-    feedList: [],
-    feedStartIndex: 0,
-  })
-
-  const {
-    close,
-    currentVideoShareString,
-    videoList,
-    fetchNextPage,
-    fetchPreviousPage,
-    setCurrentIndex,
-    startIndex,
-    endIndex,
-    currentIndex,
-  } = useCommunityListStore((state) => ({
+  const { close, currentVideoShareString, videoList, activeIndex, setActiveIndex } = useCommunityListStore((state) => ({
     close: state.close,
     currentVideoShareString: state.currentVideoShareString,
     videoList: state.videoList,
-    setCurrentIndex: state.setCurrentIndex,
-    startIndex: state.startIndex,
-    endIndex: state.endIndex,
-    currentIndex: state.currentIndex,
-    fetchNextPage: state.fetchNextPage,
-    fetchPreviousPage: state.fetchPreviousPage,
+    activeIndex: state.activeIndex,
+    setActiveIndex: state.setActiveIndex,
   }))
 
-  useEffect(() => {
-    const shareStrings = videoList.flatMap((item) => item.shareString)
-    if (currentVideoShareString) {
-      setFeedState((x) => {
-        x.isLoading = true
-        return { ...x }
-      })
-      setCurrentIndex(shareStrings.indexOf(currentVideoShareString))
-    }
-  }, [currentVideoShareString])
-
-  useEffect(() => {
-    const list = videoList.slice(startIndex, endIndex)
-    setFeedState((x) => {
-      x.feedStartIndex = list.findIndex((item) => item.shareString === currentVideoShareString)
-      x.isLoading = !list.every((item) => Boolean(item.details))
-      x.feedList = list.map((item) => item.details as VideoDataType)
-      return { ...x }
-    })
-  }, [videoList])
-
-  return (
-    <PlayerModal.desktop
-      isLoading={feedState.isLoading}
-      videos={feedState.feedList}
-      close={close}
-      fetchNextVideos={() => {
-        fetchNextPage()
-      }}
-      fetchPreviousVideos={(index: number) => {
-        // console.log('called::', index, currentIndex, startIndex, endIndex)
-        fetchPreviousPage()
-        // console.log('called 2::', index, currentIndex, startIndex, endIndex)
-      }}
-      isError={false}
-      isFetchingNextPage={false}
-      open={Boolean(currentVideoShareString)}
-      startIndex={feedState.feedStartIndex}
-    />
-  )
+  if (videoList.length > 0)
+    return (
+      <PlayerModal.profile
+        video={videoList[activeIndex].details ?? undefined}
+        hasNextVideo={activeIndex < videoList.length - 1}
+        hasPreviousVideo={activeIndex > 0}
+        getNextVideo={() => {
+          setActiveIndex(activeIndex + 1)
+        }}
+        getPreviousVideo={() => {
+          setActiveIndex(activeIndex - 1)
+        }}
+        close={close}
+        open={Boolean(currentVideoShareString)}
+      />
+    )
 }
 
 function CommunityDetails({ userId, community }: { userId: string; community: CommunityMiniObj }) {
