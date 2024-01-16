@@ -1,4 +1,4 @@
-import { Desktop, Experiment } from './desktop'
+import { Desktop, Profile } from './desktop'
 import { Mobile } from './mobile'
 
-export const PlayerModal = { desktop: Desktop, mobile: Mobile, experiment: Experiment }
+export const PlayerModal = { desktop: Desktop, mobile: Mobile, profile: Profile }

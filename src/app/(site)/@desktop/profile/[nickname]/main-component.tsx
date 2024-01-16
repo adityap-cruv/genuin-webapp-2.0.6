@@ -277,7 +277,7 @@ function PlayerModalWrapper() {
 
   if (videoList.length > 0)
     return (
-      <PlayerModal.experiment
+      <PlayerModal.profile
         video={videoList[activeIndex].details ?? undefined}
         hasNextVideo={activeIndex < videoList.length - 1}
         hasPreviousVideo={activeIndex > 0}

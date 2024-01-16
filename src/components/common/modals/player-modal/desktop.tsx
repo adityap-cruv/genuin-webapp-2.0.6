@@ -128,7 +128,7 @@ export function Desktop({
   )
 }
 
-type ExpProps = {
+type ProfileProps = {
   children?: React.ReactNode
   /**
    * If video is not available than it will show loader only.
@@ -152,7 +152,12 @@ type ExpProps = {
   getPreviousVideo: () => void
 }
 
-export function Experiment({
+/**
+ * For profile page their is different implementation for modal component in desktop.
+ * @param param0
+ * @returns
+ */
+export function Profile({
   children,
   open = false,
   video,
@@ -161,7 +166,7 @@ export function Experiment({
   hasPreviousVideo = true,
   getNextVideo,
   getPreviousVideo,
-}: ExpProps) {
+}: ProfileProps) {
   const videoSizeBox = useVideoSizeBoxModal()
 
   function InnerContent() {
