@@ -32,4 +32,6 @@ export function Root({ brandId }: { brandId?: string }) {
         />
       </main>
     )
+
+  return <FeedShimmer.desktop />
 }

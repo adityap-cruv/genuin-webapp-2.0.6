@@ -42,4 +42,6 @@ export function Root({ brandId }: { brandId?: string }) {
         </span>
       </main>
     )
+
+  return <FeedShimmer.mobile />
 }
