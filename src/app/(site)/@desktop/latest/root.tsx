@@ -1,12 +1,12 @@
 'use client'
-import { Loader } from '@components/ui/loader'
+import { FeedShimmer } from '@components/common/shimmers/feed-shimmer'
 import { useVideoSizeBox } from '@hooks/use-video-size-box'
 import { getFeed } from '@lib/api/feed'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import dynamic from 'next/dynamic'
 const Feed = dynamic(async () => await import('@components/common/feed').then((comp) => comp.Feed.desktop), {
   loading(_) {
-    return <Loader size="md" />
+    return <FeedShimmer.desktop />
   },
 })
 
