@@ -73,7 +73,7 @@ export function MainComponent({ profileData }: CompProps) {
                     toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                   })
                 }>
-                <p className="text-title-sm text-blue">Edit Profile</p>
+                <p className="text-body-1-bold text-blue">Edit Profile</p>
               </Button> */}
               <Button
                 variant="outline"
@@ -93,20 +93,16 @@ export function MainComponent({ profileData }: CompProps) {
           <div ref={detailsDivRef} className="mt-2 flex items-center">
             {profileData?.name ? (
               <>
-                <p className="line-clamp-1 pr-2 text-title-md">{profileData?.name}</p>
-                <p className="line-clamp-1 text-body-sm text-monochrome" style={{ fontWeight: 500 }}>
-                  @{profileData?.nickname}
-                </p>
+                <p className="line-clamp-1 pr-2 text-title-3-bold">{profileData?.name}</p>
+                <p className="line-clamp-1 text-body-1-med text-monochrome">@{profileData?.nickname}</p>
               </>
             ) : (
               <>
-                <p className="line-clamp-1 pr-2 text-title-md">@{profileData?.nickname}</p>
+                <p className="line-clamp-1 pr-2 text-title-3-bold">@{profileData?.nickname}</p>
               </>
             )}
           </div>
-          <p className="my-1 line-clamp-2 text-body-sm" style={{ lineHeight: '24px' }}>
-            {profileData?.bio}
-          </p>
+          <p className="my-1 line-clamp-2 text-body-1-demi">{profileData?.bio}</p>
           <Stats profileData={profileData} />
           <Links profileData={profileData} />
         </div>
@@ -177,54 +173,54 @@ function PlayerModalWrapper() {
 
 function Links({ profileData }: CompProps) {
   const links = profileData?.social_links
-    return (
-      <div className="mt-2 flex">
-        {links?.linkedin && (
-          <div className="mr-2 flex items-center rounded-md bg-monochrome-9 p-1">
-            <Link href={checkAndAppendHttps(links.linkedin)} target="_blank">
-              <Image src={icLinkedIn} alt="linkedin" />
-            </Link>
-          </div>
-        )}
-        {links?.instagram && (
-          <div className="mr-2 flex items-center rounded-md bg-monochrome-9 p-1">
-            <Link href={checkAndAppendHttps(links.instagram)} target="_blank">
-              <Image src={icInstagram} alt="instagram" />
-            </Link>
-          </div>
-        )}
-        {links?.twitter && (
-          <div className="mr-2 flex items-center rounded-md bg-monochrome-9 p-1">
-            <Link href={checkAndAppendHttps(links.twitter)} target="_blank">
-              <Image src={icTwitter} alt="twitter" />
-            </Link>
-          </div>
-        )}
-        {links?.tiktok && (
-          <div className="mr-2 flex items-center rounded-md bg-monochrome-9 p-1 px-2">
-            <Link href={checkAndAppendHttps(links.tiktok)} target="_blank">
-              <Image src={icTiktok} alt="linkedin" />
-            </Link>
-          </div>
-        )}
-      </div>
-    )
+  return (
+    <div className="mt-2 flex">
+      {links?.linkedin && (
+        <div className="mr-2 flex items-center rounded-md bg-monochrome-9 p-1">
+          <Link href={checkAndAppendHttps(links.linkedin)} target="_blank">
+            <Image src={icLinkedIn} alt="linkedin" />
+          </Link>
+        </div>
+      )}
+      {links?.instagram && (
+        <div className="mr-2 flex items-center rounded-md bg-monochrome-9 p-1">
+          <Link href={checkAndAppendHttps(links.instagram)} target="_blank">
+            <Image src={icInstagram} alt="instagram" />
+          </Link>
+        </div>
+      )}
+      {links?.twitter && (
+        <div className="mr-2 flex items-center rounded-md bg-monochrome-9 p-1">
+          <Link href={checkAndAppendHttps(links.twitter)} target="_blank">
+            <Image src={icTwitter} alt="twitter" />
+          </Link>
+        </div>
+      )}
+      {links?.tiktok && (
+        <div className="mr-2 flex items-center rounded-md bg-monochrome-9 p-1 px-2">
+          <Link href={checkAndAppendHttps(links.tiktok)} target="_blank">
+            <Image src={icTiktok} alt="linkedin" />
+          </Link>
+        </div>
+      )}
+    </div>
+  )
 }
 
 function Stats({ profileData }: { profileData: any }) {
   return (
     <div className="m-1 ml-0 flex max-w-[250px]  justify-between gap-x-2 p-1 pl-0">
       <div className="flex items-center">
-        <p className="text-title-md">{abbreviateNumber(profileData?.no_of_views) ?? 0}</p>
-        <p className="px-1 text-cap-lg text-secondary">Views</p>
+        <p className="text-title-3-bold">{abbreviateNumber(profileData?.no_of_views) ?? 0}</p>
+        <p className="px-1 text-cap-1-demi text-secondary">Views</p>
       </div>
       <div className="flex items-center">
-        <p className="text-title-md">{abbreviateNumber(profileData?.no_of_videos) ?? 0}</p>
-        <p className="px-1 text-cap-lg text-secondary">Posts</p>
+        <p className="text-title-3-bold">{abbreviateNumber(profileData?.no_of_videos) ?? 0}</p>
+        <p className="px-1 text-cap-1-demi text-secondary">Posts</p>
       </div>
       <div className="flex items-center">
-        <p className="text-title-md">{abbreviateNumber(profileData?.no_of_communities) ?? 0}</p>
-        <p className="px-1 text-cap-lg text-secondary">Communities</p>
+        <p className="text-title-3-bold">{abbreviateNumber(profileData?.no_of_communities) ?? 0}</p>
+        <p className="px-1 text-cap-1-demi text-secondary">Communities</p>
       </div>
     </div>
   )
@@ -273,7 +269,7 @@ function CommunityList({ usernickname, scrollYProgress }: any) {
                 />
                 <div className="mx-2 flex w-full items-center justify-between">
                   <Link href={{ pathname: PATH_NAME.community(item.slug) }}>
-                    <p className="line-clamp-1 break-all text-left text-title-sm">{item.name}</p>
+                    <p className="line-clamp-1 break-all text-left text-body-1-bold">{item.name}</p>
                   </Link>
 
                   <Button
@@ -298,7 +294,7 @@ function CommunityList({ usernickname, scrollYProgress }: any) {
                         })
                         .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
                     }}>
-                    <p className="px-4 py-1.5 text-title-sm">Join</p>
+                    <p className="px-4 py-1.5 text-body-1-bold">Join</p>
                   </Button>
                 </div>
               </div>
@@ -385,10 +381,12 @@ function LoopVideos({
   return (
     <>
       <a href={PATH_NAME.loop(loopDetails.slug)}>
-        <p className="break-all text-title-sm">{loopDetails.name}</p>
+        <p className="break-all text-body-1-bold">{loopDetails.name}</p>
       </a>
       {data?.pages.flatMap((page) => page.videos).length === 0 && (
-        <div className="flex items-center justify-center pt-32 text-title-md text-secondary">No videos available</div>
+        <div className="flex items-center justify-center pt-32 text-title-3-bold text-secondary">
+          No videos available
+        </div>
       )}
       <div className="my-2 grid w-full grid-cols-3 gap-2">
         {isLoading &&
@@ -422,7 +420,7 @@ function LoopVideos({
       </div>
       {hasNextPage && videoCount !== 0 && (
         <p
-          className="text-blue-500 flex w-full cursor-pointer justify-center pt-2 text-cap-lg text-monochrome"
+          className="text-blue-500 flex w-full cursor-pointer justify-center pt-2 text-cap-1-demi text-monochrome"
           onClick={handleSeeMoreClick}>
           See {videoCount} More
         </p>

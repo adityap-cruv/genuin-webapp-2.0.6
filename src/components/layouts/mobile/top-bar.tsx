@@ -57,7 +57,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
                   ? 'bg-new-off-black hover:bg-new-dark-grey'
                   : 'bg-new-off-white text-new-off-black hover:bg-new-off-black hover:text-new-off-white'
               }>
-              <p className="text-body-sm">Download Genuin</p>
+              <p className="text-body-1-demi">Download Genuin</p>
             </Button>
           </Link>
         )}
@@ -132,13 +132,13 @@ function Menu({ hamBurgerVariant = 'dark' }: { hamBurgerVariant: 'dark' | 'light
           <div className="text-monochrome">
             <span className="flex gap-x-2 pb-2">
               <Link href={PATH_NAME.terms}>
-                <p className="text-body-sm">Terms and Conditions</p>
+                <p className="text-body-1-demi">Terms and Conditions</p>
               </Link>
               <Link href={PATH_NAME.privacy}>
-                <p className="text-body-sm">Privacy Policy</p>
+                <p className="text-body-1-demi">Privacy Policy</p>
               </Link>
             </span>
-            <p className="text-body-sm"> &#169; 2023 Genuin Inc.</p>
+            <p className="text-body-1-demi"> &#169; 2023 Genuin Inc.</p>
           </div>
         </div>
       </SheetContent>
@@ -156,7 +156,7 @@ function MenuItem({ title, isActive, children }: ItemProps) {
   return (
     <div className="flex w-full items-center gap-x-3 rounded-md p-2 hover:bg-monochrome-6/10">
       {children}
-      <p className={cn('text-title-lg font-semibold', isActive ? 'text-primary' : 'text-new-off-black')}>{title}</p>
+      <p className={cn('text-title-2-bold font-semibold', isActive ? 'text-primary' : 'text-new-off-black')}>{title}</p>
     </div>
   )
 }

@@ -26,7 +26,7 @@ export function LoopVideos({ slug }: { slug: string }) {
 
   if (!videos || videos?.length === 0)
     return (
-      <div className="flex items-center justify-center pt-32 text-title-md text-secondary">No videos available</div>
+      <div className="flex items-center justify-center pt-32 text-title-3-bold text-secondary">No videos available</div>
     )
 
   // TODO: Add shimmer in images.

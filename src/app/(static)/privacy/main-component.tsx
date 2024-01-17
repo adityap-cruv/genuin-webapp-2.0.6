@@ -38,7 +38,7 @@ export function MainComponent() {
         Privacy Policy. Unless otherwise defined in this Privacy Policy, capitalized terms not defined herein have the
         meanings as given to them in our Terms of Service.
       </p>
-      <ol className="list-decimal pb-8 [&>li>strong]:text-title-lg [&>li]:py-2 marker:[&>li]:text-title-lg [&_ol]:px-5 [&_ol]:py-2 marker:[&_ol]:text-[16px] marker:[&_ol]:font-normal">
+      <ol className="list-decimal pb-8 [&>li>strong]:text-title-2-bold [&>li]:py-2 marker:[&>li]:text-title-2-bold [&_ol]:px-5 [&_ol]:py-2 marker:[&_ol]:text-[16px] marker:[&_ol]:font-normal">
         <li>
           <strong>WHAT IS PERSONALLY IDENTIFYABLE INFORMATION?</strong>
           <p className="my-2">

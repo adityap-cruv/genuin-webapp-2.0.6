@@ -136,6 +136,7 @@ export function getAllLoops(nickname: string, communitySlug: string) {
   })
 }
 
+// TODO: remove isMobile dependency from here.
 async function fetchCommunityLoopVideos(nickname: string, loopSlug: string, ref: any) {
   const limit = isMobile ? (ref ? 6 : 3) : ref ? 16 : 8
   return await axios

@@ -76,9 +76,7 @@ export function MainComponent({ profileData }: CompProps) {
             {profileData?.name ? (
               <>
                 <p className="line-clamp-1 pr-2 text-title-1-bold">{profileData?.name}</p>
-                <p className="line-clamp-1 text-body-sm text-monochrome" style={{ fontWeight: 500 }}>
-                  @{profileData?.nickname}
-                </p>
+                <p className="line-clamp-1 text-body-1-med text-monochrome">@{profileData?.nickname}</p>
               </>
             ) : (
               <>
@@ -86,9 +84,7 @@ export function MainComponent({ profileData }: CompProps) {
               </>
             )}
           </div>
-          <p className="my-1 line-clamp-2 break-all text-body-sm" style={{ fontWeight: 500, lineHeight: '24px' }}>
-            {profileData?.bio}
-          </p>
+          <p className="my-1 line-clamp-2 break-all text-body-1-med">{profileData?.bio}</p>
           <Stats profileData={profileData} />
           <Links profileData={profileData} />
         </div>
@@ -156,28 +152,16 @@ function Stats({ profileData }: { profileData: any }) {
   return (
     <div className="m-1 ml-0 flex max-w-[250px]  justify-between gap-x-6 p-1 pl-0">
       <div className="flex items-center">
-        <p className="text-body-lg" style={{ fontWeight: 700 }}>
-          {abbreviateNumber(profileData?.no_of_views) ?? 0}
-        </p>
-        <p className="px-1 text-body-sm text-secondary" style={{ fontWeight: 500 }}>
-          Views
-        </p>
+        <p className="text-title-3-bold">{abbreviateNumber(profileData?.no_of_views) ?? 0}</p>
+        <p className="px-1 text-body-1-med text-secondary">Views</p>
       </div>
       <div className="flex items-center">
-        <p className="text-body-lg" style={{ fontWeight: 700 }}>
-          {abbreviateNumber(profileData?.no_of_videos) ?? 0}
-        </p>
-        <p className="px-1 text-body-sm text-secondary" style={{ fontWeight: 500 }}>
-          Posts
-        </p>
+        <p className="text-title-3-bold">{abbreviateNumber(profileData?.no_of_videos) ?? 0}</p>
+        <p className="px-1 text-body-1-med text-secondary">Posts</p>
       </div>
       <div className="flex items-center">
-        <p className="text-body-lg" style={{ fontWeight: 700 }}>
-          {abbreviateNumber(profileData?.no_of_communities) ?? 0}
-        </p>
-        <p className="px-1 text-body-sm text-secondary" style={{ fontWeight: 500 }}>
-          Communities
-        </p>
+        <p className="text-title-3-bold">{abbreviateNumber(profileData?.no_of_communities) ?? 0}</p>
+        <p className="px-1 text-body-1-med text-secondary">Communities</p>
       </div>
     </div>
   )
@@ -370,7 +354,9 @@ function LoopVideos({ userId, loop, community }: LoopVideosProps) {
 
     if (loop.videos && loop.videos.length === 0)
       return (
-        <div className="flex items-center justify-center pt-32 text-title-md text-secondary">No videos available</div>
+        <div className="flex items-center justify-center pt-32 text-title-3-bold text-secondary">
+          No videos available
+        </div>
       )
 
     if (loop.videos)
@@ -407,16 +393,14 @@ function LoopVideos({ userId, loop, community }: LoopVideosProps) {
   return (
     <>
       <a href={PATH_NAME.loop(loop.slug)}>
-        <p className="mb-3 text-title-sm" style={{ lineHeight: '24px' }}>
-          {loop.name}
-        </p>
+        <p className="mb-3 text-body-1-bold">{loop.name}</p>
       </a>
       <div className="my-2 grid w-full grid-cols-4 gap-2 md:grid-cols-8">
         <InnerComponent />
       </div>
       {hasNextPage && videoCount !== 0 && (
         <p
-          className="text-blue-500 flex w-full cursor-pointer justify-center pt-2 text-cap-lg text-monochrome"
+          className="text-blue-500 flex w-full cursor-pointer justify-center pt-2 text-cap-1-demi text-monochrome"
           onClick={handleSeeMoreClick}>
           See {videoCount} More
         </p>

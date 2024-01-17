@@ -110,7 +110,7 @@ function Mobile({ link = '', shareDescription = '', shareTitle = '', videoData }
                 .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
             }}>
             <Image src={icSpark} height={32} width={32} alt="spark" />
-            <p className="flex justify-center text-body-sm text-monochrome-white">
+            <p className="flex justify-center text-body-1-demi text-monochrome-white">
               {videoData?.video.no_of_sparks === null ? 0 : abbreviateNumber(videoData?.video.no_of_sparks ?? 0)}
             </p>
           </ActionItem>
@@ -121,7 +121,7 @@ function Mobile({ link = '', shareDescription = '', shareTitle = '', videoData }
             commentsIsOpen ? closeComments() : openComments(videoData?.video.share_string)
           }}>
           <Image src={icComment} alt="comments" height={32} width={32} />
-          <p className="flex justify-center text-body-sm text-monochrome-white">
+          <p className="flex justify-center text-body-1-demi text-monochrome-white">
             {videoData?.video.no_of_comments === null ? 0 : abbreviateNumber(videoData?.video.no_of_comments ?? 0)}
           </p>
         </ActionItem>
@@ -200,7 +200,7 @@ function Desktop({ link = '', shareDescription = '', shareTitle = '', videoData 
         <DownloadDialog title="Get the Genuin app" subtitle="Get the app to give spark to video.">
           <ActionItem title="Give spark!">
             <Image src={icSpark} height={32} width={32} alt="spark" />
-            <p className="flex justify-center text-body-sm text-monochrome-white">
+            <p className="flex justify-center text-body-1-demi text-monochrome-white">
               {videoData?.video.no_of_sparks === null ? 0 : abbreviateNumber(videoData?.video.no_of_sparks ?? 0)}
             </p>
           </ActionItem>

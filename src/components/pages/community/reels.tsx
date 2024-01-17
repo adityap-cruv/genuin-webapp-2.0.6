@@ -59,8 +59,8 @@ function InnerReelList({ videos, isLoading, sizeBox }: InnerReelListProps) {
     return (
       <div className="flex h-full flex-col items-center justify-center px-14">
         <Image src={noLoopImage} alt="no loops found" />
-        <p className="pt-4 text-title-lg">No Loops... yet!</p>
-        <p className="pt-2 text-center text-body-sm text-secondary">
+        <p className="pt-4 text-title-2-bold">No Loops... yet!</p>
+        <p className="pt-2 text-center text-body-1-demi text-secondary">
           Loops are dynamic discussion spaces centered around specific themes. Members can share videos, get reactions,
           and enjoy engaging comments from the community.
         </p>

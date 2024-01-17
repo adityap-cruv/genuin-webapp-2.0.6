@@ -57,7 +57,7 @@ function Desktop({ defaultOpen = true, isOpen = false, loopName, shareString, co
       className="sticky top-0 z-10 flex h-14 w-full items-center justify-between border-b border-monochrome-9 bg-monochrome-white px-6"
       {...props}>
       <span className="flex items-center gap-x-2">
-        <p className="text-title-lg font-semibold">{loopName}</p>
+        <p className="text-title-2-demi">{loopName}</p>
       </span>
       <span className="my-2 flex items-center gap-x-3">
         <DownloadDialog
@@ -77,7 +77,7 @@ function Desktop({ defaultOpen = true, isOpen = false, loopName, shareString, co
         {/* <Button size="custom" variant="outline" className="border-primary px-4">
                 <span className="flex items-center">
                   <Image src={icQuestion} alt="question" />
-                  <p className="py-2 text-body-sm text-primary">Q&A</p>
+                  <p className="py-2 text-body-1-demi text-primary">Q&A</p>
                 </span>
               </Button> */}
 
@@ -129,7 +129,7 @@ function Mobile({ defaultOpen = true, isOpen = false, loopName, shareString, com
       className="sticky top-0 z-10 flex h-14 w-full items-center justify-between border-b border-monochrome-9 bg-monochrome-white px-6"
       {...props}>
       <span className="flex items-center gap-x-2">
-        <p className="text-title-lg font-semibold">{loopName}</p>
+        <p className="text-title-2-demi">{loopName}</p>
       </span>
     </motion.div>
   )

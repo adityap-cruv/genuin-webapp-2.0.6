@@ -82,7 +82,7 @@ function DownloadButton({ isMobile }: DownloadButtonProps) {
       </Button>
     </Link>
   ) : (
-    <DownloadAppDialog>
+    <DownloadAppDialog isMobile={isMobile}>
       <Button
         size="index-page"
         variant="default"
