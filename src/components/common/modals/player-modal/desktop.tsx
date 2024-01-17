@@ -16,6 +16,7 @@ import icDownArrow from '@icons/player-controls/icArrowDown.svg'
 import Image from 'next/image'
 import { Loader } from '@components/ui/loader'
 import { cn } from '@lib/utils'
+import { FeedShimmer } from '@components/common/shimmers/feed-shimmer'
 
 type Props = {
   children?: React.ReactNode
@@ -170,7 +171,7 @@ export function Profile({
   const videoSizeBox = useVideoSizeBoxModal()
 
   function InnerContent() {
-    if (!video) return <Loader size="md" />
+    if (!video) return <FeedShimmer.desktop />
     if (videoSizeBox)
       return (
         <SinglePlayer

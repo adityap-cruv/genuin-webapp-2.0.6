@@ -5,6 +5,7 @@ import { DesktopDetails } from './desktop-details'
 import { useFeedListStore } from './store'
 import { useEffect, useRef } from 'react'
 import { cn } from '@lib/utils'
+import { FeedShimmer } from '../shimmers/feed-shimmer'
 const DesktopPlayer = dynamic(async () => await import('@components/common/player').then((comp) => comp.Player.desktop))
 
 type DesktopProps = {
@@ -19,16 +20,7 @@ type DesktopProps = {
   className?: string
 }
 
-export function Desktop({
-  sizeBox,
-  fetchNextPage,
-  hasNextPage,
-  isError,
-  isFetchingNextPage,
-  isLoading,
-  videos,
-  className,
-}: DesktopProps) {
+export function Desktop({ sizeBox, fetchNextPage, isFetchingNextPage, videos, className }: DesktopProps) {
   const scrollDivRef = useRef<HTMLDivElement>(null)
   const { setNewVideos, videoList, setCurrentIndex, currentIndex } = useFeedListStore((state) => ({
     setNewVideos: state.setVideoList,
@@ -95,6 +87,8 @@ export function Desktop({
         <DesktopDetails videoDetails={videoList[currentIndex]} />
       </div>
     )
+
+  return <FeedShimmer.desktop />
 }
 
 type SinglePlayerProps = {

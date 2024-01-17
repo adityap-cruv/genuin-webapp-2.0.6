@@ -7,6 +7,7 @@ import { useFeedListStore } from './store'
 import { useEffect, useRef } from 'react'
 import { useCommentSheetStore } from '../player/comment-sheet/store'
 import { useVideoSizeBoxMobile } from '@hooks/use-video-size-box-mobile'
+import { FeedShimmer } from '../shimmers/feed-shimmer'
 const Player = dynamic(async () => await import('@components/common/player').then((comp) => comp.Player.mobile))
 
 type MobileProps = {
@@ -110,6 +111,8 @@ export function Mobile({
         <InfinityViewBox />
       </div>
     )
+
+  return <FeedShimmer.mobile />
 }
 
 function InfinityViewBox() {

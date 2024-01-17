@@ -3,11 +3,10 @@ import { CustomDialog, CustomDialogContent, CustomDialogTrigger } from '@compone
 import { useEffect } from 'react'
 import { type VideoDataType } from '@lib/schemas/video'
 import { useFeedModalStore } from './store'
-import { Loader } from '@components/ui/loader'
 import { Feed } from '@components/common/feed'
-import { useVideoSizeBox } from '@hooks/use-video-size-box'
 import { TopBar } from '@components/layouts/mobile/top-bar'
 import { useVideoSizeBoxMobile } from '@hooks/use-video-size-box-mobile'
+import { FeedShimmer } from '@components/common/shimmers/feed-shimmer'
 
 type Props = {
   children?: React.ReactNode
@@ -60,12 +59,6 @@ export function Mobile({
   }, [currentIndex])
 
   function InnerContent() {
-    if (isLoading)
-      return (
-        <div style={{ width: videoSizeBox?.width, height: videoSizeBox?.height }} className="bg-monochrome-white">
-          <Loader size="md" />
-        </div>
-      )
     if (videoSizeBox && videos)
       return (
         <Feed.mobile
@@ -77,6 +70,7 @@ export function Mobile({
           sizeBox={videoSizeBox}
         />
       )
+    return <FeedShimmer.mobile />
   }
 
   return (
