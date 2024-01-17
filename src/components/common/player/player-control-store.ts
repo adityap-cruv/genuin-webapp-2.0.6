@@ -15,6 +15,7 @@ type PlayerControlStoreType = {
   setDuration: (duration: number) => void
   setCurrentTime: (currentTime: number) => void
   currentTime: number
+  setTimeState: (currentTime: number, duration: number) => void
 }
 
 export const usePlayerControlStore = create<PlayerControlStoreType>((set) => {
@@ -44,32 +45,32 @@ export const usePlayerControlStore = create<PlayerControlStoreType>((set) => {
     },
     currentTime: 0,
     setCurrentTime(currentTime) {
-      set((state) => {
-        const { videoList: feedVideoList, currentIndex: feedCurrentIndex } = useFeedListStore.getState();
-        const { videos: modalVideoList, currentIndex: modalCurrentIndex } = useFeedModalStore.getState();
-    
-        const finalVideoList = feedVideoList.length === 0 ? modalVideoList : feedVideoList;
-        const finalIndex = feedVideoList.length === 0 ? modalCurrentIndex : feedCurrentIndex;
-    
-        const duration = state.duration;
-        const progressValue = Math.round((currentTime / duration) * 100);
-    
-        if (progressValue > 95 && duration !== 0) {
-          void analyticsService({
-            eventName: 'Video Ended',
-            properties: {
-              content_category: 'loop',
-              content_id: finalVideoList[finalIndex].video.id,
-              event_record_screen: 'feed',
-              event_target_screen: 'none',
-              video_length: duration,
-              video_view_length: currentTime,
-            },
-          });
-        }
-    
-        return { currentTime };
-      });
+      set((state) => ({ currentTime }))
+    },
+    setTimeState(currentTime, duration) {
+      const { videoList: feedVideoList, currentIndex: feedCurrentIndex } = useFeedListStore.getState();
+      const { videos: modalVideoList, currentIndex: modalCurrentIndex } = useFeedModalStore.getState();
+
+      const finalVideoList = feedVideoList.length === 0 ? modalVideoList : feedVideoList;
+      const finalIndex = feedVideoList.length === 0 ? modalCurrentIndex : feedCurrentIndex;
+
+      const progressValue = Math.round((currentTime / duration) * 100);
+
+      if (progressValue > 95 && duration !== 0) {
+        void analyticsService({
+          eventName: 'Video Ended',
+          properties: {
+            content_category: 'loop',
+            content_id: finalVideoList[finalIndex].video.id,
+            event_record_screen: 'feed',
+            event_target_screen: 'none',
+            video_length: duration,
+            video_view_length: currentTime,
+          },
+        });
+      }
+
+      set({ currentTime, duration })
     }
   }
 })

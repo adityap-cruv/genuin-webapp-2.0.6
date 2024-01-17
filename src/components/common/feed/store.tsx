@@ -19,32 +19,34 @@ export const useFeedListStore = create<FeedListStoreType>((set) => {
     currentIndex: 0,
     setCurrentIndex(index) {
       set((state) => {
-        const { duration, currentTime } = usePlayerControlStore.getState()
-        const numberOfVideos = state.videoList.length
-        const progressValue = Math.round((currentTime / duration) * 100)
-        const hasCrossed50 = progressValue > 50
+        if (index !== state.currentIndex) {
+          const { duration, currentTime } = usePlayerControlStore.getState()
+          const numberOfVideos = state.videoList.length
+          const progressValue = Math.round((currentTime / duration) * 100)
+          const hasCrossed50 = progressValue > 50
 
-        if (index !== -1 && numberOfVideos > index) {
-          const eventName = index < state.currentIndex ? 'Swipe Up' : 'Swipe Down'
-          const properties = {
-            content_category: 'loop',
-            content_id: state.videoList[state.currentIndex].video.id,
-            event_record_screen: 'feed',
-            event_target_screen: 'none',
-            video_length: duration,
-            video_view_length: currentTime,
-          }
+          if (index !== -1 && numberOfVideos > index) {
+            const eventName = index < state.currentIndex ? 'Swipe Up' : 'Swipe Down'
+            const properties = {
+              content_category: 'loop',
+              content_id: state.videoList[state.currentIndex].video.id,
+              event_record_screen: 'feed',
+              event_target_screen: 'none',
+              video_length: duration,
+              video_view_length: currentTime,
+            }
 
-          if (hasCrossed50) {
-            void analyticsService({
-              eventName,
-              properties,
-            })
+            if (hasCrossed50) {
+              void analyticsService({
+                eventName,
+                properties,
+              })
 
-            void analyticsService({
-              eventName: 'Video Watched',
-              properties,
-            })
+              void analyticsService({
+                eventName: 'Video Watched',
+                properties,
+              })
+            }
           }
         }
 
