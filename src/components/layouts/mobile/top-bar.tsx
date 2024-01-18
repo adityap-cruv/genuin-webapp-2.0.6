@@ -6,14 +6,14 @@ import { Sheet, SheetClose, SheetContent, SheetTrigger } from '@components/ui/sh
 import { type ReactNode } from 'react'
 import { cn } from '@lib/utils'
 import Link from 'next/link'
-import { usePathname, useSearchParams } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { PopularIcon, HomeIcon, LatestIcon } from '@icons/side-bar-icons'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { X } from 'lucide-react'
 import { RecentCommunities } from './recent-communities'
-import { DownloadAppDialog } from '@components/pages/home/download-app-dialog'
 import { MOBILE_DOWNLOAD_APP_LINK } from '@lib/constants'
+import { useLocalStorage } from '@lib/stores/local-storage'
 
 const navVariant = cva('sticky top-0 flex z-40 h-[76px] w-full items-center justify-between  px-2', {
   variants: {
@@ -36,20 +36,19 @@ type Props = {
 } & VariantProps<typeof navVariant>
 
 export function TopBar({ variant = 'light', className, showClose = false, onClose }: Props) {
-  // TODO: Remove this line of code.
-  const showTopbar = useSearchParams().get('embed') !== '1'
+  const showSymbol = useLocalStorage((state) => !state.isIframe)
   return (
     <nav className={cn(navVariant({ variant }), className)}>
       <span className="flex items-center ">
         <Menu hamBurgerVariant={variant === 'trasparent' ? 'light' : 'dark'} />
-        {showTopbar && (
+        {showSymbol && (
           <Link href={{ pathname: PATH_NAME.home() }}>
             <GenuinSymbol variant={variant === 'trasparent' ? 'light' : 'black'} />
           </Link>
         )}
       </span>
       <span className="flex items-center gap-x-2">
-        {showTopbar && (
+        {showSymbol && (
           <Link href={MOBILE_DOWNLOAD_APP_LINK} target="_blank">
             <Button
               className={

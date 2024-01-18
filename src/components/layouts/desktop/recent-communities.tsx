@@ -3,11 +3,11 @@ import Link from 'next/link'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { cn } from '@lib/utils'
 import { type ReactNode } from 'react'
-import { useRecentCommunitiesStore } from '@lib/stores/recent-communities'
+import { useLocalStorage } from '@lib/stores/local-storage'
 import { PATH_NAME } from '@lib/utils/constants/path'
 
 export function RecentCommunities() {
-  const communities = useRecentCommunitiesStore((state) => state.communities)
+  const communities = useLocalStorage((state) => state.communities)
   const pathName = usePathname()
   if (communities.length > 0)
     return (
