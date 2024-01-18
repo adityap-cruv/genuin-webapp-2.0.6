@@ -9,7 +9,7 @@ export default async function Page({ searchParams }: { searchParams: { token: st
   return (
     <>
       <NavBar variant="light" isMobile={false} />
-      <section className="h-full w-full bg-[#F9F9F9]">
+      <section className="bg-monochrome-11 h-full w-full">
         <div className="flex h-full items-center justify-center">
           <div className="flex max-w-full flex-col items-center justify-center rounded-xl bg-monochrome-white sm:max-w-sm md:max-w-lg">
             <div className="flex flex-col items-center justify-center px-4 py-12">

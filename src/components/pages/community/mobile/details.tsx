@@ -101,8 +101,8 @@ export function ProfileDetails({ communityDetails }: Props) {
         <ProfileTabs />
         {/* // TODO: have to add is_private community */}
         {/* <div
-          className="mt-4 flex w-full items-center justify-center overflow-hidden"
-          style={{ height: 'calc(100% - 56px)', backgroundColor: '#F9F9F9' }}>
+          className="mt-4 flex w-full items-center bg-monochrome-11 justify-center overflow-hidden"
+          style={{ height: 'calc(100% - 56px)' }}>
           <div className="flex flex-col items-center justify-center">
             <Image src={lockIcon} alt="share" className="h-16 w-16" />
             <p className="text-title-2-demi">

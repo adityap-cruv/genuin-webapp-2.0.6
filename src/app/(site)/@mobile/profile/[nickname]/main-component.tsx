@@ -249,9 +249,7 @@ function CommunityList({ usernickname, scrollYProgress }: any) {
       {isLoading && <Loader size="md" />}
       {communities && communities?.length === 0 && (
         <div className="w-full overflow-hidden" style={{ height: 'calc(100% - 280px)' }}>
-          <div
-            className="flex h-full w-full items-center justify-center pt-2 text-title-3-bold text-monochrome"
-            style={{ backgroundColor: '#F9F9F9' }}>
+          <div className="bg-monochrome-11 flex h-full w-full items-center justify-center pt-2 text-title-3-bold text-monochrome">
             No posts yet
           </div>
         </div>
@@ -323,9 +321,7 @@ function CommunityDetails({ userId, community }: { userId: string; community: Co
     <>
       <div className="h-3"></div>
       {isLoading && (
-        <li
-          className="profile-loop-li relative my-4 w-full rounded-lg bg-monochrome-9 p-4"
-          style={{ backgroundColor: '#F9F9F9' }}>
+        <li className="profile-loop-li bg-monochrome-11 relative my-4 w-full rounded-lg p-4">
           <Shimmer className="h-4 w-24" />
           <div className="my-2 grid w-full grid-cols-3 gap-2">
             {Array.from({ length: 3 }).map((_, index) => (
@@ -338,9 +334,8 @@ function CommunityDetails({ userId, community }: { userId: string; community: Co
       )}
       {community.loops.map((item: any, index: any) => (
         <li
-          className="profile-loop-li relative mb-2 w-full rounded-lg border border-monochrome-9 p-4 pb-2"
-          key={index}
-          style={{ backgroundColor: '#F9F9F9' }}>
+          className="profile-loop-li bg-monochrome-11 relative mb-2 w-full rounded-lg border border-monochrome-9 p-4 pb-2"
+          key={index}>
           <LoopVideos userId={userId} loopDetails={item} community={community} />
         </li>
       ))}

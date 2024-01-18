@@ -78,7 +78,7 @@ function LoopItem({ loopDetails, openModal }: { loopDetails: any; openModal: (sl
                 </p>
               )}
             </div>
-            <div className="h-[60%] rounded-b-lg border border-monochrome-8 p-4" style={{ backgroundColor: '#F9F9F9' }}>
+            <div className="bg-monochrome-11 h-[60%] rounded-b-lg border border-monochrome-8 p-4">
               <div className="flex w-[68%] items-center">
                 <div className="relative flex">
                   {loopDetails.owner.profile_image && (
@@ -139,7 +139,7 @@ function LoopItem({ loopDetails, openModal }: { loopDetails: any; openModal: (sl
 function NoLoops() {
   return (
     <div className="flex h-full">
-      <div className="mt-4 flex flex-col items-center justify-center" style={{ backgroundColor: '#F9F9F9' }}>
+      <div className="bg-monochrome-11 mt-4 flex flex-col items-center justify-center">
         <Image src={noLoopsImage} alt="share" />
         <p className="text-title-2-bold">No Loops... yet!</p>
         <p className="w-[80%] text-center text-body-1-demi text-monochrome">
