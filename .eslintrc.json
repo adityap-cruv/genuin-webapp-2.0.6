@@ -42,7 +42,10 @@
       }
     ],
     "prettier/prettier": [
-      "warn"
+      "warn",
+      {
+        "endOfLine": "auto"
+      }
     ]
   },
   "ignorePatterns": [

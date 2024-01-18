@@ -1,8 +1,9 @@
 'use client'
 import type { CommunityDetailsType } from '@lib/schemas/community'
-import { useRecentCommunitiesStore } from '@lib/stores/recent-communities'
 import dynamic from 'next/dynamic'
+import { useLocalStorage } from '@lib/stores/local-storage'
 import { useEffect } from 'react'
+
 const Details = dynamic(
   async () => await import('@components/pages/community/mobile/details').then((comp) => comp.ProfileDetails)
 )
@@ -12,7 +13,7 @@ type Props = {
 }
 
 export function RootDetails({ communityDetails }: Props) {
-  const addCommunity = useRecentCommunitiesStore((state) => state.addCommunity)
+  const addCommunity = useLocalStorage((state) => state.addCommunity)
 
   useEffect(() => {
     addCommunity({

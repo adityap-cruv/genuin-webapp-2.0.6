@@ -1,7 +1,7 @@
 'use client'
 import type { CommunityDetailsType } from '@lib/schemas/community'
-import { useRecentCommunitiesStore } from '@lib/stores/recent-communities'
 import { useEffect, useRef } from 'react'
+import { useLocalStorage } from '@lib/stores/local-storage'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { TopStickyBar } from './top-bar'
 import { Button } from '@components/ui/button'
@@ -33,7 +33,7 @@ let communityDetailsModule: CommunityDetailsType
 // TODO: Separate this component.
 export function RootDetails({ communityDetails }: Props) {
   communityDetailsModule = communityDetails
-  const addCommunity = useRecentCommunitiesStore((state) => state.addCommunity)
+  const addCommunity = useLocalStorage((state) => state.addCommunity)
   const detailsDivRef = useRef<HTMLDivElement>(null)
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
   const { shareFn } = useAdaptiveShare()
