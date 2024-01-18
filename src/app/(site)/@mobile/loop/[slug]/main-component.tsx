@@ -58,7 +58,7 @@ export function MainComponent({ loopDetails }: Props) {
               <p className="line-clamp-1 text-title-1-bold">{loopDetails.group.group_name}</p>
               <p className="my-2 line-clamp-2 break-words text-title-3-demi">{loopDetails.group.group_description}</p>
             </div>
-            <div className=" my-3 rounded-lg border border-solid border-monochrome-9 p-4">
+            <div className=" my-3 rounded-lg border border-solid border-monochrome-9 p-4 overflow-hidden">
               <div className="flex">
                 <div className="flex flex-1 flex-col items-start">
                   <p className="text-body-1-demi text-secondary">Created by</p>
