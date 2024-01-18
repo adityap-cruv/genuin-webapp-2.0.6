@@ -32,6 +32,7 @@ module.exports = {
       },
       monochrome: {
         white: '#FFFFFF',
+        11: '#F9F9F9',
         10: '#F3F3F3',
         9: '#E7E7E7',
         8: '#DBDBDB',

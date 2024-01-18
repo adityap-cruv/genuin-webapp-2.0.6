@@ -19,16 +19,12 @@ export function TopBar() {
                 variant="outline"
                 size="custom"
                 className="px-4 py-3 hover:bg-new-off-black hover:text-new-off-white">
-                <p className="text-new-para-2" style={{ fontWeight: 600 }}>
-                  We're hiring!
-                </p>
+                <p className="text-new-para-2 font-semibold">We're hiring!</p>
               </Button>
             </Link>
             <DownloadAppDialog isMobile={false}>
               <Button variant="default" size={'custom'} className="bg-new-off-black px-4 py-3 hover:bg-new-dark-grey">
-                <p className="text-new-para-2" style={{ fontWeight: 600 }}>
-                  Download Genuin
-                </p>
+                <p className="text-new-para-2 font-semibold">Download Genuin</p>
               </Button>
             </DownloadAppDialog>
           </div>

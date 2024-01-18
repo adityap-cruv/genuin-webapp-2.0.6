@@ -14,12 +14,10 @@ export default async function Page({ searchParams }: { searchParams: { token: st
           <div className="flex max-w-full flex-col items-center justify-center rounded-xl bg-monochrome-white sm:max-w-sm md:max-w-lg">
             <div className="flex flex-col items-center justify-center px-4 py-12">
               <Image src={data.error ? imgError : imgSuccess} height={125} width={125} alt="status image." />
-              <p style={{ fontSize: '32px', lineHeight: '48px', fontWeight: '700' }} className="p-4 text-center">
+              <p style={{ fontSize: '32px', lineHeight: '48px' }} className="p-4 text-center font-bold">
                 {data.title}
               </p>
-              <p style={{ fontSize: '17px', lineHeight: '24px', fontWeight: 600 }} className="p-4 text-center ">
-                {data.subtitle}
-              </p>
+              <p className="p-4 text-center text-title-3-demi">{data.subtitle}</p>
             </div>
           </div>
         </div>

@@ -52,18 +52,10 @@ export function SideBar() {
             side="bottom"
             align="start">
             <Link href={{ pathname: PATH_NAME.terms }}>
-              <p
-                style={{ fontSize: '20px', lineHeight: '32px', fontWeight: 600 }}
-                className="rounded-md p-2 hover:bg-monochrome-6/10">
-                Terms and Conditions
-              </p>
+              <p className="rounded-md p-2 text-title-2-demi hover:bg-monochrome-6/10">Terms and Conditions</p>
             </Link>
             <Link href={{ pathname: PATH_NAME.privacy }}>
-              <p
-                style={{ fontSize: '20px', lineHeight: '32px', fontWeight: 600 }}
-                className="rounded-md p-2 hover:bg-monochrome-6/10">
-                Privacy Policy
-              </p>
+              <p className="rounded-md p-2 text-title-2-demi hover:bg-monochrome-6/10">Privacy Policy</p>
             </Link>
           </PopoverContent>
         </Popover>
@@ -79,7 +71,6 @@ type ItemProps = {
   children: ReactNode
 }
 
-// TODO: remove hard coding of font styles
 function Item({ title, isActive, children }: ItemProps) {
   return (
     <div className="flex w-full max-w-full items-center gap-x-3 rounded-md p-3 hover:bg-monochrome-6/10">

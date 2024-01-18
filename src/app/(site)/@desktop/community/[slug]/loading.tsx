@@ -1,5 +1,6 @@
 import { Shimmer } from '@components/ui/shimmer'
 
+// TODO: show feed shimmer if community is showing feed not details.
 export default function Loading() {
   return (
     <div className="hide-scrollbar absolute inset-0 h-full w-full overflow-auto px-6">

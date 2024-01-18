@@ -109,8 +109,7 @@ function LoopItem({ loopDetails, openModal }: { loopDetails: any; openModal: (sl
                 <p
                   className={`ml-1 line-clamp-1 text-body-1-med text-monochrome-4 ${
                     loopDetails.collaborators.length !== 0 && 'ml-7'
-                  } ${loopDetails.collaborators.length === 2 && 'ml-6'}`}
-                  style={{ fontWeight: 500 }}>
+                  } ${loopDetails.collaborators.length === 2 && 'ml-6'}`}>
                   {loopDetails.owner.nickname}
                   {getCollaboratorsCountString(loopDetails.member_count - 1)}
                 </p>
@@ -118,7 +117,7 @@ function LoopItem({ loopDetails, openModal }: { loopDetails: any; openModal: (sl
               <p className="my-[2%] line-clamp-2 w-[68%] text-body-1-demi text-monochrome-4">
                 {loopDetails.description}
               </p>
-              <p className="w-[68%] text-body-1-med text-monochrome-4" style={{ fontWeight: 500 }}>
+              <p className="w-[68%] text-body-1-med text-monochrome-4">
                 {abbreviateNumber(loopDetails.subscriber_count)} subscribers ∙{' '}
                 {abbreviateNumber(loopDetails.view_count)} views
               </p>

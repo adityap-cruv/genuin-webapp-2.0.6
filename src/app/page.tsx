@@ -5,7 +5,6 @@ import { MainComponent } from '@components/pages/home/main-component'
 import { cookies } from 'next/headers'
 import Script from 'next/script'
 
-// TODO: create skeleton for everything and pages.
 // TODO: optimize uses of dynamic function.
 // TODO: check react-device-detect dependency and than remove it. as it is not needed anymore.
 export default async function Page() {
