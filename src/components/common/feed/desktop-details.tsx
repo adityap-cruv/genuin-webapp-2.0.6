@@ -78,9 +78,7 @@ export function DesktopDetails({ videoDetails }: DesktopDetailsProps) {
                     }
                     asChild>
                     <Button size="custom">
-                      <p className="whitespace-nowrap px-4 py-1 text-body-1-demi" style={{ lineHeight: '24px' }}>
-                        Join Community
-                      </p>
+                      <p className="whitespace-nowrap px-4 py-1 text-body-1-demi">Join Community</p>
                     </Button>
                   </DownloadDialog>
                   <Button

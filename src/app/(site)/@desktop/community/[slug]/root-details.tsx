@@ -308,19 +308,19 @@ function Stats({ communityDetails }: { communityDetails: CommunityDetailsType })
     <div className="flex items-center">
       <span className="flex items-center pr-4">
         <p className="text-title-3-bold text-monochrome-black">{communityDetails?.info.count.member}</p>
-        <p className="text-body-1-med text-secondary" style={{ fontWeight: 500 }}>
+        <p className="text-body-1-med text-secondary">
           &nbsp;{communityDetails?.info.count.member === 1 ? 'Member' : 'Members'}
         </p>
       </span>
       <span className="flex items-center pr-4">
         <p className="text-title-3-bold text-monochrome-black">{communityDetails?.info.count.loop}</p>
-        <p className="text-body-1-med text-secondary" style={{ fontWeight: 500 }}>
+        <p className="text-body-1-med text-secondary">
           &nbsp;{communityDetails?.info.count.loop === 1 ? 'Loop' : 'Loops'}
         </p>
       </span>
       <span className="flex items-center pr-4">
         <p className="text-title-3-bold text-monochrome-black">{communityDetails?.info.count.video}</p>
-        <p className="text-body-1-med text-secondary" style={{ fontWeight: 500 }}>
+        <p className="text-body-1-med text-secondary">
           &nbsp;{communityDetails?.info.count.video === 1 ? 'Video' : 'Videos'}
         </p>
       </span>

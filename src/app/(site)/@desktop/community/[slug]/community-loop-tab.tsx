@@ -52,7 +52,7 @@ export function CommunityLoopTab({ communitySlug }: { communitySlug: string }) {
 
 function NoLoops() {
   return (
-    <div className="flex h-full flex-col items-center justify-center" style={{ backgroundColor: '#F9F9F9' }}>
+    <div className="bg-monochrome-11 flex h-full flex-col items-center justify-center">
       <Image src={noLoopsImage} alt="share" />
       <p className="text-title-2-bold">No Loops... yet!</p>
       <p className="w-[80%] text-center text-body-1-demi text-monochrome">
@@ -87,7 +87,7 @@ function LoopItem({ loopDetails, openModal }: { loopDetails: any; openModal: (sl
               </p>
             )}
           </div>
-          <div className="h-[60%] rounded-b-lg border border-monochrome-8 p-4" style={{ backgroundColor: '#F9F9F9' }}>
+          <div className="bg-monochrome-11 h-[60%] rounded-b-lg border border-monochrome-8 p-4">
             <div className="flex w-[70%] items-center">
               <div className="relative flex">
                 {loopDetails.owner.profile_image && (
@@ -118,14 +118,13 @@ function LoopItem({ loopDetails, openModal }: { loopDetails: any; openModal: (sl
               <p
                 className={`ml-1 line-clamp-1 text-body-1-med text-monochrome-4 ${
                   loopDetails.collaborators.length !== 0 && 'ml-7'
-                } ${loopDetails.collaborators.length === 2 && 'ml-6'}`}
-                style={{ fontWeight: 500 }}>
+                } ${loopDetails.collaborators.length === 2 && 'ml-6'}`}>
                 {loopDetails.owner.nickname}
                 {getCollaboratorsCountString(loopDetails.member_count - 1)}
               </p>
             </div>
             <p className="my-[2%] line-clamp-2 w-[70%] text-body-1-demi text-monochrome-4">{loopDetails.description}</p>
-            <p className="w-[70%] text-body-1-med text-monochrome-4" style={{ fontWeight: 500 }}>
+            <p className="w-[70%] text-body-1-med text-monochrome-4">
               {abbreviateNumber(loopDetails.subscriber_count)} subscribers ∙ {abbreviateNumber(loopDetails.view_count)}{' '}
               views
             </p>

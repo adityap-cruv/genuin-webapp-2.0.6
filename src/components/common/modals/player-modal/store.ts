@@ -31,7 +31,7 @@ export const useFeedModalStore = create<FeedModalStore>((set, get) => {
             const eventName = index < state.currentIndex ? 'Swipe Up' : 'Swipe Down'
             const properties = {
               content_category: 'loop',
-              content_id: state.videos[state.currentIndex].video.id,
+              content_id: state.videos[state.currentIndex]?.video.id,
               event_record_screen: 'feed',
               event_target_screen: 'none',
               video_length: duration,

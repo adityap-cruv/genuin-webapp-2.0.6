@@ -21,11 +21,10 @@ interface Props {
 }
 
 function Desktop({ videoData }: Props) {
-  const { toggleMuted, muted, shouldPlay, toggleShouldPlay } = usePlayerControlStore((state) => ({
+  const { toggleMuted, muted, shouldPlay } = usePlayerControlStore((state) => ({
     toggleMuted: state.toggleMuted,
     muted: state.muted,
     shouldPlay: state.shouldPlay,
-    toggleShouldPlay: state.toggleShouldPlay,
   }))
 
   if (videoData) {
@@ -87,7 +86,7 @@ function Mobile({ videoData }: Props) {
               e.stopPropagation()
               toggleMuted()
             }}
-            className="absolute z-[6] h-full w-full">
+            className="absolute z-[3] h-full w-full ">
             <span className="absolute left-4 top-20">
               <AnimatedMuteIcon />
             </span>
@@ -106,7 +105,7 @@ function Mobile({ videoData }: Props) {
             />
           </div>
         </div>
-        <div className="absolute bottom-16 left-0 z-[5] w-full">
+        <div className="absolute bottom-16 left-0 z-[5] w-full ">
           <Loop videoData={videoData} />
         </div>
         <PlayerProgressBar />

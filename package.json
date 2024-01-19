@@ -46,6 +46,7 @@
     "react-device-detect": "^2.2.3",
     "react-dom": "18.2.0",
     "react-flag-kit": "^1.1.1",
+    "swiper": "^11.0.5",
     "tailwind-merge": "^1.14.0",
     "tailwindcss-animate": "^1.0.7",
     "uuidv4": "^6.2.13",

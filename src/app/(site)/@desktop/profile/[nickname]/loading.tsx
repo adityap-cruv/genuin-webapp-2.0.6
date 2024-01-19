@@ -31,9 +31,7 @@ export default function Loading() {
         <Shimmer className="h-6 w-1/6 rounded-xl" />
       </div>
 
-      <div
-        className="w-full rounded-lg border border-monochrome-9 bg-new-dark-grey p-4"
-        style={{ backgroundColor: '#F9F9F9' }}>
+      <div className="bg-monochrome-11 w-full rounded-lg border border-monochrome-9 p-4">
         <Shimmer className="h-4 w-1/5" />
         <div className="my-4 grid grid-cols-8 gap-2">
           <Shimmer className="aspect-reel w-full" />
@@ -47,9 +45,7 @@ export default function Loading() {
         </div>
       </div>
 
-      <div
-        className="my-2 w-full rounded-lg border border-monochrome-9 bg-new-dark-grey p-4"
-        style={{ backgroundColor: '#F9F9F9' }}>
+      <div className="bg-monochrome-11 my-2 w-full rounded-lg border border-monochrome-9 p-4">
         <Shimmer className="h-4 w-1/5" />
         <div className="my-4 grid grid-cols-8 gap-2">
           <Shimmer className="aspect-reel w-full" />

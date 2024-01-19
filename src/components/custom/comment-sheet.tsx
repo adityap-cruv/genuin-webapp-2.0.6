@@ -12,7 +12,7 @@ const SheetTrigger = SheetPrimitive.Trigger
 const SheetPortal = SheetPrimitive.Portal
 
 const sheetVariants = cva(
-  'absolute z-50 transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-500',
+  'fixed z-50 transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-500',
   {
     variants: {
       side: {
@@ -31,9 +31,11 @@ type SheetContentProps = React.ComponentPropsWithoutRef<typeof SheetPrimitive.Co
 
 const SheetContent = React.forwardRef<React.ElementRef<typeof SheetPrimitive.Content>, SheetContentProps>(
   ({ side = 'bottom', className, children, ...props }, ref) => (
-    <SheetPrimitive.Content ref={ref} className={cn(sheetVariants({ side }), className)} {...props}>
-      {children}
-    </SheetPrimitive.Content>
+    <SheetPortal>
+      <SheetPrimitive.Content ref={ref} className={cn(sheetVariants({ side }), className)} {...props}>
+        {children}
+      </SheetPrimitive.Content>
+    </SheetPortal>
   )
 )
 SheetContent.displayName = SheetPrimitive.Content.displayName
