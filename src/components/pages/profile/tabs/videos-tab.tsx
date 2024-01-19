@@ -128,7 +128,7 @@ function TabBody({ videos, hasNextPage, fetchingNextPage }: TabBodyProps) {
   if (videos.length === 0) {
     return (
       <div className={`flex h-full w-full items-center justify-center pt-40 text-title-2-bold text-secondary sm:pt-0`}>
-        No videos yet
+        No posts yet
       </div>
     )
   }

@@ -53,6 +53,7 @@ const LoopDetailsSchema = z.object({
   owner: Owner,
   preview_image: z.string(),
   group: Group,
+  private: z.boolean(),
 })
 
 export type LoopDetailsType = z.infer<typeof LoopDetailsSchema>

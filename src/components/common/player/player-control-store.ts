@@ -48,13 +48,15 @@ export const usePlayerControlStore = create<PlayerControlStoreType>((set) => {
       set((state) => ({ currentTime }))
     },
     setTimeState(currentTime, duration) {
-      const { videoList: feedVideoList, currentIndex: feedCurrentIndex } = useFeedListStore.getState();
-      const { videos: modalVideoList, currentIndex: modalCurrentIndex } = useFeedModalStore.getState();
+      const { videoList: feedVideoList, currentIndex: feedCurrentIndex } = useFeedListStore.getState()
+      const { videos: modalVideoList, currentIndex: modalCurrentIndex } = useFeedModalStore.getState()
 
-      const finalVideoList = feedVideoList.length === 0 ? modalVideoList : feedVideoList;
-      const finalIndex = feedVideoList.length === 0 ? modalCurrentIndex : feedCurrentIndex;
+      const finalVideoList = feedVideoList.length === 0 ? modalVideoList : feedVideoList
+      const finalIndex = feedVideoList.length === 0 ? modalCurrentIndex : feedCurrentIndex
 
-      const progressValue = Math.round((currentTime / duration) * 100);
+      const progressValue = Math.round((currentTime / duration) * 100)
+      const usersdata = JSON.parse(localStorage.getItem('_user_id_') ?? '')
+      const userId = usersdata.state.userId ?? ''
 
       if (progressValue > 95 && duration !== 0) {
         void analyticsService({
@@ -66,11 +68,12 @@ export const usePlayerControlStore = create<PlayerControlStoreType>((set) => {
             event_target_screen: 'none',
             video_length: duration,
             video_view_length: currentTime,
+            user_id: userId,
           },
-        });
+        })
       }
 
       set({ currentTime, duration })
-    }
+    },
   }
 })

@@ -12,6 +12,8 @@ import { getAllCommunities, getAllLoops, getAllLoopVideos } from '@lib/api/profi
 import { Loader } from '@components/ui/loader'
 import React, { useEffect, useRef, useState } from 'react'
 import icSpark from '@icons/player-controls/icBulb.svg'
+import icLock from '@icons/icLock.svg'
+import icLoopDark from '@icons/icLoopDark.svg'
 import icInstagram from '@icons/icInstagramBlack.svg'
 import icTiktok from '@icons/icTiktok.svg'
 import icLinkedIn from '@icons/icLinkedIn.svg'
@@ -303,14 +305,47 @@ function CommunityDetails({ userId, community }: { userId: string; community: Co
           </div>
         </li>
       )}
-      {community.loops?.map((item: any, index: any) => (
+      {!community.private &&
+        community.loops?.map((item: any, index: any) => (
+          <li
+            className="profile-loop-li relative mb-4 w-full rounded-lg border border-monochrome-9 p-4 pb-2"
+            style={{ backgroundColor: '#F9F9F9' }}
+            key={index}>
+            <>
+              {item.private ? (
+                <div className="mb-2 flex items-center">
+                  <div className="mr-4 h-14 w-14 shrink-0 rounded-full bg-monochrome-9 p-3">
+                    <Image src={icLoopDark} alt="share" className=" fill-blue-20" />
+                  </div>
+                  <div>
+                    <a href={PATH_NAME.loop(item.slug)}>
+                      <p className="text-title-3-bold">{item.name}</p>
+                    </a>
+                    <p className="text-body-1-med">This Loop is visible to its Collaborators only.</p>
+                  </div>
+                </div>
+              ) : (
+                <LoopVideos userId={userId} loop={item} community={community} />
+              )}
+            </>
+          </li>
+        ))}
+
+      {community && community.private && (
         <li
-          className="profile-loop-li relative mb-4 w-full rounded-lg border border-monochrome-9 p-4 pb-2"
-          style={{ backgroundColor: '#F9F9F9' }}
-          key={index}>
-          <LoopVideos userId={userId} loop={item} community={community} />
+          className="profile-loop-li relative mb-4 w-full rounded-lg border border-monochrome-9 p-4"
+          style={{ backgroundColor: '#F9F9F9' }}>
+          <div className="flex items-center">
+            <div className="mr-4 h-14 w-14 shrink-0 rounded-full bg-monochrome-9 p-3">
+              <Image src={icLock} alt="share" className=" fill-blue-20" />
+            </div>
+            <div>
+              <p className="text-title-3-demi">This community is private</p>
+              <p className="text-body-1-med">Join this community to see and interact with their posts.</p>
+            </div>
+          </div>
         </li>
-      ))}
+      )}
       {isFetchingNextPage && <Loader size="md" />}
     </>
   )
@@ -355,7 +390,7 @@ function LoopVideos({ userId, loop, community }: LoopVideosProps) {
     if (loop.videos && loop.videos.length === 0)
       return (
         <div className="flex items-center justify-center pt-32 text-title-3-bold text-secondary">
-          No videos available
+          No posts available
         </div>
       )
 

@@ -10,6 +10,7 @@ import icPlay from '@icons/player-controls/icPlay.svg'
 import { useState } from 'react'
 import { PlayerModal } from '@components/common/modals/player-modal'
 import { getLoopVideos } from '@lib/api/loop'
+import icLock from '@icons/icLock.svg'
 
 // TODO: remove this component from here and put at better location
 export function CommunityLoopTab({ communitySlug }: { communitySlug: string }) {
@@ -72,7 +73,7 @@ function LoopItem({ loopDetails, openModal }: { loopDetails: any; openModal: (sl
           <div className="relative w-full rounded-lg border border-monochrome-9 bg-monochrome-white">
             <div className="w-[70%] items-center p-[3%]">
               <p className="text-body-1-bold">{loopDetails.name}</p>
-              {loopDetails.videos.length !== 0 && (
+              {loopDetails.videos.length !== 0 && !loopDetails.private && (
                 <p className="text-body-1-demi text-monochrome-4">
                   {loopDetails.videos[0].owner} posted ∙ {getTimeAgo(loopDetails.videos[0].created_at)}
                 </p>
@@ -127,12 +128,20 @@ function LoopItem({ loopDetails, openModal }: { loopDetails: any; openModal: (sl
           </div>
         </div>
       </Link>
-      <span
-        onClick={() => {
-          openModal(loopDetails.slug)
-        }}>
-        <RenderedImages loopDetails={loopDetails} />
-      </span>
+      {loopDetails.private ? (
+        <div className="group/video absolute right-7 top-[50%] flex aspect-reel h-[80%] -translate-y-1/2 items-center justify-center rounded border border-monochrome-9 bg-monochrome-white hover:cursor-pointer">
+          <div className="rounded-full bg-monochrome-9 p-2">
+            <Image src={icLock} alt="share" className="h-4 w-4" />
+          </div>
+        </div>
+      ) : (
+        <span
+          onClick={() => {
+            openModal(loopDetails.slug)
+          }}>
+          <RenderedImages loopDetails={loopDetails} />
+        </span>
+      )}
     </div>
   )
 }
