@@ -27,11 +27,12 @@ export const useFeedListStore = create<FeedListStoreType>((set) => {
           const usersdata = JSON.parse(localStorage.getItem('_user_id_') ?? '')
           const userId = usersdata.state.userId ?? ''
 
+          // console.log('state::', state.videoList, state.currentIndex)
           if (index !== -1 && numberOfVideos > index) {
             const eventName = index < state.currentIndex ? 'Swipe Up' : 'Swipe Down'
             const properties = {
               content_category: 'loop',
-              content_id: state.videoList[state.currentIndex].video.id,
+              content_id: state.videoList[state.currentIndex]?.video.id,
               event_record_screen: 'feed',
               event_target_screen: 'none',
               video_length: duration,

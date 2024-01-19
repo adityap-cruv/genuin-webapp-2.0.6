@@ -159,6 +159,7 @@ function PlayerModalWrapper() {
     })
   }, [videoList])
 
+  //  TODO: this code is causing many issues fix it.
   return (
     <PlayerModal.mobile
       close={close}
@@ -251,7 +252,7 @@ function CommunityList({ usernickname, scrollYProgress }: any) {
       {isLoading && <Loader size="md" />}
       {communities && communities?.length === 0 && (
         <div className="w-full overflow-hidden" style={{ height: 'calc(100% - 280px)' }}>
-          <div className="bg-monochrome-11 flex h-full w-full items-center justify-center pt-2 text-title-3-bold text-monochrome">
+          <div className="flex h-full w-full items-center justify-center bg-monochrome-11 pt-2 text-title-3-bold text-monochrome">
             No posts yet
           </div>
         </div>
@@ -323,7 +324,7 @@ function CommunityDetails({ userId, community }: { userId: string; community: Co
     <>
       <div className="h-3"></div>
       {isLoading && (
-        <li className="profile-loop-li bg-monochrome-11 relative my-4 w-full rounded-lg p-4">
+        <li className="profile-loop-li relative my-4 w-full rounded-lg bg-monochrome-11 p-4">
           <Shimmer className="h-4 w-24" />
           <div className="my-2 grid w-full grid-cols-3 gap-2">
             {Array.from({ length: 3 }).map((_, index) => (
