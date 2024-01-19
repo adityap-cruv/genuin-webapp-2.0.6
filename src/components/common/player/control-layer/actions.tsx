@@ -39,7 +39,10 @@ function Mobile({ link = '', shareDescription = '', shareTitle = '', videoData }
 
   if (videoData) {
     return (
-      <div>
+      <div
+        onClick={(e) => {
+          e.stopPropagation()
+        }}>
         {link && (
           <Link href={checkAndAppendHttps(link)} target="_blank">
             <ActionItem title="Click Here!">

@@ -2,12 +2,13 @@ import { type VideoSizeBoxType } from '@hooks/use-video-size-box'
 import { AnimatedInfinityView } from '@components/common/animated-infinity-view'
 import dynamic from 'next/dynamic'
 import { type VideoDataType } from '@lib/schemas/video'
-import { cn } from '@lib/utils'
 import { useFeedListStore } from './store'
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import { useCommentSheetStore } from '../player/comment-sheet/store'
 import { useVideoSizeBoxMobile } from '@hooks/use-video-size-box-mobile'
 import { FeedShimmer } from '../shimmers/feed-shimmer'
+import { Swiper, SwiperSlide } from 'swiper/react'
+import { Mousewheel } from 'swiper/modules'
 const Player = dynamic(async () => await import('@components/common/player').then((comp) => comp.Player.mobile))
 
 type MobileProps = {
@@ -33,10 +34,9 @@ export function Mobile({
   isFetchingNextPage,
   isLoading,
   hasNextPage,
-  startIndex,
+  startIndex = 0,
   sizeBox,
 }: MobileProps) {
-  const scrollDivRef = useRef<HTMLDivElement>(null)
   const { setCurrentIndex, setVideoList, currentIndex, videoList } = useFeedListStore((state) => ({
     setCurrentIndex: state.setCurrentIndex,
     setVideoList: state.setVideoList,
@@ -54,26 +54,7 @@ export function Mobile({
   }, [currentIndex])
 
   useEffect(() => {
-    const element = scrollDivRef.current
-    if (!element) return
-    function handleScroll(this: HTMLDivElement, e: Event) {
-      const newIndex = Math.floor(this.scrollTop / this.clientHeight)
-      setCurrentIndex(newIndex)
-    }
-
-    element.addEventListener('scroll', handleScroll)
-    return () => {
-      element.removeEventListener('scroll', handleScroll)
-    }
-  }, [scrollDivRef.current])
-
-  useEffect(() => {
     setCurrentIndex(startIndex)
-  }, [])
-
-  useEffect(() => {
-    const element = scrollDivRef.current
-    element?.scroll({ top: element.clientHeight * startIndex, behavior: 'instant' })
   }, [])
 
   useEffect(() => {
@@ -82,20 +63,21 @@ export function Mobile({
 
   if (videos && videoSizeBox)
     return (
-      <div className="relative block overflow-clip">
-        <div
-          ref={scrollDivRef}
-          style={{ height: videoSizeBox.height, width: videoSizeBox.width }}
-          className={cn(
-            'hide-scrollbar snap-y snap-mandatory snap-normal  overflow-x-clip scroll-smooth',
-            !commentIsOpen ? 'overflow-y-scroll' : 'overflow-y-hidden'
-          )}>
-          {videos.map((item, index) => {
-            return (
-              <div
-                key={index}
-                className="snap-start snap-always"
-                style={{ width: videoSizeBox.width, height: videoSizeBox.height }}>
+      <div style={{ height: sizeBox.height, width: sizeBox.width }} className="overflow-clip">
+        <Swiper
+          modules={[Mousewheel]}
+          mousewheel={true}
+          direction="vertical"
+          initialSlide={startIndex}
+          onActiveIndexChange={(swiper) => {
+            setCurrentIndex(swiper.activeIndex)
+          }}
+          allowSlideNext={!commentIsOpen}
+          allowSlidePrev={!commentIsOpen}
+          style={{ height: sizeBox.height, width: sizeBox.width }}>
+          {videos.map((item, index) => (
+            <SwiperSlide key={index}>
+              {() => (
                 <Player
                   playIfInViewPort
                   isFirstPlayerInList={index === 0}
@@ -104,11 +86,11 @@ export function Mobile({
                   sizeBox={videoSizeBox}
                   videoData={item}
                 />
-              </div>
-            )
-          })}
-        </div>
-        <InfinityViewBox />
+              )}
+            </SwiperSlide>
+          ))}
+          <InfinityViewBox />
+        </Swiper>
       </div>
     )
 

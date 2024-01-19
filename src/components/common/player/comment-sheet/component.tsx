@@ -1,8 +1,6 @@
-import { CommentSheet, CommentSheetContent, CommentSheetPortal } from '@components/custom/comment-sheet'
+import { CommentSheet, CommentSheetContent } from '@components/custom/comment-sheet'
 import { X } from 'lucide-react'
-import { usePlayerControlStore } from '../player-control-store'
 import { useCommentSheetStore } from './store'
-import { useEffect } from 'react'
 import { Comments } from '@components/common/comments'
 import Image from 'next/image'
 import icAudioRecord from '@icons/audioRecord.svg'
@@ -17,6 +15,7 @@ type Props = {
   noOfComments: number
 }
 
+// TODO: remove comment sheet with general sheet because there is no difference between.
 // Sheet is only used in mobile component for now.
 export function Sheet({ container, videoDetails, noOfComments }: Props) {
   const { isOpen, close, currentVideoId } = useCommentSheetStore((state) => ({
@@ -24,49 +23,30 @@ export function Sheet({ container, videoDetails, noOfComments }: Props) {
     close: state.closeModal,
     currentVideoId: state.currentVideoId,
   }))
-  const { pauseVideo, playVideo } = usePlayerControlStore((state) => ({
-    pauseVideo: state.pause,
-    playVideo: state.play,
-  }))
   const shouldOpen = isOpen && currentVideoId === videoDetails.video.share_string
 
-  useEffect(() => {
-    if (shouldOpen) {
-      document.getElementById('reel-list')?.classList.add('!overflow-y-hidden')
-      pauseVideo()
-    } else {
-      document.getElementById('reel-list')?.classList.remove('!overflow-y-hidden')
-      playVideo()
-    }
-  }, [shouldOpen])
-
   return (
-    <CommentSheet open={shouldOpen} modal={false}>
-      <CommentSheetPortal container={container.current}>
-        <CommentSheetContent
-          side="bottom"
-          onInteractOutside={() => {
-            close()
-          }}>
-          <div className="h-full w-full rounded-t-[18px] bg-background outline-none sm:rounded-t-none">
-            <div className="flex h-12 w-full items-center justify-between border-b border-monochrome-9 px-3 ">
-              <p className="text-title-3-demi text-secondary">
-                Comments{noOfComments !== 0 ? `(${noOfComments})` : ''}
-              </p>
-              <X
-                className="h-6 w-6 cursor-pointer stroke-secondary"
-                onClick={() => {
-                  close()
-                }}
-              />
-            </div>
-            <div style={{ height: 'calc(100% - 60px)' }}>
-              <Comments.withApi videoId={videoDetails.video.share_string} />
-            </div>
+    <CommentSheet open={shouldOpen} modal={true}>
+      <CommentSheetContent
+        onInteractOutside={() => {
+          close()
+        }}>
+        <div className="h-full w-full rounded-t-[18px] bg-background outline-none sm:rounded-t-none">
+          <div className="flex h-12 w-full items-center justify-between border-b border-monochrome-9 px-3 ">
+            <p className="text-title-3-demi text-secondary">Comments{noOfComments !== 0 ? `(${noOfComments})` : ''}</p>
+            <X
+              className="h-6 w-6 cursor-pointer stroke-secondary"
+              onClick={() => {
+                close()
+              }}
+            />
           </div>
-          <CommentInput videoDetails={videoDetails} />
-        </CommentSheetContent>
-      </CommentSheetPortal>
+          <div style={{ height: 'calc(100% - 60px)' }}>
+            <Comments.withApi videoId={videoDetails.video.share_string} />
+          </div>
+        </div>
+        <CommentInput videoDetails={videoDetails} />
+      </CommentSheetContent>
     </CommentSheet>
   )
 }
