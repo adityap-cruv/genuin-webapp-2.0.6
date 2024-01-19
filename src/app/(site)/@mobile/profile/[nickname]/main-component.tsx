@@ -24,6 +24,8 @@ import icTiktok from '@icons/icTiktok.svg'
 import { type CommunityMiniObj, useCommunityListStore, type LoopMiniObj } from './store'
 import { PlayerModal } from '@components/common/modals/player-modal'
 import { type VideoDataType } from '@lib/schemas/video'
+import icLock from '@icons/icLock.svg'
+import icLoopDark from '@icons/icLoopDark.svg'
 
 interface CompProps {
   profileData: any
@@ -334,11 +336,41 @@ function CommunityDetails({ userId, community }: { userId: string; community: Co
       )}
       {community.loops.map((item: any, index: any) => (
         <li
-          className="profile-loop-li bg-monochrome-11 relative mb-2 w-full rounded-lg border border-monochrome-9 p-4 pb-2"
-          key={index}>
-          <LoopVideos userId={userId} loopDetails={item} community={community} />
+          className="profile-loop-li relative mb-2 w-full rounded-lg border border-monochrome-9 p-4 pb-2"
+          key={index}
+          style={{ backgroundColor: '#F9F9F9' }}>
+          {item.private ? (
+            <div className="mb-2 flex items-center">
+              <div className="mr-4 h-10 w-10 shrink-0 rounded-full bg-monochrome-9 p-2">
+                <Image src={icLoopDark} alt="share" className=" fill-blue-20" />
+              </div>
+              <div>
+                <a href={PATH_NAME.loop(item.slug)}>
+                  <p className="text-title-3-bold">{item.name}</p>
+                </a>
+                <p className="text-body-1-med">This Loop is visible to its Collaborators only.</p>
+              </div>
+            </div>
+          ) : (
+            <LoopVideos userId={userId} loopDetails={item} community={community} />
+          )}
         </li>
       ))}
+      {community && community.private && (
+        <li
+          className="profile-loop-li relative mb-4 w-full rounded-lg border border-monochrome-9 p-4"
+          style={{ backgroundColor: '#F9F9F9' }}>
+          <div className="flex items-center">
+            <div className="mr-4 h-10 w-10 shrink-0 rounded-full bg-monochrome-9 p-2">
+              <Image src={icLock} alt="share" className=" fill-blue-20" />
+            </div>
+            <div>
+              <p className="text-title-3-demi">This community is private</p>
+              <p className="text-body-1-med">Join this community to see and interact with their posts.</p>
+            </div>
+          </div>
+        </li>
+      )}
       {isFetchingNextPage && <Loader size="md" />}
     </>
   )
@@ -380,7 +412,7 @@ function LoopVideos({
       </a>
       {data?.pages.flatMap((page) => page.videos).length === 0 && (
         <div className="flex items-center justify-center pt-32 text-title-3-bold text-secondary">
-          No videos available
+          No posts available
         </div>
       )}
       <div className="my-2 grid w-full grid-cols-3 gap-2">

@@ -4,6 +4,7 @@ import type { CommunityDetailsType } from '@lib/schemas/community'
 import { checkAndAppendHttps, generateDeepLink, openGeneratedLink } from '@lib/utils'
 import Image from 'next/image'
 import icShare from '@icons/icShareBlue.svg'
+import icLock from '@icons/icLock.svg'
 import Link from 'next/link'
 import icInstagram from '@icons/icInstagramBlack.svg'
 import icLinkedIn from '@icons/icLinkedIn.svg'
@@ -98,22 +99,22 @@ export function ProfileDetails({ communityDetails }: Props) {
           </div>
           <Stats />
         </div>
-        <ProfileTabs />
-        {/* // TODO: have to add is_private community */}
-        {/* <div
-          className="mt-4 flex w-full items-center bg-monochrome-11 justify-center overflow-hidden"
-          style={{ height: 'calc(100% - 56px)' }}>
-          <div className="flex flex-col items-center justify-center">
-            <Image src={lockIcon} alt="share" className="h-16 w-16" />
-            <p className="text-title-2-demi">
-              This community is private
-            </p>
-            <p className="text-center text-body-1-med">
-              Join this community to see and interact
-              <br /> with their posts
-            </p>
+        {communityDetails.info.private ? (
+          <div
+            className="mt-4 flex w-full items-center justify-center overflow-hidden"
+            style={{ height: 'calc(100% - 220px)' }}>
+            <div className="flex flex-col items-center justify-center">
+              <Image src={icLock} alt="share" className="h-16 w-16" />
+              <p className="text-title-2-demi">This community is private</p>
+              <p className="text-center text-body-1-med">
+                Join this community to see and interact
+                <br /> with their posts
+              </p>
+            </div>
           </div>
-        </div> */}
+        ) : (
+          <ProfileTabs />
+        )}
       </div>
     </>
   )

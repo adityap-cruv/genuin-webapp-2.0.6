@@ -12,6 +12,7 @@ export type CommunityMiniObj = {
   conversation_count: number
   video_count: number
   loops: LoopMiniObj[]
+  private: boolean
 }
 
 export type LoopMiniObj = {

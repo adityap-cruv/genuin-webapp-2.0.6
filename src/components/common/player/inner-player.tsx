@@ -33,10 +33,11 @@ export function InnerPlayer({
     playing: false,
     player: null,
   })
-  const { shouldPlay, muted, setTimeState } = usePlayerControlStore((state) => ({
+  const { shouldPlay, muted, setTimeState, setLatency } = usePlayerControlStore((state) => ({
     shouldPlay: state.shouldPlay,
     muted: state.muted,
     setTimeState: state.setTimeState,
+    setLatency: state.setLatency,
   }))
 
   useEffect(() => {
@@ -87,10 +88,14 @@ export function InnerPlayer({
   useEffect(() => {
     const player = localRef.current.player
     if (!player) return
+    const startTime = performance.now()
     if (shouldPlay && localRef.current.loaded) {
       player
         .play()
         .then(() => {
+          const endTime = performance.now()
+          const loadingTimeMillis = endTime - startTime
+          setLatency(Math.floor(loadingTimeMillis))
           // console.log('starts playing from use effect.')
         })
         .catch((e) => {
@@ -162,10 +167,11 @@ export function ViewportPlayer({
     playing: false,
     player: null,
   })
-  const { shouldPlay, muted, setTimeState } = usePlayerControlStore((state) => ({
+  const { shouldPlay, muted, setTimeState, setLatency } = usePlayerControlStore((state) => ({
     shouldPlay: state.shouldPlay,
     muted: state.muted,
     setTimeState: state.setTimeState,
+    setLatency: state.setLatency,
   }))
   const inView = useInView(videoRef, { amount: 0.95 })
 
@@ -216,9 +222,13 @@ export function ViewportPlayer({
 
   useEffect(() => {
     const player = localRef.current.player
+    const startTime = performance.now()
     // console.log('inView::', player, inView)
     if (inView && shouldPlay) {
       void player?.play().then(() => {
+        const endTime = performance.now()
+        const loadingTimeMillis = endTime - startTime
+        setLatency(Math.floor(loadingTimeMillis))
         // console.log('being played..')
       })
     } else {

@@ -24,6 +24,8 @@ export const useFeedListStore = create<FeedListStoreType>((set) => {
           const numberOfVideos = state.videoList.length
           const progressValue = Math.round((currentTime / duration) * 100)
           const hasCrossed50 = progressValue > 50
+          const usersdata = JSON.parse(localStorage.getItem('_user_id_') ?? '')
+          const userId = usersdata.state.userId ?? ''
 
           if (index !== -1 && numberOfVideos > index) {
             const eventName = index < state.currentIndex ? 'Swipe Up' : 'Swipe Down'
@@ -34,6 +36,7 @@ export const useFeedListStore = create<FeedListStoreType>((set) => {
               event_target_screen: 'none',
               video_length: duration,
               video_view_length: currentTime,
+              user_id: userId,
             }
 
             if (hasCrossed50) {
