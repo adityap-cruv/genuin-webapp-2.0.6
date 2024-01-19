@@ -101,11 +101,21 @@ export function MainComponent({ loopDetails }: Props) {
               )}
 
               {loopDetails.private && (
-                <Button size="custom" variant="outline" className="border border-primary">
-                  <p className="px-4 py-1 text-title-3-bold text-primary" style={{ fontSize: '15px' }}>
-                    Join as collaborator
-                  </p>
-                </Button>
+                <DownloadDialog
+                  title="Get the Genuin app"
+                  subtitle={
+                    <>
+                      Get the app to Join as collaborator to
+                      <span className="font-bold"> {loopDetails.group.group_name}</span> Loop.
+                    </>
+                  }
+                  asChild>
+                  <Button size="custom" variant="outline" className="border border-primary">
+                    <p className="px-4 py-1 text-title-3-bold text-primary" style={{ fontSize: '15px' }}>
+                      Join as collaborator
+                    </p>
+                  </Button>
+                </DownloadDialog>
               )}
 
               {/* Hidden by requirement. */}

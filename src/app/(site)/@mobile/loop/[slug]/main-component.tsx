@@ -133,7 +133,29 @@ export function MainComponent({ loopDetails }: Props) {
               )}
 
               {loopDetails.private && (
-                <Button size="custom" variant="outline" className="border border-primary">
+                <Button
+                  size="custom"
+                  variant="outline"
+                  className="border border-primary"
+                  onClick={() => {
+                    generateDeepLink({
+                      contentType: 'loop',
+                      description: ldDescription,
+                      title: loopDetails.group.group_name,
+                      previewImage: null,
+                      fromUserName: null,
+                      pathName: window.location.pathname,
+                      // sourceId: loopDetails.share_string,
+                      utmCampaign: 'share',
+                      utmMedium: 'web',
+                      utmSource: window.location.hostname,
+                      community: loopDetails.community.share_string,
+                    })
+                      .then((generatedLink) => {
+                        openGeneratedLink(generatedLink)
+                      })
+                      .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
+                  }}>
                   <p className="px-4 py-1 text-title-3-bold text-primary" style={{ fontSize: '15px' }}>
                     Join as collaborator
                   </p>
