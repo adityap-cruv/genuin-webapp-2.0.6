@@ -11,7 +11,8 @@ const Feed = dynamic(async () => await import('@components/common/feed').then((c
 })
 
 export function Root({ brandId }: { brandId?: string }) {
-  const videoSizeBox = useVideoSizeBox(true)
+  const showTopbar = useLocalStorage((state) => !state.isIframe)
+  const videoSizeBox = useVideoSizeBox(showTopbar)
   const userId = useLocalStorage((state) => state.userId)
   const { data, isError, fetchNextPage, isFetchingNextPage, isLoading } = getFeed({
     feedType: 'popular',

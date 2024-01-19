@@ -1,7 +1,7 @@
 import { type Metadata } from 'next'
 import './globals.css'
 import { ReactQueryProvider } from '@components/providers/reactQueryProvider'
-import Script from 'next/script';
+import Script from 'next/script'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -9,7 +9,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <link rel="icon" type="image/x-icon" href="/favicon.svg" />
         <link rel="mask-icon" href="/favicon.svg" />
-        <Script id='bufferEvents'>
+        <Script id="bufferEvents">
           {`
             window.rudderanalytics = [];
             var methods = [
