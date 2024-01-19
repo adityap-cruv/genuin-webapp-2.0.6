@@ -7,6 +7,7 @@ import { TopStickyBar } from './top-bar'
 import { Button } from '@components/ui/button'
 import Image from 'next/image'
 import icShare from '@icons/icShareBlue.svg'
+import icLock from '@icons/icLock.svg'
 import { useInView } from 'framer-motion'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
 import Link from 'next/link'
@@ -99,33 +100,36 @@ export function RootDetails({ communityDetails }: Props) {
             </Button>
           </span>
         </div>
-        {/* // TODO: have to add is_private community */}
-        {/* <div
-          className="mt-4 flex w-full items-center justify-center overflow-hidden"
-          style={{ height: 'calc(100% - 56px)', backgroundColor: '#F9F9F9' }}>
-          <div className="flex flex-col items-center justify-center">
-            <Image src={lockIcon} alt="share" className="h-16 w-16" />
-            <p className="text-title-2-bold" style={{ fontWeight: 600 }}>
-              This community is private
-            </p>
-            <p className="text-center text-body-1-med">
-              Join this community to see and interact
-              <br /> with their posts
-            </p>
-          </div>
-        </div> */}
-        <div className="grid w-full grid-cols-2 gap-4 overflow-hidden" style={{ height: 'calc(100% - 56px)' }}>
-          <div className="snap-y snap-proximity overflow-auto overflow-x-hidden scroll-smooth">
-            <CommunityDetailsTabs />
-          </div>
 
-          <div className="snap-y snap-proximity overflow-auto overflow-x-hidden scroll-smooth">
-            <Categories />
-            <Links />
-            <Guidelines />
-            <Leaders />
+        {communityDetails.info.private ? (
+          <div
+            className="mt-4 flex w-full items-center justify-center overflow-hidden"
+            style={{ height: 'calc(100% - 285px)', backgroundColor: '#F9F9F9' }}>
+            <div className="flex flex-col items-center justify-center">
+              <Image src={icLock} alt="share" className="h-16 w-16" />
+              <p className="text-title-2-bold" style={{ fontWeight: 600 }}>
+                This community is private
+              </p>
+              <p className="text-center text-body-1-med">
+                Join this community to see and interact
+                <br /> with their posts
+              </p>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="grid w-full grid-cols-2 gap-4 overflow-hidden" style={{ height: 'calc(100% - 56px)' }}>
+            <div className="snap-y snap-proximity overflow-auto overflow-x-hidden scroll-smooth">
+              <CommunityDetailsTabs />
+            </div>
+
+            <div className="snap-y snap-proximity overflow-auto overflow-x-hidden scroll-smooth">
+              <Categories />
+              <Links />
+              <Guidelines />
+              <Leaders />
+            </div>
+          </div>
+        )}
       </main>
       <Toaster />
     </>
@@ -144,7 +148,7 @@ function CommunityDetailsTabs() {
         </TabsTrigger>
       </TabsList>
       <hr className="border-t border-monochrome-9" />
-      <TabsContent value="Loops" className="mr-2 h-full">
+      <TabsContent value="Loops" className="mr-2 h-full py-4">
         <CommunityLoopTab communitySlug={communityDetailsModule.info.slug} />
       </TabsContent>
       <TabsContent value="Members">

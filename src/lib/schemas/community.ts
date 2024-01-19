@@ -20,6 +20,7 @@ const infoSchema = z.object({
   profile_image: z.string(),
   categories: z.array(z.string()),
   share_string: z.string(),
+  private: z.boolean(),
 })
 
 // Define a schema for the "popular_loops" array

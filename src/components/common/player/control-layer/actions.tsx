@@ -36,6 +36,8 @@ function Mobile({ link = '', shareDescription = '', shareTitle = '', videoData }
     closeComments: state.closeModal,
     commentsIsOpen: state.modalIsOpen,
   }))
+  const usersdata = JSON.parse(localStorage.getItem('_user_id_') ?? '')
+  const userId = usersdata.state.userId ?? ''
 
   if (videoData) {
     return (
@@ -135,6 +137,7 @@ function Mobile({ link = '', shareDescription = '', shareTitle = '', videoData }
                 content_id: videoData.video.id,
                 event_record_screen: 'feed',
                 event_target_screen: 'none',
+                user_id: userId,
               },
             })
             const url = {
@@ -177,6 +180,8 @@ function Desktop({ link = '', shareDescription = '', shareTitle = '', videoData 
   //   closeComments: state.closeModal,
   //   commentsIsOpen: state.modalIsOpen,
   // }))
+  const usersdata = JSON.parse(localStorage.getItem('_user_id_') ?? '')
+  const userId = usersdata.state.userId ?? ''
 
   if (videoData) {
     return (
@@ -215,6 +220,7 @@ function Desktop({ link = '', shareDescription = '', shareTitle = '', videoData 
                 content_id: videoData.video.id,
                 event_record_screen: 'feed',
                 event_target_screen: 'none',
+                user_id: userId,
               },
             })
             const url = {

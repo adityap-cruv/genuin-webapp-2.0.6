@@ -4,6 +4,7 @@ import type { LoopDetailsType } from '@lib/schemas/loop/details'
 import { generateDeepLink, openGeneratedLink } from '@lib/utils'
 import Image from 'next/image'
 import icShare from '@icons/icShareBlue.svg'
+import icLock from '@icons/icLock.svg'
 import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
@@ -58,7 +59,7 @@ export function MainComponent({ loopDetails }: Props) {
               <p className="line-clamp-1 text-title-1-bold">{loopDetails.group.group_name}</p>
               <p className="my-2 line-clamp-2 break-words text-title-3-demi">{loopDetails.group.group_description}</p>
             </div>
-            <div className=" my-3 rounded-lg border border-solid border-monochrome-9 p-4 overflow-hidden">
+            <div className=" my-3 overflow-hidden rounded-lg border border-solid border-monochrome-9 p-4">
               <div className="flex">
                 <div className="flex flex-1 flex-col items-start">
                   <p className="text-body-1-demi text-secondary">Created by</p>
@@ -104,30 +105,40 @@ export function MainComponent({ loopDetails }: Props) {
             </div>
 
             <div className="flex items-center gap-x-2">
-              <Button
-                size="custom"
-                onClick={() => {
-                  generateDeepLink({
-                    action: 'subscribe',
-                    contentType: 'loop',
-                    description: ldDescription,
-                    title: loopDetails.group.group_name,
-                    previewImage: null,
-                    fromUserName: null,
-                    pathName: window.location.pathname,
-                    // sourceId: loopDetails.share_string,
-                    utmCampaign: 'share',
-                    utmMedium: 'web',
-                    utmSource: window.location.hostname,
-                    community: loopDetails.community.share_string,
-                  })
-                    .then((generatedLink) => {
-                      openGeneratedLink(generatedLink)
+              {!loopDetails.private && (
+                <Button
+                  size="custom"
+                  onClick={() => {
+                    generateDeepLink({
+                      action: 'subscribe',
+                      contentType: 'loop',
+                      description: ldDescription,
+                      title: loopDetails.group.group_name,
+                      previewImage: null,
+                      fromUserName: null,
+                      pathName: window.location.pathname,
+                      // sourceId: loopDetails.share_string,
+                      utmCampaign: 'share',
+                      utmMedium: 'web',
+                      utmSource: window.location.hostname,
+                      community: loopDetails.community.share_string,
                     })
-                    .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
-                }}>
-                <p className="px-4 py-1 text-title-3-demi">Subscribe</p>
-              </Button>
+                      .then((generatedLink) => {
+                        openGeneratedLink(generatedLink)
+                      })
+                      .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
+                  }}>
+                  <p className="px-4 py-1 text-title-3-demi">Subscribe</p>
+                </Button>
+              )}
+
+              {loopDetails.private && (
+                <Button size="custom" variant="outline" className="border border-primary">
+                  <p className="px-4 py-1 text-title-3-bold text-primary" style={{ fontSize: '15px' }}>
+                    Join as collaborator
+                  </p>
+                </Button>
+              )}
 
               {/* Hidden by requirement. */}
               {/* <Button size="custom" variant="outline" className="border-primary px-4">
@@ -154,8 +165,24 @@ export function MainComponent({ loopDetails }: Props) {
               </Button>
             </div>
           </div>
-
-          <LoopTabs />
+          <hr className="border-t border-monochrome-9" />
+          {loopDetails.private ? (
+            <div
+              className="mt-4 flex w-full items-center justify-center overflow-hidden"
+              style={{ height: 'calc(100% - 220px)' }}>
+              <div className="flex flex-col items-center justify-center">
+                <div className="mb-2 rounded-full bg-monochrome-9 p-6">
+                  <Image src={icLock} alt="share" className="h-16 w-16" />
+                </div>
+                <p className="text-center text-title-2-demi">
+                  This Loop is visible to its
+                  <br /> Collaborators only
+                </p>
+              </div>
+            </div>
+          ) : (
+            <LoopTabs />
+          )}
         </div>
       </>
     )
