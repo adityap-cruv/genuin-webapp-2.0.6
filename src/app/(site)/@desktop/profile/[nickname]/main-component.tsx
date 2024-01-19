@@ -195,7 +195,7 @@ function CommunityList({ usernickname }: any) {
         {isLoading && <Loader size="md" />}
         {communities && communities?.length === 0 && (
           <div className="w-full overflow-hidden" style={{ height: `calc(100% - 250px)` }}>
-            <div className="bg-monochrome-11 flex h-full w-full items-center justify-center pt-2 text-title-3-bold text-monochrome">
+            <div className="flex h-full w-full items-center justify-center bg-monochrome-11 pt-2 text-title-3-bold text-monochrome">
               No posts yet
             </div>
           </div>
@@ -290,7 +290,7 @@ function CommunityDetails({ userId, community }: { userId: string; community: Co
     <>
       <div className="h-3"></div>
       {isLoading && (
-        <li className="profile-loop-li bg-monochrome-11 relative my-4 w-full rounded-lg border border-monochrome-9 p-4">
+        <li className="profile-loop-li relative my-4 w-full rounded-lg border border-monochrome-9 bg-monochrome-11 p-4">
           <Shimmer className="h-6 w-40" />
           <div className="my-2 grid w-full grid-cols-4 gap-2 md:grid-cols-8">
             {Array.from({ length: 8 }).map((_, index) => (
@@ -327,7 +327,7 @@ function CommunityDetails({ userId, community }: { userId: string; community: Co
           </li>
         ))}
 
-      {community && community.private && (
+      {community?.private && (
         <li
           className="profile-loop-li relative mb-4 w-full rounded-lg border border-monochrome-9 p-4"
           style={{ backgroundColor: '#F9F9F9' }}>
