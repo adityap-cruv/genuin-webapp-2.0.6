@@ -383,7 +383,7 @@ function Component5() {
             books, and I love engaging with others about these topics.
           </p>
           <p className="mt-4 text-new-para-1">
-            Jamie Mars, <span style={{ fontWeight: 400 }}>Student & Future Investor</span>
+            Jamie Mars, <span className="font-normal">Student & Future Investor</span>
           </p>
         </div>
         <Image priority loading="eager" className="sm:w-1/2" src={imgC5_2} alt="genuin" />

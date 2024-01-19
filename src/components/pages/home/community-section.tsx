@@ -48,7 +48,7 @@ export function CommunitySection() {
   return (
     <div className="flex w-full flex-col gap-y-10">
       <div ref={divRef} className="hide-scrollbar scroll-snap-always flex snap-x overflow-x-auto px-4 sm:px-0 sm:pl-5 ">
-        <div ref={firstDivRef} style={{ width: '2px' }}>
+        <div ref={firstDivRef} className="w-0.5">
           &nbsp;
         </div>
         {communityList.map((item, index) => {
@@ -56,7 +56,6 @@ export function CommunitySection() {
             <React.Fragment key={index}>
               <div
                 onClick={() => (window.location.href = item.link)}
-                style={{ WebkitBoxSizing: 'border-box' }}
                 className={`m-4 box-border flex min-w-full snap-center flex-col gap-y-1 rounded-[20px] border-2 border-transparent p-6 outline outline-1 outline-new-light-grey hover:border-2 hover:border-primary hover:shadow-md hover:outline-0 sm:min-w-max sm:max-w-md`}>
                 <div className="flex w-full justify-between">
                   <CustomAvatar
@@ -96,7 +95,7 @@ export function CommunitySection() {
             </React.Fragment>
           )
         })}
-        <div ref={lastDivRef} style={{ width: '2px' }}>
+        <div ref={lastDivRef} className="w-0.5">
           &nbsp;
         </div>
       </div>
