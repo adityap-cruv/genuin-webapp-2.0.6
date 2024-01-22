@@ -101,10 +101,12 @@ export function ProfileDetails({ communityDetails }: Props) {
         </div>
         {communityDetails.info.private ? (
           <div
-            className="mt-4 flex w-full items-center justify-center overflow-hidden"
+            className="mt-4 flex w-full items-center justify-center overflow-hidden border-t border-monochrome-9"
             style={{ height: 'calc(100% - 220px)' }}>
             <div className="flex flex-col items-center justify-center">
-              <Image src={icLock} alt="share" className="h-16 w-16" />
+              <div className="rounded-full bg-monochrome-9 p-3">
+                <Image src={icLock} alt="share" className="h-12 w-12" />
+              </div>
               <p className="text-title-2-demi">This community is private</p>
               <p className="text-center text-body-1-med">
                 Join this community to see and interact
