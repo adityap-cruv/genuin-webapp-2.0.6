@@ -32,13 +32,16 @@ export type VideoMiniObj = {
   no_of_sparks: number
 }
 
-type CommunityListType = {
-  open: (shareString: string) => void
-  close: () => void
+type State = {
   communities: CommunityMiniObj[]
   videoList: Array<{ shareString: string; details: null | VideoDataType }>
   currentVideoShareString: string | null
   activeIndex: number
+}
+
+type Actions = {
+  open: (shareString: string) => void
+  close: () => void
   setActiveIndex: (newIndex: number) => void
   setVideoDetails: (shareStrings: Array<{ share_string: string }>) => Promise<void>
   addCommunities: (list: Array<Omit<CommunityMiniObj, 'loops'>>) => void
@@ -48,10 +51,29 @@ type CommunityListType = {
     loopObj: LoopMiniObj | number,
     list: Array<Omit<VideoMiniObj, 'details'>>
   ) => void
+  reset: () => void
 }
 
-export const useCommunityListStore = create<CommunityListType>((set) => {
+// TODO: Here communities value is changing find why is that happening.
+const initialState: State = {
+  activeIndex: 0,
+  videoList: [],
+  currentVideoShareString: '',
+  communities: [],
+}
+
+export const useCommunityListStore = create<State & Actions>((set) => {
   return {
+    ...initialState,
+    reset() {
+      set((state) => {
+        //! Didn't use initialState because initialState is having different value
+        // TODO: Remove this code.
+        console.log('states::initialState::', initialState)
+        console.log('states::setStateValue::', state)
+        return { activeIndex: 0, videoList: [], currentVideoShareString: '', communities: [] }
+      })
+    },
     open(shareString) {
       set((state) => {
         const shareStrings = state.videoList.flatMap((item) => item.shareString)
@@ -67,7 +89,6 @@ export const useCommunityListStore = create<CommunityListType>((set) => {
     close() {
       set({ currentVideoShareString: null })
     },
-    activeIndex: 0,
     setActiveIndex(newIndex) {
       set((state) => {
         const oldIndex = state.activeIndex
@@ -91,9 +112,6 @@ export const useCommunityListStore = create<CommunityListType>((set) => {
         return { activeIndex: newIndex }
       })
     },
-    videoList: [],
-    currentVideoShareString: '',
-    communities: [],
     async setVideoDetails(shareStrings) {
       if (shareStrings.length > 0) {
         const videoDetailsList = await fetchVideoDetailsByShareString(shareStrings)
