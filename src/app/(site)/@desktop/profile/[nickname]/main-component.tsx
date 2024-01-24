@@ -41,7 +41,6 @@ export function MainComponent({ profileData }: CompProps) {
 
   useEffect(() => {
     return () => {
-      console.log('destroyed data::')
       resetData()
     }
   }, [])

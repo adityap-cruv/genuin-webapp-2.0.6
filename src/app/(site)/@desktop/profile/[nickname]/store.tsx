@@ -69,8 +69,8 @@ export const useCommunityListStore = create<State & Actions>((set) => {
       set((state) => {
         //! Didn't use initialState because initialState is having different value
         // TODO: Remove this code.
-        console.log('states::initialState::', initialState)
-        console.log('states::setStateValue::', state)
+        // console.log('states::initialState::', initialState)
+        // console.log('states::setStateValue::', state)
         return { activeIndex: 0, videoList: [], currentVideoShareString: '', communities: [] }
       })
     },
