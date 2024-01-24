@@ -36,8 +36,15 @@ interface CompProps {
 export function MainComponent({ profileData }: CompProps) {
   const detailsDivRef = useRef<HTMLDivElement>(null)
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
-
+  const { reset: resetData } = useCommunityListStore((state) => ({ reset: state.reset }))
   const divRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    return () => {
+      console.log('destroyed data::')
+      resetData()
+    }
+  }, [])
   // const [divHeight, setDivHeight] = useState(0)
 
   // useEffect(() => {
