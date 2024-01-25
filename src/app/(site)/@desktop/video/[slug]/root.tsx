@@ -8,6 +8,7 @@ type Props = {
 }
 // TODO: Fix comment component bug. scrolling issue.
 export function Root({ videoDetails }: Props) {
+  console.log('video details::', videoDetails)
   const sizeBox = useVideoSizeBox(true)
   if (sizeBox)
     return (
