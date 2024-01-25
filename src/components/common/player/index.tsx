@@ -6,6 +6,8 @@ import { useEffect, useRef } from 'react'
 import { usePlayerControlStore } from './player-control-store'
 import { useCommentStore } from '../comments/store'
 import { useHasUserFocus } from '@hooks/use-has-user-focus'
+import { LockIcon } from '@icons/LockIcon'
+import { FeedShimmer } from '../shimmers/feed-shimmer'
 
 const CommentSheet = dynamic(async () => await import('./comment-sheet').then((comp) => comp.CommentSheet))
 const InnerPlayer = dynamic(async () => await import('./inner-player').then((comp) => comp.InnerPlayer), {
@@ -89,7 +91,7 @@ function Mobile({
     hasFocus ? setShouldPlay(shouldPlay) : setShouldPlay(false)
   }, [hasFocus])
 
-  if (videoData) {
+  if (videoData?.video) {
     return (
       <div
         onClick={(e) => {
@@ -125,6 +127,24 @@ function Mobile({
       </div>
     )
   }
+
+  return (
+    <div className="w-ful flex h-full flex-col items-center justify-center gap-y-4 bg-new-off-black">
+      <LockIcon className="stroke-new-off-white" />
+      <p className="text-center text-body-1-demi text-new-off-white">
+        {videoData?.community.private ? (
+          <span>This Loop is visible to its Collaborators only</span>
+        ) : (
+          <span>
+            This Loop is visible to its Community
+            <br /> Members only
+          </span>
+        )}
+      </p>
+    </div>
+  )
+
+  // return <
 }
 
 function Desktop({
@@ -159,7 +179,7 @@ function Desktop({
     hasFocus ? setShouldPlay(shouldPlay && activeComment === '') : setShouldPlay(false)
   }, [hasFocus])
 
-  if (videoData) {
+  if (videoData?.video) {
     return (
       <div className="relative flex h-full w-full snap-start items-center justify-center overflow-clip">
         {shouldShowBackgroundBlurImage && (
@@ -195,4 +215,19 @@ function Desktop({
       </div>
     )
   }
+  return (
+    <div className="w-ful flex h-full flex-col items-center justify-center gap-y-4 bg-monochrome-9">
+      <LockIcon className="stroke-secondary" />
+      <p className="text-center text-body-1-demi text-secondary">
+        {videoData?.community.private ? (
+          <span>This Loop is visible to its Collaborators only</span>
+        ) : (
+          <span>
+            This Loop is visible to its Community
+            <br /> Members only
+          </span>
+        )}
+      </p>
+    </div>
+  )
 }

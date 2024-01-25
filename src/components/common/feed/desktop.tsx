@@ -77,7 +77,7 @@ export function Desktop({ sizeBox, fetchNextPage, isFetchingNextPage, videos, cl
             )
           })}
         </Swiper>
-        <DesktopDetails videoDetails={videoList[currentIndex]} />
+        {videoList[currentIndex].video && <DesktopDetails videoDetails={videoList[currentIndex]} />}
       </div>
     )
 
