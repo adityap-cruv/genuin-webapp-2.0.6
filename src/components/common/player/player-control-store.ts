@@ -62,7 +62,7 @@ export const usePlayerControlStore = create<PlayerControlStoreType>((set) => {
 
       if (progressValue > 95 && duration !== 0) {
         void analyticsService({
-          eventName: 'Video Ended',
+          eventName: 'Video Watched',
           properties: {
             content_category: 'loop',
             content_id: finalVideoList[finalIndex].video.id,
