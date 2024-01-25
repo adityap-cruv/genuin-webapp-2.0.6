@@ -23,7 +23,7 @@ export function Sheet({ container, videoDetails, noOfComments }: Props) {
     close: state.closeModal,
     currentVideoId: state.currentVideoId,
   }))
-  const shouldOpen = isOpen && currentVideoId === videoDetails.video.share_string
+  const shouldOpen = isOpen && currentVideoId === videoDetails.video?.share_string
 
   return (
     <CommentSheet open={shouldOpen} modal={true}>
@@ -42,7 +42,7 @@ export function Sheet({ container, videoDetails, noOfComments }: Props) {
             />
           </div>
           <div style={{ height: 'calc(100% - 60px)' }}>
-            <Comments.withApi videoId={videoDetails.video.share_string} />
+            <Comments.withApi videoId={videoDetails?.video?.share_string ?? ''} />
           </div>
         </div>
         <CommentInput videoDetails={videoDetails} />
@@ -62,7 +62,7 @@ function CommentInput({ videoDetails }: { videoDetails: VideoDataType }) {
           title: ``,
           previewImage: null,
           fromUserName: null,
-          pathName: PATH_NAME.video(videoDetails.video.slug),
+          pathName: PATH_NAME.video(videoDetails.video?.slug),
           utmCampaign: 'share',
           utmMedium: 'web',
           utmSource: window.location.hostname,

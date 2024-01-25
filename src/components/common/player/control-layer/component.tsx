@@ -57,9 +57,9 @@ function Desktop({ videoData }: Props) {
         )}
         <div className="absolute bottom-0 right-0 pr-2">
           <Actions.desktop
-            link={videoData?.video.link ?? ''}
-            shareTitle={videoData?.video.description ?? ''}
-            shareDescription={videoData?.video.description ?? ''}
+            link={videoData?.video?.link ?? ''}
+            shareTitle={videoData?.video?.description ?? ''}
+            shareDescription={videoData?.video?.description ?? ''}
             videoData={videoData}
           />
         </div>
@@ -134,16 +134,16 @@ function Loop({ videoData }: { videoData?: VideoDataType }) {
           </div>
           <span className="py-2">
             <ReadMore
-              text={videoData?.video.description ?? ''}
+              text={videoData?.video?.description ?? ''}
               className="line-clamp-2 w-full break-all text-body-1-demi text-monochrome-white"
             />
           </span>
         </div>
         {/* TODO: configure share title and description correctly */}
         <Actions.mobile
-          link={videoData?.video.link ?? ''}
-          shareTitle={videoData?.video.description ?? ''}
-          shareDescription={videoData?.video.description ?? ''}
+          link={videoData?.video?.link ?? ''}
+          shareTitle={videoData?.video?.description ?? ''}
+          shareDescription={videoData?.video?.description ?? ''}
           videoData={videoData}
         />
       </div>

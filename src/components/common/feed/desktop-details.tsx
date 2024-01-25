@@ -115,7 +115,7 @@ export function DesktopDetails({ videoDetails }: DesktopDetailsProps) {
             </p>
           </div>
           <div className="h-full px-4 pt-2">
-            <CommentBox shareString={videoDetails?.video?.share_string || ''} parentRef={scrollDivRef} />
+            <CommentBox shareString={videoDetails?.video?.share_string ?? ''} parentRef={scrollDivRef} />
           </div>
         </div>
         <CommentInput />

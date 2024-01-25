@@ -65,7 +65,7 @@ export const usePlayerControlStore = create<PlayerControlStoreType>((set) => {
           eventName: 'Video Watched',
           properties: {
             content_category: 'loop',
-            content_id: finalVideoList[finalIndex].video.id,
+            content_id: finalVideoList[finalIndex].video?.id,
             event_record_screen: 'feed',
             event_target_screen: 'none',
             video_length: duration,
@@ -95,9 +95,9 @@ export const usePlayerControlStore = create<PlayerControlStoreType>((set) => {
             properties: {
               latency,
               user_id: userId,
-              video_id: finalVideoList[finalIndex].video.id,
+              video_id: finalVideoList[finalIndex].video?.id,
               video_length: state.duration,
-              video_url: finalVideoList[finalIndex].video.url,
+              video_url: finalVideoList[finalIndex].video?.url,
             },
           })
         }
