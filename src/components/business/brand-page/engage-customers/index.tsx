@@ -48,7 +48,9 @@ const EngageCustomers: React.FC = () => {
       })
     }, component)
 
-    return () => ctx.revert()
+    return () => {
+      ctx.revert()
+    }
   }, [])
 
   return (

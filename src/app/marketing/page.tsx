@@ -7,6 +7,7 @@ import Precision from '@components/business/marketing-page/precision'
 import SocialConnections from '@components/business/marketing-page/social-connections'
 import Communities from '@components/business/marketing-page/communities'
 import { NavBar } from '@components/pages/home/nav-bar'
+import Footer from '@components/business/footer'
 
 export default function MarketingPage() {
   return (
@@ -34,6 +35,7 @@ export default function MarketingPage() {
         <SocialConnections />
         <Communities />
       </div>
+      <Footer />
     </>
   )
 }

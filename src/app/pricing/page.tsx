@@ -6,6 +6,7 @@ import PlanDetails from '@components/business/pricing-page/plan-details'
 import SubscriptionPlan from '@components/business/pricing-page/subscription-plan'
 import Support from '@components/business/pricing-page/support'
 import { NavBar } from '@components/pages/home/nav-bar'
+import Footer from '@components/business/footer'
 
 export default function PricingPage() {
   return (
@@ -25,6 +26,7 @@ export default function PricingPage() {
         {/* Support component */}
         <Support />
       </div>
+      <Footer />
     </>
   )
 }

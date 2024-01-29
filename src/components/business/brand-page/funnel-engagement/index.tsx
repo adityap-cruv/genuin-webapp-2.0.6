@@ -68,7 +68,9 @@ const FunnelEngagement: React.FC = () => {
       tl.to({}, { duration: 0.1 })
     }, app)
 
-    return () => ctx.revert()
+    return () => {
+      ctx.revert()
+    }
   }, [])
 
   return (

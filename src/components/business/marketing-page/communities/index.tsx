@@ -13,6 +13,7 @@ export default function Communities() {
     <section className={style.container}>
       <div className={style.firstRow}>
         <HeadingComponent headingLevel={2} title={content.Communities.title} colorVariant={'black'} />
+        <div style={{ margin: '10px 0' }}></div>
         <ParagraphComponent text={content.Communities.caption} sizeVariant={'medium'} colorVariant={'black'} />
         <Button text={content.Communities.button} variant={'outline'} size={'small'} color={'black'} />
       </div>

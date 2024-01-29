@@ -26,6 +26,7 @@
     h4 {
       border-top: 2px solid $off-black;
       padding-top: 16px;
+      border-image: linear-gradient(to right, $off-black 50%, transparent 50%) 100% 1;
     }
 
     p {

@@ -21,6 +21,7 @@ import tedBanner from '@images/business/brand-page/brands/ted.png'
 import lowesLogo from '@images/business/brand-page/brands/lowes.svg'
 import lowesBanner from '@images/business/brand-page/brands/lowes.png'
 import { NavBar } from '@components/pages/home/nav-bar'
+import Footer from '@components/business/footer'
 
 export default function BrandsPage() {
   return (
@@ -68,6 +69,7 @@ export default function BrandsPage() {
         {/* Get In Touch component */}
         <GetInTouch />
       </div>
+      <Footer />
     </>
   )
 }
