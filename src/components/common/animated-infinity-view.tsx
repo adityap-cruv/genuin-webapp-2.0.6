@@ -76,7 +76,7 @@ export function AnimatedInfinityView({ community, loop }: Props) {
     <span className="mb-2 flex px-1">
       <motion.div initial={{ rotateX: '90deg' }} animate={leftControls} className=" relative flex-1">
         <Link href={{ pathname: PATH_NAME.community(community.slug) }}>
-          <Image src={infynityLeft} alt="bar" className="h-auto w-auto" />
+          <Image src={infynityLeft} alt="bar" className="h-auto w-full min-w-max" />
           <span className="absolute inset-0 flex h-full w-full items-center gap-x-2 pl-2">
             <CustomAvatar
               imageUrl={localState.communityDp}
@@ -95,7 +95,7 @@ export function AnimatedInfinityView({ community, loop }: Props) {
       </motion.div>
       <motion.div initial={{ rotateX: '90deg' }} animate={rightControls} className="relative flex-1">
         <a href={PATH_NAME.loop(loop.slug)}>
-          <Image src={infynityRight} alt="bar" className="h-auto w-auto" />
+          <Image src={infynityRight} alt="bar" className="h-auto w-full min-w-max" />
           <span className="absolute inset-0 block w-full flex-1 justify-end">
             <span className="flex h-full items-center justify-end">
               <div className="w-[85%]">
