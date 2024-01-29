@@ -64,7 +64,7 @@ function Mobile({ link = '', shareDescription = '', shareTitle = '', videoData }
                 title: ``,
                 previewImage: null,
                 fromUserName: null,
-                pathName: PATH_NAME.video(videoData.video.slug),
+                pathName: PATH_NAME.video(videoData.video?.slug),
                 utmCampaign: 'share',
                 utmMedium: 'web',
                 utmSource: window.location.hostname,
@@ -103,7 +103,7 @@ function Mobile({ link = '', shareDescription = '', shareTitle = '', videoData }
                 title: ``,
                 previewImage: null,
                 fromUserName: null,
-                pathName: PATH_NAME.video(videoData.video.slug),
+                pathName: PATH_NAME.video(videoData.video?.slug),
                 utmCampaign: 'share',
                 utmMedium: 'web',
                 utmSource: window.location.hostname,
@@ -117,18 +117,18 @@ function Mobile({ link = '', shareDescription = '', shareTitle = '', videoData }
             }}>
             <Image src={icSpark} height={32} width={32} alt="spark" />
             <p className="flex justify-center text-body-1-demi text-monochrome-white">
-              {videoData?.video.no_of_sparks === null ? 0 : abbreviateNumber(videoData?.video.no_of_sparks ?? 0)}
+              {videoData?.video?.no_of_sparks === null ? 0 : abbreviateNumber(videoData?.video?.no_of_sparks ?? 0)}
             </p>
           </ActionItem>
         </span>
         <ActionItem
           title="See Comments!"
           onClick={() => {
-            commentsIsOpen ? closeComments() : openComments(videoData?.video.share_string)
+            commentsIsOpen ? closeComments() : openComments(videoData?.video?.share_string ?? '')
           }}>
           <Image src={icComment} alt="comments" height={32} width={32} />
           <p className="flex justify-center text-body-1-demi text-monochrome-white">
-            {videoData?.video.no_of_comments === null ? 0 : abbreviateNumber(videoData?.video.no_of_comments ?? 0)}
+            {videoData?.video?.no_of_comments === null ? 0 : abbreviateNumber(videoData?.video?.no_of_comments ?? 0)}
           </p>
         </ActionItem>
         <ActionItem
@@ -138,14 +138,14 @@ function Mobile({ link = '', shareDescription = '', shareTitle = '', videoData }
               eventName: 'Video Shared',
               properties: {
                 content_category: 'loop',
-                content_id: videoData.video.id,
+                content_id: videoData.video?.id,
                 event_record_screen: 'feed',
                 event_target_screen: 'none',
                 user_id: userId,
               },
             })
             const url = {
-              pathname: PATH_NAME.video(videoData.video.slug),
+              pathname: PATH_NAME.video(videoData.video?.slug),
               query: {
                 community: videoData.community.share_string,
                 loop: videoData.loop.share_string,
@@ -210,7 +210,7 @@ function Desktop({ link = '', shareDescription = '', shareTitle = '', videoData 
           <ActionItem title="Give spark!">
             <Image src={icSpark} height={32} width={32} alt="spark" />
             <p className="flex justify-center text-body-1-demi text-monochrome-white">
-              {videoData?.video.no_of_sparks === null ? 0 : abbreviateNumber(videoData?.video.no_of_sparks ?? 0)}
+              {videoData?.video?.no_of_sparks === null ? 0 : abbreviateNumber(videoData?.video?.no_of_sparks ?? 0)}
             </p>
           </ActionItem>
         </DownloadDialog>
@@ -221,14 +221,14 @@ function Desktop({ link = '', shareDescription = '', shareTitle = '', videoData 
               eventName: 'Video Shared',
               properties: {
                 content_category: 'loop',
-                content_id: videoData.video.id,
+                content_id: videoData.video?.id,
                 event_record_screen: 'feed',
                 event_target_screen: 'none',
                 user_id: userId,
               },
             })
             const url = {
-              pathname: PATH_NAME.video(videoData.video.slug),
+              pathname: PATH_NAME.video(videoData.video?.slug),
               query: {
                 community: videoData.community.share_string,
                 loop: videoData.loop.share_string,

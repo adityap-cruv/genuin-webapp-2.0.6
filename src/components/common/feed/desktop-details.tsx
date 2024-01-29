@@ -42,10 +42,10 @@ export function DesktopDetails({ videoDetails }: DesktopDetailsProps) {
               <Link href={PATH_NAME.profile(videoDetails.owner.nickname)}>
                 <p className="text-title-3-demi">@{videoDetails.owner.nickname}</p>
               </Link>
-              <p className="text-body-1-demi text-secondary">{getTimeAgo(videoDetails.video.created_at) + ' ago'}</p>
+              <p className="text-body-1-demi text-secondary">{getTimeAgo(videoDetails?.video?.created_at) + ' ago'}</p>
             </span>
           </span>
-          {videoDetails.video.description && (
+          {videoDetails?.video?.description && (
             <p className="line-clamp-2 w-5/6 overflow-hidden break-all pt-3 text-title-3-med">
               {videoDetails.video.description}
             </p>
@@ -111,11 +111,11 @@ export function DesktopDetails({ videoDetails }: DesktopDetailsProps) {
           </div>
           <div className="sticky top-0 z-10">
             <p className="border-b border-t border-monochrome-black/10 bg-monochrome-white px-4 py-3 text-title-3-demi text-secondary">
-              Comments {videoDetails.video.no_of_comments !== 0 ? `(${videoDetails.video.no_of_comments})` : ''}
+              Comments {videoDetails?.video?.no_of_comments !== 0 ? `(${videoDetails?.video?.no_of_comments})` : ''}
             </p>
           </div>
           <div className="h-full px-4 pt-2">
-            <CommentBox shareString={videoDetails.video.share_string} parentRef={scrollDivRef} />
+            <CommentBox shareString={videoDetails?.video?.share_string ?? ''} parentRef={scrollDivRef} />
           </div>
         </div>
         <CommentInput />

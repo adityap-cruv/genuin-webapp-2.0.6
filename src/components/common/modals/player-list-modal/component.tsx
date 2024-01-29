@@ -73,7 +73,7 @@ export function Component({ videosData, startIndex, onOpenChange, closeModal }: 
         ? [{ key: 'l', value: videoDetails.loop?.share_string ?? null }]
         : []
       replaceUrlWithoutReload({
-        pathname: PATH_NAME.video(videoDetails.video.share_string),
+        pathname: PATH_NAME.video(videoDetails?.video?.share_string),
         query,
       })
     }
