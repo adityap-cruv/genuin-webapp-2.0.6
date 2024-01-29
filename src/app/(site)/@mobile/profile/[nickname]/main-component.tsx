@@ -408,9 +408,11 @@ function LoopVideos({
 
   const handleSeeMoreClick = () => {
     void fetchNextPage()
-    if (videoCount > 0) {
-      setVideoCount((prevVideosCount) => Math.max(0, prevVideosCount - 6))
-    }
+    setTimeout(() => {
+      if (videoCount > 0) {
+        setVideoCount((prevVideosCount) => Math.max(0, prevVideosCount - 6))
+      }
+    }, 500)
   }
 
   return (
@@ -446,6 +448,10 @@ function LoopVideos({
             </div>
           </div>
         ))}
+        {isFetchingNextPage &&
+          [...Array(videoCount < 6 ? videoCount : 6)].map((_, index) => (
+            <Shimmer key={index} className="aspect-reel w-full rounded" />
+          ))}
       </div>
       {hasNextPage && videoCount !== 0 && (
         <p
