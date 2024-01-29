@@ -1,5 +1,4 @@
 import { CustomAvatar } from '@components/custom/custom-avatar'
-import { Loader } from '@components/ui/loader'
 import { getCommunityLoops } from '@lib/api/community'
 import { abbreviateNumber, getTimeAgo } from '@lib/utils'
 import { PATH_NAME } from '@lib/utils/constants/path'
@@ -11,12 +10,20 @@ import { useState } from 'react'
 import { PlayerModal } from '@components/common/modals/player-modal'
 import { getLoopVideos } from '@lib/api/loop'
 import icLock from '@icons/icLock.svg'
+import { Shimmer } from '@components/ui/shimmer'
 
 // TODO: remove this component from here and put at better location
 export function CommunityLoopTab({ communitySlug }: { communitySlug: string }) {
   const { data: loops, isLoading } = getCommunityLoops(communitySlug)
   const [modalController, setModalController] = useState({ open: false, slug: '' })
-  if (isLoading) return <Loader size="sm" />
+  if (isLoading)
+    return (
+      <>
+        <LoopDetailsTabShimmer />
+        <LoopDetailsTabShimmer />
+        <LoopDetailsTabShimmer />
+      </>
+    )
 
   if (loops.length === 0) return <NoLoops />
 
@@ -228,5 +235,68 @@ function PlayerModalWrapper({ open = false, loopSlug, close }: PlayerModalWrappe
       videos={videos}
       close={close}
     />
+  )
+}
+
+function LoopDetailsTabShimmer() {
+  const videos = [1, 2, 3]
+  const videosLength = videos.length
+  const transformValues: any = {
+    1: [50],
+    2: [48, 52],
+    3: [46, 50, 54],
+  }
+
+  const rightValues: any = {
+    1: [20],
+    2: [24, 16],
+    3: [28, 20, 12],
+  }
+
+  const opacitValues: any = {
+    1: [1],
+    2: [1, 0.5],
+    3: [1, 0.66, 0.4],
+  }
+
+  return (
+    <div className="relative">
+      <div className="relative my-4 w-full rounded-lg border border-monochrome-9 bg-monochrome-white">
+        <div className="w-[70%] items-center p-[3%]">
+          <Shimmer className="h-4 w-2/3" />
+          <div className="my-1 flex gap-2">
+            <Shimmer className="h-4 w-1/2" />
+            <Shimmer className="h-4 w-1/12" />
+          </div>
+        </div>
+        <div className="h-[60%] p-4">
+          <div className="flex w-[70%] items-center">
+            <div className="relative flex">
+              <Shimmer className="z-20 h-6 w-6 rounded-full" />
+              <Shimmer className="absolute left-3 z-10 h-6 w-6 rounded-full" />
+              <Shimmer className="absolute left-6 h-6 w-6 rounded-full" />
+            </div>
+            <Shimmer className="ml-7 h-3 w-1/2" />
+          </div>
+          <Shimmer className="my-1 h-3 w-2/3" />
+          <Shimmer className="my-1 h-3 w-2/3" />
+          <div className="my-2 flex gap-2">
+            <Shimmer className="h-3 w-1/5" />
+            <Shimmer className="h-3 w-1/6" />
+          </div>
+        </div>
+      </div>
+      {videos.map((item: any, index: number) => (
+        <Shimmer
+          key={index}
+          className="group/video absolute top-[50%] flex aspect-reel h-[80%] items-center justify-center rounded hover:cursor-pointer"
+          style={{
+            right: `${rightValues[videosLength][index]}px`,
+            transform: `translateY(-${transformValues[videosLength][index]}%)`,
+            zIndex: videosLength - index + 1,
+            opacity: `${opacitValues[videosLength][index]}`,
+          }}></Shimmer>
+      ))}
+    </div>
   )
 }
