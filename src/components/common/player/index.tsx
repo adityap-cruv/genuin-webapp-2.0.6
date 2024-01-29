@@ -7,7 +7,7 @@ import { usePlayerControlStore } from './player-control-store'
 import { useCommentStore } from '../comments/store'
 import { useHasUserFocus } from '@hooks/use-has-user-focus'
 import { LockIcon } from '@icons/LockIcon'
-import { FeedShimmer } from '../shimmers/feed-shimmer'
+// import { FeedShimmer } from '../shimmers/feed-shimmer'
 
 const CommentSheet = dynamic(async () => await import('./comment-sheet').then((comp) => comp.CommentSheet))
 const InnerPlayer = dynamic(async () => await import('./inner-player').then((comp) => comp.InnerPlayer), {
