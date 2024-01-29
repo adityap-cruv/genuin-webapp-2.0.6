@@ -103,7 +103,7 @@ function InfinityViewBox() {
     videoList: state.videoList,
   }))
   const videoDetails = videoList[currentIndex]
-  if (videoDetails.video)
+  if (videoDetails?.video)
     return (
       <span className="absolute bottom-0 w-full">
         <AnimatedInfinityView
