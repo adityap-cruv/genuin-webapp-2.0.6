@@ -446,12 +446,6 @@ function LoopVideos({
             </div>
           </div>
         ))}
-        {isFetchingNextPage &&
-          Array.from({ length: Math.max(0, loopDetails.video_count - videoCount) }).map((_, index) => (
-            <div key={`shimmer-${index}`} className="relative flex flex-col items-center">
-              <Shimmer className="aspect-reel h-full rounded" />
-            </div>
-          ))}
       </div>
       {hasNextPage && videoCount !== 0 && (
         <p
