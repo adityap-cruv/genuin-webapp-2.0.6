@@ -1,0 +1,14 @@
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0px 0px 159px;
+
+  .sectionRight {
+    max-width: 585px;
+    width: 100%;
+    button {
+      margin-top: 10px;
+    }
+  }
+}

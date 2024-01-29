@@ -18,6 +18,15 @@ export function NavBar() {
             <GenuinLogo variant="black" />
           </Link>
           <div className="flex items-center gap-x-4">
+            <Link href="/brands">
+              <p className="pr-4 text-new-para-2 font-semibold transition-all hover:underline">For brands</p>
+            </Link>
+            <Link href="/marketing">
+              <p className="pr-4 text-new-para-2 font-semibold transition-all hover:underline">For marketing</p>
+            </Link>
+            <Link href="/pricing">
+              <p className="pr-4 text-new-para-2 font-semibold transition-all hover:underline">Pricing</p>
+            </Link>
             <Link href={{ pathname: PATH_NAME.home() }}>
               <p className="pr-4 text-new-para-2 font-semibold transition-all hover:underline">Explore Genuin</p>
             </Link>

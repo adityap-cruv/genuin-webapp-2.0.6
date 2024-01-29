@@ -1,0 +1,36 @@
+@import '../../../styles/variables.scss';
+
+.para {
+  font-family: 'Avenir Next';
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}
+
+.blackPara {
+  color: $off-black;
+}
+
+.whitePara {
+  color: $off-white;
+}
+
+.greenPara {
+  color: #489d1f;
+}
+
+.silverPara {
+  color: #b58e2b;
+}
+
+.smallPara {
+  font-size: $paragraph-2;
+}
+
+.mediumPara {
+  font-size: $paragraph-1;
+}
+
+.fontWeight-600 {
+  font-weight: 600;
+}

@@ -1,0 +1,74 @@
+@import '../../../../styles/breakpoints.scss';
+
+.container {
+  display: flex;
+  flex-direction: column;
+  margin: 0px 0px 98px;
+  h2 {
+    margin-bottom: 88px;
+    text-align: center;
+  }
+  .row {
+    display: flex;
+    gap: 30px;
+    .card {
+      border-radius: 20px;
+      border: 1px solid $light-grey;
+      background: $off-white;
+      box-shadow: $card-shadow;
+      max-width: 380px;
+      width: 100%;
+
+      .cardBody {
+        padding: 40px 40px 0px;
+
+        h5 {
+          margin: 0px;
+          max-height: 224px;
+          min-height: 224px;
+          height: 100%;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          letter-spacing: -0.72px;
+        }
+      }
+
+      .cardFooter {
+        display: flex;
+        justify-content: space-between;
+        gap: 34px;
+        margin-top: 40px;
+        margin-bottom: -20px;
+        padding: 0px 25px 0px 40px;
+
+        .testimonialImg {
+          width: 128px;
+          height: 128px;
+          overflow: hidden;
+          object-fit: cover;
+          border-radius: 100%;
+          flex-shrink: 0;
+        }
+
+        .testimonialDetails {
+          max-height: 90px;
+          height: 100%;
+          overflow: hidden;
+        }
+
+        h5 {
+          margin: 0px;
+          font-weight: 500;
+          color: $black;
+          display: block;
+          letter-spacing: -0.72px;
+        }
+
+        p {
+          margin: 0;
+          color: $dark-grey;
+        }
+      }
+    }
+  }
+}

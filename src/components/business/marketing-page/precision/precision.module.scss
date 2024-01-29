@@ -1,0 +1,17 @@
+@import '../../../../styles/breakpoints.scss';
+
+.container {
+  margin-top: 109px;
+  .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 33px;
+    .col {
+      &:first-child {
+        max-width: 585px;
+        width: 100%;
+      }
+    }
+  }
+}

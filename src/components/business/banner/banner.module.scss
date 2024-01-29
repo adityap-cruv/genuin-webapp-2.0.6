@@ -1,0 +1,52 @@
+@import '../../../styles/breakpoints.scss';
+
+.banner {
+  .container {
+    @include container;
+    height: calc(100vh - 96px);
+    align-items: center;
+    position: relative;
+
+    .containerRow {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      margin-top: -96px;
+    }
+
+    .bannerLeft {
+      max-width: 586px;
+      width: 100%;
+
+      .bannerButton {
+        margin: 10px 0px;
+        display: flex;
+        gap: 16px;
+      }
+    }
+
+    .containerBrand {
+      display: flex;
+      align-items: center;
+      gap: 21px;
+      position: absolute;
+      bottom: 24px;
+
+      .imageContainer {
+        background-color: #f7f1f9;
+        padding: 12px 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 51px;
+        width: 183px;
+        border-radius: 8px;
+
+        &.active {
+          background-color: #ffffff;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "TopBanner": {
+    "title": "Unleash the Power of Your Community",
+    "caption": "Transform your marketing strategies with our dynamic solutions – from SMS and Email to Programmatic and Social, all centered around short video-based knowledge sharing within thriving communities.",
+    "button": [{ "text": "Get Started", "variant": "solid" }]
+  },
+  "Impressions": {
+    "title": "Instant Impact, Lasting Impressions",
+    "caption": "Create custom email and SMS campaigns and connect with customers on the go with integrated marketing tools.",
+    "Engagement": [
+      {
+        "title": "SMS Engagement",
+        "caption": "Elevate your marketing game with your brand’s SMS engagement. Deliver concise, powerful messages through short videos that capture attention instantly and resonate with your audience.",
+        "button": "Experience SMS Revolution"
+      },
+      {
+        "title": "Email Engagement",
+        "caption": "Say goodbye to traditional emails your brand’s email engagement lets you connect on a deeper level through compelling short videos, making every interaction memorable and meaningful.",
+        "button": "Elevate Email Campaigns"
+      }
+    ]
+  },
+  "Precision": {
+    "title": "Precision in Every Pixel, Impact in Every Frame",
+    "caption": "Elevate Engagement and Attention with Genuin AdReels. Engage your audience effortlessly with swipeable video content, optimized for every screen. Experience the advantage of strategically placed short videos that resonate across the digital landscape.",
+    "button": "Explore Programmatic Power"
+  },
+  "SocialConnections": {
+    "title": "Fuel Social Connections with Video Brilliance",
+    "caption": "Transform your social media presence with your community. Craft engaging short videos that resonate with your community, driving conversations, and fostering genuine connections.",
+    "Engagement": [
+      {
+        "title": "Content Marketing",
+        "caption": "Transform your social media presence with Genuin. Craft engaging short videos that resonate with your community, driving conversations, and fostering genuine connections.",
+        "button": "Learn more"
+      },
+      {
+        "title": "SEO Tools",
+        "caption": "Help people find your community with SEO tools to edit title tags, meta descriptions, and content details.",
+        "button": "Learn more"
+      },
+      {
+        "title": "Social Media Ads",
+        "caption": "Transform your social media presence with Genuin. Craft engaging short videos that resonate with your community, driving conversations, and fostering genuine connections.",
+        "button": "Learn more"
+      }
+    ]
+  },
+  "Communities": {
+    "title": "Multiple Entry Points for Customers to Engage in your Communities",
+    "caption": "Bring your community to life! Genuin allows you to embed highlights through short videos, capturing the essence of your brand and fostering a sense of belonging among your audience.",
+    "button": "Highlight Your Community"
+  }
+}

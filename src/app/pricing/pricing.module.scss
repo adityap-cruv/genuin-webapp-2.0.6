@@ -1,0 +1,13 @@
+// Import breakpoints
+@import '../../styles/breakpoints.scss';
+
+// Container styles using a mixin
+.container {
+  @include container;
+  flex-direction: column;
+  padding-top: 74px;
+}
+
+.sectionOne {
+  border-bottom: 1px solid #e7e7e7;
+}

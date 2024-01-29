@@ -1,0 +1,36 @@
+@import '../../../../styles/breakpoints.scss';
+
+.container {
+  margin-top: 36px;
+  .secondRow {
+    margin-top: 17px;
+    padding: 48px 43px;
+    border-radius: 30px;
+    background: $sky-blue;
+    display: flex;
+    justify-content: space-between;
+    gap: 33px;
+    img {
+      width: 100%;
+      border-radius: 35.667px;
+      background: $white;
+      box-shadow: $impressions-box;
+    }
+  }
+  .thirdRow {
+    margin-top: 44px;
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+
+    h4 {
+      border-top: 2px solid $off-black;
+      padding-top: 16px;
+    }
+
+    p {
+      margin-top: 6px;
+      margin-bottom: 16px;
+    }
+  }
+}

@@ -1,0 +1,54 @@
+@import '../../../styles/breakpoints.scss';
+
+.footer {
+  background-color: $genuin-blue;
+
+  .container {
+    @include container;
+    flex-direction: column;
+    padding-top: 102px;
+
+    .footerRow {
+      padding-bottom: 55px;
+      display: flex;
+      align-items: center;
+      gap: 338px;
+    }
+
+    .innerContainer {
+      background-color: $off-black;
+      border-radius: 20px 20px 0px 0px;
+      width: 100%;
+      padding: 61px 103px 26px;
+      display: flex;
+      align-items: flex-start;
+      gap: 220px;
+
+      .logoContainer {
+        display: flex;
+        flex-direction: column;
+        gap: 152px;
+      }
+
+      .footerMenu {
+        display: flex;
+        justify-content: space-between;
+        gap: 77px;
+
+        .footerMenuList {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+
+          a {
+            color: $off-white;
+            font-style: normal;
+            font-weight: 300;
+            font-size: $paragraph-1;
+            font-family: 'Avenir Next';
+          }
+        }
+      }
+    }
+  }
+}
