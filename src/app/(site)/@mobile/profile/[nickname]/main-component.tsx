@@ -39,6 +39,13 @@ export function MainComponent({ profileData }: CompProps) {
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
   const scrollDivRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ container: scrollDivRef, layoutEffect: false })
+  const resetData = useCommunityListStore((state) => state.reset)
+
+  useEffect(() => {
+    return () => {
+      resetData()
+    }
+  }, [])
 
   return (
     <>
