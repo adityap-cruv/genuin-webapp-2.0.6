@@ -36,7 +36,7 @@ export function HamBurgerMenuIcon({
   }
 
   return (
-    <div className="flex h-12 w-12 flex-col items-center justify-center rounded " onClick={toggle}>
+    <div className="flex h-12 w-12 flex-col items-center justify-center rounded focus:outline-none " onClick={toggle}>
       <span className={cn(line, isOpen && toggleToClose ? 'translate-y-2 rotate-45' : undefined)} />
       <span className={cn(line, isOpen && toggleToClose ? 'opacity-0' : undefined)} />
       <span className={cn(line, isOpen && toggleToClose ? '-translate-y-2 -rotate-45' : undefined)} />
