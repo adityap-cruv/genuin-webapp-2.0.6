@@ -38,7 +38,7 @@ function Details({ variant = 'light', communityDetails }: Props) {
             fallbackString={communityDetails?.info.name}
             isAvatar={false}
           />
-          <p className="my-2 line-clamp-1 break-all text-title-sm">{communityDetails?.info.name}</p>
+          <p className="my-2 line-clamp-1 break-all text-body-1-bold">{communityDetails?.info.name}</p>
         </div>
         <div className=" absolute right-0">
           <BurgerMenu variant={isVariantLight ? 'light' : 'dark'} />
@@ -62,22 +62,22 @@ function BurgerMenu({ variant = 'dark' }: { variant?: 'light' | 'dark' }) {
         }}>
         <DropdownMenuItem>
           <Link href="https://careers.begenuin.com" className="w-full">
-            <p className="text-right text-title-xl text-monochrome-white">Join Our Team</p>
+            <p className="text-right text-title-1-bold text-monochrome-white">Join Our Team</p>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem>
           <Link href="https://begenuin.com/l/123f373977001407" className="w-full">
-            <p className="w-full text-right text-title-xl text-monochrome-white">Life at Genuin</p>
+            <p className="w-full text-right text-title-1-bold text-monochrome-white">Life at Genuin</p>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem>
           <Link href="/terms" className="w-full">
-            <p className="w-full text-right text-title-xl text-monochrome-white">Terms of Service</p>
+            <p className="w-full text-right text-title-1-bold text-monochrome-white">Terms of Service</p>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem>
           <Link href="/privacy" className="w-full">
-            <p className="w-full text-right text-title-xl text-monochrome-white">Privacy Policy</p>
+            <p className="w-full text-right text-title-1-bold text-monochrome-white">Privacy Policy</p>
           </Link>
         </DropdownMenuItem>
       </DropdownMenuContent>
@@ -110,7 +110,7 @@ function Reels({ communityDetails }: ReelsProps) {
             fallbackString={communityDetails?.info.name}
             isAvatar={false}
           />
-          <p className="my-2 line-clamp-1 break-all text-title-sm text-monochrome-white">
+          <p className="my-2 line-clamp-1 break-all text-body-1-bold text-monochrome-white">
             {communityDetails?.info.name}
           </p>
         </div>

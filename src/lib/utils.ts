@@ -51,7 +51,7 @@ export function checkAndAppendHttps(link: string): string {
   return link.startsWith('http') || link.startsWith('https') ? link : 'https://' + link
 }
 
-export function isValidHTTPS(link: string): any {
+export function isValidHTTPS(link: string) {
   return link.startsWith('http') || link.startsWith('https') ? link : null
 }
 
@@ -125,7 +125,7 @@ export const generateDeepLink = async ({
   fromUserName,
   // parentId,
   community,
-  loop
+  loop,
 }: any) => {
   const queryParams = {}
   if (utmCampaign) {

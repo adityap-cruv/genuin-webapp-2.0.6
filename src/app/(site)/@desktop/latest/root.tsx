@@ -1,17 +1,18 @@
 'use client'
-import { Loader } from '@components/ui/loader'
+import { FeedShimmer } from '@components/common/shimmers/feed-shimmer'
 import { useVideoSizeBox } from '@hooks/use-video-size-box'
 import { getFeed } from '@lib/api/feed'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import dynamic from 'next/dynamic'
 const Feed = dynamic(async () => await import('@components/common/feed').then((comp) => comp.Feed.desktop), {
   loading(_) {
-    return <Loader size="md" />
+    return <FeedShimmer.desktop />
   },
 })
 
 export function Root({ brandId }: { brandId?: string }) {
-  const videoSizeBox = useVideoSizeBox(true)
+  const showTopbar = useLocalStorage((state) => !state.isIframe)
+  const videoSizeBox = useVideoSizeBox(showTopbar)
   const userId = useLocalStorage((state) => state.userId)
   const { data, isError, fetchNextPage, isFetchingNextPage, isLoading } = getFeed({
     feedType: 'lattest',
@@ -32,4 +33,6 @@ export function Root({ brandId }: { brandId?: string }) {
         />
       </main>
     )
+
+  return <FeedShimmer.desktop />
 }

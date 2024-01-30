@@ -1,27 +1,64 @@
-import { Loader } from '@components/ui/loader'
+import { TopBar } from '@components/layouts/mobile/top-bar'
+import { Shimmer } from '@components/ui/shimmer'
 
 export default function Loading() {
-  return <Loader size="lg" />
-}
+  return (
+    <div>
+      <TopBar variant={'light'} />
+      <div className="h-body w-full">
+        <div className="w-full p-4">
+          <Shimmer className="h-20 w-20 rounded-full" />
+          <div className="flex items-center gap-2 py-2">
+            <Shimmer className="h-6 w-1/4 rounded-xl" />
+            <Shimmer className="h-4 w-1/6" />
+          </div>
+          <Shimmer className="my-1 h-4 w-full" />
+          <Shimmer className="my-1 h-4 w-full" />
 
-//! use it in case of shimmer requirement
-// const ShimmerComponent = () => {
-//   return (
-//     <div className="container my-10 flex h-full min-h-full flex-col  md:flex-row">
-//       <div className="flex w-full flex-col items-center md:mx-auto md:w-[25%]">
-//         <div className="mt-2 w-full">
-//           <Shimmer className="h-12 w-12 rounded-full" />
-//           <div className="my-2">
-//             <Shimmer className="my-2 h-4 w-full" />
-//             <Shimmer className="my-2 h-4 w-[70%]" />
-//           </div>
-//         </div>
-//         <Shimmer className="my-4 h-4 w-full" />
-//         <Shimmer className="my-2 h-40 w-full" />
-//       </div>
-//       <div className="align-items-center my-10 flex h-full w-full justify-center md:px-10">
-//         <Shimmer className="h-full w-full" />
-//       </div>
-//     </div>
-//   )
-// }
+          <div className="my-3 flex w-full">
+            <Shimmer className="h-4 w-1/12" />
+            <Shimmer className="ml-1 h-4 w-1/6" />
+
+            <Shimmer className="ml-4 h-4 w-1/12" />
+            <Shimmer className="ml-1 h-4 w-1/6" />
+
+            <Shimmer className="ml-4 h-4 w-1/12" />
+            <Shimmer className="ml-1 h-4 w-1/6" />
+          </div>
+
+          <Shimmer className="h-8 w-8" />
+          <hr className="my-1 border-t border-monochrome-9" />
+
+          <div className="flex items-center justify-between">
+            <div className="my-4 flex items-center gap-2">
+              <Shimmer className="h-11 w-11 shrink-0 rounded-full" />
+              <Shimmer className="h-4 w-20 rounded-xl" />
+            </div>
+            <div className="flex items-center gap-2">
+              <Shimmer className="h-8 w-14" />
+              <Shimmer className="h-8 w-8" />
+            </div>
+          </div>
+
+          <div className="bg-monochrome-11 w-full rounded-lg border border-monochrome-9 p-4">
+            <Shimmer className="h-4 w-1/5" />
+            <div className="my-4 grid grid-cols-3 gap-2">
+              <Shimmer className="aspect-reel w-full" />
+              <Shimmer className="aspect-reel w-full" />
+              <Shimmer className="aspect-reel w-full" />
+            </div>
+          </div>
+
+          <div className="bg-monochrome-11 my-2 w-full rounded-lg border border-monochrome-9 p-4">
+            <Shimmer className="h-4 w-1/5" />
+            <div className="my-4 grid grid-cols-3 gap-2">
+              <Shimmer className="aspect-reel w-full" />
+              <Shimmer className="aspect-reel w-full" />
+              <Shimmer className="aspect-reel w-full" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}

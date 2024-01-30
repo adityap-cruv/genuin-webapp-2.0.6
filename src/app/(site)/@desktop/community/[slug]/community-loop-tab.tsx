@@ -7,9 +7,11 @@ import Image from 'next/image'
 import Link from 'next/link'
 import noLoopsImage from '@images/noLoopImage.svg'
 import icPlay from '@icons/player-controls/icPlay.svg'
+import icLock from '@icons/icLock.svg'
 import { PlayerModal } from '@components/common/modals/player-modal'
 import { getLoopVideos } from '@lib/api/loop'
 import { useState } from 'react'
+import { Shimmer } from '@components/ui/shimmer'
 
 // TODO: remove this component from here and put at better location
 // TODO: improve player-modal opening logic. As not meeting standards.
@@ -17,7 +19,14 @@ export function CommunityLoopTab({ communitySlug }: { communitySlug: string }) {
   const { isLoading, data: loops } = getCommunityLoops(communitySlug)
   const [modalController, setModalController] = useState({ open: false, loopSlug: '' })
 
-  if (isLoading) return <Loader size="sm" />
+  if (isLoading)
+    return (
+      <>
+        <LoopDetailsTabShimmer />
+        <LoopDetailsTabShimmer />
+        <LoopDetailsTabShimmer />
+      </>
+    )
   if (loops.length === 0) return <NoLoops />
   if (loops)
     return (
@@ -51,7 +60,7 @@ export function CommunityLoopTab({ communitySlug }: { communitySlug: string }) {
 
 function NoLoops() {
   return (
-    <div className="flex h-full flex-col items-center justify-center" style={{ backgroundColor: '#F9F9F9' }}>
+    <div className="bg-monochrome-11 flex h-full flex-col items-center justify-center">
       <Image src={noLoopsImage} alt="share" />
       <p className="text-title-2-bold">No Loops... yet!</p>
       <p className="w-[80%] text-center text-body-1-demi text-monochrome">
@@ -80,13 +89,13 @@ function LoopItem({ loopDetails, openModal }: { loopDetails: any; openModal: (sl
         <div className="relative my-4 w-full rounded-lg border border-monochrome-9 bg-monochrome-white">
           <div className="w-[70%] items-center p-[3%]">
             <p className="text-body-1-bold">{loopDetails.name}</p>
-            {loopDetails.videos.length !== 0 && (
+            {loopDetails.videos.length !== 0 && !loopDetails.private && (
               <p className="text-body-1-demi text-monochrome-4">
                 {loopDetails.videos[0].owner} posted ∙ {getTimeAgo(loopDetails.videos[0].created_at)}
               </p>
             )}
           </div>
-          <div className="h-[60%] rounded-b-lg border border-monochrome-8 p-4" style={{ backgroundColor: '#F9F9F9' }}>
+          <div className="bg-monochrome-11 h-[60%] rounded-b-lg border border-monochrome-8 p-4">
             <div className="flex w-[70%] items-center">
               <div className="relative flex">
                 {loopDetails.owner.profile_image && (
@@ -117,26 +126,33 @@ function LoopItem({ loopDetails, openModal }: { loopDetails: any; openModal: (sl
               <p
                 className={`ml-1 line-clamp-1 text-body-1-med text-monochrome-4 ${
                   loopDetails.collaborators.length !== 0 && 'ml-7'
-                } ${loopDetails.collaborators.length === 2 && 'ml-6'}`}
-                style={{ fontWeight: 500 }}>
+                } ${loopDetails.collaborators.length === 2 && 'ml-6'}`}>
                 {loopDetails.owner.nickname}
                 {getCollaboratorsCountString(loopDetails.member_count - 1)}
               </p>
             </div>
             <p className="my-[2%] line-clamp-2 w-[70%] text-body-1-demi text-monochrome-4">{loopDetails.description}</p>
-            <p className="w-[70%] text-body-1-med text-monochrome-4" style={{ fontWeight: 500 }}>
+            <p className="w-[70%] text-body-1-med text-monochrome-4">
               {abbreviateNumber(loopDetails.subscriber_count)} subscribers ∙ {abbreviateNumber(loopDetails.view_count)}{' '}
               views
             </p>
           </div>
         </div>
       </Link>
-      <RenderedImages
-        videos={loopDetails.videos}
-        onClick={() => {
-          openModal(loopDetails.slug)
-        }}
-      />
+      {loopDetails.private ? (
+        <div className="group/video absolute right-7 top-[50%] flex aspect-reel h-[80%] -translate-y-1/2 items-center justify-center rounded border border-monochrome-9 bg-monochrome-white hover:cursor-pointer">
+          <div className="rounded-full bg-monochrome-9 p-2">
+            <Image src={icLock} alt="share" className="h-4 w-4" />
+          </div>
+        </div>
+      ) : (
+        <RenderedImages
+          videos={loopDetails.videos}
+          onClick={() => {
+            openModal(loopDetails.slug)
+          }}
+        />
+      )}
     </div>
   )
 }
@@ -204,5 +220,68 @@ function PlayerModalWrapper({ open = false, loopSlug, close }: PlayerModalWrappe
       videos={videos}
       close={close}
     />
+  )
+}
+
+function LoopDetailsTabShimmer() {
+  const videos = [1, 2, 3]
+  const videosLength = videos.length
+  const transformValues: any = {
+    1: [50],
+    2: [48, 52],
+    3: [46, 50, 54],
+  }
+
+  const rightValues: any = {
+    1: [20],
+    2: [24, 16],
+    3: [28, 20, 12],
+  }
+
+  const opacitValues: any = {
+    1: [1],
+    2: [1, 0.5],
+    3: [1, 0.66, 0.4],
+  }
+
+  return (
+    <div className="relative">
+      <div className="relative my-4 w-full rounded-lg border border-monochrome-9 bg-monochrome-white">
+        <div className="w-[70%] items-center p-[3%]">
+          <Shimmer className="h-4 w-2/3" />
+          <div className="my-1 flex gap-2">
+            <Shimmer className="h-4 w-1/2" />
+            <Shimmer className="h-4 w-1/12" />
+          </div>
+        </div>
+        <div className="h-[60%] p-4">
+          <div className="flex w-[70%] items-center">
+            <div className="relative flex">
+              <Shimmer className="z-20 h-6 w-6 rounded-full" />
+              <Shimmer className="absolute left-3 z-10 h-6 w-6 rounded-full" />
+              <Shimmer className="absolute left-6 h-6 w-6 rounded-full" />
+            </div>
+            <Shimmer className="ml-7 h-3 w-1/2" />
+          </div>
+          <Shimmer className="my-1 h-3 w-2/3" />
+          <Shimmer className="my-1 h-3 w-2/3" />
+          <div className="my-2 flex gap-2">
+            <Shimmer className="h-3 w-1/5" />
+            <Shimmer className="h-3 w-1/6" />
+          </div>
+        </div>
+      </div>
+      {videos.map((item: any, index: number) => (
+        <Shimmer
+          key={index}
+          className="group/video absolute top-[50%] flex aspect-reel h-[80%] items-center justify-center rounded hover:cursor-pointer"
+          style={{
+            right: `${rightValues[videosLength][index]}px`,
+            transform: `translateY(-${transformValues[videosLength][index]}%)`,
+            zIndex: videosLength - index + 1,
+            opacity: `${opacitValues[videosLength][index]}`,
+          }}></Shimmer>
+      ))}
+    </div>
   )
 }

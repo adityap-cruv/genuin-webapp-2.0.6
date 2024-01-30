@@ -2,7 +2,6 @@ import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 
 export async function fetchCommunityDetails(slug: string) {
-  console.log(process.env.NEXT_PUBLIC_API_URL)
   return await axios
     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/community/details', {
       params: {

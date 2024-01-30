@@ -3,6 +3,7 @@ import { Button } from '@components/ui/button'
 import type { LoopDetailsType } from '@lib/schemas/loop/details'
 import Image from 'next/image'
 import icShare from '@icons/icShareBlue.svg'
+import icLock from '@icons/icLock.svg'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { useRef } from 'react'
 import { useInView } from 'framer-motion'
@@ -83,24 +84,45 @@ export function MainComponent({ loopDetails }: Props) {
               />
             </div>
             <span className="my-2 flex items-center gap-x-3">
-              <DownloadDialog
-                title="Get the Genuin app"
-                subtitle={
-                  <>
-                    Get the app to subscribe to<span className="font-bold"> {loopDetails.group.group_name}</span> Loop.
-                  </>
-                }
-                asChild>
-                <Button size="custom">
-                  <p className="px-4 py-1 text-title-3-demi">Subscribe</p>
-                </Button>
-              </DownloadDialog>
+              {!loopDetails.private && (
+                <DownloadDialog
+                  title="Get the Genuin app"
+                  subtitle={
+                    <>
+                      Get the app to subscribe to<span className="font-bold"> {loopDetails.group.group_name}</span>{' '}
+                      Loop.
+                    </>
+                  }
+                  asChild>
+                  <Button size="custom">
+                    <p className="px-4 py-1 text-title-3-demi">Subscribe</p>
+                  </Button>
+                </DownloadDialog>
+              )}
+
+              {loopDetails.private && (
+                <DownloadDialog
+                  title="Get the Genuin app"
+                  subtitle={
+                    <>
+                      Get the app to Join as collaborator to
+                      <span className="font-bold"> {loopDetails.group.group_name}</span> Loop.
+                    </>
+                  }
+                  asChild>
+                  <Button size="custom" variant="outline" className="border border-primary">
+                    <p className="px-4 py-1 text-title-3-bold text-primary" style={{ fontSize: '15px' }}>
+                      Join as collaborator
+                    </p>
+                  </Button>
+                </DownloadDialog>
+              )}
 
               {/* Hidden by requirement. */}
               {/* <Button size="custom" variant="outline" className="border-primary px-4">
                 <span className="flex items-center">
                   <Image src={icQuestion} alt="question" />
-                  <p className="py-2 text-body-sm text-primary">Q&A</p>
+                  <p className="py-2 text-body-1-demi text-primary">Q&A</p>
                 </span>
               </Button> */}
 
@@ -121,15 +143,31 @@ export function MainComponent({ loopDetails }: Props) {
               </Button>
             </span>
           </span>
-          <div className="grid w-full grid-cols-2 gap-4 overflow-hidden" style={{ height: 'calc(100% - 56px)' }}>
-            <div className="h-full snap-y snap-proximity overflow-auto scroll-smooth">
-              <LoopVideos slug={loopDetails.chat_slug} />
+
+          {loopDetails.private ? (
+            <div
+              className="mt-4 flex w-full items-center justify-center overflow-hidden"
+              style={{ height: 'calc(100% - 320px)', backgroundColor: '#F9F9F9' }}>
+              <div className="flex flex-col items-center justify-center">
+                <Image src={icLock} alt="share" className="h-16 w-16" />
+                <p className="text-center text-title-2-demi">
+                  This Loop is visible to its
+                  <br /> Collaborators only
+                </p>
+              </div>
             </div>
-            <div className="snap-y snap-proximity overflow-auto scroll-smooth py-2">
-              <LoopCollaborators slug={loopDetails.chat_slug} />
-              <LoopSubscribers slug={loopDetails.chat_slug} />
+          ) : (
+            <div className="grid w-full grid-cols-2 gap-4 overflow-hidden" style={{ height: 'calc(100% - 56px)' }}>
+              <div className="h-full snap-y snap-proximity overflow-auto scroll-smooth">
+                <LoopVideos slug={loopDetails.chat_slug} />
+              </div>
+              <div className="snap-y snap-proximity overflow-auto scroll-smooth py-2">
+                <LoopCollaborators slug={loopDetails.chat_slug} />
+                <LoopSubscribers slug={loopDetails.chat_slug} />
+              </div>
             </div>
-          </div>
+          )}
+
           <Toaster />
         </main>
       </>
@@ -145,7 +183,7 @@ function LoopCollaborators({ slug }: { slug: string }) {
   if (cohosts && cohosts.length !== 0)
     return (
       <div>
-        <p className="my-2 text-title-md">Collaborators</p>
+        <p className="my-2 text-title-3-bold">Collaborators</p>
         <div className="h-full w-full overflow-auto">
           {cohosts.map((item: any, index: any) => (
             <Link key={index} href={{ pathname: PATH_NAME.profile(item.user.nickname) }}>

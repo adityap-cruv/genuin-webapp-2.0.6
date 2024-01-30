@@ -46,7 +46,7 @@ export function HorizontalVideosList({ loopId }: { loopId: string }) {
                   className="object-fill"
                   fill
                 /> */}
-              <p className="absolute left-1 top-1 text-title-sm text-monochrome-white">
+              <p className="absolute left-1 top-1 text-body-1-bold text-monochrome-white">
                 {item.video?.metadata?.duration + 's'}
               </p>
             </div>

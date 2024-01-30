@@ -1,12 +1,13 @@
 'use client'
 import type { CommunityDetailsType } from '@lib/schemas/community'
-import { useRecentCommunitiesStore } from '@lib/stores/recent-communities'
 import { useEffect, useRef } from 'react'
+import { useLocalStorage } from '@lib/stores/local-storage'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { TopStickyBar } from './top-bar'
 import { Button } from '@components/ui/button'
 import Image from 'next/image'
 import icShare from '@icons/icShareBlue.svg'
+import icLock from '@icons/icLock.svg'
 import { useInView } from 'framer-motion'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
 import Link from 'next/link'
@@ -33,7 +34,7 @@ let communityDetailsModule: CommunityDetailsType
 // TODO: Separate this component.
 export function RootDetails({ communityDetails }: Props) {
   communityDetailsModule = communityDetails
-  const addCommunity = useRecentCommunitiesStore((state) => state.addCommunity)
+  const addCommunity = useLocalStorage((state) => state.addCommunity)
   const detailsDivRef = useRef<HTMLDivElement>(null)
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
   const { shareFn } = useAdaptiveShare()
@@ -99,33 +100,36 @@ export function RootDetails({ communityDetails }: Props) {
             </Button>
           </span>
         </div>
-        {/* // TODO: have to add is_private community */}
-        {/* <div
-          className="mt-4 flex w-full items-center justify-center overflow-hidden"
-          style={{ height: 'calc(100% - 56px)', backgroundColor: '#F9F9F9' }}>
-          <div className="flex flex-col items-center justify-center">
-            <Image src={lockIcon} alt="share" className="h-16 w-16" />
-            <p className="text-title-lg" style={{ fontWeight: 600 }}>
-              This community is private
-            </p>
-            <p className="text-center text-body-sm" style={{ fontWeight: 500 }}>
-              Join this community to see and interact
-              <br /> with their posts
-            </p>
-          </div>
-        </div> */}
-        <div className="grid w-full grid-cols-2 gap-4 overflow-hidden" style={{ height: 'calc(100% - 56px)' }}>
-          <div className="snap-y snap-proximity overflow-auto overflow-x-hidden scroll-smooth">
-            <CommunityDetailsTabs />
-          </div>
 
-          <div className="snap-y snap-proximity overflow-auto overflow-x-hidden scroll-smooth">
-            <Categories />
-            <Links />
-            <Guidelines />
-            <Leaders />
+        {communityDetails.info.private ? (
+          <div
+            className="mt-4 flex w-full items-center justify-center overflow-hidden"
+            style={{ height: 'calc(100% - 285px)', backgroundColor: '#F9F9F9' }}>
+            <div className="flex flex-col items-center justify-center">
+              <Image src={icLock} alt="share" className="h-16 w-16" />
+              <p className="text-title-2-bold" style={{ fontWeight: 600 }}>
+                This community is private
+              </p>
+              <p className="text-center text-body-1-med">
+                Join this community to see and interact
+                <br /> with their posts
+              </p>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="grid w-full grid-cols-2 gap-4 overflow-hidden" style={{ height: 'calc(100% - 56px)' }}>
+            <div className="snap-y snap-proximity overflow-auto overflow-x-hidden scroll-smooth">
+              <CommunityDetailsTabs />
+            </div>
+
+            <div className="snap-y snap-proximity overflow-auto overflow-x-hidden scroll-smooth">
+              <Categories />
+              <Links />
+              <Guidelines />
+              <Leaders />
+            </div>
+          </div>
+        )}
       </main>
       <Toaster />
     </>
@@ -144,7 +148,7 @@ function CommunityDetailsTabs() {
         </TabsTrigger>
       </TabsList>
       <hr className="border-t border-monochrome-9" />
-      <TabsContent value="Loops" className="mr-2 h-full">
+      <TabsContent value="Loops" className="mr-2 h-full py-4">
         <CommunityLoopTab communitySlug={communityDetailsModule.info.slug} />
       </TabsContent>
       <TabsContent value="Members">
@@ -177,7 +181,7 @@ function Links() {
   if (links?.instagram_url ?? links?.linkedin_url ?? links?.twitter_url ?? links?.social_web_url)
     return (
       <div>
-        <p className="my-2 mt-4 text-title-md">Links</p>
+        <p className="my-2 mt-4 text-title-3-bold">Links</p>
         <div className="flex">
           {links?.instagram_url && (
             <div className="mx-1 flex items-center rounded-md bg-monochrome-9 p-1">
@@ -248,7 +252,7 @@ function Leaders() {
   if (communityDetailsModule.leaders.length !== 0)
     return (
       <div>
-        <p className="my-2 mt-4 text-title-md">Leader</p>
+        <p className="my-2 mt-4 text-title-3-bold">Leader</p>
         {communityDetailsModule?.leaders.map((moderator, index) => {
           return (
             <Link key={index} href={{ pathname: PATH_NAME.profile(moderator.nickname) }}>
@@ -304,19 +308,19 @@ function Stats({ communityDetails }: { communityDetails: CommunityDetailsType })
     <div className="flex items-center">
       <span className="flex items-center pr-4">
         <p className="text-title-3-bold text-monochrome-black">{communityDetails?.info.count.member}</p>
-        <p className="text-body-1-med text-secondary" style={{ fontWeight: 500 }}>
+        <p className="text-body-1-med text-secondary">
           &nbsp;{communityDetails?.info.count.member === 1 ? 'Member' : 'Members'}
         </p>
       </span>
       <span className="flex items-center pr-4">
         <p className="text-title-3-bold text-monochrome-black">{communityDetails?.info.count.loop}</p>
-        <p className="text-body-1-med text-secondary" style={{ fontWeight: 500 }}>
+        <p className="text-body-1-med text-secondary">
           &nbsp;{communityDetails?.info.count.loop === 1 ? 'Loop' : 'Loops'}
         </p>
       </span>
       <span className="flex items-center pr-4">
         <p className="text-title-3-bold text-monochrome-black">{communityDetails?.info.count.video}</p>
-        <p className="text-body-1-med text-secondary" style={{ fontWeight: 500 }}>
+        <p className="text-body-1-med text-secondary">
           &nbsp;{communityDetails?.info.count.video === 1 ? 'Video' : 'Videos'}
         </p>
       </span>

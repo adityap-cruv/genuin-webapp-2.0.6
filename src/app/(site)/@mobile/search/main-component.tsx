@@ -5,7 +5,7 @@ export function MainComponent() {
   return (
     <>
       <div className="h-full w-full overflow-auto p-4">
-        <div className='w-full relative'>
+        <div className="relative w-full">
           <Input className="rounded-full border-0 bg-monochrome-9" />
         </div>
         <SearchTabs />
@@ -19,36 +19,28 @@ function SearchTabs() {
     <Tabs defaultValue="Top">
       <TabsList className="flex max-w-min">
         <TabsTrigger value="Top">
-          <p className="text-title-md">Top</p>
+          <p className="text-title-3-bold">Top</p>
         </TabsTrigger>
         <TabsTrigger value="Videos">
-          <p className="text-title-md">Videos</p>
+          <p className="text-title-3-bold">Videos</p>
         </TabsTrigger>
         <TabsTrigger value="Communities">
-          <p className="text-title-md">Communities</p>
+          <p className="text-title-3-bold">Communities</p>
         </TabsTrigger>
         <TabsTrigger value="Loops">
-          <p className="text-title-md">Loops</p>
+          <p className="text-title-3-bold">Loops</p>
         </TabsTrigger>
         <TabsTrigger value="People">
-          <p className="text-title-md">People</p>
+          <p className="text-title-3-bold">People</p>
         </TabsTrigger>
       </TabsList>
-      <TabsContent value="Top">
-        Top
-      </TabsContent>
+      <TabsContent value="Top">Top</TabsContent>
       <TabsContent value="Videos">
         <VideosTab />
       </TabsContent>
-      <TabsContent value="Communities">
-        Communities
-      </TabsContent>
-      <TabsContent value="Loops">
-        Loops
-      </TabsContent>
-      <TabsContent value="People">
-        People
-      </TabsContent>
+      <TabsContent value="Communities">Communities</TabsContent>
+      <TabsContent value="Loops">Loops</TabsContent>
+      <TabsContent value="People">People</TabsContent>
     </Tabs>
   )
 }

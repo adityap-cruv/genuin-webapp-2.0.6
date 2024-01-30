@@ -21,11 +21,10 @@ interface Props {
 }
 
 function Desktop({ videoData }: Props) {
-  const { toggleMuted, muted, shouldPlay, toggleShouldPlay } = usePlayerControlStore((state) => ({
+  const { toggleMuted, muted, shouldPlay } = usePlayerControlStore((state) => ({
     toggleMuted: state.toggleMuted,
     muted: state.muted,
     shouldPlay: state.shouldPlay,
-    toggleShouldPlay: state.toggleShouldPlay,
   }))
 
   if (videoData) {
@@ -58,9 +57,9 @@ function Desktop({ videoData }: Props) {
         )}
         <div className="absolute bottom-0 right-0 pr-2">
           <Actions.desktop
-            link={videoData?.video.link ?? ''}
-            shareTitle={videoData?.video.description ?? ''}
-            shareDescription={videoData?.video.description ?? ''}
+            link={videoData?.video?.link ?? ''}
+            shareTitle={videoData?.video?.description ?? ''}
+            shareDescription={videoData?.video?.description ?? ''}
             videoData={videoData}
           />
         </div>
@@ -87,7 +86,7 @@ function Mobile({ videoData }: Props) {
               e.stopPropagation()
               toggleMuted()
             }}
-            className="absolute z-[6] h-full w-full">
+            className="absolute z-[3] h-full w-full ">
             <span className="absolute left-4 top-20">
               <AnimatedMuteIcon />
             </span>
@@ -106,7 +105,7 @@ function Mobile({ videoData }: Props) {
             />
           </div>
         </div>
-        <div className="absolute bottom-16 left-0 z-[5] w-full">
+        <div className="absolute bottom-16 left-0 z-[5] w-full ">
           <Loop videoData={videoData} />
         </div>
         <PlayerProgressBar />
@@ -130,21 +129,21 @@ function Loop({ videoData }: { videoData?: VideoDataType }) {
                 fallbackString={videoData.loop?.name ?? ''}
                 isAvatar={videoData?.owner.is_avatar}
               />
-              <p className="line-clamp-1 px-2 text-title-md text-monochrome-white">@{videoData.owner.nickname}</p>
+              <p className="line-clamp-1 px-2 text-title-3-bold text-monochrome-white">@{videoData.owner.nickname}</p>
             </Link>
           </div>
           <span className="py-2">
             <ReadMore
-              text={videoData?.video.description ?? ''}
-              className="line-clamp-2 w-full break-all text-body-sm text-monochrome-white"
+              text={videoData?.video?.description ?? ''}
+              className="line-clamp-2 w-full break-all text-body-1-demi text-monochrome-white"
             />
           </span>
         </div>
         {/* TODO: configure share title and description correctly */}
         <Actions.mobile
-          link={videoData?.video.link ?? ''}
-          shareTitle={videoData?.video.description ?? ''}
-          shareDescription={videoData?.video.description ?? ''}
+          link={videoData?.video?.link ?? ''}
+          shareTitle={videoData?.video?.description ?? ''}
+          shareDescription={videoData?.video?.description ?? ''}
           videoData={videoData}
         />
       </div>

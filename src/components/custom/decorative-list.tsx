@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { isMobile, isSafari } from 'react-device-detect'
 
+// TODO: refactor use of is mobile and issafari.
 /**
  * Add only <li></li> elements in it.
  * @param param0

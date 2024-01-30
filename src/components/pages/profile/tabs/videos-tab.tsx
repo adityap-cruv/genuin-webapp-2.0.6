@@ -13,7 +13,6 @@ import dynamic from 'next/dynamic'
 import { pushUrlWithoutReload } from '@lib/utils'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { useResponsive } from '@hooks/useResponsive'
-import { isMobile } from 'react-device-detect'
 const PlayerListModal = dynamic(
   async () => await import('@components/common/modals/player-list-modal').then((comp) => comp.PlayerListModal)
 )
@@ -48,7 +47,7 @@ function GenuinVideos() {
   })
   return (
     <div ref={divRef} className="h-full overflow-y-auto">
-      {isLoading && <Loader className={`${isMobile && 'pt-40'}`} size="md" />}
+      {isLoading && <Loader className="pt-40 sm:pt-0" size="md" />}
       {data && (
         <TabBody
           videos={data?.pages.flatMap((page: { videos: any }) => page.videos)}
@@ -73,7 +72,7 @@ function LoopVideos() {
   })
   return (
     <div ref={divRef} className="h-full overflow-y-auto">
-      {isLoading && <Loader className={`${isMobile && 'pt-40'}`} size="md" />}
+      {isLoading && <Loader className="pt-40 sm:pt-0" size="md" />}
       {data && (
         <TabBody
           videos={data?.pages.flatMap((page: { videos: any }) => page.videos)}
@@ -99,7 +98,7 @@ function AllVideos() {
 
   return (
     <div ref={divRef} className="h-full overflow-y-auto">
-      {isLoading && <Loader className={`${isMobile && 'pt-40'}`} size="md" />}
+      {isLoading && <Loader className="pt-40 sm:pt-0" size="md" />}
       {data && (
         <TabBody
           videos={data?.pages.flatMap((page) => page.videos)}
@@ -128,11 +127,8 @@ function TabBody({ videos, hasNextPage, fetchingNextPage }: TabBodyProps) {
 
   if (videos.length === 0) {
     return (
-      <div
-        className={`flex h-full ${
-          isMobile && 'pt-40'
-        } w-full items-center justify-center text-title-lg text-secondary`}>
-        No videos yet
+      <div className={`flex h-full w-full items-center justify-center pt-40 text-title-2-bold text-secondary sm:pt-0`}>
+        No posts yet
       </div>
     )
   }
@@ -193,15 +189,15 @@ function Tile({ width = -1, videoDetails, onClick, tileIndex }: TileProps) {
     <div
       onClick={() => {
         pushUrlWithoutReload({
-          pathname: PATH_NAME.video(videoDetails.video.slug),
+          pathname: PATH_NAME.video(videoDetails.video?.slug),
           query: [{ key: 'l', value: videoDetails.loop.share_string }],
         })
         onClick?.(tileIndex)
       }}
       className="relative cursor-pointer p-[1px] duration-300 hover:scale-95 md:p-1">
       <Image
-        src={videoDetails.video.thumbnail ?? ''}
-        alt={videoDetails.video.description ?? 'Genuin Video'}
+        src={videoDetails.video?.thumbnail ?? ''}
+        alt={videoDetails.video?.description ?? 'Genuin Video'}
         className="bg-secondary object-cover"
         height={width * (16 / 9)}
         width={width}
@@ -213,11 +209,11 @@ function Tile({ width = -1, videoDetails, onClick, tileIndex }: TileProps) {
             <div className="flex justify-between">
               <div className="flex items-center">
                 <Image src={icView} alt="views" />
-                <p className="text-title-sm text-secondary-foreground">{videoDetails.video.view_count ?? 0}</p>
+                <p className="text-body-1-bold text-secondary-foreground">{videoDetails.video?.view_count ?? 0}</p>
               </div>
               <Image src={icLoop} alt="loop" height={24} width={24} />
             </div>
-            <div className="ml-1 line-clamp-2 break-all text-left text-title-sm text-secondary-foreground">
+            <div className="ml-1 line-clamp-2 break-all text-left text-body-1-bold text-secondary-foreground">
               {videoDetails.loop?.name}
             </div>
           </div>
@@ -226,9 +222,9 @@ function Tile({ width = -1, videoDetails, onClick, tileIndex }: TileProps) {
           <div className="flex h-full items-end">
             <div className="flex items-center p-2">
               <Image src={icVideoBubble} alt="replies" />
-              <p className="text-title-sm text-secondary-foreground">&nbsp;{videoDetails.video.reply_count ?? 0}</p>
+              <p className="text-body-1-bold text-secondary-foreground">&nbsp;{videoDetails.video?.reply_count ?? 0}</p>
               <Image src={icView} alt="view" />
-              <p className="text-title-sm text-secondary-foreground">&nbsp;{videoDetails.video.view_count ?? 0}</p>
+              <p className="text-body-1-bold text-secondary-foreground">&nbsp;{videoDetails.video?.view_count ?? 0}</p>
             </div>
           </div>
         )}

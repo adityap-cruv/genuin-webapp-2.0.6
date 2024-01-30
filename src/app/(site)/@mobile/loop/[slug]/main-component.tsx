@@ -4,6 +4,7 @@ import type { LoopDetailsType } from '@lib/schemas/loop/details'
 import { generateDeepLink, openGeneratedLink } from '@lib/utils'
 import Image from 'next/image'
 import icShare from '@icons/icShareBlue.svg'
+import icLock from '@icons/icLock.svg'
 import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
@@ -55,13 +56,13 @@ export function MainComponent({ loopDetails }: Props) {
           style={{ height: 'calc(100% - 74px)' }}>
           <div className="w-full">
             <div ref={detailsDivRef}>
-              <p className="line-clamp-1 text-title-xl">{loopDetails.group.group_name}</p>
-              <p className="my-2 line-clamp-2 break-words text-body-lg">{loopDetails.group.group_description}</p>
+              <p className="line-clamp-1 text-title-1-bold">{loopDetails.group.group_name}</p>
+              <p className="my-2 line-clamp-2 break-words text-title-3-demi">{loopDetails.group.group_description}</p>
             </div>
-            <div className=" my-3 rounded-lg border border-solid border-monochrome-9 p-4">
+            <div className=" my-3 overflow-hidden rounded-lg border border-solid border-monochrome-9 p-4">
               <div className="flex">
                 <div className="flex flex-1 flex-col items-start">
-                  <p className="text-body-sm text-secondary">Created by</p>
+                  <p className="text-body-1-demi text-secondary">Created by</p>
                   <Link href={{ pathname: PATH_NAME.profile(loopDetails.owner.nickname) }}>
                     <div className="my-2 flex items-center">
                       <div className="bg-red-400 h-6 w-6">
@@ -72,12 +73,12 @@ export function MainComponent({ loopDetails }: Props) {
                           isAvatar={loopDetails.owner.is_avatar}
                         />
                       </div>
-                      <p className="ml-1 text-title-sm">@{loopDetails.owner.nickname}</p>
+                      <p className="text-body-1-bold ml-1">@{loopDetails.owner.nickname}</p>
                     </div>
                   </Link>
                 </div>
                 <div className="flex flex-1 flex-col items-start">
-                  <p className="text-body-sm text-secondary">Posted in</p>
+                  <p className="text-body-1-demi text-secondary">Posted in</p>
                   {/* todo change to community data */}
                   <Link href={{ pathname: PATH_NAME.community(loopDetails.community.slug) }}>
                     <div className="my-2 flex items-center">
@@ -89,7 +90,7 @@ export function MainComponent({ loopDetails }: Props) {
                           isAvatar={false}
                         />
                       </div>
-                      <p className="ml-1 text-title-sm">{loopDetails.community.name}</p>
+                      <p className="ml-1 text-body-1-bold">{loopDetails.community.name}</p>
                     </div>
                   </Link>
                 </div>
@@ -104,36 +105,68 @@ export function MainComponent({ loopDetails }: Props) {
             </div>
 
             <div className="flex items-center gap-x-2">
-              <Button
-                size="custom"
-                onClick={() => {
-                  generateDeepLink({
-                    action: 'subscribe',
-                    contentType: 'loop',
-                    description: ldDescription,
-                    title: loopDetails.group.group_name,
-                    previewImage: null,
-                    fromUserName: null,
-                    pathName: window.location.pathname,
-                    // sourceId: loopDetails.share_string,
-                    utmCampaign: 'share',
-                    utmMedium: 'web',
-                    utmSource: window.location.hostname,
-                    community: loopDetails.community.share_string
-                  })
-                    .then((generatedLink) => {
-                      openGeneratedLink(generatedLink)
+              {!loopDetails.private && (
+                <Button
+                  size="custom"
+                  onClick={() => {
+                    generateDeepLink({
+                      action: 'subscribe',
+                      contentType: 'loop',
+                      description: ldDescription,
+                      title: loopDetails.group.group_name,
+                      previewImage: null,
+                      fromUserName: null,
+                      pathName: window.location.pathname,
+                      // sourceId: loopDetails.share_string,
+                      utmCampaign: 'share',
+                      utmMedium: 'web',
+                      utmSource: window.location.hostname,
+                      community: loopDetails.community.share_string,
                     })
-                    .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
-                }}>
-                <p className="px-4 py-1 text-title-3-demi">Subscribe</p>
-              </Button>
+                      .then((generatedLink) => {
+                        openGeneratedLink(generatedLink)
+                      })
+                      .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
+                  }}>
+                  <p className="px-4 py-1 text-title-3-demi">Subscribe</p>
+                </Button>
+              )}
+
+              {loopDetails.private && (
+                <Button
+                  size="custom"
+                  variant="outline"
+                  className="border border-primary"
+                  onClick={() => {
+                    generateDeepLink({
+                      contentType: 'loop',
+                      description: ldDescription,
+                      title: loopDetails.group.group_name,
+                      previewImage: null,
+                      fromUserName: null,
+                      pathName: window.location.pathname,
+                      // sourceId: loopDetails.share_string,
+                      utmCampaign: 'share',
+                      utmMedium: 'web',
+                      utmSource: window.location.hostname,
+                      community: loopDetails.community.share_string,
+                    })
+                      .then((generatedLink) => {
+                        openGeneratedLink(generatedLink)
+                      })
+                      .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
+                  }}>
+                  <p className="px-4 py-1 text-title-3-bold text-primary" style={{ fontSize: '15px' }}>
+                    Join as collaborator
+                  </p>
+                </Button>
+              )}
 
               {/* Hidden by requirement. */}
               {/* <Button size="custom" variant="outline" className="border-primary px-4">
                 <span className="flex items-center">
                   <Image src={icQuestion} alt="question" />
-                  <p className="py-2 text-body-sm text-primary">Q&A</p>
+                  <p className="py-2 text-body-1-demi text-primary">Q&A</p>
                 </span>
               </Button> */}
 
@@ -154,8 +187,24 @@ export function MainComponent({ loopDetails }: Props) {
               </Button>
             </div>
           </div>
-
-          <LoopTabs />
+          <hr className="border-t border-monochrome-9" />
+          {loopDetails.private ? (
+            <div
+              className="mt-4 flex w-full items-center justify-center overflow-hidden"
+              style={{ height: 'calc(100% - 220px)' }}>
+              <div className="flex flex-col items-center justify-center">
+                <div className="mb-2 rounded-full bg-monochrome-9 p-6">
+                  <Image src={icLock} alt="share" className="h-16 w-16" />
+                </div>
+                <p className="text-center text-title-2-demi">
+                  This Loop is visible to its
+                  <br /> Collaborators only
+                </p>
+              </div>
+            </div>
+          ) : (
+            <LoopTabs />
+          )}
         </div>
       </>
     )
@@ -166,13 +215,13 @@ function LoopTabs() {
     <Tabs defaultValue="Loops">
       <TabsList className="sticky flex max-w-min">
         <TabsTrigger value="Loops">
-          <p className="text-title-md">Posts</p>
+          <p className="text-title-3-bold">Posts</p>
         </TabsTrigger>
         <TabsTrigger value="About">
-          <p className="text-title-md">Collaborators</p>
+          <p className="text-title-3-bold">Collaborators</p>
         </TabsTrigger>
         <TabsTrigger value="Members">
-          <p className="text-title-md">Subscribers</p>
+          <p className="text-title-3-bold">Subscribers</p>
         </TabsTrigger>
       </TabsList>
       <hr className="border-t border-monochrome-9" />
@@ -198,7 +247,7 @@ function LoopCollaborators({ slug }: { slug: string }) {
   if (cohosts && cohosts.length === 0)
     return (
       <div className="flex h-full w-full items-center justify-center pt-32 text-title-3-bold text-monochrome">
-        No collaborators
+        No collaborators yet
       </div>
     )
 
@@ -231,7 +280,7 @@ function LoopSubscribers({ slug }: any) {
   if (subscribers && subscribers.length === 0)
     return (
       <div className="flex h-full w-full items-center justify-center pt-32 text-title-3-bold text-monochrome">
-        No subscribers
+        No subscribers yet
       </div>
     )
 
@@ -269,8 +318,8 @@ function Stats({
       {statsData.map((obj, index) => {
         return (
           <div key={index} className="flex items-center">
-            <p className="mr-1 text-title-lg">{obj.value}</p>
-            <p className="mr-4 text-body-sm text-secondary">{obj.key}</p>
+            <p className="mr-1 text-title-2-bold">{obj.value}</p>
+            <p className="mr-4 text-body-1-demi text-secondary">{obj.key}</p>
           </div>
         )
       })}

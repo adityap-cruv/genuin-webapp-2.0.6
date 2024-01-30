@@ -12,8 +12,8 @@ export function Stats({ statsData }: Props) {
       {statsData.map((obj, index) => {
         return (
           <div key={index}>
-            <p className="text-title-lg">{obj.value}</p>
-            <p className="text-cap-lg text-secondary">{obj.key}</p>
+            <p className="text-title-2-bold">{obj.value}</p>
+            <p className="text-cap-1-demi text-secondary">{obj.key}</p>
           </div>
         )
       })}

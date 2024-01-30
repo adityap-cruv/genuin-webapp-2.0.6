@@ -18,9 +18,7 @@ export default function Error() {
             style={{ fontSize: '48px', lineHeight: '110%', fontWeight: 700, letterSpacing: '-0.96px' }}>
             Oops! Something <br /> went wrong.
           </p>
-          <p className="pt-4 text-center text-body-lg" style={{ fontWeight: 500 }}>
-            Our team is trying to resolve the issue.
-          </p>
+          <p className="pt-4 text-center text-title-3-med">Our team is trying to resolve the issue.</p>
         </span>
         <Image src={imgPuppet} alt="" className="h-auto w-32" />
         <Link href={PATH_NAME.home()}>

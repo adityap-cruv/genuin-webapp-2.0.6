@@ -75,7 +75,7 @@ function Component1() {
           really matter.
         </p>
         <div className="flex flex-col gap-y-4">
-          <DownloadAppDialog>
+          <DownloadAppDialog isMobile>
             <Button size="custom" className="bg-new-off-black px-5 py-4 after:bg-new-dark-grey hover:bg-new-dark-grey">
               <p className="text-new-md text-new-off-white">Download Genuin</p>
             </Button>
@@ -383,7 +383,7 @@ function Component5() {
             books, and I love engaging with others about these topics.
           </p>
           <p className="mt-4 text-new-para-1">
-            Jamie Mars, <span style={{ fontWeight: 400 }}>Student & Future Investor</span>
+            Jamie Mars, <span className="font-normal">Student & Future Investor</span>
           </p>
         </div>
         <Image priority loading="eager" className="sm:w-1/2" src={imgC5_2} alt="genuin" />

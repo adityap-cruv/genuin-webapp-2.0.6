@@ -19,9 +19,7 @@ export function NavBar() {
           </Link>
           <div className="flex items-center gap-x-4">
             <Link href={{ pathname: PATH_NAME.home() }}>
-              <p className="pr-4 text-new-para-2 transition-all hover:underline" style={{ fontWeight: 600 }}>
-                Explore Genuin
-              </p>
+              <p className="pr-4 text-new-para-2 font-semibold transition-all hover:underline">Explore Genuin</p>
             </Link>
             <Link href={HIRING_LINK}>
               <Button
@@ -29,16 +27,12 @@ export function NavBar() {
                 className="hover:bg-new-off-black hover:text-new-off-white"
                 outlineColor="black"
                 size="index-page">
-                <p className="text-new-sm" style={{ fontWeight: 600 }}>
-                  We're hiring!
-                </p>
+                <p className="text-new-sm font-semibold">We're hiring!</p>
               </Button>
             </Link>
-            <DownloadAppDialog>
+            <DownloadAppDialog isMobile={false}>
               <Button size="index-page" className="bg-new-off-black after:bg-new-dark-grey hover:bg-new-dark-grey">
-                <p className="text-new-sm text-new-off-white" style={{ fontWeight: 600 }}>
-                  Download Genuin
-                </p>
+                <p className="text-new-sm font-semibold text-new-off-white">Download Genuin</p>
               </Button>
             </DownloadAppDialog>
           </div>
@@ -59,7 +53,7 @@ export function NavBar() {
                 }}>
                 <div className="flex h-full min-w-full flex-col gap-y-1 pt-7">
                   <div className="flex h-full min-w-full flex-col gap-y-4 py-7">
-                    <DownloadAppDialog>
+                    <DownloadAppDialog isMobile>
                       <Button size="index-page" className="my-2 w-full bg-new-off-black hover:bg-new-dark-grey">
                         <p className="text-new-md text-new-off-white">Download Genuin</p>
                       </Button>

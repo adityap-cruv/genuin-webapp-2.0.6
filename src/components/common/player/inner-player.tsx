@@ -3,7 +3,7 @@ import { useInView } from 'framer-motion'
 import { type DetailedHTMLProps, type ReactEventHandler, type VideoHTMLAttributes, useEffect, useRef } from 'react'
 import { usePlayerControlStore } from './player-control-store'
 
-// todo work on why player is sendding multiple request.
+// TODO: work on why player is sendding multiple request.
 interface Props extends DetailedHTMLProps<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement> {
   // videoSizeBox: { width: number; height: number }
   videoSource?: string
@@ -33,11 +33,11 @@ export function InnerPlayer({
     playing: false,
     player: null,
   })
-  const { shouldPlay, muted, setCurrentTime, setDuration } = usePlayerControlStore((state) => ({
+  const { shouldPlay, muted, setTimeState, setLatency } = usePlayerControlStore((state) => ({
     shouldPlay: state.shouldPlay,
     muted: state.muted,
-    setDuration: state.setDuration,
-    setCurrentTime: state.setCurrentTime,
+    setTimeState: state.setTimeState,
+    setLatency: state.setLatency,
   }))
 
   useEffect(() => {
@@ -88,10 +88,14 @@ export function InnerPlayer({
   useEffect(() => {
     const player = localRef.current.player
     if (!player) return
+    const startTime = performance.now()
     if (shouldPlay && localRef.current.loaded) {
       player
         .play()
         .then(() => {
+          const endTime = performance.now()
+          const loadingTimeMillis = endTime - startTime
+          setLatency(Math.floor(loadingTimeMillis))
           // console.log('starts playing from use effect.')
         })
         .catch((e) => {
@@ -102,12 +106,12 @@ export function InnerPlayer({
     }
   }, [shouldPlay])
 
-  const onDurationChangeEventHandler: ReactEventHandler<HTMLVideoElement> = (event) => {
-    setDuration(event.currentTarget.duration)
-  }
+  // const onDurationChangeEventHandler: ReactEventHandler<HTMLVideoElement> = (event) => {
+  //   setDuration(event.currentTarget.duration)
+  // }
 
   const onTimeUpdateEventHandler: ReactEventHandler<HTMLVideoElement> = (event) => {
-    setCurrentTime(event.currentTarget.currentTime)
+    setTimeState(event.currentTarget.currentTime, event.currentTarget.duration)
   }
 
   if (videoSource)
@@ -131,7 +135,7 @@ export function InnerPlayer({
           localRef.current.loaded = true
           if (onCanPlay) onCanPlay(ev)
         }}
-        onDurationChange={onDurationChangeEventHandler}
+        // onDurationChange={onDurationChangeEventHandler}
         onTimeUpdate={onTimeUpdateEventHandler}
         onPause={onPause}
         onEnded={onEnded}
@@ -163,20 +167,20 @@ export function ViewportPlayer({
     playing: false,
     player: null,
   })
-  const { shouldPlay, muted, setCurrentTime, setDuration } = usePlayerControlStore((state) => ({
+  const { shouldPlay, muted, setTimeState, setLatency } = usePlayerControlStore((state) => ({
     shouldPlay: state.shouldPlay,
     muted: state.muted,
-    setCurrentTime: state.setCurrentTime,
-    setDuration: state.setDuration,
+    setTimeState: state.setTimeState,
+    setLatency: state.setLatency,
   }))
   const inView = useInView(videoRef, { amount: 0.95 })
 
-  const onDurationChangeEventHandler: ReactEventHandler<HTMLVideoElement> = (event) => {
-    setDuration(event.currentTarget.duration)
-  }
+  // const onDurationChangeEventHandler: ReactEventHandler<HTMLVideoElement> = (event) => {
+  //   setDuration(event.currentTarget.duration)
+  // }
 
   const onTimeUpdateEventHandler: ReactEventHandler<HTMLVideoElement> = (event) => {
-    setCurrentTime(event.currentTarget.currentTime)
+    setTimeState(event.currentTarget.currentTime, event.currentTarget.duration)
   }
 
   useEffect(() => {
@@ -218,9 +222,13 @@ export function ViewportPlayer({
 
   useEffect(() => {
     const player = localRef.current.player
+    const startTime = performance.now()
     // console.log('inView::', player, inView)
     if (inView && shouldPlay) {
       void player?.play().then(() => {
+        const endTime = performance.now()
+        const loadingTimeMillis = endTime - startTime
+        setLatency(Math.floor(loadingTimeMillis))
         // console.log('being played..')
       })
     } else {
@@ -249,7 +257,7 @@ export function ViewportPlayer({
         onPause={onPause}
         onEnded={onEnded}
         onTimeUpdate={onTimeUpdateEventHandler}
-        onDurationChange={onDurationChangeEventHandler}
+        // onDurationChange={onDurationChangeEventHandler}
         {...props}
       />
     )

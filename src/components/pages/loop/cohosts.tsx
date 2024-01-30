@@ -10,7 +10,7 @@ export function Cohosts({ loopId }: { loopId: string }) {
   const cohosts = data?.users
   return (
     <div className="h-2/3 pt-3">
-      <p className="text-title-lg">Co-Hosts</p>
+      <p className="text-title-2-bold">Co-Hosts</p>
       {isLoading && <Loader size="md" />}
       {isError && <div>Something went wrong...</div>}
       {cohosts && (
@@ -43,8 +43,8 @@ function CohostTile({ image, title, subtitle, userName }: CohostTileProps) {
     <div className="relative m-1 h-44 rounded-md border-2  border-secondary duration-300 hover:scale-95 md:h-44 lg:h-52">
       <div className="flex h-full w-full flex-col items-center justify-center p-2">
         <CustomAvatar className="h-20 w-20 bg-red-40" imageUrl={image} fallbackString={userName} isAvatar={false} />
-        <p className="my-1 line-clamp-1 break-all text-center text-title-sm">{title}</p>
-        <p className="line-clamp-3 break-all text-center text-cap-lg lg:line-clamp-4">{subtitle}</p>
+        <p className="my-1 line-clamp-1 break-all text-center text-body-1-bold">{title}</p>
+        <p className="line-clamp-3 break-all text-center text-cap-1-demi lg:line-clamp-4">{subtitle}</p>
       </div>
     </div>
   )
