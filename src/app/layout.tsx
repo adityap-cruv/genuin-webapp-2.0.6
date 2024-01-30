@@ -1,6 +1,6 @@
 import { type Metadata } from 'next'
 import './globals.css'
-import { ReactQueryProvider } from '@components/providers/reactQueryProvider'
+import { ReactQueryProvider } from '@components/providers/query-client-provider'
 import { EmbedProvider } from '@components/providers/embed-provider'
 import Script from 'next/script'
 

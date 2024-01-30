@@ -1,6 +1,5 @@
 'use client'
 import { Button } from '@components/ui/button'
-import { GenuinAdaptiveLogo } from '@components/ui/genuin-logo'
 import { DownloadAppDialog } from '../pages/home/download-app-dialog'
 import Link from 'next/link'
 import { cn } from '@lib/utils'
@@ -9,6 +8,7 @@ import { HamBurgerMenuIcon } from '@components/ui/ham-burger'
 import { HIRING_LINK, MOBILE_DOWNLOAD_APP_LINK } from '@lib/constants'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { type VariantProps, cva } from 'class-variance-authority'
+import { AppLogo } from '@components/ui/app-logo'
 
 const navbarVariant = cva('fixed left-0 top-0 z-10 m-auto flex h-navbar w-full', {
   variants: {
@@ -28,7 +28,12 @@ export function NavBar({ variant, isMobile }: Props) {
   return (
     <nav className={cn(navbarVariant({ variant }))}>
       <div className={'container flex h-full items-center justify-between py-1'}>
-        <GenuinAdaptiveLogo variant={isVariantLight ? 'light' : 'dark'} />
+        {isMobile ? (
+          <AppLogo.icon imageHeight={32} className={cn(isVariantLight ? 'fill-new-off-white' : 'fill-new-off-black')} />
+        ) : (
+          <AppLogo.logo imageHeight={42} className={cn(isVariantLight ? 'fill-new-off-white' : 'fill-new-off-black')} />
+        )}
+        {/* <GenuinAdaptiveLogo variant={isVariantLight ? 'light' : 'dark'} /> */}
         <div className="flex items-center">
           <GetAppButton isMobile={isMobile} />
           <BurgerMenu variant={isVariantLight ? 'light' : 'dark'} />

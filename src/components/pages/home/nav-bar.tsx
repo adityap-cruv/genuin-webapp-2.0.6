@@ -1,13 +1,13 @@
 'use client'
 import { cn } from '@lib/utils'
 import { Button } from '@components/ui/button'
-import { GenuinLogo, GenuinText } from '@components/ui/genuin-logo'
 import { HamBurgerMenuIcon } from '@components/ui/ham-burger'
 import Link from 'next/link'
 import { Sheet, SheetContent, SheetTrigger } from '@components/ui/sheet'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { DownloadAppDialog } from './download-app-dialog'
 import { HIRING_LINK } from '@lib/constants'
+import { GenuinIcon } from '@icons/genuin-icon'
 
 export function NavBar() {
   return (
@@ -15,7 +15,7 @@ export function NavBar() {
       <nav className="absolute top-0 z-10 m-auto hidden h-navbar w-full lg:flex ">
         <div className={cn('container flex h-full w-full items-center justify-between py-1')}>
           <Link href="/">
-            <GenuinLogo variant="black" />
+            <GenuinIcon.logo className="fill-new-off-black" />
           </Link>
           <div className="flex items-center gap-x-4">
             <Link href={{ pathname: PATH_NAME.home() }}>
@@ -39,8 +39,10 @@ export function NavBar() {
         </div>
       </nav>
       <nav className="absolute top-0 z-10 m-auto h-navbar w-full lg:hidden ">
-        <div className={cn('flex h-full items-center justify-between py-1 pl-2')}>
-          <GenuinText variant="black" />
+        <div className="flex h-full items-center justify-between py-1 pl-2">
+          <Link href="/">
+            <GenuinIcon.logo className="fill-new-off-black" />
+          </Link>
           <div className="flex items-center gap-x-2">
             <Sheet modal={true}>
               <SheetTrigger>
