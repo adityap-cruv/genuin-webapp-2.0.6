@@ -91,7 +91,7 @@ function Mobile({
     hasFocus ? setShouldPlay(shouldPlay) : setShouldPlay(false)
   }, [hasFocus])
 
-  if (videoData.community.private || videoData.loop.private)
+  if (videoData && (videoData.community.private || videoData.loop.private))
     return (
       <div className="w-ful flex h-full flex-col items-center justify-center gap-y-4 bg-new-off-black">
         <LockIcon className="stroke-new-off-white" />
@@ -108,7 +108,7 @@ function Mobile({
       </div>
     )
 
-  if (videoData.video) {
+  if (videoData?.video) {
     return (
       <div
         onClick={(e) => {
@@ -180,7 +180,7 @@ function Desktop({
     hasFocus ? setShouldPlay(shouldPlay && activeComment === '') : setShouldPlay(false)
   }, [hasFocus])
 
-  if (videoData.community.private || videoData.loop.private)
+  if (videoData?.community.private || videoData?.loop.private)
     return (
       <div className="w-ful flex h-full flex-col items-center justify-center gap-y-4 bg-monochrome-9">
         <LockIcon className="stroke-secondary" />
@@ -197,7 +197,7 @@ function Desktop({
       </div>
     )
 
-  if (videoData.video) {
+  if (videoData?.video) {
     return (
       <div className="relative flex h-full w-full snap-start items-center justify-center overflow-clip">
         {shouldShowBackgroundBlurImage && (
