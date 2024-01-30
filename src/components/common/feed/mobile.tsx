@@ -63,7 +63,7 @@ export function Mobile({
 
   if (videos && videoSizeBox)
     return (
-      <div style={{ height: sizeBox.height, width: sizeBox.width }} className="overflow-clip">
+      <div style={{ height: videoSizeBox.height, width: videoSizeBox.width }} className="overflow-clip">
         <Swiper
           modules={[Mousewheel]}
           mousewheel={true}
@@ -74,7 +74,7 @@ export function Mobile({
           }}
           allowSlideNext={!commentIsOpen}
           allowSlidePrev={!commentIsOpen}
-          style={{ height: sizeBox.height, width: sizeBox.width }}>
+          style={{ height: videoSizeBox.height, width: videoSizeBox.width }}>
           {videos.map((item, index) => (
             <SwiperSlide key={index}>
               {() => (
