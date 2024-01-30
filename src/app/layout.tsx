@@ -1,6 +1,7 @@
 import { type Metadata } from 'next'
 import './globals.css'
 import { ReactQueryProvider } from '@components/providers/reactQueryProvider'
+import { EmbedProvider } from '@components/providers/embed-provider'
 import Script from 'next/script'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -43,7 +44,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </Script>
       </head>
       <body className="index-page-background absolute inset-0 min-h-full min-w-full text-new-off-black">
-        <ReactQueryProvider>{children}</ReactQueryProvider>
+        <ReactQueryProvider>
+          <EmbedProvider>{children}</EmbedProvider>
+        </ReactQueryProvider>
       </body>
     </html>
   )

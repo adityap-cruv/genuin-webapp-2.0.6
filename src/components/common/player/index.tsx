@@ -31,7 +31,7 @@ export const Player = {
 }
 
 type Props = {
-  videoData?: VideoDataType
+  videoData: VideoDataType
   /**
    * This field is very mandatory if you want play to stop after rendering
    * then pass false value. Otherwise it will start playing video automatically.
@@ -91,7 +91,24 @@ function Mobile({
     hasFocus ? setShouldPlay(shouldPlay) : setShouldPlay(false)
   }, [hasFocus])
 
-  if (videoData?.video) {
+  if (videoData.community.private || videoData.loop.private)
+    return (
+      <div className="w-ful flex h-full flex-col items-center justify-center gap-y-4 bg-new-off-black">
+        <LockIcon className="stroke-new-off-white" />
+        <p className="text-center text-body-1-demi text-new-off-white">
+          {videoData?.community.private ? (
+            <span>This Loop is visible to its Collaborators only</span>
+          ) : (
+            <span>
+              This Loop is visible to its Community
+              <br /> Members only
+            </span>
+          )}
+        </p>
+      </div>
+    )
+
+  if (videoData.video) {
     return (
       <div
         onClick={(e) => {
@@ -128,22 +145,6 @@ function Mobile({
     )
   }
 
-  return (
-    <div className="w-ful flex h-full flex-col items-center justify-center gap-y-4 bg-new-off-black">
-      <LockIcon className="stroke-new-off-white" />
-      <p className="text-center text-body-1-demi text-new-off-white">
-        {videoData?.community.private ? (
-          <span>This Loop is visible to its Collaborators only</span>
-        ) : (
-          <span>
-            This Loop is visible to its Community
-            <br /> Members only
-          </span>
-        )}
-      </p>
-    </div>
-  )
-
   // return <
 }
 
@@ -179,7 +180,24 @@ function Desktop({
     hasFocus ? setShouldPlay(shouldPlay && activeComment === '') : setShouldPlay(false)
   }, [hasFocus])
 
-  if (videoData?.video) {
+  if (videoData.community.private || videoData.loop.private)
+    return (
+      <div className="w-ful flex h-full flex-col items-center justify-center gap-y-4 bg-monochrome-9">
+        <LockIcon className="stroke-secondary" />
+        <p className="text-center text-body-1-demi text-secondary">
+          {videoData?.community.private ? (
+            <span>This Loop is visible to its Collaborators only</span>
+          ) : (
+            <span>
+              This Loop is visible to its Community
+              <br /> Members only
+            </span>
+          )}
+        </p>
+      </div>
+    )
+
+  if (videoData.video) {
     return (
       <div className="relative flex h-full w-full snap-start items-center justify-center overflow-clip">
         {shouldShowBackgroundBlurImage && (
@@ -215,19 +233,4 @@ function Desktop({
       </div>
     )
   }
-  return (
-    <div className="w-ful flex h-full flex-col items-center justify-center gap-y-4 bg-monochrome-9">
-      <LockIcon className="stroke-secondary" />
-      <p className="text-center text-body-1-demi text-secondary">
-        {videoData?.community.private ? (
-          <span>This Loop is visible to its Collaborators only</span>
-        ) : (
-          <span>
-            This Loop is visible to its Community
-            <br /> Members only
-          </span>
-        )}
-      </p>
-    </div>
-  )
 }

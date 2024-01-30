@@ -6,6 +6,7 @@ import { cookies } from 'next/headers'
 import Script from 'next/script'
 
 // TODO: optimize uses of dynamic function.
+// TODO: Check out for image optimization
 // TODO: check react-device-detect dependency and than remove it. as it is not needed anymore.
 export default async function Page() {
   const isMobile = cookies().get('mobile')?.value === 'true'
