@@ -25,6 +25,7 @@ export function GenuinOptionsProvider({ children, isMobile }: { children: React.
       isMobile,
       isLoading: false,
       sizeBoxes: getSizeBoxes(isMobile, !hideNavbar),
+      isIframe: window !== window.parent,
     })
   }
 
