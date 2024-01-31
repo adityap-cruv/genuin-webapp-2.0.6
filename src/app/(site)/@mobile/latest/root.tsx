@@ -1,5 +1,4 @@
 'use client'
-import { useVideoSizeBox } from '@hooks/use-video-size-box'
 import dynamic from 'next/dynamic'
 import { TopBar } from '@components/layouts/mobile/top-bar'
 import { getFeed } from '@lib/api/feed'
@@ -22,9 +21,8 @@ export function Root({ brandId }: { brandId?: string }) {
     fetchNextPage,
   } = getFeed({ feedType: 'lattest', userID: userId, brandId })
   const videos = videoPages?.pages.flatMap((item) => item.reels)
-  const sizeBox = useVideoSizeBox()
 
-  if (videos && sizeBox)
+  if (videos)
     return (
       <main className="h-full w-full">
         <TopBar variant="trasparent" />
@@ -32,7 +30,6 @@ export function Root({ brandId }: { brandId?: string }) {
           <Feed
             fetchNextPage={fetchNextPage}
             startIndex={0}
-            sizeBox={sizeBox}
             isError={isError}
             isFetchingNextPage={isFetchingNextPage}
             hasNextPage={hasNextPage}

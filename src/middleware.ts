@@ -4,7 +4,7 @@ import MobileDetect from 'mobile-detect'
 
 export function middleware(request: NextRequest) {
   // detects if it's mobile or not
-  const isMobile = Boolean(new MobileDetect(userAgent(request).ua).mobile())
+  const isMobile = Boolean(new MobileDetect(userAgent(request).ua).phone)
   request.cookies.set('mobile', '' + isMobile)
   return NextResponse.next({ request })
 }

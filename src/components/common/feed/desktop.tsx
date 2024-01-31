@@ -1,4 +1,3 @@
-import { type VideoSizeBoxType } from '@hooks/use-video-size-box'
 import { type VideoDataType } from '@lib/schemas/video'
 import dynamic from 'next/dynamic'
 import { DesktopDetails } from './desktop-details'
@@ -8,11 +7,11 @@ import { cn } from '@lib/utils'
 import { FeedShimmer } from '../shimmers/feed-shimmer'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Mousewheel, Keyboard } from 'swiper/modules'
+import { type VideoSizeBoxType, useGenuinOptions } from '@lib/stores/genuin-options'
 
 const DesktopPlayer = dynamic(async () => await import('@components/common/player').then((comp) => comp.Player.desktop))
 
 type DesktopProps = {
-  sizeBox: VideoSizeBoxType
   // queryFuncResult: UseInfiniteQueryResult
   videos: VideoDataType[]
   isLoading: boolean
@@ -23,7 +22,8 @@ type DesktopProps = {
   className?: string
 }
 
-export function Desktop({ sizeBox, fetchNextPage, isFetchingNextPage, videos, className }: DesktopProps) {
+export function Desktop({ fetchNextPage, isFetchingNextPage, videos, className }: DesktopProps) {
+  const sizeBox = useGenuinOptions().sizeBoxes.default
   const { setNewVideos, videoList, setCurrentIndex, currentIndex } = useFeedListStore((state) => ({
     setNewVideos: state.setVideoList,
     videoList: state.videoList,
@@ -93,7 +93,7 @@ type SinglePlayerProps = {
 export function SinglePlayer({ sizeBox, videoDetails, className }: SinglePlayerProps) {
   return (
     <div className={cn('flex h-full w-full', className)}>
-      <div style={{ width: sizeBox.width, height: sizeBox.height }} className="hide-scrollbar overflow-x-clip">
+      <div style={{ ...sizeBox }} className="hide-scrollbar overflow-x-clip">
         <DesktopPlayer shouldPlay sizeBox={sizeBox} videoData={videoDetails} loop />
       </div>
       <DesktopDetails videoDetails={videoDetails} />
