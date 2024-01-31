@@ -73,7 +73,7 @@ export function MainComponent({ loopDetails }: Props) {
                           isAvatar={loopDetails.owner.is_avatar}
                         />
                       </div>
-                      <p className="text-body-1 ml-1">@{loopDetails.owner.nickname}</p>
+                      <p className="text-body-1-bold ml-1">@{loopDetails.owner.nickname}</p>
                     </div>
                   </Link>
                 </div>
@@ -242,6 +242,7 @@ function LoopCollaborators({ slug }: { slug: string }) {
   const { data, isLoading } = getLoopCohosts(slug, 'members')
   const cohosts = data?.users
 
+  // TODO: Add shimmer.
   if (isLoading) return <Loader className="pt-32" size="md" />
 
   if (cohosts && cohosts.length === 0)
@@ -275,6 +276,7 @@ function LoopSubscribers({ slug }: any) {
   const { data, isLoading } = getLoopSubscribers(slug, 'subscribers')
   const subscribers = data?.users
 
+  // TODO: Add shimmer.
   if (isLoading) return <Loader className="pt-32" size="md" />
 
   if (subscribers && subscribers.length === 0)

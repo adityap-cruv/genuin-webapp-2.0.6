@@ -7,7 +7,8 @@ import { usePlayerControlStore } from './player-control-store'
 import { useCommentStore } from '../comments/store'
 import { useHasUserFocus } from '@hooks/use-has-user-focus'
 import { LockIcon } from '@icons/LockIcon'
-import { FeedShimmer } from '../shimmers/feed-shimmer'
+import { useGenuinOptions, type VideoSizeBoxType } from '@lib/stores/genuin-options'
+// import { FeedShimmer } from '../shimmers/feed-shimmer'
 
 const CommentSheet = dynamic(async () => await import('./comment-sheet').then((comp) => comp.CommentSheet))
 const InnerPlayer = dynamic(async () => await import('./inner-player').then((comp) => comp.InnerPlayer), {
@@ -31,7 +32,7 @@ export const Player = {
 }
 
 type Props = {
-  videoData?: VideoDataType
+  videoData: VideoDataType
   /**
    * This field is very mandatory if you want play to stop after rendering
    * then pass false value. Otherwise it will start playing video automatically.
@@ -50,7 +51,7 @@ type Props = {
    * Sizebox is mandatory. To get sizebox see hooke useVideoSizeBox.
    * Tip: Please don't render withour sizebox
    */
-  sizeBox: { height: number; width: number }
+  sizeBox: VideoSizeBoxType
   /**
    * If it is enabled video will play if only if video is in viewport.
    */
@@ -71,12 +72,12 @@ function Mobile({
   videoData,
   shouldPlay = true,
   loop = false,
-  sizeBox,
   playIfInViewPort,
   shouldShowBackgroundBlurImage = true,
   isFirstPlayerInList = false,
-}: Props) {
+}: Omit<Props, 'sizeBox'>) {
   const containerRef = useRef<HTMLDivElement | null>(null)
+  const sizeBox = useGenuinOptions().sizeBoxes.default
   const hasFocus = useHasUserFocus()
   const { setShouldPlay, toggleShouldPlay } = usePlayerControlStore((state) => ({
     setShouldPlay: state.setShouldPlay,
@@ -91,6 +92,23 @@ function Mobile({
     hasFocus ? setShouldPlay(shouldPlay) : setShouldPlay(false)
   }, [hasFocus])
 
+  if (videoData && (videoData.community.private || videoData.loop.private))
+    return (
+      <div className="w-ful flex h-full flex-col items-center justify-center gap-y-4 bg-new-off-black">
+        <LockIcon className="stroke-new-off-white" />
+        <p className="text-center text-body-1-demi text-new-off-white">
+          {videoData?.community.private ? (
+            <span>This Loop is visible to its Collaborators only</span>
+          ) : (
+            <span>
+              This Loop is visible to its Community
+              <br /> Members only
+            </span>
+          )}
+        </p>
+      </div>
+    )
+
   if (videoData?.video) {
     return (
       <div
@@ -103,7 +121,7 @@ function Mobile({
         <div
           ref={containerRef}
           className="relative overflow-hidden"
-          style={{ width: sizeBox?.width, height: sizeBox?.height }}>
+          style={{ width: sizeBox.width, height: sizeBox.height }}>
           {playIfInViewPort ? (
             <ViewportPlayer
               videoSource={videoData.video.url}
@@ -127,22 +145,6 @@ function Mobile({
       </div>
     )
   }
-
-  return (
-    <div className="w-ful flex h-full flex-col items-center justify-center gap-y-4 bg-new-off-black">
-      <LockIcon className="stroke-new-off-white" />
-      <p className="text-center text-body-1-demi text-new-off-white">
-        {videoData?.community.private ? (
-          <span>This Loop is visible to its Collaborators only</span>
-        ) : (
-          <span>
-            This Loop is visible to its Community
-            <br /> Members only
-          </span>
-        )}
-      </p>
-    </div>
-  )
 
   // return <
 }
@@ -179,6 +181,23 @@ function Desktop({
     hasFocus ? setShouldPlay(shouldPlay && activeComment === '') : setShouldPlay(false)
   }, [hasFocus])
 
+  if (videoData?.community.private || videoData?.loop.private)
+    return (
+      <div className="w-ful flex h-full flex-col items-center justify-center gap-y-4 bg-monochrome-9">
+        <LockIcon className="stroke-secondary" />
+        <p className="text-center text-body-1-demi text-secondary">
+          {videoData?.community.private ? (
+            <span>This Loop is visible to its Collaborators only</span>
+          ) : (
+            <span>
+              This Loop is visible to its Community
+              <br /> Members only
+            </span>
+          )}
+        </p>
+      </div>
+    )
+
   if (videoData?.video) {
     return (
       <div className="relative flex h-full w-full snap-start items-center justify-center overflow-clip">
@@ -197,7 +216,7 @@ function Desktop({
             }
             setShouldPlay(!stateShouldPlay)
           }}
-          style={{ width: sizeBox?.width, height: sizeBox?.height }}>
+          style={{ ...sizeBox }}>
           {playIfInViewPort ? (
             <ViewportPlayer
               videoSource={videoData.video.url}
@@ -215,19 +234,4 @@ function Desktop({
       </div>
     )
   }
-  return (
-    <div className="w-ful flex h-full flex-col items-center justify-center gap-y-4 bg-monochrome-9">
-      <LockIcon className="stroke-secondary" />
-      <p className="text-center text-body-1-demi text-secondary">
-        {videoData?.community.private ? (
-          <span>This Loop is visible to its Collaborators only</span>
-        ) : (
-          <span>
-            This Loop is visible to its Community
-            <br /> Members only
-          </span>
-        )}
-      </p>
-    </div>
-  )
 }

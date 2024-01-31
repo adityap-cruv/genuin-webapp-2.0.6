@@ -2,27 +2,16 @@ import { type Metadata } from 'next'
 import { NavBar } from '@components/pages/home/nav-bar'
 import { Footer } from '@components/pages/home/footer'
 import { MainComponent } from '@components/pages/home/main-component'
-import { cookies } from 'next/headers'
-import Script from 'next/script'
 
 // TODO: optimize uses of dynamic function.
+// TODO: Check out for image optimization
 // TODO: check react-device-detect dependency and than remove it. as it is not needed anymore.
 export default async function Page() {
-  const isMobile = cookies().get('mobile')?.value === 'true'
   return (
     <main id="indexPage" className="absolute inset-0 text-new-off-black">
       <NavBar />
-      <MainComponent isMobile={isMobile} />
-      <Footer isMobile={isMobile} />
-      <Script src={`https://www.googletagmanager.com/gtag/js?id=${process.env.GA_MEASUREMENT_ID}`} />
-      <Script id="google-analytics">
-        {`
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', '${process.env.GA_MEASUREMENT_ID}');
-        `}
-      </Script>
+      <MainComponent />
+      <Footer />
     </main>
   )
 }

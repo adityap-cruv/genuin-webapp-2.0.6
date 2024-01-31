@@ -195,6 +195,7 @@ function CommunityList({ usernickname }: any) {
     }
   })
 
+  // TODO: Improve this component return type.
   return (
     <div className="w-full overflow-hidden" style={{ height: 'calc(100% - 56px)' }}>
       <div ref={scrollDivRef} className="h-full w-full overflow-y-auto">
@@ -376,9 +377,11 @@ function LoopVideos({ userId, loop, community }: LoopVideosProps) {
 
   const handleSeeMoreClick = () => {
     void fetchNextPage()
-    if (videoCount > 0) {
-      setVideoCount((prevVideosCount) => Math.max(0, prevVideosCount - 16))
-    }
+    setTimeout(() => {
+      if (videoCount > 0) {
+        setVideoCount((prevVideosCount) => Math.max(0, prevVideosCount - 16))
+      }
+    }, 500)
   }
 
   function InnerComponent() {
@@ -397,33 +400,31 @@ function LoopVideos({ userId, loop, community }: LoopVideosProps) {
       )
 
     if (loop.videos)
-      return loop.videos.map((video, index) => (
-        <React.Fragment key={index}>
-          <div
-            onClick={() => {
-              open(video.share_string)
-            }}
-            key={video.id}
-            className="group/vidcard relative flex aspect-reel min-w-full flex-col items-center bg-secondary hover:cursor-pointer">
-            <img src={video.thumbnail} className="aspect-reel rounded" />
-            <div className="absolute bottom-0 left-0 m-1 flex items-center justify-center">
-              <Image src={icSpark} alt="share" height={15} width={15} />
-              <p className="text-new-para-2-mobile text-monochrome-white">
-                {abbreviateNumber(video.no_of_sparks) ?? 0}
-              </p>
-            </div>
-            <div className="absolute inset-0 hidden h-full w-full items-center justify-center bg-monochrome-black/40 group-hover/vidcard:flex">
-              <Image src={icPlay} alt="" />
-            </div>
-          </div>
-          {isFetchingNextPage &&
-            Array.from({ length: Math.max(0, loop.video_count - videoCount) }).map((_, index) => (
-              <div key={`shimmer-${index}`} className="relative flex flex-col items-center">
-                <Shimmer className="aspect-reel h-full rounded" />
+      return (
+        <>
+          {loop.videos.map((video, index) => (
+            <React.Fragment key={index}>
+              <div
+                onClick={() => {
+                  open(video.share_string)
+                }}
+                key={video.id}
+                className="group/vidcard relative flex aspect-reel min-w-full flex-col items-center bg-secondary hover:cursor-pointer">
+                <img src={video.thumbnail} className="aspect-reel rounded" />
+                <div className="absolute bottom-0 left-0 m-1 flex items-center justify-center">
+                  <Image src={icSpark} alt="share" height={15} width={15} />
+                  <p className="text-new-para-2-mobile text-monochrome-white">
+                    {abbreviateNumber(video.no_of_sparks) ?? 0}
+                  </p>
+                </div>
+                <div className="absolute inset-0 hidden h-full w-full items-center justify-center bg-monochrome-black/40 group-hover/vidcard:flex">
+                  <Image src={icPlay} alt="" />
+                </div>
               </div>
-            ))}
-        </React.Fragment>
-      ))
+            </React.Fragment>
+          ))}
+        </>
+      )
   }
 
   // TODO: replace <a></a> with <Link></Link>
@@ -434,6 +435,10 @@ function LoopVideos({ userId, loop, community }: LoopVideosProps) {
       </a>
       <div className="my-2 grid w-full grid-cols-4 gap-2 md:grid-cols-8">
         <InnerComponent />
+        {isFetchingNextPage &&
+          [...Array(videoCount < 16 ? videoCount : 16)].map((_, index) => (
+            <Shimmer key={index} className="aspect-reel w-full rounded" />
+          ))}
       </div>
       {hasNextPage && videoCount !== 0 && (
         <p

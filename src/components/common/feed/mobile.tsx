@@ -1,18 +1,16 @@
-import { type VideoSizeBoxType } from '@hooks/use-video-size-box'
 import { AnimatedInfinityView } from '@components/common/animated-infinity-view'
 import dynamic from 'next/dynamic'
 import { type VideoDataType } from '@lib/schemas/video'
 import { useFeedListStore } from './store'
 import { useEffect } from 'react'
 import { useCommentSheetStore } from '../player/comment-sheet/store'
-import { useVideoSizeBoxMobile } from '@hooks/use-video-size-box-mobile'
 import { FeedShimmer } from '../shimmers/feed-shimmer'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Mousewheel } from 'swiper/modules'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
 const Player = dynamic(async () => await import('@components/common/player').then((comp) => comp.Player.mobile))
 
 type MobileProps = {
-  sizeBox: VideoSizeBoxType
   videos: VideoDataType[]
   isLoading: boolean
   isError: boolean
@@ -35,8 +33,8 @@ export function Mobile({
   isLoading,
   hasNextPage,
   startIndex = 0,
-  sizeBox,
 }: MobileProps) {
+  const videoSizeBox = useGenuinOptions().sizeBoxes.default
   const { setCurrentIndex, setVideoList, currentIndex, videoList } = useFeedListStore((state) => ({
     setCurrentIndex: state.setCurrentIndex,
     setVideoList: state.setVideoList,
@@ -45,7 +43,6 @@ export function Mobile({
   }))
   // # If comment sheet is open than element should not be scrolled..
   const commentIsOpen = useCommentSheetStore((state) => state.modalIsOpen)
-  const videoSizeBox = useVideoSizeBoxMobile()
 
   useEffect(() => {
     if (!isFetchingNextPage && videoList.length - 3 <= currentIndex) {
@@ -61,9 +58,9 @@ export function Mobile({
     setVideoList(videos)
   }, [videos])
 
-  if (videos && videoSizeBox)
+  if (videos)
     return (
-      <div style={{ height: sizeBox.height, width: sizeBox.width }} className="overflow-clip">
+      <div style={{ height: videoSizeBox.height, width: videoSizeBox.width }} className="overflow-clip">
         <Swiper
           modules={[Mousewheel]}
           mousewheel={true}
@@ -74,19 +71,10 @@ export function Mobile({
           }}
           allowSlideNext={!commentIsOpen}
           allowSlidePrev={!commentIsOpen}
-          style={{ height: sizeBox.height, width: sizeBox.width }}>
+          style={{ height: videoSizeBox.height, width: videoSizeBox.width }}>
           {videos.map((item, index) => (
             <SwiperSlide key={index}>
-              {() => (
-                <Player
-                  playIfInViewPort
-                  isFirstPlayerInList={index === 0}
-                  shouldPlay
-                  loop
-                  sizeBox={videoSizeBox}
-                  videoData={item}
-                />
-              )}
+              {() => <Player playIfInViewPort isFirstPlayerInList={index === 0} shouldPlay loop videoData={item} />}
             </SwiperSlide>
           ))}
           <InfinityViewBox />
@@ -103,7 +91,7 @@ function InfinityViewBox() {
     videoList: state.videoList,
   }))
   const videoDetails = videoList[currentIndex]
-  if (videoDetails.video)
+  if (videoDetails?.video)
     return (
       <span className="absolute bottom-0 w-full">
         <AnimatedInfinityView

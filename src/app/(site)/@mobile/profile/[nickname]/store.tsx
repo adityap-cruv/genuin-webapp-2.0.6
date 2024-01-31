@@ -52,6 +52,7 @@ type CommunityListType = {
     loopObj: LoopMiniObj | number,
     list: Array<Omit<VideoMiniObj, 'details'>>
   ) => void
+  reset: () => void
 }
 
 export const useCommunityListStore = create<CommunityListType>((set) => {
@@ -61,6 +62,9 @@ export const useCommunityListStore = create<CommunityListType>((set) => {
     },
     close() {
       set({ currentVideoShareString: null })
+    },
+    reset() {
+      set({ communities: [], videoList: [], currentIndex: 0, currentVideoShareString: '', startIndex: 0, endIndex: -1 })
     },
     videoList: [],
     currentVideoShareString: '',
