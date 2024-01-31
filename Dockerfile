@@ -18,6 +18,7 @@ COPY .env.production.local ./.env.production.local
 
 # Install project dependencies
 RUN npm install
+RUN npm i sharp
 
 RUN npm run build
 
