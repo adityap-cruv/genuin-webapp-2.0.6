@@ -100,12 +100,12 @@ export function DesktopDetails({ videoDetails }: DesktopDetailsProps) {
               </span>
               <DecorativeList>
                 <div className="h-2 w-full" />
-                <a href={PATH_NAME.loop(videoDetails.loop.slug)}>
+                <Link href={PATH_NAME.loop(videoDetails.loop.slug)}>
                   <li className="relative flex h-full w-full items-center justify-between rounded-md border border-monochrome-9 bg-monochrome-10 p-4 ">
                     <p className="line-clamp-1 w-full break-all pr-2 text-body-1-demi">{videoDetails.loop?.name}</p>
                     <p className="whitespace-nowrap text-cap-1-med text-primary">View Loop</p>
                   </li>
-                </a>
+                </Link>
               </DecorativeList>
             </div>
           </div>
