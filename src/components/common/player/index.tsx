@@ -7,6 +7,7 @@ import { usePlayerControlStore } from './player-control-store'
 import { useCommentStore } from '../comments/store'
 import { useHasUserFocus } from '@hooks/use-has-user-focus'
 import { LockIcon } from '@icons/LockIcon'
+import { useGenuinOptions, type VideoSizeBoxType } from '@lib/stores/genuin-options'
 // import { FeedShimmer } from '../shimmers/feed-shimmer'
 
 const CommentSheet = dynamic(async () => await import('./comment-sheet').then((comp) => comp.CommentSheet))
@@ -50,7 +51,7 @@ type Props = {
    * Sizebox is mandatory. To get sizebox see hooke useVideoSizeBox.
    * Tip: Please don't render withour sizebox
    */
-  sizeBox: { height: number; width: number }
+  sizeBox: VideoSizeBoxType
   /**
    * If it is enabled video will play if only if video is in viewport.
    */
@@ -71,12 +72,12 @@ function Mobile({
   videoData,
   shouldPlay = true,
   loop = false,
-  sizeBox,
   playIfInViewPort,
   shouldShowBackgroundBlurImage = true,
   isFirstPlayerInList = false,
-}: Props) {
+}: Omit<Props, 'sizeBox'>) {
   const containerRef = useRef<HTMLDivElement | null>(null)
+  const sizeBox = useGenuinOptions().sizeBoxes.default
   const hasFocus = useHasUserFocus()
   const { setShouldPlay, toggleShouldPlay } = usePlayerControlStore((state) => ({
     setShouldPlay: state.setShouldPlay,
@@ -120,7 +121,7 @@ function Mobile({
         <div
           ref={containerRef}
           className="relative overflow-hidden"
-          style={{ width: sizeBox?.width, height: sizeBox?.height }}>
+          style={{ width: sizeBox.width, height: sizeBox.height }}>
           {playIfInViewPort ? (
             <ViewportPlayer
               videoSource={videoData.video.url}
@@ -215,7 +216,7 @@ function Desktop({
             }
             setShouldPlay(!stateShouldPlay)
           }}
-          style={{ width: sizeBox?.width, height: sizeBox?.height }}>
+          style={{ ...sizeBox }}>
           {playIfInViewPort ? (
             <ViewportPlayer
               videoSource={videoData.video.url}

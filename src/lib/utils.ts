@@ -40,13 +40,6 @@ export function getAvatarUrl(avatarUrl: any) {
   return null
 }
 
-/**
- * @returns {Boolean} if requesting client is mobile or not
- */
-// export function checkIfMobile(): boolean {
-//   return cookies().get('mobile')?.value === 'true'
-// }
-
 export function checkAndAppendHttps(link: string): string {
   return link.startsWith('http') || link.startsWith('https') ? link : 'https://' + link
 }

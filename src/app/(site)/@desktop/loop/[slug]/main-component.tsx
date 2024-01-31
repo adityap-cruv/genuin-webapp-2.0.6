@@ -178,6 +178,7 @@ function LoopCollaborators({ slug }: { slug: string }) {
   const { data, isLoading } = getLoopCohosts(slug, 'members')
   const cohosts = data?.users
 
+  //  TODO: Implement shimmer.
   if (isLoading) return <Loader size="md" />
 
   if (cohosts && cohosts.length !== 0)
@@ -205,6 +206,7 @@ function LoopSubscribers({ slug }: { slug: string }) {
   const { data, isLoading } = getLoopSubscribers(slug, 'subscribers')
   const subscribers = data?.users
 
+  // TODO: Implement shimmer.
   if (isLoading) return <Loader size="md" />
 
   if (subscribers && subscribers.length !== 0)

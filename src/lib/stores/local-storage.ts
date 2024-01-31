@@ -8,8 +8,6 @@ type LocalStorageType = {
   userId: string
   communities: CommunityType[]
   addCommunity: (community: CommunityType) => void
-  isIframe: boolean
-  setIsIframe: (value: boolean) => void
 }
 
 export const useLocalStorage = create(
@@ -37,10 +35,6 @@ export const useLocalStorage = create(
             }
             return { communities }
           })
-        },
-        isIframe: false,
-        setIsIframe(value) {
-          set({ isIframe: value })
         },
       }
     },

@@ -1,6 +1,6 @@
 import { GenuinIcon } from '@icons/genuin-icon'
-import { useEmbedDataStore } from '@lib/stores/embed-data-store'
-import Image from 'next/image'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
+// import Image from 'next/image'
 import { type ComponentProps } from 'react'
 
 type Props = ComponentProps<'svg'> & {
@@ -31,8 +31,9 @@ function Logo({ ...props }: Props) {
 type ProcessorProps = { type: 'icon' | 'text' | 'logo' } & Props
 
 function LogoProcessor({ imageHeight, type, ...props }: ProcessorProps) {
-  const { embed, logoUrl } = useEmbedDataStore((state) => ({ embed: state.embed, logoUrl: state.logoUrl }))
+  const { embed, logoUrl } = useGenuinOptions((state) => ({ embed: state.embed, logoUrl: state.logoUrl }))
 
+  // TODO: Find a way to use next/image here.
   if (embed && logoUrl) return <img src={logoUrl} style={{ height: imageHeight }} className="w-auto" alt="brand logo" />
 
   switch (type) {

@@ -4,12 +4,9 @@ import Link from 'next/link'
 import { DownloadAppDialog } from './download-app-dialog'
 import { MOBILE_DOWNLOAD_APP_LINK } from '@lib/constants'
 import { GenuinIcon } from '@icons/genuin-icon'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
 
-type Props = {
-  isMobile: boolean
-}
-
-export function Footer({ isMobile }: Props) {
+export function Footer() {
   return (
     <>
       <footer className="relative hidden bg-primary lg:block">
@@ -22,7 +19,7 @@ export function Footer({ isMobile }: Props) {
                 you? Start your own!
               </h5>
             </div>
-            <DownloadButton isMobile={isMobile} />
+            <DownloadButton />
           </div>
           <div
             className="flex flex-col gap-y-10 bg-new-off-black px-20 pb-8 pt-12 text-primary-foreground"
@@ -52,7 +49,7 @@ export function Footer({ isMobile }: Props) {
           <div className="mt-5 flex flex-col items-center justify-center gap-y-2">
             <p className="max-w-[230px] text-center text-new-h2-mobile text-new-off-white">Join the world of Genuin.</p>
             <div className="mt-3">
-              <DownloadButton isMobile={isMobile} />
+              <DownloadButton />
             </div>
           </div>
           <div
@@ -67,11 +64,8 @@ export function Footer({ isMobile }: Props) {
   )
 }
 
-type DownloadButtonProps = {
-  isMobile: boolean
-}
-
-function DownloadButton({ isMobile }: DownloadButtonProps) {
+function DownloadButton() {
+  const isMobile = useGenuinOptions().isMobile
   return isMobile ? (
     <Link href={MOBILE_DOWNLOAD_APP_LINK}>
       <Button

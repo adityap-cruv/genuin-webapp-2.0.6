@@ -11,6 +11,6 @@ const Desktop = dynamic(async () => await import('./desktop').then((comp) => com
   },
 })
 
-export const MainComponent = ({ isMobile }: { isMobile: boolean }) => {
+export const MainComponent = () => {
   return <Desktop />
 }

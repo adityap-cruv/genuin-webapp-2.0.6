@@ -5,7 +5,6 @@ import { type VideoDataType } from '@lib/schemas/video'
 import { useFeedModalStore } from './store'
 import { Feed } from '@components/common/feed'
 import { TopBar } from '@components/layouts/mobile/top-bar'
-import { useVideoSizeBoxMobile } from '@hooks/use-video-size-box-mobile'
 import { FeedShimmer } from '@components/common/shimmers/feed-shimmer'
 
 type Props = {
@@ -39,7 +38,6 @@ export function Mobile({
   isError,
   fetchNextVideos,
 }: Props) {
-  const videoSizeBox = useVideoSizeBoxMobile()
   const { currentIndex, setCurrentIndex, setStateVideos } = useFeedModalStore((state) => ({
     currentIndex: state.currentIndex,
     setCurrentIndex: state.setCurrentIndex,
@@ -59,7 +57,7 @@ export function Mobile({
   }, [currentIndex])
 
   function InnerContent() {
-    if (videoSizeBox && videos)
+    if (videos)
       return (
         <Feed.mobile
           isError={false}
@@ -67,7 +65,6 @@ export function Mobile({
           isFetchingNextPage={false}
           isLoading={false}
           startIndex={startIndex}
-          sizeBox={videoSizeBox}
         />
       )
     return <FeedShimmer.mobile />
@@ -77,21 +74,19 @@ export function Mobile({
     <CustomDialog open={open}>
       <CustomDialogTrigger>{children}</CustomDialogTrigger>
       <CustomDialogContent showDefaultClose={false}>
-        {videoSizeBox && (
-          <span className="flex items-center gap-x-6">
-            <div className="relative h-full w-full overflow-clip bg-monochrome-white">
-              <TopBar showClose className="fixed left-0 top-0" variant="trasparent" onClose={close} />
-              {/* <CustomDialogClose
+        <span className="flex items-center gap-x-6">
+          <div className="relative h-full w-full overflow-clip bg-monochrome-white">
+            <TopBar showClose className="fixed left-0 top-0" variant="trasparent" onClose={close} />
+            {/* <CustomDialogClose
                 onClick={() => {
                   close?.()
                 }}
                 className="absolute right-4 top-4 z-10">
                 <X className="h-6 w-6 stroke-monochrome-white" />
               </CustomDialogClose> */}
-              <InnerContent />
-            </div>
-          </span>
-        )}
+            <InnerContent />
+          </div>
+        </span>
       </CustomDialogContent>
     </CustomDialog>
   )

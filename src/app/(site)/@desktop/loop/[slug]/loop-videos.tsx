@@ -22,6 +22,7 @@ export function LoopVideos({ slug }: { slug: string }) {
     }
   })
 
+  // TODO: Implement shimmer.
   if (isLoading) return <Loader size="md" />
 
   if (!videos || videos?.length === 0)

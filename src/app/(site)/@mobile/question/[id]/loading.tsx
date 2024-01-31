@@ -1,6 +1,7 @@
 'use client'
-import { Loader } from '@components/ui/loader'
+import { SplashScreen } from '@components/common/splash-screen'
 
+// TODO: Add shimmer.
 export default function Loading() {
-  return <Loader size="lg" />
+  return <SplashScreen/>
 }
