@@ -14,6 +14,7 @@ import { RecentCommunities } from './recent-communities'
 import { MOBILE_DOWNLOAD_APP_LINK } from '@lib/constants'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import { AppLogo } from '@components/ui/app-logo'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
 
 const navVariant = cva('sticky top-0 flex z-40 h-[76px] w-full items-center justify-between  px-2', {
   variants: {
@@ -36,12 +37,12 @@ type Props = {
 } & VariantProps<typeof navVariant>
 
 export function TopBar({ variant = 'light', className, showClose = false, onClose }: Props) {
-  const showSymbol = useLocalStorage((state) => !state.isIframe)
+  const isEmbed = useGenuinOptions().embed
   return (
     <nav className={cn(navVariant({ variant }), className)}>
       <span className="flex items-center ">
         <Menu hamBurgerVariant={variant === 'trasparent' ? 'light' : 'dark'} />
-        {showSymbol && (
+        {isEmbed && (
           <Link href={{ pathname: PATH_NAME.home() }}>
             <AppLogo.icon
               imageHeight={32}
@@ -51,7 +52,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
         )}
       </span>
       <span className="flex items-center gap-x-2">
-        {showSymbol && (
+        {isEmbed && (
           <Link href={MOBILE_DOWNLOAD_APP_LINK} target="_blank">
             <Button
               className={
