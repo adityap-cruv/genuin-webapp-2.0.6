@@ -1,9 +1,8 @@
 'use client'
-import dynamic from 'next/dynamic'
 import { SideBar } from './side-bar'
+import { TopBar } from './top-bar'
 import { cn } from '@lib/utils'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
-const TopBar = dynamic(async () => await import('./top-bar').then((comp) => comp.TopBar))
 
 export function Layout(props: any) {
   const showNavbar = useGenuinOptions().showNavbar
