@@ -22,6 +22,7 @@ import lowesLogo from '@images/business/brand-page/brands/lowes.svg'
 import lowesBanner from '@images/business/brand-page/brands/lowes.png'
 import { NavBar } from '@components/pages/home/nav-bar'
 import Footer from '@components/business/footer'
+import AsSeenIn from '@components/business/as-seen-in'
 
 export default function BrandsPage() {
   return (
@@ -32,9 +33,9 @@ export default function BrandsPage() {
         <div className="pt-navbar">
           <Banner
             titleHtmlTag={1}
-            bannerTitle={'Making Community Engaging for Everyone'}
+            bannerTitle={'Making Community Engaging on your App & Web'}
             titleVariant={'black'}
-            bannerCaption={`Nova is supporting the world's biggest brands, the next generation of community builders, and the knowledge seekers in between.`}
+            bannerCaption={`Embedded Communities offer brands a compelling, interactive alternative to third-party social channels, free from privacy concerns, data ownership issues, and algorithm complexities.`}
             paraVariant={'medium'}
             buttonData={[
               { text: 'Get Started', variant: 'solid' },
@@ -54,10 +55,10 @@ export default function BrandsPage() {
       </div>
 
       <div className={style.container}>
-        {/* Online Community component */}
-        <OnlineCommunity />
         {/* Engage Customers component */}
         <EngageCustomers />
+        {/* Online Community component */}
+        <OnlineCommunity />
         {/* Engagement Hooks component */}
         <EngagementHooks />
         {/* Funnel Engagement component */}
@@ -69,6 +70,7 @@ export default function BrandsPage() {
         {/* Get In Touch component */}
         <GetInTouch />
       </div>
+      <AsSeenIn />
       <Footer />
     </>
   )

@@ -1,11 +1,12 @@
 @import '../../../../styles/breakpoints.scss';
 
 .bannerContainer {
-  margin-bottom: 222px;
+  margin-bottom: 122px;
 
   .bannerTop {
     position: sticky;
     top: 0;
+    margin: 40px 0;
   }
   position: relative;
 }

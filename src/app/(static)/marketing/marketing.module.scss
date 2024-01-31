@@ -1,9 +1,9 @@
 // Import breakpoints
-@import '../../styles/breakpoints.scss';
+@import '../../../styles/breakpoints.scss';
 
 // Section One styles
 .sectionOne {
-  background: url(../../../public/images/business/brand-page/brandBG.png) no-repeat;
+  background: url(../../../../public/images/business/marketing-page/marketingBG.png) no-repeat;
   background-size: 100% 100%;
   background-position: center;
   backdrop-filter: blur(100px);

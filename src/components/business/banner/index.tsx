@@ -77,19 +77,25 @@ const MainBanner: React.FC<BannerProps> = ({
         </div>
         <div className={style.containerBrand}>
           {/* Render brand images */}
-          {brandImages?.map(({ img }: any, index: any) => (
-            <div className={`${style.imageContainer} ${index === currentIndex ? `${style.active}` : ''}`} key={index}>
-              <Image
-                priority
-                loading="eager"
-                src={img}
-                alt={`Thumbnail ${index + 1}`}
-                onClick={() => {
-                  handleThumbnailClick(index)
-                }}
-              />
-            </div>
-          ))}
+          {brandImages?.map(
+            ({ img }: any, index: any) =>
+              // Check if img is not null before rendering Image component
+              img && (
+                <div
+                  className={`${style.imageContainer} ${index === currentIndex ? `${style.active}` : ''}`}
+                  key={index}>
+                  <Image
+                    priority
+                    loading="eager"
+                    src={img}
+                    alt={`Thumbnail ${index + 1}`}
+                    onClick={() => {
+                      handleThumbnailClick(index)
+                    }}
+                  />
+                </div>
+              )
+          )}
         </div>
       </div>
     </div>

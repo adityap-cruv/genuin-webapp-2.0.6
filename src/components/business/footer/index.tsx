@@ -49,18 +49,6 @@ export default function Footer() {
               ))}
             </div>
 
-            {/* Container for the "Resources" section */}
-            <div className={style.footerMenuList}>
-              {/* Paragraph component for the section title */}
-              <ParagraphComponent text={'Resources'} sizeVariant={'medium'} colorVariant={'white'} />
-              {/* Map through the "resources" array and create links */}
-              {content?.resources?.map(({ url, title }, index) => (
-                <Link key={index} href={url}>
-                  {title}
-                </Link>
-              ))}
-            </div>
-
             {/* Container for the "Company" section */}
             <div className={style.footerMenuList}>
               {/* Paragraph component for the section title */}

@@ -56,10 +56,25 @@ const EngageCustomers: React.FC = () => {
   return (
     <section className={progressValue > 0 ? `stickySection ${style.bannerContainer}` : style.bannerContainer}>
       <div className={style.bannerTop}>
+        {/* <div className='h-20'></div> */}
         <HeadingComponent headingLevel={2} title={content.EngageCustomers.title} colorVariant={'black'} />
         <ParagraphComponent text={content.EngageCustomers.caption} sizeVariant={'medium'} colorVariant={'black'} />
         <div className={style.bannerBottons}>
-          <progress id="progressBar" max="100" value="0"></progress>
+          <progress
+            id="progressBar"
+            max="100"
+            value="0"
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: 0,
+              width: '100%',
+              height: '4px',
+              border: 'none',
+              background: 'transparent',
+              marginTop: '-2px',
+              zIndex: 8,
+            }}></progress>
           <span>Interaction</span>
           <span className={progressValue >= 50 ? style.activeButton : ''}>Engagement</span>
           <span className={progressValue >= 90 ? style.activeButton : ''}>Automation</span>

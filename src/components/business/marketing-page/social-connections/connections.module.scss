@@ -1,33 +1,64 @@
-@import '../../../../styles/breakpoints.scss';
-
 .container {
-  margin-top: 186px;
-  .firstRow {
-    text-align: center;
-    margin-bottom: 53px;
-  }
-  .row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 105;
-    .col {
-      &:last-child {
-        max-width: 585px;
-        width: 100%;
+  width: 100%;
+  height: 100vh;
+}
+
+.containerContent {
+  overflow: hidden;
+  display: flex;
+  position: relative;
+}
+
+.leftContainer,
+.rightContainer {
+  width: 50%;
+  // height: 100vh;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.rightContainer {
+  .rightInnerContainer {
+    .rightElementBlock {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 40px;
+      opacity: 0.3;
+
+      h4 {
+        margin: 0px 0px 8px;
       }
-      .colContainer {
-        margin-bottom: 30px;
-
-        h4 {
-          margin-top: 0px;
-          margin-bottom: 8px;
-        }
-
-        p {
-          margin: 0px 0px 8px;
-        }
+      p {
+        margin: 0px;
       }
     }
+    .rightElementBlock.active {
+      opacity: 1;
+    }
+  }
+  .rightElement {
+    width: 50%;
+    // height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-size: 100px;
+  }
+}
+
+.leftContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .leftContent {
+    width: 100%;
+    max-width: 400px;
+    height: 100%;
+    max-height: 400px;
+    position: relative;
+    overflow: hidden;
   }
 }

@@ -24,14 +24,20 @@
     gap: 30px;
 
     h4 {
-      border-top: 2px solid $off-black;
       padding-top: 16px;
-      border-image: linear-gradient(to right, $off-black 50%, transparent 50%) 100% 1;
     }
 
     p {
       margin-top: 6px;
       margin-bottom: 16px;
     }
+  }
+  .topLine {
+    border-top: 2px solid #bbb;
+    border-image: linear-gradient(to right, #bbb 50%, transparent 50%) 100% 1;
+  }
+  .topLineHovered {
+    border-top: 2px solid $off-black;
+    border-image: linear-gradient(to right, $off-black 50%, transparent 50%) 100% 1;
   }
 }
