@@ -42,7 +42,7 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
       title,
       description,
       url: shareLink,
-      images: [{ url: `${videoDetails?.video?.thumbnail}#primaryimage` }],
+      images: [{ url: `${videoDetails?.video?.preview}#primaryimage` }],
     },
   }
 }
