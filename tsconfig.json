@@ -50,7 +50,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "src/app/api/auth/[...nextauth]/route.js"
-  ],
+, "src/components/business/marketing-page/social-connections/index.js"  ],
   "exclude": [
     "node_modules",
     "postcss.config.js"

@@ -1,0 +1,52 @@
+@import './variables.scss';
+
+// Small tablets and large smartphones (landscape view)
+$screen-sm: $screen-sm-min;
+
+// Small tablets (portrait view)
+$screen-md: $screen-md-min;
+
+// Tablets and small desktops
+$screen-lg: $screen-lg-min;
+
+// Large tablets and desktops
+$screen-xl: $screen-xl-min;
+
+// Small devices
+@mixin sm {
+  @media (min-width: #{$screen-sm}) {
+    @content;
+  }
+}
+
+// Medium devices
+@mixin md {
+  @media (min-width: #{$screen-md}) {
+    @content;
+  }
+}
+
+// Large devices
+@mixin lg {
+  @media (min-width: #{$screen-lg}) {
+    @content;
+  }
+}
+
+// Extra large devices
+@mixin xl {
+  @media (min-width: #{$screen-xl}) {
+    @content;
+  }
+}
+
+@mixin container {
+  max-width: $container-width;
+  width: 100%;
+  padding-left: 15px;
+  padding-right: 15px;
+  margin: 0 auto;
+  display: flex;
+}
+
+

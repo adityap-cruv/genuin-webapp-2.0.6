@@ -17,10 +17,21 @@ export function NavBar() {
           <Link href="/">
             <GenuinIcon.logo className="fill-new-off-black" />
           </Link>
-          <div className="flex items-center gap-x-4">
-            <Link href={{ pathname: PATH_NAME.home() }}>
-              <p className="pr-4 text-new-para-2 font-semibold transition-all hover:underline">Explore Genuin</p>
+          <div className="flex w-1/4 justify-between">
+            <Link href="/brands">
+              <p className="pr-4 text-new-para-2 font-semibold transition-all hover:underline">Manage</p>
             </Link>
+            <Link href="/marketing">
+              <p className="pr-4 text-new-para-2 font-semibold transition-all hover:underline">Market</p>
+            </Link>
+            <Link href="/pricing">
+              <p className="pr-4 text-new-para-2 font-semibold transition-all hover:underline">Pricing</p>
+            </Link>
+          </div>
+          <div className="flex items-center gap-x-4">
+            {/* <Link href={{ pathname: PATH_NAME.home() }}>
+              <p className="pr-4 text-new-para-2 font-semibold transition-all hover:underline">Explore Genuin</p>
+            </Link> */}
             <Link href={HIRING_LINK}>
               <Button
                 variant="outline"

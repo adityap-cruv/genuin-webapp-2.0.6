@@ -1,0 +1,63 @@
+{
+  "table": {
+    "title": "Compare all plan features",
+    "tableData": [
+      {
+        "category": "Dedicated domain Begenuin.com server",
+        "free": true,
+        "starter": true,
+        "essential": true,
+        "pro": true,
+        "enterprise": true
+      },
+      {
+        "category": "Unlimited video uploads",
+        "free": true,
+        "starter": true,
+        "essential": true,
+        "pro": true,
+        "enterprise": true
+      },
+      {
+        "category": "Unlimited users",
+        "free": true,
+        "starter": true,
+        "essential": true,
+        "pro": true,
+        "enterprise": true
+      },
+      {
+        "category": "No streaming limit",
+        "free": true,
+        "starter": true,
+        "essential": true,
+        "pro": true,
+        "enterprise": true
+      },
+      {
+        "category": "Upload of content from third party platforms",
+        "free": true,
+        "starter": true,
+        "essential": true,
+        "pro": true,
+        "enterprise": true
+      },
+      {
+        "category": "Automate loop generation and curation",
+        "free": true,
+        "starter": true,
+        "essential": true,
+        "pro": true,
+        "enterprise": true
+      },
+      {
+        "category": "Feature",
+        "free": false,
+        "starter": false,
+        "essential": false,
+        "pro": true,
+        "enterprise": true
+      }
+    ]
+  }
+}
