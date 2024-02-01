@@ -24,7 +24,6 @@ type MobileProps = {
   startIndex: number
 }
 
-// TODO: remove props sizebox
 export function Mobile({
   videos,
   fetchNextPage,

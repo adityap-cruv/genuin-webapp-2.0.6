@@ -394,7 +394,11 @@ function LoopVideos({
   loopDetails: LoopMiniObj
   community: CommunityMiniObj
 }) {
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getAllLoopVideos(userId, loopDetails.slug)
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getAllLoopVideos(
+    userId,
+    loopDetails.slug,
+    3
+  )
   const { addVideos, openModal } = useCommunityListStore((state) => ({
     addVideos: state.addVideos,
     openModal: state.open,

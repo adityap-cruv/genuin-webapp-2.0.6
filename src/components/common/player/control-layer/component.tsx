@@ -69,7 +69,6 @@ function Desktop({ videoData }: Props) {
   }
 }
 
-// TODO: Copy youtubes behavior.
 function Mobile({ videoData }: Props) {
   const { toggleMuted, muted, shouldPlay } = usePlayerControlStore((state) => ({
     toggleMuted: state.toggleMuted,

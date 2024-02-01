@@ -44,7 +44,6 @@
     "next": "^14.0.1",
     "openplayerjs": "^2.13.3",
     "react": "18.2.0",
-    "react-device-detect": "^2.2.3",
     "react-dom": "18.2.0",
     "react-flag-kit": "^1.1.1",
     "sass": "^1.70.0",

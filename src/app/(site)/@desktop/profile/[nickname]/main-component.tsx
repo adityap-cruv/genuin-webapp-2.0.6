@@ -44,23 +44,6 @@ export function MainComponent({ profileData }: CompProps) {
       resetData()
     }
   }, [])
-  // const [divHeight, setDivHeight] = useState(0)
-
-  // useEffect(() => {
-  //   const updateHeight = () => {
-  //     if (divRef.current) {
-  //       const height = divRef.current.getBoundingClientRect().height
-  //       setDivHeight(height)
-  //     }
-  //   }
-  //   updateHeight()
-  //   window.addEventListener('resize', updateHeight)
-  //   return () => {
-  //     window.removeEventListener('resize', updateHeight)
-  //   }
-  // }, [divRef])
-
-  // console.log(divHeight)
 
   return (
     <>
@@ -361,7 +344,7 @@ type LoopVideosProps = {
 }
 
 function LoopVideos({ userId, loop, community }: LoopVideosProps) {
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getAllLoopVideos(userId, loop.slug)
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getAllLoopVideos(userId, loop.slug, 8)
 
   const { addVideos, open } = useCommunityListStore((state) => ({
     addVideos: state.addVideos,

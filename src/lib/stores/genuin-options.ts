@@ -36,7 +36,11 @@ type StateType = {
    */
   isLoading: boolean
   isMobile: boolean
+  os: string
   isIframe: boolean
+  deviceType: string
+  browserType: string
+  isSafari: boolean
 }
 
 type ActionsType = {
@@ -55,6 +59,10 @@ const initialState: StateType = {
     modal: { width: -1, height: -1, player: { height: -1, width: -1 } },
   },
   isIframe: false,
+  os: '',
+  deviceType: '',
+  browserType: '',
+  isSafari: false,
 }
 
 export const useGenuinOptions = create(

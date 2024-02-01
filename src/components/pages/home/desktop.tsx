@@ -10,7 +10,7 @@ import Link from 'next/link'
 // all images import
 import imgC1 from '@images/home-page/c1.png'
 import imgC1Mobile from '@images/home-page/c1_mobile.png'
-import qrImage from '@images/home-page/download_qr.svg'
+// import qrImage from '@images/home-page/download_qr.svg'
 import icAddButton from '@icons/home-page/icAddButton.svg'
 import imgC2 from '@images/home-page/c2.png'
 import imgC2Mobile from '@images/home-page/c2_mobile.png'
@@ -50,7 +50,8 @@ function Component1() {
           <div className="w-[60%] flex-col justify-between">
             <h1 className="text-new-h1">
               Community,
-              <br /> reimagined. Learn, connect and engage
+              <br /> reimagined. Learn,
+              <br /> connect and engage
               <br /> — all under one roof.
             </h1>
             <p className=" my-2 text-left text-new-para-1">
@@ -63,7 +64,7 @@ function Component1() {
               </Button>
             </Link>
           </div>
-          <Image priority loading="eager" className="w-[40%]" src={imgC1} alt="genuin" />
+          <Image unoptimized priority loading="eager" className="w-[40%]" src={imgC1} alt="genuin" />
         </div>
       </div>
       <div

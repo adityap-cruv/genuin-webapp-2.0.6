@@ -1,5 +1,5 @@
+import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { useEffect, useRef, useState } from 'react'
-import { isMobile, isSafari } from 'react-device-detect'
 
 // TODO: refactor use of is mobile and issafari.
 /**
@@ -8,8 +8,10 @@ import { isMobile, isSafari } from 'react-device-detect'
  * @returns
  */
 export function DecorativeList({ children }: any) {
+  const { isMobile, isSafari } = useGenuinOptions((state) => ({ isMobile: state.isMobile, isSafari: state.isSafari }))
   const [lastLiHeight, setLastLiHeight] = useState(0)
   const ul = useRef<HTMLUListElement>(null)
+
   useEffect(() => {
     function onChange() {
       const li = ul.current?.querySelector('li:last-child')
