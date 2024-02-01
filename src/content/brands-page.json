@@ -1,0 +1,52 @@
+{
+  "TopBanner": {
+    "title": "Making Community Engaging for Everyone",
+    "caption": "Nova is supporting the world's biggest brands, the next generation of community builders, and the knowledge seekers in between.",
+    "button": [
+      { "text": "Get Started", "variant": "solid" },
+      { "text": "Contact Sales", "variant": "outline" }
+    ]
+  },
+  "OnlineCommunity": {
+    "title": "Build a Thriving Online Community, Your Way",
+    "caption": "Engage your audience and nurture loyal brand advocates in your custom-built Genuin community.",
+    "button": "Contact Sales",
+    "imgLeft": "/images/customer-engage/engagement-2.png",
+    "imgLeftAlt": "alt",
+    "imgRight": "/images/customer-engage/engagement-2.png",
+    "imgRightAlt": "alt"
+  },
+  "EngageCustomers": {
+    "title": "Engage Your Customers, Wherever They Are",
+    "caption": "Allow your customers to engage with your brand in three easy steps. Use Genuin's unique tools to bring everyone into the conversation."
+  },
+  "EngagementHooks": {
+    "title": "The Best Engagement Hooks on Your App",
+    "caption": "A new way of connecting with your audience — entertain, educate, and convert them into loyal brand advocates through engaging content",
+    "button": "Learn More"
+  },
+  "Testimonials": [
+    {
+      "text": "“Genuin changed the game for us! By utalizing the community-building tools provided, we saw substantially bolstered engagement and amplified brand loyalty.”",
+      "name": "Esther Howard",
+      "position": "Brand Manager",
+      "img": "/images/business/brand-page/testimonials/testimonial-1.png"
+    },
+    {
+      "text": "“We're thrilled with the seamless integration. We struggled with engaging our audience, and Genuin provides us with a simple, video-based solution that meets our customers where they're at.”",
+      "name": "Jenny Wilson",
+      "position": "Marketing Lead",
+      "img": "/images/business/brand-page/testimonials/testimonial-2.png"
+    },
+    {
+      "text": "“We're thrilled with the seamless integration. We struggled with engaging our audience, and Genuin provides us with a simple, video-based solution that meets our customers where they're at.”",
+      "name": "Jacob Jones",
+      "position": "Brand Manager",
+      "img": "/images/business/brand-page/testimonials/testimonial-3.png"
+    }
+  ],
+  "GetInTouch": {
+    "title": "Drive loyal customers and fans in your branded communities.",
+    "caption": "Get in touch today to start building your unique brand community."
+  }
+}

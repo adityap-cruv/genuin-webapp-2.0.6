@@ -1,0 +1,47 @@
+@import '../../../styles/breakpoints.scss';
+
+.navBar {
+  padding: 25px 0px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: $header-gradient;
+
+  .navContainer {
+    @include container;
+    justify-content: space-between;
+
+    .navLeft {
+      display: flex;
+      align-items: center;
+
+      .navLogo {
+        margin-right: 44px;
+
+        a {
+          outline: none;
+        }
+      }
+
+      .navMenu {
+        display: inline-flex;
+        gap: 65px;
+        margin-top: -8px;
+
+        .active {
+          color: $off-black;
+          font-weight: 700;
+        }
+
+        a {
+          color: #4d4d4d;
+        }
+      }
+    }
+    .navRight {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+  }
+}

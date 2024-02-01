@@ -1,0 +1,197 @@
+@import './variables.scss';
+// @import 'tailwindcss/base';
+// @import 'tailwindcss/components';
+// @import 'tailwindcss/utilities';
+
+html {
+  height: 100%;
+}
+body {
+  overflow-x: hidden;
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family:
+    'Avenir Next',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    'Roboto',
+    'Oxygen',
+    'Ubuntu',
+    'Cantarell',
+    'Fira Sans',
+    'Droid Sans',
+    'Helvetica Neue',
+    sans-serif;
+  height: 100%;
+  background: #f8f8f8;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+p {
+  margin: 10px 0px;
+  display: inline-block;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+  margin: 10px 0px;
+  display: inline-block;
+}
+
+// swiper css for if you use swiper for Engage Your Customers, Wherever They Are section
+.swiper-container {
+  margin-top: 12px;
+  position: relative;
+
+  &::after {
+    width: 100%;
+    height: calc(100% - 62px);
+    content: '';
+    background: #f7f1f9;
+    position: absolute;
+    bottom: 0;
+  }
+  .swiper {
+    padding-top: 62px;
+    position: relative;
+    .swiper-wrapper {
+      .swiper-slide {
+        display: flex;
+        justify-content: space-between;
+
+        &.two,
+        &.three {
+          padding: 0px 142px;
+        }
+        img {
+          // max-width: 230px;
+          // width: 100%;
+          height: 100%;
+          max-height: 498px;
+          width: auto;
+        }
+      }
+    }
+    .swiper-pagination {
+      background: $white;
+      display: flex;
+      justify-content: space-between;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      .swiper-pagination-bullet {
+        cursor: pointer;
+        border-radius: 20px;
+        border: 1px solid $off-black;
+        background: $off-white;
+        padding: 8px 20px;
+        font-family: Avenir Next;
+        font-size: 16px;
+        font-style: normal;
+        font-weight: 500;
+        line-height: normal;
+        &-active {
+          background-color: $off-black;
+          color: $white;
+        }
+        z-index: 9;
+      }
+      &::before {
+        content: '';
+        height: 4px;
+        width: 5%;
+        background: $black;
+        position: absolute;
+        top: 50%;
+        left: 120px;
+        margin-top: -2px;
+        z-index: 2;
+        transition-duration: 1s;
+        transition-timing-function: ease;
+        transition-property: width, background;
+        transition-delay: 0s, 1s;
+      }
+
+      &::after {
+        content: '';
+        background: #eceaf2;
+        width: 100%;
+        height: 4px;
+        position: absolute;
+        top: 50%;
+        margin-top: -2px;
+        z-index: 1;
+      }
+    }
+  }
+
+  &.slide-1 {
+    .swiper-pagination-bullet.active-0 {
+      background-color: $off-black;
+      color: $white;
+    }
+    .swiper-pagination {
+      &::before {
+        width: 45%;
+      }
+    }
+  }
+  &.slide-2 {
+    .swiper-pagination-bullet.active-0 {
+      background-color: $off-black;
+      color: $white;
+    }
+    .swiper-pagination-bullet.active-1 {
+      background-color: $off-black;
+      color: $white;
+    }
+    .swiper-pagination {
+      &::before {
+        width: 90%;
+      }
+    }
+  }
+}
+
+// Progress bar css for Engage Your Customers, Wherever They Are section
+progress {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  border: none;
+  background: transparent;
+  margin-top: -2px;
+  z-index: 8;
+}
+progress::-webkit-progress-bar {
+  background: transparent;
+}
+progress::-webkit-progress-value {
+  background: $black;
+  background-attachment: fixed;
+}
+progress::-moz-progress-bar {
+  background: $black;
+  background-attachment: fixed;
+}
