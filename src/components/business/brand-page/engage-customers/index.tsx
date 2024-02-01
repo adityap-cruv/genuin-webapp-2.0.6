@@ -92,21 +92,21 @@ const EngageCustomers: React.FC = () => {
         <div ref={slider} className={style.panelContainer}>
           <div className={`panel ${style.panel}`}>
             <div className={style.imgContainer}>
-              <Image priority loading="eager" className="w-full" src={interaction1} alt="genuine" />
-              <Image priority loading="eager" className="w-full" src={interaction2} alt="genuine" />
-              <Image priority loading="eager" className="w-full" src={interaction3} alt="genuine" />
+              <Image priority loading="eager" className={style.img} src={interaction1} alt="genuine" />
+              <Image priority loading="eager" className={style.img} src={interaction2} alt="genuine" />
+              <Image priority loading="eager" className={style.img} src={interaction3} alt="genuine" />
             </div>
           </div>
           <div className={`panel ${style.panel}`}>
             <div className={style.imgContainer}>
-              <Image priority loading="eager" className="w-full" src={Engagement1} alt="genuine" />
-              <Image priority loading="eager" className="w-full" src={Engagement2} alt="genuine" />
+              <Image priority loading="eager" className={style.img} src={Engagement1} alt="genuine" />
+              <Image priority loading="eager" className={style.img} src={Engagement2} alt="genuine" />
             </div>
           </div>
           <div className={`panel ${style.panel}`}>
             <div className={style.imgContainer}>
-              <Image priority loading="eager" className="w-full" src={Automation1} alt="genuine" />
-              <Image priority loading="eager" className="w-full" src={Automation2} alt="genuine" />
+              <Image priority loading="eager" className={style.img} src={Automation1} alt="genuine" />
+              <Image priority loading="eager" className={style.img} src={Automation2} alt="genuine" />
             </div>
           </div>
         </div>
