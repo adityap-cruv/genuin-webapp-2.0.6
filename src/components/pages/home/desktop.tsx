@@ -53,7 +53,6 @@ function Component1() {
               <br /> reimagined. Learn, connect and engage
               <br /> — all under one roof.
             </h1>
-<<<<<<< HEAD
             <p className=" my-2 text-left text-new-para-1">
               Explore Genuin and create communities, interact with your audience, and start conversations on the topics
               that really matter.
@@ -63,15 +62,6 @@ function Component1() {
                 <p className="text-new-sm font-semibold text-new-off-white">Explore Genuin</p>
               </Button>
             </Link>
-=======
-            <div className="mt-15 flex items-center gap-x-5">
-              <Image priority loading="eager" src={qrImage} alt="Download Genuin!" unoptimized />
-              <p className="max-w-md text-left text-new-para-1">
-                Download Genuin to create communities, interact with your audience, and start conversations on the
-                topics that really matter.
-              </p>
-            </div>
->>>>>>> qa
           </div>
           <Image priority loading="eager" className="w-[40%]" src={imgC1} alt="genuin" />
         </div>
