@@ -55,10 +55,10 @@ export default function BrandsPage() {
       </div>
 
       <div className={style.container}>
-        {/* Engage Customers component */}
-        <EngageCustomers />
         {/* Online Community component */}
         <OnlineCommunity />
+        {/* Engage Customers component */}
+        <EngageCustomers />
         {/* Engagement Hooks component */}
         <EngagementHooks />
         {/* Funnel Engagement component */}

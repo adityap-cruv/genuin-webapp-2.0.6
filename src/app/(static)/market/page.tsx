@@ -4,6 +4,7 @@ import Banner from '@components/business/banner'
 import bannerIMG from '@images/business/marketing-page/banner.png'
 import Impressions from '@components/business/marketing-page/impressions'
 import Precision from '@components/business/marketing-page/precision'
+import CustomQr from '@components/business/marketing-page/customqr'
 import SocialConnections from '@components/business/marketing-page/social-connections'
 import Communities from '@components/business/marketing-page/communities'
 import { NavBar } from '@components/pages/home/nav-bar'
@@ -21,7 +22,7 @@ export default function MarketingPage() {
       <div className={style.sectionOne}>
         <NavBar />
         {/* Banner component */}
-        <div className="pt-navbar">
+        <div className="pt-32">
           <Banner
             titleHtmlTag={1}
             bannerTitle={'Unleash the Power of Your Community'}
@@ -44,6 +45,7 @@ export default function MarketingPage() {
       <div className={style.container}>
         <Impressions />
         <Precision />
+        <CustomQr />
         <SocialConnections />
         <Communities />
       </div>

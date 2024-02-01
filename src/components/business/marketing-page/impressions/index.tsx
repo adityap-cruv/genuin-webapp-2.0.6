@@ -12,7 +12,7 @@ import SMSTab from '@images/business/marketing-page/SMS Engagement.png'
 import EmailBoxTab from '@images/business/marketing-page/Email Engagement.png'
 
 export default function Impressions() {
-  const [isHovered, setIsHovered] = useState<null | string>(null)
+  const [isHovered, setIsHovered] = useState<null | string>('sms')
   return (
     <section className={style.container}>
       {/* First Row with Heading and Caption */}

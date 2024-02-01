@@ -69,7 +69,7 @@ const MainBanner: React.FC<BannerProps> = ({
           <div className={style.bannerRight}>
             {/* Image Component */}
             {brandImages ? (
-              <Image priority loading="eager" src={brandImages[currentIndex].banner} alt="genuin" />
+              <Image priority loading="eager" src={brandImages[currentIndex].banner} height={500} alt="genuin" />
             ) : (
               <Image priority loading="eager" src={bannerImg} alt="genuin" />
             )}
@@ -79,7 +79,6 @@ const MainBanner: React.FC<BannerProps> = ({
           {/* Render brand images */}
           {brandImages?.map(
             ({ img }: any, index: any) =>
-              // Check if img is not null before rendering Image component
               img && (
                 <div
                   className={`${style.imageContainer} ${index === currentIndex ? `${style.active}` : ''}`}
