@@ -71,7 +71,7 @@ const EngageCustomers: React.FC = () => {
               width: '100%',
               height: '4px',
               border: 'none',
-              background: 'transparent',
+              background: 'black',
               marginTop: '-2px',
               zIndex: 8,
             }}>
