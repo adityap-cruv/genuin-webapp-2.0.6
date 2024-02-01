@@ -195,6 +195,7 @@ function CommunityList({ usernickname }: any) {
     }
   })
 
+  // TODO: Improve this component return type.
   return (
     <div className="w-full overflow-hidden" style={{ height: 'calc(100% - 56px)' }}>
       <div ref={scrollDivRef} className="h-full w-full overflow-y-auto">

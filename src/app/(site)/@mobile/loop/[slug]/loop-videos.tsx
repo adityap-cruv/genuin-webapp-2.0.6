@@ -24,6 +24,7 @@ export function LoopVideos({ slug }: { slug: string }) {
 
   // TODO: Add shimmer in images.
   // TODO: Remove this component from here. and put it  in better location.
+  // TODO: Imrove return.
   return (
     <div ref={scrollDivRef} className="h-full w-full overflow-y-auto">
       {isLoading && <Loader size="md" />}

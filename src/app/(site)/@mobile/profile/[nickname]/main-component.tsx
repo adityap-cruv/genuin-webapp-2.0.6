@@ -254,6 +254,7 @@ function CommunityList({ usernickname, scrollYProgress }: any) {
     }
   })
 
+  // TODO: Improve return type and add shimmer.
   return (
     <div className="h-full w-full p-4">
       {isLoading && <Loader size="md" />}
