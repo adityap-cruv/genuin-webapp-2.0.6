@@ -13,6 +13,9 @@ import imgC1Mobile from '@images/home-page/c1_mobile.png'
 import qrImage from '@images/home-page/download_qr.svg'
 import icAddButton from '@icons/home-page/icAddButton.svg'
 import imgC2 from '@images/home-page/c2.png'
+import imgC2_s1 from '@images/home-page/c2_1.png'
+import imgC2_s2 from '@images/home-page/c2_2.png'
+import imgC2_2 from '@images/home-page/c2-2.png'
 import imgC2Mobile from '@images/home-page/c2_mobile.png'
 import imgC3 from '@images/home-page/c3.png'
 import icVideoAddButton from '@icons/home-page/icVideoAddButton.svg'
@@ -24,6 +27,7 @@ import imgC5 from '@images/home-page/c5.png'
 import imgC5_2 from '@images/home-page/c5_2.png'
 import imgReviewerDp from '@images/home-page/reviewerDp.png'
 import { PATH_NAME } from '@lib/utils/constants/path'
+import AsSeenIn from '@components/business/as-seen-in'
 
 export function Desktop() {
   return (
@@ -34,6 +38,7 @@ export function Desktop() {
       <Component4 />
       <Component5 />
       <Component6 />
+      <AsSeenIn />
       {/* <Component7 /> */}
     </>
   )
@@ -48,30 +53,15 @@ function Component1() {
         style={{ background: 'radial-gradient(123.19% 48.8% at 76.02% 69.05%, #E9CAF4 0%, #ADD8FB 100%)' }}>
         <div className="container flex h-full w-full items-center justify-around">
           <div className="w-[60%] flex-col justify-between">
-            <h1 className="text-new-h1">
-              Community,
-              <br /> reimagined. Learn, connect and engage
-              <br /> — all under one roof.
-            </h1>
-<<<<<<< HEAD
-            <p className=" my-2 text-left text-new-para-1">
-              Explore Genuin and create communities, interact with your audience, and start conversations on the topics
-              that really matter.
+            <h1 className="text-new-h1">Natively Integrated Video Communities for Leading Brands.</h1>
+            <p className="my-4 text-left text-new-para-1 text-monochrome-black">
+              With Genuin make your digital presence GenZ Ready with Bite-Sized Video Based Communities.
             </p>
             <Link href={{ pathname: PATH_NAME.home() }}>
-              <Button size="index-page" className="mt-4 bg-new-off-black after:bg-new-dark-grey hover:bg-new-dark-grey">
+              <Button size="index-page" className="my-2 bg-new-off-black after:bg-new-dark-grey hover:bg-new-dark-grey">
                 <p className="text-new-sm font-semibold text-new-off-white">Explore Genuin</p>
               </Button>
             </Link>
-=======
-            <div className="mt-15 flex items-center gap-x-5">
-              <Image priority loading="eager" src={qrImage} alt="Download Genuin!" unoptimized />
-              <p className="max-w-md text-left text-new-para-1">
-                Download Genuin to create communities, interact with your audience, and start conversations on the
-                topics that really matter.
-              </p>
-            </div>
->>>>>>> qa
           </div>
           <Image priority loading="eager" className="w-[40%]" src={imgC1} alt="genuin" />
         </div>
@@ -114,19 +104,35 @@ function Component1() {
 function Component2() {
   return (
     <>
-      <div className="my-20 hidden max-h-full w-full flex-col items-center justify-center gap-y-5  lg:flex ">
-        <h2 className="-tracking-new max-w-lg text-center text-new-h2">
-          <Image
+      <div className="my-20 hidden w-full flex-col items-center justify-center gap-y-5  lg:flex ">
+        <h2 className="-tracking-new text-center text-new-h2">
+          {/* <Image
             priority
             loading="eager"
             src={icAddButton}
             alt="Add"
             className="mr-2 inline-block h-full translate-y-1 align-top"
             unoptimized
-          />
-          Create and grow your own community
+          /> */}
+          Move Beyond Traditional Editorial <br /> Communities to Video-Based Communities
         </h2>
-        <Image priority unoptimized loading="eager" className="w-1/2" src={imgC2} alt="Create you community!" />
+        <div className="flex w-1/3 justify-center">
+          <Image priority unoptimized loading="eager" src={imgC2_s1} alt="Create you community!" />
+          <Image priority unoptimized loading="eager" src={imgC2_s2} alt="Create you community!" />
+        </div>
+
+        <h2 className="-tracking-new mt-12 text-center text-new-h2">
+          {/* <Image
+            priority
+            loading="eager"
+            src={icAddButton}
+            alt="Add"
+            className="mr-2 inline-block h-full translate-y-1 align-top"
+            unoptimized
+          /> */}
+          Your Brand Owned Video Community
+        </h2>
+        <Image priority unoptimized loading="eager" className="w-1/2" src={imgC2_2} alt="Create you community!" />
       </div>
       <div className="flex flex-col items-center justify-center py-10 lg:hidden">
         <h2 className="w-full max-w-sm py-4 text-center text-new-h2-mobile sm:text-new-h2">
@@ -172,9 +178,8 @@ function Component3() {
             Loops
           </h2>
           <h5 className="text-new-h5">
-            Loops are interactive discussion spaces where you can kickstart discussions with Q&A prompts, learn from
-            each other, and join in with video, photo, voice recording or text responses. It's crowdsourced knowledge at
-            your fingertips.
+            The nexus for dynamic one-on-one connections and collaborative discussions. Engage with customers, partners,
+            and employees through Q&A prompts, multimedia sharing and crowdsourced knowledge.
           </h5>
         </div>
       </div>
@@ -275,7 +280,7 @@ function Component4() {
               </div>
               <div
                 ref={textRef}
-                className="flex h-full w-1/2 flex-col justify-center gap-y-8 [&>div]:opacity-30 [&>div]:transition-opacity [&>div]:duration-300 [&>div]:ease-in ">
+                className="flex h-full w-1/2 flex-col justify-center gap-y-8 px-14 [&>div]:opacity-30 [&>div]:transition-opacity [&>div]:duration-300 [&>div]:ease-in ">
                 <div className="!opacity-100">
                   <h3 className="text-new-h3">Connect</h3>
                   <h5 className="mt-4 text-new-h5">Meet new people, grow your audience, and discover new interests.</h5>
@@ -386,8 +391,8 @@ function Component5() {
             </div>
             <div className="flex h-1/2 flex-col justify-between rounded-[15px] border-[1px] border-new-light-grey p-10">
               <h5 className="text-new-h5">
-                "Genuin is so community–driven — I love having that level of interaction with people sharing their own
-                versions of my DIY hacks and offering their own tips."
+                "Since implementing, our engagement levels have skyrocketed. The platform's versatility has allowed us
+                to connect with our diverse audience on a whole new level."
               </h5>
               <p className="mt-10 text-new-para-1">Esmé, Seattle, DIY Content Creator</p>
             </div>
@@ -398,12 +403,12 @@ function Component5() {
           <Image priority loading="eager" className="w-1/3" src={imgC5_2} alt="board" unoptimized />
           <div className="flex flex-col justify-between rounded-2xl bg-primary p-10 text-new-off-white">
             <h5 className="text-new-h5">
-              I love following creators on Instagram and TikTok, but I always wished I could interact with people who
-              share the same interests as me. On Genuin, I'm part of communities on everything from venture capital to
-              books, and I love engaging with others about these topics.
+              Adding communities has been a game-changer for our team. The platform seamlessly connects us with our
+              customers, allowing for insightful discussions and valuable feedback. The interactive format sparks
+              creativity and fosters a sense of community like never before.
             </h5>
             <p className="text-new-para-1">
-              Jamie Mars, <span style={{ fontWeight: '400 !important' }}>Student & Future Investor</span>
+              Sarah Jones, <span style={{ fontWeight: '400 !important' }}>Marketing Manager</span>
             </p>
           </div>
         </div>

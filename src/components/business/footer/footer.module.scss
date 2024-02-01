@@ -6,7 +6,7 @@
   .container {
     @include container;
     flex-direction: column;
-    padding-top: 102px;
+    padding-top: 80px;
 
     .footerRow {
       padding-bottom: 55px;
@@ -19,7 +19,7 @@
       background-color: $off-black;
       border-radius: 20px 20px 0px 0px;
       width: 100%;
-      padding: 61px 103px 26px;
+      padding: 40px 100px 20px;
       display: flex;
       justify-content: space-between;
       align-items: flex-start;

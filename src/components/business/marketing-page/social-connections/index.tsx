@@ -79,7 +79,7 @@ const FunnelEngagement: React.FC = () => {
     <>
       <section ref={app}>
         <div className={`container ${style.container}`}>
-          <div>
+          <div className="text-center">
             <HeadingComponent headingLevel={2} title={content.SocialConnections.title} colorVariant={'black'} />
             <ParagraphComponent
               text={content.SocialConnections.caption}
