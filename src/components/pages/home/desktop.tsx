@@ -53,20 +53,9 @@ function Component1() {
         style={{ background: 'radial-gradient(123.19% 48.8% at 76.02% 69.05%, #E9CAF4 0%, #ADD8FB 100%)' }}>
         <div className="container flex h-full w-full items-center justify-around">
           <div className="w-[60%] flex-col justify-between">
-<<<<<<< HEAD
             <h1 className="text-new-h1">Natively Integrated Video Communities for Leading Brands.</h1>
             <p className="my-4 text-left text-new-para-1 text-monochrome-black">
               With Genuin make your digital presence GenZ Ready with Bite-Sized Video Based Communities.
-=======
-            <h1 className="text-new-h1">
-              Community,
-              <br /> reimagined. Learn, connect and engage
-              <br /> — all under one roof.
-            </h1>
-            <p className=" my-2 text-left text-new-para-1">
-              Explore Genuin and create communities, interact with your audience, and start conversations on the topics
-              that really matter.
->>>>>>> qa
             </p>
             <Link href={{ pathname: PATH_NAME.home() }}>
               <Button size="index-page" className="my-2 bg-new-off-black after:bg-new-dark-grey hover:bg-new-dark-grey">
