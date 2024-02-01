@@ -410,12 +410,11 @@ function LoopVideos({ userId, loop, community }: LoopVideosProps) {
       )
   }
 
-  // TODO: replace <a></a> with <Link></Link>
   return (
     <>
-      <a href={PATH_NAME.loop(loop.slug)}>
+      <Link href={PATH_NAME.loop(loop.slug)}>
         <p className="mb-3 text-body-1-bold">{loop.name}</p>
-      </a>
+      </Link>
       <div className="my-2 grid w-full grid-cols-4 gap-2 md:grid-cols-8">
         <InnerComponent />
         {isFetchingNextPage &&

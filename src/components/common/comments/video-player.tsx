@@ -4,7 +4,7 @@ import { useInView } from 'framer-motion'
 import { useCommentStore } from './store'
 import Image from 'next/image'
 import icPlay from '@icons/player-controls/icPlay.svg'
-import { useHasUserFocus } from '@hooks/use-has-user-focus'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
 
 type Props = {
   // videoSizeBox: { width: number; height: number }
@@ -28,7 +28,7 @@ export function CommentPlayer({ videoSource, poster, commentShareString, onClick
   })
   const elementIsInView = useInView(videoRef, { amount: 'some' })
   const activeCommentIndex = useCommentStore((state) => state.activeCommentIndex)
-  const hasFocus = useHasUserFocus()
+  const hasFocus = useGenuinOptions().userHasFocus
   const shouldPlay = activeCommentIndex === commentShareString && elementIsInView && hasFocus
 
   useEffect(() => {

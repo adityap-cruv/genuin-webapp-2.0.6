@@ -5,10 +5,8 @@ import { type VideoDataType } from '@lib/schemas/video'
 import { useEffect, useRef } from 'react'
 import { usePlayerControlStore } from './player-control-store'
 import { useCommentStore } from '../comments/store'
-import { useHasUserFocus } from '@hooks/use-has-user-focus'
 import { LockIcon } from '@icons/LockIcon'
 import { useGenuinOptions, type VideoSizeBoxType } from '@lib/stores/genuin-options'
-// import { FeedShimmer } from '../shimmers/feed-shimmer'
 
 const CommentSheet = dynamic(async () => await import('./comment-sheet').then((comp) => comp.CommentSheet))
 const InnerPlayer = dynamic(async () => await import('./inner-player').then((comp) => comp.InnerPlayer), {
@@ -78,7 +76,7 @@ function Mobile({
 }: Omit<Props, 'sizeBox'>) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const sizeBox = useGenuinOptions().sizeBoxes.default
-  const hasFocus = useHasUserFocus()
+  const hasFocus = useGenuinOptions().userHasFocus
   const { setShouldPlay, toggleShouldPlay } = usePlayerControlStore((state) => ({
     setShouldPlay: state.setShouldPlay,
     toggleShouldPlay: state.toggleShouldPlay,
@@ -159,7 +157,7 @@ function Desktop({
   isFirstPlayerInList = false,
 }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null)
-  const hasFocus = useHasUserFocus()
+  const hasFocus = useGenuinOptions().userHasFocus
   const { setShouldPlay, stateShouldPlay } = usePlayerControlStore((state) => ({
     setShouldPlay: state.setShouldPlay,
     stateShouldPlay: state.shouldPlay,

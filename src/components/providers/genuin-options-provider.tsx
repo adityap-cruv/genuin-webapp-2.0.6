@@ -47,12 +47,24 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType }:
     setInitialData({ sizeBoxes: getSizeBoxes(isMobile, !hideNavbar) })
   }
 
+  function handleBlur() {
+    setInitialData({ userHasFocus: false })
+  }
+
+  function handleFocus() {
+    setInitialData({ userHasFocus: true })
+  }
+
   useEffect(() => {
     init()
 
+    window.addEventListener('focus', handleFocus)
+    window.addEventListener('blur', handleBlur)
     window.addEventListener('resize', handleResize)
     return () => {
       window.removeEventListener('resize', handleResize)
+      window.removeEventListener('blur', handleBlur)
+      window.removeEventListener('focus', handleFocus)
     }
   }, [])
 
