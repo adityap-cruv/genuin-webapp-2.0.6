@@ -40,7 +40,7 @@ export default function Loading() {
             </div>
           </div>
 
-          <div className="bg-monochrome-11 w-full rounded-lg border border-monochrome-9 p-4">
+          <div className="w-full rounded-lg border border-monochrome-9 bg-monochrome-11 p-4">
             <Shimmer className="h-4 w-1/5" />
             <div className="my-4 grid grid-cols-3 gap-2">
               <Shimmer className="aspect-reel w-full" />
@@ -49,7 +49,7 @@ export default function Loading() {
             </div>
           </div>
 
-          <div className="bg-monochrome-11 my-2 w-full rounded-lg border border-monochrome-9 p-4">
+          <div className="my-2 w-full rounded-lg border border-monochrome-9 bg-monochrome-11 p-4">
             <Shimmer className="h-4 w-1/5" />
             <div className="my-4 grid grid-cols-3 gap-2">
               <Shimmer className="aspect-reel w-full" />
