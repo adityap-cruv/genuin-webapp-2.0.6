@@ -9,7 +9,7 @@ export default function Testimonial() {
   return (
     <section className={style.container}>
       {/* Testimonials Section Heading */}
-      <HeadingComponent headingLevel={2} title={'Testimonials'} colorVariant={'black'} />
+      <HeadingComponent headingLevel={2} title={'What Users Say About Genuin'} colorVariant={'black'} />
 
       <div className={style.row}>
         {/* Map through Testimonials data from the content object */}

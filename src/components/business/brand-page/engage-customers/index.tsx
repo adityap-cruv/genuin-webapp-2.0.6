@@ -71,10 +71,18 @@ const EngageCustomers: React.FC = () => {
               width: '100%',
               height: '4px',
               border: 'none',
-              background: 'transparent',
+              background: 'black',
               marginTop: '-2px',
               zIndex: 8,
-            }}></progress>
+            }}>
+            {' '}
+            <style>{`
+              ::-webkit-progress-value {
+                background: black;
+                background-attachment: fixed;
+              }
+            `}</style>
+          </progress>
           <span>Interaction</span>
           <span className={progressValue >= 50 ? style.activeButton : ''}>Engagement</span>
           <span className={progressValue >= 90 ? style.activeButton : ''}>Automation</span>
@@ -84,21 +92,21 @@ const EngageCustomers: React.FC = () => {
         <div ref={slider} className={style.panelContainer}>
           <div className={`panel ${style.panel}`}>
             <div className={style.imgContainer}>
-              <Image priority loading="eager" src={interaction1} alt="genuine" />
-              <Image priority loading="eager" src={interaction2} alt="genuine" />
-              <Image priority loading="eager" src={interaction3} alt="genuine" />
+              <Image priority loading="eager" className={style.img} src={interaction1} alt="genuine" />
+              <Image priority loading="eager" className={style.img} src={interaction2} alt="genuine" />
+              <Image priority loading="eager" className={style.img} src={interaction3} alt="genuine" />
             </div>
           </div>
           <div className={`panel ${style.panel}`}>
             <div className={style.imgContainer}>
-              <Image priority loading="eager" src={Engagement1} alt="genuine" />
-              <Image priority loading="eager" src={Engagement2} alt="genuine" />
+              <Image priority loading="eager" className={style.img} src={Engagement1} alt="genuine" />
+              <Image priority loading="eager" className={style.img} src={Engagement2} alt="genuine" />
             </div>
           </div>
           <div className={`panel ${style.panel}`}>
             <div className={style.imgContainer}>
-              <Image priority loading="eager" src={Automation1} alt="genuine" />
-              <Image priority loading="eager" src={Automation2} alt="genuine" />
+              <Image priority loading="eager" className={style.img} src={Automation1} alt="genuine" />
+              <Image priority loading="eager" className={style.img} src={Automation2} alt="genuine" />
             </div>
           </div>
         </div>

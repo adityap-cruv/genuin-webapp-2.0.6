@@ -8,9 +8,11 @@ import { PATH_NAME } from '@lib/utils/constants/path'
 import { DownloadAppDialog } from './download-app-dialog'
 import { HIRING_LINK } from '@lib/constants'
 import { GenuinIcon } from '@icons/genuin-icon'
+import { usePathname } from 'next/navigation'
 
 // TODO: Add path name instead of '/brands' | '/marketing' | '/pricing' hard coded values.
 export function NavBar() {
+  const pathname = usePathname()
   return (
     <>
       <nav className="absolute top-0 z-10 m-auto hidden h-navbar w-full lg:flex ">
@@ -18,16 +20,38 @@ export function NavBar() {
           <Link href="/">
             <GenuinIcon.logo className="fill-new-off-black" />
           </Link>
-          <div className="flex w-1/4 justify-between">
-            <Link href="/brands">
-              <p className="pr-4 text-new-para-2 font-semibold transition-all hover:underline">Manage</p>
+          <div className="flex w-1/4 items-center justify-between">
+            <Link href="/">
+              <p
+                className={`pr-4 text-new-para-2 font-semibold ${
+                  pathname === '/' ? 'text-title-3-bold text-monochrome-black' : 'text-monochrome-3'
+                } transition-all hover:underline`}>
+                Build
+              </p>
             </Link>
-            <Link href="/marketing">
-              <p className="pr-4 text-new-para-2 font-semibold transition-all hover:underline">Market</p>
+            <Link href="/manage">
+              <p
+                className={`pr-4 text-new-para-2 font-semibold ${
+                  pathname === '/manage' ? 'text-title-3-bold text-monochrome-black' : 'text-monochrome-3'
+                } transition-all hover:underline`}>
+                {' '}
+                Manage
+              </p>
             </Link>
-            <Link href="/pricing">
-              <p className="pr-4 text-new-para-2 font-semibold transition-all hover:underline">Pricing</p>
+            <Link href="/market">
+              <p
+                className={`pr-4 text-new-para-2 font-semibold ${
+                  pathname === '/market' ? 'text-title-3-bold text-monochrome-black' : 'text-monochrome-3'
+                } transition-all hover:underline`}>
+                {' '}
+                Market
+              </p>
             </Link>
+            {/* <Link href="/pricing">
+              <p className="pr-4 text-new-para-2 font-semibold text-monochrome-3 transition-all hover:underline">
+                Pricing
+              </p>
+            </Link> */}
           </div>
           <div className="flex items-center gap-x-4">
             {/* <Link href={{ pathname: PATH_NAME.home() }}>

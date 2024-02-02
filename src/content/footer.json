@@ -6,16 +6,20 @@
   },
   "solutions": [
     {
-      "url": "/builders",
-      "title": "For Builders"
+      "url": "/",
+      "title": "Build"
     },
     {
-      "url": "/brand",
-      "title": "For Brand"
+      "url": "/manage",
+      "title": "Manage"
     },
     {
-      "url": "/marketing",
-      "title": "For Marketing"
+      "url": "/market",
+      "title": "Market"
+    },
+    {
+      "url": "/pricing",
+      "title": "Pricing"
     }
   ],
 
