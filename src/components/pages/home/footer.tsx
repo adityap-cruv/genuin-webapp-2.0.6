@@ -66,6 +66,7 @@ export function Footer() {
 
 function DownloadButton() {
   const isMobile = useGenuinOptions().isMobile
+
   return isMobile ? (
     <Link href={MOBILE_DOWNLOAD_APP_LINK}>
       <Button
@@ -76,7 +77,7 @@ function DownloadButton() {
       </Button>
     </Link>
   ) : (
-    <DownloadAppDialog isMobile={isMobile}>
+    <DownloadAppDialog>
       <Button
         size="index-page"
         variant="default"

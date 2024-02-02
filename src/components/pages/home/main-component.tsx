@@ -11,9 +11,9 @@ import Link from 'next/link'
 // all images import
 import imgC1 from '@images/home-page/c1.png'
 import imgC1Mobile from '@images/home-page/c1_mobile.png'
-import qrImage from '@images/home-page/download_qr.svg'
+// import qrImage from '@images/home-page/download_qr.svg'
 import icAddButton from '@icons/home-page/icAddButton.svg'
-import imgC2 from '@images/home-page/c2.png'
+// import imgC2 from '@images/home-page/c2.png'
 import imgC2_s1 from '@images/home-page/c2_1.png'
 import imgC2_s2 from '@images/home-page/c2_2.png'
 import imgC2_2 from '@images/home-page/c2-2.png'
@@ -64,7 +64,9 @@ function Component1() {
               </Button>
             </Link>
           </div>
-          <Image priority loading="eager" className="w-[40%]" src={imgC1} alt="genuin" />
+          {/* <Image priority loading="eager" className="w-[40%]" src={imgC1} alt="genuin" /> */}
+          {/* eslint-disable-next-line react/no-unknown-property */}
+          <img src={imgC1.src} width={'45%'} height="auto" decoding="sync" loading="lazy" fetchPriority="high" />
         </div>
       </div>
       <div
@@ -78,7 +80,7 @@ function Component1() {
           really matter.
         </p>
         <div className="flex flex-col gap-y-4">
-          <DownloadAppDialog isMobile>
+          <DownloadAppDialog>
             <Button size="custom" className="bg-new-off-black px-5 py-4 after:bg-new-dark-grey hover:bg-new-dark-grey">
               <p className="text-new-md text-new-off-white">Download Genuin</p>
             </Button>
@@ -89,14 +91,15 @@ function Component1() {
             </Button>
           </Link>
         </div>
-        <Image
+        <img src={imgC1Mobile.src} width={'45%'} height="auto" decoding="sync" loading="lazy" fetchPriority="high" />
+        {/* <Image
           priority
           unoptimized
           loading="eager"
           className="w-4/5 translate-x-2 py-5 sm:w-1/2"
           src={imgC1Mobile}
           alt="genuin"
-        />
+        /> */}
       </div>
     </>
   )
@@ -118,8 +121,8 @@ function Component2() {
           Move Beyond Traditional Editorial <br /> Communities to Video-Based Communities
         </h2>
         <div className="flex w-1/3 justify-center">
-          <Image priority unoptimized loading="eager" src={imgC2_s1} alt="Create you community!" />
-          <Image priority unoptimized loading="eager" src={imgC2_s2} alt="Create you community!" />
+          <img loading="lazy" fetchPriority="low" decoding="async" src={imgC2_s1.src} />
+          <img loading="lazy" fetchPriority="low" decoding="async" src={imgC2_s2.src} />
         </div>
 
         <h2 className="-tracking-new mt-12 text-center text-new-h2">
@@ -133,20 +136,36 @@ function Component2() {
           /> */}
           Your Brand Owned Video Community
         </h2>
-        <Image priority unoptimized loading="eager" className="w-1/2" src={imgC2_2} alt="Create you community!" />
+        <img loading="lazy" fetchPriority="low" decoding="async" src={imgC2_2.src} />
+        {/* <Image priority unoptimized loading="eager" className="w-1/2" src={imgC2_2} alt="Create you community!" /> */}
       </div>
       <div className="flex flex-col items-center justify-center py-10 lg:hidden">
         <h2 className="w-full max-w-sm py-4 text-center text-new-h2-mobile sm:text-new-h2">
-          <Image
+          <img
+            loading="lazy"
+            fetchPriority="low"
+            decoding="async"
+            src={icAddButton.src}
+            className="mr-2 inline-block w-8 translate-y-1 align-baseline sm:mr-4 sm:w-11"
+          />
+          {/* <Image
             unoptimized
             priority
             loading="eager"
             src={icAddButton}
             alt="add"
             className="mr-2 inline-block w-8 translate-y-1 align-baseline sm:mr-4 sm:w-11"
-          />
+          /> */}
           Create and grow your own community
         </h2>
+        <img
+          loading="lazy"
+          fetchPriority="low"
+          decoding="async"
+          src={imgC2Mobile.src}
+          className="py-4 sm:w-1/2 sm:translate-x-5"
+        />
+        {/* 
         <Image
           priority
           unoptimized
@@ -154,7 +173,7 @@ function Component2() {
           src={imgC2Mobile}
           alt="genuin"
           className="py-4 sm:w-1/2 sm:translate-x-5"
-        />
+        /> */}
       </div>
     </>
   )
@@ -164,18 +183,26 @@ function Component3() {
   return (
     <>
       <div className="relative my-40 hidden max-h-full items-center justify-around px-6 xl:container lg:flex xl:px-0">
-        <Image priority loading="eager" unoptimized className="w-1/3" src={imgC3} alt="genuin" />
+        <img loading="lazy" fetchPriority="low" decoding="async" src={imgC2_s1.src} />
+        {/* <Image priority loading="eager" unoptimized className="w-1/3" src={imgC3} alt="genuin" /> */}
         <div className="flex w-2/3 max-w-md flex-col gap-y-8">
           <h2 className="text-new-h2">
             Be part of the conversation with
-            <Image
+            <img
+              loading="lazy"
+              fetchPriority="low"
+              decoding="async"
+              src={icVideoAddButton.src}
+              className="ml-4 mr-3 inline-block align-bottom"
+            />
+            {/* <Image
               priority
               unoptimized
               loading="eager"
               src={icVideoAddButton}
               alt="Add Video"
               className="ml-4 mr-3 inline-block align-bottom"
-            />
+            /> */}
             Loops
           </h2>
           <h5 className="text-new-h5">
@@ -188,21 +215,29 @@ function Component3() {
         <h2 className="max-w-xs text-center text-new-h2-mobile sm:max-w-sm sm:text-new-h2">
           Be part of the conversation
           <br /> with
-          <Image
+          <img
+            loading="lazy"
+            fetchPriority="low"
+            decoding="async"
+            src={icVideoAddButton.src}
+            className="ml-3 mr-2 inline-block w-8 translate-y-1 align-baseline sm:mr-4 sm:w-11"
+          />
+          {/* <Image
             priority
             unoptimized
             loading="eager"
             src={icVideoAddButton}
             alt="add"
             className="ml-3 mr-2 inline-block w-8 translate-y-1 align-baseline sm:mr-4 sm:w-11"
-          />
+          /> */}
           Loops
         </h2>
         <h5 className="flex w-4/5 text-center text-new-h5">
           Loops are interactive discussion spaces where you can join in with video, photo, voice recording and text
           responses.
         </h5>
-        <Image priority unoptimized loading="eager" src={imgC3} alt="loops" className="translate-x-4 sm:w-1/2" />
+        <img loading="lazy" fetchPriority="low" decoding="async" src={imgC3.src} className="translate-x-4 sm:w-1/2" />
+        {/* <Image priority unoptimized loading="eager" src={imgC3} alt="loops" className="translate-x-4 sm:w-1/2" /> */}
       </div>
     </>
   )
@@ -246,14 +281,21 @@ function Component4() {
             <div className="flex h-1/5 items-center justify-center">
               <h2 className="max-w-2xl text-center text-new-h2">
                 Expand your horizons and add to the
-                <Image
+                <img
+                  loading="lazy"
+                  fetchPriority="low"
+                  decoding="async"
+                  src={icConversation.src}
+                  className="ml-3 mr-4 inline-block align-bottom"
+                />
+                {/* <Image
                   priority
                   unoptimized
                   loading="eager"
                   src={icConversation}
                   alt="conversation"
                   className="ml-3 mr-4 inline-block align-bottom"
-                />
+                /> */}
                 conversation
               </h2>
             </div>
@@ -261,23 +303,44 @@ function Component4() {
               <div
                 ref={imgRef}
                 className="relative w-1/2 [&>img]:inset-0 [&>img]:transition-opacity [&>img]:duration-200 [&>img]:ease-in">
-                <Image priority unoptimized loading="eager" src={imgConnect} alt="connect" className="inset-0 w-3/4" />
-                <Image
+                <img
+                  loading="lazy"
+                  fetchPriority="low"
+                  decoding="async"
+                  src={imgConnect.src}
+                  className="inset-0 w-3/4"
+                />
+                {/* <Image priority unoptimized loading="eager" src={imgConnect} alt="connect" className="inset-0 w-3/4" /> */}
+                <img
+                  loading="lazy"
+                  fetchPriority="low"
+                  decoding="async"
+                  src={imgDiscover.src}
+                  className="absolute w-3/4 p-8 opacity-0"
+                />
+                {/* <Image
                   priority
                   unoptimized
                   loading="eager"
                   src={imgDiscover}
                   alt="discover"
                   className="absolute w-3/4 p-8 opacity-0"
+                /> */}
+                <img
+                  loading="lazy"
+                  fetchPriority="low"
+                  decoding="async"
+                  src={imgLearn.src}
+                  className="absolute w-3/4 p-9 opacity-0"
                 />
-                <Image
+                {/* <Image
                   priority
                   unoptimized
                   loading="eager"
                   src={imgLearn}
                   alt="learn"
                   className="absolute w-3/4 p-9 opacity-0"
-                />
+                /> */}
               </div>
               <div
                 ref={textRef}
@@ -308,7 +371,14 @@ function Component4() {
         <h2 className="mb-10 max-w-xs text-center text-new-h2-mobile sm:max-w-lg sm:text-new-h2">
           Expand your horizons and add to the
           <br />
-          <Image
+          <img
+            loading="lazy"
+            fetchPriority="low"
+            decoding="async"
+            src={icConversation.src}
+            className="ml-3 mr-2 inline-block w-8 translate-y-1 align-baseline sm:mr-4 sm:w-11"
+          />
+          {/* <Image
             priority
             loading="eager"
             unoptimized
@@ -317,7 +387,7 @@ function Component4() {
             height={30}
             alt="conversation"
             className="ml-3 mr-2 inline-block w-8 translate-y-1 align-baseline sm:mr-4 sm:w-11"
-          />
+          /> */}
           conversation
         </h2>
         <div className="flex w-full justify-center">
@@ -379,14 +449,21 @@ function Component5() {
             <div className="-border-spacing-10 flex h-1/2 flex-col justify-around rounded-[10px] border-[18px] border-[#E9CAF4] bg-new-off-black p-8">
               <h3 className="text-new-h3 text-new-off-white">"Infinite community possibilities."</h3>
               <div className="mt-5 flex items-center">
-                <Image
+                <img
+                  loading="lazy"
+                  fetchPriority="low"
+                  decoding="async"
+                  src={imgReviewerDp.src}
+                  className="mr-4 h-12 w-12"
+                />
+                {/* <Image
                   priority
                   loading="eager"
                   unoptimized
                   src={imgReviewerDp}
                   alt="lauren hall"
                   className="mr-4 h-12 w-12"
-                />
+                /> */}
                 <p className="text-new-off-white">Lauren Hall, App Member</p>
               </div>
             </div>
@@ -398,10 +475,18 @@ function Component5() {
               <p className="mt-10 text-new-para-1">Esmé, Seattle, DIY Content Creator</p>
             </div>
           </div>
-          <Image priority loading="eager" src={imgC5} alt="genuin" unoptimized className="w-3/5 lg:w-2/5 2xl:w-1/3" />
+          <img
+            loading="lazy"
+            fetchPriority="low"
+            decoding="async"
+            src={imgC5.src}
+            className="w-3/5 lg:w-2/5 2xl:w-1/3"
+          />
+          {/* <Image priority loading="eager" src={imgC5} alt="genuin" unoptimized className="w-3/5 lg:w-2/5 2xl:w-1/3" /> */}
         </div>
         <div className="flex w-full justify-between gap-x-10">
-          <Image priority loading="eager" className="w-1/3" src={imgC5_2} alt="board" unoptimized />
+          <img loading="lazy" fetchPriority="low" className="w-1/3" decoding="async" src={imgC5_2.src} />
+          {/* <Image priority loading="eager" className="w-1/3" src={imgC5_2} alt="board" unoptimized /> */}
           <div className="flex flex-col justify-between rounded-2xl bg-primary p-10 text-new-off-white">
             <h5 className="text-new-h5">
               Adding communities has been a game-changer for our team. The platform seamlessly connects us with our
@@ -421,21 +506,29 @@ function Component5() {
             "Infinite community possibilities."
           </p>
           <div className="mt-5 flex w-full">
-            <Image
+            <img
+              loading="lazy"
+              fetchPriority="low"
+              decoding="async"
+              src={imgReviewerDp.src}
+              className="mr-4 h-12 w-12"
+            />
+            {/* <Image
               priority
               loading="eager"
               src={imgReviewerDp}
               alt="lauren hall"
               className="mr-4 h-12 w-12"
               unoptimized
-            />
+            /> */}
             <p className="text-new-off-white">
               Lauren Hall, <br />
               App Member
             </p>
           </div>
         </div>
-        <Image priority loading="eager" className="sm:w-1/2" src={imgC5} alt="genuin" unoptimized />
+        <img loading="lazy" fetchPriority="low" decoding="async" src={imgC5.src} className="sm:w-1/2" />
+        {/* <Image priority loading="eager" className="sm:w-1/2" src={imgC5} alt="genuin" unoptimized /> */}
         <div className="flex flex-col justify-between rounded-2xl bg-primary p-4 text-new-off-white sm:w-4/5">
           <p className="text-new-para-1">
             I love following creators on Instagram and TikTok, but I always wished I could interact with people who
@@ -446,7 +539,8 @@ function Component5() {
             Jamie Mars, <span className="font-normal">Student & Future Investor</span>
           </p>
         </div>
-        <Image priority loading="eager" className="sm:w-1/2" src={imgC5_2} alt="genuin" unoptimized />
+        <img loading="lazy" fetchPriority="low" className="sm:w-1/2" decoding="async" src={imgC5_2.src} />
+        {/* <Image priority loading="eager" className="sm:w-1/2" src={imgC5_2} alt="genuin" unoptimized /> */}
       </div>
     </>
   )
