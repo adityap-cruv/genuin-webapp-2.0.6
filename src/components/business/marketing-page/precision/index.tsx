@@ -1,11 +1,10 @@
 import React from 'react'
-import Image from 'next/image'
 import Button from '../../button'
 import style from './precision.module.scss'
 import HeadingComponent from '../../heading'
 import ParagraphComponent from '../../paragraph'
 import content from '../../../../content/marketing-page.json'
-import precision from '@images/business/marketing-page/precision.png'
+import precision from '@images/business/marketing-page/precision.webp'
 
 export default function Precision() {
   return (
@@ -17,7 +16,8 @@ export default function Precision() {
           <Button text={content.Precision.button} variant={'outline'} size={'small'} color={'black'} />
         </div>
         <div className={style.col}>
-          <Image priority loading="eager" src={precision} alt={'Email'} />
+          <img loading="lazy" fetchPriority="low" decoding="async" src={precision.src} alt="precision" />
+          {/* <Image priority loading="eager" src={precision} alt={'Email'} /> */}
         </div>
       </div>
     </section>

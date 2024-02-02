@@ -1,7 +1,7 @@
 import React from 'react'
 import style from './marketing.module.scss'
 import Banner from '@components/business/banner'
-import bannerIMG from '@images/business/marketing-page/banner.png'
+import bannerIMG from '@images/business/marketing-page/banner.webp'
 import Impressions from '@components/business/marketing-page/impressions'
 import Precision from '@components/business/marketing-page/precision'
 import CustomQr from '@components/business/marketing-page/customqr'
@@ -9,13 +9,14 @@ import SocialConnections from '@components/business/marketing-page/social-connec
 import Communities from '@components/business/marketing-page/communities'
 import { NavBar } from '@components/pages/home/nav-bar'
 import Footer from '@components/business/footer'
-import cxr from '@images/business/marketing-page/communities/cxr.png'
-import social_share from '@images/business/marketing-page/communities/social_share.png'
-import mail from '@images/business/marketing-page/communities/mail.png'
-import sms from '@images/business/marketing-page/communities/sms.png'
-import whatsapp from '@images/business/marketing-page/communities/whatsapp.png'
+import cxr from '@images/business/marketing-page/communities/cxr.webp'
+import social_share from '@images/business/marketing-page/communities/social_share.webp'
+import mail from '@images/business/marketing-page/communities/mail.webp'
+import sms from '@images/business/marketing-page/communities/sms.webp'
+import whatsapp from '@images/business/marketing-page/communities/whatsapp.webp'
 import AsSeenIn from '@components/business/as-seen-in'
 
+// TODO: This page has bug on SocialConnections. Fix It.
 export default function MarketingPage() {
   return (
     <>

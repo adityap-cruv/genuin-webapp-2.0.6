@@ -1,11 +1,10 @@
 import React from 'react'
-import Image from 'next/image'
 import style from './hooks.module.scss'
 import Button from '../../button'
 import HeadingComponent from '../../heading'
 import ParagraphComponent from '../../paragraph'
 import content from '../../../../content/brands-page.json'
-import engagementHooks from '@images/business/brand-page/engagement-hooks.png'
+import engagementHooks from '@images/business/brand-page/engagement-hooks.webp'
 
 export default function EngagementHooks() {
   return (
@@ -14,7 +13,8 @@ export default function EngagementHooks() {
       {/* Left section with an image */}
       <div className={style.sectionLeft}>
         {/* Display the image using Next.js Image component */}
-        <Image priority loading="eager" src={engagementHooks} alt="genuin" />
+        <img loading="lazy" decoding="async" fetchPriority="low" src={engagementHooks.src} alt="genuin" />
+        {/* <Image priority loading="eager" src={engagementHooks} alt="genuin" /> */}
       </div>
 
       {/* Right section with text and a button */}

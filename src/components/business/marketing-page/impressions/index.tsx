@@ -1,15 +1,14 @@
 'use client'
-import React, { useEffect, useRef, useState } from 'react'
-import Image from 'next/image'
+import React, { useState } from 'react'
 import Button from '../../button'
 import style from './impressions.module.scss'
 import HeadingComponent from '../../heading'
 import ParagraphComponent from '../../paragraph'
 import content from '../../../../content/marketing-page.json'
-import SMS from '@images/business/marketing-page/sms.png'
-import EmailBox from '@images/business/marketing-page/email-box.png'
-import SMSTab from '@images/business/marketing-page/SMS Engagement.png'
-import EmailBoxTab from '@images/business/marketing-page/Email Engagement.png'
+// import SMS from '@images/business/marketing-page/sms.webp'
+// import EmailBox from '@images/business/marketing-page/email-box.webp'
+import SMSTab from '@images/business/marketing-page/sms-engagement.webp'
+import EmailBoxTab from '@images/business/marketing-page/email-engagement.webp'
 
 export default function Impressions() {
   const [isHovered, setIsHovered] = useState<null | string>('sms')
@@ -22,9 +21,9 @@ export default function Impressions() {
       </div>
 
       {isHovered === 'sms' ? (
-        <Image priority loading="eager" src={SMSTab} alt={'Email'} />
+        <img loading="lazy" fetchPriority="low" decoding="async" src={SMSTab.src} alt="sms" />
       ) : (
-        <Image priority loading="eager" src={EmailBoxTab} alt={'Email'} />
+        <img loading="lazy" fetchPriority="low" decoding="async" src={EmailBoxTab.src} alt="email" />
       )}
 
       {/* Third Row with Engagement Items */}

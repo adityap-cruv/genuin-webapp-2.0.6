@@ -1,12 +1,11 @@
 import React from 'react'
-import Image from 'next/image'
 import Button from '../../button'
 import style from './communities.module.scss'
 import HeadingComponent from '../../heading'
 import ParagraphComponent from '../../paragraph'
 import content from '../../../../content/marketing-page.json'
-import communities1 from '@images/business/marketing-page/communities-1.png'
-import communities2 from '@images/business/marketing-page/communities-2.png'
+import communities1 from '@images/business/marketing-page/communities-1.webp'
+import communities2 from '@images/business/marketing-page/communities-2.webp'
 
 export default function Communities() {
   return (
@@ -18,8 +17,10 @@ export default function Communities() {
       </div>
 
       <div className={style.secondRow}>
-        <Image priority loading="eager" src={communities1} alt={'communities1'} />
-        <Image priority loading="eager" src={communities2} alt={'communities2'} />
+        <img loading="lazy" fetchPriority="low" decoding="async" src={communities1.src} alt="genuin" />
+        <img loading="lazy" fetchPriority="low" decoding="async" src={communities2.src} alt="genuin" />
+        {/* <Image priority loading="eager" src={communities1} alt={'communities1'} />
+        <Image priority loading="eager" src={communities2} alt={'communities2'} /> */}
       </div>
     </section>
   )

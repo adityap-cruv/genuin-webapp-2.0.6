@@ -1,16 +1,15 @@
 import React from 'react' // Import React for creating React components
-import Image from 'next/image' // Import the Image component from Next.js for handling images
 import style from './communities.module.scss' // Import SCSS styles for the header
 import HeadingComponent from '../../heading' // Import typography component for section title
-import ParagraphComponent from '../../paragraph' // Import typography component for paragraphs
-import dashboard from '@images/business/brand-page/video-base-communities/dashboard.png'
-import img01 from '@images/business/brand-page/video-base-communities/01.png'
-import img02 from '@images/business/brand-page/video-base-communities/02.png'
-import Genuin from '@images/business/brand-page/video-base-communities/Genuin.png'
-import Discord from '@images/business/brand-page/video-base-communities/Discord.png'
-import Reddit from '@images/business/brand-page/video-base-communities/Reddit.png'
-import Facebook from '@images/business/brand-page/video-base-communities/Facebook.png'
-import Whatsapp from '@images/business/brand-page/video-base-communities/Whatsapp.png'
+// import ParagraphComponent from '../../paragraph' // Import typography component for paragraphs
+import dashboard from '@images/business/brand-page/video-base-communities/dashboard.webp'
+// import img01 from '@images/business/brand-page/video-base-communities/01.png'
+// import img02 from '@images/business/brand-page/video-base-communities/02.png'
+// import Genuin from '@images/business/brand-page/video-base-communities/Genuin.png'
+// import Discord from '@images/business/brand-page/video-base-communities/Discord.png'
+// import Reddit from '@images/business/brand-page/video-base-communities/Reddit.png'
+// import Facebook from '@images/business/brand-page/video-base-communities/Facebook.png'
+// import Whatsapp from '@images/business/brand-page/video-base-communities/Whatsapp.png'
 
 // export default function VideoBasedCommunities() {
 //   return (
@@ -61,7 +60,15 @@ export default function VideoBasedCommunities() {
     <section className={style.container}>
       <HeadingComponent headingLevel={2} title={'Manage Your First Party Data'} colorVariant={'black'} />
       <div className="mt-12 flex justify-center">
-        <Image priority loading="eager" src={dashboard} alt={'01'} className={style.testimonialImg} />
+        <img
+          loading="lazy"
+          decoding="async"
+          fetchPriority="low"
+          src={dashboard.src}
+          alt="genuin"
+          className={style.testimonialImg}
+        />
+        {/* <Image priority loading="eager" src={dashboard} alt={'01'} className={style.testimonialImg} /> */}
       </div>
     </section>
   )
