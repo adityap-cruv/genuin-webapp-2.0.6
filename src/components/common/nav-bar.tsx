@@ -55,7 +55,7 @@ function GetAppButton({ isMobile }: GetAppButtonType) {
       </Button>
     </Link>
   ) : (
-    <DownloadAppDialog isMobile={false}>
+    <DownloadAppDialog>
       <Button size="sm">
         <p className="line-clamp-1 text-body-1-bold text-monochrome-white">Get App</p>
       </Button>

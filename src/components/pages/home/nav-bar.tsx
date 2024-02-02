@@ -66,7 +66,7 @@ export function NavBar() {
                 <p className="text-new-sm font-semibold">We're hiring!</p>
               </Button>
             </Link>
-            <DownloadAppDialog isMobile={false}>
+            <DownloadAppDialog>
               <Button size="index-page" className="bg-new-off-black after:bg-new-dark-grey hover:bg-new-dark-grey">
                 <p className="text-new-sm font-semibold text-new-off-white">Download Genuin</p>
               </Button>
@@ -91,7 +91,7 @@ export function NavBar() {
                 }}>
                 <div className="flex h-full min-w-full flex-col gap-y-1 pt-7">
                   <div className="flex h-full min-w-full flex-col gap-y-4 py-7">
-                    <DownloadAppDialog isMobile>
+                    <DownloadAppDialog>
                       <Button size="index-page" className="my-2 w-full bg-new-off-black hover:bg-new-dark-grey">
                         <p className="text-new-md text-new-off-white">Download Genuin</p>
                       </Button>

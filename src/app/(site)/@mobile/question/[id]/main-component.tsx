@@ -16,7 +16,7 @@ export function MainComponent({ questionDetails }: Props) {
           <img style={{ width: '100%', height: 'auto', borderRadius: '20px' }} src={previewImage} alt="app store" />
         </div>
         <div className="mt-6">
-          <DownloadAppDialog isMobile>
+          <DownloadAppDialog>
             <Button className="px-6 py-6">
               <p className="mx-2 text-title-2-bold text-new-off-white">Get App</p>
             </Button>
