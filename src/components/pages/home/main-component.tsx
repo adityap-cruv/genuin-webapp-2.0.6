@@ -9,24 +9,24 @@ import { DownloadAppDialog } from './download-app-dialog'
 import Link from 'next/link'
 
 // all images import
-import imgC1 from '@images/home-page/c1.png'
-import imgC1Mobile from '@images/home-page/c1_mobile.png'
+import imgC1 from '@images/home-page/c1.webp'
+import imgC1Mobile from '@images/home-page/c1_mobile.webp'
 // import qrImage from '@images/home-page/download_qr.svg'
 import icAddButton from '@icons/home-page/icAddButton.svg'
-// import imgC2 from '@images/home-page/c2.png'
-import imgC2_s1 from '@images/home-page/c2_1.png'
-import imgC2_s2 from '@images/home-page/c2_2.png'
-import imgC2_2 from '@images/home-page/c2-2.png'
-import imgC2Mobile from '@images/home-page/c2_mobile.png'
-import imgC3 from '@images/home-page/c3.png'
+// import imgC2 from '@images/home-page/c2.webp'
+import imgC2_s1 from '@images/home-page/c2_1.webp'
+import imgC2_s2 from '@images/home-page/c2_2.webp'
+import imgC2_2 from '@images/home-page/c2-2.webp'
+import imgC2Mobile from '@images/home-page/c2_mobile.webp'
+import imgC3 from '@images/home-page/c3.webp'
 import icVideoAddButton from '@icons/home-page/icVideoAddButton.svg'
-import imgConnect from '@images/home-page/c4_connect.png'
-import imgDiscover from '@images/home-page/c4_discover.png'
-import imgLearn from '@images/home-page/c4_learn.png'
+import imgConnect from '@images/home-page/c4_connect.webp'
+import imgDiscover from '@images/home-page/c4_discover.webp'
+import imgLearn from '@images/home-page/c4_learn.webp'
 import icConversation from '@icons/home-page/icConversation.svg'
-import imgC5 from '@images/home-page/c5.png'
-import imgC5_2 from '@images/home-page/c5_2.png'
-import imgReviewerDp from '@images/home-page/reviewerDp.png'
+import imgC5 from '@images/home-page/c5.webp'
+import imgC5_2 from '@images/home-page/c5_2.webp'
+import imgReviewerDp from '@images/home-page/reviewerDp.webp'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import AsSeenIn from '@components/business/as-seen-in'
 
@@ -70,7 +70,7 @@ function Component1() {
         </div>
       </div>
       <div
-        className="flex min-h-full flex-col items-center justify-center gap-y-4 px-5 pt-navbar lg:hidden"
+        className="flex min-h-full flex-col items-center justify-center gap-y-4 px-5 pb-5 pt-navbar lg:hidden"
         style={{ background: 'radial-gradient(123.19% 48.8% at 76.02% 69.05%, #E9CAF4 0%, #ADD8FB 100%)' }}>
         <h1 className="flex max-w-xs  justify-center py-5 text-center text-new-h1-mobile sm:text-new-h1 ">
           Community, reimagined.
