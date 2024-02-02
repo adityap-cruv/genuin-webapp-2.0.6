@@ -16,6 +16,7 @@ const nextConfig = {
       { source: '/q/:id', destination: '/question/:id', permanent: true },
     ]
   },
+  // webpack(config, ) {},
 }
 
 module.exports = nextConfig

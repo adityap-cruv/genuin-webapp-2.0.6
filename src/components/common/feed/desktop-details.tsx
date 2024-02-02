@@ -12,12 +12,12 @@ import { Comments, NoComments } from '@components/common/comments'
 import { type VideoDataType } from '@lib/schemas/video'
 import { getLoopVideoComments } from '@lib/api/loop'
 import { type RefObject, useRef } from 'react'
-import { Loader } from '@components/ui/loader'
 import { useMotionValueEvent, useScroll } from 'framer-motion'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
 import { getTimeAgo } from '@lib/utils'
+import { FeedShimmer } from '../shimmers/feed-shimmer'
 
 type DesktopDetailsProps = {
   videoDetails: VideoDataType
@@ -142,7 +142,7 @@ function CommentBox({ shareString, parentRef }: { shareString: string; parentRef
   })
 
   if (isLoading) {
-    return <Loader size="md" />
+    return <FeedShimmer.comments iterations={2} />
   }
 
   if (comments && comments?.length !== 0)

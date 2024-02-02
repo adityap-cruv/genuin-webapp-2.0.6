@@ -1,6 +1,6 @@
 import { Shimmer } from '@components/ui/shimmer'
 
-export const FeedShimmer = { mobile: Mobile, desktop: Desktop }
+export const FeedShimmer = { mobile: Mobile, desktop: Desktop, comments: Comments }
 
 function Mobile() {
   return (
@@ -74,12 +74,7 @@ function Desktop() {
           <Shimmer className="h-4 w-1/3" />
         </div>
         <div className="w-full py-2">
-          <CommentItem />
-          <CommentItem />
-          <CommentItem />
-          <CommentItem />
-          <CommentItem />
-          <CommentItem />
+          <Comments iterations={5} />
         </div>
         <div className="absolute bottom-0 right-0 flex w-full items-center gap-x-4 border-t-2 border-monochrome-9 bg-monochrome-white p-2">
           <div className="w-full rounded-full border-2 border-monochrome-9 py-2 pl-2">
@@ -91,6 +86,16 @@ function Desktop() {
       </div>
     </div>
   )
+}
+
+function Comments({ iterations }: { iterations: number }) {
+  return (() => {
+    const rows = []
+    for (let i = 0; i < iterations; i++) {
+      rows.push(<CommentItem />)
+    }
+    return rows
+  })()
 }
 
 function CommentItem() {
