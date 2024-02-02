@@ -4,8 +4,6 @@ import Footer from '@components/business/footer'
 import { MainComponent } from '@components/pages/home/main-component'
 
 // TODO: optimize uses of dynamic function.
-// TODO: Check out for image optimization
-// TODO: check react-device-detect dependency and than remove it. as it is not needed anymore.
 export default async function Page() {
   return (
     <main id="indexPage" className="absolute inset-0 text-new-off-black">

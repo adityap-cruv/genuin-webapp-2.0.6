@@ -4,7 +4,7 @@ import audioCommentPlay from '@icons/audio/play.svg'
 import audioCommentPause from '@icons/audio/pause.svg'
 import { useInView } from 'framer-motion'
 import { useCommentStore } from './store'
-import { useHasUserFocus } from '@hooks/use-has-user-focus'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
 
 type Props = {
   url: string
@@ -28,7 +28,7 @@ export function AudioPlayer({ url, commentShareString, onClick }: Props) {
   const totalProgressWidth = (progress.duration ? progress.currentTime / progress.duration : 0) * waveWidth
   const elementIsInView = useInView(elementRef, { amount: 0.5 })
   const activeCommentIndex = useCommentStore((state) => state.activeCommentIndex)
-  const hasFocus = useHasUserFocus()
+  const hasFocus = useGenuinOptions().userHasFocus
   const shouldPlay = activeCommentIndex === commentShareString && elementIsInView && hasFocus
 
   const pipeHeights = useMemo(() => {

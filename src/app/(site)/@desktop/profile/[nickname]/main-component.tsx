@@ -44,23 +44,6 @@ export function MainComponent({ profileData }: CompProps) {
       resetData()
     }
   }, [])
-  // const [divHeight, setDivHeight] = useState(0)
-
-  // useEffect(() => {
-  //   const updateHeight = () => {
-  //     if (divRef.current) {
-  //       const height = divRef.current.getBoundingClientRect().height
-  //       setDivHeight(height)
-  //     }
-  //   }
-  //   updateHeight()
-  //   window.addEventListener('resize', updateHeight)
-  //   return () => {
-  //     window.removeEventListener('resize', updateHeight)
-  //   }
-  // }, [divRef])
-
-  // console.log(divHeight)
 
   return (
     <>
@@ -361,7 +344,7 @@ type LoopVideosProps = {
 }
 
 function LoopVideos({ userId, loop, community }: LoopVideosProps) {
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getAllLoopVideos(userId, loop.slug)
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getAllLoopVideos(userId, loop.slug, 8)
 
   const { addVideos, open } = useCommunityListStore((state) => ({
     addVideos: state.addVideos,
@@ -427,12 +410,11 @@ function LoopVideos({ userId, loop, community }: LoopVideosProps) {
       )
   }
 
-  // TODO: replace <a></a> with <Link></Link>
   return (
     <>
-      <a href={PATH_NAME.loop(loop.slug)}>
+      <Link href={PATH_NAME.loop(loop.slug)}>
         <p className="mb-3 text-body-1-bold">{loop.name}</p>
-      </a>
+      </Link>
       <div className="my-2 grid w-full grid-cols-4 gap-2 md:grid-cols-8">
         <InnerComponent />
         {isFetchingNextPage &&

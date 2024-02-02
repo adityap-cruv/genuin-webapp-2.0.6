@@ -12,7 +12,6 @@ import { PATH_NAME } from '@lib/utils/constants/path'
 import { X } from 'lucide-react'
 import { RecentCommunities } from './recent-communities'
 import { MOBILE_DOWNLOAD_APP_LINK } from '@lib/constants'
-import { useLocalStorage } from '@lib/stores/local-storage'
 import { AppLogo } from '@components/ui/app-logo'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 
@@ -37,7 +36,7 @@ type Props = {
 } & VariantProps<typeof navVariant>
 
 export function TopBar({ variant = 'light', className, showClose = false, onClose }: Props) {
-  const isEmbed = useGenuinOptions().embed
+  const isEmbed = !useGenuinOptions().embed
   return (
     <nav className={cn(navVariant({ variant }), className)}>
       <span className="flex items-center ">

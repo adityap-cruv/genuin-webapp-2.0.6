@@ -10,6 +10,7 @@ import { HIRING_LINK } from '@lib/constants'
 import { GenuinIcon } from '@icons/genuin-icon'
 import { usePathname } from 'next/navigation'
 
+// TODO: Add path name instead of '/brands' | '/marketing' | '/pricing' hard coded values.
 export function NavBar() {
   const pathname = usePathname()
   return (

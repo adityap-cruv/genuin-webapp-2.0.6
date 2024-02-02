@@ -38,10 +38,10 @@ function LogoProcessor({ imageHeight, type, ...props }: ProcessorProps) {
 
   switch (type) {
     case 'text':
-      return <GenuinIcon.text style={{ maxHeight: imageHeight }} {...props} />
+      return <GenuinIcon.text style={{ maxHeight: imageHeight, height: imageHeight }} {...props} />
     case 'icon':
-      return <GenuinIcon.icon style={{ maxHeight: imageHeight }} {...props} />
+      return <GenuinIcon.icon style={{ maxHeight: imageHeight, height: imageHeight }} {...props} />
     case 'logo':
-      return <GenuinIcon.logo style={{ maxHeight: imageHeight }} {...props} />
+      return <GenuinIcon.logo style={{ maxHeight: imageHeight, height: imageHeight }} {...props} />
   }
 }

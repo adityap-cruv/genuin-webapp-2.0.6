@@ -9,7 +9,7 @@ interface Props {
   }
 }
 
-// todo do some R&D to move this code to /next.config.ts
+// TODO: do some R&D to move this code to /next.config.ts
 export default function RedirectPage({ params, searchParams }: Props) {
   const linkToRedirect = '/v/' + searchParams.v + '?l=' + params.id
   permanentRedirect(linkToRedirect)

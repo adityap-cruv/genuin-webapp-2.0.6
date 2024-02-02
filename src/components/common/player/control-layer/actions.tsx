@@ -36,6 +36,7 @@ function Mobile({ link = '', shareDescription = '', shareTitle = '', videoData }
     closeComments: state.closeModal,
     commentsIsOpen: state.modalIsOpen,
   }))
+
   // TODO: Why?
   const usersdata = JSON.parse(localStorage.getItem('_user_id_') ?? '')
   const userId = usersdata.state.userId ?? ''

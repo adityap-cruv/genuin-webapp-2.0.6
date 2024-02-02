@@ -1,6 +1,8 @@
-import { isDesktop, isMobile } from 'react-device-detect'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
 
 export function useAdaptiveShare() {
+  const isMobile = useGenuinOptions().isMobile
+
   async function shareFn({
     title,
     description,
@@ -17,11 +19,12 @@ export function useAdaptiveShare() {
       if (isMobile) {
         await window.navigator.share({ url: linkToCopy, title, text: description })
         return true
-      }
-      if (window.navigator.clipboard && isDesktop) {
-        await window.navigator.clipboard.writeText(linkToCopy)
-        if (toast) toast()
-        return true
+      } else {
+        if (window.navigator.clipboard) {
+          await window.navigator.clipboard.writeText(linkToCopy)
+          if (toast) toast()
+          return true
+        }
       }
     }
     return false

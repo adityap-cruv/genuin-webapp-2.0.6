@@ -1,6 +1,5 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
 import axios from 'axios'
-import { isMobile } from 'react-device-detect'
 
 export async function fetchUserData(nickname: string) {
   return await axios
@@ -136,9 +135,7 @@ export function getAllLoops(nickname: string, communitySlug: string) {
   })
 }
 
-// TODO: remove isMobile dependency from here.
-async function fetchCommunityLoopVideos(nickname: string, loopSlug: string, ref: any) {
-  const limit = isMobile ? (ref ? 6 : 3) : ref ? 16 : 8
+async function fetchCommunityLoopVideos(nickname: string, loopSlug: string, ref: any, limit: number) {
   return await axios
     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/profile/contributed_loop_videos', {
       params: {
@@ -156,10 +153,11 @@ async function fetchCommunityLoopVideos(nickname: string, loopSlug: string, ref:
     })
 }
 
-export function getAllLoopVideos(nickname: string, slug: string) {
+export function getAllLoopVideos(nickname: string, slug: string, limit: number) {
   return useInfiniteQuery({
     queryKey: ['videos', nickname, slug],
-    queryFn: async ({ pageParam }) => await fetchCommunityLoopVideos(nickname, slug, pageParam),
+    queryFn: async ({ pageParam }) =>
+      await fetchCommunityLoopVideos(nickname, slug, pageParam, pageParam ? limit * 2 : limit),
     getNextPageParam(lastPage, allPages) {
       if (lastPage.end) {
         return
