@@ -28,7 +28,8 @@ import imgC5 from '@images/home-page/c5.webp'
 import imgC5_2 from '@images/home-page/c5_2.webp'
 import imgReviewerDp from '@images/home-page/reviewerDp.webp'
 import { PATH_NAME } from '@lib/utils/constants/path'
-import AsSeenIn from '@components/business/as-seen-in'
+import businessInsider from '@images/business/marketing-page/as-seen-in/business-insider.png'
+import yahoo from '@images/business/marketing-page/as-seen-in/yahoo.png'
 
 export function MainComponent() {
   return (
@@ -39,8 +40,7 @@ export function MainComponent() {
       <Component4 />
       <Component5 />
       <Component6 />
-      <AsSeenIn />
-      {/* <Component7 /> */}
+      <Component7 />
     </>
   )
 }
@@ -557,6 +557,48 @@ function Component6() {
       </h5>
       <CommunitySection />
     </div>
+  )
+}
+
+function Component7() {
+  return (
+    <>
+      <div className=" hidden h-32 bg-monochrome-9 lg:flex xl:px-0">
+        <div className="flex items-center justify-between xl:container">
+          <p className="text-new-h2">As Seen In</p>
+          <div className="flex gap-10">
+            <div className="flex items-center justify-center rounded-lg bg-monochrome-white px-8 py-2 ">
+              <img loading="lazy" fetchPriority="low" decoding="async" src={businessInsider.src} alt="genuin" />
+              {/* <Image priority loading="eager" src={businessInsider} alt={`businessInsider`} /> */}
+            </div>
+            <div className="flex items-center justify-center rounded-lg bg-monochrome-white px-8 py-2 ">
+              <img loading="lazy" fetchPriority="low" decoding="async" src={yahoo.src} alt="genuin" />
+              {/* <Image priority loading="eager" src={yahoo} alt={`yahoo`} /> */}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="flex h-36 flex-col items-center justify-center gap-2 bg-monochrome-9 lg:hidden">
+        <p className="text-new-h3">As Seen In</p>
+        <div className="flex gap-8">
+          <div className="flex items-center justify-center rounded-lg bg-monochrome-white px-6 py-2 ">
+            <img
+              loading="lazy"
+              fetchPriority="low"
+              className="h-8"
+              decoding="async"
+              src={businessInsider.src}
+              alt="genuin"
+            />
+            {/* <Image priority loading="eager" src={businessInsider} alt={`businessInsider`} /> */}
+          </div>
+          <div className="flex items-center justify-center rounded-lg bg-monochrome-white px-6 py-2 ">
+            <img loading="lazy" fetchPriority="low" className="h-8" decoding="async" src={yahoo.src} alt="genuin" />
+            {/* <Image priority loading="eager" src={yahoo} alt={`yahoo`} /> */}
+          </div>
+        </div>
+      </div>
+    </>
   )
 }
 
