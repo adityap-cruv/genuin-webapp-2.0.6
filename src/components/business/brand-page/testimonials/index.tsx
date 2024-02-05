@@ -1,5 +1,4 @@
 import React from 'react'
-import Image from 'next/image'
 import style from './testimonials.module.scss'
 import content from '../../../../content/brands-page.json'
 import HeadingComponent from '../../heading'
@@ -23,16 +22,16 @@ export default function Testimonial() {
             {/* Testimonial Footer */}
             <div className={style.cardFooter}>
               {/* Testimonial Image */}
-              <Image
-                priority
-                loading="eager"
+              <img
+                loading="lazy"
+                fetchPriority="low"
+                decoding="async"
                 src={img}
                 alt={name}
+                className={style.testimonialImg}
                 width={128}
                 height={128}
-                className={style.testimonialImg}
               />
-
               {/* Testimonial Details */}
               <div className={style.testimonialDetails}>
                 {/* Testimonial Name */}

@@ -1,12 +1,11 @@
 import React from 'react'
-import Image from 'next/image'
 import style from './community.module.scss'
 import Button from '../../button'
 import HeadingComponent from '../../heading'
 import ParagraphComponent from '../../paragraph'
 import content from '../../../../content/brands-page.json'
-import community1 from '@images/business/brand-page/online-community-1.png'
-import community2 from '@images/business/brand-page/online-community-2.png'
+import community1 from '@images/business/brand-page/online-community-1.webp'
+import community2 from '@images/business/brand-page/online-community-2.webp'
 
 export default function OnlineCommunity() {
   // Comment: The main component for the "Online Community" section on the homepage.
@@ -27,10 +26,10 @@ export default function OnlineCommunity() {
       {/* Comment: Row Two contains images */}
       <div className={style.rowTwo}>
         <div className={style.rowTwoLeft}>
-          <Image priority loading="eager" src={community1} alt="genuin" />
+          <img src={community1.src} loading="lazy" fetchPriority="low" decoding="async" />
         </div>
         <div className={style.rowTwoRight}>
-          <Image priority loading="eager" src={community2} alt="genuin" />
+          <img src={community2.src} loading="lazy" fetchPriority="low" decoding="async" />
         </div>
       </div>
     </section>

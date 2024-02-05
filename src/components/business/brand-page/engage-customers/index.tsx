@@ -2,17 +2,16 @@
 import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import ScrollTrigger from 'gsap/ScrollTrigger'
-import Image from 'next/image'
 import HeadingComponent from '@components/business/heading'
 import ParagraphComponent from '@components/business/paragraph'
 import content from '../../../../content/brands-page.json'
-import interaction1 from '@images/business/brand-page/customer-engage/interaction-1.png'
-import interaction2 from '@images/business/brand-page/customer-engage/interaction-2.png'
-import interaction3 from '@images/business/brand-page/customer-engage/interaction-3.png'
-import Engagement1 from '@images/business/brand-page/customer-engage/engagement-1.png'
-import Engagement2 from '@images/business/brand-page/customer-engage/engagement-2.png'
-import Automation1 from '@images/business/brand-page/customer-engage/automation-1.png'
-import Automation2 from '@images/business/brand-page/customer-engage/automation-2.png'
+import interaction1 from '@images/business/brand-page/customer-engage/interaction-1.webp'
+import interaction2 from '@images/business/brand-page/customer-engage/interaction-2.webp'
+import interaction3 from '@images/business/brand-page/customer-engage/interaction-3.webp'
+import Engagement1 from '@images/business/brand-page/customer-engage/engagement-1.webp'
+import Engagement2 from '@images/business/brand-page/customer-engage/engagement-2.webp'
+import Automation1 from '@images/business/brand-page/customer-engage/automation-1.webp'
+import Automation2 from '@images/business/brand-page/customer-engage/automation-2.webp'
 import style from './customer.module.scss'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -92,21 +91,70 @@ const EngageCustomers: React.FC = () => {
         <div ref={slider} className={style.panelContainer}>
           <div className={`panel ${style.panel}`}>
             <div className={style.imgContainer}>
-              <Image priority loading="eager" className={style.img} src={interaction1} alt="genuine" />
-              <Image priority loading="eager" className={style.img} src={interaction2} alt="genuine" />
-              <Image priority loading="eager" className={style.img} src={interaction3} alt="genuine" />
+              <img
+                loading="lazy"
+                decoding="async"
+                fetchPriority="low"
+                className={style.img}
+                alt="genuin"
+                src={interaction1.src}
+              />
+              <img
+                loading="lazy"
+                decoding="async"
+                fetchPriority="low"
+                className={style.img}
+                alt="genuin"
+                src={interaction2.src}
+              />
+              <img
+                loading="lazy"
+                decoding="async"
+                fetchPriority="low"
+                className={style.img}
+                alt="genuin"
+                src={interaction3.src}
+              />
             </div>
           </div>
           <div className={`panel ${style.panel}`}>
             <div className={style.imgContainer}>
-              <Image priority loading="eager" className={style.img} src={Engagement1} alt="genuine" />
-              <Image priority loading="eager" className={style.img} src={Engagement2} alt="genuine" />
+              <img
+                loading="lazy"
+                decoding="async"
+                fetchPriority="low"
+                className={style.img}
+                alt="genuin"
+                src={Engagement1.src}
+              />
+              <img
+                loading="lazy"
+                decoding="async"
+                fetchPriority="low"
+                className={style.img}
+                alt="genuin"
+                src={Engagement2.src}
+              />
             </div>
           </div>
           <div className={`panel ${style.panel}`}>
             <div className={style.imgContainer}>
-              <Image priority loading="eager" className={style.img} src={Automation1} alt="genuine" />
-              <Image priority loading="eager" className={style.img} src={Automation2} alt="genuine" />
+              <img
+                loading="lazy"
+                decoding="async"
+                fetchPriority="low"
+                className={style.img}
+                alt="genuin"
+                src={Automation1.src}
+              />
+              <img
+                loading="lazy"
+                decoding="async"
+                fetchPriority="low"
+                className={style.img}
+                alt="genuin"
+                src={Automation2.src}
+              />
             </div>
           </div>
         </div>

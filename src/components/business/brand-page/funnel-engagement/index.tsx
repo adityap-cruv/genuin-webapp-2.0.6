@@ -1,13 +1,12 @@
 'use client'
 import React, { useRef, useEffect, useState } from 'react'
-import Image from 'next/image'
 import gsap from 'gsap'
 import ScrollTrigger from 'gsap/ScrollTrigger'
 import HeadingComponent from '@components/business/heading'
 import ParagraphComponent from '@components/business/paragraph'
-import img1 from '@images/business/brand-page/funnel-engagement/img-1.png'
-import img2 from '@images/business/brand-page/funnel-engagement/img-2.png'
-import img3 from '@images/business/brand-page/funnel-engagement/img-3.png'
+import img1 from '@images/business/brand-page/funnel-engagement/img-1.webp'
+import img2 from '@images/business/brand-page/funnel-engagement/img-2.webp'
+import img3 from '@images/business/brand-page/funnel-engagement/img-3.webp'
 import style from './engagement.module.scss'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -146,11 +145,14 @@ const FunnelEngagement: React.FC = () => {
           <div className={style.leftContainer}>
             <div className={`left-content ${style.leftContent}`}>
               {activeElementIndex === 2 || activeElementIndex === 3 ? (
-                <Image priority loading="eager" src={img3} alt="learn" />
-              ) : activeElementIndex === 1 ? (
-                <Image priority loading="eager" src={img2} alt="discover" />
+                <img loading="lazy" decoding="async" fetchPriority="low" src={img3.src} alt="genuin" />
+              ) : // <Image priority loading="eager" src={img3} alt="learn" />
+              activeElementIndex === 1 ? (
+                // <Image priority loading="eager" src={img2} alt="discover" />
+                <img loading="lazy" decoding="async" fetchPriority="low" src={img2.src} alt="genuin" />
               ) : (
-                <Image priority loading="eager" src={img1} alt="connect" />
+                // <Image priority loading="eager" src={img1} alt="connect" />
+                <img loading="lazy" decoding="async" fetchPriority="low" src={img1.src} alt="genuin" />
               )}
             </div>
           </div>

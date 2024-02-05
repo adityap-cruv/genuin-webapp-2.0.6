@@ -1,12 +1,11 @@
 'use client'
 import React, { useEffect } from 'react'
-import Image from 'next/image'
 import style from './getintuch.module.scss'
 import HeadingComponent from '@components/business/heading'
 import ParagraphComponent from '@components/business/paragraph'
 import InlineButtonInput from '@components/business/input'
 import content from '../../../../content/brands-page.json'
-import getInTouch from '@images/business/brand-page/get-in-touch.png'
+import getInTouch from '@images/business/brand-page/get-in-touch.webp'
 
 export default function GetInTouch() {
   const handleButtonClick = (value: string) => {
@@ -39,7 +38,7 @@ export default function GetInTouch() {
       {/* Right section of the Get In Touch section for button */}
       <div className={style.sectionRight}>
         {/* Get Started button */}
-        <Image priority loading="eager" src={getInTouch} alt="discover" />
+        <img loading="lazy" fetchPriority="low" decoding="async" src={getInTouch.src} alt="genuin" />
       </div>
     </section>
   )

@@ -1,6 +1,5 @@
 'use client'
 import React, { useEffect, useRef, useState } from 'react'
-import Image from 'next/image'
 import gsap from 'gsap'
 import ScrollTrigger from 'gsap/ScrollTrigger'
 import Button from '../../button'
@@ -8,9 +7,9 @@ import style from './connections.module.scss'
 import HeadingComponent from '../../heading'
 import ParagraphComponent from '../../paragraph'
 import content from '../../../../content/marketing-page.json'
-import socialConnections1 from '@images/business/marketing-page/connections/socialConnections1.png'
-import socialConnections2 from '@images/business/marketing-page/connections/socialConnections2.png'
-import socialConnections3 from '@images/business/marketing-page/connections/social-connections.png'
+import socialConnections1 from '@images/business/marketing-page/connections/socialConnections1.webp'
+import socialConnections2 from '@images/business/marketing-page/connections/socialConnections2.webp'
+import socialConnections3 from '@images/business/marketing-page/connections/social-connections.webp'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -90,11 +89,14 @@ const FunnelEngagement: React.FC = () => {
           <div className="flex">
             <div className="flex w-1/2 items-center justify-center">
               {activeElementIndex === 2 || activeElementIndex === 3 ? (
-                <Image priority loading="eager" src={socialConnections3} alt="learn" />
-              ) : activeElementIndex === 1 ? (
-                <Image priority loading="eager" src={socialConnections2} alt="discover" />
+                <img loading="lazy" fetchPriority="low" decoding="async" src={socialConnections3.src} alt="genuin" />
+              ) : // <Image priority loading="eager" src={socialConnections3} alt="learn" />
+              activeElementIndex === 1 ? (
+                <img loading="lazy" fetchPriority="low" decoding="async" src={socialConnections2.src} alt="genuin" />
               ) : (
-                <Image priority loading="eager" src={socialConnections1} alt="connect" />
+                // <Image priority loading="eager" src={socialConnections2} alt="discover" />
+                <img loading="lazy" fetchPriority="low" decoding="async" src={socialConnections1.src} alt="genuin" />
+                // <Image priority loading="eager" src={socialConnections1} alt="connect" />
               )}
             </div>
             <div className={style.rightContainer}>
