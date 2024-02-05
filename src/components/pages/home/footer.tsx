@@ -54,16 +54,16 @@ export function Footer() {
       </footer>
       <footer className="relative bg-primary lg:hidden">
         <div className="mx-2 flex h-full flex-col gap-y-6 sm:mx-15">
-          <div className="mt-5 flex flex-col items-center justify-center gap-y-2">
+          <div className="mt-14 flex flex-col items-center justify-center gap-y-2">
             <p className="max-w-[230px] text-center text-new-h2-mobile text-new-off-white">Join the world of Genuin.</p>
             <div className="mt-3">
               <DownloadButton />
             </div>
           </div>
           <div
-            className="mt-5 flex items-center justify-between gap-y-10 bg-new-off-black p-5 text-primary-foreground"
+            className="mt-10 flex items-center justify-between gap-y-10 bg-new-off-black p-5 px-8 text-primary-foreground"
             style={{ borderRadius: '20px 20px 0px 0px' }}>
-            <GenuinIcon.text className="fill-new-off-white" />
+            <GenuinIcon.text className="w-20 fill-new-off-white" />
             <p className="text-new-para-2-mobile sm:text-new-para-2">© 2023 Genuin Inc.</p>
           </div>
         </div>
@@ -81,7 +81,7 @@ function DownloadButton() {
         size="index-page"
         variant="default"
         className="bg-new-off-black after:bg-new-dark-grey hover:bg-new-dark-grey">
-        <p className="whitespace-nowrap text-new-md text-new-off-white">Contact Us</p>
+        <p className="whitespace-nowrap text-new-md text-new-off-white">Download Genuin</p>
       </Button>
     </Link>
   ) : (
