@@ -6,6 +6,7 @@ import ParagraphComponent from '../../paragraph'
 import content from '../../../../content/brands-page.json'
 import community1 from '@images/business/brand-page/online-community-1.webp'
 import community2 from '@images/business/brand-page/online-community-2.webp'
+import Image from 'next/image'
 
 export default function OnlineCommunity() {
   // Comment: The main component for the "Online Community" section on the homepage.
@@ -26,10 +27,12 @@ export default function OnlineCommunity() {
       {/* Comment: Row Two contains images */}
       <div className={style.rowTwo}>
         <div className={style.rowTwoLeft}>
-          <img src={community1.src} loading="lazy" fetchPriority="low" decoding="async" />
+          {/* <img src={community1.src} loading="lazy" fetchPriority="low" decoding="async" /> */}
+          <Image loading="lazy" src={community1} alt="genuin" />
         </div>
         <div className={style.rowTwoRight}>
-          <img src={community2.src} loading="lazy" fetchPriority="low" decoding="async" />
+          {/* <img src={community2.src} loading="lazy" fetchPriority="low" decoding="async" /> */}
+          <Image loading="lazy" src={community2} alt="genuin" />
         </div>
       </div>
     </section>

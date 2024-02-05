@@ -10,6 +10,7 @@ import content from '../../../../content/marketing-page.json'
 import socialConnections1 from '@images/business/marketing-page/connections/socialConnections1.webp'
 import socialConnections2 from '@images/business/marketing-page/connections/socialConnections2.webp'
 import socialConnections3 from '@images/business/marketing-page/connections/social-connections.webp'
+import Image from 'next/image'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -89,14 +90,14 @@ const FunnelEngagement: React.FC = () => {
           <div className="flex">
             <div className="flex w-1/2 items-center justify-center">
               {activeElementIndex === 2 || activeElementIndex === 3 ? (
-                <img loading="lazy" fetchPriority="low" decoding="async" src={socialConnections3.src} alt="genuin" />
-              ) : // <Image priority loading="eager" src={socialConnections3} alt="learn" />
-              activeElementIndex === 1 ? (
-                <img loading="lazy" fetchPriority="low" decoding="async" src={socialConnections2.src} alt="genuin" />
+                // <img loading="lazy" fetchPriority="low" decoding="async" src={socialConnections3.src} alt="genuin" />
+                <Image loading="lazy" src={socialConnections3} alt="learn" />
+              ) : activeElementIndex === 1 ? (
+                // <img loading="lazy" fetchPriority="low" decoding="async" src={socialConnections2.src} alt="genuin" />
+                <Image loading="lazy" src={socialConnections2} alt="discover" />
               ) : (
-                // <Image priority loading="eager" src={socialConnections2} alt="discover" />
-                <img loading="lazy" fetchPriority="low" decoding="async" src={socialConnections1.src} alt="genuin" />
-                // <Image priority loading="eager" src={socialConnections1} alt="connect" />
+                // <img loading="lazy" fetchPriority="low" decoding="async" src={socialConnections1.src} alt="genuin" />
+                <Image loading="lazy" src={socialConnections1} alt="connect" />
               )}
             </div>
             <div className={style.rightContainer}>
