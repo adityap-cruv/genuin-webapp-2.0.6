@@ -3,6 +3,7 @@ import style from './communities.module.scss' // Import SCSS styles for the head
 import HeadingComponent from '../../heading' // Import typography component for section title
 // import ParagraphComponent from '../../paragraph' // Import typography component for paragraphs
 import dashboard from '@images/business/brand-page/video-base-communities/dashboard.webp'
+import Image from 'next/image'
 // import img01 from '@images/business/brand-page/video-base-communities/01.png'
 // import img02 from '@images/business/brand-page/video-base-communities/02.png'
 // import Genuin from '@images/business/brand-page/video-base-communities/Genuin.png'
@@ -60,15 +61,15 @@ export default function VideoBasedCommunities() {
     <section className={style.container}>
       <HeadingComponent headingLevel={2} title={'Manage Your First Party Data'} colorVariant={'black'} />
       <div className="mt-12 flex justify-center">
-        <img
+        {/* <img
           loading="lazy"
           decoding="async"
           fetchPriority="low"
           src={dashboard.src}
           alt="genuin"
           className={style.testimonialImg}
-        />
-        {/* <Image priority loading="eager" src={dashboard} alt={'01'} className={style.testimonialImg} /> */}
+        /> */}
+        <Image priority loading="eager" src={dashboard} alt={'01'} className={style.testimonialImg} />
       </div>
     </section>
   )

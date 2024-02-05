@@ -69,17 +69,17 @@ const MainBanner: React.FC<BannerProps> = ({
           <div className={style.bannerRight}>
             {/* Image Component */}
             {brandImages ? (
-              <img
-                loading="lazy"
-                fetchPriority="low"
-                decoding="async"
-                height={500}
-                src={brandImages[currentIndex].banner.src}
-              />
+              // <img
+              //   loading="lazy"
+              //   fetchPriority="low"
+              //   decoding="async"
+              //   height={500}
+              //   src={brandImages[currentIndex].banner.src}
+              // />
+              <Image priority loading="eager" src={brandImages[currentIndex].banner} height={500} alt="genuin" />
             ) : (
-              // <Image priority loading="eager" src={brandImages[currentIndex].banner} height={500} alt="genuin" />
-              // <Image priority loading="eager" src={bannerImg} alt="genuin" />
-              <img loading="lazy" fetchPriority="low" decoding="async" src={bannerImg.src} />
+              <Image priority loading="eager" src={bannerImg} alt="genuin" />
+              // <img loading="lazy" fetchPriority="low" decoding="async" src={bannerImg.src} />
             )}
           </div>
         </div>

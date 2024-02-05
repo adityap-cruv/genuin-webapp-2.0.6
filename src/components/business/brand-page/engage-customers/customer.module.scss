@@ -12,12 +12,12 @@
 }
 .imgContainer {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-evenly;
   align-items: center;
   max-width: 1200px;
   // margin: 0 auto;
   img {
-    height: 498px;
+    height: 60vh;
     width: auto;
   }
 }
@@ -80,14 +80,14 @@
 
 .panelContainer {
   width: 600vw;
-  height: 498px;
+  height: 60vh;
   display: flex;
   flex-wrap: wrap;
 }
 
 .panel {
   width: 100vw;
-  height: 498px;
+  height: 60vh;
   background-color: #f7f1f9;
   // background-color: red;
 }

@@ -183,7 +183,7 @@ function Component3() {
   return (
     <>
       <div className="relative my-40 hidden max-h-full items-center justify-around px-6 xl:container lg:flex xl:px-0">
-        <img loading="lazy" fetchPriority="low" decoding="async" src={imgC2_s1.src} />
+        <img loading="lazy" fetchPriority="low" decoding="async" src={imgC3.src} />
         {/* <Image priority loading="eager" unoptimized className="w-1/3" src={imgC3} alt="genuin" /> */}
         <div className="flex w-2/3 max-w-md flex-col gap-y-8">
           <h2 className="text-new-h2">

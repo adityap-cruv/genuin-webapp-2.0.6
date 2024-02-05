@@ -9,6 +9,7 @@ import content from '../../../../content/marketing-page.json'
 // import EmailBox from '@images/business/marketing-page/email-box.webp'
 import SMSTab from '@images/business/marketing-page/sms-engagement.webp'
 import EmailBoxTab from '@images/business/marketing-page/email-engagement.webp'
+import Image from 'next/image'
 
 export default function Impressions() {
   const [isHovered, setIsHovered] = useState<null | string>('sms')
@@ -21,9 +22,11 @@ export default function Impressions() {
       </div>
 
       {isHovered === 'sms' ? (
-        <img loading="lazy" fetchPriority="low" decoding="async" src={SMSTab.src} alt="sms" />
+        // <img loading="lazy" fetchPriority="low" decoding="async" src={SMSTab.src} alt="sms" />
+        <Image priority loading="eager" src={SMSTab} alt={'Email'} />
       ) : (
-        <img loading="lazy" fetchPriority="low" decoding="async" src={EmailBoxTab.src} alt="email" />
+        // <img loading="lazy" fetchPriority="low" decoding="async" src={EmailBoxTab.src} alt="email" />
+        <Image priority loading="eager" src={EmailBoxTab} alt={'Email'} />
       )}
 
       {/* Third Row with Engagement Items */}
