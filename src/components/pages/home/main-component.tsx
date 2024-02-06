@@ -28,7 +28,8 @@ import imgC5 from '@images/home-page/c5.webp'
 import imgC5_2 from '@images/home-page/c5_2.webp'
 import imgReviewerDp from '@images/home-page/reviewerDp.webp'
 import { PATH_NAME } from '@lib/utils/constants/path'
-import AsSeenIn from '@components/business/as-seen-in'
+import businessInsider from '@images/business/marketing-page/as-seen-in/business-insider.png'
+import yahoo from '@images/business/marketing-page/as-seen-in/yahoo.png'
 
 export function MainComponent() {
   return (
@@ -39,8 +40,7 @@ export function MainComponent() {
       <Component4 />
       <Component5 />
       <Component6 />
-      <AsSeenIn />
-      {/* <Component7 /> */}
+      <Component7 />
     </>
   )
 }
@@ -72,26 +72,29 @@ function Component1() {
       <div
         className="flex min-h-full flex-col items-center justify-center gap-y-4 px-5 pb-5 pt-navbar lg:hidden"
         style={{ background: 'radial-gradient(123.19% 48.8% at 76.02% 69.05%, #E9CAF4 0%, #ADD8FB 100%)' }}>
-        <h1 className="flex max-w-xs  justify-center py-5 text-center text-new-h1-mobile sm:text-new-h1 ">
-          Community, reimagined.
+        <h1 className="flex max-w-sm  justify-center text-center text-new-h2-mobile sm:text-new-h1 ">
+          Natively Integrated Video Communities for Leading Brands.
         </h1>
-        <p className="mx-3 max-w-xs text-center text-new-md sm:w-4/5">
-          Download Genuin to create communities, interact with your audience, and start conversations on the topics that
-          really matter.
+        <p className="mx-3 max-w-sm py-2 text-center text-new-para-2 sm:w-4/5">
+          With Genuin make your digital
+          <br /> presence GenZ Ready with Bite-Sized
+          <br /> Video Based Communities.
         </p>
         <div className="flex flex-col gap-y-4">
-          <DownloadAppDialog>
-            <Button size="custom" className="bg-new-off-black px-5 py-4 after:bg-new-dark-grey hover:bg-new-dark-grey">
-              <p className="text-new-md text-new-off-white">Download Genuin</p>
-            </Button>
-          </DownloadAppDialog>
           <Link href={{ pathname: PATH_NAME.home() }}>
-            <Button size="custom" variant="outline" className="w-full px-5 py-4">
+            <Button size="custom" className="bg-new-off-black px-5 py-4 after:bg-new-dark-grey hover:bg-new-dark-grey">
               <p className="text-new-md">Explore Genuin</p>
             </Button>
           </Link>
         </div>
-        <img src={imgC1Mobile.src} width={'45%'} height="auto" decoding="sync" loading="lazy" fetchPriority="high" />
+        <img
+          src={imgC1.src}
+          className="mr-4 mt-6 w-11/12"
+          height="auto"
+          decoding="sync"
+          loading="lazy"
+          fetchPriority="high"
+        />
         {/* <Image
           priority
           unoptimized
@@ -110,14 +113,6 @@ function Component2() {
     <>
       <div className="my-20 hidden w-full flex-col items-center justify-center gap-y-5  lg:flex ">
         <h2 className="-tracking-new text-center text-new-h2">
-          {/* <Image
-            priority
-            loading="eager"
-            src={icAddButton}
-            alt="Add"
-            className="mr-2 inline-block h-full translate-y-1 align-top"
-            unoptimized
-          /> */}
           Move Beyond Traditional Editorial <br /> Communities to Video-Based Communities
         </h2>
         <div className="flex w-1/3 justify-center">
@@ -141,39 +136,16 @@ function Component2() {
       </div>
       <div className="flex flex-col items-center justify-center py-10 lg:hidden">
         <h2 className="w-full max-w-sm py-4 text-center text-new-h2-mobile sm:text-new-h2">
-          <img
-            loading="lazy"
-            fetchPriority="low"
-            decoding="async"
-            src={icAddButton.src}
-            className="mr-2 inline-block w-8 translate-y-1 align-baseline sm:mr-4 sm:w-11"
-          />
-          {/* <Image
-            unoptimized
-            priority
-            loading="eager"
-            src={icAddButton}
-            alt="add"
-            className="mr-2 inline-block w-8 translate-y-1 align-baseline sm:mr-4 sm:w-11"
-          /> */}
-          Create and grow your own community
+          Move Beyond
+          <br /> Traditional Editorial <br /> Communities to Video-Based Communities
         </h2>
-        <img
-          loading="lazy"
-          fetchPriority="low"
-          decoding="async"
-          src={imgC2Mobile.src}
-          className="py-4 sm:w-1/2 sm:translate-x-5"
-        />
-        {/* 
-        <Image
-          priority
-          unoptimized
-          loading="eager"
-          src={imgC2Mobile}
-          alt="genuin"
-          className="py-4 sm:w-1/2 sm:translate-x-5"
-        /> */}
+        <img loading="lazy" fetchPriority="low" decoding="async" src={imgC2Mobile.src} />
+
+        <h2 className="mt-10 w-full max-w-sm py-4 text-center text-new-h2-mobile sm:text-new-h2">
+          Your Brand Owned
+          <br /> Video Community
+        </h2>
+        <img loading="lazy" fetchPriority="low" decoding="async" src={imgC2_2.src} className="w-10/12" />
       </div>
     </>
   )
@@ -183,7 +155,7 @@ function Component3() {
   return (
     <>
       <div className="relative my-40 hidden max-h-full items-center justify-around px-6 xl:container lg:flex xl:px-0">
-        <img loading="lazy" fetchPriority="low" decoding="async" src={imgC2_s1.src} />
+        <img loading="lazy" fetchPriority="low" decoding="async" src={imgC3.src} />
         {/* <Image priority loading="eager" unoptimized className="w-1/3" src={imgC3} alt="genuin" /> */}
         <div className="flex w-2/3 max-w-md flex-col gap-y-8">
           <h2 className="text-new-h2">
@@ -211,7 +183,7 @@ function Component3() {
           </h5>
         </div>
       </div>
-      <div className="my-20 flex flex-col items-center gap-y-8 px-5 lg:hidden">
+      <div className="my-10 flex flex-col items-center gap-y-8 px-5 lg:hidden">
         <h2 className="max-w-xs text-center text-new-h2-mobile sm:max-w-sm sm:text-new-h2">
           Be part of the conversation
           <br /> with
@@ -233,8 +205,8 @@ function Component3() {
           Loops
         </h2>
         <h5 className="flex w-4/5 text-center text-new-h5">
-          Loops are interactive discussion spaces where you can join in with video, photo, voice recording and text
-          responses.
+          The nexus for dynamic one-on-one connections and collaborative discussions. Engage with customers, partners,
+          and employees through Q&A prompts, multimedia sharing and crowdsourced knowledge.
         </h5>
         <img loading="lazy" fetchPriority="low" decoding="async" src={imgC3.src} className="translate-x-4 sm:w-1/2" />
         {/* <Image priority unoptimized loading="eager" src={imgC3} alt="loops" className="translate-x-4 sm:w-1/2" /> */}
@@ -531,12 +503,12 @@ function Component5() {
         {/* <Image priority loading="eager" className="sm:w-1/2" src={imgC5} alt="genuin" unoptimized /> */}
         <div className="flex flex-col justify-between rounded-2xl bg-primary p-4 text-new-off-white sm:w-4/5">
           <p className="text-new-para-1">
-            I love following creators on Instagram and TikTok, but I always wished I could interact with people who
-            share the same interests as me. On Genuin, I’m part of communities on everything from venture capital to
-            books, and I love engaging with others about these topics.
+            Adding communities has been a game-changer for our team. The platform seamlessly connects us with our
+            customers, allowing for insightful discussions and valuable feedback. The interactive format sparks
+            creativity and fosters a sense of community like never before.
           </p>
-          <p className="mt-4 text-new-para-1">
-            Jamie Mars, <span className="font-normal">Student & Future Investor</span>
+          <p className="mt-10 text-new-para-1">
+            Sarah Jones, <span className="font-normal">Marketing Manager</span>
           </p>
         </div>
         <img loading="lazy" fetchPriority="low" className="sm:w-1/2" decoding="async" src={imgC5_2.src} />
@@ -557,6 +529,48 @@ function Component6() {
       </h5>
       <CommunitySection />
     </div>
+  )
+}
+
+function Component7() {
+  return (
+    <>
+      <div className=" hidden h-32 bg-monochrome-9 lg:flex xl:px-0">
+        <div className="flex items-center justify-between xl:container">
+          <p className="text-new-h2">As Seen In</p>
+          <div className="flex gap-10">
+            <div className="flex items-center justify-center rounded-lg bg-monochrome-white px-8 py-2 ">
+              <img loading="lazy" fetchPriority="low" decoding="async" src={businessInsider.src} alt="genuin" />
+              {/* <Image priority loading="eager" src={businessInsider} alt={`businessInsider`} /> */}
+            </div>
+            <div className="flex items-center justify-center rounded-lg bg-monochrome-white px-8 py-2 ">
+              <img loading="lazy" fetchPriority="low" decoding="async" src={yahoo.src} alt="genuin" />
+              {/* <Image priority loading="eager" src={yahoo} alt={`yahoo`} /> */}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="flex h-40 flex-col items-center justify-center gap-4 bg-monochrome-9 lg:hidden">
+        <p className="text-new-h3">As Seen In</p>
+        <div className="flex gap-8">
+          <div className="flex items-center justify-center rounded-lg bg-monochrome-white px-6 py-2 ">
+            <img
+              loading="lazy"
+              fetchPriority="low"
+              className="h-8"
+              decoding="async"
+              src={businessInsider.src}
+              alt="genuin"
+            />
+            {/* <Image priority loading="eager" src={businessInsider} alt={`businessInsider`} /> */}
+          </div>
+          <div className="flex items-center justify-center rounded-lg bg-monochrome-white px-6 py-2 ">
+            <img loading="lazy" fetchPriority="low" className="h-8" decoding="async" src={yahoo.src} alt="genuin" />
+            {/* <Image priority loading="eager" src={yahoo} alt={`yahoo`} /> */}
+          </div>
+        </div>
+      </div>
+    </>
   )
 }
 

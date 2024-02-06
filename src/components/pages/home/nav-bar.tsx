@@ -96,6 +96,18 @@ export function NavBar() {
                         <p className="text-new-md text-new-off-white">Download Genuin</p>
                       </Button>
                     </DownloadAppDialog>
+                    <Link href="/">
+                      <h3 className="text-new-h3-mobile font-semibold">Build</h3>
+                    </Link>
+                    <Link href="/manage">
+                      <h3 className="text-new-h3-mobile font-semibold">Manage</h3>
+                    </Link>
+                    <Link href="/market">
+                      <h3 className="text-new-h3-mobile font-semibold">Market</h3>
+                    </Link>
+                    <Link href="/pricing">
+                      <h3 className="text-new-h3-mobile font-semibold">Pricing</h3>
+                    </Link>
                     <Link href={HIRING_LINK}>
                       <h3 className="text-new-h3-mobile font-semibold">Careers</h3>
                     </Link>

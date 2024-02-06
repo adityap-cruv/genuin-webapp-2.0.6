@@ -6,9 +6,16 @@
 
   .sectionRight {
     max-width: 585px;
-    width: 100%;
+    width: 50%;
     button {
       margin-top: 10px;
     }
+  }
+
+  .sectionLeft {
+    width: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 }
