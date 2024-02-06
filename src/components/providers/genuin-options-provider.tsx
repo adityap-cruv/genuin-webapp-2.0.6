@@ -23,6 +23,8 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType }:
   const embed = searchParams.get('embed') === '1'
   const brandId = searchParams.get('brand_id') ?? ''
   const logoUrl = searchParams.get('logo_url') ?? ''
+  const from = searchParams.get('from') ?? ''
+
   const isMobile = deviceType === 'mobile'
   const isSafari = browserType.toLowerCase().includes('safari')
 
@@ -40,7 +42,9 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType }:
       os,
       browserType,
       isSafari,
+      from,
     })
+    console.log('parent: :', window.parent.location.href, window.parent)
   }
 
   function handleResize() {
