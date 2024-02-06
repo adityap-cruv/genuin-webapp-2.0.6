@@ -1,5 +1,12 @@
 'use client'
-import { abbreviateNumber, checkAndAppendHttps, generateDeepLink, openGeneratedLink } from '@lib/utils'
+import {
+  abbreviateNumber,
+  checkAndAppendHttps,
+  generateDeepLink,
+  getCurrentShareUrl,
+  openGeneratedLink,
+} from '@lib/utils'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { Button } from '@components/ui/button'
 import Image from 'next/image'
 import { CustomAvatar } from '@components/custom/custom-avatar'
@@ -40,6 +47,7 @@ export function MainComponent({ profileData }: CompProps) {
   const scrollDivRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ container: scrollDivRef, layoutEffect: false })
   const resetData = useCommunityListStore((state) => state.reset)
+  const { isEmbed, parentUrl } = useGenuinOptions((state) => ({ isEmbed: state.embed, parentUrl: state.parentUrl }))
 
   useEffect(() => {
     return () => {
@@ -91,7 +99,7 @@ export function MainComponent({ profileData }: CompProps) {
                 className="p-1.5"
                 onClick={async () =>
                   await shareFn({
-                    shareLink: window.location.href + '?utm_source=app_web',
+                    shareLink: getCurrentShareUrl({ isEmbed, parentUrl }),
                     toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                   })
                 }>
