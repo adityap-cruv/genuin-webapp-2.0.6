@@ -7,6 +7,8 @@ import icShare from '@icons/icShareBlue.svg'
 import { DownloadDialog } from '@components/common/download-dialog'
 import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
+import { getCurrentShareUrl } from '@lib/utils'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
 
 type Props = {
   /**
@@ -38,6 +40,7 @@ export function Desktop({
   const navAnimationControl = useAnimationControls()
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
+  const { isEmbed, parentUrl } = useGenuinOptions((state) => ({ isEmbed: state.embed, parentUrl: state.parentUrl }))
 
   useEffect(() => {
     if (defaultOpen || isOpen) {
@@ -92,7 +95,7 @@ export function Desktop({
           className="border border-primary p-0.5"
           onClick={async () =>
             await shareFn({
-              shareLink: window.location.href + '?utm_source=app_web',
+              shareLink: getCurrentShareUrl({ isEmbed, parentUrl }),
               toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
             })
           }>

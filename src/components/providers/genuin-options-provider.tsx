@@ -23,10 +23,18 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType }:
   const embed = searchParams.get('embed') === '1'
   const brandId = searchParams.get('brand_id') ?? ''
   const logoUrl = searchParams.get('logo_url') ?? ''
+  const from = searchParams.get('from') ?? ''
+
   const isMobile = deviceType === 'mobile'
   const isSafari = browserType.toLowerCase().includes('safari')
 
+  function getBox() {
+    return getSizeBoxes(isMobile, !hideNavbar)
+  }
+
   function init() {
+    const isIframe = window !== window.parent
+
     setInitialData({
       brandId,
       embed,
@@ -34,17 +42,18 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType }:
       showNavbar: !hideNavbar,
       isMobile,
       isLoading: false,
-      sizeBoxes: getSizeBoxes(isMobile, !hideNavbar),
-      isIframe: window !== window.parent,
+      sizeBoxes: getBox(),
+      isIframe,
       deviceType,
       os,
       browserType,
       isSafari,
+      parentUrl: from,
     })
   }
 
   function handleResize() {
-    setInitialData({ sizeBoxes: getSizeBoxes(isMobile, !hideNavbar) })
+    setInitialData({ sizeBoxes: getBox() })
   }
 
   function handleBlur() {

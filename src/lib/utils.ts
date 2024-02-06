@@ -168,3 +168,31 @@ export const generateDeepLink = async ({
     return process.env.NEXT_PUBLIC_HOST_URL
   }
 }
+
+// TODO: Not used anywhere rn.
+export function getParentUrl(url: string): string {
+  const urlObj = new URL(url)
+  let path = urlObj.pathname
+  path = path.startsWith('/') ? path.slice(1, path.length) : path
+  path = path.endsWith('/') ? path.slice(0, path.length - 1) : path
+  const arr = path.split('/')
+  if (arr.length < 3) return url
+  return urlObj.hostname + '/' + arr[arr.length - 3]
+}
+
+/**
+ * This function will return share url from window.location.href.
+ * Call this function client side only.
+ * Make sure window object is there.
+ */
+export function getCurrentShareUrl({ isEmbed, parentUrl }: { isEmbed: boolean; parentUrl: string }) {
+  if (!window) return ''
+  const urlObj = new URL(window.location.href)
+  if (isEmbed) {
+    urlObj.pathname = parentUrl
+    urlObj.searchParams.append('utm_source', 'app_web_sdk')
+  } else {
+    urlObj.searchParams.append('utm_source', 'app_web')
+  }
+  return urlObj.href
+}
