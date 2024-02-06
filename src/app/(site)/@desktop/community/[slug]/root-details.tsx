@@ -11,7 +11,7 @@ import icLock from '@icons/icLock.svg'
 import { useInView } from 'framer-motion'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
 import Link from 'next/link'
-import { checkAndAppendHttps } from '@lib/utils'
+import { checkAndAppendHttps, getCurrentShareUrl } from '@lib/utils'
 import icInstagram from '@icons/icInstagramBlack.svg'
 import icLinkedIn from '@icons/icLinkedIn.svg'
 import icLink from '@icons/icLinkBlack.svg'
@@ -24,6 +24,7 @@ import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
 import { CommunityLoopTab } from './community-loop-tab'
 import { ListItem } from '@components/common/list-item'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
 
 interface Props {
   communityDetails: CommunityDetailsType
@@ -39,6 +40,7 @@ export function RootDetails({ communityDetails }: Props) {
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
+  const { isEmbed, parentUrl } = useGenuinOptions((state) => ({ isEmbed: state.embed, parentUrl: state.parentUrl }))
 
   useEffect(() => {
     addCommunity({
@@ -92,7 +94,7 @@ export function RootDetails({ communityDetails }: Props) {
               className="border border-primary p-0.5"
               onClick={async () =>
                 await shareFn({
-                  shareLink: window.location.href + '?utm_source=app_web',
+                  shareLink: getCurrentShareUrl({ isEmbed, parentUrl }),
                   toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                 })
               }>

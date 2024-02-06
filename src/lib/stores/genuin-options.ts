@@ -46,7 +46,7 @@ type StateType = {
    * @default true
    */
   userHasFocus: boolean
-  from: string
+  parentUrl: string
 }
 
 type ActionsType = {
@@ -70,7 +70,7 @@ const initialState: StateType = {
   browserType: '',
   isSafari: false,
   userHasFocus: true,
-  from: '',
+  parentUrl: '',
 }
 
 export const useGenuinOptions = create(

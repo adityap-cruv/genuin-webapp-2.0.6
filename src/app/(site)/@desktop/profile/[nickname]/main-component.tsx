@@ -1,5 +1,5 @@
 'use client'
-import { abbreviateNumber, checkAndAppendHttps } from '@lib/utils'
+import { abbreviateNumber, checkAndAppendHttps, getCurrentShareUrl } from '@lib/utils'
 import { Button } from '@components/ui/button'
 import Image from 'next/image'
 import icShare from '@icons/icShareBlue.svg'
@@ -27,6 +27,7 @@ import icPlay from '@icons/player-controls/icPlay.svg'
 import { DownloadDialog } from '@components/common/download-dialog'
 import { type CommunityMiniObj, useCommunityListStore, type LoopMiniObj, type VideoMiniObj } from './store'
 import { PlayerModal } from '@components/common/modals/player-modal'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
 
 interface CompProps {
   profileData: any
@@ -90,6 +91,8 @@ function Links({ profileData }: CompProps) {
   const links = profileData?.social_links
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
+  const { isEmbed, parentUrl } = useGenuinOptions((state) => ({ isEmbed: state.embed, parentUrl: state.parentUrl }))
+
   return (
     <div className="my-2 flex">
       {links?.linkedin && (
@@ -127,7 +130,7 @@ function Links({ profileData }: CompProps) {
         className="mx-1"
         onClick={async () =>
           await shareFn({
-            shareLink: window.location.href + '?utm_source=app_web',
+            shareLink: getCurrentShareUrl({ isEmbed, parentUrl }),
             toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
           })
         }>
