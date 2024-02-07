@@ -37,6 +37,7 @@
     "axios": "^1.5.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
+    "embla-carousel-react": "^8.0.0-rc22",
     "framer-motion": "^10.16.4",
     "gsap": "^3.12.5",
     "lucide-react": "^0.279.0",
