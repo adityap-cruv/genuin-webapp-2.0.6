@@ -17,11 +17,11 @@ export function NavBar() {
     <>
       <nav className="absolute top-0 z-10 m-auto hidden h-navbar w-full lg:flex ">
         <div className={cn('container flex h-full w-full items-center justify-between py-1')}>
-          <Link href="/">
+          <Link href={PATH_NAME.build()}>
             <GenuinIcon.logo className="fill-new-off-black" />
           </Link>
           <div className="flex w-1/4 items-center justify-between">
-            <Link href="/">
+            <Link href={PATH_NAME.build()}>
               <p
                 className={`pr-4 text-new-para-2 font-semibold ${
                   pathname === '/' ? 'text-title-3-bold text-monochrome-black' : 'text-monochrome-3'
@@ -29,7 +29,7 @@ export function NavBar() {
                 Build
               </p>
             </Link>
-            <Link href="/manage">
+            <Link href={PATH_NAME.manage()}>
               <p
                 className={`pr-4 text-new-para-2 font-semibold ${
                   pathname === '/manage' ? 'text-title-3-bold text-monochrome-black' : 'text-monochrome-3'
@@ -38,7 +38,7 @@ export function NavBar() {
                 Manage
               </p>
             </Link>
-            <Link href="/market">
+            <Link href={PATH_NAME.market()}>
               <p
                 className={`pr-4 text-new-para-2 font-semibold ${
                   pathname === '/market' ? 'text-title-3-bold text-monochrome-black' : 'text-monochrome-3'
@@ -47,7 +47,7 @@ export function NavBar() {
                 Market
               </p>
             </Link>
-            {/* <Link href="/pricing">
+            {/* <Link href={PATH_NAME.pricing()}>
               <p className="pr-4 text-new-para-2 font-semibold text-monochrome-3 transition-all hover:underline">
                 Pricing
               </p>
@@ -96,16 +96,16 @@ export function NavBar() {
                         <p className="text-new-md text-new-off-white">Download Genuin</p>
                       </Button>
                     </DownloadAppDialog>
-                    <Link href="/">
+                    <Link href={PATH_NAME.build()}>
                       <h3 className="text-new-h3-mobile font-semibold">Build</h3>
                     </Link>
-                    <Link href="/manage">
+                    <Link href={PATH_NAME.manage()}>
                       <h3 className="text-new-h3-mobile font-semibold">Manage</h3>
                     </Link>
-                    <Link href="/market">
+                    <Link href={PATH_NAME.market()}>
                       <h3 className="text-new-h3-mobile font-semibold">Market</h3>
                     </Link>
-                    <Link href="/pricing">
+                    <Link href={PATH_NAME.pricing()}>
                       <h3 className="text-new-h3-mobile font-semibold">Pricing</h3>
                     </Link>
                     <Link href={HIRING_LINK}>
