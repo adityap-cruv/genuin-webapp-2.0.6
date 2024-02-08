@@ -47,11 +47,15 @@ export function NavBar() {
                 Market
               </p>
             </Link>
-            {/* <Link href={PATH_NAME.pricing()}>
-              <p className="pr-4 text-new-para-2 font-semibold text-monochrome-3 transition-all hover:underline">
+            <Link href={PATH_NAME.pricing()}>
+              <p
+                className={`pr-4 text-new-para-2 font-semibold ${
+                  pathname === '/pricing' ? 'text-title-3-bold text-monochrome-black' : 'text-monochrome-3'
+                } transition-all hover:underline`}>
+                {' '}
                 Pricing
               </p>
-            </Link> */}
+            </Link>
           </div>
           <div className="flex items-center gap-x-4">
             {/* <Link href={{ pathname: PATH_NAME.home() }}>

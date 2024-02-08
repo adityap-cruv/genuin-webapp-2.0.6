@@ -4,6 +4,7 @@ import Image from 'next/image'
 import style from './comparePlan.module.scss'
 import HeadingComponent from '@components/business/heading'
 import check from '@icons/business/check.svg'
+import dash from '@icons/business/dash.svg'
 import content from '../../../../content/pricing-page.json'
 
 export default function ComparePlan() {
@@ -25,28 +26,55 @@ export default function ComparePlan() {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td colSpan={6} style={{ fontSize: '32px', fontWeight: 600 }}>
-                Category
-              </td>
-            </tr>
             {content.table.tableData.map((row, index) => (
               <tr key={index}>
-                <td data-label="Category">{row.category}</td>
+                <td data-label="Category" className="text-new-sm font-bold">
+                  {row.category}
+                </td>
                 <td data-label="Free">
-                  {row.free && <Image priority loading="eager" src={check} width={32} height={32} alt="Check" />}
+                  <div className="flex justify-center">
+                    {row.free ? (
+                      <Image priority loading="eager" src={check} width={32} height={32} alt="Check" />
+                    ) : (
+                      <Image priority loading="eager" src={dash} width={32} height={32} alt="Check" />
+                    )}
+                  </div>
                 </td>
                 <td data-label="Starter">
-                  {row.starter && <Image priority loading="eager" src={check} width={32} height={32} alt="Check" />}
+                  <div className="flex justify-center">
+                    {row.starter ? (
+                      <Image priority loading="eager" src={check} width={32} height={32} alt="Check" />
+                    ) : (
+                      <Image priority loading="eager" src={dash} width={32} height={32} alt="Check" />
+                    )}
+                  </div>
                 </td>
                 <td data-label="Essential">
-                  {row.essential && <Image priority loading="eager" src={check} width={32} height={32} alt="Check" />}
+                  <div className="flex justify-center">
+                    {row.essential ? (
+                      <Image priority loading="eager" src={check} width={32} height={32} alt="Check" />
+                    ) : (
+                      <Image priority loading="eager" src={dash} width={32} height={32} alt="Check" />
+                    )}
+                  </div>
                 </td>
                 <td data-label="Pro">
-                  {row.pro && <Image priority loading="eager" src={check} width={32} height={32} alt="Check" />}
+                  <div className="flex justify-center">
+                    {row.pro ? (
+                      <Image priority loading="eager" src={check} width={32} height={32} alt="Check" />
+                    ) : (
+                      <Image priority loading="eager" src={dash} width={32} height={32} alt="Check" />
+                    )}
+                  </div>
                 </td>
                 <td data-label="Enterprise">
-                  {row.enterprise && <Image priority loading="eager" src={check} width={32} height={32} alt="Check" />}
+                  <div className="flex justify-center">
+                    {row.enterprise ? (
+                      <Image priority loading="eager" src={check} width={32} height={32} alt="Check" />
+                    ) : (
+                      <Image priority loading="eager" src={dash} width={32} height={32} alt="Check" />
+                    )}
+                  </div>
                 </td>
               </tr>
             ))}

@@ -10,14 +10,14 @@ export default function PlanDetails() {
     <section className={style.container}>
       <div className={style.innerContainer}>
         <div className={style.firstRow}>
-          <HeadingComponent headingLevel={2} title={'Pro Plan'} colorVariant={'white'} />
+          <p className="text-new-h2">Pro Plan</p>
         </div>
 
         <div className={style.secondRow}>
           <div className={style.secondRowLeft}>
             <HeadingComponent
               headingLevel={2}
-              title={'Want more customization from our basic plans?'}
+              title={'Want a fully customized plan for your goals?'}
               colorVariant={'black'}
             />
             <ParagraphComponent
@@ -32,16 +32,17 @@ export default function PlanDetails() {
           <div className={style.secondRowRIght}>
             <HeadingComponent headingLevel={4} title={'What do you get from a pro plan?'} colorVariant={'black'} />
             <ParagraphComponent
-              text={'White label ability with your own URL AI tools'}
+              text={'White label ability with your own URL'}
               sizeVariant={'medium'}
               colorVariant={'black'}
             />
+            <ParagraphComponent text={'AI tools'} sizeVariant={'medium'} colorVariant={'black'} />
           </div>
         </div>
       </div>
       <div className={style.innerContainer}>
         <div className={style.firstRow}>
-          <HeadingComponent headingLevel={2} title={'Enterprise Plan'} colorVariant={'white'} />
+          <p className="text-new-h2">Enterprise Plan</p>{' '}
         </div>
 
         <div className={style.secondRow}>
@@ -58,7 +59,7 @@ export default function PlanDetails() {
             />
             <div className={style.buttonContainer}>
               <Button text={'Contact us for demo and pricing'} variant={'solid'} size={'small'} color={'black'} />
-              <Button text={'Read Case Studies'} variant={'outline'} size={'small'} color={'black'} />
+              {/* <Button text={'Read Case Studies'} variant={'outline'} size={'small'} color={'black'} /> */}
             </div>
           </div>
           <div className={style.secondRowRIght}>
