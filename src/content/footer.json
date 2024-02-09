@@ -36,15 +36,15 @@
 
   "company": [
     {
-      "url": "/careers",
+      "url": "https://careers.begenuin.com",
       "title": "Careers"
     },
     {
-      "url": "/terms-and-services",
+      "url": "/terms",
       "title": "Terms and Services"
     },
     {
-      "url": "/privacy-policy",
+      "url": "/privacy",
       "title": "Privacy Policy"
     }
   ]

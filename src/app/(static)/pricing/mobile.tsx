@@ -30,7 +30,7 @@ export default function Mobile() {
 
 function Component1() {
   return (
-    <div className="container flex h-screen flex-col items-center justify-center pt-navbar">
+    <div className="container flex flex-col items-center justify-center pb-24 pt-36 ">
       <p className=" text-center text-new-h1-mobile">A Plan for Every Brand</p>
 
       <div className="my-4">

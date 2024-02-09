@@ -135,7 +135,7 @@
         "free": false,
         "starter": false,
         "essential": false,
-        "pro": true,
+        "pro": false,
         "enterprise": true
       },
       {
