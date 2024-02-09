@@ -61,7 +61,7 @@ function Component1() {
   }, [brandImages])
   return (
     <div
-      className="flex h-screen items-center pt-navbar"
+      className="flex items-center pb-24 pt-36"
       style={{
         background: `url(${marketbg.src}) no-repeat`,
         backgroundSize: '100% 100%',

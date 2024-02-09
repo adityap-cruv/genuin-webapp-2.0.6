@@ -49,7 +49,7 @@ export default function Mobile() {
 function Component1() {
   return (
     <div
-      className="flex h-screen items-center pt-navbar"
+      className="flex items-center pb-20 pt-36 "
       style={{
         background: `url(${managebg.src}) no-repeat`,
         backgroundSize: '100% 100%',
@@ -62,7 +62,7 @@ function Component1() {
           Nova is supporting the world's biggest brands, the next generation of community builders, and the knowledge
           seekers in between.
         </p>
-        <Button size="custom" className="my-3 bg-new-off-black px-5 py-4 after:bg-new-dark-grey hover:bg-new-dark-grey">
+        <Button size="custom" className="my-3 bg-new-off-black px-4 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
           <p className="text-new-para-2">Get Started</p>
         </Button>
         <div className="my-4 flex min-h-[300px] items-center justify-center">

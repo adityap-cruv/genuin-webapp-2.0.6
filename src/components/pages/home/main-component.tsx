@@ -100,7 +100,7 @@ function Component1() {
         />
       </div>
       <div
-        className="flex min-h-full flex-col items-center justify-center gap-y-4 px-5 pb-5 pt-navbar lg:hidden"
+        className="flex flex-col items-center justify-center gap-y-4 px-5 pb-40 pt-40 lg:hidden"
         style={{ background: 'radial-gradient(123.19% 48.8% at 76.02% 69.05%, #E9CAF4 0%, #ADD8FB 100%)' }}>
         <h1 className="flex max-w-sm  justify-center text-center text-new-h2-mobile sm:text-new-h1 ">
           Natively Integrated Video Communities for Leading Brands.
@@ -112,8 +112,8 @@ function Component1() {
         </p>
         <div className="flex flex-col gap-y-4">
           <Link href={{ pathname: PATH_NAME.home() }}>
-            <Button size="custom" className="bg-new-off-black px-5 py-4 after:bg-new-dark-grey hover:bg-new-dark-grey">
-              <p className="text-new-md">Explore Genuin</p>
+            <Button size="custom" className="bg-new-off-black px-4 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
+              <p className="text-new-sm">Explore Genuin</p>
             </Button>
           </Link>
         </div>
