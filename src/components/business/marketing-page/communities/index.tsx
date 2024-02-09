@@ -21,7 +21,7 @@ export default function Communities() {
         {/* <img loading="lazy" fetchPriority="low" decoding="async" src={communities1.src} alt="genuin" />
         <img loading="lazy" fetchPriority="low" decoding="async" src={communities2.src} alt="genuin" /> */}
         <Image loading="lazy" src={communities1} alt={'communities1'} />
-        <Image loading="lazy" src={communities2} alt={'communities2'} />
+        {/* <Image loading="lazy" src={communities2} alt={'communities2'} /> */}
       </div>
     </section>
   )

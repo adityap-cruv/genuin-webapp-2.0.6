@@ -1,5 +1,5 @@
 'use client'
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useMotionValueEvent, useScroll } from 'framer-motion'
 import Image from 'next/image'
 import { CommunitySection } from './community-section'
@@ -30,6 +30,18 @@ import imgReviewerDp from '@images/home-page/reviewerDp.webp'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import businessInsider from '@images/business/marketing-page/as-seen-in/business-insider.png'
 import yahoo from '@images/business/marketing-page/as-seen-in/yahoo.png'
+import MainBanner from '@components/business/banner'
+import toyotaLogo from '@images/business/brand-page/brands/toyota.svg'
+import toyotaBanner from '@images/business/brand-page/brands/toyota.webp'
+import toyotaBanne2 from '@images/business/brand-page/brands/toyota_full.webp'
+import niveaLogo from '@images/business/brand-page/brands/nivea.svg'
+import niveaBanner from '@images/business/brand-page/brands/nivea.webp'
+import sephoraLogo from '@images/business/brand-page/brands/sephora.svg'
+import sephoraBanner from '@images/business/brand-page/brands/sephora.webp'
+import doveLogo from '@images/business/brand-page/brands/dove.svg'
+import doveBanner from '@images/business/brand-page/brands/dove.webp'
+import cocacolaLogo from '@images/business/brand-page/brands/cocacola.svg'
+import cocacolaBanner from '@images/business/brand-page/brands/cocacola.webp'
 
 export function MainComponent() {
   return (
@@ -46,28 +58,46 @@ export function MainComponent() {
 }
 
 function Component1() {
+  const brandImages: any = [
+    { alt: 'cxr', banner: toyotaBanne2 },
+    { alt: 'social_share', banner: niveaBanner },
+    { alt: 'mail', banner: sephoraBanner },
+    { alt: 'sms', banner: doveBanner },
+    { alt: 'whatsapp', banner: cocacolaBanner },
+  ]
+  const [currentIndex, setCurrentIndex] = useState(0)
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setCurrentIndex((prevIndex: any) => (prevIndex + 1) % brandImages?.length)
+    }, 3000)
+
+    return () => {
+      clearInterval(intervalId)
+    }
+  }, [brandImages])
   return (
     <>
       <div
         id="initial-component"
-        className="hidden min-h-full items-center pt-navbar lg:flex"
+        className="hidden min-h-full items-center justify-center pt-navbar lg:flex"
         style={{ background: 'radial-gradient(123.19% 48.8% at 76.02% 69.05%, #E9CAF4 0%, #ADD8FB 100%)' }}>
-        <div className="container flex h-full w-full items-center justify-around">
-          <div className="w-[60%] flex-col justify-between">
-            <h1 className="text-new-h1">Natively Integrated Video Communities for Leading Brands.</h1>
-            <p className="my-4 text-left text-new-para-1 text-monochrome-black">
-              With Genuin make your digital presence GenZ Ready with Bite-Sized Video Based Communities.
-            </p>
-            <Link href={{ pathname: PATH_NAME.home() }}>
-              <Button size="index-page" className="my-2 bg-new-off-black after:bg-new-dark-grey hover:bg-new-dark-grey">
-                <p className="text-new-sm font-semibold text-new-off-white">Explore Genuin</p>
-              </Button>
-            </Link>
-          </div>
-          {/* <Image priority loading="eager" className="w-[40%]" src={imgC1} alt="genuin" /> */}
-          {/* eslint-disable-next-line react/no-unknown-property */}
-          <img src={imgC1.src} width={'45%'} height="auto" decoding="sync" loading="lazy" fetchPriority="high" />
-        </div>
+        <MainBanner
+          titleHtmlTag={1}
+          bannerTitle={'Natively Integrated Video Communities for Leading Brands.'}
+          titleVariant={'black'}
+          bannerCaption={`With Genuin make your digital presence GenZ Ready with Bite-Sized Video Based Communities.`}
+          paraVariant={'medium'}
+          buttonData={[{ text: 'Explore Genuin', variant: 'solid', path: PATH_NAME.home() }]}
+          bannerImg={null}
+          brandImages={[
+            { img: toyotaLogo, alt: 'toyota', banner: toyotaBanne2 },
+            { img: niveaLogo, alt: 'nivea', banner: niveaBanner },
+            { img: sephoraLogo, alt: 'sephora', banner: sephoraBanner },
+            { img: doveLogo, alt: 'dove', banner: doveBanner },
+            { img: cocacolaLogo, alt: 'cocacola', banner: cocacolaBanner },
+          ]}
+        />
       </div>
       <div
         className="flex min-h-full flex-col items-center justify-center gap-y-4 px-5 pb-5 pt-navbar lg:hidden"
@@ -87,14 +117,15 @@ function Component1() {
             </Button>
           </Link>
         </div>
-        <img
-          src={imgC1.src}
-          className="mr-4 mt-6 w-11/12"
-          height="auto"
-          decoding="sync"
-          loading="lazy"
-          fetchPriority="high"
-        />
+        <div className="relative my-4 flex min-h-[300px] w-screen items-center justify-center">
+          <img
+            loading="lazy"
+            fetchPriority="low"
+            decoding="async"
+            className="absolute right-0 h-80"
+            src={toyotaBanner.src}
+          />
+        </div>
         {/* <Image
           priority
           unoptimized
@@ -204,7 +235,7 @@ function Component3() {
           /> */}
           Loops
         </h2>
-        <h5 className="flex w-4/5 text-center text-new-h5">
+        <h5 className="flex w-4/5 text-center text-new-para-1-mobile">
           The nexus for dynamic one-on-one connections and collaborative discussions. Engage with customers, partners,
           and employees through Q&A prompts, multimedia sharing and crowdsourced knowledge.
         </h5>
@@ -368,7 +399,7 @@ function Component4() {
               <AccordionTrigger className="items-baseline">
                 <div className="flex flex-col items-start">
                   <h3 className="mb-2 text-new-h3-mobile">Connect</h3>
-                  <p className="text-start text-new-para-1">
+                  <p className="text-start text-new-para-1-mobile">
                     Meet new people, grow your audience, and discover new interests.
                   </p>
                 </div>
@@ -381,7 +412,7 @@ function Component4() {
               <AccordionTrigger className="items-baseline">
                 <div className="flex flex-col items-start">
                   <h3 className="mb-2 text-new-h3-mobile">Discover</h3>
-                  <p className="text-start text-new-para-1">
+                  <p className="text-start text-new-para-1-mobile">
                     Create Loops, interactive discussion spaces that combine video, photo, voice recording and text.
                   </p>
                 </div>
@@ -394,7 +425,7 @@ function Component4() {
               <AccordionTrigger className="items-baseline">
                 <div className="flex flex-col items-start">
                   <h3 className="mb-2 text-new-h3-mobile">Learn</h3>
-                  <p className="text-start text-new-para-1">
+                  <p className="text-start text-new-para-1-mobile">
                     Start conversations and invite your audience to contribute, too—a space to learn alongside and from
                     each other.
                   </p>

@@ -19,7 +19,7 @@ export default function SubscriptionPlan() {
         <div className="flex justify-center">
           {isSelected === 'free' && (
             <div
-              className="h-full w-[500px] rounded-xl p-10"
+              className="z-10 h-full w-[500px] rounded-xl p-10"
               style={{
                 border: '3px solid #E9CAF4',
                 background: '#FFF',
@@ -32,7 +32,7 @@ export default function SubscriptionPlan() {
                 <Button
                   size="custom"
                   className="mt-8 bg-new-off-black px-5 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
-                  <p className="text-new-para-2">Contact us for pricing</p>
+                  <p className="text-new-para-2">Download App</p>
                 </Button>
               </div>
               <div className="flex flex-col gap-1">
@@ -55,7 +55,7 @@ export default function SubscriptionPlan() {
 
           {isSelected === 'starter' && (
             <div
-              className="h-full w-[500px] rounded-xl p-10"
+              className="z-10 h-full w-[500px] rounded-xl p-10"
               style={{
                 border: '3px solid #E9CAF4',
                 background: '#FFF',
@@ -93,7 +93,7 @@ export default function SubscriptionPlan() {
 
           {isSelected === 'essential' && (
             <div
-              className="h-full w-[500px] rounded-xl p-10"
+              className="z-10 h-full w-[500px] rounded-xl p-10"
               style={{
                 border: '3px solid #E9CAF4',
                 background: '#FFF',
@@ -131,7 +131,7 @@ export default function SubscriptionPlan() {
 
           {isSelected === 'pro-plan' && (
             <div
-              className="h-full w-[500px] rounded-xl p-10"
+              className="z-10 h-full w-[500px] rounded-xl p-10"
               style={{
                 border: '3px solid #E9CAF4',
                 background: '#FFF',
@@ -167,7 +167,7 @@ export default function SubscriptionPlan() {
 
           {isSelected === 'enterprise' && (
             <div
-              className="relative h-full w-[500px] rounded-xl p-10"
+              className="relative z-10 h-full w-[500px] rounded-xl p-10"
               style={{
                 border: '3px solid #E9CAF4',
                 background: '#FFF',
@@ -213,9 +213,10 @@ export default function SubscriptionPlan() {
             onClick={() => {
               setIsSelected('free')
             }}
-            className={`flex items-center bg-monochrome-white ${
+            className={`relative flex items-center bg-monochrome-white ${
               isSelected === 'free' ? 'border-4 border-[#E9CAF4]' : 'border border-monochrome-7'
             } justify-between rounded-xl p-4 px-8 hover:border-4 hover:border-[#E9CAF4]`}>
+            {isSelected === 'free' && <hr className="absolute -left-24 w-24 border-2 border-[#E9CAF4]" />}
             <p className="text-new-lg">
               Free
               <br />
@@ -228,10 +229,10 @@ export default function SubscriptionPlan() {
             onClick={() => {
               setIsSelected('starter')
             }}
-            className={`flex items-center bg-monochrome-white ${
+            className={`relative flex items-center bg-monochrome-white ${
               isSelected === 'starter' ? 'border-4 border-[#E9CAF4]' : 'border border-monochrome-7'
             } justify-between rounded-xl p-4 px-8 hover:border-4 hover:border-[#E9CAF4]`}>
-            {' '}
+            {isSelected === 'starter' && <hr className="absolute -left-24 w-24 border-2 border-[#E9CAF4]" />}
             <p className="text-new-lg">
               Starter
               <br />
@@ -246,10 +247,10 @@ export default function SubscriptionPlan() {
             onClick={() => {
               setIsSelected('essential')
             }}
-            className={`flex items-center bg-monochrome-white ${
+            className={`relative flex items-center bg-monochrome-white ${
               isSelected === 'essential' ? 'border-4 border-[#E9CAF4]' : 'border border-monochrome-7'
             } justify-between rounded-xl p-4 px-8 hover:border-4 hover:border-[#E9CAF4]`}>
-            {' '}
+            {isSelected === 'essential' && <hr className="absolute -left-24 w-24 border-2 border-[#E9CAF4]" />}
             <p className="text-new-lg">
               Essential
               <br />
@@ -264,10 +265,10 @@ export default function SubscriptionPlan() {
             onClick={() => {
               setIsSelected('pro-plan')
             }}
-            className={`flex items-center bg-monochrome-white ${
+            className={`relative flex items-center bg-monochrome-white ${
               isSelected === 'pro-plan' ? 'border-4 border-[#E9CAF4]' : 'border border-monochrome-7'
             } justify-between rounded-xl p-4 px-8 hover:border-4 hover:border-[#E9CAF4]`}>
-            {' '}
+            {isSelected === 'pro-plan' && <hr className="absolute -left-24 w-24 border-2 border-[#E9CAF4]" />}
             <p className="text-new-lg">
               Pro
               <br />
@@ -280,10 +281,10 @@ export default function SubscriptionPlan() {
             onClick={() => {
               setIsSelected('enterprise')
             }}
-            className={`flex items-center bg-monochrome-white ${
+            className={`relative flex items-center bg-monochrome-white ${
               isSelected === 'enterprise' ? 'border-4 border-[#E9CAF4]' : 'border border-monochrome-7'
             } justify-between rounded-xl p-4 px-8 hover:border-4 hover:border-[#E9CAF4]`}>
-            {' '}
+            {isSelected === 'enterprise' && <hr className="absolute -left-24 w-24 border-2 border-[#E9CAF4]" />}
             <p className="text-new-lg">
               Enterprise
               <br />

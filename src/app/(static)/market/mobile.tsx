@@ -18,6 +18,7 @@ import communities from '@images/business/marketing-page/communities-mobile.webp
 import businessInsider from '@images/business/marketing-page/as-seen-in/business-insider.png'
 import yahoo from '@images/business/marketing-page/as-seen-in/yahoo.png'
 import marketbg from '@images/business/marketing-page/market-bg-mobile.png'
+import communities1 from '@images/business/marketing-page/communities-1.webp'
 import { Button } from '@components/ui/button'
 import { Footer } from '@components/pages/home/footer'
 import { useMotionValueEvent, useScroll } from 'framer-motion'
@@ -69,11 +70,15 @@ function Component1() {
       }}>
       <div className="container">
         <p className="my-3 w-3/4 text-new-h3">Unleash the Power of Your Community</p>
-        <p className="my-3 text-new-md">
+        <p
+          className="my-3 text-new-para-1"
+          style={{
+            fontSize: '18px',
+          }}>
           Transform your marketing strategies with our dynamic solutions – from SMS and Email to Programmatic and
           Social, all centered around short video-based knowledge sharing within thriving communities.
         </p>
-        <Button size="custom" className="my-3 bg-new-off-black px-5 py-4 after:bg-new-dark-grey hover:bg-new-dark-grey">
+        <Button size="custom" className="my-3 bg-new-off-black px-4 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
           <p className="text-new-para-2">Get Started</p>
         </Button>
         <div className="my-4 flex min-h-[300px] items-center justify-center">
@@ -279,8 +284,8 @@ function Component4() {
           <AccordionItem value="connect" className="border-none ">
             <AccordionTrigger className="items-baseline">
               <div className="flex flex-col items-start">
-                <h3 className="mb-2 text-new-h3-mobile">Content Marketing</h3>
-                <p className="text-start text-new-para-1">
+                <h3 className="mb-2 text-new-h4">Content Marketing</h3>
+                <p className="text-start text-new-para-1-mobile">
                   Transform your social media presence with Genuin. Craft engaging short videos that resonate with your
                   community, driving conversations, and fostering genuine connections.
                 </p>
@@ -293,8 +298,8 @@ function Component4() {
           <AccordionItem value="discover" className="border-none ">
             <AccordionTrigger className="items-baseline">
               <div className="flex flex-col items-start">
-                <h3 className="mb-2 text-new-h3-mobile">SEO Tools</h3>
-                <p className="text-start text-new-para-1">
+                <h3 className="mb-2 text-new-h4">SEO Tools</h3>
+                <p className="text-start text-new-para-1-mobile">
                   Help people find your community with SEO tools to edit title tags, meta descriptions, and content
                   details.
                 </p>
@@ -314,8 +319,8 @@ function Component4() {
           <AccordionItem value="learn" className="border-none ">
             <AccordionTrigger className="items-baseline">
               <div className="flex flex-col items-start">
-                <h3 className="mb-2 text-new-h3-mobile">Social Media Ads</h3>
-                <p className="text-start text-new-para-1">
+                <h3 className="mb-2 text-new-h4">Social Media Ads</h3>
+                <p className="text-start text-new-para-1-mobile">
                   Transform your social media presence with Genuin. Craft engaging short videos that resonate with your
                   community, driving conversations, and fostering genuine connections.
                 </p>
@@ -340,11 +345,11 @@ function Component5() {
         of your brand and fostering a sense of belonging among your audience.
       </p>
 
-      <Button variant={'outline'} size="custom" className="my-1 px-4 py-2">
+      {/* <Button variant={'outline'} size="custom" className="my-1 px-4 py-2">
         <p className="text-new-para-2">Highlight Your Community</p>
-      </Button>
-      <div className="flex justify-center">
-        <img loading="lazy" fetchPriority="low" decoding="async" className="my-6 w-11/12" src={communities.src} />
+      </Button> */}
+      <div className="my-4 flex justify-center rounded-xl bg-[#ADDAFF]">
+        <img loading="lazy" fetchPriority="low" decoding="async" className="my-6 w-11/12" src={communities1.src} />
       </div>
     </div>
   )
