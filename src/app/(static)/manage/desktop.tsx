@@ -8,21 +8,20 @@ import FunnelEngagement from '@components/business/brand-page/funnel-engagement'
 import VideoBasedCommunities from '@components/business/brand-page/video-based-communities'
 import Testimonial from '@components/business/brand-page/testimonials'
 import GetInTouch from '@components/business/brand-page/get-in-touch'
-import dunkingLogo from '@images/business/brand-page/brands/dunking.svg'
-import dunkingBanner from '@images/business/brand-page/brands/dunking.webp'
-import instacartLogo from '@images/business/brand-page/brands/instacart.svg'
-import instacartBanner from '@images/business/brand-page/brands/instacart.webp'
-import udemyLogo from '@images/business/brand-page/brands/udemy.svg'
-import udemyBanner from '@images/business/brand-page/brands/udemy.webp'
-import starbucksLogo from '@images/business/brand-page/brands/starbucks.svg'
-import starbucksBanner from '@images/business/brand-page/brands/starbucks.webp'
-import tedLogo from '@images/business/brand-page/brands/ted.svg'
-import tedBanner from '@images/business/brand-page/brands/ted.webp'
-import lowesLogo from '@images/business/brand-page/brands/lowes.svg'
-import lowesBanner from '@images/business/brand-page/brands/lowes.webp'
+import toyotaLogo from '@images/business/brand-page/brands/toyota.svg'
+import toyotaBanner from '@images/business/brand-page/brands/toyota.webp'
+import niveaLogo from '@images/business/brand-page/brands/nivea.svg'
+import niveaBanner from '@images/business/brand-page/brands/nivea.webp'
+import sephoraLogo from '@images/business/brand-page/brands/sephora.svg'
+import sephoraBanner from '@images/business/brand-page/brands/sephora.webp'
+import doveLogo from '@images/business/brand-page/brands/dove.svg'
+import doveBanner from '@images/business/brand-page/brands/dove.webp'
+import cocacolaLogo from '@images/business/brand-page/brands/cocacola.svg'
+import cocacolaBanner from '@images/business/brand-page/brands/cocacola.webp'
 import { NavBar } from '@components/pages/home/nav-bar'
 import Footer from '@components/business/footer'
 import AsSeenIn from '@components/business/as-seen-in'
+import onlinecommunity from '@images/business/brand-page/online-community-group.webp'
 
 export default function Desktop() {
   return (
@@ -33,23 +32,13 @@ export default function Desktop() {
         <div className="pt-navbar">
           <Banner
             titleHtmlTag={1}
-            bannerTitle={'Making Community Engaging on your App & Web'}
+            bannerTitle={'Get First-Party Data & Generate Unique Audience Segments.'}
             titleVariant={'black'}
-            bannerCaption={`Embedded Communities offer brands a compelling, interactive alternative to third-party social channels, free from privacy concerns, data ownership issues, and algorithm complexities.`}
+            bannerCaption={`Control and Moderate posts and own data in Your video based Community`}
             paraVariant={'medium'}
-            buttonData={[
-              { text: 'Get Started', variant: 'solid' },
-              { text: 'Contact Sales', variant: 'outline' },
-            ]}
-            bannerImg={null}
-            brandImages={[
-              { img: dunkingLogo, alt: 'dunking', banner: dunkingBanner },
-              { img: instacartLogo, alt: 'instacart', banner: instacartBanner },
-              { img: udemyLogo, alt: 'udemy', banner: udemyBanner },
-              { img: starbucksLogo, alt: 'starbucks', banner: starbucksBanner },
-              { img: tedLogo, alt: 'TED', banner: tedBanner },
-              { img: lowesLogo, alt: 'lowes', banner: lowesBanner },
-            ]}
+            buttonData={[{ text: 'Get Started', variant: 'solid', path: '' }]}
+            bannerImg={onlinecommunity}
+            brandImages={null}
           />
         </div>
       </div>

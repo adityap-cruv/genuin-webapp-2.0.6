@@ -5,10 +5,12 @@ import style from './banner.module.scss'
 import HeadingComponent from '../heading'
 import ParagraphComponent from '../paragraph'
 import Button from '../button'
+import Link from 'next/link'
 
 interface ButtonData {
   text: string | undefined
   variant: 'solid' | 'outline'
+  path: string | undefined
 }
 
 interface BannerProps {
@@ -34,7 +36,11 @@ const MainBanner: React.FC<BannerProps> = ({
 }) => {
   // Render buttons based on buttonData
   const renderedButtons = buttonData?.map((button, index) => (
-    <Button key={index} text={button.text} variant={button.variant} />
+    <>
+      <Link href={{ pathname: button.path }}>
+        <Button key={index} text={button.text} variant={button.variant} />
+      </Link>
+    </>
   ))
 
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -76,7 +82,7 @@ const MainBanner: React.FC<BannerProps> = ({
               //   height={500}
               //   src={brandImages[currentIndex].banner.src}
               // />
-              <Image priority loading="eager" src={brandImages[currentIndex].banner} height={500} alt="genuin" />
+              <Image priority loading="eager" src={brandImages[currentIndex].banner} height={600} alt="genuin" />
             ) : (
               <Image priority loading="eager" src={bannerImg} alt="genuin" />
               // <img loading="lazy" fetchPriority="low" decoding="async" src={bannerImg.src} />

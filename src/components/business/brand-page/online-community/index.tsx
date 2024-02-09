@@ -30,10 +30,6 @@ export default function OnlineCommunity() {
           {/* <img src={community1.src} loading="lazy" fetchPriority="low" decoding="async" /> */}
           <Image loading="lazy" src={community1} alt="genuin" />
         </div>
-        <div className={style.rowTwoRight}>
-          {/* <img src={community2.src} loading="lazy" fetchPriority="low" decoding="async" /> */}
-          <Image loading="lazy" src={community2} alt="genuin" />
-        </div>
       </div>
     </section>
   )

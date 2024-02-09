@@ -31,7 +31,7 @@ export const Desktop = () => {
             titleVariant={'black'}
             bannerCaption={`Transform your marketing strategies with our dynamic solutions – from SMS and Email to Programmatic and Social, all centered around short video-based knowledge sharing within thriving communities.`}
             paraVariant={'medium'}
-            buttonData={[{ text: 'Get Started', variant: 'solid' }]}
+            buttonData={[{ text: 'Get Started', variant: 'solid', path: '' }]}
             bannerImg={null}
             brandImages={[
               { alt: 'cxr', banner: cxr },
