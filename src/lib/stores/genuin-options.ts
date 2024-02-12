@@ -13,6 +13,15 @@ export type SizeBoxesType = {
   default: VideoSizeBoxType
 }
 
+export type ConfigType = {
+  brand_id: string
+  created_at: string
+  id: string
+  logo: string
+  name: string
+  subdomain: string
+} | null
+
 type StateType = {
   /**
    * Set true if you embed needs to be true.
@@ -47,6 +56,7 @@ type StateType = {
    */
   userHasFocus: boolean
   parentUrl: string
+  config: ConfigType
 }
 
 type ActionsType = {
@@ -71,6 +81,7 @@ const initialState: StateType = {
   isSafari: false,
   userHasFocus: true,
   parentUrl: '',
+  config: null,
 }
 
 export const useGenuinOptions = create(
