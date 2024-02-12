@@ -8,5 +8,6 @@ declare namespace NodeJS {
     NEXT_PUBLIC_API_URL: string
     NEXT_PUBLIC_HOST_URL: string
     NEXT_PUBLIC_INTERNAL_API_URL: string
+    NEXT_PUBLIC_BRAND_API_URL: string
   }
 }
