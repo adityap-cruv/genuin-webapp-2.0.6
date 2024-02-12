@@ -9,8 +9,7 @@ import getInTouch from '@images/business/brand-page/get-in-touch.webp'
 
 export default function GetInTouch() {
   const handleButtonClick = (value: string) => {
-    console.log('Input value:', value)
-    // Handle the input value as needed
+    // console.log('Input value:', value)
   }
   useEffect(() => {
     // Attach event handler only if running on the client side

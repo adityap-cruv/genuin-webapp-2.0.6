@@ -8,7 +8,6 @@ import img1 from '@images/business/brand-page/funnel-engagement/img-1.webp'
 import img2 from '@images/business/brand-page/funnel-engagement/img-2.webp'
 import img3 from '@images/business/brand-page/funnel-engagement/img-3.webp'
 import style from './engagement.module.scss'
-import Image from 'next/image'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -146,14 +145,11 @@ const FunnelEngagement: React.FC = () => {
           <div className={style.leftContainer}>
             <div className={`left-content ${style.leftContent}`}>
               {activeElementIndex === 2 || activeElementIndex === 3 ? (
-                // <img loading="lazy" decoding="async" fetchPriority="low" src={img3.src} alt="genuin" />
-                <Image loading="lazy" src={img3} alt="learn" />
+                <img loading="lazy" decoding="async" fetchPriority="low" src={img3.src} alt="genuin" />
               ) : activeElementIndex === 1 ? (
-                // <img loading="lazy" decoding="async" fetchPriority="low" src={img2.src} alt="genuin" />
-                <Image loading="lazy" src={img2} alt="discover" />
+                <img loading="lazy" decoding="async" fetchPriority="low" src={img2.src} alt="genuin" />
               ) : (
-                // <img loading="lazy" decoding="async" fetchPriority="low" src={img1.src} alt="genuin" />
-                <Image loading="lazy" src={img1} alt="connect" />
+                <img loading="lazy" decoding="async" fetchPriority="low" src={img1.src} alt="genuin" />
               )}
             </div>
           </div>

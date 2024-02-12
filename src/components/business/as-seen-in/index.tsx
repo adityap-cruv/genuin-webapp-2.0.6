@@ -12,11 +12,9 @@ export default function AsSeenIn() {
         <div className="flex gap-8">
           <div className={style.imageContainer}>
             <img loading="lazy" fetchPriority="low" decoding="async" src={businessInsider.src} alt="genuin" />
-            {/* <Image priority loading="eager" src={businessInsider} alt={`businessInsider`} /> */}
           </div>
           <div className={style.imageContainer}>
             <img loading="lazy" fetchPriority="low" decoding="async" src={yahoo.src} alt="genuin" />
-            {/* <Image priority loading="eager" src={yahoo} alt={`yahoo`} /> */}
           </div>
         </div>
       </div>
