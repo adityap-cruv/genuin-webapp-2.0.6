@@ -57,9 +57,10 @@ function Component1() {
             <div
               className="m-4 h-[525px] rounded-xl p-10"
               style={{
-                border: '3px solid #E9CAF4',
-                background: '#FFF',
-                boxShadow: '0px 3.624px 18.121px 0px rgba(63, 63, 63, 0.05)',
+                background:
+                  'linear-gradient(white, white) padding-box, linear-gradient(#0645FFC2, #E9CAF4 ) border-box',
+                borderRadius: '12px',
+                border: '3px solid transparent',
               }}>
               <p className="my-1 text-new-h2-mobile font-semibold">Free Plan</p>
               <p className="text-new-sm">FOR EVERYONE TO GET STARTED</p>
@@ -95,9 +96,10 @@ function Component1() {
             <div
               className="m-4 h-[525px] rounded-xl p-10"
               style={{
-                border: '3px solid #E9CAF4',
-                background: '#FFF',
-                boxShadow: '0px 3.624px 18.121px 0px rgba(63, 63, 63, 0.05)',
+                background:
+                  'linear-gradient(white, white) padding-box, linear-gradient(#0645FFC2, #E9CAF4 ) border-box',
+                borderRadius: '12px',
+                border: '3px solid transparent',
               }}>
               <p className="my-1 text-new-h2-mobile font-semibold">Starter</p>
               <p className="text-new-sm">FOR EVERYONE TO GET STARTED</p>
@@ -132,9 +134,10 @@ function Component1() {
             <div
               className="m-4 h-[525px] rounded-xl p-10"
               style={{
-                border: '3px solid #E9CAF4',
-                background: '#FFF',
-                boxShadow: '0px 3.624px 18.121px 0px rgba(63, 63, 63, 0.05)',
+                background:
+                  'linear-gradient(white, white) padding-box, linear-gradient(#0645FFC2, #E9CAF4 ) border-box',
+                borderRadius: '12px',
+                border: '3px solid transparent',
               }}>
               <p className="my-1 text-new-h2-mobile font-semibold">Essential</p>
               <p className="text-new-sm">FOR SMALL STUDIOS</p>
@@ -169,9 +172,10 @@ function Component1() {
             <div
               className="m-4 h-[525px] rounded-xl p-10"
               style={{
-                border: '3px solid #E9CAF4',
-                background: '#FFF',
-                boxShadow: '0px 3.624px 18.121px 0px rgba(63, 63, 63, 0.05)',
+                background:
+                  'linear-gradient(white, white) padding-box, linear-gradient(#0645FFC2, #E9CAF4 ) border-box',
+                borderRadius: '12px',
+                border: '3px solid transparent',
               }}>
               <p className="my-1 text-new-h2-mobile font-semibold">Pro Plan</p>
               <p className="text-new-sm">FOR BIG COMMUNITIES</p>
@@ -207,9 +211,10 @@ function Component1() {
             <div
               className="relative m-4 h-[525px] rounded-xl p-10"
               style={{
-                border: '3px solid #E9CAF4',
-                background: '#FFF',
-                boxShadow: '0px 3.624px 18.121px 0px rgba(63, 63, 63, 0.05)',
+                background:
+                  'linear-gradient(white, white) padding-box, linear-gradient(#0645FFC2, #E9CAF4 ) border-box',
+                borderRadius: '12px',
+                border: '3px solid transparent',
               }}>
               <Image priority loading="eager" className="absolute -left-4 bottom-6 h-6 w-auto" src={star1} alt="Star" />
               <Image priority loading="eager" className="absolute -right-5 top-6 h-10 w-auto" src={star2} alt="Star" />
@@ -259,11 +264,11 @@ function Component2() {
       <p className="mb-10 text-center text-new-h1-mobile">Compare All Plan Features</p>
       <div className="bg-white sticky top-0 z-10">
         <div className="grid grid-cols-5 bg-[#ADDAFF] px-4 py-4">
-          <div className="flex justify-center">Free</div>
-          <div className="flex justify-center">Starter</div>
-          <div className="flex justify-center">Essential</div>
-          <div className="flex justify-center">Pro</div>
-          <div className="flex justify-center">Enterprise</div>
+          <div className="flex justify-center text-cap-1-bold ">Free</div>
+          <div className="flex justify-center text-cap-1-bold">Starter</div>
+          <div className="flex justify-center text-cap-1-bold">Essential</div>
+          <div className="flex justify-center text-cap-1-bold">Pro</div>
+          <div className="flex justify-center text-cap-1-bold">Enterprise</div>
         </div>
       </div>
       <div className="mt-6 ">

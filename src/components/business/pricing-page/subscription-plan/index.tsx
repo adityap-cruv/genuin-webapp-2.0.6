@@ -6,9 +6,11 @@ import star1 from '@images/business/star1.webp'
 import star2 from '@images/business/star2.webp'
 import exclamation from '@icons/business/exclamation.svg'
 import { Button } from '@components/ui/button'
+import style from './subscriptionPlan.module.scss'
 
 export default function SubscriptionPlan() {
   const [isSelected, setIsSelected] = useState('free')
+
   return (
     <div className="my-10 ">
       <p className="text-center text-new-h2">
@@ -18,13 +20,7 @@ export default function SubscriptionPlan() {
       <div className="mt-10 grid h-[585px] grid-cols-2 gap-12">
         <div className="flex justify-center">
           {isSelected === 'free' && (
-            <div
-              className="z-10 h-full w-[500px] rounded-xl p-10"
-              style={{
-                border: '3px solid #E9CAF4',
-                background: '#FFF',
-                boxShadow: '0px 3.624px 18.121px 0px rgba(63, 63, 63, 0.05)',
-              }}>
+            <div className={`${style.btngradient} z-10 h-full w-[500px] rounded-xl p-10`}>
               <p className="my-1 text-new-h2-mobile font-semibold">Free Plan</p>
               <p className="text-new-para-1">FOR EVERYONE TO GET STARTED</p>
               <div className="flex flex-col items-center py-20">
@@ -54,13 +50,7 @@ export default function SubscriptionPlan() {
           )}
 
           {isSelected === 'starter' && (
-            <div
-              className="z-10 h-full w-[500px] rounded-xl p-10"
-              style={{
-                border: '3px solid #E9CAF4',
-                background: '#FFF',
-                boxShadow: '0px 3.624px 18.121px 0px rgba(63, 63, 63, 0.05)',
-              }}>
+            <div className={`${style.btngradient} z-10 h-full w-[500px] rounded-xl p-10`}>
               <p className="my-1 text-new-h2-mobile font-semibold">Starter</p>
               <p className="text-new-para-1">FOR EVERYONE TO GET STARTED</p>
               <div className="flex flex-col items-center py-20">
@@ -92,13 +82,7 @@ export default function SubscriptionPlan() {
           )}
 
           {isSelected === 'essential' && (
-            <div
-              className="z-10 h-full w-[500px] rounded-xl p-10"
-              style={{
-                border: '3px solid #E9CAF4',
-                background: '#FFF',
-                boxShadow: '0px 3.624px 18.121px 0px rgba(63, 63, 63, 0.05)',
-              }}>
+            <div className={`${style.btngradient} z-10 h-full w-[500px] rounded-xl p-10`}>
               <p className="my-1 text-new-h2-mobile font-semibold">Essential</p>
               <p className="text-new-para-1">FOR SMALL STUDIOS</p>
               <div className="flex flex-col items-center py-20">
@@ -130,13 +114,7 @@ export default function SubscriptionPlan() {
           )}
 
           {isSelected === 'pro-plan' && (
-            <div
-              className="z-10 h-full w-[500px] rounded-xl p-10"
-              style={{
-                border: '3px solid #E9CAF4',
-                background: '#FFF',
-                boxShadow: '0px 3.624px 18.121px 0px rgba(63, 63, 63, 0.05)',
-              }}>
+            <div className={`${style.btngradient} z-10 h-full w-[500px] rounded-xl p-10`}>
               <p className="my-1 text-new-h2-mobile font-semibold">Pro Plan</p>
               <p className="text-new-para-1">FOR BIG COMMUNITIES</p>
               <div className="flex flex-col items-center py-12">
@@ -166,13 +144,7 @@ export default function SubscriptionPlan() {
           )}
 
           {isSelected === 'enterprise' && (
-            <div
-              className="relative z-10 h-full w-[500px] rounded-xl p-10"
-              style={{
-                border: '3px solid #E9CAF4',
-                background: '#FFF',
-                boxShadow: '0px 3.624px 18.121px 0px rgba(63, 63, 63, 0.05)',
-              }}>
+            <div className={`${style.btngradient} relative z-10 h-full w-[500px] rounded-xl p-10`}>
               <Image priority loading="eager" className="absolute -left-5 bottom-6" src={star1} alt="Star" />
               <Image priority loading="eager" className="absolute -right-6 top-6" src={star2} alt="Star" />
               <p className="my-1 text-new-h2-mobile font-semibold">Enterprise</p>
@@ -213,10 +185,19 @@ export default function SubscriptionPlan() {
             onClick={() => {
               setIsSelected('free')
             }}
-            className={`relative flex items-center bg-monochrome-white ${
-              isSelected === 'free' ? 'border-4 border-[#E9CAF4]' : 'border border-monochrome-7'
-            } justify-between rounded-xl p-4 px-8 hover:border-4 hover:border-[#E9CAF4]`}>
-            {isSelected === 'free' && <hr className="absolute -left-24 w-24 border-2 border-[#E9CAF4]" />}
+            className={`relative flex items-center justify-between rounded-xl border border-monochrome-7 bg-monochrome-white p-4 px-8 hover:border-2`}
+            style={
+              isSelected === 'free'
+                ? {
+                    background:
+                      'linear-gradient(white, white) padding-box, linear-gradient(#0645ff, #e9caf4) border-box',
+                    borderRadius: '12px',
+                    border: '3px solid transparent',
+                  }
+                : {}
+            }>
+            {isSelected === 'free' && <div className="absolute -left-24 h-0.5 w-24 bg-[#677EFB]" />}
+
             <p className="text-new-lg">
               Free
               <br />
@@ -229,10 +210,19 @@ export default function SubscriptionPlan() {
             onClick={() => {
               setIsSelected('starter')
             }}
-            className={`relative flex items-center bg-monochrome-white ${
-              isSelected === 'starter' ? 'border-4 border-[#E9CAF4]' : 'border border-monochrome-7'
-            } justify-between rounded-xl p-4 px-8 hover:border-4 hover:border-[#E9CAF4]`}>
-            {isSelected === 'starter' && <hr className="absolute -left-24 w-24 border-2 border-[#E9CAF4]" />}
+            className={`relative flex items-center justify-between rounded-xl border border-monochrome-7 bg-monochrome-white p-4 px-8 hover:border-2 `}
+            style={
+              isSelected === 'starter'
+                ? {
+                    background:
+                      'linear-gradient(white, white) padding-box, linear-gradient(#0645ff, #e9caf4) border-box',
+                    borderRadius: '12px',
+                    border: '3px solid transparent',
+                  }
+                : {}
+            }>
+            {isSelected === 'starter' && <div className="absolute -left-24 h-0.5 w-24 bg-[#677EFB]" />}
+
             <p className="text-new-lg">
               Starter
               <br />
@@ -247,10 +237,19 @@ export default function SubscriptionPlan() {
             onClick={() => {
               setIsSelected('essential')
             }}
-            className={`relative flex items-center bg-monochrome-white ${
-              isSelected === 'essential' ? 'border-4 border-[#E9CAF4]' : 'border border-monochrome-7'
-            } justify-between rounded-xl p-4 px-8 hover:border-4 hover:border-[#E9CAF4]`}>
-            {isSelected === 'essential' && <hr className="absolute -left-24 w-24 border-2 border-[#E9CAF4]" />}
+            className={`relative flex items-center justify-between rounded-xl border  border-monochrome-7 bg-monochrome-white p-4 px-8 hover:border-2 `}
+            style={
+              isSelected === 'essential'
+                ? {
+                    background:
+                      'linear-gradient(white, white) padding-box, linear-gradient(#0645ff, #e9caf4) border-box',
+                    borderRadius: '12px',
+                    border: '3px solid transparent',
+                  }
+                : {}
+            }>
+            {isSelected === 'essential' && <div className="absolute -left-24 h-0.5 w-24 bg-[#677EFB]" />}
+
             <p className="text-new-lg">
               Essential
               <br />
@@ -265,10 +264,19 @@ export default function SubscriptionPlan() {
             onClick={() => {
               setIsSelected('pro-plan')
             }}
-            className={`relative flex items-center bg-monochrome-white ${
-              isSelected === 'pro-plan' ? 'border-4 border-[#E9CAF4]' : 'border border-monochrome-7'
-            } justify-between rounded-xl p-4 px-8 hover:border-4 hover:border-[#E9CAF4]`}>
-            {isSelected === 'pro-plan' && <hr className="absolute -left-24 w-24 border-2 border-[#E9CAF4]" />}
+            className={`relative flex items-center justify-between rounded-xl border border-monochrome-7 bg-monochrome-white p-4 px-8 hover:border-2 `}
+            style={
+              isSelected === 'pro-plan'
+                ? {
+                    background:
+                      'linear-gradient(white, white) padding-box, linear-gradient(#0645ff, #e9caf4) border-box',
+                    borderRadius: '12px',
+                    border: '3px solid transparent',
+                  }
+                : {}
+            }>
+            {isSelected === 'pro-plan' && <div className="absolute -left-24 h-0.5 w-24 bg-[#677EFB]" />}
+
             <p className="text-new-lg">
               Pro
               <br />
@@ -281,10 +289,18 @@ export default function SubscriptionPlan() {
             onClick={() => {
               setIsSelected('enterprise')
             }}
-            className={`relative flex items-center bg-monochrome-white ${
-              isSelected === 'enterprise' ? 'border-4 border-[#E9CAF4]' : 'border border-monochrome-7'
-            } justify-between rounded-xl p-4 px-8 hover:border-4 hover:border-[#E9CAF4]`}>
-            {isSelected === 'enterprise' && <hr className="absolute -left-24 w-24 border-2 border-[#E9CAF4]" />}
+            className={`relative flex items-center justify-between rounded-xl border border-monochrome-7 bg-monochrome-white p-4 px-8 hover:border-2 `}
+            style={
+              isSelected === 'enterprise'
+                ? {
+                    background:
+                      'linear-gradient(white, white) padding-box, linear-gradient(#0645ff, #e9caf4) border-box',
+                    borderRadius: '12px',
+                    border: '3px solid transparent',
+                  }
+                : {}
+            }>
+            {isSelected === 'enterprise' && <div className="absolute -left-24 h-0.5 w-24 bg-[#677EFB]" />}
             <p className="text-new-lg">
               Enterprise
               <br />

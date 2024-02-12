@@ -140,7 +140,7 @@ function Component2() {
                     loading="lazy"
                     fetchPriority="low"
                     decoding="async"
-                    className="h-[50vh] w-auto"
+                    className="h-[480px] w-auto"
                     src={SMSTab.src}
                   />
                   <div className="flex w-full justify-between">
@@ -163,7 +163,7 @@ function Component2() {
                     loading="lazy"
                     fetchPriority="low"
                     decoding="async"
-                    className="h-[50vh] w-auto"
+                    className="h-[480px] w-auto"
                     src={EmailBoxTab.src}
                   />
                   <div className="flex w-full justify-between">
@@ -186,7 +186,7 @@ function Component2() {
                     loading="lazy"
                     fetchPriority="low"
                     decoding="async"
-                    className="h-[50vh] w-auto"
+                    className="h-[480px] w-auto"
                     src={EmailBoxTab.src}
                   />
                   <div className="flex w-full justify-between">
