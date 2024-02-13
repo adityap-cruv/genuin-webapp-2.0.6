@@ -34,14 +34,8 @@ export default function Desktop() {
                   <p className="text-new-sm">Get Started</p>
                 </Button>
               </div>
-              <div className="relative flex h-full w-1/2 items-center justify-center">
-                <img
-                  loading="lazy"
-                  fetchPriority="low"
-                  decoding="async"
-                  className="absolute"
-                  src={onlinecommunity.src}
-                />
+              <div className=" h-full w-1/2 items-center justify-center">
+                <img loading="lazy" fetchPriority="low" decoding="async" src={onlinecommunity.src} />
               </div>
             </div>
           </div>
