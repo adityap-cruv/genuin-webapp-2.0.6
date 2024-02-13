@@ -1,6 +1,7 @@
 'use client'
 import { SplashScreen } from '@components/common/splash-screen'
-import { useGenuinOptions } from '@lib/stores/genuin-options'
+import { getEmbedConfig } from '@lib/api/config'
+import { type ConfigType, useGenuinOptions } from '@lib/stores/genuin-options'
 import { getSizeBoxes } from '@lib/utils/common/size-box'
 import { useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
@@ -10,9 +11,13 @@ type Props = {
   deviceType: string
   os: string
   browserType: string
+  /**
+   * If you want to get config from api.
+   */
+  configParams: string
 }
 
-export function GenuinOptionsProvider({ children, deviceType, os, browserType }: Props) {
+export function GenuinOptionsProvider({ children, deviceType, os, browserType, configParams }: Props) {
   const { setInitialData, isLoading } = useGenuinOptions((state) => ({
     setInitialData: state.setData,
     isLoading: state.isLoading,
@@ -20,11 +25,10 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType }:
   const searchParams = useSearchParams()
 
   const hideNavbar = searchParams.get('hide_navbar') === '1'
-  const embed = searchParams.get('embed') === '1'
-  const brandId = searchParams.get('brand_id') ?? ''
-  const logoUrl = searchParams.get('logo_url') ?? ''
+  // const embed = searchParams.get('embed') === '1'
+  // const brandId = searchParams.get('brand_id') ?? ''
+  // const logoUrl = searchParams.get('logo_url') ?? ''
   const from = searchParams.get('from') ?? ''
-
   const isMobile = deviceType === 'mobile'
   const isSafari = browserType.toLowerCase().includes('safari')
 
@@ -32,13 +36,12 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType }:
     return getSizeBoxes(isMobile, !hideNavbar)
   }
 
-  function init() {
+  function setData(config: ConfigType) {
     const isIframe = window !== window.parent
-
     setInitialData({
-      brandId,
-      embed,
-      logoUrl,
+      embed: !!config,
+      logoUrl: config?.logo,
+      brandId: config?.brand_id,
       showNavbar: !hideNavbar,
       isMobile,
       isLoading: false,
@@ -49,7 +52,26 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType }:
       browserType,
       isSafari,
       parentUrl: from,
+      config,
     })
+  }
+
+  function init() {
+    let config: any = null
+    if (configParams) {
+      getEmbedConfig(JSON.parse(configParams))
+        .then((res) => {
+          config = res
+        })
+        .catch((e) => {
+          // console.log('error::', e)
+        })
+        .finally(() => {
+          setData(config)
+        })
+    } else {
+      setData(null)
+    }
   }
 
   function handleResize() {

@@ -14,6 +14,18 @@ export function middleware(request: NextRequest) {
   const browserType = parsedUA.browser.name
   if (browserType) request.cookies.set('browser_type', browserType)
 
+  const config = getConfig(request.url)
+  request.headers.set('x-get-config', config)
+
+  const urlObj = new URL(request.url)
+  if (
+    config &&
+    ['/', '/manage', '/market', '/pricing', '/privacy', '/terms', '/verify-email'].includes(urlObj.pathname)
+  ) {
+    urlObj.pathname = '/home'
+    return NextResponse.redirect(urlObj.href)
+  }
+
   return NextResponse.next({ request })
 }
 
@@ -28,4 +40,14 @@ export const config = {
      */
     '/((?!api|_next/static|_next/image|favicon.ico|fonts).*)',
   ],
+}
+
+function getConfig(url: string): string {
+  const obj = new URL(url)
+  const arr = obj.host.split('.')
+  if (['app', 'begenuin', 'localhost:4005'].includes(arr[0])) return ''
+
+  if (!obj.host.includes('begenuin')) return JSON.stringify({ domain: obj.host })
+
+  return JSON.stringify({ subdomain: arr[0] })
 }
