@@ -63,7 +63,7 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
           config = res
         })
         .catch((e) => {
-          console.log('error::', e)
+          // console.log('error::', e)
         })
         .finally(() => {
           setData(config)

@@ -33,7 +33,7 @@ export const config = {
 }
 
 function getConfig(url: string): string {
-  const obj = new URL('https://jaydeeph.begenuin.com')
+  const obj = new URL(url)
   const arr = obj.host.split('.')
   if (['app', 'begenuin', 'localhost:4005'].includes(arr[0])) return ''
 
