@@ -14,7 +14,17 @@ export function middleware(request: NextRequest) {
   const browserType = parsedUA.browser.name
   if (browserType) request.cookies.set('browser_type', browserType)
 
-  request.headers.set('x-get-config', getConfig(request.url))
+  const config = getConfig(request.url)
+  request.headers.set('x-get-config', config)
+
+  const urlObj = new URL(request.url)
+  if (
+    config &&
+    ['/', '/manage', '/market', '/pricing', '/privacy', '/terms', '/verify-email'].includes(urlObj.pathname)
+  ) {
+    urlObj.pathname = '/home'
+    return NextResponse.redirect(urlObj.href)
+  }
 
   return NextResponse.next({ request })
 }

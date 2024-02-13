@@ -25,7 +25,7 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
   const searchParams = useSearchParams()
 
   const hideNavbar = searchParams.get('hide_navbar') === '1'
-  const embed = searchParams.get('embed') === '1'
+  // const embed = searchParams.get('embed') === '1'
   // const brandId = searchParams.get('brand_id') ?? ''
   // const logoUrl = searchParams.get('logo_url') ?? ''
   const from = searchParams.get('from') ?? ''
@@ -39,8 +39,9 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
   function setData(config: ConfigType) {
     const isIframe = window !== window.parent
     setInitialData({
-      embed,
+      embed: !!config,
       logoUrl: config?.logo,
+      brandId: config?.brand_id,
       showNavbar: !hideNavbar,
       isMobile,
       isLoading: false,
