@@ -87,14 +87,23 @@ function Component1() {
                   On your website, in your app, under your brand and
                   <br /> distributed on the open web.
                 </p>
-                <Button
-                  size="custom"
-                  className="bg-new-off-black px-4 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
-                  <p className="text-new-sm">Explore Genuin</p>
-                </Button>
+                <Link href={{ pathname: PATH_NAME.home() }}>
+                  <Button
+                    size="custom"
+                    className="bg-new-off-black px-4 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
+                    <p className="text-new-sm">Explore Genuin</p>
+                  </Button>
+                </Link>
               </div>
-              <div className="w-1/2">
-                <img loading="lazy" fetchPriority="low" decoding="async" src={brandImages[currentIndex].banner.src} />
+              <div>
+                <img
+                  loading="lazy"
+                  fetchPriority="low"
+                  decoding="async"
+                  className="h-[70vh] w-full"
+                  src={brandImages[currentIndex].banner.src}
+                  style={{ objectFit: 'contain' }}
+                />
               </div>
             </div>
             <div className=" flex w-full justify-center gap-6">
@@ -102,9 +111,11 @@ function Component1() {
                 ({ img }: any, index: any) =>
                   img && (
                     <div
-                      className={`flex h-12 w-44 items-center justify-center rounded-lg bg-[#f7f1f9] p-3 ${
-                        index === currentIndex ? `bg-monochrome-white` : ''
-                      }`}
+                      className={`flex h-12 w-44 items-center justify-center rounded-lg p-3 `}
+                      style={{
+                        backgroundColor:
+                          index === currentIndex ? 'rgba(249, 254, 255, 0.60)' : 'rgba(255, 255, 255, 0.10)',
+                      }}
                       key={index}>
                       <img
                         loading="eager"
@@ -245,8 +256,8 @@ function Component4() {
 
   useMotionValueEvent(scrollYProgress, 'change', (latest) => {
     const value = Number(latest.toPrecision(2))
-    if (value >= 0.32 && value <= 0.58) {
-      const calcValue = Math.floor((value - 0.32) * 10)
+    if (value >= 0.38 && value <= 0.64) {
+      const calcValue = Math.floor((value - 0.38) * 10)
       if (currentIndexRef.current !== calcValue) {
         toggleIndex(currentIndexRef.current, calcValue)
         currentIndexRef.current = calcValue

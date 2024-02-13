@@ -19,7 +19,7 @@ export default function OnlineCommunity() {
           <HeadingComponent headingLevel={2} title={content.OnlineCommunity.title} colorVariant={'black'} />
         </div>
         <div className={style.rowOneRight}>
-          <ParagraphComponent text={content.OnlineCommunity.caption} sizeVariant={'medium'} colorVariant={'black'} />
+          <p className="text-new-para-1">{content.OnlineCommunity.caption}</p>
           <Button text={content.OnlineCommunity.button} variant={'outline'} size={'small'} color={'black'} />
         </div>
       </div>
