@@ -25,6 +25,7 @@ import { useMotionValueEvent, useScroll } from 'framer-motion'
 import Image from 'next/image'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@components/ui/accordion'
 import { PATH_NAME } from '@lib/utils/constants/path'
+import { ContactUs } from '@components/common/modals/contact-us'
 
 export const Mobile = () => {
   return (
@@ -79,9 +80,13 @@ function Component1() {
           Transform your marketing strategies with our dynamic solutions – from SMS and Email to Programmatic and
           Social, all centered around short video-based knowledge sharing within thriving communities.
         </p>
-        <Button size="custom" className="my-3 bg-new-off-black px-4 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
-          <p className="text-new-para-2">Get Started</p>
-        </Button>
+        <ContactUs>
+          <Button
+            size="custom"
+            className="my-3 bg-new-off-black px-4 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
+            <p className="text-new-para-2">Get Started</p>
+          </Button>
+        </ContactUs>
         <div className="my-4 flex min-h-[300px] items-center justify-center">
           <img
             loading="lazy"

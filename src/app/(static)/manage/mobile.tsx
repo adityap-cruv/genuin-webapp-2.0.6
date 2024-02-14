@@ -27,6 +27,7 @@ import businessInsider from '@images/business/marketing-page/as-seen-in/business
 import yahoo from '@images/business/marketing-page/as-seen-in/yahoo.png'
 import InlineButtonInput from '@components/business/input'
 import testimonial_styles from '@components/business/brand-page/testimonials/testimonials.module.scss'
+import { ContactUs } from '@components/common/modals/contact-us'
 
 export default function Mobile() {
   return (
@@ -62,9 +63,13 @@ function Component1() {
           Nova is supporting the world's biggest brands, the next generation of community builders, and the knowledge
           seekers in between.
         </p>
-        <Button size="custom" className="my-3 bg-new-off-black px-4 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
-          <p className="text-new-para-2">Get Started</p>
-        </Button>
+        <ContactUs>
+          <Button
+            size="custom"
+            className="my-3 bg-new-off-black px-4 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
+            <p className="text-new-para-2">Get Started</p>
+          </Button>
+        </ContactUs>
         <div className="my-4 flex min-h-[300px] items-center justify-center">
           <img loading="lazy" fetchPriority="low" decoding="async" src={onlinecommunity.src} />
         </div>
@@ -81,9 +86,11 @@ function Component2() {
         <p className="my-2 text-new-para-2">
           Engage your audience and nurture loyal brand advocates in your custom-built Genuin community.
         </p>
-        <Button size="custom" variant={'outline'} className="my-2 px-5 py-3 ">
-          <p className="text-new-para-2">Contact Sales</p>
-        </Button>
+        <ContactUs>
+          <Button size="custom" variant={'outline'} className="my-2 px-5 py-3 ">
+            <p className="text-new-para-2">Contact Sales</p>
+          </Button>
+        </ContactUs>
         <div className="my-2 flex flex-col items-center justify-center gap-4">
           <img loading="lazy" fetchPriority="low" decoding="async" src={community1.src} />
           {/* <img loading="lazy" fetchPriority="low" decoding="async" className="w-3/4" src={community2.src} /> */}

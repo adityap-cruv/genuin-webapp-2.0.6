@@ -33,7 +33,20 @@ export function ContactUs({ children }: Props) {
   const isMobile = useGenuinOptions().isMobile
 
   return isMobile ? (
-    <Link href={MOBILE_DOWNLOAD_APP_LINK}>{children}</Link>
+    <Dialog>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent className="rounded-20px">
+        <div className="m-8 gap-12">
+          <div>
+            <h3 className="text-new-h2-mobile">Get in touch with an expert. Talk with sales.</h3>
+            <p className="my-4 text-new-sm">Enter your details and a member of our team will contact you shortly.</p>
+          </div>
+          <div>
+            <DownloadAppForm />
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   ) : (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
