@@ -13,6 +13,7 @@ type Props = {
   browserType: string
 }
 
+// TODO: FIND A BETTER WAY TO GET CONFIGS.
 export function ConfigProvider({ children, ...props }: Props) {
   const [handler, setHandler] = useState<{ isLoading: boolean; config: ConfigType }>({
     isLoading: true,
