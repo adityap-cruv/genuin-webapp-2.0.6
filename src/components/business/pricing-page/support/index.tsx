@@ -2,7 +2,8 @@ import React from 'react'
 import style from './support.module.scss'
 import HeadingComponent from '@components/business/heading'
 import ParagraphComponent from '@components/business/paragraph'
-import Button from '@components/business/button'
+import { Button } from '@components/ui/button'
+import { ContactUs } from '@components/common/modals/contact-us'
 
 export default function Support() {
   return (
@@ -19,7 +20,14 @@ export default function Support() {
           />
         </div>
         <div className={style.col}>
-          <Button text={'Book Demo'} variant={'solid'} size={'small'} color={'black'} />
+          <ContactUs>
+            <Button
+              size="index-page"
+              variant="default"
+              className="bg-new-off-black after:bg-new-dark-grey hover:bg-new-dark-grey">
+              <p className="whitespace-nowrap text-new-sm text-new-off-white">Book Demo</p>
+            </Button>
+          </ContactUs>
         </div>
       </div>
     </section>

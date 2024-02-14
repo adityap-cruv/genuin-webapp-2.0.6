@@ -49,12 +49,12 @@ export default function Impressions() {
               {/* Caption Component */}
               <ParagraphComponent text={content?.Impressions.Engagement[0].caption} sizeVariant={'medium'} />
               {/* Get Started button */}
-              <Button
+              {/* <Button
                 text={content?.Impressions.Engagement[0].button}
                 variant={'outline'}
                 size={'small'}
                 color={'black'}
-              />
+              /> */}
             </div>
 
             <div
@@ -73,12 +73,12 @@ export default function Impressions() {
               {/* Caption Component */}
               <ParagraphComponent text={content?.Impressions.Engagement[1].caption} sizeVariant={'medium'} />
               {/* Get Started button */}
-              <Button
+              {/* <Button
                 text={content?.Impressions.Engagement[1].button}
                 variant={'outline'}
                 size={'small'}
                 color={'black'}
-              />
+              /> */}
             </div>
           </>
         )}

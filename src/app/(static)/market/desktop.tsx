@@ -16,6 +16,7 @@ import sms from '@images/business/marketing-page/communities/sms.webp'
 import whatsapp from '@images/business/marketing-page/communities/whatsapp.webp'
 import AsSeenIn from '@components/business/as-seen-in'
 import { Button } from '@components/ui/button'
+import { ContactUs } from '@components/common/modals/contact-us'
 
 export const Desktop = () => {
   const brandImages: any = [
@@ -51,11 +52,13 @@ export const Desktop = () => {
                   Transform your marketing strategies with our dynamic solutions – from SMS and Email to Programmatic
                   and Social, all centered around short video-based knowledge sharing within thriving communities.
                 </p>
-                <Button
-                  size="custom"
-                  className="bg-new-off-black px-4 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
-                  <p className="text-new-sm">Get Started</p>
-                </Button>
+                <ContactUs>
+                  <Button
+                    size="custom"
+                    className="bg-new-off-black px-4 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
+                    <p className="text-new-sm">Get Started</p>
+                  </Button>
+                </ContactUs>
               </div>
               <div className="flex h-[70vh] w-1/2 justify-center">
                 <img

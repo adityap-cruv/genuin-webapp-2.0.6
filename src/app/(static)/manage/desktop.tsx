@@ -12,6 +12,7 @@ import Footer from '@components/business/footer'
 import AsSeenIn from '@components/business/as-seen-in'
 import onlinecommunity from '@images/business/brand-page/online-community-group.webp'
 import { Button } from '@components/ui/button'
+import { ContactUs } from '@components/common/modals/contact-us'
 
 export default function Desktop() {
   return (
@@ -28,11 +29,13 @@ export default function Desktop() {
                 <p className="my-4 text-new-para-1">
                   Control and Moderate posts and own data in Your video based Community
                 </p>
-                <Button
-                  size="custom"
-                  className="bg-new-off-black px-4 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
-                  <p className="text-new-sm">Get Started</p>
-                </Button>
+                <ContactUs>
+                  <Button
+                    size="custom"
+                    className="bg-new-off-black px-4 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
+                    <p className="text-new-sm">Get Started</p>
+                  </Button>
+                </ContactUs>
               </div>
               <div className=" h-full w-1/2 items-center justify-center">
                 <img loading="lazy" fetchPriority="low" decoding="async" src={onlinecommunity.src} />

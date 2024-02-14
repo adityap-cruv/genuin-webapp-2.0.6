@@ -12,6 +12,8 @@ import content from '../../../content/pricing-page.json'
 import exclamation from '@icons/business/exclamation.svg'
 import Image from 'next/image'
 import { Footer } from '@components/pages/home/footer'
+import { DownloadAppDialog } from '@components/pages/home/download-app-dialog'
+import { ContactUs } from '@components/common/modals/contact-us'
 
 export default function Mobile() {
   return (
@@ -69,11 +71,13 @@ function Component1() {
                   Free
                   <br /> Forever
                 </p>
-                <Button
-                  size="custom"
-                  className="mt-8 bg-new-off-black px-5 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
-                  <p className="text-new-para-2">Download App</p>
-                </Button>
+                <DownloadAppDialog>
+                  <Button
+                    size="custom"
+                    className="mt-8 bg-new-off-black px-5 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
+                    <p className="text-new-para-2">Download App</p>
+                  </Button>
+                </DownloadAppDialog>
               </div>
               <div className="flex flex-col gap-1">
                 <p className="text-title-2-demi">Benefits:</p>
@@ -107,11 +111,13 @@ function Component1() {
                 <p className="text-center text-new-h3">
                   $39<span className="text-new-md">/month</span>
                 </p>
-                <Button
-                  size="custom"
-                  className="mt-8 bg-new-off-black px-5 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
-                  <p className="text-new-para-2">Contact us for pricing</p>
-                </Button>
+                <ContactUs>
+                  <Button
+                    size="custom"
+                    className="mt-8 bg-new-off-black px-5 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
+                    <p className="text-new-para-2">Contact us for pricing</p>
+                  </Button>
+                </ContactUs>
               </div>
               <div className="flex flex-col gap-1">
                 <p className="text-title-2-demi">Benefits:</p>
@@ -145,11 +151,13 @@ function Component1() {
                 <p className="text-center text-new-h3">
                   $299<span className="text-new-md">/month</span>
                 </p>
-                <Button
-                  size="custom"
-                  className="mt-8 bg-new-off-black px-5 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
-                  <p className="text-new-para-2">Contact us for pricing</p>
-                </Button>
+                <ContactUs>
+                  <Button
+                    size="custom"
+                    className="mt-8 bg-new-off-black px-5 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
+                    <p className="text-new-para-2">Contact us for pricing</p>
+                  </Button>
+                </ContactUs>
               </div>
               <div className="flex flex-col gap-1">
                 <p className="text-title-2-demi">Benefits:</p>
@@ -184,11 +192,13 @@ function Component1() {
                   Customized
                   <br /> Pricing
                 </p>
-                <Button
-                  size="custom"
-                  className="mt-8 bg-new-off-black px-5 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
-                  <p className="text-new-para-2">Contact us for pricing</p>
-                </Button>
+                <ContactUs>
+                  <Button
+                    size="custom"
+                    className="mt-8 bg-new-off-black px-5 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
+                    <p className="text-new-para-2">Contact us for pricing</p>
+                  </Button>
+                </ContactUs>
               </div>
               <div className="flex flex-col gap-1">
                 <p className="text-title-2-demi">Benefits:</p>
@@ -225,11 +235,13 @@ function Component1() {
                   Customized
                   <br /> Pricing
                 </p>
-                <Button
-                  size="custom"
-                  className="mt-8 bg-new-off-black px-5 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
-                  <p className="text-new-para-2">Contact us for pricing</p>
-                </Button>
+                <ContactUs>
+                  <Button
+                    size="custom"
+                    className="mt-8 bg-new-off-black px-5 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
+                    <p className="text-new-para-2">Contact us for pricing</p>
+                  </Button>
+                </ContactUs>
               </div>
               <div className="flex flex-col gap-0.5">
                 <p className="text-title-2-demi">Benefits:</p>
@@ -325,9 +337,11 @@ function Component3() {
       <p className="my-10 text-center text-new-h1-mobile">Pro Plan</p>
       <p className="my-4 text-new-h2-mobile">Want a fully customized plan for your goals?</p>
       <p className="my-4 text-new-sm">With pro plan, you’ll get the white label capabilities with your own URL.</p>
-      <Button size="custom" className="my-2 bg-new-off-black px-5 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
-        <p className="text-new-para-2">Contact us for pricing</p>
-      </Button>
+      <ContactUs>
+        <Button size="custom" className="my-2 bg-new-off-black px-5 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
+          <p className="text-new-para-2">Contact us for pricing</p>
+        </Button>
+      </ContactUs>
       <div className="mt my-4 rounded-2xl bg-[#F7F1F9] p-6">
         <p className="mb-8 text-new-h4">What do you get from a pro plan?</p>
         <div className="flex items-center gap-2">
@@ -351,9 +365,11 @@ function Component4() {
         Are you a big enterprise that need A fully customized community solution?
       </p>
       <p className="my-4 text-new-sm">With enterprise plan, Genuin will curate a solution for you.</p>
-      <Button size="custom" className="my-2 bg-new-off-black px-5 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
-        <p className="text-new-para-2">Contact us for demo and pricing</p>
-      </Button>
+      <ContactUs>
+        <Button size="custom" className="my-2 bg-new-off-black px-5 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
+          <p className="text-new-para-2">Contact us for demo and pricing</p>
+        </Button>
+      </ContactUs>
       <div className="mt my-4 rounded-2xl bg-[#F7F1F9] p-6">
         <p className="mb-8 text-new-h4">What do you get from a enterprise plan?</p>
         <div className="flex items-center gap-2">
@@ -390,9 +406,13 @@ function Component5() {
           Contact us for support - we can help you find the plan that works best for you and your community. Contact us
           to get started!
         </p>
-        <Button size="custom" className="my-2 bg-new-off-black px-5 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
-          <p className="text-new-para-2">Book Demo</p>
-        </Button>
+        <ContactUs>
+          <Button
+            size="custom"
+            className="my-2 bg-new-off-black px-5 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
+            <p className="text-new-para-2">Book Demo</p>
+          </Button>
+        </ContactUs>
       </div>
     </div>
   )

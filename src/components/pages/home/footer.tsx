@@ -2,6 +2,7 @@
 import { Button } from '@components/ui/button'
 import Link from 'next/link'
 import { DownloadAppDialog } from './download-app-dialog'
+import { ContactUs } from '../../common/modals/contact-us'
 import { MOBILE_DOWNLOAD_APP_LINK } from '@lib/constants'
 import { GenuinIcon } from '@icons/genuin-icon'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
@@ -85,13 +86,13 @@ function DownloadButton() {
       </Button>
     </Link>
   ) : (
-    <DownloadAppDialog>
+    <ContactUs>
       <Button
         size="index-page"
         variant="default"
         className="bg-new-off-black after:bg-new-dark-grey hover:bg-new-dark-grey">
-        <p className="whitespace-nowrap text-new-md text-new-off-white">Contact Us</p>
+        <p className="whitespace-nowrap text-new-sm text-new-off-white">Contact Us</p>
       </Button>
-    </DownloadAppDialog>
+    </ContactUs>
   )
 }

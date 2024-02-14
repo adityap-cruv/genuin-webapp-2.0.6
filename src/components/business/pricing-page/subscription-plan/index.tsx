@@ -7,6 +7,8 @@ import star2 from '@images/business/star2.webp'
 import exclamation from '@icons/business/exclamation.svg'
 import { Button } from '@components/ui/button'
 import style from './subscriptionPlan.module.scss'
+import { DownloadAppDialog } from '@components/pages/home/download-app-dialog'
+import { ContactUs } from '@components/common/modals/contact-us'
 
 export default function SubscriptionPlan() {
   const [isSelected, setIsSelected] = useState('free')
@@ -25,11 +27,13 @@ export default function SubscriptionPlan() {
               <p className="text-new-para-1">FOR EVERYONE TO GET STARTED</p>
               <div className="flex flex-col items-center py-20">
                 <p className="text-center text-new-h2">Free Forever</p>
-                <Button
-                  size="custom"
-                  className="mt-8 bg-new-off-black px-5 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
-                  <p className="text-new-para-2">Download App</p>
-                </Button>
+                <DownloadAppDialog>
+                  <Button
+                    size="custom"
+                    className="mt-8 bg-new-off-black px-5 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
+                    <p className="text-new-para-2">Download App</p>
+                  </Button>
+                </DownloadAppDialog>
               </div>
               <div className="flex flex-col gap-1">
                 <p className="text-title-2-demi">Benefits:</p>
@@ -57,11 +61,13 @@ export default function SubscriptionPlan() {
                 <p className="text-center text-new-h2">
                   $39<span className="text-new-md">/month</span>
                 </p>
-                <Button
-                  size="custom"
-                  className="mt-8 bg-new-off-black px-5 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
-                  <p className="text-new-para-2">Contact us for pricing</p>
-                </Button>
+                <ContactUs>
+                  <Button
+                    size="custom"
+                    className="mt-8 bg-new-off-black px-5 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
+                    <p className="text-new-para-2">Contact us for pricing</p>
+                  </Button>
+                </ContactUs>
               </div>
               <div className="flex flex-col gap-1">
                 <p className="text-title-2-demi">Benefits:</p>
@@ -89,11 +95,13 @@ export default function SubscriptionPlan() {
                 <p className="text-center text-new-h2">
                   $299<span className="text-new-md">/month</span>
                 </p>
-                <Button
-                  size="custom"
-                  className="mt-8 bg-new-off-black px-5 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
-                  <p className="text-new-para-2">Contact us for pricing</p>
-                </Button>
+                <ContactUs>
+                  <Button
+                    size="custom"
+                    className="mt-8 bg-new-off-black px-5 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
+                    <p className="text-new-para-2">Contact us for pricing</p>
+                  </Button>
+                </ContactUs>
               </div>
               <div className="flex flex-col gap-1">
                 <p className="text-title-2-demi">Benefits:</p>
@@ -119,11 +127,13 @@ export default function SubscriptionPlan() {
               <p className="text-new-para-1">FOR BIG COMMUNITIES</p>
               <div className="flex flex-col items-center py-12">
                 <p className="text-center text-new-h2">Customized Pricing</p>
-                <Button
-                  size="custom"
-                  className="mt-8 bg-new-off-black px-5 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
-                  <p className="text-new-para-2">Contact us for pricing</p>
-                </Button>
+                <ContactUs>
+                  <Button
+                    size="custom"
+                    className="mt-8 bg-new-off-black px-5 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
+                    <p className="text-new-para-2">Contact us for pricing</p>
+                  </Button>
+                </ContactUs>
               </div>
               <div className="flex flex-col gap-1">
                 <p className="text-title-2-demi">Benefits:</p>
@@ -151,11 +161,13 @@ export default function SubscriptionPlan() {
               <p className="text-new-para-1">FOR ENTERPRISES</p>
               <div className="flex flex-col items-center py-12">
                 <p className="text-center text-new-h2">Customized Pricing</p>
-                <Button
-                  size="custom"
-                  className="mt-8 bg-new-off-black px-5 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
-                  <p className="text-new-para-2">Contact us for pricing</p>
-                </Button>
+                <ContactUs>
+                  <Button
+                    size="custom"
+                    className="mt-8 bg-new-off-black px-5 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
+                    <p className="text-new-para-2">Contact us for pricing</p>
+                  </Button>
+                </ContactUs>
               </div>
               <div className="flex flex-col gap-1">
                 <p className="text-title-2-demi">Benefits:</p>

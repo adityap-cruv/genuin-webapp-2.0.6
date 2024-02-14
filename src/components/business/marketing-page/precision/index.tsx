@@ -1,5 +1,4 @@
 import React from 'react'
-import Button from '../../button'
 import style from './precision.module.scss'
 import HeadingComponent from '../../heading'
 import ParagraphComponent from '../../paragraph'
@@ -7,6 +6,9 @@ import content from '../../../../content/marketing-page.json'
 import precision from '@images/business/marketing-page/precision.webp'
 import customqr from '@images/business/marketing-page/customqr.webp'
 import Image from 'next/image'
+import Link from 'next/link'
+import { PATH_NAME } from '@lib/utils/constants/path'
+import { Button } from '@components/ui/button'
 
 export default function Precision() {
   return (
@@ -15,7 +17,11 @@ export default function Precision() {
         <div className={style.col}>
           <HeadingComponent headingLevel={2} title={content.Precision.title} colorVariant={'black'} />
           <ParagraphComponent text={content.Precision.caption} sizeVariant={'medium'} colorVariant={'black'} />
-          <Button text={content.Precision.button} variant={'outline'} size={'small'} color={'black'} />
+          <Link href={{ pathname: PATH_NAME.adreels() }}>
+            <Button variant={'outline'} size="custom" className="my-1 px-4 py-2">
+              <p className="text-new-para-2">Explore Programmatic Power</p>
+            </Button>
+          </Link>{' '}
         </div>
         <div className={style.col}>
           {/* <img loading="lazy" fetchPriority="low" decoding="async" src={precision.src} alt="precision" /> */}

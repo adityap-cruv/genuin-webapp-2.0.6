@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Button } from '@components/ui/button'
 import axios from 'axios'
-import { Countries } from './countries'
+import { Countries } from '../../../content/countries'
 import { FlagIcon, type FlagIconCode } from 'react-flag-kit' // Import Flag from react-flag-kit
 import { Dialog, DialogTrigger, DialogContent } from '@components/ui/dialog'
 import Image from 'next/image'

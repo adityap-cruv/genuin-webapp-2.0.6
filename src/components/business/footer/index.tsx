@@ -1,12 +1,13 @@
 import React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import Button from '../button'
 import content from '../../../content/footer.json'
 import style from '../footer/footer.module.scss'
 import HeadingComponent from '../heading'
 import ParagraphComponent from '../paragraph'
 import whiteLogo from '@icons/business/white-logo.svg'
+import { ContactUs } from '@components/common/modals/contact-us'
+import { Button } from '@components/ui/button'
 
 export default function Footer() {
   return (
@@ -23,7 +24,14 @@ export default function Footer() {
           <ParagraphComponent text={content.download.caption} sizeVariant={'medium'} colorVariant={'white'} />
 
           {/* Button component for the "Contact Us" button */}
-          <Button text={content.download.button} variant={'solid'} size={'medium'} />
+          <ContactUs>
+            <Button
+              size="index-page"
+              variant="default"
+              className="bg-new-off-black after:bg-new-dark-grey hover:bg-new-dark-grey">
+              <p className="whitespace-nowrap text-new-sm text-new-off-white">Contact Us</p>
+            </Button>
+          </ContactUs>
         </div>
 
         {/* Inner container for additional footer content */}

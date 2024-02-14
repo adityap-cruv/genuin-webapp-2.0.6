@@ -3,7 +3,8 @@ import React from 'react'
 import style from './planDetails.module.scss'
 import HeadingComponent from '@components/business/heading'
 import ParagraphComponent from '@components/business/paragraph'
-import Button from '@components/business/button'
+import { ContactUs } from '@components/common/modals/contact-us'
+import { Button } from '@components/ui/button'
 
 export default function PlanDetails() {
   return (
@@ -26,7 +27,14 @@ export default function PlanDetails() {
               colorVariant={'black'}
             />
             <div className={style.buttonContainer}>
-              <Button text={'Contact us for pricing'} variant={'solid'} size={'small'} color={'black'} />
+              <ContactUs>
+                <Button
+                  size="index-page"
+                  variant="default"
+                  className="bg-new-off-black after:bg-new-dark-grey hover:bg-new-dark-grey">
+                  <p className="whitespace-nowrap text-new-sm text-new-off-white">Contact us for pricing</p>
+                </Button>
+              </ContactUs>
             </div>
           </div>
           <div className={style.secondRowRIght}>
@@ -58,7 +66,14 @@ export default function PlanDetails() {
               colorVariant={'black'}
             />
             <div className={style.buttonContainer}>
-              <Button text={'Contact us for demo and pricing'} variant={'solid'} size={'small'} color={'black'} />
+              <ContactUs>
+                <Button
+                  size="index-page"
+                  variant="default"
+                  className="bg-new-off-black after:bg-new-dark-grey hover:bg-new-dark-grey">
+                  <p className="whitespace-nowrap text-new-sm text-new-off-white">Contact us for demo and pricing</p>
+                </Button>
+              </ContactUs>
               {/* <Button text={'Read Case Studies'} variant={'outline'} size={'small'} color={'black'} /> */}
             </div>
           </div>
