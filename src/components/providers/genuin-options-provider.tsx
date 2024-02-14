@@ -3,7 +3,7 @@ import { SplashScreen } from '@components/common/splash-screen'
 import { getEmbedConfig } from '@lib/api/config'
 import { type ConfigType, useGenuinOptions } from '@lib/stores/genuin-options'
 import { getSizeBoxes } from '@lib/utils/common/size-box'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
 
 type Props = {
@@ -11,18 +11,15 @@ type Props = {
   deviceType: string
   os: string
   browserType: string
-  /**
-   * If you want to get config from api.
-   */
-  configParams: string
 }
 
-export function GenuinOptionsProvider({ children, deviceType, os, browserType, configParams }: Props) {
+export function GenuinOptionsProvider({ children, deviceType, os, browserType }: Props) {
   const { setInitialData, isLoading } = useGenuinOptions((state) => ({
     setInitialData: state.setData,
     isLoading: state.isLoading,
   }))
   const searchParams = useSearchParams()
+  const router = useRouter()
 
   const hideNavbar = searchParams.get('hide_navbar') === '1'
   // const embed = searchParams.get('embed') === '1'
@@ -56,18 +53,35 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
     })
   }
 
+  function getConfig() {
+    const obj = new URL(window.location.href)
+    const arr = obj.host.split('.')
+    if (['app', 'begenuin', 'localhost:4005'].includes(arr[0])) return null
+
+    if (!obj.host.includes('begenuin')) return { domain: obj.host }
+
+    return { subdomain: arr[0] }
+  }
+
   function init() {
-    let config: any = null
-    if (configParams) {
-      getEmbedConfig(JSON.parse(configParams))
+    const config = getConfig()
+    const urlObj = new URL(window.location.href)
+
+    if (
+      config &&
+      ['/', '/manage', '/market', '/pricing', '/privacy', '/terms', '/verify-email'].includes(urlObj.pathname)
+    ) {
+      urlObj.pathname = '/home'
+      router.replace('/home')
+    }
+
+    if (config) {
+      getEmbedConfig(config)
         .then((res) => {
-          config = res
+          setData(res)
         })
         .catch((e) => {
           // console.log('error::', e)
-        })
-        .finally(() => {
-          setData(config)
         })
     } else {
       setData(null)
