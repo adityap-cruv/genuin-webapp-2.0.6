@@ -1,0 +1,38 @@
+@import './fonts.scss';
+
+// Theme color
+$genuin-blue: #0645ff;
+$dark-blue: #00072f;
+$dark-grey: #3f3f3f;
+$light-grey: #bbbbbb;
+$lavender: #e9caf4;
+$sky-blue: #addaff;
+$lemon: #fff853;
+$off-black: #16171a;
+$off-white: #f8f8f8;
+$white: #ffffff;
+$black: #000000;
+
+$header-gradient: radial-gradient(123.19% 48.8% at 76.02% 69.05%, #e9caf4 0%, #add8fb 100%);
+$card-shadow: 0px 4px 20px 0px rgba(63, 63, 63, 0.05);
+
+// Marketing Page
+$impressions-box: 0px 5.707px 28.534px 0px rgba(63, 63, 63, 0.05);
+
+// Breakpoints and containers
+$screen-sm-min: 576px; // Small tablets and large smartphones (landscape view)
+$screen-md-min: 768px; // Small tablets (portrait view)
+$screen-lg-min: 992px; // Tablets and small desktops
+$screen-xl-min: 1200px; // Large tablets and desktops
+
+// Container
+$container-width: 1230px;
+
+// Typography
+$heading-1: 60px;
+$heading-2: 48px;
+$heading-3: 40px;
+$heading-4: 28px;
+$heading-5: 24px;
+$paragraph-1: 20px;
+$paragraph-2: 16px;

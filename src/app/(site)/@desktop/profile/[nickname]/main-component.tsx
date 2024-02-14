@@ -1,5 +1,5 @@
 'use client'
-import { abbreviateNumber, checkAndAppendHttps } from '@lib/utils'
+import { abbreviateNumber, checkAndAppendHttps, getCurrentShareUrl } from '@lib/utils'
 import { Button } from '@components/ui/button'
 import Image from 'next/image'
 import icShare from '@icons/icShareBlue.svg'
@@ -27,6 +27,7 @@ import icPlay from '@icons/player-controls/icPlay.svg'
 import { DownloadDialog } from '@components/common/download-dialog'
 import { type CommunityMiniObj, useCommunityListStore, type LoopMiniObj, type VideoMiniObj } from './store'
 import { PlayerModal } from '@components/common/modals/player-modal'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
 
 interface CompProps {
   profileData: any
@@ -44,23 +45,6 @@ export function MainComponent({ profileData }: CompProps) {
       resetData()
     }
   }, [])
-  // const [divHeight, setDivHeight] = useState(0)
-
-  // useEffect(() => {
-  //   const updateHeight = () => {
-  //     if (divRef.current) {
-  //       const height = divRef.current.getBoundingClientRect().height
-  //       setDivHeight(height)
-  //     }
-  //   }
-  //   updateHeight()
-  //   window.addEventListener('resize', updateHeight)
-  //   return () => {
-  //     window.removeEventListener('resize', updateHeight)
-  //   }
-  // }, [divRef])
-
-  // console.log(divHeight)
 
   return (
     <>
@@ -107,6 +91,8 @@ function Links({ profileData }: CompProps) {
   const links = profileData?.social_links
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
+  const { isEmbed, parentUrl } = useGenuinOptions((state) => ({ isEmbed: state.embed, parentUrl: state.parentUrl }))
+
   return (
     <div className="my-2 flex">
       {links?.linkedin && (
@@ -144,7 +130,7 @@ function Links({ profileData }: CompProps) {
         className="mx-1"
         onClick={async () =>
           await shareFn({
-            shareLink: window.location.href + '?utm_source=app_web',
+            shareLink: getCurrentShareUrl({ isEmbed, parentUrl }),
             toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
           })
         }>
@@ -361,7 +347,7 @@ type LoopVideosProps = {
 }
 
 function LoopVideos({ userId, loop, community }: LoopVideosProps) {
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getAllLoopVideos(userId, loop.slug)
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getAllLoopVideos(userId, loop.slug, 8)
 
   const { addVideos, open } = useCommunityListStore((state) => ({
     addVideos: state.addVideos,
@@ -427,12 +413,11 @@ function LoopVideos({ userId, loop, community }: LoopVideosProps) {
       )
   }
 
-  // TODO: replace <a></a> with <Link></Link>
   return (
     <>
-      <a href={PATH_NAME.loop(loop.slug)}>
+      <Link href={PATH_NAME.loop(loop.slug)}>
         <p className="mb-3 text-body-1-bold">{loop.name}</p>
-      </a>
+      </Link>
       <div className="my-2 grid w-full grid-cols-4 gap-2 md:grid-cols-8">
         <InnerComponent />
         {isFetchingNextPage &&

@@ -27,7 +27,7 @@ export function TopBar() {
                   <p className="text-new-para-2 font-semibold">We're hiring!</p>
                 </Button>
               </Link>
-              <DownloadAppDialog isMobile={false}>
+              <DownloadAppDialog>
                 <Button variant="default" size={'custom'} className="bg-new-off-black px-4 py-3 hover:bg-new-dark-grey">
                   <p className="text-new-para-2 font-semibold">Download Genuin</p>
                 </Button>

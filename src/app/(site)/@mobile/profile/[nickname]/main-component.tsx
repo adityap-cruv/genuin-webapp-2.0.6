@@ -1,5 +1,12 @@
 'use client'
-import { abbreviateNumber, checkAndAppendHttps, generateDeepLink, openGeneratedLink } from '@lib/utils'
+import {
+  abbreviateNumber,
+  checkAndAppendHttps,
+  generateDeepLink,
+  getCurrentShareUrl,
+  openGeneratedLink,
+} from '@lib/utils'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { Button } from '@components/ui/button'
 import Image from 'next/image'
 import { CustomAvatar } from '@components/custom/custom-avatar'
@@ -40,6 +47,7 @@ export function MainComponent({ profileData }: CompProps) {
   const scrollDivRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ container: scrollDivRef, layoutEffect: false })
   const resetData = useCommunityListStore((state) => state.reset)
+  const { isEmbed, parentUrl } = useGenuinOptions((state) => ({ isEmbed: state.embed, parentUrl: state.parentUrl }))
 
   useEffect(() => {
     return () => {
@@ -91,7 +99,7 @@ export function MainComponent({ profileData }: CompProps) {
                 className="p-1.5"
                 onClick={async () =>
                   await shareFn({
-                    shareLink: window.location.href + '?utm_source=app_web',
+                    shareLink: getCurrentShareUrl({ isEmbed, parentUrl }),
                     toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                   })
                 }>
@@ -394,7 +402,11 @@ function LoopVideos({
   loopDetails: LoopMiniObj
   community: CommunityMiniObj
 }) {
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getAllLoopVideos(userId, loopDetails.slug)
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getAllLoopVideos(
+    userId,
+    loopDetails.slug,
+    3
+  )
   const { addVideos, openModal } = useCommunityListStore((state) => ({
     addVideos: state.addVideos,
     openModal: state.open,
@@ -440,7 +452,7 @@ function LoopVideos({
               openModal(video.share_string)
             }}
             className="relative flex aspect-reel min-w-full flex-col items-center">
-            <img src={video.thumbnail} alt={`Video Thumbnail ${index}`} className="aspect-reel rounded" />
+            <img src={video.thumbnail} alt={video.slug} className="aspect-reel rounded" />
             <div className="absolute bottom-0 left-0 m-1 flex items-center justify-center">
               <Image src={icSpark} alt="share" height={15} width={15} />
               <p className="text-new-para-2-mobile text-monochrome-white">

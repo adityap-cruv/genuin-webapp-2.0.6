@@ -2,11 +2,14 @@ import { type Metadata } from 'next'
 import './globals.css'
 import { ReactQueryProvider } from '@components/providers/query-client-provider'
 import { cookies } from 'next/headers'
-import { GenuinOptionsProvider } from '@components/providers/genuin-options-provider'
 import { ThirdPartyScriptProvider } from '@components/providers/third-party-script-provider'
+import { ConfigProvider } from '@components/providers/config-provider'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const isMobile = cookies().get('mobile')?.value === 'true'
+  const deviceType = cookies().get('device_type')?.value ?? ''
+  const os = cookies().get('os')?.value ?? ''
+  const browserType = cookies().get('browser_type')?.value ?? ''
+
   return (
     <html lang="en">
       <head>
@@ -15,9 +18,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="index-page-background absolute inset-0 min-h-full min-w-full text-new-off-black">
         <ThirdPartyScriptProvider>
-          <GenuinOptionsProvider isMobile={isMobile}>
+          <ConfigProvider deviceType={deviceType} os={os} browserType={browserType}>
             <ReactQueryProvider>{children}</ReactQueryProvider>
-          </GenuinOptionsProvider>
+          </ConfigProvider>
         </ThirdPartyScriptProvider>
       </body>
     </html>

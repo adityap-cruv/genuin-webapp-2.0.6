@@ -1,22 +1,46 @@
-{  "parser": "@typescript-eslint/parser",
+{
+  "parser": "@typescript-eslint/parser",
   "env": {
     "browser": true,
     "es2021": true
   },
-  "extends": ["standard-with-typescript", "plugin:react/recommended", "prettier", "plugin:prettier/recommended"],
+  "extends": [
+    "standard-with-typescript",
+    "plugin:react/recommended",
+    "prettier",
+    "plugin:prettier/recommended"
+  ],
   "parserOptions": {
     "ecmaVersion": "latest",
     "sourceType": "module"
   },
-  "plugins": ["react", "@tanstack/query", "@tanstack/eslint-plugin-query", "@next/eslint-plugin-next", "prettier"],
+  "plugins": [
+    "react",
+    "@tanstack/query",
+    "@tanstack/eslint-plugin-query",
+    "@next/eslint-plugin-next",
+    "prettier"
+  ],
   "rules": {
     "@typescript-eslint/no-unused-vars": "warn",
     "react/react-in-jsx-scope": "off",
+    "react/no-unknown-property": [
+      "error",
+      {
+        "ignore": [
+          "fetchPriority"
+        ]
+      }
+    ],
     "@typescript-eslint/explicit-function-return-type": "off",
     // I have kept this rules off. For fixing eslin's error.
-    "@typescript-eslint/consistent-type-definitions": ["off", "type"],
+    "@typescript-eslint/consistent-type-definitions": [
+      "off",
+      "type"
+    ],
     "@typescript-eslint/consistent-type-assertions": "off",
     "no-console": "warn",
+    "@next/next/no-img-element": "off",
     "react/no-unescaped-entities": "off",
     "@typescript-eslint/strict-boolean-expressions": "off",
     "react/prop-types": "off",
@@ -33,5 +57,8 @@
       }
     ]
   },
-  "ignorePatterns": ["postcss.config.js", "next.config.js"]
+  "ignorePatterns": [
+    "postcss.config.js",
+    "next.config.js"
+  ]
 }

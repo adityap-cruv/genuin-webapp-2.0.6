@@ -9,6 +9,11 @@ import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { useInView } from 'framer-motion'
+import c1 from '@images/home-page/community/communityshare 1.webp'
+import c2 from '@images/home-page/community/communityshare 2.webp'
+import c3 from '@images/home-page/community/communityshare 3.webp'
+import c4 from '@images/home-page/community/communityshare 4.webp'
+import c5 from '@images/home-page/community/communityshare 5.webp'
 
 export function CommunitySection() {
   const communityList = [
@@ -47,54 +52,17 @@ export function CommunitySection() {
 
   return (
     <div className="flex w-full flex-col gap-y-10">
-      <div ref={divRef} className="hide-scrollbar scroll-snap-always flex snap-x overflow-x-auto px-4 sm:px-0 sm:pl-5 ">
+      <div
+        ref={divRef}
+        className="hide-scrollbar scroll-snap-always flex snap-x gap-6 overflow-x-auto px-4 sm:px-0 sm:pl-5 ">
         <div ref={firstDivRef} className="w-0.5">
           &nbsp;
         </div>
-        {communityList.map((item, index) => {
-          return (
-            <React.Fragment key={index}>
-              <div
-                onClick={() => (window.location.href = item.link)}
-                className={`m-4 box-border flex min-w-full snap-center flex-col gap-y-1 rounded-[20px] border-2 border-transparent p-6 outline outline-1 outline-new-light-grey hover:border-2 hover:border-primary hover:shadow-md hover:outline-0 sm:min-w-max sm:max-w-md`}>
-                <div className="flex w-full justify-between">
-                  <CustomAvatar
-                    className="h-20 w-20 rounded-full bg-red-40"
-                    imageUrl={item.profile_image}
-                    isAvatar={false}
-                    fallbackString={item.name}
-                  />
-                  <div className="flex items-center gap-x-2">
-                    <Link href={item.link}>
-                      <Button size="sm" className="px-4">
-                        <p className="text-title-3-bold">Join</p>
-                      </Button>
-                    </Link>
-                    <Button
-                      variant="outline"
-                      outlineColor="genuin-blue"
-                      size="sm"
-                      onClick={async (e) => {
-                        e.preventDefault()
-                        e.stopPropagation()
-                        await shareFn({
-                          title: 'Share this community.',
-                          description: 'Welcome to Genuin!!',
-                          shareLink: item.link,
-                          toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
-                        })
-                      }}>
-                      <Image src={icShare} alt="share" />
-                    </Button>
-                    <Toaster />
-                  </div>
-                </div>
-                <p className="mt-2 line-clamp-1 text-title-3-bold">{item.name}</p>
-                <p className="line-clamp-2 text-title-3-demi sm:max-w-xs">{item.description}</p>
-              </div>
-            </React.Fragment>
-          )
-        })}
+        <img src={c1.src} />
+        <img src={c2.src} />
+        <img src={c3.src} />
+        <img src={c4.src} />
+        <img src={c5.src} />
         <div ref={lastDivRef} className="w-0.5">
           &nbsp;
         </div>

@@ -4,14 +4,16 @@ import { TopBar } from '@components/layouts/mobile/top-bar'
 import { getFeed } from '@lib/api/feed'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import { FeedShimmer } from '@components/common/shimmers/feed-shimmer'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
 const Feed = dynamic(async () => await import('@components/common/feed').then((comp) => comp.Feed.mobile), {
   loading(loadingProps) {
     return <FeedShimmer.mobile />
   },
 })
 
-export function Root({ brandId }: { brandId?: string }) {
+export function Root() {
   const userId = useLocalStorage((state) => state.userId)
+  const brandId = useGenuinOptions().brandId
   const {
     data: videoPages,
     isError,

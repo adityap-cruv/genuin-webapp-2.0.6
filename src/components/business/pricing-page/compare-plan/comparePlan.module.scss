@@ -1,0 +1,83 @@
+@import '../../../../styles/variables.scss';
+
+.container {
+  margin-top: 60px;
+  margin-bottom: 63px;
+  .row {
+    text-align: center;
+    margin-bottom: 50px;
+  }
+  .tableContainer {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: 12px;
+    .responsiveTable {
+      width: 100%;
+      border-collapse: collapse;
+
+      thead {
+        background: #ADDAFF;
+
+        th {
+          font-size: 20px;
+          // color: $white;
+          padding: 24px;
+          text-align: center;
+          width: 16.6666667%;
+
+          &:first-child {
+            width: 20%;
+          }
+
+          &:first-child {
+            border-top-left-radius: 12px;
+            border-bottom-left-radius: 12px;
+          }
+          &:last-child {
+            border-top-right-radius: 12px;
+            border-bottom-right-radius: 12px;
+          }
+        }
+      }
+
+      tbody {
+        tr {
+          position: relative;
+          &::after {
+            content: '';
+            position: absolute;
+            background: #ddd;
+            width: calc(100% - 40px);
+            height: 1px;
+            left: 20px;
+            right: 20px;
+          }
+        }
+        td {
+          padding: 28px 20px;
+          text-align: left;
+          width: 16.6666667%;
+
+          &:first-child {
+            width: 20%;
+          }
+        }
+      }
+
+      @media (max-width: 600px) {
+        th,
+        td {
+          display: block;
+          width: 100%;
+          box-sizing: border-box;
+        }
+
+        td[data-label]:before {
+          content: attr(data-label);
+          float: left;
+          font-weight: bold;
+        }
+      }
+    }
+  }
+}

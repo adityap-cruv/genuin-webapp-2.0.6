@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Button } from '@components/ui/button'
 import axios from 'axios'
-import { Countries } from './countries'
+import { Countries } from '../../../content/countries'
 import { FlagIcon, type FlagIconCode } from 'react-flag-kit' // Import Flag from react-flag-kit
 import { Dialog, DialogTrigger, DialogContent } from '@components/ui/dialog'
 import Image from 'next/image'
@@ -9,6 +9,7 @@ import imageAppStore from '@images/appStore.svg'
 import imagePlayStore from '@images/playStore.svg'
 import Link from 'next/link'
 import { MOBILE_DOWNLOAD_APP_LINK } from '@lib/constants'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
 
 interface FormData {
   phone: string
@@ -20,16 +21,16 @@ const initialFormData: FormData = {
   email: '',
 }
 
-interface Props {
+type Props = {
   children: React.ReactNode
-  isMobile: boolean
 }
 
 // TODO: improve it's api implementation
-// TODO: Causing hydration issue fix it.
-export function DownloadAppDialog({ children, isMobile }: Props) {
+export function DownloadAppDialog({ children }: Props) {
+  const isMobile = useGenuinOptions().isMobile
   const URL_TO_APP_STORE = 'https://apps.apple.com/US/app/id1511177838?mt=8'
   const URL_TO_PLAY_STORE = 'https://play.google.com/store/apps/details?id=com.begenuin.begenuin'
+
   return isMobile ? (
     <Link href={MOBILE_DOWNLOAD_APP_LINK}>{children}</Link>
   ) : (

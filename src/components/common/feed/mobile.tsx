@@ -4,7 +4,6 @@ import { type VideoDataType } from '@lib/schemas/video'
 import { useFeedListStore } from './store'
 import { useEffect } from 'react'
 import { useCommentSheetStore } from '../player/comment-sheet/store'
-import { FeedShimmer } from '../shimmers/feed-shimmer'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Mousewheel } from 'swiper/modules'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
@@ -24,7 +23,6 @@ type MobileProps = {
   startIndex: number
 }
 
-// TODO: remove props sizebox
 export function Mobile({
   videos,
   fetchNextPage,
@@ -58,31 +56,28 @@ export function Mobile({
     setVideoList(videos)
   }, [videos])
 
-  if (videos)
-    return (
-      <div style={{ height: videoSizeBox.height, width: videoSizeBox.width }} className="overflow-clip">
-        <Swiper
-          modules={[Mousewheel]}
-          mousewheel={true}
-          direction="vertical"
-          initialSlide={startIndex}
-          onActiveIndexChange={(swiper) => {
-            setCurrentIndex(swiper.activeIndex)
-          }}
-          allowSlideNext={!commentIsOpen}
-          allowSlidePrev={!commentIsOpen}
-          style={{ height: videoSizeBox.height, width: videoSizeBox.width }}>
-          {videos.map((item, index) => (
-            <SwiperSlide key={index}>
-              {() => <Player playIfInViewPort isFirstPlayerInList={index === 0} shouldPlay loop videoData={item} />}
-            </SwiperSlide>
-          ))}
-          <InfinityViewBox />
-        </Swiper>
-      </div>
-    )
-
-  return <FeedShimmer.mobile />
+  return (
+    <div style={{ height: videoSizeBox.height, width: videoSizeBox.width }} className="overflow-clip">
+      <Swiper
+        modules={[Mousewheel]}
+        mousewheel={true}
+        direction="vertical"
+        initialSlide={startIndex}
+        onActiveIndexChange={(swiper) => {
+          setCurrentIndex(swiper.activeIndex)
+        }}
+        allowSlideNext={!commentIsOpen}
+        allowSlidePrev={!commentIsOpen}
+        style={{ height: videoSizeBox.height, width: videoSizeBox.width }}>
+        {videos.map((item, index) => (
+          <SwiperSlide key={index}>
+            {() => <Player playIfInViewPort isFirstPlayerInList={index === 0} shouldPlay loop videoData={item} />}
+          </SwiperSlide>
+        ))}
+        <InfinityViewBox />
+      </Swiper>
+    </div>
+  )
 }
 
 function InfinityViewBox() {

@@ -27,7 +27,7 @@ export default function Error({ error, reset }: { error: Error; reset: () => voi
               <a href="/">Genuin Home Page.</a>
             </h5>
 
-            <DownloadAppDialog isMobile>
+            <DownloadAppDialog>
               <Button className="px-6 py-6">
                 <p className="mx-2 text-title-2-bold text-new-off-white">Download Genuin</p>
               </Button>

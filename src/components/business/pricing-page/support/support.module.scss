@@ -1,0 +1,20 @@
+@import '../../../../styles/variables.scss';
+
+.container {
+  border-radius: 20px;
+  padding: 50px 80px;
+  background: $lavender;
+  margin-bottom: 109px;
+
+  .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    .col {
+      &:first-child {
+        max-width: 608px;
+        width: 100%;
+      }
+    }
+  }
+}

@@ -20,8 +20,8 @@
     "noImplicitAny": true,
     "plugins": [
       {
-        "name": "next"
-      }
+        "name": "next",
+      },
     ],
     "paths": {
       "@components/*": [
@@ -41,15 +41,17 @@
       ],
       "@analytics/*": [
         "./src/services/analytics/*"
-      ]
-    }
+      ],
+    },
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "src/app/api/auth/[...nextauth]/route.js"
+    "**/*.js"
+    // "src/app/api/auth/[...nextauth]/route.js",
+    // "src/components/business/marketing-page/social-connections/index.js"
   ],
   "exclude": [
     "node_modules",

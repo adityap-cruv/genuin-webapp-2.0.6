@@ -55,7 +55,7 @@ function GetAppButton({ isMobile }: GetAppButtonType) {
       </Button>
     </Link>
   ) : (
-    <DownloadAppDialog isMobile={false}>
+    <DownloadAppDialog>
       <Button size="sm">
         <p className="line-clamp-1 text-body-1-bold text-monochrome-white">Get App</p>
       </Button>
@@ -72,7 +72,7 @@ function BurgerMenu({ variant = 'dark' }: { variant?: 'light' | 'dark' }) {
       <DropdownMenuContent
         className="bg-monochrome-black/90 px-3"
         onInteractOutside={(event) => {
-          // todo think about it what to do when user clicks outside
+          // TODO: think about it what to do when user clicks outside
           event.preventDefault()
         }}>
         <DropdownMenuItem>

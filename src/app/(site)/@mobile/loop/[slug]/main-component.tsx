@@ -73,7 +73,7 @@ export function MainComponent({ loopDetails }: Props) {
                           isAvatar={loopDetails.owner.is_avatar}
                         />
                       </div>
-                      <p className="text-body-1-bold ml-1">@{loopDetails.owner.nickname}</p>
+                      <p className="ml-1 text-body-1-bold">@{loopDetails.owner.nickname}</p>
                     </div>
                   </Link>
                 </div>

@@ -1,7 +1,8 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { Button } from '@components/ui/button'
 import type { CommunityDetailsType } from '@lib/schemas/community'
-import { checkAndAppendHttps, generateDeepLink, openGeneratedLink } from '@lib/utils'
+import { checkAndAppendHttps, generateDeepLink, getCurrentShareUrl, openGeneratedLink } from '@lib/utils'
 import Image from 'next/image'
 import icShare from '@icons/icShareBlue.svg'
 import icLock from '@icons/icLock.svg'
@@ -32,6 +33,7 @@ export function ProfileDetails({ communityDetails }: Props) {
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
+  const { isEmbed, parentUrl } = useGenuinOptions((state) => ({ isEmbed: state.embed, parentUrl: state.parentUrl }))
 
   return (
     <>
@@ -85,7 +87,7 @@ export function ProfileDetails({ communityDetails }: Props) {
                 className="p-1"
                 onClick={async () =>
                   await shareFn({
-                    shareLink: window.location.href + '?utm_source=app_web',
+                    shareLink: getCurrentShareUrl({ isEmbed, parentUrl }),
                     toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                   })
                 }>
