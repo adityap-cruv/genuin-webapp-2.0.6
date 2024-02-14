@@ -24,7 +24,7 @@ export function ConfigProvider({ children, ...props }: Props) {
     const configParams = getConfig()
     getEmbedConfig(configParams)
       .then((res) => {
-        const urlObj = new URL('https://ankpal.begenuin.com')
+        const urlObj = new URL(window.location.href)
         if (
           res &&
           ['/', '/manage', '/market', '/pricing', '/privacy', '/terms', '/verify-email'].includes(urlObj.pathname)
@@ -58,7 +58,7 @@ export function ConfigProvider({ children, ...props }: Props) {
 }
 
 function getConfig() {
-  const obj = new URL('https://ankpal.begenuin.com')
+  const obj = new URL(window.location.href)
   const arr = obj.host.split('.')
   if (['app', 'begenuin', 'localhost:4005'].includes(arr[0])) return ''
 
