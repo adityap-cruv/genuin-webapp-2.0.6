@@ -13,6 +13,7 @@ export const PATH_NAME = {
   market: () => `/market`,
   pricing: () => `/pricing`,
   careers: () => 'https://careers.begenuin.com',
+  adreels: () => 'https://creatives.begenuin.com/',
   terms: `/terms`,
   privacy: `/privacy`,
 }

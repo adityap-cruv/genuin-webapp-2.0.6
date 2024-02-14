@@ -24,6 +24,7 @@ import { Footer } from '@components/pages/home/footer'
 import { useMotionValueEvent, useScroll } from 'framer-motion'
 import Image from 'next/image'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@components/ui/accordion'
+import { PATH_NAME } from '@lib/utils/constants/path'
 
 export const Mobile = () => {
   return (
@@ -153,9 +154,9 @@ function Component2() {
                       Elevate your marketing game with Genuin's SMS engagement. Deliver concise, powerful messages
                       through short videos that capture attention instantly and resonate with your audience.
                     </p>
-                    <Button variant={'outline'} size="custom" className="my-1 px-4 py-2">
+                    {/* <Button variant={'outline'} size="custom" className="my-1 px-4 py-2">
                       <p className="text-new-para-2">Experience SMS Revolution</p>
-                    </Button>
+                    </Button> */}
                   </div>
                 </div>
                 <div className="absolute flex flex-col justify-center opacity-0">
@@ -176,9 +177,9 @@ function Component2() {
                       Say goodbye to traditional emails your brand’s email engagement lets you connect on a deeper level
                       through compelling short videos, making every interaction memorable and meaningful.{' '}
                     </p>
-                    <Button variant={'outline'} size="custom" className="my-1 px-4 py-2">
+                    {/* <Button variant={'outline'} size="custom" className="my-1 px-4 py-2">
                       <p className="text-new-para-2">Experience SMS Revolution</p>
-                    </Button>
+                    </Button> */}
                   </div>
                 </div>
                 <div className="absolute flex flex-col justify-center opacity-0">
@@ -199,9 +200,9 @@ function Component2() {
                       Say goodbye to traditional emails your brand’s email engagement lets you connect on a deeper level
                       through compelling short videos, making every interaction memorable and meaningful.{' '}
                     </p>
-                    <Button variant={'outline'} size="custom" className="my-1 px-4 py-2">
+                    {/* <Button variant={'outline'} size="custom" className="my-1 px-4 py-2">
                       <p className="text-new-para-2">Experience SMS Revolution</p>
-                    </Button>
+                    </Button> */}
                   </div>
                 </div>{' '}
                 {/* <div className="h-100 w-100 absolute bg-new-off-black opacity-0"></div> */}
@@ -252,9 +253,11 @@ function Component3() {
         With Genuin's Programmatic Engagement, take control of your marketing strategy. Deliver targeted short videos
         seamlessly, ensuring your message reaches the right audience at the right time.
       </p>
-      <Button variant={'outline'} size="custom" className="my-1 px-4 py-2">
-        <p className="text-new-para-2">Explore Programmatic Power</p>
-      </Button>
+      <Link href={{ pathname: PATH_NAME.adreels() }}>
+        <Button variant={'outline'} size="custom" className="my-1 px-4 py-2">
+          <p className="text-new-para-2">Explore Programmatic Power</p>
+        </Button>
+      </Link>
       <div className="flex justify-center">
         <img loading="lazy" fetchPriority="low" decoding="async" className="my-6 mb-10 w-11/12" src={precision.src} />
       </div>

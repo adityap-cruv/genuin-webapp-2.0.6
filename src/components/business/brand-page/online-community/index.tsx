@@ -1,12 +1,13 @@
 import React from 'react'
 import style from './community.module.scss'
-import Button from '../../button'
 import HeadingComponent from '../../heading'
 import ParagraphComponent from '../../paragraph'
 import content from '../../../../content/brands-page.json'
 import community1 from '@images/business/brand-page/online-community-1.webp'
 import community2 from '@images/business/brand-page/online-community-2.webp'
 import Image from 'next/image'
+import { ContactUs } from '@components/common/modals/contact-us'
+import { Button } from '@components/ui/button'
 
 export default function OnlineCommunity() {
   // Comment: The main component for the "Online Community" section on the homepage.
@@ -20,7 +21,11 @@ export default function OnlineCommunity() {
         </div>
         <div className={style.rowOneRight}>
           <p className="text-new-para-1">{content.OnlineCommunity.caption}</p>
-          <Button text={content.OnlineCommunity.button} variant={'outline'} size={'small'} color={'black'} />
+          <ContactUs>
+            <Button size="custom" variant={'outline'} className="px-3 py-2">
+              <p className="text-new-sm">{content.OnlineCommunity.button}</p>
+            </Button>
+          </ContactUs>
         </div>
       </div>
 

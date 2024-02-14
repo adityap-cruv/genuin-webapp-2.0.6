@@ -9,39 +9,13 @@ import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { useInView } from 'framer-motion'
-import c1 from '@images/home-page/community/communityshare 1.webp'
-import c2 from '@images/home-page/community/communityshare 2.webp'
-import c3 from '@images/home-page/community/communityshare 3.webp'
-import c4 from '@images/home-page/community/communityshare 4.webp'
-import c5 from '@images/home-page/community/communityshare 5.webp'
+import c1 from '@images/home-page/loop/Loop-Link-Share 1.webp'
+import c2 from '@images/home-page/loop/Loop-Link-Share 2.webp'
+import c3 from '@images/home-page/loop/Loop-Link-Share 3.webp'
+import c4 from '@images/home-page/loop/Loop-Link-Share 4.webp'
+import c5 from '@images/home-page/loop/Loop-Link-Share 5.webp'
 
-export function CommunitySection() {
-  const communityList = [
-    {
-      profile_image: 'https://media.begenuin.com/webapp_assets/community/travel_hacks.png',
-      name: 'Travel Hacks & Tips 👀✈️',
-      description: "The best travel tips & tricks you've learned & tried… 👋🏼",
-      link: 'https://begenuin.com/community/travel-hacks-tips',
-    },
-    {
-      profile_image: 'https://media.begenuin.com/webapp_assets/community/tech_founders.png',
-      name: 'Tech Founders 📈',
-      description: 'A space for tech founders to come together & discuss founder life 🎢',
-      link: 'https://begenuin.com/community/tech-founders',
-    },
-    {
-      profile_image: 'https://media.begenuin.com/webapp_assets/community/diy_lovers.png',
-      name: 'DIY Lovers 🔨',
-      description: 'For people who want to share DIY hacks, tips & tricks ⚒️🎨👷‍♀️',
-      link: 'https://begenuin.com/community/diy-lovers',
-    },
-    {
-      profile_image: 'https://media.begenuin.com/webapp_assets/community/flower_arranging.png',
-      name: 'Flower Arranging 🌻',
-      description: 'A community for people who love flower arranging — and those who want to learn 🌸🌻',
-      link: 'https://begenuin.com/community/flower-arranging',
-    },
-  ]
+export function LoopSection() {
   const divRef = useRef<HTMLDivElement>(null)
   const firstDivRef = useRef<HTMLDivElement>(null)
   const lastDivRef = useRef<HTMLDivElement>(null)
@@ -54,7 +28,7 @@ export function CommunitySection() {
     <div className="flex w-full flex-col gap-y-10">
       <div
         ref={divRef}
-        className="hide-scrollbar scroll-snap-always flex snap-x gap-6 overflow-x-auto px-4 sm:px-0 sm:pl-5 ">
+        className="hide-scrollbar scroll-snap-always flex snap-x gap-4 overflow-x-auto px-4 sm:px-0 sm:pl-5 ">
         <div ref={firstDivRef} className="w-0.5">
           &nbsp;
         </div>

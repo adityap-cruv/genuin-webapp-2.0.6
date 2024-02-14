@@ -32,6 +32,7 @@ import doveLogo from '@images/business/brand-page/brands/dove.svg'
 import doveBanner from '@images/business/brand-page/brands/dove.webp'
 import cocacolaLogo from '@images/business/brand-page/brands/cocacola.svg'
 import cocacolaBanner from '@images/business/brand-page/brands/cocacola.webp'
+import { LoopSection } from './loop-section'
 
 export function MainComponent() {
   return (
@@ -43,6 +44,7 @@ export function MainComponent() {
       <Component5 />
       <Component6 />
       <Component7 />
+      <Component8 />
     </>
   )
 }
@@ -152,14 +154,8 @@ function Component1() {
             </Button>
           </Link>
         </div>
-        <div className="relative my-4 flex min-h-[300px] w-screen items-center justify-center">
-          <img
-            loading="lazy"
-            fetchPriority="low"
-            decoding="async"
-            className="absolute right-0 h-80"
-            src={toyotaBanner.src}
-          />
+        <div className=" my-4 flex min-h-[300px] items-center justify-center">
+          <img loading="lazy" fetchPriority="low" decoding="async" className="" src={toyotaBanne2.src} />
         </div>
       </div>
     </>
@@ -519,7 +515,7 @@ function Component5() {
 
 function Component6() {
   return (
-    <div className="my-10 flex flex-col items-center lg:my-20">
+    <div className="my-5 flex flex-col items-center lg:my-10">
       <h2 className="my-6 max-w-[200px] text-center text-new-h2-mobile sm:max-w-[300px] sm:text-new-h2 lg:max-w-none">
         Community sneak peak
       </h2>
@@ -532,6 +528,20 @@ function Component6() {
 }
 
 function Component7() {
+  return (
+    <div className="my-5 flex flex-col items-center lg:my-10">
+      <h2 className="my-6 max-w-[200px] text-center text-new-h2-mobile sm:max-w-[300px] sm:text-new-h2 lg:max-w-none">
+        Loop sneak peak
+      </h2>
+      <h5 className="mb-10 max-w-[320px] text-center text-new-h5-mobile sm:max-w-xs sm:text-new-h5 lg:max-w-xl ">
+        Take a look inside some of the loops, get inspired to start your own.
+      </h5>
+      <LoopSection />
+    </div>
+  )
+}
+
+function Component8() {
   return (
     <>
       <div className=" hidden h-32 bg-monochrome-9 lg:flex xl:px-0">
