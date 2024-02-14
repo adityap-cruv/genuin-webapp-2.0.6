@@ -15,6 +15,7 @@ export function middleware(request: NextRequest) {
   if (browserType) request.cookies.set('browser_type', browserType)
 
   const config = getConfig(request.url)
+  console.log('config::', config, request.url)
   request.headers.set('x-get-config', config)
 
   const urlObj = new URL(request.url)
