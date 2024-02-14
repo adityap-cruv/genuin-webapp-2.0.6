@@ -2,7 +2,7 @@
 import { SplashScreen } from '@components/common/splash-screen'
 import { type ConfigType, useGenuinOptions } from '@lib/stores/genuin-options'
 import { getSizeBoxes } from '@lib/utils/common/size-box'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
 
 type Props = {
@@ -19,6 +19,7 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
     isLoading: state.isLoading,
   }))
   const searchParams = useSearchParams()
+  const router = useRouter()
 
   const hideNavbar = searchParams.get('hide_navbar') === '1'
   // const embed = searchParams.get('embed') === '1'
