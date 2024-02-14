@@ -1,6 +1,5 @@
 'use client'
 import { SplashScreen } from '@components/common/splash-screen'
-import { getEmbedConfig } from '@lib/api/config'
 import { type ConfigType, useGenuinOptions } from '@lib/stores/genuin-options'
 import { getSizeBoxes } from '@lib/utils/common/size-box'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -11,9 +10,10 @@ type Props = {
   deviceType: string
   os: string
   browserType: string
+  config: ConfigType
 }
 
-export function GenuinOptionsProvider({ children, deviceType, os, browserType }: Props) {
+export function GenuinOptionsProvider({ children, deviceType, os, browserType, config }: Props) {
   const { setInitialData, isLoading } = useGenuinOptions((state) => ({
     setInitialData: state.setData,
     isLoading: state.isLoading,
@@ -33,7 +33,7 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType }:
     return getSizeBoxes(isMobile, !hideNavbar)
   }
 
-  function setData(config: ConfigType) {
+  function init() {
     const isIframe = window !== window.parent
     setInitialData({
       embed: !!config,
@@ -51,41 +51,6 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType }:
       parentUrl: from,
       config,
     })
-  }
-
-  function getConfig() {
-    const obj = new URL(window.location.href)
-    const arr = obj.host.split('.')
-    if (['app', 'begenuin', 'localhost:4005'].includes(arr[0])) return null
-
-    if (!obj.host.includes('begenuin')) return { domain: obj.host }
-
-    return { subdomain: arr[0] }
-  }
-
-  function init() {
-    const config = getConfig()
-    const urlObj = new URL(window.location.href)
-
-    if (
-      config &&
-      ['/', '/manage', '/market', '/pricing', '/privacy', '/terms', '/verify-email'].includes(urlObj.pathname)
-    ) {
-      urlObj.pathname = '/home'
-      router.replace('/home')
-    }
-
-    if (config) {
-      getEmbedConfig(config)
-        .then((res) => {
-          setData(res)
-        })
-        .catch((e) => {
-          // console.log('error::', e)
-        })
-    } else {
-      setData(null)
-    }
   }
 
   function handleResize() {
@@ -115,4 +80,5 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType }:
 
   if (isLoading) return <SplashScreen />
   return children
+  // return null
 }
