@@ -1,6 +1,5 @@
 'use client'
 import { SplashScreen } from '@components/common/splash-screen'
-import { getEmbedConfig } from '@lib/api/config'
 import { type ConfigType, useGenuinOptions } from '@lib/stores/genuin-options'
 import { getSizeBoxes } from '@lib/utils/common/size-box'
 import { useSearchParams } from 'next/navigation'
@@ -11,13 +10,10 @@ type Props = {
   deviceType: string
   os: string
   browserType: string
-  /**
-   * If you want to get config from api.
-   */
-  configParams: string
+  config: ConfigType
 }
 
-export function GenuinOptionsProvider({ children, deviceType, os, browserType, configParams }: Props) {
+export function GenuinOptionsProvider({ children, deviceType, os, browserType, config }: Props) {
   const { setInitialData, isLoading } = useGenuinOptions((state) => ({
     setInitialData: state.setData,
     isLoading: state.isLoading,
@@ -36,7 +32,7 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
     return getSizeBoxes(isMobile, !hideNavbar)
   }
 
-  function setData(config: ConfigType) {
+  function init() {
     const isIframe = window !== window.parent
     setInitialData({
       embed: !!config,
@@ -54,24 +50,6 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
       parentUrl: from,
       config,
     })
-  }
-
-  function init() {
-    let config: any = null
-    if (configParams) {
-      getEmbedConfig(JSON.parse(configParams))
-        .then((res) => {
-          config = res
-        })
-        .catch((e) => {
-          // console.log('error::', e)
-        })
-        .finally(() => {
-          setData(config)
-        })
-    } else {
-      setData(null)
-    }
   }
 
   function handleResize() {
@@ -101,4 +79,5 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
 
   if (isLoading) return <SplashScreen />
   return children
+  // return null
 }
