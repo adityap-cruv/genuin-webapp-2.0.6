@@ -13,7 +13,6 @@ export function middleware(request: NextRequest) {
 
   const browserType = parsedUA.browser.name
   if (browserType) request.cookies.set('browser_type', browserType)
-
   return NextResponse.next({ request })
 }
 
