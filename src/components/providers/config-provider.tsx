@@ -33,6 +33,7 @@ export function ConfigProvider({ children, ...props }: Props) {
         }
         setHandler((x) => {
           x.config = res
+          x.isLoading = false
           return { ...x }
         })
       })
@@ -40,12 +41,12 @@ export function ConfigProvider({ children, ...props }: Props) {
         console.log('error is here::')
       })
       .finally(() => {
-        setTimeout(() => {
-          setHandler((x) => {
-            x.isLoading = false
-            return { ...x }
-          })
-        }, 500)
+        // setTimeout(() => {
+        //   setHandler((x) => {
+        //     x.isLoading = false
+        //     return { ...x }
+        //   })
+        // }, 500)
       })
   }, [])
 
