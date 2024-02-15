@@ -12,6 +12,7 @@ export async function fetchUserData(nickname: string) {
       return res.data.data
     })
     .catch((e) => {
+      console.log('error::', e)
       throw new Error('Something went wrong in profile details api.')
     })
 }
