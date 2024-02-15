@@ -47,11 +47,16 @@ export function LoopVideos({ slug }: { slug: string }) {
               })
             }}
             className="group/video relative flex aspect-reel w-full items-center justify-center duration-300 hover:cursor-pointer">
-            <Image
+            {/* <Image
               src={item.video.thumbnail ?? ''}
               alt={item.video.description ?? ''}
               className="h-full w-full rounded-xl object-fill"
               fill
+            /> */}
+            <img
+              src={item.video.thumbnail}
+              alt={item.video.description}
+              className="h-full w-full rounded-xl object-fill"
             />
             <div className="absolute bottom-2 left-2">
               <Link href={{ pathname: PATH_NAME.profile(item.owner.nickname) }}>

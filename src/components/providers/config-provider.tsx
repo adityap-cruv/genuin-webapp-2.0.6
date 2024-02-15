@@ -22,31 +22,39 @@ export function ConfigProvider({ children, ...props }: Props) {
 
   useEffect(() => {
     const configParams = getConfig()
-    getEmbedConfig(configParams)
-      .then((res) => {
-        const urlObj = new URL(window.location.href)
-        if (
-          res &&
-          ['/', '/manage', '/market', '/pricing', '/privacy', '/terms', '/verify-email'].includes(urlObj.pathname)
-        ) {
-          void navigate()
-        }
-        setHandler((x) => {
-          x.config = res
-          return { ...x }
-        })
-      })
-      .catch((e) => {
-        console.log('error is here::')
-      })
-      .finally(() => {
-        setTimeout(() => {
+    if (configParams) {
+      getEmbedConfig(configParams)
+        .then((res) => {
+          const urlObj = new URL(window.location.href)
+          if (
+            res &&
+            ['/', '/manage', '/market', '/pricing', '/privacy', '/terms', '/verify-email'].includes(urlObj.pathname)
+          ) {
+            void navigate()
+          }
           setHandler((x) => {
+            x.config = res
             x.isLoading = false
             return { ...x }
           })
-        }, 500)
+        })
+        .catch((e) => {
+          console.log('error is here::')
+        })
+        .finally(() => {
+          // setTimeout(() => {
+          //   setHandler((x) => {
+          //     x.isLoading = false
+          //     return { ...x }
+          //   })
+          // }, 500)
+        })
+    } else {
+      setHandler((x) => {
+        x.isLoading = false
+        return { ...x }
       })
+    }
   }, [])
 
   if (handler.isLoading) return <SplashScreen />
