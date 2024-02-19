@@ -8,6 +8,8 @@ import Link from 'next/link'
 import imgC2_s1 from '@images/home-page/c2_1.webp'
 import imgC2_s2 from '@images/home-page/c2_2.webp'
 import imgC2_2 from '@images/home-page/c2-2.webp'
+import imgC2_c2 from '@images/home-page/c2_2_2.webp'
+import imgC2_c2_mobile from '@images/home-page/c2_2_mobile.webp'
 import imgC2Mobile from '@images/home-page/c2_mobile.webp'
 import imgC3 from '@images/home-page/c3.webp'
 import icVideoAddButton from '@icons/home-page/icVideoAddButton.svg'
@@ -28,8 +30,8 @@ import niveaLogo from '@images/business/brand-page/brands/nivea.svg'
 import niveaBanner from '@images/business/brand-page/brands/nivea.webp'
 import sephoraLogo from '@images/business/brand-page/brands/sephora.svg'
 import sephoraBanner from '@images/business/brand-page/brands/sephora.webp'
-import doveLogo from '@images/business/brand-page/brands/dove.svg'
-import doveBanner from '@images/business/brand-page/brands/dove.webp'
+import nikeLogo from '@images/business/brand-page/brands/nikeLogo.svg'
+import nikeBanner from '@images/business/brand-page/brands/nikeBanner.webp'
 import cocacolaLogo from '@images/business/brand-page/brands/cocacola.svg'
 import cocacolaBanner from '@images/business/brand-page/brands/cocacola.webp'
 import { LoopSection } from './loop-section'
@@ -54,7 +56,7 @@ function Component1() {
     { img: toyotaLogo, alt: 'toyota', banner: toyotaBanne2 },
     { img: niveaLogo, alt: 'nivea', banner: niveaBanner },
     { img: sephoraLogo, alt: 'sephora', banner: sephoraBanner },
-    { img: doveLogo, alt: 'dove', banner: doveBanner },
+    { img: nikeLogo, alt: 'nike', banner: nikeBanner },
     { img: cocacolaLogo, alt: 'cocacola', banner: cocacolaBanner },
   ]
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -139,13 +141,12 @@ function Component1() {
       <div
         className="flex flex-col items-center justify-center gap-y-4 px-5 pb-40 pt-40 lg:hidden"
         style={{ background: 'radial-gradient(123.19% 48.8% at 76.02% 69.05%, #E9CAF4 0%, #ADD8FB 100%)' }}>
-        <h1 className="flex max-w-sm  justify-center text-center text-new-h2-mobile sm:text-new-h1 ">
-          Natively Integrated Video Communities for Leading Brands.
+        <h1 className="flex justify-center text-center text-new-h2-mobile sm:text-new-h1 ">
+          Social Video Communities for
+          <br /> Leading Brands.
         </h1>
         <p className="mx-3 max-w-sm py-2 text-center text-new-para-2 sm:w-4/5">
-          With Genuin make your digital
-          <br /> presence GenZ Ready with Bite-Sized
-          <br /> Video Based Communities.
+          On your website, in your app, under your brand and distributed on the open web.
         </p>
         <div className="flex flex-col gap-y-4">
           <Link href={{ pathname: PATH_NAME.home() }}>
@@ -167,32 +168,45 @@ function Component2() {
     <>
       <div className="my-20 hidden w-full flex-col items-center justify-center gap-y-5  lg:flex ">
         <h2 className="-tracking-new text-center text-new-h2">
-          Move Beyond Traditional Editorial <br /> Communities to Video-Based Communities
+          Move Beyond Traditional Text Based <br /> Communities to Video Based Communities
         </h2>
         <div className="flex w-10/12 justify-center">
           <div>
             <img loading="lazy" fetchPriority="low" decoding="async" src={imgC2_s1.src} />
           </div>
-          <div className="flex items-center">
+          <div className="flex items-end">
             <img loading="lazy" fetchPriority="low" decoding="async" src={imgC2_s2.src} />
           </div>
         </div>
 
-        <h2 className="-tracking-new mt-12 text-center text-new-h2">Your Brand Owned Video Community</h2>
-        <img loading="lazy" fetchPriority="low" decoding="async" src={imgC2_2.src} />
+        <h2 className="-tracking-new mb-6 mt-12 text-center text-new-h2">
+          Communities You Control Instead of Ones They Control
+        </h2>
+        <div className="flex w-10/12 justify-center gap-8">
+          <div>
+            <img loading="lazy" fetchPriority="low" decoding="async" src={imgC2_2.src} />
+          </div>
+          <div className="flex items-center">
+            <img loading="lazy" fetchPriority="low" decoding="async" src={imgC2_c2.src} />
+          </div>
+        </div>
+        {/* <img loading="lazy" fetchPriority="low" decoding="async" src={imgC2_2.src} /> */}
       </div>
       <div className="flex flex-col items-center justify-center py-10 lg:hidden">
         <h2 className="w-full max-w-sm py-4 text-center text-new-h2-mobile sm:text-new-h2">
           Move Beyond
           <br /> Traditional Editorial <br /> Communities to Video-Based Communities
         </h2>
-        <img loading="lazy" fetchPriority="low" decoding="async" src={imgC2Mobile.src} />
+        <img loading="lazy" fetchPriority="low" decoding="async" src={imgC2_s1.src} />
 
         <h2 className="mt-10 w-full max-w-sm py-4 text-center text-new-h2-mobile sm:text-new-h2">
-          Your Brand Owned
-          <br /> Video Community
+          Communities You Control
+          <br /> Instead of
+          <br />
+          Ones They Control
         </h2>
-        <img loading="lazy" fetchPriority="low" decoding="async" src={imgC2_2.src} className="w-10/12" />
+        <img loading="lazy" fetchPriority="low" decoding="async" src={imgC2_2.src} className="w-10/12 mb-10" />
+        <img loading="lazy" fetchPriority="low" decoding="async" src={imgC2_c2_mobile.src} className="w-10/12" />
       </div>
     </>
   )
@@ -204,37 +218,18 @@ function Component3() {
       <div className="relative my-40 hidden max-h-full items-center justify-around px-6 xl:container lg:flex xl:px-0">
         <img loading="lazy" fetchPriority="low" decoding="async" src={imgC3.src} />
         <div className="flex w-2/3 max-w-md flex-col gap-y-8">
-          <h2 className="text-new-h2">
-            Be part of the conversation with
-            <img
-              loading="lazy"
-              fetchPriority="low"
-              decoding="async"
-              src={icVideoAddButton.src}
-              className="ml-4 mr-3 inline-block align-bottom"
-            />
-            Loops
-          </h2>
+          <h2 className="text-new-h2">Captivate Your Community the Way They Like to Communicate With Video Loops</h2>
           <h5 className="text-new-h5">
-            The nexus for dynamic one-on-one connections and collaborative discussions. Engage with customers, partners,
-            and employees through Q&A prompts, multimedia sharing and crowdsourced knowledge.
+            Engage with your fans, customers, partners, employees and stakeholders via a video based social feed
+            organized by topics that you control.
           </h5>
         </div>
       </div>
       <div className="my-10 flex flex-col items-center gap-y-8 px-5 lg:hidden">
-        <h2 className="max-w-xs text-center text-new-h2-mobile sm:max-w-sm sm:text-new-h2">
-          Be part of the conversation
-          <br /> with
-          <img
-            loading="lazy"
-            fetchPriority="low"
-            decoding="async"
-            src={icVideoAddButton.src}
-            className="ml-3 mr-2 inline-block w-8 translate-y-1 align-baseline sm:mr-4 sm:w-11"
-          />
-          Loops
+        <h2 className=" text-center text-new-h2-mobile sm:text-new-h2">
+          Captivate Your Community the Way They Like to Communicate With Video Loops
         </h2>
-        <h5 className="flex w-4/5 text-center text-new-para-1-mobile">
+        <h5 className="flex w-11/12 text-center text-new-para-1-mobile">
           The nexus for dynamic one-on-one connections and collaborative discussions. Engage with customers, partners,
           and employees through Q&A prompts, multimedia sharing and crowdsourced knowledge.
         </h5>
@@ -280,16 +275,9 @@ function Component4() {
         <div id="carousel" className="sticky top-0 h-1/3">
           <div className="h-full w-full">
             <div className="flex h-1/5 items-center justify-center">
-              <h2 className="max-w-2xl text-center text-new-h2">
-                Expand your horizons and add to the
-                <img
-                  loading="lazy"
-                  fetchPriority="low"
-                  decoding="async"
-                  src={icConversation.src}
-                  className="ml-3 mr-4 inline-block align-bottom"
-                />
-                conversation
+              <h2 className="text-center text-new-h2">
+                All the Community-Building Functionality of
+                <br /> Top Social Networks
               </h2>
             </div>
             <div className="mt-10 flex h-[60%] w-full items-center px-6 pt-10 xl:container xl:px-0">
@@ -323,19 +311,23 @@ function Component4() {
                 className="flex h-full w-1/2 flex-col justify-center gap-y-8 px-14 [&>div]:opacity-30 [&>div]:transition-opacity [&>div]:duration-300 [&>div]:ease-in ">
                 <div className="!opacity-100">
                   <h3 className="text-new-h3">Connect</h3>
-                  <h5 className="mt-4 text-new-h5">Meet new people, grow your audience, and discover new interests.</h5>
+                  <h5 className="mt-4 text-new-h5">
+                    Interact through short video, audio, text, reactions and more. Seamlessly link out to your e-store,
+                    website, social channels, or anywhere.
+                  </h5>
                 </div>
                 <div>
                   <h3 className="text-new-h3">Discover</h3>
                   <h5 className="mt-4 text-new-h5">
-                    Create Loops, interactive discussion spaces that combine video, photo, voice recording and text.
+                    Enable your fans to join communities on topics you and they can define, and cross-promote new loops
+                    in the feed. Make your community discoverable on the open web ( see Market Your Community )
                   </h5>
                 </div>
                 <div>
                   <h3 className="text-new-h3">Learn</h3>
                   <h5 className="mt-4 text-new-h5">
-                    Start conversations and invite your audience to contribute, too—a space to learn alongside and from
-                    each other.
+                    Start conversations and invite your audience to participate -- gain insights directly from your
+                    stakeholders.
                   </h5>
                 </div>
               </div>
@@ -343,18 +335,9 @@ function Component4() {
           </div>
         </div>
       </div>
-      <div className="my-20 mt-16 flex flex-col items-center px-5 lg:hidden">
-        <h2 className="mb-10 max-w-xs text-center text-new-h2-mobile sm:max-w-lg sm:text-new-h2">
-          Expand your horizons and add to the
-          <br />
-          <img
-            loading="lazy"
-            fetchPriority="low"
-            decoding="async"
-            src={icConversation.src}
-            className="ml-3 mr-2 inline-block w-8 translate-y-1 align-baseline sm:mr-4 sm:w-11"
-          />
-          conversation
+      <div className="my-20 mt-20 flex flex-col items-center px-5 lg:hidden">
+        <h2 className="mb-10 text-center text-new-h2-mobile sm:max-w-lg sm:text-new-h2">
+          All the Community- Building Functionality of Top Social Networks
         </h2>
         <div className="flex w-full justify-center">
           <Accordion type="single" defaultValue="connect" collapsible className="px-3 sm:w-4/5">
@@ -363,7 +346,8 @@ function Component4() {
                 <div className="flex flex-col items-start">
                   <h3 className="mb-2 text-new-h3-mobile">Connect</h3>
                   <p className="text-start text-new-para-1-mobile">
-                    Meet new people, grow your audience, and discover new interests.
+                    Interact through short video, audio, text, reactions and more. Seamlessly link out to your e-store,
+                    website, social channels, or anywhere.
                   </p>
                 </div>
               </AccordionTrigger>
@@ -383,7 +367,8 @@ function Component4() {
                 <div className="flex flex-col items-start">
                   <h3 className="mb-2 text-new-h3-mobile">Discover</h3>
                   <p className="text-start text-new-para-1-mobile">
-                    Create Loops, interactive discussion spaces that combine video, photo, voice recording and text.
+                    Enable your fans to join communities on topics you and they can define, and cross-promote new loops
+                    in the feed. Make your community discoverable on the open web ( see Market Your Community )
                   </p>
                 </div>
               </AccordionTrigger>
@@ -403,8 +388,8 @@ function Component4() {
                 <div className="flex flex-col items-start">
                   <h3 className="mb-2 text-new-h3-mobile">Learn</h3>
                   <p className="text-start text-new-para-1-mobile">
-                    Start conversations and invite your audience to contribute, too—a space to learn alongside and from
-                    each other.
+                    Start conversations and invite your audience to participate -- gain insights directly from your
+                    stakeholders.
                   </p>
                 </div>
               </AccordionTrigger>
@@ -430,11 +415,13 @@ function Component5() {
   return (
     <>
       <div className="my-40 hidden w-full flex-col items-center px-6 xl:container lg:flex xl:px-0">
-        <h2 className="text-center text-new-h2">What our members say</h2>
+        <h2 className="text-center text-new-h2">What our Community Builders say</h2>
         <div className="my-10 mt-15 flex w-full justify-between gap-10">
           <div className="flex w-3/5 flex-col gap-y-10">
             <div className="-border-spacing-10 flex h-1/2 flex-col justify-around rounded-[10px] border-[18px] border-[#E9CAF4] bg-new-off-black p-8">
-              <h3 className="text-new-h3 text-new-off-white">"Infinite community possibilities."</h3>
+              <h3 className="text-new-h3 text-new-off-white">
+                “I love that new community members can see the history of discussion in the video feed”
+              </h3>
               <div className="mt-5 flex items-center">
                 <img
                   loading="lazy"
@@ -443,15 +430,14 @@ function Component5() {
                   src={imgReviewerDp.src}
                   className="mr-4 h-12 w-12"
                 />
-                <p className="text-new-off-white">Lauren Hall, App Member</p>
+                <p className="text-new-off-white">Lauren Hall, Community Builder</p>
               </div>
             </div>
             <div className="flex h-1/2 flex-col justify-between rounded-[15px] border-[1px] border-new-light-grey p-10">
               <h5 className="text-new-h5">
-                "Since implementing, our engagement levels have skyrocketed. The platform's versatility has allowed us
-                to connect with our diverse audience on a whole new level."
+                “It was so easy to repurpose my social media content & jumpstart my community.”
               </h5>
-              <p className="mt-10 text-new-para-1">Esmé, Seattle, DIY Content Creator</p>
+              <p className="mt-10 text-new-para-1">Esmé, Seattle, Content Creator</p>
             </div>
           </div>
           <img
@@ -466,9 +452,8 @@ function Component5() {
           <img loading="lazy" fetchPriority="low" className="w-1/3" decoding="async" src={imgC5_2.src} />
           <div className="flex flex-col justify-between rounded-2xl bg-primary p-10 text-new-off-white">
             <h5 className="text-new-h5">
-              Adding communities has been a game-changer for our team. The platform seamlessly connects us with our
-              customers, allowing for insightful discussions and valuable feedback. The interactive format sparks
-              creativity and fosters a sense of community like never before.
+              “Link-outs are so hard on the big social platforms and the rules always change. I loved being able to link
+              to my store sell more merch!”
             </h5>
             <p className="text-new-para-1">
               Sarah Jones, <span style={{ fontWeight: '400 !important' }}>Marketing Manager</span>
@@ -477,10 +462,10 @@ function Component5() {
         </div>
       </div>
       <div className="my-20 flex min-h-full flex-col items-center gap-y-10 px-5 lg:hidden">
-        <h2 className="text-center text-new-h2-mobile sm:text-new-h2">What our members say</h2>
+        <h2 className="text-center text-new-h2-mobile sm:text-new-h2">What our Community Builders say</h2>
         <div className=" flex flex-col rounded-[10px] border-[18px] border-[#E9CAF4] bg-new-off-black p-4 sm:w-4/5">
           <p className="font-bold text-new-off-white" style={{ fontSize: '28px' }}>
-            "Infinite community possibilities."
+            “I love that new community members can see the history of discussion in the video feed”
           </p>
           <div className="mt-5 flex w-full">
             <img
@@ -499,9 +484,8 @@ function Component5() {
         <img loading="lazy" fetchPriority="low" decoding="async" src={imgC5.src} className="sm:w-1/2" />
         <div className="flex flex-col justify-between rounded-2xl bg-primary p-4 text-new-off-white sm:w-4/5">
           <p className="text-new-para-1">
-            Adding communities has been a game-changer for our team. The platform seamlessly connects us with our
-            customers, allowing for insightful discussions and valuable feedback. The interactive format sparks
-            creativity and fosters a sense of community like never before.
+            “Link-outs are so hard on the big social platforms and the rules always change. I loved being able to link
+            to my store sell more merch!”
           </p>
           <p className="mt-10 text-new-para-1">
             Sarah Jones, <span className="font-normal">Marketing Manager</span>
@@ -520,7 +504,7 @@ function Component6() {
         Community sneak peak
       </h2>
       <h5 className="mb-10 max-w-[320px] text-center text-new-h5-mobile sm:max-w-xs sm:text-new-h5 lg:max-w-xl ">
-        Take a look inside some of the communities you'll find in on Genuin and get inspired to start your own.
+        Take a look inside some of the communities, get inspired to start your own.{' '}
       </h5>
       <CommunitySection />
     </div>
@@ -534,7 +518,7 @@ function Component7() {
         Loop sneak peak
       </h2>
       <h5 className="mb-10 max-w-[320px] text-center text-new-h5-mobile sm:max-w-xs sm:text-new-h5 lg:max-w-xl ">
-        Take a look inside some of the loops, get inspired to start your own.
+        Take a look inside some of the loops, get inspired to start your own.{' '}
       </h5>
       <LoopSection />
     </div>
