@@ -1,11 +1,8 @@
 'use client'
 import React from 'react'
-import style from './planDetails.module.scss'
-import HeadingComponent from '@components/business/heading'
-import ParagraphComponent from '@components/business/paragraph'
 import { ContactUs } from '@components/common/modals/contact-us'
 import { Button } from '@components/ui/button'
-import check from '@icons/business/check.svg'
+import check from '@icons/icCheck.svg'
 
 export default function PlanDetails() {
   return (
@@ -29,45 +26,25 @@ export default function PlanDetails() {
       </div>
       <div className="flex justify-center gap-8">
         <div className="flex h-32 w-80 items-center gap-6 rounded-2xl bg-[#F7F1F9] p-10">
-          <div>
-            <svg xmlns="http://www.w3.org/2000/svg" width="53" height="38" viewBox="0 0 53 38" fill="none">
-              <path d="M3 18.5422L16.2923 33L51 3" stroke="#E9CAF4" stroke-width="6" />
-            </svg>
-          </div>
+          <img src={check.src} alt="genuin" className="h-14 w-14" />
           <p>Full white label capability with your URL</p>
         </div>
         <div className="flex h-32 w-80 items-center gap-6 rounded-2xl bg-[#F7F1F9] p-10">
-          <div>
-            <svg xmlns="http://www.w3.org/2000/svg" width="53" height="38" viewBox="0 0 53 38" fill="none">
-              <path d="M3 18.5422L16.2923 33L51 3" stroke="#E9CAF4" stroke-width="6" />
-            </svg>
-          </div>
+          <img src={check.src} alt="genuin" className="h-14 w-14" />
           <p>Data in your own warehouse</p>
         </div>
         <div className="flex h-32 w-80 items-center gap-6 rounded-2xl bg-[#F7F1F9] p-10">
-          <div>
-            <svg xmlns="http://www.w3.org/2000/svg" width="53" height="38" viewBox="0 0 53 38" fill="none">
-              <path d="M3 18.5422L16.2923 33L51 3" stroke="#E9CAF4" stroke-width="6" />
-            </svg>
-          </div>
+          <img src={check.src} alt="genuin" className="h-14 w-14" />
           <p>Advanced analytics tools and insights</p>
         </div>
       </div>
       <div className="mt-8 flex justify-center gap-8">
         <div className="flex h-32 w-80 items-center gap-6 rounded-2xl bg-[#F7F1F9] p-10">
-          <div>
-            <svg xmlns="http://www.w3.org/2000/svg" width="53" height="38" viewBox="0 0 53 38" fill="none">
-              <path d="M3 18.5422L16.2923 33L51 3" stroke="#E9CAF4" stroke-width="6" />
-            </svg>
-          </div>
+          <img src={check.src} alt="genuin" className="h-14 w-14" />
           <p>AI moderation and management tools</p>
         </div>
         <div className="flex h-32 w-80 items-center gap-6 rounded-2xl bg-[#F7F1F9] p-10">
-          <div>
-            <svg xmlns="http://www.w3.org/2000/svg" width="53" height="38" viewBox="0 0 53 38" fill="none">
-              <path d="M3 18.5422L16.2923 33L51 3" stroke="#E9CAF4" stroke-width="6" />
-            </svg>
-          </div>
+          <img src={check.src} alt="genuin" className="h-14 w-14" />
           <p>AI assistance to engage and grow your audience</p>
         </div>
       </div>

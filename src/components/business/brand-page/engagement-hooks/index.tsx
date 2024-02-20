@@ -30,7 +30,9 @@ export default function EngagementHooks() {
                   ? 'text-new-h2 text-monochrome-black'
                   : ' text-new-h2-mobile font-medium text-[#949494]'
               }`}
-              onMouseEnter={() => setIsHoverd(option)}>
+              onMouseEnter={() => {
+                setIsHoverd(option)
+              }}>
               {option}
             </p>
           ))}

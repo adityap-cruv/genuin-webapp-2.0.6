@@ -14,6 +14,7 @@ import Image from 'next/image'
 import { Footer } from '@components/pages/home/footer'
 import { DownloadAppDialog } from '@components/pages/home/download-app-dialog'
 import { ContactUs } from '@components/common/modals/contact-us'
+import check_p from '@icons/icCheck.svg'
 
 export default function Mobile() {
   return (
@@ -21,7 +22,7 @@ export default function Mobile() {
       <NavBar />
       <Component1 />
       <Component2 />
-      <Component3 />
+      {/* <Component3 /> */}
       <Component4 />
       <Component5 />
       <Component6 />
@@ -32,7 +33,7 @@ export default function Mobile() {
 
 function Component1() {
   return (
-    <div className="container flex flex-col items-center justify-center pb-24 pt-36 ">
+    <div className="container flex flex-col items-center justify-center pb-12 pt-36 ">
       <p className=" text-center text-new-h1-mobile">A Plan for Every Brand</p>
 
       <div className="my-4">
@@ -46,9 +47,6 @@ function Component1() {
             </TabsTrigger>
             <TabsTrigger value="Essential">
               <p className="text-title-3-bold">Essential</p>
-            </TabsTrigger>
-            <TabsTrigger value="Pro">
-              <p className="text-title-3-bold">Pro</p>
             </TabsTrigger>
             <TabsTrigger value="Enterprise">
               <p className="text-title-3-bold">Enterprise</p>
@@ -176,47 +174,6 @@ function Component1() {
               </div>
             </div>
           </TabsContent>
-          <TabsContent value="Pro">
-            <div
-              className="m-4 h-[525px] rounded-xl p-10"
-              style={{
-                background:
-                  'linear-gradient(white, white) padding-box, linear-gradient(#0645FFC2, #E9CAF4 ) border-box',
-                borderRadius: '12px',
-                border: '3px solid transparent',
-              }}>
-              <p className="my-1 text-new-h2-mobile font-semibold">Pro Plan</p>
-              <p className="text-new-sm">FOR BIG COMMUNITIES</p>
-              <div className="flex flex-col items-center py-12">
-                <p className="text-center text-new-h3">
-                  Customized
-                  <br /> Pricing
-                </p>
-                <ContactUs>
-                  <Button
-                    size="custom"
-                    className="mt-8 bg-new-off-black px-5 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
-                    <p className="text-new-para-2">Contact us for pricing</p>
-                  </Button>
-                </ContactUs>
-              </div>
-              <div className="flex flex-col gap-1">
-                <p className="text-title-2-demi">Benefits:</p>
-                <div className="flex items-center gap-2">
-                  <Image priority loading="eager" src={check} width={24} height={24} alt="Star" />
-                  <p className="text-new-para-2-mobile">Basic community tools enough you get you started</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Image priority loading="eager" src={check} width={24} height={24} alt="Star" />
-                  <p className="text-new-para-2-mobile">Basic moderation tools</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Image priority loading="eager" src={exclamation} width={24} height={24} alt="Star" />
-                  <p className="text-new-para-2-mobile">Genuin watermark</p>
-                </div>
-              </div>
-            </div>
-          </TabsContent>
           <TabsContent value="Enterprise">
             <div
               className="relative m-4 h-[525px] rounded-xl p-10"
@@ -275,18 +232,17 @@ function Component2() {
     <div>
       <p className="mb-10 text-center text-new-h1-mobile">Compare All Plan Features</p>
       <div className="bg-white sticky top-0 z-10">
-        <div className="grid grid-cols-5 bg-[#ADDAFF] px-4 py-4">
+        <div className="grid grid-cols-4 bg-[#ADDAFF] px-4 py-4">
           <div className="flex justify-center text-cap-1-bold ">Free</div>
           <div className="flex justify-center text-cap-1-bold">Starter</div>
           <div className="flex justify-center text-cap-1-bold">Essential</div>
-          <div className="flex justify-center text-cap-1-bold">Pro</div>
           <div className="flex justify-center text-cap-1-bold">Enterprise</div>
         </div>
       </div>
       <div className="mt-6 ">
         {content.table.tableData.map((row, index) => (
           <div key={index} className="m-4 rounded-lg border border-monochrome-9">
-            <div className="grid grid-cols-5 ">
+            <div className="grid grid-cols-4 ">
               <div className="flex justify-center rounded-tl-lg border border-monochrome-9 p-2">
                 {row.free ? (
                   <Image priority loading="eager" src={check} width={24} height={24} alt="Check" />
@@ -303,13 +259,6 @@ function Component2() {
               </div>
               <div className="flex justify-center border border-monochrome-9 p-2">
                 {row.essential ? (
-                  <Image priority loading="eager" src={check} width={24} height={24} alt="Check" />
-                ) : (
-                  <Image priority loading="eager" src={dash} width={24} height={24} alt="Check" />
-                )}
-              </div>
-              <div className="flex justify-center border border-monochrome-9 p-2">
-                {row.pro ? (
                   <Image priority loading="eager" src={check} width={24} height={24} alt="Check" />
                 ) : (
                   <Image priority loading="eager" src={dash} width={24} height={24} alt="Check" />
@@ -358,6 +307,13 @@ function Component3() {
 }
 
 function Component4() {
+  const features = [
+    'Full white label capability with your URL',
+    'Data in your own warehouse',
+    'Advanced analytics tools and insights',
+    'AI moderation and management tools',
+    'AI assistance to engage and grow your audience',
+  ]
   return (
     <div className="container mt-20">
       <p className="my-10 text-center text-new-h1-mobile">Enterprise Plan</p>
@@ -370,28 +326,13 @@ function Component4() {
           <p className="text-new-para-2">Contact us for demo and pricing</p>
         </Button>
       </ContactUs>
-      <div className="mt my-4 rounded-2xl bg-[#F7F1F9] p-6">
-        <p className="mb-8 text-new-h4">What do you get from a enterprise plan?</p>
-        <div className="flex items-center gap-2">
-          <Image priority loading="eager" src={check} width={24} height={24} alt="Star" />
-          <p className="text-new-sm">Full white label capability with your URL</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Image priority loading="eager" src={check} width={24} height={24} alt="Star" />
-          <p className="text-new-sm">Data in your own warehouse</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Image priority loading="eager" src={check} width={24} height={24} alt="Star" />
-          <p className="text-new-sm">Advanced analytics tools and insights</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Image priority loading="eager" src={check} width={24} height={24} alt="Star" />
-          <p className="text-new-sm">AI moderation and management tools for brand</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Image priority loading="eager" src={check} width={24} height={24} alt="Star" />
-          <p className="text-new-sm">AIGH assistance to engage and grow your audience</p>
-        </div>
+      <div className="mt-8 flex flex-col justify-center gap-4">
+        {features.map((item, index) => (
+          <div key={index} className="flex h-20 items-center gap-6 rounded-2xl bg-[#F7F1F9] p-6">
+            <img src={check_p.src} alt="genuin" className="h-10 w-10" />
+            <p>{item}</p>
+          </div>
+        ))}
       </div>
     </div>
   )
