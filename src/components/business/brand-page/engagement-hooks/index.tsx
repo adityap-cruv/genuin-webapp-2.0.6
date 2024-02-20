@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import style from './hooks.module.scss'
 import Button from '../../button'
 import HeadingComponent from '../../heading'
@@ -7,32 +7,35 @@ import content from '../../../../content/brands-page.json'
 import engagementHooks from '@images/business/brand-page/engagement-hooks.webp'
 
 export default function EngagementHooks() {
+  const [isHovered, setIsHoverd] = useState<string | null>('Feed')
+  const options = ['Reactions', 'Comments', 'Link Share', 'Feed', 'Challenge', 'Rewards', 'Q&A']
   return (
-    // Container for the entire section
-    <section className={style.container}>
-      {/* Left section with an image */}
-      <div className={style.sectionLeft}>
-        <img
-          loading="lazy"
-          decoding="async"
-          fetchPriority="low"
-          className="h-[80vh] w-auto"
-          src={engagementHooks.src}
-          alt="genuin"
-        />
+    <div className="my-40 flex w-full items-center">
+      <div className="w-1/2">
+        <p className="text-new-h2">Activate Proven Engagement Hooks to Keep Your Community Active</p>
+        <p className="my-4 text-new-para-1">
+          All the user engagement hooks of popular video-based social network are now in your hands
+        </p>
       </div>
-
-      {/* Right section with text and a button */}
-      <div className={style.sectionRight}>
-        {/* Heading for the section */}
-        <HeadingComponent headingLevel={2} title={content.EngagementHooks.title} colorVariant={'black'} />
-
-        {/* Paragraph for the section */}
-        <ParagraphComponent text={content.EngagementHooks.caption} sizeVariant={'medium'} colorVariant={'black'} />
-
-        {/* Button for the section */}
-        <Button text={content.EngagementHooks.button} variant={'outline'} size={'small'} color={'black'} />
+      <div className="flex w-1/2">
+        <div className="w-3/5">
+          <img src={engagementHooks.src} alt="genuin" />
+        </div>
+        <div className="grid-rows-7 flex w-2/5 flex-col justify-between">
+          {options.map((option) => (
+            <p
+              key={option}
+              className={` text-center ${
+                isHovered === option
+                  ? 'text-new-h2 text-monochrome-black'
+                  : ' text-new-h2-mobile font-medium text-[#949494]'
+              }`}
+              onMouseEnter={() => setIsHoverd(option)}>
+              {option}
+            </p>
+          ))}
+        </div>
       </div>
-    </section>
+    </div>
   )
 }

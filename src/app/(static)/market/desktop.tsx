@@ -8,7 +8,6 @@ import Precision from '@components/business/marketing-page/precision'
 import SocialConnections from '@components/business/marketing-page/social-connections'
 import Communities from '@components/business/marketing-page/communities'
 import { NavBar } from '@components/pages/home/nav-bar'
-import Footer from '@components/business/footer'
 import cxr from '@images/business/marketing-page/communities/cxr.webp'
 import social_share from '@images/business/marketing-page/communities/social_share.webp'
 import mail from '@images/business/marketing-page/communities/mail.webp'
@@ -17,6 +16,7 @@ import whatsapp from '@images/business/marketing-page/communities/whatsapp.webp'
 import AsSeenIn from '@components/business/as-seen-in'
 import { Button } from '@components/ui/button'
 import { ContactUs } from '@components/common/modals/contact-us'
+import { Footer } from '@components/pages/home/footer'
 
 export const Desktop = () => {
   const brandImages: any = [
@@ -46,11 +46,10 @@ export const Desktop = () => {
             <div className="flex items-center">
               <div className="w-1/2">
                 <p className="my-4 text-new-h1" style={{ fontSize: '56px' }}>
-                  Unleash the Power of Your Community
+                  Unleash New Unprecedented Ways to Grow Your Community
                 </p>
                 <p className="my-4 text-new-para-1">
-                  Transform your marketing strategies with our dynamic solutions – from SMS and Email to Programmatic
-                  and Social, all centered around short video-based knowledge sharing within thriving communities.
+                  Rich feature set for marketing communities is driven by Open Web approach.
                 </p>
                 <ContactUs>
                   <Button
@@ -74,10 +73,10 @@ export const Desktop = () => {
         </div>
       </div>
 
-      <div className={style.container}>
-        <Impressions />
+      <div className='container'>
+        {/* <Impressions /> */}
         <Precision />
-        <SocialConnections />
+        {/* <SocialConnections /> */}
         <Communities />
       </div>
       <AsSeenIn />
