@@ -168,17 +168,17 @@ function Component2() {
         </h2>
         <div className="flex w-10/12 justify-center">
           <div>
-            <img loading="lazy" fetchPriority="low" decoding="async" src={imgC2_s1.src} />
+            <img loading="lazy" fetchPriority="low" className="h-[80vh]" decoding="async" src={imgC2_s1.src} />
           </div>
           <div className="flex items-end">
-            <img loading="lazy" fetchPriority="low" decoding="async" src={imgC2_s2.src} />
+            <img loading="lazy" fetchPriority="low" className="h-[80vh]" decoding="async" src={imgC2_s2.src} />
           </div>
         </div>
 
         <h2 className="-tracking-new mb-6 mt-12 text-center text-new-h2">
           Communities You Control Instead of Ones They Control
         </h2>
-        <div className="flex w-10/12 justify-center gap-8">
+        <div className="flex w-3/4 justify-center gap-8">
           <div>
             <img loading="lazy" fetchPriority="low" decoding="async" src={imgC2_2.src} />
           </div>
@@ -212,7 +212,7 @@ function Component3() {
   return (
     <>
       <div className="relative my-40 hidden max-h-full items-center justify-around px-6 xl:container lg:flex xl:px-0">
-        <img loading="lazy" fetchPriority="low" decoding="async" src={imgC3.src} />
+        <img loading="lazy" fetchPriority="low" decoding="async" className="h-[80vh]" src={imgC3.src} />
         <div className="flex w-2/3 max-w-md flex-col gap-y-8">
           <h2 className="text-new-h2">Captivate Your Community the Way They Like to Communicate With Video Loops</h2>
           <h5 className="text-new-h5">
@@ -445,7 +445,7 @@ function Component5() {
           />
         </div>
         <div className="flex w-full justify-between gap-x-10">
-          <img loading="lazy" fetchPriority="low" className="w-1/3" decoding="async" src={imgC5_2.src} />
+          <img loading="lazy" fetchPriority="low" className="w-1/4" decoding="async" src={imgC5_2.src} />
           <div className="flex flex-col justify-between rounded-2xl bg-primary p-10 text-new-off-white">
             <h5 className="text-new-h5">
               “Link-outs are so hard on the big social platforms and the rules always change. I loved being able to link

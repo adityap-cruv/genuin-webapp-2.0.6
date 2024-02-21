@@ -2,11 +2,9 @@
 export const MainComponent = () => {
   return (
     <>
-      <p
-        className="flex w-full items-center justify-center py-8 text-center font-bold"
-        style={{ fontSize: 'min(40px, 5vw)' }}>
-        Genuin, Inc. <br />
-        General Terms of Service
+      <p className="flex w-full items-center justify-center py-8 text-center text-new-h2 font-bold">
+        Genuin Inc.
+        <br /> Privacy Policy
       </p>
       <div className="mb-8 px-6 text-[16px] md:px-0">
         <p>

@@ -1,14 +1,46 @@
-import React, { useState } from 'react'
-import style from './hooks.module.scss'
-import Button from '../../button'
-import HeadingComponent from '../../heading'
-import ParagraphComponent from '../../paragraph'
-import content from '../../../../content/brands-page.json'
+import React, { useEffect, useState } from 'react'
 import engagementHooks from '@images/business/brand-page/engagement-hooks.webp'
+import interaction1 from '@images/business/brand-page/customer-engage/interaction-1.webp'
+import interaction2 from '@images/business/brand-page/customer-engage/interaction-2.webp'
+import interaction3 from '@images/business/brand-page/customer-engage/interaction-3.webp'
+import Engagement1 from '@images/business/brand-page/customer-engage/engagement-1.webp'
+import Engagement2 from '@images/business/brand-page/customer-engage/engagement-2.webp'
+import Automation1 from '@images/business/brand-page/customer-engage/automation-1.webp'
+import Automation2 from '@images/business/brand-page/customer-engage/automation-2.webp'
 
 export default function EngagementHooks() {
-  const [isHovered, setIsHoverd] = useState<string | null>('Feed')
-  const options = ['Reactions', 'Comments', 'Link Share', 'Feed', 'Challenge', 'Rewards', 'Q&A']
+  const [isSelected, setIsSelected] = useState<string | null>('Reactions')
+  const [currentIndex, setCurrentIndex] = useState(0)
+
+  const brandImages: any = [
+    { title: 'Reactions', banner: interaction2 },
+    { title: 'Comments', banner: interaction3 },
+    { title: 'Link Share', banner: Engagement1 },
+    { title: 'Feed', banner: interaction1 },
+    { title: 'Challenge', banner: Engagement2 },
+    { title: 'Rewards', banner: Automation1 },
+    { title: 'Q&A', banner: Automation2 },
+  ]
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setCurrentIndex((prevIndex: any) => (prevIndex + 1) % brandImages?.length)
+    }, 3000)
+
+    return () => {
+      clearInterval(intervalId)
+    }
+  }, [brandImages])
+
+  useEffect(() => {
+    setIsSelected(brandImages[currentIndex]?.title)
+  }, [currentIndex])
+
+  const handleThumbnailClick = (index: any, title: any) => {
+    setCurrentIndex(index)
+    setIsSelected(title)
+  }
+
   return (
     <div className="my-40 flex w-full items-center">
       <div className="w-1/2">
@@ -18,22 +50,22 @@ export default function EngagementHooks() {
         </p>
       </div>
       <div className="flex w-1/2">
-        <div className="w-3/5">
-          <img src={engagementHooks.src} alt="genuin" />
+        <div className="flex w-3/5 justify-center">
+          <img src={brandImages[currentIndex].banner.src} alt="genuin" />
         </div>
         <div className="grid-rows-7 flex w-2/5 flex-col justify-between">
-          {options.map((option) => (
+          {brandImages.map((option: any, index: any) => (
             <p
-              key={option}
+              key={index}
               className={` text-center ${
-                isHovered === option
+                isSelected === option.title
                   ? 'text-new-h2 text-monochrome-black'
                   : ' text-new-h2-mobile font-medium text-[#949494]'
               }`}
-              onMouseEnter={() => {
-                setIsHoverd(option)
+              onClick={() => {
+                handleThumbnailClick(index, option.title)
               }}>
-              {option}
+              {option.title}
             </p>
           ))}
         </div>

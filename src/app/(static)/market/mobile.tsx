@@ -15,9 +15,12 @@ import { Footer } from '@components/pages/home/footer'
 import m1 from '@images/business/marketing-page/m_01.webp'
 import m2 from '@images/business/marketing-page/m_02.webp'
 import m3 from '@images/business/marketing-page/m_03.webp'
-import m4 from '@images/business/marketing-page/m_04.webp'
+import m4 from '@images/business/marketing-page/m_04_1.webp'
 import m5 from '@images/business/marketing-page/m_05.webp'
 import m6 from '@images/business/marketing-page/m_06.webp'
+import ms1 from '@images/business/marketing-page/m_s1_mobile.webp'
+import ms2 from '@images/business/marketing-page/m_s2_mobile.webp'
+import ms3 from '@images/business/marketing-page/m_s3_mobile.webp'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { ContactUs } from '@components/common/modals/contact-us'
 
@@ -79,13 +82,7 @@ function Component1() {
           </Button>
         </ContactUs>
         <div className="my-4 flex min-h-[300px] items-center justify-center">
-          <img
-            loading="lazy"
-            fetchPriority="low"
-            decoding="async"
-            className="h-80"
-            src={brandImages[currentIndex].banner.src}
-          />
+          <img loading="lazy" fetchPriority="low" decoding="async" className="h-80" src={whatsapp.src} />
         </div>
       </div>
     </div>
@@ -206,7 +203,7 @@ function Component3() {
           loading="lazy"
           fetchPriority="low"
           decoding="async"
-          src={isSelected === 'community' ? m1.src : isSelected === 'loop' ? m2.src : m3.src}
+          src={isSelected === 'community' ? ms1.src : isSelected === 'loop' ? ms2.src : ms3.src}
           alt="genuin"
         />
       </div>

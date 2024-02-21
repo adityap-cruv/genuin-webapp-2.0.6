@@ -26,13 +26,13 @@ export default function GetInTouch() {
   }, [])
   return (
     <div className="my-32 flex w-full rounded-2xl bg-[#E9CAF4]">
-      <div className="p-16">
+      <div className="w-2/3 p-16">
         <HeadingComponent headingLevel={2} title={content.GetInTouch.title} colorVariant={'black'} />
         <ParagraphComponent text={content.GetInTouch.caption} sizeVariant={'medium'} colorVariant={'black'} />
         <InlineButtonInput onButtonClick={handleButtonClick} />
       </div>
 
-      <div className="flex flex-shrink-0 items-end">
+      <div className="flex w-4/12 flex-shrink-0 items-end">
         <img loading="lazy" fetchPriority="low" decoding="async" src={getInTouch.src} alt="genuin" />
       </div>
     </div>
