@@ -7,7 +7,7 @@ import yahoo from '@images/business/marketing-page/as-seen-in/yahoo.png'
 export default function AsSeenIn() {
   return (
     <section className="bg-monochrome-9">
-      <div className={style.container}>
+      <div className='container h-32 justify-between items-center flex'>
         <HeadingComponent headingLevel={2} title={'As Seen In'} colorVariant={'black'} />
         <div className="flex gap-8">
           <div className={style.imageContainer}>

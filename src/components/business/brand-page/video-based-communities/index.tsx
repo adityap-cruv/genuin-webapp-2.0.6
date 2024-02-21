@@ -6,7 +6,11 @@ import dashboard from '@images/business/brand-page/video-base-communities/dashbo
 export default function VideoBasedCommunities() {
   return (
     <section className={style.container}>
-      <HeadingComponent headingLevel={2} title={'Manage Your First Party Data'} colorVariant={'black'} />
+      <HeadingComponent headingLevel={2} title={'Collect and Manage New First Party Data'} colorVariant={'black'} />
+      <p className="text-new-para-1 my-4">
+        Gain insights and access your community participants directly, integrate with existing identity and data clean
+        rooms
+      </p>
       <div className="mt-12 flex justify-center">
         <img
           loading="lazy"

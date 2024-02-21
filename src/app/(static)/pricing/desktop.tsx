@@ -5,8 +5,8 @@ import PlanDetails from '@components/business/pricing-page/plan-details'
 import SubscriptionPlan from '@components/business/pricing-page/subscription-plan'
 import Support from '@components/business/pricing-page/support'
 import { NavBar } from '@components/pages/home/nav-bar'
-import Footer from '@components/business/footer'
 import AsSeenIn from '@components/business/as-seen-in'
+import { Footer } from '@components/pages/home/footer'
 
 export default function Desktop() {
   return (
@@ -16,7 +16,7 @@ export default function Desktop() {
         <NavBar />
       </div>
 
-      <div className={style.container}>
+      <div className="container">
         {/* Subscription Plan component */}
         <SubscriptionPlan />
         {/* Subscription table component */}

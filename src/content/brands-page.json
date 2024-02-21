@@ -14,8 +14,8 @@
     ]
   },
   "OnlineCommunity": {
-    "title": "Build a Thriving Online Community, Your Way",
-    "caption": "Engage your audience and nurture loyal brand advocates in your custom-built Genuin community.",
+    "title": "Ensure Brand Safety Through your own Policies and Platform Controls",
+    "caption": "Control what your community sees, keep it relevant to your brand, and easily policy prohibited content.",
     "button": "Contact Sales",
     "imgLeft": "/images/customer-engage/engagement-2.png",
     "imgLeftAlt": "alt",
@@ -33,26 +33,26 @@
   },
   "Testimonials": [
     {
-      "text": "“Genuin changed the game for us! By utalizing the community-building tools provided, we saw substantially bolstered engagement and amplified brand loyalty.”",
-      "name": "Esther Howard",
+      "text": "“Genuin changed the game for us! By utilizing the community-building tools, we saw a huge boost in engagement, which translated to amplified brand loyalty.”",
+      "name": "Sammy Lucas",
       "position": "Brand Manager",
       "img": "/images/business/brand-page/testimonials/testimonial-1.webp"
     },
     {
-      "text": "“We're thrilled with the seamless integration. We struggled with engaging our audience, and Genuin provides us with a simple, video-based solution that meets our customers where they're at.”",
+      "text": "“We're thrilled with the ability to present our communities under our own brand and collect a ton of first-party data quickly and inexpensively.”",
       "name": "Jenny Wilson",
       "position": "Marketing Lead",
       "img": "/images/business/brand-page/testimonials/testimonial-2.webp"
     },
     {
-      "text": "“Our audience is primarily Millennials and Gen Z, who respond best to video content. We couldn't find a video-based community solution out there—Genuin really solved a major issue for us!”",
+      "text": "“We have been struggling with the lack of brand safety on the major social networks. Genuin gives us the ability to implement our policies perfectly, making us extremely comfortable letting the community thrive and grow.”",
       "name": "Jacob Jones",
       "position": "Brand Manager",
       "img": "/images/business/brand-page/testimonials/testimonial-3.webp"
     }
   ],
   "GetInTouch": {
-    "title": "Drive loyal customers and fans in your branded communities.",
-    "caption": "Get in touch today to start building your unique brand community."
+    "title": "Grow a Thriving Brand Community and Build a Loyal Customer Base",
+    "caption": "Get in touch today to start building your brand community with Genuin."
   }
 }
