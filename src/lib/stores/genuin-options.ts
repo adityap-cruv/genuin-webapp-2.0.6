@@ -13,11 +13,25 @@ export type SizeBoxesType = {
   default: VideoSizeBoxType
 }
 
+type IntegrationSettingsType = {
+  sdk: {
+    web: {
+      enable: boolean
+      hide_navbar: boolean
+    }
+  }
+  white_label: {
+    enable: boolean
+    allowed_domains: string[]
+  }
+}
+
 export type ConfigType = {
   brand_id: string
   created_at: string
   id: string
   logo: string
+  integrations: IntegrationSettingsType
   name: string
   subdomain: string
 } | null
