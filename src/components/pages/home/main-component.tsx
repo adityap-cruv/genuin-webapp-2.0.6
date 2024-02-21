@@ -120,6 +120,9 @@ function Component1() {
                         backgroundColor:
                           index === currentIndex ? 'rgba(249, 254, 255, 0.60)' : 'rgba(255, 255, 255, 0.10)',
                       }}
+                      onClick={() => {
+                        handleThumbnailClick(index)
+                      }}
                       key={index}>
                       <img
                         loading="eager"
@@ -127,9 +130,6 @@ function Component1() {
                         alt={`Thumbnail ${index + 1}`}
                         decoding="async"
                         src={img.src}
-                        onClick={() => {
-                          handleThumbnailClick(index)
-                        }}
                       />
                     </div>
                   )
@@ -192,7 +192,7 @@ function Component2() {
         </div>
         {/* <img loading="lazy" fetchPriority="low" decoding="async" src={imgC2_2.src} /> */}
       </div>
-      <div className="flex flex-col items-center justify-center py-10 lg:hidden">
+      <div className="container flex flex-col items-center justify-center py-10 lg:hidden">
         <h2 className="w-full max-w-sm py-4 text-center text-new-h2-mobile sm:text-new-h2">
           Move Beyond
           <br /> Traditional Editorial <br /> Communities to Video-Based Communities
@@ -205,7 +205,7 @@ function Component2() {
           <br />
           Ones They Control
         </h2>
-        <img loading="lazy" fetchPriority="low" decoding="async" src={imgC2_2.src} className="w-10/12 mb-10" />
+        <img loading="lazy" fetchPriority="low" decoding="async" src={imgC2_2.src} className="mb-10 w-10/12" />
         <img loading="lazy" fetchPriority="low" decoding="async" src={imgC2_c2_mobile.src} className="w-10/12" />
       </div>
     </>
@@ -225,7 +225,7 @@ function Component3() {
           </h5>
         </div>
       </div>
-      <div className="my-10 flex flex-col items-center gap-y-8 px-5 lg:hidden">
+      <div className="container my-10 flex flex-col items-center gap-y-8 px-5 lg:hidden">
         <h2 className=" text-center text-new-h2-mobile sm:text-new-h2">
           Captivate Your Community the Way They Like to Communicate With Video Loops
         </h2>
@@ -233,7 +233,7 @@ function Component3() {
           The nexus for dynamic one-on-one connections and collaborative discussions. Engage with customers, partners,
           and employees through Q&A prompts, multimedia sharing and crowdsourced knowledge.
         </h5>
-        <img loading="lazy" fetchPriority="low" decoding="async" src={imgC3.src} className="translate-x-4 sm:w-1/2" />
+        <img loading="lazy" fetchPriority="low" decoding="async" src={imgC3.src} />
       </div>
     </>
   )

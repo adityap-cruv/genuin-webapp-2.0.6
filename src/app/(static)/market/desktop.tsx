@@ -1,11 +1,7 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import style from './marketing.module.scss'
-import Banner from '@components/business/banner'
-import bannerIMG from '@images/business/marketing-page/banner.webp'
-import Impressions from '@components/business/marketing-page/impressions'
 import Precision from '@components/business/marketing-page/precision'
-import SocialConnections from '@components/business/marketing-page/social-connections'
 import Communities from '@components/business/marketing-page/communities'
 import { NavBar } from '@components/pages/home/nav-bar'
 import cxr from '@images/business/marketing-page/communities/cxr.webp'
@@ -73,10 +69,8 @@ export const Desktop = () => {
         </div>
       </div>
 
-      <div className='container'>
-        {/* <Impressions /> */}
+      <div className="container">
         <Precision />
-        {/* <SocialConnections /> */}
         <Communities />
       </div>
       <AsSeenIn />

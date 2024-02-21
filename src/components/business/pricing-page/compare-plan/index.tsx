@@ -10,7 +10,8 @@ export default function ComparePlan() {
     <div className="my-28">
       <p className="mb-10 text-center text-new-h1-mobile">Compare All Plan Features</p>
       <div className="bg-white sticky top-0 z-10">
-        <div className="grid grid-cols-5 rounded-xl bg-[#ADDAFF] py-6">
+        <div className="grid grid-cols-6 rounded-xl bg-[#ADDAFF] py-6">
+          <div className="text-center"></div>
           <div className="text-center"></div>
           <div className="text-center text-title-2-bold">Free</div>
           <div className="text-center text-title-2-bold">
@@ -28,8 +29,9 @@ export default function ComparePlan() {
       <div className="mt-6 ">
         {content.table.tableData.map((row, index) => (
           <div key={index} className="my-4 rounded-lg border-b border-monochrome-9">
-            <div className="grid grid-cols-5 ">
+            <div className="grid grid-cols-6 ">
               <div className="flex rounded-tl-lg p-4 text-new-sm font-bold">{row.category}</div>
+              <div></div>
               <div className="flex justify-center rounded-tl-lg p-4">
                 {row.free ? (
                   <Image priority loading="eager" src={check} width={32} height={32} alt="Check" />

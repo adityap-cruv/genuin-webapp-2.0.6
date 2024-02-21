@@ -21,8 +21,8 @@ export default function Desktop() {
         <NavBar />
         <div className="container flex h-[100vh] items-center">
           <div className="flex flex-col justify-between">
-            <div className="flex items-center">
-              <div className="w-1/2">
+            <div className="flex items-center gap-8">
+              <div className="w-2/5">
                 <p className="my-4 text-new-h1" style={{ fontSize: '56px' }}>
                   Get First Party Data & Capabilities to Moderate your Communities
                 </p>
@@ -37,7 +37,7 @@ export default function Desktop() {
                   </Button>
                 </ContactUs>
               </div>
-              <div className=" h-full w-1/2 items-center justify-center">
+              <div className=" h-full w-3/5 items-center justify-center">
                 <img loading="lazy" fetchPriority="low" decoding="async" src={onlinecommunity.src} />
               </div>
             </div>
