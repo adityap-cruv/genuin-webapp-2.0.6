@@ -5,6 +5,7 @@ import { GenuinOptionsProvider } from './genuin-options-provider'
 import { type ConfigType } from '@lib/stores/genuin-options'
 import { getEmbedConfig } from '@lib/api/config'
 import { navigate } from './actions'
+import { checkAndAppendHttps } from '@lib/utils'
 
 type Props = {
   children: React.ReactNode
@@ -26,12 +27,15 @@ export function ConfigProvider({ children, ...props }: Props) {
       getEmbedConfig(configParams)
         .then((res) => {
           const urlObj = new URL(window.location.href)
-          if (
-            res &&
-            ['/', '/manage', '/market', '/pricing', '/privacy', '/terms', '/verify-email'].includes(urlObj.pathname)
-          ) {
-            void navigate()
-          }
+          if (res)
+            if (res?.integrations.white_label.enable && res.integrations.white_label.allowed_domains.length > 0) {
+              void navigate(checkAndAppendHttps(res.integrations.white_label.allowed_domains[0]))
+            } else if (
+              res &&
+              ['/', '/manage', '/market', '/pricing', '/privacy', '/terms', '/verify-email'].includes(urlObj.pathname)
+            ) {
+              void navigate('/home')
+            }
           setHandler((x) => {
             x.config = res
             x.isLoading = false
