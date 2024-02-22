@@ -1,12 +1,9 @@
 export function MainComponent() {
   return (
     <div className="h-full w-full text-[16px] [&>p]:py-2">
-      <p
-        className="flex w-full items-center justify-center pb-4 pt-12 text-center font-bold"
-        style={{ fontSize: 'min(5vw, 40px)' }}>
-        Genuin, Inc.
-        <br />
-        Privacy Policy
+      <p className="flex w-full items-center justify-center pb-4 pt-12 text-center text-new-h2 font-bold">
+        Genuin Inc. <br />
+        General Terms of Service
       </p>
       <p>
         <b>Last Updated:</b> May 5, 2023

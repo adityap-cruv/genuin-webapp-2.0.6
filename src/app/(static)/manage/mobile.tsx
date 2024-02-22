@@ -1,14 +1,12 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Footer } from '@components/pages/home/footer'
 import { NavBar } from '@components/pages/home/nav-bar'
 import { Button } from '@components/ui/button'
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@components/ui/accordion'
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious } from '@components/ui/carousel'
 import Image from 'next/image'
 import managebg from '@images/business/brand-page/manage-bg-mobile.webp'
 import onlinecommunity from '@images/business/brand-page/online-community-group.webp'
 import community1 from '@images/business/brand-page/online-community-1-mobile.webp'
-import community2 from '@images/business/brand-page/online-community-2-mobile.webp'
 import content from '../../../content/brands-page.json'
 import interaction1 from '@images/business/brand-page/customer-engage/interaction-1.webp'
 import interaction2 from '@images/business/brand-page/customer-engage/interaction-2.webp'
@@ -17,10 +15,6 @@ import Engagement1 from '@images/business/brand-page/customer-engage/engagement-
 import Engagement2 from '@images/business/brand-page/customer-engage/engagement-2.webp'
 import Automation1 from '@images/business/brand-page/customer-engage/automation-1.webp'
 import Automation2 from '@images/business/brand-page/customer-engage/automation-2.webp'
-import engagementHooks from '@images/business/brand-page/engagement-hooks.webp'
-import img1 from '@images/business/brand-page/funnel-engagement/img-1.webp'
-import img2 from '@images/business/brand-page/funnel-engagement/img-2.webp'
-import img3 from '@images/business/brand-page/funnel-engagement/img-3.webp'
 import dashboard from '@images/business/brand-page/video-base-communities/dashboard.webp'
 import getInTouch from '@images/business/brand-page/get-in-touch.webp'
 import businessInsider from '@images/business/marketing-page/as-seen-in/business-insider.png'
@@ -36,8 +30,6 @@ export default function Mobile() {
       <Component1 />
       <Component2 />
       <Component3 />
-      <Component4 />
-      <Component5 />
       <Component6 />
       <Component7 />
       <Component8 />
@@ -58,10 +50,9 @@ function Component1() {
         backdropFilter: 'blur(100px)',
       }}>
       <div className="container">
-        <p className="my-3 text-new-h2-mobile">Enhanced Safety & Moderation for your Video Communities</p>
+        <p className="my-3 text-new-h2-mobile">Get First Party Data & Capabilities to Moderate your Communities</p>
         <p className="my-3 text-new-para-2">
-          Nova is supporting the world's biggest brands, the next generation of community builders, and the knowledge
-          seekers in between.
+          Full Transparency, access, and control over your community’s activity with help from AI assistants
         </p>
         <ContactUs>
           <Button
@@ -82,9 +73,9 @@ function Component2() {
   return (
     <div className="mt-10 flex h-fit items-center">
       <div className="container">
-        <p className="my-2 text-new-h2-mobile">Brand Safety and Moderation Tools in your Own Community</p>
+        <p className="my-2 text-new-h2-mobile">Ensure Brand Safety Through your own Policies and Platform Controls</p>
         <p className="my-2 text-new-para-2">
-          Engage your audience and nurture loyal brand advocates in your custom-built Genuin community.
+          Control what your community sees, keep it relevant to your brand, and easily policy prohibited content.
         </p>
         <ContactUs>
           <Button size="custom" variant={'outline'} className="my-2 px-5 py-3 ">
@@ -101,13 +92,83 @@ function Component2() {
 }
 
 function Component3() {
+  const [scrollPercentage, setScrollPercentage] = useState(0)
+
+  const handleScrollChange = (event: any) => {
+    const container = event.target
+    const scrollPosition = (container.scrollLeft / (container.scrollWidth - container.clientWidth)) * 100
+    setScrollPercentage(scrollPosition)
+  }
+
+  useEffect(() => {
+    const container = document.querySelector('.hide-scrollbar')
+    container?.addEventListener('scroll', handleScrollChange)
+    return () => {
+      container?.removeEventListener('scroll', handleScrollChange)
+    }
+  }, [])
+
   return (
-    <div className="container  mt-14 h-fit">
-      <p className="my-2 text-new-h2-mobile">Thriving Online Community, Your Way</p>
+    <div className="container mt-14 h-fit">
+      <p className="my-2 text-new-h2-mobile">Activate Proven Engagement Hooks to Keep Your Community Active</p>
       <p className="my-2 text-new-para-2">
-        Allow your customers to engage with your brand in three easy steps. Use Genuin's unique tools to bring everyone
-        into the conversation.
+        All the user engagement hooks of popular video-based social network are now in your hands
       </p>
+      {/* DIV to show scroll bar progress */}
+      <div className="relative my-10 flex h-1 w-full items-center bg-[#E5E0F5]">
+        <div className="absolute h-1 bg-monochrome-black" style={{ width: `${scrollPercentage}%` }} />
+        <div className="absolute flex w-full grid-cols-7 items-center justify-between">
+          {scrollPercentage >= 0 && scrollPercentage < 12 ? (
+            <div className="rounded-2xl bg-monochrome-black px-4 py-2 text-new-para-2-mobile text-monochrome-white">
+              Feed
+            </div>
+          ) : (
+            <div></div>
+          )}
+          {scrollPercentage > 12 && scrollPercentage < 26 ? (
+            <div className="rounded-2xl bg-monochrome-black px-4 py-2 text-new-para-2-mobile text-monochrome-white">
+              Reactions
+            </div>
+          ) : (
+            <div></div>
+          )}
+          {scrollPercentage > 26 && scrollPercentage < 40 ? (
+            <div className="rounded-2xl bg-monochrome-black px-4 py-2 text-new-para-2-mobile text-monochrome-white">
+              Comments
+            </div>
+          ) : (
+            <div></div>
+          )}
+          {scrollPercentage > 40 && scrollPercentage < 60 ? (
+            <div className="rounded-2xl bg-monochrome-black px-4 py-2 text-new-para-2-mobile text-monochrome-white">
+              Link Share
+            </div>
+          ) : (
+            <div></div>
+          )}
+          {scrollPercentage > 60 && scrollPercentage < 80 ? (
+            <div className="rounded-2xl bg-monochrome-black px-4 py-2 text-new-para-2-mobile text-monochrome-white">
+              Challenge
+            </div>
+          ) : (
+            <div></div>
+          )}
+          {scrollPercentage > 80 && scrollPercentage < 94 ? (
+            <div className="rounded-2xl bg-monochrome-black px-4 py-2 text-new-para-2-mobile text-monochrome-white">
+              Rewards
+            </div>
+          ) : (
+            <div></div>
+          )}
+          {scrollPercentage > 94 && scrollPercentage <= 100 ? (
+            <div className="rounded-2xl bg-monochrome-black px-4 py-2 text-new-para-2-mobile text-monochrome-white">
+              Q&A
+            </div>
+          ) : (
+            <div></div>
+          )}
+        </div>
+      </div>
       <div className="hide-scrollbar mt-6 min-h-[400px] w-auto overflow-x-scroll whitespace-nowrap">
         <Image priority loading="eager" className="mr-14 inline-block h-96 w-auto" src={interaction1} alt="genuine" />
         <Image priority loading="eager" className="mr-14 inline-block h-96 w-auto" src={interaction2} alt="genuine" />
@@ -121,87 +182,20 @@ function Component3() {
   )
 }
 
-function Component4() {
-  return (
-    <div className="mt-10 flex h-fit items-center">
-      <div className="container">
-        <p className="my-2 text-new-h2-mobile">The Best Engagement Hooks on Your App</p>
-        <p className="my-2 text-new-para-2">
-          A new way of connecting with your audience — entertain, educate, and convert them into loyal brand advocates
-          through engaging content
-        </p>
-        <Button size="custom" variant={'outline'} className="my-2 px-5 py-3 ">
-          <p className="text-new-para-2">Learn more</p>
-        </Button>
-        <div className="my-2 flex flex-col items-center justify-center gap-4">
-          <img loading="lazy" fetchPriority="low" decoding="async" src={engagementHooks.src} />
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function Component5() {
-  return (
-    <div className="container flex h-fit flex-col items-center pt-16">
-      <div>
-        <p className="my-2 text-new-h2-mobile ">Your Full Funnel Engagement & Optimization</p>
-      </div>
-      <div className="my-2 flex w-full justify-center">
-        <Accordion type="single" defaultValue="connect" collapsible className="px-3 sm:w-4/5">
-          <AccordionItem value="connect" className="border-none ">
-            <AccordionTrigger className="items-baseline">
-              <div className="flex flex-col items-start">
-                <h3 className="mb-2 text-start text-new-h4">Holistic Engagement Approach</h3>
-                <p className="text-start text-new-para-1-mobile">
-                  Unlock the power of seamless full-funnel engagement, from awareness to conversion, maximizing every
-                  interaction for unparalleled results.
-                </p>
-              </div>
-            </AccordionTrigger>
-            <AccordionContent className="[&>div]:flex [&>div]:w-full [&>div]:justify-center">
-              <Image priority loading="eager" className="sm:w-1/2" src={img1} alt="connect" />
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="discover" className="border-none ">
-            <AccordionTrigger className="items-baseline">
-              <div className="flex flex-col items-start">
-                <h3 className="mb-2 text-start text-new-h4">Optimized Engagement</h3>
-                <p className="text-start text-new-para-1-mobile">
-                  Drive success with precision. Our full-funnel engagement turns community members into loyal customers
-                  at every touchpoint.
-                </p>
-              </div>
-            </AccordionTrigger>
-            <AccordionContent className="[&>div]:flex [&>div]:w-full [&>div]:justify-center">
-              <Image unoptimized priority loading="eager" className="sm:w-1/2" src={img2} alt="discover" />
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="learn" className="border-none ">
-            <AccordionTrigger className="items-baseline">
-              <div className="flex flex-col items-start">
-                <h3 className="mb-2 text-start text-new-h4">Data-Driven Brand Powerhouse</h3>
-                <p className="text-start text-new-para-1-mobile">
-                  We provide you with the insights and data you need to optimize and elevate your brand's performance,
-                  seamlessly creating a superior experience for community members.
-                </p>
-              </div>
-            </AccordionTrigger>
-            <AccordionContent className="[&>div]:flex [&>div]:w-full [&>div]:justify-center">
-              <Image priority unoptimized loading="eager" className="sm:w-1/2" src={img3} alt="learn" />
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-      </div>
-    </div>
-  )
-}
-
 function Component6() {
   return (
     <div className="mt-16 flex h-fit items-center">
       <div className="container">
-        <p className="my-2 text-center text-new-h2-mobile">Manage Your First Party Data</p>
+        <p className="my-2 text-new-h2-mobile">Collect and Manage New First Party Data</p>
+        <p className="my-4 text-new-para-2">
+          Gain insights and access your community participants directly, integrate with existing identity and data clean
+          rooms
+        </p>
+        <ContactUs>
+          <Button size="custom" variant={'outline'} className="px-5 py-3 ">
+            <p className="text-new-para-2">Learn more</p>
+          </Button>
+        </ContactUs>
         <div className="my-6 flex flex-col items-center justify-center gap-4">
           <img loading="lazy" fetchPriority="low" decoding="async" src={dashboard.src} />
         </div>

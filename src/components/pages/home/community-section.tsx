@@ -54,7 +54,7 @@ export function CommunitySection() {
     <div className="flex w-full flex-col gap-y-10">
       <div
         ref={divRef}
-        className="hide-scrollbar scroll-snap-always flex snap-x gap-6 overflow-x-auto px-4 sm:px-0 sm:pl-5 ">
+        className="hide-scrollbar scroll-snap-always flex snap-x gap-6 overflow-x-auto px-4 sm:px-0 sm:pl-5 lg:h-[25vh] ">
         <div ref={firstDivRef} className="w-0.5">
           &nbsp;
         </div>

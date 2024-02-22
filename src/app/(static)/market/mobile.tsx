@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { NavBar } from '@components/pages/home/nav-bar'
 import cxr from '@images/business/marketing-page/communities/cxr.webp'
 import social_share from '@images/business/marketing-page/communities/social_share.webp'
@@ -7,23 +7,20 @@ import mail from '@images/business/marketing-page/communities/mail.webp'
 import sms from '@images/business/marketing-page/communities/sms.webp'
 import whatsapp from '@images/business/marketing-page/communities/whatsapp.webp'
 import Link from 'next/link'
-import SMSTab from '@images/business/marketing-page/sms-engagement-mobile.webp'
-import EmailBoxTab from '@images/business/marketing-page/email-engagement-mobile.webp'
-import precision from '@images/business/marketing-page/precision.webp'
-import customqr from '@images/business/marketing-page/customqr.webp'
-import socialConnections1 from '@images/business/marketing-page/connections/socialConnections1.webp'
-import socialConnections2 from '@images/business/marketing-page/connections/socialConnections2.webp'
-import socialConnections3 from '@images/business/marketing-page/connections/social-connections.webp'
-import communities from '@images/business/marketing-page/communities-mobile.webp'
 import businessInsider from '@images/business/marketing-page/as-seen-in/business-insider.png'
 import yahoo from '@images/business/marketing-page/as-seen-in/yahoo.png'
 import marketbg from '@images/business/marketing-page/market-bg-mobile.png'
-import communities1 from '@images/business/marketing-page/communities-1.webp'
 import { Button } from '@components/ui/button'
 import { Footer } from '@components/pages/home/footer'
-import { useMotionValueEvent, useScroll } from 'framer-motion'
-import Image from 'next/image'
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@components/ui/accordion'
+import m1 from '@images/business/marketing-page/m_01.webp'
+import m2 from '@images/business/marketing-page/m_02.webp'
+import m3 from '@images/business/marketing-page/m_03.webp'
+import m4 from '@images/business/marketing-page/m_04_1.webp'
+import m5 from '@images/business/marketing-page/m_05.webp'
+import m6 from '@images/business/marketing-page/m_06.webp'
+import ms1 from '@images/business/marketing-page/m_s1_mobile.webp'
+import ms2 from '@images/business/marketing-page/m_s2_mobile.webp'
+import ms3 from '@images/business/marketing-page/m_s3_mobile.webp'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { ContactUs } from '@components/common/modals/contact-us'
 
@@ -35,8 +32,6 @@ export const Mobile = () => {
       <Component2 />
       <Component3 />
       <Component4 />
-      <Component5 />
-      <Component6 />
       <Footer />
     </>
   )
@@ -71,14 +66,13 @@ function Component1() {
         backdropFilter: 'blur(100px)',
       }}>
       <div className="container">
-        <p className="my-3 w-3/4 text-new-h3">Unleash the Power of Your Community</p>
+        <p className="my-3 text-new-h3">Unleash New Unprecedented Ways to Grow Your Community</p>
         <p
           className="my-3 text-new-para-1"
           style={{
             fontSize: '18px',
           }}>
-          Transform your marketing strategies with our dynamic solutions – from SMS and Email to Programmatic and
-          Social, all centered around short video-based knowledge sharing within thriving communities.
+          Rich feature set for marketing communities is driven by Open Web approach.
         </p>
         <ContactUs>
           <Button
@@ -88,13 +82,7 @@ function Component1() {
           </Button>
         </ContactUs>
         <div className="my-4 flex min-h-[300px] items-center justify-center">
-          <img
-            loading="lazy"
-            fetchPriority="low"
-            decoding="async"
-            className="h-80"
-            src={brandImages[currentIndex].banner.src}
-          />
+          <img loading="lazy" fetchPriority="low" decoding="async" className="h-80" src={whatsapp.src} />
         </div>
       </div>
     </div>
@@ -102,268 +90,128 @@ function Component1() {
 }
 
 function Component2() {
-  const imgRef = useRef<HTMLDivElement>(null)
-  const currentIndexRef = useRef(0)
-  const { scrollYProgress } = useScroll()
-
-  useMotionValueEvent(scrollYProgress, 'change', (latest) => {
-    const value = Number(latest.toPrecision(2))
-    if (value >= 0.32 && value <= 0.58) {
-      const calcValue = Math.floor((value - 0.32) * 10)
-      if (currentIndexRef.current !== calcValue) {
-        toggleIndex(currentIndexRef.current, calcValue)
-        currentIndexRef.current = calcValue
-      }
-    }
-  })
-
-  function toggleIndex(oldIndex: number, newIndex: number) {
-    const images = imgRef.current?.children
-    // Edge case prevention
-    if (oldIndex === 3 || newIndex === 3) return
-    images?.item(oldIndex)?.classList.toggle('opacity-0')
-    images?.item(newIndex)?.classList.toggle('opacity-0')
-  }
-
+  const marketdata = [
+    {
+      title: 'Distribute Your Community Widely on the Open Web with Adreels',
+      subtitle: 'Publish your community through video ad networks (using Genuin AdReels video feed syndication.',
+      button: true,
+      image: m1,
+    },
+    {
+      title: 'Integrate Seamlessly with Email & SMS Marketing Programs',
+      subtitle: 'Attract new members efficiently via through email and SMS system integrations.',
+      button: false,
+      image: m2,
+    },
+    {
+      title: 'Gain New Community Marketing Assets Automatically',
+      subtitle: 'Platform automatically creates dynamic ads, link posts and social content based on community content.',
+      button: false,
+      image: m3,
+    },
+    {
+      title: 'Incorporate Community Building at Physical Events',
+      subtitle: 'QR Codes link directly to communities',
+      button: false,
+      image: m4,
+    },
+    {
+      title: 'Make your Community Visible in Web Search',
+      subtitle: 'SEO activity',
+      button: false,
+      image: m5,
+    },
+    {
+      title: 'Promote Your Community In Native Formats',
+      subtitle:
+        'Embed automatically created community advertising assets in a wide range of industry standard supported formats',
+      button: false,
+      image: m6,
+    },
+  ]
   return (
-    <>
-      <div className="container relative mt-10 h-[300%]">
-        <div id="carousel" className="sticky top-0 h-fit">
-          <div className="h-full w-full">
-            <div className="h-fit">
-              <p className="my-2 text-new-h2-mobile">Instant Impact, Lasting Impressions</p>
-              <p className="my-2 text-new-para-2">
-                Create custom email and SMS campaigns and connect with customers on the go with integrated marketing
-                tools.
-              </p>
-            </div>
-            <div className="mt-4 flex w-full items-center justify-center">
-              <div
-                ref={imgRef}
-                className="relative  [&>div]:inset-0 [&>div]:transition-opacity [&>div]:duration-200 [&>div]:ease-in">
-                <div className="inset-0 flex flex-col justify-center">
-                  <img
-                    loading="lazy"
-                    fetchPriority="low"
-                    decoding="async"
-                    className="h-[480px] w-auto"
-                    src={SMSTab.src}
-                  />
-                  <div className="flex w-full justify-between">
-                    <hr className="w-2/5 border-b-2" />
-                    <hr className="w-2/5 border-b-2 border-new-light-grey" />
-                  </div>
-                  <div>
-                    <p className="my-4 text-new-h4-mobile">SMS Engagement</p>
-                    <p className="my-4 text-new-para-2">
-                      Elevate your marketing game with Genuin's SMS engagement. Deliver concise, powerful messages
-                      through short videos that capture attention instantly and resonate with your audience.
-                    </p>
-                    {/* <Button variant={'outline'} size="custom" className="my-1 px-4 py-2">
-                      <p className="text-new-para-2">Experience SMS Revolution</p>
-                    </Button> */}
-                  </div>
-                </div>
-                <div className="absolute flex flex-col justify-center opacity-0">
-                  <img
-                    loading="lazy"
-                    fetchPriority="low"
-                    decoding="async"
-                    className="h-[480px] w-auto"
-                    src={EmailBoxTab.src}
-                  />
-                  <div className="flex w-full justify-between">
-                    <hr className="w-2/5 border-b-2 border-new-light-grey" />
-                    <hr className="w-2/5 border-b-2" />
-                  </div>
-                  <div>
-                    <p className="my-4 text-new-h4-mobile">Email Engagement</p>
-                    <p className="my-4 text-new-para-2">
-                      Say goodbye to traditional emails your brand’s email engagement lets you connect on a deeper level
-                      through compelling short videos, making every interaction memorable and meaningful.{' '}
-                    </p>
-                    {/* <Button variant={'outline'} size="custom" className="my-1 px-4 py-2">
-                      <p className="text-new-para-2">Experience SMS Revolution</p>
-                    </Button> */}
-                  </div>
-                </div>
-                <div className="absolute flex flex-col justify-center opacity-0">
-                  <img
-                    loading="lazy"
-                    fetchPriority="low"
-                    decoding="async"
-                    className="h-[480px] w-auto"
-                    src={EmailBoxTab.src}
-                  />
-                  <div className="flex w-full justify-between">
-                    <hr className="w-2/5 border-b-2 border-new-light-grey" />
-                    <hr className="w-2/5 border-b-2" />
-                  </div>
-                  <div>
-                    <p className="my-4 text-new-h4-mobile">Email Engagement</p>
-                    <p className="my-4 text-new-para-2">
-                      Say goodbye to traditional emails your brand’s email engagement lets you connect on a deeper level
-                      through compelling short videos, making every interaction memorable and meaningful.{' '}
-                    </p>
-                    {/* <Button variant={'outline'} size="custom" className="my-1 px-4 py-2">
-                      <p className="text-new-para-2">Experience SMS Revolution</p>
-                    </Button> */}
-                  </div>
-                </div>{' '}
-                {/* <div className="h-100 w-100 absolute bg-new-off-black opacity-0"></div> */}
-              </div>
+    <div>
+      {marketdata.map((item, index) => (
+        <div key={index}>
+          <div className="container mb-20">
+            <p className="text-new-h2-mobile">{item.title}</p>
+            <p className="my-4 text-new-sm">{item.subtitle}</p>
+            {item.button && (
+              <Link href={{ pathname: PATH_NAME.adreels() }}>
+                <Button variant={'outline'} size="custom" className="px-4 py-2">
+                  <p className="text-new-para-2">Explore Programmatic Power</p>
+                </Button>
+              </Link>
+            )}
+            <div className="flex justify-center">
+              <img src={item.image.src} className="mt-2" alt="genuin" />
             </div>
           </div>
         </div>
-      </div>
-    </>
+      ))}
+    </div>
   )
 }
 
-// function Component2() {
-//   return (
-//     <>
-//       <div className="container">
-//         <p className="my-2 text-new-h2-mobile">Instant Impact, Lasting Impressions</p>
-//         <p className="my-2 text-new-para-2">
-//           Create custom email and SMS campaigns and connect with customers on the go with integrated marketing tools.
-//         </p>
-//         <div className="flex flex-col justify-center">
-//           <img loading="lazy" fetchPriority="low" decoding="async" className="h-[50vh] w-auto" src={SMSTab.src} />
-//           <div className="flex w-full justify-between">
-//             <hr className="w-2/5 border-b-2" />
-//             <hr className="w-2/5 border-b-2 border-new-light-grey" />
-//           </div>
-//           <div>
-//             <p className="my-4 text-new-h4-mobile">SMS Engagement</p>
-//             <p className="my-4 text-new-para-2">
-//               Elevate your marketing game with Genuin's SMS engagement. Deliver concise, powerful messages through short
-//               videos that capture attention instantly and resonate with your audience.
-//             </p>
-//             <Button variant={'outline'} size="custom" className="my-1 px-4 py-2">
-//               <p className="text-new-para-2">Experience SMS Revolution</p>
-//             </Button>
-//           </div>
-//         </div>
-//       </div>
-//     </>
-//   )
-// }
-
 function Component3() {
+  const [isSelected, setIsSelected] = useState<string | null>('community')
+
   return (
-    <div className="container h-fit pt-10">
-      <p className="my-4 text-new-h2-mobile">Precision in Every Pixel, Impact in Every Frame</p>
-      <p className="my-4 text-new-para-2">
-        With Genuin's Programmatic Engagement, take control of your marketing strategy. Deliver targeted short videos
-        seamlessly, ensuring your message reaches the right audience at the right time.
+    <div className="container">
+      <p className="text-center text-new-h2-mobile">
+        Multiple Entry Points for Customers to Engage in your Communities
       </p>
-      <Link href={{ pathname: PATH_NAME.adreels() }}>
-        <Button variant={'outline'} size="custom" className="my-1 px-4 py-2">
-          <p className="text-new-para-2">Explore Programmatic Power</p>
-        </Button>
-      </Link>
+      <p className="my-4 text-center text-new-sm">
+        Bring your community to life! Genuin allows you to embed highlights through short videos, capturing the essence
+        of your brand and fostering a sense of belonging among your audience.
+      </p>
+
       <div className="flex justify-center">
-        <img loading="lazy" fetchPriority="low" decoding="async" className="my-6 mb-10 w-11/12" src={precision.src} />
+        <div className="flex rounded-2xl bg-[#ECEAF2] p-2">
+          <div
+            className={`${
+              isSelected === 'community' && 'bg-primary text-new-off-white'
+            } rounded-lg px-4 py-2 text-new-para-2-mobile`}
+            onClick={() => {
+              setIsSelected('community')
+            }}>
+            Community
+          </div>
+          <div
+            className={`${
+              isSelected === 'loop' && 'bg-primary text-new-off-white'
+            } rounded-lg px-4 py-2 text-new-para-2-mobile`}
+            onClick={() => {
+              setIsSelected('loop')
+            }}>
+            Loops
+          </div>
+          <div
+            className={`${
+              isSelected === 'post' && 'bg-primary text-new-off-white'
+            } rounded-lg px-4 py-2 text-new-para-2-mobile`}
+            onClick={() => {
+              setIsSelected('post')
+            }}>
+            Posts
+          </div>
+        </div>
       </div>
 
-      <p className="my-4 text-new-h2-mobile">
-        Custom QR code generation to grow your community on digital and physical media
-      </p>
-      <div className="flex justify-center">
-        <img loading="lazy" fetchPriority="low" decoding="async" className="my-6 mb-10 w-11/12" src={customqr.src} />
+      <div className="my-12 flex justify-center">
+        <img
+          loading="lazy"
+          fetchPriority="low"
+          decoding="async"
+          src={isSelected === 'community' ? ms1.src : isSelected === 'loop' ? ms2.src : ms3.src}
+          alt="genuin"
+        />
       </div>
     </div>
   )
 }
 
 function Component4() {
-  return (
-    <div className="container flex h-fit flex-col items-center pt-10">
-      <div className="flex h-fit flex-col items-center justify-center">
-        <p className="my-2 w-3/4 text-center text-new-h2-mobile">Fuel Social Connections with Video Brilliance</p>
-        <p className="my-2 text-center text-new-para-2">
-          Transform your social media presence with Genuin. Craft engaging short videos that resonate with your
-          community, driving conversations, and fostering genuine connections.
-        </p>
-      </div>
-      <div className="flex w-full justify-center">
-        <Accordion type="single" defaultValue="connect" collapsible className="px-3 sm:w-4/5">
-          <AccordionItem value="connect" className="border-none ">
-            <AccordionTrigger className="items-baseline">
-              <div className="flex flex-col items-start">
-                <h3 className="mb-2 text-new-h4">Content Marketing</h3>
-                <p className="text-start text-new-para-1-mobile">
-                  Transform your social media presence with Genuin. Craft engaging short videos that resonate with your
-                  community, driving conversations, and fostering genuine connections.
-                </p>
-              </div>
-            </AccordionTrigger>
-            <AccordionContent className="[&>div]:flex [&>div]:w-full [&>div]:justify-center">
-              <Image priority loading="eager" className="sm:w-1/2" src={socialConnections1} alt="connect" />
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="discover" className="border-none ">
-            <AccordionTrigger className="items-baseline">
-              <div className="flex flex-col items-start">
-                <h3 className="mb-2 text-new-h4">SEO Tools</h3>
-                <p className="text-start text-new-para-1-mobile">
-                  Help people find your community with SEO tools to edit title tags, meta descriptions, and content
-                  details.
-                </p>
-              </div>
-            </AccordionTrigger>
-            <AccordionContent className="[&>div]:flex [&>div]:w-full [&>div]:justify-center">
-              <Image
-                unoptimized
-                priority
-                loading="eager"
-                className="sm:w-1/2"
-                src={socialConnections2}
-                alt="discover"
-              />
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="learn" className="border-none ">
-            <AccordionTrigger className="items-baseline">
-              <div className="flex flex-col items-start">
-                <h3 className="mb-2 text-new-h4">Social Media Ads</h3>
-                <p className="text-start text-new-para-1-mobile">
-                  Transform your social media presence with Genuin. Craft engaging short videos that resonate with your
-                  community, driving conversations, and fostering genuine connections.
-                </p>
-              </div>
-            </AccordionTrigger>
-            <AccordionContent className="[&>div]:flex [&>div]:w-full [&>div]:justify-center">
-              <Image priority unoptimized loading="eager" className="sm:w-1/2" src={socialConnections3} alt="learn" />
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-      </div>
-    </div>
-  )
-}
-
-function Component5() {
-  return (
-    <div className="container flex h-fit flex-col items-center pt-10">
-      <p className="my-4 text-center text-new-h2-mobile">Showcase Your Embed Community, Tell Your Story</p>
-      <p className="my-4 text-center text-new-para-2">
-        Bring your community to life! Genuin allows you to embed highlights through short videos, capturing the essence
-        of your brand and fostering a sense of belonging among your audience.
-      </p>
-
-      {/* <Button variant={'outline'} size="custom" className="my-1 px-4 py-2">
-        <p className="text-new-para-2">Highlight Your Community</p>
-      </Button> */}
-      <div className="my-4 flex justify-center rounded-xl bg-[#ADDAFF]">
-        <img loading="lazy" fetchPriority="low" decoding="async" className="my-6 w-11/12" src={communities1.src} />
-      </div>
-    </div>
-  )
-}
-
-function Component6() {
   return (
     <div className="mt-10 flex h-40 flex-col items-center justify-center gap-4 bg-monochrome-9 ">
       <p className="text-new-h3">As Seen In</p>
