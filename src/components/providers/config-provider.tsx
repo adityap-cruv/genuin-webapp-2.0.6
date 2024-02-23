@@ -35,7 +35,7 @@ export function ConfigProvider({ children, ...props }: Props) {
               ['/', '/manage', '/market', '/pricing', '/privacy', '/terms', '/verify-email'].includes(urlObj.pathname)
             ) {
               console.log('redirecting::', res)
-              void navigate('/home')
+              // void navigate('/home')
             }
           setHandler((x) => {
             x.config = res
