@@ -4,7 +4,6 @@ import { DesktopDetails } from './desktop-details'
 import { useFeedListStore } from './store'
 import { useEffect } from 'react'
 import { cn } from '@lib/utils'
-import { FeedShimmer } from '../shimmers/feed-shimmer'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Mousewheel, Keyboard } from 'swiper/modules'
 import { type VideoSizeBoxType, useGenuinOptions } from '@lib/stores/genuin-options'
@@ -13,7 +12,7 @@ const DesktopPlayer = dynamic(async () => await import('@components/common/playe
 
 type DesktopProps = {
   // queryFuncResult: UseInfiniteQueryResult
-  videos: VideoDataType[]
+  videos?: VideoDataType[]
   isLoading: boolean
   isError: boolean
   hasNextPage?: boolean
@@ -43,10 +42,10 @@ export function Desktop({ fetchNextPage, isFetchingNextPage, videos, className }
   }, [])
 
   useEffect(() => {
-    setNewVideos(videos)
+    setNewVideos(videos ?? [])
   }, [videos])
 
-  if (videoList)
+  if (videoList.length > 0)
     return (
       <div className={cn('flex h-full w-full', className)}>
         <Swiper
@@ -71,6 +70,7 @@ export function Desktop({ fetchNextPage, isFetchingNextPage, videos, className }
                     sizeBox={sizeBox}
                     videoData={item}
                     loop
+                    key={index}
                   />
                 )}
               </SwiperSlide>
@@ -80,8 +80,6 @@ export function Desktop({ fetchNextPage, isFetchingNextPage, videos, className }
         {videoList[currentIndex]?.video && <DesktopDetails videoDetails={videoList[currentIndex]} />}
       </div>
     )
-
-  return <FeedShimmer.desktop />
 }
 
 type SinglePlayerProps = {
