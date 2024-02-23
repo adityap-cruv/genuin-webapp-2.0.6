@@ -104,7 +104,7 @@ function Mobile({ videoData }: Props) {
             />
           </div>
         </div>
-        <div className="absolute bottom-16 left-0 z-[5] w-full ">
+        <div className="absolute bottom-16 left-0 w-full ">
           <Loop videoData={videoData} />
         </div>
         <PlayerProgressBar />
