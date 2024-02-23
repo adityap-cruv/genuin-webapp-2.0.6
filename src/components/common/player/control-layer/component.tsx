@@ -104,7 +104,7 @@ function Mobile({ videoData }: Props) {
             />
           </div>
         </div>
-        <div className="absolute bottom-16 left-0 z-[5] w-full ">
+        <div className="absolute bottom-16 left-0 w-full ">
           <Loop videoData={videoData} />
         </div>
         <PlayerProgressBar />
@@ -118,7 +118,7 @@ function Loop({ videoData }: { videoData?: VideoDataType }) {
     return (
       <div className="flex justify-between px-2">
         <div className="flex w-4/5 flex-col justify-end">
-          <div className="flex items-center">
+          <div className="z-10 flex items-center">
             <Link
               className="flex cursor-pointer items-center hover:opacity-60"
               href={{ pathname: PATH_NAME.profile(videoData.owner.nickname) }}>
@@ -139,12 +139,14 @@ function Loop({ videoData }: { videoData?: VideoDataType }) {
           </span>
         </div>
         {/* TODO: configure share title and description correctly */}
-        <Actions.mobile
-          link={videoData?.video?.link ?? ''}
-          shareTitle={videoData?.video?.description ?? ''}
-          shareDescription={videoData?.video?.description ?? ''}
-          videoData={videoData}
-        />
+        <div className="z-10">
+          <Actions.mobile
+            link={videoData?.video?.link ?? ''}
+            shareTitle={videoData?.video?.description ?? ''}
+            shareDescription={videoData?.video?.description ?? ''}
+            videoData={videoData}
+          />
+        </div>
       </div>
     )
 }
