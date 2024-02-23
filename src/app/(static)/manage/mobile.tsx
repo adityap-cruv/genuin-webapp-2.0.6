@@ -119,7 +119,7 @@ function Component3() {
       {/* DIV to show scroll bar progress */}
       <div className="relative my-10 flex h-1 w-full items-center bg-[#E5E0F5]">
         <div className="absolute h-1 bg-monochrome-black" style={{ width: `${scrollPercentage}%` }} />
-        <div className="absolute flex w-full grid-cols-7 items-center justify-between">
+        <div className="absolute z-10 flex w-full grid-cols-7 items-center justify-between">
           {scrollPercentage >= 0 && scrollPercentage < 12 ? (
             <div className="rounded-2xl bg-monochrome-black px-4 py-2 text-new-para-2-mobile text-monochrome-white">
               Feed
@@ -169,6 +169,22 @@ function Component3() {
           ) : (
             <div></div>
           )}
+        </div>
+        <div className="absolute flex w-full grid-cols-7 items-center justify-between">
+          <div
+            className={`h-2 w-2 rounded-full ${scrollPercentage > 12 ? 'bg-monochrome-black' : 'bg-[#E5E0F5]'}`}></div>
+          <div
+            className={`h-2 w-2 rounded-full ${scrollPercentage > 25 ? 'bg-monochrome-black' : 'bg-[#E5E0F5]'}`}></div>
+          <div
+            className={`h-2 w-2 rounded-full ${scrollPercentage > 32 ? 'bg-monochrome-black' : 'bg-[#E5E0F5]'}`}></div>
+          <div
+            className={`h-2 w-2 rounded-full ${scrollPercentage > 45 ? 'bg-monochrome-black' : 'bg-[#E5E0F5]'}`}></div>
+          <div
+            className={`h-2 w-2 rounded-full ${scrollPercentage > 62 ? 'bg-monochrome-black' : 'bg-[#E5E0F5]'}`}></div>
+          <div
+            className={`h-2 w-2 rounded-full ${scrollPercentage > 80 ? 'bg-monochrome-black' : 'bg-[#E5E0F5]'}`}></div>
+          <div
+            className={`h-2 w-2 rounded-full ${scrollPercentage > 94 ? 'bg-monochrome-black' : 'bg-[#E5E0F5]'}`}></div>
         </div>
       </div>
       <div className="hide-scrollbar mt-6 min-h-[400px] w-auto overflow-x-scroll whitespace-nowrap">
