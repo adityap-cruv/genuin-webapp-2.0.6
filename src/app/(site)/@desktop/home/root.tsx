@@ -4,6 +4,7 @@ import { getFeed } from '@lib/api/feed'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import dynamic from 'next/dynamic'
+import Head from 'next/head'
 const Feed = dynamic(async () => await import('@components/common/feed').then((comp) => comp.Feed.desktop), {
   loading(_) {
     return <FeedShimmer.desktop />
@@ -20,8 +21,12 @@ export function Root() {
   })
   const videos = data?.pages.flatMap((item) => item.reels)
 
-  if (videos)
-    return (
+  // TODO: Remove if this code if this does not have any output in client.
+  return (
+    <>
+      <Head>
+        <meta key="x-brand-id" content="21423" />
+      </Head>
       <main className="h-full w-full">
         <Feed
           isError={isError}
@@ -31,6 +36,7 @@ export function Root() {
           videos={videos}
         />
       </main>
-    )
-  return <FeedShimmer.desktop />
+    </>
+  )
+  // return <FeedShimmer.desktop />
 }
