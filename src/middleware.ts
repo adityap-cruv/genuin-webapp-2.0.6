@@ -9,6 +9,7 @@ export function middleware(request: NextRequest) {
   console.log('::header::', request.headers.get('host'))
   console.log('::forwarded headers::', request.headers.get('x-forwarded-host'))
   console.log('::string headers::', JSON.stringify(request.headers))
+  console.log('::request object::', JSON.stringify(request))
   const deviceType = parsedUA.device.type
   if (deviceType) request.cookies.set('device_type', deviceType)
 
