@@ -4,8 +4,11 @@ import { NextResponse, userAgent } from 'next/server'
 
 export function middleware(request: NextRequest) {
   const parsedUA = userAgent(request)
-  console.log('::Referrer::', request.referrer)
-  console.log('::Referrer Policy::', request.referrerPolicy)
+  // console.log('::Referrer::', request.referrer)
+  // console.log('::Referrer Policy::', request.referrerPolicy)
+  console.log('::header::', request.headers.get('host'))
+  console.log('::forwarded headers::', request.headers.get('x-forwarded-host'))
+  console.log('::string headers::', JSON.stringify(request.headers))
   const deviceType = parsedUA.device.type
   if (deviceType) request.cookies.set('device_type', deviceType)
 
