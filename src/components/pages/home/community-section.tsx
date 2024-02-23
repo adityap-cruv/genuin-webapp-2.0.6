@@ -18,28 +18,24 @@ import c5 from '@images/home-page/community/communityshare 5.webp'
 export function CommunitySection() {
   const communityList = [
     {
-      profile_image: 'https://media.begenuin.com/webapp_assets/community/travel_hacks.png',
-      name: 'Travel Hacks & Tips 👀✈️',
-      description: "The best travel tips & tricks you've learned & tried… 👋🏼",
-      link: 'https://begenuin.com/community/travel-hacks-tips',
+      image: c1,
+      link: 'https://begenuin.com/community/meaningful-love-gifts',
     },
     {
-      profile_image: 'https://media.begenuin.com/webapp_assets/community/tech_founders.png',
-      name: 'Tech Founders 📈',
-      description: 'A space for tech founders to come together & discuss founder life 🎢',
-      link: 'https://begenuin.com/community/tech-founders',
+      image: c2,
+      link: 'https://begenuin.com/community/flawless-makeup-secrets',
     },
     {
-      profile_image: 'https://media.begenuin.com/webapp_assets/community/diy_lovers.png',
-      name: 'DIY Lovers 🔨',
-      description: 'For people who want to share DIY hacks, tips & tricks ⚒️🎨👷‍♀️',
-      link: 'https://begenuin.com/community/diy-lovers',
+      image: c3,
+      link: 'https://begenuin.com/community/knowledge-sharing-talks',
     },
     {
-      profile_image: 'https://media.begenuin.com/webapp_assets/community/flower_arranging.png',
-      name: 'Flower Arranging 🌻',
-      description: 'A community for people who love flower arranging — and those who want to learn 🌸🌻',
-      link: 'https://begenuin.com/community/flower-arranging',
+      image: c4,
+      link: 'https://begenuin.com/community/home-improvement-community',
+    },
+    {
+      image: c5,
+      link: 'https://begenuin.com/community/vibrant-creative-community',
     },
   ]
   const divRef = useRef<HTMLDivElement>(null)
@@ -52,17 +48,22 @@ export function CommunitySection() {
 
   return (
     <div className="flex w-full flex-col gap-y-10">
-      <div
-        ref={divRef}
-        className="hide-scrollbar scroll-snap-always flex snap-x gap-6 overflow-x-auto px-4 sm:px-0 sm:pl-5 lg:h-[25vh] ">
+      <div ref={divRef} className="hide-scrollbar scroll-snap-always flex snap-x overflow-x-auto px-4 sm:px-0 sm:pl-5 ">
         <div ref={firstDivRef} className="w-0.5">
           &nbsp;
         </div>
-        <img src={c1.src} />
-        <img src={c2.src} />
-        <img src={c3.src} />
-        <img src={c4.src} />
-        <img src={c5.src} />
+        {communityList.map((item, index) => {
+          return (
+            <React.Fragment key={index}>
+              <div
+                className={`m-4 box-border flex min-w-full snap-center flex-col gap-y-1 rounded-3xl shadow-md hover:cursor-pointer sm:min-w-max sm:max-w-md`}>
+                <Link href={item.link}>
+                  <img src={item.image.src} className="lg:h-[25vh]" alt="genuin" />
+                </Link>
+              </div>
+            </React.Fragment>
+          )
+        })}
         <div ref={lastDivRef} className="w-0.5">
           &nbsp;
         </div>

@@ -16,6 +16,28 @@ import c4 from '@images/home-page/loop/Loop-Link-Share 4.webp'
 import c5 from '@images/home-page/loop/Loop-Link-Share 5.webp'
 
 export function LoopSection() {
+  const loopList = [
+    {
+      image: c1,
+      link: 'https://begenuin.com/loop/customized-gifts-impact-loved-ones',
+    },
+    {
+      image: c2,
+      link: 'https://begenuin.com/loop/welcome-to-lms-beauty',
+    },
+    {
+      image: c3,
+      link: 'https://begenuin.com/loop/new-vision-perspective',
+    },
+    {
+      image: c4,
+      link: 'https://begenuin.com/loop/lowes-loyalty-rewards-tips',
+    },
+    {
+      image: c5,
+      link: 'https://begenuin.com/loop/latest-features-tools-creations',
+    },
+  ]
   const divRef = useRef<HTMLDivElement>(null)
   const firstDivRef = useRef<HTMLDivElement>(null)
   const lastDivRef = useRef<HTMLDivElement>(null)
@@ -26,17 +48,22 @@ export function LoopSection() {
 
   return (
     <div className="flex w-full flex-col gap-y-10">
-      <div
-        ref={divRef}
-        className="hide-scrollbar scroll-snap-always flex snap-x gap-4 overflow-x-auto px-4 sm:px-0 sm:pl-5 lg:h-[25vh] ">
+      <div ref={divRef} className="hide-scrollbar scroll-snap-always flex snap-x overflow-x-auto px-4 sm:px-0 sm:pl-5 ">
         <div ref={firstDivRef} className="w-0.5">
           &nbsp;
         </div>
-        <img src={c1.src} />
-        <img src={c2.src} />
-        <img src={c3.src} />
-        <img src={c4.src} />
-        <img src={c5.src} />
+        {loopList.map((item, index) => {
+          return (
+            <React.Fragment key={index}>
+              <div
+                className={`m-4 box-border flex min-w-full snap-center flex-col gap-y-1 rounded-3xl shadow-md hover:cursor-pointer sm:min-w-max sm:max-w-md`}>
+                <Link href={item.link}>
+                  <img src={item.image.src} className="lg:h-[25vh]" alt="genuin" />
+                </Link>
+              </div>
+            </React.Fragment>
+          )
+        })}
         <div ref={lastDivRef} className="w-0.5">
           &nbsp;
         </div>
