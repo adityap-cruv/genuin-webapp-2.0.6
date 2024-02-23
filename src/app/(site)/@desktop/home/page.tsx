@@ -1,5 +1,6 @@
 import { Root } from './root'
 import { type Metadata } from 'next'
+import { cookies } from 'next/headers'
 
 // type Props = {
 //   searchParams: {
@@ -8,7 +9,8 @@ import { type Metadata } from 'next'
 // }
 
 export default function Page() {
-  return <Root />
+  const host = cookies().get('host_name')?.value ?? ''
+  return <Root host={host} />
 }
 
 export function generateMetadata(): Metadata {

@@ -11,7 +11,7 @@ const Feed = dynamic(async () => await import('@components/common/feed').then((c
   },
 })
 
-export function Root() {
+export function Root({ host = 'not availabled' }: { host: string }) {
   const userId = useLocalStorage((state) => state.userId)
   const brandId = useGenuinOptions().brandId
   const { data, isError, fetchNextPage, isFetchingNextPage, isLoading } = getFeed({
@@ -21,6 +21,7 @@ export function Root() {
   })
   const videos = data?.pages.flatMap((item) => item.reels)
 
+  console.log('host:', host)
   // TODO: Remove if this code if this does not have any output in client.
   return (
     <>
