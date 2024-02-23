@@ -1,17 +1,9 @@
 'use client'
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import style from './marketing.module.scss'
-import Banner from '@components/business/banner'
-import bannerIMG from '@images/business/marketing-page/banner.webp'
-import Impressions from '@components/business/marketing-page/impressions'
 import Precision from '@components/business/marketing-page/precision'
-import SocialConnections from '@components/business/marketing-page/social-connections'
 import Communities from '@components/business/marketing-page/communities'
 import { NavBar } from '@components/pages/home/nav-bar'
-import cxr from '@images/business/marketing-page/communities/cxr.webp'
-import social_share from '@images/business/marketing-page/communities/social_share.webp'
-import mail from '@images/business/marketing-page/communities/mail.webp'
-import sms from '@images/business/marketing-page/communities/sms.webp'
 import whatsapp from '@images/business/marketing-page/communities/whatsapp.webp'
 import AsSeenIn from '@components/business/as-seen-in'
 import { Button } from '@components/ui/button'
@@ -19,24 +11,6 @@ import { ContactUs } from '@components/common/modals/contact-us'
 import { Footer } from '@components/pages/home/footer'
 
 export const Desktop = () => {
-  const brandImages: any = [
-    { alt: 'cxr', banner: cxr },
-    { alt: 'social_share', banner: social_share },
-    { alt: 'mail', banner: mail },
-    { alt: 'sms', banner: sms },
-    { alt: 'whatsapp', banner: whatsapp },
-  ]
-  const [currentIndex, setCurrentIndex] = useState(0)
-
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      setCurrentIndex((prevIndex: any) => (prevIndex + 1) % brandImages?.length)
-    }, 3000)
-
-    return () => {
-      clearInterval(intervalId)
-    }
-  }, [brandImages])
   return (
     <>
       <div className={style.sectionOne}>
@@ -60,23 +34,15 @@ export const Desktop = () => {
                 </ContactUs>
               </div>
               <div className="flex h-[70vh] w-1/2 justify-center">
-                <img
-                  loading="lazy"
-                  fetchPriority="low"
-                  decoding="async"
-                  className="h-full"
-                  src={brandImages[currentIndex].banner.src}
-                />
+                <img loading="lazy" fetchPriority="low" decoding="async" className="h-full" src={whatsapp.src} />
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      <div className='container'>
-        {/* <Impressions /> */}
+      <div className="container">
         <Precision />
-        {/* <SocialConnections /> */}
         <Communities />
       </div>
       <AsSeenIn />

@@ -1,8 +1,12 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import m1 from '@images/business/marketing-page/m_01.webp'
 import m2 from '@images/business/marketing-page/m_02.webp'
 import m3 from '@images/business/marketing-page/m_03.webp'
-import m4 from '@images/business/marketing-page/m_04.webp'
+import m4_1 from '@images/business/marketing-page/m_04_1.webp'
+import m4_2 from '@images/business/marketing-page/m_04_2.webp'
+import m4_3 from '@images/business/marketing-page/m_04_3.webp'
+import m4_4 from '@images/business/marketing-page/m_04_4.webp'
+import m4_5 from '@images/business/marketing-page/m_04_5.webp'
 import m5 from '@images/business/marketing-page/m_05.webp'
 import m6 from '@images/business/marketing-page/m_06.webp'
 import Link from 'next/link'
@@ -10,6 +14,24 @@ import { PATH_NAME } from '@lib/utils/constants/path'
 import { Button } from '@components/ui/button'
 
 export default function Precision() {
+  const brandImages: any = [
+    { alt: 'cxr', banner: m4_1 },
+    { alt: 'social_share', banner: m4_2 },
+    { alt: 'mail', banner: m4_3 },
+    { alt: 'sms', banner: m4_4 },
+    { alt: 'sms', banner: m4_5 },
+  ]
+  const [currentIndex, setCurrentIndex] = useState(0)
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      setCurrentIndex((prevIndex: any) => (prevIndex + 1) % brandImages?.length)
+    }, 1000)
+
+    return () => {
+      clearInterval(intervalId)
+    }
+  }, [brandImages])
   return (
     <>
       <div className="my-24 flex w-full">
@@ -17,7 +39,7 @@ export default function Precision() {
           <img loading="lazy" fetchPriority="low" className="w-10/12" decoding="async" src={m1.src} alt="precision" />
         </div>
         <div className="flex w-1/2 flex-col justify-center">
-          <p className="my-2 text-new-h2">Distribute Your Community Widely on the Open Web with Adreels</p>
+          <p className="my-2 text-new-h2">Distribute Your Community Widely on the Open Web with AdReels</p>
           <p className="my-2 text-new-para-1">
             Publish your community through video ad networks using Genuin AdReels video feed syndication.
           </p>
@@ -59,7 +81,14 @@ export default function Precision() {
           <p className="my-2 text-new-para-1">QR Codes link directly to communities</p>
         </div>
         <div className="flex w-1/2 justify-center">
-          <img loading="lazy" fetchPriority="low" className="w-10/12" decoding="async" src={m4.src} alt="precision" />
+          <img
+            loading="lazy"
+            fetchPriority="low"
+            className="w-10/12"
+            decoding="async"
+            src={brandImages[currentIndex].banner.src}
+            alt="precision"
+          />
         </div>
       </div>
 

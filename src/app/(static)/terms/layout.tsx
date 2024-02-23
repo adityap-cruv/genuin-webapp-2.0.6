@@ -1,4 +1,4 @@
-import { NavBar } from '@components/common/nav-bar'
+import { NavBar } from '@components/pages/home/nav-bar'
 import { cookies } from 'next/headers'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -6,7 +6,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <main>
-      <NavBar variant="dark" isMobile={isMobile} />
+      <NavBar />
       <section className="container mt-navbar">{children}</section>
     </main>
   )

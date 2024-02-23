@@ -15,6 +15,8 @@ import { Footer } from '@components/pages/home/footer'
 import { DownloadAppDialog } from '@components/pages/home/download-app-dialog'
 import { ContactUs } from '@components/common/modals/contact-us'
 import check_p from '@icons/icCheck.svg'
+import Link from 'next/link'
+import { PATH_NAME } from '@lib/utils/constants/path'
 
 export default function Mobile() {
   return (
@@ -365,19 +367,21 @@ function Component6() {
       <p className="text-new-h3">As Seen In</p>
       <div className="flex gap-8">
         <div className="flex items-center justify-center rounded-lg bg-monochrome-white px-6 py-2 ">
-          <img
-            loading="lazy"
-            fetchPriority="low"
-            className="h-8"
-            decoding="async"
-            src={businessInsider.src}
-            alt="genuin"
-          />
-          {/* <Image priority loading="eager" src={businessInsider} alt={`businessInsider`} /> */}
+          <Link href={{ pathname: PATH_NAME.businessinsider() }}>
+            <img
+              loading="lazy"
+              fetchPriority="low"
+              className="h-8"
+              decoding="async"
+              src={businessInsider.src}
+              alt="genuin"
+            />
+          </Link>
         </div>
         <div className="flex items-center justify-center rounded-lg bg-monochrome-white px-6 py-2 ">
-          <img loading="lazy" fetchPriority="low" className="h-8" decoding="async" src={yahoo.src} alt="genuin" />
-          {/* <Image priority loading="eager" src={yahoo} alt={`yahoo`} /> */}
+          <Link href={{ pathname: PATH_NAME.yahoo() }}>
+            <img loading="lazy" fetchPriority="low" className="h-8" decoding="async" src={yahoo.src} alt="genuin" />
+          </Link>
         </div>
       </div>
     </div>

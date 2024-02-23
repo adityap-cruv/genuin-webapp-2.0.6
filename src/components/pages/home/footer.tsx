@@ -21,7 +21,7 @@ export function Footer() {
                 that speaks to you? Start your own!
               </h5>
             </div>
-            <DownloadButton />
+            <ContactButton />
           </div>
           <div
             className="flex flex-col gap-y-10 bg-new-off-black px-20 pb-8 pt-12 text-primary-foreground"
@@ -54,18 +54,41 @@ export function Footer() {
         </div>
       </footer>
       <footer className="relative bg-primary lg:hidden">
-        <div className="mx-2 flex h-full flex-col gap-y-6 sm:mx-15">
+        <div className="mx-8 flex h-full flex-col gap-y-6 sm:mx-15">
           <div className="mt-14 flex flex-col items-center justify-center gap-y-2">
-            <p className="max-w-[230px] text-center text-new-h2-mobile text-new-off-white">Join the world of Genuin.</p>
+            <p className="text-center text-new-h1-mobile text-new-off-white">
+              Join the world
+              <br /> of Genuin.
+            </p>
             <div className="mt-3">
-              <DownloadButton />
+              <ContactButton />
             </div>
           </div>
           <div
-            className="mt-10 flex items-center justify-between gap-y-10 bg-new-off-black p-5 px-8 text-primary-foreground"
+            className="mt-10 gap-y-10 bg-new-off-black p-5 px-8 text-primary-foreground"
             style={{ borderRadius: '20px 20px 0px 0px' }}>
-            <GenuinIcon.text className="w-20 fill-new-off-white" />
-            <p className="text-new-para-2-mobile sm:text-new-para-2">© 2023 Genuin Inc.</p>
+            <div className="mx-6 my-14 flex flex-col gap-10">
+              <div className="flex flex-col gap-3">
+                <p className="text-new-md font-semibold">Solutions</p>
+                {content?.solutions?.map(({ url, title }, index) => (
+                  <Link key={index} href={url}>
+                    <p className="text-new-para-1-mobile text-monochrome-7">{title}</p>
+                  </Link>
+                ))}
+              </div>
+              <div className="flex flex-col gap-3">
+                <p className="text-new-md font-semibold">Company</p>
+                {content?.company?.map(({ url, title }, index) => (
+                  <Link key={index} href={url}>
+                    <p className="text-new-para-1-mobile text-monochrome-7">{title}</p>
+                  </Link>
+                ))}
+              </div>
+            </div>
+            <div className="flex w-full items-center justify-between">
+              <GenuinIcon.text className="w-20 fill-new-off-white" />
+              <p className="text-new-para-2-mobile sm:text-new-para-2">© 2023 Genuin Inc.</p>
+            </div>
           </div>
         </div>
       </footer>
@@ -73,25 +96,25 @@ export function Footer() {
   )
 }
 
-function DownloadButton() {
+function ContactButton() {
   const isMobile = useGenuinOptions().isMobile
 
   return isMobile ? (
-    <Link href={MOBILE_DOWNLOAD_APP_LINK}>
+    <ContactUs>
       <Button
         size="index-page"
         variant="default"
         className="bg-new-off-black after:bg-new-dark-grey hover:bg-new-dark-grey">
-        <p className="whitespace-nowrap text-new-md text-new-off-white">Download Genuin</p>
+        <p className="whitespace-nowrap text-new-md text-new-off-white">Contact us</p>
       </Button>
-    </Link>
+    </ContactUs>
   ) : (
     <ContactUs>
       <Button
         size="index-page"
         variant="default"
         className="bg-new-off-black after:bg-new-dark-grey hover:bg-new-dark-grey">
-        <p className="whitespace-nowrap text-new-sm text-new-off-white">Contact Us</p>
+        <p className="whitespace-nowrap text-new-md text-new-off-white">Contact us</p>
       </Button>
     </ContactUs>
   )

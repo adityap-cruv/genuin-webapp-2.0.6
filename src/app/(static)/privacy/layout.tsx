@@ -1,4 +1,4 @@
-import { NavBar } from '@components/common/nav-bar'
+import { NavBar } from '@components/pages/home/nav-bar'
 import { cookies } from 'next/headers'
 
 interface Props {
@@ -9,7 +9,7 @@ export default function Layout({ children }: Props) {
   const isMobile = cookies().get('mobile')?.value === 'true'
   return (
     <main>
-      <NavBar variant="dark" isMobile={isMobile} />
+      <NavBar />
       <section className="container mt-navbar h-body">{children}</section>
     </main>
   )

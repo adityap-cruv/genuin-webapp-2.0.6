@@ -25,20 +25,16 @@ export default function GetInTouch() {
     }
   }, [])
   return (
-    <section className={style.container}>
-      {/* Left section of the Get In Touch Section */}
-      <div className={style.sectionLeft}>
-        {/* Heading component for get in touch caption */}
+    <div className="my-32 flex w-full rounded-2xl bg-[#E9CAF4]">
+      <div className="w-2/3 p-16">
         <HeadingComponent headingLevel={2} title={content.GetInTouch.title} colorVariant={'black'} />
         <ParagraphComponent text={content.GetInTouch.caption} sizeVariant={'medium'} colorVariant={'black'} />
         <InlineButtonInput onButtonClick={handleButtonClick} />
       </div>
 
-      {/* Right section of the Get In Touch section for button */}
-      <div className={style.sectionRight}>
-        {/* Get Started button */}
+      <div className="flex w-4/12 flex-shrink-0 items-end">
         <img loading="lazy" fetchPriority="low" decoding="async" src={getInTouch.src} alt="genuin" />
       </div>
-    </section>
+    </div>
   )
 }
