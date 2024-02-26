@@ -41,7 +41,7 @@ export function getAvatarUrl(avatarUrl: any) {
 }
 
 export function checkAndAppendHttps(link: string): string {
-  return link.startsWith('http') || link.startsWith('https') ? link : 'https://' + link
+  return link?.startsWith('http') || link?.startsWith('https') ? link : 'https://' + link
 }
 
 export function isValidHTTPS(link: string) {
