@@ -32,7 +32,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <meta rel="x-brand-id" content={config?.subdomain} />
       </head>
       <body className="index-page-background absolute inset-0 min-h-full min-w-full text-new-off-black">
-        <RedirectHandler config={config}>
+        <RedirectHandler config={config} shouldRedirect={Object.hasOwn(configParams, 'subdomain')}>
           <ThirdPartyScriptProvider>
             <GenuinOptionsProvider browserType={browserType} deviceType={deviceType} os={os} config={config}>
               <ReactQueryProvider>{children}</ReactQueryProvider>
