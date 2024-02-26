@@ -10,7 +10,7 @@ type Props = {
   deviceType: string
   os: string
   browserType: string
-  config: ConfigType
+  config?: ConfigType
 }
 
 export function GenuinOptionsProvider({ children, deviceType, os, browserType, config }: Props) {

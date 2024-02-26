@@ -3,25 +3,42 @@ import './globals.css'
 import { ReactQueryProvider } from '@components/providers/query-client-provider'
 import { cookies } from 'next/headers'
 import { ThirdPartyScriptProvider } from '@components/providers/third-party-script-provider'
-import { ConfigProvider } from '@components/providers/config-provider'
+import { GenuinOptionsProvider } from '@components/providers/genuin-options-provider'
+import { getEmbedConfig } from '@lib/api/config'
+import { type ConfigType } from '@lib/stores/genuin-options'
+import { RedirectHandler } from '@components/providers/redirect-handler'
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const deviceType = cookies().get('device_type')?.value ?? ''
   const os = cookies().get('os')?.value ?? ''
   const browserType = cookies().get('browser_type')?.value ?? ''
+  const configParams = JSON.parse(cookies().get('config_params')?.value ?? '')
+  let config: ConfigType | undefined
+
+  if (configParams) {
+    try {
+      config = await getEmbedConfig(configParams)
+    } catch (e) {
+      console.log('error', e)
+      // notFound()
+    }
+  }
 
   return (
     <html lang="en">
       <head>
         <link rel="icon" type="image/x-icon" href="/favicon.svg" />
         <link rel="mask-icon" href="/favicon.svg" />
+        <meta rel="x-brand-id" content={config?.subdomain} />
       </head>
       <body className="index-page-background absolute inset-0 min-h-full min-w-full text-new-off-black">
-        <ThirdPartyScriptProvider>
-          <ConfigProvider deviceType={deviceType} os={os} browserType={browserType}>
-            <ReactQueryProvider>{children}</ReactQueryProvider>
-          </ConfigProvider>
-        </ThirdPartyScriptProvider>
+        <RedirectHandler config={config}>
+          <ThirdPartyScriptProvider>
+            <GenuinOptionsProvider browserType={browserType} deviceType={deviceType} os={os} config={config}>
+              <ReactQueryProvider>{children}</ReactQueryProvider>
+            </GenuinOptionsProvider>
+          </ThirdPartyScriptProvider>
+        </RedirectHandler>
       </body>
     </html>
   )
