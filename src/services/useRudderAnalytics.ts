@@ -6,7 +6,7 @@ async function getRudderStack(): Promise<RudderAnalytics> {
   const { RudderAnalytics } = await import('@rudderstack/analytics-js')
   const analyticsInstance = new RudderAnalytics()
 
-  analyticsInstance.load('2TKjFZvo9nt38kcH91svAZ2T1vl', 'https://rudderstack.qa.begenuin.com')
+  analyticsInstance.load(process.env.NEXT_PUBLIC_RUDDERSTACK_KEY, process.env.NEXT_PUBLIC_RUDDERSTACK_URL)
 
   // analyticsInstance.ready(() => {
   //   console.log('We are all set!!!');
