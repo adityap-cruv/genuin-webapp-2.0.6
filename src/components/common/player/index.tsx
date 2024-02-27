@@ -143,8 +143,6 @@ function Mobile({
       </div>
     )
   }
-
-  // return <
 }
 
 function Desktop({
