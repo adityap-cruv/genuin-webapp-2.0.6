@@ -65,7 +65,7 @@ function Component1() {
                 border: '3px solid transparent',
               }}>
               <p className="my-1 text-new-h2-mobile font-semibold">Free Plan</p>
-              <p className="text-new-sm">FOR EVERYONE TO GET STARTED</p>
+              <p className="text-new-sm">For everyone to get started</p>
               <div className="flex flex-col items-center py-12">
                 <p className="text-center text-new-h3">
                   Free
@@ -106,7 +106,7 @@ function Component1() {
                 border: '3px solid transparent',
               }}>
               <p className="my-1 text-new-h2-mobile font-semibold">Starter</p>
-              <p className="text-new-sm">FOR EVERYONE TO GET STARTED</p>
+              <p className="text-new-sm">For Emerging Communities</p>
               <div className="flex flex-col items-center py-16">
                 <p className="text-center text-new-h3">
                   $39<span className="text-new-md">/month</span>
@@ -130,6 +130,10 @@ function Component1() {
                   <p className="text-new-para-2-mobile">Basic moderation tools to keep community safe</p>
                 </div>
                 <div className="flex items-center gap-2">
+                  <Image priority loading="eager" src={check} width={24} height={24} alt="Star" />
+                  <p className="text-new-para-2-mobile">10,000 MaU included with additional MaUs at $0.5/MaU</p>
+                </div>
+                <div className="flex items-center gap-2">
                   <Image priority loading="eager" src={exclamation} width={24} height={24} alt="Star" />
                   <p className="text-new-para-2-mobile">Genuin watermark</p>
                 </div>
@@ -146,7 +150,7 @@ function Component1() {
                 border: '3px solid transparent',
               }}>
               <p className="my-1 text-new-h2-mobile font-semibold">Essential</p>
-              <p className="text-new-sm">FOR SMALL STUDIOS</p>
+              <p className="text-new-sm">For Established Communities</p>
               <div className="flex flex-col items-center py-16">
                 <p className="text-center text-new-h3">
                   $299<span className="text-new-md">/month</span>
@@ -170,6 +174,10 @@ function Component1() {
                   <p className="text-new-para-2-mobile">Basic moderation tools</p>
                 </div>
                 <div className="flex items-center gap-2">
+                  <Image priority loading="eager" src={check} width={24} height={24} alt="Star" />
+                  <p className="text-new-para-2-mobile">10,000 MaU included with additional MaUs at $0.5/MaU</p>
+                </div>
+                <div className="flex items-center gap-2">
                   <Image priority loading="eager" src={exclamation} width={24} height={24} alt="Star" />
                   <p className="text-new-para-2-mobile">Genuin watermark</p>
                 </div>
@@ -188,7 +196,7 @@ function Component1() {
               <Image priority loading="eager" className="absolute -left-4 bottom-6 h-6 w-auto" src={star1} alt="Star" />
               <Image priority loading="eager" className="absolute -right-5 top-6 h-10 w-auto" src={star2} alt="Star" />
               <p className="my-1 text-new-h2-mobile font-semibold">Enterprise</p>
-              <p className="text-new-sm">FOR ENTERPRISES</p>
+              <p className="text-new-sm">For Enterprises</p>
               <div className="flex flex-col items-center py-12">
                 <p className="text-center text-new-h3">
                   Customized
