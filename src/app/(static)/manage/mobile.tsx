@@ -209,11 +209,6 @@ function Component6() {
           Gain insights and access your community participants directly, integrate with existing identity and data clean
           rooms
         </p>
-        <ContactUs>
-          <Button size="custom" variant={'outline'} className="px-5 py-3 ">
-            <p className="text-new-para-2">Learn more</p>
-          </Button>
-        </ContactUs>
         <div className="my-6 flex flex-col items-center justify-center gap-4">
           <img loading="lazy" fetchPriority="low" decoding="async" src={dashboard.src} />
         </div>

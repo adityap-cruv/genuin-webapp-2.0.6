@@ -53,7 +53,7 @@ export default function SubscriptionPlan() {
           {isSelected === 'starter' && (
             <div className={`${style.btngradient} z-10 h-full w-[500px] rounded-xl p-10`}>
               <p className="my-1 text-new-h2-mobile font-semibold">Starter</p>
-              <p className="text-new-para-1">For Community Builders</p>
+              <p className="text-new-para-1">For Emerging Communities</p>
               <div className="flex flex-col items-center py-16">
                 <p className="text-center text-new-h2">
                   $39<span className="text-new-md">/month</span>
@@ -91,7 +91,7 @@ export default function SubscriptionPlan() {
           {isSelected === 'essential' && (
             <div className={`${style.btngradient} z-10 h-full w-[500px] rounded-xl p-10`}>
               <p className="my-1 text-new-h2-mobile font-semibold">Essential</p>
-              <p className="text-new-para-1">For Small Studios</p>
+              <p className="text-new-para-1">For Established Communities</p>
               <div className="flex flex-col items-center py-16">
                 <p className="text-center text-new-h2">
                   $299<span className="text-new-md">/month</span>
@@ -211,7 +211,7 @@ export default function SubscriptionPlan() {
             <p className="text-new-lg">
               Starter
               <br />
-              <span className="text-new-sm">For Community Builders</span>
+              <span className="text-new-sm">For Emerging Communities</span>
             </p>
             <p className="text-new-sm font-bold">
               $39<span className="font-medium">/month</span>
@@ -238,7 +238,7 @@ export default function SubscriptionPlan() {
             <p className="text-new-lg">
               Essential
               <br />
-              <span className="text-new-sm">For Small Studios</span>
+              <span className="text-new-sm">For Established Communities</span>
             </p>
             <p className="text-new-sm font-bold">
               $299<span className="font-medium">/month</span>

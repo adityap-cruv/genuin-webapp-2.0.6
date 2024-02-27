@@ -93,7 +93,7 @@ function Component2() {
   const marketdata = [
     {
       title: 'Distribute Your Community Widely on the Open Web with Adreels',
-      subtitle: 'Publish your community through video ad networks (using Genuin AdReels video feed syndication.',
+      subtitle: 'Publish your community through video ad networks using Genuin AdReels video feed syndication.',
       button: true,
       image: m1,
     },
@@ -111,13 +111,15 @@ function Component2() {
     },
     {
       title: 'Incorporate Community Building at Physical Events',
-      subtitle: 'QR Codes link directly to communities',
+      subtitle:
+        'Easily create QR codes that can be printed on signage, print materials, or anywhere to bring new members directly into your community',
       button: false,
       image: m4,
     },
     {
       title: 'Make your Community Visible in Web Search',
-      subtitle: 'SEO activity',
+      subtitle:
+        'Set your community to be available to the public and make it visible to Search Engines and appear in relevant search results.',
       button: false,
       image: m5,
     },

@@ -78,7 +78,10 @@ export default function Precision() {
       <div className="my-24 flex w-full">
         <div className="flex w-1/2 flex-col justify-center">
           <p className="my-2 text-new-h2">Incorporate Community Building at Physical Events</p>
-          <p className="my-2 text-new-para-1">QR Codes link directly to communities</p>
+          <p className="my-2 text-new-para-1">
+            Easily create QR codes that can be printed on signage, print materials, or anywhere to bring new members
+            directly into your community
+          </p>
         </div>
         <div className="flex w-1/2 justify-center">
           <img
@@ -98,7 +101,10 @@ export default function Precision() {
         </div>
         <div className="flex w-1/2 flex-col justify-center">
           <p className="my-2 text-new-h2">Make your Community Visible in Web Search</p>
-          <p className="my-2 text-new-para-1">SEO activity</p>
+          <p className="my-2 text-new-para-1">
+            Set your community to be available to the public and make it visible to Search Engines and appear in
+            relevant search results.
+          </p>
         </div>
       </div>
 
