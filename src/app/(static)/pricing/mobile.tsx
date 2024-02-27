@@ -131,7 +131,7 @@ function Component1() {
                 </div>
                 <div className="flex items-center gap-2">
                   <Image priority loading="eager" src={check} width={24} height={24} alt="Star" />
-                  <p className="text-new-para-2-mobile">10,000 MaU included with additional MaUs at $0.5/MaU</p>
+                  <p className="text-new-para-2-mobile">1000 MaU included with additional MaUs at $0.5/MaU</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <Image priority loading="eager" src={exclamation} width={24} height={24} alt="Star" />
