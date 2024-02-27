@@ -78,7 +78,7 @@ export default function SubscriptionPlan() {
                 </div>
                 <div className="flex items-center gap-2">
                   <Image priority loading="eager" src={check} width={24} height={24} alt="Star" />
-                  <p className="text-new-sm">1000 MaU included with additional MaUs at $0.10/MaU</p>
+                  <p className="text-new-sm">1,000 MaU included with additional MaUs at $0.10/MaU</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <Image priority loading="eager" src={exclamation} width={24} height={24} alt="Star" />
@@ -116,7 +116,7 @@ export default function SubscriptionPlan() {
                 </div>
                 <div className="flex items-center gap-2">
                   <Image priority loading="eager" src={check} width={24} height={24} alt="Star" />
-                  <p className="text-new-sm">10,000 MaU included with additional MaUs at $0.10/MaU</p>
+                  <p className="text-new-sm">10,000 MaU included with additional MaUs at $0.5/MaU</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <Image priority loading="eager" src={exclamation} width={24} height={24} alt="Star" />
