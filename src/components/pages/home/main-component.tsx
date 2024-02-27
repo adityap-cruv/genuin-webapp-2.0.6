@@ -226,8 +226,8 @@ function Component3() {
           Captivate Your Community the Way They Like to Communicate With Video Loops
         </h2>
         <h5 className="flex w-11/12 text-center text-new-para-1-mobile">
-          The nexus for dynamic one-on-one connections and collaborative discussions. Engage with customers, partners,
-          and employees through Q&A prompts, multimedia sharing and crowdsourced knowledge.
+          Engage with your fans, customers, partners, employees and stakeholders via a video based social feed organized
+          by topics that you control.
         </h5>
         <img loading="lazy" fetchPriority="low" decoding="async" src={imgC3.src} />
       </div>
