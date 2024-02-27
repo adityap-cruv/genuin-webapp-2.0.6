@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Footer } from '@components/pages/home/footer'
 import { NavBar } from '@components/pages/home/nav-bar'
 import { Button } from '@components/ui/button'
-import { Carousel, CarouselContent, CarouselItem, CarouselPrevious } from '@components/ui/carousel'
+import { Carousel, CarouselContent, CarouselItem } from '@components/ui/carousel'
 import Image from 'next/image'
 import managebg from '@images/business/brand-page/manage-bg-mobile.webp'
 import onlinecommunity from '@images/business/brand-page/online-community-group.webp'
@@ -259,7 +259,6 @@ function Component7() {
               </>
             ))}
           </CarouselContent>
-          <CarouselPrevious />
         </Carousel>
       </div>
     </div>
