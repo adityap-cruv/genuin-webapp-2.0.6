@@ -5,6 +5,7 @@ import { PATH_NAME } from '@lib/utils/constants/path'
 import { DownloadAppDialog } from '@components/pages/home/download-app-dialog'
 import { AppLogo } from '@components/ui/app-logo'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
+import { AuthenticationModal } from '@components/common/modals/authentication'
 // import { GenuinIcon } from '@icons/genuin-icon'
 
 export function TopBar() {
@@ -32,6 +33,11 @@ export function TopBar() {
                   <p className="text-new-para-2 font-semibold">Download Genuin</p>
                 </Button>
               </DownloadAppDialog>
+              <AuthenticationModal>
+                <Button>
+                  <p>Log in</p>
+                </Button>
+              </AuthenticationModal>
             </div>
           )}
         </nav>
