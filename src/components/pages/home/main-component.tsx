@@ -8,6 +8,7 @@ import Link from 'next/link'
 import imgC2_s1 from '@images/home-page/c2_1.webp'
 import imgC2_s2 from '@images/home-page/c2_2.webp'
 import imgC2_2 from '@images/home-page/c2-2.webp'
+import imgC2_desktop from '@images/home-page/c2_desktop.webp'
 import imgC2_c2 from '@images/home-page/c2_2_2.webp'
 import imgC2_c2_mobile from '@images/home-page/c2_2_mobile.webp'
 import imgC3 from '@images/home-page/c3.webp'
@@ -107,29 +108,26 @@ function Component1() {
               </div>
             </div>
             <div className=" flex w-full justify-center gap-6">
-              {brandImages?.map(
-                ({ img }: any, index: any) =>
-                  img && (
-                    <div
-                      className={`flex h-12 w-44 items-center justify-center rounded-lg p-3 `}
-                      style={{
-                        backgroundColor:
-                          index === currentIndex ? 'rgba(249, 254, 255, 0.60)' : 'rgba(255, 255, 255, 0.10)',
-                      }}
-                      onClick={() => {
-                        handleThumbnailClick(index)
-                      }}
-                      key={index}>
-                      <img
-                        loading="eager"
-                        fetchPriority="auto"
-                        alt={`Thumbnail ${index + 1}`}
-                        decoding="async"
-                        src={img.src}
-                      />
-                    </div>
-                  )
-              )}
+              {brandImages?.map(({ img }: any, index: any) => (
+                <div
+                  className={`flex h-12 w-44 items-center justify-center rounded-lg p-3 `}
+                  style={{
+                    backgroundColor: index === currentIndex ? 'rgba(249, 254, 255, 0.60)' : 'rgba(255, 255, 255, 0.10)',
+                  }}
+                  onClick={() => {
+                    handleThumbnailClick(index)
+                  }}
+                  key={index}>
+                  <img
+                    loading="eager"
+                    fetchPriority="high"
+                    className="bg-transparent"
+                    alt={`Thumbnail ${index + 1}`}
+                    decoding="async"
+                    src={img.src}
+                  />
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -167,12 +165,7 @@ function Component2() {
           Move Beyond Traditional Text Based <br /> Communities to Video Based Communities
         </h2>
         <div className="flex w-10/12 justify-center">
-          <div>
-            <img loading="lazy" fetchPriority="low" className="h-[80vh]" decoding="async" src={imgC2_s1.src} />
-          </div>
-          <div className="flex items-end">
-            <img loading="lazy" fetchPriority="low" className="h-[80vh]" decoding="async" src={imgC2_s2.src} />
-          </div>
+          <img loading="lazy" fetchPriority="low" className="h-[90vh]" decoding="async" src={imgC2_desktop.src} />
         </div>
 
         <h2 className="-tracking-new mb-6 mt-12 text-center text-new-h2">
