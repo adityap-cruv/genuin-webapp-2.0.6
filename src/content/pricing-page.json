@@ -11,8 +11,16 @@
         "enterprise": true
       },
       {
-        "category": "Brand subdomain on Genuin",
+        "category": "Manual Moderation",
         "free": true,
+        "starter": true,
+        "essential": true,
+        "pro": true,
+        "enterprise": true
+      },
+      {
+        "category": "Your Subdomain on Genuin",
+        "free": false,
         "starter": true,
         "essential": true,
         "pro": true,
@@ -20,15 +28,7 @@
       },
       {
         "category": "Brand Control Center",
-        "free": true,
-        "starter": true,
-        "essential": true,
-        "pro": true,
-        "enterprise": true
-      },
-      {
-        "category": "Manual Moderation",
-        "free": true,
+        "free": false,
         "starter": true,
         "essential": true,
         "pro": true,
@@ -53,7 +53,7 @@
       {
         "category": "AI moderation",
         "free": false,
-        "starter": true,
+        "starter": false,
         "essential": true,
         "pro": true,
         "enterprise": true
@@ -78,7 +78,7 @@
         "category": "Remove Powered by Genuin",
         "free": false,
         "starter": false,
-        "essential": true,
+        "essential": false,
         "pro": true,
         "enterprise": true
       },
@@ -123,7 +123,7 @@
         "enterprise": true
       },
       {
-        "category": "25/7 Human Moderator for Community",
+        "category": "24/7 Human Moderator for Community",
         "free": false,
         "starter": false,
         "essential": false,
@@ -140,6 +140,14 @@
       },
       {
         "category": "DMP/CDP data sync",
+        "free": false,
+        "starter": false,
+        "essential": false,
+        "pro": false,
+        "enterprise": true
+      },
+      {
+        "category": "Restrict Community Builder Requests",
         "free": false,
         "starter": false,
         "essential": false,

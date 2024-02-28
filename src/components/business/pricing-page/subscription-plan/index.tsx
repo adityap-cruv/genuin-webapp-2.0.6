@@ -14,17 +14,14 @@ export default function SubscriptionPlan() {
   const [isSelected, setIsSelected] = useState('free')
 
   return (
-    <div className="my-10 ">
-      <p className="text-center text-new-h2">
-        A Plan
-        <br /> for Every Brand
-      </p>
-      <div className="mt-10 grid h-[585px] grid-cols-2 gap-12">
+    <div className="my-6 flex flex-col items-center">
+      <p className="mt-navbar py-8 text-center text-new-h2">A Plan for Everyone</p>
+      <div className="mt-10 grid h-[585px] max-w-6xl grid-cols-2 gap-12">
         <div className="flex justify-center">
           {isSelected === 'free' && (
             <div className={`${style.btngradient} z-10 h-full w-[500px] rounded-xl p-10`}>
               <p className="my-1 text-new-h2-mobile font-semibold">Free Plan</p>
-              <p className="text-new-para-1">FOR EVERYONE TO GET STARTED</p>
+              <p className="text-new-para-1">For everyone to get started</p>
               <div className="flex flex-col items-center py-20">
                 <p className="text-center text-new-h2">Free Forever</p>
                 <DownloadAppDialog>
@@ -56,8 +53,8 @@ export default function SubscriptionPlan() {
           {isSelected === 'starter' && (
             <div className={`${style.btngradient} z-10 h-full w-[500px] rounded-xl p-10`}>
               <p className="my-1 text-new-h2-mobile font-semibold">Starter</p>
-              <p className="text-new-para-1">FOR EVERYONE TO GET STARTED</p>
-              <div className="flex flex-col items-center py-20">
+              <p className="text-new-para-1">For Emerging Communities</p>
+              <div className="flex flex-col items-center py-16">
                 <p className="text-center text-new-h2">
                   $39<span className="text-new-md">/month</span>
                 </p>
@@ -80,6 +77,10 @@ export default function SubscriptionPlan() {
                   <p className="text-new-sm">Basic moderation tools to keep community safe</p>
                 </div>
                 <div className="flex items-center gap-2">
+                  <Image priority loading="eager" src={check} width={24} height={24} alt="Star" />
+                  <p className="text-new-sm">1,000 MaU included with additional MaUs at $0.10/MaU</p>
+                </div>
+                <div className="flex items-center gap-2">
                   <Image priority loading="eager" src={exclamation} width={24} height={24} alt="Star" />
                   <p className="text-new-sm">Genuin watermark</p>
                 </div>
@@ -90,8 +91,8 @@ export default function SubscriptionPlan() {
           {isSelected === 'essential' && (
             <div className={`${style.btngradient} z-10 h-full w-[500px] rounded-xl p-10`}>
               <p className="my-1 text-new-h2-mobile font-semibold">Essential</p>
-              <p className="text-new-para-1">FOR SMALL STUDIOS</p>
-              <div className="flex flex-col items-center py-20">
+              <p className="text-new-para-1">For Established Communities</p>
+              <div className="flex flex-col items-center py-16">
                 <p className="text-center text-new-h2">
                   $299<span className="text-new-md">/month</span>
                 </p>
@@ -114,36 +115,8 @@ export default function SubscriptionPlan() {
                   <p className="text-new-sm">Basic moderation tools</p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Image priority loading="eager" src={exclamation} width={24} height={24} alt="Star" />
-                  <p className="text-new-sm">Genuin watermark</p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {isSelected === 'pro-plan' && (
-            <div className={`${style.btngradient} z-10 h-full w-[500px] rounded-xl p-10`}>
-              <p className="my-1 text-new-h2-mobile font-semibold">Pro Plan</p>
-              <p className="text-new-para-1">FOR BIG COMMUNITIES</p>
-              <div className="flex flex-col items-center py-12">
-                <p className="text-center text-new-h2">Customized Pricing</p>
-                <ContactUs>
-                  <Button
-                    size="custom"
-                    className="mt-8 bg-new-off-black px-5 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
-                    <p className="text-new-para-2">Contact us for pricing</p>
-                  </Button>
-                </ContactUs>
-              </div>
-              <div className="flex flex-col gap-1">
-                <p className="text-title-2-demi">Benefits:</p>
-                <div className="flex items-center gap-2">
                   <Image priority loading="eager" src={check} width={24} height={24} alt="Star" />
-                  <p className="text-new-sm">White label ability with your own URL</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Image priority loading="eager" src={check} width={24} height={24} alt="Star" />
-                  <p className="text-new-sm">AI tools</p>
+                  <p className="text-new-sm">10,000 MaU included with additional MaUs at $0.5/MaU</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <Image priority loading="eager" src={exclamation} width={24} height={24} alt="Star" />
@@ -158,7 +131,7 @@ export default function SubscriptionPlan() {
               <Image priority loading="eager" className="absolute -left-5 bottom-6" src={star1} alt="Star" />
               <Image priority loading="eager" className="absolute -right-6 top-6" src={star2} alt="Star" />
               <p className="my-1 text-new-h2-mobile font-semibold">Enterprise</p>
-              <p className="text-new-para-1">FOR ENTERPRISES</p>
+              <p className="text-new-para-1">For Enterprises</p>
               <div className="flex flex-col items-center py-12">
                 <p className="text-center text-new-h2">Customized Pricing</p>
                 <ContactUs>
@@ -192,7 +165,7 @@ export default function SubscriptionPlan() {
           )}
         </div>
 
-        <div className="grid grid-rows-5 gap-4">
+        <div className="grid grid-rows-4 gap-4">
           <div
             onClick={() => {
               setIsSelected('free')
@@ -238,7 +211,7 @@ export default function SubscriptionPlan() {
             <p className="text-new-lg">
               Starter
               <br />
-              <span className="text-new-sm">For Community Builders</span>
+              <span className="text-new-sm">For Emerging Communities</span>
             </p>
             <p className="text-new-sm font-bold">
               $39<span className="font-medium">/month</span>
@@ -265,36 +238,11 @@ export default function SubscriptionPlan() {
             <p className="text-new-lg">
               Essential
               <br />
-              <span className="text-new-sm">For Small Studios</span>
+              <span className="text-new-sm">For Established Communities</span>
             </p>
             <p className="text-new-sm font-bold">
               $299<span className="font-medium">/month</span>
             </p>
-          </div>
-
-          <div
-            onClick={() => {
-              setIsSelected('pro-plan')
-            }}
-            className={`relative flex items-center justify-between rounded-xl border border-monochrome-7 bg-monochrome-white p-4 px-8 hover:border-2 `}
-            style={
-              isSelected === 'pro-plan'
-                ? {
-                    background:
-                      'linear-gradient(white, white) padding-box, linear-gradient(#0645ff, #e9caf4) border-box',
-                    borderRadius: '12px',
-                    border: '3px solid transparent',
-                  }
-                : {}
-            }>
-            {isSelected === 'pro-plan' && <div className="absolute -left-24 h-0.5 w-24 bg-[#677EFB]" />}
-
-            <p className="text-new-lg">
-              Pro
-              <br />
-              <span className="text-new-sm">For Big Companies</span>
-            </p>
-            <p className="text-new-sm font-bold">Customized Pricing</p>
           </div>
 
           <div

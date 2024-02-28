@@ -10,6 +10,7 @@
   }
   .row {
     display: flex;
+    justify-content: center;
     gap: 30px;
     .card {
       border-radius: 20px;

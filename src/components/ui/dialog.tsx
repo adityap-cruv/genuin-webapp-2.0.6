@@ -6,6 +6,14 @@ import { X } from 'lucide-react'
 
 import { cn } from '@lib/utils'
 
+function toggleBodyScrolling(enableScrolling: boolean) {
+  if (enableScrolling) {
+    document.body.classList.remove('no-scroll')
+  } else {
+    document.body.classList.add('no-scroll')
+  }
+}
+
 const Dialog = DialogPrimitive.Root
 
 const DialogTrigger = DialogPrimitive.Trigger
@@ -15,14 +23,19 @@ DialogPortal.displayName = DialogPrimitive.Portal.displayName
 
 const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
->(({ className, children, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & { isMobile: boolean }
+>(({ className, children, isMobile, ...props }, ref) => (
   <DialogPortal>
     <DialogPrimitive.Content
       ref={ref}
       className={cn('group fixed inset-0 z-50 bg-monochrome-black/70', className)}
       {...props}>
-      <div className="fixed bottom-0 z-50 grid min-h-min w-fit justify-center rounded-t-2xl bg-monochrome-white p-6 shadow-lg duration-300 group-data-[state=open]:animate-in group-data-[state=closed]:animate-out group-data-[state=closed]:fade-out-0 group-data-[state=open]:fade-in-0 group-data-[state=closed]:zoom-out-95 group-data-[state=open]:zoom-in-95 group-data-[state=closed]:slide-out-to-left-1/2 group-data-[state=closed]:slide-out-to-top-[48%] group-data-[state=open]:slide-in-from-left-1/2 group-data-[state=open]:slide-in-from-top-[48%] sm:left-[50%] sm:top-[50%]  sm:translate-x-[-50%] sm:translate-y-[-50%] sm:rounded-lg">
+      <div
+        className={`fixed bottom-0 z-50 grid min-h-min w-fit justify-center rounded-t-2xl bg-monochrome-white p-6 shadow-lg duration-300 group-data-[state=open]:animate-in group-data-[state=closed]:animate-out group-data-[state=closed]:fade-out-0 group-data-[state=open]:fade-in-0 group-data-[state=closed]:zoom-out-95 group-data-[state=open]:zoom-in-95 ${
+          isMobile
+            ? ' right-0 group-data-[state=closed]:slide-out-to-bottom group-data-[state=open]:slide-in-from-bottom sm:bottom-[50%] sm:right-[50%]  sm:translate-x-[50%] sm:translate-y-[50%] sm:rounded-lg'
+            : ' group-data-[state=closed]:slide-out-to-left-1/2 group-data-[state=closed]:slide-out-to-top-[48%] group-data-[state=open]:slide-in-from-left-1/2 group-data-[state=open]:slide-in-from-top-[48%] sm:left-[50%] sm:top-[50%]  sm:translate-x-[-50%] sm:translate-y-[-50%] sm:rounded-lg'
+        }`}>
         <DialogPrimitive.Close className="absolute right-4 top-4 rounded-sm transition-opacity focus:outline-none disabled:pointer-events-none">
           <X className="h-6 w-6" />
           <span className="sr-only">Close</span>
@@ -58,4 +71,26 @@ DialogDescription.displayName = DialogPrimitive.Description.displayName
 
 const DialogClose = DialogPrimitive.Close
 
-export { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription, DialogClose }
+const CustomDialogContent = React.forwardRef<any, any>((props, ref) => {
+  const handleOpen = () => {
+    toggleBodyScrolling(false) // Disable scrolling when modal is opened
+  }
+
+  const handleClose = () => {
+    toggleBodyScrolling(true) // Enable scrolling when modal is closed
+  }
+
+  return <DialogContent {...props} ref={ref} onOpenAutoFocus={handleOpen} onCloseAutoFocus={handleClose} />
+})
+CustomDialogContent.displayName = 'CustomDialogContent'
+
+export {
+  Dialog,
+  DialogTrigger,
+  CustomDialogContent as DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
+  DialogClose,
+}

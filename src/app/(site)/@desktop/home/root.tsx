@@ -20,17 +20,15 @@ export function Root() {
   })
   const videos = data?.pages.flatMap((item) => item.reels)
 
-  if (videos)
-    return (
-      <main className="h-full w-full">
-        <Feed
-          isError={isError}
-          isFetchingNextPage={isFetchingNextPage}
-          fetchNextPage={fetchNextPage}
-          isLoading={isLoading}
-          videos={videos}
-        />
-      </main>
-    )
-  return <FeedShimmer.desktop />
+  return (
+    <main className="h-full w-full">
+      <Feed
+        isError={isError}
+        isFetchingNextPage={isFetchingNextPage}
+        fetchNextPage={fetchNextPage}
+        isLoading={isLoading}
+        videos={videos}
+      />
+    </main>
+  )
 }

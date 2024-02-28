@@ -92,7 +92,7 @@ function Comments({ iterations }: { iterations: number }) {
   return (() => {
     const rows = []
     for (let i = 0; i < iterations; i++) {
-      rows.push(<CommentItem />)
+      rows.push(<CommentItem key={i} />)
     }
     return rows
   })()

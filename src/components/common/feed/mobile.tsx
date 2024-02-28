@@ -57,7 +57,7 @@ export function Mobile({
   }, [videos])
 
   return (
-    <div style={{ height: videoSizeBox.height, width: videoSizeBox.width }} className="overflow-clip">
+    <div style={{ height: videoSizeBox.height, width: videoSizeBox.width }} className="absolute overflow-clip">
       <Swiper
         modules={[Mousewheel]}
         mousewheel={true}
@@ -74,8 +74,8 @@ export function Mobile({
             {() => <Player playIfInViewPort isFirstPlayerInList={index === 0} shouldPlay loop videoData={item} />}
           </SwiperSlide>
         ))}
-        <InfinityViewBox />
       </Swiper>
+      <InfinityViewBox />
     </div>
   )
 }

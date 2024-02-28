@@ -1,18 +1,16 @@
 import React from 'react'
 import style from './brand.module.scss'
 import OnlineCommunity from '@components/business/brand-page/online-community'
-import EngageCustomers from '@components/business/brand-page/engage-customers'
 import EngagementHooks from '@components/business/brand-page/engagement-hooks'
-import FunnelEngagement from '@components/business/brand-page/funnel-engagement'
 import VideoBasedCommunities from '@components/business/brand-page/video-based-communities'
 import Testimonial from '@components/business/brand-page/testimonials'
 import GetInTouch from '@components/business/brand-page/get-in-touch'
 import { NavBar } from '@components/pages/home/nav-bar'
-import Footer from '@components/business/footer'
 import AsSeenIn from '@components/business/as-seen-in'
 import onlinecommunity from '@images/business/brand-page/online-community-group.webp'
 import { Button } from '@components/ui/button'
 import { ContactUs } from '@components/common/modals/contact-us'
+import { Footer } from '@components/pages/home/footer'
 
 export default function Desktop() {
   return (
@@ -21,13 +19,13 @@ export default function Desktop() {
         <NavBar />
         <div className="container flex h-[100vh] items-center">
           <div className="flex flex-col justify-between">
-            <div className="flex items-center">
-              <div className="w-1/2">
+            <div className="flex items-center gap-8">
+              <div className="w-2/5">
                 <p className="my-4 text-new-h1" style={{ fontSize: '56px' }}>
-                  Get First-Party Data & Generate Unique Audience Segments.
+                  Get First Party Data & Capabilities to Moderate your Communities
                 </p>
                 <p className="my-4 text-new-para-1">
-                  Control and Moderate posts and own data in Your video based Community
+                  Full Transparency, access, and control over your community’s activity with help from AI assistants{' '}
                 </p>
                 <ContactUs>
                   <Button
@@ -37,7 +35,7 @@ export default function Desktop() {
                   </Button>
                 </ContactUs>
               </div>
-              <div className=" h-full w-1/2 items-center justify-center">
+              <div className=" h-full w-3/5 items-center justify-center">
                 <img loading="lazy" fetchPriority="low" decoding="async" src={onlinecommunity.src} />
               </div>
             </div>
@@ -45,15 +43,15 @@ export default function Desktop() {
         </div>
       </div>
 
-      <div className={style.container}>
+      <div className="container">
         {/* Online Community component */}
         <OnlineCommunity />
         {/* Engage Customers component */}
-        <EngageCustomers />
+        {/* <EngageCustomers /> */}
         {/* Engagement Hooks component */}
         <EngagementHooks />
         {/* Funnel Engagement component */}
-        <FunnelEngagement />
+        {/* <FunnelEngagement /> */}
         {/* Video Based Communities component */}
         <VideoBasedCommunities />
         {/* Testimonial component */}

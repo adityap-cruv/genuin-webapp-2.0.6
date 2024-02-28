@@ -35,8 +35,8 @@ export function ContactUs({ children }: Props) {
   return isMobile ? (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="rounded-20px">
-        <div className="m-8 gap-12">
+      <DialogContent isMobile={isMobile} className="rounded-20px">
+        <div className="hide-scrollbar m-4 max-h-[70vh] gap-12 overflow-auto p-2">
           <div>
             <h3 className="text-new-h2-mobile">Get in touch with an expert. Talk with sales.</h3>
             <p className="my-4 text-new-sm">Enter your details and a member of our team will contact you shortly.</p>
