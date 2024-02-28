@@ -120,6 +120,9 @@ export function NavBar() {
                     <Link href={PATH_NAME.pricing()}>
                       <h3 className="text-new-h3-mobile font-semibold">Pricing</h3>
                     </Link>
+                    <Link href={PATH_NAME.discover()}>
+                      <h3 className="text-new-h3-mobile font-semibold">Discover</h3>
+                    </Link>
                     <Link href={HIRING_LINK}>
                       <h3 className="text-new-h3-mobile font-semibold">Careers</h3>
                     </Link>
