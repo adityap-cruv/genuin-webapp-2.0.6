@@ -57,7 +57,7 @@ export function Mobile({
   }, [videos])
 
   return (
-    <div style={{ height: videoSizeBox.height, width: videoSizeBox.width }} className="overflow-clip">
+    <div style={{ height: videoSizeBox.height, width: videoSizeBox.width }} className="absolute overflow-clip">
       <Swiper
         modules={[Mousewheel]}
         mousewheel={true}
@@ -74,8 +74,8 @@ export function Mobile({
             {() => <Player playIfInViewPort isFirstPlayerInList={index === 0} shouldPlay loop videoData={item} />}
           </SwiperSlide>
         ))}
-        <InfinityViewBox />
       </Swiper>
+      <InfinityViewBox />
     </div>
   )
 }
@@ -88,7 +88,7 @@ function InfinityViewBox() {
   const videoDetails = videoList[currentIndex]
   if (videoDetails?.video)
     return (
-      <span className="sticky bottom-4 w-full">
+      <span className="absolute bottom-0 w-full">
         <AnimatedInfinityView
           community={{
             name: videoDetails.community.name ?? '',
