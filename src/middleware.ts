@@ -17,7 +17,7 @@ export async function middleware(request: NextRequest) {
 
   const host = request.headers.get('host')
   if (host) {
-    const config = getConfig('himanshu.begenuin.com')
+    const config = getConfig(host)
     request.cookies.set('config_params', JSON.stringify(config))
     const urlObj = new URL(request.url)
     // eslint-disable-next-line no-prototype-builtins
