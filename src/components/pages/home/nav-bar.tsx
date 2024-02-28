@@ -19,7 +19,7 @@ export function NavBar() {
           <Link href={PATH_NAME.build()}>
             <GenuinIcon.logo className="fill-new-off-black" />
           </Link>
-          <div className="flex w-1/4 items-center justify-between">
+          <div className="flex w-2/5 items-center justify-between">
             <Link href={PATH_NAME.build()}>
               <p
                 className={`pr-4 text-new-para-2 font-semibold ${
@@ -53,6 +53,15 @@ export function NavBar() {
                 } transition-all hover:underline`}>
                 {' '}
                 Pricing
+              </p>
+            </Link>
+            <Link href={PATH_NAME.discover()}>
+              <p
+                className={`pr-4 text-new-para-2 font-semibold ${
+                  pathname === '/discover' ? 'text-title-3-bold text-monochrome-black' : 'text-monochrome-3'
+                } transition-all hover:underline`}>
+                {' '}
+                Discover
               </p>
             </Link>
           </div>
