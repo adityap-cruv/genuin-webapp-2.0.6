@@ -8,6 +8,7 @@ import Link from 'next/link'
 import imgC2_s1 from '@images/home-page/c2_1.webp'
 import imgC2_s2 from '@images/home-page/c2_2.webp'
 import imgC2_2 from '@images/home-page/c2-2.webp'
+import imgC2_desktop from '@images/home-page/c2_desktop.webp'
 import imgC2_c2 from '@images/home-page/c2_2_2.webp'
 import imgC2_c2_mobile from '@images/home-page/c2_2_mobile.webp'
 import imgC3 from '@images/home-page/c3.webp'
@@ -20,15 +21,15 @@ import imgReviewerDp from '@images/home-page/reviewerDp.webp'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import businessInsider from '@images/business/marketing-page/as-seen-in/business-insider.png'
 import yahoo from '@images/business/marketing-page/as-seen-in/yahoo.png'
-import toyotaLogo from '@images/home-page/brands-section/toyota.svg'
+import toyotaLogo from '@images/home-page/brands-section/toyota_logo.webp'
 import toyotaBanne2 from '@images/home-page/brands-section/toyota_full.webp'
-import niveaLogo from '@images/home-page/brands-section/nivea.svg'
+import niveaLogo from '@images/home-page/brands-section/nivea_logo.webp'
 import niveaBanner from '@images/home-page/brands-section/nivea.webp'
-import sephoraLogo from '@images/home-page/brands-section/sephora.svg'
+import sephoraLogo from '@images/home-page/brands-section/sephora_logo.webp'
 import sephoraBanner from '@images/home-page/brands-section/sephora.webp'
-import nikeLogo from '@images/home-page/brands-section/nikeLogo.svg'
+import nikeLogo from '@images/home-page/brands-section/nike_logo.webp'
 import nikeBanner from '@images/home-page/brands-section/nikeBanner.webp'
-import cocacolaLogo from '@images/home-page/brands-section/cocacola.svg'
+import cocacolaLogo from '@images/home-page/brands-section/cocacola_logo.webp'
 import cocacolaBanner from '@images/home-page/brands-section/cocacola.webp'
 import { LoopSection } from './loop-section'
 
@@ -49,11 +50,11 @@ export function MainComponent() {
 
 function Component1() {
   const brandImages: any = [
-    { img: toyotaLogo, alt: 'toyota', banner: toyotaBanne2 },
-    { img: niveaLogo, alt: 'nivea', banner: niveaBanner },
-    { img: sephoraLogo, alt: 'sephora', banner: sephoraBanner },
-    { img: nikeLogo, alt: 'nike', banner: nikeBanner },
-    { img: cocacolaLogo, alt: 'cocacola', banner: cocacolaBanner },
+    { img: toyotaLogo, alt: 'toyota', banner: toyotaBanne2, logoHeight: 4 },
+    { img: niveaLogo, alt: 'nivea', banner: niveaBanner, logoHeight: 10 },
+    { img: sephoraLogo, alt: 'sephora', banner: sephoraBanner, logoHeight: 12 },
+    { img: nikeLogo, alt: 'nike', banner: nikeBanner, logoHeight: 6 },
+    { img: cocacolaLogo, alt: 'cocacola', banner: cocacolaBanner, logoHeight: 10 },
   ]
   const [currentIndex, setCurrentIndex] = useState(0)
 
@@ -107,29 +108,26 @@ function Component1() {
               </div>
             </div>
             <div className=" flex w-full justify-center gap-6">
-              {brandImages?.map(
-                ({ img }: any, index: any) =>
-                  img && (
-                    <div
-                      className={`flex h-12 w-44 items-center justify-center rounded-lg p-3 `}
-                      style={{
-                        backgroundColor:
-                          index === currentIndex ? 'rgba(249, 254, 255, 0.60)' : 'rgba(255, 255, 255, 0.10)',
-                      }}
-                      onClick={() => {
-                        handleThumbnailClick(index)
-                      }}
-                      key={index}>
-                      <img
-                        loading="eager"
-                        fetchPriority="auto"
-                        alt={`Thumbnail ${index + 1}`}
-                        decoding="async"
-                        src={img.src}
-                      />
-                    </div>
-                  )
-              )}
+              {brandImages?.map(({ img, logoHeight }: any, index: any) => (
+                <div
+                  className={`flex h-12 w-44 items-center justify-center rounded-lg p-3 `}
+                  style={{
+                    backgroundColor: index === currentIndex ? 'rgba(249, 254, 255, 0.60)' : 'rgba(255, 255, 255, 0.10)',
+                  }}
+                  onClick={() => {
+                    handleThumbnailClick(index)
+                  }}
+                  key={index}>
+                  <img
+                    loading="eager"
+                    fetchPriority="high"
+                    className={`h-${logoHeight} bg-transparent object-cover`}
+                    alt={`Thumbnail ${index + 1}`}
+                    decoding="async"
+                    src={img.src}
+                  />
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -167,12 +165,7 @@ function Component2() {
           Move Beyond Traditional Text Based <br /> Communities to Video Based Communities
         </h2>
         <div className="flex w-10/12 justify-center">
-          <div>
-            <img loading="lazy" fetchPriority="low" className="h-[80vh]" decoding="async" src={imgC2_s1.src} />
-          </div>
-          <div className="flex items-end">
-            <img loading="lazy" fetchPriority="low" className="h-[80vh]" decoding="async" src={imgC2_s2.src} />
-          </div>
+          <img loading="lazy" fetchPriority="low" className="h-[90vh]" decoding="async" src={imgC2_desktop.src} />
         </div>
 
         <h2 className="-tracking-new mb-6 mt-12 text-center text-new-h2">
