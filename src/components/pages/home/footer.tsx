@@ -105,7 +105,7 @@ function ContactButton() {
         size="index-page"
         variant="default"
         className="bg-new-off-black after:bg-new-dark-grey hover:bg-new-dark-grey">
-        <p className="whitespace-nowrap text-new-md text-new-off-white">Contact us</p>
+        <p className="whitespace-nowrap text-new-md text-new-off-white">Contact Us</p>
       </Button>
     </ContactUs>
   ) : (
@@ -114,7 +114,7 @@ function ContactButton() {
         size="index-page"
         variant="default"
         className="bg-new-off-black after:bg-new-dark-grey hover:bg-new-dark-grey">
-        <p className="whitespace-nowrap text-new-md text-new-off-white">Contact us</p>
+        <p className="whitespace-nowrap text-new-md text-new-off-white">Contact Us</p>
       </Button>
     </ContactUs>
   )
