@@ -109,7 +109,7 @@ function DownloadAppForm({ setIsSubmitted }: any) {
   }
 
   useEffect(() => {
-    if (!formData.email && !formData.phone) {
+    if (!formData.email || !formData.phone || !formData.email) {
       setDisableSubmit(true)
     } else {
       setDisableSubmit(false)
@@ -163,7 +163,7 @@ function DownloadAppForm({ setIsSubmitted }: any) {
   }
 
   const onSendLink = async () => {
-    const { phone, email, name } = formData
+    const { phone, email, name, companyName, companyUrl } = formData
     validatePhoneNumber(phone)
     validateEmail(email)
 
@@ -176,6 +176,12 @@ function DownloadAppForm({ setIsSubmitted }: any) {
     }
     if (formData.email && !isInvalidEmail) {
       Object.assign(payload, { email })
+    }
+    if (formData.companyName) {
+      Object.assign(payload, { companyName })
+    }
+    if (formData.companyName) {
+      Object.assign(payload, { companyUrl })
     }
 
     if (!isInvalidNumber && !isInvalidEmail) {
@@ -314,15 +320,14 @@ function DownloadAppForm({ setIsSubmitted }: any) {
               }}
             />
           </div>
-
+          {isError && <div className="absolute text-cap-1-demi text-red">Please try again after some time</div>}
           <Button
             className="mt-6 w-full rounded-md bg-new-off-black px-4 py-2 hover:bg-monochrome-black"
             onClick={async () => {
               await onSendLink()
             }}
-            // disabled={disableSubmit}
-          >
-            Submit
+            disabled={disableSubmit}>
+            {isLoading ? 'Submitting...' : 'Submit'}
           </Button>
           <p className="mt-2 text-center text-new-para-2-mobile text-new-dark-grey">
             By submitting this form, you agree to receive promotional messages from Genuin about its products and
