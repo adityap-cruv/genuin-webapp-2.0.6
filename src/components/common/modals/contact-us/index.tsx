@@ -31,43 +31,67 @@ type Props = {
 // TODO: api implementation
 export function ContactUs({ children }: Props) {
   const isMobile = useGenuinOptions().isMobile
+  const [isSubmitted, setIsSubmitted] = useState<any>(false)
+
+  useEffect(() => {
+    return () => {
+      // Reset isSubmitted when the component is unmounted
+      setIsSubmitted(false)
+    }
+  }, [])
 
   return isMobile ? (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent isMobile={isMobile} className="rounded-20px">
-        <div className="hide-scrollbar m-4 max-h-[70vh] gap-12 overflow-auto p-2">
-          <div>
-            <h3 className="text-new-h2-mobile">Get in touch with an expert. Talk with sales.</h3>
-            <p className="my-4 text-new-sm">Enter your details and a member of our team will contact you shortly.</p>
+        {isSubmitted ? (
+          <div className="hide-scrollbar m-4 flex h-[50vh] max-h-[70vh] items-center justify-center gap-12 overflow-auto p-2">
+            <p className="text-center text-new-h2-mobile">
+              Thank you for your interest. Our team will contact you shortly!
+            </p>
           </div>
-          <div>
-            <DownloadAppForm />
+        ) : (
+          <div className="hide-scrollbar m-4 max-h-[70vh] gap-12 overflow-auto p-2">
+            <div>
+              <h3 className="text-new-h2-mobile">Get in touch with an expert. Talk with sales.</h3>
+              <p className="my-4 text-new-sm">Enter your details and a member of our team will contact you shortly.</p>
+            </div>
+            <div>
+              <DownloadAppForm setIsSubmitted={setIsSubmitted} />
+            </div>
           </div>
-        </div>
+        )}
       </DialogContent>
     </Dialog>
   ) : (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="rounded-20px min-w-fit">
-        <div className="m-8 flex justify-around gap-12 sm:w-[600px] md:w-[800px]">
-          <div className="w-1/2">
-            <h3 className="text-new-h3">Get in touch with an expert. Talk with sales.</h3>
-            <p className="my-4 text-new-para-1">
-              Enter your details and a member of our team will contact you shortly.
+        {isSubmitted ? (
+          <div className="m-8 flex h-80 items-center justify-center gap-12 sm:w-[600px] md:w-[800px]">
+            <p className="text-center text-new-h1" style={{ fontSize: '56px' }}>
+              Thank you for your interest. Our team will contact you shortly!
             </p>
           </div>
-          <div>
-            <DownloadAppForm />
+        ) : (
+          <div className="m-8 flex justify-around gap-12 sm:w-[600px] md:w-[800px]">
+            <div className="w-1/2">
+              <h3 className="text-new-h3">Get in touch with an expert. Talk with sales.</h3>
+              <p className="my-4 text-new-para-1">
+                Enter your details and a member of our team will contact you shortly.
+              </p>
+            </div>
+            <div>
+              <DownloadAppForm setIsSubmitted={setIsSubmitted} />
+            </div>
           </div>
-        </div>
+        )}
       </DialogContent>
     </Dialog>
   )
 }
 
-function DownloadAppForm() {
+function DownloadAppForm({ setIsSubmitted }: any) {
   const [formData, setFormData] = useState(initialFormData)
   const [isInvalidNumber, setIsInvalidNumber] = useState(false)
   const [isInvalidEmail, setIsInvalidEmail] = useState(false)
@@ -138,35 +162,39 @@ function DownloadAppForm() {
     setFormData({ ...formData, companyUrl: input })
   }
 
-  //   const onSendLink = async () => {
-  //     const { phone, email } = formData
-  //     validatePhoneNumber(phone)
-  //     validateEmail(email)
+  const onSendLink = async () => {
+    const { phone, email, name } = formData
+    validatePhoneNumber(phone)
+    validateEmail(email)
 
-  //     const payload = {}
-  //     if (formData.phone && !isInvalidNumber) {
-  //       Object.assign(payload, { mobile: selectedCountry.dial_code + phone })
-  //     }
-  //     if (formData.email && !isInvalidEmail) {
-  //       Object.assign(payload, { email })
-  //     }
+    const payload = {}
+    if (formData.email && !isInvalidEmail) {
+      Object.assign(payload, { name })
+    }
+    if (formData.phone && !isInvalidNumber) {
+      Object.assign(payload, { mobile: selectedCountry.dial_code + phone })
+    }
+    if (formData.email && !isInvalidEmail) {
+      Object.assign(payload, { email })
+    }
 
-  //     if (!isInvalidNumber && !isInvalidEmail) {
-  //       setIsLoading(true)
+    if (!isInvalidNumber && !isInvalidEmail) {
+      setIsLoading(true)
 
-  //       try {
-  //         const res = await axios.post(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/send_download_link', payload)
+      try {
+        const res = await axios.post(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/brand_integration', payload)
 
-  //         if (res.data.code === 200) {
-  //           setIsLinkSent(true)
-  //         }
-  //       } catch (e) {
-  //         setIsError(true)
-  //       }
+        if (res.data.code === 200) {
+          setIsLinkSent(true)
+          setIsSubmitted(true)
+        }
+      } catch (e) {
+        setIsError(true)
+      }
 
-  //       setIsLoading(false)
-  //     }
-  //   }
+      setIsLoading(false)
+    }
+  }
 
   return (
     <div className="flex w-full items-center justify-center">
@@ -289,14 +317,8 @@ function DownloadAppForm() {
 
           <Button
             className="mt-6 w-full rounded-md bg-new-off-black px-4 py-2 hover:bg-monochrome-black"
-            onClick={() => {
-              setFormData({
-                phone: '',
-                email: '',
-                name: '',
-                companyName: '',
-                companyUrl: '',
-              })
+            onClick={async () => {
+              await onSendLink()
             }}
             // disabled={disableSubmit}
           >
