@@ -1,5 +1,4 @@
 import { NavBar } from '@components/pages/home/nav-bar'
-import { Input } from '@components/ui/input'
 import bg from '@images/business/discover/bg_discover_mobile.webp'
 import c1 from '@images/home-page/community/communityshare 1.webp'
 import c2 from '@images/home-page/community/communityshare 2.webp'
@@ -11,7 +10,9 @@ import l2 from '@images/home-page/loop/Loop-Link-Share 2.webp'
 import l3 from '@images/home-page/loop/Loop-Link-Share 3.webp'
 import l4 from '@images/home-page/loop/Loop-Link-Share 4.webp'
 import l5 from '@images/home-page/loop/Loop-Link-Share 5.webp'
+import search from '@icons/icSearch.svg'
 import Link from 'next/link'
+import { useState } from 'react'
 
 export default function Mobile() {
   return (
@@ -25,6 +26,12 @@ export default function Mobile() {
 }
 
 function SearchSection() {
+  const [searchItem, setSearchItem] = useState('')
+
+  const handleInputChange = (e: any) => {
+    const searchTerm = e.target.value
+    setSearchItem(searchTerm)
+  }
   return (
     <div
       className="h-56 pt-navbar"
@@ -35,7 +42,16 @@ function SearchSection() {
       }}>
       <div className="container flex flex-col items-center">
         <p className="mb-6 mt-4 text-center text-new-para-1 font-bold">Find your community on Genuin</p>
-        <Input className="w-3/5 rounded-full border-0" type="text" placeholder="Search Genuin" />
+        <div className="relative flex w-3/5 items-center justify-start">
+          <img src={search.src} className="absolute left-4" alt="genuin" />
+          <input
+            type="text"
+            className="w-full rounded-full border-0 p-2 px-12 outline-none"
+            value={searchItem}
+            onChange={handleInputChange}
+            placeholder=" Search Genuin"
+          />
+        </div>{' '}
       </div>
     </div>
   )
