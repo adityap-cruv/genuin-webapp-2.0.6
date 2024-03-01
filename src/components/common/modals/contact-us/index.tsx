@@ -4,8 +4,6 @@ import axios from 'axios'
 import { Countries } from '../../../../content/countries'
 import { FlagIcon, type FlagIconCode } from 'react-flag-kit' // Import Flag from react-flag-kit
 import { Dialog, DialogTrigger, DialogContent } from '@components/ui/dialog'
-import Link from 'next/link'
-import { MOBILE_DOWNLOAD_APP_LINK } from '@lib/constants'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 
 interface FormData {
@@ -28,51 +26,80 @@ type Props = {
   children: React.ReactNode
 }
 
-// TODO: api implementation
 export function ContactUs({ children }: Props) {
-  const isMobile = useGenuinOptions().isMobile
-
-  return isMobile ? (
+  return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="rounded-t-3xl">
-        <div className="hide-scrollbar m-4 max-h-[70vh] gap-12 overflow-auto p-2">
-          <div>
-            <h3 className="text-new-h2-mobile">Get in touch with an expert. Talk with sales.</h3>
-            <p className="my-4 text-new-sm">Enter your details and a member of our team will contact you shortly.</p>
-          </div>
-          <div>
-            <DownloadAppForm />
-          </div>
-        </div>
-      </DialogContent>
-    </Dialog>
-  ) : (
-    <Dialog>
-      <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="rounded-20px min-w-fit">
-        <div className="m-8 flex justify-around gap-12 sm:w-[600px] md:w-[800px]">
-          <div className="w-1/2">
-            <h3 className="text-new-h3">Get in touch with an expert. Talk with sales.</h3>
-            <p className="my-4 text-new-para-1">
-              Enter your details and a member of our team will contact you shortly.
-            </p>
-          </div>
-          <div>
-            <DownloadAppForm />
-          </div>
-        </div>
+      <DialogContent className="rounded-t-2xl">
+        <DownloadAppForm />
       </DialogContent>
     </Dialog>
   )
 }
 
-function DownloadAppForm() {
+export default function DownloadAppForm() {
+  const isMobile = useGenuinOptions().isMobile
+  const [isLinkSent, setIsLinkSent] = useState(false)
+
+  return isMobile ? (
+    <>
+      {isLinkSent ? (
+        <div className="hide-scrollbar m-4 flex h-[50vh] max-h-[70vh] flex-col items-center justify-center gap-4 overflow-auto p-2">
+          <img
+            className="h-28"
+            alt="genuin"
+            src="https://s3-alpha-sig.figma.com/img/e85a/0248/eae94be2998af4b960adff36d72727aa?Expires=1710115200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=lxldO4uMhIQCFIw3z4qNXRpt7kt~2etnssF7rG77amPto0gEmge94Qm0pWtuQJVybSaHIZFJ0RdajvasZQO0ReexhtQKVHgEIl5NMF17w-kDDWVfsLVBKtnSePE76m0X4x~prjFgiVUGohAKW7qx0jksHGsHddeIjzdhUOCBqGIwLNNTJ8CiVMfpLzImtIuVh9E2viYK76UzjUCuHgsorXldtQxY-6wjODR2BLHxShZYbFQGeFX6dgK1qhTsv7AkhFxiT7pvpAw5xXLtIj2Eu9Zugy1MIACqy1KYZe8ZbiqDj8Jhnv2MCx00RzLxZuA43X27tMsUxVBeiH-nHSraVw__"
+          />
+          <p className="text-center text-new-h3-mobile font-semibold">
+            Thank you for your interest. Our team will contact you shortly!
+          </p>
+        </div>
+      ) : (
+        <div className="hide-scrollbar m-10 max-h-[70vh] gap-12 overflow-auto p-2">
+          <div>
+            <h3 className="text-new-h2-mobile">Get in touch with an expert. Talk with sales.</h3>
+            <p className="my-4 text-new-sm">Enter your details and a member of our team will contact you shortly.</p>
+          </div>
+          <Form setIsLinkSent={setIsLinkSent} />
+        </div>
+      )}
+    </>
+  ) : (
+    <>
+      {isLinkSent ? (
+        <div className="m-8 flex h-80 flex-col items-center justify-center gap-4 sm:w-[600px] md:w-[800px]">
+          <img
+            className="h-28"
+            alt="genuin"
+            src="https://s3-alpha-sig.figma.com/img/e85a/0248/eae94be2998af4b960adff36d72727aa?Expires=1710115200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=lxldO4uMhIQCFIw3z4qNXRpt7kt~2etnssF7rG77amPto0gEmge94Qm0pWtuQJVybSaHIZFJ0RdajvasZQO0ReexhtQKVHgEIl5NMF17w-kDDWVfsLVBKtnSePE76m0X4x~prjFgiVUGohAKW7qx0jksHGsHddeIjzdhUOCBqGIwLNNTJ8CiVMfpLzImtIuVh9E2viYK76UzjUCuHgsorXldtQxY-6wjODR2BLHxShZYbFQGeFX6dgK1qhTsv7AkhFxiT7pvpAw5xXLtIj2Eu9Zugy1MIACqy1KYZe8ZbiqDj8Jhnv2MCx00RzLxZuA43X27tMsUxVBeiH-nHSraVw__"
+          />
+          <p className="text-center text-new-h2-mobile font-semibold">
+            Thank you for your interest.
+            <br /> Our team will contact you shortly!
+          </p>
+        </div>
+      ) : (
+        <div className="m-8 flex justify-around gap-12 sm:w-[600px] md:w-[800px]">
+          <div className="w-1/2">
+            <h3 className="text-new-h1" style={{ fontSize: '56px' }}>
+              Get in touch with an expert. Talk with sales.
+            </h3>
+            <p className="my-4 text-new-para-1">
+              Enter your details and a member of our team will contact you shortly.
+            </p>
+          </div>
+          <Form setIsLinkSent={setIsLinkSent} />
+        </div>
+      )}
+    </>
+  )
+}
+
+function Form({ setIsLinkSent }: any) {
   const [formData, setFormData] = useState(initialFormData)
   const [isInvalidNumber, setIsInvalidNumber] = useState(false)
   const [isInvalidEmail, setIsInvalidEmail] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [isLinkSent, setIsLinkSent] = useState(false)
   const [isError, setIsError] = useState(false)
   // const [selectedCountry, setSelectedCountry] = useState(Countries[0]);
   const [disableSubmit, setDisableSubmit] = useState(true)
@@ -85,7 +112,7 @@ function DownloadAppForm() {
   }
 
   useEffect(() => {
-    if (!formData.email && !formData.phone) {
+    if (!formData.email || !formData.phone || !formData.name || !formData.companyName || !formData.companyUrl) {
       setDisableSubmit(true)
     } else {
       setDisableSubmit(false)
@@ -138,38 +165,47 @@ function DownloadAppForm() {
     setFormData({ ...formData, companyUrl: input })
   }
 
-  //   const onSendLink = async () => {
-  //     const { phone, email } = formData
-  //     validatePhoneNumber(phone)
-  //     validateEmail(email)
+  const onSendLink = async () => {
+    const { phone, email, name, companyName, companyUrl } = formData
+    validatePhoneNumber(phone)
+    validateEmail(email)
 
-  //     const payload = {}
-  //     if (formData.phone && !isInvalidNumber) {
-  //       Object.assign(payload, { mobile: selectedCountry.dial_code + phone })
-  //     }
-  //     if (formData.email && !isInvalidEmail) {
-  //       Object.assign(payload, { email })
-  //     }
+    const payload = {}
+    if (formData.email && !isInvalidEmail) {
+      Object.assign(payload, { name })
+    }
+    if (formData.phone && !isInvalidNumber) {
+      Object.assign(payload, { mobile: selectedCountry.dial_code + phone })
+    }
+    if (formData.email && !isInvalidEmail) {
+      Object.assign(payload, { email })
+    }
+    if (formData.companyName) {
+      Object.assign(payload, { company_name: companyName })
+    }
+    if (formData.companyName) {
+      Object.assign(payload, { company_url: companyUrl })
+    }
 
-  //     if (!isInvalidNumber && !isInvalidEmail) {
-  //       setIsLoading(true)
+    if (!isInvalidNumber && !isInvalidEmail) {
+      setIsLoading(true)
 
-  //       try {
-  //         const res = await axios.post(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/send_download_link', payload)
+      try {
+        const res = await axios.post(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/contact_us', payload)
 
-  //         if (res.data.code === 200) {
-  //           setIsLinkSent(true)
-  //         }
-  //       } catch (e) {
-  //         setIsError(true)
-  //       }
+        if (res.data.code === 200) {
+          setIsLinkSent(true)
+        }
+      } catch (e) {
+        setIsError(true)
+      }
 
-  //       setIsLoading(false)
-  //     }
-  //   }
+      setIsLoading(false)
+    }
+  }
 
   return (
-    <div className="flex w-full items-center justify-center">
+    <div className="flex items-center justify-center">
       <div className="max-w-sm">
         <>
           <div className="relative mb-4">
@@ -286,21 +322,14 @@ function DownloadAppForm() {
               }}
             />
           </div>
-
+          {isError && <div className="absolute text-cap-1-demi text-red">Please try again after some time</div>}
           <Button
             className="mt-6 w-full rounded-md bg-new-off-black px-4 py-2 hover:bg-monochrome-black"
-            onClick={() => {
-              setFormData({
-                phone: '',
-                email: '',
-                name: '',
-                companyName: '',
-                companyUrl: '',
-              })
+            onClick={async () => {
+              await onSendLink()
             }}
-            // disabled={disableSubmit}
-          >
-            Submit
+            disabled={disableSubmit}>
+            {isLoading ? 'Submitting...' : 'Submit'}
           </Button>
           <p className="mt-2 text-center text-new-para-2-mobile text-new-dark-grey">
             By submitting this form, you agree to receive promotional messages from Genuin about its products and
@@ -311,5 +340,3 @@ function DownloadAppForm() {
     </div>
   )
 }
-
-export default DownloadAppForm
