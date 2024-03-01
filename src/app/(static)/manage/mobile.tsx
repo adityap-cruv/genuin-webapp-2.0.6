@@ -44,7 +44,7 @@ export default function Mobile() {
 function Component1() {
   return (
     <div
-      className="flex items-center pb-20 pt-36 "
+      className="flex items-center pb-32 pt-44 "
       style={{
         background: `url(${managebg.src}) no-repeat`,
         backgroundSize: '100% 100%',

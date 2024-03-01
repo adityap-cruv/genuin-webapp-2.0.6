@@ -11,14 +11,14 @@ export function RedirectHandler({
   config?: ConfigType
   shouldRedirect: boolean
 }) {
-  if (
-    config &&
-    config?.integrations.white_label.enable &&
-    config?.integrations.white_label.allowed_domains[0] &&
-    shouldRedirect
-  ) {
-    permanentRedirect(checkAndAppendHttps(config.integrations.white_label.allowed_domains[0]))
-  }
+  // if (
+  //   config &&
+  //   config?.integrations.white_label.enable &&
+  //   config?.integrations.white_label.allowed_domains[0] &&
+  //   shouldRedirect
+  // ) {
+  //   permanentRedirect(checkAndAppendHttps(config.integrations.white_label.allowed_domains[0]))
+  // }
 
   return children
 }
