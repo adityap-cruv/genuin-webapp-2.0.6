@@ -2,12 +2,13 @@
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { type ReactNode } from 'react'
-import { HomeIcon, LatestIcon, MoreIcon, PopularIcon } from '@icons/side-bar-icons'
+import { HomeIcon, LatestIcon, MoreIcon, NotificationIcon, PopularIcon, ProfileIcon } from '@icons/side-bar-icons'
 import { cn } from '@lib/utils'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
 // import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@components/ui/tooltip'
 import dynamic from 'next/dynamic'
+import { Button } from '@components/ui/button'
 // import { Popover } from '@components/ui/popover'
 const RecentCommunities = dynamic(
   async () => await import('./recent-communities').then((comp) => comp.RecentCommunities),
@@ -18,7 +19,7 @@ const RecentCommunities = dynamic(
 export function SideBar() {
   const pathName = usePathname()
   return (
-    <nav className="flex h-full w-fit  flex-col border border-monochrome-9 transition-[width] lg:w-full lg:border-none">
+    <nav className="flex h-full w-fit flex-col  overflow-auto border border-monochrome-9 transition-[width] lg:w-full lg:border-none">
       <span className="px-1 py-4">
         <Link href={{ pathname: PATH_NAME.home() }}>
           <Item title="Home" isActive={pathName === PATH_NAME.home()}>
@@ -33,6 +34,16 @@ export function SideBar() {
         <Link href={{ pathname: PATH_NAME.latest() }}>
           <Item title="Latest" isActive={pathName === PATH_NAME.latest()}>
             <LatestIcon isActive={pathName === PATH_NAME.latest()} />
+          </Item>
+        </Link>
+        {/* <Link href={{ pathname: PATH_NAME.notification() }}>
+          <Item title="Notification" isActive={pathName === PATH_NAME.notification()}>
+            <NotificationIcon isActive={pathName === PATH_NAME.notification()} />
+          </Item>
+        </Link> */}
+        <Link href={{ pathname: PATH_NAME.profile() }}>
+          <Item title="Profile" isActive={pathName === PATH_NAME.profile()}>
+            <ProfileIcon isActive={pathName === PATH_NAME.profile()} />
           </Item>
         </Link>
         {/* <Link href={PATH_NAME.search()}>
@@ -59,6 +70,9 @@ export function SideBar() {
             </Link>
           </PopoverContent>
         </Popover>
+        <Button variant={'outline'} className="mb-2 w-3/4 border-primary">
+          <p className="text-title-3-bold text-primary"> Log in</p>
+        </Button>
         <RecentCommunities />
       </span>
     </nav>

@@ -2,6 +2,50 @@ import { cn } from '@lib/utils'
 import { type ComponentProps } from 'react'
 type Props = { isActive: boolean; className?: string } & ComponentProps<'svg'>
 
+export function NotificationIcon({ isActive, className, ...props }: Props) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        className={cn(isActive ? '' : 'fill-monochrome-black', className)}
+        d="M15.9998 4C20.4181 4 23.9998 7.58166 23.9998 11.9999C23.9998 14.5508 23.9998 17.1122 23.9998 18.6667C23.9998 22.6667 26.6665 24 26.6665 24L5.33317 24C5.33317 24 7.99984 22.6667 7.99984 18.6667C7.99984 17.1122 7.99984 14.5508 7.99984 11.9999C7.99984 7.58166 11.5816 4 15.9998 4V4Z"
+        stroke={isActive ? '#0645FF' : 'black'}
+        strokeWidth="2"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M13.3332 24C13.3332 25.4728 14.5271 26.6667 15.9998 26.6667C17.4726 26.6667 18.6665 25.4728 18.6665 24"
+        stroke={isActive ? '#0645FF' : 'black'}
+        strokeWidth="2"
+      />
+    </svg>
+  )
+}
+
+export function ProfileIcon({ isActive, className, ...props }: Props) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className={cn(isActive ? '' : 'fill-monochrome-black', className)}
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none">
+      <path
+        d="M8.21481 10.138C7.21094 9.13417 6.64697 7.77263 6.64697 6.35294C6.64697 4.93325 7.21094 3.57171 8.21481 2.56784C9.21868 1.56397 10.5802 1 11.9999 1C13.4196 1 14.7811 1.56397 15.785 2.56784C16.7889 3.57171 17.3529 4.93325 17.3529 6.35294C17.3529 7.77263 16.7889 9.13417 15.785 10.138C14.7811 11.1419 13.4196 11.7059 11.9999 11.7059C10.5802 11.7059 9.21868 11.1419 8.21481 10.138Z"
+        stroke={isActive ? '#0645FF' : 'black'}
+        strokeWidth="2"
+      />
+      <path
+        d="M22.987 22.693L22.9874 22.6942C22.9992 22.7268 23.0027 22.7608 22.998 22.7939L23.9881 22.9339L22.998 22.7939C22.9933 22.8271 22.9803 22.8605 22.9582 22.891L23.7684 23.4772L22.9582 22.891C22.936 22.9216 22.9049 22.949 22.8659 22.9687C22.8267 22.9885 22.7819 22.9995 22.7353 22.9995H1.26466C1.21813 22.9995 1.17328 22.9885 1.13414 22.9687C1.0951 22.949 1.06398 22.9216 1.04179 22.891L0.240314 23.4709L1.04179 22.891C1.0197 22.8605 1.00671 22.8271 1.00202 22.7939C0.997342 22.7608 1.00075 22.7268 1.01259 22.6942L1.01304 22.693C1.81208 20.4834 3.2953 18.5657 5.26273 17.2072C7.23047 15.8485 9.5844 15.1172 12 15.1172C14.4156 15.1172 16.7695 15.8485 18.7373 17.2072C20.7047 18.5657 22.1879 20.4834 22.987 22.693Z"
+        stroke={isActive ? '#0645FF' : 'black'}
+        strokeWidth="2"
+      />
+    </svg>
+  )
+}
+
 export function PopularIcon({ isActive, className, ...props }: Props) {
   return (
     <svg
