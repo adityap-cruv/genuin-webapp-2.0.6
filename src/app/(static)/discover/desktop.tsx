@@ -1,5 +1,4 @@
 import { NavBar } from '@components/pages/home/nav-bar'
-import { Input } from '@components/ui/input'
 import bg from '@images/business/discover/bg_discover.webp'
 import c1 from '@images/home-page/community/communityshare 1.webp'
 import c2 from '@images/home-page/community/communityshare 2.webp'
@@ -11,7 +10,9 @@ import l2 from '@images/home-page/loop/Loop-Link-Share 2.webp'
 import l3 from '@images/home-page/loop/Loop-Link-Share 3.webp'
 import l4 from '@images/home-page/loop/Loop-Link-Share 4.webp'
 import l5 from '@images/home-page/loop/Loop-Link-Share 5.webp'
+import search from '@icons/icSearch.svg'
 import Link from 'next/link'
+import { useState } from 'react'
 
 export default function Desktop() {
   return (
@@ -25,6 +26,13 @@ export default function Desktop() {
 }
 
 function SearchSection() {
+  const [searchItem, setSearchItem] = useState('')
+
+  const handleInputChange = (e: any) => {
+    const searchTerm = e.target.value
+    setSearchItem(searchTerm)
+  }
+
   return (
     <div
       className="h-96 pt-navbar"
@@ -35,7 +43,16 @@ function SearchSection() {
       }}>
       <div className="container flex flex-col items-center">
         <p className="mb-6 mt-14 text-center text-new-h2">Find your community on Genuin</p>
-        <Input className="w-3/5 rounded-full border-0" type="text" placeholder="Search Genuin" />
+        <div className="relative flex w-3/5 items-center justify-start">
+          <img src={search.src} className="absolute left-4" alt="genuin" />
+          <input
+            type="text"
+            className="w-full rounded-full border-0 p-2 px-12 outline-none"
+            value={searchItem}
+            onChange={handleInputChange}
+            placeholder=" Search Genuin"
+          />
+        </div>
       </div>
     </div>
   )
@@ -106,7 +123,7 @@ function LoopSection() {
     },
   ]
   return (
-    <div className="container mt-12 px-40">
+    <div className="container my-4 mt-8 px-40">
       <p className=" text-new-para-1">Featured Loops</p>
       <div className="mt-6 grid grid-cols-2 gap-6">
         {loopList.map((item, index) => {
