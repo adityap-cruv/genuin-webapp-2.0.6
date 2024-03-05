@@ -32,7 +32,7 @@ export default function OnlineCommunity() {
       {/* Comment: Row Two contains images */}
       <div className={style.rowTwo}>
         <div className={style.rowTwoLeft}>
-          <img src={community1.src} loading="lazy" className="mt-6" fetchPriority="low" decoding="async" />
+          <img src={community1.src} loading="lazy" className="mt-6 h-[90vh]" fetchPriority="low" decoding="async" />
         </div>
       </div>
     </section>
