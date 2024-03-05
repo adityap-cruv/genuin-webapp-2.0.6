@@ -57,9 +57,9 @@ export function NavBar() {
             </Link>
             <Link href={PATH_NAME.discover()}>
               <p
-                className={`pr-4 text-new-para-2 font-semibold ${
-                  pathname === '/discover' ? 'text-title-3-bold text-monochrome-black' : 'text-monochrome-3'
-                } transition-all hover:underline`}>
+                className={`pr-4 text-new-para-2 ${
+                  pathname === '/discover' ? 'font-bold text-monochrome-black' : 'text-monochrome-3'
+                } transition-all `}>
                 {' '}
                 Discover
               </p>
