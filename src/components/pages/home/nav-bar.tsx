@@ -22,35 +22,35 @@ export function NavBar() {
           <div className="flex w-1/4 items-center justify-between">
             <Link href={PATH_NAME.build()}>
               <p
-                className={`pr-4 text-new-para-2 font-semibold ${
-                  pathname === '/' ? 'text-title-3-bold text-monochrome-black' : 'text-monochrome-3'
-                } transition-all hover:underline`}>
+                className={`pr-4 text-new-para-2 ${
+                  pathname === '/' ? 'font-bold text-monochrome-black' : 'text-monochrome-3'
+                } transition-all`}>
                 Build
               </p>
             </Link>
             <Link href={PATH_NAME.manage()}>
               <p
-                className={`pr-4 text-new-para-2 font-semibold ${
-                  pathname === '/manage' ? 'text-title-3-bold text-monochrome-black' : 'text-monochrome-3'
-                } transition-all hover:underline`}>
+                className={`pr-4 text-new-para-2 ${
+                  pathname === '/manage' ? 'font-bold text-monochrome-black' : 'text-monochrome-3'
+                } transition-all`}>
                 {' '}
                 Manage
               </p>
             </Link>
             <Link href={PATH_NAME.market()}>
               <p
-                className={`pr-4 text-new-para-2 font-semibold ${
-                  pathname === '/market' ? 'text-title-3-bold text-monochrome-black' : 'text-monochrome-3'
-                } transition-all hover:underline`}>
+                className={`pr-4 text-new-para-2 ${
+                  pathname === '/market' ? 'font-bold text-monochrome-black' : 'text-monochrome-3'
+                } transition-all`}>
                 {' '}
                 Market
               </p>
             </Link>
             <Link href={PATH_NAME.pricing()}>
               <p
-                className={`pr-4 text-new-para-2 font-semibold ${
-                  pathname === '/pricing' ? 'text-title-3-bold text-monochrome-black' : 'text-monochrome-3'
-                } transition-all hover:underline`}>
+                className={`pr-4 text-new-para-2 ${
+                  pathname === '/pricing' ? 'font-bold text-monochrome-black' : 'text-monochrome-3'
+                } transition-all`}>
                 {' '}
                 Pricing
               </p>

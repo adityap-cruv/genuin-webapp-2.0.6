@@ -233,7 +233,7 @@ function Component7() {
                         <div className={testimonial_styles.cardBody}>
                           <p className="text-center text-new-h5-mobile">{text}</p>
                         </div>
-                        <div className="-mb-4 mt-4 flex gap-6 pl-10 pt-6">
+                        <div className="mb-4 mt-2 flex gap-6 pl-10 pt-6">
                           <img
                             loading="lazy"
                             fetchPriority="low"
