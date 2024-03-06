@@ -10,6 +10,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
 import dynamic from 'next/dynamic'
 import { Button } from '@components/ui/button'
 import { AppLogo } from '@components/ui/app-logo'
+import { GenuinIcon } from '@icons/genuin-icon'
 // import { Popover } from '@components/ui/popover'
 const RecentCommunities = dynamic(
   async () => await import('./recent-communities').then((comp) => comp.RecentCommunities),
@@ -81,8 +82,8 @@ export function SideBar() {
         <div className="flex items-center">
           <p className="text-title-2-demi text-monochrome">Powered by</p>
           <Link href={{ pathname: PATH_NAME.home() }}>
-            <AppLogo.logo className="fill-new-off-black" imageHeight={30} />
-            {/* <GenuinIcon.logo className="fill-new-off-black" /> */}
+            {/* <AppLogo.logo className="fill-new-off-black" imageHeight={30} /> */}
+            <GenuinIcon.logo className="h-8 fill-new-off-black" />
           </Link>
         </div>
       </div>
