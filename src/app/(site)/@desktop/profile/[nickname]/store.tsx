@@ -80,7 +80,7 @@ export const useCommunityListStore = create<State & Actions>((set) => {
         const newActiveIndex = shareStrings.indexOf(shareString)
         if (!state.videoList[newActiveIndex].details) {
           const startIndex = newActiveIndex - 5 > -1 ? newActiveIndex - 5 : 0
-          const endIndex = newActiveIndex + 5 >= shareStrings.length ? shareStrings.length - 1 : newActiveIndex + 5
+          const endIndex = newActiveIndex + 5 >= shareStrings.length ? shareStrings.length : newActiveIndex + 5
           void state.setVideoDetails(shareStrings.slice(startIndex, endIndex).map((item) => ({ share_string: item })))
         }
         return { activeIndex: newActiveIndex, currentVideoShareString: shareString }
