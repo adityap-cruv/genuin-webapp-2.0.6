@@ -83,14 +83,14 @@ function CommunitySection() {
   ]
   return (
     <div className="container mt-8 px-40">
-      <p className="text-new-para-1">Featured communities</p>
+      <p className="text-new-para-1">Featured Communities</p>
       <div className="mt-6 grid grid-cols-2 gap-6">
         {communityList.map((item, index) => {
           return (
             <div key={index}>
-              <Link href={item.link}>
+              <a href={item.link} target="_blank" rel="noopener noreferrer">
                 <img src={item.image.src} className="rounded-3xl shadow-lg" alt="genuin" />
-              </Link>
+              </a>
             </div>
           )
         })}
@@ -129,9 +129,9 @@ function LoopSection() {
         {loopList.map((item, index) => {
           return (
             <div key={index}>
-              <Link href={item.link}>
+              <a href={item.link} target="_blank" rel="noopener noreferrer">
                 <img src={item.image.src} className="rounded-3xl shadow-lg" alt="genuin" />
-              </Link>
+              </a>
             </div>
           )
         })}

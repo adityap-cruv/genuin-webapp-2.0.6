@@ -87,9 +87,9 @@ function CommunitySection() {
         {communityList.map((item, index) => {
           return (
             <div key={index}>
-              <Link href={item.link}>
+              <a href={item.link} target="_blank" rel="noopener noreferrer">
                 <img src={item.image.src} className="rounded-3xl shadow-lg" alt="genuin" />
-              </Link>
+              </a>
             </div>
           )
         })}
@@ -128,9 +128,9 @@ function LoopSection() {
         {loopList.map((item, index) => {
           return (
             <div key={index}>
-              <Link href={item.link}>
+              <a href={item.link} target="_blank" rel="noopener noreferrer">
                 <img src={item.image.src} className="rounded-3xl shadow-lg" alt="genuin" />
-              </Link>
+              </a>
             </div>
           )
         })}
