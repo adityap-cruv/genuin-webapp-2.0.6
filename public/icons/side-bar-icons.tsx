@@ -27,9 +27,9 @@ export function ProfileIcon({ isActive, className, ...props }: Props) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      className={cn(isActive ? '' : 'fill-monochrome-black', className)}
-      width="24"
-      height="24"
+      className={cn(isActive ? 'p-1' : 'fill-monochrome-black p-1', className)}
+      width="32"
+      height="32"
       viewBox="0 0 24 24"
       fill="none">
       <path

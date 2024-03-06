@@ -41,8 +41,8 @@ function SearchSection() {
         backgroundPosition: 'center',
       }}>
       <div className="container flex flex-col items-center">
-        <p className="mb-6 mt-4 text-center text-new-para-1 font-bold">Find your community on Genuin</p>
-        <div className="relative flex w-3/5 items-center justify-start">
+        <p className="mb-6 mt-12 text-center text-new-para-1 font-bold">Communities on Genuin</p>
+        {/* <div className="relative flex w-3/5 items-center justify-start">
           <img src={search.src} className="absolute left-4" alt="genuin" />
           <input
             type="text"
@@ -51,7 +51,7 @@ function SearchSection() {
             onChange={handleInputChange}
             placeholder=" Search Genuin"
           />
-        </div>{' '}
+        </div>{' '} */}
       </div>
     </div>
   )
@@ -124,7 +124,7 @@ function LoopSection() {
   return (
     <div className="container mb-4 mt-8">
       <p className=" text-new-h5-mobile">Featured Loops</p>
-      <div className="mt-6 grid grid-cols-1 gap-6">
+      <div className="my-6 grid grid-cols-1 gap-6">
         {loopList.map((item, index) => {
           return (
             <div key={index}>

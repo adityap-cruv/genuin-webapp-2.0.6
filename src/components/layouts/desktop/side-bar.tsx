@@ -9,6 +9,8 @@ import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
 // import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@components/ui/tooltip'
 import dynamic from 'next/dynamic'
 import { Button } from '@components/ui/button'
+import { AppLogo } from '@components/ui/app-logo'
+import { GenuinIcon } from '@icons/genuin-icon'
 // import { Popover } from '@components/ui/popover'
 const RecentCommunities = dynamic(
   async () => await import('./recent-communities').then((comp) => comp.RecentCommunities),
@@ -19,8 +21,8 @@ const RecentCommunities = dynamic(
 export function SideBar() {
   const pathName = usePathname()
   return (
-    <nav className="flex h-full w-fit flex-col  overflow-auto border border-monochrome-9 transition-[width] lg:w-full lg:border-none">
-      <span className="px-1 py-4">
+    <nav className="flex h-full w-fit flex-col justify-between overflow-auto border border-monochrome-9 px-1 py-4 transition-[width] lg:w-full lg:border-none">
+      <div>
         <Link href={{ pathname: PATH_NAME.home() }}>
           <Item title="Home" isActive={pathName === PATH_NAME.home()}>
             <HomeIcon isActive={pathName === PATH_NAME.home()} />
@@ -70,11 +72,21 @@ export function SideBar() {
             </Link>
           </PopoverContent>
         </Popover>
-        <Button variant={'outline'} className="mb-2 w-3/4 border-primary">
+        <Button variant={'outline'} className="mb-2 w-3/5 border-primary">
           <p className="text-title-3-bold text-primary"> Log in</p>
         </Button>
         <RecentCommunities />
-      </span>
+      </div>
+      <div>
+        <hr className="border-1 mb-4 mt-1 border-monochrome-black/10" />
+        <div className="flex items-center">
+          <p className="text-title-2-demi text-monochrome">Powered by</p>
+          <Link href={{ pathname: PATH_NAME.home() }}>
+            {/* <AppLogo.logo className="fill-new-off-black" imageHeight={30} /> */}
+            <GenuinIcon.logo className="h-8 fill-new-off-black" />
+          </Link>
+        </div>
+      </div>
     </nav>
   )
 }
