@@ -395,7 +395,7 @@ function LoopVideos({ userId, loop, community }: LoopVideosProps) {
                   open(video.share_string)
                 }}
                 key={video.id}
-                className="group/vidcard relative flex aspect-reel min-w-full flex-col items-center bg-secondary hover:cursor-pointer">
+                className="group/vidcard relative flex aspect-reel min-w-full flex-col items-center hover:cursor-pointer">
                 <img src={video.thumbnail} className="aspect-reel rounded" />
                 <div className="absolute bottom-0 left-0 m-1 flex items-center justify-center">
                   <Image src={icSpark} alt="share" height={15} width={15} />
@@ -403,7 +403,7 @@ function LoopVideos({ userId, loop, community }: LoopVideosProps) {
                     {abbreviateNumber(video.no_of_sparks) ?? 0}
                   </p>
                 </div>
-                <div className="absolute inset-0 hidden h-full w-full items-center justify-center bg-monochrome-black/40 group-hover/vidcard:flex">
+                <div className="rounded absolute inset-0 hidden h-full w-full items-center justify-center bg-monochrome-black/40 group-hover/vidcard:flex">
                   <Image src={icPlay} alt="" />
                 </div>
               </div>
