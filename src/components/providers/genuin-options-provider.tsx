@@ -4,6 +4,8 @@ import { type ConfigType, useGenuinOptions } from '@lib/stores/genuin-options'
 import { getSizeBoxes } from '@lib/utils/common/size-box'
 import { useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
+import FingerpringJS from '@fingerprintjs/fingerprintjs'
+import { useLocalStorage } from '@lib/stores/local-storage'
 
 type Props = {
   children: React.ReactNode
@@ -32,8 +34,20 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
     return getSizeBoxes(isMobile, !hideNavbar)
   }
 
+  function setVisitorID() {
+    const fpPromise = FingerpringJS.load()
+
+    void (async () => {
+      // Get the visitor identifier when you need it.
+      const fp = await fpPromise
+      const result = await fp.get()
+      // setUserId(result.visitorId)
+    })()
+  }
+
   function init() {
     const isIframe = window !== window.parent
+    setVisitorID()
     setInitialData({
       embed: !!config,
       logoUrl: config?.logo,
