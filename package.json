@@ -61,7 +61,6 @@
     "tailwind-merge": "^1.14.0",
     "tailwindcss-animate": "^1.0.7",
     "uuid": "^9.0.1",
-    "uuidv4": "^6.2.13",
     "zod": "^3.22.2",
     "zustand": "^4.4.1"
   },
@@ -71,6 +70,7 @@
     "@types/node": "^20.5.6",
     "@types/react": "18.2.21",
     "@types/react-dom": "18.2.7",
+    "@types/uuid": "^9.0.8",
     "@typescript-eslint/eslint-plugin": "^6.4.1",
     "@typescript-eslint/parser": "^6.4.1",
     "autoprefixer": "10.4.15",
