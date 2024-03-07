@@ -1,4 +1,5 @@
 'use client'
+import { AuthenticationModal } from '@components/common/modals/authentication'
 import { SplashScreen } from '@components/common/splash-screen'
 import { type ConfigType, useGenuinOptions } from '@lib/stores/genuin-options'
 import { getSizeBoxes } from '@lib/utils/common/size-box'
@@ -92,6 +93,10 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
   }, [])
 
   if (isLoading) return <SplashScreen />
-  return children
-  // return null
+  return (
+    <>
+      {children}
+      <AuthenticationModal.ui />
+    </>
+  )
 }

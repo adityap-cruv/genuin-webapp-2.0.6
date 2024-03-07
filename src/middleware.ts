@@ -1,5 +1,9 @@
+import NextAuth from 'next-auth'
 import type { NextRequest } from 'next/server'
 import { NextResponse, userAgent } from 'next/server'
+import { authConfig } from '../auth.config'
+
+export default NextAuth(authConfig).auth
 
 export async function middleware(request: NextRequest) {
   const STATIC_PATHNAMES = ['/', '/manage', '/market', '/pricing', '/privacy', '/terms', '/verify-email']
@@ -45,7 +49,7 @@ export const config = {
 
 function getConfig(host: string) {
   const arr = host.split('.')
-  if (['app', 'begenuin', 'localhost:4005', 'www'].includes(arr[0])) return ''
+  if (['app', 'begenuin', 'localhost:4005', 'www', '192'].includes(arr[0])) return ''
 
   if (!host.includes('begenuin')) return { domain: host }
 
