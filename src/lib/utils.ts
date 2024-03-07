@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { type ClassValue, clsx } from 'clsx'
+import { createCipheriv } from 'crypto'
 import { twMerge } from 'tailwind-merge'
 
 export function cn(...inputs: ClassValue[]) {
@@ -221,4 +222,21 @@ export function getRandomAvatar() {
     'snowman',
   ]
   return avatars[Math.round(Math.random() * avatars.length)]
+}
+
+export function encryptText(text: string) {
+  // console.log(crypto.getCiphers())
+  const iv = Buffer.from(process.env.NEXT_PUBLIC_AES_IV)
+  const encryptedText = Buffer.from(text)
+
+  // Creating Cipher
+  const cipher = createCipheriv('aes-256-cbc', Buffer.from(process.env.NEXT_PUBLIC_AES_KEY), iv)
+
+  // Updating encrypted text
+  let encrypted = cipher.update(encryptedText)
+  // encrypted += cipher.final();
+  encrypted = Buffer.concat([encrypted, cipher.final()])
+
+  // returns data after decryption
+  return encrypted.toString('base64')
 }

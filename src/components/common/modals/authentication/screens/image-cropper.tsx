@@ -3,13 +3,12 @@ import Cropper from 'react-cropper'
 import 'cropperjs/dist/cropper.css'
 import { Button } from '@components/ui/button'
 import { useAuthenticationModalStore } from '../store'
-import { v4 as uuid } from 'uuid'
 
 export function ImageCropper() {
   const cropperRef = createRef<any>()
-  const { imageUrl, setImageUrl, setStep } = useAuthenticationModalStore((state) => ({
-    imageUrl: state.formData.imageUrl,
-    setImageUrl: state.setFormData,
+  const { image, setImage, setStep } = useAuthenticationModalStore((state) => ({
+    image: state.formData.image,
+    setImage: state.setFormData,
     setStep: state.setStep,
   }))
 
@@ -39,9 +38,7 @@ export function ImageCropper() {
       if (canvas) {
         canvas.toBlob((blob: any) => {
           if (blob) {
-            const file = new File([blob], `${uuid()}.png`, { type: 'image/png' })
-            // TODO: Upload image here.
-            setImageUrl({ imageUrl: URL.createObjectURL(file as any) })
+            setImage({ image: new File([blob], `cropper_image.png`, { type: 'image/png' }), isAvatar: false })
             setStep('SIGN_UP')
           }
         }, 'image/png')
@@ -51,7 +48,7 @@ export function ImageCropper() {
 
   return (
     <>
-      <h3 className="flex w-full items-center  justify-center text-heading-3">Edit Profile picture</h3>
+      <h3 className="text-heading-3 flex w-full  items-center justify-center">Edit Profile picture</h3>
       <div className="pb-2">
         <Cropper
           viewMode={1}
@@ -66,7 +63,7 @@ export function ImageCropper() {
           zoomOnWheel
           initialAspectRatio={1}
           ref={cropperRef}
-          src={imageUrl}
+          src={typeof image === 'string' ? image : URL.createObjectURL(image as any)}
           cropBoxMovable
           aspectRatio={1}
           style={{ maxHeight: '400px', maxWidth: '500px' }}

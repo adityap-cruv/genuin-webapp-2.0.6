@@ -7,9 +7,12 @@ import { cn } from '@lib/utils'
 import { z } from 'zod'
 import { useAuthenticationModalStore } from '../store'
 import { Label } from '@components/ui/label'
+import { signup } from '@lib/api/auth'
+import { useLocalStorage } from '@lib/stores/local-storage'
 
 export function Signup() {
   const { setStep, formData, setFormData } = useAuthenticationModalStore()
+  const deviceId = useLocalStorage().deviceId
 
   const formSchema = z.object({
     displayName: z
@@ -23,37 +26,53 @@ export function Signup() {
     resolver: zodResolver(formSchema),
     mode: 'onSubmit',
     criteriaMode: 'firstError',
+    defaultValues: {
+      displayName: formData.displayName,
+      email: formData.email,
+    },
   })
 
   const { isDirty, isValid, isSubmitting } = form.formState
-  //  TODO: Use this in onSubmit.
-  function onSubmit() {}
+
+  async function onSubmit({ displayName, email }: { displayName: string; email: string }) {
+    grecaptcha.enterprise.ready(async () => {
+      const token = await grecaptcha.enterprise.execute(process.env.NEXT_PUBLIC_RECAPTCHA_CLIENT_KEY, {
+        action: 'SIGNUP',
+      })
+      console.log('in::', token)
+      await signup({
+        email,
+        profileImage: formData.image ?? '',
+        isAvatar: formData.isAvatar,
+        recaptchaAction: 'SIGNUP',
+        recaptchaToken: token,
+        deviceId,
+      })
+        .then((res) => {})
+        .catch((e) => {})
+    })
+    // TODO: Verify Email here.
+    // form.control.setError('email', { message: 'Account already exists. Log in instead. ' })
+  }
 
   return (
     <>
       <h3 className="flex w-full items-center justify-center pb-4 text-heading-3">Sign up for Ted</h3>
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(
-            async ({ displayName, email }) => {
-              console.log('display name::', displayName, '::email::', email)
-              // TODO: Verify Email here.
-              // form.control.setError('email', { message: 'Account already exists. Log in instead. ' })
-            },
-            ({ displayName, email }) => {
-              console.log('display name::', displayName, '::email::', email)
-            }
-          )}>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="flex w-full flex-col items-center justify-center gap-y-2">
-            <img src={formData.imageUrl} className="h-20 w-20 rounded-full bg-blue-70" />
+            <img
+              src={typeof formData.image === 'string' ? formData.image : URL.createObjectURL(formData.image as any)}
+              className="h-20 w-20 rounded-full bg-blue-70"
+            />
             <input
               id="pic"
               type="file"
               className="hidden w-full"
               accept="image/*"
               onChange={(e) => {
-                setFormData({ imageUrl: URL.createObjectURL(e.target.files?.[0] as any) })
-                setStep('IMAGE_INPUT')
+                setFormData({ image: URL.createObjectURL(e.target.files?.[0] as any) })
+                setStep('IMAGE_CROPPER')
               }}
             />
             <Label htmlFor="pic" className="cursor-pointer !text-body-1-demi text-primary">
@@ -118,17 +137,6 @@ export function Signup() {
                 value="Verify Email"
                 className="flex w-full cursor-pointer items-center justify-center rounded-lg bg-new-off-black  text-monochrome-white hover:bg-new-dark-grey disabled:hover:bg-new-off-black"
                 disabled={!isDirty || !isValid}
-                onClick={() => {
-                  // console.log('sign in in..')
-                  // void signIn('credentials', { callbackUrl: '/explore', redirect: true })
-                  // void authenticate()
-                  // grecaptcha.enterprise.ready(async () => {
-                  //   const token = await grecaptcha.enterprise.execute('6LeQm4gpAAAAAC2o51SQj-ak7ojnfOlxyDiR9E7p', {
-                  //     action: 'LOGIN',
-                  //   })
-                  //   console.log('token::', token)
-                  // })
-                }}
               />
             )}
           </span>

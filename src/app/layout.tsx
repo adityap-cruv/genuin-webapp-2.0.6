@@ -41,7 +41,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         {error ? (
           <BrandNotFound />
         ) : (
-          <RedirectHandler config={config} shouldRedirect={Object.hasOwn(configParams, 'subdomain')}>
+          <RedirectHandler config={config} shouldRedirect={Object.hasOwn(configParams ?? {}, 'subdomain')}>
             <ThirdPartyScriptProvider>
               <SessionProvider>
                 <GenuinOptionsProvider browserType={browserType} deviceType={deviceType} os={os} config={config}>

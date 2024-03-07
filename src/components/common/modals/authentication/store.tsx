@@ -1,14 +1,13 @@
 import { getAvatarUrl, getRandomAvatar } from '@lib/utils'
 import { create } from 'zustand'
 
-type StepsType =
+export type StepsType =
   | 'SIGN_UP'
   | 'EMAIL_INPUT'
   | 'NUMBER_INPUT'
   | 'PASSWORD_INPUT'
-  | 'EMAIL_SENT_NOTICE'
   | 'OTP_INPUT'
-  | 'IMAGE_INPUT'
+  | 'IMAGE_CROPPER'
   | 'EMAIL_VERIFICATION_SUCCESS'
   | 'EMAIL_VERIFICATION_FAILURE'
   | 'MAGIC_LINK_VERIFICATION_SUCCESS'
@@ -21,14 +20,15 @@ type FormDataType = {
   email: string
   password: string
   mobileNumber: string
-  imageUrl: string
-  imageFile: File
+  image: string | File
+  isAvatar: boolean
 }
 
 type States = {
   step: StepsType
   formData: Partial<FormDataType>
   isOpen: boolean
+  note?: React.ReactNode
 }
 
 type Actions = {
@@ -37,12 +37,14 @@ type Actions = {
   setStep: (step: StepsType) => void
   reset: () => void
   setFormData: (formData: Partial<FormDataType>) => void
+  showNote: (note: React.ReactNode) => void
 }
 
 const initialStates: States = {
   step: 'SIGN_UP',
   formData: {
-    imageUrl: getAvatarUrl(getRandomAvatar()),
+    image: getAvatarUrl(getRandomAvatar()),
+    isAvatar: true,
   },
   isOpen: false,
 }
@@ -64,6 +66,9 @@ export const useAuthenticationModalStore = create<Actions & States>((set) => {
     },
     setFormData(formData) {
       set({ formData })
+    },
+    showNote(note) {
+      set({ note, isOpen: true, step: 'NOTE' })
     },
   }
 })

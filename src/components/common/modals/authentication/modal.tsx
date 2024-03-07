@@ -2,16 +2,16 @@
 
 import { Dialog, DialogTrigger, DialogContent, DialogClose } from '@components/ui/dialog'
 import { type DialogProps } from '@radix-ui/react-dialog'
-import { useAuthenticationModalStore } from './store'
+import { type StepsType, useAuthenticationModalStore } from './store'
 import {
   EmailInput,
-  EmailSentNotice,
   EmailVerification,
   ImageCropper,
   MagicLinkVerification,
   NumberInput,
   PasswordInput,
   Signup,
+  Note,
 } from './screens'
 import { useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
@@ -29,12 +29,12 @@ export function Modal({ children, ...props }: Props) {
   }))
   const searchParams = useSearchParams()
 
-  const stepSet = new Set([
+  const stepSet: Set<StepsType> = new Set<StepsType>([
     'EMAIL_VERIFICATION_FAILURE',
     'EMAIL_VERIFICATION_SUCCESS',
     'MAGIC_LINK_VERIFICATION_FAILURE',
     'MAGIC_LINK_VERIFICATION_SUCCESS',
-    'IMAGE_INPUT',
+    'IMAGE_CROPPER',
   ])
   const showClose = !stepSet.has(step)
 
@@ -80,12 +80,10 @@ export function Content() {
       return <Signup />
     case 'NUMBER_INPUT':
       return <NumberInput />
-    case 'IMAGE_INPUT':
+    case 'IMAGE_CROPPER':
       return <ImageCropper />
     case 'PASSWORD_INPUT':
       return <PasswordInput />
-    case 'EMAIL_SENT_NOTICE':
-      return <EmailSentNotice />
     case 'OTP_INPUT':
       return <p>otp input.</p>
     case 'EMAIL_VERIFICATION_FAILURE':
@@ -96,5 +94,7 @@ export function Content() {
       return <MagicLinkVerification.failure />
     case 'MAGIC_LINK_VERIFICATION_SUCCESS':
       return <MagicLinkVerification.success />
+    case 'NOTE':
+      return <Note />
   }
 }
