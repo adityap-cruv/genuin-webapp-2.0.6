@@ -42,8 +42,8 @@ function SearchSection() {
         backgroundPosition: 'center',
       }}>
       <div className="container flex flex-col items-center">
-        <p className="mb-6 mt-14 text-center text-new-h2">Find your community on Genuin</p>
-        <div className="relative flex w-3/5 items-center justify-start">
+        <p className="mb-6 mt-24 text-center text-new-h2">Communities on Genuin</p>
+        {/* <div className="relative flex w-3/5 items-center justify-start">
           <img src={search.src} className="absolute left-4" alt="genuin" />
           <input
             type="text"
@@ -52,7 +52,7 @@ function SearchSection() {
             onChange={handleInputChange}
             placeholder=" Search Genuin"
           />
-        </div>
+        </div> */}
       </div>
     </div>
   )
@@ -83,14 +83,14 @@ function CommunitySection() {
   ]
   return (
     <div className="container mt-8 px-40">
-      <p className="text-new-para-1">Featured communities</p>
+      <p className="text-new-para-1">Featured Communities</p>
       <div className="mt-6 grid grid-cols-2 gap-6">
         {communityList.map((item, index) => {
           return (
             <div key={index}>
-              <Link href={item.link}>
+              <a href={item.link} target="_blank" rel="noopener noreferrer">
                 <img src={item.image.src} className="rounded-3xl shadow-lg" alt="genuin" />
-              </Link>
+              </a>
             </div>
           )
         })}
@@ -125,13 +125,13 @@ function LoopSection() {
   return (
     <div className="container my-4 mt-8 px-40">
       <p className=" text-new-para-1">Featured Loops</p>
-      <div className="mt-6 grid grid-cols-2 gap-6">
+      <div className="my-6 grid grid-cols-2 gap-6">
         {loopList.map((item, index) => {
           return (
             <div key={index}>
-              <Link href={item.link}>
+              <a href={item.link} target="_blank" rel="noopener noreferrer">
                 <img src={item.image.src} className="rounded-3xl shadow-lg" alt="genuin" />
-              </Link>
+              </a>
             </div>
           )
         })}

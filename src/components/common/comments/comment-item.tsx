@@ -85,6 +85,6 @@ const Comment = {
     )
   },
   text({ comment }: any) {
-    return <ReadMore className="text-body-1-med" text={comment.comment.text} />
+    return <ReadMore className="break-all text-body-1-med" text={comment.comment.text} />
   },
 }
