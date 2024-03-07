@@ -1,5 +1,6 @@
 import { type ConfigType } from '@lib/stores/genuin-options'
 import { checkAndAppendHttps } from '@lib/utils'
+import { headers } from 'next/headers'
 import { permanentRedirect } from 'next/navigation'
 
 export function RedirectHandler({
@@ -17,7 +18,8 @@ export function RedirectHandler({
     config?.integrations.white_label.allowed_domains[0] &&
     shouldRedirect
   ) {
-    permanentRedirect(checkAndAppendHttps(config.integrations.white_label.allowed_domains[0]))
+    const searchParamStr = headers().get('x-search-params')
+    permanentRedirect(checkAndAppendHttps(config.integrations.white_label.allowed_domains[0]) + searchParamStr)
   }
 
   return children
