@@ -5,7 +5,6 @@ import { getSizeBoxes } from '@lib/utils/common/size-box'
 import { useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
 import FingerpringJS from '@fingerprintjs/fingerprintjs'
-import { useLocalStorage } from '@lib/stores/local-storage'
 
 type Props = {
   children: React.ReactNode
