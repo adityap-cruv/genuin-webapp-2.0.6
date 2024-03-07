@@ -14,8 +14,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const deviceType = cookies().get('device_type')?.value ?? ''
   const os = cookies().get('os')?.value ?? ''
   const browserType = cookies().get('browser_type')?.value ?? ''
-  const configStr = cookies().get('config_params')?.value ?? ''
-  const configParams = configStr ? JSON.parse(configStr) : {}
+  const configParamsStr = cookies().get('config_params')?.value ?? ''
+  let configParams = null
+  if (configParamsStr) configParams = JSON.parse(configParamsStr)
+
   let config: ConfigType | undefined
   let error = false
 
