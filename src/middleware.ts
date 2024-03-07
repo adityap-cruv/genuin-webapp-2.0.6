@@ -23,6 +23,7 @@ export async function middleware(request: NextRequest) {
     // eslint-disable-next-line no-prototype-builtins
     if (config && STATIC_PATHNAMES.includes(urlObj.pathname)) {
       urlObj.pathname = '/home'
+      console.log("URL::", urlObj)
       return NextResponse.redirect(urlObj)
     }
   }
