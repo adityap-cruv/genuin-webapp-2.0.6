@@ -227,7 +227,7 @@ export function getRandomAvatar() {
 export function encryptText(text: string) {
   // console.log(crypto.getCiphers())
   const iv = Buffer.from(process.env.NEXT_PUBLIC_AES_IV)
-  const encryptedText = Buffer.from(text)
+  const encryptedText = Buffer.from(text + process.env.NEXT_PUBLIC_SECRET_STRING)
 
   // Creating Cipher
   const cipher = createCipheriv('aes-256-cbc', Buffer.from(process.env.NEXT_PUBLIC_AES_KEY), iv)

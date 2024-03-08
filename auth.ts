@@ -10,12 +10,32 @@ export const {
   ...authConfig,
   providers: [
     credentials({
+      name: 'credentials',
+      type: 'credentials',
       credentials: {
-        username: { type: 'text' },
+        is_avatar: { type: 'text' },
+        member_id: { type: 'text' },
+        nickname: { type: 'text' },
+        profile_image: { type: 'text' },
+        email: { type: 'text' },
+        bio: { type: 'text' },
+        name: { type: 'text' },
+        is_email_verified: { type: 'text' },
+        is_password_set: { type: 'text' },
       },
       authorize(credentials, request) {
         console.log('credentials:', credentials)
-        return { authToken: '23' }
+        return {
+          isAvatar: credentials.is_avatar === 'true',
+          memberId: String(credentials.member_id),
+          nickname: String(credentials.nickname),
+          image: String(credentials.profile_image),
+          email: String(credentials.email),
+          bio: String(credentials.bio),
+          name: String(credentials.name),
+          isEmailVerified: credentials.is_email_verified === 'true',
+          isPasswordSet: credentials.is_password_set === 'true',
+        }
       },
     }),
   ],

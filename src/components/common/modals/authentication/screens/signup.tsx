@@ -3,12 +3,15 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, useForm
 import { Input } from '@components/ui/input'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import { cn } from '@lib/utils'
+import { cn, getAvatarUrl } from '@lib/utils'
 import { z } from 'zod'
 import { useAuthenticationModalStore } from '../store'
 import { Label } from '@components/ui/label'
 import { signup } from '@lib/api/auth'
 import { useLocalStorage } from '@lib/stores/local-storage'
+import { useEffect } from 'react'
+import { SIGNUP_SOURCE } from '@lib/constants'
+import { signIn } from 'next-auth/react'
 
 export function Signup() {
   const { setStep, formData, setFormData } = useAuthenticationModalStore()
@@ -31,25 +34,41 @@ export function Signup() {
       email: formData.email,
     },
   })
-
   const { isDirty, isValid, isSubmitting } = form.formState
+
+  useEffect(() => {
+    const w = form.watch((value) => {
+      setFormData({ displayName: value.displayName, email: value.email })
+    })
+    return () => {
+      w.unsubscribe()
+    }
+  }, [form.watch])
 
   async function onSubmit({ displayName, email }: { displayName: string; email: string }) {
     grecaptcha.enterprise.ready(async () => {
       const token = await grecaptcha.enterprise.execute(process.env.NEXT_PUBLIC_RECAPTCHA_CLIENT_KEY, {
         action: 'SIGNUP',
       })
-      console.log('in::', token)
       await signup({
         email,
         profileImage: formData.image ?? '',
+        name: displayName,
         isAvatar: formData.isAvatar,
         recaptchaAction: 'SIGNUP',
         recaptchaToken: token,
         deviceId,
+        signupSource: SIGNUP_SOURCE.web,
+      }).then(async (res) => {
+        if (res?.code === 200) {
+          await signIn('credentials', {
+            ...res.data.user,
+            redirect: false,
+          }).then((res) => {
+            if (res?.ok) setStep('EMAIL_SENT_NOTE')
+          })
+        }
       })
-        .then((res) => {})
-        .catch((e) => {})
     })
     // TODO: Verify Email here.
     // form.control.setError('email', { message: 'Account already exists. Log in instead. ' })
@@ -62,7 +81,11 @@ export function Signup() {
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="flex w-full flex-col items-center justify-center gap-y-2">
             <img
-              src={typeof formData.image === 'string' ? formData.image : URL.createObjectURL(formData.image as any)}
+              src={
+                typeof formData.image === 'string'
+                  ? getAvatarUrl(formData.image)
+                  : URL.createObjectURL(formData.image as any)
+              }
               className="h-20 w-20 rounded-full bg-blue-70"
             />
             <input

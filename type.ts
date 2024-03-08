@@ -12,5 +12,6 @@ declare namespace NodeJS {
     NEXT_PUBLIC_AES_KEY: string
     NEXT_PUBLIC_AES_IV: string
     NEXT_PUBLIC_RECAPTCHA_CLIENT_KEY: string
+    NEXT_PUBLIC_SECRET_STRING: string
   }
 }

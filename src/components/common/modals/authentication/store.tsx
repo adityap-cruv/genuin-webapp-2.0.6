@@ -1,4 +1,4 @@
-import { getAvatarUrl, getRandomAvatar } from '@lib/utils'
+import { getRandomAvatar } from '@lib/utils'
 import { create } from 'zustand'
 
 export type StepsType =
@@ -13,7 +13,8 @@ export type StepsType =
   | 'MAGIC_LINK_VERIFICATION_SUCCESS'
   | 'MAGIC_LINK_VERIFICATION_FAILURE'
   | 'COMPLETE_PROFILE'
-  | 'NOTE'
+  | 'EMAIL_SENT_NOTE'
+  | 'MAGIC_LINK_SENT_NOTE'
 
 type FormDataType = {
   displayName: string
@@ -37,13 +38,13 @@ type Actions = {
   setStep: (step: StepsType) => void
   reset: () => void
   setFormData: (formData: Partial<FormDataType>) => void
-  showNote: (note: React.ReactNode) => void
+  // showNote: (note: React.ReactNode) => void
 }
 
 const initialStates: States = {
   step: 'SIGN_UP',
   formData: {
-    image: getAvatarUrl(getRandomAvatar()),
+    image: getRandomAvatar(),
     isAvatar: true,
   },
   isOpen: false,
@@ -65,10 +66,10 @@ export const useAuthenticationModalStore = create<Actions & States>((set) => {
       set(initialStates)
     },
     setFormData(formData) {
-      set({ formData })
-    },
-    showNote(note) {
-      set({ note, isOpen: true, step: 'NOTE' })
+      set((state) => {
+        Object.assign(state.formData, formData)
+        return { formData: state.formData }
+      })
     },
   }
 })

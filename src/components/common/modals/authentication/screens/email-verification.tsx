@@ -32,7 +32,7 @@ function Success() {
 }
 
 function Failure() {
-  const showNote = useAuthenticationModalStore().showNote
+  const setStep = useAuthenticationModalStore().setStep
 
   return (
     <ModalShell>
@@ -45,25 +45,10 @@ function Failure() {
         className="w-full bg-new-off-black hover:bg-new-dark-grey"
         variant="default"
         onClick={() => {
-          showNote(<NextNote />)
+          setStep('EMAIL_SENT_NOTE')
         }}>
         <p className="text-title-3-demi">Resend verification email</p>
       </Button>
-    </ModalShell>
-  )
-}
-
-// TODO: Add dynamic mail.
-function NextNote() {
-  return (
-    <ModalShell>
-      <p className="text-title-1-med text-center">
-        We have sent a confirmation link to your <span className="text-title-1-bold">john.doe@gmail.com</span>. Verify
-        your email to save your profile.
-      </p>
-      <p className="text-title-3-demi">
-        Not seeing the email? <span className="text-primary">Resend</span>
-      </p>
     </ModalShell>
   )
 }

@@ -94,7 +94,7 @@ export function Content() {
       return <MagicLinkVerification.failure />
     case 'MAGIC_LINK_VERIFICATION_SUCCESS':
       return <MagicLinkVerification.success />
-    case 'NOTE':
-      return <Note />
+    case 'EMAIL_SENT_NOTE':
+      return <Note.email />
   }
 }

@@ -2,18 +2,18 @@ import type { NextAuthConfig } from 'next-auth'
 
 export const authConfig = {
   callbacks: {
-    authorized({ auth, request: { nextUrl } }) {
-      const isLoggedIn = !!auth?.user
-      const isOnDashboard = nextUrl.pathname.startsWith('/dashboard')
-      // if (isOnDashboard) {
-      //   if (isLoggedIn) return true
-      //   return false // Redirect unauthenticated users to login page
-      // } else if (isLoggedIn) {
-      //   return Response.redirect(new URL('/explore', nextUrl))
-      // }
-      console.log('true::', auth)
-      return true
+    session(params) {
+      console.log('in session::', params)
+      return { user: params.user, expires: params.session.expires }
     },
+    jwt(params) {
+      console.log(params.)
+      console.log('::in jwt::', params)
+      return { ...params }
+    },
+  },
+  session: {
+    strategy: 'jwt',
   },
   pages: {
     signIn: '/home',
@@ -21,8 +21,5 @@ export const authConfig = {
     signOut: '/home',
   },
   providers: [], // Add providers with an empty array for now
-  debug: true,
-  session: {
-    maxAge: 50,
-  },
+  // debug: true,
 } satisfies NextAuthConfig
