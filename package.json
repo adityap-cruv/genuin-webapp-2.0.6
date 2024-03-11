@@ -21,6 +21,7 @@
     }
   },
   "dependencies": {
+    "@auth/core": "^0.28.0",
     "@fingerprintjs/fingerprintjs": "^4.2.2",
     "@hookform/resolvers": "^3.3.2",
     "@radix-ui/react-accordion": "^1.1.2",
@@ -51,8 +52,10 @@
     "lucide-react": "^0.279.0",
     "mobile-detect": "^1.4.5",
     "next": "^14.0.1",
+    "next-auth": "^5.0.0-beta.15",
     "openplayerjs": "^2.13.3",
     "react": "18.2.0",
+    "react-cropper": "^2.3.3",
     "react-dom": "18.2.0",
     "react-flag-kit": "^1.1.1",
     "react-phone-number-input": "^3.3.9",
@@ -67,6 +70,7 @@
   "devDependencies": {
     "@next/eslint-plugin-next": "^14.0.3",
     "@tanstack/eslint-plugin-query": "^4.34.1",
+    "@types/grecaptcha": "^3.0.8",
     "@types/node": "^20.5.6",
     "@types/react": "18.2.21",
     "@types/react-dom": "18.2.7",

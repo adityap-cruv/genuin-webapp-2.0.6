@@ -1,5 +1,5 @@
 import { Avatar, AvatarImage, AvatarFallback } from '@components/ui/avatar'
-import { isValidHTTPS, cn } from '@lib/utils'
+import { cn, getAvatarUrl } from '@lib/utils'
 
 type Props = {
   isAvatar: boolean
@@ -17,15 +17,6 @@ export function CustomAvatar({ isAvatar = false, imageUrl, className, fallbackSt
       </AvatarFallback>
     </Avatar>
   )
-}
-
-function getAvatarUrl(avatarUrl: any) {
-  if (avatarUrl) {
-    return isValidHTTPS(avatarUrl)
-      ? avatarUrl
-      : `https://media.qa.begenuin.com/webapp_assets/assets/avatar/${avatarUrl}.gif`
-  }
-  return null
 }
 
 function getAvatarFallback(str: string | undefined) {

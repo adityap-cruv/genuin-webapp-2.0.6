@@ -14,6 +14,7 @@ import { RecentCommunities } from './recent-communities'
 import { MOBILE_DOWNLOAD_APP_LINK } from '@lib/constants'
 import { AppLogo } from '@components/ui/app-logo'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
+import { AuthenticationModal } from '@components/common/modals/authentication'
 
 const navVariant = cva('sticky top-0 flex z-40 h-[76px] w-full items-center justify-between  px-2', {
   variants: {
@@ -63,6 +64,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
             </Button>
           </Link>
         )}
+        <Button>Login</Button>
         {showClose && (
           <X
             onClick={() => {

@@ -1,3 +1,4 @@
+import { auth } from '../../../../../auth'
 import { Root } from './root'
 import { type Metadata } from 'next'
 
@@ -7,7 +8,9 @@ import { type Metadata } from 'next'
 //   }
 // }
 
-export default function Page() {
+export default async function Page() {
+  const data = await auth()
+  console.log(data)
   return <Root />
 }
 

@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { type ClassValue, clsx } from 'clsx'
+import { createCipheriv } from 'crypto'
 import { twMerge } from 'tailwind-merge'
 
 export function cn(...inputs: ClassValue[]) {
@@ -35,7 +36,9 @@ export function getTimeAgo(createdAt: any) {
 
 export function getAvatarUrl(avatarUrl: any) {
   if (avatarUrl) {
-    return isValidHTTPS(avatarUrl) ? avatarUrl : `https://media.qa.begenuin.com/backend_assets/lottie/${avatarUrl}.png`
+    return isValidHTTPS(avatarUrl)
+      ? avatarUrl
+      : `https://media.qa.begenuin.com/webapp_assets/assets/avatar/${avatarUrl}.gif`
   }
   return null
 }
@@ -195,4 +198,45 @@ export function getCurrentShareUrl({ isEmbed, parentUrl }: { isEmbed: boolean; p
     urlObj.searchParams.append('utm_source', 'app_web')
   }
   return urlObj.href
+}
+
+export function getRandomAvatar() {
+  const avatars = [
+    'cow_face',
+    'alien',
+    'dog_face',
+    'sloth',
+    'frog',
+    'hear_no_evil_monkey',
+    'jack_o_lantern',
+    'owl',
+    'penguin',
+    'rabbit_face',
+    'pile_of_poo',
+    'pig_face',
+    'robot',
+    'ghost',
+    'teddy_bear',
+    'smiling_face_with_horns',
+    'smiling_face_with_sunglasses',
+    'snowman',
+  ]
+  return avatars[Math.round(Math.random() * avatars.length)]
+}
+
+export function encryptText(text: string) {
+  // console.log(crypto.getCiphers())
+  const iv = Buffer.from(process.env.NEXT_PUBLIC_AES_IV)
+  const encryptedText = Buffer.from(text + process.env.NEXT_PUBLIC_SECRET_STRING)
+
+  // Creating Cipher
+  const cipher = createCipheriv('aes-256-cbc', Buffer.from(process.env.NEXT_PUBLIC_AES_KEY), iv)
+
+  // Updating encrypted text
+  let encrypted = cipher.update(encryptedText)
+  // encrypted += cipher.final();
+  encrypted = Buffer.concat([encrypted, cipher.final()])
+
+  // returns data after decryption
+  return encrypted.toString('base64')
 }

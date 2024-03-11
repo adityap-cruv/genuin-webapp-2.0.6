@@ -8,6 +8,7 @@ import { getEmbedConfig } from '@lib/api/config'
 import { type ConfigType } from '@lib/stores/genuin-options'
 import { RedirectHandler } from '@components/providers/redirect-handler'
 import { BrandNotFound } from '@components/common/brand-not-found'
+import { SessionProvider } from 'next-auth/react'
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const deviceType = cookies().get('device_type')?.value ?? ''
@@ -34,16 +35,19 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link rel="icon" type="image/x-icon" href="/favicon.svg" />
         <link rel="mask-icon" href="/favicon.svg" />
         <meta rel="x-brand-id" content={config?.subdomain} />
+        <script src="https://www.google.com/recaptcha/enterprise.js?render=6LeQm4gpAAAAAC2o51SQj-ak7ojnfOlxyDiR9E7p"></script>
       </head>
       <body className="index-page-background !absolute inset-0 min-h-full min-w-full text-new-off-black">
         {error ? (
           <BrandNotFound />
         ) : (
-          <RedirectHandler config={config} shouldRedirect={Object.hasOwn(configParams, 'subdomain')}>
+          <RedirectHandler config={config} shouldRedirect={Object.hasOwn(configParams ?? {}, 'subdomain')}>
             <ThirdPartyScriptProvider>
-              <GenuinOptionsProvider browserType={browserType} deviceType={deviceType} os={os} config={config}>
-                <ReactQueryProvider>{children}</ReactQueryProvider>
-              </GenuinOptionsProvider>
+              <SessionProvider>
+                <GenuinOptionsProvider browserType={browserType} deviceType={deviceType} os={os} config={config}>
+                  <ReactQueryProvider>{children}</ReactQueryProvider>
+                </GenuinOptionsProvider>
+              </SessionProvider>
             </ThirdPartyScriptProvider>
           </RedirectHandler>
         )}

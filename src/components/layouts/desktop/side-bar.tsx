@@ -2,15 +2,16 @@
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { type ReactNode } from 'react'
-import { HomeIcon, LatestIcon, MoreIcon, NotificationIcon, PopularIcon, ProfileIcon } from '@icons/side-bar-icons'
+import { HomeIcon, LatestIcon, MoreIcon, PopularIcon, ProfileIcon } from '@icons/side-bar-icons'
 import { cn } from '@lib/utils'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
 // import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@components/ui/tooltip'
 import dynamic from 'next/dynamic'
 import { Button } from '@components/ui/button'
-import { AppLogo } from '@components/ui/app-logo'
+import { AuthenticationModal } from '@components/common/modals/authentication'
 import { GenuinIcon } from '@icons/genuin-icon'
+import { useSession } from 'next-auth/react'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 // import { Popover } from '@components/ui/popover'
 const RecentCommunities = dynamic(
@@ -22,6 +23,7 @@ const RecentCommunities = dynamic(
 export function SideBar() {
   const { embed } = useGenuinOptions((state) => ({ embed: state.embed }))
   const pathName = usePathname()
+  const { status } = useSession()
   return (
     <nav className="flex h-full w-fit flex-col justify-between overflow-auto border border-monochrome-9 px-1 py-4 transition-[width] lg:w-full lg:border-none">
       <div>
@@ -74,9 +76,11 @@ export function SideBar() {
             </Link>
           </PopoverContent>
         </Popover>
-        <Button variant={'outline'} className="mb-2 w-3/5 border-primary">
-          <p className="text-title-3-bold text-primary"> Log in</p>
-        </Button>
+        {status === 'unauthenticated' && (
+          <Button onClick={AuthenticationModal.open} variant={'outline'} className="mb-2 w-3/4 border-primary">
+            <p className="text-title-3-bold text-primary"> Log in</p>
+          </Button>
+        )}
         <RecentCommunities />
       </div>
       {embed && (
