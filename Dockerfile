@@ -16,6 +16,8 @@ COPY .prettierrc.json ./.prettierrc.json
 COPY .env ./.env
 COPY .env.production.local ./.env.production.local
 
+COPY auth.ts ./auth.ts
+
 # Install project dependencies
 RUN npm install
 RUN npm i sharp
