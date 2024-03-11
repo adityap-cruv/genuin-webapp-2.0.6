@@ -13,6 +13,7 @@ import l5 from '@images/home-page/loop/Loop-Link-Share 5.webp'
 import search from '@icons/icSearch.svg'
 import Link from 'next/link'
 import { useState } from 'react'
+import { Footer } from '@components/pages/home/footer'
 
 export default function Mobile() {
   return (
@@ -21,6 +22,7 @@ export default function Mobile() {
       <SearchSection />
       <CommunitySection />
       <LoopSection />
+      <Footer />
     </>
   )
 }
@@ -122,7 +124,7 @@ function LoopSection() {
     },
   ]
   return (
-    <div className="container mb-4 mt-8">
+    <div className="container mt-8 pb-4">
       <p className=" text-new-h5-mobile">Featured Loops</p>
       <div className="my-6 grid grid-cols-1 gap-6">
         {loopList.map((item, index) => {
