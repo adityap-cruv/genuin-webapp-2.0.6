@@ -51,6 +51,6 @@ export async function signup({
     })
     .catch((e) => {
       console.log('::error in signup api::', e.response.data.code)
-      return { code: e.response.data.code, data: undefined }
+      return { code: Number(e.response.data.code), data: undefined }
     })
 }

@@ -15,6 +15,7 @@ export type StepsType =
   | 'COMPLETE_PROFILE'
   | 'EMAIL_SENT_NOTE'
   | 'MAGIC_LINK_SENT_NOTE'
+  | 'ERROR'
 
 type FormDataType = {
   displayName: string

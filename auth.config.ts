@@ -1,9 +1,8 @@
-import type { NextAuthConfig, User } from 'next-auth'
+import type { NextAuthConfig } from 'next-auth'
 
 export const authConfig = {
   callbacks: {
     session(params) {
-      console.log('::session in session::', params.token.user)
       return { user: params.token.user, expires: params.session.expires }
     },
     jwt({
@@ -18,6 +17,7 @@ export const authConfig = {
       // Available only in the first call once the user signs in. Not available in subsequent calls
       account,
     }) {
+      console.log('::session in session::', token.user)
       if (user && trigger === 'signIn') {
         // console.log('user in jwt::', user, account, session)
         return { user }
@@ -35,5 +35,4 @@ export const authConfig = {
     signOut: '/home',
   },
   providers: [], // Add providers with an empty array for now
-  debug: true,
 } satisfies NextAuthConfig

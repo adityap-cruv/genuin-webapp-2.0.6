@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { axiosInstance } from './instance'
 
 /**
  * 5033 / 401 - token has expired.
@@ -16,7 +17,7 @@ export async function verifyEmail(token: unknown) {
       error: true,
     }
 
-  return await axios
+  return await axiosInstance
     .get(`${process.env.NEXT_PUBLIC_INTERNAL_API_URL}/api/v3/verify_email_token`, {
       params: {
         token,

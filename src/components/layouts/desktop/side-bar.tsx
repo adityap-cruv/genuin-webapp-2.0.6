@@ -10,8 +10,8 @@ import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
 import dynamic from 'next/dynamic'
 import { Button } from '@components/ui/button'
 import { AuthenticationModal } from '@components/common/modals/authentication'
-import { AppLogo } from '@components/ui/app-logo'
 import { GenuinIcon } from '@icons/genuin-icon'
+import { useSession } from 'next-auth/react'
 // import { Popover } from '@components/ui/popover'
 const RecentCommunities = dynamic(
   async () => await import('./recent-communities').then((comp) => comp.RecentCommunities),
@@ -21,6 +21,7 @@ const RecentCommunities = dynamic(
 // TODO: Improve active states on all items.
 export function SideBar() {
   const pathName = usePathname()
+  const { status } = useSession()
   return (
     <nav className="flex h-full w-fit flex-col justify-between overflow-auto border border-monochrome-9 px-1 py-4 transition-[width] lg:w-full lg:border-none">
       <div>
@@ -73,9 +74,11 @@ export function SideBar() {
             </Link>
           </PopoverContent>
         </Popover>
-        <Button onClick={AuthenticationModal.open} variant={'outline'} className="mb-2 w-3/4 border-primary">
-          <p className="text-title-3-bold text-primary"> Log in</p>
-        </Button>
+        {status === 'unauthenticated' && (
+          <Button onClick={AuthenticationModal.open} variant={'outline'} className="mb-2 w-3/4 border-primary">
+            <p className="text-title-3-bold text-primary"> Log in</p>
+          </Button>
+        )}
         <RecentCommunities />
       </div>
       <div>

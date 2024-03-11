@@ -9,13 +9,14 @@ import { useAuthenticationModalStore } from '../store'
 import { Label } from '@components/ui/label'
 import { signup } from '@lib/api/auth'
 import { useLocalStorage } from '@lib/stores/local-storage'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { SIGNUP_SOURCE } from '@lib/constants'
 import { signIn } from 'next-auth/react'
 
 export function Signup() {
   const { setStep, formData, setFormData } = useAuthenticationModalStore()
   const deviceId = useLocalStorage().deviceId
+  const [isLoading, setIsLoading] = useState(false)
 
   const formSchema = z.object({
     displayName: z
@@ -34,7 +35,7 @@ export function Signup() {
       email: formData.email,
     },
   })
-  const { isDirty, isValid, isSubmitting } = form.formState
+  const { isDirty, isValid } = form.formState
 
   useEffect(() => {
     const w = form.watch((value) => {
@@ -46,6 +47,7 @@ export function Signup() {
   }, [form.watch])
 
   async function onSubmit({ displayName, email }: { displayName: string; email: string }) {
+    setIsLoading(true)
     grecaptcha.enterprise.ready(async () => {
       const token = await grecaptcha.enterprise.execute(process.env.NEXT_PUBLIC_RECAPTCHA_CLIENT_KEY, {
         action: 'SIGNUP',
@@ -59,19 +61,42 @@ export function Signup() {
         recaptchaToken: token,
         deviceId,
         signupSource: SIGNUP_SOURCE.web,
-      }).then(async (res) => {
-        if (res?.code === 200) {
-          await signIn('credentials', {
-            ...res.data.user,
-            redirect: false,
-          }).then((res) => {
-            if (res?.ok) setStep('EMAIL_SENT_NOTE')
-          })
-        }
       })
+        .then(async (res) => {
+          if (res?.code === 200) {
+            await signIn('credentials', {
+              ...res.data.user,
+              redirect: false,
+            }).then((res) => {
+              if (res?.ok) setStep('EMAIL_SENT_NOTE')
+            })
+          }
+          console.log('res in signup', res)
+          if (res.code === 5242) {
+            console.log('in')
+            form.control.setError('root', { message: 'Something went wrong!' })
+          }
+          // Email verification pending and password not set.
+          if (res.code === 5231) {
+            console.log('object')
+            form.control.setError('root', { message: 'Email verification pending and password not set.' })
+          }
+          // Email verified password not set.
+          else if (res.code === 5237) {
+            console.log('eme vkd')
+            form.control.setError('root', { message: 'Email verified password not set.' })
+          }
+          // Account exists log in instead.
+          else if (res.code === 5232) {
+            form.control.setError('email', { message: 'Email already exists. Log in instead.' })
+          } else {
+            form.control.setError('root', { message: 'Something went wrong. Please try again.' })
+          }
+        })
+        .finally(() => {
+          setIsLoading(false)
+        })
     })
-    // TODO: Verify Email here.
-    // form.control.setError('email', { message: 'Account already exists. Log in instead. ' })
   }
 
   return (
@@ -151,16 +176,17 @@ export function Signup() {
               )
             }}
           />
-          <span className="text-title-3-demi">
-            {isSubmitting ? (
-              <p>loading</p>
-            ) : (
-              <Input
-                type="submit"
-                value="Verify Email"
-                className="flex w-full cursor-pointer items-center justify-center rounded-lg bg-new-off-black  text-monochrome-white hover:bg-new-dark-grey disabled:hover:bg-new-off-black"
-                disabled={!isDirty || !isValid}
-              />
+          <span className="flex flex-col gap-y-3 text-title-3-demi">
+            <Input
+              type="submit"
+              value="Verify Email"
+              className="flex w-full cursor-pointer items-center justify-center rounded-lg bg-new-off-black  text-monochrome-white hover:bg-new-dark-grey disabled:hover:bg-new-off-black"
+              disabled={!isDirty || !isValid}
+            />
+            {form.formState.errors.root && (
+              <p className="flex items-center justify-center text-title-3-med text-supplementary-red">
+                {form.formState.errors.root.message}
+              </p>
             )}
           </span>
         </form>

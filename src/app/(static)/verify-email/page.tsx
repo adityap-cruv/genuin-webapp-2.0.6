@@ -6,6 +6,8 @@ import imgError from '@images/verify-email/error.svg'
 
 export default async function Page({ searchParams }: { searchParams: { token: string } }) {
   const data = await verifyEmail(searchParams.token)
+  console.log(data)
+
   return (
     <>
       <NavBar variant="light" isMobile={false} />

@@ -12,6 +12,7 @@ import {
   PasswordInput,
   Signup,
   Note,
+  Error,
 } from './screens'
 import { useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
@@ -96,5 +97,7 @@ export function Content() {
       return <MagicLinkVerification.success />
     case 'EMAIL_SENT_NOTE':
       return <Note.email />
+    case 'ERROR':
+      return <Error />
   }
 }

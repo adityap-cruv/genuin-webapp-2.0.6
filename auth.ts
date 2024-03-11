@@ -26,12 +26,12 @@ export const {
       authorize(credentials, request) {
         return {
           isAvatar: credentials.is_avatar === 'true',
-          memberId: String(credentials.member_id),
+          id: String(credentials.member_id),
           nickname: String(credentials.nickname),
-          image: String(credentials.profile_image),
-          email: String(credentials.email),
-          bio: String(credentials.bio),
-          name: String(credentials.name),
+          image: credentials.profile_image ? String(credentials.profile_image) : undefined,
+          email: credentials.email ? String(credentials.email) : undefined,
+          bio: credentials.bio ? String(credentials.bio) : undefined,
+          name: credentials.bio ? String(credentials.name) : undefined,
           isEmailVerified: credentials.is_email_verified === 'true',
           isPasswordSet: credentials.is_password_set === 'true',
         }

@@ -14,7 +14,6 @@ declare module 'next-auth' {
     bio?: string
     email: string
     isAvatar: boolean
-    memberId: string
     name: string
     nickname: string
     isEmailVerified: boolean
@@ -41,7 +40,6 @@ declare module 'next-auth/jwt' {
       bio?: string
       email?: string | null
       isAvatar: boolean
-      memberId: string
       name?: string | null
       nickname: string
       isEmailVerified: boolean

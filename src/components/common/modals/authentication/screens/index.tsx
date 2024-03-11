@@ -1,3 +1,4 @@
+export { Error } from './error'
 export { NumberInput } from './number-input'
 export { EmailInput } from './email-input'
 export { Signup } from './signup'
