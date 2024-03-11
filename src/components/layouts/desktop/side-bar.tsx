@@ -12,6 +12,7 @@ import { Button } from '@components/ui/button'
 import { AuthenticationModal } from '@components/common/modals/authentication'
 import { GenuinIcon } from '@icons/genuin-icon'
 import { useSession } from 'next-auth/react'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
 // import { Popover } from '@components/ui/popover'
 const RecentCommunities = dynamic(
   async () => await import('./recent-communities').then((comp) => comp.RecentCommunities),
@@ -20,6 +21,7 @@ const RecentCommunities = dynamic(
 
 // TODO: Improve active states on all items.
 export function SideBar() {
+  const { embed } = useGenuinOptions((state) => ({ embed: state.embed }))
   const pathName = usePathname()
   const { status } = useSession()
   return (
@@ -81,16 +83,17 @@ export function SideBar() {
         )}
         <RecentCommunities />
       </div>
-      <div>
-        <hr className="border-1 mb-4 mt-1 border-monochrome-black/10" />
-        <div className="flex items-center">
-          <p className="text-title-2-demi text-monochrome">Powered by</p>
-          <Link href={{ pathname: PATH_NAME.home() }}>
-            {/* <AppLogo.logo className="fill-new-off-black" imageHeight={30} /> */}
-            <GenuinIcon.logo className="h-8 fill-new-off-black" />
-          </Link>
+      {embed && (
+        <div>
+          <hr className="border-1 mb-4 mt-1 border-monochrome-black/10" />
+          <div className="flex items-center">
+            <p className="text-title-2-demi text-monochrome">Powered by</p>
+            <Link href={{ pathname: PATH_NAME.home() }}>
+              <GenuinIcon.logo className="h-8 fill-new-off-black" />
+            </Link>
+          </div>
         </div>
-      </div>
+      )}
     </nav>
   )
 }
