@@ -17,6 +17,7 @@ COPY .env ./.env
 COPY .env.production.local ./.env.production.local
 
 COPY auth.ts ./auth.ts
+COPY auth.config.ts ./auth.config.ts
 
 # Install project dependencies
 RUN npm install
