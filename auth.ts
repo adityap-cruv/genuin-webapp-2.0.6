@@ -24,7 +24,6 @@ export const {
         is_password_set: { type: 'text' },
       },
       authorize(credentials, request) {
-        console.log('credentials:', credentials)
         return {
           isAvatar: credentials.is_avatar === 'true',
           memberId: String(credentials.member_id),

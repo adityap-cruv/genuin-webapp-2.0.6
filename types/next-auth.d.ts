@@ -1,5 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import NextAuth, { Session } from 'next-auth'
+import 'next-auth/jwt'
 
 declare module 'next-auth' {
   /**
@@ -32,4 +33,20 @@ declare module 'next-auth' {
   //   isPasswordSet: boolean
   //   image: string
   // }
+}
+
+declare module 'next-auth/jwt' {
+  interface JWT {
+    user: {
+      bio?: string
+      email?: string | null
+      isAvatar: boolean
+      memberId: string
+      name?: string | null
+      nickname: string
+      isEmailVerified: boolean
+      isPasswordSet: boolean
+      image?: string | null
+    }
+  }
 }

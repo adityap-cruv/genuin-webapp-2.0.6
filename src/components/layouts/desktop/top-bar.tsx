@@ -48,8 +48,8 @@ export function TopBar() {
 }
 
 function UserTick() {
-  const { data, status } = useSession()
-  // console.log('data::', data)
+  const { data, status, update } = useSession()
+  console.log('data::', data, status)
   if (status === 'unauthenticated') return <Button onClick={AuthenticationModal.open}>Log in</Button>
 
   if (status === 'authenticated')
@@ -59,8 +59,8 @@ function UserTick() {
           <div className="flex items-center rounded-full border border-monochrome-9 p-1">
             <CustomAvatar
               className="h-8 w-8"
-              fallbackString={data.user.name}
-              imageUrl={data.user.image}
+              fallbackString={data.user.name ?? ''}
+              imageUrl={data.user.image ?? ''}
               isAvatar={data.user.isAvatar}
             />
             <svg
@@ -84,8 +84,8 @@ function UserTick() {
           <div className="my-2 flex items-center gap-2">
             <CustomAvatar
               className="h-12 w-12"
-              fallbackString={data.user.name}
-              imageUrl={data.user.image}
+              fallbackString={data.user.name ?? ''}
+              imageUrl={data.user.image ?? ''}
               isAvatar={data.user.isAvatar}
             />
             <div>
