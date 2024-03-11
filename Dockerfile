@@ -4,7 +4,7 @@ FROM node:18.17.0
 
 WORKDIR /genuin-webapp-qa
 
-COPY  * ./*
+COPY  . ./.
 
 # Install project dependencies
 RUN npm install
