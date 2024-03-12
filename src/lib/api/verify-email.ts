@@ -1,24 +1,3 @@
-import { axiosInstance } from './instance'
-
-export async function verifyEmail(token: string) {
-  console.log('in')
-  return await axiosInstance
-    .get('/api/v3/verify_email_token', {
-      params: {
-        token,
-      },
-      baseURL: process.env.NEXT_PUBLIC_INTERNAL_API_URL,
-    })
-    .then((res) => {
-      console.log(res)
-      return { code: Number(res.data.code) }
-    })
-    .catch((e) => {
-      console.log('error::', e)
-      return { code: Number(e.response.data.code) }
-    })
-}
-
 /**
  * 5033 / 401 - token has expired.
  * 1099 / 400 - An unexpected error occurred processing the request.

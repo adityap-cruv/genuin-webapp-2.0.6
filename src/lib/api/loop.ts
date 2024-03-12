@@ -11,6 +11,7 @@ export async function fetchLoopDetails(slug: string) {
       return res?.data?.data
     })
     .catch((e) => {
+      console.log(e.response.data)
       throw new Error('Something went wrong!!')
     })
 }

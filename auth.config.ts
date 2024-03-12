@@ -34,5 +34,6 @@ export const authConfig = {
     error: '/error',
     signOut: '/home',
   },
+  trustHost: true,
   providers: [], // Add providers with an empty array for now
 } satisfies NextAuthConfig
