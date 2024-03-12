@@ -13,6 +13,8 @@ import {
   Signup,
   Note,
   Error,
+  UsernameInput,
+  CompleteProfile,
 } from './screens'
 import { useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
@@ -42,11 +44,13 @@ export function Modal({ children, ...props }: Props) {
   useEffect(() => {
     const emailVerification = searchParams.get('email_verification_status') ?? ''
     const magicLinkVerification = searchParams.get('magic_link_verification') ?? ''
+    const error = searchParams.get('error_in_verification') ?? ''
     if (Boolean(emailVerification) || Boolean(magicLinkVerification)) {
       if (emailVerification === '0') setStep('EMAIL_VERIFICATION_FAILURE')
       if (emailVerification === '1') setStep('EMAIL_VERIFICATION_SUCCESS')
       if (magicLinkVerification === '0') setStep('MAGIC_LINK_VERIFICATION_FAILURE')
       if (magicLinkVerification === '1') setStep('MAGIC_LINK_VERIFICATION_SUCCESS')
+      if (error === '1') setStep('ERROR')
       openModal()
     }
   }, [searchParams])
@@ -99,5 +103,9 @@ export function Content() {
       return <Note.email />
     case 'ERROR':
       return <Error />
+    case 'USERNAME_INPUT':
+      return <UsernameInput />
+    case 'COMPLETE_PROFILE':
+      return <CompleteProfile />
   }
 }

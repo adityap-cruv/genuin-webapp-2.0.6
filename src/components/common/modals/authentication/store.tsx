@@ -16,6 +16,7 @@ export type StepsType =
   | 'EMAIL_SENT_NOTE'
   | 'MAGIC_LINK_SENT_NOTE'
   | 'ERROR'
+  | 'USERNAME_INPUT'
 
 type FormDataType = {
   displayName: string
@@ -24,6 +25,8 @@ type FormDataType = {
   mobileNumber: string
   image: string | File
   isAvatar: boolean
+  bio: string
+  username: string
 }
 
 type States = {
@@ -43,7 +46,7 @@ type Actions = {
 }
 
 const initialStates: States = {
-  step: 'SIGN_UP',
+  step: 'COMPLETE_PROFILE',
   formData: {
     image: getRandomAvatar(),
     isAvatar: true,

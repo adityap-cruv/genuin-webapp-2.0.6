@@ -8,7 +8,7 @@ export function Error() {
       <img src={icErrorInForm.src} className="h-20 w-20" />
       <h3 className="text-heading-3">Oops! Something went wrong</h3>
       <p className="text-center text-title-3-med">
-        We're sorry, but it looks like something went wrong on our end. Please retry to continue.{' '}
+        We're sorry, but it looks like something went wrong on our end. Please retry to coontinue .{' '}
       </p>
       <Button
         variant="default"

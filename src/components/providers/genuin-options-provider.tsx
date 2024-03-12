@@ -72,12 +72,12 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
   useEffect(() => {
     init()
     const fpPromise = FingerpringJS.load()
-
     void (async () => {
       const fp = await fpPromise
       const result = await fp.get()
       setDeviceId(result.visitorId)
     })()
+
     window.addEventListener('focus', handleFocus)
     window.addEventListener('blur', handleBlur)
     window.addEventListener('resize', handleResize)
