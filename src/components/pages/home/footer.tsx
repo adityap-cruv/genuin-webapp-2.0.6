@@ -29,7 +29,7 @@ export function Footer() {
             <GenuinIcon.text className="fill-new-off-white" />
             <div className="flex justify-between text-new-para-1">
               <div className="flex items-end">
-                <p>© 2023 Genuin Inc.</p>
+                <p>© 2024 Genuin Inc.</p>
               </div>
               <div className="flex gap-x-32 hover:[&>a>p]:text-primary">
                 <div className="flex flex-col gap-3">
@@ -87,7 +87,7 @@ export function Footer() {
             </div>
             <div className="flex w-full items-center justify-between">
               <GenuinIcon.text className="w-20 fill-new-off-white" />
-              <p className="text-new-para-2-mobile sm:text-new-para-2">© 2023 Genuin Inc.</p>
+              <p className="text-new-para-2-mobile sm:text-new-para-2">© 2024 Genuin Inc.</p>
             </div>
           </div>
         </div>
