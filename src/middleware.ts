@@ -6,7 +6,7 @@ import { authConfig } from '../auth.config'
 export default NextAuth(authConfig).auth
 
 export async function middleware(request: NextRequest) {
-  const STATIC_PATHNAMES = ['/', '/manage', '/market', '/pricing', '/privacy', '/terms', '/verify-email']
+  const STATIC_PATHNAMES = ['/', '/manage', '/market', '/pricing', '/privacy', '/terms', '/discover']
   const parsedUA = userAgent(request)
   const deviceType = parsedUA.device.type
   if (deviceType) request.cookies.set('device_type', deviceType)
@@ -15,7 +15,7 @@ export async function middleware(request: NextRequest) {
   if (os) request.cookies.set('os', os)
 
   request.headers.set('x-search-params', request.nextUrl.search)
-
+  request.headers.set('x-path-params', request.nextUrl.pathname)
   // console.log('config params::', getConfig('ankpal.com'))
 
   const browserType = parsedUA.browser.name

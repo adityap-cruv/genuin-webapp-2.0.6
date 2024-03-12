@@ -45,6 +45,11 @@ export function ThirdPartyScriptProvider({ children }: { children: React.ReactNo
             }
         `}
       </Script>
+      <Script src={'https://cdn.cookielaw.org/consent/018e2bbd-1879-7b2c-aada-f9403ae9429d-test/OtAutoBlock.js'} />
+      <Script
+        src="https://cdn.cookielaw.org/scripttemplates/otSDKStub.js"
+        data-domain-script="018e2bbd-1879-7b2c-aada-f9403ae9429d-test"></Script>
+      <Script>function OptanonWrapper() {}</Script>
     </>
   )
 }
