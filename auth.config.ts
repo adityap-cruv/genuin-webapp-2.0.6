@@ -28,13 +28,12 @@ export const authConfig = {
   session: {
     strategy: 'jwt',
   },
-  trustHost : true,
+  trustHost: true,
   secret: 'hCflPpaRjcKXLDwz+9vy/mYAGamxWhUqr4MBjOuV0EM=',
   pages: {
     signIn: '/home',
     error: '/error',
     signOut: '/home',
   },
-  trustHost: true,
   providers: [], // Add providers with an empty array for now
 } satisfies NextAuthConfig
