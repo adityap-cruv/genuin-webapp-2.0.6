@@ -28,6 +28,7 @@ export const authConfig = {
   session: {
     strategy: 'jwt',
   },
+  trustHost : true,
   secret: 'hCflPpaRjcKXLDwz+9vy/mYAGamxWhUqr4MBjOuV0EM=',
   pages: {
     signIn: '/home',
