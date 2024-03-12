@@ -1,0 +1,34 @@
+import { useAuthenticationModalStore } from '../store'
+import { getAvatarUrl } from '@lib/utils'
+import { Label } from '@components/ui/label'
+
+export function ImageInput() {
+  const { formData, setFormData, setStep } = useAuthenticationModalStore((state) => ({
+    formData: state.formData,
+    setStep: state.setStep,
+    setFormData: state.setFormData,
+  }))
+  return (
+    <div className="flex w-full flex-col items-center justify-center gap-y-2">
+      <img
+        src={
+          typeof formData.image === 'string' ? getAvatarUrl(formData.image) : URL.createObjectURL(formData.image as any)
+        }
+        className="h-20 w-20 rounded-full bg-blue-70"
+      />
+      <input
+        id="pic"
+        type="file"
+        className="hidden w-full"
+        accept="image/*"
+        onChange={(e) => {
+          setFormData({ image: URL.createObjectURL(e.target.files?.[0] as any) })
+          setStep('IMAGE_CROPPER')
+        }}
+      />
+      <Label htmlFor="pic" className="cursor-pointer !text-body-1-demi text-primary">
+        Change profile picture
+      </Label>
+    </div>
+  )
+}

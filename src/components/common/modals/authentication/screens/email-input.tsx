@@ -6,9 +6,10 @@ import { useForm } from 'react-hook-form'
 import { cn } from '@lib/utils'
 import { z } from 'zod'
 import { useAuthenticationModalStore } from '../store'
+import { useEffect } from 'react'
 
 export function EmailInput() {
-  const { setStep } = useAuthenticationModalStore()
+  const { setStep, setFormData, formData } = useAuthenticationModalStore()
   const formSchema = z.object({
     email: z.string().email({ message: 'Please enter valid email.' }),
   })
@@ -17,7 +18,17 @@ export function EmailInput() {
     resolver: zodResolver(formSchema),
     mode: 'onSubmit',
     criteriaMode: 'firstError',
+    defaultValues: { email: formData.email },
   })
+
+  useEffect(() => {
+    const w = form.watch((value) => {
+      setFormData({ email: value.email })
+    })
+    return () => {
+      w.unsubscribe()
+    }
+  }, [form.watch])
 
   return (
     <>

@@ -3,28 +3,28 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, useForm
 import { Input } from '@components/ui/input'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import { cn, getAvatarUrl } from '@lib/utils'
+import { cn } from '@lib/utils'
 import { z } from 'zod'
 import { useAuthenticationModalStore } from '../store'
-import { Label } from '@components/ui/label'
 import { signup } from '@lib/api/auth'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import { useEffect, useState } from 'react'
 import { SIGNUP_SOURCE } from '@lib/constants'
 import { signIn } from 'next-auth/react'
+import { ImageInput } from '../components/image-input'
+
+const formSchema = z.object({
+  displayName: z
+    .string()
+    .min(3, { message: 'Min length should be 3.' })
+    .max(25, { message: 'Max length should be 25.' }),
+  email: z.string().email({ message: 'Please enter valid email.' }),
+})
 
 export function Signup() {
   const { setStep, formData, setFormData } = useAuthenticationModalStore()
   const deviceId = useLocalStorage().deviceId
   const [isLoading, setIsLoading] = useState(false)
-
-  const formSchema = z.object({
-    displayName: z
-      .string()
-      .min(3, { message: 'Min length should be 3.' })
-      .max(25, { message: 'Max length should be 25.' }),
-    email: z.string().email({ message: 'Please enter valid email.' }),
-  })
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -104,29 +104,7 @@ export function Signup() {
       <h3 className="flex w-full items-center justify-center pb-4 text-heading-3">Sign up for Ted</h3>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <div className="flex w-full flex-col items-center justify-center gap-y-2">
-            <img
-              src={
-                typeof formData.image === 'string'
-                  ? getAvatarUrl(formData.image)
-                  : URL.createObjectURL(formData.image as any)
-              }
-              className="h-20 w-20 rounded-full bg-blue-70"
-            />
-            <input
-              id="pic"
-              type="file"
-              className="hidden w-full"
-              accept="image/*"
-              onChange={(e) => {
-                setFormData({ image: URL.createObjectURL(e.target.files?.[0] as any) })
-                setStep('IMAGE_CROPPER')
-              }}
-            />
-            <Label htmlFor="pic" className="cursor-pointer !text-body-1-demi text-primary">
-              Change profile picture
-            </Label>
-          </div>
+          <ImageInput />
           <FormField
             control={form.control}
             name="displayName"
@@ -137,7 +115,7 @@ export function Signup() {
                   <FormLabel className="text-body-1-med">
                     <div className="flex w-full justify-between">
                       <p>Display Name</p>
-                      <p className="text-cap-1-med text-secondary">{form.getValues('displayName')?.length ?? 0}/24</p>
+                      <p className="text-cap-1-med text-secondary">{form.getValues('displayName')?.length ?? 0}/25</p>
                     </div>
                   </FormLabel>
                   <FormControl>

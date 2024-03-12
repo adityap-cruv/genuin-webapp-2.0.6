@@ -52,3 +52,11 @@ function Failure() {
     </ModalShell>
   )
 }
+
+function Error() {
+  return (
+    <ModalShell>
+      <p>Something went wrong!</p>
+    </ModalShell>
+  )
+}
