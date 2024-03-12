@@ -46,7 +46,7 @@ type Actions = {
 }
 
 const initialStates: States = {
-  step: 'COMPLETE_PROFILE',
+  step: 'SIGN_UP',
   formData: {
     image: getRandomAvatar(),
     isAvatar: true,
