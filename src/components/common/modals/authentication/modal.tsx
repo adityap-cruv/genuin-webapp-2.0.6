@@ -15,6 +15,7 @@ import {
   Error,
   UsernameInput,
   CompleteProfile,
+  OtpInput,
 } from './screens'
 import { useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
@@ -90,7 +91,7 @@ export function Content() {
     case 'PASSWORD_INPUT':
       return <PasswordInput />
     case 'OTP_INPUT':
-      return <p>otp input.</p>
+      return <OtpInput />
     case 'EMAIL_VERIFICATION_FAILURE':
       return <EmailVerification.failure />
     case 'EMAIL_VERIFICATION_SUCCESS':
