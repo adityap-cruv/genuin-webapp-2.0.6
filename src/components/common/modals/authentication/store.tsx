@@ -1,3 +1,4 @@
+import { type AuthActionType } from '@lib/api/auth'
 import { getRandomAvatar } from '@lib/utils'
 import { create } from 'zustand'
 
@@ -34,10 +35,11 @@ type States = {
   formData: Partial<FormDataType>
   isOpen: boolean
   note?: React.ReactNode
+  action?: AuthActionType
 }
 
 type Actions = {
-  open: () => void
+  open: (action?: AuthActionType) => void
   close: () => void
   setStep: (step: StepsType) => void
   reset: () => void
@@ -57,11 +59,11 @@ const initialStates: States = {
 export const useAuthenticationModalStore = create<Actions & States>((set) => {
   return {
     ...initialStates,
-    open() {
-      set({ isOpen: true })
+    open(action) {
+      set({ isOpen: true, action })
     },
     close() {
-      set({ isOpen: false })
+      set({ isOpen: false, step: 'SIGN_UP' })
     },
     setStep(step) {
       set({ step })

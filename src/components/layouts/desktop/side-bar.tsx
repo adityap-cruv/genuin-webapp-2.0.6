@@ -77,7 +77,12 @@ export function SideBar() {
           </PopoverContent>
         </Popover>
         {status === 'unauthenticated' && (
-          <Button onClick={AuthenticationModal.open} variant={'outline'} className="mb-2 w-3/4 border-primary">
+          <Button
+            onClick={() => {
+              AuthenticationModal.open()
+            }}
+            variant={'outline'}
+            className="mb-2 w-3/4 border-primary">
             <p className="text-title-3-bold text-primary"> Log in</p>
           </Button>
         )}

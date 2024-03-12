@@ -1,5 +1,4 @@
 'use client'
-
 import { Dialog, DialogTrigger, DialogContent, DialogClose } from '@components/ui/dialog'
 import { type DialogProps } from '@radix-ui/react-dialog'
 import { type StepsType, useAuthenticationModalStore } from './store'
@@ -46,7 +45,8 @@ export function Modal({ children, ...props }: Props) {
     const emailVerification = searchParams.get('email_verification_status') ?? ''
     const magicLinkVerification = searchParams.get('magic_link_verification') ?? ''
     const error = searchParams.get('error_in_verification') ?? ''
-    if (Boolean(emailVerification) || Boolean(magicLinkVerification)) {
+
+    if (Boolean(emailVerification) || Boolean(magicLinkVerification) || Boolean(error)) {
       if (emailVerification === '0') setStep('EMAIL_VERIFICATION_FAILURE')
       if (emailVerification === '1') setStep('EMAIL_VERIFICATION_SUCCESS')
       if (magicLinkVerification === '0') setStep('MAGIC_LINK_VERIFICATION_FAILURE')
@@ -67,7 +67,11 @@ export function Modal({ children, ...props }: Props) {
         className="rounded-t-lg !py-10">
         {showClose && (
           <DialogClose className="absolute right-2 top-2">
-            <X onClick={closeModal} />
+            <X
+              onClick={() => {
+                closeModal()
+              }}
+            />
           </DialogClose>
         )}
         <Content />
