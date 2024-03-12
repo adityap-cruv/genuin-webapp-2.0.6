@@ -15,7 +15,7 @@ export async function middleware(request: NextRequest) {
   if (os) request.cookies.set('os', os)
 
   request.headers.set('x-search-params', request.nextUrl.search)
-
+  request.headers.set('x-path-params', request.nextUrl.pathname)
   // console.log('config params::', getConfig('ankpal.com'))
 
   const browserType = parsedUA.browser.name

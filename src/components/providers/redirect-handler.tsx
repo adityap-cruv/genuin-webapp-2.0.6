@@ -19,7 +19,10 @@ export function RedirectHandler({
     shouldRedirect
   ) {
     const searchParamStr = headers().get('x-search-params')
-    permanentRedirect(checkAndAppendHttps(config.integrations.white_label.allowed_domains[0]) + searchParamStr)
+    const pathParamStr = headers().get('x-path-params')
+    permanentRedirect(
+      checkAndAppendHttps(config.integrations.white_label.allowed_domains[0]) + pathParamStr + searchParamStr
+    )
   }
 
   return children
