@@ -1,8 +1,14 @@
 import { encryptText } from '@lib/utils'
 import { axiosInstance, setAuthTokenInAxiosInstance } from './instance'
-import { useGenuinOptions } from '@lib/stores/genuin-options'
 
 type RecaptchaActionType = 'LOGIN' | 'SIGNUP'
+
+export type AuthActionType = 'JOIN_COMMUNITY'
+
+type ActionMetadataType = {
+  action?: AuthActionType
+  path: string
+}
 
 type SignupProps = {
   name?: string
@@ -13,6 +19,7 @@ type SignupProps = {
   recaptchaToken: string
   signupSource: number
   recaptchaAction: RecaptchaActionType
+  actionMetadata: ActionMetadataType
 }
 
 export async function signup({
@@ -24,6 +31,7 @@ export async function signup({
   recaptchaAction,
   recaptchaToken,
   signupSource,
+  actionMetadata,
 }: SignupProps): Promise<{ code: number; data: any }> {
   return await axiosInstance
     .post(
@@ -37,7 +45,9 @@ export async function signup({
         recaptcha_action: recaptchaAction,
         profile_image: profileImage,
         signup_source: signupSource,
+        // TODO: remove this statically typed brand_id once testin gets over
         brand_id: 1429,
+        action_meta_data: actionMetadata,
       },
       {
         headers: {
@@ -52,5 +62,38 @@ export async function signup({
     .catch((e) => {
       console.log('::error in signup api::', e.response.data.code)
       return { code: Number(e.response.data.code), data: undefined }
+    })
+}
+
+export async function verifyEmail(token: string): Promise<{
+  code: number
+  actionMetadata?: ActionMetadataType
+  user?: any
+  /**
+   * 11 -> magic link
+   * 12 -> verify email
+   */
+  emailType: 11 | 12
+}> {
+  return await axiosInstance
+    .get('/api/v3/verify_email_token', {
+      params: {
+        token,
+      },
+      baseURL: process.env.NEXT_PUBLIC_INTERNAL_API_URL,
+    })
+    .then((res) => {
+      const data = res?.data?.data
+      return {
+        code: Number(res.data.code),
+        actionMetadata: data?.action_metadata as ActionMetadataType,
+        user: data?.user,
+        emailType: data?.email_type,
+      }
+    })
+    .catch((e) => {
+      console.log('error::', e)
+      const data = e?.response?.data
+      return { code: Number(data.code), emailType: data.email_type, actionMetadata: data.action_meta_data }
     })
 }

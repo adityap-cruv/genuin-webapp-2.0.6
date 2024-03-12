@@ -51,7 +51,16 @@ export function TopBar() {
 function UserTick() {
   const { data, status } = useSession()
 
-  if (status === 'unauthenticated') return <Button onClick={AuthenticationModal.open}>Log in</Button>
+  if (status === 'unauthenticated')
+    return (
+      <Button
+        className="px-4 "
+        onClick={() => {
+          AuthenticationModal.open()
+        }}>
+        <p className="text-title-3-demi">Log in</p>
+      </Button>
+    )
 
   if (status === 'authenticated')
     return (

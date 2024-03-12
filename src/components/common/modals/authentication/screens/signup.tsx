@@ -12,6 +12,7 @@ import { useEffect, useState } from 'react'
 import { SIGNUP_SOURCE } from '@lib/constants'
 import { signIn } from 'next-auth/react'
 import { ImageInput } from '../components/image-input'
+import { usePathname } from 'next/navigation'
 
 const formSchema = z.object({
   displayName: z
@@ -22,8 +23,9 @@ const formSchema = z.object({
 })
 
 export function Signup() {
-  const { setStep, formData, setFormData } = useAuthenticationModalStore()
+  const { setStep, formData, setFormData, action } = useAuthenticationModalStore()
   const deviceId = useLocalStorage().deviceId
+  const pathname = usePathname()
   const [isLoading, setIsLoading] = useState(false)
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -61,6 +63,7 @@ export function Signup() {
         recaptchaToken: token,
         deviceId,
         signupSource: SIGNUP_SOURCE.web,
+        actionMetadata: { path: pathname, action },
       })
         .then(async (res) => {
           if (res?.code === 200) {
