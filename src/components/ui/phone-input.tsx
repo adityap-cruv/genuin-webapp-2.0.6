@@ -29,6 +29,7 @@ const PhoneInput: React.ForwardRefExoticComponent<PhoneInputProps> = React.forwa
     flagComponent={FlagComponent}
     countrySelectComponent={CountrySelect}
     inputComponent={InputComponent}
+    defaultCountry="US"
     /**
      * Handles the onChange event.
      *

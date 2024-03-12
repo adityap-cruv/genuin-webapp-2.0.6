@@ -1,9 +1,11 @@
 'use client'
+import { AuthenticationModal } from '@components/common/modals/authentication'
 import { SplashScreen } from '@components/common/splash-screen'
 import { type ConfigType, useGenuinOptions } from '@lib/stores/genuin-options'
 import { getSizeBoxes } from '@lib/utils/common/size-box'
 import { useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
+import { useLocalStorage } from '@lib/stores/local-storage'
 import FingerpringJS from '@fingerprintjs/fingerprintjs'
 
 type Props = {
@@ -19,6 +21,8 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
     setInitialData: state.setData,
     isLoading: state.isLoading,
   }))
+  const setDeviceId = useLocalStorage().setDeviceId
+
   const searchParams = useSearchParams()
 
   const hideNavbar = searchParams.get('hide_navbar') === '1'
@@ -33,20 +37,8 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
     return getSizeBoxes(isMobile, !hideNavbar)
   }
 
-  function setVisitorID() {
-    const fpPromise = FingerpringJS.load()
-
-    void (async () => {
-      // Get the visitor identifier when you need it.
-      const fp = await fpPromise
-      const result = await fp.get()
-      // setUserId(result.visitorId)
-    })()
-  }
-
   function init() {
     const isIframe = window !== window.parent
-    setVisitorID()
     setInitialData({
       embed: !!config,
       logoUrl: config?.logo,
@@ -79,6 +71,12 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
 
   useEffect(() => {
     init()
+    const fpPromise = FingerpringJS.load()
+    void (async () => {
+      const fp = await fpPromise
+      const result = await fp.get()
+      setDeviceId(result.visitorId)
+    })()
 
     window.addEventListener('focus', handleFocus)
     window.addEventListener('blur', handleBlur)
@@ -91,6 +89,10 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
   }, [])
 
   if (isLoading) return <SplashScreen />
-  return children
-  // return null
+  return (
+    <>
+      {children}
+      <AuthenticationModal.ui />
+    </>
+  )
 }

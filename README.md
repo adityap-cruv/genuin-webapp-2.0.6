@@ -76,3 +76,11 @@ Use the scope to indicate the specific part of the genuin-webapp project affecte
 - Enhanced collaboration and communication among developers.
 
 By following these guidelines, you'll contribute to a well-documented and maintainable genuin-webapp project.
+
+## Need Help?
+
+If you encounter any issues or require assistance, feel free to contact the development team:
+
+- Himanshu - <himanshu@begenuin.com>
+- Jimit - <jimit@begenuin.com>
+- Dev Tejot - <dev@begenuin.com>

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import engagementHooks from '@images/business/brand-page/engagement-hooks.webp'
 import interaction1 from '@images/business/brand-page/customer-engage/interaction-1.webp'
 import interaction2 from '@images/business/brand-page/customer-engage/interaction-2.webp'
 import interaction3 from '@images/business/brand-page/customer-engage/interaction-3.webp'

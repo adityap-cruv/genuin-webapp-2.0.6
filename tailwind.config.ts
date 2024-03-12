@@ -90,7 +90,10 @@ module.exports = {
     },
     fontSize: {
       // New Typography developed by design team for new web.
+      'heading-3': ['32px', { fontWeight: 600, lineHeight: '120%', letterSpacing: '-0.96px' }],
       'title-1-bold': ['24px', { fontWeight: 700, lineHeight: '32px' }],
+      'title-1-demi': ['24px', { fontWeight: 600, lineHeight: '32px' }],
+      'title-1-med': ['24px', { fontWeight: 500, lineHeight: '32px' }],
       'title-2-bold': ['20px', { fontWeight: 700, lineHeight: '32px' }],
       'title-2-demi': ['20px', { fontWeight: 600, lineHeight: '32px' }],
       'title-3-bold': ['17px', { fontWeight: 700, lineHeight: '24px' }],
