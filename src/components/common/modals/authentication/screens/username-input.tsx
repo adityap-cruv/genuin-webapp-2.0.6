@@ -6,16 +6,16 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
 import { useAuthenticationModalStore } from '../store'
+import { updateUser, validateUsername } from '@lib/api/auth'
 
 const usernameSchema = z.object({
   username: z
     .string()
-    .min(3, { message: 'There should be minimum 3 characters for username.' })
-    .regex(/^[a-zA-Z0-9._-]+$/, { message: 'Please enter valid username.' }),
+    .regex(/^[a-zA-Z0-9._-]+$/, { message: 'Usernames can only use letters, numbers, underscores, and periods.' }),
 })
 
 export function UsernameInput() {
-  const setFormData = useAuthenticationModalStore().setFormData
+  const { setStep, setFormData } = useAuthenticationModalStore()
   const form = useForm<z.infer<typeof usernameSchema>>({ resolver: zodResolver(usernameSchema), mode: 'onSubmit' })
   const { isDirty, isValid } = form.formState
 
@@ -28,8 +28,21 @@ export function UsernameInput() {
     }
   }, [form.watch])
 
-  // TODO: handle submit here.
-  function onSubmit({ username }: { username: string }) {}
+  async function onSubmit({ username }: { username: string }) {
+    try {
+      const usernameAvailable = await validateUsername(username)
+      if (usernameAvailable) {
+        const userUpdated = await updateUser({ nickname: username })
+        if (userUpdated) {
+          setStep('COMPLETE_PROFILE')
+        }
+      } else {
+        form.setError('username', { message: 'This username isn’t available. Choose a different username.' })
+      }
+    } catch (e) {
+      form.setError('root', { message: 'Something went wrong' })
+    }
+  }
 
   return (
     <>
@@ -55,7 +68,6 @@ export function UsernameInput() {
                   <FormControl>
                     <Input
                       maxLength={25}
-                      minLength={8}
                       type="text"
                       className={cn('border-monochrome-9 bg-monochrome-11 text-title-3-med', errors && '!border-red')}
                       {...field}

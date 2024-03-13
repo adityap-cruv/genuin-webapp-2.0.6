@@ -6,16 +6,28 @@ import { EyeIcon, EyeOffIcon } from 'lucide-react'
 import { useState } from 'react'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { updateUser } from '@lib/api/auth'
+import { useAuthenticationModalStore } from '../store'
 
 const passwordSchema = z.object({ password: z.string().min(8) })
 
 export function PasswordInput() {
   const [passwordVisible, setPasswordVisible] = useState(false)
+  const setStep = useAuthenticationModalStore().setStep
   const form = useForm<z.infer<typeof passwordSchema>>({ resolver: zodResolver(passwordSchema), mode: 'onSubmit' })
   const { isDirty, isValid } = form.formState
 
   // TODO: Handle password here.
-  function onSubmit({ password }: { password: string }) {}
+  async function onSubmit({ password }: { password: string }) {
+    try {
+      const ans = await updateUser({ password })
+      if (ans) {
+        setStep('USERNAME_INPUT')
+      }
+    } catch (e) {
+      form.setError('root', { message: 'Something went wrong.' })
+    }
+  }
 
   return (
     <>

@@ -44,11 +44,10 @@ type Actions = {
   setStep: (step: StepsType) => void
   reset: () => void
   setFormData: (formData: Partial<FormDataType>) => void
-  // showNote: (note: React.ReactNode) => void
 }
 
 const initialStates: States = {
-  step: 'ERROR',
+  step: 'SIGN_UP',
   formData: {
     image: getRandomAvatar(),
     isAvatar: true,
