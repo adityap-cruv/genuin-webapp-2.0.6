@@ -48,7 +48,7 @@ type Actions = {
 }
 
 const initialStates: States = {
-  step: 'SIGN_UP',
+  step: 'ERROR',
   formData: {
     image: getRandomAvatar(),
     isAvatar: true,

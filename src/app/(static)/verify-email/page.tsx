@@ -1,11 +1,12 @@
 import { redirect } from 'next/navigation'
 import { ClientComponent } from './client-component'
 import { verifyEmail } from '@lib/api/auth'
+import { headers } from 'next/headers'
 
 export default async function Page({ searchParams }: { searchParams: { token: string } }) {
   const { code, actionMetadata, user, emailType } = await verifyEmail(searchParams.token)
 
-  if (code === 200) {
+  if (code === 200 && user) {
     return (
       <ClientComponent
         user={user}
@@ -18,9 +19,7 @@ export default async function Page({ searchParams }: { searchParams: { token: st
     redirect(getRedirectTo({ emailType, error: false, path: actionMetadata?.path, success: false }))
   }
 
-  if (code === 1003 || code === 5033 || code === 5100 || code === 5052 || code === 1099) {
-    redirect(getRedirectTo({ emailType, error: true, path: actionMetadata?.path }))
-  }
+  redirect(getRedirectTo({ emailType, error: true, path: actionMetadata?.path }))
 }
 
 function getRedirectTo({
@@ -34,20 +33,21 @@ function getRedirectTo({
   success?: boolean
   emailType: 11 | 12
 }) {
-  path ??= '/home'
+  const urlObj = new URL((headers().get('host') ?? process.env.HOST_NAME) + (path ?? '/home'))
+
   if (error) {
-    path += '?error_in_verification=1'
+    urlObj.searchParams.set('error_in_verification', '1')
   }
 
   if (emailType === 11) {
-    path += '?magic_link_verification='
-    success ? (path += '1') : (path += '0')
+    urlObj.searchParams.set('magic_link_verification', success ? '1' : '0')
   }
 
   if (emailType === 12) {
-    path += '?email_verification_status='
-    success ? (path += '1') : (path += '0')
+    urlObj.searchParams.set('email_verification_status', success ? '1' : '0')
   }
-  console.log('::path::', path)
-  return path
+
+  console.log('::url::', urlObj.href)
+
+  return urlObj.href
 }

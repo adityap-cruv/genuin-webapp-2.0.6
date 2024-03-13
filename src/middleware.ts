@@ -51,7 +51,7 @@ export const config = {
 
 function getConfig(host: string) {
   const arr = host.split('.')
-  if (['app', 'begenuin', 'localhost:4005', 'www', '192'].includes(arr[0])) return ''
+  if (['app', 'begenuin', 'localhost:4005', 'www'].includes(arr[0])) return ''
 
   if (!host.includes('begenuin')) return { domain: host }
 

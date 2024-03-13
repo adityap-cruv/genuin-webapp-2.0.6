@@ -45,7 +45,7 @@ function Failure() {
         className="w-full bg-new-off-black hover:bg-new-dark-grey"
         variant="default"
         onClick={() => {
-          setStep('EMAIL_SENT_NOTE')
+          // TODO: Add resend verification mail.
         }}>
         <p className="text-title-3-demi">Resend verification email</p>
       </Button>

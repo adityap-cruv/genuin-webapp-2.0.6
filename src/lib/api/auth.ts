@@ -94,6 +94,11 @@ export async function verifyEmail(token: string): Promise<{
     .catch((e) => {
       console.log('error::', e)
       const data = e?.response?.data
-      return { code: Number(data.code), emailType: data.email_type, actionMetadata: data.action_meta_data }
+      return {
+        code: Number(data?.code),
+        emailType: data?.email_type,
+        actionMetadata: data?.action_meta_data,
+        email: data?.email,
+      }
     })
 }
