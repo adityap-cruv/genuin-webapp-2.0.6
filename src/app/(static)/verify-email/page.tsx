@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { ClientComponent } from './client-component'
 import { verifyEmail } from '@lib/api/auth'
 import { headers } from 'next/headers'
+import { checkAndAppendHttps } from '@lib/utils'
 
 export default async function Page({ searchParams }: { searchParams: { token: string } }) {
   const { code, actionMetadata, user, emailType } = await verifyEmail(searchParams.token)
@@ -33,7 +34,7 @@ function getRedirectTo({
   success?: boolean
   emailType: 11 | 12
 }) {
-  const urlObj = new URL((headers().get('host') ?? process.env.HOST_NAME) + (path ?? '/home'))
+  const urlObj = new URL(checkAndAppendHttps((headers().get('host') ?? process.env.HOST_NAME) + (path ?? '/home')))
 
   if (error) {
     urlObj.searchParams.set('error_in_verification', '1')
