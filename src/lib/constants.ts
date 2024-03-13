@@ -16,3 +16,18 @@ export const SIGNUP_SOURCE = {
   bcc: 6,
   adreels: 7,
 }
+
+export const LOGIN_SOURCE = {
+  web_sdk: 1,
+  white_label: 2,
+  web: 3,
+  mobile_app: 4,
+  mobile_sdk: 5,
+  bcc: 6,
+  adreels: 7,
+}
+
+export const VERIFICATION_TYPE = {
+  sms: 1,
+  call: 2,
+}

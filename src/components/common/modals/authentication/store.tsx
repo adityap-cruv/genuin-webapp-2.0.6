@@ -28,6 +28,9 @@ type FormDataType = {
   isAvatar: boolean
   bio: string
   username: string
+  phone: string
+  otp: number
+  userId: string
 }
 
 type States = {

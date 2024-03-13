@@ -224,19 +224,21 @@ export function getRandomAvatar() {
   return avatars[Math.round(Math.random() * avatars.length)]
 }
 
-export function encryptText(text: string) {
-  // console.log(crypto.getCiphers())
+export function encryptText(text: string, appendString: boolean) {
+  // Extracting common variables
   const iv = Buffer.from(process.env.NEXT_PUBLIC_AES_IV)
-  const encryptedText = Buffer.from(text + process.env.NEXT_PUBLIC_SECRET_STRING)
+  const key = Buffer.from(process.env.NEXT_PUBLIC_AES_KEY)
+
+  // Appending secret string if needed
+  const textToEncrypt = appendString ? text + process.env.NEXT_PUBLIC_SECRET_STRING : text
 
   // Creating Cipher
-  const cipher = createCipheriv('aes-256-cbc', Buffer.from(process.env.NEXT_PUBLIC_AES_KEY), iv)
+  const cipher = createCipheriv('aes-256-cbc', key, iv)
 
   // Updating encrypted text
-  let encrypted = cipher.update(encryptedText)
-  // encrypted += cipher.final();
+  let encrypted = cipher.update(Buffer.from(textToEncrypt))
   encrypted = Buffer.concat([encrypted, cipher.final()])
 
-  // returns data after decryption
+  // Returning base64 encoded encrypted text
   return encrypted.toString('base64')
 }
