@@ -6,16 +6,32 @@ import { EyeIcon, EyeOffIcon } from 'lucide-react'
 import { useState } from 'react'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { updateUser } from '@lib/api/auth'
+import { useAuthenticationModalStore } from '../store'
 
 const passwordSchema = z.object({ password: z.string().min(8) })
 
 export function PasswordInput() {
   const [passwordVisible, setPasswordVisible] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const setStep = useAuthenticationModalStore().setStep
   const form = useForm<z.infer<typeof passwordSchema>>({ resolver: zodResolver(passwordSchema), mode: 'onSubmit' })
   const { isDirty, isValid } = form.formState
 
   // TODO: Handle password here.
-  function onSubmit({ password }: { password: string }) {}
+  async function onSubmit({ password }: { password: string }) {
+    setIsLoading(true)
+    try {
+      const ans = await updateUser({ password })
+      if (ans) {
+        setStep('USERNAME_INPUT')
+      }
+    } catch (e) {
+      form.setError('root', { message: 'Something went wrong.' })
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   return (
     <>
@@ -77,10 +93,15 @@ export function PasswordInput() {
           />
           <Input
             type="submit"
-            disabled={!isDirty || !isValid}
+            disabled={!isDirty || !isValid || isLoading}
             className="flex items-center justify-center border-0 bg-new-off-black !text-title-3-demi text-new-off-white"
             value="Save and proceed"
           />
+          {form.formState.errors.root && (
+            <p className="flex items-center justify-center text-title-3-med text-supplementary-red">
+              {form.formState.errors.root.message}
+            </p>
+          )}
         </form>
       </Form>
     </>

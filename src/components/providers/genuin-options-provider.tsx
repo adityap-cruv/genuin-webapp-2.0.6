@@ -7,6 +7,8 @@ import { useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import FingerpringJS from '@fingerprintjs/fingerprintjs'
+import { useSession } from 'next-auth/react'
+import { axiosInstance, setAuthTokenInAxiosInstance } from '@lib/api/instance'
 
 type Props = {
   children: React.ReactNode
@@ -17,6 +19,7 @@ type Props = {
 }
 
 export function GenuinOptionsProvider({ children, deviceType, os, browserType, config }: Props) {
+  const { data: sessionData, status: sessionStatus } = useSession()
   const { setInitialData, isLoading } = useGenuinOptions((state) => ({
     setInitialData: state.setData,
     isLoading: state.isLoading,
@@ -36,6 +39,15 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
   function getBox() {
     return getSizeBoxes(isMobile, !hideNavbar)
   }
+  useEffect(() => {
+    console.log('Session Details:', sessionData)
+    console.log('sesstion Status', sessionStatus)
+    if (sessionStatus === 'authenticated') {
+      setAuthTokenInAxiosInstance(sessionData.user.accessToken)
+    } else {
+      setAuthTokenInAxiosInstance(undefined)
+    }
+  }, [sessionStatus])
 
   function init() {
     const isIframe = window !== window.parent

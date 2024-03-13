@@ -24,24 +24,29 @@ export function TopBar() {
             <AppLogo.logo className="fill-new-off-black" imageHeight={42} />
             {/* <GenuinIcon.logo className="fill-new-off-black" /> */}
           </Link>
-          {!isEmbed && (
-            <div className="flex gap-x-3">
-              <Link href={{ pathname: PATH_NAME.careers() }}>
-                <Button
-                  variant="outline"
-                  size="custom"
-                  className="px-4 py-3 hover:bg-new-off-black hover:text-new-off-white">
-                  <p className="text-new-para-2 font-semibold">We're hiring!</p>
-                </Button>
-              </Link>
-              <DownloadAppDialog>
-                <Button variant="default" size={'custom'} className="bg-new-off-black px-4 py-3 hover:bg-new-dark-grey">
-                  <p className="text-new-para-2 font-semibold">Download Genuin</p>
-                </Button>
-              </DownloadAppDialog>
-              <UserTick />
-            </div>
-          )}
+          <div className="flex gap-x-3">
+            {!isEmbed && (
+              <>
+                <Link href={{ pathname: PATH_NAME.careers() }}>
+                  <Button
+                    variant="outline"
+                    size="custom"
+                    className="px-4 py-3 hover:bg-new-off-black hover:text-new-off-white">
+                    <p className="text-new-para-2 font-semibold">We're hiring!</p>
+                  </Button>
+                </Link>
+                <DownloadAppDialog>
+                  <Button
+                    variant="default"
+                    size={'custom'}
+                    className="bg-new-off-black px-4 py-3 hover:bg-new-dark-grey">
+                    <p className="text-new-para-2 font-semibold">Download Genuin</p>
+                  </Button>
+                </DownloadAppDialog>
+              </>
+            )}
+            <UserTick />
+          </div>
         </nav>
       </div>
     </>

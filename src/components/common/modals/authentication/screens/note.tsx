@@ -23,5 +23,13 @@ function Email() {
 }
 
 function MagicLink() {
-  return <p>configure it.</p>
+  const email = useAuthenticationModalStore().formData.email
+  return (
+    <ModalShell>
+      <p className="text-center text-title-1-med">
+        We have sent a magic link to your <span className="text-title-1-bold">{email}</span>. Click the link to Log in
+        to Ted.
+      </p>
+    </ModalShell>
+  )
 }

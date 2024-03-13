@@ -19,6 +19,7 @@ declare module 'next-auth' {
     isEmailVerified: boolean
     isPasswordSet: boolean
     image: string
+    accessToken: string
   }
 
   // interface AdapterUser {
@@ -45,6 +46,7 @@ declare module 'next-auth/jwt' {
       isEmailVerified: boolean
       isPasswordSet: boolean
       image?: string | null
+      accessToken: string
     }
   }
 }

@@ -3,6 +3,9 @@ import imgSuccess from '@images/verify-email/success.svg'
 import { ModalShell } from '../modal-shell'
 import imgError from '@images/verify-email/error.svg'
 import { useAuthenticationModalStore } from '../store'
+import { useSearchParams } from 'next/navigation'
+import { resendVerificationMail } from '@lib/api/auth'
+import { useState } from 'react'
 
 export const EmailVerification = {
   success: Success,
@@ -33,6 +36,8 @@ function Success() {
 
 function Failure() {
   const setStep = useAuthenticationModalStore().setStep
+  const searchParams = useSearchParams()
+  const [error, setError] = useState('')
 
   return (
     <ModalShell>
@@ -44,19 +49,22 @@ function Failure() {
       <Button
         className="w-full bg-new-off-black hover:bg-new-dark-grey"
         variant="default"
-        onClick={() => {
-          setStep('EMAIL_SENT_NOTE')
+        onClick={async () => {
+          const email = searchParams.get('email')
+          const emailType = Number(searchParams.get('email_type'))
+          if (email && emailType) {
+            await resendVerificationMail(email, emailType)
+              .then((res) => {
+                if (res) setStep('EMAIL_SENT_NOTE')
+              })
+              .catch((e) => {
+                setError('Something went wrong.')
+              })
+          }
         }}>
         <p className="text-title-3-demi">Resend verification email</p>
+        {error && <p className="flex items-center justify-center text-title-3-med text-supplementary-red">{error}</p>}
       </Button>
-    </ModalShell>
-  )
-}
-
-function Error() {
-  return (
-    <ModalShell>
-      <p>Something went wrong!</p>
     </ModalShell>
   )
 }

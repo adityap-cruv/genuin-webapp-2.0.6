@@ -47,7 +47,6 @@ type Actions = {
   setStep: (step: StepsType) => void
   reset: () => void
   setFormData: (formData: Partial<FormDataType>) => void
-  // showNote: (note: React.ReactNode) => void
 }
 
 const initialStates: States = {
