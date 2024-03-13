@@ -32,7 +32,7 @@ export async function signup({
   recaptchaToken,
   signupSource,
   actionMetadata,
-}: SignupProps): Promise<{ code: number; data: any }> {
+}: SignupProps): Promise<{ code: number; data: any; accessToken?: string }> {
   return await axiosInstance
     .post(
       '/api/v3/signup',
@@ -56,12 +56,12 @@ export async function signup({
       }
     )
     .then((res) => {
-      setAuthTokenInAxiosInstance(res.headers['x-auth-token'])
-      return { code: 200, data: res.data.data }
+      setAuthTokenInAxiosInstance()
+      return { code: 200, data: res.data.data, accessToken: res.headers['x-auth-token'] }
     })
     .catch((e) => {
       console.log('::error in signup api::', e.response.data.code)
-      return { code: Number(e.response.data.code), data: undefined }
+      return { code: Number(e.response.data.code), data: undefined, accessToken: undefined }
     })
 }
 
@@ -74,6 +74,7 @@ export async function verifyEmail(token: string): Promise<{
    * 12 -> verify email
    */
   emailType: 11 | 12
+  accessToken?: string
 }> {
   return await axiosInstance
     .get('/api/v3/verify_email_token', {
@@ -84,11 +85,14 @@ export async function verifyEmail(token: string): Promise<{
     })
     .then((res) => {
       const data = res?.data?.data
-      console.log('::data in verify email::', JSON.stringify(data))
+      const user = data?.user
+
+      Object.assign(user, { accessToken: res.headers['x-auth-token'] })
+
       return {
         code: Number(res?.data?.code),
         actionMetadata: data?.action_metadata as ActionMetadataType,
-        user: data?.user,
+        user,
         emailType: data?.email_type,
       }
     })

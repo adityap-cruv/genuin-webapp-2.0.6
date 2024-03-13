@@ -23,6 +23,7 @@ export const {
         name: { type: 'text' },
         is_email_verified: { type: 'text' },
         is_password_set: { type: 'text' },
+        accessToken: { type: 'text' },
       },
       authorize(credentials, request) {
         return {
@@ -35,6 +36,7 @@ export const {
           name: credentials.bio ? String(credentials.name) : undefined,
           isEmailVerified: credentials.is_email_verified === 'true',
           isPasswordSet: credentials.is_password_set === 'true',
+          accessToken: String(credentials.accessToken),
         }
       },
     }),

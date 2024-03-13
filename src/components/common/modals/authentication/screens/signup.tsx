@@ -30,7 +30,7 @@ export function Signup() {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    mode: 'onSubmit',
+    mode: 'onBlur',
     criteriaMode: 'firstError',
     defaultValues: {
       displayName: formData.displayName,
@@ -69,25 +69,23 @@ export function Signup() {
           if (res?.code === 200) {
             await signIn('credentials', {
               ...res.data.user,
+              accessToken: res.accessToken,
               redirect: false,
             }).then((res) => {
               if (res?.ok) setStep('EMAIL_SENT_NOTE')
             })
           }
-          console.log('res in signup', res)
+          // Recaptcha validation issue
           if (res.code === 5242) {
-            console.log('in')
-            form.control.setError('root', { message: 'Something went wrong!' })
+            form.control.setError('root', { message: 'Bot access detected' })
           }
           // Email verification pending and password not set.
           if (res.code === 5231) {
-            console.log('object')
-            form.control.setError('root', { message: 'Email verification pending and password not set.' })
+            setStep('EMAIL_SENT_NOTE')
           }
           // Email verified password not set.
           else if (res.code === 5237) {
-            console.log('eme vkd')
-            form.control.setError('root', { message: 'Email verified password not set.' })
+            setStep('MAGIC_LINK_SENT_NOTE')
           }
           // Account exists log in instead.
           else if (res.code === 5232) {
@@ -162,7 +160,7 @@ export function Signup() {
               type="submit"
               value="Verify Email"
               className="flex w-full cursor-pointer items-center justify-center rounded-lg bg-new-off-black  text-monochrome-white hover:bg-new-dark-grey disabled:hover:bg-new-off-black"
-              disabled={!isDirty || !isValid}
+              disabled={!isDirty || !isValid || isLoading}
             />
             {form.formState.errors.root && (
               <p className="flex items-center justify-center text-title-3-med text-supplementary-red">
