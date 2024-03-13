@@ -4,7 +4,7 @@ import { Input } from '@components/ui/input'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useAuthenticationModalStore } from '../store'
 import { updateUser, validateUsername } from '@lib/api/auth'
 
@@ -15,6 +15,7 @@ const usernameSchema = z.object({
 })
 
 export function UsernameInput() {
+  const [isLoading, setIsLoading] = useState(false)
   const { setStep, setFormData } = useAuthenticationModalStore()
   const form = useForm<z.infer<typeof usernameSchema>>({ resolver: zodResolver(usernameSchema), mode: 'onSubmit' })
   const { isDirty, isValid } = form.formState
@@ -29,6 +30,7 @@ export function UsernameInput() {
   }, [form.watch])
 
   async function onSubmit({ username }: { username: string }) {
+    setIsLoading(true)
     try {
       const usernameAvailable = await validateUsername(username)
       if (usernameAvailable) {
@@ -41,6 +43,8 @@ export function UsernameInput() {
       }
     } catch (e) {
       form.setError('root', { message: 'Something went wrong' })
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -80,10 +84,15 @@ export function UsernameInput() {
           />
           <Input
             type="submit"
-            disabled={!isDirty || !isValid}
+            disabled={!isDirty || !isValid || isLoading}
             className="mt-4 flex items-center justify-center border-0 bg-new-off-black !text-title-3-demi text-new-off-white"
             value="Save and proceed"
           />
+          {form.formState.errors.root && (
+            <p className="flex items-center justify-center text-title-3-med text-supplementary-red">
+              {form.formState.errors.root.message}
+            </p>
+          )}
         </form>
       </Form>
     </>

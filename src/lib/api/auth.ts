@@ -1,5 +1,7 @@
 import { encryptText } from '@lib/utils'
 import { axiosInstance, setAuthTokenInAxiosInstance } from './instance'
+import { useLocalStorage } from '@lib/stores/local-storage'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
 
 type RecaptchaActionType = 'LOGIN' | 'SIGNUP'
 
@@ -75,6 +77,7 @@ export async function verifyEmail(token: string): Promise<{
    */
   emailType: 11 | 12
   accessToken?: string
+  email?: string
 }> {
   return await axiosInstance
     .get('/api/v3/verify_email_token', {
@@ -86,10 +89,11 @@ export async function verifyEmail(token: string): Promise<{
     .then((res) => {
       const data = res?.data?.data
       const user = data?.user
-
+      console.log('User::', JSON.stringify(data?.user))
       Object.assign(user, { accessToken: res.headers['x-auth-token'] })
-      console.log("User::", user)
-      console.log("Resp Header", res.headers['x-auth-token'])
+
+      console.log('response::', JSON.stringify(res.data.data))
+      console.log('Resp Header', res.headers['x-auth-token'])
       return {
         code: Number(res?.data?.code),
         actionMetadata: data?.action_metadata as ActionMetadataType,
@@ -147,5 +151,23 @@ export async function validateUsername(nickname: string) {
     .catch((e) => {
       console.log('::ERROR in validata username::', e)
       return false
+    })
+}
+
+export async function resendVerificationMail(email: string, emailType: number, actionMetadata?: ActionMetadataType) {
+  return await axiosInstance
+    .post('api/v3/resend_email_verification', {
+      email,
+      email_type: emailType,
+      device_id: encryptText(useLocalStorage.getState().deviceId),
+      brand_id: useGenuinOptions.getState().brandId,
+      action_meta_data: actionMetadata,
+    })
+    .then((res) => {
+      return true
+    })
+    .catch((e) => {
+      console.log('::Error in resend api::', e)
+      throw new Error('Something went wrong')
     })
 }

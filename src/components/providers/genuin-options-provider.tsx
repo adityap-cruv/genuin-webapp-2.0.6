@@ -40,8 +40,8 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
     return getSizeBoxes(isMobile, !hideNavbar)
   }
   useEffect(() => {
-    console.log("Session Details:", sessionData)
-    console.log("sesstion Status", sessionStatus)
+    console.log('Session Details:', sessionData)
+    console.log('sesstion Status', sessionStatus)
     if (sessionStatus === 'authenticated') {
       setAuthTokenInAxiosInstance(sessionData.user.accessToken)
     } else {
