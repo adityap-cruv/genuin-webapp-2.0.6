@@ -5,12 +5,13 @@ import { headers } from 'next/headers'
 import { checkAndAppendHttps } from '@lib/utils'
 
 export default async function Page({ searchParams }: { searchParams: { token: string } }) {
-  const { code, actionMetadata, user, emailType } = await verifyEmail(searchParams.token)
+  const { code, actionMetadata, user, emailType, accessToken } = await verifyEmail(searchParams.token)
 
   console.log(':: in response page code::', code)
   console.log(':: in page user::', user)
 
   if (code === 200 && user) {
+    Object.assign(user, { accessToken })
     return (
       <ClientComponent
         user={user}
