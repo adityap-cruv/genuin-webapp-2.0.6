@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Textarea } from '@components/ui/textarea'
 import { useEffect } from 'react'
 import { useAuthenticationModalStore } from '../store'
+import { updateUser } from '@lib/api/auth'
 
 const formSchema = z.object({
   displayName: z.string().max(25, { message: 'Max length should be 25.' }).optional(),
@@ -15,10 +16,7 @@ const formSchema = z.object({
 })
 
 export function CompleteProfile() {
-  const { formData, setFormData } = useAuthenticationModalStore((state) => ({
-    setFormData: state.setFormData,
-    formData: state.formData,
-  }))
+  const { formData, setFormData, close: closeModal } = useAuthenticationModalStore()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -38,8 +36,18 @@ export function CompleteProfile() {
     }
   }, [form.watch])
 
-  // TODO: Handle api call here.
-  function onSubmit({ displayName, bio }: { displayName?: string | null; bio?: string | null }) {}
+  async function onSubmit({ displayName, bio }: { displayName?: string | null; bio?: string | null }) {
+    try {
+      const userUpdated = await updateUser({ name: displayName, bio })
+      if (userUpdated) {
+        closeModal()
+      } else {
+        throw new Error()
+      }
+    } catch (e) {
+      form.setError('root', { message: 'Something went wrong.' })
+    }
+  }
 
   return (
     <>

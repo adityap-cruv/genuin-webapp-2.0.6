@@ -84,15 +84,16 @@ export async function verifyEmail(token: string): Promise<{
     })
     .then((res) => {
       const data = res?.data?.data
+      console.log('::data in verify email::', JSON.stringify(data))
       return {
-        code: Number(res.data.code),
+        code: Number(res?.data?.code),
         actionMetadata: data?.action_metadata as ActionMetadataType,
         user: data?.user,
         emailType: data?.email_type,
       }
     })
     .catch((e) => {
-      console.log('error::', e)
+      console.log(':: error in verify email::', JSON.stringify(e))
       const data = e?.response?.data
       return {
         code: Number(data?.code),
@@ -100,5 +101,46 @@ export async function verifyEmail(token: string): Promise<{
         actionMetadata: data?.action_meta_data,
         email: data?.email,
       }
+    })
+}
+
+type UserType = {
+  name?: string | null
+  bio?: string | null
+  nickname: string
+  is_avatar: boolean
+  profile_image: string
+  birthday: string
+  linkedin_id: string
+  insta_id: string
+  twitter_id: string
+  tiktok_id: string
+  platform_guidelines: boolean
+  community_walkthrough: boolean
+  password: string
+}
+
+export async function updateUser(user: Partial<UserType>): Promise<boolean> {
+  return await axiosInstance
+    .patch('/api/v3/users/update_user_profile', { user })
+    .then((res) => {
+      return res.status === 200
+    })
+    .catch((e) => {
+      console.log('::ERROR in updata user profile::', e)
+      throw new Error('Something went wrong')
+    })
+}
+
+export async function validateUsername(nickname: string) {
+  return await axiosInstance
+    .post('/api/v3/users/validate_nickname', { nickname })
+    .then((res) => {
+      if (res.status === 200) return true
+      return false
+    })
+    .catch((e) => {
+      console.log('::ERROR in validata username::', e)
+      return false
     })
 }
