@@ -37,7 +37,7 @@ export function EmailInput() {
 
   return (
     <ModalShell>
-      <p className="text-heading-3 text-center">Log in to Ted</p>
+      <p className="text-center text-heading-3">Log in to Ted</p>
       <div className="w-full">
         <Form {...form}>
           <FormField
