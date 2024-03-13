@@ -9,6 +9,7 @@ export default async function Page({ searchParams }: { searchParams: { token: st
 
   console.log(':: in response page code::', code)
   console.log(':: in page user::', user)
+  console.log("accrssToken:", accessToken)
 
   if (code === 200 && user) {
     Object.assign(user, { accessToken })

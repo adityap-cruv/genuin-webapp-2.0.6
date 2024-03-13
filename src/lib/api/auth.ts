@@ -91,7 +91,8 @@ export async function verifyEmail(token: string): Promise<{
       const user = data?.user
 
       Object.assign(user, { accessToken: res.headers['x-auth-token'] })
-
+      console.log("User::", user)
+      console.log("Resp Header", res.headers['x-auth-token'])
       return {
         code: Number(res?.data?.code),
         actionMetadata: data?.action_metadata as ActionMetadataType,
