@@ -30,6 +30,7 @@ export const authConfig = {
     },
     redirect({ baseUrl, url }) {
       baseUrl = checkAndAppendHttps(headers().get('host') ?? 'app.qa.begenuin.com')
+      if (url.startsWith('/')) baseUrl += url
       return baseUrl
     },
   },
