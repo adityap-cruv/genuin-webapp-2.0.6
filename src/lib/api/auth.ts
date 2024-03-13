@@ -177,7 +177,7 @@ export async function resendVerificationMail(email: string, emailType: number, a
     .post('api/v3/resend_email_verification', {
       email,
       email_type: emailType,
-      device_id: encryptText(useLocalStorage.getState().deviceId),
+      device_id: encryptText(useLocalStorage.getState().deviceId, true),
       brand_id: useGenuinOptions.getState().brandId,
       action_meta_data: actionMetadata,
     })
