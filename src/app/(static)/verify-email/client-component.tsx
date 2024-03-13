@@ -5,7 +5,15 @@ import { useEffect } from 'react'
 
 export function ClientComponent({ user, redirectTo }: { user: any; redirectTo: string }) {
   useEffect(() => {
-    void signIn('credentials', { ...user, callbackUrl: redirectTo, redirect: true })
+    void signIn('credentials', { ...user, callbackUrl: redirectTo, redirect: false })
+      .then((val) => {
+        if (val?.ok) {
+          console.log('signed in..')
+        }
+      })
+      .catch((e) => {
+        console.log('::Error in signin::', e)
+      })
   }, [])
 
   return <></>
