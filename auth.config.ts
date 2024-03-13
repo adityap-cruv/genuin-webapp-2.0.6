@@ -1,4 +1,9 @@
 import type { NextAuthConfig } from 'next-auth'
+import { headers } from 'next/headers'
+
+function checkAndAppendHttps(link: string): string {
+  return link?.startsWith('http') || link?.startsWith('https') ? link : 'https://' + link
+}
 
 export const authConfig = {
   callbacks: {
@@ -24,12 +29,19 @@ export const authConfig = {
       }
       return token
     },
+    redirect({ baseUrl, url }) {
+      console.log('header host::', headers().get('host'))
+      console.log('base url::;', baseUrl)
+      console.log('url::', url)
+      baseUrl = checkAndAppendHttps(headers().get('host') ?? 'app.qa.begenuin.com')
+      return baseUrl
+    },
   },
   session: {
     strategy: 'jwt',
   },
   trustHost: true,
-  secret: 'hCflPpaRjcKXLDwz+9vy/mYAGamxWhUqr4MBjOuV0EM=',
+  secret: process.env.NEXTAUTH_SECRET,
   pages: {
     signIn: '/home',
     error: '/error',

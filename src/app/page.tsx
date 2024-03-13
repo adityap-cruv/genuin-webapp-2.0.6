@@ -5,6 +5,8 @@ import { MainComponent } from '@components/pages/home/main-component'
 
 // TODO: optimize uses of dynamic function.
 export default async function Page() {
+  process.env.NEXT_AUTH_URL = 'localhost:4005'
+  console.log(process.env.NEXT_AUTH_URL)
   return (
     <main id="indexPage" className="absolute inset-0 text-new-off-black">
       <NavBar />
