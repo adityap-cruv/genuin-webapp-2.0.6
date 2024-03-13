@@ -87,13 +87,14 @@ export async function verifyEmail(token: string): Promise<{
       baseURL: process.env.NEXT_PUBLIC_INTERNAL_API_URL,
     })
     .then((res) => {
+      console.log('total reseponse:', JSON.stringify(res))
+      console.log('Resp Header', res.headers['x-auth-token'])
       const data = res?.data?.data
       const user = data?.user
       console.log('User::', JSON.stringify(data?.user))
       Object.assign(user, { accessToken: res.headers['x-auth-token'] })
-
+      console.log('user after manipulation::', JSON.stringify(user))
       console.log('response::', JSON.stringify(res.data.data))
-      console.log('Resp Header', res.headers['x-auth-token'])
       return {
         code: Number(res?.data?.code),
         actionMetadata: data?.action_metadata as ActionMetadataType,
