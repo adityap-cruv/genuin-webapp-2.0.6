@@ -85,7 +85,7 @@ export async function verifyEmail(token: string): Promise<{
     .then((res) => {
       const data = res?.data?.data
       return {
-        code: Number(res.data.code),
+        code: Number(res?.data?.code),
         actionMetadata: data?.action_metadata as ActionMetadataType,
         user: data?.user,
         emailType: data?.email_type,
@@ -101,4 +101,8 @@ export async function verifyEmail(token: string): Promise<{
         email: data?.email,
       }
     })
+}
+
+export async function updateUser() {
+  return null
 }
