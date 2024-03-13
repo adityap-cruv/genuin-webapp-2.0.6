@@ -6,7 +6,7 @@ import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Textarea } from '@components/ui/textarea'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useAuthenticationModalStore } from '../store'
 import { updateUser } from '@lib/api/auth'
 
@@ -16,6 +16,7 @@ const formSchema = z.object({
 })
 
 export function CompleteProfile() {
+  const [isLoading, setIsLoading] = useState(false)
   const { formData, setFormData, close: closeModal } = useAuthenticationModalStore()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -37,6 +38,7 @@ export function CompleteProfile() {
   }, [form.watch])
 
   async function onSubmit({ displayName, bio }: { displayName?: string | null; bio?: string | null }) {
+    setIsLoading(true)
     try {
       const userUpdated = await updateUser({ name: displayName, bio })
       if (userUpdated) {
@@ -46,6 +48,8 @@ export function CompleteProfile() {
       }
     } catch (e) {
       form.setError('root', { message: 'Something went wrong.' })
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -114,7 +118,7 @@ export function CompleteProfile() {
               type="submit"
               value="Save"
               className="flex w-full cursor-pointer items-center justify-center rounded-lg bg-new-off-black  text-monochrome-white hover:bg-new-dark-grey disabled:hover:bg-new-off-black"
-              disabled={!isDirty || !isValid}
+              disabled={!isDirty || !isValid || isLoading}
             />
             {form.formState.errors.root && (
               <p className="flex items-center justify-center text-title-3-med text-supplementary-red">

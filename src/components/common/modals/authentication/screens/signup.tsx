@@ -18,7 +18,8 @@ const formSchema = z.object({
   displayName: z
     .string()
     .min(3, { message: 'Min length should be 3.' })
-    .max(25, { message: 'Max length should be 25.' }),
+    .max(25, { message: 'Max length should be 25.' })
+    .regex(/^[a-zA-Z0-9 ]+$/i, { message: 'Full Name can only have letters, numbers and spaces.' }),
   email: z.string().email({ message: 'Please enter valid email.' }),
 })
 
