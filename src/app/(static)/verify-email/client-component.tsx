@@ -12,6 +12,7 @@ export function ClientComponent({ user, redirectTo }: { user: any; redirectTo: s
       .then((val) => {
         if (val?.ok) {
           console.log('signed in..')
+          console.log('redirectTo:', redirectTo)
           router.replace(redirectTo)
         }
       })
