@@ -8,7 +8,7 @@ export const axiosInstance = axios.create({ baseURL: process.env.NEXT_PUBLIC_API
  */
 export function setAuthTokenInAxiosInstance(token?: string) {
   axiosInstance.interceptors.request.use((config) => {
-    config.headers.set('x-auth-token', token)
+    if (token) config.headers['x-auth-token'] = token
     return config
   })
 }
