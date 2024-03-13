@@ -84,6 +84,7 @@ export async function verifyEmail(token: string): Promise<{
     })
     .then((res) => {
       const data = res?.data?.data
+      console.log('::data in verify email::', JSON.stringify(data))
       return {
         code: Number(res?.data?.code),
         actionMetadata: data?.action_metadata as ActionMetadataType,
@@ -92,7 +93,7 @@ export async function verifyEmail(token: string): Promise<{
       }
     })
     .catch((e) => {
-      console.log('error::', e)
+      console.log(':: error in verify email::', JSON.stringify(e))
       const data = e?.response?.data
       return {
         code: Number(data?.code),
