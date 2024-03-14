@@ -5,12 +5,9 @@ import { headers } from 'next/headers'
 import { checkAndAppendHttps } from '@lib/utils'
 
 export default async function Page({ searchParams }: { searchParams: { token: string } }) {
-  const { code, actionMetadata, user, emailType, accessToken, email } = await verifyEmail(searchParams.token)
-
-  console.log(':: in page user::', JSON.stringify(user), JSON.stringify(actionMetadata))
+  const { code, actionMetadata, user, emailType, email } = await verifyEmail(searchParams.token)
 
   if (code === 200 && user) {
-    Object.assign(user, { accessToken })
     return (
       <ClientComponent
         user={user}
@@ -20,11 +17,16 @@ export default async function Page({ searchParams }: { searchParams: { token: st
   }
 
   // If verification link expired.
-  if (code === 5176) {
+  if (code === 1003) {
+    // console.log('flfdlld:::', code, actionMetadata, user, emailType, email)
+    // console.log(
+    //   'redirect to::',
+    //   getRedirectTo({ email, emailType, error: false, path: actionMetadata?.path, success: false })
+    // )
     redirect(getRedirectTo({ email, emailType, error: false, path: actionMetadata?.path, success: false }))
   }
 
-  redirect(getRedirectTo({ emailType, error: true, path: actionMetadata?.path }))
+  // redirect(getRedirectTo({ emailType, error: true, path: actionMetadata?.path }))
 }
 
 function getRedirectTo({
@@ -41,6 +43,8 @@ function getRedirectTo({
   email?: string
 }) {
   const urlObj = new URL(checkAndAppendHttps((headers().get('host') ?? process.env.HOST_NAME) + (path ?? '/home')))
+  // const urlObj = new URL(('http://' + headers().get('host') ?? process.env.HOST_NAME) + (path ?? '/home'))
+
   // console.log('::url object before manipulation::', urlObj.href)
   if (error) {
     urlObj.searchParams.set('error_in_verification', '1')
@@ -58,7 +62,7 @@ function getRedirectTo({
     if (email) urlObj.searchParams.set('email', email)
   }
 
-  // console.log('::url::', urlObj.href)
+  console.log('::url::', urlObj.href)
 
   return urlObj.href
 }

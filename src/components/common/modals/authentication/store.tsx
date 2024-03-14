@@ -43,7 +43,8 @@ type States = {
 }
 
 type Actions = {
-  open: (action?: AuthActionType) => void
+  open: () => void
+  openWithStep: (action?: AuthActionType, step?: StepsType) => void
   close: () => void
   setStep: (step: StepsType) => void
   reset: () => void
@@ -51,7 +52,7 @@ type Actions = {
 }
 
 const initialStates: States = {
-  step: 'SIGN_UP',
+  step: 'NUMBER_INPUT',
   formData: {
     image: getRandomAvatar(),
     isAvatar: true,
@@ -62,11 +63,14 @@ const initialStates: States = {
 export const useAuthenticationModalStore = create<Actions & States>((set) => {
   return {
     ...initialStates,
-    open(action) {
-      set({ isOpen: true, action })
+    open() {
+      set({ isOpen: true })
+    },
+    openWithStep(action, step = 'NUMBER_INPUT') {
+      set({ isOpen: true, step, action })
     },
     close() {
-      set({ isOpen: false, step: 'SIGN_UP' })
+      set({ isOpen: false })
     },
     setStep(step) {
       set({ step })
