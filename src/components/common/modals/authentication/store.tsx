@@ -18,6 +18,7 @@ export type StepsType =
   | 'MAGIC_LINK_SENT_NOTE'
   | 'ERROR'
   | 'USERNAME_INPUT'
+  | 'PASSWORD_INPUT_LOGIN'
 
 type FormDataType = {
   displayName: string

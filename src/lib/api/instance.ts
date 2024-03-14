@@ -13,4 +13,11 @@ export function setAuthTokenInAxiosInstance(token?: string) {
   })
 }
 
+export function setTempAuthTokenInAxiosInstance(token?: string) {
+  axiosInstance.interceptors.request.use((config) => {
+    if (token) config.headers['x-temp-auth-token'] = token
+    return config
+  })
+}
+
 // axiosInstance.interceptors.request.use(() => {})

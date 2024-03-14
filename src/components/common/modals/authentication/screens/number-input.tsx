@@ -23,6 +23,7 @@ export function NumberInput() {
   const { setStep, formData, setFormData } = useAuthenticationModalStore()
   const [phoneNumber, setPhoneNumber] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [isInvalidNumber, setIsInvalidNumber] = useState(false)
   const deviceId = useLocalStorage().deviceId
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -33,9 +34,27 @@ export function NumberInput() {
     },
   })
 
+  function isValidPhoneNumber(phoneNumber: string) {
+    const pattern = /^[+]{1}(?:[0-9\-\\(\\)\\/.]\s?){6,15}[0-9]{1}$/
+
+    if (!phoneNumber) {
+      setIsInvalidNumber(false)
+    }
+
+    if (pattern.test(phoneNumber)) {
+      setIsInvalidNumber(true)
+    } else {
+      setIsInvalidNumber(false)
+    }
+  }
+
   useEffect(() => {
+    isValidPhoneNumber(phoneNumber)
     setFormData({ phone: phoneNumber })
-  }, [phoneNumber])
+    if (!isInvalidNumber) {
+      form.control.setError('root', { message: '' })
+    }
+  }, [phoneNumber, isInvalidNumber])
 
   async function onSubmit() {
     setIsLoading(true)
@@ -85,11 +104,6 @@ export function NumberInput() {
                       <PhoneInput value={'+1'} international className="w-full" onChange={setPhoneNumber} />
                     </FormControl>
                     <FormMessage className={cn('!text-cap-1-demi')} />
-                    {form.formState.errors.root && (
-                      <p className="text-text-new-para-2-mobile flex items-center justify-center text-supplementary-red">
-                        {form.formState.errors.root.message}
-                      </p>
-                    )}
                   </FormItem>
                 )
               }}
@@ -98,12 +112,17 @@ export function NumberInput() {
               type="submit"
               variant="default"
               className="w-full bg-new-off-black hover:bg-new-dark-grey"
-              disabled={!phoneNumber.trim()}>
+              disabled={!isInvalidNumber}>
               <p className="text-title-3-demi">{isLoading ? 'Loading...' : 'Next'}</p>
             </Button>
           </form>
         </Form>
       </div>
+      {form.formState.errors.root && (
+        <p className="text-text-new-para-2-mobile flex items-center justify-center text-supplementary-red">
+          {form.formState.errors.root.message}
+        </p>
+      )}
 
       <p className="text-title-3-demi text-monochrome">OR</p>
       <Button

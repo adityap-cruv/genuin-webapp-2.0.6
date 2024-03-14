@@ -8,9 +8,9 @@ import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { cn } from '@lib/utils'
-import { verifyOtp } from '@lib/api/auth'
+import { loginViaPhone, verifyOtp } from '@lib/api/auth'
 import { useLocalStorage } from '@lib/stores/local-storage'
-import { LOGIN_SOURCE } from '@lib/constants'
+import { LOGIN_SOURCE, VERIFICATION_TYPE } from '@lib/constants'
 
 const formSchema = z.object({
   phone: z.string(),
@@ -19,6 +19,7 @@ const formSchema = z.object({
 export function OtpInput() {
   const { setStep, formData, setFormData } = useAuthenticationModalStore()
   const [otp, setOtp] = useState<number>(0)
+  const [isValidOtp, setIsValidOtp] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const deviceId = useLocalStorage().deviceId
   const [timer, setTimer] = useState(30)
@@ -32,7 +33,13 @@ export function OtpInput() {
   })
 
   useEffect(() => {
+    const isValidLength = otp.toString().length === 6
+    setIsValidOtp(isValidLength)
     setFormData({ otp })
+
+    if (!isValidLength) {
+      form.control.setError('root', { message: '' })
+    }
   }, [otp])
 
   useEffect(() => {
@@ -57,7 +64,7 @@ export function OtpInput() {
     })
       .then(async (res) => {
         if (res?.code === 200) {
-          setIsLoading(false)
+          const user = res.data
           setStep('OTP_INPUT')
         }
         if (res?.code === 1008) {
@@ -72,12 +79,31 @@ export function OtpInput() {
   async function resendOtp() {
     if (timer <= 0) {
       setTimer(30)
+
+      setIsLoading(true)
+      await loginViaPhone({
+        phone: formData.phone,
+        token: deviceId,
+        verificationType: VERIFICATION_TYPE.sms,
+        loginSource: LOGIN_SOURCE.web,
+      })
+        .then(async (res) => {
+          if (res?.code === 200) {
+            setFormData({ userId: res.data.user_id })
+            setIsLoading(false)
+          }
+        })
+        .finally(() => {
+          setIsLoading(false)
+        })
     }
   }
   return (
     <ModalShell>
       <div className="flex flex-col items-center">
-        <p className="mb-2 text-center text-title-3-med text-monochrome">
+        <p className="mb-2 text-center text-heading-3">Enter code</p>
+
+        <p className="w-full text-center text-title-3-med text-monochrome">
           Enter the 6-digit code sent to: {formData.phone}
         </p>
 
@@ -100,31 +126,36 @@ export function OtpInput() {
                         />
                       </FormControl>
                       <FormMessage className={cn('!text-cap-1-demi')} />
-                      {form.formState.errors.root && (
-                        <p className="text-text-new-para-2-mobile flex items-center justify-center text-center text-supplementary-red">
-                          {form.formState.errors.root.message}
-                        </p>
-                      )}
                     </FormItem>
                   )
                 }}
               />
-              <Button type="submit" variant="default" className="w-full bg-new-off-black hover:bg-new-dark-grey">
+              <Button
+                type="submit"
+                variant="default"
+                className="w-full bg-new-off-black hover:bg-new-dark-grey"
+                disabled={!isValidOtp}>
                 <p className="text-title-3-demi">Verify</p>
               </Button>
             </form>
           </Form>
         </div>
-        {timer <= 0 ? (
-          <p className="mt-4 cursor-pointer text-body-1-med text-primary" onClick={resendOtp}>
-            Resend otp
-          </p>
-        ) : (
-          <p className="mt-4 text-center text-body-1-med text-monochrome">
-            Resend code in <span className="text-monochrome-black">{`00:${timer.toString().padStart(2, '0')}`}</span>
-          </p>
-        )}
       </div>
+
+      {form.formState.errors.root && (
+        <p className="text-text-new-para-2-mobile flex items-center justify-center text-center text-supplementary-red">
+          {form.formState.errors.root.message}
+        </p>
+      )}
+      {timer <= 0 ? (
+        <p className="cursor-pointer text-body-1-med text-primary" onClick={resendOtp}>
+          Resend otp
+        </p>
+      ) : (
+        <p className="text-center text-body-1-med text-monochrome">
+          Resend code in <span className="text-monochrome-black">{`00:${timer.toString().padStart(2, '0')}`}</span>
+        </p>
+      )}
 
       <p className="flex w-full items-center justify-center text-body-1-demi">
         Don't have an account?
