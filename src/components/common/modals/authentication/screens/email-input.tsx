@@ -6,15 +6,23 @@ import { useForm } from 'react-hook-form'
 import { cn } from '@lib/utils'
 import { z } from 'zod'
 import { useAuthenticationModalStore } from '../store'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { ModalShell } from '../modal-shell'
 import { Button } from '@components/ui/button'
 import Link from 'next/link'
 import phone_icon from '@icons/icPhone.svg'
 import { PATH_NAME } from '@lib/utils/constants/path'
+import { loginViaEmail } from '@lib/api/auth'
+import { useLocalStorage } from '@lib/stores/local-storage'
+import { LOGIN_SOURCE } from '@lib/constants'
+import { usePathname } from 'next/navigation'
 
 export function EmailInput() {
-  const { setStep, setFormData, formData } = useAuthenticationModalStore()
+  const { setStep, setFormData, formData, action } = useAuthenticationModalStore()
+  const [isLoading, setIsLoading] = useState(false)
+  const deviceId = useLocalStorage().deviceId
+  const pathname = usePathname()
+
   const formSchema = z.object({
     email: z.string().email({ message: 'Please enter valid email.' }),
   })
@@ -35,40 +43,79 @@ export function EmailInput() {
     }
   }, [form.watch])
 
+  async function onSubmit() {
+    setIsLoading(true)
+    await loginViaEmail({
+      email: formData.email,
+      deviceId,
+      loginSource: LOGIN_SOURCE.web,
+      actionMetaData: { path: pathname, action },
+    })
+      .then(async (res) => {
+        if (res?.code === 200) {
+          console.log(res.data)
+        }
+        if (res.code === 5237) {
+          if (res.data.is_email_verified) {
+            setStep(res.data.is_password_set ? 'PASSWORD_INPUT_LOGIN' : 'MAGIC_LINK_SENT_NOTE')
+          } else {
+            setStep('EMAIL_SENT_NOTE')
+          }
+        }
+        if (res.code === 5174) {
+          form.control.setError('root', { message: 'API Rate Limit Exceeded' })
+        }
+        if (res.code === 5234) {
+          form.control.setError('email', {
+            message: 'Account with this email id doesn`t exist on our system. Please sign-up instead',
+          })
+        }
+      })
+      .finally(() => {
+        setIsLoading(false)
+      })
+  }
+
   return (
     <ModalShell>
       <p className="text-center text-heading-3">Log in to Ted</p>
       <div className="w-full">
         <Form {...form}>
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => {
-              const errors = useFormField().error
-              return (
-                <FormItem className="sm:w-full">
-                  <FormLabel className="w-full text-body-1-med">
-                    <div className="flex w-full justify-between">
-                      <p>Email</p>
-                    </div>
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      className={cn('border-monochrome-9 bg-monochrome-11 text-title-3-med', errors && '!border-red')}
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage className={cn('!text-cap-1-demi')} />
-                </FormItem>
-              )
-            }}
-          />
-          <Input
-            type="submit"
-            className="flex w-full items-center justify-center rounded-lg bg-new-off-black text-title-3-demi text-monochrome-white"
-          />
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => {
+                const errors = useFormField().error
+                return (
+                  <FormItem className="sm:w-full">
+                    <FormLabel className="w-full text-body-1-med">
+                      <div className="flex w-full justify-between">
+                        <p>Email</p>
+                      </div>
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        className={cn('border-monochrome-9 bg-monochrome-11 text-title-3-med', errors && '!border-red')}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage className={cn('!text-cap-1-demi')} />
+                  </FormItem>
+                )
+              }}
+            />
+            <Button type="submit" variant="default" className="w-full bg-new-off-black hover:bg-new-dark-grey">
+              <p className="text-title-3-demi">Next</p>
+            </Button>
+          </form>
         </Form>
       </div>
+      {form.formState.errors.root && (
+        <p className="text-text-new-para-2-mobile flex items-center justify-center text-center text-supplementary-red">
+          {form.formState.errors.root.message}
+        </p>
+      )}
 
       <p className="text-title-3-demi text-monochrome">OR</p>
       <Button

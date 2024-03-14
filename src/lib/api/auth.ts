@@ -1,5 +1,5 @@
 import { encryptText } from '@lib/utils'
-import { axiosInstance, setAuthTokenInAxiosInstance } from './instance'
+import { axiosInstance, setAuthTokenInAxiosInstance, setTempAuthTokenInAxiosInstance } from './instance'
 import { useLocalStorage } from '@lib/stores/local-storage'
 
 type RecaptchaActionType = 'LOGIN' | 'SIGNUP'
@@ -30,6 +30,15 @@ type loginViaPhoneProps = {
   verificationType: number
   brandId?: number
   loginSource: any
+}
+
+type loginViaEmailProps = {
+  email: string | undefined
+  deviceId: string
+  brandId?: string
+  password?: string
+  loginSource: any
+  actionMetaData: ActionMetadataType
 }
 
 type OtpProps = {
@@ -206,7 +215,7 @@ export async function loginViaPhone({
       }
     )
     .then((res) => {
-      setAuthTokenInAxiosInstance(res.headers['x-auth-token'])
+      setTempAuthTokenInAxiosInstance(res.headers['x-temp-auth-token'])
       return { code: 200, data: res.data.data }
     })
     .catch((e) => {
@@ -246,5 +255,40 @@ export async function verifyOtp({
     .catch((e) => {
       console.log('::error in verifyotp api::', e.response.data.code)
       return { code: Number(e.response.data.code), data: undefined }
+    })
+}
+
+export async function loginViaEmail({
+  email,
+  deviceId,
+  brandId,
+  password,
+  loginSource,
+  actionMetaData,
+}: loginViaEmailProps): Promise<{ code: number; data: any }> {
+  return await axiosInstance
+    .post(
+      '/api/v3/login_via_email',
+      {
+        email: encryptText(email ?? '', false),
+        device_id: encryptText(deviceId, true),
+        brand_id: 1429,
+        password,
+        login_source: loginSource,
+        action_meta_data: actionMetaData,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    )
+    .then((res) => {
+      setTempAuthTokenInAxiosInstance(res.headers['x-temp-auth-token'])
+      return { code: 200, data: res.data.data }
+    })
+    .catch((e) => {
+      console.log('::error in sendotp api::', e.response.data.code)
+      return { code: Number(e.response.data.code), data: e.response.data.data }
     })
 }

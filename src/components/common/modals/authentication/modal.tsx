@@ -19,6 +19,7 @@ import {
 import { useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
 import { X } from 'lucide-react'
+import { PasswordInputLogin } from './screens/password-input-login'
 
 type Props = DialogProps
 
@@ -112,5 +113,9 @@ export function Content() {
       return <UsernameInput />
     case 'COMPLETE_PROFILE':
       return <CompleteProfile />
+    case 'MAGIC_LINK_SENT_NOTE':
+      return <Note.magicLink />
+    case 'PASSWORD_INPUT_LOGIN':
+      return <PasswordInputLogin />
   }
 }
