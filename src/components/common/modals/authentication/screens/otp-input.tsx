@@ -64,10 +64,7 @@ export function OtpInput() {
     })
       .then(async (res) => {
         if (res?.code === 200) {
-<<<<<<< HEAD
           const user = res.data
-=======
->>>>>>> qa
           setStep('OTP_INPUT')
         }
         if (res?.code === 1008) {
