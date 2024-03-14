@@ -77,11 +77,11 @@ export function Signup() {
             })
           }
           // Recaptcha validation issue
-          if (res.code === 5242) {
+          else if (res.code === 5242) {
             form.control.setError('root', { message: 'Bot access detected' })
           }
           // Email verification pending and password not set.
-          if (res.code === 5231) {
+          else if (res.code === 5231) {
             setStep('EMAIL_SENT_NOTE')
           }
           // Email verified password not set.
