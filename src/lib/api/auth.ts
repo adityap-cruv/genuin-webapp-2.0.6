@@ -2,6 +2,7 @@ import { encryptText } from '@lib/utils'
 import { axiosInstance, setAuthTokenInAxiosInstance } from './instance'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
+import axios from 'axios'
 
 type RecaptchaActionType = 'LOGIN' | 'SIGNUP'
 
@@ -98,21 +99,12 @@ export async function verifyEmail(token: string): Promise<{
 }> {
   console.log('::Token to be sent::', token)
   return await axiosInstance
-    .get('/api/v3/verify_email_token', {
-      params: {
-        token,
-      },
-      baseURL: process.env.NEXT_PUBLIC_INTERNAL_API_URL,
-    })
+    .get('/api/v3/verify_email_token', { params: { token }, baseURL: process.env.NEXT_PUBLIC_INTERNAL_API_URL })
     .then((res) => {
-      console.log('total-reseponse:', JSON.stringify(res))
-      console.log('Resp-Header', res.headers['x-auth-token'])
       const data = res?.data?.data
       const user = data?.user
-      console.log('User::', JSON.stringify(user))
       Object.assign(user, { accessToken: res.headers['x-auth-token'] })
-      console.log('user after manipulation::', JSON.stringify(user))
-      console.log('response::', JSON.stringify(res.data.data))
+      console.log(user)
       return {
         code: Number(res?.data?.code),
         actionMetadata: data?.action_metadata as ActionMetadataType,
@@ -121,7 +113,7 @@ export async function verifyEmail(token: string): Promise<{
       }
     })
     .catch((e) => {
-      console.log(':: error in verify email::', JSON.stringify(e), e?.response?.data)
+      // console.log(':: error in verify email::', JSON.stringify(e), e?.response?.data)
       const data = e?.response?.data
       return {
         code: Number(data?.code),

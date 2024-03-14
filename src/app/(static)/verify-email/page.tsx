@@ -5,12 +5,12 @@ import { headers } from 'next/headers'
 import { checkAndAppendHttps } from '@lib/utils'
 
 export default async function Page({ searchParams }: { searchParams: { token: string } }) {
-  const { code, actionMetadata, user, emailType, accessToken, email } = await verifyEmail(searchParams.token)
+  const { code, actionMetadata, user, emailType, email } = await verifyEmail(searchParams.token)
 
-  console.log(':: in page user::', JSON.stringify(user), JSON.stringify(actionMetadata))
+  console.log(code, actionMetadata, user, emailType, email)
+  // console.log(':: in page user::', JSON.stringify(user), JSON.stringify(actionMetadata), code)
 
   if (code === 200 && user) {
-    Object.assign(user, { accessToken })
     return (
       <ClientComponent
         user={user}
@@ -20,7 +20,7 @@ export default async function Page({ searchParams }: { searchParams: { token: st
   }
 
   // If verification link expired.
-  if (code === 5176) {
+  if (code === 1003) {
     redirect(getRedirectTo({ email, emailType, error: false, path: actionMetadata?.path, success: false }))
   }
 
@@ -58,7 +58,7 @@ function getRedirectTo({
     if (email) urlObj.searchParams.set('email', email)
   }
 
-  // console.log('::url::', urlObj.href)
+  console.log('::url::', urlObj.href)
 
   return urlObj.href
 }

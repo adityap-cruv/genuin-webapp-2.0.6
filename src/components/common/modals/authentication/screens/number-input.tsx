@@ -66,7 +66,6 @@ export function NumberInput() {
   return (
     <ModalShell>
       <p className="text-center text-heading-3">Log in to Ted</p>
-
       <div className="w-full">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>

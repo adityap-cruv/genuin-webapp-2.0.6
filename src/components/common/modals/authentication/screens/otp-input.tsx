@@ -1,5 +1,5 @@
 import Otp from '@components/ui/otp'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, useFormField } from '@components/ui/form'
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@components/ui/form'
 import { useEffect, useState } from 'react'
 import { ModalShell } from '../modal-shell'
 import { Button } from '@components/ui/button'
@@ -57,7 +57,6 @@ export function OtpInput() {
     })
       .then(async (res) => {
         if (res?.code === 200) {
-          setIsLoading(false)
           setStep('OTP_INPUT')
         }
         if (res?.code === 1008) {
@@ -74,6 +73,7 @@ export function OtpInput() {
       setTimer(30)
     }
   }
+
   return (
     <ModalShell>
       <div className="flex flex-col items-center">
