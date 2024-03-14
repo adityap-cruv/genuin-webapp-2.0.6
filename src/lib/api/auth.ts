@@ -96,6 +96,7 @@ export async function verifyEmail(token: string): Promise<{
   accessToken?: string
   email?: string
 }> {
+  console.log('::Token to be sent::', token)
   return await axiosInstance
     .get('/api/v3/verify_email_token', {
       params: {
@@ -104,11 +105,11 @@ export async function verifyEmail(token: string): Promise<{
       baseURL: process.env.NEXT_PUBLIC_INTERNAL_API_URL,
     })
     .then((res) => {
-      console.log('total reseponse:', JSON.stringify(res))
-      console.log('Resp Header', res.headers['x-auth-token'])
+      console.log('total-reseponse:', JSON.stringify(res))
+      console.log('Resp-Header', res.headers['x-auth-token'])
       const data = res?.data?.data
       const user = data?.user
-      console.log('User::', JSON.stringify(data?.user))
+      console.log('User::', JSON.stringify(user))
       Object.assign(user, { accessToken: res.headers['x-auth-token'] })
       console.log('user after manipulation::', JSON.stringify(user))
       console.log('response::', JSON.stringify(res.data.data))
@@ -120,7 +121,7 @@ export async function verifyEmail(token: string): Promise<{
       }
     })
     .catch((e) => {
-      console.log(':: error in verify email::', JSON.stringify(e))
+      console.log(':: error in verify email::', JSON.stringify(e), e?.response?.data)
       const data = e?.response?.data
       return {
         code: Number(data?.code),
