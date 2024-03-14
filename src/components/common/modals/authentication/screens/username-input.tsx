@@ -17,23 +17,42 @@ const usernameSchema = z.object({
 export function UsernameInput() {
   const [isLoading, setIsLoading] = useState(false)
   const { setStep, setFormData } = useAuthenticationModalStore()
+  const [username, setUsername] = useState<string>('')
+  const [isUsernameValid, setIsUsernameValid] = useState(false)
   const form = useForm<z.infer<typeof usernameSchema>>({ resolver: zodResolver(usernameSchema), mode: 'onSubmit' })
-  const { isDirty, isValid } = form.formState
 
   useEffect(() => {
     const watch = form.watch((value) => {
       setFormData({ username: value.username })
+      setUsername(value.username ?? '')
     })
     return () => {
       watch.unsubscribe()
     }
   }, [form.watch])
 
+  useEffect(() => {
+    const validateUser = setTimeout(async () => {
+      if (username?.length > 0) {
+        const usernameAvailable = await validateUsername(username)
+        if (!usernameAvailable) {
+          form.setError('username', { message: 'This username isn’t available. Choose a different username.' })
+        } else {
+          form.clearErrors()
+        }
+        setIsUsernameValid(usernameAvailable ?? false)
+      }
+    }, 500)
+
+    return () => {
+      clearTimeout(validateUser)
+    }
+  }, [username])
+
   async function onSubmit({ username }: { username: string }) {
     setIsLoading(true)
     try {
-      const usernameAvailable = await validateUsername(username)
-      if (usernameAvailable) {
+      if (isUsernameValid) {
         const userUpdated = await updateUser({ nickname: username })
         if (userUpdated) {
           setStep('COMPLETE_PROFILE')
@@ -84,7 +103,7 @@ export function UsernameInput() {
           />
           <Input
             type="submit"
-            disabled={!isDirty || !isValid || isLoading}
+            disabled={!isUsernameValid || isLoading || username.length === 0}
             className="mt-4 flex items-center justify-center border-0 bg-new-off-black !text-title-3-demi text-new-off-white"
             value="Save and proceed"
           />

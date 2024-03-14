@@ -160,8 +160,8 @@ export async function validateUsername(nickname: string) {
   return await axiosInstance
     .post('/api/v3/users/validate_nickname', { nickname })
     .then((res) => {
-      if (res.status === 200) return true
-      return false
+      if (res.data.code === 200) return true
+      else if (res.data.code === '5073') return false
     })
     .catch((e) => {
       console.log('::ERROR in validata username::', e)
