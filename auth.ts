@@ -33,7 +33,7 @@ export const {
           image: credentials.profile_image ? String(credentials.profile_image) : undefined,
           email: credentials.email ? String(credentials.email) : undefined,
           bio: credentials.bio ? String(credentials.bio) : undefined,
-          name: credentials.bio ? String(credentials.name) : undefined,
+          name: credentials.name ? String(credentials.name) : undefined,
           isEmailVerified: credentials.is_email_verified === 'true',
           isPasswordSet: credentials.is_password_set === 'true',
           accessToken: String(credentials.accessToken),

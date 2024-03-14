@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useState } from 'react'
 import { useAuthenticationModalStore } from '../store'
 import { updateUser, validateUsername } from '@lib/api/auth'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
 
 const usernameSchema = z.object({
   username: z
@@ -17,8 +18,13 @@ const usernameSchema = z.object({
 export function UsernameInput() {
   const [isLoading, setIsLoading] = useState(false)
   const { setStep, setFormData } = useAuthenticationModalStore()
-  const form = useForm<z.infer<typeof usernameSchema>>({ resolver: zodResolver(usernameSchema), mode: 'onSubmit' })
-  const { isDirty, isValid } = form.formState
+  const defaultUsername = useGenuinOptions().user?.nickname
+  const form = useForm<z.infer<typeof usernameSchema>>({
+    resolver: zodResolver(usernameSchema),
+    mode: 'onBlur',
+    defaultValues: { username: defaultUsername },
+  })
+  const { isValid } = form.formState
 
   useEffect(() => {
     const watch = form.watch((value) => {
@@ -84,7 +90,7 @@ export function UsernameInput() {
           />
           <Input
             type="submit"
-            disabled={!isDirty || !isValid || isLoading}
+            disabled={!isValid || isLoading}
             className="mt-4 flex items-center justify-center border-0 bg-new-off-black !text-title-3-demi text-new-off-white"
             value="Save and proceed"
           />
