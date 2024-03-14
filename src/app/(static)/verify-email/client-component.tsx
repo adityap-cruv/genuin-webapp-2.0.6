@@ -9,13 +9,12 @@ export function ClientComponent({ user, redirectTo }: { user: any; redirectTo: s
     void signIn('credentials', { ...user, redirect: false })
       .then((val) => {
         if (val?.ok) {
-          console.log('signed in..')
-          console.log('redirectTo:', redirectTo)
           router.replace(redirectTo)
         }
       })
       .catch((e) => {
         console.log('::Error in signin::', e)
+        router.replace('/home?error_in_verification=1')
       })
   }, [])
 

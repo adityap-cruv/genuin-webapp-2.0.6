@@ -51,54 +51,54 @@ export function Signup() {
 
   async function onSubmit({ displayName, email }: { displayName: string; email: string }) {
     setIsLoading(true)
-    grecaptcha.enterprise.ready(async () => {
-      const token = await grecaptcha.enterprise.execute(process.env.NEXT_PUBLIC_RECAPTCHA_CLIENT_KEY, {
-        action: 'SIGNUP',
-      })
-      await signup({
-        email,
-        profileImage: formData.image ?? '',
-        name: displayName,
-        isAvatar: formData.isAvatar,
-        recaptchaAction: 'SIGNUP',
-        recaptchaToken: token,
-        deviceId,
-        signupSource: SIGNUP_SOURCE.web,
-        actionMetadata: { path: pathname, action },
-      })
-        .then(async (res) => {
-          if (res?.code === 200) {
-            await signIn('credentials', {
-              ...res.data.user,
-              accessToken: res.accessToken,
-              redirect: false,
-            }).then((res) => {
-              if (res?.ok) setStep('EMAIL_SENT_NOTE')
-            })
-          }
-          // Recaptcha validation issue
-          else if (res.code === 5242) {
-            form.control.setError('root', { message: 'Bot access detected' })
-          }
-          // Email verification pending and password not set.
-          else if (res.code === 5231) {
-            setStep('EMAIL_SENT_NOTE')
-          }
-          // Email verified password not set.
-          else if (res.code === 5237) {
-            setStep('MAGIC_LINK_SENT_NOTE')
-          }
-          // Account exists log in instead.
-          else if (res.code === 5232) {
-            form.control.setError('email', { message: 'Email already exists. Log in instead.' })
-          } else {
-            form.control.setError('root', { message: 'Something went wrong. Please try again.' })
-          }
-        })
-        .finally(() => {
-          setIsLoading(false)
-        })
+    // grecaptcha.enterprise.ready(async () => {
+    //   const token = await grecaptcha.enterprise.execute(process.env.NEXT_PUBLIC_RECAPTCHA_CLIENT_KEY, {
+    //     action: 'SIGNUP',
+    //   })
+    await signup({
+      email,
+      profileImage: formData.image ?? '',
+      name: displayName,
+      isAvatar: formData.isAvatar,
+      recaptchaAction: 'SIGNUP',
+      // recaptchaToken: token,
+      deviceId,
+      signupSource: SIGNUP_SOURCE.web,
+      actionMetadata: { path: pathname, action },
     })
+      .then(async (res) => {
+        if (res?.code === 200) {
+          await signIn('credentials', {
+            ...res.data.user,
+            accessToken: res.accessToken,
+            redirect: false,
+          }).then((res) => {
+            if (res?.ok) setStep('EMAIL_SENT_NOTE')
+          })
+        }
+        // Recaptcha validation issue
+        else if (res.code === 5242) {
+          form.control.setError('root', { message: 'Bot access detected' })
+        }
+        // Email verification pending and password not set.
+        else if (res.code === 5231) {
+          setStep('EMAIL_SENT_NOTE')
+        }
+        // Email verified password not set.
+        else if (res.code === 5237) {
+          setStep('MAGIC_LINK_SENT_NOTE')
+        }
+        // Account exists log in instead.
+        else if (res.code === 5232) {
+          form.control.setError('email', { message: 'Email already exists. Log in instead.' })
+        } else {
+          form.control.setError('root', { message: 'Something went wrong. Please try again.' })
+        }
+      })
+      .finally(() => {
+        setIsLoading(false)
+      })
+    // })
   }
 
   return (
