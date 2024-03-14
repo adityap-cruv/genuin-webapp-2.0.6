@@ -3,6 +3,6 @@ import { useAuthenticationModalStore } from './store'
 
 export const AuthenticationModal = {
   ui: Modal,
-  open: useAuthenticationModalStore.getState().open,
+  open: useAuthenticationModalStore.getState().openWithStep,
   close: useAuthenticationModalStore.getState().close,
 }
