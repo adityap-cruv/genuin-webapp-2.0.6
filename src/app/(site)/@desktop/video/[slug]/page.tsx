@@ -29,9 +29,12 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   const title = `${
     videoDetails?.video?.description ? videoDetails?.video?.description + ' • ' : ''
   }Watch and react on Genuin`
-  let shareLink = `${process.env.NEXT_PUBLIC_HOST_URL}${PATH_NAME.video(videoDetails?.video?.share_string)}`
+  let shareLink = `${process.env.NEXT_PUBLIC_HOST_URL}${PATH_NAME.video(videoDetails?.video?.slug)}`
+  if (videoDetails?.community?.share_string) {
+    shareLink += `?community=${videoDetails?.community?.share_string}`
+  }
   if (videoDetails?.loop?.share_string) {
-    shareLink += `?l=${videoDetails?.loop?.share_string}`
+    shareLink += `&loop=${videoDetails?.loop?.share_string}`
   }
 
   return {
