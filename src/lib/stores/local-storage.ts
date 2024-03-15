@@ -12,6 +12,8 @@ type LocalStorageType = {
    */
   deviceId: string
   setDeviceId: (id: string) => void
+  visitorAdded: boolean
+  setVisitor: (added: boolean) => void
   addCommunity: (community: CommunityType) => void
 }
 
@@ -24,6 +26,10 @@ export const useLocalStorage = create(
         deviceId: uuid(),
         setDeviceId(id) {
           set({ deviceId: id })
+        },
+        visitorAdded: false,
+        setVisitor(added: boolean) {
+          set({ visitorAdded: added })
         },
         addCommunity(community: CommunityType) {
           set((state) => {
