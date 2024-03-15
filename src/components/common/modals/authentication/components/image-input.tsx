@@ -8,6 +8,7 @@ export function ImageInput() {
     setStep: state.setStep,
     setFormData: state.setFormData,
   }))
+
   return (
     <div className="flex w-full flex-col items-center justify-center gap-y-2">
       <img
