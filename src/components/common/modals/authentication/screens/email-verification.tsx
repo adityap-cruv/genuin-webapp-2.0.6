@@ -6,7 +6,6 @@ import { useAuthenticationModalStore } from '../store'
 import { useSearchParams } from 'next/navigation'
 import { resendVerificationMail } from '@lib/api/auth'
 import { useState } from 'react'
-import { Loader } from '@components/ui/loader'
 
 export const EmailVerification = {
   success: Success,
@@ -38,7 +37,6 @@ function Success() {
 function Failure() {
   const setStep = useAuthenticationModalStore().setStep
   const searchParams = useSearchParams()
-  const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
 
   return (
@@ -52,7 +50,6 @@ function Failure() {
         className="w-full bg-new-off-black hover:bg-new-dark-grey"
         variant="default"
         onClick={async () => {
-          setIsLoading(true)
           const email = searchParams.get('email')
           const emailType = Number(searchParams.get('email_type'))
           if (email && emailType) {
@@ -63,16 +60,9 @@ function Failure() {
               .catch((e) => {
                 setError('Something went wrong.')
               })
-              .finally(() => {
-                setIsLoading(false)
-              })
           }
         }}>
-        {isLoading ? (
-          <Loader size="sm" className="fill-new-off-white" />
-        ) : (
-          <p className="text-title-3-demi">Resend verification email</p>
-        )}
+        <p className="text-title-3-demi">Resend verification email</p>
         {error && <p className="flex items-center justify-center text-title-3-med text-supplementary-red">{error}</p>}
       </Button>
     </ModalShell>

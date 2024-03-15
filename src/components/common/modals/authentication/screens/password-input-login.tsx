@@ -6,7 +6,7 @@ import { EyeIcon, EyeOffIcon } from 'lucide-react'
 import { useState } from 'react'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { loginViaEmail } from '@lib/api/auth'
+import { loginViaEmail, updateUser } from '@lib/api/auth'
 import { useAuthenticationModalStore } from '../store'
 import { ModalShell } from '../modal-shell'
 import { Button } from '@components/ui/button'
@@ -54,6 +54,7 @@ export function PasswordInputLogin() {
           // console.log('user', user)
           void signIn('credentials', { ...user, redirect: false })
             .then((res) => {
+              console.log(res)
               if (res?.ok) {
                 close()
               }
@@ -62,10 +63,12 @@ export function PasswordInputLogin() {
             .catch((e) => {
               form.setError('root', { message: 'Oops! something went wrong. try again.' })
             })
-        } else if (res?.code === 5238) {
+        }
+        if (res?.code === 5238) {
           form.control.setError('password', {
             message: 'Password is incorrect. Please try again.',
           })
+          console.log(res.data)
         }
       })
       .finally(() => {

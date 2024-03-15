@@ -15,7 +15,6 @@ import { cn } from '@lib/utils'
 import { loginViaPhone } from '@lib/api/auth'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import { LOGIN_SOURCE, VERIFICATION_TYPE } from '@lib/constants'
-import { Loader } from '@components/ui/loader'
 
 const formSchema = z.object({
   phone: z.string(),
@@ -101,20 +100,17 @@ export function NumberInput() {
               variant="default"
               className="w-full bg-new-off-black hover:bg-new-dark-grey"
               disabled={!isValidPhoneNumber(formData.phone ?? '')}>
-              {isLoading ? (
-                <Loader size="sm" className="fill-new-off-white" />
-              ) : (
-                <p className="text-title-3-demi">Next</p>
-              )}
+              <p className="text-title-3-demi">{isLoading ? 'Loading...' : 'Next'}</p>
             </Button>
-            {form.formState.errors.root && (
-              <p className="flex items-center justify-center pt-3 text-title-3-med text-supplementary-red">
-                {form.formState.errors.root.message}
-              </p>
-            )}
           </form>
         </Form>
       </div>
+      {form.formState.errors.root && (
+        <p className="text-text-new-para-2-mobile flex items-center justify-center text-supplementary-red">
+          {form.formState.errors.root.message}
+        </p>
+      )}
+
       <p className="text-title-3-demi text-monochrome">OR</p>
       <Button
         variant="outline"
