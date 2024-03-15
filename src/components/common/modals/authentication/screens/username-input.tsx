@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useState } from 'react'
 import { useAuthenticationModalStore } from '../store'
 import { updateUser, validateUsername } from '@lib/api/auth'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
 
 const usernameSchema = z.object({
   username: z
@@ -18,7 +19,12 @@ export function UsernameInput() {
   const [isLoading, setIsLoading] = useState(false)
   const { setStep, setFormData, formData } = useAuthenticationModalStore()
   const [isUsernameValid, setIsUsernameValid] = useState(false)
-  const form = useForm<z.infer<typeof usernameSchema>>({ resolver: zodResolver(usernameSchema), mode: 'onSubmit' })
+  const defautlUsername = useGenuinOptions().user?.nickname
+  const form = useForm<z.infer<typeof usernameSchema>>({
+    resolver: zodResolver(usernameSchema),
+    mode: 'onSubmit',
+    defaultValues: { username: defautlUsername },
+  })
   const { isValid } = form.formState
 
   useEffect(() => {
