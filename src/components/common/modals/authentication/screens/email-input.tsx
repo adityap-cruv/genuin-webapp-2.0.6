@@ -16,12 +16,9 @@ import { loginViaEmail } from '@lib/api/auth'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import { LOGIN_SOURCE } from '@lib/constants'
 import { usePathname } from 'next/navigation'
-import { Loader } from '@components/ui/loader'
-import { useGenuinOptions } from '@lib/stores/genuin-options'
 
 export function EmailInput() {
   const { setStep, setFormData, formData, action } = useAuthenticationModalStore()
-  const brandName = useGenuinOptions().config?.name
   const [isLoading, setIsLoading] = useState(false)
   const deviceId = useLocalStorage().deviceId
   const pathname = usePathname()
@@ -82,7 +79,7 @@ export function EmailInput() {
 
   return (
     <ModalShell>
-      <p className="text-center text-heading-3">Log in to {brandName}</p>
+      <p className="text-center text-heading-3">Log in to Ted</p>
       <div className="w-full">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -113,8 +110,8 @@ export function EmailInput() {
               type="submit"
               variant="default"
               className="w-full bg-new-off-black hover:bg-new-dark-grey"
-              disabled={!isValid || isLoading}>
-              {isLoading ? <Loader size="sm" /> : <p className="text-title-3-demi">Next</p>}
+              disabled={!isValid}>
+              <p className="text-title-3-demi">Next</p>
             </Button>
           </form>
         </Form>
@@ -124,7 +121,8 @@ export function EmailInput() {
           {form.formState.errors.root.message}
         </p>
       )}
-      <p className="text-title-3-demi text-monochrome">OR</p>
+
+      {/* <p className="text-title-3-demi text-monochrome">OR</p>
       <Button
         variant="outline"
         className="w-full border border-monochrome-9"
@@ -135,7 +133,7 @@ export function EmailInput() {
           <img src={phone_icon.src} className="absolute left-0 h-5 w-5" alt="at" />
           <p className="text-title-3-demi">Use phone</p>
         </div>
-      </Button>
+      </Button> */}
       <p className="text-new-para-2-mobile">
         By registering, you agree to Ted's
         <Link href={PATH_NAME.terms}>

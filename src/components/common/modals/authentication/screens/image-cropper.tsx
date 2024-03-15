@@ -48,7 +48,7 @@ export function ImageCropper() {
 
   return (
     <>
-      <h3 className="flex w-full items-center  justify-center text-heading-3">Edit Profile picture</h3>
+      <h3 className="text-heading-3 flex w-full  items-center justify-center">Edit Profile picture</h3>
       <div className="pb-2">
         <Cropper
           viewMode={1}

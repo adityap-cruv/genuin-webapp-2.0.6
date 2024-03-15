@@ -66,7 +66,7 @@ export const useAuthenticationModalStore = create<Actions & States>((set) => {
     open() {
       set({ isOpen: true })
     },
-    openWithStep(action, step = 'COMPLETE_PROFILE') {
+    openWithStep(action, step = 'EMAIL_INPUT') {
       set({ isOpen: true, step, action })
     },
     close() {

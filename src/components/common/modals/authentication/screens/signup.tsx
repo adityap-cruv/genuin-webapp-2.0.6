@@ -13,8 +13,6 @@ import { SIGNUP_SOURCE } from '@lib/constants'
 import { signIn } from 'next-auth/react'
 import { ImageInput } from '../components/image-input'
 import { usePathname } from 'next/navigation'
-import { Button } from '@components/ui/button'
-import { Loader } from '@components/ui/loader'
 
 const formSchema = z.object({
   displayName: z
@@ -159,12 +157,12 @@ export function Signup() {
             }}
           />
           <span className="flex flex-col gap-y-3 text-title-3-demi">
-            <Button
+            <Input
               type="submit"
+              value="Verify Email"
               className="flex w-full cursor-pointer items-center justify-center rounded-lg bg-new-off-black  text-monochrome-white hover:bg-new-dark-grey disabled:hover:bg-new-off-black"
-              disabled={!isDirty || !isValid || isLoading}>
-              {isLoading ? <Loader size="sm" /> : <p>Verify Email</p>}
-            </Button>
+              disabled={!isDirty || !isValid || isLoading}
+            />
             {form.formState.errors.root && (
               <p className="flex items-center justify-center text-title-3-med text-supplementary-red">
                 {form.formState.errors.root.message}
