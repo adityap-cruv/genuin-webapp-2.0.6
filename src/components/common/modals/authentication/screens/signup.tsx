@@ -116,7 +116,7 @@ export function Signup() {
                 <FormItem>
                   <FormLabel className="text-body-1-med">
                     <div className="flex w-full justify-between">
-                      <p>Display Name</p>
+                      <p>Full Name</p>
                       <p className="text-cap-1-med text-secondary">{form.getValues('displayName')?.length ?? 0}/25</p>
                     </div>
                   </FormLabel>
