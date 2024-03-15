@@ -52,7 +52,7 @@ type Actions = {
 }
 
 const initialStates: States = {
-  step: 'USERNAME_INPUT',
+  step: 'NUMBER_INPUT',
   formData: {
     image: getRandomAvatar(),
     isAvatar: true,
