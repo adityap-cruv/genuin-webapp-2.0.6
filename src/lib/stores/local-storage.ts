@@ -23,7 +23,7 @@ export const useLocalStorage = create(
       return {
         userId: uuid(),
         communities: [],
-        deviceId: '',
+        deviceId: uuid(),
         setDeviceId(id) {
           set({ deviceId: id })
         },
