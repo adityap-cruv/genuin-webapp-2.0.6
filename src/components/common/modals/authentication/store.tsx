@@ -52,7 +52,7 @@ type Actions = {
 }
 
 const initialStates: States = {
-  step: 'USERNAME_INPUT',
+  step: 'NUMBER_INPUT',
   formData: {
     image: getRandomAvatar(),
     isAvatar: true,
@@ -66,7 +66,7 @@ export const useAuthenticationModalStore = create<Actions & States>((set) => {
     open() {
       set({ isOpen: true })
     },
-    openWithStep(action, step = 'USERNAME_INPUT') {
+    openWithStep(action, step = 'NUMBER_INPUT') {
       set({ isOpen: true, step, action })
     },
     close() {
