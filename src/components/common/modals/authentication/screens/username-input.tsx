@@ -7,7 +7,6 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useState } from 'react'
 import { useAuthenticationModalStore } from '../store'
 import { updateUser, validateUsername } from '@lib/api/auth'
-import { useGenuinOptions } from '@lib/stores/genuin-options'
 
 const usernameSchema = z.object({
   username: z
@@ -18,28 +17,42 @@ const usernameSchema = z.object({
 export function UsernameInput() {
   const [isLoading, setIsLoading] = useState(false)
   const { setStep, setFormData } = useAuthenticationModalStore()
-  const defaultUsername = useGenuinOptions().user?.nickname
-  const form = useForm<z.infer<typeof usernameSchema>>({
-    resolver: zodResolver(usernameSchema),
-    mode: 'onBlur',
-    defaultValues: { username: defaultUsername },
-  })
-  const { isValid } = form.formState
+  const [username, setUsername] = useState<string>('')
+  const [isUsernameValid, setIsUsernameValid] = useState(false)
+  const form = useForm<z.infer<typeof usernameSchema>>({ resolver: zodResolver(usernameSchema), mode: 'onSubmit' })
 
   useEffect(() => {
     const watch = form.watch((value) => {
       setFormData({ username: value.username })
+      setUsername(value.username ?? '')
     })
     return () => {
       watch.unsubscribe()
     }
   }, [form.watch])
 
+  useEffect(() => {
+    const validateUser = setTimeout(async () => {
+      if (username?.length > 0) {
+        const usernameAvailable = await validateUsername(username)
+        if (!usernameAvailable) {
+          form.setError('username', { message: 'This username isn’t available. Choose a different username.' })
+        } else {
+          form.clearErrors()
+        }
+        setIsUsernameValid(usernameAvailable ?? false)
+      }
+    }, 500)
+
+    return () => {
+      clearTimeout(validateUser)
+    }
+  }, [username])
+
   async function onSubmit({ username }: { username: string }) {
     setIsLoading(true)
     try {
-      const usernameAvailable = await validateUsername(username)
-      if (usernameAvailable) {
+      if (isUsernameValid) {
         const userUpdated = await updateUser({ nickname: username })
         if (userUpdated) {
           setStep('COMPLETE_PROFILE')
@@ -90,7 +103,7 @@ export function UsernameInput() {
           />
           <Input
             type="submit"
-            disabled={!isValid || isLoading}
+            disabled={!isUsernameValid || isLoading || username.length === 0}
             className="mt-4 flex items-center justify-center border-0 bg-new-off-black !text-title-3-demi text-new-off-white"
             value="Save and proceed"
           />
