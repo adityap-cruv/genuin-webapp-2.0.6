@@ -242,3 +242,46 @@ export function encryptText(text: string, appendString: boolean) {
   // Returning base64 encoded encrypted text
   return encrypted.toString('base64')
 }
+
+export function parseUserAgent(userAgent: string) {
+  const ua = userAgent.toLowerCase()
+  let os_type = 'Unknown OS'
+  let deviceType = 'Unknown Device'
+  let browser = 'Unknown Browser'
+
+  // Detect OS
+  if (ua.indexOf('windows') !== -1) {
+    os_type = 'Windows'
+  } else if (ua.indexOf('macintosh') !== -1 || ua.indexOf('mac os x') !== -1) {
+    os_type = 'Mac OS'
+  } else if (ua.indexOf('linux') !== -1) {
+    os_type = 'Linux'
+  } else if (ua.indexOf('iphone') !== -1) {
+    os_type = 'iOS'
+    deviceType = 'iPhone'
+  } else if (ua.indexOf('ipad') !== -1) {
+    os_type = 'iOS'
+    deviceType = 'iPad'
+  } else if (ua.indexOf('android') !== -1) {
+    os_type = 'Android'
+  }
+
+  // Detect Browser
+  if (ua.indexOf('firefox') !== -1) {
+    browser = 'Firefox'
+  } else if (ua.indexOf('chrome') !== -1) {
+    browser = 'Chrome'
+  } else if (ua.indexOf('safari') !== -1) {
+    browser = 'Safari'
+  } else if (ua.indexOf('edge') !== -1) {
+    browser = 'Edge'
+  } else if (ua.indexOf('msie') !== -1 || ua.indexOf('trident') !== -1) {
+    browser = 'Internet Explorer'
+  }
+
+  return {
+    os_type: os_type,
+    device_type: deviceType,
+    browser_type: browser,
+  }
+}
