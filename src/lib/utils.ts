@@ -245,25 +245,25 @@ export function encryptText(text: string, appendString: boolean) {
 
 export function parseUserAgent(userAgent: string) {
   const ua = userAgent.toLowerCase()
-  let os_type = 'Unknown OS'
+  let osType = 'Unknown OS'
   let deviceType = 'Unknown Device'
   let browser = 'Unknown Browser'
 
   // Detect OS
   if (ua.indexOf('windows') !== -1) {
-    os_type = 'Windows'
+    osType = 'Windows'
   } else if (ua.indexOf('macintosh') !== -1 || ua.indexOf('mac os x') !== -1) {
-    os_type = 'Mac OS'
+    osType = 'Mac OS'
   } else if (ua.indexOf('linux') !== -1) {
-    os_type = 'Linux'
+    osType = 'Linux'
   } else if (ua.indexOf('iphone') !== -1) {
-    os_type = 'iOS'
+    osType = 'iOS'
     deviceType = 'iPhone'
   } else if (ua.indexOf('ipad') !== -1) {
-    os_type = 'iOS'
+    osType = 'iOS'
     deviceType = 'iPad'
   } else if (ua.indexOf('android') !== -1) {
-    os_type = 'Android'
+    osType = 'Android'
   }
 
   // Detect Browser
@@ -280,7 +280,7 @@ export function parseUserAgent(userAgent: string) {
   }
 
   return {
-    os_type: os_type,
+    os_type: osType,
     device_type: deviceType,
     browser_type: browser,
   }
