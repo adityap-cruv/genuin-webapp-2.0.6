@@ -44,7 +44,9 @@ export function getAvatarUrl(avatarUrl: any) {
 }
 
 export function checkAndAppendHttps(link: string): string {
-  return link?.startsWith('http') || link?.startsWith('https') ? link : 'https://' + link
+  return link?.startsWith('http') || link?.startsWith('https')
+    ? link
+    : (process.env.NEXT_PUBLIC_CURRENT_ENV === 'local' ? 'http://' : 'https://') + link
 }
 
 export function isValidHTTPS(link: string) {
@@ -241,4 +243,47 @@ export function encryptText(text: string, appendString: boolean) {
 
   // Returning base64 encoded encrypted text
   return encrypted.toString('base64')
+}
+
+export function parseUserAgent(userAgent: string) {
+  const ua = userAgent.toLowerCase()
+  let osType = 'Unknown OS'
+  let deviceType = 'Unknown Device'
+  let browser = 'Unknown Browser'
+
+  // Detect OS
+  if (ua.includes('windows')) {
+    osType = 'Windows'
+  } else if (ua.includes('macintosh') || ua.includes('mac os')) {
+    osType = 'Mac OS'
+  } else if (ua.includes('linux')) {
+    osType = 'Linux'
+  } else if (ua.includes('iphone')) {
+    osType = 'iOS'
+    deviceType = 'iPhone'
+  } else if (ua.includes('ipad')) {
+    osType = 'iOS'
+    deviceType = 'iPad'
+  } else if (ua.includes('android')) {
+    osType = 'Android'
+  }
+
+  // Detect Browser
+  if (ua.includes('firefox')) {
+    browser = 'Firefox'
+  } else if (ua.includes('chrome')) {
+    browser = 'Chrome'
+  } else if (ua.includes('safari')) {
+    browser = 'Safari'
+  } else if (ua.includes('edge')) {
+    browser = 'Edge'
+  } else if (ua.includes('msie') || ua.includes('trident')) {
+    browser = 'Internet Explorer'
+  }
+
+  return {
+    os_type: osType,
+    device_type: deviceType,
+    browser_type: browser,
+  }
 }

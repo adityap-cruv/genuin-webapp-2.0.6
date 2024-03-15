@@ -63,7 +63,11 @@ function CommentList({ comments, isFetchingNextPage, fetchNextPage }: CommentLis
       {comments.map((comment, index) => {
         return <CommentItem key={index} comment={comment} />
       })}
-      {isFetchingNextPage && <Loader className="h-40 w-full" size="md" />}
+      {isFetchingNextPage && (
+        <div className="h-40 w-full">
+          <Loader size="md" />
+        </div>
+      )}
     </div>
   )
 }

@@ -6,6 +6,7 @@ import imgError from '@images/verify-email/error.svg'
 import { resendVerificationMail } from '@lib/api/auth'
 import { useSearchParams } from 'next/navigation'
 import { useState } from 'react'
+import { Loader } from '@components/ui/loader'
 
 export const MagicLinkVerification = {
   success: Success,
@@ -33,6 +34,7 @@ export function Success() {
 
 export function Failure() {
   const [error, setError] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
   const setStep = useAuthenticationModalStore().setStep
   const searchParams = useSearchParams()
 
@@ -45,7 +47,9 @@ export function Failure() {
       </p>
       <Button
         className="w-full bg-monochrome-black hover:bg-new-dark-grey"
+        disabled={isLoading}
         onClick={async () => {
+          setIsLoading(true)
           const email = searchParams.get('email')
           const emailType = Number(searchParams.get('email_type'))
           if (email && emailType) {
@@ -56,9 +60,12 @@ export function Failure() {
               .catch((e) => {
                 setError('Something went wrong.')
               })
+              .finally(() => {
+                setIsLoading(false)
+              })
           }
         }}>
-        <p className="text-title-3-med">Resend magic link</p>
+        {isLoading ? <Loader size="sm" /> : <p className="text-title-3-med">Resend magic link</p>}
       </Button>
       {error && <p className="flex items-center justify-center text-title-3-med text-supplementary-red">{error}</p>}
     </ModalShell>

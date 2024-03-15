@@ -8,8 +8,9 @@ import { useEffect } from 'react'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import FingerpringJS from '@fingerprintjs/fingerprintjs'
 import { useSession } from 'next-auth/react'
-import { setAuthTokenInAxiosInstance } from '@lib/api/instance'
 import { DownloadDialogModal } from '@components/common/modals/download-app'
+import { axiosInstance, setAuthTokenInAxiosInstance } from '@lib/api/instance'
+import { encryptText, parseUserAgent } from '@lib/utils'
 
 type Props = {
   children: React.ReactNode
@@ -26,6 +27,8 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
     isLoading: state.isLoading,
   }))
   const setDeviceId = useLocalStorage().setDeviceId
+  const visitorAdded = useLocalStorage().visitorAdded
+  const setVisitor = useLocalStorage().setVisitor
 
   const searchParams = useSearchParams()
 
@@ -89,7 +92,12 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
     void (async () => {
       const fp = await fpPromise
       const result = await fp.get()
-      setDeviceId(result.visitorId)
+      if (!visitorAdded) {
+        // Call API for visitor registration
+        setDeviceId(result.visitorId)
+        setVisitor(true)
+        await saveVisitor(result.visitorId, config?.brand_id, window.navigator.userAgent)
+      }
     })()
 
     window.addEventListener('focus', handleFocus)
@@ -110,4 +118,23 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
       <DownloadDialogModal.ui />
     </>
   )
+}
+async function saveVisitor(visitorId: string, brandId: string | undefined, userAgent: string) {
+  const userInfo = parseUserAgent(userAgent)
+  return await axiosInstance
+    .post('/api/v3/guestusers/visit', {
+      device_id: encryptText(visitorId || '', true),
+      brand_id: brandId,
+      meta_data: {
+        ...userInfo,
+      },
+    })
+    .then((res) => {
+      if (res.data.code === 200) return true
+      else if (res.data.code === '5073') return false
+    })
+    .catch((e) => {
+      console.log('::ERROR in saving visitor api::', e)
+      return false
+    })
 }

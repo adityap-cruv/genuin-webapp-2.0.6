@@ -150,7 +150,7 @@ function CommentBox({ shareString, parentRef }: { shareString: string; parentRef
       <div className="h-full overflow-visible pb-40">
         <Comments.withoutApi
           comments={comments}
-          fetchNextPage={() => {}}
+          fetchNextPage={() => { }}
           hasNextPage={hasNextPage}
           isError={isError}
           isFetchingNextPage={isFetchingNextPage}
