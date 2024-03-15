@@ -64,7 +64,13 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
             </Button>
           </Link>
         )}
-        <Button>Login</Button>
+        <Button
+          className="my-1"
+          onClick={() => {
+            AuthenticationModal.open()
+          }}>
+          <p className="text-body-1-demi text-new-off-white">Login</p>
+        </Button>
         {showClose && (
           <X
             onClick={() => {

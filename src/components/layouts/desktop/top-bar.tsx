@@ -106,7 +106,8 @@ function UserTick() {
             <p
               className="text-body-1-demi"
               onClick={() => {
-                void signOut()
+                const callbackUrl = window.location.pathname + window.location.search
+                void signOut({ callbackUrl, redirect: true })
               }}>
               Log out
             </p>
