@@ -23,7 +23,7 @@ type SignupProps = {
   actionMetadata: ActionMetadataType
 }
 
-type loginViaPhoneProps = {
+type LoginViaPhoneType = {
   phone: string | undefined
   platform?: string
   token: string
@@ -32,7 +32,7 @@ type loginViaPhoneProps = {
   loginSource: any
 }
 
-type loginViaEmailProps = {
+type LoginViaEmailType = {
   email: string | undefined
   deviceId: string
   brandId?: string
@@ -195,7 +195,7 @@ export async function loginViaPhone({
   verificationType,
   brandId,
   loginSource,
-}: loginViaPhoneProps): Promise<{ code: number; data: any }> {
+}: LoginViaPhoneType): Promise<{ code: number; data: any }> {
   return await axiosInstance
     .post(
       '/api/v3/send_otp',
@@ -265,13 +265,14 @@ export async function loginViaEmail({
   password,
   loginSource,
   actionMetaData,
-}: loginViaEmailProps): Promise<{ code: number; data: any }> {
+}: LoginViaEmailType): Promise<{ code: number; data: any }> {
   return await axiosInstance
     .post(
       '/api/v3/login_via_email',
       {
         email: encryptText(email ?? '', false),
         device_id: encryptText(deviceId, true),
+        // TODO: replace this static value
         brand_id: 1429,
         password,
         login_source: loginSource,
@@ -284,7 +285,14 @@ export async function loginViaEmail({
       }
     )
     .then((res) => {
-      setTempAuthTokenInAxiosInstance(res.headers['x-temp-auth-token'])
+      if (password) {
+        const authToken = res.headers['x-auth-token']
+        setAuthTokenInAxiosInstance(authToken)
+        Object.assign(res.data.data, { accessToken: authToken })
+      } else {
+        setTempAuthTokenInAxiosInstance(res.headers['x-temp-auth-token'])
+      }
+
       return { code: 200, data: res.data.data }
     })
     .catch((e) => {

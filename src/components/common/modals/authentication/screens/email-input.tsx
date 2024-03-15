@@ -33,6 +33,7 @@ export function EmailInput() {
     criteriaMode: 'firstError',
     defaultValues: { email: formData.email },
   })
+  const { isValid } = form.formState
 
   useEffect(() => {
     const w = form.watch((value) => {
@@ -53,7 +54,7 @@ export function EmailInput() {
     })
       .then(async (res) => {
         if (res?.code === 200) {
-          console.log(res.data)
+          setStep('PASSWORD_INPUT_LOGIN')
         }
         if (res.code === 5237) {
           if (res.data.is_email_verified) {
@@ -105,7 +106,11 @@ export function EmailInput() {
                 )
               }}
             />
-            <Button type="submit" variant="default" className="w-full bg-new-off-black hover:bg-new-dark-grey">
+            <Button
+              type="submit"
+              variant="default"
+              className="w-full bg-new-off-black hover:bg-new-dark-grey"
+              disabled={!isValid}>
               <p className="text-title-3-demi">Next</p>
             </Button>
           </form>
@@ -117,7 +122,7 @@ export function EmailInput() {
         </p>
       )}
 
-      <p className="text-title-3-demi text-monochrome">OR</p>
+      {/* <p className="text-title-3-demi text-monochrome">OR</p>
       <Button
         variant="outline"
         className="w-full border border-monochrome-9"
@@ -128,7 +133,7 @@ export function EmailInput() {
           <img src={phone_icon.src} className="absolute left-0 h-5 w-5" alt="at" />
           <p className="text-title-3-demi">Use phone</p>
         </div>
-      </Button>
+      </Button> */}
       <p className="text-new-para-2-mobile">
         By registering, you agree to Ted's
         <Link href={PATH_NAME.terms}>

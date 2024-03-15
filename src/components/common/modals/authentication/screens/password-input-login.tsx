@@ -13,16 +13,19 @@ import { Button } from '@components/ui/button'
 import { LOGIN_SOURCE } from '@lib/constants'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import { usePathname } from 'next/navigation'
+import { Loader } from '@components/ui/loader'
+import { signIn } from 'next-auth/react'
 
 const passwordSchema = z.object({ password: z.string().min(8) })
 
 export function PasswordInputLogin() {
-  const { setStep, setFormData, formData, action } = useAuthenticationModalStore()
+  const { setStep, close, formData, action } = useAuthenticationModalStore()
   const [passwordVisible, setPasswordVisible] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const deviceId = useLocalStorage().deviceId
   const pathname = usePathname()
   const form = useForm<z.infer<typeof passwordSchema>>({ resolver: zodResolver(passwordSchema), mode: 'onSubmit' })
+  const { isValid } = form.formState
 
   async function onSubmit({ password }: { password: string }) {
     setIsLoading(true)
@@ -35,6 +38,36 @@ export function PasswordInputLogin() {
     })
       .then(async (res) => {
         if (res?.code === 200) {
+          // console.log(res.data)
+          const user = {
+            is_avatar: res.data.is_avatar,
+            member_id: res.data.user_id,
+            nickname: res.data.nickname,
+            profile_image: res.data.profile_image,
+            email: res.data.email,
+            bio: res.data.bio,
+            name: res.data.name,
+            is_email_verified: res.data.is_email_verified,
+            is_password_set: true,
+            accessToken: res.data.accessToken,
+          }
+          // console.log('user', user)
+          void signIn('credentials', { ...user, redirect: false })
+            .then((res) => {
+              console.log(res)
+              if (res?.ok) {
+                close()
+              }
+              form.setError('root', { message: 'Oops! something went wrong. try again.' })
+            })
+            .catch((e) => {
+              form.setError('root', { message: 'Oops! something went wrong. try again.' })
+            })
+        }
+        if (res?.code === 5238) {
+          form.control.setError('password', {
+            message: 'Password is incorrect. Please try again.',
+          })
           console.log(res.data)
         }
       })
@@ -62,46 +95,48 @@ export function PasswordInputLogin() {
                       </div>
                     </FormLabel>
                     <FormControl>
-                      <div>
-                        <div className="relative">
-                          <Input
-                            maxLength={24}
-                            minLength={8}
-                            type={passwordVisible ? 'text' : 'password'}
-                            className={cn(
-                              'border-monochrome-9 bg-monochrome-11 text-title-3-med',
-                              errors && '!border-red'
-                            )}
-                            {...field}
-                          />
-                          <div className="absolute right-4 top-0 flex h-full items-center">
-                            {!passwordVisible ? (
-                              <EyeOffIcon
-                                className="cursor-pointer"
-                                onClick={() => {
-                                  setPasswordVisible(true)
-                                }}
-                              />
-                            ) : (
-                              <EyeIcon
-                                className="cursor-pointer"
-                                onClick={() => {
-                                  setPasswordVisible(false)
-                                }}
-                              />
-                            )}
-                          </div>
+                      <div className="relative">
+                        <Input
+                          maxLength={24}
+                          minLength={8}
+                          type={passwordVisible ? 'text' : 'password'}
+                          className={cn(
+                            'border-monochrome-9 bg-monochrome-11 text-title-3-med',
+                            errors && '!border-red'
+                          )}
+                          {...field}
+                        />
+                        <div className="absolute right-4 top-0 flex h-full items-center">
+                          {!passwordVisible ? (
+                            <EyeOffIcon
+                              className="cursor-pointer"
+                              onClick={() => {
+                                setPasswordVisible(true)
+                              }}
+                            />
+                          ) : (
+                            <EyeIcon
+                              className="cursor-pointer"
+                              onClick={() => {
+                                setPasswordVisible(false)
+                              }}
+                            />
+                          )}
                         </div>
-                        <p className="mt-2 text-center text-body-1-demi text-monochrome-6">Forgot password?</p>
                       </div>
                     </FormControl>
                     <FormMessage className={cn('!text-cap-1-demi')} />
+                    {/* <p className="mt-2 text-center text-body-1-demi text-monochrome-6">Forgot password?</p> */}
                   </FormItem>
                 )
               }}
             />
-            <Button type="submit" variant="default" className="w-full bg-new-off-black hover:bg-new-dark-grey">
-              <p className="text-title-3-demi">{isLoading ? 'Loading...' : 'Next'}</p>
+            <Button
+              type="submit"
+              variant="default"
+              className="w-full bg-new-off-black hover:bg-new-dark-grey"
+              disabled={!isValid || isLoading}>
+              {isLoading ? <Loader size="sm" /> : <p className="text-title-3-demi">Next</p>}
             </Button>
             {form.formState.errors.root && (
               <p className="flex items-center justify-center text-title-3-med text-supplementary-red">
