@@ -1,3 +1,4 @@
+import { isValidPhoneNumber } from 'react-phone-number-input'
 import { PhoneInput } from '@components/ui/phone-input'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@components/ui/form'
 import { useEffect, useState } from 'react'
@@ -21,9 +22,7 @@ const formSchema = z.object({
 
 export function NumberInput() {
   const { setStep, formData, setFormData } = useAuthenticationModalStore()
-  const [phoneNumber, setPhoneNumber] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const [isInvalidNumber, setIsInvalidNumber] = useState(false)
   const deviceId = useLocalStorage().deviceId
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -34,27 +33,9 @@ export function NumberInput() {
     },
   })
 
-  function isValidPhoneNumber(phoneNumber: string) {
-    const pattern = /^[+]{1}(?:[0-9\-\\(\\)\\/.]\s?){6,15}[0-9]{1}$/
-
-    if (!phoneNumber) {
-      setIsInvalidNumber(false)
-    }
-
-    if (pattern.test(phoneNumber)) {
-      setIsInvalidNumber(true)
-    } else {
-      setIsInvalidNumber(false)
-    }
-  }
-
   useEffect(() => {
-    isValidPhoneNumber(phoneNumber)
-    setFormData({ phone: phoneNumber })
-    if (!isInvalidNumber) {
-      form.control.setError('root', { message: '' })
-    }
-  }, [phoneNumber, isInvalidNumber])
+    if (!isValidPhoneNumber(formData.phone ?? '')) form.clearErrors()
+  }, [formData.phone])
 
   async function onSubmit() {
     setIsLoading(true)
@@ -100,7 +81,14 @@ export function NumberInput() {
                       </div>
                     </FormLabel>
                     <FormControl>
-                      <PhoneInput value={'+1'} international className="w-full" onChange={setPhoneNumber} />
+                      <PhoneInput
+                        value={'+1'}
+                        international
+                        className="w-full"
+                        onChange={(value) => {
+                          setFormData({ phone: value })
+                        }}
+                      />
                     </FormControl>
                     <FormMessage className={cn('!text-cap-1-demi')} />
                   </FormItem>
@@ -111,7 +99,7 @@ export function NumberInput() {
               type="submit"
               variant="default"
               className="w-full bg-new-off-black hover:bg-new-dark-grey"
-              disabled={!isInvalidNumber}>
+              disabled={!isValidPhoneNumber(formData.phone ?? '')}>
               <p className="text-title-3-demi">{isLoading ? 'Loading...' : 'Next'}</p>
             </Button>
           </form>
