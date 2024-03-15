@@ -7,7 +7,8 @@
   "extends": [
     "standard-with-typescript",
     "plugin:react/recommended",
-    "prettier"
+    "prettier",
+    "plugin:prettier/recommended"
   ],
   "parserOptions": {
     "ecmaVersion": "latest",
@@ -18,11 +19,19 @@
     "@tanstack/query",
     "@tanstack/eslint-plugin-query",
     "@next/eslint-plugin-next",
-    "eslint-plugin-react"
+    "prettier"
   ],
   "rules": {
     "@typescript-eslint/no-unused-vars": "warn",
     "react/react-in-jsx-scope": "off",
+    "react/no-unknown-property": [
+      "error",
+      {
+        "ignore": [
+          "fetchPriority"
+        ]
+      }
+    ],
     "@typescript-eslint/explicit-function-return-type": "off",
     // I have kept this rules off. For fixing eslin's error.
     "@typescript-eslint/consistent-type-definitions": [
@@ -31,6 +40,7 @@
     ],
     "@typescript-eslint/consistent-type-assertions": "off",
     "no-console": "warn",
+    "@next/next/no-img-element": "off",
     "react/no-unescaped-entities": "off",
     "@typescript-eslint/strict-boolean-expressions": "off",
     "react/prop-types": "off",
@@ -38,6 +48,12 @@
       "error",
       {
         "checksVoidReturn": false
+      }
+    ],
+    "prettier/prettier": [
+      "warn",
+      {
+        "endOfLine": "auto"
       }
     ]
   },

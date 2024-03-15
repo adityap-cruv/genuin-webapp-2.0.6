@@ -1,25 +1,26 @@
 'use client'
-import { Loader } from '@components/ui/loader'
-import { useVideoSizeBox } from '@hooks/use-video-size-box'
+import { FeedShimmer } from '@components/common/shimmers/feed-shimmer'
 import { getFeed } from '@lib/api/feed'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import dynamic from 'next/dynamic'
 const Feed = dynamic(async () => await import('@components/common/feed').then((comp) => comp.Feed.desktop), {
   loading(_) {
-    return <Loader size="md" />
+    return <FeedShimmer.desktop />
   },
 })
 
-export function Root({ brandId }: { brandId?: string }) {
-  const videoSizeBox = useVideoSizeBox(true)
-  const userId = useLocalStorage((state) => state.userId)
+export function Root() {
+  const userId = useLocalStorage().userId
+  const brandId = useGenuinOptions().brandId
   const { data, isError, fetchNextPage, isFetchingNextPage, isLoading } = getFeed({
     feedType: 'lattest',
     userID: userId,
     brandId,
   })
   const videos = data?.pages.flatMap((item) => item.reels)
-  if (videoSizeBox && videos)
+
+  if (videos)
     return (
       <main className="h-full w-full">
         <Feed
@@ -27,9 +28,10 @@ export function Root({ brandId }: { brandId?: string }) {
           isFetchingNextPage={isFetchingNextPage}
           fetchNextPage={fetchNextPage}
           isLoading={isLoading}
-          sizeBox={videoSizeBox}
           videos={videos}
         />
       </main>
     )
+
+  return <FeedShimmer.desktop />
 }

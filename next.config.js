@@ -2,7 +2,6 @@
 const nextConfig = {
   images: {
     remotePatterns: [{ protocol: 'https', hostname: 'media.qa.begenuin.com' }],
-    unoptimized: true,
     formats: ['image/avif', 'image/webp'],
   },
   async redirects() {
@@ -17,6 +16,7 @@ const nextConfig = {
       { source: '/q/:id', destination: '/question/:id', permanent: true },
     ]
   },
+  // webpack(config, ) {},
 }
 
 module.exports = nextConfig

@@ -2,7 +2,6 @@ import { useEffect } from 'react'
 import { motion, useAnimationControls } from 'framer-motion'
 import Image from 'next/image'
 import icMute from '@icons/player-controls/icMuteBlack.svg'
-import icUnmute from '@icons/player-controls/icUnmute.svg'
 
 // TODO: Make this component more reusable
 export const AnimatedMuteIcon = () => {

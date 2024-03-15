@@ -2,12 +2,17 @@
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { type ReactNode } from 'react'
-import { HomeIcon, LatestIcon, MoreIcon, PopularIcon } from '@icons/side-bar-icons'
+import { HomeIcon, LatestIcon, MoreIcon, PopularIcon, ProfileIcon } from '@icons/side-bar-icons'
 import { cn } from '@lib/utils'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
 // import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@components/ui/tooltip'
 import dynamic from 'next/dynamic'
+import { Button } from '@components/ui/button'
+import { AuthenticationModal } from '@components/common/modals/authentication'
+import { GenuinIcon } from '@icons/genuin-icon'
+import { useSession } from 'next-auth/react'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
 // import { Popover } from '@components/ui/popover'
 const RecentCommunities = dynamic(
   async () => await import('./recent-communities').then((comp) => comp.RecentCommunities),
@@ -16,10 +21,12 @@ const RecentCommunities = dynamic(
 
 // TODO: Improve active states on all items.
 export function SideBar() {
+  const { embed } = useGenuinOptions((state) => ({ embed: state.embed }))
   const pathName = usePathname()
+  const { status } = useSession()
   return (
-    <nav className="flex h-full w-fit  flex-col border border-monochrome-9 transition-[width] lg:w-full lg:border-none">
-      <span className="px-1 py-4">
+    <nav className="flex h-full w-fit flex-col justify-between overflow-auto border border-monochrome-9 px-1 py-4 transition-[width] lg:w-full lg:border-none">
+      <div>
         <Link href={{ pathname: PATH_NAME.home() }}>
           <Item title="Home" isActive={pathName === PATH_NAME.home()}>
             <HomeIcon isActive={pathName === PATH_NAME.home()} />
@@ -33,6 +40,16 @@ export function SideBar() {
         <Link href={{ pathname: PATH_NAME.latest() }}>
           <Item title="Latest" isActive={pathName === PATH_NAME.latest()}>
             <LatestIcon isActive={pathName === PATH_NAME.latest()} />
+          </Item>
+        </Link>
+        {/* <Link href={{ pathname: PATH_NAME.notification() }}>
+          <Item title="Notification" isActive={pathName === PATH_NAME.notification()}>
+            <NotificationIcon isActive={pathName === PATH_NAME.notification()} />
+          </Item>
+        </Link> */}
+        <Link href={{ pathname: PATH_NAME.profile() }}>
+          <Item title="Profile" isActive={pathName === PATH_NAME.profile()}>
+            <ProfileIcon isActive={pathName === PATH_NAME.profile()} />
           </Item>
         </Link>
         {/* <Link href={PATH_NAME.search()}>
@@ -52,23 +69,36 @@ export function SideBar() {
             side="bottom"
             align="start">
             <Link href={{ pathname: PATH_NAME.terms }}>
-              <p
-                style={{ fontSize: '20px', lineHeight: '32px', fontWeight: 600 }}
-                className="rounded-md p-2 hover:bg-monochrome-6/10">
-                Terms and Conditions
-              </p>
+              <p className="rounded-md p-2 text-title-2-demi hover:bg-monochrome-6/10">Terms and Conditions</p>
             </Link>
             <Link href={{ pathname: PATH_NAME.privacy }}>
-              <p
-                style={{ fontSize: '20px', lineHeight: '32px', fontWeight: 600 }}
-                className="rounded-md p-2 hover:bg-monochrome-6/10">
-                Privacy Policy
-              </p>
+              <p className="rounded-md p-2 text-title-2-demi hover:bg-monochrome-6/10">Privacy Policy</p>
             </Link>
           </PopoverContent>
         </Popover>
+        {status === 'unauthenticated' && (
+          <Button
+            onClick={() => {
+              AuthenticationModal.open()
+            }}
+            variant={'outline'}
+            className="mb-2 w-3/4 border-primary">
+            <p className="text-title-3-bold text-primary"> Log in</p>
+          </Button>
+        )}
         <RecentCommunities />
-      </span>
+      </div>
+      {embed && (
+        <div>
+          <hr className="border-1 mb-4 mt-1 border-monochrome-black/10" />
+          <div className="flex items-center">
+            <p className="text-title-2-demi text-monochrome">Powered by</p>
+            <Link href={{ pathname: PATH_NAME.home() }}>
+              <GenuinIcon.logo className="h-8 fill-new-off-black" />
+            </Link>
+          </div>
+        </div>
+      )}
     </nav>
   )
 }
@@ -79,7 +109,6 @@ type ItemProps = {
   children: ReactNode
 }
 
-// TODO: remove hard coding of font styles
 function Item({ title, isActive, children }: ItemProps) {
   return (
     <div className="flex w-full max-w-full items-center gap-x-3 rounded-md p-3 hover:bg-monochrome-6/10">

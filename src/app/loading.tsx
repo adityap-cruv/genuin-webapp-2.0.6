@@ -1,7 +1,5 @@
-import { Loader } from '@components/ui/loader'
+import { SplashScreen } from '@components/common/splash-screen'
 
-const Loading = () => {
-  return <Loader size="lg" />
+export default function Loading() {
+  return <SplashScreen />
 }
-
-export default Loading

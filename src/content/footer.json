@@ -1,0 +1,55 @@
+{
+  "download": {
+    "title": "Join the world of Genuin",
+    "caption": "Download the app to join communities and add to the conversation. Don’t see a community that speaks to you? Start your own!",
+    "button": "Contact Us"
+  },
+  "solutions": [
+    {
+      "url": "/",
+      "title": "Build"
+    },
+    {
+      "url": "/manage",
+      "title": "Manage"
+    },
+    {
+      "url": "/market",
+      "title": "Market"
+    },
+    {
+      "url": "/pricing",
+      "title": "Pricing"
+    },
+    {
+      "url": "/discover",
+      "title": "Discover"
+    }
+  ],
+
+  "resources": [
+    {
+      "url": "/blog",
+      "title": "Blog"
+    },
+    {
+      "url": "/contact",
+      "title": "Contact"
+    }
+  ],
+
+  "company": [
+    {
+      "url": "https://careers.begenuin.com",
+      "title": "Careers"
+    },
+    {
+      "url": "/terms",
+      "title": "Terms and Services"
+    },
+    {
+      "url": "/privacy",
+      "title": "Privacy Policy"
+    }
+  ]
+}

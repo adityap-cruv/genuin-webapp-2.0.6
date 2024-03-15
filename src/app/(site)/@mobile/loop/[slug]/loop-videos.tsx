@@ -24,11 +24,14 @@ export function LoopVideos({ slug }: { slug: string }) {
 
   // TODO: Add shimmer in images.
   // TODO: Remove this component from here. and put it  in better location.
+  // TODO: Imrove return.
   return (
     <div ref={scrollDivRef} className="h-full w-full overflow-y-auto">
       {isLoading && <Loader size="md" />}
       {videos?.length === 0 && (
-        <div className="flex items-center justify-center pt-32 text-title-md text-secondary">No videos available</div>
+        <div className="flex items-center justify-center pt-32 text-title-3-bold text-secondary">
+          No posts available
+        </div>
       )}
       <div className="my-4 grid grid-cols-2 gap-4">
         {videos?.map((item, index) => (
@@ -42,11 +45,16 @@ export function LoopVideos({ slug }: { slug: string }) {
               })
             }}
             className="group/video relative flex aspect-reel w-full items-center justify-center duration-300 hover:cursor-pointer">
-            <Image
+            {/* <Image
               src={item.video.thumbnail ?? ''}
               alt={item.video.description ?? ''}
               className="h-full w-full rounded-xl object-fill"
               fill
+            /> */}
+            <img
+              src={item.video.thumbnail}
+              alt={item.video.description}
+              className="h-full w-full rounded-xl object-fill"
             />
             <div className="absolute bottom-2 left-2">
               <Link href={{ pathname: PATH_NAME.profile(item.owner.nickname) }}>

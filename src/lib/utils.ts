@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { type ClassValue, clsx } from 'clsx'
+import { createCipheriv } from 'crypto'
 import { twMerge } from 'tailwind-merge'
 
 export function cn(...inputs: ClassValue[]) {
@@ -35,23 +36,18 @@ export function getTimeAgo(createdAt: any) {
 
 export function getAvatarUrl(avatarUrl: any) {
   if (avatarUrl) {
-    return isValidHTTPS(avatarUrl) ? avatarUrl : `https://media.qa.begenuin.com/backend_assets/lottie/${avatarUrl}.png`
+    return isValidHTTPS(avatarUrl)
+      ? avatarUrl
+      : `https://media.qa.begenuin.com/webapp_assets/assets/avatar/${avatarUrl}.gif`
   }
   return null
 }
 
-/**
- * @returns {Boolean} if requesting client is mobile or not
- */
-// export function checkIfMobile(): boolean {
-//   return cookies().get('mobile')?.value === 'true'
-// }
-
 export function checkAndAppendHttps(link: string): string {
-  return link.startsWith('http') || link.startsWith('https') ? link : 'https://' + link
+  return link?.startsWith('http') || link?.startsWith('https') ? link : 'https://' + link
 }
 
-export function isValidHTTPS(link: string): any {
+export function isValidHTTPS(link: string) {
   return link.startsWith('http') || link.startsWith('https') ? link : null
 }
 
@@ -106,7 +102,7 @@ export function pushUrlWithoutReload(urlObj: UrlObjType) {
 export const openGeneratedLink = (link = '') => {
   const element = document.createElement('a')
   element.setAttribute('href', link)
-  element.target = '_self'
+  element.target = '_blank'
   element.click()
 }
 
@@ -125,7 +121,7 @@ export const generateDeepLink = async ({
   fromUserName,
   // parentId,
   community,
-  loop
+  loop,
 }: any) => {
   const queryParams = {}
   if (utmCampaign) {
@@ -174,4 +170,75 @@ export const generateDeepLink = async ({
   } catch (e) {
     return process.env.NEXT_PUBLIC_HOST_URL
   }
+}
+
+// TODO: Not used anywhere rn.
+export function getParentUrl(url: string): string {
+  const urlObj = new URL(url)
+  let path = urlObj.pathname
+  path = path.startsWith('/') ? path.slice(1, path.length) : path
+  path = path.endsWith('/') ? path.slice(0, path.length - 1) : path
+  const arr = path.split('/')
+  if (arr.length < 3) return url
+  return urlObj.hostname + '/' + arr[arr.length - 3]
+}
+
+/**
+ * This function will return share url from window.location.href.
+ * Call this function client side only.
+ * Make sure window object is there.
+ */
+export function getCurrentShareUrl({ isEmbed, parentUrl }: { isEmbed: boolean; parentUrl: string }) {
+  if (!window) return ''
+  const urlObj = new URL(window.location.href)
+  if (isEmbed) {
+    urlObj.pathname = parentUrl
+    urlObj.searchParams.append('utm_source', 'app_web_sdk')
+  } else {
+    urlObj.searchParams.append('utm_source', 'app_web')
+  }
+  return urlObj.href
+}
+
+export function getRandomAvatar() {
+  const avatars = [
+    'cow_face',
+    'alien',
+    'dog_face',
+    'sloth',
+    'frog',
+    'hear_no_evil_monkey',
+    'jack_o_lantern',
+    'owl',
+    'penguin',
+    'rabbit_face',
+    'pile_of_poo',
+    'pig_face',
+    'robot',
+    'ghost',
+    'teddy_bear',
+    'smiling_face_with_horns',
+    'smiling_face_with_sunglasses',
+    'snowman',
+  ]
+  return avatars[Math.round(Math.random() * avatars.length)]
+}
+
+export function encryptText(text: string, appendString: boolean) {
+  // Extracting common variables
+  const iv = Buffer.from(process.env.NEXT_PUBLIC_AES_IV)
+  const key = Buffer.from(process.env.NEXT_PUBLIC_AES_KEY)
+
+  // Appending secret string if needed
+  const textToEncrypt = appendString ? text + process.env.NEXT_PUBLIC_SECRET_STRING : text
+
+  // Creating Cipher
+  const cipher = createCipheriv('aes-256-cbc', key, iv)
+
+  // Updating encrypted text
+  let encrypted = cipher.update(Buffer.from(textToEncrypt))
+  encrypted = Buffer.concat([encrypted, cipher.final()])
+
+  // Returning base64 encoded encrypted text
+  return encrypted.toString('base64')
 }

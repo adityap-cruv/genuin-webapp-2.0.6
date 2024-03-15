@@ -8,7 +8,16 @@ export const PATH_NAME = {
   popular: () => `/popular`,
   latest: () => `/latest`,
   search: () => `/search`,
+  build: () => `/`,
+  manage: () => `/manage`,
+  market: () => `/market`,
+  pricing: () => `/pricing`,
+  discover: () => '/discover',
   careers: () => 'https://careers.begenuin.com',
+  adreels: () => 'https://creatives.begenuin.com/',
+  yahoo: () => 'https://finance.yahoo.com/news/genuin-unveils-social-paradigm-empowering-140027873.html',
+  businessinsider: () =>
+    'https://markets.businessinsider.com/news/stocks/genuin-is-reinventing-social-connections-with-a-communityfirst-approach-1032839987',
   terms: `/terms`,
   privacy: `/privacy`,
 }

@@ -1,0 +1,125 @@
+import { Form, FormField, useFormField, FormItem, FormLabel, FormControl, FormMessage } from '@components/ui/form'
+import { cn } from '@lib/utils'
+import { Input } from '@components/ui/input'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useEffect, useState } from 'react'
+import { useAuthenticationModalStore } from '../store'
+import { updateUser, validateUsername } from '@lib/api/auth'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
+
+const usernameSchema = z.object({
+  username: z
+    .string()
+    .regex(/^[a-zA-Z0-9._-]+$/, { message: 'Usernames can only use letters, numbers, underscores, and periods.' }),
+})
+
+export function UsernameInput() {
+  const [isLoading, setIsLoading] = useState(false)
+  const { setStep, setFormData, formData } = useAuthenticationModalStore()
+  const [isUsernameValid, setIsUsernameValid] = useState(false)
+  const defautlUsername = useGenuinOptions().user?.nickname
+  const form = useForm<z.infer<typeof usernameSchema>>({
+    resolver: zodResolver(usernameSchema),
+    mode: 'onSubmit',
+    defaultValues: { username: defautlUsername },
+  })
+  const { isValid } = form.formState
+
+  useEffect(() => {
+    const watch = form.watch((value) => {
+      setFormData({ username: value.username })
+    })
+    return () => {
+      watch.unsubscribe()
+    }
+  }, [form.watch])
+
+  useEffect(() => {
+    if (isValid) form.clearErrors()
+    const validateUser = setTimeout(async () => {
+      if (formData.username && formData.username?.length > 0) {
+        const usernameAvailable = await validateUsername(formData.username ?? '')
+        if (!usernameAvailable) {
+          form.setError('username', { message: 'This username isn’t available. Choose a different username.' })
+        } else {
+          form.clearErrors()
+        }
+        setIsUsernameValid(usernameAvailable ?? false)
+      }
+    }, 500)
+
+    return () => {
+      clearTimeout(validateUser)
+    }
+  }, [formData.username, isValid])
+
+  async function onSubmit({ username }: { username: string }) {
+    setIsLoading(true)
+    try {
+      if (isUsernameValid) {
+        const userUpdated = await updateUser({ nickname: username })
+        if (userUpdated) {
+          setStep('COMPLETE_PROFILE')
+        }
+      } else {
+        form.setError('username', { message: 'This username isn’t available. Choose a different username.' })
+      }
+    } catch (e) {
+      form.setError('root', { message: 'Something went wrong' })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  return (
+    <>
+      <h3 className="flex w-full items-center justify-center text-heading-3">Create username</h3>
+      <p className="flex w-full justify-center pt-3 text-title-3-med text-secondary">
+        Enter a name to show on your videos
+      </p>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          <FormField
+            control={form.control}
+            name="username"
+            render={({ field }) => {
+              const errors = useFormField().error
+              return (
+                <FormItem>
+                  <FormLabel className="text-body-1-med">
+                    <div className="flex w-full justify-between">
+                      <p>Username</p>
+                      <p className="text-cap-1-med text-secondary">{form.getValues('username')?.length ?? 0}/25</p>
+                    </div>
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      maxLength={25}
+                      type="text"
+                      className={cn('border-monochrome-9 bg-monochrome-11 text-title-3-med', errors && '!border-red')}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage className={cn('!text-cap-1-demi')} />
+                </FormItem>
+              )
+            }}
+          />
+          <Input
+            type="submit"
+            disabled={!isUsernameValid || isLoading || !isValid}
+            className="mt-4 flex items-center justify-center border-0 bg-new-off-black !text-title-3-demi text-new-off-white"
+            value="Save and proceed"
+          />
+          {form.formState.errors.root && (
+            <p className="flex items-center justify-center text-title-3-med text-supplementary-red">
+              {form.formState.errors.root.message}
+            </p>
+          )}
+        </form>
+      </Form>
+    </>
+  )
+}

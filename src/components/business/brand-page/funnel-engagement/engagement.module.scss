@@ -1,0 +1,67 @@
+.container {
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  position: relative;
+  .containerTitle {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+}
+
+.leftContainer,
+.rightContainer {
+  width: 50%;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.rightContainer {
+  .rightInnerContainer {
+    .rightElementBlock {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 54px;
+      opacity: 0.3;
+
+      h4 {
+        margin: 0px 0px 8px;
+      }
+      p {
+        margin: 0px;
+      }
+    }
+    .rightElementBlock.active {
+      opacity: 1;
+    }
+  }
+  .rightElement {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-size: 100px;
+  }
+}
+
+.leftContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .leftContent {
+    width: 100%;
+    max-width: 400px;
+    height: 100%;
+    max-height: 400px;
+    position: relative;
+    overflow: hidden;
+  }
+}

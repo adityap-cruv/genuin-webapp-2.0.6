@@ -1,16 +1,18 @@
 'use client'
 import type { CommunityDetailsType } from '@lib/schemas/community'
-import { useRecentCommunitiesStore } from '@lib/stores/recent-communities'
 import { useEffect, useRef } from 'react'
+import { useLocalStorage } from '@lib/stores/local-storage'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { TopStickyBar } from './top-bar'
 import { Button } from '@components/ui/button'
 import Image from 'next/image'
 import icShare from '@icons/icShareBlue.svg'
+import icMore from '@icons/icMoreBlue.svg'
+import icLock from '@icons/icLock.svg'
 import { useInView } from 'framer-motion'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
 import Link from 'next/link'
-import { checkAndAppendHttps } from '@lib/utils'
+import { checkAndAppendHttps, getCurrentShareUrl } from '@lib/utils'
 import icInstagram from '@icons/icInstagramBlack.svg'
 import icLinkedIn from '@icons/icLinkedIn.svg'
 import icLink from '@icons/icLinkBlack.svg'
@@ -23,6 +25,7 @@ import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
 import { CommunityLoopTab } from './community-loop-tab'
 import { ListItem } from '@components/common/list-item'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
 
 interface Props {
   communityDetails: CommunityDetailsType
@@ -33,11 +36,12 @@ let communityDetailsModule: CommunityDetailsType
 // TODO: Separate this component.
 export function RootDetails({ communityDetails }: Props) {
   communityDetailsModule = communityDetails
-  const addCommunity = useRecentCommunitiesStore((state) => state.addCommunity)
+  const addCommunity = useLocalStorage((state) => state.addCommunity)
   const detailsDivRef = useRef<HTMLDivElement>(null)
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
+  const { isEmbed, parentUrl } = useGenuinOptions((state) => ({ isEmbed: state.embed, parentUrl: state.parentUrl }))
 
   useEffect(() => {
     addCommunity({
@@ -57,21 +61,17 @@ export function RootDetails({ communityDetails }: Props) {
         communityProfileImage={communityDetails.info.profile_image}
         communtiyHandle={communityDetails.info.handle}
       />
-      <main className="hide-scrollbar absolute inset-0 h-full w-full overflow-auto px-6">
-        <div ref={detailsDivRef} className="pt-6">
-          <CustomAvatar
-            isAvatar={false}
-            imageUrl={communityDetails.info.profile_image}
-            fallbackString={communityDetails.info.name}
-            className="h-20 w-20 text-new-h2 font-medium"
-          />
-          <span className="flex items-center gap-x-2 py-2">
-            <p className="text-title-1-bold">{communityDetails.info.name}</p>
-            <p className="text-body-1-med text-secondary">@{communityDetails.info.handle}</p>
-          </span>
-          <p className="mb-2 line-clamp-2 w-1/2 break-all text-body-1-med">{communityDetails.info.description}</p>
-          <Stats communityDetails={communityDetails} />
-          <span className="my-2 flex items-center gap-x-2">
+      <main className="hide-scrollbar absolute inset-0 h-full w-full overflow-auto">
+        <div>
+          <div className="-px-6 relative h-56 w-full rounded-lg bg-monochrome-9">
+            <CustomAvatar
+              isAvatar={false}
+              imageUrl={communityDetails.info.profile_image}
+              fallbackString={communityDetails.info.name}
+              className="absolute -bottom-14 left-6 h-20 w-20 border-2 border-monochrome-white text-new-h2 font-medium"
+            />
+          </div>
+          <div ref={detailsDivRef} className="my-3 flex items-center justify-end gap-x-2">
             <DownloadDialog
               title="Get the Genuin app"
               subtitle={
@@ -91,41 +91,57 @@ export function RootDetails({ communityDetails }: Props) {
               className="border border-primary p-0.5"
               onClick={async () =>
                 await shareFn({
-                  shareLink: window.location.href + '?utm_source=app_web',
+                  shareLink: getCurrentShareUrl({ isEmbed, parentUrl }),
                   toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                 })
               }>
               <Image src={icShare} alt="share" className="h-7 w-7" />
             </Button>
+            {/* <Button variant="outline" size="custom" className="border border-primary p-1">
+              <Image src={icMore} alt="share" className="h-6 w-6" />
+            </Button> */}
+          </div>
+        </div>
+        <div>
+          <span className="flex items-center gap-x-2 px-6 py-2">
+            <p className="text-title-1-bold">{communityDetails.info.name}</p>
+            <p className="text-body-1-med text-secondary">@{communityDetails.info.handle}</p>
           </span>
         </div>
-        {/* // TODO: have to add is_private community */}
-        {/* <div
-          className="mt-4 flex w-full items-center justify-center overflow-hidden"
-          style={{ height: 'calc(100% - 56px)', backgroundColor: '#F9F9F9' }}>
-          <div className="flex flex-col items-center justify-center">
-            <Image src={lockIcon} alt="share" className="h-16 w-16" />
-            <p className="text-title-lg" style={{ fontWeight: 600 }}>
-              This community is private
-            </p>
-            <p className="text-center text-body-sm" style={{ fontWeight: 500 }}>
-              Join this community to see and interact
-              <br /> with their posts
-            </p>
-          </div>
-        </div> */}
-        <div className="grid w-full grid-cols-2 gap-4 overflow-hidden" style={{ height: 'calc(100% - 56px)' }}>
-          <div className="snap-y snap-proximity overflow-auto overflow-x-hidden scroll-smooth">
-            <CommunityDetailsTabs />
-          </div>
 
-          <div className="snap-y snap-proximity overflow-auto overflow-x-hidden scroll-smooth">
-            <Categories />
-            <Links />
-            <Guidelines />
-            <Leaders />
+        {communityDetails.info.private ? (
+          <div
+            className="mt-4 flex w-full items-center justify-center overflow-hidden"
+            style={{ height: 'calc(100% - 285px)', backgroundColor: '#F9F9F9' }}>
+            <div className="flex flex-col items-center justify-center">
+              <Image src={icLock} alt="share" className="h-16 w-16" />
+              <p className="text-title-2-bold" style={{ fontWeight: 600 }}>
+                This community is private
+              </p>
+              <p className="text-center text-body-1-med">
+                Join this community to see and interact
+                <br /> with their posts
+              </p>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="grid w-full grid-cols-2 gap-4 overflow-hidden px-6" style={{ height: 'calc(100% - 56px)' }}>
+            <div className="snap-y snap-proximity overflow-auto overflow-x-hidden scroll-smooth">
+              {communityDetails.info.description && (
+                <p className="mb-2 line-clamp-2 break-all text-body-1-med">{communityDetails.info.description}</p>
+              )}
+              <Stats communityDetails={communityDetails} />
+              <CommunityDetailsTabs />
+            </div>
+
+            <div className="snap-y snap-proximity overflow-auto overflow-x-hidden scroll-smooth">
+              <Categories />
+              <Links />
+              <Guidelines />
+              <Leaders />
+            </div>
+          </div>
+        )}
       </main>
       <Toaster />
     </>
@@ -134,7 +150,7 @@ export function RootDetails({ communityDetails }: Props) {
 
 function CommunityDetailsTabs() {
   return (
-    <Tabs defaultValue="Loops" style={{ height: 'calc(100% - 42px)' }}>
+    <Tabs defaultValue="Loops" style={{ height: 'calc(100% - 114px)' }}>
       <TabsList className="flex max-w-min">
         <TabsTrigger value="Loops">
           <p className="text-title-3-bold">Loops</p>
@@ -144,7 +160,7 @@ function CommunityDetailsTabs() {
         </TabsTrigger>
       </TabsList>
       <hr className="border-t border-monochrome-9" />
-      <TabsContent value="Loops" className="mr-2 h-full">
+      <TabsContent value="Loops" className="mr-2 h-full py-4">
         <CommunityLoopTab communitySlug={communityDetailsModule.info.slug} />
       </TabsContent>
       <TabsContent value="Members">
@@ -157,8 +173,8 @@ function CommunityDetailsTabs() {
 function Categories() {
   if (communityDetailsModule.info.categories.length !== 0)
     return (
-      <div>
-        <p className="my-2 mt-4 text-title-3-bold">Categories</p>
+      <div className="mb-4">
+        <p className="my-2 text-title-3-bold">Categories</p>
         <div>
           {communityDetailsModule?.info.categories.map((cat, index) => {
             return (
@@ -176,8 +192,8 @@ function Links() {
   const links = communityDetailsModule?.info.links
   if (links?.instagram_url ?? links?.linkedin_url ?? links?.twitter_url ?? links?.social_web_url)
     return (
-      <div>
-        <p className="my-2 mt-4 text-title-md">Links</p>
+      <div className="mb-4">
+        <p className="my-2 text-title-3-bold">Links</p>
         <div className="flex">
           {links?.instagram_url && (
             <div className="mx-1 flex items-center rounded-md bg-monochrome-9 p-1">
@@ -218,8 +234,8 @@ function Links() {
 function Guidelines() {
   if (communityDetailsModule.guidelines)
     return (
-      <div>
-        <p className="my-2 mt-4 text-title-3-bold">Guidelines</p>
+      <div className="mb-4">
+        <p className="my-2 text-title-3-bold">Guidelines</p>
         <>
           <Accordion type="single" collapsible>
             {communityDetailsModule?.guidelines.map((guideline: any, index: any) => {
@@ -247,8 +263,8 @@ function Guidelines() {
 function Leaders() {
   if (communityDetailsModule.leaders.length !== 0)
     return (
-      <div>
-        <p className="my-2 mt-4 text-title-md">Leader</p>
+      <div className="mb-4">
+        <p className="my-2 text-title-3-bold">Leader</p>
         {communityDetailsModule?.leaders.map((moderator, index) => {
           return (
             <Link key={index} href={{ pathname: PATH_NAME.profile(moderator.nickname) }}>
@@ -304,19 +320,19 @@ function Stats({ communityDetails }: { communityDetails: CommunityDetailsType })
     <div className="flex items-center">
       <span className="flex items-center pr-4">
         <p className="text-title-3-bold text-monochrome-black">{communityDetails?.info.count.member}</p>
-        <p className="text-body-1-med text-secondary" style={{ fontWeight: 500 }}>
+        <p className="text-body-1-med text-secondary">
           &nbsp;{communityDetails?.info.count.member === 1 ? 'Member' : 'Members'}
         </p>
       </span>
       <span className="flex items-center pr-4">
         <p className="text-title-3-bold text-monochrome-black">{communityDetails?.info.count.loop}</p>
-        <p className="text-body-1-med text-secondary" style={{ fontWeight: 500 }}>
+        <p className="text-body-1-med text-secondary">
           &nbsp;{communityDetails?.info.count.loop === 1 ? 'Loop' : 'Loops'}
         </p>
       </span>
       <span className="flex items-center pr-4">
         <p className="text-title-3-bold text-monochrome-black">{communityDetails?.info.count.video}</p>
-        <p className="text-body-1-med text-secondary" style={{ fontWeight: 500 }}>
+        <p className="text-body-1-med text-secondary">
           &nbsp;{communityDetails?.info.count.video === 1 ? 'Video' : 'Videos'}
         </p>
       </span>

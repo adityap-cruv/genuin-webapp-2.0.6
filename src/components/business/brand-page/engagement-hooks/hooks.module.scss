@@ -1,0 +1,21 @@
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0px 0px 159px;
+
+  .sectionRight {
+    max-width: 585px;
+    width: 50%;
+    button {
+      margin-top: 10px;
+    }
+  }
+
+  .sectionLeft {
+    width: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}

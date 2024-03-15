@@ -1,0 +1,19 @@
+// Import breakpoints
+@import '../../../styles/breakpoints.scss';
+
+// Section One styles
+.sectionOne {
+  background: url(../../../../public/images/business/marketing-page/marketingbg.webp) no-repeat;
+  background-size: 100% 100%;
+  background-position: center;
+  backdrop-filter: blur(100px);
+  // Uncomment the line below if you want to use a variable for the background color
+  // background: $header-gradient;
+  height: 100vh;
+}
+
+// Container styles using a mixin
+.container {
+  @include container;
+  flex-direction: column;
+}

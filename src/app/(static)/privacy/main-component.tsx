@@ -1,12 +1,9 @@
 export function MainComponent() {
   return (
     <div className="h-full w-full text-[16px] [&>p]:py-2">
-      <p
-        className="flex w-full items-center justify-center pb-4 pt-12 text-center font-bold"
-        style={{ fontSize: 'min(5vw, 40px)' }}>
-        Genuin, Inc.
-        <br />
-        Privacy Policy
+      <p className="flex w-full items-center justify-center pb-4 pt-12 text-center text-new-h2 font-bold">
+        Genuin Inc.
+        <br /> Privacy Policy
       </p>
       <p>
         <b>Last Updated:</b> May 5, 2023
@@ -38,7 +35,7 @@ export function MainComponent() {
         Privacy Policy. Unless otherwise defined in this Privacy Policy, capitalized terms not defined herein have the
         meanings as given to them in our Terms of Service.
       </p>
-      <ol className="list-decimal pb-8 [&>li>strong]:text-title-lg [&>li]:py-2 marker:[&>li]:text-title-lg [&_ol]:px-5 [&_ol]:py-2 marker:[&_ol]:text-[16px] marker:[&_ol]:font-normal">
+      <ol className="list-decimal pb-8 [&>li>strong]:text-title-2-bold [&>li]:py-2 marker:[&>li]:text-title-2-bold [&_ol]:px-5 [&_ol]:py-2 marker:[&_ol]:text-[16px] marker:[&_ol]:font-normal">
         <li>
           <strong>WHAT IS PERSONALLY IDENTIFYABLE INFORMATION?</strong>
           <p className="my-2">

@@ -2,10 +2,8 @@
 export const MainComponent = () => {
   return (
     <>
-      <p
-        className="flex w-full items-center justify-center py-8 text-center font-bold"
-        style={{ fontSize: 'min(40px, 5vw)' }}>
-        Genuin, Inc. <br />
+      <p className="flex w-full items-center justify-center py-8 text-center text-new-h2 font-bold">
+        Genuin Inc. <br />
         General Terms of Service
       </p>
       <div className="mb-8 px-6 text-[16px] md:px-0">
@@ -28,9 +26,9 @@ export const MainComponent = () => {
           </b>
         </p>
 
-        <ol className="list-outside list-decimal marker:[&>li]:text-title-lg [&_ol]:py-3 [&_ol]:pl-3 marker:[&_ol]:text-[16px] marker:[&_ol]:font-normal">
+        <ol className="list-outside list-decimal marker:[&>li]:text-title-2-bold [&_ol]:py-3 [&_ol]:pl-3 marker:[&_ol]:text-[16px] marker:[&_ol]:font-normal">
           <li>
-            <p className="pt-3 text-title-lg">Introduction</p>
+            <p className="pt-3 text-title-2-bold">Introduction</p>
             <ol type="a" className="list-lower">
               <li>
                 These Terms of Service constitute a legal agreement and create a binding contract between you and
@@ -64,7 +62,7 @@ export const MainComponent = () => {
             </ol>
           </li>
           <li>
-            <p className="text-title-lg">Your Account</p>
+            <p className="text-title-2-bold">Your Account</p>
             <ol type="a" className="list-lower">
               <li>
                 In order to use the App, you must set up an account as a user ("<b>Your Account</b>"), subject to these
@@ -141,7 +139,7 @@ export const MainComponent = () => {
             </ol>
           </li>
           <li>
-            <p className="text-title-lg">Messaging</p>
+            <p className="text-title-2-bold">Messaging</p>
             <ol type="a" className="list-lower">
               <li>
                 By signing up for the Service, accepting these Terms of Service, and by providing a mobile phone number
@@ -164,7 +162,7 @@ export const MainComponent = () => {
             </ol>
           </li>
           <li>
-            <p className="text-title-lg">Sharing Personal Information </p>
+            <p className="text-title-2-bold">Sharing Personal Information </p>
             <ol type="a" className="list-lower">
               <li>
                 We do not share your information unless required to do so by law and/or unless we have your express
@@ -181,7 +179,7 @@ export const MainComponent = () => {
             </ol>
           </li>
           <li>
-            <p className="text-title-lg">Licenses</p>
+            <p className="text-title-2-bold">Licenses</p>
             <ol type="a" className="list-lower">
               <li>
                 Our License to You{' '}
@@ -226,7 +224,7 @@ export const MainComponent = () => {
             </ol>
           </li>
           <li>
-            <p className="text-title-lg">Deletions and Cancelations</p>
+            <p className="text-title-2-bold">Deletions and Cancelations</p>
             <ol type="a" className="list-lower">
               <li>
                 Deleting Your Content
@@ -302,7 +300,7 @@ export const MainComponent = () => {
             </ol>
           </li>
           <li>
-            <p className="text-title-lg">Termination or Suspension by Genuin</p>
+            <p className="text-title-2-bold">Termination or Suspension by Genuin</p>
             <ol type="a" className="list-lower">
               <li>
                 In some cases we may terminate, suspend or otherwise restrict Your Account and use of the App if we
@@ -342,7 +340,7 @@ export const MainComponent = () => {
             </ol>
           </li>
           <li>
-            <p className="text-title-lg">Indemnification; Rights and Remedies</p>
+            <p className="text-title-2-bold">Indemnification; Rights and Remedies</p>
             <ol type="a" className="list-lower">
               <li>
                 You agree to indemnify and hold harmless Genuin, their affiliates, contractors, licensors, and their
@@ -383,7 +381,7 @@ export const MainComponent = () => {
             </ol>
           </li>
           <li>
-            <p className="text-title-lg">Disclaimer</p>
+            <p className="text-title-2-bold">Disclaimer</p>
             <ol type="a" className="list-lower">
               <li>
                 THE SERVICES ARE PROVIDED ON AN AS-IS AND AS AVAILABLE BASIS. YOU AGREE THAT YOUR USE OF THE SERVICES IS
@@ -422,7 +420,7 @@ export const MainComponent = () => {
             </ol>
           </li>
           <li>
-            <p className="text-title-lg">Disputes</p>
+            <p className="text-title-2-bold">Disputes</p>
             <ol type="a" className="list-lower">
               <li>
                 Notice of Claim
@@ -498,7 +496,7 @@ export const MainComponent = () => {
             </ol>
           </li>
           <li>
-            <p className="text-title-lg">Other Matters</p>
+            <p className="text-title-2-bold">Other Matters</p>
             <ol type="a" className="list-lower">
               <li>
                 Our failure to act with respect to a breach by you or others does not waive our right to act with

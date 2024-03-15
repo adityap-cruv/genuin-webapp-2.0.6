@@ -32,6 +32,7 @@ module.exports = {
       },
       monochrome: {
         white: '#FFFFFF',
+        11: '#F9F9F9',
         10: '#F3F3F3',
         9: '#E7E7E7',
         8: '#DBDBDB',
@@ -89,7 +90,10 @@ module.exports = {
     },
     fontSize: {
       // New Typography developed by design team for new web.
+      'heading-3': ['32px', { fontWeight: 600, lineHeight: '120%', letterSpacing: '-0.96px' }],
       'title-1-bold': ['24px', { fontWeight: 700, lineHeight: '32px' }],
+      'title-1-demi': ['24px', { fontWeight: 600, lineHeight: '32px' }],
+      'title-1-med': ['24px', { fontWeight: 500, lineHeight: '32px' }],
       'title-2-bold': ['20px', { fontWeight: 700, lineHeight: '32px' }],
       'title-2-demi': ['20px', { fontWeight: 600, lineHeight: '32px' }],
       'title-3-bold': ['17px', { fontWeight: 700, lineHeight: '24px' }],
@@ -101,17 +105,6 @@ module.exports = {
       'cap-1-bold': ['12px', { fontWeight: 700, lineHeight: '16px' }],
       'cap-1-demi': ['12px', { fontWeight: 600, lineHeight: '16px' }],
       'cap-1-med': ['12px', { fontWeight: 500, lineHeight: '16px' }],
-      // TODO: Scrap this fonts after using sanity and changing all fonts
-      'title-sm': ['15px', { fontWeight: 700, lineHeight: '20px' }], // 15px
-      'title-md': ['17px', { fontWeight: 700, lineHeight: '24px' }], // 17px
-      'title-lg': ['20px', { fontWeight: 700, lineHeight: '32px' }], // 20px
-      'title-xl': ['24px', { fontWeight: 700, lineHeight: '32px' }], // 24px
-      'body-sm': ['15px', { fontWeight: 600, lineHeight: '20px' }], // 15px
-      'body-lg': ['17px', { fontWeight: 600, lineHeight: '20px' }], // 17px
-      'cap-bold-sm': ['10px', { fontWeight: 700, lineHeight: '16px' }], // 10px
-      'cap-bold-lg': ['12px', { fontWeight: 700, lineHeight: '16px' }], // 12px
-      'cap-sm': ['10px', { fontWeight: 600, lineHeight: '16px' }],
-      'cap-lg': ['12px', { fontWeight: 600, lineHeight: '16px' }],
       // This typography is only used for index page.
       'new-h1': ['60px', { fontWeight: 700, lineHeight: '110%', letterSpacing: '-1.8px' }],
       'new-h2': ['48px', { fontWeight: 700, lineHeight: '110%', letterSpacing: '-1.44px' }],

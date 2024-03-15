@@ -3,11 +3,11 @@ import Link from 'next/link'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { cn } from '@lib/utils'
 import { type ReactNode } from 'react'
-import { useRecentCommunitiesStore } from '@lib/stores/recent-communities'
 import { PATH_NAME } from '@lib/utils/constants/path'
+import { useLocalStorage } from '@lib/stores/local-storage'
 
 export function RecentCommunities() {
-  const communities = useRecentCommunitiesStore((state) => state.communities)
+  const communities = useLocalStorage((state) => state.communities)
   const pathName = usePathname()
 
   if (communities.length > 0)
@@ -44,7 +44,7 @@ function CommunityItem({ children, title, isActive }: ItemProps) {
   return (
     <div className="flex w-full max-w-full items-center gap-x-2 rounded-md p-2 hover:bg-monochrome-6/10">
       {children}
-      <p className={cn('break-all text-title-lg font-semibold', isActive ? 'text-primary' : 'text-new-off-black')}>
+      <p className={cn('break-all text-title-2-bold font-semibold', isActive ? 'text-primary' : 'text-new-off-black')}>
         {title}
       </p>
     </div>

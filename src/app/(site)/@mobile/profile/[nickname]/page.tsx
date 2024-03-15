@@ -16,7 +16,7 @@ export default async function Component({ params }: CompProps) {
 
 export async function generateMetadata({ params }: CompProps): Promise<Metadata> {
   const data = await fetchUserData(params.nickname)
-  const title = `${data.name} (@${data.nickname}) is on Genuin`
+  const title = `${data.name ? data.name : ''} (@${data.nickname}) is on Genuin`
   let desc = `${
     Boolean(data.name) && data.name.replace(/\s+/g, '') !== ''
       ? `${data.name.trim()} (@${data.nickname})`

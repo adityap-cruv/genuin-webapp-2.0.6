@@ -1,16 +1,15 @@
-import { type VideoSizeBoxType } from '@hooks/use-video-size-box'
 import { AnimatedInfinityView } from '@components/common/animated-infinity-view'
 import dynamic from 'next/dynamic'
 import { type VideoDataType } from '@lib/schemas/video'
-import { cn } from '@lib/utils'
 import { useFeedListStore } from './store'
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import { useCommentSheetStore } from '../player/comment-sheet/store'
-import { useVideoSizeBoxMobile } from '@hooks/use-video-size-box-mobile'
+import { Swiper, SwiperSlide } from 'swiper/react'
+import { Mousewheel } from 'swiper/modules'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
 const Player = dynamic(async () => await import('@components/common/player').then((comp) => comp.Player.mobile))
 
 type MobileProps = {
-  sizeBox: VideoSizeBoxType
   videos: VideoDataType[]
   isLoading: boolean
   isError: boolean
@@ -24,7 +23,6 @@ type MobileProps = {
   startIndex: number
 }
 
-// TODO: remove props sizebox
 export function Mobile({
   videos,
   fetchNextPage,
@@ -32,10 +30,9 @@ export function Mobile({
   isFetchingNextPage,
   isLoading,
   hasNextPage,
-  startIndex,
-  sizeBox,
+  startIndex = 0,
 }: MobileProps) {
-  const scrollDivRef = useRef<HTMLDivElement>(null)
+  const videoSizeBox = useGenuinOptions().sizeBoxes.default
   const { setCurrentIndex, setVideoList, currentIndex, videoList } = useFeedListStore((state) => ({
     setCurrentIndex: state.setCurrentIndex,
     setVideoList: state.setVideoList,
@@ -52,60 +49,35 @@ export function Mobile({
   }, [currentIndex])
 
   useEffect(() => {
-    const element = scrollDivRef.current
-    if (!element) return
-    function handleScroll(this: HTMLDivElement, e: Event) {
-      const newIndex = Math.floor(this.scrollTop / this.clientHeight)
-      setCurrentIndex(newIndex)
-    }
-
-    element.addEventListener('scroll', handleScroll)
-    return () => {
-      element.removeEventListener('scroll', handleScroll)
-    }
-  }, [scrollDivRef.current])
-
-  useEffect(() => {
     setCurrentIndex(startIndex)
-  }, [])
-
-  useEffect(() => {
-    const element = scrollDivRef.current
-    element?.scroll({ top: element.clientHeight * startIndex, behavior: 'instant' })
   }, [])
 
   useEffect(() => {
     setVideoList(videos)
   }, [videos])
 
-  if (videos)
-    return (
-      <div className="relative block overflow-clip">
-        <div
-          ref={scrollDivRef}
-          style={{ height: sizeBox.height, width: sizeBox.width }}
-          className={cn(
-            'hide-scrollbar snap-y snap-mandatory snap-always overflow-x-clip  scroll-smooth',
-            !commentIsOpen ? 'overflow-y-scroll' : 'overflow-y-hidden'
-          )}>
-          {videos.map((item, index) => {
-            return (
-              <div key={index} style={{ width: sizeBox.width, height: sizeBox.height }}>
-                <Player
-                  playIfInViewPort
-                  isFirstPlayerInList={index === 0}
-                  shouldPlay
-                  loop
-                  sizeBox={sizeBox}
-                  videoData={item}
-                />
-              </div>
-            )
-          })}
-        </div>
-        <InfinityViewBox />
-      </div>
-    )
+  return (
+    <div style={{ height: videoSizeBox.height, width: videoSizeBox.width }} className="overflow-clip">
+      <Swiper
+        modules={[Mousewheel]}
+        mousewheel={true}
+        direction="vertical"
+        initialSlide={startIndex}
+        onActiveIndexChange={(swiper) => {
+          setCurrentIndex(swiper.activeIndex)
+        }}
+        allowSlideNext={!commentIsOpen}
+        allowSlidePrev={!commentIsOpen}
+        style={{ height: videoSizeBox.height, width: videoSizeBox.width }}>
+        {videos.map((item, index) => (
+          <SwiperSlide key={index}>
+            {() => <Player playIfInViewPort isFirstPlayerInList={index === 0} shouldPlay loop videoData={item} />}
+          </SwiperSlide>
+        ))}
+      </Swiper>
+      <InfinityViewBox />
+    </div>
+  )
 }
 
 function InfinityViewBox() {
@@ -114,7 +86,7 @@ function InfinityViewBox() {
     videoList: state.videoList,
   }))
   const videoDetails = videoList[currentIndex]
-  if (videoDetails)
+  if (videoDetails?.video)
     return (
       <span className="absolute bottom-0 w-full">
         <AnimatedInfinityView

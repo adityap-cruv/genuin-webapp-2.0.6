@@ -3,16 +3,16 @@ import Link from 'next/link'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { cn } from '@lib/utils'
 import { type ReactNode } from 'react'
-import { useRecentCommunitiesStore } from '@lib/stores/recent-communities'
+import { useLocalStorage } from '@lib/stores/local-storage'
 import { PATH_NAME } from '@lib/utils/constants/path'
 
 export function RecentCommunities() {
-  const communities = useRecentCommunitiesStore((state) => state.communities)
+  const communities = useLocalStorage((state) => state.communities)
   const pathName = usePathname()
   if (communities.length > 0)
     return (
       <>
-        <hr className="mb-4 mt-1 border border-monochrome-black/10" />
+        <hr className="border-1 mb-4 mt-1 border-monochrome-black/10" />
         <p className="hidden w-full break-all pb-1 pl-1 text-title-2-demi text-monochrome lg:line-clamp-1">
           Recent Communities
         </p>

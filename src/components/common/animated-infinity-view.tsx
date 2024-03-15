@@ -76,7 +76,7 @@ export function AnimatedInfinityView({ community, loop }: Props) {
     <span className="mb-2 flex px-1">
       <motion.div initial={{ rotateX: '90deg' }} animate={leftControls} className=" relative flex-1">
         <Link href={{ pathname: PATH_NAME.community(community.slug) }}>
-          <Image src={infynityLeft} alt="bar" className="w-full" />
+          <Image src={infynityLeft} alt="bar" className="h-auto w-full min-w-max" />
           <span className="absolute inset-0 flex h-full w-full items-center gap-x-2 pl-2">
             <CustomAvatar
               imageUrl={localState.communityDp}
@@ -85,26 +85,22 @@ export function AnimatedInfinityView({ community, loop }: Props) {
               className="h-6 w-6"
             />
             <span className="pr-5">
-              <p className="line-clamp-1 w-full break-all text-body-sm font-medium text-monochrome-white">
+              <p className="line-clamp-1 w-full break-all text-body-1-med text-monochrome-white">
                 {localState.communityName}
               </p>
-              <p className="w-full whitespace-nowrap text-cap-lg font-medium text-monochrome-white/60">
-                Browse Community
-              </p>
+              <p className="w-full whitespace-nowrap text-cap-1-med text-monochrome-white/60">Browse Community</p>
             </span>
           </span>
         </Link>
       </motion.div>
       <motion.div initial={{ rotateX: '90deg' }} animate={rightControls} className="relative flex-1">
         <a href={PATH_NAME.loop(loop.slug)}>
-          <Image src={infynityRight} alt="bar" className="w-full" />
+          <Image src={infynityRight} alt="bar" className="h-auto w-full min-w-max" />
           <span className="absolute inset-0 block w-full flex-1 justify-end">
             <span className="flex h-full items-center justify-end">
               <div className="w-[85%]">
-                <p className="line-clamp-1 break-all text-body-sm font-medium text-monochrome-white">
-                  {localState.loopName}
-                </p>
-                <p className="line-clamp-1 text-cap-sm font-medium text-monochrome-white/60">view Loop</p>
+                <p className="line-clamp-1 break-all text-body-1-med text-monochrome-white">{localState.loopName}</p>
+                <p className="line-clamp-1 text-cap-1-med text-monochrome-white/60">View Loop</p>
               </div>
             </span>
           </span>

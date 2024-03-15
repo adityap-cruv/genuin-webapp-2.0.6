@@ -5,7 +5,6 @@ import {
   CustomDialogContent,
   CustomDialogTrigger,
 } from '@components/custom/custom-dialog'
-import { useVideoSizeBoxModal } from '@hooks/use-video-size-box-modal'
 import { useEffect } from 'react'
 import { type VideoDataType } from '@lib/schemas/video'
 import { X } from 'lucide-react'
@@ -16,6 +15,8 @@ import icDownArrow from '@icons/player-controls/icArrowDown.svg'
 import Image from 'next/image'
 import { Loader } from '@components/ui/loader'
 import { cn } from '@lib/utils'
+import { FeedShimmer } from '@components/common/shimmers/feed-shimmer'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
 
 type Props = {
   children?: React.ReactNode
@@ -50,7 +51,7 @@ export function Desktop({
   fetchNextVideos,
   fetchPreviousVideos,
 }: Props) {
-  const videoSizeBox = useVideoSizeBoxModal()
+  const sizeBox = useGenuinOptions().sizeBoxes
   const { currentIndex, setCurrentIndex, setStateVideos } = useFeedModalStore((state) => ({
     currentIndex: state.currentIndex,
     setCurrentIndex: state.setCurrentIndex,
@@ -72,29 +73,23 @@ export function Desktop({
 
   function InnerContent() {
     if (isLoading) return <Loader size="md" />
-    if (videoSizeBox && videos)
-      return (
-        <SinglePlayer
-          videoDetails={videos[currentIndex]}
-          sizeBox={{ height: videoSizeBox.video.height, width: videoSizeBox.video.width }}
-        />
-      )
+    if (videos) return <SinglePlayer videoDetails={videos[currentIndex]} sizeBox={sizeBox.modal.player} />
   }
 
   return (
     <CustomDialog open={open}>
       <CustomDialogTrigger>{children}</CustomDialogTrigger>
       <CustomDialogContent showDefaultClose={false}>
-        {videoSizeBox && videos && (
+        {videos && (
           <span className="flex items-center gap-x-6">
             <div
-              style={{ width: videoSizeBox.modal.width, height: videoSizeBox.modal.height }}
-              className="relative overflow-clip rounded-2xl bg-monochrome-white">
+              style={{ height: sizeBox.modal.height, width: sizeBox.modal.width }}
+              className="relative min-w-[800px] overflow-clip rounded-2xl bg-monochrome-white">
               <CustomDialogClose
                 onClick={() => {
                   close?.()
                 }}
-                className="absolute right-4 top-4 z-10">
+                className="absolute right-4 top-4 z-10 focus:outline-none">
                 <X className="h-6 w-6" />
               </CustomDialogClose>
               <InnerContent />
@@ -123,6 +118,92 @@ export function Desktop({
             </span>
           </span>
         )}
+      </CustomDialogContent>
+    </CustomDialog>
+  )
+}
+
+type ProfileProps = {
+  children?: React.ReactNode
+  /**
+   * If video is not available than it will show loader only.
+   */
+  video?: VideoDataType
+  /**
+   * Controls if modal should open or not.
+   * @default false
+   */
+  open: boolean
+  close: () => void
+  /**
+   * @default true
+   */
+  hasNextVideo: boolean
+  /**
+   * @default true
+   */
+  hasPreviousVideo: boolean
+  getNextVideo: () => void
+  getPreviousVideo: () => void
+}
+
+/**
+ * For profile page their is different implementation for modal component in desktop.
+ * @param param0
+ * @returns
+ */
+export function Profile({
+  children,
+  open = false,
+  video,
+  close,
+  hasNextVideo = true,
+  hasPreviousVideo = true,
+  getNextVideo,
+  getPreviousVideo,
+}: ProfileProps) {
+  const sizeBox = useGenuinOptions().sizeBoxes
+  function InnerContent() {
+    if (!video) return <FeedShimmer.desktop />
+    return <SinglePlayer videoDetails={video} sizeBox={{ ...sizeBox.modal.player }} />
+  }
+
+  return (
+    <CustomDialog open={open}>
+      <CustomDialogTrigger>{children}</CustomDialogTrigger>
+      <CustomDialogContent showDefaultClose={false}>
+        <span className="flex items-center gap-x-6">
+          <div
+            style={{ width: sizeBox.modal.width, height: sizeBox.modal.height }}
+            className="relative min-w-[800px] overflow-clip rounded-2xl bg-monochrome-white">
+            <CustomDialogClose
+              onClick={() => {
+                close?.()
+              }}
+              className="absolute right-4 top-4 z-10">
+              <X className="h-6 w-6" />
+            </CustomDialogClose>
+            <InnerContent />
+          </div>
+          <span className="flex flex-col gap-y-4">
+            <button
+              onClick={hasPreviousVideo ? getPreviousVideo : undefined}
+              className={cn(
+                'rounded-full bg-monochrome-white/10 p-2 ',
+                !hasPreviousVideo ? 'opacity-40' : 'hover:bg-monochrome-white/20'
+              )}>
+              <Image src={icUpArrow} alt="" />
+            </button>
+            <button
+              onClick={hasNextVideo ? getNextVideo : undefined}
+              className={cn(
+                'rounded-full bg-monochrome-white/10 p-2 ',
+                !hasNextVideo ? 'opacity-40' : 'hover:bg-monochrome-white/20'
+              )}>
+              <Image src={icDownArrow} alt="" />
+            </button>
+          </span>
+        </span>
       </CustomDialogContent>
     </CustomDialog>
   )

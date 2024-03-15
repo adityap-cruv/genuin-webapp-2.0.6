@@ -1,13 +1,13 @@
 import { Root } from './root'
 import { type Metadata } from 'next'
 
-type Props = {
-  searchParams: {
-    brand_id?: string
-  }
-}
+// type Props = {
+//   searchParams: {
+//     brand_id?: string
+//   }
+// }
 
-export default function Page({ searchParams }: Props) {
+export default function Page() {
   return <Root />
 }
 

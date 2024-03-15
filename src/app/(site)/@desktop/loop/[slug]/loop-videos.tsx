@@ -4,11 +4,10 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { CustomAvatar } from '@components/custom/custom-avatar'
-import { isMobile } from 'react-device-detect'
 import { useRef, useState } from 'react'
 import icPlay from '@icons/player-controls/icPlay.svg'
 import { useMotionValueEvent, useScroll } from 'framer-motion'
-import { PlayerModal } from '../../../../../components/common/modals/player-modal'
+import { PlayerModal } from '@components/common/modals/player-modal'
 
 export function LoopVideos({ slug }: { slug: string }) {
   const { data, isLoading, fetchNextPage, isError, isFetchingNextPage } = getLoopVideos(slug)
@@ -23,15 +22,19 @@ export function LoopVideos({ slug }: { slug: string }) {
     }
   })
 
+  // TODO: Implement shimmer.
+  if (isLoading) return <Loader size="md" />
+
+  if (!videos || videos?.length === 0)
+    return (
+      <div className="flex items-center justify-center pt-32 text-title-3-bold text-secondary">No posts available</div>
+    )
+
   // TODO: Add shimmer in images.
   // TODO: Remove this component from here. and put it  in better location.
   return (
     <div ref={scrollDivRef} className="h-full w-full overflow-y-auto">
-      {!isMobile && <p className="my-2 text-title-3-bold">Posts</p>}
-      {isLoading && <Loader size="md" />}
-      {videos?.length === 0 && (
-        <div className="flex items-center justify-center pt-32 text-title-md text-secondary">No videos available</div>
-      )}
+      <p className="my-2 text-title-3-bold">Posts</p>
       <div className="my-4 grid grid-cols-2 gap-4">
         {videos?.map((item, index) => (
           <div
@@ -44,11 +47,16 @@ export function LoopVideos({ slug }: { slug: string }) {
               })
             }}
             className="group/video relative flex aspect-reel w-full items-center justify-center duration-300 hover:cursor-pointer">
-            <Image
+            {/* <Image
               src={item.video.thumbnail ?? ''}
               alt={item.video.description ?? ''}
               className="h-full w-full rounded-xl object-fill"
               fill
+            /> */}
+            <img
+              src={item.video.thumbnail}
+              alt={item.video.description}
+              className="h-full w-full rounded-xl object-fill"
             />
             <div className="absolute bottom-2 left-2">
               <Link href={{ pathname: PATH_NAME.profile(item.owner.nickname) }}>
@@ -70,24 +78,21 @@ export function LoopVideos({ slug }: { slug: string }) {
           </div>
         ))}
       </div>
-      {isFetchingNextPage && <Loader size="md" />}
-      {videos && (
-        <PlayerModal.desktop
-          videos={videos}
-          isLoading={false}
-          close={() => {
-            setModalControl((x) => {
-              x.open = false
-              return { ...x }
-            })
-          }}
-          fetchNextVideos={fetchNextPage}
-          isError={isError}
-          open={modalControl.open}
-          isFetchingNextPage={isFetchingNextPage}
-          startIndex={modalControl.startIndex}
-        />
-      )}
+      <PlayerModal.desktop
+        videos={videos}
+        isLoading={false}
+        close={() => {
+          setModalControl((x) => {
+            x.open = false
+            return { ...x }
+          })
+        }}
+        fetchNextVideos={fetchNextPage}
+        isError={isError}
+        open={modalControl.open}
+        isFetchingNextPage={isFetchingNextPage}
+        startIndex={modalControl.startIndex}
+      />
     </div>
   )
 }

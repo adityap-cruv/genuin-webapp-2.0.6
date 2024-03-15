@@ -1,0 +1,58 @@
+{
+  "TopBanner": {
+    "title": "Making Community Engaging for Everyone",
+    "caption": "Nova is supporting the world's biggest brands, the next generation of community builders, and the knowledge seekers in between.",
+    "button": [
+      {
+        "text": "Get Started",
+        "variant": "solid"
+      },
+      {
+        "text": "Contact Sales",
+        "variant": "outline"
+      }
+    ]
+  },
+  "OnlineCommunity": {
+    "title": "Ensure Brand Safety Through your own Policies and Platform Controls",
+    "caption": "Control what your community sees, keep it relevant to your brand, and easily policy prohibited content.",
+    "button": "Contact Sales",
+    "imgLeft": "/images/customer-engage/engagement-2.png",
+    "imgLeftAlt": "alt",
+    "imgRight": "/images/customer-engage/engagement-2.png",
+    "imgRightAlt": "alt"
+  },
+  "EngageCustomers": {
+    "title": "Engage Your Customers, Wherever They Are",
+    "caption": "Allow your customers to engage with your brand in three easy steps. Use Genuin's unique tools to bring everyone into the conversation."
+  },
+  "EngagementHooks": {
+    "title": "The Best Engagement Hooks on Your App",
+    "caption": "A new way of connecting with your audience — entertain, educate, and convert them into loyal brand advocates through engaging content",
+    "button": "Learn More"
+  },
+  "Testimonials": [
+    {
+      "text": "“Genuin changed the game for us! By utilizing the community-building tools, we saw a huge boost in engagement, which translated to amplified brand loyalty.”",
+      "name": "Sammy Lucas",
+      "position": "Brand Manager",
+      "img": "/images/business/brand-page/testimonials/testimonial-1.webp"
+    },
+    {
+      "text": "“We're thrilled with the ability to present our communities under our own brand and collect a ton of first-party data quickly and inexpensively.”",
+      "name": "Jenny Wilson",
+      "position": "Marketing Lead",
+      "img": "/images/business/brand-page/testimonials/testimonial-2.webp"
+    },
+    {
+      "text": "“We have been struggling with the lack of brand safety on the major social networks. Genuin gives us the ability to implement our policies perfectly, making us extremely comfortable letting the community thrive and grow.”",
+      "name": "Jacob Jones",
+      "position": "Brand Manager",
+      "img": "/images/business/brand-page/testimonials/testimonial-3.webp"
+    }
+  ],
+  "GetInTouch": {
+    "title": "Grow a Thriving Brand Community and Build a Loyal Customer Base",
+    "caption": "Get in touch today to start building your brand community with Genuin."
+  }
+}

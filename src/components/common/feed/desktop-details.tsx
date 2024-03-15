@@ -12,12 +12,12 @@ import { Comments, NoComments } from '@components/common/comments'
 import { type VideoDataType } from '@lib/schemas/video'
 import { getLoopVideoComments } from '@lib/api/loop'
 import { type RefObject, useRef } from 'react'
-import { Loader } from '@components/ui/loader'
 import { useMotionValueEvent, useScroll } from 'framer-motion'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
 import { getTimeAgo } from '@lib/utils'
+import { FeedShimmer } from '../shimmers/feed-shimmer'
 
 type DesktopDetailsProps = {
   videoDetails: VideoDataType
@@ -40,12 +40,12 @@ export function DesktopDetails({ videoDetails }: DesktopDetailsProps) {
             />
             <span className="flex items-center gap-x-1">
               <Link href={PATH_NAME.profile(videoDetails.owner.nickname)}>
-                <p className="text-body-lg">@{videoDetails.owner.nickname}</p>
+                <p className="text-title-3-demi">@{videoDetails.owner.nickname}</p>
               </Link>
-              <p className="text-body-1-demi text-secondary">{getTimeAgo(videoDetails.video.created_at) + ' ago'}</p>
+              <p className="text-body-1-demi text-secondary">{getTimeAgo(videoDetails?.video?.created_at) + ' ago'}</p>
             </span>
           </span>
-          {videoDetails.video.description && (
+          {videoDetails?.video?.description && (
             <p className="line-clamp-2 w-5/6 overflow-hidden break-all pt-3 text-title-3-med">
               {videoDetails.video.description}
             </p>
@@ -67,7 +67,7 @@ export function DesktopDetails({ videoDetails }: DesktopDetailsProps) {
                     <p className="line-clamp-1 break-all pr-2 text-title-3-bold">{videoDetails.community.name}</p>
                   </Link>
                 </span>
-                <span className="flex h-min flex-1 items-center gap-x-3">
+                <span className="flex h-min flex-1 items-center justify-end gap-x-3">
                   <DownloadDialog
                     title="Get the Genuin app"
                     subtitle={
@@ -78,7 +78,7 @@ export function DesktopDetails({ videoDetails }: DesktopDetailsProps) {
                     }
                     asChild>
                     <Button size="custom">
-                      <p className="whitespace-nowrap px-4 py-1 text-title-3-demi">Join Community</p>
+                      <p className="whitespace-nowrap px-4 py-1 text-body-1-demi">Join Community</p>
                     </Button>
                   </DownloadDialog>
                   <Button
@@ -90,7 +90,7 @@ export function DesktopDetails({ videoDetails }: DesktopDetailsProps) {
                         shareLink:
                           window.location.host +
                           PATH_NAME.community(videoDetails.community.slug) +
-                          '&utm_source=app_web',
+                          '?utm_source=app_web',
                         toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                       })
                     }>
@@ -100,22 +100,22 @@ export function DesktopDetails({ videoDetails }: DesktopDetailsProps) {
               </span>
               <DecorativeList>
                 <div className="h-2 w-full" />
-                <a href={PATH_NAME.loop(videoDetails.loop.slug)}>
+                <Link href={PATH_NAME.loop(videoDetails.loop.slug)}>
                   <li className="relative flex h-full w-full items-center justify-between rounded-md border border-monochrome-9 bg-monochrome-10 p-4 ">
                     <p className="line-clamp-1 w-full break-all pr-2 text-body-1-demi">{videoDetails.loop?.name}</p>
                     <p className="whitespace-nowrap text-cap-1-med text-primary">View Loop</p>
                   </li>
-                </a>
+                </Link>
               </DecorativeList>
             </div>
           </div>
           <div className="sticky top-0 z-10">
             <p className="border-b border-t border-monochrome-black/10 bg-monochrome-white px-4 py-3 text-title-3-demi text-secondary">
-              Comments {videoDetails.video.no_of_comments !== 0 ? `(${videoDetails.video.no_of_comments})` : ''}
+              Comments {videoDetails?.video?.no_of_comments !== 0 ? `(${videoDetails?.video?.no_of_comments})` : ''}
             </p>
           </div>
           <div className="h-full px-4 pt-2">
-            <CommentBox shareString={videoDetails.video.share_string} parentRef={scrollDivRef} />
+            <CommentBox shareString={videoDetails?.video?.share_string ?? ''} parentRef={scrollDivRef} />
           </div>
         </div>
         <CommentInput />
@@ -134,7 +134,7 @@ function CommentBox({ shareString, parentRef }: { shareString: string; parentRef
     isLoading,
   } = getLoopVideoComments(shareString)
   const comments = commentPages?.pages.flatMap((item) => item.comments)
-  const { scrollYProgress } = useScroll({ container: parentRef })
+  const { scrollYProgress } = useScroll({ container: parentRef, layoutEffect: false })
 
   useMotionValueEvent(scrollYProgress, 'change', (value) => {
     value = Number(value.toFixed(1))
@@ -142,7 +142,7 @@ function CommentBox({ shareString, parentRef }: { shareString: string; parentRef
   })
 
   if (isLoading) {
-    return <Loader size="md" />
+    return <FeedShimmer.comments iterations={2} />
   }
 
   if (comments && comments?.length !== 0)
