@@ -39,7 +39,7 @@ const Otp = ({ length, otp, onOtpChange }: OtpInputProps): JSX.Element => {
   }, [activeOtpIndex])
 
   return (
-    <div className="flex w-fit items-center  space-x-2">
+    <div className="flex w-fit items-center space-x-2">
       {tempOtp.map((_, index) => {
         return (
           <Fragment key={index}>
@@ -49,7 +49,7 @@ const Otp = ({ length, otp, onOtpChange }: OtpInputProps): JSX.Element => {
               onKeyDown={(e) => {
                 handleOnKeyDown(e, index)
               }}
-              className="placeholder:text-slate-300 dark:placeholder:text-slate-500 h-12 w-12 border border-monochrome-9 bg-monochrome-11 p-0 text-center"
+              className="h-12 w-12 border border-monochrome-9 bg-monochrome-11 text-center"
               type="text"
               placeholder={'•'}
               value={tempOtp[index]}
