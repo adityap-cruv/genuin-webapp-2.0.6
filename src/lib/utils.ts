@@ -250,32 +250,32 @@ export function parseUserAgent(userAgent: string) {
   let browser = 'Unknown Browser'
 
   // Detect OS
-  if (ua.indexOf('windows') !== -1) {
+  if (ua.includes('windows')) {
     osType = 'Windows'
-  } else if (ua.indexOf('macintosh') !== -1 || ua.indexOf('mac os x') !== -1) {
+  } else if (ua.includes('macintosh') || ua.includes('mac os')) {
     osType = 'Mac OS'
-  } else if (ua.indexOf('linux') !== -1) {
+  } else if (ua.includes('linux')) {
     osType = 'Linux'
-  } else if (ua.indexOf('iphone') !== -1) {
+  } else if (ua.includes('iphone')) {
     osType = 'iOS'
     deviceType = 'iPhone'
-  } else if (ua.indexOf('ipad') !== -1) {
+  } else if (ua.includes('ipad')) {
     osType = 'iOS'
     deviceType = 'iPad'
-  } else if (ua.indexOf('android') !== -1) {
+  } else if (ua.includes('android')) {
     osType = 'Android'
   }
 
   // Detect Browser
-  if (ua.indexOf('firefox') !== -1) {
+  if (ua.includes('firefox')) {
     browser = 'Firefox'
-  } else if (ua.indexOf('chrome') !== -1) {
+  } else if (ua.includes('chrome')) {
     browser = 'Chrome'
-  } else if (ua.indexOf('safari') !== -1) {
+  } else if (ua.includes('safari')) {
     browser = 'Safari'
-  } else if (ua.indexOf('edge') !== -1) {
+  } else if (ua.includes('edge')) {
     browser = 'Edge'
-  } else if (ua.indexOf('msie') !== -1 || ua.indexOf('trident') !== -1) {
+  } else if (ua.includes('msie') || ua.includes('trident')) {
     browser = 'Internet Explorer'
   }
 
