@@ -9,6 +9,7 @@ import { Textarea } from '@components/ui/textarea'
 import { useEffect, useState } from 'react'
 import { useAuthenticationModalStore } from '../store'
 import { updateUser } from '@lib/api/auth'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
 
 const formSchema = z.object({
   displayName: z.string().max(25, { message: 'Max length should be 25.' }).optional(),
@@ -17,16 +18,17 @@ const formSchema = z.object({
 
 export function CompleteProfile() {
   const [isLoading, setIsLoading] = useState(false)
+  const defaultFullname = useGenuinOptions().user?.name
   const { formData, setFormData, close: closeModal } = useAuthenticationModalStore()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       bio: formData.bio,
-      displayName: formData.displayName,
+      displayName: defaultFullname ?? '',
     },
     mode: 'onChange',
   })
-  const { isValid, isDirty } = form.formState
+  // const { isValid, isDirty } = form.formState
 
   useEffect(() => {
     const w = form.watch((value) => {
@@ -68,7 +70,7 @@ export function CompleteProfile() {
                 <FormItem>
                   <FormLabel className="text-body-1-med">
                     <div className="flex w-full justify-between">
-                      <p>Display Name</p>
+                      <p>Full Name</p>
                       <p className="text-cap-1-med text-secondary">{form.getValues('displayName')?.length ?? 0}/25</p>
                     </div>
                   </FormLabel>
@@ -118,7 +120,7 @@ export function CompleteProfile() {
               type="submit"
               value="Save"
               className="flex w-full cursor-pointer items-center justify-center rounded-lg bg-new-off-black  text-monochrome-white hover:bg-new-dark-grey disabled:hover:bg-new-off-black"
-              disabled={!isDirty || !isValid || isLoading}
+              disabled={isLoading}
             />
             {form.formState.errors.root && (
               <p className="flex items-center justify-center text-title-3-med text-supplementary-red">

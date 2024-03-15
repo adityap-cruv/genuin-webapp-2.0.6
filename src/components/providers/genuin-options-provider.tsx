@@ -8,7 +8,7 @@ import { useEffect } from 'react'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import FingerpringJS from '@fingerprintjs/fingerprintjs'
 import { useSession } from 'next-auth/react'
-import { axiosInstance, setAuthTokenInAxiosInstance } from '@lib/api/instance'
+import { setAuthTokenInAxiosInstance } from '@lib/api/instance'
 
 type Props = {
   children: React.ReactNode
@@ -40,11 +40,12 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
     return getSizeBoxes(isMobile, !hideNavbar)
   }
   useEffect(() => {
-    console.log('Session Details:', sessionData)
-    console.log('sesstion Status', sessionStatus)
+    console.log(sessionData)
     if (sessionStatus === 'authenticated') {
       setAuthTokenInAxiosInstance(sessionData.user.accessToken)
+      setInitialData({ user: sessionData.user })
     } else {
+      setInitialData({ user: undefined })
       setAuthTokenInAxiosInstance(undefined)
     }
   }, [sessionStatus])
