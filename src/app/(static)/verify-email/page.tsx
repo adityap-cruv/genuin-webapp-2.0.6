@@ -42,8 +42,8 @@ function getRedirectTo({
   emailType: 11 | 12
   email?: string
 }) {
-  // const urlObj = new URL(checkAndAppendHttps((headers().get('host') ?? process.env.HOST_NAME) + (path ?? '/home')))
-  const urlObj = new URL(('http://' + headers().get('host') ?? process.env.HOST_NAME) + (path ?? '/home'))
+  const urlObj = new URL(checkAndAppendHttps((headers().get('host') ?? process.env.HOST_NAME) + (path ?? '/home')))
+  // const urlObj = new URL(('http://' + headers().get('host') ?? process.env.HOST_NAME) + (path ?? '/home'))
 
   // console.log('::url object before manipulation::', urlObj.href)
   if (error) {
