@@ -8,6 +8,8 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { updateUser } from '@lib/api/auth'
 import { useAuthenticationModalStore } from '../store'
+import { Button } from '@components/ui/button'
+import { Loader } from '@components/ui/loader'
 
 const passwordSchema = z.object({ password: z.string().min(8) })
 
@@ -91,12 +93,12 @@ export function PasswordInput() {
               )
             }}
           />
-          <Input
+          <Button
             type="submit"
             disabled={!isDirty || !isValid || isLoading}
-            className="flex items-center justify-center border-0 bg-new-off-black !text-title-3-demi text-new-off-white"
-            value="Save and proceed"
-          />
+            className="flex items-center justify-center border-0 bg-new-off-black !text-title-3-demi text-new-off-white">
+            {isLoading ? <Loader size="sm" className="fill-new-off-white" /> : <p>Save and proceed</p>}
+          </Button>
           {form.formState.errors.root && (
             <p className="flex items-center justify-center text-title-3-med text-supplementary-red">
               {form.formState.errors.root.message}

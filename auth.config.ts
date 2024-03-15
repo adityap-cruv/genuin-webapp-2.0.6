@@ -2,7 +2,9 @@ import type { NextAuthConfig } from 'next-auth'
 import { headers } from 'next/headers'
 
 function checkAndAppendHttps(link: string): string {
-  return link?.startsWith('http') || link?.startsWith('https') ? link : 'https://' + link
+  return link?.startsWith('http') || link?.startsWith('https')
+    ? link
+    : (process.env.NEXT_PUBLIC_CURRENT_ENV === 'local' ? 'http://' : 'https://') + link
 }
 
 export const authConfig = {
@@ -29,6 +31,7 @@ export const authConfig = {
       return token
     },
     redirect({ baseUrl, url }) {
+      console.log(baseUrl, url)
       baseUrl = checkAndAppendHttps(headers().get('host') ?? 'app.qa.begenuin.com')
       if (url.startsWith('/')) baseUrl += url
       return baseUrl

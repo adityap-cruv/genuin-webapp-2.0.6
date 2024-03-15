@@ -10,6 +10,8 @@ import { useEffect, useState } from 'react'
 import { useAuthenticationModalStore } from '../store'
 import { updateUser } from '@lib/api/auth'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
+import { Button } from '@components/ui/button'
+import { Loader } from '@components/ui/loader'
 
 const formSchema = z.object({
   displayName: z.string().max(25, { message: 'Max length should be 25.' }).optional(),
@@ -116,12 +118,12 @@ export function CompleteProfile() {
             }}
           />
           <span className="flex flex-col gap-y-3 text-title-3-demi">
-            <Input
+            <Button
               type="submit"
-              value="Save"
               className="flex w-full cursor-pointer items-center justify-center rounded-lg bg-new-off-black  text-monochrome-white hover:bg-new-dark-grey disabled:hover:bg-new-off-black"
-              disabled={isLoading}
-            />
+              disabled={isLoading}>
+              {isLoading ? <Loader size="sm" className="fill-new-off-white" /> : <p>Save</p>}
+            </Button>
             {form.formState.errors.root && (
               <p className="flex items-center justify-center text-title-3-med text-supplementary-red">
                 {form.formState.errors.root.message}
