@@ -141,7 +141,7 @@ export function EmailInput() {
           <p className="text-title-3-demi">Use phone</p>
         </div>
       </Button>
-      <p className="text-new-para-2-mobile">
+      <p className="text-center text-new-para-2-mobile">
         By registering, you agree to {brandName ?? 'genuin'}'s
         <Link href={PATH_NAME.terms} target="_blank">
           <span className="text-primary"> Terms of Service </span>

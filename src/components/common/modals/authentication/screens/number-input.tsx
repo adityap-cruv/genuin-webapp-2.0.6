@@ -67,7 +67,7 @@ export function NumberInput() {
 
   return (
     <ModalShell>
-      <p className="text-center text-heading-3">Log in to Ted</p>
+      <p className="text-center text-heading-3">Log in to {brandName ?? 'genuin'}</p>
       <div className="w-full">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -76,7 +76,7 @@ export function NumberInput() {
               name="phone"
               render={({ field }) => {
                 return (
-                  <FormItem className="sm:w-full">
+                  <FormItem>
                     <FormLabel className="text-body-1-med">
                       <div className="flex w-full justify-between">
                         <p>Phone</p>
@@ -129,7 +129,7 @@ export function NumberInput() {
           <p className="text-title-3-demi">Use Email</p>
         </div>
       </Button>
-      <p className="text-new-para-2-mobile">
+      <p className="text-center text-new-para-2-mobile">
         By registering, you agree to {brandName ?? 'genuin'}'s
         <Link href={PATH_NAME.terms} target="_blank">
           <span className="text-primary"> Terms of Service </span>
