@@ -2,7 +2,9 @@ import type { NextAuthConfig } from 'next-auth'
 import { headers } from 'next/headers'
 
 function checkAndAppendHttps(link: string): string {
-  return link?.startsWith('http') || link?.startsWith('https') ? link : 'https://' + link
+  return link?.startsWith('http') || link?.startsWith('https')
+    ? link
+    : (process.env.NEXT_PUBLIC_CURRENT_ENV === 'local' ? 'http://' : 'https://') + link
 }
 
 export const authConfig = {
@@ -22,9 +24,12 @@ export const authConfig = {
       // Available only in the first call once the user signs in. Not available in subsequent calls
       account,
     }) {
+      if (trigger === 'update') {
+        return session
+      }
       if (user && trigger === 'signIn') {
         // console.log('user in jwt::', user, account, session)
-        return { user }
+        return { ...token, user }
       }
       return token
     },

@@ -78,7 +78,7 @@ export const useAuthenticationModalStore = create<Actions & States>((set) => {
       set((state) => {
         state.previousStep = state.step
         state.step = step
-        return state
+        return { ...state }
       })
     },
     goToPrevios() {

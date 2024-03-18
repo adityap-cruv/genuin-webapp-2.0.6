@@ -5,7 +5,8 @@ import imgError from '@images/verify-email/error.svg'
 import { useAuthenticationModalStore } from '../store'
 import { useSearchParams } from 'next/navigation'
 import { resendVerificationMail } from '@lib/api/auth'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useSession } from 'next-auth/react'
 
 export const EmailVerification = {
   success: Success,
@@ -14,6 +15,12 @@ export const EmailVerification = {
 
 function Success() {
   const setStep = useAuthenticationModalStore().setStep
+  const { data: sessionData, update } = useSession()
+
+  useEffect(() => {
+    void update({ ...sessionData, user: { ...sessionData?.user, isEmailVerified: true } })
+  }, [])
+
   return (
     <ModalShell>
       <img src={imgSuccess.src} style={{ width: 120, height: 120 }} />
