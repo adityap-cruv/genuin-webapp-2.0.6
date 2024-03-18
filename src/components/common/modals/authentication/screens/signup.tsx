@@ -184,11 +184,11 @@ export function Signup() {
         </form>
         <p className="py-4 text-center text-cap-1-med text-monochrome-4">
           By registering, you agree to {brandName ?? 'genuin'}’s&nbsp;
-          <Link href={PATH_NAME.terms} className="break-keep text-primary">
+          <Link href={PATH_NAME.terms} target="_blank" className="break-keep text-primary">
             Terms of Service
           </Link>
           &nbsp;and&nbsp;
-          <Link className="text-primary" href={PATH_NAME.privacy}>
+          <Link className="text-primary" target="_blank" href={PATH_NAME.privacy}>
             Privacy
           </Link>
         </p>

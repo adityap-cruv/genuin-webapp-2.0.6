@@ -132,11 +132,11 @@ export function NumberInput() {
       </Button>
       <p className="text-new-para-2-mobile">
         By registering, you agree to {brandName ?? 'genuin'}'s
-        <Link href={PATH_NAME.terms}>
+        <Link href={PATH_NAME.terms} target="_blank">
           <span className="text-primary"> Terms of Service </span>
         </Link>
         and
-        <Link href={PATH_NAME.privacy}>
+        <Link href={PATH_NAME.privacy} target="_blank">
           <span className="text-primary"> Privacy</span>
         </Link>
       </p>
