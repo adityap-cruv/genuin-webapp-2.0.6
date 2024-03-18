@@ -1,4 +1,3 @@
-import Otp from '@components/ui/otp'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@components/ui/form'
 import { useEffect, useState } from 'react'
 import { ModalShell } from '../modal-shell'
@@ -14,6 +13,7 @@ import { LOGIN_SOURCE, VERIFICATION_TYPE } from '@lib/constants'
 import { signIn } from 'next-auth/react'
 import { formatPhoneNumberIntl } from 'react-phone-number-input'
 import { Loader } from '@components/ui/loader'
+import { InputOTP, InputOTPGroup, InputOTPSlot } from '@components/ui/input-otp'
 
 const formSchema = z.object({
   otp: z.string().max(6),
@@ -21,7 +21,6 @@ const formSchema = z.object({
 
 export function OtpInput() {
   const { setStep, formData, setFormData, close: closeModal } = useAuthenticationModalStore()
-  const [otp, setOtp] = useState<number>(0)
   const [isValidOtp, setIsValidOtp] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const deviceId = useLocalStorage().deviceId
@@ -36,14 +35,20 @@ export function OtpInput() {
   })
 
   useEffect(() => {
-    const isValidLength = otp.toString().length === 6
-    setIsValidOtp(isValidLength)
-    setFormData({ otp })
+    const w = form.watch((value) => {
+      const otp = parseInt(value.otp ?? '')
+      const isValidLength = otp.toString().length === 6
+      setIsValidOtp(isValidLength)
+      setFormData({ otp })
 
-    if (!isValidLength) {
-      form.control.setError('root', { message: '' })
+      if (!isValidLength) {
+        form.control.setError('root', { message: '' })
+      }
+    })
+    return () => {
+      w.unsubscribe()
     }
-  }, [otp])
+  }, [form.watch])
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -56,12 +61,12 @@ export function OtpInput() {
     }
   }, [timer])
 
-  async function onSubmit() {
+  async function onSubmit(data: any) {
     setIsLoading(true)
 
     await verifyOtp({
       userId: formData.userId ?? '',
-      otp,
+      otp: parseInt(data.otp),
       token: deviceId,
       loginSource: LOGIN_SOURCE.web,
     })
@@ -125,12 +130,16 @@ export function OtpInput() {
                   return (
                     <FormItem className="flex flex-col items-center py-2 sm:w-full">
                       <FormControl>
-                        <Otp
-                          length={6}
-                          otp={otp}
-                          onOtpChange={(value) => {
-                            setOtp(value)
-                          }}
+                        <InputOTP
+                          maxLength={6}
+                          render={({ slots }) => (
+                            <InputOTPGroup>
+                              {slots.map((slot, index) => (
+                                <InputOTPSlot key={index} {...slot} />
+                              ))}{' '}
+                            </InputOTPGroup>
+                          )}
+                          {...field}
                         />
                       </FormControl>
                       <FormMessage className={cn('!text-cap-1-demi')} />
