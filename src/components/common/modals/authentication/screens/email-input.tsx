@@ -82,7 +82,7 @@ export function EmailInput() {
 
   return (
     <ModalShell>
-      <p className="text-center text-heading-3">Log in to {brandName}</p>
+      <p className="text-center text-heading-3">Log in {brandName && `to ${brandName}`}</p>
       <div className="w-full">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -137,14 +137,14 @@ export function EmailInput() {
         </div>
       </Button>
       <p className="text-new-para-2-mobile">
-        By registering, you agree to Ted's
-        <Link href={PATH_NAME.terms}>
+        By registering, you agree to {brandName && `${brandName}'s`}
+        <a href={PATH_NAME.terms} target="_blank" rel="noopener noreferrer">
           <span className="text-primary"> Terms of Service </span>
-        </Link>
+        </a>
         and
-        <Link href={PATH_NAME.privacy}>
+        <a href={PATH_NAME.privacy} target="_blank" rel="noopener noreferrer">
           <span className="text-primary"> Privacy</span>
-        </Link>
+        </a>
       </p>
       <p className="flex w-full items-center justify-center text-body-1-demi">
         Don't have an account?{' '}

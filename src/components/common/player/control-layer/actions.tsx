@@ -5,6 +5,7 @@ import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
 import icLinkout from '@icons/player-controls/icLinkout.svg'
 import icSpark from '@icons/player-controls/icBulb.svg'
+import icSparkTrue from '@icons/player-controls/icSparkTrue.svg'
 import icRepost from '@icons/player-controls/icRepost.svg'
 import ic3Dot from '@icons/player-controls/3Dot.svg'
 import { type VideoDataType } from '@lib/schemas/video'
@@ -15,6 +16,8 @@ import { useCommentSheetStore } from '../comment-sheet/store'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { format } from 'url'
 import { analyticsService } from '../../../../services/analytics_service'
+import { videoSpark } from '@lib/api/video'
+import { useState } from 'react'
 
 interface ActionsProps {
   link: string
@@ -180,6 +183,8 @@ function Mobile({ link = '', shareDescription = '', shareTitle = '', videoData }
 function Desktop({ link = '', shareDescription = '', shareTitle = '', videoData }: ActionsProps) {
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
+  const [isSparked, setIsSparked] = useState(false)
+  const [sparkCount, setSparkCount] = useState(videoData?.video?.no_of_sparks ?? 0)
   // const { openComments, closeComments, commentsIsOpen } = useCommentsStore((state) => ({
   //   openComments: state.openModal,
   //   closeComments: state.closeModal,
@@ -207,14 +212,16 @@ function Desktop({ link = '', shareDescription = '', shareTitle = '', videoData 
             <Image src={icRepost} alt="repost" height={32} width={32} />
           </ActionItem>
         </DownloadDialog>
-        <DownloadDialog title="Get the Genuin app" subtitle="Get the app to give spark to video.">
-          <ActionItem title="Give spark!">
-            <Image src={icSpark} height={32} width={32} alt="spark" />
-            <p className="flex justify-center text-body-1-demi text-monochrome-white">
-              {videoData?.video?.no_of_sparks === null ? 0 : abbreviateNumber(videoData?.video?.no_of_sparks ?? 0)}
-            </p>
-          </ActionItem>
-        </DownloadDialog>
+        <ActionItem
+          title="Give spark!"
+          onClick={async () => {
+            await videoSpark(videoData.video?.id ?? '', 2, !isSparked)
+            setIsSparked((prevIsSparked) => !prevIsSparked)
+            setSparkCount((prevCount) => (isSparked ? prevCount - 1 : prevCount + 1))
+          }}>
+          <Image src={isSparked ? icSparkTrue : icSpark} height={32} width={32} alt="spark" />
+          <p className="flex justify-center text-body-1-demi text-monochrome-white">{abbreviateNumber(sparkCount)}</p>
+        </ActionItem>
         <ActionItem
           title="Share Video!"
           onClick={async () => {
