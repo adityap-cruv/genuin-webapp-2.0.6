@@ -10,6 +10,7 @@ import { updateUser, validateUsername } from '@lib/api/auth'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { Button } from '@components/ui/button'
 import { Loader } from '@components/ui/loader'
+import { ModalShell } from '../modal-shell'
 
 const usernameSchema = z.object({
   username: z
@@ -76,20 +77,18 @@ export function UsernameInput() {
   }
 
   return (
-    <>
+    <ModalShell>
       <h3 className="flex w-full items-center justify-center text-heading-3">Create username</h3>
-      <p className="flex w-full justify-center pt-3 text-title-3-med text-secondary">
-        Enter a name to show on your videos
-      </p>
+      <p className="flex w-full justify-center text-title-3-med text-secondary">Enter a name to show on your videos</p>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
           <FormField
             control={form.control}
             name="username"
             render={({ field }) => {
               const errors = useFormField().error
               return (
-                <FormItem>
+                <FormItem className="sm:w-full">
                   <FormLabel className="text-body-1-med">
                     <div className="flex w-full justify-between">
                       <p>Username</p>
@@ -112,7 +111,7 @@ export function UsernameInput() {
           <Button
             type="submit"
             disabled={!isUsernameValid || isLoading || !isValid}
-            className="mt-4 flex items-center justify-center border-0 bg-new-off-black !text-title-3-demi text-new-off-white"
+            className="mt-4 flex w-full items-center justify-center border-0 bg-new-off-black !text-title-3-demi text-new-off-white"
             value="">
             {isLoading ? <Loader size="sm" className="fill-new-off-white" /> : <p>Save and proceed</p>}
           </Button>
@@ -123,6 +122,6 @@ export function UsernameInput() {
           )}
         </form>
       </Form>
-    </>
+    </ModalShell>
   )
 }

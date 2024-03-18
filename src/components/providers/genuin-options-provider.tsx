@@ -8,6 +8,7 @@ import { useEffect } from 'react'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import FingerpringJS from '@fingerprintjs/fingerprintjs'
 import { useSession } from 'next-auth/react'
+import { DownloadDialogModal } from '@components/common/modals/download-app'
 import { axiosInstance, setAuthTokenInAxiosInstance } from '@lib/api/instance'
 import { encryptText, parseUserAgent } from '@lib/utils'
 
@@ -114,6 +115,7 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
     <>
       {children}
       <AuthenticationModal.ui />
+      <DownloadDialogModal.ui />
     </>
   )
 }
