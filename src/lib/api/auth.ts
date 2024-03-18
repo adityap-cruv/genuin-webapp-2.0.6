@@ -169,6 +169,13 @@ export async function validateUsername(nickname: string) {
     })
 }
 
+/**
+ *
+ * @param email
+ * @param emailType  11 -> magic link, 12 -> verify email
+ * @param actionMetadata
+ * @returns
+ */
 export async function resendVerificationMail(email: string, emailType: number, actionMetadata?: ActionMetadataType) {
   return await axiosInstance
     .post('api/v3/resend_email_verification', {

@@ -24,14 +24,16 @@ export const authConfig = {
       // Available only in the first call once the user signs in. Not available in subsequent calls
       account,
     }) {
+      if (trigger === 'update') {
+        return session
+      }
       if (user && trigger === 'signIn') {
         // console.log('user in jwt::', user, account, session)
-        return { user }
+        return { ...token, user }
       }
       return token
     },
     redirect({ baseUrl, url }) {
-      console.log(baseUrl, url)
       baseUrl = checkAndAppendHttps(headers().get('host') ?? 'app.qa.begenuin.com')
       if (url.startsWith('/')) baseUrl += url
       return baseUrl

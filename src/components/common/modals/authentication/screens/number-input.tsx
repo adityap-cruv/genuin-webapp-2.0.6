@@ -15,6 +15,7 @@ import { cn } from '@lib/utils'
 import { loginViaPhone } from '@lib/api/auth'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import { LOGIN_SOURCE, VERIFICATION_TYPE } from '@lib/constants'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { Loader } from '@components/ui/loader'
 
 const formSchema = z.object({
@@ -25,6 +26,7 @@ export function NumberInput() {
   const { setStep, formData, setFormData } = useAuthenticationModalStore()
   const [isLoading, setIsLoading] = useState(false)
   const deviceId = useLocalStorage().deviceId
+  const brandName = useGenuinOptions().config?.name
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     mode: 'onSubmit',
@@ -49,7 +51,6 @@ export function NumberInput() {
       .then(async (res) => {
         if (res?.code === 200) {
           setFormData({ userId: res.data.user_id })
-          setIsLoading(false)
           setStep('OTP_INPUT')
         }
         if (res.code === 5234) {
@@ -66,7 +67,7 @@ export function NumberInput() {
 
   return (
     <ModalShell>
-      <p className="text-center text-heading-3">Log in to Ted</p>
+      <p className="text-center text-heading-3">Log in to {brandName ?? 'genuin'}</p>
       <div className="w-full">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -75,7 +76,7 @@ export function NumberInput() {
               name="phone"
               render={({ field }) => {
                 return (
-                  <FormItem className="sm:w-full">
+                  <FormItem>
                     <FormLabel className="text-body-1-med">
                       <div className="flex w-full justify-between">
                         <p>Phone</p>
@@ -100,21 +101,22 @@ export function NumberInput() {
               type="submit"
               variant="default"
               className="w-full bg-new-off-black hover:bg-new-dark-grey"
-              disabled={!isValidPhoneNumber(formData.phone ?? '')}>
+              disabled={!isValidPhoneNumber(formData.phone ?? '') || isLoading}>
               {isLoading ? (
                 <Loader size="sm" className="fill-new-off-white" />
               ) : (
                 <p className="text-title-3-demi">Next</p>
               )}
             </Button>
-            {form.formState.errors.root && (
-              <p className="flex items-center justify-center pt-3 text-title-3-med text-supplementary-red">
-                {form.formState.errors.root.message}
-              </p>
-            )}
           </form>
         </Form>
       </div>
+      {form.formState.errors.root && (
+        <p className="text-text-new-para-2-mobile flex items-center justify-center text-supplementary-red">
+          {form.formState.errors.root.message}
+        </p>
+      )}
+
       <p className="text-title-3-demi text-monochrome">OR</p>
       <Button
         variant="outline"
@@ -127,13 +129,13 @@ export function NumberInput() {
           <p className="text-title-3-demi">Use Email</p>
         </div>
       </Button>
-      <p className="text-new-para-2-mobile">
-        By registering, you agree to Ted's
-        <Link href={PATH_NAME.terms}>
+      <p className="text-center text-new-para-2-mobile">
+        By registering, you agree to {brandName ?? 'genuin'}'s
+        <Link href={PATH_NAME.terms} target="_blank">
           <span className="text-primary"> Terms of Service </span>
         </Link>
         and
-        <Link href={PATH_NAME.privacy}>
+        <Link href={PATH_NAME.privacy} target="_blank">
           <span className="text-primary"> Privacy</span>
         </Link>
       </p>

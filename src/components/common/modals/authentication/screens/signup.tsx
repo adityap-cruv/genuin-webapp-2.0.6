@@ -13,6 +13,9 @@ import { SIGNUP_SOURCE } from '@lib/constants'
 import { signIn } from 'next-auth/react'
 import { ImageInput } from '../components/image-input'
 import { usePathname } from 'next/navigation'
+import Link from 'next/link'
+import { PATH_NAME } from '@lib/utils/constants/path'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { Button } from '@components/ui/button'
 import { Loader } from '@components/ui/loader'
 import { ModalShell } from '../modal-shell'
@@ -29,6 +32,7 @@ const formSchema = z.object({
 export function Signup() {
   const { setStep, formData, setFormData, action } = useAuthenticationModalStore()
   const deviceId = useLocalStorage().deviceId
+  const brandName = useGenuinOptions().config?.name
   const pathname = usePathname()
   const [isLoading, setIsLoading] = useState(false)
 
@@ -85,7 +89,7 @@ export function Signup() {
         }
         // Email verification pending and password not set.
         else if (res.code === 5231) {
-          setStep('EMAIL_SENT_NOTE')
+          setStep('EMAIL_SENT_NOTE_ACCOUNT_EXISTS')
         }
         // Email verified password not set.
         else if (res.code === 5237) {
@@ -106,7 +110,9 @@ export function Signup() {
 
   return (
     <ModalShell>
-      <h3 className="flex w-full items-center justify-center pb-4 text-heading-3">Sign up for Ted</h3>
+      <h3 className="flex w-full items-center justify-center pb-4 text-heading-3">
+        Sign up for {brandName ?? 'genuin'}
+      </h3>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
           <ImageInput />
@@ -162,9 +168,13 @@ export function Signup() {
           <span className="flex flex-col gap-y-3 text-title-3-demi">
             <Button
               type="submit"
-              className="flex w-full cursor-pointer items-center justify-center rounded-lg bg-new-off-black  text-monochrome-white hover:bg-new-dark-grey disabled:hover:bg-new-off-black"
+              className="flex w-full cursor-pointer items-center justify-center rounded-lg bg-new-off-black  hover:bg-new-dark-grey disabled:hover:bg-new-off-black"
               disabled={!isDirty || !isValid || isLoading}>
-              {isLoading ? <Loader size="sm" /> : <p>Verify Email</p>}
+              {isLoading ? (
+                <Loader size="sm" className="fill-new-off-white" />
+              ) : (
+                <p className="text-title-3-demi text-new-off-white">Verify Email</p>
+              )}
             </Button>
             {form.formState.errors.root && (
               <p className="flex items-center justify-center text-title-3-med text-supplementary-red">
@@ -173,7 +183,17 @@ export function Signup() {
             )}
           </span>
         </form>
-        <p className="flex w-full items-center justify-center pt-2 text-body-1-demi">
+        <p className="py-4 text-center text-cap-1-med text-monochrome-4">
+          By registering, you agree to {brandName ?? 'genuin'}’s&nbsp;
+          <Link href={PATH_NAME.terms} target="_blank" className="break-keep text-primary">
+            Terms of Service
+          </Link>
+          &nbsp;and&nbsp;
+          <Link className="text-primary" target="_blank" href={PATH_NAME.privacy}>
+            Privacy
+          </Link>
+        </p>
+        <p className="flex w-full items-center justify-center text-body-1-demi">
           Already have an account?
           <span
             className="cursor-pointer text-primary"

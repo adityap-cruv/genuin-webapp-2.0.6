@@ -10,21 +10,21 @@ import { useEffect, useState } from 'react'
 import { ModalShell } from '../modal-shell'
 import { Button } from '@components/ui/button'
 import Link from 'next/link'
-import phone_icon from '@icons/icPhone.svg'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { loginViaEmail } from '@lib/api/auth'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import { LOGIN_SOURCE } from '@lib/constants'
 import { usePathname } from 'next/navigation'
-import { Loader } from '@components/ui/loader'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
+import { Loader } from '@components/ui/loader'
+import icPhone from '@icons/icPhone.svg'
 
 export function EmailInput() {
   const { setStep, setFormData, formData, action } = useAuthenticationModalStore()
-  const brandName = useGenuinOptions().config?.name
   const [isLoading, setIsLoading] = useState(false)
   const deviceId = useLocalStorage().deviceId
   const pathname = usePathname()
+  const brandName = useGenuinOptions().config?.name
 
   const formSchema = z.object({
     email: z.string().email({ message: 'Please enter valid email.' }),
@@ -82,7 +82,7 @@ export function EmailInput() {
 
   return (
     <ModalShell>
-      <p className="text-center text-heading-3">Log in to {brandName}</p>
+      <p className="text-center text-heading-3">Log in to {brandName ?? 'genuin'}</p>
       <div className="w-full">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -114,7 +114,11 @@ export function EmailInput() {
               variant="default"
               className="w-full bg-new-off-black hover:bg-new-dark-grey"
               disabled={!isValid || isLoading}>
-              {isLoading ? <Loader size="sm" /> : <p className="text-title-3-demi">Next</p>}
+              {isLoading ? (
+                <Loader className="stroke-new-off-white" size="sm" />
+              ) : (
+                <p className="text-title-3-demi">Next</p>
+              )}
             </Button>
           </form>
         </Form>
@@ -124,6 +128,7 @@ export function EmailInput() {
           {form.formState.errors.root.message}
         </p>
       )}
+
       <p className="text-title-3-demi text-monochrome">OR</p>
       <Button
         variant="outline"
@@ -132,17 +137,17 @@ export function EmailInput() {
           setStep('NUMBER_INPUT')
         }}>
         <div className="relative flex w-full items-center justify-center">
-          <img src={phone_icon.src} className="absolute left-0 h-5 w-5" alt="at" />
+          <img src={icPhone.src} className="absolute left-0 h-5 w-5" alt="at" />
           <p className="text-title-3-demi">Use phone</p>
         </div>
       </Button>
-      <p className="text-new-para-2-mobile">
-        By registering, you agree to Ted's
-        <Link href={PATH_NAME.terms}>
+      <p className="text-center text-new-para-2-mobile">
+        By registering, you agree to {brandName ?? 'genuin'}'s
+        <Link href={PATH_NAME.terms} target="_blank">
           <span className="text-primary"> Terms of Service </span>
         </Link>
         and
-        <Link href={PATH_NAME.privacy}>
+        <Link href={PATH_NAME.privacy} target="_blank">
           <span className="text-primary"> Privacy</span>
         </Link>
       </p>

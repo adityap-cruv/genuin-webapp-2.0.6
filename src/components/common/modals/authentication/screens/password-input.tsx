@@ -97,8 +97,12 @@ export function PasswordInput() {
           <Button
             type="submit"
             disabled={!isDirty || !isValid || isLoading}
-            className="flex w-full items-center justify-center border-0 bg-new-off-black !text-title-3-demi text-new-off-white">
-            {isLoading ? <Loader size="sm" className="fill-new-off-white" /> : <p>Save and proceed</p>}
+            className="flex items-center justify-center border-0 bg-new-off-black">
+            {isLoading ? (
+              <Loader size="sm" className="fill-new-off-white" />
+            ) : (
+              <p className="text-title-3-demi text-new-off-white">Save and proceed</p>
+            )}
           </Button>
           {form.formState.errors.root && (
             <p className="flex items-center justify-center text-title-3-med text-supplementary-red">

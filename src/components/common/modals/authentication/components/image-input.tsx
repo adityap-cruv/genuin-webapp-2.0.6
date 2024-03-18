@@ -21,7 +21,7 @@ export function ImageInput() {
         id="pic"
         type="file"
         className="hidden w-full"
-        accept="image/*"
+        accept="image/png, image/jpeg, image/jpg"
         onChange={(e) => {
           setFormData({ image: URL.createObjectURL(e.target.files?.[0] as any) })
           setStep('IMAGE_CROPPER')

@@ -3,10 +3,11 @@ import imgSuccess from '@images/verify-email/success.svg'
 import { ModalShell } from '../modal-shell'
 import imgError from '@images/verify-email/error.svg'
 import { useAuthenticationModalStore } from '../store'
-import { useSearchParams } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { resendVerificationMail } from '@lib/api/auth'
-import { useState } from 'react'
-import { Loader } from '@components/ui/loader'
+import { useEffect, useState } from 'react'
+import { useSession } from 'next-auth/react'
+import { deleteSearchParam } from '@lib/utils'
 
 export const EmailVerification = {
   success: Success,
@@ -15,6 +16,14 @@ export const EmailVerification = {
 
 function Success() {
   const setStep = useAuthenticationModalStore().setStep
+  const pathName = usePathname()
+  const searchParams = useSearchParams()
+  const { data: sessionData, update } = useSession()
+
+  useEffect(() => {
+    void update({ ...sessionData, user: { ...sessionData?.user, isEmailVerified: true } })
+  }, [])
+
   return (
     <ModalShell>
       <img src={imgSuccess.src} style={{ width: 120, height: 120 }} />
@@ -27,6 +36,11 @@ function Success() {
         className="w-full bg-new-off-black hover:bg-new-dark-grey"
         variant="default"
         onClick={() => {
+          deleteSearchParam({
+            paramToDelete: 'email_verification_status',
+            pathName,
+            searchParams: searchParams.toString(),
+          })
           setStep('PASSWORD_INPUT')
         }}>
         <p className="text-title-3-med">Continue</p>
@@ -35,10 +49,11 @@ function Success() {
   )
 }
 
+// TODO: Create a deleteSearchParam function such that it accepts array of string and delete that list search params from the url.
 function Failure() {
   const setStep = useAuthenticationModalStore().setStep
   const searchParams = useSearchParams()
-  const [isLoading, setIsLoading] = useState(false)
+  const pathName = usePathname()
   const [error, setError] = useState('')
 
   return (
@@ -52,27 +67,36 @@ function Failure() {
         className="w-full bg-new-off-black hover:bg-new-dark-grey"
         variant="default"
         onClick={async () => {
-          setIsLoading(true)
           const email = searchParams.get('email')
           const emailType = Number(searchParams.get('email_type'))
           if (email && emailType) {
             await resendVerificationMail(email, emailType)
               .then((res) => {
-                if (res) setStep('EMAIL_SENT_NOTE')
+                if (res) {
+                  deleteSearchParam({
+                    pathName,
+                    searchParams: searchParams.toString(),
+                    paramToDelete: 'email_verification_status',
+                  })
+                  deleteSearchParam({
+                    pathName,
+                    searchParams: searchParams.toString(),
+                    paramToDelete: 'email',
+                  })
+                  deleteSearchParam({
+                    pathName,
+                    searchParams: searchParams.toString(),
+                    paramToDelete: 'email_type',
+                  })
+                  setStep('EMAIL_SENT_NOTE')
+                }
               })
               .catch((e) => {
                 setError('Something went wrong.')
               })
-              .finally(() => {
-                setIsLoading(false)
-              })
           }
         }}>
-        {isLoading ? (
-          <Loader size="sm" className="fill-new-off-white" />
-        ) : (
-          <p className="text-title-3-demi">Resend verification email</p>
-        )}
+        <p className="text-title-3-demi">Resend verification email</p>
         {error && <p className="flex items-center justify-center text-title-3-med text-supplementary-red">{error}</p>}
       </Button>
     </ModalShell>
