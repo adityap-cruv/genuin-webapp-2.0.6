@@ -36,6 +36,7 @@ type FormDataType = {
 
 type States = {
   step: StepsType
+  previousStep?: StepsType
   formData: Partial<FormDataType>
   isOpen: boolean
   note?: React.ReactNode
@@ -45,6 +46,7 @@ type States = {
 type Actions = {
   open: () => void
   openWithStep: (action?: AuthActionType, step?: StepsType) => void
+  goToPrevios: () => void
   close: () => void
   setStep: (step: StepsType) => void
   reset: () => void
@@ -73,7 +75,17 @@ export const useAuthenticationModalStore = create<Actions & States>((set) => {
       set({ isOpen: false })
     },
     setStep(step) {
-      set({ step })
+      set((state) => {
+        state.previousStep = state.step
+        state.step = step
+        return state
+      })
+    },
+    goToPrevios() {
+      set((state) => {
+        state.step = state.previousStep ?? 'EMAIL_INPUT'
+        return state
+      })
     },
     reset() {
       set(initialStates)
