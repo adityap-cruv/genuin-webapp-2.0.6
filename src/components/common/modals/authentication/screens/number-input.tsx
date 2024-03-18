@@ -51,7 +51,6 @@ export function NumberInput() {
       .then(async (res) => {
         if (res?.code === 200) {
           setFormData({ userId: res.data.user_id })
-          setIsLoading(false)
           setStep('OTP_INPUT')
         }
         if (res.code === 5234) {
