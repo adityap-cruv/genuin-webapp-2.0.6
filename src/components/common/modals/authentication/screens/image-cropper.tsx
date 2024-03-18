@@ -6,7 +6,7 @@ import { useAuthenticationModalStore } from '../store'
 
 export function ImageCropper() {
   const cropperRef = createRef<any>()
-  const { image, setImage, setStep, goBack } = useAuthenticationModalStore((state) => ({
+  const { image, setImage, goBack } = useAuthenticationModalStore((state) => ({
     image: state.formData.image,
     setImage: state.setFormData,
     setStep: state.setStep,

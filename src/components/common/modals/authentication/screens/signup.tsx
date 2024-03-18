@@ -16,6 +16,8 @@ import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
+import { Button } from '@components/ui/button'
+import { Loader } from '@components/ui/loader'
 
 const formSchema = z.object({
   displayName: z
@@ -163,12 +165,16 @@ export function Signup() {
             }}
           />
           <span className="flex flex-col gap-y-3 text-title-3-demi">
-            <Input
+            <Button
               type="submit"
-              value="Verify Email"
-              className="flex w-full cursor-pointer items-center justify-center rounded-lg bg-new-off-black  text-monochrome-white hover:bg-new-dark-grey disabled:hover:bg-new-off-black"
-              disabled={!isDirty || !isValid || isLoading}
-            />
+              className="flex w-full cursor-pointer items-center justify-center rounded-lg bg-new-off-black  hover:bg-new-dark-grey disabled:hover:bg-new-off-black"
+              disabled={!isDirty || !isValid || isLoading}>
+              {isLoading ? (
+                <Loader size="sm" className="fill-new-off-white" />
+              ) : (
+                <p className="text-title-3-demi text-new-off-white">Verify Email</p>
+              )}
+            </Button>
             {form.formState.errors.root && (
               <p className="flex items-center justify-center text-title-3-med text-supplementary-red">
                 {form.formState.errors.root.message}

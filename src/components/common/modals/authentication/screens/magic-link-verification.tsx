@@ -31,6 +31,7 @@ export function Success() {
     )
 }
 
+// TODO: Handle API success and failure case.
 export function Failure() {
   const [error, setError] = useState('')
   const setStep = useAuthenticationModalStore().setStep

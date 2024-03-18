@@ -8,6 +8,8 @@ import { useEffect, useState } from 'react'
 import { useAuthenticationModalStore } from '../store'
 import { updateUser, validateUsername } from '@lib/api/auth'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
+import { Button } from '@components/ui/button'
+import { Loader } from '@components/ui/loader'
 
 const usernameSchema = z.object({
   username: z
@@ -108,12 +110,16 @@ export function UsernameInput() {
               )
             }}
           />
-          <Input
+          <Button
             type="submit"
             disabled={!isUsernameValid || isLoading || !isValid}
-            className="mt-4 flex items-center justify-center border-0 bg-new-off-black !text-title-3-demi text-new-off-white"
-            value="Save and proceed"
-          />
+            className="mt-4 flex items-center justify-center border-0 bg-new-off-black">
+            {isLoading ? (
+              <Loader size="sm" className="fill-new-off-white" />
+            ) : (
+              <p className="text-title-3-demi text-new-off-white">Save and proceed</p>
+            )}
+          </Button>
           {form.formState.errors.root && (
             <p className="flex items-center justify-center text-title-3-med text-supplementary-red">
               {form.formState.errors.root.message}

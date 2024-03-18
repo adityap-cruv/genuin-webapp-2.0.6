@@ -11,6 +11,7 @@ import { cn } from '@lib/utils'
 import { loginViaPhone, verifyOtp } from '@lib/api/auth'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import { LOGIN_SOURCE, VERIFICATION_TYPE } from '@lib/constants'
+import { Loader } from '@components/ui/loader'
 
 const formSchema = z.object({
   phone: z.string(),
@@ -64,7 +65,6 @@ export function OtpInput() {
     })
       .then(async (res) => {
         if (res?.code === 200) {
-          const user = res.data
           setStep('OTP_INPUT')
         }
         if (res?.code === 1008) {
@@ -135,8 +135,12 @@ export function OtpInput() {
                 type="submit"
                 variant="default"
                 className="w-full bg-new-off-black hover:bg-new-dark-grey"
-                disabled={!isValidOtp}>
-                <p className="text-title-3-demi">Verify</p>
+                disabled={!isValidOtp || isLoading}>
+                {isLoading ? (
+                  <Loader size="sm" className="fill-new-off-white" />
+                ) : (
+                  <p className="text-title-3-demi">Verify</p>
+                )}
               </Button>
             </form>
           </Form>
