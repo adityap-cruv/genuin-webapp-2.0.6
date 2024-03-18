@@ -10,6 +10,7 @@ import { updateUser } from '@lib/api/auth'
 import { useAuthenticationModalStore } from '../store'
 import { Button } from '@components/ui/button'
 import { Loader } from '@components/ui/loader'
+import { ModalShell } from '../modal-shell'
 
 const passwordSchema = z.object({ password: z.string().min(8) })
 
@@ -36,17 +37,17 @@ export function PasswordInput() {
   }
 
   return (
-    <>
+    <ModalShell>
       <h3 className="flex w-full items-center justify-center text-heading-3">Set your password</h3>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
           <FormField
             control={form.control}
             name="password"
             render={({ field }) => {
               const errors = useFormField().error
               return (
-                <FormItem>
+                <FormItem className="sm:w-full">
                   <FormLabel className="text-body-1-med">
                     <div className="flex w-full justify-between">
                       <p>Password</p>
@@ -110,6 +111,6 @@ export function PasswordInput() {
           )}
         </form>
       </Form>
-    </>
+    </ModalShell>
   )
 }

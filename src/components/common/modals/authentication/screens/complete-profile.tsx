@@ -12,6 +12,7 @@ import { updateUser } from '@lib/api/auth'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { Button } from '@components/ui/button'
 import { Loader } from '@components/ui/loader'
+import { ModalShell } from '../modal-shell'
 
 const formSchema = z.object({
   displayName: z.string().max(25, { message: 'Max length should be 25.' }).optional(),
@@ -58,18 +59,18 @@ export function CompleteProfile() {
   }
 
   return (
-    <>
-      <h3 className="flex w-full items-center justify-center pb-4 text-heading-3">Complete profile</h3>
+    <ModalShell>
+      <h3 className="flex w-full items-center justify-center text-heading-3">Complete profile</h3>
       <ImageInput />
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
           <FormField
             name="displayName"
             control={form.control}
             render={({ field }) => {
               const errors = useFormField().error
               return (
-                <FormItem>
+                <FormItem className="sm:w-full">
                   <FormLabel className="text-body-1-med">
                     <div className="flex w-full justify-between">
                       <p>Full Name</p>
@@ -95,7 +96,7 @@ export function CompleteProfile() {
             render={({ field }) => {
               const errors = useFormField().error
               return (
-                <FormItem>
+                <FormItem className="sm:w-full">
                   <FormLabel className="text-body-1-med">
                     <div className="flex w-full justify-between">
                       <p>Bio</p>
@@ -132,6 +133,6 @@ export function CompleteProfile() {
           </span>
         </form>
       </Form>
-    </>
+    </ModalShell>
   )
 }

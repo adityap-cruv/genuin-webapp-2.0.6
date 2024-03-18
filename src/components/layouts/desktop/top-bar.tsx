@@ -94,7 +94,7 @@ function UserTick() {
               isAvatar={data.user.isAvatar}
             />
             <div>
-              <p className="text-title-3-bold">{data.user.email}</p>
+              <p className="line-clamp-1 break-words break-all text-title-3-bold">{data.user.email}</p>
               <p className="text-body-1-demi text-monochrome-6">
                 {!data.user.isEmailVerified ? 'Send verification email' : 'Complete profile'}
               </p>
