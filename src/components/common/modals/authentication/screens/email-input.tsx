@@ -10,18 +10,20 @@ import { useEffect, useState } from 'react'
 import { ModalShell } from '../modal-shell'
 import { Button } from '@components/ui/button'
 import Link from 'next/link'
-import phone_icon from '@icons/icPhone.svg'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { loginViaEmail } from '@lib/api/auth'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import { LOGIN_SOURCE } from '@lib/constants'
 import { usePathname } from 'next/navigation'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
+import { Loader } from '@components/ui/loader'
 
 export function EmailInput() {
   const { setStep, setFormData, formData, action } = useAuthenticationModalStore()
   const [isLoading, setIsLoading] = useState(false)
   const deviceId = useLocalStorage().deviceId
   const pathname = usePathname()
+  const brandName = useGenuinOptions().config?.name
 
   const formSchema = z.object({
     email: z.string().email({ message: 'Please enter valid email.' }),
@@ -110,8 +112,12 @@ export function EmailInput() {
               type="submit"
               variant="default"
               className="w-full bg-new-off-black hover:bg-new-dark-grey"
-              disabled={!isValid}>
-              <p className="text-title-3-demi">Next</p>
+              disabled={!isValid || isLoading}>
+              {isLoading ? (
+                <Loader className="stroke-new-off-white" size="sm" />
+              ) : (
+                <p className="text-title-3-demi">Next</p>
+              )}
             </Button>
           </form>
         </Form>
@@ -135,7 +141,7 @@ export function EmailInput() {
         </div>
       </Button> */}
       <p className="text-new-para-2-mobile">
-        By registering, you agree to Ted's
+        By registering, you agree to {brandName ?? 'genuin'}'s
         <Link href={PATH_NAME.terms}>
           <span className="text-primary"> Terms of Service </span>
         </Link>

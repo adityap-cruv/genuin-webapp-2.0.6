@@ -15,6 +15,7 @@ import { cn } from '@lib/utils'
 import { loginViaPhone } from '@lib/api/auth'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import { LOGIN_SOURCE, VERIFICATION_TYPE } from '@lib/constants'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
 
 const formSchema = z.object({
   phone: z.string(),
@@ -24,6 +25,7 @@ export function NumberInput() {
   const { setStep, formData, setFormData } = useAuthenticationModalStore()
   const [isLoading, setIsLoading] = useState(false)
   const deviceId = useLocalStorage().deviceId
+  const brandName = useGenuinOptions().config?.name
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     mode: 'onSubmit',
@@ -124,7 +126,7 @@ export function NumberInput() {
         </div>
       </Button>
       <p className="text-new-para-2-mobile">
-        By registering, you agree to Ted's
+        By registering, you agree to {brandName ?? 'genuin'}'s
         <Link href={PATH_NAME.terms}>
           <span className="text-primary"> Terms of Service </span>
         </Link>

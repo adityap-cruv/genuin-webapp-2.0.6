@@ -13,6 +13,9 @@ import { SIGNUP_SOURCE } from '@lib/constants'
 import { signIn } from 'next-auth/react'
 import { ImageInput } from '../components/image-input'
 import { usePathname } from 'next/navigation'
+import Link from 'next/link'
+import { PATH_NAME } from '@lib/utils/constants/path'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
 
 const formSchema = z.object({
   displayName: z
@@ -26,6 +29,7 @@ const formSchema = z.object({
 export function Signup() {
   const { setStep, formData, setFormData, action } = useAuthenticationModalStore()
   const deviceId = useLocalStorage().deviceId
+  const brandName = useGenuinOptions().config?.name
   const pathname = usePathname()
   const [isLoading, setIsLoading] = useState(false)
 
@@ -103,7 +107,9 @@ export function Signup() {
 
   return (
     <>
-      <h3 className="flex w-full items-center justify-center pb-4 text-heading-3">Sign up for Ted</h3>
+      <h3 className="flex w-full items-center justify-center pb-4 text-heading-3">
+        Sign up for {brandName ?? 'genuin'}
+      </h3>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <ImageInput />
@@ -170,7 +176,17 @@ export function Signup() {
             )}
           </span>
         </form>
-        <p className="flex w-full items-center justify-center pt-2 text-body-1-demi">
+        <p className="py-4 text-center text-cap-1-med text-monochrome-4">
+          By registering, you agree to {brandName ?? 'genuin'}’s&nbsp;
+          <Link href={PATH_NAME.terms} className="break-keep text-primary">
+            Terms of Service
+          </Link>
+          &nbsp;and&nbsp;
+          <Link className="text-primary" href={PATH_NAME.privacy}>
+            Privacy
+          </Link>
+        </p>
+        <p className="flex w-full items-center justify-center text-body-1-demi">
           Already have an account?
           <span
             className="cursor-pointer text-primary"
