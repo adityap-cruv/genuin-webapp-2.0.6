@@ -3,6 +3,7 @@ import Cropper from 'react-cropper'
 import 'cropperjs/dist/cropper.css'
 import { Button } from '@components/ui/button'
 import { useAuthenticationModalStore } from '../store'
+import { ModalShell } from '../modal-shell'
 
 export function ImageCropper() {
   const cropperRef = createRef<any>()
@@ -47,8 +48,8 @@ export function ImageCropper() {
   }
 
   return (
-    <>
-      <h3 className="mb-8 flex w-full  items-center justify-center text-heading-3">Edit Profile picture</h3>
+    <ModalShell>
+      <h3 className="mb-4 flex w-full  items-center justify-center text-heading-3">Edit Profile picture</h3>
       <div className="pb-2">
         <Cropper
           viewMode={1}
@@ -74,6 +75,6 @@ export function ImageCropper() {
         onClick={getCropData}>
         Save Changes
       </Button>
-    </>
+    </ModalShell>
   )
 }

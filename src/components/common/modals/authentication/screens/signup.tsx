@@ -15,6 +15,7 @@ import { ImageInput } from '../components/image-input'
 import { usePathname } from 'next/navigation'
 import { Button } from '@components/ui/button'
 import { Loader } from '@components/ui/loader'
+import { ModalShell } from '../modal-shell'
 
 const formSchema = z.object({
   displayName: z
@@ -104,10 +105,10 @@ export function Signup() {
   }
 
   return (
-    <>
+    <ModalShell>
       <h3 className="flex w-full items-center justify-center pb-4 text-heading-3">Sign up for Ted</h3>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
           <ImageInput />
           <FormField
             control={form.control}
@@ -115,7 +116,7 @@ export function Signup() {
             render={({ field }) => {
               const errors = useFormField().error
               return (
-                <FormItem>
+                <FormItem className="sm:w-full">
                   <FormLabel className="text-body-1-med">
                     <div className="flex w-full justify-between">
                       <p>Full Name</p>
@@ -141,7 +142,7 @@ export function Signup() {
             render={({ field }) => {
               const errors = useFormField().error
               return (
-                <FormItem>
+                <FormItem className="sm:w-full">
                   <FormLabel className="text-body-1-med">
                     <div className="flex w-full justify-between">
                       <p>Email</p>
@@ -183,6 +184,6 @@ export function Signup() {
           </span>
         </p>
       </Form>
-    </>
+    </ModalShell>
   )
 }
