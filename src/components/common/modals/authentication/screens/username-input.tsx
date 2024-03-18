@@ -18,7 +18,8 @@ const usernameSchema = z.object({
 export function UsernameInput() {
   const [isLoading, setIsLoading] = useState(false)
   const { setStep, setFormData, formData } = useAuthenticationModalStore()
-  const [isUsernameValid, setIsUsernameValid] = useState(false)
+  // prefield username is always valid.
+  const [isUsernameValid, setIsUsernameValid] = useState(true)
   const defautlUsername = useGenuinOptions().user?.nickname
   const form = useForm<z.infer<typeof usernameSchema>>({
     resolver: zodResolver(usernameSchema),
