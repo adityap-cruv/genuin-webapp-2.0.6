@@ -7,10 +7,11 @@ import { ModalShell } from '../modal-shell'
 
 export function ImageCropper() {
   const cropperRef = createRef<any>()
-  const { image, setImage, setStep } = useAuthenticationModalStore((state) => ({
+  const { image, setImage, goBack } = useAuthenticationModalStore((state) => ({
     image: state.formData.image,
     setImage: state.setFormData,
     setStep: state.setStep,
+    goBack: state.goToPrevios,
   }))
 
   function getRoundedCanvas(sourceCanvas: any) {
@@ -40,7 +41,7 @@ export function ImageCropper() {
         canvas.toBlob((blob: any) => {
           if (blob) {
             setImage({ image: new File([blob], `cropper_image.png`, { type: 'image/png' }), isAvatar: false })
-            setStep('SIGN_UP')
+            goBack()
           }
         }, 'image/png')
       }

@@ -4,9 +4,9 @@ import { ModalShell } from '../modal-shell'
 import { useAuthenticationModalStore } from '../store'
 import imgError from '@images/verify-email/error.svg'
 import { resendVerificationMail } from '@lib/api/auth'
-import { useSearchParams } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { useState } from 'react'
-import { Loader } from '@components/ui/loader'
+import { deleteSearchParam } from '@lib/utils'
 
 export const MagicLinkVerification = {
   success: Success,
@@ -15,6 +15,8 @@ export const MagicLinkVerification = {
 
 export function Success() {
   const { data, status } = useSession()
+  const pathName = usePathname()
+  const searchParams = useSearchParams()
   const setStep = useAuthenticationModalStore().setStep
 
   if (status !== 'loading')
@@ -24,6 +26,11 @@ export function Success() {
         <Button
           className="w-full bg-monochrome-black hover:bg-new-dark-grey"
           onClick={() => {
+            deleteSearchParam({
+              pathName,
+              searchParams: searchParams.toString(),
+              paramToDelete: 'magic_link_verification',
+            })
             setStep('PASSWORD_INPUT')
           }}>
           <p>Continue</p>
@@ -32,10 +39,12 @@ export function Success() {
     )
 }
 
+// TODO: Handle API success and failure case.
+// TODO: Create a deleteSearchParam function such that it accepts array of string and delete that list search params from the url.
 export function Failure() {
   const [error, setError] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
   const setStep = useAuthenticationModalStore().setStep
+  const pathName = usePathname()
   const searchParams = useSearchParams()
 
   return (
@@ -47,25 +56,37 @@ export function Failure() {
       </p>
       <Button
         className="w-full bg-monochrome-black hover:bg-new-dark-grey"
-        disabled={isLoading}
         onClick={async () => {
-          setIsLoading(true)
           const email = searchParams.get('email')
           const emailType = Number(searchParams.get('email_type'))
           if (email && emailType) {
             await resendVerificationMail(email, emailType)
               .then((res) => {
-                if (res) setStep('EMAIL_SENT_NOTE')
+                if (res) {
+                  deleteSearchParam({
+                    pathName,
+                    searchParams: searchParams.toString(),
+                    paramToDelete: 'magic_link_verification',
+                  })
+                  deleteSearchParam({
+                    pathName,
+                    searchParams: searchParams.toString(),
+                    paramToDelete: 'email',
+                  })
+                  deleteSearchParam({
+                    pathName,
+                    searchParams: searchParams.toString(),
+                    paramToDelete: 'email_type',
+                  })
+                  setStep('EMAIL_SENT_NOTE')
+                }
               })
               .catch((e) => {
                 setError('Something went wrong.')
               })
-              .finally(() => {
-                setIsLoading(false)
-              })
           }
         }}>
-        {isLoading ? <Loader size="sm" /> : <p className="text-title-3-med">Resend magic link</p>}
+        <p className="text-title-3-med">Resend magic link</p>
       </Button>
       {error && <p className="flex items-center justify-center text-title-3-med text-supplementary-red">{error}</p>}
     </ModalShell>

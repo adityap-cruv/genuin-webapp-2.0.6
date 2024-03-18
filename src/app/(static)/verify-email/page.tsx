@@ -62,7 +62,5 @@ function getRedirectTo({
     if (email) urlObj.searchParams.set('email', email)
   }
 
-  console.log('::url::', urlObj.href)
-
   return urlObj.href
 }

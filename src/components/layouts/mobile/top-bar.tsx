@@ -15,6 +15,11 @@ import { MOBILE_DOWNLOAD_APP_LINK } from '@lib/constants'
 import { AppLogo } from '@components/ui/app-logo'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { AuthenticationModal } from '@components/common/modals/authentication'
+import { useSession, signOut } from 'next-auth/react'
+import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
+import { CustomAvatar } from '@components/custom/custom-avatar'
+import { BurgerIcon } from '@icons/burger-icon'
+import { LogoutIcon } from '@icons/logout'
 
 const navVariant = cva('sticky top-0 flex z-40 h-[76px] w-full items-center justify-between  px-2', {
   variants: {
@@ -64,13 +69,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
             </Button>
           </Link>
         )}
-        <Button
-          className="my-1"
-          onClick={() => {
-            AuthenticationModal.open()
-          }}>
-          <p className="text-body-1-demi text-new-off-white">Login</p>
-        </Button>
+        <UserTick />
         {showClose && (
           <X
             onClick={() => {
@@ -169,4 +168,67 @@ function MenuItem({ title, isActive, children }: ItemProps) {
       <p className={cn('text-title-2-bold font-semibold', isActive ? 'text-primary' : 'text-new-off-black')}>{title}</p>
     </div>
   )
+}
+
+function UserTick() {
+  const { data, status } = useSession()
+
+  if (status === 'unauthenticated')
+    return (
+      <Button
+        className="px-4 "
+        onClick={() => {
+          AuthenticationModal.open()
+        }}>
+        <p className="text-title-3-demi">Log in</p>
+      </Button>
+    )
+
+  if (status === 'authenticated')
+    return (
+      <Popover>
+        <PopoverTrigger>
+          <div className="flex items-center gap-x-2 rounded-full border border-monochrome-9 p-1 pr-2">
+            <CustomAvatar
+              className="h-6 w-6"
+              fallbackString={data.user.name ?? ''}
+              imageUrl={data.user.image ?? ''}
+              isAvatar={data.user.isAvatar}
+            />
+            <BurgerIcon />
+          </div>
+        </PopoverTrigger>
+        <PopoverContent
+          sideOffset={-6}
+          className="rounded-2xl p-2 shadow-lg shadow-monochrome-3/40"
+          side="bottom"
+          align="end">
+          <div className="my-2 flex items-center gap-2">
+            <CustomAvatar
+              className="h-12 w-12"
+              fallbackString={data.user.name ?? ''}
+              imageUrl={data.user.image ?? ''}
+              isAvatar={data.user.isAvatar}
+            />
+            <div>
+              <p className="text-title-3-bold">{data.user.email}</p>
+              <p className="text-body-1-demi text-monochrome-6">
+                {!data.user.isEmailVerified ? 'Send verification email' : 'Complete profile'}
+              </p>
+            </div>
+          </div>
+          <hr className="border-b border-monochrome-9" />
+          <div className="flex items-center gap-x-2 p-4">
+            <LogoutIcon />
+            <p
+              className="text-body-1-demi"
+              onClick={() => {
+                void signOut({ callbackUrl: `${window.location.pathname}${window.location.search}`, redirect: true })
+              }}>
+              Log out
+            </p>
+          </div>
+        </PopoverContent>
+      </Popover>
+    )
 }

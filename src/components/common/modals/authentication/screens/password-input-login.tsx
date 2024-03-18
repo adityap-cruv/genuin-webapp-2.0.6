@@ -62,7 +62,8 @@ export function PasswordInputLogin() {
             .catch((e) => {
               form.setError('root', { message: 'Oops! something went wrong. try again.' })
             })
-        } else if (res?.code === 5238) {
+        }
+        if (res?.code === 5238) {
           form.control.setError('password', {
             message: 'Password is incorrect. Please try again.',
           })

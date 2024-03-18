@@ -21,7 +21,8 @@ const usernameSchema = z.object({
 export function UsernameInput() {
   const [isLoading, setIsLoading] = useState(false)
   const { setStep, setFormData, formData } = useAuthenticationModalStore()
-  const [isUsernameValid, setIsUsernameValid] = useState(false)
+  // prefield username is always valid.
+  const [isUsernameValid, setIsUsernameValid] = useState(true)
   const defautlUsername = useGenuinOptions().user?.nickname
   const form = useForm<z.infer<typeof usernameSchema>>({
     resolver: zodResolver(usernameSchema),
@@ -111,9 +112,12 @@ export function UsernameInput() {
           <Button
             type="submit"
             disabled={!isUsernameValid || isLoading || !isValid}
-            className="mt-4 flex w-full items-center justify-center border-0 bg-new-off-black !text-title-3-demi text-new-off-white"
-            value="">
-            {isLoading ? <Loader size="sm" className="fill-new-off-white" /> : <p>Save and proceed</p>}
+            className="mt-4 flex items-center justify-center border-0 bg-new-off-black">
+            {isLoading ? (
+              <Loader size="sm" className="fill-new-off-white" />
+            ) : (
+              <p className="text-title-3-demi text-new-off-white">Save and proceed</p>
+            )}
           </Button>
           {form.formState.errors.root && (
             <p className="flex items-center justify-center text-title-3-med text-supplementary-red">

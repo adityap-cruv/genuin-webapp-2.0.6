@@ -16,7 +16,7 @@ import { Loader } from '@components/ui/loader'
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@components/ui/input-otp'
 
 const formSchema = z.object({
-  otp: z.string().max(6),
+  otp: z.string(),
 })
 
 export function OtpInput() {
@@ -118,8 +118,9 @@ export function OtpInput() {
       <div className="flex flex-col items-center">
         <p className="mb-6 text-center text-heading-3">Enter code</p>
         <p className="w-full text-center text-title-3-med text-monochrome">
-          Enter the 6-digit code sent to: {formatPhoneNumberIntl(formData.phone ?? '')}
+          Enter the 6-digit code sent to: {formData.phone}
         </p>
+
         <div className="w-full">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -128,7 +129,7 @@ export function OtpInput() {
                 name="otp"
                 render={({ field }) => {
                   return (
-                    <FormItem className="flex flex-col items-center py-2 sm:w-full">
+                    <FormItem className="flex flex-col items-center sm:w-full">
                       <FormControl>
                         <InputOTP
                           maxLength={6}
@@ -147,44 +148,47 @@ export function OtpInput() {
                   )
                 }}
               />
-              <span className="flex w-full justify-center pb-5 pt-2">
-                {timer <= 0 ? (
-                  <p className=" cursor-pointer  text-body-1-med text-primary" onClick={resendOtp}>
-                    Resend otp
-                  </p>
-                ) : (
-                  <p className="text-center text-body-1-med text-monochrome">
-                    Resend code in{' '}
-                    <span className="text-monochrome-black">{`00:${timer.toString().padStart(2, '0')}`}</span>
-                  </p>
-                )}
-              </span>
               <Button
                 type="submit"
                 variant="default"
                 className="w-full bg-new-off-black hover:bg-new-dark-grey"
                 disabled={!isValidOtp || isLoading}>
-                {isLoading ? <Loader size="sm" /> : <p className="text-title-3-demi">Verify</p>}
+                {isLoading ? (
+                  <Loader size="sm" className="fill-new-off-white" />
+                ) : (
+                  <p className="text-title-3-demi">Verify</p>
+                )}
               </Button>
-              {form.formState.errors.root && (
-                <p className="flex items-center justify-center py-3 text-center text-title-3-med text-supplementary-red">
-                  {form.formState.errors.root.message}
-                </p>
-              )}
-              <p className="flex w-full items-center justify-center text-body-1-demi">
-                Don't have an account?
-                <span
-                  className="cursor-pointer text-primary"
-                  onClick={() => {
-                    setStep('SIGN_UP')
-                  }}>
-                  &nbsp;Sign up
-                </span>
-              </p>
             </form>
           </Form>
         </div>
       </div>
+
+      {form.formState.errors.root && (
+        <p className="text-text-new-para-2-mobile flex items-center justify-center text-center text-supplementary-red">
+          {form.formState.errors.root.message}
+        </p>
+      )}
+      {timer <= 0 ? (
+        <p className="cursor-pointer text-body-1-med text-primary" onClick={resendOtp}>
+          Resend otp
+        </p>
+      ) : (
+        <p className="text-center text-body-1-med text-monochrome">
+          Resend code in <span className="text-monochrome-black">{`00:${timer.toString().padStart(2, '0')}`}</span>
+        </p>
+      )}
+
+      <p className="flex w-full items-center justify-center text-body-1-demi">
+        Don't have an account?
+        <span
+          className="cursor-pointer text-primary"
+          onClick={() => {
+            setStep('SIGN_UP')
+          }}>
+          &nbsp;Sign up
+        </span>
+      </p>
     </ModalShell>
   )
 }
