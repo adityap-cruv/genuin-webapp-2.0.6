@@ -88,7 +88,7 @@ export function Signup() {
         }
         // Email verification pending and password not set.
         else if (res.code === 5231) {
-          setStep('EMAIL_SENT_NOTE')
+          setStep('EMAIL_SENT_NOTE_ACCOUNT_EXISTS')
         }
         // Email verified password not set.
         else if (res.code === 5237) {

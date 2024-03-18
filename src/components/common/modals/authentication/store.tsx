@@ -19,6 +19,7 @@ export type StepsType =
   | 'ERROR'
   | 'USERNAME_INPUT'
   | 'PASSWORD_INPUT_LOGIN'
+  | 'EMAIL_SENT_NOTE_ACCOUNT_EXISTS'
 
 type FormDataType = {
   displayName: string

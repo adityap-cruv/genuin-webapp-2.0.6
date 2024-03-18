@@ -107,6 +107,8 @@ export function Content() {
       return <MagicLinkVerification.success />
     case 'EMAIL_SENT_NOTE':
       return <Note.email />
+    case 'EMAIL_SENT_NOTE_ACCOUNT_EXISTS':
+      return <Note.email acountExists />
     case 'ERROR':
       return <Error />
     case 'USERNAME_INPUT':
