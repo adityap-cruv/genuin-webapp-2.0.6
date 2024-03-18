@@ -76,7 +76,7 @@ export function NumberInput() {
               name="phone"
               render={({ field }) => {
                 return (
-                  <FormItem>
+                  <FormItem className="sm:w-full">
                     <FormLabel className="text-body-1-med">
                       <div className="flex w-full justify-between">
                         <p>Phone</p>
@@ -130,7 +130,7 @@ export function NumberInput() {
         </div>
       </Button>
       <p className="text-new-para-2-mobile">
-        By registering, you agree to {brandName && `${brandName}'s`}
+        By registering, you agree to {brandName ?? 'genuin'}'s
         <a href={PATH_NAME.terms} target="_blank" rel="noopener noreferrer">
           <span className="text-primary"> Terms of Service </span>
         </a>
