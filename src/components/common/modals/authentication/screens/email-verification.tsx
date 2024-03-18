@@ -3,10 +3,11 @@ import imgSuccess from '@images/verify-email/success.svg'
 import { ModalShell } from '../modal-shell'
 import imgError from '@images/verify-email/error.svg'
 import { useAuthenticationModalStore } from '../store'
-import { useSearchParams } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { resendVerificationMail } from '@lib/api/auth'
 import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
+import { deleteSearchParam } from '@lib/utils'
 
 export const EmailVerification = {
   success: Success,
@@ -15,6 +16,8 @@ export const EmailVerification = {
 
 function Success() {
   const setStep = useAuthenticationModalStore().setStep
+  const pathName = usePathname()
+  const searchParams = useSearchParams()
   const { data: sessionData, update } = useSession()
 
   useEffect(() => {
@@ -33,6 +36,11 @@ function Success() {
         className="w-full bg-new-off-black hover:bg-new-dark-grey"
         variant="default"
         onClick={() => {
+          deleteSearchParam({
+            paramToDelete: 'email_verification_status',
+            pathName,
+            searchParams: searchParams.toString(),
+          })
           setStep('PASSWORD_INPUT')
         }}>
         <p className="text-title-3-med">Continue</p>
@@ -41,9 +49,11 @@ function Success() {
   )
 }
 
+// TODO: Create a deleteSearchParam function such that it accepts array of string and delete that list search params from the url.
 function Failure() {
   const setStep = useAuthenticationModalStore().setStep
   const searchParams = useSearchParams()
+  const pathName = usePathname()
   const [error, setError] = useState('')
 
   return (
@@ -62,7 +72,24 @@ function Failure() {
           if (email && emailType) {
             await resendVerificationMail(email, emailType)
               .then((res) => {
-                if (res) setStep('EMAIL_SENT_NOTE')
+                if (res) {
+                  deleteSearchParam({
+                    pathName,
+                    searchParams: searchParams.toString(),
+                    paramToDelete: 'email_verification_status',
+                  })
+                  deleteSearchParam({
+                    pathName,
+                    searchParams: searchParams.toString(),
+                    paramToDelete: 'email',
+                  })
+                  deleteSearchParam({
+                    pathName,
+                    searchParams: searchParams.toString(),
+                    paramToDelete: 'email_type',
+                  })
+                  setStep('EMAIL_SENT_NOTE')
+                }
               })
               .catch((e) => {
                 setError('Something went wrong.')

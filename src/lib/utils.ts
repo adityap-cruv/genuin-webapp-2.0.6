@@ -7,6 +7,24 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+export function deleteSearchParam({
+  pathName,
+  searchParams,
+  paramToDelete,
+}: {
+  pathName: string
+  searchParams: string
+  paramToDelete: string
+}) {
+  const searchParamObject = new URLSearchParams(searchParams)
+  searchParamObject.delete(paramToDelete)
+  if (searchParamObject.size === 0) {
+    window.history.replaceState('', '', `${pathName}`)
+  } else {
+    window.history.replaceState('', '', `${pathName}?${searchParamObject.toString()}`)
+  }
+}
+
 export function getTimeAgo(createdAt: any) {
   const currentDate: any = new Date()
   const createdAtDate: any = new Date(createdAt)
