@@ -18,6 +18,8 @@ import { format } from 'url'
 import { analyticsService } from '../../../../services/analytics_service'
 import { videoSpark } from '@lib/api/video'
 import { useState } from 'react'
+import { DownloadDialogModal } from '@components/common/modals/download-app'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
 
 interface ActionsProps {
   link: string
@@ -192,6 +194,7 @@ function Desktop({ link = '', shareDescription = '', shareTitle = '', videoData 
   // }))
   const usersdata = JSON.parse(localStorage.getItem('_user_id_') ?? '')
   const userId = usersdata.state.userId ?? ''
+  const user = useGenuinOptions().user
 
   if (videoData) {
     return (
@@ -214,11 +217,20 @@ function Desktop({ link = '', shareDescription = '', shareTitle = '', videoData 
         </DownloadDialog>
         <ActionItem
           title="Give spark!"
-          onClick={async () => {
-            await videoSpark(videoData.video?.id ?? '', 2, !isSparked)
-            setIsSparked((prevIsSparked) => !prevIsSparked)
-            setSparkCount((prevCount) => (isSparked ? prevCount - 1 : prevCount + 1))
-          }}>
+          onClick={
+            user
+              ? async () => {
+                  await videoSpark(videoData.video?.id ?? '', 2, !isSparked)
+                  setIsSparked((prevIsSparked) => !prevIsSparked)
+                  setSparkCount((prevCount) => (isSparked ? prevCount - 1 : prevCount + 1))
+                }
+              : () => {
+                  DownloadDialogModal.open({
+                    title: 'Get the Genuin app',
+                    subtitle: 'Get the app to spark the video.',
+                  })
+                }
+          }>
           <Image src={isSparked ? icSparkTrue : icSpark} height={32} width={32} alt="spark" />
           <p className="flex justify-center text-body-1-demi text-monochrome-white">{abbreviateNumber(sparkCount)}</p>
         </ActionItem>
