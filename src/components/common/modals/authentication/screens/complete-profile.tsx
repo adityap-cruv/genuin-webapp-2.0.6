@@ -9,10 +9,10 @@ import { Textarea } from '@components/ui/textarea'
 import { useEffect, useState } from 'react'
 import { useAuthenticationModalStore } from '../store'
 import { updateUser } from '@lib/api/auth'
-import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { Button } from '@components/ui/button'
 import { Loader } from '@components/ui/loader'
 import { ModalShell } from '../modal-shell'
+import { useSession } from 'next-auth/react'
 
 const formSchema = z.object({
   displayName: z.string().max(25, { message: 'Max length should be 25.' }).optional(),
@@ -20,14 +20,14 @@ const formSchema = z.object({
 })
 
 export function CompleteProfile() {
+  const { data: sessionData, update: updateSession } = useSession()
   const [isLoading, setIsLoading] = useState(false)
-  const { user } = useGenuinOptions((state) => ({ user: state.user }))
   const { formData, setFormData, close: closeModal } = useAuthenticationModalStore()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       bio: formData.bio,
-      displayName: user?.name ?? '',
+      displayName: formData?.displayName,
     },
     mode: 'onChange',
   })
@@ -44,9 +44,18 @@ export function CompleteProfile() {
   async function onSubmit({ displayName, bio }: { displayName?: string | null; bio?: string | null }) {
     setIsLoading(true)
     try {
-      const userUpdated = await updateUser({ name: displayName, bio })
-      if (userUpdated) {
+      const { status, user } = await updateUser({
+        name: displayName,
+        bio,
+        is_avatar: formData.isAvatar,
+        profile_image: formData.imageName ? formData.imageName : (formData.image as string),
+      })
+      if (status) {
         closeModal()
+        void updateSession({
+          ...sessionData,
+          user: { ...sessionData?.user, bio: user.bio, name: user.name, image: user.profile_image },
+        })
       } else {
         throw new Error()
       }
@@ -56,10 +65,6 @@ export function CompleteProfile() {
       setIsLoading(false)
     }
   }
-
-  useEffect(() => {
-    if (user) setFormData({ isAvatar: user.isAvatar, image: user.image as string })
-  }, [user])
 
   return (
     <ModalShell>

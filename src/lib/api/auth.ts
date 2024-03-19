@@ -2,6 +2,8 @@ import { encryptText } from '@lib/utils'
 import { axiosInstance, setAuthTokenInAxiosInstance, setTempAuthTokenInAxiosInstance } from './instance'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
+import axios from 'axios'
+import { v4 as uuid } from 'uuid'
 
 type RecaptchaActionType = 'LOGIN' | 'SIGNUP'
 
@@ -128,6 +130,25 @@ export async function verifyEmail(token: string): Promise<{
     })
 }
 
+export async function uploadProfileImage(file: File) {
+  try {
+    const getUrlResponse = await axiosInstance.post('/api/v3/users/video/upload/create_upload_url', {
+      contentType: file.type,
+      path: `uploads/profile_images/${file.name}`,
+    })
+    const uploadUrl = getUrlResponse.data.data.uploadURL
+    const uploadResponse = await axiosInstance.put(uploadUrl, file, {
+      headers: {
+        'Content-Type': file.type,
+      },
+    })
+    return uploadResponse.status === 200
+  } catch (e) {
+    console.log('::ERROR IN UPLOAD API::', e)
+    return false
+  }
+}
+
 type UserType = {
   name?: string | null
   bio?: string | null
@@ -144,11 +165,12 @@ type UserType = {
   password: string
 }
 
-export async function updateUser(user: Partial<UserType>): Promise<boolean> {
+export async function updateUser(user: Partial<UserType>): Promise<{ status: boolean; user: any }> {
   return await axiosInstance
     .patch('/api/v3/users/update_user_profile', { user })
     .then((res) => {
-      return res.status === 200
+      console.log(res.data.data)
+      return { status: res.status === 200, user: res.data.data }
     })
     .catch((e) => {
       console.log('::ERROR in updata user profile::', e)

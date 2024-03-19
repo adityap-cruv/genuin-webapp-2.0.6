@@ -7,10 +7,10 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useState } from 'react'
 import { useAuthenticationModalStore } from '../store'
 import { updateUser, validateUsername } from '@lib/api/auth'
-import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { Button } from '@components/ui/button'
 import { Loader } from '@components/ui/loader'
 import { ModalShell } from '../modal-shell'
+import { useSession } from 'next-auth/react'
 
 const usernameSchema = z.object({
   username: z
@@ -19,17 +19,17 @@ const usernameSchema = z.object({
 })
 
 export function UsernameInput() {
+  const { data: sessionData, update: updateSession } = useSession()
   const [isLoading, setIsLoading] = useState(false)
   const { setStep, setFormData, formData } = useAuthenticationModalStore()
   // prefield username is always valid.
   const [isUsernameValid, setIsUsernameValid] = useState(true)
-  const defautlUsername = useGenuinOptions().user?.nickname
   const form = useForm<z.infer<typeof usernameSchema>>({
     resolver: zodResolver(usernameSchema),
-    mode: 'onSubmit',
-    defaultValues: { username: defautlUsername },
+    mode: 'onBlur',
+    defaultValues: { username: formData.username },
   })
-  const { isValid } = form.formState
+  const { isValid, isDirty } = form.formState
 
   useEffect(() => {
     const watch = form.watch((value) => {
@@ -41,9 +41,12 @@ export function UsernameInput() {
   }, [form.watch])
 
   useEffect(() => {
-    if (isValid) form.clearErrors()
+    if (isValid && !isDirty) {
+      form.clearErrors()
+      setIsUsernameValid(true)
+    }
     const validateUser = setTimeout(async () => {
-      if (formData.username && formData.username?.length > 0) {
+      if (formData.username && formData.username?.length > 0 && isDirty) {
         const usernameAvailable = await validateUsername(formData.username ?? '')
         if (!usernameAvailable) {
           form.setError('username', { message: 'This username isn’t available. Choose a different username.' })
@@ -57,14 +60,15 @@ export function UsernameInput() {
     return () => {
       clearTimeout(validateUser)
     }
-  }, [formData.username, isValid])
+  }, [formData.username, isValid, isDirty])
 
   async function onSubmit({ username }: { username: string }) {
     setIsLoading(true)
     try {
       if (isUsernameValid) {
-        const userUpdated = await updateUser({ nickname: username })
-        if (userUpdated) {
+        const { status } = await updateUser({ nickname: username })
+        if (status) {
+          await updateSession({ ...sessionData, user: { ...sessionData?.user, nickname: username } })
           setStep('COMPLETE_PROFILE')
         }
       } else {

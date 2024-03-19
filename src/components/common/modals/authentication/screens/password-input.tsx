@@ -11,10 +11,12 @@ import { useAuthenticationModalStore } from '../store'
 import { Button } from '@components/ui/button'
 import { Loader } from '@components/ui/loader'
 import { ModalShell } from '../modal-shell'
+import { useSession } from 'next-auth/react'
 
 const passwordSchema = z.object({ password: z.string().min(8) })
 
 export function PasswordInput() {
+  const { data: sessionData, update: updateSession } = useSession()
   const [passwordVisible, setPasswordVisible] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const setStep = useAuthenticationModalStore().setStep
@@ -25,9 +27,12 @@ export function PasswordInput() {
   async function onSubmit({ password }: { password: string }) {
     setIsLoading(true)
     try {
-      const ans = await updateUser({ password })
-      if (ans) {
+      const { status } = await updateUser({ password })
+      if (status) {
+        await updateSession({ ...sessionData, user: { ...sessionData?.user, isPasswordSet: true } })
         setStep('USERNAME_INPUT')
+      } else {
+        throw new Error()
       }
     } catch (e) {
       form.setError('root', { message: 'Something went wrong.' })
