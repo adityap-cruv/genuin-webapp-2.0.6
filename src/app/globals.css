@@ -241,3 +241,7 @@
 .cropper-face {
   border-radius: 50%;
 }
+
+#onetrust-banner-sdk {
+  z-index: 40 !important;
+}
