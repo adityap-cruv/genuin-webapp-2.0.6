@@ -241,3 +241,9 @@
 .cropper-face {
   border-radius: 50%;
 }
+
+/* As we are utilizing onetrust banner for cookie settings. onetrust's banner's design is clashing with our modal so forcefully changing there style
+ */
+#onetrust-banner-sdk {
+  z-index: 40 !important;
+}

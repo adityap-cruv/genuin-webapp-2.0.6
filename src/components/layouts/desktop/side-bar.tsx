@@ -76,7 +76,7 @@ export function SideBar() {
             </Link>
           </PopoverContent>
         </Popover>
-        {status === 'unauthenticated' && (
+        {status === 'unauthenticated' && embed && (
           <Button
             onClick={() => {
               AuthenticationModal.open()

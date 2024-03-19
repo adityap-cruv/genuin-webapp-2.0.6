@@ -25,7 +25,7 @@ export function TopBar() {
             {/* <GenuinIcon.logo className="fill-new-off-black" /> */}
           </Link>
           <div className="flex gap-x-3">
-            {!isEmbed && (
+            {!isEmbed ? (
               <>
                 <Link href={{ pathname: PATH_NAME.careers() }}>
                   <Button
@@ -44,8 +44,9 @@ export function TopBar() {
                   </Button>
                 </DownloadAppDialog>
               </>
+            ) : (
+              <UserTick />
             )}
-            <UserTick />
           </div>
         </nav>
       </div>
