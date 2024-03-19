@@ -52,7 +52,6 @@ export async function videoSpark(contentId: string, type: number, spark: boolean
       return { code: 200, data: res.data.data }
     })
     .catch((e) => {
-      console.log('::error in videoSpark api::', e.response.data)
       return { code: Number(e.response.data.code), data: undefined, accessToken: undefined }
     })
 }
@@ -60,7 +59,7 @@ export async function videoSpark(contentId: string, type: number, spark: boolean
 export async function joinCommunity(onboardingCommunities: boolean, communities: any, users: any) {
   return await axiosInstance
     .post(
-      '/api/v3/spark',
+      '/api/v3/community/add_users',
       {
         onboarding_communities: onboardingCommunities,
         communities,
@@ -76,19 +75,20 @@ export async function joinCommunity(onboardingCommunities: boolean, communities:
       return { code: 200, data: res.data.data }
     })
     .catch((e) => {
-      console.log('::error in joinCommunity api::', e.response.data)
-      return { code: Number(e.response.data.code), data: undefined, accessToken: undefined }
+      return { code: Number(e.response.data.code) }
     })
 }
 
-export async function createComment(onboardingCommunities: boolean, communities: any, users: any) {
+export async function createComment(videoId: string, loopId: string, type: number, commentText: string) {
   return await axiosInstance
     .post(
       '/api/v3/comment/create',
       {
-        onboarding_communities: onboardingCommunities,
-        communities,
-        users,
+        conversation_id: videoId,
+        chat_id: loopId,
+        type,
+        comment_text: commentText,
+        comment_data: commentText,
       },
       {
         headers: {
@@ -100,7 +100,6 @@ export async function createComment(onboardingCommunities: boolean, communities:
       return { code: 200, data: res.data.data }
     })
     .catch((e) => {
-      console.log('::error in createComment api::', e.response.data)
-      return { code: Number(e.response.data.code), data: undefined, accessToken: undefined }
+      return { code: Number(e.response.data.code) }
     })
 }

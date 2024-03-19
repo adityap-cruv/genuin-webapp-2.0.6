@@ -11,13 +11,16 @@ import { DownloadDialog } from '@components/common/download-dialog'
 import { Comments, NoComments } from '@components/common/comments'
 import { type VideoDataType } from '@lib/schemas/video'
 import { getLoopVideoComments } from '@lib/api/loop'
-import { type RefObject, useRef } from 'react'
+import { type RefObject, useRef, useState, useEffect } from 'react'
 import { useMotionValueEvent, useScroll } from 'framer-motion'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
 import { getTimeAgo } from '@lib/utils'
 import { FeedShimmer } from '../shimmers/feed-shimmer'
+import { Input } from '@components/ui/input'
+import { createComment, joinCommunity } from '@lib/api/video'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
 
 type DesktopDetailsProps = {
   videoDetails: VideoDataType
@@ -26,6 +29,10 @@ export function DesktopDetails({ videoDetails }: DesktopDetailsProps) {
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
   const scrollDivRef = useRef<HTMLDivElement>(null)
+  const [isCommunityJoined, setIsCommunityJoined] = useState(false)
+  const [currentComment, setCurrentComment] = useState('')
+  const [comments, setComments] = useState([])
+  const user = useGenuinOptions().user
 
   if (videoDetails)
     return (
@@ -68,23 +75,50 @@ export function DesktopDetails({ videoDetails }: DesktopDetailsProps) {
                   </Link>
                 </span>
                 <span className="flex h-min flex-1 items-center justify-end gap-x-3">
-                  <DownloadDialog
-                    title="Get the Genuin app"
-                    subtitle={
-                      <>
-                        Get the app to join the <br />
-                        <span className="font-bold">@{videoDetails.community.handle}</span> community.
-                      </>
-                    }
-                    asChild>
-                    <Button size="custom">
-                      <p className="whitespace-nowrap px-4 py-1 text-body-1-demi">Join Community</p>
+                  {user ? (
+                    <Button
+                      size="custom"
+                      className={`${isCommunityJoined && 'rounded border border-primary '}`}
+                      variant={isCommunityJoined ? 'outline' : 'default'}
+                      onClick={async () => {
+                        !isCommunityJoined &&
+                          (await joinCommunity(
+                            false,
+                            [videoDetails.community.id],
+                            [
+                              {
+                                user_id: user?.id,
+                              },
+                            ]
+                          ))
+                        setIsCommunityJoined((prev) => !prev)
+                      }}>
+                      <p
+                        className={`whitespace-nowrap px-4 py-1 text-body-1-demi ${
+                          isCommunityJoined && 'text-primary'
+                        }`}>
+                        {isCommunityJoined ? 'Joined' : 'Join Community'}
+                      </p>
                     </Button>
-                  </DownloadDialog>
+                  ) : (
+                    <DownloadDialog
+                      title="Get the Genuin app"
+                      subtitle={
+                        <>
+                          Get the app to join the <br />
+                          <span className="font-bold">@{videoDetails.community.handle}</span> community.
+                        </>
+                      }
+                      asChild>
+                      <Button size="custom">
+                        <p className="whitespace-nowrap px-4 py-1 text-body-1-demi">Join Community</p>
+                      </Button>
+                    </DownloadDialog>
+                  )}
                   <Button
                     size="custom"
                     variant="outline"
-                    className="min-w-max border-2 border-primary p-1 "
+                    className="min-w-max border border-primary p-1 "
                     onClick={async () =>
                       await shareFn({
                         shareLink:
@@ -115,16 +149,36 @@ export function DesktopDetails({ videoDetails }: DesktopDetailsProps) {
             </p>
           </div>
           <div className="h-full px-4 pt-2">
-            <CommentBox shareString={videoDetails?.video?.share_string ?? ''} parentRef={scrollDivRef} />
+            <CommentBox
+              shareString={videoDetails?.video?.share_string ?? ''}
+              parentRef={scrollDivRef}
+              setComments={setComments}
+              comments={comments}
+            />
           </div>
         </div>
-        <CommentInput />
+        <CommentInput
+          setComments={setComments}
+          currentComment={currentComment}
+          setCurrentComment={setCurrentComment}
+          videoDetails={videoDetails}
+        />
         <Toaster />
       </div>
     )
 }
 
-function CommentBox({ shareString, parentRef }: { shareString: string; parentRef: RefObject<HTMLDivElement> }) {
+function CommentBox({
+  shareString,
+  parentRef,
+  setComments,
+  comments,
+}: {
+  shareString: string
+  parentRef: RefObject<HTMLDivElement>
+  setComments: any
+  comments: any
+}) {
   const {
     data: commentPages,
     fetchNextPage,
@@ -133,7 +187,11 @@ function CommentBox({ shareString, parentRef }: { shareString: string; parentRef
     isFetchingNextPage,
     isLoading,
   } = getLoopVideoComments(shareString)
-  const comments = commentPages?.pages.flatMap((item) => item.comments)
+
+  useEffect(() => {
+    setComments(commentPages?.pages.flatMap((item) => item.comments))
+  }, [commentPages])
+
   const { scrollYProgress } = useScroll({ container: parentRef, layoutEffect: false })
 
   useMotionValueEvent(scrollYProgress, 'change', (value) => {
@@ -150,7 +208,7 @@ function CommentBox({ shareString, parentRef }: { shareString: string; parentRef
       <div className="h-full overflow-visible pb-40">
         <Comments.withoutApi
           comments={comments}
-          fetchNextPage={() => { }}
+          fetchNextPage={() => {}}
           hasNextPage={hasNextPage}
           isError={isError}
           isFetchingNextPage={isFetchingNextPage}
@@ -165,20 +223,58 @@ function CommentBox({ shareString, parentRef }: { shareString: string; parentRef
   )
 }
 
-function CommentInput() {
+function CommentInput({ setComments, currentComment, setCurrentComment, videoDetails }: any) {
+  const user = useGenuinOptions().user
+  async function handleClick() {
+    if (currentComment.length !== 0) {
+      const newComment = {
+        owner: {
+          nickname: user?.nickname,
+          is_avatar: user?.isAvatar,
+          profile_image: user?.image,
+        },
+        comment: {
+          created_at: new Date().toISOString(),
+          type: 'text',
+          text: currentComment,
+          no_of_sparks: 0,
+          url: null,
+          thumbnail: null,
+          share_string: null,
+        },
+      }
+      await createComment(videoDetails.video.id, videoDetails.loop.id, 3, currentComment)
+      setComments((prevComments: any) => [newComment, ...prevComments])
+      setCurrentComment('')
+    }
+  }
   return (
     <div className="absolute bottom-0 left-0 h-16 w-full border-t-2 border-t-monochrome-9 bg-monochrome-10 py-3 shadow-md">
-      <DownloadDialog title="Get the Genuin app" subtitle="Get the app to comment on this video." asChild>
-        <button className="flex w-full flex-1 items-center gap-x-4 pl-6">
-          <div
+      <button className="flex w-full flex-1 items-center gap-x-4 px-6">
+        <div className="relative flex w-full items-center">
+          <Input
             placeholder="Add a comment"
-            className="h-full w-2/3 rounded-full border-2 border-monochrome-9 bg-monochrome-white py-2 pl-6">
-            <p className="text-start text-title-3-demi text-monochrome">Add a Comment</p>
-          </div>
+            value={currentComment}
+            disabled={!user}
+            className="rounded-full border border-monochrome-9 bg-monochrome-white"
+            onChange={(event) => {
+              const newComment = event.target.value
+              setCurrentComment(newComment)
+            }}
+          />
+          {user && (
+            <p onClick={handleClick} className="absolute right-4 text-body-1-bold text-primary">
+              Post
+            </p>
+          )}
+        </div>
+        <DownloadDialog title="Get the Genuin app" subtitle="Get the app to comment on this video." asChild>
           <Image src={icAudioRecord} alt="audio record" className="h-8 w-8" />
+        </DownloadDialog>
+        <DownloadDialog title="Get the Genuin app" subtitle="Get the app to comment on this video." asChild>
           <Image src={icVideoRecord} alt="audio record" className="h-8 w-8" />
-        </button>
-      </DownloadDialog>
+        </DownloadDialog>
+      </button>
     </div>
   )
 }
