@@ -1,4 +1,3 @@
-import Otp from '@components/ui/otp'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@components/ui/form'
 import { useEffect, useState } from 'react'
 import { ModalShell } from '../modal-shell'
@@ -11,15 +10,17 @@ import { cn } from '@lib/utils'
 import { loginViaPhone, verifyOtp } from '@lib/api/auth'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import { LOGIN_SOURCE, VERIFICATION_TYPE } from '@lib/constants'
+import { signIn } from 'next-auth/react'
+import { formatPhoneNumberIntl } from 'react-phone-number-input'
 import { Loader } from '@components/ui/loader'
+import { InputOTP, InputOTPGroup, InputOTPSlot } from '@components/ui/input-otp'
 
 const formSchema = z.object({
-  phone: z.string(),
+  otp: z.string(),
 })
 
 export function OtpInput() {
-  const { setStep, formData, setFormData } = useAuthenticationModalStore()
-  const [otp, setOtp] = useState<number>(0)
+  const { setStep, formData, setFormData, close: closeModal } = useAuthenticationModalStore()
   const [isValidOtp, setIsValidOtp] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const deviceId = useLocalStorage().deviceId
@@ -29,19 +30,25 @@ export function OtpInput() {
     mode: 'onSubmit',
     criteriaMode: 'firstError',
     defaultValues: {
-      phone: '',
+      otp: '',
     },
   })
 
   useEffect(() => {
-    const isValidLength = otp.toString().length === 6
-    setIsValidOtp(isValidLength)
-    setFormData({ otp })
+    const w = form.watch((value) => {
+      const otp = parseInt(value.otp ?? '')
+      const isValidLength = otp.toString().length === 6
+      setIsValidOtp(isValidLength)
+      setFormData({ otp })
 
-    if (!isValidLength) {
-      form.control.setError('root', { message: '' })
+      if (!isValidLength) {
+        form.control.setError('root', { message: '' })
+      }
+    })
+    return () => {
+      w.unsubscribe()
     }
-  }, [otp])
+  }, [form.watch])
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -54,18 +61,26 @@ export function OtpInput() {
     }
   }, [timer])
 
-  async function onSubmit() {
+  async function onSubmit(data: any) {
     setIsLoading(true)
 
     await verifyOtp({
       userId: formData.userId ?? '',
-      otp,
+      otp: parseInt(data.otp),
       token: deviceId,
       loginSource: LOGIN_SOURCE.web,
     })
       .then(async (res) => {
         if (res?.code === 200) {
-          setStep('OTP_INPUT')
+          const user = res.data
+          void signIn('credentials', { ...user, redirect: false })
+            .then((res) => {
+              if (res?.ok) closeModal()
+            })
+            .catch((e) => {
+              form.control.setError('root', { message: 'Something went wrong.' })
+            })
+          // setStep('OTP_INPUT')
         }
         if (res?.code === 1008) {
           form.control.setError('root', { message: 'That doesn`t look right. Please check your code and try again' })
@@ -90,7 +105,6 @@ export function OtpInput() {
         .then(async (res) => {
           if (res?.code === 200) {
             setFormData({ userId: res.data.user_id })
-            setIsLoading(false)
           }
         })
         .finally(() => {
@@ -102,8 +116,7 @@ export function OtpInput() {
   return (
     <ModalShell>
       <div className="flex flex-col items-center">
-        <p className="mb-2 text-center text-heading-3">Enter code</p>
-
+        <p className="mb-6 text-center text-heading-3">Enter code</p>
         <p className="w-full text-center text-title-3-med text-monochrome">
           Enter the 6-digit code sent to: {formData.phone}
         </p>
@@ -113,17 +126,21 @@ export function OtpInput() {
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <FormField
                 control={form.control}
-                name="phone"
+                name="otp"
                 render={({ field }) => {
                   return (
                     <FormItem className="flex flex-col items-center sm:w-full">
                       <FormControl>
-                        <Otp
-                          length={6}
-                          otp={otp}
-                          onOtpChange={(value) => {
-                            setOtp(value)
-                          }}
+                        <InputOTP
+                          maxLength={6}
+                          render={({ slots }) => (
+                            <InputOTPGroup>
+                              {slots.map((slot, index) => (
+                                <InputOTPSlot key={index} {...slot} />
+                              ))}{' '}
+                            </InputOTPGroup>
+                          )}
+                          {...field}
                         />
                       </FormControl>
                       <FormMessage className={cn('!text-cap-1-demi')} />
