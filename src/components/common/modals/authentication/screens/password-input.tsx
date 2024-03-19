@@ -97,7 +97,7 @@ export function PasswordInput() {
           <Button
             type="submit"
             disabled={!isDirty || !isValid || isLoading}
-            className="flex w-full items-center justify-center border-0 bg-new-off-black">
+            className="flex w-full items-center justify-center border-0 bg-new-off-black hover:bg-new-dark-grey">
             {isLoading ? (
               <Loader size="sm" className="fill-new-off-white" />
             ) : (

@@ -21,17 +21,16 @@ const formSchema = z.object({
 
 export function CompleteProfile() {
   const [isLoading, setIsLoading] = useState(false)
-  const defaultFullname = useGenuinOptions().user?.name
+  const { user } = useGenuinOptions((state) => ({ user: state.user }))
   const { formData, setFormData, close: closeModal } = useAuthenticationModalStore()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       bio: formData.bio,
-      displayName: defaultFullname ?? '',
+      displayName: user?.name ?? '',
     },
     mode: 'onChange',
   })
-  // const { isValid, isDirty } = form.formState
 
   useEffect(() => {
     const w = form.watch((value) => {
@@ -57,6 +56,10 @@ export function CompleteProfile() {
       setIsLoading(false)
     }
   }
+
+  useEffect(() => {
+    if (user) setFormData({ isAvatar: user.isAvatar, image: user.image as string })
+  }, [user])
 
   return (
     <ModalShell>

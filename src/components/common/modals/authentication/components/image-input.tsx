@@ -13,7 +13,11 @@ export function ImageInput() {
     <div className="flex w-full flex-col items-center justify-center gap-y-2">
       <img
         src={
-          typeof formData.image === 'string' ? getAvatarUrl(formData.image) : URL.createObjectURL(formData.image as any)
+          typeof formData.image === 'string'
+            ? formData.isAvatar
+              ? getAvatarUrl(formData.image)
+              : formData.image
+            : URL.createObjectURL(formData.image as any)
         }
         className="h-20 w-20 rounded-full bg-blue-70"
       />
