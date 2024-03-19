@@ -1,5 +1,4 @@
 'use client'
-import { AuthenticationModal } from '@components/common/modals/authentication'
 import { SplashScreen } from '@components/common/splash-screen'
 import { type ConfigType, useGenuinOptions } from '@lib/stores/genuin-options'
 import { getSizeBoxes } from '@lib/utils/common/size-box'
@@ -8,9 +7,17 @@ import { useEffect } from 'react'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import FingerpringJS from '@fingerprintjs/fingerprintjs'
 import { useSession } from 'next-auth/react'
-import { DownloadDialogModal } from '@components/common/modals/download-app'
+import {} from '@components/common/modals/download-app'
 import { axiosInstance, setAuthTokenInAxiosInstance } from '@lib/api/instance'
 import { encryptText, parseUserAgent } from '@lib/utils'
+import dynamic from 'next/dynamic'
+
+const AuthenticationModal = dynamic(
+  async () => await import('@components/common/modals/authentication').then((comp) => comp.AuthenticationModal.ui)
+)
+const DownloadDialogModal = dynamic(
+  async () => await import('@components/common/modals/download-app').then((comp) => comp.DownloadDialogModal.ui)
+)
 
 type Props = {
   children: React.ReactNode
@@ -114,8 +121,8 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
   return (
     <>
       {children}
-      <AuthenticationModal.ui />
-      <DownloadDialogModal.ui />
+      {!!config && <AuthenticationModal />}
+      {!config && <DownloadDialogModal />}
     </>
   )
 }

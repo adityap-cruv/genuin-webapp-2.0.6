@@ -16,7 +16,8 @@ function Email({ acountExists = false }: { acountExists?: boolean }) {
     <ModalShell>
       <p className="text-center text-title-1-med">
         {acountExists && 'An account with the given email already exists. '}We have sent a confirmation link to{' '}
-        <span className="text-title-1-bold">{email}</span>. Verify your email to save your profile.
+        <span className="text-title-1-bold">{email}</span>. Verify your email to save your profile{' '}
+        {acountExists && 'and continue'}.
       </p>
       <p className="text-title-3-demi">
         Not seeing the email?{' '}

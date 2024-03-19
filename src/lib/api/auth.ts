@@ -1,6 +1,7 @@
 import { encryptText } from '@lib/utils'
 import { axiosInstance, setAuthTokenInAxiosInstance, setTempAuthTokenInAxiosInstance } from './instance'
 import { useLocalStorage } from '@lib/stores/local-storage'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
 
 type RecaptchaActionType = 'LOGIN' | 'SIGNUP'
 
@@ -72,8 +73,7 @@ export async function signup({
         recaptcha_action: recaptchaAction,
         profile_image: profileImage,
         signup_source: signupSource,
-        // TODO: remove this statically typed brand_id once testin gets over
-        brand_id: 1429,
+        brand_id: useGenuinOptions.getState().brandId,
         action_meta_data: actionMetadata,
       },
       {
@@ -182,8 +182,7 @@ export async function resendVerificationMail(email: string, emailType: number, a
       email: encryptText(email, false),
       email_type: emailType,
       device_id: encryptText(useLocalStorage.getState().deviceId, true),
-      // TODO: remove this statically typed brand_id once testin gets over
-      brand_id: 1429,
+      brand_id: useGenuinOptions.getState().brandId,
       action_meta_data: actionMetadata,
     })
     .then((res) => {
@@ -211,8 +210,7 @@ export async function loginViaPhone({
         platform: 3,
         token: encryptText(token, true),
         verification_type: verificationType,
-        // TODO: remove this statically typed brand_id once testin gets over
-        brand_id: 1429,
+        brand_id: useGenuinOptions.getState().brandId,
         login_source: loginSource,
       },
       {
@@ -246,8 +244,7 @@ export async function verifyOtp({
         otp,
         token: encryptText(token, true),
         login_source: loginSource,
-        // TODO: remove this statically typed brand_id once testin gets over
-        brand_id: 1429,
+        brand_id: useGenuinOptions.getState().brandId,
       },
       {
         headers: {
@@ -279,8 +276,7 @@ export async function loginViaEmail({
       {
         email: encryptText(email ?? '', false),
         device_id: encryptText(deviceId, true),
-        // TODO: replace this static value
-        brand_id: 1429,
+        brand_id: useGenuinOptions.getState().brandId,
         password,
         login_source: loginSource,
         action_meta_data: actionMetaData,
