@@ -46,7 +46,6 @@ type User = {
   isPasswordSet: boolean
   image?: string | null
   accessToken: string
-  id: string
 }
 
 type StateType = {
