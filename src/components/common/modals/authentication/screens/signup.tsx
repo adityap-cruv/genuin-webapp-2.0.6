@@ -45,7 +45,7 @@ export function Signup() {
       email: formData.email,
     },
   })
-  const { isDirty, isValid } = form.formState
+  const { isValid } = form.formState
 
   useEffect(() => {
     const w = form.watch((value) => {
@@ -169,7 +169,7 @@ export function Signup() {
             <Button
               type="submit"
               className="flex w-full cursor-pointer items-center justify-center rounded-lg bg-new-off-black  hover:bg-new-dark-grey disabled:hover:bg-new-off-black"
-              disabled={!isDirty || !isValid || isLoading}>
+              disabled={!isValid || isLoading}>
               {isLoading ? (
                 <Loader size="sm" className="fill-new-off-white" />
               ) : (
