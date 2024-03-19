@@ -42,7 +42,7 @@ type Props = {
 } & VariantProps<typeof navVariant>
 
 export function TopBar({ variant = 'light', className, showClose = false, onClose }: Props) {
-  const isEmbed = !useGenuinOptions().embed
+  const isEmbed = useGenuinOptions().embed
   return (
     <nav className={cn(navVariant({ variant }), className)}>
       <span className="flex items-center ">
@@ -57,19 +57,23 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
         )}
       </span>
       <span className="flex items-center gap-x-2">
-        {isEmbed && (
-          <Link href={MOBILE_DOWNLOAD_APP_LINK} target="_blank">
-            <Button
-              className={
-                variant === 'light'
-                  ? 'bg-new-off-black hover:bg-new-dark-grey'
-                  : 'bg-new-off-white text-new-off-black hover:bg-new-off-black hover:text-new-off-white'
-              }>
-              <p className="text-body-1-demi">Download Genuin</p>
-            </Button>
-          </Link>
+        {!isEmbed ? (
+          <>
+            <Link href={MOBILE_DOWNLOAD_APP_LINK} target="_blank">
+              <Button
+                className={
+                  variant === 'light'
+                    ? 'bg-new-off-black hover:bg-new-dark-grey'
+                    : 'bg-new-off-white text-new-off-black hover:bg-new-off-black hover:text-new-off-white'
+                }>
+                <p className="text-body-1-demi">Download Genuin</p>
+              </Button>
+            </Link>
+          </>
+        ) : (
+          <UserTick />
         )}
-        <UserTick />
+
         {showClose && (
           <X
             onClick={() => {
