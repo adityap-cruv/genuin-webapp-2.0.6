@@ -20,18 +20,32 @@ import { useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
 import { X } from 'lucide-react'
 import { PasswordInputLogin } from './screens/password-input-login'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
 
 type Props = DialogProps
 
 export function Modal({ children, ...props }: Props) {
-  const { isModalOpen, openModal, setStep, closeModal, step } = useAuthenticationModalStore((state) => ({
+  const user = useGenuinOptions().user
+  const { isModalOpen, openModal, setStep, closeModal, step, setFormData } = useAuthenticationModalStore((state) => ({
     isModalOpen: state.isOpen,
     openModal: state.open,
     setStep: state.setStep,
     closeModal: state.close,
     step: state.step,
+    setFormData: state.setFormData,
   }))
   const searchParams = useSearchParams()
+
+  useEffect(() => {
+    if (user)
+      setFormData({
+        ...user,
+        username: user.nickname,
+        displayName: user.name ?? '',
+        email: user?.email ?? '',
+        image: user?.image ?? '',
+      })
+  }, [user])
 
   const stepSet: Set<StepsType> = new Set<StepsType>([
     'EMAIL_VERIFICATION_FAILURE',

@@ -1,17 +1,26 @@
-import React, { createRef } from 'react'
+import React, { createRef, useState } from 'react'
 import Cropper from 'react-cropper'
 import 'cropperjs/dist/cropper.css'
 import { Button } from '@components/ui/button'
 import { useAuthenticationModalStore } from '../store'
 import { ModalShell } from '../modal-shell'
+import { v4 } from 'uuid'
+import { uploadProfileImage } from '@lib/api/auth'
 
 export function ImageCropper() {
   const cropperRef = createRef<any>()
-  const { image, setImage, goBack } = useAuthenticationModalStore((state) => ({
+  const [error, setError] = useState('')
+  const [uploadingImage, setUploadingImage] = useState(false)
+  /*  Here step is previousStep because we want if we want to upload image or not
+    in case of signup we don't upload image we directly sent it by API.
+    while in other cases we have to upload image to aws and then send response to api.
+   because update_user_profile api is private. */
+  const { image, setImage, goBack, step } = useAuthenticationModalStore((state) => ({
     image: state.formData.image,
     setImage: state.setFormData,
     setStep: state.setStep,
     goBack: state.goToPrevios,
+    step: state.previousStep,
   }))
 
   function getRoundedCanvas(sourceCanvas: any) {
@@ -33,15 +42,34 @@ export function ImageCropper() {
     return canvas
   }
 
-  const getCropData = () => {
+  const getCropData = async () => {
     if (typeof cropperRef.current?.cropper !== 'undefined') {
       const canvas = getRoundedCanvas(cropperRef.current?.cropper.getCroppedCanvas())
-
       if (canvas) {
         canvas.toBlob((blob: any) => {
           if (blob) {
-            setImage({ image: new File([blob], `cropper_image.png`, { type: 'image/png' }), isAvatar: false })
-            goBack()
+            const file = new File([blob], `${v4()}.png`, { type: 'image/png' })
+            if (step === 'SIGN_UP') {
+              setImage({ image: file, isAvatar: false })
+              goBack()
+            } else {
+              setUploadingImage(true)
+              void uploadProfileImage(file)
+                .then((res) => {
+                  if (res) {
+                    setImage({ imageName: file.name, image: file, isAvatar: false })
+                    goBack()
+                  } else {
+                    setError('Something went wrong. Please try again.')
+                  }
+                })
+                .catch((e) => {
+                  setError('Something went wrong please try again.')
+                })
+                .finally(() => {
+                  setUploadingImage(false)
+                })
+            }
           }
         }, 'image/png')
       }
@@ -72,10 +100,12 @@ export function ImageCropper() {
         />
       </div>
       <Button
+        disabled={uploadingImage}
         className="w-full bg-new-off-black  text-title-3-demi !text-new-off-white hover:bg-new-dark-grey"
         onClick={getCropData}>
-        Save Changes
+        {uploadingImage ? <p>Uploading...</p> : <p>Save Changes</p>}
       </Button>
+      {error && <p className="flex items-center justify-center text-title-3-med text-supplementary-red">{error}</p>}
     </ModalShell>
   )
 }

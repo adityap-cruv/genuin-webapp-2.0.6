@@ -33,6 +33,7 @@ type FormDataType = {
   phone: string
   otp: number
   userId: string
+  imageName: string
 }
 
 type States = {
