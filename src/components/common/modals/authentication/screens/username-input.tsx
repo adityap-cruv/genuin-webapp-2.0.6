@@ -112,7 +112,7 @@ export function UsernameInput() {
           <Button
             type="submit"
             disabled={!isUsernameValid || isLoading || !isValid}
-            className="mt-4 flex items-center justify-center border-0 bg-new-off-black">
+            className="mt-4 flex w-full items-center justify-center border-0 bg-new-off-black">
             {isLoading ? (
               <Loader size="sm" className="fill-new-off-white" />
             ) : (
