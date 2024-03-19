@@ -104,7 +104,7 @@ function UserTick() {
           <div className="flex items-center gap-x-2 p-4">
             <LogoutIcon />
             <p
-              className="text-body-1-demi"
+              className="cursor-pointer text-body-1-demi"
               onClick={() => {
                 void signOut({ callbackUrl: `${window.location.pathname}${window.location.search}`, redirect: true })
               }}>
