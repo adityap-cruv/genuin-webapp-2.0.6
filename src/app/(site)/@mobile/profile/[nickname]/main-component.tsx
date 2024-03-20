@@ -33,6 +33,7 @@ import { PlayerModal } from '@components/common/modals/player-modal'
 import { type VideoDataType } from '@lib/schemas/video'
 import icLock from '@icons/icLock.svg'
 import icLoopDark from '@icons/icLoopDark.svg'
+import { DownloadDialog } from '@components/common/download-dialog'
 
 interface CompProps {
   profileData: any
@@ -250,6 +251,7 @@ function CommunityList({ usernickname, scrollYProgress }: any) {
     addCommunities: state.addCommunities,
     communities: state.communities,
   }))
+  const embed = useGenuinOptions().embed
 
   useEffect(() => {
     const pageLength = data?.pages.length
@@ -289,30 +291,45 @@ function CommunityList({ usernickname, scrollYProgress }: any) {
                     <p className="line-clamp-1 break-all text-left text-body-1-bold">{item.name}</p>
                   </Link>
 
-                  <Button
-                    size="custom"
-                    variant="default"
-                    onClick={() => {
-                      generateDeepLink({
-                        action: 'join',
-                        contentType: 'community',
-                        description: `Find your people. Find what you love. | Join ${item.name} to talk about it`,
-                        title: `join ${item.name}`,
-                        previewImage: null,
-                        fromUserName: null,
-                        pathName: PATH_NAME.community(item.slug),
-                        // sourceId: item.handle,
-                        utmCampaign: 'share',
-                        utmMedium: 'web',
-                        utmSource: window.location.hostname,
-                      })
-                        .then((generatedLink) => {
-                          openGeneratedLink(generatedLink)
+                  {embed ? (
+                    <DownloadDialog
+                      title="Get the Genuin app"
+                      subtitle={
+                        <>
+                          Get the app to join the <br />
+                          <span className="font-bold">@{item.handle}</span> community.
+                        </>
+                      }>
+                      <Button size="custom" variant="default">
+                        <p className="px-4 py-1.5 text-body-1-bold">Join</p>
+                      </Button>
+                    </DownloadDialog>
+                  ) : (
+                    <Button
+                      size="custom"
+                      variant="default"
+                      onClick={() => {
+                        generateDeepLink({
+                          action: 'join',
+                          contentType: 'community',
+                          description: `Find your people. Find what you love. | Join ${item.name} to talk about it`,
+                          title: `join ${item.name}`,
+                          previewImage: null,
+                          fromUserName: null,
+                          pathName: PATH_NAME.community(item.slug),
+                          // sourceId: item.handle,
+                          utmCampaign: 'share',
+                          utmMedium: 'web',
+                          utmSource: window.location.hostname,
                         })
-                        .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
-                    }}>
-                    <p className="px-4 py-1.5 text-body-1-bold">Join</p>
-                  </Button>
+                          .then((generatedLink) => {
+                            openGeneratedLink(generatedLink)
+                          })
+                          .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
+                      }}>
+                      <p className="px-4 py-1.5 text-body-1-bold">Join</p>
+                    </Button>
+                  )}
                 </div>
               </div>
               <DecorativeList>

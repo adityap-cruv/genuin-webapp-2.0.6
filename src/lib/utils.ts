@@ -1,10 +1,26 @@
+import { DownloadDialogModal } from '@components/common/modals/download-app'
 import axios from 'axios'
 import { type ClassValue, clsx } from 'clsx'
 import { createCipheriv } from 'crypto'
 import { twMerge } from 'tailwind-merge'
+import { useGenuinOptions } from './stores/genuin-options'
+import { AuthenticationModal } from '@components/common/modals/authentication'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
+}
+
+export function openModal({ title, subtitle, action }: any) {
+  const embed = useGenuinOptions.getState().embed
+
+  if (embed) {
+    AuthenticationModal.open()
+  } else {
+    DownloadDialogModal.open({
+      title,
+      subtitle,
+    })
+  }
 }
 
 export function deleteSearchParam({

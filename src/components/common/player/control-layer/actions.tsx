@@ -1,4 +1,4 @@
-import { abbreviateNumber, checkAndAppendHttps, generateDeepLink, openGeneratedLink } from '@lib/utils'
+import { abbreviateNumber, checkAndAppendHttps, generateDeepLink, openGeneratedLink, openModal } from '@lib/utils'
 import icShare from '@icons/player-controls/icShare.svg'
 import icComment from '@icons/player-controls/icComment.svg'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
@@ -18,7 +18,6 @@ import { format } from 'url'
 import { analyticsService } from '../../../../services/analytics_service'
 import { videoSpark } from '@lib/api/video'
 import { useState } from 'react'
-import { DownloadDialogModal } from '@components/common/modals/download-app'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 
 interface ActionsProps {
@@ -45,6 +44,10 @@ function Mobile({ link = '', shareDescription = '', shareTitle = '', videoData }
   // TODO: Why?
   const usersdata = JSON.parse(localStorage.getItem('_user_id_') ?? '')
   const userId = usersdata.state.userId ?? ''
+  const [isSparked, setIsSparked] = useState(false)
+  const [sparkCount, setSparkCount] = useState(videoData?.video?.no_of_sparks ?? 0)
+  const embed = useGenuinOptions().embed
+  const user = useGenuinOptions().user
 
   if (videoData) {
     return (
@@ -60,71 +63,92 @@ function Mobile({ link = '', shareDescription = '', shareTitle = '', videoData }
           </Link>
         )}
         <span className=" flex flex-col">
-          <ActionItem
-            title="Repost the video!"
-            onClick={() => {
-              generateDeepLink({
-                action: 'repost',
-                contentType: 'video',
-                description: ``,
-                title: ``,
-                previewImage: null,
-                fromUserName: null,
-                pathName: PATH_NAME.video(videoData.video?.slug),
-                utmCampaign: 'share',
-                utmMedium: 'web',
-                utmSource: window.location.hostname,
-                community: videoData.community.share_string,
-                loop: videoData.loop.share_string,
-              })
-                .then((generatedLink) => {
-                  openGeneratedLink(generatedLink)
+          {embed ? (
+            <DownloadDialog title="Get the Genuin app" subtitle="Get the app to spark the video.">
+              <ActionItem title="Repost the video!">
+                <Image src={icRepost} height={32} width={32} alt="repost" />
+              </ActionItem>
+            </DownloadDialog>
+          ) : (
+            <ActionItem
+              title="Repost the video!"
+              onClick={() => {
+                generateDeepLink({
+                  action: 'repost',
+                  contentType: 'video',
+                  description: ``,
+                  title: ``,
+                  previewImage: null,
+                  fromUserName: null,
+                  pathName: PATH_NAME.video(videoData.video?.slug),
+                  utmCampaign: 'share',
+                  utmMedium: 'web',
+                  utmSource: window.location.hostname,
+                  community: videoData.community.share_string,
+                  loop: videoData.loop.share_string,
                 })
-                .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
-            }}>
-            <Image src={icRepost} height={32} width={32} alt="repost" />
-          </ActionItem>
+                  .then((generatedLink) => {
+                    openGeneratedLink(generatedLink)
+                  })
+                  .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
+              }}>
+              <Image src={icRepost} height={32} width={32} alt="repost" />
+            </ActionItem>
+          )}
           <ActionItem
             title="Give spark!"
-            onClick={(e) => {
-              // const url = {
-              //   pathname: PATH_NAME.video(videoData.video.slug),
-              //   query: {
-              //     community: videoData.community.share_string,
-              //     loop: videoData.loop.share_string,
-              //     utm_source: 'app_web',
-              //   },
-              // }
-              // const shareUrl = format(url)
-              // void window.navigator.share({
-              //   text: videoData.video?.description ?? '',
-              //   title: 'Share this video',
-              //   url: shareUrl,
-              // })
-              // e.stopPropagation()
-              generateDeepLink({
-                action: 'spark',
-                contentType: 'video',
-                description: ``,
-                title: ``,
-                previewImage: null,
-                fromUserName: null,
-                pathName: PATH_NAME.video(videoData.video?.slug),
-                utmCampaign: 'share',
-                utmMedium: 'web',
-                utmSource: window.location.hostname,
-                community: videoData.community.share_string,
-                loop: videoData.loop.share_string,
-              })
-                .then((generatedLink) => {
-                  openGeneratedLink(generatedLink)
-                })
-                .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
-            }}>
-            <Image src={icSpark} height={32} width={32} alt="spark" />
-            <p className="flex justify-center text-body-1-demi text-monochrome-white">
-              {videoData?.video?.no_of_sparks === null ? 0 : abbreviateNumber(videoData?.video?.no_of_sparks ?? 0)}
-            </p>
+            onClick={
+              embed
+                ? user
+                  ? async () => {
+                      await videoSpark(videoData.video?.id ?? '', 2, !isSparked)
+                      setIsSparked((prevIsSparked) => !prevIsSparked)
+                      setSparkCount((prevCount) => (isSparked ? prevCount - 1 : prevCount + 1))
+                    }
+                  : () => {
+                      openModal({
+                        title: 'Get the Genuin app',
+                        subtitle: <>Get the app to spark the video.</>,
+                      })
+                    }
+                : (e) => {
+                    // const url = {
+                    //   pathname: PATH_NAME.video(videoData.video.slug),
+                    //   query: {
+                    //     community: videoData.community.share_string,
+                    //     loop: videoData.loop.share_string,
+                    //     utm_source: 'app_web',
+                    //   },
+                    // }
+                    // const shareUrl = format(url)
+                    // void window.navigator.share({
+                    //   text: videoData.video?.description ?? '',
+                    //   title: 'Share this video',
+                    //   url: shareUrl,
+                    // })
+                    // e.stopPropagation()
+                    generateDeepLink({
+                      action: 'spark',
+                      contentType: 'video',
+                      description: ``,
+                      title: ``,
+                      previewImage: null,
+                      fromUserName: null,
+                      pathName: PATH_NAME.video(videoData.video?.slug),
+                      utmCampaign: 'share',
+                      utmMedium: 'web',
+                      utmSource: window.location.hostname,
+                      community: videoData.community.share_string,
+                      loop: videoData.loop.share_string,
+                    })
+                      .then((generatedLink) => {
+                        openGeneratedLink(generatedLink)
+                      })
+                      .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
+                  }
+            }>
+            <Image src={isSparked ? icSparkTrue : icSpark} height={32} width={32} alt="spark" />
+            <p className="flex justify-center text-body-1-demi text-monochrome-white">{abbreviateNumber(sparkCount)}</p>
           </ActionItem>
         </span>
         <ActionItem
@@ -174,9 +198,11 @@ function Mobile({ link = '', shareDescription = '', shareTitle = '', videoData }
           }}>
           <Image src={icShare} alt="share" height={32} width={32} />
         </ActionItem>
-        <ActionItem title="more options!">
-          <Image src={ic3Dot} alt="more options" height={32} width={32} />
-        </ActionItem>
+        <DownloadDialog title="Get the Genuin app" subtitle="Get the app to report the video.">
+          <ActionItem title="more options!">
+            <Image src={ic3Dot} alt="more options" height={32} width={32} />
+          </ActionItem>
+        </DownloadDialog>
       </div>
     )
   }
@@ -225,9 +251,9 @@ function Desktop({ link = '', shareDescription = '', shareTitle = '', videoData 
                   setSparkCount((prevCount) => (isSparked ? prevCount - 1 : prevCount + 1))
                 }
               : () => {
-                  DownloadDialogModal.open({
+                  openModal({
                     title: 'Get the Genuin app',
-                    subtitle: 'Get the app to spark the video.',
+                    subtitle: <>Get the app to spark the video.</>,
                   })
                 }
           }>
