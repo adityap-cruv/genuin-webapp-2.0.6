@@ -3,6 +3,7 @@ import { ModalShell } from '../modal-shell'
 import { useAuthenticationModalStore } from '../store'
 import { resendVerificationMail } from '@lib/api/auth'
 import { shortenedEmail } from '@lib/utils'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
 
 export const Note = {
   email: Email,
@@ -54,11 +55,12 @@ function Email({ acountExists = false }: { acountExists?: boolean }) {
 
 function MagicLink() {
   const email = useAuthenticationModalStore().formData.email
+  const brandName = useGenuinOptions().config?.name
   return (
     <ModalShell>
       <p className="text-center text-title-1-med">
         We have sent a magic link to <span className="text-title-1-bold">{shortenedEmail(email)}</span>. Click the link
-        to Log in to Ted.
+        to Log in to {brandName}.
       </p>
     </ModalShell>
   )
