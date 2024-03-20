@@ -18,6 +18,8 @@ import { useRef } from 'react'
 import { useInView } from 'framer-motion'
 import { TopStickyBar } from '../../../@desktop/loop/[slug]/top-bar'
 import { LoopVideos } from './loop-videos'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
+import { DownloadDialog } from '@components/common/download-dialog'
 
 let loopDetailsModule: LoopDetailsType
 
@@ -39,6 +41,7 @@ export function MainComponent({ loopDetails }: Props) {
       ? loopDetails.group.group_description + ' | '
       : ''
   } • Join ${loopDetails.group.group_name} to talk about it`
+  const embed = useGenuinOptions().embed
 
   if (loopDetails)
     return (
@@ -105,7 +108,7 @@ export function MainComponent({ loopDetails }: Props) {
             </div>
 
             <div className="flex items-center gap-x-2">
-              {!loopDetails.private && (
+              {!loopDetails.private && !embed && (
                 <Button
                   size="custom"
                   onClick={() => {
@@ -130,6 +133,20 @@ export function MainComponent({ loopDetails }: Props) {
                   }}>
                   <p className="px-4 py-1 text-title-3-demi">Subscribe</p>
                 </Button>
+              )}
+              {!loopDetails.private && embed && (
+                <DownloadDialog
+                  title="Get the Genuin app"
+                  subtitle={
+                    <>
+                      Get the app to subscribe to
+                      <span className="font-bold"> {loopDetails.group.group_name}</span> Loop.
+                    </>
+                  }>
+                  <Button size="custom">
+                    <p className="px-4 py-1 text-title-3-demi">Subscribe</p>
+                  </Button>
+                </DownloadDialog>
               )}
 
               {loopDetails.private && (

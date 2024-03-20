@@ -21,7 +21,7 @@ const RecentCommunities = dynamic(
 
 // TODO: Improve active states on all items.
 export function SideBar() {
-  const { embed } = useGenuinOptions((state) => ({ embed: state.embed }))
+  const { embed, user } = useGenuinOptions((state) => ({ embed: state.embed, user: state.user }))
   const pathName = usePathname()
   const { status } = useSession()
   return (
@@ -47,35 +47,39 @@ export function SideBar() {
             <NotificationIcon isActive={pathName === PATH_NAME.notification()} />
           </Item>
         </Link> */}
-        <Link href={{ pathname: PATH_NAME.profile() }}>
-          <Item title="Profile" isActive={pathName === PATH_NAME.profile()}>
-            <ProfileIcon isActive={pathName === PATH_NAME.profile()} />
-          </Item>
-        </Link>
+        {user && (
+          <Link href={{ pathname: PATH_NAME.profile(user.nickname) }}>
+            <Item title="Profile" isActive={pathName === PATH_NAME.profile()}>
+              <ProfileIcon isActive={pathName === PATH_NAME.profile()} />
+            </Item>
+          </Link>
+        )}
         {/* <Link href={PATH_NAME.search()}>
           <Item title="Search" isActive={pathName === PATH_NAME.search()}>
             <SearchIcon isActive={pathName.includes('search')} />
           </Item>
         </Link> */}
-        <Popover>
-          <PopoverTrigger className="w-full">
-            <Item title="More">
-              <MoreIcon isActive={false} />
-            </Item>
-          </PopoverTrigger>
-          <PopoverContent
-            sideOffset={-6}
-            className=" rounded-2xl p-2 shadow-lg shadow-monochrome-3/40"
-            side="bottom"
-            align="start">
-            <Link href={{ pathname: PATH_NAME.terms }}>
-              <p className="rounded-md p-2 text-title-2-demi hover:bg-monochrome-6/10">Terms and Conditions</p>
-            </Link>
-            <Link href={{ pathname: PATH_NAME.privacy }}>
-              <p className="rounded-md p-2 text-title-2-demi hover:bg-monochrome-6/10">Privacy Policy</p>
-            </Link>
-          </PopoverContent>
-        </Popover>
+        {!embed && (
+          <Popover>
+            <PopoverTrigger className="w-full">
+              <Item title="More">
+                <MoreIcon isActive={false} />
+              </Item>
+            </PopoverTrigger>
+            <PopoverContent
+              sideOffset={-6}
+              className=" rounded-2xl p-2 shadow-lg shadow-monochrome-3/40"
+              side="bottom"
+              align="start">
+              <Link href={{ pathname: PATH_NAME.terms }}>
+                <p className="rounded-md p-2 text-title-2-demi hover:bg-monochrome-6/10">Terms and Conditions</p>
+              </Link>
+              <Link href={{ pathname: PATH_NAME.privacy }}>
+                <p className="rounded-md p-2 text-title-2-demi hover:bg-monochrome-6/10">Privacy Policy</p>
+              </Link>
+            </PopoverContent>
+          </Popover>
+        )}
         {status === 'unauthenticated' && embed && (
           <Button
             onClick={() => {

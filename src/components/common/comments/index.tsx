@@ -5,18 +5,19 @@ import { type CommentListType, type CommentType } from '@lib/schemas/loop/commen
 import { CommentItem } from './comment-item'
 import Image from 'next/image'
 import icComment from '@icons/icCommentShallow.svg'
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 
 export const Comments = {
   withApi: WithApi,
   withoutApi: WithoutApi,
 }
 
-function WithApi({ videoId }: { videoId: string }) {
+function WithApi({ videoId, comments, setComments }: any) {
   const { isLoading, data, isError, isFetchingNextPage, fetchNextPage } = getLoopVideoComments(videoId)
-  const comments = data?.pages.flatMap((item) => {
-    return item.comments
-  })
+
+  useEffect(() => {
+    setComments(data?.pages.flatMap((item) => item.comments))
+  }, [data])
 
   if (isLoading) {
     return <Loader size="md" />
