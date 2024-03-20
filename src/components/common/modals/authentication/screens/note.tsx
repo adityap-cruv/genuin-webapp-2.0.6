@@ -11,6 +11,24 @@ export const Note = {
 function Email({ acountExists = false }: { acountExists?: boolean }) {
   const email = useAuthenticationModalStore().formData.email
   const [error, setError] = useState('')
+  const [emailSentText, setEmailSentText] = useState('')
+
+  async function resendMail() {
+    if (email)
+      await resendVerificationMail(email, 12)
+        .then((res) => {
+          if (res.code === 200) {
+            setEmailSentText('Email has been sent sucessfully')
+          } else if (res.code === 5239) {
+            setError('Email has already been verified')
+          } else {
+            throw new Error()
+          }
+        })
+        .catch((e) => {
+          setError('Something went wrong.Please try again.')
+        })
+  }
 
   return (
     <ModalShell>
@@ -21,21 +39,13 @@ function Email({ acountExists = false }: { acountExists?: boolean }) {
       </p>
       <p className="text-title-3-demi">
         Not seeing the email?{' '}
-        <span
-          onClick={async () => {
-            if (email)
-              await resendVerificationMail(email, 12)
-                .then((res) => {
-                  // if (res)
-                })
-                .catch((e) => {
-                  setError('Something went wrong.Please try again.')
-                })
-          }}
-          className="cursor-pointer text-primary">
+        <span onClick={resendMail} className="cursor-pointer text-primary">
           Resend
         </span>
       </p>
+      {emailSentText && (
+        <p className="flex items-center justify-center text-title-3-med text-supplementary-green">{emailSentText}</p>
+      )}
       {error && <p className="flex items-center justify-center text-title-3-med text-supplementary-red">{error}</p>}
     </ModalShell>
   )

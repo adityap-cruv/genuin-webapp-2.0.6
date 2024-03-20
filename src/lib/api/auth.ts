@@ -198,7 +198,11 @@ export async function validateUsername(nickname: string) {
  * @param actionMetadata
  * @returns
  */
-export async function resendVerificationMail(email: string, emailType: number, actionMetadata?: ActionMetadataType) {
+export async function resendVerificationMail(
+  email: string,
+  emailType: number,
+  actionMetadata?: ActionMetadataType
+): Promise<{ code: number }> {
   return await axiosInstance
     .post('api/v3/resend_email_verification', {
       email: encryptText(email, false),
@@ -208,11 +212,11 @@ export async function resendVerificationMail(email: string, emailType: number, a
       action_meta_data: actionMetadata,
     })
     .then((res) => {
-      return true
+      return { code: res.status }
     })
     .catch((e) => {
       console.log('::Error in resend api::', e)
-      throw new Error('Something went wrong')
+      return { code: Number(e.response.data.code) }
     })
 }
 
