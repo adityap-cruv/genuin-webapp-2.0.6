@@ -85,7 +85,7 @@ export async function signup({
       }
     )
     .then((res) => {
-      setAuthTokenInAxiosInstance()
+      setAuthTokenInAxiosInstance(res.headers['x-auth-token'])
       return { code: 200, data: res.data.data, accessToken: res.headers['x-auth-token'] }
     })
     .catch((e) => {
