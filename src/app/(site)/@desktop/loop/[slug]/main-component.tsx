@@ -14,10 +14,10 @@ import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { ListItem } from '@components/common/list-item'
 import { LoopVideos } from './loop-videos'
-import { DownloadDialog } from '@components/common/download-dialog'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
+import { openModal } from '@lib/utils'
 
 interface Props {
   loopDetails: LoopDetailsType
@@ -85,37 +85,43 @@ export function MainComponent({ loopDetails }: Props) {
             </div>
             <span className="my-2 flex items-center gap-x-3">
               {!loopDetails.private && (
-                <DownloadDialog
-                  title="Get the Genuin app"
-                  subtitle={
-                    <>
-                      Get the app to subscribe to<span className="font-bold"> {loopDetails.group.group_name}</span>{' '}
-                      Loop.
-                    </>
-                  }
-                  asChild>
-                  <Button size="custom">
-                    <p className="px-4 py-1 text-title-3-demi">Subscribe</p>
-                  </Button>
-                </DownloadDialog>
+                <Button
+                  size="custom"
+                  onClick={() => {
+                    openModal({
+                      title: 'Get the Genuin app',
+                      subtitle: (
+                        <>
+                          Get the app to subscribe to
+                          <span className="font-bold"> {loopDetails.group.group_name}</span> Loop.
+                        </>
+                      ),
+                    })
+                  }}>
+                  <p className="px-4 py-1 text-title-3-demi">Subscribe</p>
+                </Button>
               )}
 
               {loopDetails.private && (
-                <DownloadDialog
-                  title="Get the Genuin app"
-                  subtitle={
-                    <>
-                      Get the app to Join as collaborator to
-                      <span className="font-bold"> {loopDetails.group.group_name}</span> Loop.
-                    </>
-                  }
-                  asChild>
-                  <Button size="custom" variant="outline" className="border border-primary">
-                    <p className="px-4 py-1 text-title-3-bold text-primary" style={{ fontSize: '15px' }}>
-                      Join as collaborator
-                    </p>
-                  </Button>
-                </DownloadDialog>
+                <Button
+                  size="custom"
+                  variant="outline"
+                  className="border border-primary"
+                  onClick={() => {
+                    openModal({
+                      title: 'Get the Genuin app',
+                      subtitle: (
+                        <>
+                          Get the app to Join as collaborator to
+                          <span className="font-bold"> {loopDetails.group.group_name}</span> Loop.
+                        </>
+                      ),
+                    })
+                  }}>
+                  <p className="px-4 py-1 text-title-3-bold text-primary" style={{ fontSize: '15px' }}>
+                    Join as collaborator
+                  </p>
+                </Button>
               )}
 
               {/* Hidden by requirement. */}

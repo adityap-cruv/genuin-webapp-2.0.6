@@ -1,4 +1,4 @@
-import { abbreviateNumber, checkAndAppendHttps, generateDeepLink, openGeneratedLink } from '@lib/utils'
+import { abbreviateNumber, checkAndAppendHttps, generateDeepLink, openGeneratedLink, openModal } from '@lib/utils'
 import icShare from '@icons/player-controls/icShare.svg'
 import icComment from '@icons/player-controls/icComment.svg'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
@@ -18,7 +18,6 @@ import { format } from 'url'
 import { analyticsService } from '../../../../services/analytics_service'
 import { videoSpark } from '@lib/api/video'
 import { useState } from 'react'
-import { DownloadDialogModal } from '@components/common/modals/download-app'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 
 interface ActionsProps {
@@ -225,9 +224,9 @@ function Desktop({ link = '', shareDescription = '', shareTitle = '', videoData 
                   setSparkCount((prevCount) => (isSparked ? prevCount - 1 : prevCount + 1))
                 }
               : () => {
-                  DownloadDialogModal.open({
+                  openModal({
                     title: 'Get the Genuin app',
-                    subtitle: 'Get the app to spark the video.',
+                    subtitle: <>Get the app to spark the video.</>,
                   })
                 }
           }>
