@@ -40,6 +40,7 @@ const LoopInfoSchema = z.object({
   profile_image: z.string().url().nullish(),
   discoverable: z.boolean().optional(), // todo remove it from api.
   preview_image: z.string().url().nullish(),
+  id: z.string(),
 })
 
 const CommunityInfoSchema = z.object({
@@ -49,6 +50,7 @@ const CommunityInfoSchema = z.object({
   name: z.string().optional(),
   slug: z.string(),
   private: z.boolean(),
+  id: z.string(),
 })
 
 const VideoDataSchema = z.object({

@@ -7,20 +7,25 @@ import { GenuinOptionsProvider } from '@components/providers/genuin-options-prov
 import { getEmbedConfig } from '@lib/api/config'
 import { type ConfigType } from '@lib/stores/genuin-options'
 import { RedirectHandler } from '@components/providers/redirect-handler'
+import { BrandNotFound } from '@components/common/brand-not-found'
+import { SessionProvider } from 'next-auth/react'
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const deviceType = cookies().get('device_type')?.value ?? ''
   const os = cookies().get('os')?.value ?? ''
   const browserType = cookies().get('browser_type')?.value ?? ''
-  const configParams = JSON.parse(cookies().get('config_params')?.value ?? '')
+  const configParamsStr = cookies().get('config_params')?.value ?? ''
+  let configParams = null
+  if (configParamsStr) configParams = JSON.parse(configParamsStr)
+
   let config: ConfigType | undefined
+  let error = false
 
   if (configParams) {
     try {
       config = await getEmbedConfig(configParams)
     } catch (e) {
-      console.log('error', e)
-      // notFound()
+      error = true
     }
   }
 
@@ -30,15 +35,22 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link rel="icon" type="image/x-icon" href="/favicon.svg" />
         <link rel="mask-icon" href="/favicon.svg" />
         <meta rel="x-brand-id" content={config?.subdomain} />
+        {/* <script src="https://www.google.com/recaptcha/enterprise.js?render=6LeQm4gpAAAAAC2o51SQj-ak7ojnfOlxyDiR9E7p"></script> */}
       </head>
-      <body className="index-page-background absolute inset-0 min-h-full min-w-full text-new-off-black">
-        <RedirectHandler config={config} shouldRedirect={Object.hasOwn(configParams, 'subdomain')}>
-          <ThirdPartyScriptProvider>
-            <GenuinOptionsProvider browserType={browserType} deviceType={deviceType} os={os} config={config}>
-              <ReactQueryProvider>{children}</ReactQueryProvider>
-            </GenuinOptionsProvider>
-          </ThirdPartyScriptProvider>
-        </RedirectHandler>
+      <body className="index-page-background !absolute inset-0 min-h-full min-w-full text-new-off-black">
+        {error ? (
+          <BrandNotFound />
+        ) : (
+          <RedirectHandler config={config} shouldRedirect={Object.hasOwn(configParams ?? {}, 'subdomain')}>
+            <ThirdPartyScriptProvider>
+              <SessionProvider>
+                <GenuinOptionsProvider browserType={browserType} deviceType={deviceType} os={os} config={config}>
+                  <ReactQueryProvider>{children}</ReactQueryProvider>
+                </GenuinOptionsProvider>
+              </SessionProvider>
+            </ThirdPartyScriptProvider>
+          </RedirectHandler>
+        )}
       </body>
     </html>
   )

@@ -19,7 +19,7 @@ export function NavBar() {
           <Link href={PATH_NAME.build()}>
             <GenuinIcon.logo className="fill-new-off-black" />
           </Link>
-          <div className="flex w-1/4 items-center justify-between">
+          <div className="flex w-2/5 items-center justify-between">
             <Link href={PATH_NAME.build()}>
               <p
                 className={`pr-4 text-new-para-2 ${
@@ -53,6 +53,15 @@ export function NavBar() {
                 } transition-all`}>
                 {' '}
                 Pricing
+              </p>
+            </Link>
+            <Link href={PATH_NAME.discover()}>
+              <p
+                className={`pr-4 text-new-para-2 ${
+                  pathname === '/discover' ? 'font-bold text-monochrome-black' : 'text-monochrome-3'
+                } transition-all `}>
+                {' '}
+                Discover
               </p>
             </Link>
           </div>
@@ -110,6 +119,9 @@ export function NavBar() {
                     </Link>
                     <Link href={PATH_NAME.pricing()}>
                       <h3 className="text-new-h3-mobile font-semibold">Pricing</h3>
+                    </Link>
+                    <Link href={PATH_NAME.discover()}>
+                      <h3 className="text-new-h3-mobile font-semibold">Discover</h3>
                     </Link>
                     <Link href={HIRING_LINK}>
                       <h3 className="text-new-h3-mobile font-semibold">Careers</h3>

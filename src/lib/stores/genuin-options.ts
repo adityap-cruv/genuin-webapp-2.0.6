@@ -36,6 +36,19 @@ export type ConfigType = {
   subdomain: string
 } | null
 
+type User = {
+  bio?: string
+  email?: string | null
+  isAvatar: boolean
+  name?: string | null
+  nickname: string
+  isEmailVerified: boolean
+  isPasswordSet: boolean
+  image?: string | null
+  accessToken: string
+  id?: string
+}
+
 type StateType = {
   /**
    * Set true if you embed needs to be true.
@@ -71,6 +84,7 @@ type StateType = {
   userHasFocus: boolean
   parentUrl: string
   config: ConfigType
+  user?: User
 }
 
 type ActionsType = {

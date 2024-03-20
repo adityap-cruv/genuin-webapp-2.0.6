@@ -403,7 +403,7 @@ function LoopVideos({ userId, loop, community }: LoopVideosProps) {
                     {abbreviateNumber(video.no_of_sparks) ?? 0}
                   </p>
                 </div>
-                <div className="rounded absolute inset-0 hidden h-full w-full items-center justify-center bg-monochrome-black/40 group-hover/vidcard:flex">
+                <div className="absolute inset-0 hidden h-full w-full items-center justify-center rounded bg-monochrome-black/40 group-hover/vidcard:flex">
                   <Image src={icPlay} alt="" />
                 </div>
               </div>

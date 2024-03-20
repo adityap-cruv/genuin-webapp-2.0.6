@@ -4,6 +4,20 @@ import { type ConfigType, useGenuinOptions } from '@lib/stores/genuin-options'
 import { getSizeBoxes } from '@lib/utils/common/size-box'
 import { useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
+import { useLocalStorage } from '@lib/stores/local-storage'
+import FingerpringJS from '@fingerprintjs/fingerprintjs'
+import { useSession } from 'next-auth/react'
+import {} from '@components/common/modals/download-app'
+import { axiosInstance, setAuthTokenInAxiosInstance } from '@lib/api/instance'
+import { encryptText, parseUserAgent } from '@lib/utils'
+import dynamic from 'next/dynamic'
+
+const AuthenticationModal = dynamic(
+  async () => await import('@components/common/modals/authentication').then((comp) => comp.AuthenticationModal.ui)
+)
+const DownloadDialogModal = dynamic(
+  async () => await import('@components/common/modals/download-app').then((comp) => comp.DownloadDialogModal.ui)
+)
 
 type Props = {
   children: React.ReactNode
@@ -14,10 +28,15 @@ type Props = {
 }
 
 export function GenuinOptionsProvider({ children, deviceType, os, browserType, config }: Props) {
+  const { data: sessionData, status: sessionStatus } = useSession()
   const { setInitialData, isLoading } = useGenuinOptions((state) => ({
     setInitialData: state.setData,
     isLoading: state.isLoading,
   }))
+  const setDeviceId = useLocalStorage().setDeviceId
+  const visitorAdded = useLocalStorage().visitorAdded
+  const setVisitor = useLocalStorage().setVisitor
+
   const searchParams = useSearchParams()
 
   const hideNavbar = searchParams.get('hide_navbar') === '1'
@@ -31,6 +50,16 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
   function getBox() {
     return getSizeBoxes(isMobile, !hideNavbar)
   }
+  useEffect(() => {
+    console.log(sessionData)
+    if (sessionStatus === 'authenticated') {
+      setAuthTokenInAxiosInstance(sessionData.user.accessToken)
+      setInitialData({ user: sessionData.user })
+    } else {
+      setInitialData({ user: undefined })
+      setAuthTokenInAxiosInstance(undefined)
+    }
+  }, [sessionStatus])
 
   function init() {
     const isIframe = window !== window.parent
@@ -66,6 +95,17 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
 
   useEffect(() => {
     init()
+    const fpPromise = FingerpringJS.load()
+    void (async () => {
+      const fp = await fpPromise
+      const result = await fp.get()
+      if (!visitorAdded) {
+        // Call API for visitor registration
+        setDeviceId(result.visitorId)
+        setVisitor(true)
+        await saveVisitor(result.visitorId, config?.brand_id, window.navigator.userAgent)
+      }
+    })()
 
     window.addEventListener('focus', handleFocus)
     window.addEventListener('blur', handleBlur)
@@ -78,6 +118,30 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
   }, [])
 
   if (isLoading) return <SplashScreen />
-  return children
-  // return null
+  return (
+    <>
+      {children}
+      {!!config && <AuthenticationModal />}
+      {!config && <DownloadDialogModal />}
+    </>
+  )
+}
+async function saveVisitor(visitorId: string, brandId: string | undefined, userAgent: string) {
+  const userInfo = parseUserAgent(userAgent)
+  return await axiosInstance
+    .post('/api/v3/guestusers/visit', {
+      device_id: encryptText(visitorId || '', true),
+      brand_id: brandId,
+      meta_data: {
+        ...userInfo,
+      },
+    })
+    .then((res) => {
+      if (res.data.code === 200) return true
+      else if (res.data.code === '5073') return false
+    })
+    .catch((e) => {
+      console.log('::ERROR in saving visitor api::', e)
+      return false
+    })
 }

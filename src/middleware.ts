@@ -1,8 +1,12 @@
+import NextAuth from 'next-auth'
 import type { NextRequest } from 'next/server'
 import { NextResponse, userAgent } from 'next/server'
+import { authConfig } from '../auth.config'
+
+export default NextAuth(authConfig).auth
 
 export async function middleware(request: NextRequest) {
-  const STATIC_PATHNAMES = ['/', '/manage', '/market', '/pricing', '/privacy', '/terms', '/verify-email']
+  const STATIC_PATHNAMES = ['/', '/manage', '/market', '/pricing', '/privacy', '/terms', '/discover']
   const parsedUA = userAgent(request)
   const deviceType = parsedUA.device.type
   if (deviceType) request.cookies.set('device_type', deviceType)
@@ -12,7 +16,6 @@ export async function middleware(request: NextRequest) {
 
   request.headers.set('x-search-params', request.nextUrl.search)
   request.headers.set('x-path-params', request.nextUrl.pathname)
-
   // console.log('config params::', getConfig('ankpal.com'))
 
   const browserType = parsedUA.browser.name
@@ -26,7 +29,7 @@ export async function middleware(request: NextRequest) {
     // eslint-disable-next-line no-prototype-builtins
     if (config && STATIC_PATHNAMES.includes(urlObj.pathname)) {
       urlObj.pathname = '/home'
-      return NextResponse.redirect(urlObj)
+      return NextResponse.redirect(urlObj.href)
     }
   }
 
@@ -48,7 +51,7 @@ export const config = {
 
 function getConfig(host: string) {
   const arr = host.split('.')
-  if (['app', 'begenuin', 'localhost:4005'].includes(arr[0])) return ''
+  if (['app', 'begenuin', 'localhost:4005', 'www'].includes(arr[0])) return ''
 
   if (!host.includes('begenuin')) return { domain: host }
 

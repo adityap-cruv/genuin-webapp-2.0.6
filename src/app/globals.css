@@ -202,8 +202,8 @@
   .show-scrollbar::-webkit-scrollbar {
     -webkit-appearance: initial;
     appearance: initial;
-    height: 10px;
-    width: 10px;
+    height: 8px;
+    width: 8px;
   }
 
   /*  TODO: find better solution for this */
@@ -213,7 +213,7 @@
 
   ::-webkit-scrollbar {
     width: 8px;
-    height: 50px;
+    height: 8px;
   }
 
   ::-webkit-scrollbar-thumb {
@@ -231,4 +231,19 @@
 
 .no-scroll {
   overflow: hidden;
+}
+
+.cropper-view-box {
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.cropper-face {
+  border-radius: 50%;
+}
+
+/* As we are utilizing onetrust banner for cookie settings. onetrust's banner's design is clashing with our modal so forcefully changing there style
+ */
+#onetrust-banner-sdk {
+  z-index: 40 !important;
 }

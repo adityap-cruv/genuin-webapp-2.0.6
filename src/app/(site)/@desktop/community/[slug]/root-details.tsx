@@ -7,6 +7,7 @@ import { TopStickyBar } from './top-bar'
 import { Button } from '@components/ui/button'
 import Image from 'next/image'
 import icShare from '@icons/icShareBlue.svg'
+import icMore from '@icons/icMoreBlue.svg'
 import icLock from '@icons/icLock.svg'
 import { useInView } from 'framer-motion'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
@@ -60,21 +61,17 @@ export function RootDetails({ communityDetails }: Props) {
         communityProfileImage={communityDetails.info.profile_image}
         communtiyHandle={communityDetails.info.handle}
       />
-      <main className="hide-scrollbar absolute inset-0 h-full w-full overflow-auto px-6">
-        <div ref={detailsDivRef} className="pt-6">
-          <CustomAvatar
-            isAvatar={false}
-            imageUrl={communityDetails.info.profile_image}
-            fallbackString={communityDetails.info.name}
-            className="h-20 w-20 text-new-h2 font-medium"
-          />
-          <span className="flex items-center gap-x-2 py-2">
-            <p className="text-title-1-bold">{communityDetails.info.name}</p>
-            <p className="text-body-1-med text-secondary">@{communityDetails.info.handle}</p>
-          </span>
-          <p className="mb-2 line-clamp-2 w-1/2 break-all text-body-1-med">{communityDetails.info.description}</p>
-          <Stats communityDetails={communityDetails} />
-          <span className="my-2 flex items-center gap-x-2">
+      <main className="hide-scrollbar absolute inset-0 h-full w-full overflow-auto">
+        <div>
+          <div className="-px-6 relative h-56 w-full rounded-lg bg-monochrome-9">
+            <CustomAvatar
+              isAvatar={false}
+              imageUrl={communityDetails.info.profile_image}
+              fallbackString={communityDetails.info.name}
+              className="absolute -bottom-14 left-6 h-20 w-20 border-2 border-monochrome-white text-new-h2 font-medium"
+            />
+          </div>
+          <div ref={detailsDivRef} className="my-3 flex items-center justify-end gap-x-2">
             <DownloadDialog
               title="Get the Genuin app"
               subtitle={
@@ -100,6 +97,15 @@ export function RootDetails({ communityDetails }: Props) {
               }>
               <Image src={icShare} alt="share" className="h-7 w-7" />
             </Button>
+            {/* <Button variant="outline" size="custom" className="border border-primary p-1">
+              <Image src={icMore} alt="share" className="h-6 w-6" />
+            </Button> */}
+          </div>
+        </div>
+        <div>
+          <span className="flex items-center gap-x-2 px-6 py-2">
+            <p className="text-title-1-bold">{communityDetails.info.name}</p>
+            <p className="text-body-1-med text-secondary">@{communityDetails.info.handle}</p>
           </span>
         </div>
 
@@ -119,8 +125,12 @@ export function RootDetails({ communityDetails }: Props) {
             </div>
           </div>
         ) : (
-          <div className="grid w-full grid-cols-2 gap-4 overflow-hidden" style={{ height: 'calc(100% - 56px)' }}>
+          <div className="grid w-full grid-cols-2 gap-4 overflow-hidden px-6" style={{ height: 'calc(100% - 56px)' }}>
             <div className="snap-y snap-proximity overflow-auto overflow-x-hidden scroll-smooth">
+              {communityDetails.info.description && (
+                <p className="mb-2 line-clamp-2 break-all text-body-1-med">{communityDetails.info.description}</p>
+              )}
+              <Stats communityDetails={communityDetails} />
               <CommunityDetailsTabs />
             </div>
 
@@ -140,7 +150,7 @@ export function RootDetails({ communityDetails }: Props) {
 
 function CommunityDetailsTabs() {
   return (
-    <Tabs defaultValue="Loops" style={{ height: 'calc(100% - 42px)' }}>
+    <Tabs defaultValue="Loops" style={{ height: 'calc(100% - 114px)' }}>
       <TabsList className="flex max-w-min">
         <TabsTrigger value="Loops">
           <p className="text-title-3-bold">Loops</p>
@@ -163,8 +173,8 @@ function CommunityDetailsTabs() {
 function Categories() {
   if (communityDetailsModule.info.categories.length !== 0)
     return (
-      <div>
-        <p className="my-2 mt-4 text-title-3-bold">Categories</p>
+      <div className="mb-4">
+        <p className="my-2 text-title-3-bold">Categories</p>
         <div>
           {communityDetailsModule?.info.categories.map((cat, index) => {
             return (
@@ -182,8 +192,8 @@ function Links() {
   const links = communityDetailsModule?.info.links
   if (links?.instagram_url ?? links?.linkedin_url ?? links?.twitter_url ?? links?.social_web_url)
     return (
-      <div>
-        <p className="my-2 mt-4 text-title-3-bold">Links</p>
+      <div className="mb-4">
+        <p className="my-2 text-title-3-bold">Links</p>
         <div className="flex">
           {links?.instagram_url && (
             <div className="mx-1 flex items-center rounded-md bg-monochrome-9 p-1">
@@ -224,8 +234,8 @@ function Links() {
 function Guidelines() {
   if (communityDetailsModule.guidelines)
     return (
-      <div>
-        <p className="my-2 mt-4 text-title-3-bold">Guidelines</p>
+      <div className="mb-4">
+        <p className="my-2 text-title-3-bold">Guidelines</p>
         <>
           <Accordion type="single" collapsible>
             {communityDetailsModule?.guidelines.map((guideline: any, index: any) => {
@@ -253,8 +263,8 @@ function Guidelines() {
 function Leaders() {
   if (communityDetailsModule.leaders.length !== 0)
     return (
-      <div>
-        <p className="my-2 mt-4 text-title-3-bold">Leader</p>
+      <div className="mb-4">
+        <p className="my-2 text-title-3-bold">Leader</p>
         {communityDetailsModule?.leaders.map((moderator, index) => {
           return (
             <Link key={index} href={{ pathname: PATH_NAME.profile(moderator.nickname) }}>

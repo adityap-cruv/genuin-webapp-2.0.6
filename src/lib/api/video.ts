@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { axiosInstance } from './instance'
 
 export async function fetchVideoDetails(slug: string) {
   return await axios
@@ -29,5 +30,76 @@ export async function fetchVideoDetailsByShareString(shareStringList: Array<{ sh
     })
     .catch((e) => {
       throw new Error('Something went wrong in video details api.')
+    })
+}
+
+export async function videoSpark(contentId: string, type: number, spark: boolean) {
+  return await axiosInstance
+    .post(
+      '/api/v3/spark',
+      {
+        content_id: contentId,
+        type,
+        spark,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    )
+    .then((res) => {
+      return { code: 200, data: res.data.data }
+    })
+    .catch((e) => {
+      return { code: Number(e.response.data.code), data: undefined, accessToken: undefined }
+    })
+}
+
+export async function joinCommunity(onboardingCommunities: boolean, communities: any, users: any) {
+  return await axiosInstance
+    .post(
+      '/api/v3/community/add_users',
+      {
+        onboarding_communities: onboardingCommunities,
+        communities,
+        users,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    )
+    .then((res) => {
+      return { code: 200, data: res.data.data }
+    })
+    .catch((e) => {
+      return { code: Number(e.response.data.code) }
+    })
+}
+
+export async function createComment(videoId: string, loopId: string, type: number, commentText: string) {
+  return await axiosInstance
+    .post(
+      '/api/v3/comment/create',
+      {
+        conversation_id: videoId,
+        chat_id: loopId,
+        type,
+        comment_text: commentText,
+        comment_data: commentText,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    )
+    .then((res) => {
+      return { code: 200, data: res.data.data }
+    })
+    .catch((e) => {
+      return { code: Number(e.response.data.code) }
     })
 }

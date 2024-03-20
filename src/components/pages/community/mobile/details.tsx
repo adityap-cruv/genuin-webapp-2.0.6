@@ -11,6 +11,7 @@ import icInstagram from '@icons/icInstagramBlack.svg'
 import icLinkedIn from '@icons/icLinkedIn.svg'
 import icLink from '@icons/icLinkBlack.svg'
 import icTwitter from '@icons/icTwitterBlack.svg'
+import icMore from '@icons/icMoreBlue.svg'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
@@ -48,15 +49,17 @@ export function ProfileDetails({ communityDetails }: Props) {
       <div
         className="hide-scrollbar absolute inset-0 mt-navbar w-full overflow-auto"
         style={{ height: 'calc(100% - 74px)' }}>
+        <div className="relative h-20 bg-monochrome-9">
+          <CustomAvatar
+            imageUrl={communityDetailsModule?.info.profile_image}
+            fallbackString={communityDetailsModule?.info.name}
+            isAvatar={false}
+            className="absolute -bottom-14 left-4 h-20 w-20 border-2 border-monochrome-white bg-red-50"
+          />
+        </div>
         <div className="px-4 py-2 pt-4">
-          <div className="flex justify-between">
-            <CustomAvatar
-              imageUrl={communityDetailsModule?.info.profile_image}
-              fallbackString={communityDetailsModule?.info.name}
-              isAvatar={false}
-              className="h-20 w-20 bg-red-50"
-            />
-            <div className="my-2 flex items-center gap-x-2">
+          <div className="flex justify-end">
+            <div className="flex items-center gap-x-2">
               <Button
                 variant="default"
                 size="sm"
@@ -93,10 +96,13 @@ export function ProfileDetails({ communityDetails }: Props) {
                 }>
                 <Image src={icShare} alt="share" />
               </Button>
+              {/* <Button variant="outline" size="custom" className="border border-primary p-1">
+                <Image src={icMore} alt="share" className="h-6 w-6" />
+              </Button> */}
             </div>
           </div>
           <div ref={detailsDivRef}>
-            <p className="my-1 line-clamp-1 break-all text-title-3-bold">{communityDetailsModule?.info.name}</p>
+            <p className="my-1 mt-2 line-clamp-1 break-all text-title-3-bold">{communityDetailsModule?.info.name}</p>
             <p className="my-1 line-clamp-2 break-all text-body-1-demi">{communityDetailsModule?.info.description}</p>
           </div>
           <Stats />

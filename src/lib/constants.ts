@@ -6,3 +6,30 @@ export const MOBILE_DOWNLOAD_APP_LINK = 'https://install.begenuin.com/86sn/cgs'
  * This is hiring link hiring page is hosted on {@link https://careers.begenuin.com | Careers}
  */
 export const HIRING_LINK = 'https://careers.begenuin.com'
+export const URL_TO_APP_STORE = 'https://apps.apple.com/US/app/id1511177838?mt=8'
+export const URL_TO_PLAY_STORE = 'https://play.google.com/store/apps/details?id=com.begenuin.begenuin'
+
+export const SIGNUP_SOURCE = {
+  web_sdk: 1,
+  white_label: 2,
+  web: 3,
+  mobile_app: 4,
+  mobile_sdk: 5,
+  bcc: 6,
+  adreels: 7,
+}
+
+export const LOGIN_SOURCE = {
+  web_sdk: 1,
+  white_label: 2,
+  web: 3,
+  mobile_app: 4,
+  mobile_sdk: 5,
+  bcc: 6,
+  adreels: 7,
+}
+
+export const VERIFICATION_TYPE = {
+  sms: 1,
+  call: 2,
+}

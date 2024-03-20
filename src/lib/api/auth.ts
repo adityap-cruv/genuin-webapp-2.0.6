@@ -1,0 +1,327 @@
+import { encryptText } from '@lib/utils'
+import { axiosInstance, setAuthTokenInAxiosInstance, setTempAuthTokenInAxiosInstance } from './instance'
+import { useLocalStorage } from '@lib/stores/local-storage'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
+import axios from 'axios'
+import { v4 as uuid } from 'uuid'
+
+type RecaptchaActionType = 'LOGIN' | 'SIGNUP'
+
+export type AuthActionType = 'JOIN_COMMUNITY'
+
+type ActionMetadataType = {
+  action?: AuthActionType
+  path: string
+}
+
+type SignupProps = {
+  name?: string
+  email: string
+  isAvatar?: boolean
+  profileImage: string | File
+  deviceId?: string
+  // recaptchaToken: string
+  signupSource: number
+  recaptchaAction: RecaptchaActionType
+  actionMetadata: ActionMetadataType
+}
+
+type LoginViaPhoneType = {
+  phone: string | undefined
+  platform?: string
+  token: string
+  verificationType: number
+  brandId?: number
+  loginSource: any
+}
+
+type LoginViaEmailType = {
+  email: string | undefined
+  deviceId: string
+  brandId?: string
+  password?: string
+  loginSource: any
+  actionMetaData: ActionMetadataType
+}
+
+type OtpProps = {
+  userId: string
+  otp: number
+  token: string
+  loginSource: number
+  brandId?: number
+}
+
+export async function signup({
+  deviceId,
+  email,
+  isAvatar,
+  name,
+  profileImage,
+  recaptchaAction,
+  // recaptchaToken,
+  signupSource,
+  actionMetadata,
+}: SignupProps): Promise<{ code: number; data: any; accessToken?: string }> {
+  return await axiosInstance
+    .post(
+      '/api/v3/signup',
+      {
+        name,
+        email,
+        is_avatar: isAvatar,
+        device_id: encryptText(deviceId ?? '', true),
+        // recaptcha_token: recaptchaToken,
+        recaptcha_action: recaptchaAction,
+        profile_image: profileImage,
+        signup_source: signupSource,
+        brand_id: useGenuinOptions.getState().brandId,
+        action_meta_data: actionMetadata,
+      },
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    )
+    .then((res) => {
+      setAuthTokenInAxiosInstance()
+      return { code: 200, data: res.data.data, accessToken: res.headers['x-auth-token'] }
+    })
+    .catch((e) => {
+      console.log('::error in signup api::', e.response.data)
+      return { code: Number(e.response.data.code), data: undefined, accessToken: undefined }
+    })
+}
+
+export async function verifyEmail(token: string): Promise<{
+  code: number
+  actionMetadata?: ActionMetadataType
+  user?: any
+  /**
+   * 11 -> magic link
+   * 12 -> verify email
+   */
+  emailType: 11 | 12
+  accessToken?: string
+  email?: string
+}> {
+  return await axiosInstance
+    .get('/api/v3/verify_email_token', { params: { token }, baseURL: process.env.NEXT_PUBLIC_INTERNAL_API_URL })
+    .then((res) => {
+      const data = res?.data?.data
+      const user = data?.user
+      Object.assign(user, { accessToken: res.headers['x-auth-token'] })
+      return {
+        code: Number(res?.data?.code),
+        actionMetadata: data?.action_metadata as ActionMetadataType,
+        user,
+        emailType: data?.email_type,
+      }
+    })
+    .catch((e) => {
+      const data = e?.response?.data
+      return {
+        code: Number(data?.code),
+        emailType: data?.data?.email_type,
+        actionMetadata: data?.data?.action_meta_data,
+        email: data?.data?.email,
+      }
+    })
+}
+
+export async function uploadProfileImage(file: File) {
+  try {
+    const getUrlResponse = await axiosInstance.post('/api/v3/users/video/upload/create_upload_url', {
+      contentType: file.type,
+      path: `uploads/profile_images/${file.name}`,
+    })
+    const uploadUrl = getUrlResponse.data.data.uploadURL
+    const uploadResponse = await axiosInstance.put(uploadUrl, file, {
+      headers: {
+        'Content-Type': file.type,
+      },
+    })
+    return uploadResponse.status === 200
+  } catch (e) {
+    console.log('::ERROR IN UPLOAD API::', e)
+    return false
+  }
+}
+
+type UserType = {
+  name?: string | null
+  bio?: string | null
+  nickname: string
+  is_avatar: boolean
+  profile_image: string
+  birthday: string
+  linkedin_id: string
+  insta_id: string
+  twitter_id: string
+  tiktok_id: string
+  platform_guidelines: boolean
+  community_walkthrough: boolean
+  password: string
+}
+
+export async function updateUser(user: Partial<UserType>): Promise<{ status: boolean; user: any }> {
+  return await axiosInstance
+    .patch('/api/v3/users/update_user_profile', { user })
+    .then((res) => {
+      console.log(res.data.data)
+      return { status: res.status === 200, user: res.data.data }
+    })
+    .catch((e) => {
+      console.log('::ERROR in updata user profile::', e)
+      throw new Error('Something went wrong')
+    })
+}
+
+export async function validateUsername(nickname: string) {
+  return await axiosInstance
+    .post('/api/v3/users/validate_nickname', { nickname })
+    .then((res) => {
+      if (res.data.code === 200) return true
+      else if (res.data.code === '5073') return false
+    })
+    .catch((e) => {
+      console.log('::ERROR in validata username::', e)
+      return false
+    })
+}
+
+/**
+ *
+ * @param email
+ * @param emailType  11 -> magic link, 12 -> verify email
+ * @param actionMetadata
+ * @returns
+ */
+export async function resendVerificationMail(email: string, emailType: number, actionMetadata?: ActionMetadataType) {
+  return await axiosInstance
+    .post('api/v3/resend_email_verification', {
+      email: encryptText(email, false),
+      email_type: emailType,
+      device_id: encryptText(useLocalStorage.getState().deviceId, true),
+      brand_id: useGenuinOptions.getState().brandId,
+      action_meta_data: actionMetadata,
+    })
+    .then((res) => {
+      return true
+    })
+    .catch((e) => {
+      console.log('::Error in resend api::', e)
+      throw new Error('Something went wrong')
+    })
+}
+
+export async function loginViaPhone({
+  phone,
+  platform,
+  token,
+  verificationType,
+  brandId,
+  loginSource,
+}: LoginViaPhoneType): Promise<{ code: number; data: any }> {
+  return await axiosInstance
+    .post(
+      '/api/v3/send_otp',
+      {
+        phone: encryptText(phone ?? '', false),
+        platform: 3,
+        token: encryptText(token, true),
+        verification_type: verificationType,
+        brand_id: useGenuinOptions.getState().brandId,
+        login_source: loginSource,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    )
+    .then((res) => {
+      setTempAuthTokenInAxiosInstance(res.headers['x-temp-auth-token'])
+      return { code: 200, data: res.data.data }
+    })
+    .catch((e) => {
+      console.log('::error in sendotp api::', e.response.data.code)
+      return { code: Number(e.response.data.code), data: undefined }
+    })
+}
+
+export async function verifyOtp({
+  userId,
+  otp,
+  token,
+  loginSource,
+  brandId,
+}: OtpProps): Promise<{ code: number; data: any }> {
+  return await axiosInstance
+    .post(
+      '/api/v3/verify_otp',
+      {
+        user_id: userId,
+        otp,
+        token: encryptText(token, true),
+        login_source: loginSource,
+        brand_id: useGenuinOptions.getState().brandId,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    )
+    .then((res) => {
+      setAuthTokenInAxiosInstance(res.headers['x-auth-token'])
+      return { code: 200, data: res.data.data }
+    })
+    .catch((e) => {
+      console.log('::error in verifyotp api::', e.response.data.code)
+      return { code: Number(e.response.data.code), data: undefined }
+    })
+}
+
+export async function loginViaEmail({
+  email,
+  deviceId,
+  brandId,
+  password,
+  loginSource,
+  actionMetaData,
+}: LoginViaEmailType): Promise<{ code: number; data: any }> {
+  return await axiosInstance
+    .post(
+      '/api/v3/login_via_email',
+      {
+        email: encryptText(email ?? '', false),
+        device_id: encryptText(deviceId, true),
+        brand_id: useGenuinOptions.getState().brandId,
+        password,
+        login_source: loginSource,
+        action_meta_data: actionMetaData,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    )
+    .then((res) => {
+      if (password) {
+        const authToken = res.headers['x-auth-token']
+        setAuthTokenInAxiosInstance(authToken)
+        Object.assign(res.data.data, { accessToken: authToken })
+      } else {
+        setTempAuthTokenInAxiosInstance(res.headers['x-temp-auth-token'])
+      }
+
+      return { code: 200, data: res.data.data }
+    })
+    .catch((e) => {
+      console.log('::error in sendotp api::', e.response.data.code)
+      return { code: Number(e.response.data.code), data: e.response.data.data }
+    })
+}

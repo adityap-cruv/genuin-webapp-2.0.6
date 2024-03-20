@@ -1,27 +1,66 @@
-import { NavBar } from '@components/common/nav-bar'
-import { verifyEmail } from '@lib/api/verify-email'
-import Image from 'next/image'
-import imgSuccess from '@images/verify-email/success.svg'
-import imgError from '@images/verify-email/error.svg'
+import { redirect } from 'next/navigation'
+import { ClientComponent } from './client-component'
+import { verifyEmail } from '@lib/api/auth'
+import { headers } from 'next/headers'
+import { checkAndAppendHttps } from '@lib/utils'
 
 export default async function Page({ searchParams }: { searchParams: { token: string } }) {
-  const data = await verifyEmail(searchParams.token)
-  return (
-    <>
-      <NavBar variant="light" isMobile={false} />
-      <section className="h-full w-full bg-monochrome-11">
-        <div className="flex h-full items-center justify-center">
-          <div className="flex max-w-full flex-col items-center justify-center rounded-xl bg-monochrome-white sm:max-w-sm md:max-w-lg">
-            <div className="flex flex-col items-center justify-center px-4 py-12">
-              <Image src={data.error ? imgError : imgSuccess} height={125} width={125} alt="status image." />
-              <p style={{ fontSize: '32px', lineHeight: '48px' }} className="p-4 text-center font-bold">
-                {data.title}
-              </p>
-              <p className="p-4 text-center text-title-3-demi">{data.subtitle}</p>
-            </div>
-          </div>
-        </div>
-      </section>
-    </>
-  )
+  const { code, actionMetadata, user, emailType, email } = await verifyEmail(searchParams.token)
+
+  if (code === 200 && user) {
+    return (
+      <ClientComponent
+        user={user}
+        redirectTo={getRedirectTo({ emailType, error: false, path: actionMetadata?.path, success: true })}
+      />
+    )
+  }
+
+  // If verification link expired.
+  if (code === 1003) {
+    // console.log('flfdlld:::', code, actionMetadata, user, emailType, email)
+    // console.log(
+    //   'redirect to::',
+    //   getRedirectTo({ email, emailType, error: false, path: actionMetadata?.path, success: false })
+    // )
+    redirect(getRedirectTo({ email, emailType, error: false, path: actionMetadata?.path, success: false }))
+  }
+
+  // redirect(getRedirectTo({ emailType, error: true, path: actionMetadata?.path }))
+}
+
+function getRedirectTo({
+  path,
+  error,
+  success,
+  emailType,
+  email,
+}: {
+  path?: string
+  error: boolean
+  success?: boolean
+  emailType: 11 | 12
+  email?: string
+}) {
+  const urlObj = new URL(checkAndAppendHttps((headers().get('host') ?? process.env.HOST_NAME) + (path ?? '/home')))
+  // const urlObj = new URL(('http://' + headers().get('host') ?? process.env.HOST_NAME) + (path ?? '/home'))
+
+  // console.log('::url object before manipulation::', urlObj.href)
+  if (error) {
+    urlObj.searchParams.set('error_in_verification', '1')
+  }
+
+  if (emailType === 11) {
+    urlObj.searchParams.set('magic_link_verification', success ? '1' : '0')
+  }
+
+  if (emailType === 12) {
+    urlObj.searchParams.set('email_verification_status', success ? '1' : '0')
+  }
+  if (!success) {
+    if (emailType) urlObj.searchParams.set('email_type', emailType.toString())
+    if (email) urlObj.searchParams.set('email', email)
+  }
+
+  return urlObj.href
 }
