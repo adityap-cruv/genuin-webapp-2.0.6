@@ -4,9 +4,9 @@ import { useEffect } from 'react'
 import Image from 'next/image'
 import icShare from '@icons/icShareBlue.svg'
 import icQuestion from '@icons/icQuestion.svg'
-import { DownloadDialog } from '@components/common/download-dialog'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
+import { openModal } from '@lib/utils'
 
 type Props = {
   /**
@@ -60,18 +60,20 @@ function Desktop({ defaultOpen = true, isOpen = false, loopName, shareString, co
         <p className="text-title-2-demi">{loopName}</p>
       </span>
       <span className="my-2 flex items-center gap-x-3">
-        <DownloadDialog
-          title="Get the Genuin app"
-          subtitle={
-            <>
-              Get the app to subscribe to<span className="font-bold"> {loopName}</span> Loop.
-            </>
-          }
-          asChild>
-          <Button size="custom">
-            <p className="px-4 py-1 text-title-3-demi">Subscribe</p>
-          </Button>
-        </DownloadDialog>
+        <Button
+          size="custom"
+          onClick={() => {
+            openModal({
+              title: 'Get the Genuin app',
+              subtitle: (
+                <>
+                  Get the app to subscribe to<span className="font-bold"> {loopName}</span> Loop.
+                </>
+              ),
+            })
+          }}>
+          <p className="px-4 py-1 text-title-3-demi">Subscribe</p>
+        </Button>
 
         {/* Hidden by requirement. */}
         {/* <Button size="custom" variant="outline" className="border-primary px-4">
