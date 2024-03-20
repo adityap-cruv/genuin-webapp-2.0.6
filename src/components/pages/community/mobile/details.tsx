@@ -21,6 +21,7 @@ import { CommunityLoopTab } from './community-loop-tab'
 import { useRef } from 'react'
 import { useInView } from 'framer-motion'
 import { TopStickyBar } from '../../../../app/(site)/@desktop/community/[slug]/top-bar'
+import { DownloadDialog } from '@components/common/download-dialog'
 
 let communityDetailsModule: CommunityDetailsType
 
@@ -60,29 +61,44 @@ export function ProfileDetails({ communityDetails }: Props) {
         <div className="px-4 py-2 pt-4">
           <div className="flex justify-end">
             <div className="flex items-center gap-x-2">
-              <Button
-                variant="default"
-                size="sm"
-                onClick={() => {
-                  generateDeepLink({
-                    action: 'join',
-                    contentType: 'community',
-                    description: `Find your people. Find what you love. | Join ${communityDetailsModule?.info.name} to talk about it`,
-                    title: `join ${communityDetailsModule?.info.name}`,
-                    previewImage: null,
-                    fromUserName: null,
-                    pathName: window.location.pathname,
-                    utmCampaign: 'share',
-                    utmMedium: 'web',
-                    utmSource: window.location.hostname,
-                  })
-                    .then((generatedLink) => {
-                      openGeneratedLink(generatedLink)
+              {isEmbed ? (
+                <DownloadDialog
+                  title="Get the Genuin app"
+                  subtitle={
+                    <>
+                      Get the app to join the <br />
+                      <span className="font-bold">@{communityDetailsModule.info.handle}</span> community.
+                    </>
+                  }>
+                  <Button variant="default" size="sm">
+                    <p className="mx-2 text-body-1-bold text-monochrome-white">Join Community</p>
+                  </Button>
+                </DownloadDialog>
+              ) : (
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={() => {
+                    generateDeepLink({
+                      action: 'join',
+                      contentType: 'community',
+                      description: `Find your people. Find what you love. | Join ${communityDetailsModule?.info.name} to talk about it`,
+                      title: `join ${communityDetailsModule?.info.name}`,
+                      previewImage: null,
+                      fromUserName: null,
+                      pathName: window.location.pathname,
+                      utmCampaign: 'share',
+                      utmMedium: 'web',
+                      utmSource: window.location.hostname,
                     })
-                    .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
-                }}>
-                <p className="mx-2 text-body-1-bold text-monochrome-white">Join Community</p>
-              </Button>
+                      .then((generatedLink) => {
+                        openGeneratedLink(generatedLink)
+                      })
+                      .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
+                  }}>
+                  <p className="mx-2 text-body-1-bold text-monochrome-white">Join Community</p>
+                </Button>
+              )}
               <Button
                 variant="outline"
                 outlineColor="genuin-blue"
