@@ -20,4 +20,12 @@ export function setTempAuthTokenInAxiosInstance(token?: string) {
   })
 }
 
+export function removeAllAuthToken() {
+  axiosInstance.interceptors.request.use((config) => {
+    config.headers['x-auth-token'] = undefined
+    config.headers['x-temp-auth-token'] = undefined
+    return config
+  })
+}
+
 // axiosInstance.interceptors.request.use(() => {})

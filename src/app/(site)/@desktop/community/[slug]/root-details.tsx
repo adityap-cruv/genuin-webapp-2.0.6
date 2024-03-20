@@ -1,6 +1,6 @@
 'use client'
 import type { CommunityDetailsType } from '@lib/schemas/community'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { TopStickyBar } from './top-bar'
@@ -25,6 +25,7 @@ import { Toaster } from '@components/ui/toaster'
 import { CommunityLoopTab } from './community-loop-tab'
 import { ListItem } from '@components/common/list-item'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
+import { joinCommunity } from '@lib/api/video'
 
 interface Props {
   communityDetails: CommunityDetailsType
@@ -41,6 +42,8 @@ export function RootDetails({ communityDetails }: Props) {
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
   const { isEmbed, parentUrl } = useGenuinOptions((state) => ({ isEmbed: state.embed, parentUrl: state.parentUrl }))
+  const [isCommunityJoined, setIsCommunityJoined] = useState(false)
+  const user = useGenuinOptions().user
 
   useEffect(() => {
     addCommunity({
@@ -59,6 +62,9 @@ export function RootDetails({ communityDetails }: Props) {
         communityName={communityDetails.info.name}
         communityProfileImage={communityDetails.info.profile_image}
         communtiyHandle={communityDetails.info.handle}
+        communityId={communityDetails.info.id}
+        isCommunityJoined={isCommunityJoined}
+        setIsCommunityJoined={setIsCommunityJoined}
       />
       <main className="hide-scrollbar absolute inset-0 h-full w-full overflow-auto">
         <div>
@@ -73,18 +79,38 @@ export function RootDetails({ communityDetails }: Props) {
           <div ref={detailsDivRef} className="my-3 flex items-center justify-end gap-x-2">
             <Button
               size="custom"
-              onClick={() => {
-                openModal({
-                  title: 'Get the Genuin app',
-                  subtitle: (
-                    <>
-                      Get the app to join the <br />
-                      <span className="font-bold">{communityDetails.info.name}</span> community.
-                    </>
-                  ),
-                })
-              }}>
-              <p className="px-4 py-2 text-body-1-demi">Join Community</p>
+              className={`${isCommunityJoined && 'border border-primary '}`}
+              variant={isCommunityJoined ? 'outline' : 'default'}
+              onClick={
+                user
+                  ? async () => {
+                      !isCommunityJoined &&
+                        (await joinCommunity(
+                          false,
+                          [communityDetails.info.id],
+                          [
+                            {
+                              user_id: user?.id,
+                            },
+                          ]
+                        ))
+                      setIsCommunityJoined((prev) => !prev)
+                    }
+                  : () => {
+                      openModal({
+                        title: 'Get the Genuin app',
+                        subtitle: (
+                          <>
+                            Get the app to join the <br />
+                            <span className="font-bold">{communityDetails.info.name}</span> community.
+                          </>
+                        ),
+                      })
+                    }
+              }>
+              <p className={`px-4 py-1.5 text-body-1-demi ${isCommunityJoined && 'text-primary'}`}>
+                {isCommunityJoined ? 'Joined' : 'Join Community'}
+              </p>
             </Button>
             <Button
               variant="outline"

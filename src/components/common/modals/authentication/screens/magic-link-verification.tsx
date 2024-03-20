@@ -5,8 +5,9 @@ import { useAuthenticationModalStore } from '../store'
 import imgError from '@images/verify-email/error.svg'
 import { resendVerificationMail } from '@lib/api/auth'
 import { usePathname, useSearchParams } from 'next/navigation'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { deleteSearchParam } from '@lib/utils'
+import { Loader } from '@components/ui/loader'
 
 export const MagicLinkVerification = {
   success: Success,
@@ -43,9 +44,49 @@ export function Success() {
 // TODO: Create a deleteSearchParam function such that it accepts array of string and delete that list search params from the url.
 export function Failure() {
   const [error, setError] = useState('')
-  const setStep = useAuthenticationModalStore().setStep
+  const { setStep, setFormData } = useAuthenticationModalStore()
   const pathName = usePathname()
   const searchParams = useSearchParams()
+  const [isLoading, setIsLoading] = useState(false)
+
+  useEffect(() => {
+    setFormData({ email: searchParams.get('email') ?? '' })
+  }, [searchParams])
+
+  async function resendMail() {
+    const email = searchParams.get('email')
+    const emailType = Number(searchParams.get('email_type'))
+    if (email && emailType) {
+      setIsLoading(false)
+      await resendVerificationMail(email, emailType)
+        .then((res) => {
+          if (res.code === 200) {
+            deleteSearchParam({
+              pathName,
+              searchParams: searchParams.toString(),
+              paramToDelete: 'magic_link_verification',
+            })
+            deleteSearchParam({
+              pathName,
+              searchParams: searchParams.toString(),
+              paramToDelete: 'email',
+            })
+            deleteSearchParam({
+              pathName,
+              searchParams: searchParams.toString(),
+              paramToDelete: 'email_type',
+            })
+            setStep('MAGIC_LINK_SENT_NOTE')
+          }
+        })
+        .catch((e) => {
+          setError('Something went wrong.')
+        })
+        .finally(() => {
+          setIsLoading(false)
+        })
+    }
+  }
 
   return (
     <ModalShell>
@@ -54,39 +95,12 @@ export function Failure() {
       <p className="text-center text-title-3-med">
         We're sorry, but it looks like the magic link has expired. Please request a new magic link.
       </p>
-      <Button
-        className="w-full bg-monochrome-black hover:bg-new-dark-grey"
-        onClick={async () => {
-          const email = searchParams.get('email')
-          const emailType = Number(searchParams.get('email_type'))
-          if (email && emailType) {
-            await resendVerificationMail(email, emailType)
-              .then((res) => {
-                if (res) {
-                  deleteSearchParam({
-                    pathName,
-                    searchParams: searchParams.toString(),
-                    paramToDelete: 'magic_link_verification',
-                  })
-                  deleteSearchParam({
-                    pathName,
-                    searchParams: searchParams.toString(),
-                    paramToDelete: 'email',
-                  })
-                  deleteSearchParam({
-                    pathName,
-                    searchParams: searchParams.toString(),
-                    paramToDelete: 'email_type',
-                  })
-                  setStep('EMAIL_SENT_NOTE')
-                }
-              })
-              .catch((e) => {
-                setError('Something went wrong.')
-              })
-          }
-        }}>
-        <p className="text-title-3-med">Resend magic link</p>
+      <Button className="w-full bg-monochrome-black hover:bg-new-dark-grey" onClick={resendMail}>
+        {isLoading ? (
+          <Loader size="sm" className="fill-new-off-white" />
+        ) : (
+          <p className="text-title-3-med">Resend magic link</p>
+        )}
       </Button>
       {error && <p className="flex items-center justify-center text-title-3-med text-supplementary-red">{error}</p>}
     </ModalShell>

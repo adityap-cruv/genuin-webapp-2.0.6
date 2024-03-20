@@ -1,13 +1,14 @@
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { Button } from '@components/ui/button'
 import { motion, useAnimationControls } from 'framer-motion'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import icShare from '@icons/icShareBlue.svg'
 import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { getCurrentShareUrl, openModal } from '@lib/utils'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
+import { joinCommunity } from '@lib/api/video'
 
 type Props = {
   /**
@@ -21,6 +22,9 @@ type Props = {
   communityName: string
   communityProfileImage: string
   communtiyHandle: string
+  communityId?: string
+  isCommunityJoined?: any
+  setIsCommunityJoined?: any
 }
 
 export const TopStickyBar = {
@@ -34,12 +38,16 @@ export function Desktop({
   communityName,
   communityProfileImage,
   communtiyHandle,
+  communityId,
+  isCommunityJoined,
+  setIsCommunityJoined,
   ...props
 }: Props) {
   const navAnimationControl = useAnimationControls()
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
   const { isEmbed, parentUrl } = useGenuinOptions((state) => ({ isEmbed: state.embed, parentUrl: state.parentUrl }))
+  const user = useGenuinOptions().user
 
   useEffect(() => {
     if (defaultOpen || isOpen) {
@@ -77,18 +85,38 @@ export function Desktop({
       <span className="flex items-center gap-x-2">
         <Button
           size="custom"
-          onClick={() => {
-            openModal({
-              title: 'Get the Genuin app',
-              subtitle: (
-                <>
-                  Get the app to join the <br />
-                  <span className="font-bold">{communityName}</span> community.
-                </>
-              ),
-            })
-          }}>
-          <p className="px-4 py-2 text-body-1-demi">Join Community</p>
+          className={`${isCommunityJoined && 'border border-primary '}`}
+          variant={isCommunityJoined ? 'outline' : 'default'}
+          onClick={
+            user
+              ? async () => {
+                  !isCommunityJoined &&
+                    (await joinCommunity(
+                      false,
+                      [communityId],
+                      [
+                        {
+                          user_id: user?.id,
+                        },
+                      ]
+                    ))
+                  setIsCommunityJoined((prev: any) => !prev)
+                }
+              : () => {
+                  openModal({
+                    title: 'Get the Genuin app',
+                    subtitle: (
+                      <>
+                        Get the app to join the <br />
+                        <span className="font-bold">{communityName}</span> community.
+                      </>
+                    ),
+                  })
+                }
+          }>
+          <p className={`px-4 py-1.5 text-body-1-demi ${isCommunityJoined && 'text-primary'}`}>
+            {isCommunityJoined ? 'Joined' : 'Join Community'}
+          </p>
         </Button>
         <Button
           variant="outline"
