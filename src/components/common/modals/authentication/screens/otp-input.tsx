@@ -11,7 +11,6 @@ import { loginViaPhone, verifyOtp } from '@lib/api/auth'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import { LOGIN_SOURCE, VERIFICATION_TYPE } from '@lib/constants'
 import { signIn } from 'next-auth/react'
-import { formatPhoneNumberIntl } from 'react-phone-number-input'
 import { Loader } from '@components/ui/loader'
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@components/ui/input-otp'
 

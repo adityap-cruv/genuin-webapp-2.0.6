@@ -134,7 +134,7 @@ export function PasswordInputLogin() {
               variant="default"
               className="w-full bg-new-off-black hover:bg-new-dark-grey"
               disabled={!isValid || isLoading}>
-              {isLoading ? <Loader size="sm" /> : <p className="text-title-3-demi">Next</p>}
+              {isLoading ? <Loader size="sm" /> : <p className="text-title-3-demi">Log in</p>}
             </Button>
             {form.formState.errors.root && (
               <p className="flex items-center justify-center text-title-3-med text-supplementary-red">
