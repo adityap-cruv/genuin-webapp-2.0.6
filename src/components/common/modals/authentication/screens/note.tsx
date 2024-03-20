@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { ModalShell } from '../modal-shell'
 import { useAuthenticationModalStore } from '../store'
 import { resendVerificationMail } from '@lib/api/auth'
+import { shortenedEmail } from '@lib/utils'
 
 export const Note = {
   email: Email,
@@ -34,7 +35,7 @@ function Email({ acountExists = false }: { acountExists?: boolean }) {
     <ModalShell>
       <p className="text-center text-title-1-med">
         {acountExists && 'An account with the given email already exists. '}We have sent a confirmation link to{' '}
-        <span className="text-title-1-bold">{email}</span>. Verify your email to save your profile{' '}
+        <span className="text-title-1-bold">{shortenedEmail(email)}</span>. Verify your email to save your profile{' '}
         {acountExists && 'and continue'}.
       </p>
       <p className="text-title-3-demi">
@@ -56,8 +57,8 @@ function MagicLink() {
   return (
     <ModalShell>
       <p className="text-center text-title-1-med">
-        We have sent a magic link to <span className="text-title-1-bold">{email}</span>. Click the link to Log in to
-        Ted.
+        We have sent a magic link to <span className="text-title-1-bold">{shortenedEmail(email)}</span>. Click the link
+        to Log in to Ted.
       </p>
     </ModalShell>
   )
