@@ -86,14 +86,14 @@ export function SideBar() {
               AuthenticationModal.open()
             }}
             variant={'outline'}
-            className="mb-2 w-3/4 border-primary">
+            className="mb-2 hidden w-3/4 border-primary lg:block">
             <p className="text-title-3-bold text-primary"> Log in</p>
           </Button>
         )}
         <RecentCommunities />
       </div>
       {embed && (
-        <div>
+        <div className="hidden lg:block">
           <hr className="border-1 mb-4 mt-1 border-monochrome-black/10" />
           <div className="flex items-center">
             <p className="text-title-2-demi text-monochrome">Powered by</p>
