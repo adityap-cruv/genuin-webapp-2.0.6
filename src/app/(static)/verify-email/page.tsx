@@ -26,7 +26,7 @@ export default async function Page({ searchParams }: { searchParams: { token: st
     redirect(getRedirectTo({ email, emailType, error: false, path: actionMetadata?.path, success: false }))
   }
 
-  // redirect(getRedirectTo({ emailType, error: true, path: actionMetadata?.path }))
+  redirect(getRedirectTo({ emailType, error: true, path: actionMetadata?.path }))
 }
 
 function getRedirectTo({
