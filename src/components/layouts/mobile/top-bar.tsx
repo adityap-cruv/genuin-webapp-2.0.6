@@ -20,6 +20,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { BurgerIcon } from '@icons/burger-icon'
 import { LogoutIcon } from '@icons/logout'
+import { axiosInstance, removeAllAuthToken } from '@lib/api/instance'
 
 const navVariant = cva('sticky top-0 flex z-40 h-[76px] w-full items-center justify-between  px-2', {
   variants: {
@@ -228,6 +229,7 @@ function UserTick() {
               className="text-body-1-demi"
               onClick={() => {
                 void signOut({ callbackUrl: `${window.location.pathname}${window.location.search}`, redirect: true })
+                removeAllAuthToken()
               }}>
               Log out
             </p>

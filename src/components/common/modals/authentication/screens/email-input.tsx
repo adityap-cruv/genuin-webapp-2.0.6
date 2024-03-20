@@ -31,11 +31,10 @@ export function EmailInput() {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    mode: 'onSubmit',
-    criteriaMode: 'firstError',
+    mode: 'onBlur',
     defaultValues: { email: formData.email },
   })
-  const { isValid } = form.formState
+  const { isValid, isDirty } = form.formState
 
   useEffect(() => {
     const w = form.watch((value) => {
@@ -112,7 +111,7 @@ export function EmailInput() {
               type="submit"
               variant="default"
               className="w-full bg-new-off-black hover:bg-new-dark-grey"
-              disabled={!isValid || isLoading}>
+              disabled={!isValid || isLoading || !isDirty}>
               {isLoading ? (
                 <Loader className="stroke-new-off-white" size="sm" />
               ) : (

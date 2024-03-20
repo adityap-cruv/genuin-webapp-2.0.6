@@ -23,10 +23,10 @@ import { ModalShell } from '../modal-shell'
 const formSchema = z.object({
   displayName: z
     .string()
-    .min(3, { message: 'Min length should be 3.' })
-    .max(25, { message: 'Max length should be 25.' })
+    .min(3, { message: 'Full Name should have minimum 3 characters.' })
+    .max(25, { message: 'Full Name should have maximum 25 characters.' })
     .regex(/^[a-zA-Z0-9 ]+$/i, { message: 'Full Name can only have letters, numbers and spaces.' }),
-  email: z.string().email({ message: 'Please enter valid email.' }),
+  email: z.string().email({ message: 'Please enter a valid email address.' }),
 })
 
 export function Signup() {
