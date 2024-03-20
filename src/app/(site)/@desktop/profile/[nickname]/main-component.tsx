@@ -27,6 +27,7 @@ import icPlay from '@icons/player-controls/icPlay.svg'
 import { type CommunityMiniObj, useCommunityListStore, type LoopMiniObj, type VideoMiniObj } from './store'
 import { PlayerModal } from '@components/common/modals/player-modal'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
+import { joinCommunity } from '@lib/api/video'
 
 interface CompProps {
   profileData: any
@@ -162,6 +163,8 @@ function Stats({ profileData }: { profileData: any }) {
 
 function CommunityList({ usernickname }: any) {
   const { data, isLoading, fetchNextPage, isFetchingNextPage } = getAllCommunities(usernickname)
+  const [isCommunityJoined, setIsCommunityJoined] = useState(false)
+  const user = useGenuinOptions().user
   const { addCommunities, communities } = useCommunityListStore((state) => ({
     addCommunities: state.addCommunities,
     communities: state.communities,
@@ -215,19 +218,38 @@ function CommunityList({ usernickname }: any) {
                     </Link>
                     <Button
                       size="custom"
-                      variant="default"
-                      onClick={() => {
-                        openModal({
-                          title: 'Get the Genuin app',
-                          subtitle: (
-                            <>
-                              Get the app to join the <br />
-                              <span className="font-bold">@{item.handle}</span> community.
-                            </>
-                          ),
-                        })
-                      }}>
-                      <p className="px-4 py-1.5 text-title-3-demi">Join</p>
+                      className={`${isCommunityJoined && 'border border-primary '}`}
+                      variant={isCommunityJoined ? 'outline' : 'default'}
+                      onClick={
+                        user
+                          ? async () => {
+                              !isCommunityJoined &&
+                                (await joinCommunity(
+                                  false,
+                                  [item.id],
+                                  [
+                                    {
+                                      user_id: user?.id,
+                                    },
+                                  ]
+                                ))
+                              setIsCommunityJoined((prev) => !prev)
+                            }
+                          : () => {
+                              openModal({
+                                title: 'Get the Genuin app',
+                                subtitle: (
+                                  <>
+                                    Get the app to join the <br />
+                                    <span className="font-bold">@{item.handle}</span> community.
+                                  </>
+                                ),
+                              })
+                            }
+                      }>
+                      <p className={`px-4 py-1.5 text-title-3-demi ${isCommunityJoined && 'text-primary'}`}>
+                        {isCommunityJoined ? 'Joined' : 'Join'}
+                      </p>
                     </Button>
                   </div>
                 </div>
