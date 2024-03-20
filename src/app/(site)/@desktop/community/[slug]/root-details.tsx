@@ -12,14 +12,13 @@ import icLock from '@icons/icLock.svg'
 import { useInView } from 'framer-motion'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
 import Link from 'next/link'
-import { checkAndAppendHttps, getCurrentShareUrl } from '@lib/utils'
+import { checkAndAppendHttps, getCurrentShareUrl, openModal } from '@lib/utils'
 import icInstagram from '@icons/icInstagramBlack.svg'
 import icLinkedIn from '@icons/icLinkedIn.svg'
 import icLink from '@icons/icLinkBlack.svg'
 import icTwitter from '@icons/icTwitterBlack.svg'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@components/ui/accordion'
-import { DownloadDialog } from '@components/common/download-dialog'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
@@ -72,19 +71,21 @@ export function RootDetails({ communityDetails }: Props) {
             />
           </div>
           <div ref={detailsDivRef} className="my-3 flex items-center justify-end gap-x-2">
-            <DownloadDialog
-              title="Get the Genuin app"
-              subtitle={
-                <>
-                  Get the app to join the <br />
-                  <span className="font-bold">{communityDetails.info.name}</span> community.
-                </>
-              }
-              asChild>
-              <Button size="custom">
-                <p className="px-4 py-2 text-body-1-demi">Join Community</p>
-              </Button>
-            </DownloadDialog>
+            <Button
+              size="custom"
+              onClick={() => {
+                openModal({
+                  title: 'Get the Genuin app',
+                  subtitle: (
+                    <>
+                      Get the app to join the <br />
+                      <span className="font-bold">{communityDetails.info.name}</span> community.
+                    </>
+                  ),
+                })
+              }}>
+              <p className="px-4 py-2 text-body-1-demi">Join Community</p>
+            </Button>
             <Button
               variant="outline"
               size="custom"

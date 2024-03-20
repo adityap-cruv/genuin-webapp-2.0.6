@@ -1,5 +1,5 @@
 'use client'
-import { abbreviateNumber, checkAndAppendHttps, getCurrentShareUrl } from '@lib/utils'
+import { abbreviateNumber, checkAndAppendHttps, getCurrentShareUrl, openModal } from '@lib/utils'
 import { Button } from '@components/ui/button'
 import Image from 'next/image'
 import icShare from '@icons/icShareBlue.svg'
@@ -24,7 +24,6 @@ import { PATH_NAME } from '@lib/utils/constants/path'
 import { useInView, useMotionValueEvent, useScroll } from 'framer-motion'
 import { TopStickyBar } from './top-bar'
 import icPlay from '@icons/player-controls/icPlay.svg'
-import { DownloadDialog } from '@components/common/download-dialog'
 import { type CommunityMiniObj, useCommunityListStore, type LoopMiniObj, type VideoMiniObj } from './store'
 import { PlayerModal } from '@components/common/modals/player-modal'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
@@ -214,19 +213,22 @@ function CommunityList({ usernickname }: any) {
                         </p>
                       </div>
                     </Link>
-                    <DownloadDialog
-                      title="Get the Genuin app"
-                      subtitle={
-                        <>
-                          Get the app to join the <br />
-                          <span className="font-bold">@{item.handle}</span> community.
-                        </>
-                      }
-                      asChild>
-                      <Button size="custom" variant="default">
-                        <p className="px-4 py-1.5 text-title-3-demi">Join</p>
-                      </Button>
-                    </DownloadDialog>
+                    <Button
+                      size="custom"
+                      variant="default"
+                      onClick={() => {
+                        openModal({
+                          title: 'Get the Genuin app',
+                          subtitle: (
+                            <>
+                              Get the app to join the <br />
+                              <span className="font-bold">@{item.handle}</span> community.
+                            </>
+                          ),
+                        })
+                      }}>
+                      <p className="px-4 py-1.5 text-title-3-demi">Join</p>
+                    </Button>
                   </div>
                 </div>
                 <DecorativeList>

@@ -7,7 +7,6 @@ import { DecorativeList } from '@components/custom/decorative-list'
 import Image from 'next/image'
 import icAudioRecord from '@icons/audioRecord.svg'
 import icVideoRecord from '@icons/videoRecord.svg'
-import { DownloadDialog } from '@components/common/download-dialog'
 import { Comments, NoComments } from '@components/common/comments'
 import { type VideoDataType } from '@lib/schemas/video'
 import { getLoopVideoComments } from '@lib/api/loop'
@@ -16,11 +15,12 @@ import { useMotionValueEvent, useScroll } from 'framer-motion'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
-import { getTimeAgo } from '@lib/utils'
+import { getTimeAgo, openModal } from '@lib/utils'
 import { FeedShimmer } from '../shimmers/feed-shimmer'
 import { Input } from '@components/ui/input'
 import { createComment, joinCommunity } from '@lib/api/video'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
+import { DownloadDialog } from '../download-dialog'
 
 type DesktopDetailsProps = {
   videoDetails: VideoDataType
@@ -75,46 +75,42 @@ export function DesktopDetails({ videoDetails }: DesktopDetailsProps) {
                   </Link>
                 </span>
                 <span className="flex h-min flex-1 items-center justify-end gap-x-3">
-                  {user ? (
-                    <Button
-                      size="custom"
-                      className={`${isCommunityJoined && 'rounded border border-primary '}`}
-                      variant={isCommunityJoined ? 'outline' : 'default'}
-                      onClick={async () => {
-                        !isCommunityJoined &&
-                          (await joinCommunity(
-                            false,
-                            [videoDetails.community.id],
-                            [
-                              {
-                                user_id: user?.id,
-                              },
-                            ]
-                          ))
-                        setIsCommunityJoined((prev) => !prev)
-                      }}>
-                      <p
-                        className={`whitespace-nowrap px-4 py-1 text-body-1-demi ${
-                          isCommunityJoined && 'text-primary'
-                        }`}>
-                        {isCommunityJoined ? 'Joined' : 'Join Community'}
-                      </p>
-                    </Button>
-                  ) : (
-                    <DownloadDialog
-                      title="Get the Genuin app"
-                      subtitle={
-                        <>
-                          Get the app to join the <br />
-                          <span className="font-bold">@{videoDetails.community.handle}</span> community.
-                        </>
-                      }
-                      asChild>
-                      <Button size="custom">
-                        <p className="whitespace-nowrap px-4 py-1 text-body-1-demi">Join Community</p>
-                      </Button>
-                    </DownloadDialog>
-                  )}
+                  <Button
+                    size="custom"
+                    className={`${isCommunityJoined && 'rounded border border-primary '}`}
+                    variant={isCommunityJoined ? 'outline' : 'default'}
+                    onClick={
+                      user
+                        ? async () => {
+                            !isCommunityJoined &&
+                              (await joinCommunity(
+                                false,
+                                [videoDetails.community.id],
+                                [
+                                  {
+                                    user_id: user?.id,
+                                  },
+                                ]
+                              ))
+                            setIsCommunityJoined((prev) => !prev)
+                          }
+                        : () => {
+                            openModal({
+                              title: 'Get the Genuin app',
+                              subtitle: (
+                                <>
+                                  Get the app to join the <br />
+                                  <span className="font-bold">@{videoDetails.community.handle}</span> community.
+                                </>
+                              ),
+                            })
+                          }
+                    }>
+                    <p
+                      className={`whitespace-nowrap px-4 py-1 text-body-1-demi ${isCommunityJoined && 'text-primary'}`}>
+                      {isCommunityJoined ? 'Joined' : 'Join Community'}
+                    </p>
+                  </Button>
                   <Button
                     size="custom"
                     variant="outline"
@@ -251,23 +247,39 @@ function CommentInput({ setComments, currentComment, setCurrentComment, videoDet
   return (
     <div className="absolute bottom-0 left-0 h-16 w-full border-t-2 border-t-monochrome-9 bg-monochrome-10 py-3 shadow-md">
       <button className="flex w-full flex-1 items-center gap-x-4 px-6">
-        <div className="relative flex w-full items-center">
-          <Input
-            placeholder="Add a comment"
-            value={currentComment}
-            disabled={!user}
-            className="rounded-full border border-monochrome-9 bg-monochrome-white"
-            onChange={(event) => {
-              const newComment = event.target.value
-              setCurrentComment(newComment)
+        {user ? (
+          <>
+            <div className="relative flex w-full items-center">
+              <Input
+                placeholder="Add a comment"
+                value={currentComment}
+                disabled={!user}
+                className="rounded-full border border-monochrome-9 bg-monochrome-white"
+                onChange={(event) => {
+                  const newComment = event.target.value
+                  setCurrentComment(newComment)
+                }}
+              />
+
+              <p onClick={handleClick} className="absolute right-4 text-body-1-bold text-primary">
+                Post
+              </p>
+            </div>
+          </>
+        ) : (
+          <div
+            onClick={() => {
+              openModal({
+                title: 'Get the Genuin app',
+                subtitle: <>Get the app to comment on this video.</>,
+              })
             }}
-          />
-          {user && (
-            <p onClick={handleClick} className="absolute right-4 text-body-1-bold text-primary">
-              Post
-            </p>
-          )}
-        </div>
+            placeholder="Add a comment"
+            className="h-full w-2/3 rounded-full border-2 border-monochrome-9 bg-monochrome-white py-2 pl-6">
+            <p className="text-start text-title-3-demi text-monochrome">Add a Comment</p>
+          </div>
+        )}
+
         <DownloadDialog title="Get the Genuin app" subtitle="Get the app to comment on this video." asChild>
           <Image src={icAudioRecord} alt="audio record" className="h-8 w-8" />
         </DownloadDialog>
