@@ -54,7 +54,7 @@ function Email({ acountExists = false }: { acountExists?: boolean }) {
       {emailSentText && (
         <p className="flex items-center justify-center text-title-3-med text-supplementary-green">{emailSentText}</p>
       )}
-      {error.message && (
+      {error.message && !emailSentText && (
         <p className="flex items-center justify-center text-title-3-med text-supplementary-red">{error.message}</p>
       )}
     </ModalShell>
