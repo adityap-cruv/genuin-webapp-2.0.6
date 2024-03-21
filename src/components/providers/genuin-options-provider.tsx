@@ -51,7 +51,6 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
     return getSizeBoxes(isMobile, !hideNavbar)
   }
   useEffect(() => {
-    console.log(sessionData)
     if (sessionStatus === 'authenticated') {
       setAuthTokenInAxiosInstance(sessionData.user.accessToken)
       setInitialData({ user: sessionData.user })
@@ -59,7 +58,7 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
       setInitialData({ user: undefined })
       setAuthTokenInAxiosInstance(undefined)
     }
-  }, [sessionStatus])
+  }, [sessionStatus, sessionData])
 
   function init() {
     const isIframe = window !== window.parent
