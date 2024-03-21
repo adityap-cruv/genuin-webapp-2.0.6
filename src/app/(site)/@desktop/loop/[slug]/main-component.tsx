@@ -18,6 +18,7 @@ import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
 import { openModal } from '@lib/utils'
+import { DownloadDialog } from '@components/common/download-dialog'
 
 interface Props {
   loopDetails: LoopDetailsType
@@ -85,21 +86,19 @@ export function MainComponent({ loopDetails }: Props) {
             </div>
             <span className="my-2 flex items-center gap-x-3">
               {!loopDetails.private && (
-                <Button
-                  size="custom"
-                  onClick={() => {
-                    openModal({
-                      title: 'Get the Genuin app',
-                      subtitle: (
-                        <>
-                          Get the app to subscribe to
-                          <span className="font-bold"> {loopDetails.group.group_name}</span> Loop.
-                        </>
-                      ),
-                    })
-                  }}>
-                  <p className="px-4 py-1 text-title-3-demi">Subscribe</p>
-                </Button>
+                <DownloadDialog
+                  title="Get the Genuin app"
+                  subtitle={
+                    <>
+                      Get the app to subscribe to
+                      <span className="font-bold"> {loopDetails.group.group_name}</span> Loop.
+                    </>
+                  }
+                  asChild>
+                  <Button size="custom">
+                    <p className="px-4 py-1 text-title-3-demi">Subscribe</p>
+                  </Button>
+                </DownloadDialog>
               )}
 
               {loopDetails.private && (
