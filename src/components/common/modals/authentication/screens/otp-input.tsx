@@ -72,6 +72,8 @@ export function OtpInput() {
       .then(async (res) => {
         if (res?.code === 200) {
           const user = res.data
+          user.member_id = user.user_id
+          console.log(user)
           void signIn('credentials', { ...user, redirect: false })
             .then((res) => {
               if (res?.ok) closeModal()
@@ -80,9 +82,10 @@ export function OtpInput() {
               form.control.setError('root', { message: 'Something went wrong.' })
             })
           // setStep('OTP_INPUT')
-        }
-        if (res?.code === 1008) {
+        } else if (res?.code === 1008) {
           form.control.setError('root', { message: 'That doesn`t look right. Please check your code and try again' })
+        } else {
+          form.control.setError('root', { message: 'Something went wrong please try again.' })
         }
       })
       .finally(() => {
