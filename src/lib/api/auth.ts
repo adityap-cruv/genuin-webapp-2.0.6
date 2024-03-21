@@ -106,12 +106,14 @@ export async function verifyEmail(token: string): Promise<{
   accessToken?: string
   email?: string
 }> {
+  console.log('--called verify email--')
   return await axiosInstance
     .get('/api/v3/verify_email_token', { params: { token }, baseURL: process.env.NEXT_PUBLIC_INTERNAL_API_URL })
     .then((res) => {
       const data = res?.data?.data
       const user = data?.user
       Object.assign(user, { accessToken: res.headers['x-auth-token'] })
+      console.log('--response in verify email---', res)
       return {
         code: Number(res?.data?.code),
         actionMetadata: data?.action_metadata as ActionMetadataType,
@@ -121,6 +123,7 @@ export async function verifyEmail(token: string): Promise<{
     })
     .catch((e) => {
       const data = e?.response?.data
+      console.log('--ERROR IN VERIFY EMAIL---', e)
       return {
         code: Number(data?.code),
         emailType: data?.data?.email_type,
