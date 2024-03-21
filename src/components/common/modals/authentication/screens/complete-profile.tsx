@@ -29,7 +29,7 @@ export function CompleteProfile() {
       bio: formData.bio,
       displayName: formData?.displayName,
     },
-    mode: 'onChange',
+    mode: 'onBlur',
   })
 
   useEffect(() => {
@@ -47,14 +47,20 @@ export function CompleteProfile() {
       const { status, user } = await updateUser({
         name: displayName,
         bio,
-        is_avatar: formData.isAvatar,
-        profile_image: formData.imageName ? formData.imageName : (formData.image as string),
+        is_avatar: formData.imageName ? formData.isAvatar : undefined,
+        profile_image: formData.imageName,
       })
       if (status) {
         closeModal()
         void updateSession({
           ...sessionData,
-          user: { ...sessionData?.user, bio: user.bio, name: user.name, image: user.profile_image },
+          user: {
+            ...sessionData?.user,
+            bio: user.bio,
+            name: user.name,
+            image: user.profile_image,
+            isAvatar: user.is_avatar,
+          },
         })
       } else {
         throw new Error()

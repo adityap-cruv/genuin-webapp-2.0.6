@@ -260,6 +260,14 @@ export function getRandomAvatar() {
   return avatars[Math.round(Math.random() * avatars.length)]
 }
 
+export function shortenedEmail(email?: string) {
+  if (!email) return ''
+  const splitArr = email.split('@')
+  let name = splitArr[0]
+  name = name.length > 12 ? name.slice(0, 12) + '...' : name
+  return name + '@' + splitArr[1]
+}
+
 export function encryptText(text: string, appendString: boolean) {
   // Extracting common variables
   const iv = Buffer.from(process.env.NEXT_PUBLIC_AES_IV)
@@ -320,4 +328,21 @@ export function parseUserAgent(userAgent: string) {
     device_type: deviceType,
     browser_type: browser,
   }
+}
+
+export function parseColors(colors: any) {
+  const parsedColors: any = {}
+  for (const category in colors) {
+    const categoryColors = colors[category]
+    for (const shade in categoryColors) {
+      const colorCode = categoryColors[shade]
+      const parsedShade = shade.split('_')[1]
+      if (parsedShade) {
+        parsedColors[`--${category}-${parsedShade}`] = colorCode
+      } else {
+        parsedColors[`--${category}`] = colorCode
+      }
+    }
+  }
+  return parsedColors
 }
