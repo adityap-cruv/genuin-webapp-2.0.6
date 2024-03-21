@@ -70,7 +70,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <BrandNotFound />
         ) : (
           <RedirectHandler config={config} shouldRedirect={Object.hasOwn(configParams ?? {}, 'subdomain')}>
-            <ThirdPartyScriptProvider>
+            <ThirdPartyScriptProvider isEmbed={!!config}>
               <SessionProvider>
                 <GenuinOptionsProvider browserType={browserType} deviceType={deviceType} os={os} config={config}>
                   <ReactQueryProvider>{children}</ReactQueryProvider>
