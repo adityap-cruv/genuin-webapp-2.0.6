@@ -52,12 +52,12 @@ export function NumberInput() {
         if (res?.code === 200) {
           setFormData({ userId: res.data.user_id })
           setStep('OTP_INPUT')
-        }
-        if (res.code === 5234) {
+        } else if (res.code === 5234) {
           form.control.setError('root', { message: `Account doesn't exists. Sign up instead` })
-        }
-        if (res.code === 5174) {
+        } else if (res.code === 5174) {
           form.control.setError('root', { message: 'API Rate Limit Exceeded' })
+        } else {
+          form.control.setError('root', { message: 'Something went wrong please try again' })
         }
       })
       .finally(() => {

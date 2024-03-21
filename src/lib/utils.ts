@@ -257,7 +257,7 @@ export function getRandomAvatar() {
     'smiling_face_with_sunglasses',
     'snowman',
   ]
-  return avatars[Math.round(Math.random() * avatars.length)]
+  return avatars[Math.round(Math.random() * (avatars.length - 1))]
 }
 
 export function shortenedEmail(email?: string) {
