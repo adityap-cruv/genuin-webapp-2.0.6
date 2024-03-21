@@ -3,6 +3,7 @@ import { signIn } from 'next-auth/react'
 import { useEffect } from 'react'
 
 export function ClientComponent({ user, redirectTo }: { user: any; redirectTo: string }) {
+  user.is_email_verified = true
   useEffect(() => {
     void signIn('credentials', { ...user, redirect: false })
       .then((val) => {
