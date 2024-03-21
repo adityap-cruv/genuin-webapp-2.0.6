@@ -2,7 +2,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { Button } from '@components/ui/button'
 import type { CommunityDetailsType } from '@lib/schemas/community'
-import { checkAndAppendHttps, generateDeepLink, getCurrentShareUrl, openGeneratedLink } from '@lib/utils'
+import { checkAndAppendHttps, generateDeepLink, getCurrentShareUrl, openGeneratedLink, openModal } from '@lib/utils'
 import Image from 'next/image'
 import icShare from '@icons/icShareBlue.svg'
 import icLock from '@icons/icLock.svg'
@@ -18,10 +18,11 @@ import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { TopBar } from '../../../layouts/mobile/top-bar'
 import { CommunityLoopTab } from './community-loop-tab'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { useInView } from 'framer-motion'
 import { TopStickyBar } from '../../../../app/(site)/@desktop/community/[slug]/top-bar'
 import { DownloadDialog } from '@components/common/download-dialog'
+import { joinCommunity } from '@lib/api/video'
 
 let communityDetailsModule: CommunityDetailsType
 
@@ -36,6 +37,8 @@ export function ProfileDetails({ communityDetails }: Props) {
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
   const { isEmbed, parentUrl } = useGenuinOptions((state) => ({ isEmbed: state.embed, parentUrl: state.parentUrl }))
+  const [isCommunityJoined, setIsCommunityJoined] = useState(false)
+  const user = useGenuinOptions().user
 
   return (
     <>
@@ -62,18 +65,41 @@ export function ProfileDetails({ communityDetails }: Props) {
           <div className="flex justify-end">
             <div className="flex items-center gap-x-2">
               {isEmbed ? (
-                <DownloadDialog
-                  title="Get the Genuin app"
-                  subtitle={
-                    <>
-                      Get the app to join the <br />
-                      <span className="font-bold">@{communityDetailsModule.info.handle}</span> community.
-                    </>
+                <Button
+                  size="sm"
+                  className={`${isCommunityJoined && 'border border-primary '}`}
+                  variant={isCommunityJoined ? 'outline' : 'default'}
+                  onClick={
+                    user
+                      ? async () => {
+                          !isCommunityJoined &&
+                            (await joinCommunity(
+                              false,
+                              [communityDetails.info.id],
+                              [
+                                {
+                                  user_id: user?.id,
+                                },
+                              ]
+                            ))
+                          setIsCommunityJoined((prev: any) => !prev)
+                        }
+                      : () => {
+                          openModal({
+                            title: 'Get the Genuin app',
+                            subtitle: (
+                              <>
+                                Get the app to join the <br />
+                                <span className="font-bold">@{communityDetails.info.handle}</span> community.
+                              </>
+                            ),
+                          })
+                        }
                   }>
-                  <Button variant="default" size="sm">
-                    <p className="mx-2 text-body-1-bold text-monochrome-white">Join Community</p>
-                  </Button>
-                </DownloadDialog>
+                  <p className={`mx-2 text-body-1-bold text-monochrome-white ${isCommunityJoined && 'text-primary'}`}>
+                    {isCommunityJoined ? 'Joined' : 'Join Community'}
+                  </p>
+                </Button>
               ) : (
                 <Button
                   variant="default"

@@ -6,7 +6,7 @@ import { checkAndAppendHttps } from '@lib/utils'
 
 export default async function Page({ searchParams }: { searchParams: { token: string } }) {
   const { code, actionMetadata, user, emailType, email } = await verifyEmail(searchParams.token)
-
+  
   if (code === 200 && user) {
     return (
       <ClientComponent

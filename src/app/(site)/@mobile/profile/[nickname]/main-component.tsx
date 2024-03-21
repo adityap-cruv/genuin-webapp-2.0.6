@@ -5,6 +5,7 @@ import {
   generateDeepLink,
   getCurrentShareUrl,
   openGeneratedLink,
+  openModal,
 } from '@lib/utils'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { Button } from '@components/ui/button'
@@ -34,6 +35,7 @@ import { type VideoDataType } from '@lib/schemas/video'
 import icLock from '@icons/icLock.svg'
 import icLoopDark from '@icons/icLoopDark.svg'
 import { DownloadDialog } from '@components/common/download-dialog'
+import { joinCommunity } from '@lib/api/video'
 
 interface CompProps {
   profileData: any
@@ -251,6 +253,8 @@ function CommunityList({ usernickname, scrollYProgress }: any) {
     addCommunities: state.addCommunities,
     communities: state.communities,
   }))
+  const [isCommunityJoined, setIsCommunityJoined] = useState(false)
+  const user = useGenuinOptions().user
   const embed = useGenuinOptions().embed
 
   useEffect(() => {
@@ -292,18 +296,41 @@ function CommunityList({ usernickname, scrollYProgress }: any) {
                   </Link>
 
                   {embed ? (
-                    <DownloadDialog
-                      title="Get the Genuin app"
-                      subtitle={
-                        <>
-                          Get the app to join the <br />
-                          <span className="font-bold">@{item.handle}</span> community.
-                        </>
+                    <Button
+                      size="custom"
+                      className={`${isCommunityJoined && 'border border-primary '}`}
+                      variant={isCommunityJoined ? 'outline' : 'default'}
+                      onClick={
+                        user
+                          ? async () => {
+                              !isCommunityJoined &&
+                                (await joinCommunity(
+                                  false,
+                                  [item.id],
+                                  [
+                                    {
+                                      user_id: user?.id,
+                                    },
+                                  ]
+                                ))
+                              setIsCommunityJoined((prev) => !prev)
+                            }
+                          : () => {
+                              openModal({
+                                title: 'Get the Genuin app',
+                                subtitle: (
+                                  <>
+                                    Get the app to join the <br />
+                                    <span className="font-bold">@{item.handle}</span> community.
+                                  </>
+                                ),
+                              })
+                            }
                       }>
-                      <Button size="custom" variant="default">
-                        <p className="px-4 py-1.5 text-body-1-bold">Join</p>
-                      </Button>
-                    </DownloadDialog>
+                      <p className={`px-4 py-1.5 text-body-1-bold ${isCommunityJoined && 'text-primary'}`}>
+                        {isCommunityJoined ? 'Joined' : 'Join'}
+                      </p>
+                    </Button>
                   ) : (
                     <Button
                       size="custom"
