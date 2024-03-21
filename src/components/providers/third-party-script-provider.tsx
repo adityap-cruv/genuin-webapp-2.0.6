@@ -1,9 +1,18 @@
 import Script from 'next/script'
 
-export function ThirdPartyScriptProvider({ children }: { children: React.ReactNode }) {
+export function ThirdPartyScriptProvider({ children, isEmbed }: { children: React.ReactNode; isEmbed: boolean }) {
   return (
     <>
       {children}
+      {!isEmbed && (
+        <>
+          <Script src={`https://cdn.cookielaw.org/consent/${process.env.ONETRUST_KEY}/OtAutoBlock.js`} />
+          <Script
+            src="https://cdn.cookielaw.org/scripttemplates/otSDKStub.js"
+            data-domain-script={`${process.env.ONETRUST_KEY}`}></Script>
+          <Script>function OptanonWrapper() {}</Script>
+        </>
+      )}
       <Script src={`https://www.googletagmanager.com/gtag/js?id=${process.env.GA_MEASUREMENT_ID}`} />
       <Script id="google-analytics">
         {`
@@ -45,11 +54,6 @@ export function ThirdPartyScriptProvider({ children }: { children: React.ReactNo
             }
         `}
       </Script>
-      <Script src={`https://cdn.cookielaw.org/consent/${process.env.ONETRUST_KEY}/OtAutoBlock.js`} />
-      <Script
-        src="https://cdn.cookielaw.org/scripttemplates/otSDKStub.js"
-        data-domain-script={`${process.env.ONETRUST_KEY}`}></Script>
-      <Script>function OptanonWrapper() {}</Script>
     </>
   )
 }

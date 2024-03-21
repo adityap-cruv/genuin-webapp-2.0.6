@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 
 export function ClientComponent({ user, redirectTo }: { user: any; redirectTo: string }) {
   useEffect(() => {
+    user.is_email_verified = true
     void signIn('credentials', { ...user, redirect: false })
       .then((val) => {
         if (val?.ok) {
