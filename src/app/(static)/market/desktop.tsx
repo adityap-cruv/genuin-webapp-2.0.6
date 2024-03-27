@@ -29,7 +29,7 @@ export const Desktop = () => {
                   <Button
                     size="custom"
                     className="bg-new-off-black px-4 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
-                    <p className="text-new-sm">Get Started</p>
+                    <p className="text-new-sm text-monochrome-white">Get Started</p>
                   </Button>
                 </ContactUs>
               </div>

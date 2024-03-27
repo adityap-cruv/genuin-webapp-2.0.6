@@ -3,7 +3,6 @@ import { Button } from '@components/ui/button'
 import type { LoopDetailsType } from '@lib/schemas/loop/details'
 import { generateDeepLink, openGeneratedLink } from '@lib/utils'
 import Image from 'next/image'
-import icShare from '@icons/icShareBlue.svg'
 import icLock from '@icons/icLock.svg'
 import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
@@ -20,6 +19,7 @@ import { TopStickyBar } from '../../../@desktop/loop/[slug]/top-bar'
 import { LoopVideos } from './loop-videos'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { DownloadDialog } from '@components/common/download-dialog'
+import { ShareIcon } from '@icons/share-icon'
 
 let loopDetailsModule: LoopDetailsType
 
@@ -59,13 +59,15 @@ export function MainComponent({ loopDetails }: Props) {
           style={{ height: 'calc(100% - 74px)' }}>
           <div className="w-full">
             <div ref={detailsDivRef}>
-              <p className="line-clamp-1 text-title-1-bold">{loopDetails.group.group_name}</p>
-              <p className="my-2 line-clamp-2 break-words text-title-3-demi">{loopDetails.group.group_description}</p>
+              <p className="line-clamp-1 text-title-1-bold text-secondary">{loopDetails.group.group_name}</p>
+              <p className="my-2 line-clamp-2 break-words text-title-3-demi text-secondary">
+                {loopDetails.group.group_description}
+              </p>
             </div>
-            <div className=" my-3 overflow-hidden rounded-lg border border-solid border-monochrome-9 p-4">
+            <div className=" my-3 overflow-hidden rounded-lg border border-solid border-tertiary-200 p-4">
               <div className="flex">
                 <div className="flex flex-1 flex-col items-start">
-                  <p className="text-body-1-demi text-secondary">Created by</p>
+                  <p className="text-body-1-demi text-tertiary">Created by</p>
                   <Link href={{ pathname: PATH_NAME.profile(loopDetails.owner.nickname) }}>
                     <div className="my-2 flex items-center">
                       <div className="bg-red-400 h-6 w-6">
@@ -76,12 +78,12 @@ export function MainComponent({ loopDetails }: Props) {
                           isAvatar={loopDetails.owner.is_avatar}
                         />
                       </div>
-                      <p className="ml-1 text-body-1-bold">@{loopDetails.owner.nickname}</p>
+                      <p className="ml-1 text-body-1-bold text-secondary">@{loopDetails.owner.nickname}</p>
                     </div>
                   </Link>
                 </div>
                 <div className="flex flex-1 flex-col items-start">
-                  <p className="text-body-1-demi text-secondary">Posted in</p>
+                  <p className="text-body-1-demi text-tertiary">Posted in</p>
                   {/* todo change to community data */}
                   <Link href={{ pathname: PATH_NAME.community(loopDetails.community.slug) }}>
                     <div className="my-2 flex items-center">
@@ -93,7 +95,7 @@ export function MainComponent({ loopDetails }: Props) {
                           isAvatar={false}
                         />
                       </div>
-                      <p className="ml-1 text-body-1-bold">{loopDetails.community.name}</p>
+                      <p className="ml-1 text-body-1-bold text-secondary">{loopDetails.community.name}</p>
                     </div>
                   </Link>
                 </div>
@@ -131,7 +133,7 @@ export function MainComponent({ loopDetails }: Props) {
                       })
                       .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
                   }}>
-                  <p className="px-4 py-1 text-title-3-demi">Subscribe</p>
+                  <p className="px-4 py-1 text-title-3-demi text-monochrome-white">Subscribe</p>
                 </Button>
               )}
               {!loopDetails.private && embed && (
@@ -144,7 +146,7 @@ export function MainComponent({ loopDetails }: Props) {
                     </>
                   }>
                   <Button size="custom">
-                    <p className="px-4 py-1 text-title-3-demi">Subscribe</p>
+                    <p className="px-4 py-1 text-title-3-demi text-monochrome-white">Subscribe</p>
                   </Button>
                 </DownloadDialog>
               )}
@@ -200,17 +202,17 @@ export function MainComponent({ loopDetails }: Props) {
                     toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                   })
                 }}>
-                <Image src={icShare} alt="share" className="h-6 w-6" />
+                <ShareIcon className="h-6 w-6 fill-primary" />
               </Button>
             </div>
           </div>
-          <hr className="border-t border-monochrome-9" />
+          <hr className="border-t border-tertiary-200" />
           {loopDetails.private ? (
             <div
               className="mt-4 flex w-full items-center justify-center overflow-hidden"
               style={{ height: 'calc(100% - 220px)' }}>
               <div className="flex flex-col items-center justify-center">
-                <div className="mb-2 rounded-full bg-monochrome-9 p-6">
+                <div className="mb-2 rounded-full bg-tertiary-200 p-6">
                   <Image src={icLock} alt="share" className="h-16 w-16" />
                 </div>
                 <p className="text-center text-title-2-demi">
@@ -241,7 +243,7 @@ function LoopTabs() {
           <p className="text-title-3-bold">Subscribers</p>
         </TabsTrigger>
       </TabsList>
-      <hr className="border-t border-monochrome-9" />
+      <hr className="border-t border-tertiary-200" />
       <TabsContent value="Loops">
         <LoopVideos slug={loopDetailsModule.chat_slug} />
       </TabsContent>
@@ -264,7 +266,7 @@ function LoopCollaborators({ slug }: { slug: string }) {
 
   if (cohosts && cohosts.length === 0)
     return (
-      <div className="flex h-full w-full items-center justify-center pt-32 text-title-3-bold text-monochrome">
+      <div className="flex h-full w-full items-center justify-center pt-32 text-title-3-bold text-tertiary">
         No collaborators yet
       </div>
     )
@@ -298,7 +300,7 @@ function LoopSubscribers({ slug }: any) {
 
   if (subscribers && subscribers.length === 0)
     return (
-      <div className="flex h-full w-full items-center justify-center pt-32 text-title-3-bold text-monochrome">
+      <div className="flex h-full w-full items-center justify-center pt-32 text-title-3-bold text-tertiary">
         No subscribers yet
       </div>
     )
@@ -337,8 +339,8 @@ function Stats({
       {statsData.map((obj, index) => {
         return (
           <div key={index} className="flex items-center">
-            <p className="mr-1 text-title-2-bold">{obj.value}</p>
-            <p className="mr-4 text-body-1-demi text-secondary">{obj.key}</p>
+            <p className="mr-1 text-title-2-bold text-secondary">{obj.value}</p>
+            <p className="mr-4 text-body-1-demi text-tertiary">{obj.key}</p>
           </div>
         )
       })}
@@ -356,12 +358,12 @@ interface CohostTileProps {
 
 function CohostTile({ image, title, subtitle, userName, isAvatar }: CohostTileProps) {
   return (
-    <div className="flex items-center gap-x-1 rounded-lg p-2 hover:bg-monochrome-10">
+    <div className="flex items-center gap-x-1 rounded-lg p-2">
       <CustomAvatar className="h-12 w-12 bg-red-40" fallbackString={title} imageUrl={image} isAvatar={isAvatar} />
       <div className="mx-2">
-        <p className="line-clamp-1 text-body-1-bold">{title}</p>
-        {userName && <p className="line-clamp-1 text-body-1-demi">{userName}</p>}
-        {subtitle && <p className="line-clamp-1 text-cap-1-demi text-monochrome-black/60">{subtitle}</p>}
+        <p className="line-clamp-1 text-body-1-bold text-secondary">{title}</p>
+        {userName && <p className="line-clamp-1 text-body-1-demi text-secondary">{userName}</p>}
+        {subtitle && <p className="line-clamp-1 text-cap-1-demi text-tertiary">{subtitle}</p>}
       </div>
     </div>
   )

@@ -28,7 +28,7 @@ export default function SubscriptionPlan() {
                   <Button
                     size="custom"
                     className="mt-8 bg-new-off-black px-5 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
-                    <p className="text-new-para-2">Download App</p>
+                    <p className="text-new-para-2 text-monochrome-white">Download App</p>
                   </Button>
                 </DownloadAppDialog>
               </div>
@@ -62,7 +62,7 @@ export default function SubscriptionPlan() {
                   <Button
                     size="custom"
                     className="mt-8 bg-new-off-black px-5 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
-                    <p className="text-new-para-2">Contact us for pricing</p>
+                    <p className="text-new-para-2 text-monochrome-white">Contact us for pricing</p>
                   </Button>
                 </ContactUs>
               </div>
@@ -100,7 +100,7 @@ export default function SubscriptionPlan() {
                   <Button
                     size="custom"
                     className="mt-8 bg-new-off-black px-5 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
-                    <p className="text-new-para-2">Contact us for pricing</p>
+                    <p className="text-new-para-2 text-monochrome-white">Contact us for pricing</p>
                   </Button>
                 </ContactUs>
               </div>
@@ -138,7 +138,7 @@ export default function SubscriptionPlan() {
                   <Button
                     size="custom"
                     className="mt-8 bg-new-off-black px-5 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
-                    <p className="text-new-para-2">Contact us for pricing</p>
+                    <p className="text-new-para-2 text-monochrome-white">Contact us for pricing</p>
                   </Button>
                 </ContactUs>
               </div>

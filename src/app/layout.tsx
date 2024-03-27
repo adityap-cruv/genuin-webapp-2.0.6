@@ -14,17 +14,17 @@ import { parseColors } from '@lib/utils'
 // TODO: Remove this staic value once colors starts coming from brand.
 const colors = {
   secondary: {
-    secondary_100: '#dbdbdb',
-    secondary_200: '#949494',
     secondary_300: '#707070',
-    secondary_400: '#585858',
+    secondary_400: '#414141',
     secondary: '#111111',
+    secondary_600: '#0e0e0e',
   },
   tertiary: {
-    tertiary_100: '#ffffff',
-    tertiary_200: '#f8f8f8',
-    tertiary_300: '#eeeeee',
-    tertiary: '#E7E7E7',
+    tertiary_100: '#fafafa',
+    tertiary_200: '#f4f4f4',
+    tertiary_300: '#d4d4d4',
+    tertiary_400: '#b4b4b4',
+    tertiary: '#949494',
   },
   primary: {
     primary_100: '#e6ecff',

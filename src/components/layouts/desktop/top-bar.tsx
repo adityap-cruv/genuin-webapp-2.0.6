@@ -41,7 +41,7 @@ export function TopBar() {
                     variant="default"
                     size={'custom'}
                     className="bg-new-off-black px-4 py-3 hover:bg-new-dark-grey">
-                    <p className="text-new-para-2 font-semibold">Download Genuin</p>
+                    <p className="text-new-para-2 font-semibold text-tertiary-100">Download Genuin</p>
                   </Button>
                 </DownloadAppDialog>
               </>

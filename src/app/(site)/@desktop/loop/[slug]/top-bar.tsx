@@ -8,6 +8,7 @@ import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
 import { openModal } from '@lib/utils'
 import { DownloadDialog } from '@components/common/download-dialog'
+import { ShareIcon } from '@icons/share-icon'
 
 type Props = {
   /**
@@ -71,7 +72,7 @@ function Desktop({ defaultOpen = true, isOpen = false, loopName, shareString, co
           }
           asChild>
           <Button size="custom">
-            <p className="px-4 py-1 text-title-3-demi">Subscribe</p>
+            <p className="px-4 py-1 text-title-3-demi text-monochrome-white">Subscribe</p>
           </Button>
         </DownloadDialog>
 
@@ -96,7 +97,7 @@ function Desktop({ defaultOpen = true, isOpen = false, loopName, shareString, co
               toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
             })
           }}>
-          <Image src={icShare} alt="share" className="h-6 w-6" />
+          <ShareIcon className="h-6 w-6 fill-primary" />{' '}
         </Button>
       </span>
     </motion.div>

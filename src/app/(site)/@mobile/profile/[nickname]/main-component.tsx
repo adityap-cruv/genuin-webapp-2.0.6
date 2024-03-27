@@ -25,7 +25,6 @@ import { TopStickyBar } from '../../../@desktop/profile/[nickname]/top-bar'
 import icInstagram from '@icons/icInstagramBlack.svg'
 import icLinkedIn from '@icons/icLinkedIn.svg'
 import icTwitter from '@icons/icTwitterBlack.svg'
-import icShare from '@icons/icShareBlue.svg'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
 import icTiktok from '@icons/icTiktok.svg'
@@ -34,8 +33,8 @@ import { PlayerModal } from '@components/common/modals/player-modal'
 import { type VideoDataType } from '@lib/schemas/video'
 import icLock from '@icons/icLock.svg'
 import icLoopDark from '@icons/icLoopDark.svg'
-import { DownloadDialog } from '@components/common/download-dialog'
 import { joinCommunity } from '@lib/api/video'
+import { ShareIcon } from '@icons/share-icon'
 
 interface CompProps {
   profileData: any
@@ -106,27 +105,27 @@ export function MainComponent({ profileData }: CompProps) {
                     toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                   })
                 }>
-                <Image src={icShare} alt="share" height={22} width={22} />
+                <ShareIcon className="h-6 w-6 fill-primary" />
               </Button>
             </div>
           </div>
           <div ref={detailsDivRef} className="mt-2 flex items-center">
             {profileData?.name ? (
               <>
-                <p className="line-clamp-1 pr-2 text-title-3-bold">{profileData?.name}</p>
-                <p className="line-clamp-1 text-body-1-med text-monochrome">@{profileData?.nickname}</p>
+                <p className="line-clamp-1 pr-2 text-title-3-bold text-secondary">{profileData?.name}</p>
+                <p className="line-clamp-1 text-body-1-med text-tertiary">@{profileData?.nickname}</p>
               </>
             ) : (
               <>
-                <p className="line-clamp-1 pr-2 text-title-3-bold">@{profileData?.nickname}</p>
+                <p className="line-clamp-1 pr-2 text-title-3-bold text-tertiary">@{profileData?.nickname}</p>
               </>
             )}
           </div>
-          <p className="my-1 line-clamp-2 text-body-1-demi">{profileData?.bio}</p>
+          <p className="my-1 line-clamp-2 text-body-1-demi text-secondary">{profileData?.bio}</p>
           <Stats profileData={profileData} />
           <Links profileData={profileData} />
         </div>
-        <hr className="my-1 border-t border-monochrome-9" />
+        <hr className="my-1 border-t border-tertiary-200" />
         <CommunityList usernickname={profileData?.nickname} scrollYProgress={scrollYProgress} />
       </div>
       <PlayerModalWrapper />
@@ -197,28 +196,28 @@ function Links({ profileData }: CompProps) {
   return (
     <div className="mt-2 flex">
       {links?.linkedin && (
-        <div className="mr-2 flex items-center rounded-md bg-monochrome-9 p-1">
+        <div className="mr-2 flex items-center rounded-md bg-tertiary-200 p-1">
           <Link href={checkAndAppendHttps(links.linkedin)} target="_blank">
             <Image src={icLinkedIn} alt="linkedin" />
           </Link>
         </div>
       )}
       {links?.instagram && (
-        <div className="mr-2 flex items-center rounded-md bg-monochrome-9 p-1">
+        <div className="mr-2 flex items-center rounded-md bg-tertiary-200 p-1">
           <Link href={checkAndAppendHttps(links.instagram)} target="_blank">
             <Image src={icInstagram} alt="instagram" />
           </Link>
         </div>
       )}
       {links?.twitter && (
-        <div className="mr-2 flex items-center rounded-md bg-monochrome-9 p-1">
+        <div className="mr-2 flex items-center rounded-md bg-tertiary-200 p-1">
           <Link href={checkAndAppendHttps(links.twitter)} target="_blank">
             <Image src={icTwitter} alt="twitter" />
           </Link>
         </div>
       )}
       {links?.tiktok && (
-        <div className="mr-2 flex items-center rounded-md bg-monochrome-9 p-1 px-2">
+        <div className="mr-2 flex items-center rounded-md bg-tertiary-200 p-1 px-2">
           <Link href={checkAndAppendHttps(links.tiktok)} target="_blank">
             <Image src={icTiktok} alt="linkedin" />
           </Link>
@@ -232,16 +231,16 @@ function Stats({ profileData }: { profileData: any }) {
   return (
     <div className="m-1 ml-0 flex max-w-[250px]  justify-between gap-x-2 p-1 pl-0">
       <div className="flex items-center">
-        <p className="text-title-3-bold">{abbreviateNumber(profileData?.no_of_views) ?? 0}</p>
-        <p className="px-1 text-cap-1-demi text-secondary">Views</p>
+        <p className="text-title-3-bold text-secondary">{abbreviateNumber(profileData?.no_of_views) ?? 0}</p>
+        <p className="px-1 text-cap-1-demi text-tertiary">Views</p>
       </div>
       <div className="flex items-center">
-        <p className="text-title-3-bold">{abbreviateNumber(profileData?.no_of_videos) ?? 0}</p>
-        <p className="px-1 text-cap-1-demi text-secondary">Posts</p>
+        <p className="text-title-3-bold text-secondary">{abbreviateNumber(profileData?.no_of_videos) ?? 0}</p>
+        <p className="px-1 text-cap-1-demi text-tertiary">Posts</p>
       </div>
       <div className="flex items-center">
-        <p className="text-title-3-bold">{abbreviateNumber(profileData?.no_of_communities) ?? 0}</p>
-        <p className="px-1 text-cap-1-demi text-secondary">Communities</p>
+        <p className="text-title-3-bold text-secondary">{abbreviateNumber(profileData?.no_of_communities) ?? 0}</p>
+        <p className="px-1 text-cap-1-demi text-tertiary">Communities</p>
       </div>
     </div>
   )
@@ -274,7 +273,7 @@ function CommunityList({ usernickname, scrollYProgress }: any) {
       {isLoading && <Loader size="md" />}
       {communities && communities?.length === 0 && (
         <div className="w-full overflow-hidden" style={{ height: 'calc(100% - 280px)' }}>
-          <div className="flex h-full w-full items-center justify-center bg-monochrome-11 pt-2 text-title-3-bold text-monochrome">
+          <div className="flex h-full w-full items-center justify-center bg-tertiary-100 pt-2 text-title-3-bold text-tertiary">
             No posts yet
           </div>
         </div>
@@ -292,7 +291,7 @@ function CommunityList({ usernickname, scrollYProgress }: any) {
                 />
                 <div className="mx-2 flex w-full items-center justify-between">
                   <Link href={{ pathname: PATH_NAME.community(item.slug) }}>
-                    <p className="line-clamp-1 break-all text-left text-body-1-bold">{item.name}</p>
+                    <p className="line-clamp-1 break-all text-left text-body-1-bold text-secondary">{item.name}</p>
                   </Link>
 
                   {embed ? (
@@ -327,7 +326,10 @@ function CommunityList({ usernickname, scrollYProgress }: any) {
                               })
                             }
                       }>
-                      <p className={`px-4 py-1.5 text-body-1-bold ${isCommunityJoined && 'text-primary'}`}>
+                      <p
+                        className={`px-4 py-1.5 text-body-1-bold  ${
+                          isCommunityJoined ? 'text-primary' : 'text-monochrome-white'
+                        }`}>
                         {isCommunityJoined ? 'Joined' : 'Join'}
                       </p>
                     </Button>
@@ -354,7 +356,7 @@ function CommunityList({ usernickname, scrollYProgress }: any) {
                           })
                           .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
                       }}>
-                      <p className="px-4 py-1.5 text-body-1-bold">Join</p>
+                      <p className="px-4 py-1.5 text-body-1-bold text-monochrome-white">Join</p>
                     </Button>
                   )}
                 </div>
@@ -384,7 +386,7 @@ function CommunityDetails({ userId, community }: { userId: string; community: Co
     <>
       <div className="h-3"></div>
       {isLoading && (
-        <li className="profile-loop-li relative my-4 w-full rounded-lg bg-monochrome-11 p-4">
+        <li className="profile-loop-li relative my-4 w-full rounded-lg bg-tertiary-100 p-4">
           <Shimmer className="h-4 w-24" />
           <div className="my-2 grid w-full grid-cols-3 gap-2">
             {Array.from({ length: 3 }).map((_, index) => (
@@ -397,13 +399,13 @@ function CommunityDetails({ userId, community }: { userId: string; community: Co
       )}
       {community.loops.map((item: any, index: any) => (
         <li
-          className="profile-loop-li relative mb-2 w-full rounded-lg border border-monochrome-9 p-4 pb-2"
+          className="profile-loop-li relative mb-2 w-full rounded-lg border border-tertiary-200 p-4 pb-2"
           key={index}
           style={{ backgroundColor: '#F9F9F9' }}>
           {item.private ? (
             <div className="mb-2 flex items-center">
-              <div className="mr-4 h-10 w-10 shrink-0 rounded-full bg-monochrome-9 p-2">
-                <Image src={icLoopDark} alt="share" className=" fill-blue-20" />
+              <div className="mr-4 h-10 w-10 shrink-0 rounded-full bg-tertiary-200 p-2">
+                <Image src={icLoopDark} alt="share" className=" fill-primary" />
               </div>
               <div>
                 <a href={PATH_NAME.loop(item.slug)}>
@@ -419,11 +421,11 @@ function CommunityDetails({ userId, community }: { userId: string; community: Co
       ))}
       {community && community.private && (
         <li
-          className="profile-loop-li relative mb-4 w-full rounded-lg border border-monochrome-9 p-4"
+          className="profile-loop-li relative mb-4 w-full rounded-lg border border-tertiary-200 p-4"
           style={{ backgroundColor: '#F9F9F9' }}>
           <div className="flex items-center">
-            <div className="mr-4 h-10 w-10 shrink-0 rounded-full bg-monochrome-9 p-2">
-              <Image src={icLock} alt="share" className=" fill-blue-20" />
+            <div className="mr-4 h-10 w-10 shrink-0 rounded-full bg-tertiary-200 p-2">
+              <Image src={icLock} alt="share" className=" fill-primary" />
             </div>
             <div>
               <p className="text-title-3-demi">This community is private</p>
@@ -475,12 +477,10 @@ function LoopVideos({
   return (
     <>
       <a href={PATH_NAME.loop(loopDetails.slug)}>
-        <p className="break-all text-body-1-bold">{loopDetails.name}</p>
+        <p className="break-all text-body-1-bold text-secondary">{loopDetails.name}</p>
       </a>
       {data?.pages.flatMap((page) => page.videos).length === 0 && (
-        <div className="flex items-center justify-center pt-32 text-title-3-bold text-secondary">
-          No posts available
-        </div>
+        <div className="flex items-center justify-center pt-32 text-title-3-bold text-tertiary">No posts available</div>
       )}
       <div className="my-2 grid w-full grid-cols-3 gap-2">
         {isLoading &&
@@ -512,7 +512,7 @@ function LoopVideos({
       </div>
       {hasNextPage && videoCount !== 0 && (
         <p
-          className="text-blue-500 flex w-full cursor-pointer justify-center pt-2 text-cap-1-demi text-monochrome"
+          className="text-blue-500 flex w-full cursor-pointer justify-center pt-2 text-cap-1-demi text-tertiary"
           onClick={handleSeeMoreClick}>
           See {videoCount} More
         </p>
