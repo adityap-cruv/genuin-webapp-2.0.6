@@ -83,7 +83,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   }
 
   return (
-    <html lang="en" style={{ ...brandColors }}>
+    <html lang="en">
       <head>
         <link rel="icon" type="image/x-icon" href="/favicon.svg" />
         <link rel="mask-icon" href="/favicon.svg" />
