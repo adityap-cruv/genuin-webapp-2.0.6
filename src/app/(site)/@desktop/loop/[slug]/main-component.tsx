@@ -95,7 +95,7 @@ export function MainComponent({ loopDetails }: Props) {
               <Button
                 variant="outline"
                 size="custom"
-                className="border border-primary p-0.5"
+                className="border border-primary p-0.5 hover:border-primary-600"
                 onClick={async () => {
                   const currentURL = new URL(window.location.href)
                   currentURL.searchParams.set('community', `${loopDetails.community.share_string}`)
@@ -105,7 +105,7 @@ export function MainComponent({ loopDetails }: Props) {
                     toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                   })
                 }}>
-                <ShareIcon className="h-6 w-6 fill-primary" />{' '}
+                <ShareIcon className="h-6 w-6 fill-primary hover:fill-primary-600" />
               </Button>
             </div>
           </div>

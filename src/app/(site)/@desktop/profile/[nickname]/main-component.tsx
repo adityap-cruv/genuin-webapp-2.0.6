@@ -132,7 +132,7 @@ function Links({ profileData }: CompProps) {
         variant="outline"
         size="custom"
         outlineColor="genuin-blue"
-        className="mx-1"
+        className="mx-1 hover:border-primary-600"
         onClick={async () =>
           await shareFn({
             shareLink: getCurrentShareUrl({ isEmbed, parentUrl }),
@@ -140,7 +140,7 @@ function Links({ profileData }: CompProps) {
           })
         }>
         <span className="flex items-center p-1">
-          <ShareIcon className="h-6 w-6 fill-primary" />{' '}
+          <ShareIcon className="h-6 w-6 fill-primary hover:fill-primary-600" />{' '}
         </span>
       </Button>
     </div>

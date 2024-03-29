@@ -121,14 +121,14 @@ export function Desktop({
         <Button
           variant="outline"
           size="custom"
-          className="border border-primary p-0.5"
+          className="border border-primary p-0.5 hover:border-primary-600"
           onClick={async () =>
             await shareFn({
               shareLink: getCurrentShareUrl({ isEmbed, parentUrl }),
               toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
             })
           }>
-          <ShareIcon className="h-6 w-6 fill-primary" />
+          <ShareIcon className="h-6 w-6 fill-primary hover:fill-primary-600" />
         </Button>
       </span>
     </motion.div>
