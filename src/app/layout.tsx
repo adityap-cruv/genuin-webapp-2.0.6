@@ -12,6 +12,31 @@ import { SessionProvider } from 'next-auth/react'
 import { parseColors } from '@lib/utils'
 
 // TODO: Remove this staic value once colors starts coming from brand.
+// const colors = {
+//   secondary: {
+//     secondary_300: '#707070',
+//     secondary_400: '#414141',
+//     secondary: '#111111',
+//     secondary_600: '#0e0e0e',
+//   },
+//   tertiary: {
+//     tertiary_100: '#fafafa',
+//     tertiary_200: '#f4f4f4',
+//     tertiary_300: '#d4d4d4',
+//     tertiary_400: '#b4b4b4',
+//     tertiary: '#949494',
+//   },
+//   primary: {
+//     primary_100: '#fbe9e8',
+//     primary_200: '#F7D2D1',
+//     primary_300: '#EC8F8C',
+//     primary_400: '#E4625D',
+//     primary: '#D91E18',
+//     primary_600: '#981511',
+//     primary_700: '#6D0F0C',
+//   },
+// }
+
 const colors = {
   secondary: {
     secondary_300: '#707070',
@@ -58,7 +83,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   }
 
   return (
-    <html lang="en">
+    <html lang="en" style={{ ...brandColors }}>
       <head>
         <link rel="icon" type="image/x-icon" href="/favicon.svg" />
         <link rel="mask-icon" href="/favicon.svg" />
