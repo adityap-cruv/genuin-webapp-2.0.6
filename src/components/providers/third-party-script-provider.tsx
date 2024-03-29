@@ -18,17 +18,38 @@ export function ThirdPartyScriptProvider({ children, isEmbed }: { children: Reac
             console.log("OnetrustActiveGroups:", OnetrustActiveGroups)
             // console.log(window.OneTrust.IsAlertBoxClosed())
             if (OnetrustActiveGroups.indexOf("C0002") > 0){
-              setTimeout(() => {
-              window.rudderanalytics.load('${process.env.NEXT_PUBLIC_RUDDERSTACK_KEY}' ?? '', '${process.env.NEXT_PUBLIC_RUDDERSTACK_URL}' ?? '',
-               {
-                consentManagement: {
-                  enabled: true,
-                  provider: 'oneTrust',
-                },
+              window.rudderanalytics = [];
+              var methods = [
+                'load',
+                'page',
+                'track',
+                'identify',
+                'alias',
+                'group',
+                'ready',
+                'reset',
+                'getAnonymousId',
+                'setAnonymousId',
+                'getUserId',
+                'getUserTraits',
+                'getGroupId',
+                'getGroupTraits',
+                'startSession',
+                'endSession',
+                'getSessionId',
+              ];
+              for (var i = 0; i < methods.length; i++) {
+                var method = methods[i];
+                window.rudderanalytics[method] = (function (methodName) {
+                  return function () {
+                    window.rudderanalytics.push([methodName].concat(Array.prototype.slice.call(arguments)));
+                  };
+                })(method);
               }
-              )
-            }, 3000)
-              
+              window.rudderanalytics.load('${process.env.NEXT_PUBLIC_RUDDERSTACK_KEY}' ?? '', '${process.env.NEXT_PUBLIC_RUDDERSTACK_URL}' ?? '',
+                { consentManagement: { enabled: true, provider: 'oneTrust'}
+              })
+              window.OneTrust.InsertScript('https://cdn.rudderlabs.com/v1.1/rudder-analytics.min.js', 'head', null, null, 'C0002')         
               window.OneTrust.InsertScript('https://www.googletagmanager.com/gtag/js?id=${process.env.GA_MEASUREMENT_ID}', 'head', null, null, 'C0002')
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
