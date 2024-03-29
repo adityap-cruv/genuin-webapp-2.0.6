@@ -43,51 +43,9 @@ export function MainComponent({ loopDetails }: Props) {
           communitySlug={loopDetails.community.slug}
         />
         <main className="hide-scrollbar absolute inset-0 h-full w-full overflow-auto pl-6">
-          <span className="w-1/2">
-            <p className="mt-6 text-title-1-bold text-secondary">{loopDetails.group.group_name}</p>
-            <p className="my-1 line-clamp-2 w-1/2 break-words text-body-1-med text-secondary">
-              {loopDetails.group.group_description}
-            </p>
-            <div className="my-3 w-1/2 rounded-xl border border-tertiary-200 p-4">
-              <span className="flex" ref={detailsDivRef}>
-                <span className="flex-1">
-                  <p className="text-body-1-demi text-tertiary">Created by</p>
-                  <Link href={{ pathname: PATH_NAME.profile(loopDetails.owner.nickname) }}>
-                    <div className="my-2 flex items-center">
-                      <CustomAvatar
-                        fallbackString={loopDetails.owner.name ?? ''}
-                        imageUrl={loopDetails.owner.profile_image ?? ''}
-                        isAvatar={loopDetails.owner.is_avatar}
-                        className="h-8 w-8"
-                      />
-                      <p className="ml-1 text-body-1-bold text-secondary">@{loopDetails.owner.nickname}</p>
-                    </div>
-                  </Link>
-                </span>
-                <span className="flex-1">
-                  <p className="text-body-1-demi text-tertiary">Posted in</p>
-                  <Link href={{ pathname: PATH_NAME.community(loopDetails.community.slug) }}>
-                    <div className="my-2 flex items-center">
-                      <CustomAvatar
-                        imageUrl={loopDetails.community.dp ?? ''}
-                        fallbackString={loopDetails.community.name}
-                        isAvatar={false}
-                        className="h-8 w-8"
-                      />
-                      <p className="ml-1 text-body-1-bold text-secondary">{loopDetails.community.name}</p>
-                    </div>
-                  </Link>
-                </span>
-              </span>
-              <Stats
-                statsData={[
-                  { key: 'Posts', value: loopDetails.group.no_of_videos },
-                  { key: 'Collaborators', value: loopDetails.group.no_of_members },
-                  { key: 'Subscribers', value: loopDetails.group.no_of_subscribers },
-                ]}
-              />
-            </div>
-            <span className="my-2 flex items-center gap-x-3">
+          <div className="mt-6 flex justify-between">
+            <p className="text-title-1-bold text-secondary">{loopDetails.group.group_name}</p>
+            <div className="flex items-center gap-x-3">
               {!loopDetails.private && (
                 <DownloadDialog
                   title="Get the Genuin app"
@@ -149,7 +107,51 @@ export function MainComponent({ loopDetails }: Props) {
                 }}>
                 <ShareIcon className="h-6 w-6 fill-primary" />{' '}
               </Button>
-            </span>
+            </div>
+          </div>
+          <span className="w-1/2">
+            <p className="my-1 line-clamp-2 w-1/2 break-words text-body-1-med text-secondary">
+              {loopDetails.group.group_description}
+            </p>
+            <div className="my-3 w-1/2 rounded-xl border border-tertiary-200 p-4">
+              <span className="flex" ref={detailsDivRef}>
+                <span className="flex-1">
+                  <p className="text-body-1-demi text-tertiary">Created by</p>
+                  <Link href={{ pathname: PATH_NAME.profile(loopDetails.owner.nickname) }}>
+                    <div className="my-2 flex items-center">
+                      <CustomAvatar
+                        fallbackString={loopDetails.owner.name ?? ''}
+                        imageUrl={loopDetails.owner.profile_image ?? ''}
+                        isAvatar={loopDetails.owner.is_avatar}
+                        className="h-8 w-8"
+                      />
+                      <p className="ml-1 text-body-1-bold text-secondary">@{loopDetails.owner.nickname}</p>
+                    </div>
+                  </Link>
+                </span>
+                <span className="flex-1">
+                  <p className="text-body-1-demi text-tertiary">Posted in</p>
+                  <Link href={{ pathname: PATH_NAME.community(loopDetails.community.slug) }}>
+                    <div className="my-2 flex items-center">
+                      <CustomAvatar
+                        imageUrl={loopDetails.community.dp ?? ''}
+                        fallbackString={loopDetails.community.name}
+                        isAvatar={false}
+                        className="h-8 w-8"
+                      />
+                      <p className="ml-1 text-body-1-bold text-secondary">{loopDetails.community.name}</p>
+                    </div>
+                  </Link>
+                </span>
+              </span>
+              <Stats
+                statsData={[
+                  { key: 'Posts', value: loopDetails.group.no_of_videos },
+                  { key: 'Collaborators', value: loopDetails.group.no_of_members },
+                  { key: 'Subscribers', value: loopDetails.group.no_of_subscribers },
+                ]}
+              />
+            </div>
           </span>
 
           {loopDetails.private ? (

@@ -196,28 +196,28 @@ function Links({ profileData }: CompProps) {
   return (
     <div className="mt-2 flex">
       {links?.linkedin && (
-        <div className="mr-2 flex items-center rounded-md bg-tertiary-200 p-1">
+        <div className="mr-2 flex h-8 w-8 items-center justify-center rounded-md bg-tertiary-200 p-1">
           <Link href={checkAndAppendHttps(links.linkedin)} target="_blank">
             <Image src={icLinkedIn} alt="linkedin" />
           </Link>
         </div>
       )}
       {links?.instagram && (
-        <div className="mr-2 flex items-center rounded-md bg-tertiary-200 p-1">
+        <div className="mr-2 flex h-8 w-8 items-center justify-center rounded-md bg-tertiary-200 p-1">
           <Link href={checkAndAppendHttps(links.instagram)} target="_blank">
             <Image src={icInstagram} alt="instagram" />
           </Link>
         </div>
       )}
       {links?.twitter && (
-        <div className="mr-2 flex items-center rounded-md bg-tertiary-200 p-1">
+        <div className="mr-2 flex h-8 w-8 items-center justify-center rounded-md bg-tertiary-200 p-1">
           <Link href={checkAndAppendHttps(links.twitter)} target="_blank">
             <Image src={icTwitter} alt="twitter" />
           </Link>
         </div>
       )}
       {links?.tiktok && (
-        <div className="mr-2 flex items-center rounded-md bg-tertiary-200 p-1 px-2">
+        <div className="mr-2 flex h-8 w-8 items-center justify-center rounded-md bg-tertiary-200 p-1 px-2">
           <Link href={checkAndAppendHttps(links.tiktok)} target="_blank">
             <Image src={icTiktok} alt="linkedin" />
           </Link>

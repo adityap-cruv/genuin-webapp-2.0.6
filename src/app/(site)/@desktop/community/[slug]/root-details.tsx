@@ -68,7 +68,12 @@ export function RootDetails({ communityDetails }: Props) {
       />
       <main className="hide-scrollbar absolute inset-0 h-full w-full overflow-auto">
         <div>
-          <div className="-px-6 relative h-56 w-full rounded-lg bg-tertiary-200">
+          <div
+            className="-px-6 aspect-w-5 aspect-h-1 relative rounded-lg bg-tertiary-200"
+            style={{
+              height: 'calc(100vw/5)',
+            }}>
+            {' '}
             <CustomAvatar
               isAvatar={false}
               imageUrl={communityDetails.info.profile_image}

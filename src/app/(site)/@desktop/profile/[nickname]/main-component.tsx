@@ -58,13 +58,18 @@ export function MainComponent({ profileData }: CompProps) {
         isAvatar={profileData?.is_avatar}
       />
       <div className="hide-scrollbar absolute inset-0 h-full w-full overflow-auto px-4">
-        <div className="mt-4 w-1/2" ref={divRef}>
+        <div className="mt-4 flex items-center justify-between">
           <CustomAvatar
             className="bg-slate-500 h-20 w-20 bg-red-40"
             fallbackString={profileData?.name}
             imageUrl={profileData?.profile_image}
             isAvatar={profileData?.is_avatar}
           />
+          <div>
+            <Links profileData={profileData} />
+          </div>
+        </div>
+        <div className="w-1/2" ref={divRef}>
           <div className="flex items-center py-1" ref={detailsDivRef}>
             {profileData?.name ? (
               <>
@@ -79,7 +84,6 @@ export function MainComponent({ profileData }: CompProps) {
           </div>
           <p className="my-1 line-clamp-2 break-all text-body-1-med text-secondary">{profileData?.bio}</p>
           <Stats profileData={profileData} />
-          <Links profileData={profileData} />
         </div>
         <CommunityList usernickname={profileData?.nickname} />
       </div>
@@ -95,30 +99,30 @@ function Links({ profileData }: CompProps) {
   const { isEmbed, parentUrl } = useGenuinOptions((state) => ({ isEmbed: state.embed, parentUrl: state.parentUrl }))
 
   return (
-    <div className="my-2 flex">
+    <div className="my-2 flex items-center">
       {links?.linkedin && (
-        <div className="mr-2 flex items-center rounded-md bg-tertiary-200 p-1">
+        <div className="mr-2 flex h-8 w-8 items-center justify-center rounded-md bg-tertiary-200 p-1">
           <Link href={checkAndAppendHttps(links.linkedin)} target="_blank">
             <Image src={icLinkedIn} alt="linkedin" />
           </Link>
         </div>
       )}
       {links?.instagram && (
-        <div className="mr-2 flex items-center rounded-md bg-tertiary-200 p-1">
+        <div className="mr-2 flex h-8 w-8 items-center justify-center rounded-md bg-tertiary-200 p-1">
           <Link href={checkAndAppendHttps(links.instagram)} target="_blank">
             <Image src={icInstagram} alt="instagram" />
           </Link>
         </div>
       )}
       {links?.twitter && (
-        <div className="mr-2 flex items-center rounded-md bg-tertiary-200 p-1">
+        <div className="mr-2 flex h-8 w-8 items-center justify-center rounded-md bg-tertiary-200 p-1">
           <Link href={checkAndAppendHttps(links.twitter)} target="_blank">
             <Image src={icTwitter} alt="twitter" />
           </Link>
         </div>
       )}
       {links?.tiktok && (
-        <div className="mr-2 flex items-center rounded-md bg-tertiary-200 p-1 px-2">
+        <div className="mr-2 flex h-8 w-8 items-center justify-center rounded-md bg-tertiary-200 p-1 px-2">
           <Link href={checkAndAppendHttps(links.tiktok)} target="_blank">
             <Image src={icTiktok} alt="linkedin" />
           </Link>
@@ -429,7 +433,7 @@ function LoopVideos({ userId, loop, community }: LoopVideosProps) {
                     {abbreviateNumber(video.no_of_sparks) ?? 0}
                   </p>
                 </div>
-                <div className="absolute inset-0 hidden h-full w-full items-center justify-center rounded bg-tertiary-400 group-hover/vidcard:flex">
+                <div className="absolute inset-0 hidden h-full w-full items-center justify-center rounded bg-monochrome-black/40 group-hover/vidcard:flex">
                   <Image src={icPlay} alt="" />
                 </div>
               </div>

@@ -34,8 +34,8 @@ export function LoopVideos({ slug }: { slug: string }) {
   // TODO: Remove this component from here. and put it  in better location.
   return (
     <div ref={scrollDivRef} className="h-full w-full overflow-y-auto">
-      <p className="my-2 text-title-3-bold text-secondary">Posts</p>
-      <div className="my-4 grid grid-cols-2 gap-4">
+      <p className="mb-1 mt-2 text-title-3-bold text-secondary">Posts</p>
+      <div className="mb-2 grid grid-cols-2 gap-4">
         {videos?.map((item, index) => (
           <div
             key={index}

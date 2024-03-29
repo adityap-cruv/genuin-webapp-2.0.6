@@ -66,9 +66,9 @@ function LoopItem({ loopDetails, openModal }: { loopDetails: any; openModal: (sl
     let str = ' + '
     if (!count) return
     if (count === 1) {
-      str += count + ' collaborator'
+      str += abbreviateNumber(count) + ' Collaborator'
     } else {
-      str += count + ' collaborators'
+      str += abbreviateNumber(count) + ' Collaborators'
     }
     return str
   }

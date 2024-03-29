@@ -13,6 +13,7 @@ import { useState } from 'react'
 import { Input } from '@components/ui/input'
 import { createComment } from '@lib/api/video'
 import { DownloadDialog } from '@components/common/download-dialog'
+import { Textarea } from '@components/ui/textarea'
 
 type Props = {
   container: React.MutableRefObject<HTMLDivElement | null>
@@ -103,7 +104,7 @@ function CommentInput({ setComments, currentComment, setCurrentComment, videoDet
             {user ? (
               <>
                 <div className="relative flex w-full items-center">
-                  <Input
+                  {/* <Input
                     placeholder="Add a comment"
                     value={currentComment}
                     disabled={!user}
@@ -112,11 +113,30 @@ function CommentInput({ setComments, currentComment, setCurrentComment, videoDet
                       const newComment = event.target.value
                       setCurrentComment(newComment)
                     }}
+                  /> */}
+
+                  <Textarea
+                    placeholder="Add a comment"
+                    value={currentComment}
+                    disabled={!user}
+                    className="h-10 rounded-full border border-tertiary-200 bg-monochrome-white px-14 pl-4 pt-2"
+                    onChange={(event) => {
+                      let newComment = event.target.value
+                      if (newComment.length > 500) {
+                        newComment = newComment.slice(0, 500)
+                      }
+                      setCurrentComment(newComment)
+                    }}
                   />
 
-                  <p onClick={handleClick} className="absolute right-4 text-body-1-bold text-primary">
+                  <button
+                    onClick={handleClick}
+                    disabled={currentComment.length === 0}
+                    className={`absolute right-4 text-body-1-bold ${
+                      currentComment.length === 0 ? 'text-primary-600' : 'text-primary'
+                    }`}>
                     Post
-                  </p>
+                  </button>
                 </div>
               </>
             ) : (

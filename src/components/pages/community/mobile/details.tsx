@@ -54,7 +54,11 @@ export function ProfileDetails({ communityDetails }: Props) {
       <div
         className="hide-scrollbar absolute inset-0 mt-navbar w-full overflow-auto"
         style={{ height: 'calc(100% - 74px)' }}>
-        <div className="relative h-20 bg-tertiary-200">
+        <div
+          className="aspect-w-5 aspect-h-1 relative h-20 bg-tertiary-200"
+          style={{
+            height: 'calc(100vw/5)',
+          }}>
           <CustomAvatar
             imageUrl={communityDetailsModule?.info.profile_image}
             fallbackString={communityDetailsModule?.info.name}

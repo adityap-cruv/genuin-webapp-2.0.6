@@ -81,14 +81,16 @@ export function SideBar() {
           </Popover>
         )}
         {status === 'unauthenticated' && embed && (
-          <Button
-            onClick={() => {
-              AuthenticationModal.open()
-            }}
-            variant={'outline'}
-            className="mb-2 hidden w-3/4 border-primary lg:block">
-            <p className="text-title-3-bold text-primary"> Log in</p>
-          </Button>
+          <div className="p-4">
+            <Button
+              onClick={() => {
+                AuthenticationModal.open()
+              }}
+              variant={'outline'}
+              className=" hidden w-3/4 border-primary lg:block">
+              <p className="text-title-3-bold text-primary"> Log in</p>
+            </Button>
+          </div>
         )}
         <RecentCommunities />
       </div>
@@ -96,9 +98,9 @@ export function SideBar() {
         <div className="hidden lg:block">
           <hr className="border-1 mb-4 mt-1 border-monochrome-black/10" />
           <div className="flex items-center">
-            <p className="text-title-2-demi text-monochrome">Powered by</p>
+            <p className="text-cap-1-demi text-monochrome">Powered by</p>
             <Link href={{ pathname: PATH_NAME.home() }}>
-              <GenuinIcon.logo className="h-8 fill-new-off-black" />
+              <GenuinIcon.logo className="ml-1 h-5 w-full fill-new-off-black" />
             </Link>
           </div>
         </div>

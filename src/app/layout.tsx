@@ -27,13 +27,13 @@ const colors = {
     tertiary: '#949494',
   },
   primary: {
-    primary_100: '#e6ecff',
-    primary_200: '#cddaff',
-    primary_300: '#83a2ff',
-    primary_400: '#517dff',
-    primary: '#0645FF',
-    primary_600: '#0430b3',
-    primary_700: '#032380',
+    primary_100: '#fbe9e8',
+    primary_200: '#F7D2D1',
+    primary_300: '#EC8F8C',
+    primary_400: '#E4625D',
+    primary: '#D91E18',
+    primary_600: '#981511',
+    primary_700: '#6D0F0C',
   },
 }
 
