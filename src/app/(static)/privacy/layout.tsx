@@ -10,7 +10,7 @@ export default function Layout({ children }: Props) {
   return (
     <main>
       <NavBar />
-      <section className="container mt-navbar h-body">{children}</section>
+      <section className="container mt-navbar">{children}</section>
     </main>
   )
 }

@@ -17,6 +17,8 @@ import { ContactUs } from '@components/common/modals/contact-us'
 import check_p from '@icons/icCheck.svg'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
+import { Carousel, type CarouselApi, CarouselContent, CarouselItem } from '@components/ui/carousel'
+import bg from '@images/business/pricing/pricing_bg.svg'
 
 export default function Mobile() {
   return (
@@ -34,204 +36,198 @@ export default function Mobile() {
 }
 
 function Component1() {
+  const [api, setApi] = React.useState<CarouselApi>()
+  const [current, setCurrent] = React.useState(1)
+
+  React.useEffect(() => {
+    if (!api) {
+      return
+    }
+
+    setCurrent(api.selectedScrollSnap() + 1)
+
+    api.on('select', () => {
+      setCurrent(api.selectedScrollSnap() + 1)
+    })
+  }, [api])
+
   return (
     <div className="container flex flex-col items-center justify-center pb-12 pt-36 ">
-      <p className=" text-center text-new-h1-mobile">A Plan for Every Brand</p>
+      <p className=" text-center text-new-h1-mobile">
+        A Plan for
+        <br /> Everyone
+      </p>
 
-      <div className="my-4">
-        <Tabs defaultValue="Free" className="h-full">
-          <TabsList className="bg-new-off-white">
-            <TabsTrigger value="Free">
-              <p className="text-title-3-bold">Free</p>
-            </TabsTrigger>
-            <TabsTrigger value="Starter">
-              <p className="text-title-3-bold">Starter</p>
-            </TabsTrigger>
-            <TabsTrigger value="Essential">
-              <p className="text-title-3-bold">Essential</p>
-            </TabsTrigger>
-            <TabsTrigger value="Enterprise">
-              <p className="text-title-3-bold">Enterprise</p>
-            </TabsTrigger>
-          </TabsList>
-          <hr className="border-t border-monochrome-9" />
-          <TabsContent value="Free">
-            <div
-              className="m-4 h-[525px] rounded-xl p-10"
-              style={{
-                background:
-                  'linear-gradient(white, white) padding-box, linear-gradient(#0645FFC2, #E9CAF4 ) border-box',
-                borderRadius: '12px',
-                border: '3px solid transparent',
-              }}>
-              <p className="my-1 text-new-h2-mobile font-semibold">Free Plan</p>
-              <p className="text-new-sm">For everyone to get started</p>
-              <div className="flex flex-col items-center py-12">
-                <p className="text-center text-new-h3">
-                  Free
-                  <br /> Forever
-                </p>
-                <DownloadAppDialog>
-                  <Button
-                    size="custom"
-                    className="mt-8 bg-new-off-black px-5 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
-                    <p className="text-new-para-2">Download App</p>
-                  </Button>
-                </DownloadAppDialog>
-              </div>
-              <div className="flex flex-col gap-1">
-                <p className="text-title-2-demi">Benefits:</p>
-                <div className="flex items-center gap-2">
-                  <Image priority loading="eager" src={check} width={24} height={24} alt="Star" />
-                  <p className="text-new-para-2-mobile">Basic community tools enough you get you started</p>
+      <div className="my-2 mt-8 flex w-full justify-between px-3">
+        <div
+          className={`flex-1 text-center text-new-para-2 ${
+            current === 1 ? 'font-bold text-monochrome-black' : 'font-semibold text-monochrome'
+          }`}>
+          Starter
+        </div>
+        <div
+          className={`flex-1 text-center text-new-para-2 ${
+            current === 2 ? 'font-bold text-monochrome-black' : 'font-semibold text-monochrome'
+          }`}>
+          Essential
+        </div>
+        <div
+          className={`flex-1 text-center text-new-para-2 ${
+            current === 3 ? 'font-bold text-monochrome-black' : 'font-semibold text-monochrome'
+          }`}>
+          Enterprise
+        </div>
+      </div>
+      <div className="flex w-full justify-between px-12">
+        {current === 1 ? <hr className="w-1/6 border-b-2 border-primary" /> : <div />}
+        {current === 2 ? <hr className="w-1/6 border-b-2 border-primary" /> : <div />}
+        {current === 3 ? <hr className="w-1/6 border-b-2 border-primary" /> : <div />}
+      </div>
+      <hr className="border-b-1 w-full border-monochrome-9" />
+
+      <div className="my-4 w-full">
+        <Carousel setApi={setApi} className="relative w-full max-w-xs" defaultValue={1}>
+          <Image priority loading="eager" className="absolute h-full w-screen" src={bg} alt="Star" />
+
+          <CarouselContent>
+            <CarouselItem className="pt-2">
+              <div className="m-4 min-h-[525px] rounded-xl bg-monochrome-white p-8">
+                <p className="my-1 text-new-h2-mobile font-semibold">Starter</p>
+                <p className="text-new-sm">For Emerging Communities</p>
+                <div className="flex flex-col items-center py-16">
+                  <p className="text-center text-new-h3">
+                    $39<span className="text-new-md">/month</span>
+                  </p>
+                  <DownloadAppDialog>
+                    <Button
+                      size="custom"
+                      className="mt-8 bg-new-off-black px-12 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
+                      <p className="text-new-para-2">Get Started</p>
+                    </Button>
+                  </DownloadAppDialog>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Image priority loading="eager" src={check} width={24} height={24} alt="Star" />
-                  <p className="text-new-para-2-mobile">Basic moderation tools</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Image priority loading="eager" src={exclamation} width={24} height={24} alt="Star" />
-                  <p className="text-new-para-2-mobile">Genuin watermark</p>
-                </div>
-              </div>
-            </div>
-          </TabsContent>
-          <TabsContent value="Starter">
-            <div
-              className="m-4 h-[525px] rounded-xl p-10"
-              style={{
-                background:
-                  'linear-gradient(white, white) padding-box, linear-gradient(#0645FFC2, #E9CAF4 ) border-box',
-                borderRadius: '12px',
-                border: '3px solid transparent',
-              }}>
-              <p className="my-1 text-new-h2-mobile font-semibold">Starter</p>
-              <p className="text-new-sm">For Emerging Communities</p>
-              <div className="flex flex-col items-center py-16">
-                <p className="text-center text-new-h3">
-                  $39<span className="text-new-md">/month</span>
-                </p>
-                <ContactUs>
-                  <Button
-                    size="custom"
-                    className="mt-8 bg-new-off-black px-5 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
-                    <p className="text-new-para-2">Contact us for pricing</p>
-                  </Button>
-                </ContactUs>
-              </div>
-              <div className="flex flex-col gap-1">
-                <p className="text-title-2-demi">Benefits:</p>
-                <div className="flex items-center gap-2">
-                  <Image priority loading="eager" src={check} width={24} height={24} alt="Star" />
-                  <p className="text-new-para-2-mobile">Basic community tools enough you get you started</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Image priority loading="eager" src={check} width={24} height={24} alt="Star" />
-                  <p className="text-new-para-2-mobile">Basic moderation tools to keep community safe</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Image priority loading="eager" src={check} width={24} height={24} alt="Star" />
-                  <p className="text-new-para-2-mobile">1,000 MaU included with additional MaUs at $0.10/MaU</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Image priority loading="eager" src={exclamation} width={24} height={24} alt="Star" />
-                  <p className="text-new-para-2-mobile">Genuin watermark</p>
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-2">
+                    <Image priority loading="eager" src={check} width={24} height={24} alt="Star" />
+                    <p className="text-new-para-2-mobile">Basic community tools enough you get you started</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Image priority loading="eager" src={check} width={24} height={24} alt="Star" />
+                    <p className="text-new-para-2-mobile">Basic moderation tools to keep community safe</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Image priority loading="eager" src={check} width={24} height={24} alt="Star" />
+                    <p className="text-new-para-2-mobile">1,000 MaU included with additional MaUs at $0.10/MaU</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Image priority loading="eager" src={exclamation} width={24} height={24} alt="Star" />
+                    <p className="text-new-para-2-mobile text-red">Genuin watermark</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          </TabsContent>
-          <TabsContent value="Essential">
-            <div
-              className="m-4 h-[525px] rounded-xl p-10"
-              style={{
-                background:
-                  'linear-gradient(white, white) padding-box, linear-gradient(#0645FFC2, #E9CAF4 ) border-box',
-                borderRadius: '12px',
-                border: '3px solid transparent',
-              }}>
-              <p className="my-1 text-new-h2-mobile font-semibold">Essential</p>
-              <p className="text-new-sm">For Established Communities</p>
-              <div className="flex flex-col items-center py-16">
-                <p className="text-center text-new-h3">
-                  $299<span className="text-new-md">/month</span>
-                </p>
-                <ContactUs>
-                  <Button
-                    size="custom"
-                    className="mt-8 bg-new-off-black px-5 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
-                    <p className="text-new-para-2">Contact us for pricing</p>
-                  </Button>
-                </ContactUs>
-              </div>
-              <div className="flex flex-col gap-1">
-                <p className="text-title-2-demi">Benefits:</p>
-                <div className="flex items-center gap-2">
-                  <Image priority loading="eager" src={check} width={24} height={24} alt="Star" />
-                  <p className="text-new-para-2-mobile">Basic community tools enough you get you started</p>
+            </CarouselItem>
+            <CarouselItem className="pt-2">
+              <div className="relative m-4 min-h-[525px] rounded-xl bg-monochrome-white p-8">
+                <div
+                  className="absolute rounded-full px-4 py-1.5 text-center text-body-1-demi text-monochrome-white"
+                  style={{
+                    backgroundImage: 'linear-gradient(89deg, #4E78FE 1.08%, #959DF9 97.55%)',
+                    top: '-20px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                  }}>
+                  MOST POPULAR
                 </div>
-                <div className="flex items-center gap-2">
-                  <Image priority loading="eager" src={check} width={24} height={24} alt="Star" />
-                  <p className="text-new-para-2-mobile">Basic moderation tools</p>
+                <p className="my-1 text-new-h2-mobile font-semibold">Essential</p>
+                <p className="text-new-sm">For Established Communities</p>
+                <div className="flex flex-col items-center py-16">
+                  <p className="text-center text-new-h3">
+                    $299<span className="text-new-md">/month</span>
+                  </p>
+                  <a href={process.env.NEXT_PUBLIC_BCC_URL} target="_blank" rel="noopener noreferrer">
+                    <Button
+                      size="custom"
+                      className="mt-8 bg-new-off-black px-12 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
+                      <p className="text-new-para-2">Get Started</p>
+                    </Button>
+                  </a>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Image priority loading="eager" src={check} width={24} height={24} alt="Star" />
-                  <p className="text-new-para-2-mobile">10,000 MaU included with additional MaUs at $0.5/MaU</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Image priority loading="eager" src={exclamation} width={24} height={24} alt="Star" />
-                  <p className="text-new-para-2-mobile">Genuin watermark</p>
-                </div>
-              </div>
-            </div>
-          </TabsContent>
-          <TabsContent value="Enterprise">
-            <div
-              className="relative m-4 h-[525px] rounded-xl p-10"
-              style={{
-                background:
-                  'linear-gradient(white, white) padding-box, linear-gradient(#0645FFC2, #E9CAF4 ) border-box',
-                borderRadius: '12px',
-                border: '3px solid transparent',
-              }}>
-              <Image priority loading="eager" className="absolute -left-4 bottom-6 h-6 w-auto" src={star1} alt="Star" />
-              <Image priority loading="eager" className="absolute -right-5 top-6 h-10 w-auto" src={star2} alt="Star" />
-              <p className="my-1 text-new-h2-mobile font-semibold">Enterprise</p>
-              <p className="text-new-sm">For Enterprises</p>
-              <div className="flex flex-col items-center py-12">
-                <p className="text-center text-new-h3">
-                  Customized
-                  <br /> Pricing
-                </p>
-                <ContactUs>
-                  <Button
-                    size="custom"
-                    className="mt-8 bg-new-off-black px-5 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
-                    <p className="text-new-para-2">Contact us for pricing</p>
-                  </Button>
-                </ContactUs>
-              </div>
-              <div className="flex flex-col gap-0.5">
-                <p className="text-title-2-demi">Benefits:</p>
-                <div className="flex items-center gap-2">
-                  <Image priority loading="eager" src={check} width={24} height={24} alt="Star" />
-                  <p className="text-new-para-2-mobile">Full white label capability with your URL</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Image priority loading="eager" src={check} width={24} height={24} alt="Star" />
-                  <p className="text-new-para-2-mobile">Data in your own warehouse</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Image priority loading="eager" src={check} width={24} height={24} alt="Star" />
-                  <p className="text-new-para-2-mobile">Advanced analytics tools and insights</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Image priority loading="eager" src={check} width={24} height={24} alt="Star" />
-                  <p className="text-new-para-2-mobile">AI assistance to engage and grow your audience</p>
+                <div className="flex flex-col gap-2">
+                  <p className="text-new-md">
+                    Everything in <span className="text-title-2-demi">Starter</span> , plus
+                  </p>{' '}
+                  <div className="flex items-center gap-2">
+                    <Image priority loading="eager" src={check} width={24} height={24} alt="Star" />
+                    <p className="text-new-para-2-mobile">AI content generation</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Image priority loading="eager" src={check} width={24} height={24} alt="Star" />
+                    <p className="text-new-para-2-mobile">AI moderation</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Image priority loading="eager" src={check} width={24} height={24} alt="Star" />
+                    <p className="text-new-para-2-mobile">10,000 MaU included with additional MaUs at $0.5/MaU</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Image priority loading="eager" src={exclamation} width={24} height={24} alt="Star" />
+                    <p className="text-new-para-2-mobile text-red">Genuin watermark</p>
+                  </div>
                 </div>
               </div>
-            </div>
-          </TabsContent>
-        </Tabs>
+            </CarouselItem>
+            <CarouselItem className="pt-2">
+              <div className="relative m-4 min-h-[525px] rounded-xl bg-monochrome-white p-8">
+                <p className="my-1 text-new-h2-mobile font-semibold">Enterprise</p>
+                <p className="text-new-sm">For Enterprises</p>
+                <div className="flex flex-col items-center py-16">
+                  <p className="text-center text-new-h3">
+                    $1999<span className="text-new-md">/month</span>
+                  </p>
+                  <a href={process.env.NEXT_PUBLIC_BCC_URL} target="_blank" rel="noopener noreferrer">
+                    <Button
+                      size="custom"
+                      className="mt-8 bg-new-off-black px-12 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
+                      <p className="text-new-para-2">Get Started</p>
+                    </Button>
+                  </a>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <p className="text-new-md">
+                    Everything in <span className="text-title-2-demi">Essential</span> , plus
+                  </p>{' '}
+                  <div className="flex items-center gap-2">
+                    <Image priority loading="eager" src={check} width={24} height={24} alt="Star" />
+                    <p className="text-new-para-2-mobile">Managed service</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Image priority loading="eager" src={check} width={24} height={24} alt="Star" />
+                    <p className="text-new-para-2-mobile">Full white label capability with your URL</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Image priority loading="eager" src={check} width={24} height={24} alt="Star" />
+                    <p className="text-new-para-2-mobile">Data in your own warehouse</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Image priority loading="eager" src={check} width={24} height={24} alt="Star" />
+                    <p className="text-new-para-2-mobile">Advanced analytics tools and insights</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Image priority loading="eager" src={check} width={24} height={24} alt="Star" />
+                    <p className="text-new-para-2-mobile">AI assistance to engage and grow your audience</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Image priority loading="eager" src={check} width={24} height={24} alt="Star" />
+                    <p className="text-new-para-2-mobile">1M MaU included with additional MaUs at $0.01/MaU</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Image priority loading="eager" src={check} width={24} height={24} alt="Star" />
+                    <p className="text-new-para-2-mobile">Genuin watermark is removed</p>
+                  </div>
+                </div>
+              </div>
+            </CarouselItem>
+          </CarouselContent>
+        </Carousel>
       </div>
     </div>
   )
@@ -242,8 +238,7 @@ function Component2() {
     <div>
       <p className="mb-10 text-center text-new-h1-mobile">Compare All Plan Features</p>
       <div className="bg-white sticky top-0 z-10">
-        <div className="grid grid-cols-4 bg-[#ADDAFF] px-4 py-4">
-          <div className="flex justify-center text-cap-1-bold ">Free</div>
+        <div className="grid grid-cols-3 bg-[#ADDAFF] px-4 py-4">
           <div className="flex justify-center text-cap-1-bold">Starter</div>
           <div className="flex justify-center text-cap-1-bold">Essential</div>
           <div className="flex justify-center text-cap-1-bold">Enterprise</div>
@@ -252,14 +247,7 @@ function Component2() {
       <div className="mt-6 ">
         {content.table.tableData.map((row, index) => (
           <div key={index} className="m-4 rounded-lg border border-monochrome-9">
-            <div className="grid grid-cols-4 ">
-              <div className="flex justify-center rounded-tl-lg border border-monochrome-9 p-2">
-                {row.free ? (
-                  <Image priority loading="eager" src={check} width={24} height={24} alt="Check" />
-                ) : (
-                  <Image priority loading="eager" src={dash} width={24} height={24} alt="Check" />
-                )}
-              </div>
+            <div className="grid grid-cols-3 ">
               <div className="flex justify-center border border-monochrome-9 p-2">
                 {row.starter ? (
                   <Image priority loading="eager" src={check} width={24} height={24} alt="Check" />

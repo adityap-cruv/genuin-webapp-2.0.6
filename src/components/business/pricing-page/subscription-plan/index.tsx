@@ -46,7 +46,7 @@ export default function SubscriptionPlan() {
             </div>
             <div className="flex items-center gap-2">
               <Image priority loading="eager" src={exclamation} width={24} height={24} alt="Star" />
-              <p className="text-new-sm text-[#F2545B]">Genuin watermark</p>
+              <p className="text-new-sm text-red">Genuin watermark</p>
             </div>
           </div>
         </div>
@@ -59,9 +59,12 @@ export default function SubscriptionPlan() {
           <Image priority loading="eager" className="absolute -left-5 bottom-6" src={star1} alt="Star" />
           <Image priority loading="eager" className="absolute -right-6 top-6" src={star2} alt="Star" />
           <div
-            className="absolute -top-5 left-[50%] translate-x-[-50%] rounded-full px-4 py-1.5 text-center text-body-1-demi text-monochrome-white"
+            className="absolute rounded-full px-4 py-1.5 text-center text-body-1-demi text-monochrome-white"
             style={{
               backgroundImage: 'linear-gradient(89deg, #4E78FE 1.08%, #959DF9 97.55%)',
+              top: '-20px',
+              left: '50%',
+              transform: 'translateX(-50%)',
             }}>
             MOST POPULAR
           </div>
@@ -98,7 +101,7 @@ export default function SubscriptionPlan() {
             </div>
             <div className="flex items-center gap-2">
               <Image priority loading="eager" src={exclamation} width={24} height={24} alt="Star" />
-              <p className="text-new-sm text-[#F2545B]">Genuin watermark</p>
+              <p className="text-new-sm text-red">Genuin watermark</p>
             </div>
           </div>
         </div>
@@ -120,7 +123,7 @@ export default function SubscriptionPlan() {
           </div>
           <div className="flex flex-col gap-2">
             <p className="text-new-md">
-              Everything in <span className="text-title-2-demi">Starter</span> , plus
+              Everything in <span className="text-title-2-demi">Essential</span> , plus
             </p>
 
             <div className="flex items-center gap-2">
