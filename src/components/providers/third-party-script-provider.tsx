@@ -73,18 +73,12 @@ export function ThirdPartyScriptProvider({ children, isEmbed }: { children: Reac
           gtag('config', '${process.env.GA_MEASUREMENT_ID}');
         `}
           </Script>
+          <Script src={`https://cdn.rudderlabs.com/v1.1/rudder-analytics.min.js`} />
           <Script id="bufferEvents">
             {`
-            setTimeout(() => {
               window.rudderanalytics.load('${process.env.NEXT_PUBLIC_RUDDERSTACK_KEY}' ?? '', '${process.env.NEXT_PUBLIC_RUDDERSTACK_URL}' ?? '',
-               {
-                consentManagement: {
-                  enabled: true,
-                  provider: 'oneTrust',
-                },
-              }
-              )
-            }, 3000)
+              { consentManagement: { enabled: true, provider: 'oneTrust'}
+            })
 
             window.rudderanalytics = [];
             var methods = [
