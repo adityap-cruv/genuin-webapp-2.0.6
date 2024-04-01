@@ -5,10 +5,10 @@ import Image from 'next/image'
 import icShare from '@icons/icShareBlue.svg'
 import icLock from '@icons/icLock.svg'
 import { CustomAvatar } from '@components/custom/custom-avatar'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { useInView } from 'framer-motion'
 import { TopStickyBar } from './top-bar'
-import { getLoopCohosts, getLoopSubscribers } from '@lib/api/loop'
+import { getLoopCohosts, getLoopSubscribers, subscribeLoop } from '@lib/api/loop'
 import { Loader } from '@components/ui/loader'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
@@ -19,6 +19,7 @@ import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
 import { openModal } from '@lib/utils'
 import { DownloadDialog } from '@components/common/download-dialog'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
 
 interface Props {
   loopDetails: LoopDetailsType
@@ -30,6 +31,8 @@ export function MainComponent({ loopDetails }: Props) {
   const { toast } = useToast()
   const detailsDivRef = useRef<HTMLDivElement>(null)
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
+  const [isLoopSubscribed, setIsLoopSubscribed] = useState(false)
+  const user = useGenuinOptions().user
 
   if (loopDetails)
     return (
@@ -40,6 +43,9 @@ export function MainComponent({ loopDetails }: Props) {
           loopName={loopDetails.group.group_name ?? ''}
           shareString={loopDetails.community.share_string}
           communitySlug={loopDetails.community.slug}
+          chatId={loopDetails.chat_id}
+          isLoopSubscribed={isLoopSubscribed}
+          setIsLoopSubscribed={setIsLoopSubscribed}
         />
         <main className="hide-scrollbar absolute inset-0 h-full w-full overflow-auto pl-6">
           <span className="w-1/2">
@@ -86,19 +92,32 @@ export function MainComponent({ loopDetails }: Props) {
             </div>
             <span className="my-2 flex items-center gap-x-3">
               {!loopDetails.private && (
-                <DownloadDialog
-                  title="Get the Genuin app"
-                  subtitle={
-                    <>
-                      Get the app to subscribe to
-                      <span className="font-bold"> {loopDetails.group.group_name}</span> Loop.
-                    </>
-                  }
-                  asChild>
-                  <Button size="custom">
-                    <p className="px-4 py-1 text-title-3-demi">Subscribe</p>
-                  </Button>
-                </DownloadDialog>
+                <Button
+                  size="custom"
+                  className={`${isLoopSubscribed && 'border border-primary '}`}
+                  variant={isLoopSubscribed ? 'outline' : 'default'}
+                  onClick={
+                    user
+                      ? async () => {
+                          !isLoopSubscribed && (await subscribeLoop(loopDetails.chat_id, true))
+                          setIsLoopSubscribed((prev) => !prev)
+                        }
+                      : () => {
+                          openModal({
+                            title: 'Get the Genuin app',
+                            subtitle: (
+                              <>
+                                Get the app to subscribe to
+                                <span className="font-bold"> {loopDetails.group.group_name}</span> Loop.
+                              </>
+                            ),
+                          })
+                        }
+                  }>
+                  <p className={`px-4 py-1 text-title-3-demi ${isLoopSubscribed && 'text-primary'}`}>
+                    {isLoopSubscribed ? 'Subscribed' : 'Subscribe'}
+                  </p>
+                </Button>
               )}
 
               {loopDetails.private && (

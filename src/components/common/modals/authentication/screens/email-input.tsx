@@ -56,21 +56,20 @@ export function EmailInput() {
       .then(async (res) => {
         if (res?.code === 200) {
           setStep('PASSWORD_INPUT_LOGIN')
-        }
-        if (res.code === 5237) {
+        } else if (res.code === 5237) {
           if (res.data.is_email_verified) {
             setStep(res.data.is_password_set ? 'PASSWORD_INPUT_LOGIN' : 'MAGIC_LINK_SENT_NOTE')
           } else {
             setStep('EMAIL_SENT_NOTE')
           }
-        }
-        if (res.code === 5174) {
+        } else if (res.code === 5174) {
           form.control.setError('root', { message: 'API Rate Limit Exceeded' })
-        }
-        if (res.code === 5234) {
+        } else if (res.code === 5234) {
           form.control.setError('email', {
             message: 'Account with this email id doesn`t exist on our system. Please sign-up instead',
           })
+        } else {
+          form.control.setError('root', { message: 'Something went wrong please try again' })
         }
       })
       .finally(() => {
