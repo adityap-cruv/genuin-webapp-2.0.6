@@ -80,9 +80,9 @@ function DownloadAppForm() {
   const [isError, setIsError] = useState(false)
   // const [selectedCountry, setSelectedCountry] = useState(Countries[0]);
   const [disableSubmit, setDisableSubmit] = useState(true)
-
   const [selectedCountry, setSelectedCountry] = useState(Countries[0])
   const [isOpen, setIsOpen] = useState(false)
+  const searchParams = new URLSearchParams(window.location.search).toString()
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen)
@@ -141,6 +141,9 @@ function DownloadAppForm() {
     }
     if (formData.email && !isInvalidEmail) {
       Object.assign(payload, { email })
+    }
+    if (searchParams.length !== 0) {
+      Object.assign(payload, { query_params: '?' + searchParams })
     }
 
     if (!isInvalidNumber && !isInvalidEmail) {

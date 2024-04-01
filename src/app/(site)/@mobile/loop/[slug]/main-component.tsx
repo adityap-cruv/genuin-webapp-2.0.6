@@ -20,6 +20,7 @@ import { TopStickyBar } from '../../../@desktop/loop/[slug]/top-bar'
 import { LoopVideos } from './loop-videos'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { DownloadDialog } from '@components/common/download-dialog'
+import { useSearchParams } from 'next/navigation'
 
 let loopDetailsModule: LoopDetailsType
 
@@ -42,6 +43,7 @@ export function MainComponent({ loopDetails }: Props) {
       : ''
   } • Join ${loopDetails.group.group_name} to talk about it`
   const embed = useGenuinOptions().embed
+  const searchParams = Object.fromEntries(useSearchParams())
 
   if (loopDetails)
     return (
@@ -125,6 +127,7 @@ export function MainComponent({ loopDetails }: Props) {
                       utmMedium: 'web',
                       utmSource: window.location.hostname,
                       community: loopDetails.community.share_string,
+                      searchParams,
                     })
                       .then((generatedLink) => {
                         openGeneratedLink(generatedLink)
@@ -167,6 +170,7 @@ export function MainComponent({ loopDetails }: Props) {
                       utmMedium: 'web',
                       utmSource: window.location.hostname,
                       community: loopDetails.community.share_string,
+                      searchParams,
                     })
                       .then((generatedLink) => {
                         openGeneratedLink(generatedLink)

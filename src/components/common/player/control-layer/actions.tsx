@@ -19,6 +19,7 @@ import { analyticsService } from '../../../../services/analytics_service'
 import { videoSpark } from '@lib/api/video'
 import { useState } from 'react'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
+import { useSearchParams } from 'next/navigation'
 
 interface ActionsProps {
   link: string
@@ -48,6 +49,7 @@ function Mobile({ link = '', shareDescription = '', shareTitle = '', videoData }
   const [sparkCount, setSparkCount] = useState(videoData?.video?.no_of_sparks ?? 0)
   const embed = useGenuinOptions().embed
   const user = useGenuinOptions().user
+  const searchParams = Object.fromEntries(useSearchParams())
 
   if (videoData) {
     return (
@@ -86,6 +88,7 @@ function Mobile({ link = '', shareDescription = '', shareTitle = '', videoData }
                   utmSource: window.location.hostname,
                   community: videoData.community.share_string,
                   loop: videoData.loop.share_string,
+                  searchParams,
                 })
                   .then((generatedLink) => {
                     openGeneratedLink(generatedLink)
@@ -140,6 +143,7 @@ function Mobile({ link = '', shareDescription = '', shareTitle = '', videoData }
                       utmSource: window.location.hostname,
                       community: videoData.community.share_string,
                       loop: videoData.loop.share_string,
+                      searchParams,
                     })
                       .then((generatedLink) => {
                         openGeneratedLink(generatedLink)
