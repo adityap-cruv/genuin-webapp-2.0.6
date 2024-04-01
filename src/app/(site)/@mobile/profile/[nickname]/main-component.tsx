@@ -36,6 +36,7 @@ import icLock from '@icons/icLock.svg'
 import icLoopDark from '@icons/icLoopDark.svg'
 import { DownloadDialog } from '@components/common/download-dialog'
 import { joinCommunity } from '@lib/api/video'
+import { useSearchParams } from 'next/navigation'
 
 interface CompProps {
   profileData: any
@@ -256,6 +257,7 @@ function CommunityList({ usernickname, scrollYProgress }: any) {
   const [isCommunityJoined, setIsCommunityJoined] = useState(false)
   const user = useGenuinOptions().user
   const embed = useGenuinOptions().embed
+  const searchParams = Object.fromEntries(useSearchParams())
 
   useEffect(() => {
     const pageLength = data?.pages.length
@@ -348,6 +350,7 @@ function CommunityList({ usernickname, scrollYProgress }: any) {
                           utmCampaign: 'share',
                           utmMedium: 'web',
                           utmSource: window.location.hostname,
+                          searchParams,
                         })
                           .then((generatedLink) => {
                             openGeneratedLink(generatedLink)

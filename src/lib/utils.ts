@@ -152,6 +152,7 @@ export const generateDeepLink = async ({
   // parentId,
   community,
   loop,
+  searchParams,
 }: any) => {
   const queryParams = {}
   if (utmCampaign) {
@@ -186,7 +187,7 @@ export const generateDeepLink = async ({
     Object.assign(queryParams, { loop })
   }
   const finalPayload = {
-    query_params: queryParams,
+    query_params: { ...queryParams, ...searchParams },
     title,
     preview_url: previewImage,
     path_params: pathName,
