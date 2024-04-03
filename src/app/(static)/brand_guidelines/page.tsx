@@ -21,21 +21,21 @@ export default function Component() {
         </span>
         <br />
         <br />
-        <span className="text-body-1-bold">Learn together:</span>
+        <span className="text-body-1-bold">Learn together: </span>
         <span className="text-body-1-med">
           {brandName} is all about learning and sharing knowledge with people who share your interests, passions, and
           experiences. We prioritize content that helps us to learn and grow together.
         </span>
         <br />
         <br />
-        <span className="text-body-1-bold">Be Authentic:</span>
+        <span className="text-body-1-bold">Be Authentic: </span>
         <span className="text-body-1-med">
           Let's keep it genuine (see what we did there?) and secure. Do not impersonate another person or entity on
           {brandName}, and refrain from misrepresenting your expertise or title.
         </span>
         <br />
         <br />
-        <span className="text-body-1-bold">Keep conversations respectful:</span>
+        <span className="text-body-1-bold">Keep conversations respectful: </span>
         <span className="text-body-1-med">
           As humans, we don't always agree, and that's ok. We welcome sharing of opinions and respectful dialogue which
           means that we lead with positive intent and choose curiosity over conflict. Harassment and hate speech have no
@@ -43,7 +43,7 @@ export default function Component() {
         </span>
         <br />
         <br />
-        <span className="text-body-1-bold">Respect the privacy of your fellow users:</span>
+        <span className="text-body-1-bold">Respect the privacy of your fellow users: </span>
         <span className="text-body-1-med">
           Do not reveal confidential or personal identifier information about another person or entity while on{' '}
           {brandName}.
