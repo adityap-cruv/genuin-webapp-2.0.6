@@ -19,7 +19,7 @@ import { signIn } from 'next-auth/react'
 const passwordSchema = z.object({ password: z.string().min(8) })
 
 export function PasswordInputLogin() {
-  const { setStep, close, formData, action } = useAuthenticationModalStore()
+  const { close, formData, action } = useAuthenticationModalStore()
   const [passwordVisible, setPasswordVisible] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const deviceId = useLocalStorage().deviceId
@@ -144,7 +144,7 @@ export function PasswordInputLogin() {
           </form>
         </Form>
       </div>
-      <p className="flex w-full items-center justify-center text-body-1-demi">
+      {/* <p className="flex w-full items-center justify-center text-body-1-demi">
         Don't have an account?
         <span
           className="cursor-pointer text-primary"
@@ -153,7 +153,7 @@ export function PasswordInputLogin() {
           }}>
           &nbsp;Sign up
         </span>
-      </p>
+      </p> */}
     </ModalShell>
   )
 }
