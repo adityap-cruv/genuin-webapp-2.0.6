@@ -1,20 +1,10 @@
 'use client'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
 import type { RudderAnalytics } from '@rudderstack/analytics-js'
 
-let _rudderStack: Promise<RudderAnalytics> | undefined
-async function getRudderStack(): Promise<RudderAnalytics> {
-  const { RudderAnalytics } = await import('@rudderstack/analytics-js')
-  const analyticsInstance = new RudderAnalytics()
-
-  analyticsInstance.load(process.env.NEXT_PUBLIC_RUDDERSTACK_KEY ?? '', process.env.NEXT_PUBLIC_RUDDERSTACK_URL ?? '')
-
-  // analyticsInstance.ready(() => {
-  //   console.log('We are all set!!!');
-  // });
-  window.rudderanalytics = analyticsInstance
-  return analyticsInstance
-}
 export async function rudderStackTrack(...args: Parameters<RudderAnalytics['track']>) {
-  const x = await (_rudderStack ??= getRudderStack())
-  x.track(...args)
+  const x = window.rudderanalytics as RudderAnalytics | undefined | null
+  const brandId = useGenuinOptions.getState().brandId
+  if (args[1] && brandId) (args[1] as any).brand_id = brandId
+  x?.track(...args)
 }

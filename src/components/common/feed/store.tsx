@@ -39,13 +39,11 @@ export const useFeedListStore = create<FeedListStoreType>((set) => {
               video_view_length: currentTime,
               user_id: userId,
             }
-
+            void analyticsService({
+              eventName,
+              properties,
+            })
             if (hasCrossed50) {
-              void analyticsService({
-                eventName,
-                properties,
-              })
-
               void analyticsService({
                 eventName: 'Video Watched',
                 properties,

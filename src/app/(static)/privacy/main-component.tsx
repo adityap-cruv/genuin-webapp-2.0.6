@@ -5,7 +5,7 @@ export function MainComponent() {
         Genuin Inc.
         <br /> Privacy Policy
       </p>
-      <div className="mb-8 px-6 text-[16px] md:px-0">
+      <div className="mb-8 pl-7 pr-6 text-[16px] md:px-0">
         <p>
           <b>Last Updated:</b> May 5, 2023
         </p>

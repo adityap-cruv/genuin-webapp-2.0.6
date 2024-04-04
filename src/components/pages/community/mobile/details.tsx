@@ -23,6 +23,7 @@ import { useInView } from 'framer-motion'
 import { TopStickyBar } from '../../../../app/(site)/@desktop/community/[slug]/top-bar'
 import { DownloadDialog } from '@components/common/download-dialog'
 import { joinCommunity } from '@lib/api/video'
+import { useSearchParams } from 'next/navigation'
 
 let communityDetailsModule: CommunityDetailsType
 
@@ -39,6 +40,7 @@ export function ProfileDetails({ communityDetails }: Props) {
   const { isEmbed, parentUrl } = useGenuinOptions((state) => ({ isEmbed: state.embed, parentUrl: state.parentUrl }))
   const [isCommunityJoined, setIsCommunityJoined] = useState(false)
   const user = useGenuinOptions().user
+  const searchParams = Object.fromEntries(useSearchParams())
 
   return (
     <>
@@ -116,6 +118,7 @@ export function ProfileDetails({ communityDetails }: Props) {
                       utmCampaign: 'share',
                       utmMedium: 'web',
                       utmSource: window.location.hostname,
+                      searchParams,
                     })
                       .then((generatedLink) => {
                         openGeneratedLink(generatedLink)
