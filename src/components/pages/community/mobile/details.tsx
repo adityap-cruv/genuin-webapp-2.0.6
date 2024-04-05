@@ -24,6 +24,7 @@ import { TopStickyBar } from '../../../../app/(site)/@desktop/community/[slug]/t
 import { DownloadDialog } from '@components/common/download-dialog'
 import { joinCommunity } from '@lib/api/video'
 import { ShareIcon } from '@icons/share-icon'
+import { useSearchParams } from 'next/navigation'
 
 let communityDetailsModule: CommunityDetailsType
 
@@ -40,6 +41,7 @@ export function ProfileDetails({ communityDetails }: Props) {
   const { isEmbed, parentUrl } = useGenuinOptions((state) => ({ isEmbed: state.embed, parentUrl: state.parentUrl }))
   const [isCommunityJoined, setIsCommunityJoined] = useState(false)
   const user = useGenuinOptions().user
+  const searchParams = Object.fromEntries(useSearchParams())
 
   return (
     <>
@@ -55,7 +57,7 @@ export function ProfileDetails({ communityDetails }: Props) {
         className="hide-scrollbar absolute inset-0 mt-navbar w-full overflow-auto"
         style={{ height: 'calc(100% - 74px)' }}>
         <div
-          className="aspect-w-5 aspect-h-1 relative h-20 bg-tertiary-200"
+          className="aspect-w-5 aspect-h-1 bg-tertiary-200 relative h-20"
           style={{
             height: 'calc(100vw/5)',
           }}>
@@ -121,6 +123,7 @@ export function ProfileDetails({ communityDetails }: Props) {
                       utmCampaign: 'share',
                       utmMedium: 'web',
                       utmSource: window.location.hostname,
+                      searchParams,
                     })
                       .then((generatedLink) => {
                         openGeneratedLink(generatedLink)
@@ -160,10 +163,10 @@ export function ProfileDetails({ communityDetails }: Props) {
         </div>
         {communityDetails.info.private ? (
           <div
-            className="mt-4 flex w-full items-center justify-center overflow-hidden border-t border-tertiary-200"
+            className="border-tertiary-200 mt-4 flex w-full items-center justify-center overflow-hidden border-t"
             style={{ height: 'calc(100% - 220px)' }}>
             <div className="flex flex-col items-center justify-center">
-              <div className="rounded-full bg-tertiary-200 p-3">
+              <div className="bg-tertiary-200 rounded-full p-3">
                 <Image src={icLock} alt="share" className="h-12 w-12" />
               </div>
               <p className="text-title-2-demi">This community is private</p>
@@ -186,19 +189,19 @@ function Stats() {
     <div className="flex items-center">
       <span className="pr-4">
         <span className="text-title-3-bold text-secondary">{communityDetailsModule?.info.count.member}</span>
-        <span className="text-cap-1-demi text-tertiary">
+        <span className="text-tertiary text-cap-1-demi">
           &nbsp;{communityDetailsModule?.info.count.member === 1 ? 'Member' : 'Members'}
         </span>
       </span>
       <span className="pr-4">
         <span className="text-title-3-bold text-secondary">{communityDetailsModule?.info.count.loop}</span>
-        <span className="text-cap-1-demi text-tertiary">
+        <span className="text-tertiary text-cap-1-demi">
           &nbsp;{communityDetailsModule?.info.count.loop === 1 ? 'Loop' : 'Loops'}
         </span>
       </span>
       <span className="pr-4">
         <span className="text-title-3-bold text-secondary">{communityDetailsModule?.info.count.video}</span>
-        <span className="text-cap-1-demi text-tertiary">
+        <span className="text-tertiary text-cap-1-demi">
           &nbsp;{communityDetailsModule?.info.count.video === 1 ? 'Video' : 'Videos'}
         </span>
       </span>
@@ -220,7 +223,7 @@ function ProfileTabs() {
           <p className="text-title-3-bold">About</p>
         </TabsTrigger>
       </TabsList>
-      <hr className="border-t border-tertiary-200" />
+      <hr className="border-tertiary-200 border-t" />
       <TabsContent value="Loops" className="mx-4 h-full">
         <CommunityLoopTab communitySlug={communityDetailsModule.info.slug} />
       </TabsContent>
@@ -249,7 +252,7 @@ function Categories() {
         <div>
           {communityDetailsModule?.info.categories.map((cat, index) => {
             return (
-              <p key={index} className="mx-1 my-1 inline-block rounded-full bg-tertiary-200 p-2 px-4 text-body-1-demi">
+              <p key={index} className="bg-tertiary-200 mx-1 my-1 inline-block rounded-full p-2 px-4 text-body-1-demi">
                 <span className="line-clamp-1 break-all">{cat}</span>
               </p>
             )
@@ -270,28 +273,28 @@ function Links() {
         )}
         <div className="flex">
           {links?.instagram_url && (
-            <div className="mx-1 flex items-center rounded-md bg-tertiary-200 p-1">
+            <div className="bg-tertiary-200 mx-1 flex items-center rounded-md p-1">
               <Link href={checkAndAppendHttps(links.instagram_url)} target="_blank">
                 <Image src={icInstagram} alt="instagram" />
               </Link>
             </div>
           )}
           {links?.linkedin_url && (
-            <div className="mx-1 flex items-center rounded-md bg-tertiary-200 p-1">
+            <div className="bg-tertiary-200 mx-1 flex items-center rounded-md p-1">
               <Link href={checkAndAppendHttps(links.linkedin_url)} target="_blank">
                 <Image src={icLinkedIn} alt="linkedin" />
               </Link>
             </div>
           )}
           {links?.twitter_url && (
-            <div className="mx-1 flex items-center rounded-md bg-tertiary-200 p-1">
+            <div className="bg-tertiary-200 mx-1 flex items-center rounded-md p-1">
               <Link href={checkAndAppendHttps(links.twitter_url)} target="_blank">
                 <Image src={icTwitter} alt="twitter" />
               </Link>
             </div>
           )}
           {links?.social_web_url && (
-            <div className="mx-1 flex items-center rounded-md bg-tertiary-200 p-1">
+            <div className="bg-tertiary-200 mx-1 flex items-center rounded-md p-1">
               <Link href={checkAndAppendHttps(links.social_web_url)} target="_blank">
                 <div className="flex">
                   <Image src={icLink} alt="web-site" />
@@ -351,7 +354,7 @@ function ListItem({
       <div className="mx-2">
         <p className="line-clamp-1 text-body-1-bold text-secondary">{subtitle}</p>
         {subtitle && <p className="line-clamp-1 text-body-1-demi text-secondary">{title}</p>}
-        {description && <p className="line-clamp-1 text-cap-1-demi text-tertiary">{description}</p>}
+        {description && <p className="text-tertiary line-clamp-1 text-cap-1-demi">{description}</p>}
       </div>
     </div>
   )

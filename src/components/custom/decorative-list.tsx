@@ -40,8 +40,8 @@ export function DecorativeList({ children }: any) {
                   height: 10px;
                   border-bottom-left-radius: 10px;
                   border-color: red;
-                  border-bottom: 2px solid #d4d4d4;
-                  border-left: 2px solid #d4d4d4;
+                  border-bottom: 2px solid #F4F4F4;
+                  border-left: 2px solid #F4F4F4;
                   position: absolute;
                   left: -1em;
                   top: 50%;
@@ -58,7 +58,7 @@ export function DecorativeList({ children }: any) {
           position: 'relative',
           height: 'fit-content',
           paddingLeft: '0.87em',
-          borderImage: `linear-gradient(to bottom, #d4d4d4 calc(100% - ${lastLiHeight / 2}px - ${
+          borderImage: `linear-gradient(to bottom, #F4F4F4 calc(100% - ${lastLiHeight / 2}px - ${
             isSafari ? (isMobile ? '18px' : '25px') : '9.5px'
           }), transparent 50%) 1`,
         }}>

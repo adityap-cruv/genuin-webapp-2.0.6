@@ -6,13 +6,8 @@ import { useForm } from 'react-hook-form'
 import { cn } from '@lib/utils'
 import { z } from 'zod'
 import { useAuthenticationModalStore } from '../store'
-import { signup } from '@lib/api/auth'
-import { useLocalStorage } from '@lib/stores/local-storage'
 import { useEffect, useState } from 'react'
-import { SIGNUP_SOURCE } from '@lib/constants'
-import { signIn } from 'next-auth/react'
 import { ImageInput } from '../components/image-input'
-import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
@@ -30,10 +25,8 @@ const formSchema = z.object({
 })
 
 export function Signup() {
-  const { setStep, formData, setFormData, action } = useAuthenticationModalStore()
-  const deviceId = useLocalStorage().deviceId
+  const { setStep, formData, setFormData } = useAuthenticationModalStore()
   const brandName = useGenuinOptions().config?.name
-  const pathname = usePathname()
   const [isLoading, setIsLoading] = useState(false)
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -58,54 +51,6 @@ export function Signup() {
 
   async function onSubmit({ displayName, email }: { displayName: string; email: string }) {
     setIsLoading(true)
-    // grecaptcha.enterprise.ready(async () => {
-    //   const token = await grecaptcha.enterprise.execute(process.env.NEXT_PUBLIC_RECAPTCHA_CLIENT_KEY, {
-    //     action: 'SIGNUP',
-    //   })
-    await signup({
-      email,
-      profileImage: formData.image ?? '',
-      name: displayName,
-      isAvatar: formData.isAvatar,
-      recaptchaAction: 'SIGNUP',
-      // recaptchaToken: token,
-      deviceId,
-      signupSource: SIGNUP_SOURCE.web,
-      actionMetadata: { path: pathname, action },
-    })
-      .then(async (res) => {
-        if (res?.code === 200) {
-          await signIn('credentials', {
-            ...res.data.user,
-            accessToken: res.accessToken,
-            redirect: false,
-          }).then((res) => {
-            if (res?.ok) setStep('EMAIL_SENT_NOTE')
-          })
-        }
-        // Recaptcha validation issue
-        else if (res.code === 5242) {
-          form.control.setError('root', { message: 'Bot access detected' })
-        }
-        // Email verification pending and password not set.
-        else if (res.code === 5231) {
-          setStep('EMAIL_SENT_NOTE_ACCOUNT_EXISTS')
-        }
-        // Email verified password not set.
-        else if (res.code === 5237) {
-          setStep('MAGIC_LINK_SENT_NOTE')
-        }
-        // Account exists log in instead.
-        else if (res.code === 5232) {
-          form.control.setError('email', { message: 'Email already exists. Log in instead.' })
-        } else {
-          form.control.setError('root', { message: 'Something went wrong. Please try again.' })
-        }
-      })
-      .finally(() => {
-        setIsLoading(false)
-      })
-    // })
   }
 
   return (

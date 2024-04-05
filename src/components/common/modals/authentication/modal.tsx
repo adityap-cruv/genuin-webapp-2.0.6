@@ -7,14 +7,10 @@ import {
   EmailVerification,
   ImageCropper,
   MagicLinkVerification,
-  NumberInput,
   PasswordInput,
-  Signup,
   Note,
-  Error,
   UsernameInput,
   CompleteProfile,
-  OtpInput,
 } from './screens'
 import { useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
@@ -101,16 +97,16 @@ export function Content() {
   switch (step) {
     case 'EMAIL_INPUT':
       return <EmailInput />
-    case 'SIGN_UP':
-      return <Signup />
-    case 'NUMBER_INPUT':
-      return <NumberInput />
+    // case 'SIGN_UP':
+    //   return <Signup />
+    // case 'NUMBER_INPUT':
+    //   return <NumberInput />
     case 'IMAGE_CROPPER':
       return <ImageCropper />
     case 'PASSWORD_INPUT':
       return <PasswordInput />
-    case 'OTP_INPUT':
-      return <OtpInput />
+    // case 'OTP_INPUT':
+    //   return <OtpInput />
     case 'EMAIL_VERIFICATION_FAILURE':
       return <EmailVerification.failure />
     case 'EMAIL_VERIFICATION_SUCCESS':
@@ -123,8 +119,8 @@ export function Content() {
       return <Note.email />
     case 'EMAIL_SENT_NOTE_ACCOUNT_EXISTS':
       return <Note.email acountExists />
-    case 'ERROR':
-      return <Error />
+    // case 'ERROR':
+    //   return <Error />
     case 'USERNAME_INPUT':
       return <UsernameInput />
     case 'COMPLETE_PROFILE':

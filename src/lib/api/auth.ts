@@ -2,12 +2,10 @@ import { encryptText } from '@lib/utils'
 import { axiosInstance, setAuthTokenInAxiosInstance, setTempAuthTokenInAxiosInstance } from './instance'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
-import axios from 'axios'
-import { v4 as uuid } from 'uuid'
 
 type RecaptchaActionType = 'LOGIN' | 'SIGNUP'
 
-export type AuthActionType = 'JOIN_COMMUNITY'
+export type AuthActionType = 'JOIN_COMMUNITY' | 'SUBSCRIBE'
 
 type ActionMetadataType = {
   action?: AuthActionType
@@ -15,75 +13,41 @@ type ActionMetadataType = {
 }
 
 type SignupProps = {
-  name?: string
+  // name?: string
   email: string
-  isAvatar?: boolean
-  profileImage: string | File
-  deviceId?: string
+  // isAvatar?: boolean
+  // profileImage: string | File
+  // deviceId?: string
   // recaptchaToken: string
   signupSource: number
-  recaptchaAction: RecaptchaActionType
-  actionMetadata: ActionMetadataType
-}
-
-type LoginViaPhoneType = {
-  phone: string | undefined
-  platform?: string
-  token: string
-  verificationType: number
-  brandId?: number
-  loginSource: any
-}
-
-type LoginViaEmailType = {
-  email: string | undefined
-  deviceId: string
-  brandId?: string
-  password?: string
-  loginSource: any
-  actionMetaData: ActionMetadataType
-}
-
-type OtpProps = {
-  userId: string
-  otp: number
-  token: string
-  loginSource: number
-  brandId?: number
+  // recaptchaAction: RecaptchaActionType
+  actionMetadata?: ActionMetadataType
 }
 
 export async function signup({
-  deviceId,
+  // deviceId,
   email,
-  isAvatar,
-  name,
-  profileImage,
-  recaptchaAction,
+  // isAvatar,
+  // name,
+  // profileImage,
+  // recaptchaAction,
   // recaptchaToken,
   signupSource,
   actionMetadata,
 }: SignupProps): Promise<{ code: number; data: any; accessToken?: string }> {
   return await axiosInstance
-    .post(
-      '/api/v3/signup',
-      {
-        name,
-        email,
-        is_avatar: isAvatar,
-        device_id: encryptText(deviceId ?? '', true),
-        // recaptcha_token: recaptchaToken,
-        recaptcha_action: recaptchaAction,
-        profile_image: profileImage,
-        signup_source: signupSource,
-        brand_id: useGenuinOptions.getState().brandId,
-        action_meta_data: actionMetadata,
-      },
-      {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      }
-    )
+    .post('/api/v3/signup', {
+      // name,
+      email,
+      // is_avatar: isAvatar,
+      device_id: encryptText(useLocalStorage.getState().deviceId ?? '', true),
+      // recaptcha_token: recaptchaToken,
+      // recaptcha_action: recaptchaAction,
+      // profile_image: profileImage,
+      signup_source: signupSource,
+      brand_id: useGenuinOptions.getState().brandId,
+      action_meta_data: actionMetadata,
+    })
     .then((res) => {
       setAuthTokenInAxiosInstance(res.headers['x-auth-token'])
       return { code: 200, data: res.data.data, accessToken: res.headers['x-auth-token'] }
@@ -91,6 +55,31 @@ export async function signup({
     .catch((e) => {
       console.log('::error in signup api::', e.response.data)
       return { code: Number(e.response.data.code), data: undefined, accessToken: undefined }
+    })
+}
+
+type KsSignupProps = {
+  email: string
+  // recaptchaToken: string
+  // recaptchaAction: string
+  actionMetadata: Record<string, unknown>
+}
+
+export async function ksSignup({
+  email,
+}: KsSignupProps): Promise<{ code: number; flow?: 'login' | 'signup'; message?: string }> {
+  return await axiosInstance
+    .post('/api/v3/ks_login_signup', {
+      email,
+      brand_id: useGenuinOptions.getState().brandId,
+    })
+    .then((res) => {
+      console.log('response in axios:', res)
+      return { code: res.status, flow: res?.data?.data.flow }
+    })
+    .catch((e) => {
+      console.log('error::', e)
+      return { code: Number(e?.response?.data?.code), flow: e?.data?.data.flow }
     })
 }
 
@@ -106,14 +95,12 @@ export async function verifyEmail(token: string): Promise<{
   accessToken?: string
   email?: string
 }> {
-  console.log('--called verify email--')
   return await axiosInstance
     .get('/api/v3/verify_email_token', { params: { token }, baseURL: process.env.NEXT_PUBLIC_INTERNAL_API_URL })
     .then((res) => {
       const data = res?.data?.data
       const user = data?.user
       Object.assign(user, { accessToken: res.headers['x-auth-token'] })
-      console.log('--response in verify email---', res)
       return {
         code: Number(res?.data?.code),
         actionMetadata: data?.action_metadata as ActionMetadataType,
@@ -123,7 +110,6 @@ export async function verifyEmail(token: string): Promise<{
     })
     .catch((e) => {
       const data = e?.response?.data
-      console.log('--ERROR IN VERIFY EMAIL---', e)
       return {
         code: Number(data?.code),
         emailType: data?.data?.email_type,
@@ -223,6 +209,15 @@ export async function resendVerificationMail(
     })
 }
 
+type LoginViaPhoneType = {
+  phone: string | undefined
+  platform?: string
+  token: string
+  verificationType: number
+  brandId?: number
+  loginSource: any
+}
+
 export async function loginViaPhone({
   phone,
   platform,
@@ -258,6 +253,14 @@ export async function loginViaPhone({
     })
 }
 
+type OtpProps = {
+  userId: string
+  otp: number
+  token: string
+  loginSource: number
+  brandId?: number
+}
+
 export async function verifyOtp({
   userId,
   otp,
@@ -289,6 +292,15 @@ export async function verifyOtp({
       console.log('::error in verifyotp api::', e.response.data.code)
       return { code: Number(e.response.data.code), data: undefined }
     })
+}
+
+type LoginViaEmailType = {
+  email: string | undefined
+  deviceId: string
+  brandId?: string
+  password?: string
+  loginSource: any
+  actionMetaData: ActionMetadataType
 }
 
 export async function loginViaEmail({

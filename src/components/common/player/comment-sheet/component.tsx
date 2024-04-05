@@ -14,6 +14,7 @@ import { Input } from '@components/ui/input'
 import { createComment } from '@lib/api/video'
 import { DownloadDialog } from '@components/common/download-dialog'
 import { Textarea } from '@components/ui/textarea'
+import { useSearchParams } from 'next/navigation'
 
 type Props = {
   container: React.MutableRefObject<HTMLDivElement | null>
@@ -71,6 +72,7 @@ export function Sheet({ container, videoDetails, noOfComments }: Props) {
 function CommentInput({ setComments, currentComment, setCurrentComment, videoDetails }: any) {
   const user = useGenuinOptions().user
   const embed = useGenuinOptions().embed
+  const searchParams = Object.fromEntries(useSearchParams())
 
   async function handleClick() {
     if (currentComment.length !== 0) {
@@ -119,7 +121,7 @@ function CommentInput({ setComments, currentComment, setCurrentComment, videoDet
                     placeholder="Add a comment"
                     value={currentComment}
                     disabled={!user}
-                    className="h-10 rounded-full border border-tertiary-200 bg-monochrome-white px-14 pl-4 pt-2"
+                    className="border-tertiary-200 h-10 rounded-full border bg-monochrome-white px-14 pl-4 pt-2"
                     onChange={(event) => {
                       let newComment = event.target.value
                       if (newComment.length > 500) {
@@ -176,6 +178,7 @@ function CommentInput({ setComments, currentComment, setCurrentComment, videoDet
               utmSource: window.location.hostname,
               community: videoDetails.community.share_string,
               loop: videoDetails.loop.share_string,
+              searchParams,
             }).then((generatedLink) => {
               openGeneratedLink(generatedLink)
             })

@@ -6,7 +6,7 @@ export const MainComponent = () => {
         Genuin Inc. <br />
         General Terms of Service
       </p>
-      <div className="mb-8 px-6 text-[16px] md:px-0">
+      <div className="mb-8 pl-7 pr-6 text-[16px] md:px-0">
         <p>
           <b>Last Updated:</b> April 20, 2023
         </p>
