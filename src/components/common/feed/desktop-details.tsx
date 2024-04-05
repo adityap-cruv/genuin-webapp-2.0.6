@@ -21,6 +21,8 @@ import { Input } from '@components/ui/input'
 import { createComment, joinCommunity } from '@lib/api/video'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { DownloadDialog } from '../download-dialog'
+import { ShareIcon } from '@icons/share-icon'
+import { Textarea } from '@components/ui/textarea'
 
 type DesktopDetailsProps = {
   videoDetails: VideoDataType
@@ -37,7 +39,7 @@ export function DesktopDetails({ videoDetails }: DesktopDetailsProps) {
   if (videoDetails)
     return (
       <div className="relative flex h-full flex-1 flex-col overflow-x-clip bg-monochrome-white pb-16 pl-2">
-        <div className="border-b border-monochrome-black/10 p-4">
+        <div className="border-tertiary-200 border-b p-4">
           <span className="flex items-center gap-x-2">
             <CustomAvatar
               isAvatar={videoDetails.owner.is_avatar}
@@ -47,9 +49,9 @@ export function DesktopDetails({ videoDetails }: DesktopDetailsProps) {
             />
             <span className="flex items-center gap-x-1">
               <Link href={PATH_NAME.profile(videoDetails.owner.nickname)}>
-                <p className="text-title-3-demi">@{videoDetails.owner.nickname}</p>
+                <p className="text-title-3-demi text-secondary">@{videoDetails.owner.nickname}</p>
               </Link>
-              <p className="text-body-1-demi text-secondary">{getTimeAgo(videoDetails?.video?.created_at) + ' ago'}</p>
+              <p className="text-tertiary text-body-1-demi">{getTimeAgo(videoDetails?.video?.created_at) + ' ago'}</p>
             </span>
           </span>
           {videoDetails?.video?.description && (
@@ -60,7 +62,7 @@ export function DesktopDetails({ videoDetails }: DesktopDetailsProps) {
         </div>
         <div ref={scrollDivRef} className="flex h-full flex-col overflow-auto overflow-x-clip">
           <div className="p-4">
-            <p className="text-title-3-bold">Posted in</p>
+            <p className="text-title-3-bold text-secondary">Posted in</p>
             <div className="pt-3">
               <span className="flex items-center justify-between">
                 <span className="flex flex-1 items-center gap-x-3">
@@ -71,7 +73,9 @@ export function DesktopDetails({ videoDetails }: DesktopDetailsProps) {
                     className="h-11 w-11"
                   />
                   <Link href={{ pathname: PATH_NAME.community(videoDetails.community.slug) }}>
-                    <p className="line-clamp-1 break-all pr-2 text-title-3-bold">{videoDetails.community.name}</p>
+                    <p className="line-clamp-1 break-all pr-2 text-title-3-bold text-secondary">
+                      {videoDetails.community.name}
+                    </p>
                   </Link>
                 </span>
                 <span className="flex h-min flex-1 items-center justify-end gap-x-3">
@@ -107,14 +111,16 @@ export function DesktopDetails({ videoDetails }: DesktopDetailsProps) {
                           }
                     }>
                     <p
-                      className={`whitespace-nowrap px-4 py-1 text-body-1-demi ${isCommunityJoined && 'text-primary'}`}>
+                      className={`whitespace-nowrap px-4 py-1.5 text-body-1-demi  ${
+                        isCommunityJoined ? 'text-primary' : 'text-monochrome-white'
+                      }`}>
                       {isCommunityJoined ? 'Joined' : 'Join Community'}
                     </p>
                   </Button>
                   <Button
                     size="custom"
                     variant="outline"
-                    className="min-w-max border border-primary p-1 "
+                    className="hover:border-primary-600 min-w-max border border-primary p-1 "
                     onClick={async () =>
                       await shareFn({
                         shareLink:
@@ -124,23 +130,25 @@ export function DesktopDetails({ videoDetails }: DesktopDetailsProps) {
                         toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                       })
                     }>
-                    <Image src={icShare} alt="share" className="h-5 w-5" />
+                    <ShareIcon className="hover:fill-primary-600 h-5 w-5 fill-primary" />
                   </Button>
                 </span>
               </span>
               <DecorativeList>
                 <div className="h-2 w-full" />
                 <Link href={PATH_NAME.loop(videoDetails.loop.slug)}>
-                  <li className="relative flex h-full w-full items-center justify-between rounded-md border border-monochrome-9 bg-monochrome-10 p-4 ">
-                    <p className="line-clamp-1 w-full break-all pr-2 text-body-1-demi">{videoDetails.loop?.name}</p>
-                    <p className="whitespace-nowrap text-cap-1-med text-primary">View Loop</p>
+                  <li className="border-tertiary-200 relative flex h-full w-full items-center justify-between rounded-md border bg-monochrome-white p-4 ">
+                    <p className="line-clamp-1 w-full break-all pr-2 text-body-1-demi text-secondary">
+                      {videoDetails.loop?.name}
+                    </p>
+                    <p className="hover:text-primary-600 whitespace-nowrap text-cap-1-med text-primary">View Loop</p>
                   </li>
                 </Link>
               </DecorativeList>
             </div>
           </div>
           <div className="sticky top-0 z-10">
-            <p className="border-b border-t border-monochrome-black/10 bg-monochrome-white px-4 py-3 text-title-3-demi text-secondary">
+            <p className="border-tertiary-200 text-tertiary border-b border-t bg-monochrome-white px-4 py-3 text-title-3-demi">
               Comments {videoDetails?.video?.no_of_comments !== 0 ? `(${videoDetails?.video?.no_of_comments})` : ''}
             </p>
           </div>
@@ -245,25 +253,47 @@ function CommentInput({ setComments, currentComment, setCurrentComment, videoDet
     }
   }
   return (
-    <div className="absolute bottom-0 left-0 h-16 w-full border-t-2 border-t-monochrome-9 bg-monochrome-10 py-3 shadow-md">
+    <div className="min-h-16 border-t-tertiary-200 bg-tertiary-200 absolute bottom-0 left-0 w-full border-t-2 py-3 shadow-md">
       <button className="flex w-full flex-1 items-center gap-x-4 px-6">
         {user ? (
           <>
             <div className="relative flex w-full items-center">
-              <Input
+              {/* <Input
                 placeholder="Add a comment"
                 value={currentComment}
                 disabled={!user}
-                className="rounded-full border border-monochrome-9 bg-monochrome-white"
+                className="rounded-full border border-tertiary-200 bg-monochrome-white px-14 pl-4"
                 onChange={(event) => {
-                  const newComment = event.target.value
+                  let newComment = event.target.value
+                  if (newComment.length > 500) {
+                    newComment = newComment.slice(0, 500)
+                  }
+                  setCurrentComment(newComment)
+                }}
+              /> */}
+
+              <Textarea
+                placeholder="Add a comment"
+                value={currentComment}
+                disabled={!user}
+                className="border-tertiary-200 h-10 rounded-full border bg-monochrome-white px-14 pl-4 pt-2"
+                onChange={(event) => {
+                  let newComment = event.target.value
+                  if (newComment.length > 500) {
+                    newComment = newComment.slice(0, 500)
+                  }
                   setCurrentComment(newComment)
                 }}
               />
 
-              <p onClick={handleClick} className="absolute right-4 text-body-1-bold text-primary">
+              <button
+                onClick={handleClick}
+                disabled={currentComment.length === 0}
+                className={`absolute right-4 text-body-1-bold ${
+                  currentComment.length === 0 ? 'text-primary-600' : 'text-primary'
+                }`}>
                 Post
-              </p>
+              </button>
             </div>
           </>
         ) : (
@@ -275,8 +305,8 @@ function CommentInput({ setComments, currentComment, setCurrentComment, videoDet
               })
             }}
             placeholder="Add a comment"
-            className="h-full w-2/3 rounded-full border-2 border-monochrome-9 bg-monochrome-white py-2 pl-6">
-            <p className="text-start text-title-3-demi text-monochrome">Add a Comment</p>
+            className="border-tertiary-200 h-full w-2/3 rounded-full border-2 bg-monochrome-white py-2 pl-6">
+            <p className="text-tertiary text-start text-title-3-demi">Add a Comment</p>
           </div>
         )}
 

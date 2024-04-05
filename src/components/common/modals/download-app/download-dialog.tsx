@@ -5,6 +5,7 @@ import Image from 'next/image'
 import imageAppStore from '@images/appStore.svg'
 import imagePlayStore from '@images/playStore.svg'
 import { URL_TO_APP_STORE, URL_TO_PLAY_STORE } from '@lib/constants'
+import { GenuinIcon } from '@icons/genuin-icon'
 
 type DownloadDialogType = {
   title?: React.ReactNode
@@ -15,7 +16,7 @@ export function DownloadDialog({ title, subtitle }: DownloadDialogType) {
   return (
     <ModalShell>
       <div className="flex w-full flex-col items-center justify-center px-4 pt-6">
-        <AppLogo.icon className="fill-primary" imageHeight={50} />
+        <GenuinIcon.icon className="h-12 fill-blue" />
         <p style={{ fontSize: '40px' }} className="hidden whitespace-nowrap text-center font-bold sm:block">
           {title}
         </p>

@@ -1,14 +1,14 @@
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { Button } from '@components/ui/button'
 import { motion, useAnimationControls } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import Image from 'next/image'
-import icShare from '@icons/icShareBlue.svg'
 import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { getCurrentShareUrl, openModal } from '@lib/utils'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { joinCommunity } from '@lib/api/video'
+import { ShareIcon } from '@icons/share-icon'
 
 type Props = {
   /**
@@ -71,7 +71,7 @@ export function Desktop({
       initial={{
         translateY: '-100%',
       }}
-      className="sticky top-0 z-30 flex h-14 w-full items-center justify-between border-b border-monochrome-9 bg-monochrome-white px-6"
+      className="sticky top-0 z-30 flex h-14 w-full items-center justify-between border-b border-tertiary-200 bg-monochrome-white px-6"
       {...props}>
       <span className="flex items-center gap-x-2">
         <CustomAvatar
@@ -114,21 +114,21 @@ export function Desktop({
                   })
                 }
           }>
-          <p className={`px-4 py-1.5 text-body-1-demi ${isCommunityJoined && 'text-primary'}`}>
+          <p className={`px-4 py-1.5 text-body-1-demi text-monochrome-white ${isCommunityJoined && 'text-primary'}`}>
             {isCommunityJoined ? 'Joined' : 'Join Community'}
           </p>
         </Button>
         <Button
           variant="outline"
           size="custom"
-          className="border border-primary p-0.5"
+          className="border border-primary p-0.5 hover:border-primary-600"
           onClick={async () =>
             await shareFn({
               shareLink: getCurrentShareUrl({ isEmbed, parentUrl }),
               toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
             })
           }>
-          <Image src={icShare} alt="share" className="h-7 w-7" />
+          <ShareIcon className="h-6 w-6 fill-primary hover:fill-primary-600" />
         </Button>
       </span>
     </motion.div>
@@ -167,7 +167,7 @@ export function Mobile({
       initial={{
         translateY: '-100%',
       }}
-      className="sticky top-0 z-30 flex h-14 w-full items-center justify-between border-b border-monochrome-9 bg-monochrome-white px-6"
+      className="sticky top-0 z-30 flex h-14 w-full items-center justify-between border-b border-tertiary-200 bg-monochrome-white px-6"
       {...props}>
       <span className="flex items-center gap-x-2">
         <CustomAvatar

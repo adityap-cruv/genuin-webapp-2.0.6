@@ -27,9 +27,9 @@ export function CommentItem({ comment }: { comment: CommentType }) {
             isAvatar={comment.owner.is_avatar}
           />
           <Link href={{ pathname: PATH_NAME.profile(comment.owner.nickname) }}>
-            <p className="text-body-1-bold hover:underline">@{comment.owner.nickname}</p>
+            <p className="text-body-1-bold text-secondary hover:underline">@{comment.owner.nickname}</p>
           </Link>
-          <p className="text-cap-1-demi text-monochrome">{getTimeAgo(comment.comment.created_at) + ' ago'}</p>
+          <p className="text-cap-1-demi text-tertiary">{getTimeAgo(comment.comment.created_at) + ' ago'}</p>
         </span>
         {/* <Image src={icMore} alt="" className="h-5 w-5" /> */}
       </span>
@@ -85,6 +85,6 @@ const Comment = {
     )
   },
   text({ comment }: any) {
-    return <ReadMore className="break-all text-body-1-med" text={comment.comment.text} />
+    return <ReadMore className="break-all text-body-1-med text-secondary" text={comment.comment.text} />
   },
 }

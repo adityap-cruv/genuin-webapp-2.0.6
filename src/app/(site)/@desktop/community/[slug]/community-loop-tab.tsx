@@ -76,9 +76,9 @@ function LoopItem({ loopDetails, openModal }: { loopDetails: any; openModal: (sl
     let str = ' + '
     if (!count) return
     if (count === 1) {
-      str += count + ' collaborator'
+      str += abbreviateNumber(count) + ' Collaborator'
     } else {
-      str += count + ' collaborators'
+      str += abbreviateNumber(count) + ' Collaborators'
     }
     return str
   }
@@ -86,21 +86,21 @@ function LoopItem({ loopDetails, openModal }: { loopDetails: any; openModal: (sl
   return (
     <div className="relative">
       <Link href={{ pathname: PATH_NAME.loop(loopDetails.slug) }}>
-        <div className="relative my-4 w-full rounded-lg border border-monochrome-9 bg-monochrome-white">
+        <div className="relative my-4 w-full rounded-lg border border-tertiary-200 bg-monochrome-white">
           <div className="w-[70%] items-center p-[3%]">
-            <p className="text-body-1-bold">{loopDetails.name}</p>
+            <p className="text-body-1-bold text-secondary">{loopDetails.name}</p>
             {loopDetails.videos.length !== 0 && !loopDetails.private && (
-              <p className="text-body-1-demi text-monochrome-4">
+              <p className="text-body-1-demi text-secondary-300">
                 {loopDetails.videos[0].owner} posted ∙ {getTimeAgo(loopDetails.videos[0].created_at)}
               </p>
             )}
           </div>
-          <div className="h-[60%] rounded-b-lg border border-monochrome-8 bg-monochrome-11 p-4">
+          <div className="h-[60%] rounded-b-lg border border-tertiary-200 bg-tertiary-200 p-4">
             <div className="flex w-[70%] items-center">
               <div className="relative flex">
                 {loopDetails.owner.profile_image && (
                   <CustomAvatar
-                    className="z-20 h-6 w-6 border-2 border-monochrome-white bg-red-50"
+                    className="z-20 h-6 w-6 border-2 border-tertiary-100 bg-red-50"
                     imageUrl={loopDetails.owner.profile_image ?? ''}
                     isAvatar={loopDetails.owner.is_avatar}
                     fallbackString={loopDetails.owner.name ?? ''}
@@ -108,7 +108,7 @@ function LoopItem({ loopDetails, openModal }: { loopDetails: any; openModal: (sl
                 )}
                 {loopDetails.collaborators.length !== 0 && loopDetails.collaborators[0] && (
                   <CustomAvatar
-                    className="absolute left-3 z-10 h-6 w-6 border-2 border-monochrome-white bg-red-50"
+                    className="absolute left-3 z-10 h-6 w-6 border-2 border-tertiary-100 bg-red-50"
                     imageUrl={loopDetails.collaborators[0].profile_image ?? ''}
                     isAvatar={loopDetails.collaborators[0].is_avatar}
                     fallbackString={loopDetails.collaborators[0].nickname ?? ''}
@@ -116,7 +116,7 @@ function LoopItem({ loopDetails, openModal }: { loopDetails: any; openModal: (sl
                 )}
                 {loopDetails.collaborators.length !== 0 && loopDetails.collaborators[1] && (
                   <CustomAvatar
-                    className="absolute left-6 h-6 w-6 border-2 border-monochrome-white bg-red-50"
+                    className="absolute left-6 h-6 w-6 border-2 border-tertiary-100 bg-red-50"
                     imageUrl={loopDetails.collaborators[1].profile_image ?? ''}
                     isAvatar={loopDetails.collaborators[1].is_avatar}
                     fallbackString={loopDetails.collaborators[1].nickname ?? ''}
@@ -124,15 +124,17 @@ function LoopItem({ loopDetails, openModal }: { loopDetails: any; openModal: (sl
                 )}
               </div>
               <p
-                className={`ml-1 line-clamp-1 text-body-1-med text-monochrome-4 ${
+                className={`ml-1 line-clamp-1 text-body-1-med text-secondary-300 ${
                   loopDetails.collaborators.length !== 0 && 'ml-7'
                 } ${loopDetails.collaborators.length === 2 && 'ml-6'}`}>
                 {loopDetails.owner.nickname}
                 {getCollaboratorsCountString(loopDetails.member_count - 1)}
               </p>
             </div>
-            <p className="my-[2%] line-clamp-2 w-[70%] text-body-1-demi text-monochrome-4">{loopDetails.description}</p>
-            <p className="w-[70%] text-body-1-med text-monochrome-4">
+            <p className="my-[2%] line-clamp-2 w-[70%] text-body-1-demi text-secondary-300">
+              {loopDetails.description}
+            </p>
+            <p className="w-[70%] text-body-1-med text-secondary-300">
               {abbreviateNumber(loopDetails.subscriber_count)} subscribers ∙ {abbreviateNumber(loopDetails.view_count)}{' '}
               views
             </p>
@@ -140,8 +142,8 @@ function LoopItem({ loopDetails, openModal }: { loopDetails: any; openModal: (sl
         </div>
       </Link>
       {loopDetails.private ? (
-        <div className="group/video absolute right-7 top-[50%] flex aspect-reel h-[80%] -translate-y-1/2 items-center justify-center rounded border border-monochrome-9 bg-monochrome-white hover:cursor-pointer">
-          <div className="rounded-full bg-monochrome-9 p-2">
+        <div className="group/video absolute right-7 top-[50%] flex aspect-reel h-[80%] -translate-y-1/2 items-center justify-center rounded border border-secondary-300 bg-monochrome-white hover:cursor-pointer">
+          <div className="bg-secondary-200 rounded-full p-2">
             <Image src={icLock} alt="share" className="h-4 w-4" />
           </div>
         </div>

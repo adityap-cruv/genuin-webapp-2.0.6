@@ -15,6 +15,7 @@ import { removeAllAuthToken } from '@lib/api/instance'
 
 export function TopBar() {
   const isEmbed = useGenuinOptions().embed
+  const config = useGenuinOptions().config
 
   return (
     <>
@@ -25,6 +26,7 @@ export function TopBar() {
             <AppLogo.logo className="fill-new-off-black" imageHeight={42} />
             {/* <GenuinIcon.logo className="fill-new-off-black" /> */}
           </Link>
+          {config?.slogan?.image && <img src={config.slogan.image} className="h-10" alt="brand_web_logo" />}
           <div className="flex gap-x-3">
             {!isEmbed ? (
               <>
@@ -41,7 +43,7 @@ export function TopBar() {
                     variant="default"
                     size={'custom'}
                     className="bg-new-off-black px-4 py-3 hover:bg-new-dark-grey">
-                    <p className="text-new-para-2 font-semibold">Download Genuin</p>
+                    <p className="text-new-para-2 font-semibold text-tertiary-100">Download Genuin</p>
                   </Button>
                 </DownloadAppDialog>
               </>

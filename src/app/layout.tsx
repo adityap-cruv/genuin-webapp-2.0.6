@@ -12,28 +12,53 @@ import { SessionProvider } from 'next-auth/react'
 import { parseColors } from '@lib/utils'
 
 // TODO: Remove this staic value once colors starts coming from brand.
+// const colors = {
+//   secondary: {
+//     secondary_300: '#707070',
+//     secondary_400: '#414141',
+//     secondary: '#111111',
+//     secondary_600: '#0e0e0e',
+//   },
+//   tertiary: {
+//     tertiary_100: '#fafafa',
+//     tertiary_200: '#f4f4f4',
+//     tertiary_300: '#d4d4d4',
+//     tertiary_400: '#b4b4b4',
+//     tertiary: '#949494',
+//   },
+//   primary: {
+//     primary_100: '#fbe9e8',
+//     primary_200: '#F7D2D1',
+//     primary_300: '#EC8F8C',
+//     primary_400: '#E4625D',
+//     primary: '#D91E18',
+//     primary_600: '#981511',
+//     primary_700: '#6D0F0C',
+//   },
+// }
+
 const colors = {
   secondary: {
-    secondary_100: '#dbdbdb',
-    secondary_200: '#949494',
     secondary_300: '#707070',
-    secondary_400: '#585858',
+    secondary_400: '#414141',
     secondary: '#111111',
+    secondary_600: '#0e0e0e',
   },
   tertiary: {
-    tertiary_100: '#ffffff',
-    tertiary_200: '#f8f8f8',
-    tertiary_300: '#eeeeee',
-    tertiary: '#E7E7E7',
+    tertiary_100: '#fafafa',
+    tertiary_200: '#f4f4f4',
+    tertiary_300: '#d4d4d4',
+    tertiary_400: '#b4b4b4',
+    tertiary: '#949494',
   },
   primary: {
-    primary_100: '#e6ecff',
-    primary_200: '#cddaff',
-    primary_300: '#83a2ff',
-    primary_400: '#517dff',
-    primary: '#0645FF',
-    primary_600: '#0430b3',
-    primary_700: '#032380',
+    primary_100: '#fbe9e8',
+    primary_200: '#F7D2D1',
+    primary_300: '#EC8F8C',
+    primary_400: '#E4625D',
+    primary: '#D91E18',
+    primary_600: '#981511',
+    primary_700: '#6D0F0C',
   },
 }
 

@@ -66,9 +66,9 @@ function LoopItem({ loopDetails, openModal }: { loopDetails: any; openModal: (sl
     let str = ' + '
     if (!count) return
     if (count === 1) {
-      str += count + ' collaborator'
+      str += abbreviateNumber(count) + ' Collaborator'
     } else {
-      str += count + ' collaborators'
+      str += abbreviateNumber(count) + ' Collaborators'
     }
     return str
   }
@@ -77,16 +77,16 @@ function LoopItem({ loopDetails, openModal }: { loopDetails: any; openModal: (sl
     <div className="relative">
       <Link href={PATH_NAME.loop(loopDetails.slug)}>
         <div className="py-2">
-          <div className="relative w-full rounded-lg border border-monochrome-9 bg-monochrome-white">
+          <div className="relative w-full rounded-lg border border-tertiary-200 bg-monochrome-white">
             <div className="w-[70%] items-center p-[3%]">
-              <p className="text-body-1-bold">{loopDetails.name}</p>
+              <p className="text-body-1-bold text-secondary">{loopDetails.name}</p>
               {loopDetails.videos.length !== 0 && !loopDetails.private && (
-                <p className="text-body-1-demi text-monochrome-4">
+                <p className="text-body-1-demi text-secondary-300">
                   {loopDetails.videos[0].owner} posted ∙ {getTimeAgo(loopDetails.videos[0].created_at)}
                 </p>
               )}
             </div>
-            <div className="h-[60%] rounded-b-lg border border-monochrome-8 bg-monochrome-11 p-4">
+            <div className="h-[60%] rounded-b-lg border border-tertiary-200 bg-tertiary-100 p-4">
               <div className="flex w-[68%] items-center">
                 <div className="relative flex">
                   {loopDetails.owner.profile_image && (
@@ -115,17 +115,17 @@ function LoopItem({ loopDetails, openModal }: { loopDetails: any; openModal: (sl
                   )}
                 </div>
                 <p
-                  className={`ml-1 line-clamp-1 text-body-1-med text-monochrome-4 ${
+                  className={`ml-1 line-clamp-1 text-body-1-med text-secondary-300 ${
                     loopDetails.collaborators.length !== 0 && 'ml-7'
                   } ${loopDetails.collaborators.length === 2 && 'ml-6'}`}>
                   {loopDetails.owner.nickname}
                   {getCollaboratorsCountString(loopDetails.member_count - 1)}
                 </p>
               </div>
-              <p className="my-[2%] line-clamp-2 w-[68%] text-body-1-demi text-monochrome-4">
+              <p className="my-[2%] line-clamp-2 w-[68%] text-body-1-demi text-secondary-300">
                 {loopDetails.description}
               </p>
-              <p className="w-[68%] text-body-1-med text-monochrome-4">
+              <p className="w-[68%] text-body-1-med text-secondary-300">
                 {abbreviateNumber(loopDetails.subscriber_count)} subscribers ∙{' '}
                 {abbreviateNumber(loopDetails.view_count)} views
               </p>
@@ -135,8 +135,8 @@ function LoopItem({ loopDetails, openModal }: { loopDetails: any; openModal: (sl
         </div>
       </Link>
       {loopDetails.private ? (
-        <div className="group/video absolute right-7 top-[50%] flex aspect-reel h-[80%] -translate-y-1/2 items-center justify-center rounded border border-monochrome-9 bg-monochrome-white hover:cursor-pointer">
-          <div className="rounded-full bg-monochrome-9 p-2">
+        <div className="group/video absolute right-7 top-[50%] flex aspect-reel h-[80%] -translate-y-1/2 items-center justify-center rounded border border-tertiary-200 bg-monochrome-white hover:cursor-pointer">
+          <div className="rounded-full bg-tertiary-200 p-2">
             <Image src={icLock} alt="share" className="h-4 w-4" />
           </div>
         </div>
@@ -155,7 +155,7 @@ function LoopItem({ loopDetails, openModal }: { loopDetails: any; openModal: (sl
 function NoLoops() {
   return (
     <div className="flex h-full">
-      <div className="mt-4 flex flex-col items-center justify-center bg-monochrome-11">
+      <div className="mt-4 flex flex-col items-center justify-center bg-tertiary-100">
         <Image src={noLoopsImage} alt="share" />
         <p className="text-title-2-bold">No Loops... yet!</p>
         <p className="w-[80%] text-center text-body-1-demi text-monochrome">
@@ -261,7 +261,7 @@ function LoopDetailsTabShimmer() {
 
   return (
     <div className="relative">
-      <div className="relative my-4 w-full rounded-lg border border-monochrome-9 bg-monochrome-white">
+      <div className="relative my-4 w-full rounded-lg border border-tertiary-200 bg-monochrome-white">
         <div className="w-[70%] items-center p-[3%]">
           <Shimmer className="h-4 w-2/3" />
           <div className="my-1 flex gap-2">

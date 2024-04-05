@@ -26,6 +26,16 @@ type IntegrationSettingsType = {
   }
 }
 
+type SloganType = {
+  font: {
+    _id: string
+    style: string
+    weight: string
+  }
+  image: string
+  text: string
+}
+
 export type ConfigType = {
   brand_id: string
   created_at: string
@@ -34,6 +44,7 @@ export type ConfigType = {
   integrations: IntegrationSettingsType
   name: string
   subdomain: string
+  slogan: SloganType
 } | null
 
 type User = {

@@ -8,6 +8,7 @@ import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
 import { openModal } from '@lib/utils'
 import { DownloadDialog } from '@components/common/download-dialog'
+import { ShareIcon } from '@icons/share-icon'
 import { subscribeLoop } from '@lib/api/loop'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 
@@ -125,7 +126,7 @@ function Desktop({
               toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
             })
           }}>
-          <Image src={icShare} alt="share" className="h-6 w-6" />
+          <ShareIcon className="h-6 w-6 fill-primary" />{' '}
         </Button>
       </span>
     </motion.div>
