@@ -46,6 +46,7 @@ export type ConfigType = {
   subdomain: string
   slogan: SloganType
   brand_colors: any
+  favicon: any
 } | null
 
 type User = {
