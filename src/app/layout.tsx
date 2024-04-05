@@ -11,57 +11,6 @@ import { BrandNotFound } from '@components/common/brand-not-found'
 import { SessionProvider } from 'next-auth/react'
 import { parseColors } from '@lib/utils'
 
-// TODO: Remove this staic value once colors starts coming from brand.
-// const colors = {
-//   secondary: {
-//     secondary_300: '#707070',
-//     secondary_400: '#414141',
-//     secondary: '#111111',
-//     secondary_600: '#0e0e0e',
-//   },
-//   tertiary: {
-//     tertiary_100: '#fafafa',
-//     tertiary_200: '#f4f4f4',
-//     tertiary_300: '#d4d4d4',
-//     tertiary_400: '#b4b4b4',
-//     tertiary: '#949494',
-//   },
-//   primary: {
-//     primary_100: '#fbe9e8',
-//     primary_200: '#F7D2D1',
-//     primary_300: '#EC8F8C',
-//     primary_400: '#E4625D',
-//     primary: '#D91E18',
-//     primary_600: '#981511',
-//     primary_700: '#6D0F0C',
-//   },
-// }
-
-const colors = {
-  secondary: {
-    secondary_300: '#707070',
-    secondary_400: '#414141',
-    secondary: '#111111',
-    secondary_600: '#0e0e0e',
-  },
-  tertiary: {
-    tertiary_100: '#fafafa',
-    tertiary_200: '#f4f4f4',
-    tertiary_300: '#d4d4d4',
-    tertiary_400: '#b4b4b4',
-    tertiary: '#949494',
-  },
-  primary: {
-    primary_100: '#fbe9e8',
-    primary_200: '#F7D2D1',
-    primary_300: '#EC8F8C',
-    primary_400: '#E4625D',
-    primary: '#D91E18',
-    primary_600: '#981511',
-    primary_700: '#6D0F0C',
-  },
-}
-
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const deviceType = cookies().get('device_type')?.value ?? ''
   const os = cookies().get('os')?.value ?? ''
@@ -69,7 +18,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const configParamsStr = cookies().get('config_params')?.value ?? ''
   let configParams = null
   if (configParamsStr) configParams = JSON.parse(configParamsStr)
-  const brandColors = parseColors(colors)
 
   let config: ConfigType | undefined
   let error = false
@@ -81,12 +29,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       error = true
     }
   }
+  const brandColors = parseColors(config?.brand_colors)
+  const favicon = config?.favicon
 
   return (
-    <html lang="en">
+    <html lang="en" style={{ ...brandColors }}>
       <head>
-        <link rel="icon" type="image/x-icon" href="/favicon.svg" />
-        <link rel="mask-icon" href="/favicon.svg" />
+        <link rel="icon" type="image/x-icon" href={favicon || '/favicon.svg'} />
+        <link rel="mask-icon" href={favicon || '/favicon.svg'} />
         <meta rel="x-brand-id" content={config?.subdomain} />
         {/* <script src="https://www.google.com/recaptcha/enterprise.js?render=6LeQm4gpAAAAAC2o51SQj-ak7ojnfOlxyDiR9E7p"></script> */}
       </head>
