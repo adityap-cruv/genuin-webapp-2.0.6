@@ -60,6 +60,7 @@ export function CompleteProfile() {
             name: user.name,
             image: user.profile_image,
             isAvatar: user.is_avatar,
+            id: user.user_id,
           },
         })
       } else {

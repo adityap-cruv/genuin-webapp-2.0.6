@@ -191,10 +191,6 @@ function CommunityList({ usernickname }: any) {
   const toggleCommunityJoinState = async (communityId: string, communityHandle: string) => {
     if (user) {
       const newState = !communityJoinStates[communityId]
-      setCommunityJoinStates((prevState) => ({
-        ...prevState,
-        [communityId]: newState,
-      }))
       if (newState) {
         await joinCommunity(
           false,
@@ -205,6 +201,11 @@ function CommunityList({ usernickname }: any) {
             },
           ]
         )
+
+        setCommunityJoinStates((prevState) => ({
+          ...prevState,
+          [communityId]: newState,
+        }))
       }
     } else {
       openModal({
