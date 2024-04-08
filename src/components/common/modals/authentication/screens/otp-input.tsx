@@ -72,7 +72,6 @@ export function OtpInput() {
       .then(async (res) => {
         if (res?.code === 200) {
           const user = res.data
-          user.member_id = user.user_id
           void signIn('credentials', { ...user, redirect: false })
             .then((res) => {
               if (res?.ok) closeModal()

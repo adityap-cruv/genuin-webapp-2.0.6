@@ -40,16 +40,16 @@ export function PasswordInputLogin() {
         if (res?.code === 200) {
           // console.log(res.data)
           const user = {
-            is_avatar: res.data.is_avatar,
-            member_id: res.data.user_id,
-            nickname: res.data.nickname,
-            profile_image: res.data.profile_image,
-            email: res.data.email,
-            bio: res.data.bio,
-            name: res.data.name,
-            is_email_verified: res.data.is_email_verified,
+            is_avatar: res.data.user.is_avatar,
+            user_id: res.data.user.user_id,
+            nickname: res.data.user.nickname,
+            profile_image: res.data.user.profile_image,
+            email: res.data.user.email,
+            bio: res.data.user.bio,
+            name: res.data.user.name,
+            is_email_verified: res.data.user.is_email_verified,
             is_password_set: true,
-            accessToken: res.data.accessToken,
+            accessToken: res.data.user.token,
           }
           // console.log('user', user)
           void signIn('credentials', { ...user, redirect: false })
