@@ -168,7 +168,7 @@ function Stats({ profileData }: { profileData: any }) {
 
 function CommunityList({ usernickname }: any) {
   const { data, isLoading, fetchNextPage, isFetchingNextPage } = getAllCommunities(usernickname)
-  const [isCommunityJoined, setIsCommunityJoined] = useState(false)
+  const [communityJoinStates, setCommunityJoinStates] = useState<Record<string, boolean>>({})
   const user = useGenuinOptions().user
   const { addCommunities, communities } = useCommunityListStore((state) => ({
     addCommunities: state.addCommunities,
@@ -187,6 +187,37 @@ function CommunityList({ usernickname }: any) {
       void fetchNextPage()
     }
   })
+
+  const toggleCommunityJoinState = async (communityId: string, communityHandle: string) => {
+    if (user) {
+      const newState = !communityJoinStates[communityId]
+      setCommunityJoinStates((prevState) => ({
+        ...prevState,
+        [communityId]: newState,
+      }))
+      if (newState) {
+        await joinCommunity(
+          false,
+          [communityId],
+          [
+            {
+              user_id: user?.id,
+            },
+          ]
+        )
+      }
+    } else {
+      openModal({
+        title: 'Get the Genuin app',
+        subtitle: (
+          <>
+            Get the app to join the <br />
+            <span className="font-bold">@{communityHandle}</span> community.
+          </>
+        ),
+      })
+    }
+  }
 
   // TODO: Improve this component return type.
   return (
@@ -223,40 +254,16 @@ function CommunityList({ usernickname }: any) {
                     </Link>
                     <Button
                       size="custom"
-                      className={`${isCommunityJoined && 'border border-primary '}`}
-                      variant={isCommunityJoined ? 'outline' : 'default'}
-                      onClick={
-                        user
-                          ? async () => {
-                              !isCommunityJoined &&
-                                (await joinCommunity(
-                                  false,
-                                  [item.id],
-                                  [
-                                    {
-                                      user_id: user?.id,
-                                    },
-                                  ]
-                                ))
-                              setIsCommunityJoined((prev) => !prev)
-                            }
-                          : () => {
-                              openModal({
-                                title: 'Get the Genuin app',
-                                subtitle: (
-                                  <>
-                                    Get the app to join the <br />
-                                    <span className="font-bold">@{item.handle}</span> community.
-                                  </>
-                                ),
-                              })
-                            }
-                      }>
+                      className={`${communityJoinStates[item.id] && 'border border-primary '}`}
+                      variant={communityJoinStates[item.id] ? 'outline' : 'default'}
+                      onClick={async () => {
+                        await toggleCommunityJoinState(item.id, item.handle)
+                      }}>
                       <p
                         className={`px-4 py-1.5 text-title-3-demi text-monochrome-white ${
-                          isCommunityJoined && 'text-primary'
+                          communityJoinStates[item.id] && 'text-primary'
                         }`}>
-                        {isCommunityJoined ? 'Joined' : 'Join'}
+                        {communityJoinStates[item.id] ? 'Joined' : 'Join'}
                       </p>
                     </Button>
                   </div>

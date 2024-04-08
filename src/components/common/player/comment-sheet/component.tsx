@@ -106,18 +106,19 @@ function CommentInput({ setComments, currentComment, setCurrentComment, videoDet
             {user ? (
               <>
                 <div className="relative flex w-full items-center">
-                  {/* <Input
+                  <Input
                     placeholder="Add a comment"
                     value={currentComment}
                     disabled={!user}
-                    className="rounded-full border border-monochrome-9 bg-monochrome-white"
+                    maxLength={500}
+                    className="rounded-full border border-monochrome-9 bg-monochrome-white px-14 pl-4"
                     onChange={(event) => {
                       const newComment = event.target.value
                       setCurrentComment(newComment)
                     }}
-                  /> */}
+                  />
 
-                  <Textarea
+                  {/* <Textarea
                     placeholder="Add a comment"
                     value={currentComment}
                     disabled={!user}
@@ -129,7 +130,7 @@ function CommentInput({ setComments, currentComment, setCurrentComment, videoDet
                       }
                       setCurrentComment(newComment)
                     }}
-                  />
+                  /> */}
 
                   <button
                     onClick={handleClick}
