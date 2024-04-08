@@ -38,7 +38,7 @@ export async function signup({
   return await axiosInstance
     .post('/api/v3/signup', {
       // name,
-      email,
+      email: encryptText(email, false),
       // is_avatar: isAvatar,
       device_id: encryptText(useLocalStorage.getState().deviceId ?? '', true),
       // recaptcha_token: recaptchaToken,
@@ -70,8 +70,9 @@ export async function ksSignup({
 }: KsSignupProps): Promise<{ code: number; flow?: 'login' | 'signup'; message?: string }> {
   return await axiosInstance
     .post('/api/v3/ks_login_signup', {
-      email,
+      email: encryptText(email, false),
       brand_id: useGenuinOptions.getState().brandId,
+      device_id: encryptText(useLocalStorage.getState().deviceId, true),
     })
     .then((res) => {
       console.log('response in axios:', res)
@@ -312,31 +313,18 @@ export async function loginViaEmail({
   actionMetaData,
 }: LoginViaEmailType): Promise<{ code: number; data: any }> {
   return await axiosInstance
-    .post(
-      '/api/v3/login_via_email',
-      {
-        email: encryptText(email ?? '', false),
-        device_id: encryptText(deviceId, true),
-        brand_id: useGenuinOptions.getState().brandId,
-        password,
-        login_source: loginSource,
-        action_meta_data: actionMetaData,
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    )
+    .post('/api/v3/login_via_email', {
+      email: encryptText(email ?? '', false),
+      device_id: encryptText(deviceId, true),
+      brand_id: useGenuinOptions.getState().brandId,
+      password: encryptText(password ?? '', false),
+      login_source: loginSource,
+      action_meta_data: actionMetaData,
+    })
     .then((res) => {
-      if (password) {
-        const authToken = res.headers['x-auth-token']
-        setAuthTokenInAxiosInstance(authToken)
-        Object.assign(res.data.data, { accessToken: authToken })
-      } else {
-        setTempAuthTokenInAxiosInstance(res.headers['x-temp-auth-token'])
-      }
-
+      const authToken = res?.data?.data?.user?.token
+      setAuthTokenInAxiosInstance(authToken)
+      Object.assign(res.data.data, { accessToken: authToken })
       return { code: 200, data: res.data.data }
     })
     .catch((e) => {
