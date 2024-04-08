@@ -86,7 +86,7 @@ function Component1() {
       <hr className="border-b-1 w-full border-monochrome-9" />
 
       <div className="my-4 w-full">
-        <Carousel setApi={setApi} className="relative w-full max-w-xs" defaultValue={1}>
+        <Carousel setApi={setApi} className="relative w-full" defaultValue={1}>
           <Image priority loading="eager" className="absolute h-full w-screen" src={bg} alt="Star" />
 
           <CarouselContent>
