@@ -11,6 +11,7 @@ import {
   Note,
   UsernameInput,
   CompleteProfile,
+  Guidelines,
 } from './screens'
 import { useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
@@ -129,5 +130,7 @@ export function Content() {
       return <Note.magicLink />
     case 'PASSWORD_INPUT_LOGIN':
       return <PasswordInputLogin />
+    case 'GUIDELINES':
+      return <Guidelines />
   }
 }
