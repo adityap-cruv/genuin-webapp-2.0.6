@@ -62,8 +62,11 @@ export function Guidelines() {
     }
   }
 
-  const brandName = useGenuinOptions().config?.name ? useGenuinOptions().config?.name : 'Genuin'
-  const brandLogo = useGenuinOptions().brandWebLogo
+  const { brandName, brandLogo } = useGenuinOptions((state) => ({
+    brandName: state.config?.name ? state.config?.name : 'Genuin',
+    brandLogo: state.brandWebLogo,
+  }))
+
   return (
     <ModalShell>
       <div className="w-full">
