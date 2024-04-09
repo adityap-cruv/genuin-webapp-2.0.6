@@ -67,7 +67,7 @@ export function NumberInput() {
 
   return (
     <ModalShell>
-      <p className="text-center text-heading-3">Log in to {brandName ?? 'genuin'}</p>
+      <p className="text-center text-heading-3 text-secondary">Log in to {brandName ?? 'genuin'}</p>
       <div className="w-full">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -79,7 +79,7 @@ export function NumberInput() {
                   <FormItem className="sm:w-full">
                     <FormLabel className="text-body-1-med">
                       <div className="flex w-full justify-between">
-                        <p>Phone</p>
+                        <p className="text-secondary">Phone</p>
                       </div>
                     </FormLabel>
                     <FormControl>
@@ -100,7 +100,7 @@ export function NumberInput() {
             <Button
               type="submit"
               variant="default"
-              className="w-full bg-new-off-black hover:bg-new-dark-grey"
+              className="w-full"
               disabled={!isValidPhoneNumber(formData.phone ?? '') || isLoading}>
               {isLoading ? (
                 <Loader size="sm" className="fill-new-off-white" />
@@ -117,16 +117,16 @@ export function NumberInput() {
         </p>
       )}
 
-      <p className="text-title-3-demi text-monochrome">OR</p>
+      <p className="text-title-3-demi text-tertiary">OR</p>
       <Button
         variant="outline"
-        className="w-full border border-monochrome-9"
+        className="w-full border border-tertiary-200"
         onClick={() => {
           setStep('EMAIL_INPUT')
         }}>
         <div className="relative flex w-full items-center justify-center">
           <img src={at_icon.src} className="absolute left-0 h-5 w-5" alt="at" />
-          <p className="text-title-3-demi">Use Email</p>
+          <p className="text-title-3-demi text-secondary">Use Email</p>
         </div>
       </Button>
       <p className="text-new-para-2-mobile">
@@ -139,7 +139,7 @@ export function NumberInput() {
           <span className="text-primary"> Privacy</span>
         </a>
       </p>
-      <p className="flex w-full items-center justify-center text-body-1-demi">
+      <p className="flex w-full items-center justify-center text-body-1-demi text-secondary">
         Don't have an account?
         <span
           className="cursor-pointer text-primary"

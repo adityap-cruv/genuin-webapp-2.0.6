@@ -23,9 +23,9 @@ export function Success() {
   if (status !== 'loading')
     return (
       <ModalShell>
-        <h3 className="text-heading-3">Welcome back, {data?.user.name} </h3>
+        <h3 className="text-heading-3 text-secondary">Welcome back, {data?.user.name} </h3>
         <Button
-          className="w-full bg-monochrome-black hover:bg-new-dark-grey"
+          className="w-full"
           onClick={() => {
             deleteSearchParam({
               pathName,
@@ -91,11 +91,11 @@ export function Failure() {
   return (
     <ModalShell>
       <img src={imgError.src} className="h-28 w-28" />
-      <h3 className="text-heading-3">Magic link expired</h3>
-      <p className="text-center text-title-3-med">
+      <h3 className="text-heading-3 text-secondary">Magic link expired</h3>
+      <p className="text-center text-title-3-med text-secondary">
         We're sorry, but it looks like the magic link has expired. Please request a new magic link.
       </p>
-      <Button className="w-full bg-monochrome-black hover:bg-new-dark-grey" onClick={resendMail}>
+      <Button className="w-full" onClick={resendMail}>
         {isLoading ? (
           <Loader size="sm" className="fill-new-off-white" />
         ) : (

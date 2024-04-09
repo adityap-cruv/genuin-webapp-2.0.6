@@ -92,7 +92,7 @@ export function EmailInput() {
 
   return (
     <ModalShell>
-      <p className="text-center text-heading-3">Log in or sign up</p>
+      <p className="text-center text-heading-3 text-secondary">Log in or sign up</p>
       <div className="w-full">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -105,12 +105,15 @@ export function EmailInput() {
                   <FormItem className="sm:w-full">
                     <FormLabel className="w-full text-body-1-med">
                       <div className="flex w-full justify-between">
-                        <p>Email</p>
+                        <p className="text-secondary">Email</p>
                       </div>
                     </FormLabel>
                     <FormControl>
                       <Input
-                        className={cn('border-monochrome-9 bg-monochrome-11 text-title-3-med', errors && '!border-red')}
+                        className={cn(
+                          'border border-tertiary-200 bg-tertiary-100 text-title-3-med',
+                          errors && '!border-red'
+                        )}
                         {...field}
                       />
                     </FormControl>
@@ -119,11 +122,7 @@ export function EmailInput() {
                 )
               }}
             />
-            <Button
-              type="submit"
-              variant="default"
-              className="w-full bg-new-off-black hover:bg-new-dark-grey"
-              disabled={!isValid || isLoading || !isDirty}>
+            <Button type="submit" variant="default" className="w-full" disabled={!isValid || isLoading}>
               {isLoading ? (
                 <Loader className="stroke-new-off-white" size="sm" />
               ) : (
@@ -138,7 +137,7 @@ export function EmailInput() {
           {form.formState.errors.root.message}
         </p>
       )}
-      <p className="text-center text-new-para-2-mobile">
+      <p className="text-center text-new-para-2-mobile text-secondary">
         By registering, you agree to {brandName ?? 'genuin'}'s
         <a href={PATH_NAME.terms} target="_blank" rel="noopener noreferrer">
           <span className="text-primary"> Terms of Service </span>

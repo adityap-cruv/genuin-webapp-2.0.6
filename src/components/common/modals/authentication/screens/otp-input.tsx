@@ -116,8 +116,8 @@ export function OtpInput() {
   return (
     <ModalShell>
       <div className="flex flex-col items-center">
-        <p className="mb-6 text-center text-heading-3">Enter code</p>
-        <p className="w-full text-center text-title-3-med text-monochrome">
+        <p className="mb-6 text-center text-heading-3 text-secondary">Enter code</p>
+        <p className="w-full text-center text-title-3-med text-tertiary">
           Enter the 6-digit code sent to: {formData.phone}
         </p>
 
@@ -148,11 +148,7 @@ export function OtpInput() {
                   )
                 }}
               />
-              <Button
-                type="submit"
-                variant="default"
-                className="w-full bg-new-off-black hover:bg-new-dark-grey"
-                disabled={!isValidOtp || isLoading}>
+              <Button type="submit" variant="default" className="w-full" disabled={!isValidOtp || isLoading}>
                 {isLoading ? (
                   <Loader size="sm" className="fill-new-off-white" />
                 ) : (
@@ -179,7 +175,7 @@ export function OtpInput() {
         </p>
       )}
 
-      <p className="flex w-full items-center justify-center text-body-1-demi">
+      <p className="flex w-full items-center justify-center text-body-1-demi text-secondary">
         Don't have an account?
         <span
           className="cursor-pointer text-primary"
