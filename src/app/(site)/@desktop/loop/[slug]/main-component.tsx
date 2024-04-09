@@ -60,8 +60,13 @@ export function MainComponent({ loopDetails }: Props) {
                   onClick={
                     user
                       ? async () => {
-                          !isLoopSubscribed && (await subscribeLoop(loopDetails.chat_id, true))
-                          setIsLoopSubscribed((prev) => !prev)
+                          !isLoopSubscribed
+                            ? await subscribeLoop(loopDetails.chat_id, true).then((res) => {
+                                if (res.code === 200) {
+                                  setIsLoopSubscribed((prev) => !prev)
+                                }
+                              })
+                            : setIsLoopSubscribed((prev) => !prev)
                         }
                       : () => {
                           openModal({
@@ -114,7 +119,7 @@ export function MainComponent({ loopDetails }: Props) {
               <Button
                 variant="outline"
                 size="custom"
-                className="hover:border-primary-600 border border-primary p-0.5"
+                className="border border-primary p-0.5 hover:border-primary-600"
                 onClick={async () => {
                   const currentURL = new URL(window.location.href)
                   currentURL.searchParams.set('community', `${loopDetails.community.share_string}`)
@@ -124,7 +129,7 @@ export function MainComponent({ loopDetails }: Props) {
                     toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                   })
                 }}>
-                <ShareIcon className="hover:fill-primary-600 h-6 w-6 fill-primary" />
+                <ShareIcon className="h-6 w-6 fill-primary hover:fill-primary-600" />
               </Button>
             </div>
           </div>
@@ -132,10 +137,10 @@ export function MainComponent({ loopDetails }: Props) {
             <p className="my-1 line-clamp-2 w-1/2 break-words text-body-1-med text-secondary">
               {loopDetails.group.group_description}
             </p>
-            <div className="border-tertiary-200 my-3 w-1/2 rounded-xl border p-4">
+            <div className="my-3 w-1/2 rounded-xl border border-tertiary-200 p-4">
               <span className="flex" ref={detailsDivRef}>
                 <span className="flex-1">
-                  <p className="text-tertiary text-body-1-demi">Created by</p>
+                  <p className="text-body-1-demi text-tertiary">Created by</p>
                   <Link href={{ pathname: PATH_NAME.profile(loopDetails.owner.nickname) }}>
                     <div className="my-2 flex items-center">
                       <CustomAvatar
@@ -149,7 +154,7 @@ export function MainComponent({ loopDetails }: Props) {
                   </Link>
                 </span>
                 <span className="flex-1">
-                  <p className="text-tertiary text-body-1-demi">Posted in</p>
+                  <p className="text-body-1-demi text-tertiary">Posted in</p>
                   <Link href={{ pathname: PATH_NAME.community(loopDetails.community.slug) }}>
                     <div className="my-2 flex items-center">
                       <CustomAvatar
@@ -274,7 +279,7 @@ function Stats({
         return (
           <div key={index} className="flex items-center gap-x-1">
             <p className="text-title-2-bold text-secondary">{obj.value}</p>
-            <p className="text-tertiary text-body-1-med">{obj.key}</p>
+            <p className="text-body-1-med text-tertiary">{obj.key}</p>
           </div>
         )
       })}

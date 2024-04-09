@@ -27,11 +27,11 @@ export function PasswordInput() {
   async function onSubmit({ password }: { password: string }) {
     setIsLoading(true)
     try {
-      const { status, user } = await updateUser({ password })
+      const { status } = await updateUser({ password })
       if (status) {
         await updateSession({
           ...sessionData,
-          user: { ...sessionData?.user, isPasswordSet: true, id: user?.user_id },
+          user: { ...sessionData?.user, isPasswordSet: true },
         })
         setStep('USERNAME_INPUT')
       } else {
@@ -46,7 +46,7 @@ export function PasswordInput() {
 
   return (
     <ModalShell>
-      <h3 className="flex w-full items-center justify-center text-heading-3">Set your password</h3>
+      <h3 className="flex w-full items-center justify-center text-heading-3 text-secondary">Set your password</h3>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
           <FormField
@@ -58,7 +58,7 @@ export function PasswordInput() {
                 <FormItem className="sm:w-full">
                   <FormLabel className="text-body-1-med">
                     <div className="flex w-full justify-between">
-                      <p>Password</p>
+                      <p className="text-secondary">Password</p>
                     </div>
                   </FormLabel>
                   <FormControl>
@@ -67,7 +67,10 @@ export function PasswordInput() {
                         maxLength={24}
                         minLength={8}
                         type={passwordVisible ? 'text' : 'password'}
-                        className={cn('border-monochrome-9 bg-monochrome-11 text-title-3-med', errors && '!border-red')}
+                        className={cn(
+                          'border border-tertiary-200 bg-tertiary-100 text-title-3-med',
+                          errors && '!border-red'
+                        )}
                         {...field}
                       />
                       <div className="absolute right-4 top-0 flex h-full items-center">
@@ -93,7 +96,7 @@ export function PasswordInput() {
                     className={cn(
                       '!text-cap-1-demi',
                       isValid && 'text-supplementary-green',
-                      (!isDirty || !isValid) && 'text-monochrome-6'
+                      (!isDirty || !isValid) && 'text-tertiary-400'
                     )}>
                     {(!isDirty || !isValid) && 'Must be at least 8 characters'}
                     {isValid && 'Looks good!'}
@@ -105,7 +108,7 @@ export function PasswordInput() {
           <Button
             type="submit"
             disabled={!isDirty || !isValid || isLoading}
-            className="flex w-full items-center justify-center border-0 bg-new-off-black hover:bg-new-dark-grey">
+            className="flex w-full items-center justify-center border-0">
             {isLoading ? (
               <Loader size="sm" className="fill-new-off-white" />
             ) : (

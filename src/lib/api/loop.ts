@@ -131,7 +131,7 @@ export async function subscribeLoop(uuid: string, subscribe: boolean) {
       }
     )
     .then((res) => {
-      return { code: 200, data: res.data.data }
+      return { code: res.status, data: res.data.data }
     })
     .catch((e) => {
       return { code: Number(e.response.data.code) }

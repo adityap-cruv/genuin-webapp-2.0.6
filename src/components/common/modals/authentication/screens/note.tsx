@@ -38,13 +38,13 @@ function Email({ acountExists = false }: { acountExists?: boolean }) {
 
   return (
     <ModalShell>
-      <p className="text-center text-title-1-med">
+      <p className="text-center text-title-1-med text-secondary">
         {acountExists && 'An account with the given email already exists. '}We have sent a confirmation link to{' '}
         <span className="text-title-1-bold">{shortenedEmail(email)}</span>. Verify your email to save your profile{' '}
         {acountExists && 'and continue'}.
       </p>
       {error.code !== 5239 && (
-        <p className="text-title-3-demi">
+        <p className="text-title-3-demi text-secondary">
           Not seeing the email?{' '}
           <span onClick={resendMail} className="cursor-pointer text-primary">
             Resend
@@ -66,7 +66,7 @@ function MagicLink() {
   const brandName = useGenuinOptions().config?.name
   return (
     <ModalShell>
-      <p className="text-center text-title-1-med">
+      <p className="text-center text-title-1-med text-secondary">
         We have sent a magic link to <span className="text-title-1-bold">{shortenedEmail(email)}</span>. Click the link
         to Log in to {brandName}.
       </p>

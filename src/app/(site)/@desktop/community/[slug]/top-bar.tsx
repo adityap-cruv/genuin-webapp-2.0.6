@@ -90,17 +90,21 @@ export function Desktop({
           onClick={
             user
               ? async () => {
-                  !isCommunityJoined &&
-                    (await joinCommunity(
-                      false,
-                      [communityId],
-                      [
-                        {
-                          user_id: user?.id,
-                        },
-                      ]
-                    ))
-                  setIsCommunityJoined((prev: any) => !prev)
+                  !isCommunityJoined
+                    ? await joinCommunity(
+                        false,
+                        [communityId],
+                        [
+                          {
+                            user_id: user?.id,
+                          },
+                        ]
+                      ).then((res) => {
+                        if (res.code === 200) {
+                          setIsCommunityJoined((prev: any) => !prev)
+                        }
+                      })
+                    : setIsCommunityJoined((prev: any) => !prev)
                 }
               : () => {
                   openModal({

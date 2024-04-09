@@ -89,17 +89,21 @@ export function RootDetails({ communityDetails }: Props) {
               onClick={
                 user
                   ? async () => {
-                      !isCommunityJoined &&
-                        (await joinCommunity(
-                          false,
-                          [communityDetails.info.id],
-                          [
-                            {
-                              user_id: user?.id,
-                            },
-                          ]
-                        ))
-                      setIsCommunityJoined((prev) => !prev)
+                      !isCommunityJoined
+                        ? await joinCommunity(
+                            false,
+                            [communityDetails.info.id],
+                            [
+                              {
+                                user_id: user?.id,
+                              },
+                            ]
+                          ).then((res) => {
+                            if (res.code === 200) {
+                              setIsCommunityJoined((prev) => !prev)
+                            }
+                          })
+                        : setIsCommunityJoined((prev) => !prev)
                     }
                   : () => {
                       openModal({

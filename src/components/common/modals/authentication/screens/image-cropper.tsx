@@ -78,7 +78,9 @@ export function ImageCropper() {
 
   return (
     <ModalShell>
-      <h3 className="mb-4 flex w-full  items-center justify-center text-heading-3">Edit Profile picture</h3>
+      <h3 className="mb-4 flex w-full  items-center justify-center text-heading-3 text-secondary">
+        Edit Profile picture
+      </h3>
       <div className="pb-2">
         <Cropper
           viewMode={1}
@@ -99,10 +101,7 @@ export function ImageCropper() {
           style={{ maxHeight: '400px', maxWidth: '500px' }}
         />
       </div>
-      <Button
-        disabled={uploadingImage}
-        className="w-full bg-new-off-black  text-title-3-demi !text-new-off-white hover:bg-new-dark-grey"
-        onClick={getCropData}>
+      <Button disabled={uploadingImage} className="w-full text-title-3-demi !text-new-off-white" onClick={getCropData}>
         {uploadingImage ? <p>Uploading...</p> : <p>Save Changes</p>}
       </Button>
       {error && <p className="flex items-center justify-center text-title-3-med text-supplementary-red">{error}</p>}

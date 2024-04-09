@@ -85,8 +85,13 @@ function Desktop({
           onClick={
             user
               ? async () => {
-                  !isLoopSubscribed && (await subscribeLoop(chatId ?? '', true))
-                  setIsLoopSubscribed((prev: any) => !prev)
+                  !isLoopSubscribed
+                    ? await subscribeLoop(chatId ?? '', true).then((res) => {
+                        if (res.code === 200) {
+                          setIsLoopSubscribed((prev: any) => !prev)
+                        }
+                      })
+                    : setIsLoopSubscribed((prev: any) => !prev)
                 }
               : () => {
                   openModal({

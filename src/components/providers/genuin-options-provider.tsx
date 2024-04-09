@@ -65,6 +65,7 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
     setInitialData({
       embed: !!config,
       logoUrl: config?.logo,
+      brandWebLogo: config?.brand_web_logo,
       brandId: config?.brand_id,
       showNavbar: !hideNavbar,
       isMobile,

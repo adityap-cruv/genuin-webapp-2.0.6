@@ -322,7 +322,7 @@ export async function loginViaEmail({
       action_meta_data: actionMetaData,
     })
     .then((res) => {
-      const authToken = res?.data?.data?.user?.token
+      const authToken = res.headers['x-auth-token']
       setAuthTokenInAxiosInstance(authToken)
       Object.assign(res.data.data, { accessToken: authToken })
       return { code: 200, data: res.data.data }
