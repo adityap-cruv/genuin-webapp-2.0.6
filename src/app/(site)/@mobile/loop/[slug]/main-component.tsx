@@ -68,10 +68,10 @@ export function MainComponent({ loopDetails }: Props) {
                 {loopDetails.group.group_description}
               </p>
             </div>
-            <div className=" border-tertiary-200 my-3 overflow-hidden rounded-lg border border-solid p-4">
+            <div className=" my-3 overflow-hidden rounded-lg border border-solid border-tertiary-200 p-4">
               <div className="flex">
                 <div className="flex flex-1 flex-col items-start">
-                  <p className="text-tertiary text-body-1-demi">Created by</p>
+                  <p className="text-body-1-demi text-tertiary">Created by</p>
                   <Link href={{ pathname: PATH_NAME.profile(loopDetails.owner.nickname) }}>
                     <div className="my-2 flex items-center">
                       <div className="bg-red-400 h-6 w-6">
@@ -87,7 +87,7 @@ export function MainComponent({ loopDetails }: Props) {
                   </Link>
                 </div>
                 <div className="flex flex-1 flex-col items-start">
-                  <p className="text-tertiary text-body-1-demi">Posted in</p>
+                  <p className="text-body-1-demi text-tertiary">Posted in</p>
                   {/* todo change to community data */}
                   <Link href={{ pathname: PATH_NAME.community(loopDetails.community.slug) }}>
                     <div className="my-2 flex items-center">
@@ -149,8 +149,13 @@ export function MainComponent({ loopDetails }: Props) {
                   onClick={
                     user
                       ? async () => {
-                          !isLoopSubscribed && (await subscribeLoop(loopDetails.chat_id, true))
-                          setIsLoopSubscribed((prev: any) => !prev)
+                          !isLoopSubscribed
+                            ? await subscribeLoop(loopDetails.chat_id, true).then((res) => {
+                                if (res.code === 200) {
+                                  setIsLoopSubscribed((prev: any) => !prev)
+                                }
+                              })
+                            : setIsLoopSubscribed((prev: any) => !prev)
                         }
                       : () => {
                           openModal({
@@ -226,13 +231,13 @@ export function MainComponent({ loopDetails }: Props) {
               </Button>
             </div>
           </div>
-          <hr className="border-tertiary-200 border-t" />
+          <hr className="border-t border-tertiary-200" />
           {loopDetails.private ? (
             <div
               className="mt-4 flex w-full items-center justify-center overflow-hidden"
               style={{ height: 'calc(100% - 220px)' }}>
               <div className="flex flex-col items-center justify-center">
-                <div className="bg-tertiary-200 mb-2 rounded-full p-6">
+                <div className="mb-2 rounded-full bg-tertiary-200 p-6">
                   <Image src={icLock} alt="share" className="h-16 w-16" />
                 </div>
                 <p className="text-center text-title-2-demi">
@@ -263,7 +268,7 @@ function LoopTabs() {
           <p className="text-title-3-bold">Subscribers</p>
         </TabsTrigger>
       </TabsList>
-      <hr className="border-tertiary-200 border-t" />
+      <hr className="border-t border-tertiary-200" />
       <TabsContent value="Loops">
         <LoopVideos slug={loopDetailsModule.chat_slug} />
       </TabsContent>
@@ -286,7 +291,7 @@ function LoopCollaborators({ slug }: { slug: string }) {
 
   if (cohosts && cohosts.length === 0)
     return (
-      <div className="text-tertiary flex h-full w-full items-center justify-center pt-32 text-title-3-bold">
+      <div className="flex h-full w-full items-center justify-center pt-32 text-title-3-bold text-tertiary">
         No collaborators yet
       </div>
     )
@@ -320,7 +325,7 @@ function LoopSubscribers({ slug }: any) {
 
   if (subscribers && subscribers.length === 0)
     return (
-      <div className="text-tertiary flex h-full w-full items-center justify-center pt-32 text-title-3-bold">
+      <div className="flex h-full w-full items-center justify-center pt-32 text-title-3-bold text-tertiary">
         No subscribers yet
       </div>
     )
@@ -360,7 +365,7 @@ function Stats({
         return (
           <div key={index} className="flex items-center">
             <p className="mr-1 text-title-2-bold text-secondary">{obj.value}</p>
-            <p className="text-tertiary mr-4 text-body-1-demi">{obj.key}</p>
+            <p className="mr-4 text-body-1-demi text-tertiary">{obj.key}</p>
           </div>
         )
       })}
@@ -383,7 +388,7 @@ function CohostTile({ image, title, subtitle, userName, isAvatar }: CohostTilePr
       <div className="mx-2">
         <p className="line-clamp-1 text-body-1-bold text-secondary">{title}</p>
         {userName && <p className="line-clamp-1 text-body-1-demi text-secondary">{userName}</p>}
-        {subtitle && <p className="text-tertiary line-clamp-1 text-cap-1-demi">{subtitle}</p>}
+        {subtitle && <p className="line-clamp-1 text-cap-1-demi text-tertiary">{subtitle}</p>}
       </div>
     </div>
   )

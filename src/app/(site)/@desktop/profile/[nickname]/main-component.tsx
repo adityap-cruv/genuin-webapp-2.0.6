@@ -200,8 +200,15 @@ function CommunityList({ usernickname }: any) {
               user_id: user?.id,
             },
           ]
-        )
-
+        ).then((res) => {
+          if (res.code === 200) {
+            setCommunityJoinStates((prevState) => ({
+              ...prevState,
+              [communityId]: newState,
+            }))
+          }
+        })
+      } else {
         setCommunityJoinStates((prevState) => ({
           ...prevState,
           [communityId]: newState,

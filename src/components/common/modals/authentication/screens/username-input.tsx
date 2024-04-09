@@ -66,11 +66,11 @@ export function UsernameInput() {
     setIsLoading(true)
     try {
       if (isUsernameValid) {
-        const { status, user } = await updateUser({ nickname: username })
+        const { status } = await updateUser({ nickname: username })
         if (status) {
           await updateSession({
             ...sessionData,
-            user: { ...sessionData?.user, nickname: username, id: user?.user_id },
+            user: { ...sessionData?.user, nickname: username },
           })
           setStep('COMPLETE_PROFILE')
         }

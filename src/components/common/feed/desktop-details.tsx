@@ -86,17 +86,21 @@ export function DesktopDetails({ videoDetails }: DesktopDetailsProps) {
                     onClick={
                       user
                         ? async () => {
-                            !isCommunityJoined &&
-                              (await joinCommunity(
-                                false,
-                                [videoDetails.community.id],
-                                [
-                                  {
-                                    user_id: user?.id,
-                                  },
-                                ]
-                              ))
-                            setIsCommunityJoined((prev) => !prev)
+                            !isCommunityJoined
+                              ? await joinCommunity(
+                                  false,
+                                  [videoDetails.community.id],
+                                  [
+                                    {
+                                      user_id: user?.id,
+                                    },
+                                  ]
+                                ).then((res) => {
+                                  if (res.code === 200) {
+                                    setIsCommunityJoined((prev) => !prev)
+                                  }
+                                })
+                              : setIsCommunityJoined((prev) => !prev)
                           }
                         : () => {
                             openModal({

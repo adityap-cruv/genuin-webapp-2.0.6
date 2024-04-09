@@ -27,11 +27,11 @@ export function PasswordInput() {
   async function onSubmit({ password }: { password: string }) {
     setIsLoading(true)
     try {
-      const { status, user } = await updateUser({ password })
+      const { status } = await updateUser({ password })
       if (status) {
         await updateSession({
           ...sessionData,
-          user: { ...sessionData?.user, isPasswordSet: true, id: user?.user_id },
+          user: { ...sessionData?.user, isPasswordSet: true },
         })
         setStep('USERNAME_INPUT')
       } else {
