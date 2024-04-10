@@ -2,11 +2,12 @@ import { type CommentListType, validateCommentList } from '@lib/schemas/loop/com
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import { axiosInstance } from './instance'
+import { validateLoopCohosts } from '@lib/schemas/loop/cohosts'
 
 export async function fetchLoopDetails(slug: string) {
   return await axios
-    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/rt/details', {
-      params: { loop_id: { slug } },
+    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/conversation/details', {
+      params: { slug },
     })
     .then((res) => {
       return res?.data?.data
@@ -46,37 +47,77 @@ export function getLoopVideos(slug: string) {
   })
 }
 
-// TODO: Check for ref and pagination is enabled or not.
-type UserType = 'subscribers' | 'members'
-async function fetchLoopCohosts(slug: string, type: UserType) {
+// async function fetchLoopCohosts(slug: string, type: UserType) {
+//   return await axios
+//     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/rt/users', {
+//       params: {
+//         type,
+//         loop_id: { slug },
+//         ref: undefined,
+//       },
+//     })
+//     .then((res) => {
+//       const resData = res.data.data
+//       return { users: resData?.list, ref: resData.ref, end: resData.end_page }
+//     })
+//     .catch((e) => {
+//       throw new Error('Something went wrong in fetching videos.')
+//     })
+// }
+
+async function fetchLoopCohosts(slug: string, pageParam: string) {
   return await axios
-    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/rt/users', {
+    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/conversation/members', {
       params: {
-        type,
-        loop_id: { slug },
-        ref: undefined,
+        slug,
+        last_member_id: pageParam,
       },
     })
     .then((res) => {
       const resData = res.data.data
-      return { users: resData?.list, ref: resData.ref, end: resData.end_page }
+      console.log('data::', resData)
+      return { members: validateLoopCohosts(resData?.members), end: resData.end_of_result }
     })
     .catch((e) => {
-      throw new Error('Something went wrong in fetching videos.')
+      console.log('error in fetching loop cohosts::', e)
+      throw new Error('Something went wrong in fetching loop cohosts.')
     })
 }
 
-export function getLoopCohosts(slug: string, type: UserType) {
-  return useQuery({
-    queryKey: ['cohosts'],
-    queryFn: async () => await fetchLoopCohosts(slug, type),
+export function getLoopCohosts(slug: string) {
+  return useInfiniteQuery({
+    queryKey: ['cohosts', slug],
+    queryFn: async ({ pageParam }) => await fetchLoopCohosts(slug, pageParam),
+    getNextPageParam(lastPage, allPages) {
+      if (lastPage.end) return
+      return lastPage.members[lastPage.members.length - 1].member_id
+    },
   })
 }
 
-export function getLoopSubscribers(slug: string, type: UserType) {
-  return useQuery({
-    queryKey: ['users'],
-    queryFn: async () => await fetchLoopCohosts(slug, type),
+async function fetchLoopSubscribers(slug: string, pageParam: string) {
+  return await axios
+    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/conversation/members', {
+      params: {
+        slug,
+        last_member_id: pageParam,
+      },
+    })
+    .then((res) => {
+      const resData = res.data.data
+      console.log('data::', resData)
+      return { members: validateLoopCohosts(resData?.members), end: resData.end_of_result }
+    })
+    .catch((e) => {
+      console.log('error in fetching loop cohosts::', e)
+      throw new Error('Something went wrong in fetching loop cohosts.')
+    })
+}
+
+export function getLoopSubscribers(slug: string) {
+  return useInfiniteQuery({
+    queryKey: ['users', slug],
+    queryFn: async ({ pageParam }) => await fetchLoopSubscribers(slug, pageParam),
   })
 }
 
@@ -118,18 +159,10 @@ export function getLoopVideoComments(videoShareString: string) {
 
 export async function subscribeLoop(uuid: string, subscribe: boolean) {
   return await axiosInstance
-    .post(
-      '/api/v3/conversation/subscription',
-      {
-        chat_id: uuid,
-        subscribe,
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    )
+    .post('/api/v3/conversation/subscription', {
+      chat_id: uuid,
+      subscribe,
+    })
     .then((res) => {
       return { code: 200, data: res.data.data }
     })

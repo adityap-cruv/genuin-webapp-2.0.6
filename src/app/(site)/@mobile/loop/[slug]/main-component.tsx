@@ -7,7 +7,7 @@ import icLock from '@icons/icLock.svg'
 import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
-import { getLoopCohosts, getLoopSubscribers, subscribeLoop } from '@lib/api/loop'
+import { getLoopCohosts, subscribeLoop } from '@lib/api/loop'
 import { Loader } from '@components/ui/loader'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
@@ -18,7 +18,6 @@ import { useInView } from 'framer-motion'
 import { TopStickyBar } from '../../../@desktop/loop/[slug]/top-bar'
 import { LoopVideos } from './loop-videos'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
-import { DownloadDialog } from '@components/common/download-dialog'
 import { ShareIcon } from '@icons/share-icon'
 import { useSearchParams } from 'next/navigation'
 
@@ -55,8 +54,9 @@ export function MainComponent({ loopDetails }: Props) {
           defaultOpen={false}
           isOpen={!detailsInView}
           loopName={loopDetails.group.group_name ?? ''}
-          shareString={loopDetails.share_string}
+          shareUrl={loopDetails.share_url}
           communitySlug={loopDetails.community.slug}
+          isLoopSubscribed={loopDetails.is_subscriber}
         />
         <div
           className="hide-scrollbar absolute inset-0 mt-navbar flex w-full flex-col gap-y-2 overflow-auto p-4 md:flex-row md:gap-x-2"
@@ -68,11 +68,11 @@ export function MainComponent({ loopDetails }: Props) {
                 {loopDetails.group.group_description}
               </p>
             </div>
-            <div className=" border-tertiary-200 my-3 overflow-hidden rounded-lg border border-solid p-4">
+            <div className=" my-3 overflow-hidden rounded-lg border border-solid border-tertiary-200 p-4">
               <div className="flex">
                 <div className="flex flex-1 flex-col items-start">
-                  <p className="text-tertiary text-body-1-demi">Created by</p>
-                  <Link href={{ pathname: PATH_NAME.profile(loopDetails.owner.nickname) }}>
+                  <p className="text-body-1-demi text-tertiary">Created by</p>
+                  <Link href={{ pathname: PATH_NAME.profile(loopDetails.owner.username) }}>
                     <div className="my-2 flex items-center">
                       <div className="bg-red-400 h-6 w-6">
                         <CustomAvatar
@@ -82,12 +82,12 @@ export function MainComponent({ loopDetails }: Props) {
                           isAvatar={loopDetails.owner.is_avatar}
                         />
                       </div>
-                      <p className="ml-1 text-body-1-bold text-secondary">@{loopDetails.owner.nickname}</p>
+                      <p className="ml-1 text-body-1-bold text-secondary">@{loopDetails.owner.username}</p>
                     </div>
                   </Link>
                 </div>
                 <div className="flex flex-1 flex-col items-start">
-                  <p className="text-tertiary text-body-1-demi">Posted in</p>
+                  <p className="text-body-1-demi text-tertiary">Posted in</p>
                   {/* todo change to community data */}
                   <Link href={{ pathname: PATH_NAME.community(loopDetails.community.slug) }}>
                     <div className="my-2 flex items-center">
@@ -95,7 +95,7 @@ export function MainComponent({ loopDetails }: Props) {
                         <CustomAvatar
                           className="h-full w-full"
                           imageUrl={loopDetails.community.dp ?? ''}
-                          fallbackString={loopDetails.community.name}
+                          fallbackString={loopDetails.community.name ?? ''}
                           isAvatar={false}
                         />
                       </div>
@@ -106,18 +106,19 @@ export function MainComponent({ loopDetails }: Props) {
               </div>
               <Stats
                 statsData={[
-                  { key: 'Post', value: loopDetails.group.no_of_videos },
-                  { key: 'Collaborator', value: loopDetails.group.no_of_members },
-                  { key: 'Subscribers', value: loopDetails.group.no_of_subscribers },
+                  { key: 'Post', value: loopDetails.group.no_of_videos ?? 0 },
+                  { key: 'Collaborator', value: loopDetails.group.no_of_members ?? 0 },
+                  { key: 'Subscribers', value: loopDetails.group.no_of_subscribers ?? 0 },
                 ]}
               />
             </div>
 
             <div className="flex items-center gap-x-2">
-              {!loopDetails.private && !embed && (
+              {loopDetails.is_view_allowed && !embed && (
                 <Button
                   size="custom"
                   onClick={() => {
+                    // TODO: check with jimit@begenuin.com
                     generateDeepLink({
                       action: 'subscribe',
                       contentType: 'loop',
@@ -130,7 +131,7 @@ export function MainComponent({ loopDetails }: Props) {
                       utmCampaign: 'share',
                       utmMedium: 'web',
                       utmSource: window.location.hostname,
-                      community: loopDetails.community.share_string,
+                      community: loopDetails.community.slug,
                       searchParams,
                     })
                       .then((generatedLink) => {
@@ -141,7 +142,7 @@ export function MainComponent({ loopDetails }: Props) {
                   <p className="px-4 py-1 text-title-3-demi text-monochrome-white">Subscribe</p>
                 </Button>
               )}
-              {!loopDetails.private && embed && (
+              {loopDetails.is_view_allowed && embed && (
                 <Button
                   size="custom"
                   className={`${isLoopSubscribed && 'border border-primary '}`}
@@ -170,12 +171,13 @@ export function MainComponent({ loopDetails }: Props) {
                 </Button>
               )}
 
-              {loopDetails.private && (
+              {!loopDetails.is_view_allowed && (
                 <Button
                   size="custom"
                   variant="outline"
                   className="border border-primary"
                   onClick={() => {
+                    // TODO: CHECK WITH JIMITBHAI
                     generateDeepLink({
                       contentType: 'loop',
                       description: ldDescription,
@@ -187,7 +189,7 @@ export function MainComponent({ loopDetails }: Props) {
                       utmCampaign: 'share',
                       utmMedium: 'web',
                       utmSource: window.location.hostname,
-                      community: loopDetails.community.share_string,
+                      community: loopDetails.community.slug,
                       searchParams,
                     })
                       .then((generatedLink) => {
@@ -214,8 +216,7 @@ export function MainComponent({ loopDetails }: Props) {
                 size="custom"
                 className="border border-primary p-0.5"
                 onClick={async () => {
-                  const currentURL = new URL(window.location.href)
-                  currentURL.searchParams.set('community', `${loopDetails.community.share_string}`)
+                  const currentURL = new URL(loopDetails.share_url)
                   currentURL.searchParams.set('utm_source', 'app_web')
                   await shareFn({
                     shareLink: currentURL.href,
@@ -226,13 +227,13 @@ export function MainComponent({ loopDetails }: Props) {
               </Button>
             </div>
           </div>
-          <hr className="border-tertiary-200 border-t" />
-          {loopDetails.private ? (
+          <hr className="border-t border-tertiary-200" />
+          {!loopDetails.is_view_allowed ? (
             <div
               className="mt-4 flex w-full items-center justify-center overflow-hidden"
               style={{ height: 'calc(100% - 220px)' }}>
               <div className="flex flex-col items-center justify-center">
-                <div className="bg-tertiary-200 mb-2 rounded-full p-6">
+                <div className="mb-2 rounded-full bg-tertiary-200 p-6">
                   <Image src={icLock} alt="share" className="h-16 w-16" />
                 </div>
                 <p className="text-center text-title-2-demi">
@@ -263,30 +264,28 @@ function LoopTabs() {
           <p className="text-title-3-bold">Subscribers</p>
         </TabsTrigger>
       </TabsList>
-      <hr className="border-tertiary-200 border-t" />
+      <hr className="border-t border-tertiary-200" />
       <TabsContent value="Loops">
-        <LoopVideos slug={loopDetailsModule.chat_slug} />
+        <LoopVideos slug={loopDetailsModule.slug} />
       </TabsContent>
       <TabsContent value="About">
-        <LoopCollaborators slug={loopDetailsModule.chat_slug} />
+        <LoopCollaborators slug={loopDetailsModule.slug} />
       </TabsContent>
-      <TabsContent value="Members">
-        <LoopSubscribers slug={loopDetailsModule.chat_slug} />
-      </TabsContent>
+      <TabsContent value="Members">{/* <LoopSubscribers slug={loopDetailsModule.slug} /> */}</TabsContent>
     </Tabs>
   )
 }
 
 function LoopCollaborators({ slug }: { slug: string }) {
-  const { data, isLoading } = getLoopCohosts(slug, 'members')
-  const cohosts = data?.users
+  const { data, isLoading } = getLoopCohosts(slug)
+  const cohosts = data?.pages.flatMap((item) => item.members)
 
   // TODO: Add shimmer.
   if (isLoading) return <Loader className="pt-32" size="md" />
 
   if (cohosts && cohosts.length === 0)
     return (
-      <div className="text-tertiary flex h-full w-full items-center justify-center pt-32 text-title-3-bold">
+      <div className="flex h-full w-full items-center justify-center pt-32 text-title-3-bold text-tertiary">
         No collaborators yet
       </div>
     )
@@ -311,39 +310,39 @@ function LoopCollaborators({ slug }: { slug: string }) {
     )
 }
 
-function LoopSubscribers({ slug }: any) {
-  const { data, isLoading } = getLoopSubscribers(slug, 'subscribers')
-  const subscribers = data?.users
+// function LoopSubscribers({ slug }: any) {
+//   const { data, isLoading } = getLoopSubscribers(slug, 'subscribers')
+//   const subscribers = data?.users
 
-  // TODO: Add shimmer.
-  if (isLoading) return <Loader className="pt-32" size="md" />
+//   // TODO: Add shimmer.
+//   if (isLoading) return <Loader className="pt-32" size="md" />
 
-  if (subscribers && subscribers.length === 0)
-    return (
-      <div className="text-tertiary flex h-full w-full items-center justify-center pt-32 text-title-3-bold">
-        No subscribers yet
-      </div>
-    )
+//   if (subscribers && subscribers.length === 0)
+//     return (
+//       <div className="flex h-full w-full items-center justify-center pt-32 text-title-3-bold text-tertiary">
+//         No subscribers yet
+//       </div>
+//     )
 
-  if (subscribers && subscribers.length !== 0)
-    return (
-      <div className="h-full pt-3">
-        <div className="h-full w-full overflow-auto">
-          {subscribers.map((item: any, index: any) => (
-            <Link key={index} href={{ pathname: PATH_NAME.profile(item.user.nickname) }}>
-              <CohostTile
-                image={item.user.profile_image || ''}
-                subtitle={item.user.bio || ''}
-                title={'@' + item.user.nickname}
-                userName={item.user.name ?? 'Unknown'}
-                isAvatar={item.user.is_avatar}
-              />
-            </Link>
-          ))}
-        </div>
-      </div>
-    )
-}
+//   if (subscribers && subscribers.length !== 0)
+//     return (
+//       <div className="h-full pt-3">
+//         <div className="h-full w-full overflow-auto">
+//           {subscribers.map((item: any, index: any) => (
+//             <Link key={index} href={{ pathname: PATH_NAME.profile(item.user.nickname) }}>
+//               <CohostTile
+//                 image={item.user.profile_image || ''}
+//                 subtitle={item.user.bio || ''}
+//                 title={'@' + item.user.nickname}
+//                 userName={item.user.name ?? 'Unknown'}
+//                 isAvatar={item.user.is_avatar}
+//               />
+//             </Link>
+//           ))}
+//         </div>
+//       </div>
+//     )
+// }
 
 function Stats({
   statsData,
@@ -360,7 +359,7 @@ function Stats({
         return (
           <div key={index} className="flex items-center">
             <p className="mr-1 text-title-2-bold text-secondary">{obj.value}</p>
-            <p className="text-tertiary mr-4 text-body-1-demi">{obj.key}</p>
+            <p className="mr-4 text-body-1-demi text-tertiary">{obj.key}</p>
           </div>
         )
       })}
@@ -383,7 +382,7 @@ function CohostTile({ image, title, subtitle, userName, isAvatar }: CohostTilePr
       <div className="mx-2">
         <p className="line-clamp-1 text-body-1-bold text-secondary">{title}</p>
         {userName && <p className="line-clamp-1 text-body-1-demi text-secondary">{userName}</p>}
-        {subtitle && <p className="text-tertiary line-clamp-1 text-cap-1-demi">{subtitle}</p>}
+        {subtitle && <p className="line-clamp-1 text-cap-1-demi text-tertiary">{subtitle}</p>}
       </div>
     </div>
   )
