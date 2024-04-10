@@ -7,7 +7,7 @@ import { CustomAvatar } from '@components/custom/custom-avatar'
 import { useRef, useState } from 'react'
 import { useInView } from 'framer-motion'
 import { TopStickyBar } from './top-bar'
-import { getLoopCohosts, subscribeLoop } from '@lib/api/loop'
+import { getLoopCohosts, getLoopSubscribers, subscribeLoop } from '@lib/api/loop'
 import { Loader } from '@components/ui/loader'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
@@ -207,6 +207,7 @@ export function MainComponent({ loopDetails }: Props) {
   )
 }
 
+// TODO: think about pagination
 function LoopCohosts({ slug }: { slug: string }) {
   const { data, isLoading } = getLoopCohosts(slug)
   const cohosts = data?.pages.flatMap((item) => item.members)
@@ -234,9 +235,10 @@ function LoopCohosts({ slug }: { slug: string }) {
     )
 }
 
+// TODO: think about pagination
 function LoopSubscribers({ slug }: { slug: string }) {
-  const { data, isLoading } = getLoopSubscribers(slug, 'subscribers')
-  const subscribers = data?.users
+  const { data, isLoading } = getLoopSubscribers(slug)
+  const subscribers = data?.pages.flatMap((item) => item.subscribers)
 
   // TODO: Implement shimmer.
   if (isLoading) return <Loader size="md" />
@@ -246,14 +248,14 @@ function LoopSubscribers({ slug }: { slug: string }) {
       <div>
         <p className="my-2 text-title-3-bold">Subscribers</p>
         <div className="h-full w-full overflow-auto">
-          {subscribers.map((item: any, index: any) => (
-            <Link key={index} href={{ pathname: PATH_NAME.profile(item.user.nickname) }}>
+          {subscribers.map((item, index) => (
+            <Link key={index} href={{ pathname: PATH_NAME.profile(item.nickname) }}>
               <ListItem
-                title={item.user.name ?? ''}
-                subtitle={'@' + item.user.nickname}
-                description={item.user.bio || ''}
-                image={item.user.profile_image || ''}
-                isAvatar={item.user.is_avatar || ''}
+                title={item.name ?? ''}
+                subtitle={'@' + item.nickname}
+                description={item.bio ?? ''}
+                image={item.profile_image}
+                isAvatar={item.is_avatar}
               />
             </Link>
           ))}

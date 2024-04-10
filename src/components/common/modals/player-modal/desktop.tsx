@@ -17,10 +17,11 @@ import { Loader } from '@components/ui/loader'
 import { cn } from '@lib/utils'
 import { FeedShimmer } from '@components/common/shimmers/feed-shimmer'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
+import { type LoopVideoListType } from '@lib/schemas/loop/videos'
 
 type Props = {
   children?: React.ReactNode
-  videos?: VideoDataType[]
+  videos?: LoopVideoListType
   /**
    * Index to start playing video from.
    * @default 0
@@ -71,53 +72,50 @@ export function Desktop({
     if (videos && !isFetchingNextPage && currentIndex >= videos?.length - 2) fetchNextVideos()
   }, [currentIndex])
 
-  function InnerContent() {
-    if (isLoading) return <Loader size="md" />
-    if (videos) return <SinglePlayer videoDetails={videos[currentIndex]} sizeBox={sizeBox.modal.player} />
-  }
-
   return (
     <CustomDialog open={open}>
       <CustomDialogTrigger>{children}</CustomDialogTrigger>
       <CustomDialogContent showDefaultClose={false}>
-        {videos && (
-          <span className="flex items-center gap-x-6">
-            <div
-              style={{ height: sizeBox.modal.height, width: sizeBox.modal.width }}
-              className="relative min-w-[800px] overflow-clip rounded-2xl bg-monochrome-white">
-              <CustomDialogClose
-                onClick={() => {
-                  close?.()
-                }}
-                className="absolute right-4 top-4 z-10 focus:outline-none">
-                <X className="h-6 w-6" />
-              </CustomDialogClose>
-              <InnerContent />
-            </div>
-            <span className="flex flex-col gap-y-4">
-              <button
-                onClick={() => {
-                  setCurrentIndex(currentIndex - 1)
-                }}
-                className={cn(
-                  'rounded-full bg-monochrome-white/10 p-2 hover:bg-monochrome-white/20',
-                  currentIndex === 0 ? 'opacity-40' : undefined
-                )}>
-                <Image src={icUpArrow} alt="" />
-              </button>
-              <button
-                onClick={() => {
-                  setCurrentIndex(currentIndex + 1)
-                }}
-                className={cn(
-                  'rounded-full bg-monochrome-white/10 p-2 hover:bg-monochrome-white/20',
-                  currentIndex === videos?.length - 1 ? 'opacity-40' : undefined
-                )}>
-                <Image src={icDownArrow} alt="" />
-              </button>
-            </span>
+        <span className="flex items-center gap-x-6">
+          <div
+            style={{ height: sizeBox.modal.height, width: sizeBox.modal.width }}
+            className="relative min-w-[800px] overflow-clip rounded-2xl bg-monochrome-white">
+            <CustomDialogClose
+              onClick={() => {
+                close?.()
+              }}
+              className="absolute right-4 top-4 z-10 focus:outline-none">
+              <X className="h-6 w-6" />
+            </CustomDialogClose>
+            {isLoading ? (
+              <Loader size="md" />
+            ) : (
+              <SinglePlayer videoDetails={videos[currentIndex]} sizeBox={sizeBox.modal.player} />
+            )}
+          </div>
+          <span className="flex flex-col gap-y-4">
+            <button
+              onClick={() => {
+                setCurrentIndex(currentIndex - 1)
+              }}
+              className={cn(
+                'rounded-full bg-monochrome-white/10 p-2 hover:bg-monochrome-white/20',
+                currentIndex === 0 ? 'opacity-40' : undefined
+              )}>
+              <Image src={icUpArrow} alt="" />
+            </button>
+            <button
+              onClick={() => {
+                setCurrentIndex(currentIndex + 1)
+              }}
+              className={cn(
+                'rounded-full bg-monochrome-white/10 p-2 hover:bg-monochrome-white/20',
+                currentIndex === videos?.length - 1 ? 'opacity-40' : undefined
+              )}>
+              <Image src={icDownArrow} alt="" />
+            </button>
           </span>
-        )}
+        </span>
       </CustomDialogContent>
     </CustomDialog>
   )

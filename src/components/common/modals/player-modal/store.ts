@@ -1,11 +1,11 @@
-import { type VideoDataListType } from '@lib/schemas/video'
 import { create } from 'zustand'
 import { analyticsService } from '../../../../services/analytics_service'
 import { usePlayerControlStore } from '@components/common/player/player-control-store'
+import { type LoopVideoListType } from '@lib/schemas/loop/videos'
 
 type FeedModalStore = {
-  videos: VideoDataListType
-  setVideos: (videos: VideoDataListType) => void
+  videos: LoopVideoListType
+  setVideos: (videos: LoopVideoListType) => void
   currentIndex: number
   setCurrentIndex: (index: number) => void
 }
@@ -13,7 +13,7 @@ type FeedModalStore = {
 export const useFeedModalStore = create<FeedModalStore>((set, get) => {
   return {
     videos: [],
-    setVideos(videos: VideoDataListType) {
+    setVideos(videos) {
       set({ videos })
     },
     currentIndex: 0,
@@ -31,7 +31,7 @@ export const useFeedModalStore = create<FeedModalStore>((set, get) => {
             const eventName = index < state.currentIndex ? 'Swipe Up' : 'Swipe Down'
             const properties = {
               content_category: 'loop',
-              content_id: state.videos[state.currentIndex]?.video?.id,
+              content_id: state.videos[state.currentIndex]?.message_id,
               event_record_screen: 'feed',
               event_target_screen: 'none',
               video_length: duration,

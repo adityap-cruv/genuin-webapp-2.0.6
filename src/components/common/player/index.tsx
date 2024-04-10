@@ -145,15 +145,52 @@ function Mobile({
   }
 }
 
+type DesktopProps = {
+  videoData: VideoDataType
+  /**
+   * This field is very mandatory if you want play to stop after rendering
+   * then pass false value. Otherwise it will start playing video automatically.
+   */
+  shouldPlay: boolean
+  /**
+   * Controls whether video should repeat or not.
+   * default: false
+   */
+  loop?: boolean
+  /**
+   * default: true
+   */
+  // showControls?: boolean
+  /**
+   * Sizebox is mandatory. To get sizebox see hooke useVideoSizeBox.
+   * Tip: Please don't render withour sizebox
+   */
+  sizeBox: VideoSizeBoxType
+  /**
+   * If it is enabled video will play if only if video is in viewport.
+   */
+  playIfInViewPort?: boolean
+  /**
+   * Default is true, if you want to remove backgroundblur than make it false
+   */
+  shouldShowBackgroundBlurImage?: boolean
+  /**
+   * If you are playing reels in list and you want first video to play automatically and next
+   * video will be playing once it is in viewport.
+   * defaults to false.
+   */
+  isFirstPlayerInList?: boolean
+}
+
 function Desktop({
-  videoData,
+  // videoData,
   loop = false,
   shouldPlay = true,
   sizeBox,
   playIfInViewPort,
   shouldShowBackgroundBlurImage = true,
   isFirstPlayerInList = false,
-}: Props) {
+}: DesktopProps) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const hasFocus = useGenuinOptions().userHasFocus
   const { setShouldPlay, stateShouldPlay } = usePlayerControlStore((state) => ({

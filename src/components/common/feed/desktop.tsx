@@ -83,7 +83,7 @@ export function Desktop({ fetchNextPage, isFetchingNextPage, videos, className }
 }
 
 type SinglePlayerProps = {
-  videoDetails: VideoDataType
+  // videoDetails:
   sizeBox: VideoSizeBoxType
   className?: string
 }

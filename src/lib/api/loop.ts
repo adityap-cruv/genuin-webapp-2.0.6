@@ -1,8 +1,10 @@
 import { type CommentListType, validateCommentList } from '@lib/schemas/loop/comment'
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
+import { useInfiniteQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import { axiosInstance } from './instance'
 import { validateLoopCohosts } from '@lib/schemas/loop/cohosts'
+import { validateLoopSubscribers } from '@lib/schemas/loop/subscribers'
+import { validateLoopVideos } from '@lib/schemas/loop/videos'
 
 export async function fetchLoopDetails(slug: string) {
   return await axios
@@ -13,21 +15,22 @@ export async function fetchLoopDetails(slug: string) {
       return res?.data?.data
     })
     .catch((e) => {
-      console.log(e.response.data)
       throw new Error('Something went wrong!!')
     })
 }
 
-async function fetchLoopVideos(slug: string, ref: any) {
+async function fetchLoopVideos(slug: string, pageParams: string) {
   return await axios
-    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/rt/videos_v2', {
+    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/conversation/messages', {
       params: {
-        loop_id: { slug },
-        ref,
+        slug,
+        last_message_id: pageParams,
       },
     })
     .then((res) => {
-      return { videos: res.data.data.list, end: res.data.data.end_page ?? false, ref: res.data.data.ref }
+      const resData = res.data.data
+      console.log('res dta:;', resData)
+      return { videos: validateLoopVideos(resData.messages), end: resData.end_of_result }
     })
     .catch((e) => {
       throw new Error('Somethig went wrong with loop videos fetching api.')
@@ -42,7 +45,7 @@ export function getLoopVideos(slug: string) {
       if (lastPage.end) {
         return
       }
-      return lastPage.ref
+      return lastPage.videos[lastPage.videos.length - 1].message_id
     },
   })
 }
@@ -75,11 +78,9 @@ async function fetchLoopCohosts(slug: string, pageParam: string) {
     })
     .then((res) => {
       const resData = res.data.data
-      console.log('data::', resData)
       return { members: validateLoopCohosts(resData?.members), end: resData.end_of_result }
     })
     .catch((e) => {
-      console.log('error in fetching loop cohosts::', e)
       throw new Error('Something went wrong in fetching loop cohosts.')
     })
 }
@@ -97,7 +98,7 @@ export function getLoopCohosts(slug: string) {
 
 async function fetchLoopSubscribers(slug: string, pageParam: string) {
   return await axios
-    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/conversation/members', {
+    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/conversation/subscribers', {
       params: {
         slug,
         last_member_id: pageParam,
@@ -105,11 +106,9 @@ async function fetchLoopSubscribers(slug: string, pageParam: string) {
     })
     .then((res) => {
       const resData = res.data.data
-      console.log('data::', resData)
-      return { members: validateLoopCohosts(resData?.members), end: resData.end_of_result }
+      return { subscribers: validateLoopSubscribers(resData?.subscribers), end: resData.end_of_result }
     })
     .catch((e) => {
-      console.log('error in fetching loop cohosts::', e)
       throw new Error('Something went wrong in fetching loop cohosts.')
     })
 }

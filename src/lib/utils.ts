@@ -10,6 +10,14 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+export function getLoopAndCommunityShareString(shareUrl: string) {
+  const urlObj = new URL(shareUrl)
+  const loopShareString = urlObj.searchParams.get('loop')
+  const communityShareString = urlObj.searchParams.get('community')
+  console.log('communu:', communityShareString)
+  return { loopShareString, communityShareString }
+}
+
 export function openModal({ title, subtitle, action }: any) {
   const embed = useGenuinOptions.getState().embed
 
@@ -136,7 +144,7 @@ export const openGeneratedLink = (link = '') => {
   element.click()
 }
 
-//  TODO This function line can be reduced and validation can be automated.
+//  TODO: This function line can be reduced and validation can be automated.
 export const generateDeepLink = async ({
   utmCampaign,
   utmSource,
