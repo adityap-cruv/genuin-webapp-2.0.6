@@ -14,7 +14,7 @@ function Email({ acountExists = false }: { acountExists?: boolean }) {
   const { formData } = useAuthenticationModalStore()
   const [error, setError] = useState({ message: '', code: 0 })
   const [emailSentText, setEmailSentText] = useState('')
-  const [timer, setTimer] = useState(10)
+  const [timer, setTimer] = useState(formData.retryTime ?? 0)
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -91,7 +91,7 @@ function MagicLink() {
   const brandName = useGenuinOptions().config?.name
   const [error, setError] = useState({ message: '', code: 0 })
   const [emailSentText, setEmailSentText] = useState('')
-  const [timer, setTimer] = useState(10)
+  const [timer, setTimer] = useState(formData.retryTime ?? 0)
 
   useEffect(() => {
     const interval = setInterval(() => {
