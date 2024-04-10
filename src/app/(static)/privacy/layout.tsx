@@ -1,3 +1,4 @@
+import { Footer } from '@components/pages/home/footer'
 import { NavBar } from '@components/pages/home/nav-bar'
 import { cookies } from 'next/headers'
 
@@ -11,6 +12,7 @@ export default function Layout({ children }: Props) {
     <main>
       <NavBar />
       <section className="container mt-navbar">{children}</section>
+      <Footer />
     </main>
   )
 }
