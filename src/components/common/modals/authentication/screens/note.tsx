@@ -14,7 +14,7 @@ function Email({ acountExists = false }: { acountExists?: boolean }) {
   const { formData } = useAuthenticationModalStore()
   const [error, setError] = useState({ message: '', code: 0 })
   const [emailSentText, setEmailSentText] = useState('')
-  const [timer, setTimer] = useState(formData.retryTime ?? 0)
+  const [timer, setTimer] = useState(10)
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -67,13 +67,12 @@ function Email({ acountExists = false }: { acountExists?: boolean }) {
       </p>
       {error.code !== 5239 && acountExists && (
         <p className="text-title-3-demi">
-          Resend email in{' '}
           {timer <= 0 ? (
             <span onClick={resendMail} className="cursor-pointer text-primary">
               Resend
             </span>
           ) : (
-            <span className="text-center text-body-1-med font-bold text-secondary">{formatTime()}</span>
+            <span className="text-center text-body-1-med font-bold text-secondary">Resend email in {formatTime()}</span>
           )}
         </p>
       )}
@@ -92,7 +91,7 @@ function MagicLink() {
   const brandName = useGenuinOptions().config?.name
   const [error, setError] = useState({ message: '', code: 0 })
   const [emailSentText, setEmailSentText] = useState('')
-  const [timer, setTimer] = useState(formData.retryTime ?? 0)
+  const [timer, setTimer] = useState(10)
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -142,13 +141,12 @@ function MagicLink() {
       </p>
       {error.code !== 5239 && (
         <p className="text-title-3-demi">
-          Resend email in{' '}
           {timer <= 0 ? (
             <span onClick={resendMail} className="cursor-pointer text-primary">
               Resend
             </span>
           ) : (
-            <span className="text-center text-body-1-med font-bold text-secondary">{formatTime()}</span>
+            <span className="text-center text-body-1-med font-bold text-secondary">Resend email in {formatTime()}</span>
           )}
         </p>
       )}
