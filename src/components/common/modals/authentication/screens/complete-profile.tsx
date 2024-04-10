@@ -74,7 +74,7 @@ export function CompleteProfile() {
 
   return (
     <ModalShell>
-      <h3 className="flex w-full items-center justify-center text-heading-3 text-secondary">Complete profile</h3>
+      <h3 className="flex w-full items-center justify-center text-heading-3 ">Complete profile</h3>
       <ImageInput />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
@@ -87,8 +87,8 @@ export function CompleteProfile() {
                 <FormItem className="sm:w-full">
                   <FormLabel className="text-body-1-med">
                     <div className="flex w-full justify-between">
-                      <p className="text-secondary">Full Name</p>
-                      <p className="text-cap-1-med text-secondary">{form.getValues('displayName')?.length ?? 0}/25</p>
+                      <p className="">Full Name</p>
+                      <p className="text-cap-1-med ">{form.getValues('displayName')?.length ?? 0}/25</p>
                     </div>
                   </FormLabel>
                   <FormControl>
@@ -116,8 +116,8 @@ export function CompleteProfile() {
                 <FormItem className="sm:w-full">
                   <FormLabel className="text-body-1-med">
                     <div className="flex w-full justify-between">
-                      <p className="text-secondary">Bio</p>
-                      <p className="text-cap-1-med text-secondary">{form.getValues('bio')?.length ?? 0}/150</p>
+                      <p className="">Bio</p>
+                      <p className="text-cap-1-med ">{form.getValues('bio')?.length ?? 0}/150</p>
                     </div>
                   </FormLabel>
                   <FormControl>

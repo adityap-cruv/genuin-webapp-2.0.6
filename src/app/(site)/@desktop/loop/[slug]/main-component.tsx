@@ -50,7 +50,7 @@ export function MainComponent({ loopDetails }: Props) {
         />
         <main className="hide-scrollbar absolute inset-0 h-full w-full overflow-auto pl-6">
           <div className="mt-6 flex justify-between">
-            <p className="text-title-1-bold text-secondary">{loopDetails.group.group_name}</p>
+            <p className="text-title-1-bold">{loopDetails.group.group_name}</p>
             <div className="flex items-center gap-x-3">
               {!loopDetails.private && (
                 <Button
@@ -134,9 +134,7 @@ export function MainComponent({ loopDetails }: Props) {
             </div>
           </div>
           <span className="w-1/2">
-            <p className="my-1 line-clamp-2 w-1/2 break-words text-body-1-med text-secondary">
-              {loopDetails.group.group_description}
-            </p>
+            <p className="my-1 line-clamp-2 w-1/2 break-words text-body-1-med">{loopDetails.group.group_description}</p>
             <div className="my-3 w-1/2 rounded-xl border border-tertiary-200 p-4">
               <span className="flex" ref={detailsDivRef}>
                 <span className="flex-1">
@@ -149,7 +147,7 @@ export function MainComponent({ loopDetails }: Props) {
                         isAvatar={loopDetails.owner.is_avatar}
                         className="h-8 w-8"
                       />
-                      <p className="ml-1 text-body-1-bold text-secondary">@{loopDetails.owner.nickname}</p>
+                      <p className="ml-1 text-body-1-bold">@{loopDetails.owner.nickname}</p>
                     </div>
                   </Link>
                 </span>
@@ -163,7 +161,7 @@ export function MainComponent({ loopDetails }: Props) {
                         isAvatar={false}
                         className="h-8 w-8"
                       />
-                      <p className="ml-1 text-body-1-bold text-secondary">{loopDetails.community.name}</p>
+                      <p className="ml-1 text-body-1-bold">{loopDetails.community.name}</p>
                     </div>
                   </Link>
                 </span>
@@ -218,7 +216,7 @@ function LoopCollaborators({ slug }: { slug: string }) {
   if (cohosts && cohosts.length !== 0)
     return (
       <div>
-        <p className="my-2 text-title-3-bold text-secondary">Collaborators</p>
+        <p className="my-2 text-title-3-bold">Collaborators</p>
         <div className="h-full w-full overflow-auto">
           {cohosts.map((item: any, index: any) => (
             <Link key={index} href={{ pathname: PATH_NAME.profile(item.user.nickname) }}>
@@ -246,7 +244,7 @@ function LoopSubscribers({ slug }: { slug: string }) {
   if (subscribers && subscribers.length !== 0)
     return (
       <div>
-        <p className="my-2 text-title-3-bold text-secondary">Subscribers</p>
+        <p className="my-2 text-title-3-bold">Subscribers</p>
         <div className="h-full w-full overflow-auto">
           {subscribers.map((item: any, index: any) => (
             <Link key={index} href={{ pathname: PATH_NAME.profile(item.user.nickname) }}>
@@ -278,7 +276,7 @@ function Stats({
       {statsData.map((obj, index) => {
         return (
           <div key={index} className="flex items-center gap-x-1">
-            <p className="text-title-2-bold text-secondary">{obj.value}</p>
+            <p className="text-title-2-bold">{obj.value}</p>
             <p className="text-body-1-med text-tertiary">{obj.key}</p>
           </div>
         )

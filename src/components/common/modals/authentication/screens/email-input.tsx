@@ -69,7 +69,7 @@ export function EmailInput() {
 
   return (
     <ModalShell>
-      <p className="text-center text-heading-3 text-secondary">Log in or sign up</p>
+      <p className="text-center text-heading-3 ">Log in or sign up</p>
       <div className="w-full">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -82,7 +82,7 @@ export function EmailInput() {
                   <FormItem className="sm:w-full">
                     <FormLabel className="w-full text-body-1-med">
                       <div className="flex w-full justify-between">
-                        <p className="text-secondary">Email</p>
+                        <p className="">Email</p>
                       </div>
                     </FormLabel>
                     <FormControl>
@@ -114,7 +114,7 @@ export function EmailInput() {
           {form.formState.errors.root.message}
         </p>
       )}
-      <p className="text-center text-new-para-2-mobile text-secondary">
+      <p className="text-center text-new-para-2-mobile ">
         By registering, you agree to genuin's
         <a href={PATH_NAME.terms} target="_blank" rel="noopener noreferrer">
           <span className="text-primary"> Terms of Service </span>

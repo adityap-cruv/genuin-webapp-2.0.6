@@ -55,7 +55,7 @@ export function Signup() {
 
   return (
     <ModalShell>
-      <h3 className="flex w-full items-center justify-center pb-4 text-heading-3 text-secondary">
+      <h3 className="flex w-full items-center justify-center pb-4 text-heading-3 ">
         Sign up for {brandName ?? 'genuin'}
       </h3>
       <Form {...form}>
@@ -70,8 +70,8 @@ export function Signup() {
                 <FormItem className="sm:w-full">
                   <FormLabel className="text-body-1-med">
                     <div className="flex w-full justify-between">
-                      <p className="text-secondary">Full Name</p>
-                      <p className="text-cap-1-med text-secondary">{form.getValues('displayName')?.length ?? 0}/25</p>
+                      <p>Full Name</p>
+                      <p className="text-cap-1-med ">{form.getValues('displayName')?.length ?? 0}/25</p>
                     </div>
                   </FormLabel>
                   <FormControl>
@@ -99,7 +99,7 @@ export function Signup() {
                 <FormItem className="sm:w-full">
                   <FormLabel className="text-body-1-med">
                     <div className="flex w-full justify-between">
-                      <p className="text-secondary">Email</p>
+                      <p>Email</p>
                     </div>
                   </FormLabel>
                   <FormControl>
@@ -144,7 +144,7 @@ export function Signup() {
             Privacy
           </Link>
         </p>
-        <p className="flex w-full items-center justify-center text-body-1-demi text-secondary">
+        <p className="flex w-full items-center justify-center text-body-1-demi ">
           Already have an account?
           <span
             className="cursor-pointer text-primary"

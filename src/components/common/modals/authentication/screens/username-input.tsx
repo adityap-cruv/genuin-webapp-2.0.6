@@ -86,8 +86,8 @@ export function UsernameInput() {
 
   return (
     <ModalShell>
-      <h3 className="flex w-full items-center justify-center text-heading-3 text-secondary">Create username</h3>
-      <p className="flex w-full justify-center text-title-3-med text-secondary">Enter a name to show on your videos</p>
+      <h3 className="flex w-full items-center justify-center text-heading-3 ">Create username</h3>
+      <p className="flex w-full justify-center text-title-3-med ">Enter a name to show on your videos</p>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
           <FormField
@@ -99,8 +99,8 @@ export function UsernameInput() {
                 <FormItem className="sm:w-full">
                   <FormLabel className="text-body-1-med">
                     <div className="flex w-full justify-between">
-                      <p className="text-secondary">Username</p>
-                      <p className="text-cap-1-med text-secondary">{form.getValues('username')?.length ?? 0}/25</p>
+                      <p className="">Username</p>
+                      <p className="text-cap-1-med ">{form.getValues('username')?.length ?? 0}/25</p>
                     </div>
                   </FormLabel>
                   <FormControl>

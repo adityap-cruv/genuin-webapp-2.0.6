@@ -49,7 +49,7 @@ export function DesktopDetails({ videoDetails }: DesktopDetailsProps) {
             />
             <span className="flex items-center gap-x-1">
               <Link href={PATH_NAME.profile(videoDetails.owner.nickname)}>
-                <p className="text-title-3-demi text-secondary">@{videoDetails.owner.nickname}</p>
+                <p className="text-title-3-demi">@{videoDetails.owner.nickname}</p>
               </Link>
               <p className="text-body-1-demi text-tertiary">{getTimeAgo(videoDetails?.video?.created_at) + ' ago'}</p>
             </span>
@@ -62,7 +62,7 @@ export function DesktopDetails({ videoDetails }: DesktopDetailsProps) {
         </div>
         <div ref={scrollDivRef} className="flex h-full flex-col overflow-auto overflow-x-clip">
           <div className="p-4">
-            <p className="text-title-3-bold text-secondary">Posted in</p>
+            <p className="text-title-3-bold">Posted in</p>
             <div className="pt-3">
               <span className="flex items-center justify-between">
                 <span className="flex flex-1 items-center gap-x-3">
@@ -73,9 +73,7 @@ export function DesktopDetails({ videoDetails }: DesktopDetailsProps) {
                     className="h-11 w-11"
                   />
                   <Link href={{ pathname: PATH_NAME.community(videoDetails.community.slug) }}>
-                    <p className="line-clamp-1 break-all pr-2 text-title-3-bold text-secondary">
-                      {videoDetails.community.name}
-                    </p>
+                    <p className="line-clamp-1 break-all pr-2 text-title-3-bold">{videoDetails.community.name}</p>
                   </Link>
                 </span>
                 <span className="flex h-min flex-1 items-center justify-end gap-x-3">
@@ -142,9 +140,7 @@ export function DesktopDetails({ videoDetails }: DesktopDetailsProps) {
                 <div className="h-2 w-full" />
                 <Link href={PATH_NAME.loop(videoDetails.loop.slug)}>
                   <li className="relative flex h-full w-full items-center justify-between rounded-md border border-tertiary-200 bg-monochrome-white p-4 ">
-                    <p className="line-clamp-1 w-full break-all pr-2 text-body-1-demi text-secondary">
-                      {videoDetails.loop?.name}
-                    </p>
+                    <p className="line-clamp-1 w-full break-all pr-2 text-body-1-demi">{videoDetails.loop?.name}</p>
                     <p className="whitespace-nowrap text-cap-1-med text-primary hover:text-primary-600">View Loop</p>
                   </li>
                 </Link>

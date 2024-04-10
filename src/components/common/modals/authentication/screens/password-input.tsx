@@ -46,7 +46,7 @@ export function PasswordInput() {
 
   return (
     <ModalShell>
-      <h3 className="flex w-full items-center justify-center text-heading-3 text-secondary">Set your password</h3>
+      <h3 className="flex w-full items-center justify-center text-heading-3 ">Set your password</h3>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
           <FormField
@@ -58,7 +58,7 @@ export function PasswordInput() {
                 <FormItem className="sm:w-full">
                   <FormLabel className="text-body-1-med">
                     <div className="flex w-full justify-between">
-                      <p className="text-secondary">Password</p>
+                      <p>Password</p>
                     </div>
                   </FormLabel>
                   <FormControl>

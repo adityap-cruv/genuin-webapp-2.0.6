@@ -156,12 +156,8 @@ export function ProfileDetails({ communityDetails }: Props) {
             </div>
           </div>
           <div ref={detailsDivRef}>
-            <p className="my-1 mt-2 line-clamp-1 break-all text-title-3-bold text-secondary">
-              {communityDetailsModule?.info.name}
-            </p>
-            <p className="my-1 line-clamp-2 break-all text-body-1-demi text-secondary">
-              {communityDetailsModule?.info.description}
-            </p>
+            <p className="my-1 mt-2 line-clamp-1 break-all text-title-3-bold ">{communityDetailsModule?.info.name}</p>
+            <p className="my-1 line-clamp-2 break-all text-body-1-demi ">{communityDetailsModule?.info.description}</p>
           </div>
           <Stats />
         </div>
@@ -192,19 +188,19 @@ function Stats() {
   return (
     <div className="flex items-center">
       <span className="pr-4">
-        <span className="text-title-3-bold text-secondary">{communityDetailsModule?.info.count.member}</span>
+        <span className="text-title-3-bold ">{communityDetailsModule?.info.count.member}</span>
         <span className="text-cap-1-demi text-tertiary">
           &nbsp;{communityDetailsModule?.info.count.member === 1 ? 'Member' : 'Members'}
         </span>
       </span>
       <span className="pr-4">
-        <span className="text-title-3-bold text-secondary">{communityDetailsModule?.info.count.loop}</span>
+        <span className="text-title-3-bold ">{communityDetailsModule?.info.count.loop}</span>
         <span className="text-cap-1-demi text-tertiary">
           &nbsp;{communityDetailsModule?.info.count.loop === 1 ? 'Loop' : 'Loops'}
         </span>
       </span>
       <span className="pr-4">
-        <span className="text-title-3-bold text-secondary">{communityDetailsModule?.info.count.video}</span>
+        <span className="text-title-3-bold ">{communityDetailsModule?.info.count.video}</span>
         <span className="text-cap-1-demi text-tertiary">
           &nbsp;{communityDetailsModule?.info.count.video === 1 ? 'Video' : 'Videos'}
         </span>
@@ -249,9 +245,7 @@ function Categories() {
       <div>
         <p className="my-2 text-title-3-bold">Categories</p>
         {communityDetailsModule?.info.categories.length === 0 && (
-          <div className="flex items-center justify-center text-title-3-bold text-secondary">
-            No categories available
-          </div>
+          <div className="flex items-center justify-center text-title-3-bold ">No categories available</div>
         )}
         <div>
           {communityDetailsModule?.info.categories.map((cat, index) => {
@@ -273,7 +267,7 @@ function Links() {
       <div>
         <p className="my-2 text-title-3-bold">Links</p>
         {!links?.instagram_url && !links?.linkedin_url && !links?.twitter_url && !links?.social_web_url && (
-          <div className="flex items-center justify-center text-title-3-bold text-secondary">No links available</div>
+          <div className="flex items-center justify-center text-title-3-bold ">No links available</div>
         )}
         <div className="flex">
           {links?.instagram_url && (
@@ -316,7 +310,7 @@ function Leaders() {
   if (communityDetailsModule.leaders.length !== 0)
     return (
       <div>
-        <p className="my-2 text-title-3-bold text-secondary">Leader</p>
+        <p className="my-2 text-title-3-bold ">Leader</p>
         {communityDetailsModule?.leaders.map((moderator, index) => {
           return (
             <Link key={index} href={{ pathname: PATH_NAME.profile(moderator.nickname) }}>
@@ -356,8 +350,8 @@ function ListItem({
         isAvatar={isAvatar}
       />
       <div className="mx-2">
-        <p className="line-clamp-1 text-body-1-bold text-secondary">{subtitle}</p>
-        {subtitle && <p className="line-clamp-1 text-body-1-demi text-secondary">{title}</p>}
+        <p className="line-clamp-1 text-body-1-bold ">{subtitle}</p>
+        {subtitle && <p className="line-clamp-1 text-body-1-demi ">{title}</p>}
         {description && <p className="line-clamp-1 text-cap-1-demi text-tertiary">{description}</p>}
       </div>
     </div>
