@@ -26,15 +26,13 @@ export function LoopVideos({ slug }: { slug: string }) {
   if (isLoading) return <Loader size="md" />
 
   if (!videos || videos?.length === 0)
-    return (
-      <div className="flex items-center justify-center pt-32 text-title-3-bold text-secondary">No posts available</div>
-    )
+    return <div className="flex items-center justify-center pt-32 text-title-3-bold">No posts available</div>
 
   // TODO: Add shimmer in images.
   // TODO: Remove this component from here. and put it  in better location.
   return (
     <div ref={scrollDivRef} className="h-full w-full overflow-y-auto">
-      <p className="mb-1 mt-2 text-title-3-bold text-secondary">Posts</p>
+      <p className="mb-1 mt-2 text-title-3-bold">Posts</p>
       <div className="mb-2 grid grid-cols-2 gap-4">
         {videos?.map((item, index) => (
           <div

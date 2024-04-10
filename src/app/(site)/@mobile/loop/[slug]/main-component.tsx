@@ -63,10 +63,8 @@ export function MainComponent({ loopDetails }: Props) {
           style={{ height: 'calc(100% - 74px)' }}>
           <div className="w-full">
             <div ref={detailsDivRef}>
-              <p className="line-clamp-1 text-title-1-bold text-secondary">{loopDetails.group.group_name}</p>
-              <p className="my-2 line-clamp-2 break-words text-title-3-demi text-secondary">
-                {loopDetails.group.group_description}
-              </p>
+              <p className="line-clamp-1 text-title-1-bold">{loopDetails.group.group_name}</p>
+              <p className="my-2 line-clamp-2 break-words text-title-3-demi">{loopDetails.group.group_description}</p>
             </div>
             <div className=" my-3 overflow-hidden rounded-lg border border-solid border-tertiary-200 p-4">
               <div className="flex">
@@ -82,7 +80,7 @@ export function MainComponent({ loopDetails }: Props) {
                           isAvatar={loopDetails.owner.is_avatar}
                         />
                       </div>
-                      <p className="ml-1 text-body-1-bold text-secondary">@{loopDetails.owner.nickname}</p>
+                      <p className="ml-1 text-body-1-bold">@{loopDetails.owner.nickname}</p>
                     </div>
                   </Link>
                 </div>
@@ -99,7 +97,7 @@ export function MainComponent({ loopDetails }: Props) {
                           isAvatar={false}
                         />
                       </div>
-                      <p className="ml-1 text-body-1-bold text-secondary">{loopDetails.community.name}</p>
+                      <p className="ml-1 text-body-1-bold">{loopDetails.community.name}</p>
                     </div>
                   </Link>
                 </div>
@@ -364,7 +362,7 @@ function Stats({
       {statsData.map((obj, index) => {
         return (
           <div key={index} className="flex items-center">
-            <p className="mr-1 text-title-2-bold text-secondary">{obj.value}</p>
+            <p className="mr-1 text-title-2-bold">{obj.value}</p>
             <p className="mr-4 text-body-1-demi text-tertiary">{obj.key}</p>
           </div>
         )
@@ -386,8 +384,8 @@ function CohostTile({ image, title, subtitle, userName, isAvatar }: CohostTilePr
     <div className="flex items-center gap-x-1 rounded-lg p-2">
       <CustomAvatar className="h-12 w-12 bg-red-40" fallbackString={title} imageUrl={image} isAvatar={isAvatar} />
       <div className="mx-2">
-        <p className="line-clamp-1 text-body-1-bold text-secondary">{title}</p>
-        {userName && <p className="line-clamp-1 text-body-1-demi text-secondary">{userName}</p>}
+        <p className="line-clamp-1 text-body-1-bold">{title}</p>
+        {userName && <p className="line-clamp-1 text-body-1-demi">{userName}</p>}
         {subtitle && <p className="line-clamp-1 text-cap-1-demi text-tertiary">{subtitle}</p>}
       </div>
     </div>

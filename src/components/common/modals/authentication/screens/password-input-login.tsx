@@ -76,7 +76,7 @@ export function PasswordInputLogin() {
 
   return (
     <ModalShell>
-      <h3 className="flex w-full items-center justify-center text-heading-3 text-secondary">Log in</h3>
+      <h3 className="flex w-full items-center justify-center text-heading-3 ">Log in</h3>
       <div className="w-full">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -89,7 +89,7 @@ export function PasswordInputLogin() {
                   <FormItem className="sm:w-full">
                     <FormLabel className="text-body-1-med">
                       <div className="flex w-full justify-between">
-                        <p className="text-secondary">Password</p>
+                        <p>Password</p>
                       </div>
                     </FormLabel>
                     <FormControl>

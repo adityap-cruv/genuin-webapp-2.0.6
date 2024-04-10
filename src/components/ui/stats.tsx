@@ -13,7 +13,7 @@ export function Stats({ statsData }: Props) {
         return (
           <div key={index}>
             <p className="text-title-2-bold">{obj.value}</p>
-            <p className="text-cap-1-demi text-secondary">{obj.key}</p>
+            <p className="text-cap-1-demi">{obj.key}</p>
           </div>
         )
       })}

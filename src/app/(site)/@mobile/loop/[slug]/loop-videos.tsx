@@ -29,9 +29,7 @@ export function LoopVideos({ slug }: { slug: string }) {
     <div ref={scrollDivRef} className="h-full w-full overflow-y-auto">
       {isLoading && <Loader size="md" />}
       {videos?.length === 0 && (
-        <div className="flex items-center justify-center pt-32 text-title-3-bold text-secondary">
-          No posts available
-        </div>
+        <div className="flex items-center justify-center pt-32 text-title-3-bold">No posts available</div>
       )}
       <div className="my-4 grid grid-cols-2 gap-4">
         {videos?.map((item, index) => (

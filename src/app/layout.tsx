@@ -40,7 +40,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <meta rel="x-brand-id" content={config?.subdomain} />
         {/* <script src="https://www.google.com/recaptcha/enterprise.js?render=6LeQm4gpAAAAAC2o51SQj-ak7ojnfOlxyDiR9E7p"></script> */}
       </head>
-      <body className="index-page-background !absolute inset-0 min-h-full min-w-full text-new-off-black">
+      <body className="index-page-background !absolute inset-0 min-h-full min-w-full text-secondary">
         {error ? (
           <BrandNotFound />
         ) : (
