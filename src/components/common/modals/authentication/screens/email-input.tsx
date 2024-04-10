@@ -54,8 +54,10 @@ export function EmailInput() {
           setStep('PASSWORD_INPUT_LOGIN')
         }
       } else if (ksResponse.code === 5237) {
+        setFormData({ retryTime: ksResponse?.retryTime })
         setStep('MAGIC_LINK_SENT_NOTE')
       } else if (ksResponse.code === 5231) {
+        setFormData({ retryTime: ksResponse?.retryTime })
         setStep('EMAIL_SENT_NOTE_ACCOUNT_EXISTS')
       } else {
         form.control.setError('root', { message: 'Something went wrong. Please try again!' })

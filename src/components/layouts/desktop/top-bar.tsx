@@ -106,7 +106,7 @@ function UserTick() {
           </div>
           <hr className="border-b border-monochrome-9" />
           <div className="flex items-center gap-x-2 p-4">
-            <LogoutIcon />
+            <LogoutIcon className="stroke-secondary" />
             <p
               className="cursor-pointer text-body-1-demi"
               onClick={() => {

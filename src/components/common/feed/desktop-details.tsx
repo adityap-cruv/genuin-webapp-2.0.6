@@ -23,6 +23,8 @@ import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { DownloadDialog } from '../download-dialog'
 import { ShareIcon } from '@icons/share-icon'
 import { Textarea } from '@components/ui/textarea'
+import { AudioRecordIcon } from '@icons/audio-record-icon'
+import { VideoRecordIcon } from '@icons/video-record-icon'
 
 type DesktopDetailsProps = {
   videoDetails: VideoDataType
@@ -306,10 +308,12 @@ function CommentInput({ setComments, currentComment, setCurrentComment, videoDet
         )}
 
         <DownloadDialog title="Get the Genuin app" subtitle="Get the app to comment on this video." asChild>
-          <Image src={icAudioRecord} alt="audio record" className="h-8 w-8" />
+          {/* <Image src={icAudioRecord} alt="audio record" className="h-8 w-8" /> */}
+          <AudioRecordIcon className="fill-secondary" />
         </DownloadDialog>
         <DownloadDialog title="Get the Genuin app" subtitle="Get the app to comment on this video." asChild>
-          <Image src={icVideoRecord} alt="audio record" className="h-8 w-8" />
+          {/* <Image src={icVideoRecord} alt="audio record" className="h-8 w-8" /> */}
+          <VideoRecordIcon className="fill-secondary" />
         </DownloadDialog>
       </button>
     </div>

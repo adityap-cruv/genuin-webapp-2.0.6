@@ -35,6 +35,7 @@ type FormDataType = {
   otp: number
   userId: string
   imageName: string
+  retryTime?: number
 }
 
 type States = {

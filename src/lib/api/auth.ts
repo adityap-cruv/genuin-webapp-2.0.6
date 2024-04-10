@@ -67,7 +67,7 @@ type KsSignupProps = {
 
 export async function ksSignup({
   email,
-}: KsSignupProps): Promise<{ code: number; flow?: 'login' | 'signup'; message?: string }> {
+}: KsSignupProps): Promise<{ code: number; flow?: 'login' | 'signup'; message?: string; retryTime: number }> {
   return await axiosInstance
     .post('/api/v3/ks_login_signup', {
       email: encryptText(email, false),
@@ -76,11 +76,13 @@ export async function ksSignup({
     })
     .then((res) => {
       console.log('response in axios:', res)
-      return { code: res.status, flow: res?.data?.data.flow }
+      const retryTime = res?.data?.data?.retryTime
+      return { code: res.status, flow: res?.data?.data.flow, retryTime }
     })
     .catch((e) => {
       console.log('error::', e)
-      return { code: Number(e?.response?.data?.code), flow: e?.data?.data.flow }
+      const retryTime = e.response?.data?.data?.retryTime
+      return { code: Number(e?.response?.data?.code), flow: e?.data?.data.flow, retryTime }
     })
 }
 
@@ -192,7 +194,7 @@ export async function resendVerificationMail(
   email: string,
   emailType: number,
   actionMetadata?: ActionMetadataType
-): Promise<{ code: number }> {
+): Promise<{ code: number; retryTime: number }> {
   return await axiosInstance
     .post('api/v3/resend_email_verification', {
       email: encryptText(email, false),
@@ -202,11 +204,13 @@ export async function resendVerificationMail(
       action_meta_data: actionMetadata,
     })
     .then((res) => {
-      return { code: res.status }
+      const retryTime = res?.data?.data?.retryTime || 0
+      return { code: res.status, retryTime }
     })
     .catch((e) => {
       console.log('::Error in resend api::', e)
-      return { code: Number(e.response.data.code) }
+      const retryTime = e.response?.data?.data?.retryTime || 0
+      return { code: Number(e.response.data.code), retryTime }
     })
 }
 
