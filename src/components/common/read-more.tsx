@@ -26,7 +26,7 @@ export function ReadMore({ text, maxChars = 150, ...props }: Props) {
           onClick={() => {
             setShowMore((old) => !old)
           }}
-          className="cursor-pointer pl-1 text-body-1-med text-secondary">
+          className="cursor-pointer pl-1 text-body-1-med">
           (View more)
         </span>
       )}

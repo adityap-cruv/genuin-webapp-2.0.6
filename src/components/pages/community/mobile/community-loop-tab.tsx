@@ -79,7 +79,7 @@ function LoopItem({ loopDetails, openModal }: { loopDetails: any; openModal: (sl
         <div className="py-2">
           <div className="relative w-full rounded-lg border border-tertiary-200 bg-monochrome-white">
             <div className="w-[70%] items-center p-[3%]">
-              <p className="text-body-1-bold text-secondary">{loopDetails.name}</p>
+              <p className="text-body-1-bold">{loopDetails.name}</p>
               {loopDetails.videos.length !== 0 && !loopDetails.private && (
                 <p className="text-body-1-demi text-secondary-300">
                   {loopDetails.videos[0].owner} posted ∙ {getTimeAgo(loopDetails.videos[0].created_at)}

@@ -14,7 +14,7 @@ export function Error() {
       </p>
       <Button
         variant="default"
-        className="w-full bg-new-off-black text-title-3-med !text-new-off-white hover:bg-new-dark-grey"
+        className="w-full text-title-3-med !text-new-off-white"
         onClick={() => {
           setStep('EMAIL_INPUT')
         }}>

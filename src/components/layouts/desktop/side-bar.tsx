@@ -119,13 +119,7 @@ function Item({ title, isActive, children }: ItemProps) {
   return (
     <div className="flex w-full max-w-full items-center gap-x-3 rounded-md p-3 hover:bg-monochrome-6/10">
       {children}
-      <p
-        className={cn(
-          'hidden break-all !text-title-2-demi lg:block',
-          isActive ? 'text-primary' : 'text-new-off-black'
-        )}>
-        {title}
-      </p>
+      <p className={cn('hidden break-all !text-title-2-demi lg:block', isActive && 'text-primary')}>{title}</p>
     </div>
   )
 }

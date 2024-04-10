@@ -10,18 +10,14 @@ import { useEffect, useState } from 'react'
 import { ModalShell } from '../modal-shell'
 import { Button } from '@components/ui/button'
 import { PATH_NAME } from '@lib/utils/constants/path'
-import { ksSignup, signup } from '@lib/api/auth'
+import { ksSignup } from '@lib/api/auth'
 import { usePathname } from 'next/navigation'
-import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { Loader } from '@components/ui/loader'
-import { SIGNUP_SOURCE } from '@lib/constants'
-import { signIn } from 'next-auth/react'
 
 export function EmailInput() {
   const { setStep, setFormData, formData, action } = useAuthenticationModalStore()
   const [isLoading, setIsLoading] = useState(false)
   const pathname = usePathname()
-  const brandName = useGenuinOptions().config?.name
 
   const formSchema = z.object({
     email: z.string().email({ message: 'Please enter valid email.' }),
@@ -32,7 +28,7 @@ export function EmailInput() {
     mode: 'onBlur',
     defaultValues: { email: formData.email },
   })
-  const { isValid, isDirty } = form.formState
+  const { isValid } = form.formState
 
   useEffect(() => {
     const w = form.watch((value) => {
@@ -53,26 +49,7 @@ export function EmailInput() {
       })
       if (ksResponse.code === 200) {
         if (ksResponse.flow === 'signup') {
-          const signupResponse = await signup({
-            email: formData.email ?? '',
-            signupSource: SIGNUP_SOURCE.web,
-          })
-
-          await signIn('credentials', {
-            ...signupResponse.data.user,
-            accessToken: signupResponse.accessToken,
-            redirect: false,
-          })
-            .then((res) => {
-              if (res?.ok) {
-                setStep('EMAIL_SENT_NOTE')
-              } else {
-                throw new Error()
-              }
-            })
-            .catch((e) => {
-              throw new Error()
-            })
+          setStep('GUIDELINES')
         } else {
           setStep('PASSWORD_INPUT_LOGIN')
         }
@@ -92,7 +69,7 @@ export function EmailInput() {
 
   return (
     <ModalShell>
-      <p className="text-center text-heading-3">Log in or sign up</p>
+      <p className="text-center text-heading-3 ">Log in or sign up</p>
       <div className="w-full">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -105,12 +82,15 @@ export function EmailInput() {
                   <FormItem className="sm:w-full">
                     <FormLabel className="w-full text-body-1-med">
                       <div className="flex w-full justify-between">
-                        <p>Email</p>
+                        <p className="">Email</p>
                       </div>
                     </FormLabel>
                     <FormControl>
                       <Input
-                        className={cn('border-monochrome-9 bg-monochrome-11 text-title-3-med', errors && '!border-red')}
+                        className={cn(
+                          'border border-tertiary-200 bg-tertiary-100 text-title-3-med',
+                          errors && '!border-red'
+                        )}
                         {...field}
                       />
                     </FormControl>
@@ -119,11 +99,7 @@ export function EmailInput() {
                 )
               }}
             />
-            <Button
-              type="submit"
-              variant="default"
-              className="w-full bg-new-off-black hover:bg-new-dark-grey"
-              disabled={!isValid || isLoading || !isDirty}>
+            <Button type="submit" variant="default" className="w-full" disabled={!isValid || isLoading}>
               {isLoading ? (
                 <Loader className="stroke-new-off-white" size="sm" />
               ) : (
@@ -138,8 +114,8 @@ export function EmailInput() {
           {form.formState.errors.root.message}
         </p>
       )}
-      <p className="text-center text-new-para-2-mobile">
-        By registering, you agree to {brandName ?? 'genuin'}'s
+      <p className="text-center text-new-para-2-mobile ">
+        By registering, you agree to genuin's
         <a href={PATH_NAME.terms} target="_blank" rel="noopener noreferrer">
           <span className="text-primary"> Terms of Service </span>
         </a>

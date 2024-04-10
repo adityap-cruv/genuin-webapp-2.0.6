@@ -57,7 +57,7 @@ export function ProfileDetails({ communityDetails }: Props) {
         className="hide-scrollbar absolute inset-0 mt-navbar w-full overflow-auto"
         style={{ height: 'calc(100% - 74px)' }}>
         <div
-          className="aspect-w-5 aspect-h-1 bg-tertiary-200 relative h-20"
+          className="aspect-w-5 aspect-h-1 relative h-20 bg-tertiary-200"
           style={{
             height: 'calc(100vw/5)',
           }}>
@@ -79,17 +79,21 @@ export function ProfileDetails({ communityDetails }: Props) {
                   onClick={
                     user
                       ? async () => {
-                          !isCommunityJoined &&
-                            (await joinCommunity(
-                              false,
-                              [communityDetails.info.id],
-                              [
-                                {
-                                  user_id: user?.id,
-                                },
-                              ]
-                            ))
-                          setIsCommunityJoined((prev: any) => !prev)
+                          !isCommunityJoined
+                            ? await joinCommunity(
+                                false,
+                                [communityDetails.info.id],
+                                [
+                                  {
+                                    user_id: user?.id,
+                                  },
+                                ]
+                              ).then((res) => {
+                                if (res.code === 200) {
+                                  setIsCommunityJoined((prev: any) => !prev)
+                                }
+                              })
+                            : setIsCommunityJoined((prev: any) => !prev)
                         }
                       : () => {
                           openModal({
@@ -152,21 +156,17 @@ export function ProfileDetails({ communityDetails }: Props) {
             </div>
           </div>
           <div ref={detailsDivRef}>
-            <p className="my-1 mt-2 line-clamp-1 break-all text-title-3-bold text-secondary">
-              {communityDetailsModule?.info.name}
-            </p>
-            <p className="my-1 line-clamp-2 break-all text-body-1-demi text-secondary">
-              {communityDetailsModule?.info.description}
-            </p>
+            <p className="my-1 mt-2 line-clamp-1 break-all text-title-3-bold ">{communityDetailsModule?.info.name}</p>
+            <p className="my-1 line-clamp-2 break-all text-body-1-demi ">{communityDetailsModule?.info.description}</p>
           </div>
           <Stats />
         </div>
         {communityDetails.info.private ? (
           <div
-            className="border-tertiary-200 mt-4 flex w-full items-center justify-center overflow-hidden border-t"
+            className="mt-4 flex w-full items-center justify-center overflow-hidden border-t border-tertiary-200"
             style={{ height: 'calc(100% - 220px)' }}>
             <div className="flex flex-col items-center justify-center">
-              <div className="bg-tertiary-200 rounded-full p-3">
+              <div className="rounded-full bg-tertiary-200 p-3">
                 <Image src={icLock} alt="share" className="h-12 w-12" />
               </div>
               <p className="text-title-2-demi">This community is private</p>
@@ -188,20 +188,20 @@ function Stats() {
   return (
     <div className="flex items-center">
       <span className="pr-4">
-        <span className="text-title-3-bold text-secondary">{communityDetailsModule?.info.count.member}</span>
-        <span className="text-tertiary text-cap-1-demi">
+        <span className="text-title-3-bold ">{communityDetailsModule?.info.count.member}</span>
+        <span className="text-cap-1-demi text-tertiary">
           &nbsp;{communityDetailsModule?.info.count.member === 1 ? 'Member' : 'Members'}
         </span>
       </span>
       <span className="pr-4">
-        <span className="text-title-3-bold text-secondary">{communityDetailsModule?.info.count.loop}</span>
-        <span className="text-tertiary text-cap-1-demi">
+        <span className="text-title-3-bold ">{communityDetailsModule?.info.count.loop}</span>
+        <span className="text-cap-1-demi text-tertiary">
           &nbsp;{communityDetailsModule?.info.count.loop === 1 ? 'Loop' : 'Loops'}
         </span>
       </span>
       <span className="pr-4">
-        <span className="text-title-3-bold text-secondary">{communityDetailsModule?.info.count.video}</span>
-        <span className="text-tertiary text-cap-1-demi">
+        <span className="text-title-3-bold ">{communityDetailsModule?.info.count.video}</span>
+        <span className="text-cap-1-demi text-tertiary">
           &nbsp;{communityDetailsModule?.info.count.video === 1 ? 'Video' : 'Videos'}
         </span>
       </span>
@@ -223,7 +223,7 @@ function ProfileTabs() {
           <p className="text-title-3-bold">About</p>
         </TabsTrigger>
       </TabsList>
-      <hr className="border-tertiary-200 border-t" />
+      <hr className="border-t border-tertiary-200" />
       <TabsContent value="Loops" className="mx-4 h-full">
         <CommunityLoopTab communitySlug={communityDetailsModule.info.slug} />
       </TabsContent>
@@ -245,14 +245,12 @@ function Categories() {
       <div>
         <p className="my-2 text-title-3-bold">Categories</p>
         {communityDetailsModule?.info.categories.length === 0 && (
-          <div className="flex items-center justify-center text-title-3-bold text-secondary">
-            No categories available
-          </div>
+          <div className="flex items-center justify-center text-title-3-bold ">No categories available</div>
         )}
         <div>
           {communityDetailsModule?.info.categories.map((cat, index) => {
             return (
-              <p key={index} className="bg-tertiary-200 mx-1 my-1 inline-block rounded-full p-2 px-4 text-body-1-demi">
+              <p key={index} className="mx-1 my-1 inline-block rounded-full bg-tertiary-200 p-2 px-4 text-body-1-demi">
                 <span className="line-clamp-1 break-all">{cat}</span>
               </p>
             )
@@ -269,32 +267,32 @@ function Links() {
       <div>
         <p className="my-2 text-title-3-bold">Links</p>
         {!links?.instagram_url && !links?.linkedin_url && !links?.twitter_url && !links?.social_web_url && (
-          <div className="flex items-center justify-center text-title-3-bold text-secondary">No links available</div>
+          <div className="flex items-center justify-center text-title-3-bold ">No links available</div>
         )}
         <div className="flex">
           {links?.instagram_url && (
-            <div className="bg-tertiary-200 mx-1 flex items-center rounded-md p-1">
+            <div className="mx-1 flex items-center rounded-md bg-tertiary-200 p-1">
               <Link href={checkAndAppendHttps(links.instagram_url)} target="_blank">
                 <Image src={icInstagram} alt="instagram" />
               </Link>
             </div>
           )}
           {links?.linkedin_url && (
-            <div className="bg-tertiary-200 mx-1 flex items-center rounded-md p-1">
+            <div className="mx-1 flex items-center rounded-md bg-tertiary-200 p-1">
               <Link href={checkAndAppendHttps(links.linkedin_url)} target="_blank">
                 <Image src={icLinkedIn} alt="linkedin" />
               </Link>
             </div>
           )}
           {links?.twitter_url && (
-            <div className="bg-tertiary-200 mx-1 flex items-center rounded-md p-1">
+            <div className="mx-1 flex items-center rounded-md bg-tertiary-200 p-1">
               <Link href={checkAndAppendHttps(links.twitter_url)} target="_blank">
                 <Image src={icTwitter} alt="twitter" />
               </Link>
             </div>
           )}
           {links?.social_web_url && (
-            <div className="bg-tertiary-200 mx-1 flex items-center rounded-md p-1">
+            <div className="mx-1 flex items-center rounded-md bg-tertiary-200 p-1">
               <Link href={checkAndAppendHttps(links.social_web_url)} target="_blank">
                 <div className="flex">
                   <Image src={icLink} alt="web-site" />
@@ -312,7 +310,7 @@ function Leaders() {
   if (communityDetailsModule.leaders.length !== 0)
     return (
       <div>
-        <p className="my-2 text-title-3-bold text-secondary">Leader</p>
+        <p className="my-2 text-title-3-bold ">Leader</p>
         {communityDetailsModule?.leaders.map((moderator, index) => {
           return (
             <Link key={index} href={{ pathname: PATH_NAME.profile(moderator.nickname) }}>
@@ -352,9 +350,9 @@ function ListItem({
         isAvatar={isAvatar}
       />
       <div className="mx-2">
-        <p className="line-clamp-1 text-body-1-bold text-secondary">{subtitle}</p>
-        {subtitle && <p className="line-clamp-1 text-body-1-demi text-secondary">{title}</p>}
-        {description && <p className="text-tertiary line-clamp-1 text-cap-1-demi">{description}</p>}
+        <p className="line-clamp-1 text-body-1-bold ">{subtitle}</p>
+        {subtitle && <p className="line-clamp-1 text-body-1-demi ">{title}</p>}
+        {description && <p className="line-clamp-1 text-cap-1-demi text-tertiary">{description}</p>}
       </div>
     </div>
   )

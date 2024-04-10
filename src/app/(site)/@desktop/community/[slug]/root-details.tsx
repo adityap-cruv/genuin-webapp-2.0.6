@@ -89,17 +89,21 @@ export function RootDetails({ communityDetails }: Props) {
               onClick={
                 user
                   ? async () => {
-                      !isCommunityJoined &&
-                        (await joinCommunity(
-                          false,
-                          [communityDetails.info.id],
-                          [
-                            {
-                              user_id: user?.id,
-                            },
-                          ]
-                        ))
-                      setIsCommunityJoined((prev) => !prev)
+                      !isCommunityJoined
+                        ? await joinCommunity(
+                            false,
+                            [communityDetails.info.id],
+                            [
+                              {
+                                user_id: user?.id,
+                              },
+                            ]
+                          ).then((res) => {
+                            if (res.code === 200) {
+                              setIsCommunityJoined((prev) => !prev)
+                            }
+                          })
+                        : setIsCommunityJoined((prev) => !prev)
                     }
                   : () => {
                       openModal({
@@ -137,7 +141,7 @@ export function RootDetails({ communityDetails }: Props) {
         </div>
         <div>
           <span className="flex items-center gap-x-2 px-6 py-2">
-            <p className="text-title-1-bold text-secondary">{communityDetails.info.name}</p>
+            <p className="text-title-1-bold">{communityDetails.info.name}</p>
             <p className="text-body-1-med text-tertiary">@{communityDetails.info.handle}</p>
           </span>
         </div>
@@ -161,9 +165,7 @@ export function RootDetails({ communityDetails }: Props) {
           <div className="grid w-full grid-cols-2 gap-4 overflow-hidden px-6" style={{ height: 'calc(100% - 56px)' }}>
             <div className="snap-y snap-proximity overflow-auto overflow-x-hidden scroll-smooth">
               {communityDetails.info.description && (
-                <p className="mb-2 line-clamp-2 break-all text-body-1-med text-secondary">
-                  {communityDetails.info.description}
-                </p>
+                <p className="mb-2 line-clamp-2 break-all text-body-1-med">{communityDetails.info.description}</p>
               )}
               <Stats communityDetails={communityDetails} />
               <CommunityDetailsTabs />
@@ -209,7 +211,7 @@ function Categories() {
   if (communityDetailsModule.info.categories.length !== 0)
     return (
       <div className="mb-4">
-        <p className="my-2 text-title-3-bold text-secondary">Categories</p>
+        <p className="my-2 text-title-3-bold">Categories</p>
         <div>
           {communityDetailsModule?.info.categories.map((cat, index) => {
             return (
@@ -228,7 +230,7 @@ function Links() {
   if (links?.instagram_url ?? links?.linkedin_url ?? links?.twitter_url ?? links?.social_web_url)
     return (
       <div className="mb-4">
-        <p className="my-2 text-title-3-bold text-secondary">Links</p>
+        <p className="my-2 text-title-3-bold">Links</p>
         <div className="flex">
           {links?.instagram_url && (
             <div className="mx-1 flex items-center rounded-md bg-tertiary-200 p-1">
@@ -270,7 +272,7 @@ function Guidelines() {
   if (communityDetailsModule.guidelines)
     return (
       <div className="mb-4">
-        <p className="my-2 text-title-3-bold text-secondary">Guidelines</p>
+        <p className="my-2 text-title-3-bold">Guidelines</p>
         <>
           <Accordion type="single" collapsible>
             {communityDetailsModule?.guidelines.map((guideline: any, index: any) => {
@@ -299,7 +301,7 @@ function Leaders() {
   if (communityDetailsModule.leaders.length !== 0)
     return (
       <div className="mb-4">
-        <p className="my-2 text-title-3-bold text-secondary">Leader</p>
+        <p className="my-2 text-title-3-bold">Leader</p>
         {communityDetailsModule?.leaders.map((moderator, index) => {
           return (
             <Link key={index} href={{ pathname: PATH_NAME.profile(moderator.nickname) }}>
@@ -354,19 +356,19 @@ function Stats({ communityDetails }: { communityDetails: CommunityDetailsType })
   return (
     <div className="flex items-center">
       <span className="flex items-center pr-4">
-        <p className="text-title-3-bold text-secondary">{communityDetails?.info.count.member}</p>
+        <p className="text-title-3-bold">{communityDetails?.info.count.member}</p>
         <p className="text-body-1-med text-tertiary">
           &nbsp;{communityDetails?.info.count.member === 1 ? 'Member' : 'Members'}
         </p>
       </span>
       <span className="flex items-center pr-4">
-        <p className="text-title-3-bold text-secondary">{communityDetails?.info.count.loop}</p>
+        <p className="text-title-3-bold">{communityDetails?.info.count.loop}</p>
         <p className="text-body-1-med text-tertiary">
           &nbsp;{communityDetails?.info.count.loop === 1 ? 'Loop' : 'Loops'}
         </p>
       </span>
       <span className="flex items-center pr-4">
-        <p className="text-title-3-bold text-secondary">{communityDetails?.info.count.video}</p>
+        <p className="text-title-3-bold">{communityDetails?.info.count.video}</p>
         <p className="text-body-1-med text-tertiary">
           &nbsp;{communityDetails?.info.count.video === 1 ? 'Video' : 'Videos'}
         </p>

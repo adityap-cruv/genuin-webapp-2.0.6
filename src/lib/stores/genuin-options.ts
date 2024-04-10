@@ -47,6 +47,7 @@ export type ConfigType = {
   slogan: SloganType
   brand_colors: any
   favicon: any
+  brand_web_logo: string
 } | null
 
 type User = {
@@ -70,6 +71,7 @@ type StateType = {
   embed: boolean
   brandId: string
   logoUrl: string
+  brandWebLogo: string
   /**
    * Set false if you don't want to show general navbar.s
    * @default true
@@ -108,6 +110,7 @@ const initialState: StateType = {
   embed: false,
   brandId: '',
   logoUrl: '',
+  brandWebLogo: '',
   showNavbar: true,
   isLoading: true,
   isMobile: true,

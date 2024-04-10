@@ -49,7 +49,7 @@ export function PasswordInputLogin() {
             name: res.data.user.name,
             is_email_verified: res.data.user.is_email_verified,
             is_password_set: true,
-            accessToken: res.data.user.token,
+            accessToken: res.data.accessToken,
           }
           // console.log('user', user)
           void signIn('credentials', { ...user, redirect: false })
@@ -76,7 +76,7 @@ export function PasswordInputLogin() {
 
   return (
     <ModalShell>
-      <h3 className="flex w-full items-center justify-center text-heading-3">Log in</h3>
+      <h3 className="flex w-full items-center justify-center text-heading-3 ">Log in</h3>
       <div className="w-full">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -99,7 +99,7 @@ export function PasswordInputLogin() {
                           minLength={8}
                           type={passwordVisible ? 'text' : 'password'}
                           className={cn(
-                            'border-monochrome-9 bg-monochrome-11 text-title-3-med',
+                            'border border-tertiary-200 bg-tertiary-100 text-title-3-med',
                             errors && '!border-red'
                           )}
                           {...field}
@@ -129,11 +129,7 @@ export function PasswordInputLogin() {
                 )
               }}
             />
-            <Button
-              type="submit"
-              variant="default"
-              className="w-full bg-new-off-black hover:bg-new-dark-grey"
-              disabled={!isValid || isLoading}>
+            <Button type="submit" variant="default" className="w-full" disabled={!isValid || isLoading}>
               {isLoading ? <Loader size="sm" /> : <p className="text-title-3-demi">Log in</p>}
             </Button>
             {form.formState.errors.root && (

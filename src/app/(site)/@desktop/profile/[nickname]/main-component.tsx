@@ -73,7 +73,7 @@ export function MainComponent({ profileData }: CompProps) {
           <div className="flex items-center py-1" ref={detailsDivRef}>
             {profileData?.name ? (
               <>
-                <p className="line-clamp-1 pr-2 text-title-1-bold text-secondary">{profileData?.name}</p>
+                <p className="line-clamp-1 pr-2 text-title-1-bold">{profileData?.name}</p>
                 <p className="line-clamp-1 text-body-1-med text-tertiary">@{profileData?.nickname}</p>
               </>
             ) : (
@@ -82,7 +82,7 @@ export function MainComponent({ profileData }: CompProps) {
               </>
             )}
           </div>
-          <p className="my-1 line-clamp-2 break-all text-body-1-med text-secondary">{profileData?.bio}</p>
+          <p className="my-1 line-clamp-2 break-all text-body-1-med">{profileData?.bio}</p>
           <Stats profileData={profileData} />
         </div>
         <CommunityList usernickname={profileData?.nickname} />
@@ -151,15 +151,15 @@ function Stats({ profileData }: { profileData: any }) {
   return (
     <div className="m-1 ml-0 flex max-w-[250px]  justify-between gap-x-6 p-1 pl-0">
       <div className="flex items-center">
-        <p className="text-title-3-bold text-secondary">{abbreviateNumber(profileData?.no_of_views) ?? 0}</p>
+        <p className="text-title-3-bold">{abbreviateNumber(profileData?.no_of_views) ?? 0}</p>
         <p className="px-1 text-body-1-med text-tertiary">Views</p>
       </div>
       <div className="flex items-center">
-        <p className="text-title-3-bold text-secondary">{abbreviateNumber(profileData?.no_of_videos) ?? 0}</p>
+        <p className="text-title-3-bold">{abbreviateNumber(profileData?.no_of_videos) ?? 0}</p>
         <p className="px-1 text-body-1-med text-tertiary">Posts</p>
       </div>
       <div className="flex items-center">
-        <p className="text-title-3-bold text-secondary">{abbreviateNumber(profileData?.no_of_communities) ?? 0}</p>
+        <p className="text-title-3-bold">{abbreviateNumber(profileData?.no_of_communities) ?? 0}</p>
         <p className="px-1 text-body-1-med text-tertiary">Communities</p>
       </div>
     </div>
@@ -200,8 +200,15 @@ function CommunityList({ usernickname }: any) {
               user_id: user?.id,
             },
           ]
-        )
-
+        ).then((res) => {
+          if (res.code === 200) {
+            setCommunityJoinStates((prevState) => ({
+              ...prevState,
+              [communityId]: newState,
+            }))
+          }
+        })
+      } else {
         setCommunityJoinStates((prevState) => ({
           ...prevState,
           [communityId]: newState,
@@ -247,7 +254,7 @@ function CommunityList({ usernickname }: any) {
                     <Link href={{ pathname: PATH_NAME.community(item.slug) }}>
                       <div className="mx-2">
                         <p
-                          className="line-clamp-1 text-left text-secondary"
+                          className="line-clamp-1 text-left"
                           style={{ fontWeight: 600, fontSize: '20px', lineHeight: '24px' }}>
                           {item.name}
                         </p>
@@ -454,7 +461,7 @@ function LoopVideos({ userId, loop, community }: LoopVideosProps) {
   return (
     <>
       <Link href={PATH_NAME.loop(loop.slug)}>
-        <p className="mb-3 text-body-1-bold text-secondary">{loop.name}</p>
+        <p className="mb-3 text-body-1-bold">{loop.name}</p>
       </Link>
       <div className="my-2 grid w-full grid-cols-4 gap-2 md:grid-cols-8">
         <InnerComponent />

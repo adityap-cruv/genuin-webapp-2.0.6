@@ -55,7 +55,7 @@ export function Signup() {
 
   return (
     <ModalShell>
-      <h3 className="flex w-full items-center justify-center pb-4 text-heading-3">
+      <h3 className="flex w-full items-center justify-center pb-4 text-heading-3 ">
         Sign up for {brandName ?? 'genuin'}
       </h3>
       <Form {...form}>
@@ -71,14 +71,17 @@ export function Signup() {
                   <FormLabel className="text-body-1-med">
                     <div className="flex w-full justify-between">
                       <p>Full Name</p>
-                      <p className="text-cap-1-med text-secondary">{form.getValues('displayName')?.length ?? 0}/25</p>
+                      <p className="text-cap-1-med ">{form.getValues('displayName')?.length ?? 0}/25</p>
                     </div>
                   </FormLabel>
                   <FormControl>
                     <Input
                       maxLength={25}
                       type="text"
-                      className={cn('border-monochrome-9 bg-monochrome-11 text-title-3-med', errors && '!border-red')}
+                      className={cn(
+                        'border border-tertiary-200 bg-tertiary-100 text-title-3-med',
+                        errors && '!border-red'
+                      )}
                       {...field}
                     />
                   </FormControl>
@@ -101,7 +104,10 @@ export function Signup() {
                   </FormLabel>
                   <FormControl>
                     <Input
-                      className={cn('border-monochrome-9 bg-monochrome-11 text-title-3-med', errors && '!border-red')}
+                      className={cn(
+                        'border border-tertiary-200 bg-tertiary-100 text-title-3-med',
+                        errors && '!border-red'
+                      )}
                       {...field}
                     />
                   </FormControl>
@@ -113,7 +119,7 @@ export function Signup() {
           <span className="flex flex-col gap-y-3 text-title-3-demi">
             <Button
               type="submit"
-              className="flex w-full cursor-pointer items-center justify-center rounded-lg bg-new-off-black  hover:bg-new-dark-grey disabled:hover:bg-new-off-black"
+              className="flex w-full cursor-pointer items-center justify-center rounded-lg"
               disabled={!isValid || isLoading}>
               {isLoading ? (
                 <Loader size="sm" className="fill-new-off-white" />
@@ -128,7 +134,7 @@ export function Signup() {
             )}
           </span>
         </form>
-        <p className="py-4 text-center text-cap-1-med text-monochrome-4">
+        <p className="py-4 text-center text-cap-1-med text-tertiary-400">
           By registering, you agree to {brandName ?? 'genuin'}’s&nbsp;
           <Link href={PATH_NAME.terms} target="_blank" className="break-keep text-primary">
             Terms of Service
@@ -138,7 +144,7 @@ export function Signup() {
             Privacy
           </Link>
         </p>
-        <p className="flex w-full items-center justify-center text-body-1-demi">
+        <p className="flex w-full items-center justify-center text-body-1-demi ">
           Already have an account?
           <span
             className="cursor-pointer text-primary"

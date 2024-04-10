@@ -216,7 +216,7 @@ function LoopCohosts({ slug }: { slug: string }) {
   if (cohosts && cohosts.length !== 0)
     return (
       <div>
-        <p className="my-2 text-title-3-bold text-secondary">Collaborators</p>
+        <p className="my-2 text-title-3-bold">Collaborators</p>
         <div className="h-full w-full overflow-auto">
           {cohosts.map((item, index) => (
             <Link key={index} href={{ pathname: PATH_NAME.profile(item.nickname) }}>
@@ -244,7 +244,7 @@ function LoopSubscribers({ slug }: { slug: string }) {
   if (subscribers && subscribers.length !== 0)
     return (
       <div>
-        <p className="my-2 text-title-3-bold text-secondary">Subscribers</p>
+        <p className="my-2 text-title-3-bold">Subscribers</p>
         <div className="h-full w-full overflow-auto">
           {subscribers.map((item: any, index: any) => (
             <Link key={index} href={{ pathname: PATH_NAME.profile(item.user.nickname) }}>

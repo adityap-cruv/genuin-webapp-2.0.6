@@ -31,10 +31,11 @@ function Logo({ ...props }: Props) {
 type ProcessorProps = { type: 'icon' | 'text' | 'logo' } & Props
 
 function LogoProcessor({ imageHeight, type, ...props }: ProcessorProps) {
-  const { logoUrl } = useGenuinOptions((state) => ({ embed: state.embed, logoUrl: state.logoUrl }))
+  const { brandWebLogo } = useGenuinOptions((state) => ({ embed: state.embed, brandWebLogo: state.brandWebLogo }))
 
   // TODO: Find a way to use next/image here.
-  if (logoUrl) return <img src={logoUrl} style={{ height: imageHeight }} className="w-auto" alt="brand logo" />
+  if (brandWebLogo)
+    return <img src={brandWebLogo} style={{ height: imageHeight }} className="w-auto" alt="brand logo" />
 
   switch (type) {
     case 'text':
