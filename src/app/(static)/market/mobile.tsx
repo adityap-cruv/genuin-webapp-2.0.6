@@ -78,7 +78,7 @@ function Component1() {
           <Button
             size="custom"
             className="my-3 bg-new-off-black px-4 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
-            <p className="text-new-para-2">Get Started</p>
+            <p className="text-new-para-2 text-monochrome-white">Get Started</p>
           </Button>
         </ContactUs>
         <div className="my-4 flex min-h-[300px] items-center justify-center">

@@ -24,7 +24,7 @@ export function ListItem({
       <div className="mx-2">
         <p className="line-clamp-1 text-body-1-demi">{subtitle}</p>
         {title && <p className="line-clamp-1 text-body-1-med">{title}</p>}
-        {description && <p className="line-clamp-1 text-body-1-med text-monochrome">{description}</p>}
+        {description && <p className="line-clamp-1 text-body-1-med text-tertiary">{description}</p>}
       </div>
     </div>
   )

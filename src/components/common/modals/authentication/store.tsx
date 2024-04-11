@@ -20,6 +20,7 @@ export type StepsType =
   | 'USERNAME_INPUT'
   | 'PASSWORD_INPUT_LOGIN'
   | 'EMAIL_SENT_NOTE_ACCOUNT_EXISTS'
+  | 'GUIDELINES'
 
 type FormDataType = {
   displayName: string
@@ -34,6 +35,7 @@ type FormDataType = {
   otp: number
   userId: string
   imageName: string
+  retryTime?: number
 }
 
 type States = {

@@ -72,8 +72,6 @@ export function OtpInput() {
       .then(async (res) => {
         if (res?.code === 200) {
           const user = res.data
-          user.member_id = user.user_id
-          console.log(user)
           void signIn('credentials', { ...user, redirect: false })
             .then((res) => {
               if (res?.ok) closeModal()
@@ -119,7 +117,7 @@ export function OtpInput() {
     <ModalShell>
       <div className="flex flex-col items-center">
         <p className="mb-6 text-center text-heading-3">Enter code</p>
-        <p className="w-full text-center text-title-3-med text-monochrome">
+        <p className="w-full text-center text-title-3-med text-tertiary">
           Enter the 6-digit code sent to: {formData.phone}
         </p>
 
@@ -150,11 +148,7 @@ export function OtpInput() {
                   )
                 }}
               />
-              <Button
-                type="submit"
-                variant="default"
-                className="w-full bg-new-off-black hover:bg-new-dark-grey"
-                disabled={!isValidOtp || isLoading}>
+              <Button type="submit" variant="default" className="w-full" disabled={!isValidOtp || isLoading}>
                 {isLoading ? (
                   <Loader size="sm" className="fill-new-off-white" />
                 ) : (

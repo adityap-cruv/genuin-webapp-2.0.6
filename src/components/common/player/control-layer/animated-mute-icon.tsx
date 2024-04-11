@@ -1,7 +1,6 @@
 import { useEffect } from 'react'
 import { motion, useAnimationControls } from 'framer-motion'
-import Image from 'next/image'
-import icMute from '@icons/player-controls/icMuteBlack.svg'
+import { MuteIcon } from '@icons/player-controls/mute-icon'
 
 // TODO: Make this component more reusable
 export const AnimatedMuteIcon = () => {
@@ -23,7 +22,7 @@ export const AnimatedMuteIcon = () => {
 
   return (
     <div className="flex w-fit items-center overflow-hidden rounded-lg bg-monochrome-white py-2 pl-2">
-      <Image src={icMute} alt="" className="h-6 w-6 overflow-visible" />
+      <MuteIcon className="stroke-secondary" />
       <div className="h-full w-2" />
       <motion.div
         animate={muteAnimationController}

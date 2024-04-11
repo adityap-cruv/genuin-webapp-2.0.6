@@ -28,6 +28,7 @@ import { type CommunityMiniObj, useCommunityListStore, type LoopMiniObj, type Vi
 import { PlayerModal } from '@components/common/modals/player-modal'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { joinCommunity } from '@lib/api/video'
+import { ShareIcon } from '@icons/share-icon'
 
 interface CompProps {
   profileData: any
@@ -57,28 +58,32 @@ export function MainComponent({ profileData }: CompProps) {
         isAvatar={profileData?.is_avatar}
       />
       <div className="hide-scrollbar absolute inset-0 h-full w-full overflow-auto px-4">
-        <div className="mt-4 w-1/2" ref={divRef}>
+        <div className="mt-4 flex items-center justify-between">
           <CustomAvatar
             className="bg-slate-500 h-20 w-20 bg-red-40"
             fallbackString={profileData?.name}
             imageUrl={profileData?.profile_image}
             isAvatar={profileData?.is_avatar}
           />
+          <div>
+            <Links profileData={profileData} />
+          </div>
+        </div>
+        <div className="w-1/2" ref={divRef}>
           <div className="flex items-center py-1" ref={detailsDivRef}>
             {profileData?.name ? (
               <>
                 <p className="line-clamp-1 pr-2 text-title-1-bold">{profileData?.name}</p>
-                <p className="line-clamp-1 text-body-1-med text-monochrome">@{profileData?.nickname}</p>
+                <p className="line-clamp-1 text-body-1-med text-tertiary">@{profileData?.nickname}</p>
               </>
             ) : (
               <>
-                <p className="line-clamp-1 pr-2 text-title-1-bold">@{profileData?.nickname}</p>
+                <p className="line-clamp-1 pr-2 text-title-1-bold text-tertiary">@{profileData?.nickname}</p>
               </>
             )}
           </div>
           <p className="my-1 line-clamp-2 break-all text-body-1-med">{profileData?.bio}</p>
           <Stats profileData={profileData} />
-          <Links profileData={profileData} />
         </div>
         <CommunityList usernickname={profileData?.nickname} />
       </div>
@@ -94,30 +99,30 @@ function Links({ profileData }: CompProps) {
   const { isEmbed, parentUrl } = useGenuinOptions((state) => ({ isEmbed: state.embed, parentUrl: state.parentUrl }))
 
   return (
-    <div className="my-2 flex">
+    <div className="my-2 flex items-center">
       {links?.linkedin && (
-        <div className="mr-2 flex items-center rounded-md bg-monochrome-9 p-1">
+        <div className="mr-2 flex h-8 w-8 items-center justify-center rounded-md bg-tertiary-200 p-1">
           <Link href={checkAndAppendHttps(links.linkedin)} target="_blank">
             <Image src={icLinkedIn} alt="linkedin" />
           </Link>
         </div>
       )}
       {links?.instagram && (
-        <div className="mr-2 flex items-center rounded-md bg-monochrome-9 p-1">
+        <div className="mr-2 flex h-8 w-8 items-center justify-center rounded-md bg-tertiary-200 p-1">
           <Link href={checkAndAppendHttps(links.instagram)} target="_blank">
             <Image src={icInstagram} alt="instagram" />
           </Link>
         </div>
       )}
       {links?.twitter && (
-        <div className="mr-2 flex items-center rounded-md bg-monochrome-9 p-1">
+        <div className="mr-2 flex h-8 w-8 items-center justify-center rounded-md bg-tertiary-200 p-1">
           <Link href={checkAndAppendHttps(links.twitter)} target="_blank">
             <Image src={icTwitter} alt="twitter" />
           </Link>
         </div>
       )}
       {links?.tiktok && (
-        <div className="mr-2 flex items-center rounded-md bg-monochrome-9 p-1 px-2">
+        <div className="mr-2 flex h-8 w-8 items-center justify-center rounded-md bg-tertiary-200 p-1 px-2">
           <Link href={checkAndAppendHttps(links.tiktok)} target="_blank">
             <Image src={icTiktok} alt="linkedin" />
           </Link>
@@ -127,7 +132,7 @@ function Links({ profileData }: CompProps) {
         variant="outline"
         size="custom"
         outlineColor="genuin-blue"
-        className="mx-1"
+        className="mx-1 hover:border-primary-600"
         onClick={async () =>
           await shareFn({
             shareLink: getCurrentShareUrl({ isEmbed, parentUrl }),
@@ -135,7 +140,7 @@ function Links({ profileData }: CompProps) {
           })
         }>
         <span className="flex items-center p-1">
-          <Image src={icShare} alt="share" height={24} width={24} />
+          <ShareIcon className="h-6 w-6 fill-primary hover:fill-primary-600" />{' '}
         </span>
       </Button>
     </div>
@@ -147,15 +152,15 @@ function Stats({ profileData }: { profileData: any }) {
     <div className="m-1 ml-0 flex max-w-[250px]  justify-between gap-x-6 p-1 pl-0">
       <div className="flex items-center">
         <p className="text-title-3-bold">{abbreviateNumber(profileData?.no_of_views) ?? 0}</p>
-        <p className="px-1 text-body-1-med text-secondary">Views</p>
+        <p className="px-1 text-body-1-med text-tertiary">Views</p>
       </div>
       <div className="flex items-center">
         <p className="text-title-3-bold">{abbreviateNumber(profileData?.no_of_videos) ?? 0}</p>
-        <p className="px-1 text-body-1-med text-secondary">Posts</p>
+        <p className="px-1 text-body-1-med text-tertiary">Posts</p>
       </div>
       <div className="flex items-center">
         <p className="text-title-3-bold">{abbreviateNumber(profileData?.no_of_communities) ?? 0}</p>
-        <p className="px-1 text-body-1-med text-secondary">Communities</p>
+        <p className="px-1 text-body-1-med text-tertiary">Communities</p>
       </div>
     </div>
   )
@@ -163,7 +168,7 @@ function Stats({ profileData }: { profileData: any }) {
 
 function CommunityList({ usernickname }: any) {
   const { data, isLoading, fetchNextPage, isFetchingNextPage } = getAllCommunities(usernickname)
-  const [isCommunityJoined, setIsCommunityJoined] = useState(false)
+  const [communityJoinStates, setCommunityJoinStates] = useState<Record<string, boolean>>({})
   const user = useGenuinOptions().user
   const { addCommunities, communities } = useCommunityListStore((state) => ({
     addCommunities: state.addCommunities,
@@ -183,6 +188,45 @@ function CommunityList({ usernickname }: any) {
     }
   })
 
+  const toggleCommunityJoinState = async (communityId: string, communityHandle: string) => {
+    if (user) {
+      const newState = !communityJoinStates[communityId]
+      if (newState) {
+        await joinCommunity(
+          false,
+          [communityId],
+          [
+            {
+              user_id: user?.id,
+            },
+          ]
+        ).then((res) => {
+          if (res.code === 200) {
+            setCommunityJoinStates((prevState) => ({
+              ...prevState,
+              [communityId]: newState,
+            }))
+          }
+        })
+      } else {
+        setCommunityJoinStates((prevState) => ({
+          ...prevState,
+          [communityId]: newState,
+        }))
+      }
+    } else {
+      openModal({
+        title: 'Get the Genuin app',
+        subtitle: (
+          <>
+            Get the app to join the <br />
+            <span className="font-bold">@{communityHandle}</span> community.
+          </>
+        ),
+      })
+    }
+  }
+
   // TODO: Improve this component return type.
   return (
     <div className="w-full overflow-hidden" style={{ height: 'calc(100% - 56px)' }}>
@@ -190,7 +234,7 @@ function CommunityList({ usernickname }: any) {
         {isLoading && <Loader size="md" />}
         {communities && communities?.length === 0 && (
           <div className="w-full overflow-hidden" style={{ height: `calc(100% - 250px)` }}>
-            <div className="flex h-full w-full items-center justify-center bg-monochrome-11 pt-2 text-title-3-bold text-monochrome">
+            <div className="flex h-full w-full items-center justify-center bg-tertiary-100 pt-2 text-title-3-bold text-tertiary">
               No posts yet
             </div>
           </div>
@@ -218,37 +262,16 @@ function CommunityList({ usernickname }: any) {
                     </Link>
                     <Button
                       size="custom"
-                      className={`${isCommunityJoined && 'border border-primary '}`}
-                      variant={isCommunityJoined ? 'outline' : 'default'}
-                      onClick={
-                        user
-                          ? async () => {
-                              !isCommunityJoined &&
-                                (await joinCommunity(
-                                  false,
-                                  [item.id],
-                                  [
-                                    {
-                                      user_id: user?.id,
-                                    },
-                                  ]
-                                ))
-                              setIsCommunityJoined((prev) => !prev)
-                            }
-                          : () => {
-                              openModal({
-                                title: 'Get the Genuin app',
-                                subtitle: (
-                                  <>
-                                    Get the app to join the <br />
-                                    <span className="font-bold">@{item.handle}</span> community.
-                                  </>
-                                ),
-                              })
-                            }
-                      }>
-                      <p className={`px-4 py-1.5 text-title-3-demi ${isCommunityJoined && 'text-primary'}`}>
-                        {isCommunityJoined ? 'Joined' : 'Join'}
+                      className={`${communityJoinStates[item.id] && 'border border-primary '}`}
+                      variant={communityJoinStates[item.id] ? 'outline' : 'default'}
+                      onClick={async () => {
+                        await toggleCommunityJoinState(item.id, item.handle)
+                      }}>
+                      <p
+                        className={`px-4 py-1.5 text-title-3-demi text-monochrome-white ${
+                          communityJoinStates[item.id] && 'text-primary'
+                        }`}>
+                        {communityJoinStates[item.id] ? 'Joined' : 'Join'}
                       </p>
                     </Button>
                   </div>
@@ -307,7 +330,7 @@ function CommunityDetails({ userId, community }: { userId: string; community: Co
     <>
       <div className="h-3"></div>
       {isLoading && (
-        <li className="profile-loop-li relative my-4 w-full rounded-lg border border-monochrome-9 bg-monochrome-11 p-4">
+        <li className="profile-loop-li relative my-4 w-full rounded-lg border border-tertiary-200 bg-tertiary-100 p-4">
           <Shimmer className="h-6 w-40" />
           <div className="my-2 grid w-full grid-cols-4 gap-2 md:grid-cols-8">
             {Array.from({ length: 8 }).map((_, index) => (
@@ -321,14 +344,14 @@ function CommunityDetails({ userId, community }: { userId: string; community: Co
       {!community.private &&
         community.loops?.map((item: any, index: any) => (
           <li
-            className="profile-loop-li relative mb-4 w-full rounded-lg border border-monochrome-9 p-4 pb-2"
+            className="profile-loop-li relative mb-4 w-full rounded-lg border border-tertiary-200 p-4 pb-2"
             style={{ backgroundColor: '#F9F9F9' }}
             key={index}>
             <>
               {item.private ? (
                 <div className="mb-2 flex items-center">
-                  <div className="mr-4 h-14 w-14 shrink-0 rounded-full bg-monochrome-9 p-3">
-                    <Image src={icLoopDark} alt="share" className=" fill-blue-20" />
+                  <div className="mr-4 h-14 w-14 shrink-0 rounded-full bg-tertiary-200 p-3">
+                    <Image src={icLoopDark} alt="share" className=" fill-primary" />
                   </div>
                   <div>
                     <a href={PATH_NAME.loop(item.slug)}>
@@ -346,11 +369,11 @@ function CommunityDetails({ userId, community }: { userId: string; community: Co
 
       {community?.private && (
         <li
-          className="profile-loop-li relative mb-4 w-full rounded-lg border border-monochrome-9 p-4"
+          className="profile-loop-li relative mb-4 w-full rounded-lg border border-tertiary-200 p-4"
           style={{ backgroundColor: '#F9F9F9' }}>
           <div className="flex items-center">
-            <div className="mr-4 h-14 w-14 shrink-0 rounded-full bg-monochrome-9 p-3">
-              <Image src={icLock} alt="share" className=" fill-blue-20" />
+            <div className="mr-4 h-14 w-14 shrink-0 rounded-full bg-tertiary-200 p-3">
+              <Image src={icLock} alt="share" className=" fill-primary" />
             </div>
             <div>
               <p className="text-title-3-demi">This community is private</p>
@@ -404,9 +427,7 @@ function LoopVideos({ userId, loop, community }: LoopVideosProps) {
 
     if (loop.videos && loop.videos.length === 0)
       return (
-        <div className="flex items-center justify-center pt-32 text-title-3-bold text-secondary">
-          No posts available
-        </div>
+        <div className="flex items-center justify-center pt-32 text-title-3-bold text-tertiary">No posts available</div>
       )
 
     if (loop.videos)
@@ -451,7 +472,7 @@ function LoopVideos({ userId, loop, community }: LoopVideosProps) {
       </div>
       {hasNextPage && videoCount !== 0 && (
         <p
-          className="text-blue-500 flex w-full cursor-pointer justify-center pt-2 text-cap-1-demi text-monochrome"
+          className="text-blue-500 flex w-full cursor-pointer justify-center pt-2 text-cap-1-demi text-tertiary"
           onClick={handleSeeMoreClick}>
           See {videoCount} More
         </p>

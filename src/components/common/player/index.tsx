@@ -181,7 +181,7 @@ function Desktop({
     return (
       <div className="w-ful flex h-full flex-col items-center justify-center gap-y-4 bg-monochrome-9">
         <LockIcon className="stroke-secondary" />
-        <p className="text-center text-body-1-demi text-secondary">
+        <p className="text-center text-body-1-demi">
           {videoData?.community.private ? (
             <span>This Loop is visible to its Collaborators only</span>
           ) : (

@@ -34,7 +34,7 @@ function Success() {
         straight to your inbox. You can use the app now.{' '}
       </p>
       <Button
-        className="w-full bg-new-off-black hover:bg-new-dark-grey"
+        className="w-full"
         variant="default"
         onClick={() => {
           deleteSearchParam({
@@ -106,11 +106,7 @@ function Failure() {
       <p className="text-center text-title-3-med">
         We're sorry, but it looks like the verification link has expired. Please request a new verification link.
       </p>
-      <Button
-        disabled={isLoading}
-        className="w-full bg-new-off-black hover:bg-new-dark-grey"
-        variant="default"
-        onClick={resendMail}>
+      <Button disabled={isLoading} className="w-full" variant="default" onClick={resendMail}>
         {isLoading ? (
           <Loader size="sm" className="fill-new-off-white" />
         ) : (

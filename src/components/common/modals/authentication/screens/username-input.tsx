@@ -68,7 +68,10 @@ export function UsernameInput() {
       if (isUsernameValid) {
         const { status } = await updateUser({ nickname: username })
         if (status) {
-          await updateSession({ ...sessionData, user: { ...sessionData?.user, nickname: username } })
+          await updateSession({
+            ...sessionData,
+            user: { ...sessionData?.user, nickname: username },
+          })
           setStep('COMPLETE_PROFILE')
         }
       } else {
@@ -83,8 +86,8 @@ export function UsernameInput() {
 
   return (
     <ModalShell>
-      <h3 className="flex w-full items-center justify-center text-heading-3">Create username</h3>
-      <p className="flex w-full justify-center text-title-3-med text-secondary">Enter a name to show on your videos</p>
+      <h3 className="flex w-full items-center justify-center text-heading-3 ">Create username</h3>
+      <p className="flex w-full justify-center text-title-3-med ">Enter a name to show on your videos</p>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
           <FormField
@@ -96,15 +99,18 @@ export function UsernameInput() {
                 <FormItem className="sm:w-full">
                   <FormLabel className="text-body-1-med">
                     <div className="flex w-full justify-between">
-                      <p>Username</p>
-                      <p className="text-cap-1-med text-secondary">{form.getValues('username')?.length ?? 0}/25</p>
+                      <p className="">Username</p>
+                      <p className="text-cap-1-med ">{form.getValues('username')?.length ?? 0}/25</p>
                     </div>
                   </FormLabel>
                   <FormControl>
                     <Input
                       maxLength={25}
                       type="text"
-                      className={cn('border-monochrome-9 bg-monochrome-11 text-title-3-med', errors && '!border-red')}
+                      className={cn(
+                        'border border-tertiary-200 bg-tertiary-100 text-title-3-med',
+                        errors && '!border-red'
+                      )}
                       {...field}
                     />
                   </FormControl>
@@ -116,7 +122,7 @@ export function UsernameInput() {
           <Button
             type="submit"
             disabled={!isUsernameValid || isLoading || !isValid}
-            className="mt-4 flex w-full items-center justify-center border-0 bg-new-off-black hover:bg-new-dark-grey">
+            className="mt-4 flex w-full items-center justify-center border-0">
             {isLoading ? (
               <Loader size="sm" className="fill-new-off-white" />
             ) : (

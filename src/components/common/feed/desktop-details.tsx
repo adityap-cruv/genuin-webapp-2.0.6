@@ -21,6 +21,10 @@ import { Input } from '@components/ui/input'
 import { createComment, joinCommunity } from '@lib/api/video'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { DownloadDialog } from '../download-dialog'
+import { ShareIcon } from '@icons/share-icon'
+import { Textarea } from '@components/ui/textarea'
+import { AudioRecordIcon } from '@icons/audio-record-icon'
+import { VideoRecordIcon } from '@icons/video-record-icon'
 
 type DesktopDetailsProps = {
   videoDetails: VideoDataType
@@ -37,7 +41,7 @@ export function DesktopDetails({ videoDetails }: DesktopDetailsProps) {
   if (videoDetails)
     return (
       <div className="relative flex h-full flex-1 flex-col overflow-x-clip bg-monochrome-white pb-16 pl-2">
-        <div className="border-b border-monochrome-black/10 p-4">
+        <div className="border-b border-tertiary-200 p-4">
           <span className="flex items-center gap-x-2">
             <CustomAvatar
               isAvatar={videoDetails.owner.is_avatar}
@@ -49,7 +53,7 @@ export function DesktopDetails({ videoDetails }: DesktopDetailsProps) {
               <Link href={PATH_NAME.profile(videoDetails.owner.nickname)}>
                 <p className="text-title-3-demi">@{videoDetails.owner.nickname}</p>
               </Link>
-              <p className="text-body-1-demi text-secondary">{getTimeAgo(videoDetails?.video?.created_at) + ' ago'}</p>
+              <p className="text-body-1-demi text-tertiary">{getTimeAgo(videoDetails?.video?.created_at) + ' ago'}</p>
             </span>
           </span>
           {videoDetails?.video?.description && (
@@ -82,17 +86,21 @@ export function DesktopDetails({ videoDetails }: DesktopDetailsProps) {
                     onClick={
                       user
                         ? async () => {
-                            !isCommunityJoined &&
-                              (await joinCommunity(
-                                false,
-                                [videoDetails.community.id],
-                                [
-                                  {
-                                    user_id: user?.id,
-                                  },
-                                ]
-                              ))
-                            setIsCommunityJoined((prev) => !prev)
+                            !isCommunityJoined
+                              ? await joinCommunity(
+                                  false,
+                                  [videoDetails.community.id],
+                                  [
+                                    {
+                                      user_id: user?.id,
+                                    },
+                                  ]
+                                ).then((res) => {
+                                  if (res.code === 200) {
+                                    setIsCommunityJoined((prev) => !prev)
+                                  }
+                                })
+                              : setIsCommunityJoined((prev) => !prev)
                           }
                         : () => {
                             openModal({
@@ -107,14 +115,16 @@ export function DesktopDetails({ videoDetails }: DesktopDetailsProps) {
                           }
                     }>
                     <p
-                      className={`whitespace-nowrap px-4 py-1 text-body-1-demi ${isCommunityJoined && 'text-primary'}`}>
+                      className={`whitespace-nowrap px-4 py-1.5 text-body-1-demi  ${
+                        isCommunityJoined ? 'text-primary' : 'text-monochrome-white'
+                      }`}>
                       {isCommunityJoined ? 'Joined' : 'Join Community'}
                     </p>
                   </Button>
                   <Button
                     size="custom"
                     variant="outline"
-                    className="min-w-max border border-primary p-1 "
+                    className="min-w-max border border-primary p-1 hover:border-primary-600 "
                     onClick={async () =>
                       await shareFn({
                         shareLink:
@@ -124,23 +134,23 @@ export function DesktopDetails({ videoDetails }: DesktopDetailsProps) {
                         toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                       })
                     }>
-                    <Image src={icShare} alt="share" className="h-5 w-5" />
+                    <ShareIcon className="h-5 w-5 fill-primary hover:fill-primary-600" />
                   </Button>
                 </span>
               </span>
               <DecorativeList>
                 <div className="h-2 w-full" />
                 <Link href={PATH_NAME.loop(videoDetails.loop.slug)}>
-                  <li className="relative flex h-full w-full items-center justify-between rounded-md border border-monochrome-9 bg-monochrome-10 p-4 ">
+                  <li className="relative flex h-full w-full items-center justify-between rounded-md border border-tertiary-200 bg-monochrome-white p-4 ">
                     <p className="line-clamp-1 w-full break-all pr-2 text-body-1-demi">{videoDetails.loop?.name}</p>
-                    <p className="whitespace-nowrap text-cap-1-med text-primary">View Loop</p>
+                    <p className="whitespace-nowrap text-cap-1-med text-primary hover:text-primary-600">View Loop</p>
                   </li>
                 </Link>
               </DecorativeList>
             </div>
           </div>
           <div className="sticky top-0 z-10">
-            <p className="border-b border-t border-monochrome-black/10 bg-monochrome-white px-4 py-3 text-title-3-demi text-secondary">
+            <p className="border-b border-t border-tertiary-200 bg-monochrome-white px-4 py-3 text-title-3-demi text-tertiary">
               Comments {videoDetails?.video?.no_of_comments !== 0 ? `(${videoDetails?.video?.no_of_comments})` : ''}
             </p>
           </div>
@@ -245,7 +255,7 @@ function CommentInput({ setComments, currentComment, setCurrentComment, videoDet
     }
   }
   return (
-    <div className="absolute bottom-0 left-0 h-16 w-full border-t-2 border-t-monochrome-9 bg-monochrome-10 py-3 shadow-md">
+    <div className="absolute bottom-0 left-0 max-h-16 w-full border-t-2 border-t-tertiary-200 bg-tertiary-200 py-3 shadow-md">
       <button className="flex w-full flex-1 items-center gap-x-4 px-6">
         {user ? (
           <>
@@ -253,17 +263,34 @@ function CommentInput({ setComments, currentComment, setCurrentComment, videoDet
               <Input
                 placeholder="Add a comment"
                 value={currentComment}
+                maxLength={500}
                 disabled={!user}
-                className="rounded-full border border-monochrome-9 bg-monochrome-white"
+                className="rounded-full border border-tertiary-200 bg-monochrome-white px-14 pl-4"
                 onChange={(event) => {
                   const newComment = event.target.value
                   setCurrentComment(newComment)
                 }}
               />
 
-              <p onClick={handleClick} className="absolute right-4 text-body-1-bold text-primary">
+              {/* <Textarea
+                placeholder="Add a comment"
+                value={currentComment}
+                maxLength={500}
+                disabled={!user}
+                className="h-10 rounded-full border border-tertiary-200 bg-monochrome-white px-14 pl-4 pt-2"
+                onChange={(event) => {
+                  setCurrentComment(event.target.value)
+                }}
+              /> */}
+
+              <button
+                onClick={handleClick}
+                disabled={currentComment.length === 0}
+                className={`absolute right-4 text-body-1-bold ${
+                  currentComment.length === 0 ? 'text-primary-600' : 'text-primary'
+                }`}>
                 Post
-              </p>
+              </button>
             </div>
           </>
         ) : (
@@ -275,16 +302,18 @@ function CommentInput({ setComments, currentComment, setCurrentComment, videoDet
               })
             }}
             placeholder="Add a comment"
-            className="h-full w-2/3 rounded-full border-2 border-monochrome-9 bg-monochrome-white py-2 pl-6">
-            <p className="text-start text-title-3-demi text-monochrome">Add a Comment</p>
+            className="h-full w-2/3 rounded-full border-2 border-tertiary-200 bg-monochrome-white py-2 pl-6">
+            <p className="text-start text-title-3-demi text-tertiary">Add a Comment</p>
           </div>
         )}
 
         <DownloadDialog title="Get the Genuin app" subtitle="Get the app to comment on this video." asChild>
-          <Image src={icAudioRecord} alt="audio record" className="h-8 w-8" />
+          {/* <Image src={icAudioRecord} alt="audio record" className="h-8 w-8" /> */}
+          <AudioRecordIcon className="fill-secondary" />
         </DownloadDialog>
         <DownloadDialog title="Get the Genuin app" subtitle="Get the app to comment on this video." asChild>
-          <Image src={icVideoRecord} alt="audio record" className="h-8 w-8" />
+          {/* <Image src={icVideoRecord} alt="audio record" className="h-8 w-8" /> */}
+          <VideoRecordIcon className="fill-secondary" />
         </DownloadDialog>
       </button>
     </div>

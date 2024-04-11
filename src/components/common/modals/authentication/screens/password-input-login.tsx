@@ -19,7 +19,7 @@ import { signIn } from 'next-auth/react'
 const passwordSchema = z.object({ password: z.string().min(8) })
 
 export function PasswordInputLogin() {
-  const { setStep, close, formData, action } = useAuthenticationModalStore()
+  const { close, formData, action } = useAuthenticationModalStore()
   const [passwordVisible, setPasswordVisible] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const deviceId = useLocalStorage().deviceId
@@ -40,14 +40,14 @@ export function PasswordInputLogin() {
         if (res?.code === 200) {
           // console.log(res.data)
           const user = {
-            is_avatar: res.data.is_avatar,
-            member_id: res.data.user_id,
-            nickname: res.data.nickname,
-            profile_image: res.data.profile_image,
-            email: res.data.email,
-            bio: res.data.bio,
-            name: res.data.name,
-            is_email_verified: res.data.is_email_verified,
+            is_avatar: res.data.user.is_avatar,
+            user_id: res.data.user.user_id,
+            nickname: res.data.user.nickname,
+            profile_image: res.data.user.profile_image,
+            email: res.data.user.email,
+            bio: res.data.user.bio,
+            name: res.data.user.name,
+            is_email_verified: res.data.user.is_email_verified,
             is_password_set: true,
             accessToken: res.data.accessToken,
           }
@@ -76,7 +76,7 @@ export function PasswordInputLogin() {
 
   return (
     <ModalShell>
-      <h3 className="flex w-full items-center justify-center text-heading-3">Log in</h3>
+      <h3 className="flex w-full items-center justify-center text-heading-3 ">Log in</h3>
       <div className="w-full">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -99,7 +99,7 @@ export function PasswordInputLogin() {
                           minLength={8}
                           type={passwordVisible ? 'text' : 'password'}
                           className={cn(
-                            'border-monochrome-9 bg-monochrome-11 text-title-3-med',
+                            'border border-tertiary-200 bg-tertiary-100 text-title-3-med',
                             errors && '!border-red'
                           )}
                           {...field}
@@ -129,11 +129,7 @@ export function PasswordInputLogin() {
                 )
               }}
             />
-            <Button
-              type="submit"
-              variant="default"
-              className="w-full bg-new-off-black hover:bg-new-dark-grey"
-              disabled={!isValid || isLoading}>
+            <Button type="submit" variant="default" className="w-full" disabled={!isValid || isLoading}>
               {isLoading ? <Loader size="sm" /> : <p className="text-title-3-demi">Log in</p>}
             </Button>
             {form.formState.errors.root && (
@@ -144,7 +140,7 @@ export function PasswordInputLogin() {
           </form>
         </Form>
       </div>
-      <p className="flex w-full items-center justify-center text-body-1-demi">
+      {/* <p className="flex w-full items-center justify-center text-body-1-demi">
         Don't have an account?
         <span
           className="cursor-pointer text-primary"
@@ -153,7 +149,7 @@ export function PasswordInputLogin() {
           }}>
           &nbsp;Sign up
         </span>
-      </p>
+      </p> */}
     </ModalShell>
   )
 }

@@ -25,7 +25,7 @@ export function Success() {
       <ModalShell>
         <h3 className="text-heading-3">Welcome back, {data?.user.name} </h3>
         <Button
-          className="w-full bg-monochrome-black hover:bg-new-dark-grey"
+          className="w-full"
           onClick={() => {
             deleteSearchParam({
               pathName,
@@ -95,7 +95,7 @@ export function Failure() {
       <p className="text-center text-title-3-med">
         We're sorry, but it looks like the magic link has expired. Please request a new magic link.
       </p>
-      <Button className="w-full bg-monochrome-black hover:bg-new-dark-grey" onClick={resendMail}>
+      <Button className="w-full" onClick={resendMail}>
         {isLoading ? (
           <Loader size="sm" className="fill-new-off-white" />
         ) : (

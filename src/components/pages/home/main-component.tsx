@@ -92,7 +92,7 @@ function Component1() {
                   <Button
                     size="custom"
                     className="bg-new-off-black px-4 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
-                    <p className="text-new-sm">Explore Genuin</p>
+                    <p className="text-new-sm text-monochrome-white">Explore Genuin</p>
                   </Button>
                 </Link>
               </div>

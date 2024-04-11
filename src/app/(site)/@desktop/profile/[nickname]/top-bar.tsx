@@ -8,6 +8,7 @@ import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { getCurrentShareUrl } from '@lib/utils'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
+import { ShareIcon } from '@icons/share-icon'
 
 type Props = {
   /**
@@ -65,7 +66,7 @@ function Desktop({
       initial={{
         translateY: '-100%',
       }}
-      className="sticky top-0 z-10 flex h-14 w-full items-center justify-between border-b border-monochrome-9 bg-monochrome-white px-6"
+      className="sticky top-0 z-10 flex h-14 w-full items-center justify-between border-b border-tertiary-200 bg-monochrome-white px-6"
       {...props}>
       <span className="flex items-center gap-x-2">
         <CustomAvatar imageUrl={profileImage} fallbackString={profileName} isAvatar={isAvatar} className="h-8 w-8" />
@@ -79,7 +80,7 @@ function Desktop({
         variant="outline"
         size="custom"
         outlineColor="genuin-blue"
-        className="my-1"
+        className="mx-1 hover:border-primary-600"
         onClick={async () =>
           await shareFn({
             shareLink: getCurrentShareUrl({ isEmbed, parentUrl }),
@@ -87,7 +88,7 @@ function Desktop({
           })
         }>
         <span className="flex items-center p-1">
-          <Image src={icShare} alt="share" height={24} width={24} />
+          <ShareIcon className="h-6 w-6 fill-primary hover:fill-primary-600" />{' '}
         </span>
       </Button>
     </motion.div>
@@ -127,7 +128,7 @@ function Mobile({
       initial={{
         translateY: '-100%',
       }}
-      className="sticky top-0 z-10 flex h-14 w-full items-center justify-between border-b border-monochrome-9 bg-monochrome-white px-6"
+      className="sticky top-0 z-10 flex h-14 w-full items-center justify-between border-b border-tertiary-200 bg-monochrome-white px-6"
       {...props}>
       <span className="flex items-center gap-x-2">
         <CustomAvatar imageUrl={profileImage} fallbackString={profileName} isAvatar={isAvatar} className="h-8 w-8" />

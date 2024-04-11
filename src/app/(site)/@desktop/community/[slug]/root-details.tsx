@@ -6,7 +6,6 @@ import { CustomAvatar } from '@components/custom/custom-avatar'
 import { TopStickyBar } from './top-bar'
 import { Button } from '@components/ui/button'
 import Image from 'next/image'
-import icShare from '@icons/icShareBlue.svg'
 import icMore from '@icons/icMoreBlue.svg'
 import icLock from '@icons/icLock.svg'
 import { useInView } from 'framer-motion'
@@ -26,6 +25,7 @@ import { CommunityLoopTab } from './community-loop-tab'
 import { ListItem } from '@components/common/list-item'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { joinCommunity } from '@lib/api/video'
+import { ShareIcon } from '@icons/share-icon'
 
 interface Props {
   communityDetails: CommunityDetailsType
@@ -68,7 +68,12 @@ export function RootDetails({ communityDetails }: Props) {
       />
       <main className="hide-scrollbar absolute inset-0 h-full w-full overflow-auto">
         <div>
-          <div className="-px-6 relative h-56 w-full rounded-lg bg-monochrome-9">
+          <div
+            className="-px-6 aspect-w-5 aspect-h-1 relative rounded-lg bg-tertiary-200"
+            style={{
+              height: 'calc(100vw/5)',
+            }}>
+            {' '}
             <CustomAvatar
               isAvatar={false}
               imageUrl={communityDetails.info.profile_image}
@@ -84,17 +89,21 @@ export function RootDetails({ communityDetails }: Props) {
               onClick={
                 user
                   ? async () => {
-                      !isCommunityJoined &&
-                        (await joinCommunity(
-                          false,
-                          [communityDetails.info.id],
-                          [
-                            {
-                              user_id: user?.id,
-                            },
-                          ]
-                        ))
-                      setIsCommunityJoined((prev) => !prev)
+                      !isCommunityJoined
+                        ? await joinCommunity(
+                            false,
+                            [communityDetails.info.id],
+                            [
+                              {
+                                user_id: user?.id,
+                              },
+                            ]
+                          ).then((res) => {
+                            if (res.code === 200) {
+                              setIsCommunityJoined((prev) => !prev)
+                            }
+                          })
+                        : setIsCommunityJoined((prev) => !prev)
                     }
                   : () => {
                       openModal({
@@ -108,21 +117,22 @@ export function RootDetails({ communityDetails }: Props) {
                       })
                     }
               }>
-              <p className={`px-4 py-1.5 text-body-1-demi ${isCommunityJoined && 'text-primary'}`}>
+              <p
+                className={`px-4 py-1.5 text-body-1-demi text-monochrome-white ${isCommunityJoined && 'text-primary'}`}>
                 {isCommunityJoined ? 'Joined' : 'Join Community'}
               </p>
             </Button>
             <Button
               variant="outline"
               size="custom"
-              className="border border-primary p-0.5"
+              className="border border-primary p-0.5 hover:border-primary-600"
               onClick={async () =>
                 await shareFn({
                   shareLink: getCurrentShareUrl({ isEmbed, parentUrl }),
                   toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                 })
               }>
-              <Image src={icShare} alt="share" className="h-7 w-7" />
+              <ShareIcon className="h-6 w-6 fill-primary hover:fill-primary-600" />
             </Button>
             {/* <Button variant="outline" size="custom" className="border border-primary p-1">
               <Image src={icMore} alt="share" className="h-6 w-6" />
@@ -132,7 +142,7 @@ export function RootDetails({ communityDetails }: Props) {
         <div>
           <span className="flex items-center gap-x-2 px-6 py-2">
             <p className="text-title-1-bold">{communityDetails.info.name}</p>
-            <p className="text-body-1-med text-secondary">@{communityDetails.info.handle}</p>
+            <p className="text-body-1-med text-tertiary">@{communityDetails.info.handle}</p>
           </span>
         </div>
 
@@ -186,7 +196,7 @@ function CommunityDetailsTabs() {
           <p className="text-title-3-bold">Members</p>
         </TabsTrigger>
       </TabsList>
-      <hr className="border-t border-monochrome-9" />
+      <hr className="border-t border-tertiary-200" />
       <TabsContent value="Loops" className="mr-2 h-full py-4">
         <CommunityLoopTab communitySlug={communityDetailsModule.info.slug} />
       </TabsContent>
@@ -205,7 +215,7 @@ function Categories() {
         <div>
           {communityDetailsModule?.info.categories.map((cat, index) => {
             return (
-              <p key={index} className="my-1 mr-1 inline-block rounded-full bg-monochrome-9 p-2 px-4 text-body-1-med">
+              <p key={index} className="my-1 mr-1 inline-block rounded-full bg-tertiary-200 p-2 px-4 text-body-1-med">
                 <span className="line-clamp-1 break-all">{cat}</span>
               </p>
             )
@@ -223,28 +233,28 @@ function Links() {
         <p className="my-2 text-title-3-bold">Links</p>
         <div className="flex">
           {links?.instagram_url && (
-            <div className="mx-1 flex items-center rounded-md bg-monochrome-9 p-1">
+            <div className="mx-1 flex items-center rounded-md bg-tertiary-200 p-1">
               <Link href={checkAndAppendHttps(links.instagram_url)} target="_blank">
                 <Image src={icInstagram} alt="instagram" />
               </Link>
             </div>
           )}
           {links?.linkedin_url && (
-            <div className="mx-1 flex items-center rounded-md bg-monochrome-9 p-1">
+            <div className="mx-1 flex items-center rounded-md bg-tertiary-200 p-1">
               <Link href={checkAndAppendHttps(links.linkedin_url)} target="_blank">
                 <Image src={icLinkedIn} alt="linkedin" />
               </Link>
             </div>
           )}
           {links?.twitter_url && (
-            <div className="mx-1 flex items-center rounded-md bg-monochrome-9 p-1">
+            <div className="mx-1 flex items-center rounded-md bg-tertiary-200 p-1">
               <Link href={checkAndAppendHttps(links.twitter_url)} target="_blank">
                 <Image src={icTwitter} alt="twitter" />
               </Link>
             </div>
           )}
           {links?.social_web_url && (
-            <div className="mx-1 flex items-center rounded-md bg-monochrome-9 p-1">
+            <div className="mx-1 flex items-center rounded-md bg-tertiary-200 p-1">
               <Link href={checkAndAppendHttps(links.social_web_url)} target="_blank">
                 <div className="flex">
                   <Image src={icLink} alt="web-site" />
@@ -275,7 +285,7 @@ function Guidelines() {
                       </p>
                     </AccordionTrigger>
                     <AccordionContent className="w-[80%] pl-4">
-                      <p className="line-clamp-2 text-left  text-monochrome">{guideline.description}</p>
+                      <p className="line-clamp-2 text-left  text-tertiary">{guideline.description}</p>
                     </AccordionContent>
                   </AccordionItem>
                 </div>
@@ -346,20 +356,20 @@ function Stats({ communityDetails }: { communityDetails: CommunityDetailsType })
   return (
     <div className="flex items-center">
       <span className="flex items-center pr-4">
-        <p className="text-title-3-bold text-monochrome-black">{communityDetails?.info.count.member}</p>
-        <p className="text-body-1-med text-secondary">
+        <p className="text-title-3-bold">{communityDetails?.info.count.member}</p>
+        <p className="text-body-1-med text-tertiary">
           &nbsp;{communityDetails?.info.count.member === 1 ? 'Member' : 'Members'}
         </p>
       </span>
       <span className="flex items-center pr-4">
-        <p className="text-title-3-bold text-monochrome-black">{communityDetails?.info.count.loop}</p>
-        <p className="text-body-1-med text-secondary">
+        <p className="text-title-3-bold">{communityDetails?.info.count.loop}</p>
+        <p className="text-body-1-med text-tertiary">
           &nbsp;{communityDetails?.info.count.loop === 1 ? 'Loop' : 'Loops'}
         </p>
       </span>
       <span className="flex items-center pr-4">
-        <p className="text-title-3-bold text-monochrome-black">{communityDetails?.info.count.video}</p>
-        <p className="text-body-1-med text-secondary">
+        <p className="text-title-3-bold">{communityDetails?.info.count.video}</p>
+        <p className="text-body-1-med text-tertiary">
           &nbsp;{communityDetails?.info.count.video === 1 ? 'Video' : 'Videos'}
         </p>
       </span>

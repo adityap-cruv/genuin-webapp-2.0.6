@@ -15,7 +15,7 @@ export const {
       type: 'credentials',
       credentials: {
         is_avatar: { type: 'text' },
-        member_id: { type: 'text' },
+        user_id: { type: 'text' },
         nickname: { type: 'text' },
         profile_image: { type: 'text' },
         email: { type: 'text' },
@@ -28,7 +28,7 @@ export const {
       authorize(credentials, request) {
         return {
           isAvatar: credentials.is_avatar === 'true',
-          id: String(credentials.member_id),
+          id: String(credentials.user_id),
           nickname: String(credentials.nickname),
           image: credentials.profile_image ? String(credentials.profile_image) : undefined,
           email: credentials.email ? String(credentials.email) : undefined,

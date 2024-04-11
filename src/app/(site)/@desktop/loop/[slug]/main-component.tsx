@@ -5,10 +5,10 @@ import Image from 'next/image'
 import icShare from '@icons/icShareBlue.svg'
 import icLock from '@icons/icLock.svg'
 import { CustomAvatar } from '@components/custom/custom-avatar'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { useInView } from 'framer-motion'
 import { TopStickyBar } from './top-bar'
-import { getLoopCohosts, getLoopSubscribers } from '@lib/api/loop'
+import { getLoopCohosts, getLoopSubscribers, subscribeLoop } from '@lib/api/loop'
 import { Loader } from '@components/ui/loader'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
@@ -19,6 +19,8 @@ import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
 import { openModal } from '@lib/utils'
 import { DownloadDialog } from '@components/common/download-dialog'
+import { ShareIcon } from '@icons/share-icon'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
 
 interface Props {
   loopDetails: LoopDetailsType
@@ -30,6 +32,8 @@ export function MainComponent({ loopDetails }: Props) {
   const { toast } = useToast()
   const detailsDivRef = useRef<HTMLDivElement>(null)
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
+  const [isLoopSubscribed, setIsLoopSubscribed] = useState(false)
+  const user = useGenuinOptions().user
 
   if (loopDetails)
     return (
@@ -40,65 +44,46 @@ export function MainComponent({ loopDetails }: Props) {
           loopName={loopDetails.group.group_name ?? ''}
           shareString={loopDetails.community.share_string}
           communitySlug={loopDetails.community.slug}
+          chatId={loopDetails.chat_id}
+          isLoopSubscribed={isLoopSubscribed}
+          setIsLoopSubscribed={setIsLoopSubscribed}
         />
         <main className="hide-scrollbar absolute inset-0 h-full w-full overflow-auto pl-6">
-          <span className="w-1/2">
-            <p className="mt-6 text-title-1-bold">{loopDetails.group.group_name}</p>
-            <p className="my-1 line-clamp-2 w-1/2 break-words text-body-1-med">{loopDetails.group.group_description}</p>
-            <div className="my-3 w-1/2 rounded-xl border border-monochrome-9 p-4">
-              <span className="flex" ref={detailsDivRef}>
-                <span className="flex-1">
-                  <p className="text-body-1-demi text-monochrome">Created by</p>
-                  <Link href={{ pathname: PATH_NAME.profile(loopDetails.owner.nickname) }}>
-                    <div className="my-2 flex items-center">
-                      <CustomAvatar
-                        fallbackString={loopDetails.owner.name ?? ''}
-                        imageUrl={loopDetails.owner.profile_image ?? ''}
-                        isAvatar={loopDetails.owner.is_avatar}
-                        className="h-8 w-8"
-                      />
-                      <p className="ml-1 text-body-1-bold">@{loopDetails.owner.nickname}</p>
-                    </div>
-                  </Link>
-                </span>
-                <span className="flex-1">
-                  <p className="text-body-1-demi text-monochrome">Posted in</p>
-                  <Link href={{ pathname: PATH_NAME.community(loopDetails.community.slug) }}>
-                    <div className="my-2 flex items-center">
-                      <CustomAvatar
-                        imageUrl={loopDetails.community.dp ?? ''}
-                        fallbackString={loopDetails.community.name}
-                        isAvatar={false}
-                        className="h-8 w-8"
-                      />
-                      <p className="ml-1 text-body-1-bold">{loopDetails.community.name}</p>
-                    </div>
-                  </Link>
-                </span>
-              </span>
-              <Stats
-                statsData={[
-                  { key: 'Posts', value: loopDetails.group.no_of_videos },
-                  { key: 'Collaborators', value: loopDetails.group.no_of_members },
-                  { key: 'Subscribers', value: loopDetails.group.no_of_subscribers },
-                ]}
-              />
-            </div>
-            <span className="my-2 flex items-center gap-x-3">
+          <div className="mt-6 flex justify-between">
+            <p className="text-title-1-bold">{loopDetails.group.group_name}</p>
+            <div className="flex items-center gap-x-3">
               {!loopDetails.private && (
-                <DownloadDialog
-                  title="Get the Genuin app"
-                  subtitle={
-                    <>
-                      Get the app to subscribe to
-                      <span className="font-bold"> {loopDetails.group.group_name}</span> Loop.
-                    </>
-                  }
-                  asChild>
-                  <Button size="custom">
-                    <p className="px-4 py-1 text-title-3-demi">Subscribe</p>
-                  </Button>
-                </DownloadDialog>
+                <Button
+                  size="custom"
+                  className={`${isLoopSubscribed && 'border border-primary '}`}
+                  variant={isLoopSubscribed ? 'outline' : 'default'}
+                  onClick={
+                    user
+                      ? async () => {
+                          !isLoopSubscribed
+                            ? await subscribeLoop(loopDetails.chat_id, true).then((res) => {
+                                if (res.code === 200) {
+                                  setIsLoopSubscribed((prev) => !prev)
+                                }
+                              })
+                            : setIsLoopSubscribed((prev) => !prev)
+                        }
+                      : () => {
+                          openModal({
+                            title: 'Get the Genuin app',
+                            subtitle: (
+                              <>
+                                Get the app to subscribe to
+                                <span className="font-bold"> {loopDetails.group.group_name}</span> Loop.
+                              </>
+                            ),
+                          })
+                        }
+                  }>
+                  <p className={`px-4 py-1 text-title-3-demi ${isLoopSubscribed && 'text-primary'}`}>
+                    {isLoopSubscribed ? 'Subscribed' : 'Subscribe'}
+                  </p>
+                </Button>
               )}
 
               {loopDetails.private && (
@@ -134,7 +119,7 @@ export function MainComponent({ loopDetails }: Props) {
               <Button
                 variant="outline"
                 size="custom"
-                className="border border-primary p-0.5"
+                className="border border-primary p-0.5 hover:border-primary-600"
                 onClick={async () => {
                   const currentURL = new URL(window.location.href)
                   currentURL.searchParams.set('community', `${loopDetails.community.share_string}`)
@@ -144,9 +129,51 @@ export function MainComponent({ loopDetails }: Props) {
                     toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                   })
                 }}>
-                <Image src={icShare} alt="share" className="h-6 w-6" />
+                <ShareIcon className="h-6 w-6 fill-primary hover:fill-primary-600" />
               </Button>
-            </span>
+            </div>
+          </div>
+          <span className="w-1/2">
+            <p className="my-1 line-clamp-2 w-1/2 break-words text-body-1-med">{loopDetails.group.group_description}</p>
+            <div className="my-3 w-1/2 rounded-xl border border-tertiary-200 p-4">
+              <span className="flex" ref={detailsDivRef}>
+                <span className="flex-1">
+                  <p className="text-body-1-demi text-tertiary">Created by</p>
+                  <Link href={{ pathname: PATH_NAME.profile(loopDetails.owner.nickname) }}>
+                    <div className="my-2 flex items-center">
+                      <CustomAvatar
+                        fallbackString={loopDetails.owner.name ?? ''}
+                        imageUrl={loopDetails.owner.profile_image ?? ''}
+                        isAvatar={loopDetails.owner.is_avatar}
+                        className="h-8 w-8"
+                      />
+                      <p className="ml-1 text-body-1-bold">@{loopDetails.owner.nickname}</p>
+                    </div>
+                  </Link>
+                </span>
+                <span className="flex-1">
+                  <p className="text-body-1-demi text-tertiary">Posted in</p>
+                  <Link href={{ pathname: PATH_NAME.community(loopDetails.community.slug) }}>
+                    <div className="my-2 flex items-center">
+                      <CustomAvatar
+                        imageUrl={loopDetails.community.dp ?? ''}
+                        fallbackString={loopDetails.community.name}
+                        isAvatar={false}
+                        className="h-8 w-8"
+                      />
+                      <p className="ml-1 text-body-1-bold">{loopDetails.community.name}</p>
+                    </div>
+                  </Link>
+                </span>
+              </span>
+              <Stats
+                statsData={[
+                  { key: 'Posts', value: loopDetails.group.no_of_videos },
+                  { key: 'Collaborators', value: loopDetails.group.no_of_members },
+                  { key: 'Subscribers', value: loopDetails.group.no_of_subscribers },
+                ]}
+              />
+            </div>
           </span>
 
           {loopDetails.private ? (
@@ -250,7 +277,7 @@ function Stats({
         return (
           <div key={index} className="flex items-center gap-x-1">
             <p className="text-title-2-bold">{obj.value}</p>
-            <p className="text-body-1-med text-monochrome">{obj.key}</p>
+            <p className="text-body-1-med text-tertiary">{obj.key}</p>
           </div>
         )
       })}

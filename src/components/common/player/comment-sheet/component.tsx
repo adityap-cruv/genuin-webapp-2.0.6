@@ -13,6 +13,7 @@ import { useState } from 'react'
 import { Input } from '@components/ui/input'
 import { createComment } from '@lib/api/video'
 import { DownloadDialog } from '@components/common/download-dialog'
+import { Textarea } from '@components/ui/textarea'
 import { useSearchParams } from 'next/navigation'
 
 type Props = {
@@ -41,7 +42,7 @@ export function Sheet({ container, videoDetails, noOfComments }: Props) {
         }}>
         <div className="h-full w-full rounded-t-[18px] bg-background outline-none sm:rounded-t-none">
           <div className="flex h-12 w-full items-center justify-between border-b border-monochrome-9 px-3 ">
-            <p className="text-title-3-demi text-secondary">Comments{noOfComments !== 0 ? `(${noOfComments})` : ''}</p>
+            <p className="text-title-3-demi">Comments{noOfComments !== 0 ? `(${noOfComments})` : ''}</p>
             <X
               className="h-6 w-6 cursor-pointer stroke-secondary"
               onClick={() => {
@@ -109,16 +110,36 @@ function CommentInput({ setComments, currentComment, setCurrentComment, videoDet
                     placeholder="Add a comment"
                     value={currentComment}
                     disabled={!user}
-                    className="rounded-full border border-monochrome-9 bg-monochrome-white"
+                    maxLength={500}
+                    className="rounded-full border border-monochrome-9 bg-monochrome-white px-14 pl-4"
                     onChange={(event) => {
                       const newComment = event.target.value
                       setCurrentComment(newComment)
                     }}
                   />
 
-                  <p onClick={handleClick} className="absolute right-4 text-body-1-bold text-primary">
+                  {/* <Textarea
+                    placeholder="Add a comment"
+                    value={currentComment}
+                    disabled={!user}
+                    className="border-tertiary-200 h-10 rounded-full border bg-monochrome-white px-14 pl-4 pt-2"
+                    onChange={(event) => {
+                      let newComment = event.target.value
+                      if (newComment.length > 500) {
+                        newComment = newComment.slice(0, 500)
+                      }
+                      setCurrentComment(newComment)
+                    }}
+                  /> */}
+
+                  <button
+                    onClick={handleClick}
+                    disabled={currentComment.length === 0}
+                    className={`absolute right-4 text-body-1-bold ${
+                      currentComment.length === 0 ? 'text-primary-600' : 'text-primary'
+                    }`}>
                     Post
-                  </p>
+                  </button>
                 </div>
               </>
             ) : (

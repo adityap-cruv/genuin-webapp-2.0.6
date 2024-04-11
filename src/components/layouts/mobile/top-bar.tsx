@@ -64,7 +64,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
               <Button
                 className={
                   variant === 'light'
-                    ? 'bg-new-off-black hover:bg-new-dark-grey'
+                    ? 'bg-new-off-black text-monochrome-white hover:bg-new-dark-grey'
                     : 'bg-new-off-white text-new-off-black hover:bg-new-off-black hover:text-new-off-white'
                 }>
                 <p className="text-body-1-demi">Download Genuin</p>
@@ -224,7 +224,7 @@ function UserTick() {
           </div>
           <hr className="border-b border-monochrome-9" />
           <div className="flex items-center gap-x-2 p-4">
-            <LogoutIcon />
+            <LogoutIcon className="stroke-secondary" />
             <p
               className="text-body-1-demi"
               onClick={() => {

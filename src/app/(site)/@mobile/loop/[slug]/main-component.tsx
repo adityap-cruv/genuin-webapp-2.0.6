@@ -1,25 +1,25 @@
 'use client'
 import { Button } from '@components/ui/button'
 import type { LoopDetailsType } from '@lib/schemas/loop/details'
-import { generateDeepLink, openGeneratedLink } from '@lib/utils'
+import { generateDeepLink, openGeneratedLink, openModal } from '@lib/utils'
 import Image from 'next/image'
-import icShare from '@icons/icShareBlue.svg'
 import icLock from '@icons/icLock.svg'
 import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
-import { getLoopCohosts, getLoopSubscribers } from '@lib/api/loop'
+import { getLoopCohosts, getLoopSubscribers, subscribeLoop } from '@lib/api/loop'
 import { Loader } from '@components/ui/loader'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { TopBar } from '@components/layouts/mobile/top-bar'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { useInView } from 'framer-motion'
 import { TopStickyBar } from '../../../@desktop/loop/[slug]/top-bar'
 import { LoopVideos } from './loop-videos'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { DownloadDialog } from '@components/common/download-dialog'
+import { ShareIcon } from '@icons/share-icon'
 import { useSearchParams } from 'next/navigation'
 
 let loopDetailsModule: LoopDetailsType
@@ -42,7 +42,9 @@ export function MainComponent({ loopDetails }: Props) {
       ? loopDetails.group.group_description + ' | '
       : ''
   } • Join ${loopDetails.group.group_name} to talk about it`
+  const [isLoopSubscribed, setIsLoopSubscribed] = useState(false)
   const embed = useGenuinOptions().embed
+  const user = useGenuinOptions().user
   const searchParams = Object.fromEntries(useSearchParams())
 
   if (loopDetails)
@@ -64,10 +66,10 @@ export function MainComponent({ loopDetails }: Props) {
               <p className="line-clamp-1 text-title-1-bold">{loopDetails.group.group_name}</p>
               <p className="my-2 line-clamp-2 break-words text-title-3-demi">{loopDetails.group.group_description}</p>
             </div>
-            <div className=" my-3 overflow-hidden rounded-lg border border-solid border-monochrome-9 p-4">
+            <div className=" my-3 overflow-hidden rounded-lg border border-solid border-tertiary-200 p-4">
               <div className="flex">
                 <div className="flex flex-1 flex-col items-start">
-                  <p className="text-body-1-demi text-secondary">Created by</p>
+                  <p className="text-body-1-demi text-tertiary">Created by</p>
                   <Link href={{ pathname: PATH_NAME.profile(loopDetails.owner.nickname) }}>
                     <div className="my-2 flex items-center">
                       <div className="bg-red-400 h-6 w-6">
@@ -83,7 +85,7 @@ export function MainComponent({ loopDetails }: Props) {
                   </Link>
                 </div>
                 <div className="flex flex-1 flex-col items-start">
-                  <p className="text-body-1-demi text-secondary">Posted in</p>
+                  <p className="text-body-1-demi text-tertiary">Posted in</p>
                   {/* todo change to community data */}
                   <Link href={{ pathname: PATH_NAME.community(loopDetails.community.slug) }}>
                     <div className="my-2 flex items-center">
@@ -134,22 +136,41 @@ export function MainComponent({ loopDetails }: Props) {
                       })
                       .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
                   }}>
-                  <p className="px-4 py-1 text-title-3-demi">Subscribe</p>
+                  <p className="px-4 py-1 text-title-3-demi text-monochrome-white">Subscribe</p>
                 </Button>
               )}
               {!loopDetails.private && embed && (
-                <DownloadDialog
-                  title="Get the Genuin app"
-                  subtitle={
-                    <>
-                      Get the app to subscribe to
-                      <span className="font-bold"> {loopDetails.group.group_name}</span> Loop.
-                    </>
+                <Button
+                  size="custom"
+                  className={`${isLoopSubscribed && 'border border-primary '}`}
+                  variant={isLoopSubscribed ? 'outline' : 'default'}
+                  onClick={
+                    user
+                      ? async () => {
+                          !isLoopSubscribed
+                            ? await subscribeLoop(loopDetails.chat_id, true).then((res) => {
+                                if (res.code === 200) {
+                                  setIsLoopSubscribed((prev: any) => !prev)
+                                }
+                              })
+                            : setIsLoopSubscribed((prev: any) => !prev)
+                        }
+                      : () => {
+                          openModal({
+                            title: 'Get the Genuin app',
+                            subtitle: (
+                              <>
+                                Get the app to subscribe to
+                                <span className="font-bold"> {loopDetails.group.group_name}</span> Loop.
+                              </>
+                            ),
+                          })
+                        }
                   }>
-                  <Button size="custom">
-                    <p className="px-4 py-1 text-title-3-demi">Subscribe</p>
-                  </Button>
-                </DownloadDialog>
+                  <p className={`px-4 py-1 text-title-3-demi ${isLoopSubscribed && 'text-primary'}`}>
+                    {isLoopSubscribed ? 'Subscribed' : 'Subscribe'}
+                  </p>
+                </Button>
               )}
 
               {loopDetails.private && (
@@ -204,17 +225,17 @@ export function MainComponent({ loopDetails }: Props) {
                     toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                   })
                 }}>
-                <Image src={icShare} alt="share" className="h-6 w-6" />
+                <ShareIcon className="h-6 w-6 fill-primary" />
               </Button>
             </div>
           </div>
-          <hr className="border-t border-monochrome-9" />
+          <hr className="border-t border-tertiary-200" />
           {loopDetails.private ? (
             <div
               className="mt-4 flex w-full items-center justify-center overflow-hidden"
               style={{ height: 'calc(100% - 220px)' }}>
               <div className="flex flex-col items-center justify-center">
-                <div className="mb-2 rounded-full bg-monochrome-9 p-6">
+                <div className="mb-2 rounded-full bg-tertiary-200 p-6">
                   <Image src={icLock} alt="share" className="h-16 w-16" />
                 </div>
                 <p className="text-center text-title-2-demi">
@@ -245,7 +266,7 @@ function LoopTabs() {
           <p className="text-title-3-bold">Subscribers</p>
         </TabsTrigger>
       </TabsList>
-      <hr className="border-t border-monochrome-9" />
+      <hr className="border-t border-tertiary-200" />
       <TabsContent value="Loops">
         <LoopVideos slug={loopDetailsModule.chat_slug} />
       </TabsContent>
@@ -268,7 +289,7 @@ function LoopCollaborators({ slug }: { slug: string }) {
 
   if (cohosts && cohosts.length === 0)
     return (
-      <div className="flex h-full w-full items-center justify-center pt-32 text-title-3-bold text-monochrome">
+      <div className="flex h-full w-full items-center justify-center pt-32 text-title-3-bold text-tertiary">
         No collaborators yet
       </div>
     )
@@ -302,7 +323,7 @@ function LoopSubscribers({ slug }: any) {
 
   if (subscribers && subscribers.length === 0)
     return (
-      <div className="flex h-full w-full items-center justify-center pt-32 text-title-3-bold text-monochrome">
+      <div className="flex h-full w-full items-center justify-center pt-32 text-title-3-bold text-tertiary">
         No subscribers yet
       </div>
     )
@@ -342,7 +363,7 @@ function Stats({
         return (
           <div key={index} className="flex items-center">
             <p className="mr-1 text-title-2-bold">{obj.value}</p>
-            <p className="mr-4 text-body-1-demi text-secondary">{obj.key}</p>
+            <p className="mr-4 text-body-1-demi text-tertiary">{obj.key}</p>
           </div>
         )
       })}
@@ -360,12 +381,12 @@ interface CohostTileProps {
 
 function CohostTile({ image, title, subtitle, userName, isAvatar }: CohostTileProps) {
   return (
-    <div className="flex items-center gap-x-1 rounded-lg p-2 hover:bg-monochrome-10">
+    <div className="flex items-center gap-x-1 rounded-lg p-2">
       <CustomAvatar className="h-12 w-12 bg-red-40" fallbackString={title} imageUrl={image} isAvatar={isAvatar} />
       <div className="mx-2">
         <p className="line-clamp-1 text-body-1-bold">{title}</p>
         {userName && <p className="line-clamp-1 text-body-1-demi">{userName}</p>}
-        {subtitle && <p className="line-clamp-1 text-cap-1-demi text-monochrome-black/60">{subtitle}</p>}
+        {subtitle && <p className="line-clamp-1 text-cap-1-demi text-tertiary">{subtitle}</p>}
       </div>
     </div>
   )

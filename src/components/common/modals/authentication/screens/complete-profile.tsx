@@ -74,7 +74,7 @@ export function CompleteProfile() {
 
   return (
     <ModalShell>
-      <h3 className="flex w-full items-center justify-center text-heading-3">Complete profile</h3>
+      <h3 className="flex w-full items-center justify-center text-heading-3 ">Complete profile</h3>
       <ImageInput />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
@@ -87,15 +87,18 @@ export function CompleteProfile() {
                 <FormItem className="sm:w-full">
                   <FormLabel className="text-body-1-med">
                     <div className="flex w-full justify-between">
-                      <p>Full Name</p>
-                      <p className="text-cap-1-med text-secondary">{form.getValues('displayName')?.length ?? 0}/25</p>
+                      <p className="">Full Name</p>
+                      <p className="text-cap-1-med ">{form.getValues('displayName')?.length ?? 0}/25</p>
                     </div>
                   </FormLabel>
                   <FormControl>
                     <Input
                       maxLength={25}
                       type="text"
-                      className={cn('border-monochrome-9 bg-monochrome-11 text-title-3-med', errors && '!border-red')}
+                      className={cn(
+                        'border border-tertiary-200 bg-tertiary-100 text-title-3-med',
+                        errors && '!border-red'
+                      )}
                       {...field}
                     />
                   </FormControl>
@@ -113,8 +116,8 @@ export function CompleteProfile() {
                 <FormItem className="sm:w-full">
                   <FormLabel className="text-body-1-med">
                     <div className="flex w-full justify-between">
-                      <p>Bio</p>
-                      <p className="text-cap-1-med text-secondary">{form.getValues('bio')?.length ?? 0}/150</p>
+                      <p className="">Bio</p>
+                      <p className="text-cap-1-med ">{form.getValues('bio')?.length ?? 0}/150</p>
                     </div>
                   </FormLabel>
                   <FormControl>
@@ -122,7 +125,7 @@ export function CompleteProfile() {
                       maxLength={150}
                       {...field}
                       className={cn(
-                        'border-monochrome-9 bg-monochrome-11 p-2 py-3 text-title-3-med',
+                        'border-tertiary-200 bg-tertiary-100 p-2 py-3 text-title-3-med',
                         errors && '!border-red'
                       )}
                     />
@@ -135,7 +138,7 @@ export function CompleteProfile() {
           <span className="flex flex-col gap-y-3 text-title-3-demi">
             <Button
               type="submit"
-              className="flex w-full cursor-pointer items-center justify-center rounded-lg bg-new-off-black  text-monochrome-white hover:bg-new-dark-grey disabled:hover:bg-new-off-black"
+              className="flex w-full cursor-pointer items-center justify-center rounded-lg"
               disabled={isLoading}>
               {isLoading ? <Loader size="sm" className="fill-new-off-white" /> : <p>Save</p>}
             </Button>

@@ -1,6 +1,7 @@
 import { type CommentListType, validateCommentList } from '@lib/schemas/loop/comment'
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import axios from 'axios'
+import { axiosInstance } from './instance'
 
 export async function fetchLoopDetails(slug: string) {
   return await axios
@@ -113,4 +114,26 @@ export function getLoopVideoComments(videoShareString: string) {
     },
     queryKey: ['comments', videoShareString],
   })
+}
+
+export async function subscribeLoop(uuid: string, subscribe: boolean) {
+  return await axiosInstance
+    .post(
+      '/api/v3/conversation/subscription',
+      {
+        chat_id: uuid,
+        subscribe,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    )
+    .then((res) => {
+      return { code: res.status, data: res.data.data }
+    })
+    .catch((e) => {
+      return { code: Number(e.response.data.code) }
+    })
 }

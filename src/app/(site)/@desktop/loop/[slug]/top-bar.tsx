@@ -8,6 +8,9 @@ import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
 import { openModal } from '@lib/utils'
 import { DownloadDialog } from '@components/common/download-dialog'
+import { ShareIcon } from '@icons/share-icon'
+import { subscribeLoop } from '@lib/api/loop'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
 
 type Props = {
   /**
@@ -21,6 +24,9 @@ type Props = {
   loopName: string
   shareString: string
   communitySlug: string
+  chatId?: string
+  isLoopSubscribed?: any
+  setIsLoopSubscribed?: any
 }
 
 export const TopStickyBar = {
@@ -28,10 +34,21 @@ export const TopStickyBar = {
   desktop: Desktop,
 }
 
-function Desktop({ defaultOpen = true, isOpen = false, loopName, shareString, communitySlug, ...props }: Props) {
+function Desktop({
+  defaultOpen = true,
+  isOpen = false,
+  loopName,
+  shareString,
+  communitySlug,
+  chatId,
+  isLoopSubscribed,
+  setIsLoopSubscribed,
+  ...props
+}: Props) {
   const navAnimationControl = useAnimationControls()
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
+  const user = useGenuinOptions().user
 
   useEffect(() => {
     if (defaultOpen || isOpen) {
@@ -61,19 +78,37 @@ function Desktop({ defaultOpen = true, isOpen = false, loopName, shareString, co
         <p className="text-title-2-demi">{loopName}</p>
       </span>
       <span className="my-2 flex items-center gap-x-3">
-        <DownloadDialog
-          title="Get the Genuin app"
-          subtitle={
-            <>
-              Get the app to subscribe to
-              <span className="font-bold"> {loopName}</span> Loop.
-            </>
-          }
-          asChild>
-          <Button size="custom">
-            <p className="px-4 py-1 text-title-3-demi">Subscribe</p>
-          </Button>
-        </DownloadDialog>
+        <Button
+          size="custom"
+          className={`${isLoopSubscribed && 'border border-primary '}`}
+          variant={isLoopSubscribed ? 'outline' : 'default'}
+          onClick={
+            user
+              ? async () => {
+                  !isLoopSubscribed
+                    ? await subscribeLoop(chatId ?? '', true).then((res) => {
+                        if (res.code === 200) {
+                          setIsLoopSubscribed((prev: any) => !prev)
+                        }
+                      })
+                    : setIsLoopSubscribed((prev: any) => !prev)
+                }
+              : () => {
+                  openModal({
+                    title: 'Get the Genuin app',
+                    subtitle: (
+                      <>
+                        Get the app to subscribe to
+                        <span className="font-bold"> {loopName}</span> Loop.
+                      </>
+                    ),
+                  })
+                }
+          }>
+          <p className={`px-4 py-1 text-title-3-demi ${isLoopSubscribed && 'text-primary'}`}>
+            {isLoopSubscribed ? 'Subscribed' : 'Subscribe'}
+          </p>
+        </Button>
 
         {/* Hidden by requirement. */}
         {/* <Button size="custom" variant="outline" className="border-primary px-4">
@@ -96,7 +131,7 @@ function Desktop({ defaultOpen = true, isOpen = false, loopName, shareString, co
               toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
             })
           }}>
-          <Image src={icShare} alt="share" className="h-6 w-6" />
+          <ShareIcon className="h-6 w-6 fill-primary" />{' '}
         </Button>
       </span>
     </motion.div>

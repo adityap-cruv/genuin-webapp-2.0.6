@@ -26,6 +26,16 @@ type IntegrationSettingsType = {
   }
 }
 
+type SloganType = {
+  font: {
+    _id: string
+    style: string
+    weight: string
+  }
+  image: string
+  text: string
+}
+
 export type ConfigType = {
   brand_id: string
   created_at: string
@@ -34,6 +44,10 @@ export type ConfigType = {
   integrations: IntegrationSettingsType
   name: string
   subdomain: string
+  slogan: SloganType
+  brand_colors: any
+  favicon: any
+  brand_web_logo: string
 } | null
 
 type User = {
@@ -57,6 +71,7 @@ type StateType = {
   embed: boolean
   brandId: string
   logoUrl: string
+  brandWebLogo: string
   /**
    * Set false if you don't want to show general navbar.s
    * @default true
@@ -95,6 +110,7 @@ const initialState: StateType = {
   embed: false,
   brandId: '',
   logoUrl: '',
+  brandWebLogo: '',
   showNavbar: true,
   isLoading: true,
   isMobile: true,

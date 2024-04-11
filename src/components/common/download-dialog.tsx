@@ -3,6 +3,7 @@ import Image from 'next/image'
 import imageAppStore from '@images/appStore.svg'
 import imagePlayStore from '@images/playStore.svg'
 import { AppLogo } from '@components/ui/app-logo'
+import { GenuinIcon } from '@icons/genuin-icon'
 
 interface Props {
   children?: React.ReactNode
@@ -22,7 +23,7 @@ export function DownloadDialog({ children, subtitle, title, asChild = false }: P
       <DialogTrigger asChild={asChild}>{children}</DialogTrigger>
       <DialogContent>
         <div className="flex w-full flex-col items-center justify-center px-4 pt-6">
-          <AppLogo.icon className="fill-primary" imageHeight={50} />
+          <GenuinIcon.icon className="h-12 fill-blue" />
           <p style={{ fontSize: '40px' }} className="hidden whitespace-nowrap text-center font-bold sm:block">
             {title}
           </p>
