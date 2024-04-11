@@ -17,10 +17,10 @@ export function RootDetails({ communityDetails }: Props) {
 
   useEffect(() => {
     addCommunity({
-      handle: communityDetails.info.handle,
-      name: communityDetails.info.name,
-      profileImage: communityDetails.info.profile_image,
-      slug: communityDetails.info.slug,
+      handle: communityDetails.handle,
+      name: communityDetails.name,
+      profileImage: communityDetails.dp ?? '',
+      slug: communityDetails.slug,
     })
   }, [])
 

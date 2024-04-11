@@ -1,14 +1,15 @@
+import { validateCommunityDetails } from '@lib/schemas/community'
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 
 export async function fetchCommunityDetails(slug: string) {
   return await axios
-    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/community/details', {
+    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/community', {
       params: {
-        community_id: { slug },
+        slug,
       },
     })
-    .then((res) => res.data.data)
+    .then((res) => validateCommunityDetails(res.data.data))
     .catch((e) => {
       // TODO:
       /**
@@ -78,3 +79,26 @@ export function getCommunityLoops(slug: string) {
 // async function fetchVideoComments(handle: string) {
 //   return await axios.get(process.env.NEXT_PUBLIC_API_URL + '/api/')
 // }
+
+async function fetchCommunityMembers(slug: string) {
+  return await axios
+    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/community/members', {
+      params: {
+        slug,
+      },
+    })
+    .then((res) => {
+      const resData = res.data.data
+      return { members: resData?.members }
+    })
+    .catch((e) => {
+      throw new Error('Something went wrong in fetching community members.')
+    })
+}
+
+export function getCommunityMembers(slug: string) {
+  return useQuery({
+    queryKey: ['members'],
+    queryFn: async () => await fetchCommunityMembers(slug),
+  })
+}
