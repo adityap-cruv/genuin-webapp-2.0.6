@@ -3,9 +3,8 @@ import { getLoopVideoComments } from '@lib/api/loop'
 import { Loader } from '@components/ui/loader'
 import { type CommentListType, type CommentType } from '@lib/schemas/loop/comment'
 import { CommentItem } from './comment-item'
-import Image from 'next/image'
-import icComment from '@icons/icCommentShallow.svg'
 import { useEffect, useRef } from 'react'
+import { CommentIcon } from '@icons/comment-icon'
 
 export const Comments = {
   withApi: WithApi,
@@ -91,7 +90,7 @@ function WithoutApi({ comments }: WithoutApiProps) {
 export function NoComments() {
   return (
     <div className="flex h-full w-full flex-col items-center justify-center">
-      <Image src={icComment} alt="comment!" />
+      <CommentIcon className="stroke-terfill-tertiary fill-tertiary" />
       <p className="mt-2 text-title-2-bold">No comments yet</p>
       <p className="text-body-1-demi">Be the first one to comment</p>
     </div>

@@ -22,7 +22,7 @@ export default async function Component({ params, searchParams }: Props) {
     try {
       communityData = await fetchCommunityDetails(params.slug)
     } catch (error) {
-      // TODO: Handle it by sending logs.
+      throw new Error()
     }
     return <RootDetails communityDetails={communityData} />
   }
@@ -30,8 +30,8 @@ export default async function Component({ params, searchParams }: Props) {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const communityData = await fetchCommunityDetails(params.slug)
-  const title = `${communityData.info.name}`
-  const desc = `${communityData.info.description}`
+  const title = `${communityData.name}`
+  const desc = `${communityData.description}`
 
   return {
     title,
@@ -41,7 +41,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title,
       description: desc,
       url: `${process.env.NEXT_PUBLIC_HOST_URL}` + PATH_NAME.community(params.slug),
-      images: [{ url: communityData.info.preview_image }],
+      images: [{ url: communityData?.preview_image ?? '' }],
     },
   }
 }

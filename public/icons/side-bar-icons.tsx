@@ -27,19 +27,19 @@ export function ProfileIcon({ isActive, className, ...props }: Props) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      className={cn(isActive ? 'p-1' : 'fill-monochrome-black p-1', className)}
+      className={`${cn(isActive && 'stroke-primary', className)} p-1`}
       width="32"
       height="32"
       viewBox="0 0 24 24"
       fill="none">
       <path
         d="M8.21481 10.138C7.21094 9.13417 6.64697 7.77263 6.64697 6.35294C6.64697 4.93325 7.21094 3.57171 8.21481 2.56784C9.21868 1.56397 10.5802 1 11.9999 1C13.4196 1 14.7811 1.56397 15.785 2.56784C16.7889 3.57171 17.3529 4.93325 17.3529 6.35294C17.3529 7.77263 16.7889 9.13417 15.785 10.138C14.7811 11.1419 13.4196 11.7059 11.9999 11.7059C10.5802 11.7059 9.21868 11.1419 8.21481 10.138Z"
-        stroke={isActive ? '#0645FF' : 'black'}
+        className={`${isActive ? 'stroke-primary' : 'stroke-secondary'}`}
         strokeWidth="2"
       />
       <path
         d="M22.987 22.693L22.9874 22.6942C22.9992 22.7268 23.0027 22.7608 22.998 22.7939L23.9881 22.9339L22.998 22.7939C22.9933 22.8271 22.9803 22.8605 22.9582 22.891L23.7684 23.4772L22.9582 22.891C22.936 22.9216 22.9049 22.949 22.8659 22.9687C22.8267 22.9885 22.7819 22.9995 22.7353 22.9995H1.26466C1.21813 22.9995 1.17328 22.9885 1.13414 22.9687C1.0951 22.949 1.06398 22.9216 1.04179 22.891L0.240314 23.4709L1.04179 22.891C1.0197 22.8605 1.00671 22.8271 1.00202 22.7939C0.997342 22.7608 1.00075 22.7268 1.01259 22.6942L1.01304 22.693C1.81208 20.4834 3.2953 18.5657 5.26273 17.2072C7.23047 15.8485 9.5844 15.1172 12 15.1172C14.4156 15.1172 16.7695 15.8485 18.7373 17.2072C20.7047 18.5657 22.1879 20.4834 22.987 22.693Z"
-        stroke={isActive ? '#0645FF' : 'black'}
+        className={`${isActive ? 'stroke-primary' : 'stroke-secondary'}`}
         strokeWidth="2"
       />
     </svg>
@@ -52,7 +52,7 @@ export function PopularIcon({ isActive, className, ...props }: Props) {
       width="32"
       height="32"
       viewBox="0 0 40 40"
-      className={cn(isActive ? 'fill-primary' : 'fill-monochrome-black', className)}
+      className={cn(isActive ? 'fill-primary' : 'fill-secondary', className)}
       xmlns="http://www.w3.org/2000/svg"
       {...props}>
       <path
@@ -67,7 +67,7 @@ export function PopularIcon({ isActive, className, ...props }: Props) {
 export function HomeIcon({ isActive, className, ...props }: Props) {
   return (
     <svg
-      className={cn(isActive ? 'fill-primary' : 'fill-monochrome-black', className)}
+      className={cn(isActive ? 'fill-primary' : 'fill-secondary', className)}
       width="32"
       height="32"
       viewBox="0 0 40 40"
@@ -86,7 +86,7 @@ export function LatestIcon({ isActive, className, ...props }: Props) {
   return (
     <svg
       width="32"
-      className={cn(isActive ? 'fill-primary' : 'fill-monochrome-black', className)}
+      className={cn(isActive ? 'fill-primary' : 'fill-secondary', className)}
       height="32"
       viewBox="0 0 40 40"
       xmlns="http://www.w3.org/2000/svg"
@@ -150,7 +150,7 @@ export function MoreIcon({ isActive, ...props }: Props) {
           fillRule="evenodd"
           clipRule="evenodd"
           d="M6 19C7.65685 19 9 17.6569 9 16C9 14.3431 7.65685 13 6 13C4.34315 13 3 14.3431 3 16C3 17.6569 4.34315 19 6 19ZM16 19C17.6569 19 19 17.6569 19 16C19 14.3431 17.6569 13 16 13C14.3431 13 13 14.3431 13 16C13 17.6569 14.3431 19 16 19ZM29 16C29 17.6569 27.6569 19 26 19C24.3431 19 23 17.6569 23 16C23 14.3431 24.3431 13 26 13C27.6569 13 29 14.3431 29 16Z"
-          fill={isActive ? '#0645FF' : 'black'}
+          className={`${isActive ? 'fill-primary stroke-primary' : 'fill-secondary stroke-secondary'}`}
         />
       </g>
       {/* <defs>

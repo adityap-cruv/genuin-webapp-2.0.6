@@ -49,8 +49,8 @@ export function SideBar() {
         </Link> */}
         {user && (
           <Link href={{ pathname: PATH_NAME.profile(user.nickname) }}>
-            <Item title="Profile" isActive={pathName === PATH_NAME.profile()}>
-              <ProfileIcon isActive={pathName === PATH_NAME.profile()} />
+            <Item title="Profile" isActive={pathName === PATH_NAME.profile(user.nickname)}>
+              <ProfileIcon isActive={pathName === PATH_NAME.profile(user.nickname)} />
             </Item>
           </Link>
         )}
