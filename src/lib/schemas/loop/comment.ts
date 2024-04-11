@@ -1,24 +1,52 @@
 import { z } from 'zod'
 
 const ownerSchema = z.object({
+  member_id: z.string(),
+  name: z.string().nullish(),
   nickname: z.string(),
+  bio: z.string().nullish(),
   is_avatar: z.boolean(),
   profile_image: z.string(),
 })
 
-const commentSchema = z.object({
-  created_at: z.string(),
-  type: z.enum(['video', 'audio', 'text']),
-  text: z.string().nullable(),
-  no_of_sparks: z.number(),
-  url: z.string().nullable(),
-  thumbnail: z.string().nullable(),
-  share_string: z.string(),
-})
-
+// Define the main schema
 const CommentSchema = z.object({
   owner: ownerSchema,
-  comment: commentSchema,
+  chat_id: z.string(),
+  conversation_id: z.string(),
+  comment_id: z.string(),
+  type: z.number().transform((value) => {
+    if (value === 1) {
+      return 'video'
+    } else if (value === 2) {
+      return 'audio'
+    } else {
+      return 'text'
+    }
+  }),
+  url: z.string().nullish(),
+  video_url_m3u8: z.string().nullish(),
+  thumbnail: z.string().nullish(),
+  link: z.string().nullish(),
+  duration: z
+    .string()
+    .transform((value) => Number(value))
+    .nullish(),
+  meta_data: z
+    .object({
+      duration: z
+        .string()
+        .transform((value) => Number(value))
+        .nullish(),
+    })
+    .nullish(),
+  created_at: z.number().nullish(),
+  no_of_views: z.number(),
+  is_read: z.boolean(),
+  comment_text: z.string().nullish(),
+  comment_data: z.string().nullish(),
+  no_of_sparks: z.number(),
+  is_sparked: z.boolean(),
 })
 
 const CommentListSchema = z.array(CommentSchema)
@@ -31,6 +59,7 @@ export function validateCommentList(data: any) {
   try {
     return CommentListSchema.parse(data)
   } catch (e) {
+    console.log('valdiation error::', e)
     throw new Error('Something went wrong with comments fetching api. Error is::', e as ErrorOptions | undefined)
   }
 }

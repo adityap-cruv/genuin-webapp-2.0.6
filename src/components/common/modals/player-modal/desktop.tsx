@@ -6,7 +6,6 @@ import {
   CustomDialogTrigger,
 } from '@components/custom/custom-dialog'
 import { useEffect } from 'react'
-import { type VideoDataType } from '@lib/schemas/video'
 import { X } from 'lucide-react'
 import { useFeedModalStore } from './store'
 import { SinglePlayer } from '@components/common/feed/desktop'
@@ -17,11 +16,11 @@ import { Loader } from '@components/ui/loader'
 import { cn } from '@lib/utils'
 import { FeedShimmer } from '@components/common/shimmers/feed-shimmer'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
-import { type LoopVideoListType } from '@lib/schemas/loop/videos'
+import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 
 type Props = {
   children?: React.ReactNode
-  videos?: LoopVideoListType
+  videos: VideoPlayerModalType[]
   /**
    * Index to start playing video from.
    * @default 0
@@ -90,7 +89,7 @@ export function Desktop({
             {isLoading ? (
               <Loader size="md" />
             ) : (
-              <SinglePlayer videoDetails={videos[currentIndex]} sizeBox={sizeBox.modal.player} />
+              <SinglePlayer videoData={{ ...videos[currentIndex] }} sizeBox={sizeBox.modal.player} />
             )}
           </div>
           <span className="flex flex-col gap-y-4">
@@ -126,7 +125,7 @@ type ProfileProps = {
   /**
    * If video is not available than it will show loader only.
    */
-  video?: VideoDataType
+  video: VideoPlayerModalType
   /**
    * Controls if modal should open or not.
    * @default false
@@ -163,7 +162,7 @@ export function Profile({
   const sizeBox = useGenuinOptions().sizeBoxes
   function InnerContent() {
     if (!video) return <FeedShimmer.desktop />
-    return <SinglePlayer videoDetails={video} sizeBox={{ ...sizeBox.modal.player }} />
+    return <SinglePlayer videoData={{ ...video }} sizeBox={{ ...sizeBox.modal.player }} />
   }
 
   return (

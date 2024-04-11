@@ -25,7 +25,6 @@ export function validateLoopCohosts(data: any) {
   try {
     return CohostListSchema.parse(data)
   } catch (e) {
-    console.log('error in validation::', e)
     throw new Error('Something went wrong with loop members validation!!')
   }
 }

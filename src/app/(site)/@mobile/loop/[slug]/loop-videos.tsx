@@ -8,9 +8,15 @@ import { useRef, useState } from 'react'
 import icPlay from '@icons/player-controls/icPlay.svg'
 import { useMotionValueEvent, useScroll } from 'framer-motion'
 import { PlayerModal } from '@components/common/modals/player-modal'
+import { type VideoPlayerModalCommunityType, type VideoPlayerModalLoopType } from '@lib/schemas/player/video'
 
-export function LoopVideos({ slug }: { slug: string }) {
-  const { data, isLoading, fetchNextPage, isFetchingNextPage } = getLoopVideos(slug)
+type Props = {
+  loop: VideoPlayerModalLoopType
+  community: VideoPlayerModalCommunityType
+}
+
+export function LoopVideos({ loop, community }: Props) {
+  const { data, isLoading, fetchNextPage, isFetchingNextPage } = getLoopVideos({ community, loop })
   const videos = data?.pages.flatMap((item) => item.videos)
   const [modalControl, setModalControl] = useState({ open: false, startIndex: -1 })
   const scrollDivRef = useRef<HTMLDivElement>(null)
@@ -51,19 +57,19 @@ export function LoopVideos({ slug }: { slug: string }) {
             /> */}
             <img
               src={item.video.thumbnail}
-              alt={item.video.description}
+              alt={item.video.description ?? ''}
               className="h-full w-full rounded-xl object-fill"
             />
             <div className="absolute bottom-2 left-2">
-              <Link href={{ pathname: PATH_NAME.profile(item.owner.nickname) }}>
+              <Link href={{ pathname: PATH_NAME.profile(item.owner.userName) }}>
                 <div className="flex h-6 w-6 items-center">
                   <CustomAvatar
                     className="h-full w-full bg-red-40"
-                    imageUrl={item.owner.profile_image}
-                    isAvatar={item.owner.is_avatar}
-                    fallbackString={item.owner.nickname}
+                    imageUrl={item.owner.profileImage}
+                    isAvatar={item.owner.isAvatar}
+                    fallbackString={item.owner.userName}
                   />
-                  <p className="ml-1 text-body-1-bold text-monochrome-white">@{item.owner.nickname}</p>
+                  <p className="ml-1 text-body-1-bold text-monochrome-white">@{item.owner.userName}</p>
                 </div>
               </Link>
               <p className="ml-1 line-clamp-2 text-body-1-demi text-monochrome-white">{item.video.description}</p>

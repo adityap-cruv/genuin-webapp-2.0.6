@@ -271,7 +271,19 @@ function LoopTabs() {
       </TabsList>
       <hr className="border-t border-tertiary-200" />
       <TabsContent value="Loops">
-        <LoopVideos slug={loopDetailsModule.slug} />
+        <LoopVideos
+          community={{
+            handle: loopDetailsModule.community.handle,
+            id: loopDetailsModule.community.community_id,
+            slug: loopDetailsModule.community.slug,
+            name: loopDetailsModule.community.name,
+          }}
+          loop={{
+            id: loopDetailsModule.chat_id,
+            slug: loopDetailsModule.slug,
+            name: loopDetailsModule.group.group_name,
+          }}
+        />
       </TabsContent>
       <TabsContent value="About">
         <LoopCollaborators slug={loopDetailsModule.slug} />

@@ -16,7 +16,6 @@ type Props = {
     slug: string
   }
   loop: {
-    shareString: string
     name: string
     slug: string
   }
@@ -70,7 +69,7 @@ export function AnimatedInfinityView({ community, loop }: Props) {
         () => {}
       )
     }
-  }, [loop.shareString])
+  }, [loop.slug])
 
   return (
     <span className="mb-2 flex px-1">

@@ -192,7 +192,20 @@ export function MainComponent({ loopDetails }: Props) {
         ) : (
           <div className="grid w-full grid-cols-2 gap-4 overflow-hidden" style={{ height: 'calc(100% - 56px)' }}>
             <div className="h-full snap-y snap-proximity overflow-auto scroll-smooth">
-              <LoopVideos slug={loopDetails.slug} />
+              <LoopVideos
+                community={{
+                  handle: loopDetails.community.handle,
+                  slug: loopDetails.community.slug,
+                  id: loopDetails.community.community_id,
+                  name: loopDetails.community.name,
+                  profileImage: loopDetails.community.dp,
+                }}
+                loop={{
+                  id: loopDetails.chat_id,
+                  slug: loopDetails.slug,
+                  name: loopDetails.group.group_name,
+                }}
+              />
             </div>
             <div className="snap-y snap-proximity overflow-auto scroll-smooth py-2">
               <LoopCohosts slug={loopDetails.slug} />

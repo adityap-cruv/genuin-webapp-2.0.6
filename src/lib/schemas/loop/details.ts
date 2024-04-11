@@ -2,10 +2,10 @@ import { z } from 'zod'
 
 const ownerSchema = z.object({
   member_id: z.string(),
-  name: z.string().nullable().optional(),
-  bio: z.string().nullable().optional(),
+  name: z.string().nullish(),
+  bio: z.string().nullish(),
   username: z.string(),
-  phone: z.string().optional(),
+  phone: z.string().nullish(),
   is_avatar: z.boolean(),
   profile_image: z.string(),
 })
@@ -13,35 +13,35 @@ const ownerSchema = z.object({
 // Define group schema
 const groupSchema = z.object({
   group_id: z.string(),
-  group_name: z.string().optional(),
-  group_description: z.string().nullable().optional(),
-  color_code: z.string().optional(),
-  text_color_code: z.string().optional(),
-  dp: z.string().nullable().optional(),
-  dp_s: z.string().optional(),
-  dp_m: z.string().optional(),
-  dp_l: z.string().optional(),
-  no_of_views: z.number().optional(),
-  no_of_videos: z.number().optional(),
-  no_of_members: z.number().optional(),
-  no_of_subscribers: z.number().optional(),
+  group_name: z.string().nullish(),
+  group_description: z.string().nullish(),
+  color_code: z.string().nullish(),
+  text_color_code: z.string().nullish(),
+  dp: z.string().nullish(),
+  dp_s: z.string().nullish(),
+  dp_m: z.string().nullish(),
+  dp_l: z.string().nullish(),
+  no_of_views: z.number().nullish(),
+  no_of_videos: z.number().nullish(),
+  no_of_members: z.number().nullish(),
+  no_of_subscribers: z.number().nullish(),
 })
 
 // Define community schema
 const communitySchema = z.object({
-  community_id: z.string().optional(),
+  community_id: z.string(),
   slug: z.string(),
-  handle: z.string().optional(),
-  name: z.string().nullable().optional(),
-  description: z.string().nullable().optional(),
-  color_code: z.string().optional(),
-  text_color_code: z.string().optional(),
-  dp: z.string().optional(),
-  dp_s: z.string().optional(),
-  dp_m: z.string().optional(),
-  dp_l: z.string().optional(),
-  share_url: z.string().optional(),
-  type: z.number().optional(),
+  handle: z.string(),
+  name: z.string().nullish(),
+  description: z.string().nullish(),
+  color_code: z.string().nullish(),
+  text_color_code: z.string().nullish(),
+  dp: z.string().nullish(),
+  dp_s: z.string().nullish(),
+  dp_m: z.string().nullish(),
+  dp_l: z.string().nullish(),
+  share_url: z.string().nullish(),
+  type: z.number().nullish(),
 })
 
 // Define settings schema

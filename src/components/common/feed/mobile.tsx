@@ -1,16 +1,16 @@
 import { AnimatedInfinityView } from '@components/common/animated-infinity-view'
 import dynamic from 'next/dynamic'
-import { type VideoDataType } from '@lib/schemas/video'
 import { useFeedListStore } from './store'
 import { useEffect } from 'react'
 import { useCommentSheetStore } from '../player/comment-sheet/store'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Mousewheel } from 'swiper/modules'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
+import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 const Player = dynamic(async () => await import('@components/common/player').then((comp) => comp.Player.mobile))
 
 type MobileProps = {
-  videos: VideoDataType[]
+  videos: VideoPlayerModalType[]
   isLoading: boolean
   isError: boolean
   hasNextPage?: boolean
@@ -71,7 +71,7 @@ export function Mobile({
         style={{ height: videoSizeBox.height, width: videoSizeBox.width }}>
         {videos.map((item, index) => (
           <SwiperSlide key={index}>
-            {() => <Player playIfInViewPort isFirstPlayerInList={index === 0} shouldPlay loop videoData={item} />}
+            {() => <Player playIfInViewPort isFirstPlayerInList={index === 0} shouldPlay loop videoDetails={item} />}
           </SwiperSlide>
         ))}
       </Swiper>
@@ -86,19 +86,18 @@ function InfinityViewBox() {
     videoList: state.videoList,
   }))
   const videoDetails = videoList[currentIndex]
-  if (videoDetails?.video)
+  if (videoDetails)
     return (
       <span className="absolute bottom-0 w-full">
         <AnimatedInfinityView
           community={{
             name: videoDetails.community.name ?? '',
             handle: videoDetails.community.handle,
-            profileImage: videoDetails.community.dp ?? '',
+            profileImage: videoDetails.community.profileImage ?? '',
             slug: videoDetails.community.slug,
           }}
           loop={{
             name: videoDetails.loop.name ?? '',
-            shareString: videoDetails.loop.share_string,
             slug: videoDetails.loop.slug,
           }}
         />

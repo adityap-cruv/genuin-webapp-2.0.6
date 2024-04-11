@@ -4,7 +4,8 @@ import axios from 'axios'
 import { axiosInstance } from './instance'
 import { validateLoopCohosts } from '@lib/schemas/loop/cohosts'
 import { validateLoopSubscribers } from '@lib/schemas/loop/subscribers'
-import { validateLoopVideos } from '@lib/schemas/loop/videos'
+import { parseVideosFromLoop } from './api-response-parser'
+import { type VideoPlayerModalCommunityType, type VideoPlayerModalLoopType } from '@lib/schemas/player/video'
 
 export async function fetchLoopDetails(slug: string) {
   return await axios
@@ -19,33 +20,43 @@ export async function fetchLoopDetails(slug: string) {
     })
 }
 
-async function fetchLoopVideos(slug: string, pageParams: string) {
+async function fetchLoopVideos(
+  pageParams: string,
+  loop: VideoPlayerModalLoopType,
+  community: VideoPlayerModalCommunityType
+) {
   return await axios
     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/conversation/messages', {
       params: {
-        slug,
+        slug: loop.slug,
         last_message_id: pageParams,
       },
     })
     .then((res) => {
       const resData = res.data.data
-      console.log('res dta:;', resData)
-      return { videos: validateLoopVideos(resData.messages), end: resData.end_of_result }
+      const videos = parseVideosFromLoop(resData.messages, loop, community)
+      return { videos, end: resData.end_of_messages }
     })
     .catch((e) => {
       throw new Error('Somethig went wrong with loop videos fetching api.')
     })
 }
 
-export function getLoopVideos(slug: string) {
+export function getLoopVideos({
+  loop,
+  community,
+}: {
+  loop: VideoPlayerModalLoopType
+  community: VideoPlayerModalCommunityType
+}) {
   return useInfiniteQuery({
-    queryFn: async ({ pageParam }) => await fetchLoopVideos(slug, pageParam),
-    queryKey: ['loop', 'videos', 'paginated', slug],
+    queryFn: async ({ pageParam }) => await fetchLoopVideos(pageParam, loop, community),
+    queryKey: ['loop', 'videos', 'paginated', loop.slug],
     getNextPageParam: (lastPage, pages) => {
       if (lastPage.end) {
         return
       }
-      return lastPage.videos[lastPage.videos.length - 1].message_id
+      return lastPage.videos[lastPage.videos.length - 1].video?.id
     },
   })
 }
@@ -120,24 +131,25 @@ export function getLoopSubscribers(slug: string) {
   })
 }
 
-// TODO: check this loop_id or video_id.
-export function getLoopVideoComments(videoShareString: string) {
-  let promise: Promise<{ comments: CommentListType; ref: any; end: boolean }> | null = null
+export function getLoopVideoComments(videoId: string) {
+  let promise: Promise<{ comments: CommentListType; end: boolean }> | null = null
   return useInfiniteQuery({
     queryFn: async ({ pageParam }) => {
       if (!promise) {
         promise = axios
-          .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/rt/page_comments', {
+          .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/comments', {
             params: {
-              loop_id: { share_string: videoShareString },
-              ref: pageParam,
+              conversation_id: videoId,
+              last_comment_id: pageParam,
             },
           })
           .then((res) => {
             const resData = res.data.data
-            return { comments: validateCommentList(resData.list), ref: resData.ref, end: resData.end_page }
+            console.log('res data;:', resData)
+            return { comments: validateCommentList(resData.comments), end: resData.end_of_result }
           })
           .catch((e) => {
+            console.log('e::', e)
             throw new Error('Something went wrong with comments api!')
           })
           .finally(() => {
@@ -150,9 +162,9 @@ export function getLoopVideoComments(videoShareString: string) {
       if (lastPage.end) {
         return
       }
-      return lastPage.ref
+      return lastPage.comments[lastPage.comments.length - 1].comment_id
     },
-    queryKey: ['comments', videoShareString],
+    queryKey: ['comments', videoId],
   })
 }
 

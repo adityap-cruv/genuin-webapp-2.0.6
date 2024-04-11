@@ -25,19 +25,18 @@ const OwnerSchema = z.object({
 const LoopVideoSchema = z.object({
   is_sparked: z.boolean().nullish(),
   message_id: z.string(),
-  // TODO: REMOVE NULLISH ONCE BACKEND BUG IS RESOLVED.
-  slug: z.string().nullish(),
+  slug: z.string(),
   no_of_views: z.number().nullable(),
   no_of_comments: z.number().nullable(),
   message_summary: z.string().nullish(),
   message_at: z.number().nullable(),
   is_pinned: z.boolean().nullish(),
-  share_url: z.string().nullish(),
+  share_url: z.string(),
   questions: z.array(z.string()).nullable(),
   thumbnail_url: z.string().nullish(),
   thumbnail_url_s: z.string().nullish(),
   thumbnail_url_l: z.string().nullish(),
-  media_url: z.string().nullish(),
+  media_url: z.string(),
   media_url_m3u8: z.string().nullish(),
   attached_link: z.string().nullish(),
   no_of_sparks: z.number().nullable(),
@@ -55,9 +54,8 @@ export type LoopVideoType = z.infer<typeof LoopVideoSchema>
 
 export function validateLoopVideos(data: any) {
   try {
-    return LoopVideoList.parse(data)
+    return LoopVideoList.safeParse(data)
   } catch (e) {
-    console.log('error in validation::', e)
     throw new Error('Something went wrong with loop members validation!!')
   }
 }
