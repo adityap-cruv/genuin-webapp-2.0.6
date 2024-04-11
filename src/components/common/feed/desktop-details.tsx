@@ -2,13 +2,11 @@ import { CustomAvatar } from '@components/custom/custom-avatar'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { Button } from '@components/ui/button'
-import icShare from '@icons/icShareBlue.svg'
 import { DecorativeList } from '@components/custom/decorative-list'
 import Image from 'next/image'
 import icAudioRecord from '@icons/audioRecord.svg'
 import icVideoRecord from '@icons/videoRecord.svg'
 import { Comments, NoComments } from '@components/common/comments'
-import { type VideoDataType } from '@lib/schemas/video'
 import { getLoopVideoComments } from '@lib/api/loop'
 import { type RefObject, useRef, useState, useEffect } from 'react'
 import { useMotionValueEvent, useScroll } from 'framer-motion'
@@ -25,162 +23,154 @@ import { ShareIcon } from '@icons/share-icon'
 import { Textarea } from '@components/ui/textarea'
 import { AudioRecordIcon } from '@icons/audio-record-icon'
 import { VideoRecordIcon } from '@icons/video-record-icon'
+import { type CommentListType } from '@lib/schemas/loop/comment'
+import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 
-type DesktopDetailsProps = {
-  videoDetails: VideoDataType
-}
-export function DesktopDetails({ videoDetails }: DesktopDetailsProps) {
+export function DesktopDetails({ loop, community, owner, video }: VideoPlayerModalType) {
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
   const scrollDivRef = useRef<HTMLDivElement>(null)
   const [isCommunityJoined, setIsCommunityJoined] = useState(false)
+  // TODO: Here state Comment and setComments are bad they are causing multiple rerenders.
   const [currentComment, setCurrentComment] = useState('')
-  const [comments, setComments] = useState([])
+  const [comments, setComments] = useState<CommentListType>([])
   const user = useGenuinOptions().user
 
-  if (videoDetails)
-    return (
-      <div className="relative flex h-full flex-1 flex-col overflow-x-clip bg-monochrome-white pb-16 pl-2">
-        <div className="border-b border-tertiary-200 p-4">
-          <span className="flex items-center gap-x-2">
-            <CustomAvatar
-              isAvatar={videoDetails.owner.is_avatar}
-              fallbackString={videoDetails.owner.username ?? ''}
-              imageUrl={videoDetails.owner.profile_image ?? ''}
-              className="h-9 w-9"
-            />
-            <span className="flex items-center gap-x-1">
-              <Link href={PATH_NAME.profile(videoDetails.owner.nickname)}>
-                <p className="text-title-3-demi">@{videoDetails.owner.nickname}</p>
-              </Link>
-              <p className="text-body-1-demi text-tertiary">{getTimeAgo(videoDetails?.video?.created_at) + ' ago'}</p>
-            </span>
+  return (
+    <div className="relative flex h-full flex-1 flex-col overflow-x-clip bg-monochrome-white pb-16 pl-2">
+      <div className="border-b border-tertiary-200 p-4">
+        <span className="flex items-center gap-x-2">
+          <CustomAvatar
+            isAvatar={owner.isAvatar}
+            fallbackString={owner.userName}
+            imageUrl={owner.profileImage}
+            className="h-9 w-9"
+          />
+          <span className="flex items-center gap-x-1">
+            <Link href={PATH_NAME.profile(owner.userName)}>
+              <p className="text-title-3-demi">@{owner.userName}</p>
+            </Link>
+            <p className="text-body-1-demi text-tertiary">{getTimeAgo(video.createdAt) + ' ago'}</p>
           </span>
-          {videoDetails?.video?.description && (
-            <p className="line-clamp-2 w-5/6 overflow-hidden break-all pt-3 text-title-3-med">
-              {videoDetails.video.description}
-            </p>
-          )}
-        </div>
-        <div ref={scrollDivRef} className="flex h-full flex-col overflow-auto overflow-x-clip">
-          <div className="p-4">
-            <p className="text-title-3-bold">Posted in</p>
-            <div className="pt-3">
-              <span className="flex items-center justify-between">
-                <span className="flex flex-1 items-center gap-x-3">
-                  <CustomAvatar
-                    imageUrl={videoDetails.community.dp ?? ''}
-                    fallbackString={videoDetails.community.name ?? ''}
-                    isAvatar={false}
-                    className="h-11 w-11"
-                  />
-                  <Link href={{ pathname: PATH_NAME.community(videoDetails.community.slug) }}>
-                    <p className="line-clamp-1 break-all pr-2 text-title-3-bold">{videoDetails.community.name}</p>
-                  </Link>
-                </span>
-                <span className="flex h-min flex-1 items-center justify-end gap-x-3">
-                  <Button
-                    size="custom"
-                    className={`${isCommunityJoined && 'rounded border border-primary '}`}
-                    variant={isCommunityJoined ? 'outline' : 'default'}
-                    onClick={
-                      user
-                        ? async () => {
-                            !isCommunityJoined
-                              ? await joinCommunity(
-                                  false,
-                                  [videoDetails.community.id],
-                                  [
-                                    {
-                                      user_id: user?.id,
-                                    },
-                                  ]
-                                ).then((res) => {
-                                  if (res.code === 200) {
-                                    setIsCommunityJoined((prev) => !prev)
-                                  }
-                                })
-                              : setIsCommunityJoined((prev) => !prev)
-                          }
-                        : () => {
-                            openModal({
-                              title: 'Get the Genuin app',
-                              subtitle: (
-                                <>
-                                  Get the app to join the <br />
-                                  <span className="font-bold">@{videoDetails.community.handle}</span> community.
-                                </>
-                              ),
-                            })
-                          }
-                    }>
-                    <p
-                      className={`whitespace-nowrap px-4 py-1.5 text-body-1-demi  ${
-                        isCommunityJoined ? 'text-primary' : 'text-monochrome-white'
-                      }`}>
-                      {isCommunityJoined ? 'Joined' : 'Join Community'}
-                    </p>
-                  </Button>
-                  <Button
-                    size="custom"
-                    variant="outline"
-                    className="min-w-max border border-primary p-1 hover:border-primary-600 "
-                    onClick={async () =>
-                      await shareFn({
-                        shareLink:
-                          window.location.host +
-                          PATH_NAME.community(videoDetails.community.slug) +
-                          '?utm_source=app_web',
-                        toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
-                      })
-                    }>
-                    <ShareIcon className="h-5 w-5 fill-primary hover:fill-primary-600" />
-                  </Button>
-                </span>
-              </span>
-              <DecorativeList>
-                <div className="h-2 w-full" />
-                <Link href={PATH_NAME.loop(videoDetails.loop.slug)}>
-                  <li className="relative flex h-full w-full items-center justify-between rounded-md border border-tertiary-200 bg-monochrome-white p-4 ">
-                    <p className="line-clamp-1 w-full break-all pr-2 text-body-1-demi">{videoDetails.loop?.name}</p>
-                    <p className="whitespace-nowrap text-cap-1-med text-primary hover:text-primary-600">View Loop</p>
-                  </li>
-                </Link>
-              </DecorativeList>
-            </div>
-          </div>
-          <div className="sticky top-0 z-10">
-            <p className="border-b border-t border-tertiary-200 bg-monochrome-white px-4 py-3 text-title-3-demi text-tertiary">
-              Comments {videoDetails?.video?.no_of_comments !== 0 ? `(${videoDetails?.video?.no_of_comments})` : ''}
-            </p>
-          </div>
-          <div className="h-full px-4 pt-2">
-            <CommentBox
-              shareString={videoDetails?.video?.share_string ?? ''}
-              parentRef={scrollDivRef}
-              setComments={setComments}
-              comments={comments}
-            />
-          </div>
-        </div>
-        <CommentInput
-          setComments={setComments}
-          currentComment={currentComment}
-          setCurrentComment={setCurrentComment}
-          videoDetails={videoDetails}
-        />
-        <Toaster />
+        </span>
+        {video.description && (
+          <p className="line-clamp-2 w-5/6 overflow-hidden break-all pt-3 text-title-3-med">{video.description}</p>
+        )}
       </div>
-    )
+      <div ref={scrollDivRef} className="flex h-full flex-col overflow-auto overflow-x-clip">
+        <div className="p-4">
+          <p className="text-title-3-bold">Posted in</p>
+          <div className="pt-3">
+            <span className="flex items-center justify-between">
+              <span className="flex flex-1 items-center gap-x-3">
+                <CustomAvatar
+                  imageUrl={community.profileImage ?? ''}
+                  fallbackString={community.name ?? ''}
+                  isAvatar={false}
+                  className="h-11 w-11"
+                />
+                {/* TODO: What if there is no community name. */}
+                <Link href={{ pathname: PATH_NAME.community(community.slug) }}>
+                  <p className="line-clamp-1 break-all pr-2 text-title-3-bold">{community.name}</p>
+                </Link>
+              </span>
+              <span className="flex h-min flex-1 items-center justify-end gap-x-3">
+                <Button
+                  size="custom"
+                  className={`${isCommunityJoined && 'rounded border border-primary '}`}
+                  variant={isCommunityJoined ? 'outline' : 'default'}
+                  onClick={
+                    user
+                      ? async () => {
+                          // TODO: Make simple function for and manage state there.
+                          !isCommunityJoined
+                            ? await joinCommunity(
+                                false,
+                                [community.id],
+                                [
+                                  {
+                                    user_id: user?.id,
+                                  },
+                                ]
+                              ).then((res) => {
+                                if (res.code === 200) {
+                                  setIsCommunityJoined((prev) => !prev)
+                                }
+                              })
+                            : setIsCommunityJoined((prev) => !prev)
+                        }
+                      : () => {
+                          openModal({
+                            title: 'Get the Genuin app',
+                            subtitle: (
+                              <>
+                                Get the app to join the <br />
+                                <span className="font-bold">@{community.handle}</span> community.
+                              </>
+                            ),
+                          })
+                        }
+                  }>
+                  <p
+                    className={`whitespace-nowrap px-4 py-1.5 text-body-1-demi  ${
+                      isCommunityJoined ? 'text-primary' : 'text-monochrome-white'
+                    }`}>
+                    {isCommunityJoined ? 'Joined' : 'Join Community'}
+                  </p>
+                </Button>
+                <Button
+                  size="custom"
+                  variant="outline"
+                  className="min-w-max border border-primary p-1 hover:border-primary-600 "
+                  onClick={async () =>
+                    await shareFn({
+                      shareLink: window.location.host + PATH_NAME.community(community.slug) + '?utm_source=app_web',
+                      toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
+                    })
+                  }>
+                  <ShareIcon className="h-5 w-5 fill-primary hover:fill-primary-600" />
+                </Button>
+              </span>
+            </span>
+            <DecorativeList>
+              <div className="h-2 w-full" />
+              <Link href={PATH_NAME.loop(loop.slug)}>
+                <li className="relative flex h-full w-full items-center justify-between rounded-md border border-tertiary-200 bg-monochrome-white p-4 ">
+                  <p className="line-clamp-1 w-full break-all pr-2 text-body-1-demi">{loop?.name}</p>
+                  <p className="whitespace-nowrap text-cap-1-med text-primary hover:text-primary-600">View Loop</p>
+                </li>
+              </Link>
+            </DecorativeList>
+          </div>
+        </div>
+        <div className="sticky top-0 z-10">
+          <p className="border-b border-t border-tertiary-200 bg-monochrome-white px-4 py-3 text-title-3-demi text-tertiary">
+            Comments {video.commentCount !== 0 ? `(${video.commentCount})` : ''}
+          </p>
+        </div>
+        <div className="h-full px-4 pt-2">
+          <CommentBox videoId={video.id} parentRef={scrollDivRef} setComments={setComments} comments={comments} />
+        </div>
+      </div>
+      <CommentInput
+        setComments={setComments}
+        currentComment={currentComment}
+        setCurrentComment={setCurrentComment}
+        videoId={video.id}
+        loopId={loop.id}
+      />
+      <Toaster />
+    </div>
+  )
 }
 
 function CommentBox({
-  shareString,
+  videoId,
   parentRef,
   setComments,
   comments,
 }: {
-  shareString: string
+  videoId: string
   parentRef: RefObject<HTMLDivElement>
   setComments: any
   comments: any
@@ -192,7 +182,7 @@ function CommentBox({
     isError,
     isFetchingNextPage,
     isLoading,
-  } = getLoopVideoComments(shareString)
+  } = getLoopVideoComments(videoId)
 
   useEffect(() => {
     setComments(commentPages?.pages.flatMap((item) => item.comments))
@@ -229,7 +219,19 @@ function CommentBox({
   )
 }
 
-function CommentInput({ setComments, currentComment, setCurrentComment, videoDetails }: any) {
+function CommentInput({
+  setComments,
+  currentComment,
+  setCurrentComment,
+  videoId,
+  loopId,
+}: {
+  setComments: any
+  currentComment: any
+  setCurrentComment: any
+  videoId: string
+  loopId: string
+}) {
   const user = useGenuinOptions().user
   async function handleClick() {
     if (currentComment.length !== 0) {
@@ -249,7 +251,7 @@ function CommentInput({ setComments, currentComment, setCurrentComment, videoDet
           share_string: null,
         },
       }
-      await createComment(videoDetails.video.id, videoDetails.loop.id, 3, currentComment)
+      await createComment(videoId, loopId, 3, currentComment)
       setComments((prevComments: any) => [newComment, ...prevComments])
       setCurrentComment('')
     }

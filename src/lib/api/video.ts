@@ -58,19 +58,11 @@ export async function videoSpark(contentId: string, type: number, spark: boolean
 
 export async function joinCommunity(onboardingCommunities: boolean, communities: any, users: any) {
   return await axiosInstance
-    .post(
-      '/api/v3/community/add_users',
-      {
-        onboarding_communities: onboardingCommunities,
-        communities,
-        users,
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    )
+    .post('/api/v3/community/add_users', {
+      onboarding_communities: onboardingCommunities,
+      communities,
+      users,
+    })
     .then((res) => {
       return { code: res.status, data: res.data.data }
     })

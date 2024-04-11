@@ -1,5 +1,4 @@
 import { CustomAvatar } from '@components/custom/custom-avatar'
-import { Loader } from '@components/ui/loader'
 import { getCommunityLoops } from '@lib/api/community'
 import { abbreviateNumber, getTimeAgo } from '@lib/utils'
 import { PATH_NAME } from '@lib/utils/constants/path'

@@ -1,4 +1,3 @@
-import { type VideoDataType } from '@lib/schemas/video'
 import dynamic from 'next/dynamic'
 import { DesktopDetails } from './desktop-details'
 import { useFeedListStore } from './store'
@@ -7,12 +6,13 @@ import { cn } from '@lib/utils'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Mousewheel, Keyboard } from 'swiper/modules'
 import { type VideoSizeBoxType, useGenuinOptions } from '@lib/stores/genuin-options'
+import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 
 const DesktopPlayer = dynamic(async () => await import('@components/common/player').then((comp) => comp.Player.desktop))
 
 type DesktopProps = {
   // queryFuncResult: UseInfiniteQueryResult
-  videos?: VideoDataType[]
+  videos?: VideoPlayerModalType[]
   isLoading: boolean
   isError: boolean
   hasNextPage?: boolean
@@ -68,7 +68,7 @@ export function Desktop({ fetchNextPage, isFetchingNextPage, videos, className }
                     isFirstPlayerInList={index === 0}
                     shouldPlay
                     sizeBox={sizeBox}
-                    videoData={item}
+                    videoData={{ ...item.video }}
                     loop
                     key={index}
                   />
@@ -77,24 +77,38 @@ export function Desktop({ fetchNextPage, isFetchingNextPage, videos, className }
             )
           })}
         </Swiper>
-        {videoList[currentIndex]?.video && <DesktopDetails videoDetails={videoList[currentIndex]} />}
+        {videoList[currentIndex]?.video && <DesktopDetails {...videoList[currentIndex]} />}
       </div>
     )
 }
 
 type SinglePlayerProps = {
-  videoDetails: VideoDataType
+  videoData: VideoPlayerModalType
   sizeBox: VideoSizeBoxType
   className?: string
 }
 
-export function SinglePlayer({ sizeBox, videoDetails, className }: SinglePlayerProps) {
+// TODO: Remove this component and use swiper instead.
+export function SinglePlayer({ sizeBox, className, videoData }: SinglePlayerProps) {
   return (
     <div className={cn('flex h-full w-full', className)}>
       <div style={{ ...sizeBox }} className="hide-scrollbar overflow-x-clip">
-        <DesktopPlayer shouldPlay sizeBox={sizeBox} videoData={videoDetails} loop />
+        <DesktopPlayer
+          shouldPlay
+          sizeBox={sizeBox}
+          videoData={{
+            id: videoData.video.id,
+            shareUrl: videoData.video.shareUrl,
+            attachedLink: videoData.video.attachedLink,
+            source: videoData.video.source,
+            sparkCount: videoData.video.sparkCount,
+            thumbnail: videoData.video.thumbnail,
+            description: videoData.video.description,
+          }}
+          loop
+        />
       </div>
-      <DesktopDetails videoDetails={videoDetails} />
+      <DesktopDetails {...videoData} />
     </div>
   )
 }

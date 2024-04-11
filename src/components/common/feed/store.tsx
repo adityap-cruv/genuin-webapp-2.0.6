@@ -1,11 +1,11 @@
-import { type VideoDataType } from '@lib/schemas/video'
 import { create } from 'zustand'
 import { usePlayerControlStore } from '../player/player-control-store'
 import { analyticsService } from '../../../services/analytics_service'
+import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 
 type FeedListStoreType = {
-  videoList: VideoDataType[]
-  setVideoList: (list: VideoDataType[]) => void
+  videoList: VideoPlayerModalType[]
+  setVideoList: (list: VideoPlayerModalType[]) => void
   currentIndex: number
   setCurrentIndex: (index: number) => void
 }

@@ -1,15 +1,15 @@
 'use client'
 import { CustomDialog, CustomDialogContent, CustomDialogTrigger } from '@components/custom/custom-dialog'
 import { useEffect } from 'react'
-import { type VideoDataType } from '@lib/schemas/video'
 import { useFeedModalStore } from './store'
 import { Feed } from '@components/common/feed'
 import { TopBar } from '@components/layouts/mobile/top-bar'
 import { FeedShimmer } from '@components/common/shimmers/feed-shimmer'
+import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 
 type Props = {
   children?: React.ReactNode
-  videos?: VideoDataType[]
+  videos?: VideoPlayerModalType[]
   /**
    * Index to start playing video from.
    * @default 0
