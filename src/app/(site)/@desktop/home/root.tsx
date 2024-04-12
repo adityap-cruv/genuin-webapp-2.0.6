@@ -12,13 +12,7 @@ const Feed = dynamic(async () => await import('@components/common/feed').then((c
 })
 
 export function Root() {
-  const userId = useLocalStorage((state) => state.userId)
-  const brandId = useGenuinOptions().brandId
-  const { data, isError, fetchNextPage, isFetchingNextPage, isLoading } = getFeed({
-    feedType: 'home',
-    userID: userId,
-    brandId,
-  })
+  const { data, isError, fetchNextPage, isFetchingNextPage, isLoading } = getFeed(1)
   const videos = data?.pages.flatMap((item) => item.reels)
 
   return (

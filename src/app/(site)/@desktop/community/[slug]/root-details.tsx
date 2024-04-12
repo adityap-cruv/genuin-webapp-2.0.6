@@ -6,7 +6,6 @@ import { CustomAvatar } from '@components/custom/custom-avatar'
 import { TopStickyBar } from './top-bar'
 import { Button } from '@components/ui/button'
 import Image from 'next/image'
-import icMore from '@icons/icMoreBlue.svg'
 import icLock from '@icons/icLock.svg'
 import { useInView } from 'framer-motion'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
@@ -200,7 +199,15 @@ function CommunityDetailsTabs() {
       </TabsList>
       <hr className="border-t border-tertiary-200" />
       <TabsContent value="Loops" className="mr-2 h-full py-4">
-        <CommunityLoopTab communitySlug={communityDetailsModule.slug} />
+        <CommunityLoopTab
+          community={{
+            handle: communityDetailsModule.handle,
+            id: communityDetailsModule.community_id,
+            slug: communityDetailsModule.slug,
+            name: communityDetailsModule.name,
+            profileImage: communityDetailsModule.dp,
+          }}
+        />
       </TabsContent>
       <TabsContent value="Members">
         <Members />

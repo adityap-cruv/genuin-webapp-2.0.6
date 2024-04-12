@@ -1,3 +1,4 @@
+import { type FeedResponseType } from '@lib/schemas/feed/response'
 import { type LoopVideoListType } from '@lib/schemas/loop/videos'
 import {
   type VideoPlayerModalCommunityType,
@@ -32,6 +33,44 @@ export function parseVideosFromLoop(
         // TODO: Description is not being showed in mobile.
         description: null,
         slug: item.slug,
+      },
+    }
+  })
+}
+
+export function parseVideosFromCommunityResponse(videos: FeedResponseType) {
+  return videos.map<VideoPlayerModalType>((item) => {
+    const video = item.feed
+    return {
+      community: {
+        handle: video.community.handle,
+        id: video.community.community_id,
+        slug: video.community.slug,
+        name: video.community.name,
+        profileImage: video.community.dp,
+      },
+      loop: {
+        id: video.group.group_id,
+        slug: video.slug,
+        name: video.group.group_name,
+      },
+      owner: {
+        isAvatar: video.messages[0].owner.is_avatar,
+        profileImage: video.messages[0].owner.profile_image,
+        userName: video.messages[0].owner.username,
+        name: video.messages[0].owner.name,
+      },
+      video: {
+        commentCount: video.messages[0].no_of_comments,
+        createdAt: video.messages[0].message_at,
+        id: video.messages[0].message_id,
+        shareUrl: video.messages[0].share_url,
+        slug: video.messages[0].slug,
+        source: video.messages[0].media_url_m3u8 ?? video.messages[0].media_url,
+        sparkCount: video.messages[0].no_of_sparks,
+        thumbnail: video.messages[0].thumbnail_url ?? '',
+        attachedLink: video.messages[0].attached_link,
+        description: '',
       },
     }
   })

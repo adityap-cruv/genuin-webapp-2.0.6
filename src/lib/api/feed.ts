@@ -1,21 +1,24 @@
+import { useGenuinOptions } from '@lib/stores/genuin-options'
+import { useLocalStorage } from '@lib/stores/local-storage'
+import { encryptText } from '@lib/utils'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import axios from 'axios'
 
-type FeedOptionsType = {
-  userID: string
-  feedType: 'popular' | 'lattest' | 'home'
-  brandId?: string | null
-}
-
-async function fetchFeed(options: FeedOptionsType, ref: any) {
-  if (!options.brandId) options.brandId = null
+/**
+ *
+ * @param feedType 1 for home, 2 for latest, 3 for popular
+ * @param pageParam
+ * @returns
+ */
+async function fetchFeed(feedType: 1 | 2 | 3, pageParam: string) {
+  console.log('device id::', useLocalStorage.getState().deviceId)
   return await axios
-    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/feed', {
+    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/feeds', {
       params: {
-        anonymous_user_uuid: options.userID,
-        ref,
-        brand_id: options.brandId,
-        feed_type: options.feedType,
+        brand_id: useGenuinOptions.getState().brandId,
+        type: feedType,
+        last_video_id: pageParam,
+        device_id: encodeURI(useLocalStorage.getState().deviceId),
       },
     })
     .then((res) => {
@@ -26,11 +29,15 @@ async function fetchFeed(options: FeedOptionsType, ref: any) {
     })
 }
 
-export function getFeed(options: FeedOptionsType) {
+/**
+ *
+ * @param feedType 1 for home, 2 for latest, 3 for popular
+ * @returns
+ */
+export function getFeed(feedType: 1 | 2 | 3) {
   return useInfiniteQuery({
-    queryKey: ['reels',options.userID, options.feedType],
-    queryFn: async ({ pageParam }) =>
-      await fetchFeed(options, pageParam),
+    queryKey: ['home', feedType],
+    queryFn: async ({ pageParam }) => await fetchFeed(feedType, pageParam),
     getNextPageParam(lastPage, allPages) {
       const obj = JSON.parse(lastPage.ref)
 
