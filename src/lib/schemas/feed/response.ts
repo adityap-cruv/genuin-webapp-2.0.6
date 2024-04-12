@@ -101,6 +101,6 @@ export function validateFeedResponse(data: any) {
   try {
     return FeedResponseSchema.parse(data)
   } catch (e) {
-    console.log('error in validation::')
+    throw new Error('error in valdation of feed response.')
   }
 }

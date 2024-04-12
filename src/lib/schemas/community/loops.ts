@@ -77,7 +77,6 @@ export function validateCommunityLoopList(data: any) {
   try {
     return CommunityLoopListSchema.parse(data)
   } catch (e) {
-    console.log('validation::', e)
     throw new Error('Something went wrong with validation of community loop list validation.')
   }
 }

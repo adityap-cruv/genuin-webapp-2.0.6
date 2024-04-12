@@ -2,7 +2,7 @@ import { validateCommunityDetails } from '@lib/schemas/community'
 import { validateCommunityLoopList, type CommunityLoopListType } from '@lib/schemas/community/loops'
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import axios from 'axios'
-import { parseVideosFromCommunityResponse } from './api-response-parser'
+import { parseFeedResponse } from './api-response-parser'
 
 export async function fetchCommunityDetails(slug: string) {
   return await axios
@@ -39,7 +39,7 @@ export function getCommunityVideos(slug: string) {
           })
           .then((res) => {
             const resData = res.data.data
-            const videos = parseVideosFromCommunityResponse(resData.feeds)
+            const videos = parseFeedResponse(resData.feeds)
             return { videos, end: resData.end_of_videos }
           })
           .catch((e) => {

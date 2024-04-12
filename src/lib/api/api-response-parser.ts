@@ -38,7 +38,7 @@ export function parseVideosFromLoop(
   })
 }
 
-export function parseVideosFromCommunityResponse(videos: FeedResponseType) {
+export function parseFeedResponse(videos: FeedResponseType) {
   return videos.map<VideoPlayerModalType>((item) => {
     const video = item.feed
     return {

@@ -1,8 +1,9 @@
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { useLocalStorage } from '@lib/stores/local-storage'
-import { encryptText } from '@lib/utils'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import axios from 'axios'
+import { parseFeedResponse } from './api-response-parser'
+import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 
 /**
  *
@@ -10,19 +11,24 @@ import axios from 'axios'
  * @param pageParam
  * @returns
  */
-async function fetchFeed(feedType: 1 | 2 | 3, pageParam: string) {
-  console.log('device id::', useLocalStorage.getState().deviceId)
+async function fetchFeed(
+  feedType: 1 | 2 | 3,
+  pageParam: { pageSession?: string; lastVideoId?: string }
+): Promise<{ reels: VideoPlayerModalType[]; pageSession: string }> {
   return await axios
     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/feeds', {
       params: {
         brand_id: useGenuinOptions.getState().brandId,
         type: feedType,
-        last_video_id: pageParam,
+        last_video_id: pageParam?.lastVideoId ?? undefined,
+        page_session: pageParam?.pageSession ?? undefined,
         device_id: encodeURI(useLocalStorage.getState().deviceId),
       },
     })
     .then((res) => {
-      return { reels: res.data.data.list, ref: res.data.data.ref }
+      const resData = res.data.data
+      const reels = parseFeedResponse(resData.feeds)
+      return { reels, pageSession: resData.page_session }
     })
     .catch((e) => {
       throw new Error('Something went wrong feed api.')
@@ -39,12 +45,7 @@ export function getFeed(feedType: 1 | 2 | 3) {
     queryKey: ['home', feedType],
     queryFn: async ({ pageParam }) => await fetchFeed(feedType, pageParam),
     getNextPageParam(lastPage, allPages) {
-      const obj = JSON.parse(lastPage.ref)
-
-      if (obj.pgNo === -1) {
-        return
-      }
-      return obj
+      return { pageSession: lastPage.pageSession, lastVideoId: lastPage.reels[lastPage.reels.length - 1].video.id }
     },
   })
 }
