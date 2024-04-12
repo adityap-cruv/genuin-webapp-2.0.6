@@ -34,7 +34,7 @@ export function ThirdPartyScriptProvider({ children, isEmbed }: { children: Reac
                 },"undefined"==typeof Promise||"undefined"==typeof globalThis){var d=document.createElement("script")
                 ;d.src="https://polyfill-fastly.io/v3/polyfill.min.js?version=3.111.0&features=Symbol%2CPromise&callback=rudderAnalyticsMount",
                 d.async=asyncScript,document.head?document.head.appendChild(d):document.body.appendChild(d)}else{
-                window.rudderAnalyticsMount()}window.rudderanalytics.load("2TKjFZvo9nt38kcH91svAZ2T1vl","https://begenuinrrcojx.dataplane.rudderstack.com",{})}();
+                window.rudderAnalyticsMount()}window.rudderanalytics.load(${process.env.NEXT_PUBLIC_RUDDERSTACK_KEY},${process.env.NEXT_PUBLIC_RUDDERSTACK_URL},{})}();
               window.OneTrust.InsertScript('https://www.googletagmanager.com/gtag/js?id=${process.env.GA_MEASUREMENT_ID}', 'head', null, null, 'C0002')
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
@@ -67,7 +67,7 @@ export function ThirdPartyScriptProvider({ children, isEmbed }: { children: Reac
               },"undefined"==typeof Promise||"undefined"==typeof globalThis){var d=document.createElement("script")
               ;d.src="https://polyfill-fastly.io/v3/polyfill.min.js?version=3.111.0&features=Symbol%2CPromise&callback=rudderAnalyticsMount",
               d.async=asyncScript,document.head?document.head.appendChild(d):document.body.appendChild(d)}else{
-              window.rudderAnalyticsMount()}window.rudderanalytics.load("2TKjFZvo9nt38kcH91svAZ2T1vl","https://begenuinrrcojx.dataplane.rudderstack.com",{})}();
+              window.rudderAnalyticsMount()}window.rudderanalytics.load(${process.env.NEXT_PUBLIC_RUDDERSTACK_KEY},${process.env.NEXT_PUBLIC_RUDDERSTACK_URL},{})}();
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
           gtag('js', new Date());
