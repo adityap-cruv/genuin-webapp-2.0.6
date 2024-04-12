@@ -278,7 +278,7 @@ function Links() {
 }
 
 function Guidelines() {
-  if (communityDetailsModule.guidelines)
+  if (communityDetailsModule.guidelines.length !== 0)
     return (
       <div className="mb-4">
         <p className="my-2 text-title-3-bold">Guidelines</p>
