@@ -1,8 +1,6 @@
 'use client'
 import { FeedShimmer } from '@components/common/shimmers/feed-shimmer'
 import { getFeed } from '@lib/api/feed'
-import { useGenuinOptions } from '@lib/stores/genuin-options'
-import { useLocalStorage } from '@lib/stores/local-storage'
 import dynamic from 'next/dynamic'
 const Feed = dynamic(async () => await import('@components/common/feed').then((comp) => comp.Feed.desktop), {
   loading(_) {
@@ -11,13 +9,7 @@ const Feed = dynamic(async () => await import('@components/common/feed').then((c
 })
 
 export function Root() {
-  const userId = useLocalStorage((state) => state.userId)
-  const brandId = useGenuinOptions().brandId
-  const { data, isError, fetchNextPage, isFetchingNextPage, isLoading } = getFeed({
-    feedType: 'popular',
-    userID: userId,
-    brandId,
-  })
+  const { data, isError, fetchNextPage, isFetchingNextPage, isLoading } = getFeed(3)
   const videos = data?.pages.flatMap((item) => item.reels)
 
   if (videos)

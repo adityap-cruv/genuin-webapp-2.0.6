@@ -1,6 +1,8 @@
 import { validateCommunityDetails } from '@lib/schemas/community'
+import { validateCommunityLoopList, type CommunityLoopListType } from '@lib/schemas/community/loops'
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import axios from 'axios'
+import { parseFeedResponse } from './api-response-parser'
 
 export async function fetchCommunityDetails(slug: string) {
   return await axios
@@ -24,19 +26,21 @@ export async function fetchCommunityDetails(slug: string) {
 }
 
 export function getCommunityVideos(slug: string) {
-  let promise: null | Promise<{ videos: any; ref: any; end?: boolean }> = null
+  let promise: null | Promise<{ videos: any; end?: boolean }> = null
   return useInfiniteQuery({
     queryFn: async ({ pageParam }) => {
       if (!promise) {
         promise = axios
-          .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/community/videos', {
+          .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/home/community_videos', {
             params: {
-              community_id: { slug },
-              ref: pageParam,
+              slug,
+              last_video_id: pageParam,
             },
           })
           .then((res) => {
-            return { videos: res.data.data.list, ref: res.data.data.ref, end: res.data.data.end_page }
+            const resData = res.data.data
+            const videos = parseFeedResponse(resData.feeds)
+            return { videos, end: resData.end_of_videos }
           })
           .catch((e) => {
             throw new Error('Something went wrong with community videos!')
@@ -50,22 +54,20 @@ export function getCommunityVideos(slug: string) {
     queryKey: ['community', 'videos', slug],
     getNextPageParam: (lastPage) => {
       if (lastPage.end) return
-      return lastPage.ref
+      return lastPage.videos
     },
   })
 }
 
-//  TODO: Add Pagination.
-// TODO: Check for pagination
-export async function fetchCommunityLoops(slug: string) {
+export async function fetchCommunityLoops(slug: string): Promise<{ loops: CommunityLoopListType }> {
   return await axios
-    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/community/loops', {
+    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/community/loops', {
       params: {
-        community_id: { slug },
+        slug,
       },
     })
     .then((res) => {
-      return res.data.data?.list
+      return { loops: validateCommunityLoopList(res.data.data.conversations) }
     })
     .catch((e) => {
       throw new Error('Something went wrong with loop detail!')

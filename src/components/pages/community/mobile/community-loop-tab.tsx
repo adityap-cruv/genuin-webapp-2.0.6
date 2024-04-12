@@ -11,11 +11,17 @@ import { PlayerModal } from '@components/common/modals/player-modal'
 import { getLoopVideos } from '@lib/api/loop'
 import icLock from '@icons/icLock.svg'
 import { Shimmer } from '@components/ui/shimmer'
+import { type VideoPlayerModalCommunityType, type VideoPlayerModalLoopType } from '@lib/schemas/player/video'
+import { type CommunityLoopType } from '@lib/schemas/community/loops'
 
 // TODO: remove this component from here and put at better location
-export function CommunityLoopTab({ communitySlug }: { communitySlug: string }) {
-  const { data: loops, isLoading } = getCommunityLoops(communitySlug)
-  const [modalController, setModalController] = useState({ open: false, slug: '' })
+export function CommunityLoopTab({ community }: { community: VideoPlayerModalCommunityType }) {
+  const { data, isLoading } = getCommunityLoops(community.slug)
+  const [modalController, setModalController] = useState<{ open: boolean; loop: VideoPlayerModalLoopType | null }>({
+    open: false,
+    loop: null,
+  })
+
   if (isLoading)
     return (
       <>
@@ -25,43 +31,45 @@ export function CommunityLoopTab({ communitySlug }: { communitySlug: string }) {
       </>
     )
 
-  if (loops.length === 0) return <NoLoops />
+  if (!data || data.loops.length === 0) return <NoLoops />
 
-  if (loops.length !== 0)
+  if (data.loops.length !== 0)
     return (
       <>
-        {loops.map((item: any, index: number) => {
+        {data.loops.map((item, index) => {
           return (
             <LoopItem
               key={index}
-              loopDetails={item}
-              openModal={(slug) => {
+              loop={item}
+              openModal={() => {
                 setModalController((x) => {
                   x.open = true
-                  x.slug = slug
+                  x.loop = { id: item.chat_id, slug: item.slug, name: item.group.group_name }
                   return { ...x }
                 })
               }}
             />
           )
         })}
-        <PlayerModalWrapper
-          close={() => {
-            setModalController((x) => {
-              x.open = false
-              return { ...x }
-            })
-          }}
-          loopSlug={modalController.slug}
-          open={modalController.open}
-        />
+        {modalController.loop && (
+          <PlayerModalWrapper
+            close={() => {
+              setModalController((x) => {
+                x.open = false
+                return { ...x }
+              })
+            }}
+            loop={modalController.loop}
+            community={community}
+            open={modalController.open}
+          />
+        )}
       </>
     )
 }
 
-function LoopItem({ loopDetails, openModal }: { loopDetails: any; openModal: (slug: string) => void }) {
-  // TODO on video click open video
-
+// TODO: Give this task to dev.
+function LoopItem({ loop, openModal }: { loop: CommunityLoopType; openModal: (slug: string) => void }) {
   function getCollaboratorsCountString(count: any) {
     let str = ' + '
     if (!count) return
@@ -75,11 +83,11 @@ function LoopItem({ loopDetails, openModal }: { loopDetails: any; openModal: (sl
 
   return (
     <div className="relative">
-      <Link href={PATH_NAME.loop(loopDetails.slug)}>
+      <Link href={PATH_NAME.loop(loop.slug)}>
         <div className="py-2">
           <div className="relative w-full rounded-lg border border-tertiary-200 bg-monochrome-white">
             <div className="w-[70%] items-center p-[3%]">
-              <p className="text-body-1-bold">{loopDetails.name}</p>
+              <p className="text-body-1-bold">{loop.group.group}</p>
               {loopDetails.videos.length !== 0 && !loopDetails.private && (
                 <p className="text-body-1-demi text-secondary-300">
                   {loopDetails.videos[0].owner} posted ∙ {getTimeAgo(loopDetails.videos[0].created_at)}
@@ -216,12 +224,13 @@ function RenderedImages({ loopDetails }: { loopDetails: any }) {
 
 type PlayerModalWrapperProps = {
   open: boolean
-  loopSlug: string
+  loop: VideoPlayerModalLoopType
+  community: VideoPlayerModalCommunityType
   close: () => void
 }
 
-function PlayerModalWrapper({ open = false, loopSlug, close }: PlayerModalWrapperProps) {
-  const { data, fetchNextPage, isError, isFetchingNextPage, isFetching } = getLoopVideos(loopSlug)
+function PlayerModalWrapper({ open = false, loop, community, close }: PlayerModalWrapperProps) {
+  const { data, fetchNextPage, isError, isFetchingNextPage, isFetching } = getLoopVideos({ community, loop })
   const videos = data?.pages.flatMap((item) => item.videos)
 
   return (

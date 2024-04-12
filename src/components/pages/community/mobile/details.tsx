@@ -4,14 +4,12 @@ import { Button } from '@components/ui/button'
 import type { CommunityDetailsType, MembersSchemaType } from '@lib/schemas/community'
 import { checkAndAppendHttps, generateDeepLink, getCurrentShareUrl, openGeneratedLink, openModal } from '@lib/utils'
 import Image from 'next/image'
-import icShare from '@icons/icShareBlue.svg'
 import icLock from '@icons/icLock.svg'
 import Link from 'next/link'
 import icInstagram from '@icons/icInstagramBlack.svg'
 import icLinkedIn from '@icons/icLinkedIn.svg'
 import icLink from '@icons/icLinkBlack.svg'
 import icTwitter from '@icons/icTwitterBlack.svg'
-import icMore from '@icons/icMoreBlue.svg'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
@@ -226,7 +224,15 @@ function ProfileTabs() {
       </TabsList>
       <hr className="border-t border-tertiary-200" />
       <TabsContent value="Loops" className="mx-4 h-full">
-        <CommunityLoopTab communitySlug={communityDetailsModule.slug} />
+        <CommunityLoopTab
+          community={{
+            handle: communityDetailsModule.handle,
+            id: communityDetailsModule.community_id,
+            slug: communityDetailsModule.slug,
+            name: communityDetailsModule.name,
+            profileImage: communityDetailsModule.dp,
+          }}
+        />
       </TabsContent>
       <TabsContent value="About" className="mx-4">
         <Categories />

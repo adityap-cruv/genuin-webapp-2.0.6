@@ -94,6 +94,7 @@ export function Desktop({
           </div>
           <span className="flex flex-col gap-y-4">
             <button
+              disabled={currentIndex === 0}
               onClick={() => {
                 setCurrentIndex(currentIndex - 1)
               }}
@@ -104,6 +105,7 @@ export function Desktop({
               <Image src={icUpArrow} alt="" />
             </button>
             <button
+              disabled={currentIndex === videos.length - 1}
               onClick={() => {
                 setCurrentIndex(currentIndex + 1)
               }}

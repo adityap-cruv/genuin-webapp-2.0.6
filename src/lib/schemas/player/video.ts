@@ -3,7 +3,7 @@ import { z } from 'zod'
 // Define the video schema
 const videoSchema = z.object({
   id: z.string(),
-  createdAt: z.number(),
+  createdAt: z.number().default(-1).nullish(),
   commentCount: z.number(),
   shareUrl: z.string(),
   attachedLink: z.string().nullable().optional(),
