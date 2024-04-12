@@ -3,6 +3,7 @@ import { RootDetails } from './root-details'
 import { RootFeed } from './root-feed'
 import { type Metadata } from 'next'
 import { PATH_NAME } from '@lib/utils/constants/path'
+import { fetchMetadata } from '@lib/api/meta-data'
 
 interface Props {
   params: {
@@ -28,9 +29,15 @@ export default async function Component({ params, searchParams }: Props) {
   }
 }
 
+interface CommunityDataType {
+  title: string
+  description: string
+  preview_image: string
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const communityData = await fetchCommunityDetails(params.slug)
-  const title = `${communityData.name}`
+  const communityData: CommunityDataType = await fetchMetadata({ type: 2, slug: params.slug })
+  const title = `${communityData.title}`
   const desc = `${communityData.description}`
 
   return {
