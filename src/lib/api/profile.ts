@@ -1,18 +1,23 @@
+import { validateProfileCommunity, validateProfileVideoResponse } from '@lib/schemas/profile/community-response'
+import { validateProfileDetails } from '@lib/schemas/profile/profile'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import axios from 'axios'
+import {
+  parseProfileCommunityResponse,
+  parseProfileLoopResponse,
+  parseProfileVideoResponse,
+} from './api-response-parser'
+import { axiosInstance } from './instance'
 
 export async function fetchUserData(nickname: string) {
   return await axios
-    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/user/details', {
-      params: {
-        user_id: { nickname },
-      },
+    .post(process.env.NEXT_PUBLIC_API_URL + '/api/v3/users/get_profile', {
+      nickname,
     })
     .then((res) => {
-      return res.data.data
+      return validateProfileDetails(res.data.data)
     })
     .catch((e) => {
-      console.log('error::', e)
       throw new Error('Something went wrong in profile details api.')
     })
 }
@@ -74,96 +79,96 @@ export function getPaginatedGenuinVideos(nickname: string) {
   })
 }
 
-async function fetchCommunities(nickname: string, ref: any) {
+let pageSession: string | undefined
+async function fetchCommunities(userId: string, pageParam: { pageSession: string; lastCommunityId: string }) {
   return await axios
-    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/profile/contributed_communities', {
+    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/profile/communities', {
       params: {
-        user_id: { nickname },
-        limit: 10,
-        ref,
+        user_id: userId,
+        page_session: pageParam?.pageSession ?? undefined,
+        last_community_id: pageParam?.lastCommunityId ?? undefined,
       },
     })
     .then((res) => {
       const resData = res.data.data
-      return { communities: resData?.list, ref: resData?.ref, end: resData?.end_page }
+      pageSession = resData.page_session
+      const communities = parseProfileCommunityResponse(resData?.communities)
+      return {
+        communities,
+        end: resData.end_of_communities,
+        pageSession: resData.page_session,
+      }
     })
     .catch((e) => {
-      throw new Error('Something went wrong with contributed_communities api.')
+      throw new Error('Something went wrong with profile community api.')
     })
 }
 
-export function getAllCommunities(nickname: string) {
+export function getCommunities(userId: string) {
   return useInfiniteQuery({
-    queryKey: ['communities', nickname],
-    queryFn: async ({ pageParam }) => await fetchCommunities(nickname, pageParam),
+    queryKey: ['communities', userId],
+    queryFn: async ({ pageParam }) => await fetchCommunities(userId, pageParam),
     getNextPageParam(lastPage, allPages) {
       if (lastPage.end) {
         return
       }
-      return lastPage.ref
+      return {
+        pageSession: lastPage.pageSession,
+        lastCommunityId: lastPage.communities[lastPage.communities.length - 1].id,
+      }
     },
   })
 }
 
-async function fetchCommunityLoops(nickname: string, communitySlug: string, ref: any) {
-  return await axios
-    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/profile/contributed_community_loops', {
+export async function fetchProfileCommunityLoops(
+  userId: string,
+  limit: number,
+  communityId: string,
+  lastLoopId: string
+) {
+  return await axiosInstance
+    .get('/api/v3/profile/loops', {
       params: {
-        user_id: { nickname },
-        community_id: { slug: communitySlug },
-        ref,
+        user_id: userId,
+        page_session: pageSession,
+        community_id: communityId,
+        last_chat_id: lastLoopId,
+        page_limit_profile_videos: limit,
       },
     })
     .then((res) => {
-      return { loops: res.data.data.list, end: res.data.data.end_page, ref: res.data.data.ref }
+      return parseProfileLoopResponse(res.data.data.loops)
     })
     .catch((e) => {
-      throw new Error('Something went wrong with contributed_community_loops api.')
+      console.log('e::', e)
+      throw new Error('Something went wrong with profile loops api.')
     })
 }
 
-// TODO: make it type safe api.
-export function getAllLoops(nickname: string, communitySlug: string) {
-  return useInfiniteQuery({
-    queryKey: ['communityLoops', nickname, communitySlug],
-    queryFn: async ({ pageParam }) => await fetchCommunityLoops(nickname, communitySlug, pageParam),
-    getNextPageParam(lastPage, allPages) {
-      if (lastPage.end) {
-        return
-      }
-      return lastPage.ref
-    },
-  })
-}
-
-async function fetchCommunityLoopVideos(nickname: string, loopSlug: string, ref: any, limit: number) {
-  return await axios
-    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/profile/contributed_loop_videos', {
+export async function fetchProfileVideos(
+  userId: string,
+  limit: number,
+  communityId: string,
+  loopId: string,
+  lastVideoId: string
+) {
+  return await axiosInstance
+    .get('/api/v3/profile/loop_videos', {
       params: {
-        user_id: { nickname },
-        limit,
-        loop_id: { slug: loopSlug },
-        ref,
+        user_id: userId,
+        community_id: communityId,
+        chat_id: loopId,
+        last_message_id: lastVideoId,
+        page_limit_profile_videos: limit,
+        page_session: pageSession,
       },
     })
     .then((res) => {
-      return { videos: res.data.data.list, end: res.data.data.end_page, ref: res.data.data.ref }
+      const resData = res.data.data
+      return parseProfileVideoResponse(resData.messages)
     })
     .catch((e) => {
-      throw new Error('Something went wrong with contributed_loop_videos api.')
+      console.log('Error in profile videos api::', e)
+      throw new Error('Something went wrong with profile videos api.')
     })
-}
-
-export function getAllLoopVideos(nickname: string, slug: string, limit: number) {
-  return useInfiniteQuery({
-    queryKey: ['videos', nickname, slug],
-    queryFn: async ({ pageParam }) =>
-      await fetchCommunityLoopVideos(nickname, slug, pageParam, pageParam ? limit * 2 : limit),
-    getNextPageParam(lastPage, allPages) {
-      if (lastPage.end) {
-        return
-      }
-      return lastPage.ref
-    },
-  })
 }

@@ -162,10 +162,6 @@ export function Profile({
   getPreviousVideo,
 }: ProfileProps) {
   const sizeBox = useGenuinOptions().sizeBoxes
-  function InnerContent() {
-    if (!video) return <FeedShimmer.desktop />
-    return <SinglePlayer videoData={{ ...video }} sizeBox={{ ...sizeBox.modal.player }} />
-  }
 
   return (
     <CustomDialog open={open}>
@@ -182,7 +178,7 @@ export function Profile({
               className="absolute right-4 top-4 z-10">
               <X className="h-6 w-6" />
             </CustomDialogClose>
-            <InnerContent />
+            <SinglePlayer videoData={{ ...video }} sizeBox={{ ...sizeBox.modal.player }} />
           </div>
           <span className="flex flex-col gap-y-4">
             <button

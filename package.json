@@ -50,6 +50,7 @@
     "embla-carousel-react": "^8.0.0-rc22",
     "framer-motion": "^10.16.4",
     "gsap": "^3.12.5",
+    "immer": "^10.0.4",
     "input-otp": "^1.2.0",
     "lucide-react": "^0.279.0",
     "mobile-detect": "^1.4.5",

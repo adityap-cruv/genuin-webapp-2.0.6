@@ -5,6 +5,12 @@ import {
   type VideoPlayerModalType,
   type VideoPlayerModalLoopType,
 } from '@lib/schemas/player/video'
+import { type ProfileLoopType, type ProfileCommunityType, type ProfileVideoType } from '@lib/schemas/profile/community'
+import {
+  type ProfileLoopResponseType,
+  type ProfileCommunityResponseType,
+  type ProfileVideoResponseType,
+} from '@lib/schemas/profile/community-response'
 
 export function parseVideosFromLoop(
   data: LoopVideoListType,
@@ -72,6 +78,67 @@ export function parseFeedResponse(videos: FeedResponseType) {
         attachedLink: video.messages[0].attached_link,
         description: '',
       },
+    }
+  })
+}
+
+export function parseProfileCommunityResponse(communities: ProfileCommunityResponseType[]) {
+  return communities.map<ProfileCommunityType>((item) => {
+    return {
+      handle: item.handle,
+      id: item.community_id,
+      // TODO: Addition from backend required.
+      isJoined: false,
+      slug: item.slug,
+      name: item.name,
+      profileImage: item.dp,
+      loopCount: item.no_of_loops,
+      loops: item.loops.map((item) => {
+        return {
+          id: item.chat_id,
+          slug: item.slug,
+          name: item.group.group_name,
+          private: !item.is_view_allowed,
+          videoCount: item.group.no_of_videos,
+          videos: item.messages.map((item) => {
+            return {
+              id: item.message_id,
+              thumbnail: item.thumbnail_url,
+              // TODO: Addition from backend.
+              sparkCount: 0,
+              viewCount: item.no_of_views,
+            }
+          }),
+        }
+      }),
+    }
+  })
+}
+
+export function parseProfileLoopResponse(loops: ProfileLoopResponseType[]) {
+  return loops.map<ProfileLoopType>((item) => {
+    return {
+      id: item.chat_id,
+      private: !item.is_view_allowed,
+      slug: item.slug,
+      videoCount: item.group.no_of_videos,
+      name: item.group.group_name,
+      videos: item.messages.map((item) => {
+        // TODO: Add spark count if needed after discussion with design and backend.
+        return { id: item.message_id, sparkCount: 0, viewCount: item.no_of_views, thumbnail: item.thumbnail_url }
+      }),
+    }
+  })
+}
+
+export function parseProfileVideoResponse(videos: ProfileVideoResponseType[]) {
+  return videos.map<ProfileVideoType>((item) => {
+    return {
+      id: item.message_id,
+      // TODO: Add spark count if needed after discussion with design and backend.
+      sparkCount: 0,
+      viewCount: item.no_of_views,
+      thumbnail: item.thumbnail_url,
     }
   })
 }

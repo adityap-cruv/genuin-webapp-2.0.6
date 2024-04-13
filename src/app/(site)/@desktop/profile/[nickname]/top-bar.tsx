@@ -1,8 +1,6 @@
 import { Button } from '@components/ui/button'
 import { motion, useAnimationControls } from 'framer-motion'
 import { useEffect } from 'react'
-import Image from 'next/image'
-import icShare from '@icons/icShareBlue.svg'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'

@@ -2,43 +2,35 @@
 import { abbreviateNumber, checkAndAppendHttps, getCurrentShareUrl, openModal } from '@lib/utils'
 import { Button } from '@components/ui/button'
 import Image from 'next/image'
-import icShare from '@icons/icShareBlue.svg'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
 import { CustomAvatar } from '@components/custom/custom-avatar'
-import { DecorativeList } from '@components/custom/decorative-list'
-import { getAllCommunities, getAllLoops, getAllLoopVideos } from '@lib/api/profile'
-import { Loader } from '@components/ui/loader'
-import React, { useEffect, useRef, useState } from 'react'
-import icSpark from '@icons/player-controls/icBulb.svg'
-import icLock from '@icons/icLock.svg'
-import icLoopDark from '@icons/icLoopDark.svg'
+
+import React, { useEffect, useRef } from 'react'
+
 import icInstagram from '@icons/icInstagramBlack.svg'
 import icTiktok from '@icons/icTiktok.svg'
 import icLinkedIn from '@icons/icLinkedIn.svg'
 import icTwitter from '@icons/icTwitterBlack.svg'
-import { Shimmer } from '@components/ui/shimmer'
 import Link from 'next/link'
-import { PATH_NAME } from '@lib/utils/constants/path'
-import { useInView, useMotionValueEvent, useScroll } from 'framer-motion'
+import { useInView } from 'framer-motion'
 import { TopStickyBar } from './top-bar'
-import icPlay from '@icons/player-controls/icPlay.svg'
-import { type CommunityMiniObj, useCommunityListStore, type LoopMiniObj, type VideoMiniObj } from './store'
-import { PlayerModal } from '@components/common/modals/player-modal'
+import { useCommunityListStore } from './store'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
-import { joinCommunity } from '@lib/api/video'
 import { ShareIcon } from '@icons/share-icon'
+import { type ProfileDetailsType } from '@lib/schemas/profile/profile'
+import { CommunityList } from './community-list'
 
 interface CompProps {
-  profileData: any
+  profileData: ProfileDetailsType
 }
 
 // TODO: separate this component.
 export function MainComponent({ profileData }: CompProps) {
   const detailsDivRef = useRef<HTMLDivElement>(null)
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
-  const { reset: resetData } = useCommunityListStore((state) => ({ reset: state.reset }))
+  const { reset: resetData } = useCommunityListStore()
   const divRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -52,8 +44,8 @@ export function MainComponent({ profileData }: CompProps) {
       <TopStickyBar.desktop
         defaultOpen={false}
         isOpen={!detailsInView}
-        profileImage={profileData?.profile_image}
-        profileName={profileData?.name}
+        profileImage={profileData.profile_image}
+        profileName={profileData.name ?? ''}
         profileNickname={profileData?.nickname}
         isAvatar={profileData?.is_avatar}
       />
@@ -61,7 +53,7 @@ export function MainComponent({ profileData }: CompProps) {
         <div className="mt-4 flex items-center justify-between">
           <CustomAvatar
             className="bg-slate-500 h-20 w-20 bg-red-40"
-            fallbackString={profileData?.name}
+            fallbackString={profileData.name ?? ''}
             imageUrl={profileData?.profile_image}
             isAvatar={profileData?.is_avatar}
           />
@@ -85,7 +77,7 @@ export function MainComponent({ profileData }: CompProps) {
           <p className="my-1 line-clamp-2 break-all text-body-1-med">{profileData?.bio}</p>
           <Stats profileData={profileData} />
         </div>
-        <CommunityList usernickname={profileData?.nickname} />
+        <CommunityList userId={profileData.user_id} />
       </div>
       <Toaster />
     </>
@@ -93,7 +85,12 @@ export function MainComponent({ profileData }: CompProps) {
 }
 
 function Links({ profileData }: CompProps) {
-  const links = profileData?.social_links
+  const links = {
+    linkedin: profileData.linkedin_id ? profileData.linkedin_url + profileData.linkedin_id : undefined,
+    instagram: profileData.insta_id ? profileData.insta_url + profileData.insta_id : undefined,
+    twitter: profileData.twitter_id ? profileData.twitter_url + profileData.twitter_id : undefined,
+    tiktok: profileData.tiktok_id ? profileData.tiktok_url + profileData.tiktok_id : undefined,
+  }
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
   const { isEmbed, parentUrl } = useGenuinOptions((state) => ({ isEmbed: state.embed, parentUrl: state.parentUrl }))
@@ -147,15 +144,15 @@ function Links({ profileData }: CompProps) {
   )
 }
 
-function Stats({ profileData }: { profileData: any }) {
+function Stats({ profileData }: { profileData: ProfileDetailsType }) {
   return (
     <div className="m-1 ml-0 flex max-w-[250px]  justify-between gap-x-6 p-1 pl-0">
       <div className="flex items-center">
-        <p className="text-title-3-bold">{abbreviateNumber(profileData?.no_of_views) ?? 0}</p>
+        <p className="text-title-3-bold">{abbreviateNumber(Number(profileData?.views)) ?? 0}</p>
         <p className="px-1 text-body-1-med text-tertiary">Views</p>
       </div>
       <div className="flex items-center">
-        <p className="text-title-3-bold">{abbreviateNumber(profileData?.no_of_videos) ?? 0}</p>
+        <p className="text-title-3-bold">{abbreviateNumber(profileData?.videos) ?? 0}</p>
         <p className="px-1 text-body-1-med text-tertiary">Posts</p>
       </div>
       <div className="flex items-center">
@@ -163,320 +160,5 @@ function Stats({ profileData }: { profileData: any }) {
         <p className="px-1 text-body-1-med text-tertiary">Communities</p>
       </div>
     </div>
-  )
-}
-
-function CommunityList({ usernickname }: any) {
-  const { data, isLoading, fetchNextPage, isFetchingNextPage } = getAllCommunities(usernickname)
-  const [communityJoinStates, setCommunityJoinStates] = useState<Record<string, boolean>>({})
-  const user = useGenuinOptions().user
-  const { addCommunities, communities } = useCommunityListStore((state) => ({
-    addCommunities: state.addCommunities,
-    communities: state.communities,
-  }))
-
-  useEffect(() => {
-    const pageLength = data?.pages.length
-    if (pageLength) addCommunities(data?.pages[pageLength - 1]?.communities as CommunityMiniObj[])
-  }, [data])
-
-  const scrollDivRef = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({ container: scrollDivRef, layoutEffect: false })
-  useMotionValueEvent(scrollYProgress, 'change', (latest) => {
-    if (Number(latest.toFixed(1)) > 0.8 && !isFetchingNextPage) {
-      void fetchNextPage()
-    }
-  })
-
-  const toggleCommunityJoinState = async (communityId: string, communityHandle: string) => {
-    if (user) {
-      const newState = !communityJoinStates[communityId]
-      if (newState) {
-        await joinCommunity(
-          false,
-          [communityId],
-          [
-            {
-              user_id: user?.id,
-            },
-          ]
-        ).then((res) => {
-          if (res.code === 200) {
-            setCommunityJoinStates((prevState) => ({
-              ...prevState,
-              [communityId]: newState,
-            }))
-          }
-        })
-      } else {
-        setCommunityJoinStates((prevState) => ({
-          ...prevState,
-          [communityId]: newState,
-        }))
-      }
-    } else {
-      openModal({
-        title: 'Get the Genuin app',
-        subtitle: (
-          <>
-            Get the app to join the <br />
-            <span className="font-bold">@{communityHandle}</span> community.
-          </>
-        ),
-      })
-    }
-  }
-
-  // TODO: Improve this component return type.
-  return (
-    <div className="w-full overflow-hidden" style={{ height: 'calc(100% - 56px)' }}>
-      <div ref={scrollDivRef} className="h-full w-full overflow-y-auto">
-        {isLoading && <Loader size="md" />}
-        {communities && communities?.length === 0 && (
-          <div className="w-full overflow-hidden" style={{ height: `calc(100% - 250px)` }}>
-            <div className="flex h-full w-full items-center justify-center bg-tertiary-100 pt-2 text-title-3-bold text-tertiary">
-              No posts yet
-            </div>
-          </div>
-        )}
-        {communities && communities?.length !== 0 && (
-          <div>
-            {communities?.map((item: CommunityMiniObj, index) => (
-              <div key={index} className="my-6">
-                <div className="flex items-center">
-                  <CustomAvatar
-                    className="bg-slate-500 h-11 w-11 bg-red-40"
-                    fallbackString={item.name}
-                    imageUrl={item.dp ?? ''}
-                    isAvatar={false}
-                  />
-                  <div className="flex w-full items-center justify-between">
-                    <Link href={{ pathname: PATH_NAME.community(item.slug) }}>
-                      <div className="mx-2">
-                        <p
-                          className="line-clamp-1 text-left"
-                          style={{ fontWeight: 600, fontSize: '20px', lineHeight: '24px' }}>
-                          {item.name}
-                        </p>
-                      </div>
-                    </Link>
-                    <Button
-                      size="custom"
-                      className={`${communityJoinStates[item.id] && 'border border-primary '}`}
-                      variant={communityJoinStates[item.id] ? 'outline' : 'default'}
-                      onClick={async () => {
-                        await toggleCommunityJoinState(item.id, item.handle)
-                      }}>
-                      <p
-                        className={`px-4 py-1.5 text-title-3-demi text-monochrome-white ${
-                          communityJoinStates[item.id] && 'text-primary'
-                        }`}>
-                        {communityJoinStates[item.id] ? 'Joined' : 'Join'}
-                      </p>
-                    </Button>
-                  </div>
-                </div>
-                <DecorativeList>
-                  <CommunityDetails userId={usernickname} community={item} />
-                </DecorativeList>
-              </div>
-            ))}
-          </div>
-        )}
-        {isFetchingNextPage && <Loader size="md" />}
-      </div>
-      <PlayerModalWrapper />
-    </div>
-  )
-}
-
-function PlayerModalWrapper() {
-  const { close, currentVideoShareString, videoList, activeIndex, setActiveIndex } = useCommunityListStore((state) => ({
-    close: state.close,
-    currentVideoShareString: state.currentVideoShareString,
-    videoList: state.videoList,
-    activeIndex: state.activeIndex,
-    setActiveIndex: state.setActiveIndex,
-  }))
-
-  if (videoList.length > 0)
-    return (
-      <PlayerModal.profile
-        video={videoList[activeIndex].details ?? undefined}
-        hasNextVideo={activeIndex < videoList.length - 1}
-        hasPreviousVideo={activeIndex > 0}
-        getNextVideo={() => {
-          setActiveIndex(activeIndex + 1)
-        }}
-        getPreviousVideo={() => {
-          setActiveIndex(activeIndex - 1)
-        }}
-        close={close}
-        open={Boolean(currentVideoShareString)}
-      />
-    )
-}
-
-function CommunityDetails({ userId, community }: { userId: string; community: CommunityMiniObj }) {
-  const { data, isLoading, isFetchingNextPage } = getAllLoops(userId, community.slug)
-  const addLoops = useCommunityListStore((state) => state.addLoops)
-
-  useEffect(() => {
-    const pageLength = data?.pages.length
-    if (pageLength) addLoops(community, data?.pages[pageLength - 1].loops as LoopMiniObj[])
-  }, [data])
-
-  return (
-    <>
-      <div className="h-3"></div>
-      {isLoading && (
-        <li className="profile-loop-li relative my-4 w-full rounded-lg border border-tertiary-200 bg-tertiary-100 p-4">
-          <Shimmer className="h-6 w-40" />
-          <div className="my-2 grid w-full grid-cols-4 gap-2 md:grid-cols-8">
-            {Array.from({ length: 8 }).map((_, index) => (
-              <div key={`shimmer-${index}`} className="relative flex flex-col items-center">
-                <Shimmer className="aspect-reel w-full rounded" />
-              </div>
-            ))}
-          </div>
-        </li>
-      )}
-      {!community.private &&
-        community.loops?.map((item: any, index: any) => (
-          <li
-            className="profile-loop-li relative mb-4 w-full rounded-lg border border-tertiary-200 p-4 pb-2"
-            style={{ backgroundColor: '#F9F9F9' }}
-            key={index}>
-            <>
-              {item.private ? (
-                <div className="mb-2 flex items-center">
-                  <div className="mr-4 h-14 w-14 shrink-0 rounded-full bg-tertiary-200 p-3">
-                    <Image src={icLoopDark} alt="share" className=" fill-primary" />
-                  </div>
-                  <div>
-                    <a href={PATH_NAME.loop(item.slug)}>
-                      <p className="text-title-3-bold">{item.name}</p>
-                    </a>
-                    <p className="text-body-1-med">This Loop is visible to its Collaborators only.</p>
-                  </div>
-                </div>
-              ) : (
-                <LoopVideos userId={userId} loop={item} community={community} />
-              )}
-            </>
-          </li>
-        ))}
-
-      {community?.private && (
-        <li
-          className="profile-loop-li relative mb-4 w-full rounded-lg border border-tertiary-200 p-4"
-          style={{ backgroundColor: '#F9F9F9' }}>
-          <div className="flex items-center">
-            <div className="mr-4 h-14 w-14 shrink-0 rounded-full bg-tertiary-200 p-3">
-              <Image src={icLock} alt="share" className=" fill-primary" />
-            </div>
-            <div>
-              <p className="text-title-3-demi">This community is private</p>
-              <p className="text-body-1-med">Join this community to see and interact with their posts.</p>
-            </div>
-          </div>
-        </li>
-      )}
-      {isFetchingNextPage && <Loader size="md" />}
-    </>
-  )
-}
-
-type LoopVideosProps = {
-  userId: string
-  loop: LoopMiniObj
-  community: CommunityMiniObj
-}
-
-function LoopVideos({ userId, loop, community }: LoopVideosProps) {
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getAllLoopVideos(userId, loop.slug, 8)
-
-  const { addVideos, open } = useCommunityListStore((state) => ({
-    addVideos: state.addVideos,
-    open: state.open,
-  }))
-
-  useEffect(() => {
-    const pageLength = data?.pages.length
-    if (pageLength) addVideos(community, loop, data?.pages[pageLength - 1]?.videos as VideoMiniObj[])
-  }, [data])
-
-  const [videoCount, setVideoCount] = useState(Math.max(0, loop.video_count - 8))
-
-  const handleSeeMoreClick = () => {
-    void fetchNextPage()
-    setTimeout(() => {
-      if (videoCount > 0) {
-        setVideoCount((prevVideosCount) => Math.max(0, prevVideosCount - 16))
-      }
-    }, 500)
-  }
-
-  function InnerComponent() {
-    if (isLoading)
-      return Array.from({ length: 8 }).map((_, index) => (
-        <div key={`shimmer-${index}`} className="relative flex flex-col items-center">
-          <Shimmer className="aspect-reel w-full rounded" />
-        </div>
-      ))
-
-    if (loop.videos && loop.videos.length === 0)
-      return (
-        <div className="flex items-center justify-center pt-32 text-title-3-bold text-tertiary">No posts available</div>
-      )
-
-    if (loop.videos)
-      return (
-        <>
-          {loop.videos.map((video, index) => (
-            <React.Fragment key={index}>
-              <div
-                onClick={() => {
-                  open(video.share_string)
-                }}
-                key={video.id}
-                className="group/vidcard relative flex aspect-reel min-w-full flex-col items-center hover:cursor-pointer">
-                <img src={video.thumbnail} className="aspect-reel rounded" />
-                <div className="absolute bottom-0 left-0 m-1 flex items-center justify-center">
-                  <Image src={icSpark} alt="share" height={15} width={15} />
-                  <p className="text-new-para-2-mobile text-monochrome-white">
-                    {abbreviateNumber(video.no_of_sparks) ?? 0}
-                  </p>
-                </div>
-                <div className="absolute inset-0 hidden h-full w-full items-center justify-center rounded bg-monochrome-black/40 group-hover/vidcard:flex">
-                  <Image src={icPlay} alt="" />
-                </div>
-              </div>
-            </React.Fragment>
-          ))}
-        </>
-      )
-  }
-
-  return (
-    <>
-      <Link href={PATH_NAME.loop(loop.slug)}>
-        <p className="mb-3 text-body-1-bold">{loop.name}</p>
-      </Link>
-      <div className="my-2 grid w-full grid-cols-4 gap-2 md:grid-cols-8">
-        <InnerComponent />
-        {isFetchingNextPage &&
-          [...Array(videoCount < 16 ? videoCount : 16)].map((_, index) => (
-            <Shimmer key={index} className="aspect-reel w-full rounded" />
-          ))}
-      </div>
-      {hasNextPage && videoCount !== 0 && (
-        <p
-          className="text-blue-500 flex w-full cursor-pointer justify-center pt-2 text-cap-1-demi text-tertiary"
-          onClick={handleSeeMoreClick}>
-          See {videoCount} More
-        </p>
-      )}
-    </>
   )
 }

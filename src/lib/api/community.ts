@@ -11,7 +11,9 @@ export async function fetchCommunityDetails(slug: string) {
         slug,
       },
     })
-    .then((res) => validateCommunityDetails(res.data.data))
+    .then((res) => {
+      return validateCommunityDetails(res.data.data)
+    })
     .catch((e) => {
       // TODO:
       /**
