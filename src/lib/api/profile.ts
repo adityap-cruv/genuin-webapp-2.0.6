@@ -1,8 +1,8 @@
-import { validateProfileCommunity, validateProfileVideoResponse } from '@lib/schemas/profile/community-response'
 import { validateProfileDetails } from '@lib/schemas/profile/profile'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import {
+  parseFeedResponse,
   parseProfileCommunityResponse,
   parseProfileLoopResponse,
   parseProfileVideoResponse,
@@ -80,13 +80,18 @@ export function getPaginatedGenuinVideos(nickname: string) {
 }
 
 let pageSession: string | undefined
-async function fetchCommunities(userId: string, pageParam: { pageSession: string; lastCommunityId: string }) {
+async function fetchCommunities(
+  userId: string,
+  pageParam: { pageSession: string; lastCommunityId: string },
+  limit: number
+) {
   return await axios
     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/profile/communities', {
       params: {
         user_id: userId,
         page_session: pageParam?.pageSession ?? undefined,
         last_community_id: pageParam?.lastCommunityId ?? undefined,
+        page_limit_profile_videos: limit,
       },
     })
     .then((res) => {
@@ -104,10 +109,10 @@ async function fetchCommunities(userId: string, pageParam: { pageSession: string
     })
 }
 
-export function getCommunities(userId: string) {
+export function getCommunities(userId: string, limit: number) {
   return useInfiniteQuery({
     queryKey: ['communities', userId],
-    queryFn: async ({ pageParam }) => await fetchCommunities(userId, pageParam),
+    queryFn: async ({ pageParam }) => await fetchCommunities(userId, pageParam, limit),
     getNextPageParam(lastPage, allPages) {
       if (lastPage.end) {
         return
@@ -165,10 +170,43 @@ export async function fetchProfileVideos(
     })
     .then((res) => {
       const resData = res.data.data
+      pageSession = resData.page_session
       return parseProfileVideoResponse(resData.messages)
     })
     .catch((e) => {
       console.log('Error in profile videos api::', e)
       throw new Error('Something went wrong with profile videos api.')
     })
+}
+
+export async function fetchProfileFeed(userId: string, pageParam?: { lastMessageId: string }, fromVideoId?: string) {
+  return await axiosInstance
+    .get('/api/v3/profile/feed', {
+      params: {
+        user_id: userId,
+        page_session: pageSession,
+        from_message_id: pageParam?.lastMessageId ? undefined : fromVideoId,
+        last_message_id: pageParam?.lastMessageId,
+      },
+    })
+    .then((res) => {
+      const resData = res.data.data
+      pageSession = resData.page_session
+      return { feed: parseFeedResponse(resData.feeds), end: resData.end_of_messages }
+    })
+    .catch((e) => {
+      console.log('error::', e)
+      throw new Error('Something went wrong!!')
+    })
+}
+
+export function getProfileFeed(userId: string, fromVideoId: string) {
+  return useInfiniteQuery({
+    queryFn: async ({ pageParam }) => await fetchProfileFeed(userId, pageParam, fromVideoId),
+    queryKey: ['feed', userId],
+    getNextPageParam(lastPage) {
+      if (lastPage.end) return
+      return { lastMessageId: lastPage.feed[lastPage.feed.length - 1].video.id }
+    },
+  })
 }

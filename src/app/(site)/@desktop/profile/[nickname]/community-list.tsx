@@ -2,7 +2,7 @@ import icSpark from '@icons/player-controls/icBulb.svg'
 import icLock from '@icons/icLock.svg'
 import icLoopDark from '@icons/icLoopDark.svg'
 import { DecorativeList } from '@components/custom/decorative-list'
-import { fetchProfileCommunityLoops, fetchProfileVideos, getCommunities } from '@lib/api/profile'
+import { fetchProfileCommunityLoops, fetchProfileVideos, getCommunities, getProfileFeed } from '@lib/api/profile'
 import { Loader } from '@components/ui/loader'
 import { Shimmer } from '@components/ui/shimmer'
 import { joinCommunity } from '@lib/api/video'
@@ -22,12 +22,12 @@ import { type ProfileLoopType, type ProfileCommunityType, type ProfileVideoType 
 import { getNextPage } from './hook'
 
 export function CommunityList({ userId }: { userId: string }) {
-  const { data, isLoading, fetchNextPage, isFetchingNextPage } = getCommunities(userId)
+  const { data, isLoading, fetchNextPage, isFetchingNextPage } = getCommunities(userId, 8)
   const communities = data?.pages.flatMap((item) => item.communities)
   const [communityJoinStates, setCommunityJoinStates] = useState<Record<string, boolean>>({})
   const user = useGenuinOptions().user
 
-  const { addCommunities } = useCommunityListStore()
+  const { addCommunities, currentVideoId } = useCommunityListStore()
 
   useEffect(() => {
     const newCommunites = data?.pages[data.pages.length - 1].communities
@@ -145,20 +145,29 @@ export function CommunityList({ userId }: { userId: string }) {
   return (
     <div ref={scrollDivRef} className="w-full overflow-scroll" style={{ height: 'calc(100% - 56px)' }}>
       <Inner />
-      <PlayerModalWrapper />
+      {currentVideoId && <PlayerModalWrapper userId={userId} currentVideoId={currentVideoId} />}
     </div>
   )
 }
 
-function PlayerModalWrapper() {
-  const { currentVideoId } = useCommunityListStore()
+function PlayerModalWrapper({ userId, currentVideoId }: { userId: string; currentVideoId: string }) {
+  const { data, isLoading, fetchNextPage } = getProfileFeed(userId, currentVideoId)
+  const { close } = useCommunityListStore()
+  const videos = data?.pages.flatMap((item) => item.feed)
   const [activeIndex, setActiveIndex] = useState(0)
+
+  useEffect(() => {
+    if (!videos) return
+    if (activeIndex === videos?.length - 2) {
+      void fetchNextPage()
+    }
+  }, [activeIndex])
 
   return (
     <PlayerModal.profile
-      video={}
-      hasNextVideo={}
-      hasPreviousVideo={}
+      video={videos?.[activeIndex]}
+      hasNextVideo={(videos?.length ?? 0) - 1 !== activeIndex}
+      hasPreviousVideo={activeIndex !== 0}
       getNextVideo={() => {
         setActiveIndex(activeIndex + 1)
       }}
@@ -167,6 +176,7 @@ function PlayerModalWrapper() {
       }}
       close={close}
       open={Boolean(currentVideoId)}
+      isLoading={isLoading}
     />
   )
 }
@@ -266,7 +276,7 @@ function LoopVideos({ userId, loop, communityId }: LoopVideosProps) {
   }))
 
   const { fetchNext, isFetchingNextPage } = getNextPage<ProfileVideoType[]>(
-    async () => await fetchProfileVideos(userId, 3, communityId, loop.id, loop.videos[loop.videos.length - 1].id),
+    async () => await fetchProfileVideos(userId, 16, communityId, loop.id, loop.videos[loop.videos.length - 1].id),
     (data) => {
       addVideos(communityId, loop.id, data)
     }

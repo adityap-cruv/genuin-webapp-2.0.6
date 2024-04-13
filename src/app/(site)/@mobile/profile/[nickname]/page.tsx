@@ -1,6 +1,6 @@
 import { type Metadata } from 'next'
-// import { MainComponent } from './main-component'
-// import { fetchUserData } from '@lib/api/profile'
+import { MainComponent } from './main-component'
+import { fetchUserData } from '@lib/api/profile'
 // import { PATH_NAME } from '@lib/utils/constants/path'
 
 interface CompProps {
@@ -11,9 +11,8 @@ interface CompProps {
 }
 
 export default async function Component({ params }: CompProps) {
-  // const profileData = await fetchUserData(params.nickname)
-  return <div>i</div>
-  // return <MainComponent profileData={profileData} />
+  const profileData = await fetchUserData(params.nickname)
+  return <MainComponent profileData={profileData} />
 }
 
 // export async function generateMetadata({ params }: CompProps): Promise<Metadata> {
