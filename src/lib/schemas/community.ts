@@ -1,44 +1,44 @@
 import { z } from 'zod'
 
 const socialLinksSchema = z.object({
-  social_web_url: z.string().nullable(),
+  social_web_url: z.string().nullish(),
   twitter: z
     .object({
-      id: z.string().nullable(),
-      url: z.string().nullable(),
+      id: z.string().nullish(),
+      url: z.string().nullish(),
     })
-    .nullable(),
+    .nullish(),
   linkedin: z
     .object({
-      id: z.string().nullable(),
-      url: z.string().nullable(),
+      id: z.string().nullish(),
+      url: z.string().nullish(),
     })
-    .nullable(),
+    .nullish(),
   insta: z
     .object({
-      id: z.string().nullable(),
-      url: z.string().nullable(),
+      id: z.string().nullish(),
+      url: z.string().nullish(),
     })
-    .nullable(),
+    .nullish(),
 })
 
 const moderatorSchema = z.object({
   member_id: z.string(),
-  name: z.string(),
-  bio: z.string(),
+  name: z.string().nullish(),
+  bio: z.string().nullish(),
   nickname: z.string(),
   is_avatar: z.boolean(),
   profile_image: z.string(),
-  profile_image_s: z.string().nullable(),
-  profile_image_m: z.string().nullable(),
-  profile_image_l: z.string().nullable(),
-  role: z.number().nullable(),
+  profile_image_s: z.string().nullish(),
+  profile_image_m: z.string().nullish(),
+  profile_image_l: z.string().nullish(),
+  role: z.number().nullish(),
 })
 
 const leaderSchema = z.object({
   member_id: z.string(),
-  name: z.string().nullable(),
-  bio: z.string(),
+  name: z.string().nullish(),
+  bio: z.string().nullish(),
   nickname: z.string(),
   is_avatar: z.boolean(),
   profile_image: z.string(),
@@ -56,31 +56,31 @@ const guidelineSchema = z.object({
 const MembersSchema = z.object({
   member_id: z.string(),
   status: z.number(),
-  name: z.string().nullable(),
-  bio: z.string().nullable(),
+  name: z.string().nullish(),
+  bio: z.string().nullish(),
   nickname: z.string(),
   is_avatar: z.boolean(),
   profile_image: z.string(),
   role: z.number(),
-  phone: z.string().nullable(),
+  phone: z.string().nullish(),
 })
 
 const CommunityDetailsSchema = z.object({
   community_id: z.string(),
   handle: z.string(),
   slug: z.string(),
-  name: z.string(),
+  name: z.string().nullish(),
   type: z.number(),
-  description: z.string().nullable(),
+  description: z.string().nullish(),
   is_community_join_requested: z.boolean(),
-  color_code: z.string(),
-  text_color_code: z.string(),
-  welcome_loop_id: z.number().nullable(),
-  dp: z.string().nullable(),
-  dp_s: z.string().nullable(),
-  dp_m: z.string().nullable(),
-  dp_l: z.string().nullable(),
-  share_url: z.string().nullable(),
+  color_code: z.string().nullish(),
+  text_color_code: z.string().nullish(),
+  welcome_loop_id: z.number().nullish(),
+  dp: z.string().nullish(),
+  dp_s: z.string().nullish(),
+  dp_m: z.string().nullish(),
+  dp_l: z.string().nullish(),
+  share_url: z.string(),
   no_of_members: z.number(),
   no_of_loops: z.number(),
   no_of_videos: z.number(),

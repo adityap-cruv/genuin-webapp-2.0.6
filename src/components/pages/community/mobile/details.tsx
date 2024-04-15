@@ -32,7 +32,7 @@ interface Props {
   communityDetails: CommunityDetailsType
 }
 
-export function ProfileDetails({ communityDetails }: Props) {
+export function Details({ communityDetails }: Props) {
   communityDetailsModule = communityDetails
   const detailsDivRef = useRef<HTMLDivElement>(null)
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
@@ -49,7 +49,7 @@ export function ProfileDetails({ communityDetails }: Props) {
       <TopStickyBar.mobile
         defaultOpen={false}
         isOpen={!detailsInView}
-        communityName={communityDetails.name}
+        communityName={communityDetails.name ?? ''}
         communityProfileImage={communityDetails.dp ?? ''}
         communtiyHandle={communityDetails.handle}
       />
@@ -63,7 +63,7 @@ export function ProfileDetails({ communityDetails }: Props) {
           }}>
           <CustomAvatar
             imageUrl={communityDetailsModule?.dp ?? ''}
-            fallbackString={communityDetailsModule?.name}
+            fallbackString={communityDetailsModule?.name ?? ''}
             isAvatar={false}
             className="absolute -bottom-14 left-4 h-20 w-20 border-2 border-monochrome-white bg-red-50"
           />
@@ -358,7 +358,7 @@ function Leaders() {
         <ListItem
           title={leader.name ?? ''}
           subtitle={'@' + leader.nickname}
-          description={leader.bio}
+          description={leader.bio ?? ''}
           image={leader.profile_image}
           isAvatar={leader.is_avatar}
         />
@@ -413,7 +413,7 @@ function Members() {
               <ListItem
                 title={communityDetailsModule.leader.name ?? ''}
                 subtitle={'@' + communityDetailsModule.leader.nickname}
-                description={communityDetailsModule.leader.bio}
+                description={communityDetailsModule.leader.bio ?? ''}
                 image={communityDetailsModule.leader.profile_image}
                 isAvatar={communityDetailsModule.leader.is_avatar}
               />

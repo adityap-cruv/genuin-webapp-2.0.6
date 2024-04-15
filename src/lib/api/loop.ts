@@ -61,24 +61,6 @@ export function getLoopVideos({
   })
 }
 
-// async function fetchLoopCohosts(slug: string, type: UserType) {
-//   return await axios
-//     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/rt/users', {
-//       params: {
-//         type,
-//         loop_id: { slug },
-//         ref: undefined,
-//       },
-//     })
-//     .then((res) => {
-//       const resData = res.data.data
-//       return { users: resData?.list, ref: resData.ref, end: resData.end_page }
-//     })
-//     .catch((e) => {
-//       throw new Error('Something went wrong in fetching videos.')
-//     })
-// }
-
 async function fetchLoopCohosts(slug: string, pageParam: string) {
   return await axios
     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/conversation/members', {

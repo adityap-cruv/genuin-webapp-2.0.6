@@ -1,35 +1,36 @@
 import axios from 'axios'
 import { axiosInstance } from './instance'
 
-export async function fetchVideoDetails(slug: string) {
-  return await axios
-    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/video_details', {
-      params: {
-        video_ids: [{ slug }],
-      },
-    })
-    .then((res) => {
-      // removed temporary for deployment
-      // return validateVideoData(res.data.data[slug])
-      return res.data.data[slug]
-    })
-    .catch((e) => {
-      throw new Error('Something went wrong with video details api.')
-    })
-}
+// export async function fetchVideoDetails(slug: string) {
+//   return await axios
+//     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/video_details', {
+//       params: {
+//         video_ids: [{ slug }],
+//       },
+//     })
+//     .then((res) => {
+//       // removed temporary for deployment
+//       // return validateVideoData(res.data.data[slug])
+//       return res.data.data[slug]
+//     })
+//     .catch((e) => {
+//       throw new Error('Something went wrong with video details api.')
+//     })
+// }
 
-export async function fetchVideoDetailsByShareString(shareStringList: Array<{ share_string: string }>) {
-  return await axios
-    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/video_details', {
+export async function fetchVideoMetadata(videoSlug: string) {
+  return await axiosInstance
+    .get('/api/v3/deep_link/meta_data', {
       params: {
-        video_ids: shareStringList,
+        type: 4,
+        slug: videoSlug,
       },
     })
     .then((res) => {
       return res.data.data
     })
     .catch((e) => {
-      throw new Error('Something went wrong in video details api.')
+      console.log('error::', e)
     })
 }
 

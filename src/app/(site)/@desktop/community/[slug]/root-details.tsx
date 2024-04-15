@@ -49,7 +49,7 @@ export function RootDetails({ communityDetails }: Props) {
   useEffect(() => {
     addCommunity({
       handle: communityDetails.handle,
-      name: communityDetails.name,
+      name: communityDetails.name ?? '',
       profileImage: communityDetails.dp ?? '',
       slug: communityDetails.slug,
     })
@@ -60,7 +60,7 @@ export function RootDetails({ communityDetails }: Props) {
       <TopStickyBar.desktop
         defaultOpen={false}
         isOpen={!detailsInView}
-        communityName={communityDetails.name}
+        communityName={communityDetails.name ?? ''}
         communityProfileImage={communityDetails.dp ?? ''}
         communtiyHandle={communityDetails.handle}
         communityId={communityDetails.community_id}
@@ -78,7 +78,7 @@ export function RootDetails({ communityDetails }: Props) {
             <CustomAvatar
               isAvatar={false}
               imageUrl={communityDetails.dp ?? ''}
-              fallbackString={communityDetails.name}
+              fallbackString={communityDetails.name ?? ''}
               className="absolute -bottom-14 left-6 h-20 w-20 border-2 border-monochrome-white text-new-h2 font-medium"
             />
           </div>
@@ -320,7 +320,7 @@ function Leaders() {
         <ListItem
           title={leader.name ?? ''}
           subtitle={'@' + leader.nickname}
-          description={leader.bio}
+          description={leader.bio ?? ''}
           image={leader.profile_image}
           isAvatar={leader.is_avatar}
         />
@@ -344,7 +344,7 @@ function Members() {
               <ListItem
                 title={communityDetailsModule.leader.name ?? ''}
                 subtitle={'@' + communityDetailsModule.leader.nickname}
-                description={communityDetailsModule.leader.bio}
+                description={communityDetailsModule.leader.bio ?? ''}
                 image={communityDetailsModule.leader.profile_image}
                 isAvatar={communityDetailsModule.leader.is_avatar}
               />

@@ -265,7 +265,7 @@ function Desktop({
         )}
         <div className="absolute left-0 top-0 h-full w-full">
           <ControlLayer.desktop
-            shareUrl={videoData.source}
+            shareUrl={videoData.shareUrl}
             sparkCount={videoData.sparkCount}
             videoId={videoData.id}
             attachedLink={videoData.attachedLink}

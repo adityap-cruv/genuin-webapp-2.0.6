@@ -1,8 +1,8 @@
 import { type Metadata } from 'next'
 import { Root } from './root'
-import { fetchVideoDetails } from '@lib/api/video'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { fetchMetadata } from '@lib/api/meta-data'
+import { fetchVideoMetadata } from '@lib/api/video'
 
 type PageProps = {
   params: {
@@ -16,15 +16,15 @@ type PageProps = {
 }
 
 export default async function Component({ params, searchParams }: PageProps) {
-  const videoData = await fetchVideoDetails(params.slug)
+  const metadata = await fetchVideoMetadata(params.slug)
   return (
     <main className="h-full w-full">
-      <Root videoDetails={videoData} />
+      <Root fromVideoId={metadata.message_id} loopId={metadata.chat_id} />
     </main>
   )
 }
 
-interface VideoDataType {
+type VideoDataType = {
   title: string
   description: string
   preview_image: string
