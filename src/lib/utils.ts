@@ -51,7 +51,7 @@ export function deleteSearchParam({
 
 export function getTimeAgo(createdAt: any) {
   const currentDate: any = new Date()
-  const createdAtDate: any = new Date(createdAt)
+  const createdAtDate: any = new Date(Number(createdAt))
 
   const timeDifference = currentDate - createdAtDate
   const minutes = Math.floor(timeDifference / (1000 * 60))

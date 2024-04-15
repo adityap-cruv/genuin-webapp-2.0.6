@@ -24,6 +24,7 @@ import { ShareIcon } from '@icons/share-icon'
 import { useSearchParams } from 'next/navigation'
 import { getCommunityMembers } from '@lib/api/community'
 import { Loader } from '@components/ui/loader'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@components/ui/accordion'
 
 let communityDetailsModule: CommunityDetailsType
 
@@ -235,6 +236,7 @@ function ProfileTabs() {
         />
       </TabsContent>
       <TabsContent value="About" className="mx-4">
+        <Guidelines />
         <Categories />
         <Links />
         <Leaders />
@@ -244,6 +246,35 @@ function ProfileTabs() {
       </TabsContent>
     </Tabs>
   )
+}
+
+function Guidelines() {
+  if (communityDetailsModule.guidelines.length !== 0)
+    return (
+      <div className="mb-4">
+        <p className="my-2 text-title-3-bold">Guidelines</p>
+        <>
+          <Accordion type="single" collapsible>
+            {communityDetailsModule?.guidelines.map((guideline: any, index: any) => {
+              return (
+                <div key={index}>
+                  <AccordionItem value={guideline.title} className="border-none">
+                    <AccordionTrigger className="my-1 p-0">
+                      <p className="line-clamp-1 text-left text-body-1-med">
+                        {index + 1}. {guideline.title}
+                      </p>
+                    </AccordionTrigger>
+                    <AccordionContent className="w-[80%] pl-4">
+                      <p className="line-clamp-2 text-left  text-tertiary">{guideline.description}</p>
+                    </AccordionContent>
+                  </AccordionItem>
+                </div>
+              )
+            })}
+          </Accordion>
+        </>
+      </div>
+    )
 }
 
 function Categories() {

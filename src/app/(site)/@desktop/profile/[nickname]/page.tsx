@@ -1,5 +1,8 @@
 import { MainComponent } from './main-component'
 import { fetchUserData } from '@lib/api/profile'
+import { PATH_NAME } from '@lib/utils/constants/path'
+import { fetchMetadata } from '@lib/api/meta-data'
+import { type Metadata } from 'next'
 
 interface CompProps {
   params: {
@@ -13,31 +16,31 @@ export default async function Component({ params }: CompProps) {
   return <MainComponent profileData={profileData} />
 }
 
-// export async function generateMetadata({ params }: CompProps): Promise<Metadata> {
-//   const data = await fetchUserData(params.nickname)
-//   const title = `${data.name ? data.name : ''} (@${data.nickname}) is on Genuin`
-//   let desc = `${
-//     Boolean(data.name) && data.name.replace(/\s+/g, '') !== ''
-//       ? `${data.name.trim()} (@${data.nickname})`
-//       : `@${data.nickname}`
-//   } on Genuin`
-//   if (data?.bio !== '') {
-//     desc += ` | ${data.bio}`
-//   }
+interface ProfileDataType {
+  member_id: string
+  title: string
+  description: string
+  preview_image: string
+}
 
-//   return {
-//     title,
-//     applicationName: 'Genuin',
-//     description: desc,
-//     openGraph: {
-//       title,
-//       description: desc,
-//       url: `${process.env.NEXT_PUBLIC_HOST_URL}${PATH_NAME.profile(data.nickname)}`,
-//       images: [
-//         {
-//           url: data.preview_image,
-//         },
-//       ],
-//     },
-//   }
-// }
+export async function generateMetadata({ params }: CompProps): Promise<Metadata> {
+  const data: ProfileDataType = await fetchMetadata({ type: 1, username: params.nickname })
+  const title = data.title
+  const desc = data.description
+
+  return {
+    title,
+    applicationName: 'Genuin',
+    description: desc,
+    openGraph: {
+      title,
+      description: desc,
+      url: `${process.env.NEXT_PUBLIC_HOST_URL}${PATH_NAME.profile(params.nickname)}`,
+      images: [
+        {
+          url: data.preview_image,
+        },
+      ],
+    },
+  }
+}

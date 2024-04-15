@@ -109,7 +109,7 @@ function LoopItem({
             fallbackString={members[0].name ?? ''}
           />
         )}
-        {members.length <= 2 && members[1] && (
+        {members.length !== 0 && members[1] && (
           <CustomAvatar
             className="absolute left-3 z-10 h-6 w-6 border-2 border-tertiary-100 bg-red-50"
             imageUrl={members[1].profile_image ?? ''}
@@ -117,7 +117,7 @@ function LoopItem({
             fallbackString={members[1].name ?? ''}
           />
         )}
-        {members.length <= 3 && members[2] && (
+        {members.length !== 0 && members[2] && (
           <CustomAvatar
             className="absolute left-6 h-6 w-6 border-2 border-tertiary-100 bg-red-50"
             imageUrl={members[2].profile_image ?? ''}
@@ -149,8 +149,8 @@ function LoopItem({
               </div>
               <p
                 className={`ml-1 line-clamp-1 text-body-1-med text-secondary-300 ${
-                  loopDetails.group.members.length !== 0 && 'ml-7'
-                } ${loopDetails.group.members.length === 2 && 'ml-6'}`}>
+                  loopDetails.group.members.length !== 1 && 'ml-7'
+                } ${loopDetails.group.members.length === 3 && 'ml-6'}`}>
                 {loopDetails.group.members[0].username}
                 {getCollaboratorsCountString(loopDetails.group.members.length - 1)}
               </p>
