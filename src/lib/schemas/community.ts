@@ -1,85 +1,109 @@
 import { z } from 'zod'
 
-// Define a schema for the "info" object
-const infoSchema = z.object({
-  handle: z.string(),
-  name: z.string(),
-  slug: z.string(),
-  description: z.string().nullish(),
-  links: z.object({
-    instagram_url: z.string().nullable(),
-    twitter_url: z.string().nullable(),
-    linkedin_url: z.string().nullable(),
-    social_web_url: z.string(),
-  }),
-  count: z.object({
-    member: z.number(),
-    loop: z.number(),
-    video: z.number(),
-  }),
-  profile_image: z.string(),
-  categories: z.array(z.string()),
-  share_string: z.string(),
-  private: z.boolean(),
-  id: z.string(),
+const socialLinksSchema = z.object({
+  social_web_url: z.string().nullish(),
+  twitter: z
+    .object({
+      id: z.string().nullish(),
+      url: z.string().nullish(),
+    })
+    .nullish(),
+  linkedin: z
+    .object({
+      id: z.string().nullish(),
+      url: z.string().nullish(),
+    })
+    .nullish(),
+  insta: z
+    .object({
+      id: z.string().nullish(),
+      url: z.string().nullish(),
+    })
+    .nullish(),
 })
 
-// Define a schema for the "popular_loops" array
-const popularLoopsSchema = z.array(
-  z.object({
-    subscriber_count: z.number(),
-    name: z.string(),
-    description: z.string(),
-    share_string: z.string(),
-    profile_image: z.string().nullable(),
-  })
-)
+const moderatorSchema = z.object({
+  member_id: z.string(),
+  name: z.string().nullish(),
+  bio: z.string().nullish(),
+  nickname: z.string(),
+  is_avatar: z.boolean(),
+  profile_image: z.string(),
+  profile_image_s: z.string().nullish(),
+  profile_image_m: z.string().nullish(),
+  profile_image_l: z.string().nullish(),
+  role: z.number().nullish(),
+})
 
-// Define a schema for the "leaders" array
-const leadersSchema = z.array(
-  z.object({
-    role: z.string(),
-    name: z.string().nullable(),
-    nickname: z.string(),
-    is_avatar: z.boolean(),
-    profile_image: z.string(),
-    description: z.string(),
-  })
-)
+const leaderSchema = z.object({
+  member_id: z.string(),
+  name: z.string().nullish(),
+  bio: z.string().nullish(),
+  nickname: z.string(),
+  is_avatar: z.boolean(),
+  profile_image: z.string(),
+  role: z.number().optional(),
+})
 
-// Define a schema for the "members" array
-const membersSchema = z.array(
-  z.object({
-    role: z.string(),
-    name: z.string(),
-    nickname: z.string(),
-    is_avatar: z.boolean(),
-    profile_image: z.string(),
-    description: z.string().nullable(),
-  })
-)
+const guidelineSchema = z.object({
+  id: z.number(),
+  position: z.number(),
+  title: z.string(),
+  guideline_id: z.number(),
+  description: z.string(),
+})
 
-const guidelineSchema = z.array(
-  z.object({
-    description: z.string(),
-    guideline_id: z.number(),
-    id: z.number(),
-    position: z.number(),
-    title: z.string(),
-  })
-)
-// Define the main schema for the entire object
+const MembersSchema = z.object({
+  member_id: z.string(),
+  status: z.number(),
+  name: z.string().nullish(),
+  bio: z.string().nullish(),
+  nickname: z.string(),
+  is_avatar: z.boolean(),
+  profile_image: z.string(),
+  role: z.number(),
+  phone: z.string().nullish(),
+})
+
 const CommunityDetailsSchema = z.object({
-  info: infoSchema,
-  guidelines: guidelineSchema,
-  popular_loops: popularLoopsSchema,
-  leaders: leadersSchema,
-  members: membersSchema,
+  community_id: z.string(),
+  handle: z.string(),
+  slug: z.string(),
+  name: z.string().nullish(),
+  type: z.number(),
+  description: z.string().nullish(),
+  is_community_join_requested: z.boolean(),
+  color_code: z.string().nullish(),
+  text_color_code: z.string().nullish(),
+  welcome_loop_id: z.number().nullish(),
+  dp: z.string().nullish(),
+  dp_s: z.string().nullish(),
+  dp_m: z.string().nullish(),
+  dp_l: z.string().nullish(),
+  share_url: z.string(),
+  no_of_members: z.number(),
+  no_of_loops: z.number(),
+  no_of_videos: z.number(),
+  categories: z
+    .array(
+      z.object({
+        category_id: z.number(),
+        title: z.string(),
+      })
+    )
+    .optional(),
+  social_links: socialLinksSchema,
+  moderators: z.array(moderatorSchema),
+  is_ai_generated: z.boolean(),
+  leader: leaderSchema,
+  guidelines: z.array(guidelineSchema),
+  preview_image: z.string().optional(),
 })
 
 export type CommunityDetailsType = z.infer<typeof CommunityDetailsSchema>
+export type MembersSchemaType = z.infer<typeof MembersSchema>
 
-export function validateCommunityDetails(communityDetails: any) {
+export function validateCommunityDetails(communityDetails: CommunityDetailsType) {
   try {
     return CommunityDetailsSchema.parse(communityDetails)
   } catch (e) {

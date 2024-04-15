@@ -2,6 +2,7 @@ import { fetchLoopDetails } from '@lib/api/loop'
 import { MainComponent } from './main-component'
 import { type Metadata } from 'next'
 import { PATH_NAME } from '@lib/utils/constants/path'
+import { fetchMetadata } from '@lib/api/meta-data'
 
 interface Props {
   params: {
@@ -16,25 +17,24 @@ export default async function Component({ params }: Props) {
   return <MainComponent loopDetails={loopDetails} />
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const loopDetails = await fetchLoopDetails(params.slug)
-  const group = loopDetails.group
-  const ldDescription = `${
-    group?.group_description !== null &&
-    group.group_description !== undefined &&
-    group.group_description.replace(/\s+/g, '') !== ''
-      ? group.group_description + ' | '
-      : ''
-  } Join ${group?.group_name} to talk about it` //! consider "it" as temporary var will have to change once api gives categories in response.
+interface LoopDataType {
+  title: string
+  description: string
+  preview_image: string
+}
 
-  const title = group?.group_name
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const loopDetails: LoopDataType = await fetchMetadata({ type: 3, slug: params.slug })
+  const title = loopDetails.title
+  const description = loopDetails.description
+
   return {
     title,
     applicationName: 'Genuin',
-    description: ldDescription,
+    description,
     openGraph: {
       title,
-      description: ldDescription,
+      description,
       url: process.env.NEXT_PUBLIC_HOST_URL + PATH_NAME.loop(params.slug),
       images: [
         {

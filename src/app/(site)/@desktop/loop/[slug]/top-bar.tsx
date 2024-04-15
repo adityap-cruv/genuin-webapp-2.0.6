@@ -1,15 +1,10 @@
 import { Button } from '@components/ui/button'
 import { motion, useAnimationControls } from 'framer-motion'
 import { useEffect } from 'react'
-import Image from 'next/image'
-import icShare from '@icons/icShareBlue.svg'
-import icQuestion from '@icons/icQuestion.svg'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
 import { openModal } from '@lib/utils'
-import { DownloadDialog } from '@components/common/download-dialog'
 import { ShareIcon } from '@icons/share-icon'
-import { subscribeLoop } from '@lib/api/loop'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 
 type Props = {
@@ -22,11 +17,11 @@ type Props = {
    */
   isOpen: boolean
   loopName: string
-  shareString: string
+  shareUrl: string
   communitySlug: string
   chatId?: string
-  isLoopSubscribed?: any
-  setIsLoopSubscribed?: any
+  isLoopSubscribed?: boolean
+  toggleSuscription?: () => void
 }
 
 export const TopStickyBar = {
@@ -38,11 +33,11 @@ function Desktop({
   defaultOpen = true,
   isOpen = false,
   loopName,
-  shareString,
+  shareUrl,
   communitySlug,
   chatId,
   isLoopSubscribed,
-  setIsLoopSubscribed,
+  toggleSuscription,
   ...props
 }: Props) {
   const navAnimationControl = useAnimationControls()
@@ -84,14 +79,8 @@ function Desktop({
           variant={isLoopSubscribed ? 'outline' : 'default'}
           onClick={
             user
-              ? async () => {
-                  !isLoopSubscribed
-                    ? await subscribeLoop(chatId ?? '', true).then((res) => {
-                        if (res.code === 200) {
-                          setIsLoopSubscribed((prev: any) => !prev)
-                        }
-                      })
-                    : setIsLoopSubscribed((prev: any) => !prev)
+              ? () => {
+                  toggleSuscription?.()
                 }
               : () => {
                   openModal({
@@ -123,11 +112,8 @@ function Desktop({
           size="custom"
           className="border border-primary p-0.5"
           onClick={async () => {
-            const currentURL = new URL(window.location.href)
-            currentURL.searchParams.set('community', `${shareString}`)
-            currentURL.searchParams.set('utm_source', 'app_web')
             await shareFn({
-              shareLink: currentURL.href,
+              shareLink: shareUrl,
               toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
             })
           }}>
@@ -138,7 +124,7 @@ function Desktop({
   )
 }
 
-function Mobile({ defaultOpen = true, isOpen = false, loopName, shareString, communitySlug, ...props }: Props) {
+function Mobile({ defaultOpen = true, isOpen = false, loopName, communitySlug, ...props }: Props) {
   const navAnimationControl = useAnimationControls()
 
   useEffect(() => {

@@ -5,7 +5,7 @@ import { useLocalStorage } from '@lib/stores/local-storage'
 import { useEffect } from 'react'
 
 const Details = dynamic(
-  async () => await import('@components/pages/community/mobile/details').then((comp) => comp.ProfileDetails)
+  async () => await import('@components/pages/community/mobile/details').then((comp) => comp.Details)
 )
 
 type Props = {
@@ -17,10 +17,10 @@ export function RootDetails({ communityDetails }: Props) {
 
   useEffect(() => {
     addCommunity({
-      handle: communityDetails.info.handle,
-      name: communityDetails.info.name,
-      profileImage: communityDetails.info.profile_image,
-      slug: communityDetails.info.slug,
+      handle: communityDetails.handle,
+      name: communityDetails.name ?? '',
+      profileImage: communityDetails.dp ?? '',
+      slug: communityDetails.slug,
     })
   }, [])
 

@@ -1,7 +1,7 @@
 import { useState, type ComponentProps } from 'react'
 
 type Props = {
-  text: string
+  text?: string | null
   /**
    * Pass this variable if you want to increase or decrease slice limit.
    * @default 150
@@ -10,10 +10,12 @@ type Props = {
 } & ComponentProps<'p'>
 
 export function ReadMore({ text, maxChars = 150, ...props }: Props) {
+  if (!text) return
+
   const [showMore, setShowMore] = useState(text.length > maxChars)
   let slicedText: string = ''
 
-  if (text.length > maxChars) {
+  if (text && text.length > maxChars) {
     slicedText = text.slice(0, maxChars)
     slicedText = slicedText.endsWith('...') ? slicedText : slicedText + '...'
   }

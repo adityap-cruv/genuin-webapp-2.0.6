@@ -1,9 +1,9 @@
 'use client'
-import { type VideoDataType } from '@lib/schemas/video'
 import { Feed } from '@components/common/feed'
+import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 
 type Props = {
-  videoDetails: VideoDataType
+  videoDetails: VideoPlayerModalType
 }
 // TODO: Fix comment component bug. scrolling issue.
 export function Root({ videoDetails }: Props) {

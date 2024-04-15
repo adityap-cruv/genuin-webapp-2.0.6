@@ -3,6 +3,7 @@ import { RootDetails } from './root-details'
 import { RootFeed } from './root-feed'
 import { type Metadata } from 'next'
 import { PATH_NAME } from '@lib/utils/constants/path'
+import { fetchMetadata } from '@lib/api/meta-data'
 
 interface Props {
   params: {
@@ -22,16 +23,22 @@ export default async function Component({ params, searchParams }: Props) {
     try {
       communityData = await fetchCommunityDetails(params.slug)
     } catch (error) {
-      // TODO: Handle it by sending logs.
+      throw new Error()
     }
     return <RootDetails communityDetails={communityData} />
   }
 }
 
+interface CommunityDataType {
+  title: string
+  description: string
+  preview_image: string
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const communityData = await fetchCommunityDetails(params.slug)
-  const title = `${communityData.info.name}`
-  const desc = `${communityData.info.description}`
+  const communityData: CommunityDataType = await fetchMetadata({ type: 2, slug: params.slug })
+  const title = `${communityData.title}`
+  const desc = `${communityData.description}`
 
   return {
     title,
@@ -41,7 +48,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title,
       description: desc,
       url: `${process.env.NEXT_PUBLIC_HOST_URL}` + PATH_NAME.community(params.slug),
-      images: [{ url: communityData.info.preview_image }],
+      images: [{ url: communityData?.preview_image ?? '' }],
     },
   }
 }

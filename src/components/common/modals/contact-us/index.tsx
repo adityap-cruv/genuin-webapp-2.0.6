@@ -183,7 +183,7 @@ function Form({ setIsLinkSent }: any) {
     if (formData.companyName) {
       Object.assign(payload, { company_name: companyName })
     }
-    if (formData.companyName) {
+    if (formData.companyUrl) {
       Object.assign(payload, { company_url: companyUrl })
     }
 
@@ -191,7 +191,7 @@ function Form({ setIsLinkSent }: any) {
       setIsLoading(true)
 
       try {
-        const res = await axios.post(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/contact_us', payload)
+        const res = await axios.post(process.env.NEXT_PUBLIC_API_URL + '/api/v3/contact_us', payload)
 
         if (res.data.code === 200) {
           setIsLinkSent(true)

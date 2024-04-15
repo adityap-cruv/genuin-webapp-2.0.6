@@ -1,5 +1,5 @@
 import { useMotionValueEvent, useScroll } from 'framer-motion'
-import { getLoopVideoComments } from '@lib/api/loop'
+import { getVideosComments } from '@lib/api/loop'
 import { Loader } from '@components/ui/loader'
 import { type CommentListType, type CommentType } from '@lib/schemas/loop/comment'
 import { CommentItem } from './comment-item'
@@ -11,11 +11,18 @@ export const Comments = {
   withoutApi: WithoutApi,
 }
 
-function WithApi({ videoId, comments, setComments }: any) {
-  const { isLoading, data, isError, isFetchingNextPage, fetchNextPage } = getLoopVideoComments(videoId)
+type Props = {
+  videoId: string
+  comments: CommentListType
+  setComments: (comments: CommentListType) => void
+}
+
+function WithApi({ videoId, comments, setComments }: Props) {
+  const { isLoading, data, isError, isFetchingNextPage, fetchNextPage } = getVideosComments(videoId)
 
   useEffect(() => {
-    setComments(data?.pages.flatMap((item) => item.comments))
+    console.log('dat::', data)
+    if (data) setComments(data.pages.flatMap((item) => item.comments))
   }, [data])
 
   if (isLoading) {

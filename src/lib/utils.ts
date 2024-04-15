@@ -10,6 +10,14 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+export function getLoopAndCommunityShareString(shareUrl: string) {
+  const urlObj = new URL(shareUrl)
+  const loopShareString = urlObj.searchParams.get('loop')
+  const communityShareString = urlObj.searchParams.get('community')
+  console.log('communu:', communityShareString)
+  return { loopShareString, communityShareString }
+}
+
 export function openModal({ title, subtitle, action }: any) {
   const embed = useGenuinOptions.getState().embed
 
@@ -43,7 +51,7 @@ export function deleteSearchParam({
 
 export function getTimeAgo(createdAt: any) {
   const currentDate: any = new Date()
-  const createdAtDate: any = new Date(createdAt)
+  const createdAtDate: any = new Date(Number(createdAt))
 
   const timeDifference = currentDate - createdAtDate
   const minutes = Math.floor(timeDifference / (1000 * 60))
@@ -136,7 +144,7 @@ export const openGeneratedLink = (link = '') => {
   element.click()
 }
 
-//  TODO This function line can be reduced and validation can be automated.
+//  TODO: This function line can be reduced and validation can be automated.
 export const generateDeepLink = async ({
   utmCampaign,
   utmSource,
@@ -196,7 +204,7 @@ export const generateDeepLink = async ({
     Object.assign(finalPayload, { description })
   }
   try {
-    const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v3/public/dynamic_link`, finalPayload)
+    const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/v3/dynamic_link`, finalPayload)
     return res?.data?.data?.shortLink
   } catch (e) {
     return process.env.NEXT_PUBLIC_HOST_URL
