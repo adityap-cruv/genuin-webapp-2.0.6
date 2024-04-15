@@ -131,7 +131,7 @@ export function getLoopSubscribers(slug: string) {
   })
 }
 
-export function getLoopVideoComments(videoId: string) {
+export function getVideosComments(videoId: string) {
   let promise: Promise<{ comments: CommentListType; end: boolean }> | null = null
   return useInfiniteQuery({
     queryFn: async ({ pageParam }) => {
@@ -145,11 +145,9 @@ export function getLoopVideoComments(videoId: string) {
           })
           .then((res) => {
             const resData = res.data.data
-            console.log('res data;:', resData)
             return { comments: validateCommentList(resData.comments), end: resData.end_of_result }
           })
           .catch((e) => {
-            console.log('e::', e)
             throw new Error('Something went wrong with comments api!')
           })
           .finally(() => {

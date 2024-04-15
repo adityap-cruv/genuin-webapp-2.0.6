@@ -7,7 +7,7 @@ import Image from 'next/image'
 import icAudioRecord from '@icons/audioRecord.svg'
 import icVideoRecord from '@icons/videoRecord.svg'
 import { Comments, NoComments } from '@components/common/comments'
-import { getLoopVideoComments } from '@lib/api/loop'
+import { getVideosComments } from '@lib/api/loop'
 import { type RefObject, useRef, useState, useEffect } from 'react'
 import { useMotionValueEvent, useScroll } from 'framer-motion'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
@@ -182,7 +182,7 @@ function CommentBox({
     isError,
     isFetchingNextPage,
     isLoading,
-  } = getLoopVideoComments(videoId)
+  } = getVideosComments(videoId)
 
   useEffect(() => {
     setComments(commentPages?.pages.flatMap((item) => item.comments))

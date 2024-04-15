@@ -21,7 +21,8 @@ export default async function Component({ params, searchParams }: Props) {
 
 async function Details({ slug }: { slug: string }) {
   const communityData = await fetchCommunityDetails(slug)
-  return <RootDetails communityDetails={communityData} />
+  return <p>mobile</p>
+  // return <RootDetails communityDetails={communityData} />
 }
 
 interface CommunityDataType {

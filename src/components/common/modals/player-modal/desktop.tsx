@@ -127,7 +127,7 @@ type ProfileProps = {
   /**
    * If video is not available than it will show loader only.
    */
-  video: VideoPlayerModalType
+  video?: VideoPlayerModalType
   /**
    * Controls if modal should open or not.
    * @default false
@@ -144,6 +144,7 @@ type ProfileProps = {
   hasPreviousVideo: boolean
   getNextVideo: () => void
   getPreviousVideo: () => void
+  isLoading: boolean
 }
 
 /**
@@ -159,13 +160,10 @@ export function Profile({
   hasNextVideo = true,
   hasPreviousVideo = true,
   getNextVideo,
+  isLoading = false,
   getPreviousVideo,
 }: ProfileProps) {
   const sizeBox = useGenuinOptions().sizeBoxes
-  function InnerContent() {
-    if (!video) return <FeedShimmer.desktop />
-    return <SinglePlayer videoData={{ ...video }} sizeBox={{ ...sizeBox.modal.player }} />
-  }
 
   return (
     <CustomDialog open={open}>
@@ -182,7 +180,11 @@ export function Profile({
               className="absolute right-4 top-4 z-10">
               <X className="h-6 w-6" />
             </CustomDialogClose>
-            <InnerContent />
+            {isLoading ? (
+              <FeedShimmer.desktop />
+            ) : (
+              video && <SinglePlayer videoData={{ ...video }} sizeBox={{ ...sizeBox.modal.player }} />
+            )}
           </div>
           <span className="flex flex-col gap-y-4">
             <button
