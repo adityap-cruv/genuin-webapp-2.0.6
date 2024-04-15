@@ -2,7 +2,7 @@ import { type Metadata } from 'next'
 import { Root } from './root'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { fetchMetadata } from '@lib/api/meta-data'
-import { fetchVideoMetadata } from '@lib/api/video'
+import { getVideoDetails } from '@lib/api/video'
 
 type PageProps = {
   params: {
@@ -16,10 +16,11 @@ type PageProps = {
 }
 
 export default async function Component({ params, searchParams }: PageProps) {
-  const metadata = await fetchVideoMetadata(params.slug)
+  const videoDetails = await getVideoDetails(params.slug)
+
   return (
     <main className="h-full w-full">
-      <Root fromVideoId={metadata.message_id} loopId={metadata.chat_id} />
+      <Root videoDetails={videoDetails} />
     </main>
   )
 }
@@ -29,6 +30,7 @@ type VideoDataType = {
   description: string
   preview_image: string
 }
+
 export async function generateMetadata({ params, searchParams }: PageProps): Promise<Metadata> {
   const videoDetails: VideoDataType = await fetchMetadata({ type: 4, slug: params.slug })
   const title = videoDetails.title

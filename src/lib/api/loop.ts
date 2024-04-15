@@ -8,8 +8,8 @@ import { parseVideosFromLoop } from './api-response-parser'
 import { type VideoPlayerModalCommunityType, type VideoPlayerModalLoopType } from '@lib/schemas/player/video'
 
 export async function fetchLoopDetails(slug: string) {
-  return await axios
-    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/conversation/details', {
+  return await axiosInstance
+    .get('/api/v3/conversation/details', {
       params: { slug },
     })
     .then((res) => {
@@ -25,8 +25,8 @@ async function fetchLoopVideos(
   loop: VideoPlayerModalLoopType,
   community: VideoPlayerModalCommunityType
 ) {
-  return await axios
-    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/conversation/messages', {
+  return await axiosInstance
+    .get('/api/v3/conversation/messages', {
       params: {
         slug: loop.slug,
         last_message_id: pageParams,
@@ -62,8 +62,8 @@ export function getLoopVideos({
 }
 
 async function fetchLoopCohosts(slug: string, pageParam: string) {
-  return await axios
-    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/conversation/members', {
+  return await axiosInstance
+    .get('/api/v3/conversation/members', {
       params: {
         slug,
         last_member_id: pageParam,
@@ -90,8 +90,8 @@ export function getLoopCohosts(slug: string) {
 }
 
 async function fetchLoopSubscribers(slug: string, pageParam: string) {
-  return await axios
-    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/conversation/subscribers', {
+  return await axiosInstance
+    .get('/api/v3/conversation/subscribers', {
       params: {
         slug,
         last_member_id: pageParam,

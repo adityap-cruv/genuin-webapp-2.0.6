@@ -54,7 +54,7 @@ export type LoopVideoType = z.infer<typeof LoopVideoSchema>
 
 export function validateLoopVideos(data: any) {
   try {
-    return LoopVideoList.safeParse(data)
+    return LoopVideoList.parse(data)
   } catch (e) {
     throw new Error('Something went wrong with loop members validation!!')
   }

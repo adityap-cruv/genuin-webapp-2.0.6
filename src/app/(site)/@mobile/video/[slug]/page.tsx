@@ -2,6 +2,7 @@ import { Root } from './root'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { type Metadata } from 'next'
 import { fetchMetadata } from '@lib/api/meta-data'
+import { getVideoDetails } from '@lib/api/video'
 type PageProps = {
   params: {
     slug: string
@@ -14,9 +15,8 @@ type PageProps = {
 }
 
 export default async function Component({ params, searchParams }: PageProps) {
-  // const videoData = await fetchVideoDetails(params.slug)
-  return <div>hello</div>
-  // return <Root videoData={videoData} />
+  const videoData = await getVideoDetails(params.slug)
+  return <Root videoData={videoData} />
 }
 
 type VideoDataType = {

@@ -1,22 +1,74 @@
-import axios from 'axios'
+import { validateLoopDetails } from '@lib/schemas/loop/details'
 import { axiosInstance } from './instance'
+import { type LoopVideoType } from '@lib/schemas/loop/videos'
+import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 
-// export async function fetchVideoDetails(slug: string) {
-//   return await axios
-//     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/video_details', {
-//       params: {
-//         video_ids: [{ slug }],
-//       },
-//     })
-//     .then((res) => {
-//       // removed temporary for deployment
-//       // return validateVideoData(res.data.data[slug])
-//       return res.data.data[slug]
-//     })
-//     .catch((e) => {
-//       throw new Error('Something went wrong with video details api.')
-//     })
-// }
+export async function getVideoDetails(slug: string): Promise<VideoPlayerModalType> {
+  const metadata = await fetchVideoMetadata(slug)
+  const [loopDetails, videoDetails] = await Promise.all([
+    await fetchLoopDetails(metadata.chat_id),
+    await fetchLoopVideo(metadata.chat_id, metadata.message_id),
+  ])
+
+  return {
+    community: {
+      handle: loopDetails.community.handle,
+      id: loopDetails.community.community_id,
+      slug: loopDetails.community.slug,
+      name: loopDetails.community.name,
+      profileImage: loopDetails.community.dp,
+    },
+    loop: { id: loopDetails.chat_id, slug: loopDetails.slug, name: loopDetails.group.group_name },
+    owner: {
+      isAvatar: videoDetails.owner.is_avatar,
+      profileImage: videoDetails.owner.profile_image,
+      userName: videoDetails.owner.username,
+      name: videoDetails.owner.name,
+    },
+    video: {
+      id: videoDetails.message_id,
+      commentCount: videoDetails.no_of_comments ?? 0,
+      shareUrl: videoDetails.share_url,
+      slug: videoDetails.slug,
+      source: videoDetails.media_url_m3u8 ?? videoDetails.media_url,
+      sparkCount: videoDetails.no_of_sparks ?? 0,
+      thumbnail: videoDetails.thumbnail_url ?? '',
+      attachedLink: videoDetails.attached_link,
+      createdAt: videoDetails.message_at,
+      description: '',
+    },
+  }
+}
+
+export async function fetchLoopVideo(loopId: string, videoId: string) {
+  return await axiosInstance
+    .get('/api/v3/conversation/messages', {
+      params: {
+        chat_id: loopId,
+        from_message_id: videoId,
+      },
+    })
+    .then((res) => {
+      return res.data.data.messages[0] as LoopVideoType
+    })
+    .catch((e) => {
+      console.log('error in conversation messages::', e)
+      throw new Error('Something went wrong in conversation messages.')
+    })
+}
+
+export async function fetchLoopDetails(id: string) {
+  return await axiosInstance
+    .get('/api/v3/conversation/details', {
+      params: { chat_id: id },
+    })
+    .then((res) => {
+      return validateLoopDetails(res?.data?.data)
+    })
+    .catch((e) => {
+      throw new Error('Something went wrong!!')
+    })
+}
 
 export async function fetchVideoMetadata(videoSlug: string) {
   return await axiosInstance
