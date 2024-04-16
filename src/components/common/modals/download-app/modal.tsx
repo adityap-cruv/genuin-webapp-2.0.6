@@ -1,5 +1,5 @@
 'use client'
-import { Dialog, DialogTrigger, DialogContent, DialogClose } from '@components/ui/dialog'
+import { Dialog, DialogContent, DialogClose } from '@components/ui/dialog'
 import { type DialogProps } from '@radix-ui/react-dialog'
 import { useDownloadDialogModalStore } from './store'
 import { DownloadDialog } from './download-dialog'
