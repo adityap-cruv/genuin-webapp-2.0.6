@@ -1,5 +1,5 @@
 import { axiosInstance } from '@lib/api/instance'
-import { validateTopResponse } from './schema/top-resp'
+import { parseCommunities, parseLoops, parsePeople, parseVideos, parseRankings } from './schema/resp-parser'
 
 export async function getTopResults(query: string) {
   return await axiosInstance
@@ -9,8 +9,14 @@ export async function getTopResults(query: string) {
       },
     })
     .then((res) => {
-      console.log('res::', res.data.data)
-      return validateTopResponse(res.data.data)
+      const resData = res.data.data
+      return {
+        communities: parseCommunities(resData.communities),
+        loops: parseLoops(resData.loops),
+        people: parsePeople(resData.people),
+        videos: parseVideos(resData.videos),
+        rankings: parseRankings(resData.ranking),
+      }
     })
     .catch((e) => {
       console.log('Something went wrong with top api.')

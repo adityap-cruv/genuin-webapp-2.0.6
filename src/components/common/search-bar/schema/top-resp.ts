@@ -163,6 +163,8 @@ export type PeopleResType = z.infer<typeof peopleSchema>
 
 export type VideosResType = z.infer<typeof videosSchema>
 
+export type RankingResType = z.infer<typeof RankingSchema>
+
 const TopResponseSchema = z.object({
   ranking: RankingSchema,
   communities: communitiesSchema,

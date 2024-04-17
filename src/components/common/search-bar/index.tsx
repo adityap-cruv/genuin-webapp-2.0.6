@@ -2,6 +2,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
 import { SearchInput } from './input'
 import { SearchBody } from './body'
 import { useSearchBarStore } from './store'
+import 'swiper/css'
 
 export function SearchBar() {
   const { setView } = useSearchBarStore()

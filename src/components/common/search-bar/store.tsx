@@ -1,34 +1,15 @@
 import { create } from 'zustand'
 
-export type CommunityType = {
-  id: string
-  memberCount: number
-  description?: string | null
-  handle: string
-  slug: string
-  profileImage?: string | null
-  name?: string | null
-}
-
-export type LoopType = {
-  name?: string | null
-  description?: string | null
-  slug: string
-  id: string
-}
-
-export type PeopleType = {
-  id: string
-  name?: string | null
-  userName: string
-  bio?: string | null
-  profileImage?: string | null
-  isAvatar: boolean
-}
-
 type ViewType = 'INITIAL' | 'TABS'
 
 type TabType = 'TOP' | 'POSTS' | 'COMMUNITIES' | 'LOOPS' | 'PEOPLE'
+
+// type DataType = Partial<{
+//   communities: CommunityType[]
+//   loops: LoopType[]
+//   people: PeopleType[]
+//   videos: VideoType[]
+// }>
 
 type StatesType = {
   view: ViewType
@@ -39,12 +20,23 @@ type ActionsType = {
   setView: (view: ViewType, tab?: TabType) => void
 }
 
+const initialState: StatesType = {
+  view: 'INITIAL',
+  defaultTab: 'TOP',
+  // communities: undefined,
+  // loops: undefined,
+  // people: undefined,
+  // videos: undefined,
+}
+
 export const useSearchBarStore = create<StatesType & ActionsType>((set) => {
   return {
-    view: 'INITIAL',
-    defaultTab: 'TOP',
+    ...initialState,
     setView(view, tabType = 'TOP') {
       set({ view, defaultTab: tabType })
     },
+    // setResults({ communities, loops, people, videos }: DataType) {
+    //   set({ communities, loops, people, videos })
+    // },
   }
 })

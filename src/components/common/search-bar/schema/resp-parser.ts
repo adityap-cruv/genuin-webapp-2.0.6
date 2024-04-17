@@ -1,5 +1,11 @@
-import { type PeopleType, type CommunityType } from '../store'
-import { LoopsResType, type PeopleResType, type CommunitiesResType } from './top-resp'
+import { type PeopleType, type CommunityType, type VideoType, type LoopType } from '../views/tabs/index'
+import {
+  type PeopleResType,
+  type CommunitiesResType,
+  type VideosResType,
+  type LoopsResType,
+  type RankingResType,
+} from './top-resp'
 
 export function parseCommunities(communities: CommunitiesResType) {
   return communities?.map<CommunityType>((item) => ({
@@ -13,9 +19,11 @@ export function parseCommunities(communities: CommunitiesResType) {
   }))
 }
 
-// export function parseLoops(loops: LoopsResType) {
-//   return loops?.map(item => )
-// }
+export function parseLoops(loops: LoopsResType) {
+  return loops?.map<LoopType>((item) => {
+    return { id: item.chat_id, slug: item.slug, name: item.group.group_name }
+  })
+}
 
 export function parsePeople(people: PeopleResType) {
   return people?.map<PeopleType>((item) => {
@@ -28,4 +36,21 @@ export function parsePeople(people: PeopleResType) {
       isAvatar: item.is_avatar,
     }
   })
+}
+
+export function parseVideos(videos: VideosResType) {
+  return videos?.map<VideoType>((item) => {
+    return {
+      id: item.message_id,
+      slug: item.slug,
+      owner: { isAvatar: item.owner.is_avatar, profileImage: item.owner.profile_image, userName: item.owner.username },
+      thumbnail: item.thumbnail_url ?? '',
+      // TODO: What should be description
+      description: '',
+    }
+  })
+}
+
+export function parseRankings(rankings: RankingResType) {
+  return rankings.filter((value, index, arr) => value !== 'videos')
 }
