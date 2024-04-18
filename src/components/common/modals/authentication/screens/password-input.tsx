@@ -46,7 +46,9 @@ export function PasswordInput() {
 
   return (
     <ModalShell>
-      <h3 className="flex w-full items-center justify-center text-heading-3 ">Set your password</h3>
+      <h3 className="flex w-full items-center justify-center text-title-1-demi sm:text-heading-3 ">
+        Set your password
+      </h3>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
           <FormField
