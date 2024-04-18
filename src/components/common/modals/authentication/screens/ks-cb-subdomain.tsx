@@ -60,16 +60,18 @@ export function KsToCbSubdomain() {
           </div>
         </SwiperSlide>
       </Swiper>
-      <Button
-        type="submit"
-        variant="default"
-        className="w-full"
-        disabled={user?.isEmailVerified}
-        onClick={() => {
-          user ? setStep('VERIFY_MAIL') : setStep('EMAIL_INPUT')
-        }}>
-        {user?.isEmailVerified ? 'Requested' : `Become a community builder for ${brandName}`}
-      </Button>
+      {user?.ks_cb_request_status !== 3 && (
+        <Button
+          type="submit"
+          variant="default"
+          className="w-full"
+          disabled={user?.ks_cb_request_status === 2}
+          onClick={() => {
+            user ? setStep('VERIFY_MAIL') : setStep('EMAIL_INPUT')
+          }}>
+          {user?.isEmailVerified ? 'Requested' : `Become a community builder for ${brandName}`}
+        </Button>
+      )}
     </ModalShell>
   )
 }

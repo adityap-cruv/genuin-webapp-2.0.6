@@ -92,12 +92,14 @@ export function KsToCbWeb() {
         <div className="flex w-[35%] justify-center">
           <QRCode
             value="https://begenuin.com/"
-            size={90}
+            size={80}
             qrStyle="dots"
             // eyeRadius={50}
             logoImage={logoImageDataUrl}
             logoHeight={20}
             logoWidth={20}
+            eyeRadius={10}
+            logoOpacity={1}
             logoPaddingStyle="circle"
             removeQrCodeBehindLogo={true}
           />
