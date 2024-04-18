@@ -133,7 +133,7 @@ export async function createComment(videoId: string, loopId: string, type: numbe
         chat_id: loopId,
         type,
         comment_text: commentText,
-        comment_data: commentText,
+        comment_data: JSON.stringify([commentText]),
       },
       {
         headers: {

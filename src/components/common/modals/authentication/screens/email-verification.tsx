@@ -30,7 +30,7 @@ function Success() {
   return (
     <ModalShell>
       <img src={imgSuccess.src} style={{ width: 120, height: 120 }} />
-      <p className="text-center text-heading-3">Email successfully verified</p>
+      <p className="text-center text-title-1-demi sm:text-heading-3">Email successfully verified</p>
       <p className="text-center text-title-3-med">
         Now you’ll receive important updates and notifications about your account, new features, and exciting news
         straight to your inbox. You can use the app now.{' '}
@@ -104,7 +104,7 @@ function Failure() {
   return (
     <ModalShell>
       <img src={imgError.src} style={{ width: 120, height: 120 }} />
-      <p className="text-center text-heading-3">Verification link expired</p>
+      <p className="text-center text-title-1-demi sm:text-heading-3">Verification link expired</p>
       <p className="text-center text-title-3-med">
         We're sorry, but it looks like the verification link has expired. Please request a new verification link.
       </p>

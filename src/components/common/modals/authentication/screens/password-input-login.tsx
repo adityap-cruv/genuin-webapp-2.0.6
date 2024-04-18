@@ -77,7 +77,7 @@ export function PasswordInputLogin() {
 
   return (
     <ModalShell>
-      <h3 className="flex w-full items-center justify-center text-heading-3 ">Log in</h3>
+      <h3 className="flex w-full items-center justify-center text-title-1-demi sm:text-heading-3">Log in</h3>
       <div className="w-full">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>

@@ -78,7 +78,9 @@ export function ImageCropper() {
 
   return (
     <ModalShell>
-      <h3 className="mb-4 flex w-full  items-center justify-center text-heading-3">Edit Profile picture</h3>
+      <h3 className="mb-4 flex w-full  items-center justify-center text-title-1-demi sm:text-heading-3">
+        Edit Profile picture
+      </h3>
       <div className="pb-2">
         <Cropper
           viewMode={1}

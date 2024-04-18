@@ -14,6 +14,7 @@ import {
   Guidelines,
   KsToCbWeb,
   KsToCbSubdomain,
+  Error,
 } from './screens'
 import { useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
@@ -122,8 +123,8 @@ export function Content() {
       return <Note.email />
     case 'EMAIL_SENT_NOTE_ACCOUNT_EXISTS':
       return <Note.email acountExists />
-    // case 'ERROR':
-    //   return <Error />
+    case 'ERROR':
+      return <Error />
     case 'USERNAME_INPUT':
       return <UsernameInput />
     case 'COMPLETE_PROFILE':
