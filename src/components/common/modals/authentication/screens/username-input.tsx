@@ -86,7 +86,7 @@ export function UsernameInput() {
 
   return (
     <ModalShell>
-      <h3 className="flex w-full items-center justify-center text-heading-3 ">Create username</h3>
+      <h3 className="flex w-full items-center justify-center text-title-1-demi sm:text-heading-3 ">Create username</h3>
       <p className="flex w-full justify-center text-title-3-med ">Enter a name to show on your videos</p>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
