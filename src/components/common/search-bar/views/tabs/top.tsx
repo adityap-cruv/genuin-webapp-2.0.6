@@ -1,21 +1,23 @@
-import { type VideoType, type CommunityType, type LoopType, type PeopleType } from '.'
-import { type RankingResType } from '../../schema/top-resp'
+import { type VideoType, type CommunityType, type PeopleType } from '.'
+import { type RankingResType, type LoopResType } from '../../schema/top-resp'
 import { type ReactNode } from 'react'
 import { CommunityTile } from './communities'
 import { Navigation } from 'swiper/modules'
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
-import { Swiper, type SwiperRef, SwiperSlide, useSwiper } from 'swiper/react'
+import { Swiper, SwiperSlide, useSwiper } from 'swiper/react'
 import { Button } from '@components/ui/button'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useSearchBarStore } from '../../store'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { Posts } from './posts'
+import { LoopItem } from './loops'
+import { NoResults } from './no-results'
 
 type Props = Partial<{
   communities: CommunityType[]
-  loops: LoopType[]
+  loops: LoopResType[]
   people: PeopleType[]
   ranking: RankingResType
   videos: VideoType[]
@@ -30,16 +32,16 @@ export function Top({ communities, loops, people, ranking, videos }: Props) {
     if (item === 'people' && people) compoArr.push(<PeopleView people={people} />)
   })
   if (videos) compoArr.push(<VideoView videos={videos} />)
+  if (compoArr.length !== 0) return <div className="flex flex-col gap-y-4 py-4">{compoArr}</div>
 
-  return <div className="py-4">{compoArr}</div>
+  return <NoResults />
 }
 
 function CommunityView({ communities }: { communities: CommunityType[] }) {
-  const swiperRef = useRef<SwiperRef>(null)
   const { setView } = useSearchBarStore()
   return (
-    <>
-      <span className="flex justify-between px-4">
+    <span>
+      <span className="flex justify-between px-4 pb-1">
         <p className="text-title-3-bold">Communities</p>
         <p
           className="cursor-pointer text-body-1-demi text-tertiary"
@@ -51,7 +53,6 @@ function CommunityView({ communities }: { communities: CommunityType[] }) {
       </span>
       <div className="relative w-full">
         <Swiper
-          ref={swiperRef}
           spaceBetween={8}
           slidesPerView={1.2}
           initialSlide={0}
@@ -71,7 +72,7 @@ function CommunityView({ communities }: { communities: CommunityType[] }) {
           <SlideButtons />
         </Swiper>
       </div>
-    </>
+    </span>
   )
 }
 
@@ -110,10 +111,10 @@ function SlideButtons() {
   )
 }
 
-function LoopView({ loops }: { loops: LoopType[] }) {
+function LoopView({ loops }: { loops: LoopResType[] }) {
   const { setView } = useSearchBarStore()
   return (
-    <>
+    <span>
       <span className="flex justify-between px-4 pb-2">
         <p className="text-title-3-bold">Loops</p>
         <p
@@ -124,14 +125,35 @@ function LoopView({ loops }: { loops: LoopType[] }) {
           See all
         </p>
       </span>
-    </>
+      <div className="relative w-full">
+        <Swiper
+          spaceBetween={8}
+          slidesPerView={1.2}
+          initialSlide={0}
+          centeredSlides
+          centerInsufficientSlides
+          slidesOffsetBefore={16}
+          slidesOffsetAfter={16}
+          centeredSlidesBounds
+          direction="horizontal"
+          navigation
+          modules={[Navigation]}>
+          {loops.map((item) => (
+            <SwiperSlide key={item.chat_id} className="p-1">
+              <LoopItem key={item.chat_id} loop={item} />
+            </SwiperSlide>
+          ))}
+          <SlideButtons />
+        </Swiper>
+      </div>
+    </span>
   )
 }
 
 function PeopleView({ people }: { people: PeopleType[] }) {
   const { setView } = useSearchBarStore()
   return (
-    <>
+    <span>
       <span className="flex justify-between px-4 pb-2">
         <p className="text-title-3-bold">People</p>
         <p
@@ -160,14 +182,14 @@ function PeopleView({ people }: { people: PeopleType[] }) {
           )
         })}
       </div>
-    </>
+    </span>
   )
 }
 
 function VideoView({ videos }: { videos: VideoType[] }) {
   const { setView } = useSearchBarStore()
   return (
-    <>
+    <span>
       <span className="flex justify-between px-4 pb-2">
         <p className="text-title-3-bold">Videos</p>
         <p
@@ -179,6 +201,6 @@ function VideoView({ videos }: { videos: VideoType[] }) {
         </p>
       </span>
       <Posts videos={videos} />
-    </>
+    </span>
   )
 }

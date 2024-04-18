@@ -6,6 +6,8 @@ import { Loader } from '@components/ui/loader'
 import { Top } from './top'
 import { People } from './people'
 import { Communities } from './communities'
+import { Posts } from './posts'
+import { Loops } from './loops'
 
 export type CommunityType = {
   id: string
@@ -45,19 +47,12 @@ export type VideoType = {
 }
 
 export default function Component() {
+  const { defaultTab, setView, keyword } = useSearchBarStore()
+
   const { data, isLoading } = useQuery({
-    queryFn: async () => await getTopResults('genuin'),
-    queryKey: ['top', 'search', 'genuin'],
+    queryFn: async () => await getTopResults(keyword),
+    queryKey: ['top', 'search', keyword],
   })
-
-  const { defaultTab, setView } = useSearchBarStore()
-
-  if (isLoading)
-    return (
-      <div className="flex h-full w-full items-center justify-center">
-        <Loader size="md" className="fill-primary" />
-      </div>
-    )
 
   return (
     <Tabs className="h-full w-full overflow-auto" defaultValue={defaultTab} value={defaultTab}>
@@ -99,22 +94,30 @@ export default function Component() {
         </TabsTrigger>
       </TabsList>
       <TabsContent value="TOP">
-        <Top
-          communities={data?.communities}
-          loops={data?.loops}
-          people={data?.people}
-          ranking={data?.rankings}
-          videos={data?.videos}
-        />
+        {isLoading ? (
+          <div className="flex h-full w-full items-center justify-center">
+            <Loader size="md" className="fill-primary" />
+          </div>
+        ) : (
+          <Top
+            communities={data?.communities}
+            loops={data?.loops ?? undefined}
+            people={data?.people}
+            ranking={data?.rankings}
+            videos={data?.videos}
+          />
+        )}
       </TabsContent>
-      <TabsContent value="VIDEOS">
-        <div>videos</div>
+      <TabsContent value="POSTS">
+        <div className="pt-4">
+          <Posts videos={data?.videos} />
+        </div>
       </TabsContent>
       <TabsContent value="COMMUNITIES">
         <Communities communities={data?.communities} />
       </TabsContent>
       <TabsContent value="LOOPS">
-        <div>loops</div>
+        <Loops loops={data?.loops ?? undefined} />
       </TabsContent>
       <TabsContent value="PEOPLE">
         <People people={data?.people} />

@@ -72,7 +72,7 @@ export async function fetchCommunityLoops(slug: string): Promise<{ loops: Commun
       return { loops: validateCommunityLoopList(res.data.data.conversations) }
     })
     .catch((e) => {
-      throw new Error('Something went wrong with loop detail!')
+      throw new Error('Something went wrong with loop community.!')
     })
 }
 

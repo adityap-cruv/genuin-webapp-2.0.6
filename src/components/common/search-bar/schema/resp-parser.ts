@@ -19,10 +19,8 @@ export function parseCommunities(communities: CommunitiesResType) {
   }))
 }
 
-export function parseLoops(loops: LoopsResType) {
-  return loops?.map<LoopType>((item) => {
-    return { id: item.chat_id, slug: item.slug, name: item.group.group_name }
-  })
+export function parseLoops(loops: LoopsResType): LoopsResType {
+  return loops
 }
 
 export function parsePeople(people: PeopleResType) {

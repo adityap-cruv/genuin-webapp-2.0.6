@@ -1,9 +1,12 @@
 import { useSearchBarStore } from './store'
-import InitialView from './views/initial'
+import { Recents } from './views/recents'
+import Suggestions from './views/suggestions'
 import TabsView from './views/tabs'
 
 export function SearchBody() {
   const { view } = useSearchBarStore()
-  if (view === 'INITIAL') return <InitialView />
+
+  if (view === 'SUGGESTION') return <Suggestions />
   if (view === 'TABS') return <TabsView />
+  if (view === 'RECENT') return <Recents />
 }

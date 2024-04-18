@@ -5,29 +5,34 @@ import { useSearchBarStore } from './store'
 import 'swiper/css'
 
 export function SearchBar() {
-  const { setView } = useSearchBarStore()
+  const { updateFocus, focusOnInput, focusOnModal } = useSearchBarStore()
+
   return (
-    <Popover
-      onOpenChange={(open) => {
-        if (!open) {
-          setTimeout(() => {
-            setView('INITIAL')
-          }, 200)
-        }
-      }}>
+    <Popover open={focusOnInput || focusOnModal}>
       <PopoverTrigger>
-        <div className="relative h-10 w-96">
-          <SearchInput />
-        </div>
+        <SearchInput />
       </PopoverTrigger>
       <PopoverContent
         side="bottom"
         sideOffset={10}
         avoidCollisions
+        className="h-[75vh] w-96 overflow-clip rounded-2xl p-0"
         onOpenAutoFocus={(e) => {
           e.preventDefault()
         }}
-        className="h-[60vh] w-96 overflow-clip rounded-2xl p-0">
+        onFocus={() => {
+          updateFocus(false, true)
+        }}
+        onInteractOutside={(e) => {
+          e.preventDefault()
+          setTimeout(() => {
+            const searchElement = document.getElementById('search-input') as HTMLInputElement
+            // eslint-disable-next-line eqeqeq
+            const focus = document.activeElement == searchElement
+            if (!focus && searchElement) searchElement.value = ''
+            updateFocus(focus, false)
+          }, 200)
+        }}>
         <SearchBody />
       </PopoverContent>
     </Popover>

@@ -15,13 +15,12 @@ import { removeAllAuthToken } from '@lib/api/instance'
 import SearchBar from '@components/common/search-bar'
 
 export function TopBar() {
-  const isEmbed = useGenuinOptions().embed
-  const config = useGenuinOptions().config
+  const { config, embed: isEmbed } = useGenuinOptions()
 
   return (
     <>
       {/* <div className="h-10 w-full bg-supplementary-red">heldldl</div> */}
-      <div className="z-20 flex w-full justify-center border-b border-monochrome-9  bg-new-off-white sm:flex">
+      <div className="z-20 flex w-full justify-center border-b border-monochrome-9  bg-monochrome-white sm:flex">
         <nav className="sticky top-0 flex h-[76px] w-full items-center justify-between px-2 xl:container">
           <Link href={{ pathname: PATH_NAME.home() }}>
             <AppLogo.logo className="fill-new-off-black" imageHeight={42} />
@@ -29,7 +28,8 @@ export function TopBar() {
           </Link>
           {config?.slogan?.image && <img src={config.slogan.image} className="h-10" alt="brand_web_logo" />}
           <div className="flex gap-x-3">
-            {/* {!isEmbed ? (
+            <SearchBar />
+            {!isEmbed ? (
               <>
                 <Link href={{ pathname: PATH_NAME.careers() }}>
                   <Button
@@ -50,8 +50,7 @@ export function TopBar() {
               </>
             ) : (
               <UserTick />
-            )} */}
-            <SearchBar />
+            )}
           </div>
         </nav>
       </div>

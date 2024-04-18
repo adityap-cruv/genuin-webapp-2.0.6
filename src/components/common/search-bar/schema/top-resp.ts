@@ -158,6 +158,7 @@ const videosSchema = z.array(VideoSchema).nullish()
 export type CommunitiesResType = z.infer<typeof communitiesSchema>
 
 export type LoopsResType = z.infer<typeof loopsSchema>
+export type LoopResType = z.infer<typeof LoopSchema>
 
 export type PeopleResType = z.infer<typeof peopleSchema>
 

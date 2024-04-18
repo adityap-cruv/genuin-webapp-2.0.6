@@ -2,6 +2,7 @@ import { CustomAvatar } from '@components/custom/custom-avatar'
 import { type PeopleType } from '.'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
+import { NoResults } from './no-results'
 
 export function People({ people }: { people?: PeopleType[] }) {
   if (people)
@@ -29,4 +30,6 @@ export function People({ people }: { people?: PeopleType[] }) {
         })}
       </div>
     )
+
+  return <NoResults />
 }
