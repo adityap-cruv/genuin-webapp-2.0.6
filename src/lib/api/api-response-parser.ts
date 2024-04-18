@@ -56,7 +56,7 @@ export function parseFeedResponse(videos: FeedResponseType) {
         profileImage: video.community.dp,
       },
       loop: {
-        id: video.group.group_id,
+        id: video.chat_id,
         slug: video.slug,
         name: video.group.group_name,
       },
