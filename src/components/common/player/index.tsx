@@ -134,7 +134,11 @@ function Mobile({
             description={videoDetails.video.description}
           />
         </div>
-        <CommentSheet videoId={videoDetails.video.id} commentCount={videoDetails.video.commentCount} />
+        <CommentSheet
+          videoDetails={videoDetails}
+          videoId={videoDetails.video.id}
+          commentCount={videoDetails.video.commentCount}
+        />
         <div className="absolute bottom-0 h-48 w-full bg-gradient-to-t from-[#111111b3] to-[#11111100]"></div>
       </div>
     </div>
