@@ -45,15 +45,18 @@ export function parseVideosFromLoop(
 }
 
 export function parseFeedResponse(videos: FeedResponseType) {
+  //! Sometime old video which doesn't have community comes into response.
+  videos = videos.filter((item, index, arr) => item.feed.community)
+
   return videos.map<VideoPlayerModalType>((item) => {
     const video = item.feed
     return {
       community: {
-        handle: video.community.handle,
-        id: video.community.community_id,
-        slug: video.community.slug,
-        name: video.community.name,
-        profileImage: video.community.dp,
+        handle: video.community?.handle ?? '',
+        id: video.community?.community_id ?? '',
+        slug: video.community?.slug ?? '',
+        name: video.community?.name ?? '',
+        profileImage: video.community?.dp ?? '',
       },
       loop: {
         id: video.chat_id,
