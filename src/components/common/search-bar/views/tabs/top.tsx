@@ -32,7 +32,7 @@ export function Top({ communities, loops, people, ranking, videos }: Props) {
     if (item === 'people' && people) compoArr.push(<PeopleView people={people} />)
   })
   if (videos) compoArr.push(<VideoView videos={videos} />)
-  if (compoArr.length !== 0) return <div className="flex flex-col gap-y-4 py-4">{compoArr}</div>
+  if (compoArr.length !== 0) return <div className="flex flex-col gap-y-4 pb-16 pt-4 sm:py-4">{compoArr}</div>
 
   return <NoResults />
 }
@@ -151,7 +151,7 @@ function LoopView({ loops }: { loops: LoopResType[] }) {
 }
 
 function PeopleView({ people }: { people: PeopleType[] }) {
-  const { setView } = useSearchBarStore()
+  const { setView, close } = useSearchBarStore()
   return (
     <span>
       <span className="flex justify-between px-4 pb-2">
@@ -168,6 +168,7 @@ function PeopleView({ people }: { people: PeopleType[] }) {
         {people.slice(0, 4).map((person) => {
           return (
             <Link
+              onClick={close}
               href={PATH_NAME.profile(person.userName)}
               className="flex flex-1 flex-col items-center gap-y-1"
               key={person.id}>

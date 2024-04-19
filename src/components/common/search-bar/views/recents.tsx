@@ -7,6 +7,7 @@ import { PATH_NAME } from '@lib/utils/constants/path'
 import { IcLoop } from '@icons/ic-loop'
 import { type ReactNode } from 'react'
 import Link from 'next/link'
+import { ItemShimmer } from './item-shimmer'
 
 export function Recents() {
   const {
@@ -20,14 +21,11 @@ export function Recents() {
 
   async function deleteClickHandler(id?: string, all?: boolean) {
     const response = await deleteRecent(id, all)
-    console.log('response:', response)
     // TODO: What should we do in case of failuere in deletion api.
     if (response) void refetch()
   }
 
-  console.log('data::', list)
-
-  if (isLoading) return <div>loading..</div>
+  if (isLoading) return <ItemShimmer count={10} />
   if (list && list.length !== 0)
     return (
       <div className="h-full w-full overflow-auto px-3 py-4">
@@ -119,6 +117,8 @@ export function Recents() {
         })}
       </div>
     )
+
+  return <div className="p-6 text-body-1-demi text-tertiary">Try searching for communities, topics, or keywords</div>
 }
 
 type ItemProps = {

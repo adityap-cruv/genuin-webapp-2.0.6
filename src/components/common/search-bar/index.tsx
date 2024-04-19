@@ -1,16 +1,23 @@
 import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
 import { SearchInput } from './input'
 import { SearchBody } from './body'
+import { type ReactNode } from 'react'
 import { useSearchBarStore } from './store'
 import 'swiper/css'
+import { Sheet, SheetContent, SheetTrigger } from '@components/ui/sheet'
 
-export function SearchBar() {
-  const { updateFocus, focusOnInput, focusOnModal } = useSearchBarStore()
+export const SearchBar = {
+  mobile: Mobile,
+  desktop: Desktop,
+}
+
+function Desktop() {
+  const { updateFocus, isOpen, close } = useSearchBarStore()
 
   return (
-    <Popover open={focusOnInput || focusOnModal}>
+    <Popover open={isOpen}>
       <PopoverTrigger>
-        <SearchInput />
+        <SearchInput.desktop />
       </PopoverTrigger>
       <PopoverContent
         side="bottom"
@@ -29,8 +36,9 @@ export function SearchBar() {
             const searchElement = document.getElementById('search-input') as HTMLInputElement
             // eslint-disable-next-line eqeqeq
             const focus = document.activeElement == searchElement
+            if (!focus) close()
             if (!focus && searchElement) searchElement.value = ''
-            updateFocus(focus, false)
+            // updateFocus(focus, false)
           }, 200)
         }}>
         <SearchBody />
@@ -39,4 +47,14 @@ export function SearchBar() {
   )
 }
 
-export default SearchBar
+function Mobile({ children }: { children: ReactNode }) {
+  return (
+    <Sheet>
+      <SheetTrigger>{children}</SheetTrigger>
+      <SheetContent showDefaultClose={false} className="w-full border-0 p-0 outline-0" side={'right'}>
+        <SearchInput.mobile />
+        <SearchBody />
+      </SheetContent>
+    </Sheet>
+  )
+}

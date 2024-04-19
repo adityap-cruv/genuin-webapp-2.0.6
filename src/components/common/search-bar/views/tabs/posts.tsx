@@ -5,8 +5,10 @@ import { PATH_NAME } from '@lib/utils/constants/path'
 import Image from 'next/image'
 import icPlay from '@icons/player-controls/icPlay.svg'
 import { NoResults } from './no-results'
+import { useSearchBarStore } from '../../store'
 
 export function Posts({ videos }: { videos?: VideoType[] }) {
+  const { close } = useSearchBarStore()
   if (videos)
     return (
       <div className="mb-2 grid grid-cols-2 gap-4 px-2">
@@ -14,6 +16,7 @@ export function Posts({ videos }: { videos?: VideoType[] }) {
           <Link
             href={PATH_NAME.video(item.slug)}
             key={index}
+            onClick={close}
             className="group/video relative flex aspect-reel w-full items-center justify-center duration-300 hover:cursor-pointer">
             <img src={item.thumbnail ?? ''} className="h-full w-full rounded-xl object-fill" />
             <div className="absolute bottom-2 left-2">

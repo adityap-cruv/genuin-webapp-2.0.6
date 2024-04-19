@@ -7,7 +7,7 @@ import { NoResults } from './no-results'
 export function People({ people }: { people?: PeopleType[] }) {
   if (people)
     return (
-      <div className="flex flex-col px-2 pt-2">
+      <div className="flex flex-col px-2 pb-16 pt-2 sm:py-4">
         {people.map((item) => {
           return (
             <Link

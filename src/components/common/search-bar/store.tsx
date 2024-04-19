@@ -11,12 +11,14 @@ type StatesType = {
   // to control the behavior of close and open modal
   focusOnInput: boolean
   focusOnModal: boolean
+  isOpen: boolean
 }
 
 type ActionsType = {
   setView: (view: ViewType, tab?: TabType) => void
   setKeyword: (value: string) => void
   updateFocus: (focusOnInput?: boolean, focusOnModal?: boolean) => void
+  close: () => void
 }
 
 const initialState: StatesType = {
@@ -25,6 +27,7 @@ const initialState: StatesType = {
   keyword: '',
   focusOnInput: false,
   focusOnModal: false,
+  isOpen: false,
 }
 
 export const useSearchBarStore = create<StatesType & ActionsType>((set) => {
@@ -37,18 +40,17 @@ export const useSearchBarStore = create<StatesType & ActionsType>((set) => {
       value.length === 0 ? set({ keyword: value, view: 'RECENT' }) : set({ keyword: value, view: 'SUGGESTION' })
     },
     updateFocus(focusOnInput, focusOnModal) {
-      // if (typeof focusOnInput !== 'undefined') set({ focusOnInput })
-      // if (typeof focusOnModal !== 'undefined') set({ focusOnModal })
       set((state) => {
         if (typeof focusOnInput !== 'undefined') state.focusOnInput = focusOnInput
         if (typeof focusOnModal !== 'undefined') state.focusOnModal = focusOnModal
-        if (!state.focusOnInput && !state.focusOnModal) {
-          state.keyword = ''
-          state.defaultTab = 'TOP'
-          state.view = 'RECENT'
-        }
+        state.isOpen = state.focusOnInput || state.focusOnModal
         return { ...state }
       })
+    },
+    close() {
+      const searchElement = document.getElementById('search-input') as HTMLInputElement
+      searchElement.value = ''
+      set({ focusOnModal: false, focusOnInput: false, isOpen: false, keyword: '', defaultTab: 'TOP', view: 'RECENT' })
     },
   }
 })

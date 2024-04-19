@@ -12,7 +12,7 @@ import { CustomAvatar } from '@components/custom/custom-avatar'
 import { LogoutIcon } from '@icons/logout'
 import { BurgerIcon } from '@icons/burger-icon'
 import { removeAllAuthToken } from '@lib/api/instance'
-import SearchBar from '@components/common/search-bar'
+import { SearchBar } from '@components/common/search-bar'
 
 export function TopBar() {
   const { config, embed: isEmbed } = useGenuinOptions()
@@ -28,7 +28,7 @@ export function TopBar() {
           </Link>
           {config?.slogan?.image && <img src={config.slogan.image} className="h-10" alt="brand_web_logo" />}
           <div className="flex gap-x-3">
-            <SearchBar />
+            <SearchBar.desktop />
             {!isEmbed ? (
               <>
                 <Link href={{ pathname: PATH_NAME.careers() }}>

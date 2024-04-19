@@ -9,7 +9,7 @@ import { usePathname } from 'next/navigation'
 import { PopularIcon, HomeIcon, LatestIcon } from '@icons/side-bar-icons'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { PATH_NAME } from '@lib/utils/constants/path'
-import { X } from 'lucide-react'
+import { Search, X } from 'lucide-react'
 import { RecentCommunities } from './recent-communities'
 import { MOBILE_DOWNLOAD_APP_LINK } from '@lib/constants'
 import { AppLogo } from '@components/ui/app-logo'
@@ -20,7 +20,8 @@ import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { BurgerIcon } from '@icons/burger-icon'
 import { LogoutIcon } from '@icons/logout'
-import { axiosInstance, removeAllAuthToken } from '@lib/api/instance'
+import { removeAllAuthToken } from '@lib/api/instance'
+import { SearchBar } from '@components/common/search-bar'
 
 const navVariant = cva('sticky top-0 flex z-40 h-[76px] w-full items-center justify-between  px-2', {
   variants: {
@@ -58,6 +59,9 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
         )}
       </span>
       <span className="flex items-center gap-x-2">
+        <SearchBar.mobile>
+          <Search className="stroke-primary-600" />
+        </SearchBar.mobile>
         {!isEmbed ? (
           <>
             <Link href={MOBILE_DOWNLOAD_APP_LINK} target="_blank">

@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { useSearchBarStore } from '../store'
 import { fetchSuggestions, postRecents } from '../api'
-import { Loader } from '@components/ui/loader'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { IcLoop } from '@icons/ic-loop'
 import Link from 'next/link'
@@ -9,6 +8,7 @@ import { PATH_NAME } from '@lib/utils/constants/path'
 import { NoResults } from './tabs/no-results'
 import { RECENT_SEARCH_CONTENT_TYPE } from '@lib/constants'
 import { type ReactNode } from 'react'
+import { ItemShimmer } from './item-shimmer'
 
 export default function Suggestions() {
   return (
@@ -117,8 +117,14 @@ function ListItem({
   urlToGo: string
   avatar: ReactNode
 }) {
+  const { close } = useSearchBarStore()
   return (
-    <Link href={urlToGo} className="flex items-center gap-x-3 rounded-md px-3 py-2 hover:bg-tertiary-200">
+    <Link
+      href={urlToGo}
+      onClick={() => {
+        close()
+      }}
+      className="flex items-center gap-x-3 rounded-md px-3 py-2 hover:bg-tertiary-200">
       {Avatar}
       <span>
         {title && <p className="line-clamp-1 break-all text-body-1-bold">{title}</p>}
@@ -129,11 +135,7 @@ function ListItem({
 }
 
 function SuggestionsShimmer() {
-  return (
-    <div className="flex h-full w-full items-center justify-center">
-      <Loader size="md" className="fill-primary" />
-    </div>
-  )
+  return <ItemShimmer count={10} />
 }
 
 function Bottom() {

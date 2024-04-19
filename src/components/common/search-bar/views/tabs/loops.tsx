@@ -7,11 +7,12 @@ import icLock from '@icons/icLock.svg'
 import icPlay from '@icons/player-controls/icPlay.svg'
 import Image from 'next/image'
 import { NoResults } from './no-results'
+import { useSearchBarStore } from '../../store'
 
 export function Loops({ loops }: { loops?: LoopResType[] }) {
   if (loops)
     return (
-      <div className="flex flex-col gap-y-3 px-4 py-4">
+      <div className="flex flex-col gap-y-3 px-4 pb-16 pt-4 sm:py-4">
         {loops.map((item) => (
           <LoopItem key={item.chat_id} loop={item} />
         ))}
@@ -22,6 +23,7 @@ export function Loops({ loops }: { loops?: LoopResType[] }) {
 }
 
 export function LoopItem({ loop }: { loop: LoopResType }) {
+  const { close } = useSearchBarStore()
   function getCollaboratorsCountString(count: any) {
     let str = ' + '
     if (!count) return
@@ -66,7 +68,7 @@ export function LoopItem({ loop }: { loop: LoopResType }) {
   }
 
   return (
-    <span className="relative">
+    <span onClick={close} className="relative">
       <Link href={{ pathname: PATH_NAME.loop(loop.slug) }}>
         <div className="relative w-full rounded-lg border border-tertiary-300 bg-monochrome-white">
           <div className="w-[70%] items-center p-[3%]">
@@ -107,13 +109,13 @@ export function LoopItem({ loop }: { loop: LoopResType }) {
           </div>
         </div>
       ) : (
-        <RenderedImages videos={loop.latest_messages} />
+        <RenderedImages videos={loop.latest_messages} slug={loop.slug} />
       )}
     </span>
   )
 }
 
-function RenderedImages({ videos }: { videos: any[] }) {
+function RenderedImages({ videos, slug }: { videos: any[]; slug: string }) {
   const videosLength = videos.length
   const transformValues: any = {
     1: [50],
@@ -137,7 +139,8 @@ function RenderedImages({ videos }: { videos: any[] }) {
     <span>
       {videos.map((item: any, index: number) => {
         return (
-          <div
+          <Link
+            href={{ pathname: PATH_NAME.loop(slug), query: 'show_videos=1' }}
             key={index}
             className="group/video absolute top-[50%] flex aspect-reel h-[80%] items-center justify-center rounded hover:cursor-pointer"
             style={{
@@ -150,7 +153,7 @@ function RenderedImages({ videos }: { videos: any[] }) {
             <div className="absolute inset-0 hidden h-full w-full items-center justify-center bg-monochrome-black/30 group-hover/video:flex">
               <Image src={icPlay} alt="play" className="absolute" />
             </div>
-          </div>
+          </Link>
         )
       })}
     </span>

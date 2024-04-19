@@ -20,7 +20,6 @@ export async function getTopResults(query: string) {
       }
     })
     .catch((e) => {
-      console.log('Something went wrong with top api.')
       throw new Error('Something went wrong in top api.')
     })
 }
@@ -37,7 +36,6 @@ export async function fetchSuggestions(query: string) {
       return validateSuggestionsResp(resData)
     })
     .catch((e) => {
-      console.log('error in suggestions api::', e)
       throw new Error('Something went wrong..')
     })
 }
@@ -50,7 +48,6 @@ export async function fetchRecents() {
       return validateRecentsResp(resData.recent_searches)
     })
     .catch((e) => {
-      console.log('error::', e)
       throw new Error('Something went wrong...')
     })
 }
@@ -58,13 +55,12 @@ export async function fetchRecents() {
 export async function deleteRecent(id?: string, all?: boolean) {
   return await axiosInstance
     .delete('/api/v3/global_search/recent', {
-      params: { id, delele_all: all },
+      params: { id, delete_all: all },
     })
     .then((res) => {
       return true
     })
     .catch((e) => {
-      console.log('error in deletion of recent::', e)
       return false
     })
 }
