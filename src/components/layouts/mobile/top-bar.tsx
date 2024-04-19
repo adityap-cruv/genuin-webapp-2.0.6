@@ -45,6 +45,9 @@ type Props = {
 
 export function TopBar({ variant = 'light', className, showClose = false, onClose }: Props) {
   const isEmbed = useGenuinOptions().embed
+  // If variant is transparent than we have removed show download button.
+  const showDownloadButton = variant !== 'trasparent'
+
   return (
     <nav className={cn(navVariant({ variant }), className)}>
       <span className="flex items-center ">
@@ -59,26 +62,22 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
         )}
       </span>
       <span className="flex items-center gap-x-2">
-        <SearchBar.mobile>
-          <Search className="stroke-primary-600" />
-        </SearchBar.mobile>
-        {!isEmbed ? (
-          <>
-            <Link href={MOBILE_DOWNLOAD_APP_LINK} target="_blank">
-              <Button
-                className={
-                  variant === 'light'
-                    ? 'bg-new-off-black text-monochrome-white hover:bg-new-dark-grey'
-                    : 'bg-new-off-white text-new-off-black hover:bg-new-off-black hover:text-new-off-white'
-                }>
-                <p className="text-body-1-demi">Download Genuin</p>
-              </Button>
-            </Link>
-          </>
-        ) : (
-          <UserTick />
+        {!isEmbed && showDownloadButton && (
+          <Link href={MOBILE_DOWNLOAD_APP_LINK} target="_blank">
+            <Button
+              className={
+                variant === 'light'
+                  ? 'bg-new-off-black text-monochrome-white hover:bg-new-dark-grey'
+                  : 'bg-new-off-white text-new-off-black hover:bg-new-off-black hover:text-new-off-white'
+              }>
+              <p className="text-body-1-demi">Download Genuin</p>
+            </Button>
+          </Link>
         )}
-
+        <SearchBar.mobile>
+          <Search className={cn(variant === 'light' ? 'stroke-secondary' : 'stroke-monochrome-white')} />
+        </SearchBar.mobile>
+        {isEmbed && <UserTick />}
         {showClose && (
           <X
             onClick={() => {
@@ -90,23 +89,6 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
             )}
           />
         )}
-        {/* {showClose ? (
-          <X
-            className={cn(
-              'h-6 w-6',
-              variant === 'light' ? 'stroke-new-off-black' : 'stroke-new-off-white stroke-[3px]'
-            )}
-          />
-        ) : (
-          <Search
-            className={cn(
-              'h-7 w-7',
-              variant === 'light'
-                ? 'stroke-new-off-black'
-                : 'rounded-full bg-monochrome-black/20 stroke-new-off-white p-1.5'
-            )}
-          />
-        )} */}
       </span>
     </nav>
   )

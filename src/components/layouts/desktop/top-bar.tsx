@@ -31,14 +31,14 @@ export function TopBar() {
             <SearchBar.desktop />
             {!isEmbed ? (
               <>
-                <Link href={{ pathname: PATH_NAME.careers() }}>
+                {/* <Link href={{ pathname: PATH_NAME.careers() }}>
                   <Button
                     variant="outline"
                     size="custom"
                     className="px-4 py-3 hover:bg-new-off-black hover:text-new-off-white">
                     <p className="text-new-para-2 font-semibold">We're hiring!</p>
                   </Button>
-                </Link>
+                </Link> */}
                 <DownloadAppDialog>
                   <Button
                     variant="default"
