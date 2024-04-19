@@ -116,7 +116,7 @@ export function OtpInput() {
   return (
     <ModalShell>
       <div className="flex flex-col items-center">
-        <p className="mb-6 text-center text-heading-3">Enter code</p>
+        <p className="mb-6 text-center text-title-1-demi sm:text-heading-3">Enter code</p>
         <p className="w-full text-center text-title-3-med text-tertiary">
           Enter the 6-digit code sent to: {formData.phone}
         </p>

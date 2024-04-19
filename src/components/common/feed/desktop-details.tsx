@@ -237,23 +237,40 @@ function CommentInput({
     if (currentComment.length !== 0) {
       const newComment = {
         owner: {
+          member_id: user?.id,
+          name: user?.name,
           nickname: user?.nickname,
+          bio: user?.bio,
           is_avatar: user?.isAvatar,
           profile_image: user?.image,
         },
-        comment: {
-          created_at: new Date().toISOString(),
-          type: 'text',
-          text: currentComment,
-          no_of_sparks: 0,
-          url: null,
-          thumbnail: null,
-          share_string: null,
-        },
+        chat_id: null,
+        conversation_id: null,
+        comment_id: null,
+        type: 'text',
+        url: null,
+        video_url_m3u8: null,
+        thumbnail: null,
+        link: null,
+        duration: null,
+        meta_data: null,
+        created_at: Date.now(),
+        no_of_views: 0,
+        is_read: false,
+        comment_text: currentComment,
+        comment_data: JSON.stringify([currentComment]),
+        no_of_sparks: 0,
+        is_sparked: false,
       }
-      await createComment(videoId, loopId, 3, currentComment)
-      setComments((prevComments: any) => [newComment, ...prevComments])
-      setCurrentComment('')
+      try {
+        const commentResponse = await createComment(videoId, loopId, 3, currentComment)
+        if (commentResponse.code === 200) {
+          setComments((prevComments: any) => [newComment, ...prevComments])
+          setCurrentComment('')
+        }
+      } catch (e) {
+        throw new Error()
+      }
     }
   }
   return (
