@@ -80,6 +80,7 @@ export function parseFeedResponse(videos: FeedResponseType) {
         thumbnail: video.messages[0].thumbnail_url ?? '',
         attachedLink: video.messages[0].attached_link,
         description: '',
+        isSparked: video.messages[0].is_sparked,
       },
     }
   })

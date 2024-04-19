@@ -21,9 +21,10 @@ type DesktopProps = {
   shareUrl: string
   attachedLink?: string | null
   description?: string | null
+  isSparked?: boolean | null | undefined
 }
 
-function Desktop({ shareUrl, sparkCount, videoId, attachedLink, description }: DesktopProps) {
+function Desktop({ shareUrl, sparkCount, videoId, attachedLink, description, isSparked }: DesktopProps) {
   const { toggleMuted, muted, shouldPlay } = usePlayerControlStore((state) => ({
     toggleMuted: state.toggleMuted,
     muted: state.muted,
@@ -64,6 +65,7 @@ function Desktop({ shareUrl, sparkCount, videoId, attachedLink, description }: D
           videoId={videoId}
           attachedLink={attachedLink}
           description={description}
+          isSparked={isSparked}
         />
       </div>
       <PlayerProgressBar />
@@ -120,6 +122,7 @@ type MobileProps = {
   description?: string | null
   commentCount: number
   slug: string
+  isSparked?: boolean | null | undefined
   owner: {
     userName: string
     profileImage: string
@@ -128,7 +131,17 @@ type MobileProps = {
   }
 }
 
-function Loop({ shareUrl, sparkCount, commentCount, slug, videoId, attachedLink, description, owner }: MobileProps) {
+function Loop({
+  shareUrl,
+  sparkCount,
+  commentCount,
+  slug,
+  videoId,
+  attachedLink,
+  description,
+  owner,
+  isSparked,
+}: MobileProps) {
   return (
     <div className="flex justify-between px-2">
       <div className="flex w-4/5 flex-col justify-end">
@@ -161,6 +174,7 @@ function Loop({ shareUrl, sparkCount, commentCount, slug, videoId, attachedLink,
           videoSlug={slug}
           attachedLink={attachedLink}
           description={description}
+          isSparked={isSparked}
         />
       </div>
     </div>

@@ -39,6 +39,7 @@ type MobileActionsProps = {
   videoId: string
   commentCount: number
   description?: string | null
+  isSparked?: boolean | null | undefined
 }
 // TODO: Fix their is bug when text length is bigger than devicesize fix it.
 function Mobile({
@@ -49,6 +50,7 @@ function Mobile({
   videoSlug,
   commentCount,
   description,
+  isSparked,
 }: MobileActionsProps) {
   // const { shareFn } = useAdaptiveShare()
   const { openComments, closeComments, commentsIsOpen } = useCommentSheetStore((state) => ({
@@ -60,7 +62,7 @@ function Mobile({
   // TODO: Why?
   const usersdata = JSON.parse(localStorage.getItem('_user_id_') ?? '')
   const userId = usersdata.state.userId ?? ''
-  const [isSparked, setIsSparked] = useState(false)
+  const [isVideoSparked, setIsSparked] = useState(isSparked)
   const [stateSparkCount, setStateSparkCount] = useState(sparkCount)
   const embed = useGenuinOptions().embed
   const user = useGenuinOptions().user
@@ -120,9 +122,9 @@ function Mobile({
               ? user
                 ? async () => {
                     // TODO: remove api call from here and do not update states 2 times.
-                    await videoSpark(videoId, 2, !isSparked)
+                    await videoSpark(videoId, 2, !isVideoSparked)
                     setIsSparked((prevIsSparked) => !prevIsSparked)
-                    setStateSparkCount((prevCount) => (isSparked ? prevCount - 1 : prevCount + 1))
+                    setStateSparkCount((prevCount) => (isVideoSparked ? prevCount - 1 : prevCount + 1))
                   }
                 : () => {
                     openModal({
@@ -153,7 +155,7 @@ function Mobile({
                     .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
                 }
           }>
-          <Image src={isSparked ? icSparkTrue : icSpark} height={32} width={32} alt="spark" />
+          <Image src={isVideoSparked ? icSparkTrue : icSpark} height={32} width={32} alt="spark" />
           <p className="flex justify-center text-body-1-demi text-monochrome-white">
             {abbreviateNumber(stateSparkCount)}
           </p>
@@ -211,12 +213,13 @@ type DesktopActionsProps = {
   shareUrl: string
   attachedLink?: string | null
   description?: string | null
+  isSparked?: boolean | null | undefined
 }
 
-function Desktop({ shareUrl, sparkCount, videoId, attachedLink, description }: DesktopActionsProps) {
+function Desktop({ shareUrl, sparkCount, videoId, attachedLink, description, isSparked }: DesktopActionsProps) {
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
-  const [isSparked, setIsSparked] = useState(false)
+  const [isVideoSparked, setIsSparked] = useState(isSparked)
   const [stateSparkCount, setStateSparkCount] = useState(sparkCount)
   const usersdata = JSON.parse(localStorage.getItem('_user_id_') ?? '')
   const userId = usersdata.state.userId ?? ''
@@ -247,9 +250,9 @@ function Desktop({ shareUrl, sparkCount, videoId, attachedLink, description }: D
             ? async () => {
                 // TODO: remove api call from here. don't manage 2 states for single functionality.
                 // TODO: update state if and only if api request to updation is successful.
-                await videoSpark(videoId, 2, !isSparked)
+                await videoSpark(videoId, 2, !isVideoSparked)
                 setIsSparked((prevIsSparked) => !prevIsSparked)
-                setStateSparkCount((prevCount) => (isSparked ? prevCount - 1 : prevCount + 1))
+                setStateSparkCount((prevCount) => (isVideoSparked ? prevCount - 1 : prevCount + 1))
               }
             : () => {
                 openModal({
@@ -258,7 +261,7 @@ function Desktop({ shareUrl, sparkCount, videoId, attachedLink, description }: D
                 })
               }
         }>
-        <Image src={isSparked ? icSparkTrue : icSpark} height={32} width={32} alt="spark" />
+        <Image src={isVideoSparked ? icSparkTrue : icSpark} height={32} width={32} alt="spark" />
         <p className="flex justify-center text-body-1-demi text-monochrome-white">
           {abbreviateNumber(stateSparkCount)}
         </p>
