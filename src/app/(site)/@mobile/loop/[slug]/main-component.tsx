@@ -86,12 +86,12 @@ export function MainComponent({ loopDetails }: Props) {
             </p>
           </div>
           <div className=" my-3 overflow-hidden rounded-lg border border-solid border-tertiary-200 p-4">
-            <div className="flex">
+            <div className="flex gap-x-2">
               <div className="flex flex-1 flex-col items-start">
                 <p className="text-body-1-demi text-tertiary">Created by</p>
                 <Link href={{ pathname: PATH_NAME.profile(loopDetails.owner.username) }}>
                   <div className="my-2 flex items-center">
-                    <div className="bg-red-400 h-6 w-6">
+                    <div className="bg-red-400 h-6 w-6 shrink-0">
                       <CustomAvatar
                         className="h-full w-full"
                         fallbackString={loopDetails.owner.name ?? ''}
@@ -99,7 +99,9 @@ export function MainComponent({ loopDetails }: Props) {
                         isAvatar={loopDetails.owner.is_avatar}
                       />
                     </div>
-                    <p className="ml-1 text-body-1-bold text-secondary">@{loopDetails.owner.username}</p>
+                    <p className="ml-1 line-clamp-1 break-all text-body-1-bold text-secondary">
+                      @{loopDetails.owner.username}
+                    </p>
                   </div>
                 </Link>
               </div>
@@ -108,7 +110,7 @@ export function MainComponent({ loopDetails }: Props) {
                 {/* todo change to community data */}
                 <Link href={{ pathname: PATH_NAME.community(loopDetails.community.slug) }}>
                   <div className="my-2 flex items-center">
-                    <div className="bg-red-400 h-6 w-6">
+                    <div className="bg-red-400 h-6 w-6 shrink-0">
                       <CustomAvatar
                         className="h-full w-full"
                         imageUrl={loopDetails.community.dp ?? ''}
@@ -116,7 +118,9 @@ export function MainComponent({ loopDetails }: Props) {
                         isAvatar={false}
                       />
                     </div>
-                    <p className="ml-1 text-body-1-bold text-secondary">{loopDetails.community.name}</p>
+                    <p className="ml-1 line-clamp-1 break-all text-body-1-bold text-secondary">
+                      {loopDetails.community.name}
+                    </p>
                   </div>
                 </Link>
               </div>
