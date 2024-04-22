@@ -16,7 +16,7 @@ import { Toaster } from '@components/ui/toaster'
 import { getTimeAgo, openModal } from '@lib/utils'
 import { FeedShimmer } from '../shimmers/feed-shimmer'
 import { Input } from '@components/ui/input'
-import { createComment, joinCommunity } from '@lib/api/video'
+import { createComment, joinCommunity, leaveCommunity } from '@lib/api/video'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { DownloadDialog } from '../download-dialog'
 import { ShareIcon } from '@icons/share-icon'
@@ -35,6 +35,28 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
   const [currentComment, setCurrentComment] = useState('')
   const [comments, setComments] = useState<CommentListType>([])
   const user = useGenuinOptions().user
+
+  async function toggleCommunityJoinState() {
+    !isCommunityJoined
+      ? await joinCommunity(
+          false,
+          [community.id],
+          [
+            {
+              user_id: user?.id,
+            },
+          ]
+        ).then((res) => {
+          if (res.code === 200) {
+            setIsCommunityJoined((prev) => !prev)
+          }
+        })
+      : await leaveCommunity(community.id).then((res) => {
+          if (res.code === 200) {
+            setIsCommunityJoined((prev) => !prev)
+          }
+        })
+  }
 
   return (
     <div className="relative flex h-full flex-1 flex-col overflow-x-clip bg-monochrome-white pb-16 pl-2">
@@ -82,22 +104,7 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
                   onClick={
                     user
                       ? async () => {
-                          // TODO: Make simple function for and manage state there.
-                          !isCommunityJoined
-                            ? await joinCommunity(
-                                false,
-                                [community.id],
-                                [
-                                  {
-                                    user_id: user?.id,
-                                  },
-                                ]
-                              ).then((res) => {
-                                if (res.code === 200) {
-                                  setIsCommunityJoined((prev) => !prev)
-                                }
-                              })
-                            : setIsCommunityJoined((prev) => !prev)
+                          await toggleCommunityJoinState()
                         }
                       : () => {
                           openModal({

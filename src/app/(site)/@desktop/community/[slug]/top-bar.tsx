@@ -7,7 +7,6 @@ import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { getCurrentShareUrl, openModal } from '@lib/utils'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
-import { joinCommunity } from '@lib/api/video'
 import { ShareIcon } from '@icons/share-icon'
 
 type Props = {
@@ -25,6 +24,7 @@ type Props = {
   communityId?: string
   isCommunityJoined?: any
   setIsCommunityJoined?: any
+  toggleCommunityJoinState?: any
 }
 
 export const TopStickyBar = {
@@ -41,6 +41,7 @@ export function Desktop({
   communityId,
   isCommunityJoined,
   setIsCommunityJoined,
+  toggleCommunityJoinState,
   ...props
 }: Props) {
   const navAnimationControl = useAnimationControls()
@@ -90,21 +91,7 @@ export function Desktop({
           onClick={
             user
               ? async () => {
-                  !isCommunityJoined
-                    ? await joinCommunity(
-                        false,
-                        [communityId],
-                        [
-                          {
-                            user_id: user?.id,
-                          },
-                        ]
-                      ).then((res) => {
-                        if (res.code === 200) {
-                          setIsCommunityJoined((prev: any) => !prev)
-                        }
-                      })
-                    : setIsCommunityJoined((prev: any) => !prev)
+                  await toggleCommunityJoinState()
                 }
               : () => {
                   openModal({
