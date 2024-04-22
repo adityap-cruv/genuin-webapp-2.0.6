@@ -1,5 +1,4 @@
-import { fetchCommunityDetails } from '@lib/api/community'
-import { RootDetails } from './root-details'
+import { CommunityDetails } from './root-details'
 import { RootFeed } from './root-feed'
 import { type Metadata } from 'next'
 import { PATH_NAME } from '@lib/utils/constants/path'
@@ -18,15 +17,8 @@ interface Props {
 export default async function Component({ params, searchParams }: Props) {
   if (searchParams.feed === '1') {
     return <RootFeed slug={params.slug} />
-  } else {
-    let communityData
-    try {
-      communityData = await fetchCommunityDetails(params.slug)
-    } catch (error) {
-      throw new Error()
-    }
-    return <RootDetails communityDetails={communityData} />
   }
+  return <CommunityDetails slug={params.slug} />
 }
 
 interface CommunityDataType {

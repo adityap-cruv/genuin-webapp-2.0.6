@@ -39,7 +39,7 @@ export function Details({ communityDetails }: Props) {
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
   const { isEmbed, parentUrl } = useGenuinOptions((state) => ({ isEmbed: state.embed, parentUrl: state.parentUrl }))
-  const [isCommunityJoined, setIsCommunityJoined] = useState(false)
+  const [isCommunityJoined, setIsCommunityJoined] = useState(!!communityDetails.logged_in_user_role)
   const user = useGenuinOptions().user
   const searchParams = Object.fromEntries(useSearchParams())
 
@@ -71,7 +71,11 @@ export function Details({ communityDetails }: Props) {
         <div className="px-4 py-2 pt-4">
           <div className="flex justify-end">
             <div className="flex items-center gap-x-2">
-              {isEmbed ? (
+              {isEmbed && communityDetails.is_community_join_requested ? (
+                <Button size="custom" className="border border-primary" variant={'outline'}>
+                  <p className={`px-4 py-1.5 text-body-1-demi text-monochrome-white text-primary`}>Requested</p>
+                </Button>
+              ) : (
                 <Button
                   size="sm"
                   className={`${isCommunityJoined && 'border border-primary '}`}
@@ -111,7 +115,8 @@ export function Details({ communityDetails }: Props) {
                     {isCommunityJoined ? 'Joined' : 'Join Community'}
                   </p>
                 </Button>
-              ) : (
+              )}
+              {!isEmbed && (
                 <Button
                   variant="default"
                   size="sm"

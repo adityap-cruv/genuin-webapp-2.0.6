@@ -1,6 +1,5 @@
-import { fetchCommunityDetails } from '@lib/api/community'
 import { RootFeed } from './root-feed'
-import { RootDetails } from './root-details'
+import { CommunityDetails } from './root-details'
 import { fetchMetadata } from '@lib/api/meta-data'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { type Metadata } from 'next'
@@ -20,9 +19,7 @@ export default async function Component({ params, searchParams }: Props) {
 }
 
 async function Details({ slug }: { slug: string }) {
-  const communityData = await fetchCommunityDetails(slug)
-  return <p>mobile</p>
-  // return <RootDetails communityDetails={communityData} />
+  return <CommunityDetails slug={slug} />
 }
 
 interface CommunityDataType {
