@@ -81,11 +81,6 @@ type StateType = {
    * Video Size boxes for video.
    */
   sizeBoxes: SizeBoxesType
-  /**
-   * If initially data is being set.
-   * @default true
-   */
-  isLoading: boolean
   isMobile: boolean
   os: string
   isIframe: boolean
@@ -112,7 +107,6 @@ const initialState: StateType = {
   logoUrl: '',
   brandWebLogo: '',
   showNavbar: true,
-  isLoading: true,
   isMobile: true,
   sizeBoxes: {
     default: { height: -1, width: -1 },
