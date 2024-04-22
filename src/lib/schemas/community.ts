@@ -73,6 +73,8 @@ const CommunityDetailsSchema = z.object({
   type: z.number(),
   description: z.string().nullish(),
   is_community_join_requested: z.boolean(),
+  is_loop_creation_allowed: z.boolean().nullish(),
+  logged_in_user_role: z.number().nullish(),
   color_code: z.string().nullish(),
   text_color_code: z.string().nullish(),
   welcome_loop_id: z.number().nullish(),

@@ -8,6 +8,7 @@ const videoSchema = z.object({
   shareUrl: z.string(),
   attachedLink: z.string().nullable().optional(),
   source: z.string(),
+  isSparked: z.boolean().nullable().optional(),
   sparkCount: z.number(),
   thumbnail: z.string(),
   description: z.string().nullable().optional(),

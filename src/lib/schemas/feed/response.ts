@@ -41,21 +41,23 @@ const messageSchema = z.object({
 })
 
 // Define the community schema
-const communitySchema = z.object({
-  community_id: z.string(),
-  handle: z.string(),
-  slug: z.string(),
-  name: z.string().nullish(),
-  description: z.string().nullish(),
-  color_code: z.string().nullish(),
-  text_color_code: z.string().nullish(),
-  dp: z.string().nullish(),
-  dp_s: z.string().nullish(),
-  dp_m: z.string().nullish(),
-  dp_l: z.string().nullish(),
-  share_url: z.string().nullish(),
-  type: z.number().nullish(),
-})
+const communitySchema = z
+  .object({
+    community_id: z.string(),
+    handle: z.string(),
+    slug: z.string(),
+    name: z.string().nullish(),
+    description: z.string().nullish(),
+    color_code: z.string().nullish(),
+    text_color_code: z.string().nullish(),
+    dp: z.string().nullish(),
+    dp_s: z.string().nullish(),
+    dp_m: z.string().nullish(),
+    dp_l: z.string().nullish(),
+    share_url: z.string().nullish(),
+    type: z.number().nullish(),
+  })
+  .nullish()
 
 // Define the group schema
 const groupSchema = z.object({
@@ -101,6 +103,7 @@ export function validateFeedResponse(data: any) {
   try {
     return FeedResponseSchema.parse(data)
   } catch (e) {
+    console.log('error in validation::', e)
     throw new Error('error in valdation of feed response.')
   }
 }

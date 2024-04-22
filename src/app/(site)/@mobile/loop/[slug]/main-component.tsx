@@ -7,7 +7,7 @@ import icLock from '@icons/icLock.svg'
 import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
-import { getLoopCohosts, subscribeLoop, getLoopSubscribers } from '@lib/api/loop'
+import { getLoopCohosts, subscribeLoop, getLoopSubscribers, getLoopDetails } from '@lib/api/loop'
 import { Loader } from '@components/ui/loader'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
@@ -20,11 +20,20 @@ import { LoopVideos } from './loop-videos'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { ShareIcon } from '@icons/share-icon'
 import { useSearchParams } from 'next/navigation'
+import Loading from './loading'
 
 let loopDetailsModule: LoopDetailsType
 
 interface Props {
   loopDetails: LoopDetailsType
+}
+
+export function LoopDetails({ slug }: { slug: string }) {
+  const { data, isLoading } = getLoopDetails(slug)
+
+  if (isLoading) return <Loading />
+
+  if (data) return <MainComponent loopDetails={data} />
 }
 
 // TODO: this page needs to be decoupled.
@@ -34,7 +43,7 @@ export function MainComponent({ loopDetails }: Props) {
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
-  const [isLoopSubscribed, setIsLoopSubscribed] = useState(loopDetails.is_subscriber)
+  const [isLoopSubscribed, setIsLoopSubscribed] = useState(!!loopDetails.is_subscriber)
   const { embed, user } = useGenuinOptions()
   const searchParams = Object.fromEntries(useSearchParams())
 

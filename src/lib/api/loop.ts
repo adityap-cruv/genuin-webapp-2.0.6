@@ -1,5 +1,5 @@
 import { type CommentListType, validateCommentList } from '@lib/schemas/loop/comment'
-import { useInfiniteQuery } from '@tanstack/react-query'
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import { axiosInstance } from './instance'
 import { validateLoopCohosts } from '@lib/schemas/loop/cohosts'
@@ -18,6 +18,13 @@ export async function fetchLoopDetails(slug: string) {
     .catch((e) => {
       throw new Error('Something went wrong!!')
     })
+}
+
+export function getLoopDetails(slug: string) {
+  return useQuery({
+    queryKey: ['loop', 'details', slug],
+    queryFn: async () => await fetchLoopDetails(slug),
+  })
 }
 
 async function fetchLoopVideos(
