@@ -117,14 +117,29 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
     }
   }, [])
 
+  if (!config) {
+    return (
+      <>
+        {children}
+        <DownloadDialogModal />
+        <AuthenticationModal />
+      </>
+    )
+  }
+
   if (isLoading) return <SplashScreen />
-  return (
-    <>
-      {children}
-      {!!config && <AuthenticationModal />}
-      {!config && <DownloadDialogModal />}
-    </>
-  )
+
+  if (config) {
+    if (sessionStatus === 'loading') return <SplashScreen />
+
+    return (
+      <>
+        {children}
+        <DownloadDialogModal />
+        <AuthenticationModal />
+      </>
+    )
+  }
 }
 async function saveVisitor(visitorId: string, brandId: string | undefined, userAgent: string) {
   const userInfo = parseUserAgent(userAgent)
