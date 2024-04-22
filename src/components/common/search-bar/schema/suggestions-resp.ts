@@ -1,4 +1,3 @@
-import { RECENT_SEARCH_CONTENT_TYPE } from '@lib/constants'
 import { z } from 'zod'
 
 // Create a Zod schema for the loop object
@@ -14,6 +13,7 @@ const loopSchema = z.object({
     dp_s: z.string().nullish(),
     dp_m: z.string().nullish(),
     dp_l: z.string().nullish(),
+    slug: z.string(),
   }),
   settings: z
     .object({
@@ -40,6 +40,7 @@ const userSchema = z.object({
 const communitySchema = z.object({
   community_id: z.string(),
   handle: z.string(),
+  slug: z.string(),
   name: z.string().nullish(),
   description: z.string().nullish(),
   color_code: z.string().nullish(),

@@ -51,7 +51,7 @@ function Inner() {
                     }
                     subtitle={`Community • ${item.community.description ?? ''}`}
                     title={item.community.name ?? ''}
-                    urlToGo={PATH_NAME.community(item.community.handle)}
+                    urlToGo={PATH_NAME.community(item.community.slug)}
                   />
                 </div>
               )
@@ -71,7 +71,7 @@ function Inner() {
                     }
                     subtitle={`Loop • ${item.loop.group.group_description ?? ''}`}
                     title={item.loop.group.group_name ?? ''}
-                    urlToGo={PATH_NAME.loop(item.loop.group.group_id)}
+                    urlToGo={PATH_NAME.loop(item.loop.group.slug)}
                   />
                 </div>
               )
