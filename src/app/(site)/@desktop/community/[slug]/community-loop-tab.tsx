@@ -1,5 +1,4 @@
 import { CustomAvatar } from '@components/custom/custom-avatar'
-import { Loader } from '@components/ui/loader'
 import { getCommunityLoops } from '@lib/api/community'
 import { abbreviateNumber, getTimeAgo } from '@lib/utils'
 import { PATH_NAME } from '@lib/utils/constants/path'
@@ -12,12 +11,17 @@ import { PlayerModal } from '@components/common/modals/player-modal'
 import { getLoopVideos } from '@lib/api/loop'
 import { useState } from 'react'
 import { Shimmer } from '@components/ui/shimmer'
+import { type CommunityLoopType } from '@lib/schemas/community/loops'
+import { type VideoPlayerModalCommunityType, type VideoPlayerModalLoopType } from '@lib/schemas/player/video'
 
 // TODO: remove this component from here and put at better location
 // TODO: improve player-modal opening logic. As not meeting standards.
-export function CommunityLoopTab({ communitySlug }: { communitySlug: string }) {
-  const { isLoading, data: loops } = getCommunityLoops(communitySlug)
-  const [modalController, setModalController] = useState({ open: false, loopSlug: '' })
+export function CommunityLoopTab({ community }: { community: VideoPlayerModalCommunityType }) {
+  const { isLoading, data } = getCommunityLoops(community.slug)
+  const [modalController, setModalController] = useState<{ open: boolean; loop: VideoPlayerModalLoopType | null }>({
+    open: false,
+    loop: null,
+  })
 
   if (isLoading)
     return (
@@ -27,26 +31,29 @@ export function CommunityLoopTab({ communitySlug }: { communitySlug: string }) {
         <LoopDetailsTabShimmer />
       </>
     )
-  if (loops.length === 0) return <NoLoops />
-  if (loops)
-    return (
-      <>
-        {loops.map((item: any, index: number) => (
-          <LoopItem
-            key={index}
-            loopDetails={item}
-            openModal={(slug) => {
-              setModalController((x) => {
-                x.loopSlug = slug
-                x.open = true
-                return { ...x }
-              })
-            }}
-          />
-        ))}
+  if (!data || data.loops.length === 0) return <NoLoops />
+
+  return (
+    <>
+      {data.loops.map((item, index) => (
+        <LoopItem
+          key={index}
+          loopDetails={item}
+          openModal={(loop) => {
+            setModalController((x) => {
+              x.loop = loop
+              x.open = true
+              return { ...x }
+            })
+          }}
+        />
+      ))}
+
+      {modalController.loop && (
         <PlayerModalWrapper
           open={modalController.open}
-          loopSlug={modalController.loopSlug}
+          loop={modalController.loop}
+          community={community}
           close={() => {
             setModalController((x) => {
               x.open = false
@@ -54,8 +61,9 @@ export function CommunityLoopTab({ communitySlug }: { communitySlug: string }) {
             })
           }}
         />
-      </>
-    )
+      )}
+    </>
+  )
 }
 
 function NoLoops() {
@@ -71,7 +79,13 @@ function NoLoops() {
   )
 }
 
-function LoopItem({ loopDetails, openModal }: { loopDetails: any; openModal: (slug: string) => void }) {
+function LoopItem({
+  loopDetails,
+  openModal,
+}: {
+  loopDetails: CommunityLoopType
+  openModal: (slug: VideoPlayerModalLoopType) => void
+}) {
   function getCollaboratorsCountString(count: any) {
     let str = ' + '
     if (!count) return
@@ -83,65 +97,75 @@ function LoopItem({ loopDetails, openModal }: { loopDetails: any; openModal: (sl
     return str
   }
 
+  function Members() {
+    const members = loopDetails.group.members
+    return (
+      <>
+        {members[0] && (
+          <CustomAvatar
+            className="z-20 h-6 w-6 border-2 border-tertiary-100 bg-red-50"
+            imageUrl={members[0].profile_image ?? ''}
+            isAvatar={members[0].is_avatar}
+            fallbackString={members[0].name ?? ''}
+          />
+        )}
+        {members.length !== 0 && members[1] && (
+          <CustomAvatar
+            className="absolute left-3 z-10 h-6 w-6 border-2 border-tertiary-100 bg-red-50"
+            imageUrl={members[1].profile_image ?? ''}
+            isAvatar={members[1].is_avatar}
+            fallbackString={members[1].name ?? ''}
+          />
+        )}
+        {members.length !== 0 && members[2] && (
+          <CustomAvatar
+            className="absolute left-6 h-6 w-6 border-2 border-tertiary-100 bg-red-50"
+            imageUrl={members[2].profile_image ?? ''}
+            isAvatar={members[2].is_avatar}
+            fallbackString={members[2].name ?? ''}
+          />
+        )}
+      </>
+    )
+  }
+
   return (
     <div className="relative">
       <Link href={{ pathname: PATH_NAME.loop(loopDetails.slug) }}>
         <div className="relative my-4 w-full rounded-lg border border-tertiary-200 bg-monochrome-white">
           <div className="w-[70%] items-center p-[3%]">
-            <p className="text-body-1-bold">{loopDetails.name}</p>
-            {loopDetails.videos.length !== 0 && !loopDetails.private && (
+            <p className="text-body-1-bold">{loopDetails.group.group_name}</p>
+            {loopDetails.latest_messages.length !== 0 && loopDetails.is_view_allowed && (
               <p className="text-body-1-demi text-secondary-300">
-                {loopDetails.videos[0].owner} posted ∙ {getTimeAgo(loopDetails.videos[0].created_at)}
+                @{loopDetails.latest_messages[0].owner.username} posted ∙{' '}
+                {getTimeAgo(loopDetails.latest_messages[0].message_at)}
               </p>
             )}
           </div>
           <div className="h-[60%] rounded-b-lg border border-tertiary-200 bg-tertiary-200 p-4">
             <div className="flex w-[70%] items-center">
               <div className="relative flex">
-                {loopDetails.owner.profile_image && (
-                  <CustomAvatar
-                    className="z-20 h-6 w-6 border-2 border-tertiary-100 bg-red-50"
-                    imageUrl={loopDetails.owner.profile_image ?? ''}
-                    isAvatar={loopDetails.owner.is_avatar}
-                    fallbackString={loopDetails.owner.name ?? ''}
-                  />
-                )}
-                {loopDetails.collaborators.length !== 0 && loopDetails.collaborators[0] && (
-                  <CustomAvatar
-                    className="absolute left-3 z-10 h-6 w-6 border-2 border-tertiary-100 bg-red-50"
-                    imageUrl={loopDetails.collaborators[0].profile_image ?? ''}
-                    isAvatar={loopDetails.collaborators[0].is_avatar}
-                    fallbackString={loopDetails.collaborators[0].nickname ?? ''}
-                  />
-                )}
-                {loopDetails.collaborators.length !== 0 && loopDetails.collaborators[1] && (
-                  <CustomAvatar
-                    className="absolute left-6 h-6 w-6 border-2 border-tertiary-100 bg-red-50"
-                    imageUrl={loopDetails.collaborators[1].profile_image ?? ''}
-                    isAvatar={loopDetails.collaborators[1].is_avatar}
-                    fallbackString={loopDetails.collaborators[1].nickname ?? ''}
-                  />
-                )}
+                <Members />
               </div>
               <p
                 className={`ml-1 line-clamp-1 text-body-1-med text-secondary-300 ${
-                  loopDetails.collaborators.length !== 0 && 'ml-7'
-                } ${loopDetails.collaborators.length === 2 && 'ml-6'}`}>
-                {loopDetails.owner.nickname}
-                {getCollaboratorsCountString(loopDetails.member_count - 1)}
+                  loopDetails.group.members.length !== 1 && 'ml-7'
+                } ${loopDetails.group.members.length === 3 && 'ml-6'}`}>
+                {loopDetails.group.members[0].username}
+                {getCollaboratorsCountString(loopDetails.group.members.length - 1)}
               </p>
             </div>
             <p className="my-[2%] line-clamp-2 w-[70%] text-body-1-demi text-secondary-300">
-              {loopDetails.description}
+              {loopDetails.group.group_description}
             </p>
             <p className="w-[70%] text-body-1-med text-secondary-300">
-              {abbreviateNumber(loopDetails.subscriber_count)} subscribers ∙ {abbreviateNumber(loopDetails.view_count)}{' '}
-              views
+              {abbreviateNumber(loopDetails.group.members.length)} subscribers ∙{' '}
+              {abbreviateNumber(loopDetails.group.no_of_views)} views
             </p>
           </div>
         </div>
       </Link>
-      {loopDetails.private ? (
+      {!loopDetails.is_view_allowed ? (
         <div className="group/video absolute right-7 top-[50%] flex aspect-reel h-[80%] -translate-y-1/2 items-center justify-center rounded border border-secondary-300 bg-monochrome-white hover:cursor-pointer">
           <div className="bg-secondary-200 rounded-full p-2">
             <Image src={icLock} alt="share" className="h-4 w-4" />
@@ -149,9 +173,9 @@ function LoopItem({ loopDetails, openModal }: { loopDetails: any; openModal: (sl
         </div>
       ) : (
         <RenderedImages
-          videos={loopDetails.videos}
+          videos={loopDetails.latest_messages}
           onClick={() => {
-            openModal(loopDetails.slug)
+            openModal({ id: loopDetails.chat_id, slug: loopDetails.slug, name: loopDetails.group.group_name })
           }}
         />
       )}
@@ -181,48 +205,52 @@ function RenderedImages({ videos, onClick }: { videos: any[]; onClick: () => voi
 
   return (
     <span onClick={onClick}>
-      {videos.map((item: any, index: number) => (
-        <div
-          key={index}
-          className="group/video absolute top-[50%] flex aspect-reel h-[80%] items-center justify-center rounded hover:cursor-pointer"
-          style={{
-            right: `${rightValues[videosLength][index]}px`,
-            transform: `translateY(-${transformValues[videosLength][index]}%)`,
-            zIndex: videosLength - index + 1,
-            opacity: `${opacitValues[videosLength][index]}`,
-          }}>
-          <img className="rounded" src={item.thumbnail} />
-          <div className="absolute inset-0 hidden h-full w-full items-center justify-center bg-monochrome-black/30 group-hover/video:flex">
-            <Image src={icPlay} alt="play" className="absolute" />
+      {videos.map((item: any, index: number) => {
+        return (
+          <div
+            key={index}
+            className="group/video absolute top-[50%] flex aspect-reel h-[80%] items-center justify-center rounded hover:cursor-pointer"
+            style={{
+              right: `${rightValues[videosLength][index]}px`,
+              transform: `translateY(-${transformValues[videosLength][index]}%)`,
+              zIndex: videosLength - index + 1,
+              opacity: `${opacitValues[videosLength][index]}`,
+            }}>
+            <img className="rounded" src={item.thumbnail_url} />
+            <div className="absolute inset-0 hidden h-full w-full items-center justify-center bg-monochrome-black/30 group-hover/video:flex">
+              <Image src={icPlay} alt="play" className="absolute" />
+            </div>
           </div>
-        </div>
-      ))}
+        )
+      })}
     </span>
   )
 }
 
 type PlayerModalWrapperProps = {
   open: boolean
-  loopSlug: string
+  community: VideoPlayerModalCommunityType
+  loop: VideoPlayerModalLoopType
   close: () => void
 }
 
-function PlayerModalWrapper({ open = false, loopSlug, close }: PlayerModalWrapperProps) {
-  const { data, fetchNextPage, isError, isFetchingNextPage, isFetching } = getLoopVideos(loopSlug)
+function PlayerModalWrapper({ open = false, close, community, loop }: PlayerModalWrapperProps) {
+  const { data, fetchNextPage, isError, isFetchingNextPage, isFetching } = getLoopVideos({ community, loop })
   const videos = data?.pages.flatMap((item) => item.videos)
 
-  return (
-    <PlayerModal.desktop
-      fetchNextVideos={fetchNextPage}
-      isError={isError}
-      isFetchingNextPage={isFetchingNextPage}
-      startIndex={0}
-      isLoading={isFetching}
-      open={open}
-      videos={videos}
-      close={close}
-    />
-  )
+  if (videos)
+    return (
+      <PlayerModal.desktop
+        fetchNextVideos={fetchNextPage}
+        isError={isError}
+        isFetchingNextPage={isFetchingNextPage}
+        startIndex={0}
+        isLoading={isFetching}
+        open={open}
+        videos={videos}
+        close={close}
+      />
+    )
 }
 
 function LoopDetailsTabShimmer() {

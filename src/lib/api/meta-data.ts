@@ -1,0 +1,31 @@
+import axios from 'axios'
+
+type MetadataPayloadType = {
+  /**
+   * type:1 -> profile
+   * type:2 -> community
+   * type:3 -> loop
+   * type:4 -> video
+   * type:4 -> brand landing page (subdomain or white label)
+   */
+  type: number
+  brandId?: number
+  username?: string
+  slug?: string
+}
+
+export async function fetchMetadata({ type, brandId, username, slug }: MetadataPayloadType) {
+  try {
+    const response = await axios.get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/web/meta_data', {
+      params: {
+        type,
+        brand_id: brandId ?? null,
+        username: username ?? null,
+        slug: slug ?? null,
+      },
+    })
+    return response.data.data
+  } catch (error) {
+    throw new Error('Something went wrong with meta_data api.')
+  }
+}

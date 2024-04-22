@@ -150,7 +150,7 @@ function DownloadAppForm() {
       setIsLoading(true)
 
       try {
-        const res = await axios.post(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/send_download_link', payload)
+        const res = await axios.post(process.env.NEXT_PUBLIC_API_URL + '/api/v3/send_download_link', payload)
 
         if (res.data.code === 200) {
           setIsLinkSent(true)

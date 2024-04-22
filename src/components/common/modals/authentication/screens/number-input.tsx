@@ -67,7 +67,7 @@ export function NumberInput() {
 
   return (
     <ModalShell>
-      <p className="text-center text-heading-3 ">Log in to {brandName ?? 'genuin'}</p>
+      <p className="text-center text-title-1-demi sm:text-heading-3">Log in to {brandName ?? 'genuin'}</p>
       <div className="w-full">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>

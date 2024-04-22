@@ -1,59 +1,69 @@
 import { z } from 'zod'
 
-const Owner = z.object({
+const ownerSchema = z.object({
   member_id: z.string(),
   name: z.string().nullish(),
   bio: z.string().nullish(),
-  nickname: z.string(),
-  phone: z.string(),
+  username: z.string(),
+  phone: z.string().nullish(),
   is_avatar: z.boolean(),
-  profile_image: z.string().nullish(),
-  profile_image_s: z.string().nullish(),
-  profile_image_m: z.string().nullish(),
-  profile_image_l: z.string().nullish(),
+  profile_image: z.string(),
 })
 
-const Group = z.object({
+// Define group schema
+const groupSchema = z.object({
   group_id: z.string(),
   group_name: z.string().nullish(),
   group_description: z.string().nullish(),
-  color_code: z.string(),
-  tags: z.string().nullish(),
-  text_color_code: z.string(),
+  color_code: z.string().nullish(),
+  text_color_code: z.string().nullish(),
   dp: z.string().nullish(),
   dp_s: z.string().nullish(),
   dp_m: z.string().nullish(),
   dp_l: z.string().nullish(),
-  no_of_views: z.number(),
-  no_of_videos: z.number(),
-  no_of_members: z.number(),
-  no_of_subscribers: z.number(),
+  no_of_views: z.number().nullish(),
+  no_of_videos: z.number().nullish(),
+  no_of_members: z.number().nullish(),
+  no_of_subscribers: z.number().nullish(),
 })
 
-const Community = z.object({
-  share_string: z.string(),
-  name: z.string(),
-  handle: z.string(),
-  dp: z.string().nullish(),
+// Define community schema
+const communitySchema = z.object({
+  community_id: z.string(),
   slug: z.string(),
+  handle: z.string(),
+  name: z.string().nullish(),
+  description: z.string().nullish(),
+  color_code: z.string().nullish(),
+  text_color_code: z.string().nullish(),
+  dp: z.string().nullish(),
+  dp_s: z.string().nullish(),
+  dp_m: z.string().nullish(),
+  dp_l: z.string().nullish(),
+  share_url: z.string().nullish(),
+  type: z.number().nullish(),
 })
 
+// Define settings schema
+const settingsSchema = z.object({
+  discoverable: z.boolean(),
+})
+
+// Define main schema
 const LoopDetailsSchema = z.object({
   chat_id: z.string(),
-  chat_slug: z.string(),
+  is_welcome_loop: z.boolean(),
   type: z.number(),
-  settings: z.object({
-    discoverable: z.boolean(),
-  }),
-  created_at: z.string(),
-  updated_at: z.string(),
-  share_string: z.string(),
   share_url: z.string(),
-  community: Community,
-  owner: Owner,
-  preview_image: z.string(),
-  group: Group,
-  private: z.boolean(),
+  settings: settingsSchema,
+  slug: z.string(),
+  is_ai_generated: z.boolean(),
+  is_view_allowed: z.boolean(),
+  group: groupSchema,
+  owner: ownerSchema,
+  is_post_allowed: z.boolean(),
+  community: communitySchema,
+  is_subscriber: z.boolean(),
 })
 
 export type LoopDetailsType = z.infer<typeof LoopDetailsSchema>

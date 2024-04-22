@@ -74,7 +74,7 @@ export function CompleteProfile() {
 
   return (
     <ModalShell>
-      <h3 className="flex w-full items-center justify-center text-heading-3 ">Complete profile</h3>
+      <h3 className="flex w-full items-center justify-center text-title-1-demi sm:text-heading-3 ">Complete profile</h3>
       <ImageInput />
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">

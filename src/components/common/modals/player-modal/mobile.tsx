@@ -1,15 +1,15 @@
 'use client'
 import { CustomDialog, CustomDialogContent, CustomDialogTrigger } from '@components/custom/custom-dialog'
 import { useEffect } from 'react'
-import { type VideoDataType } from '@lib/schemas/video'
 import { useFeedModalStore } from './store'
 import { Feed } from '@components/common/feed'
 import { TopBar } from '@components/layouts/mobile/top-bar'
 import { FeedShimmer } from '@components/common/shimmers/feed-shimmer'
+import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 
 type Props = {
   children?: React.ReactNode
-  videos?: VideoDataType[]
+  videos?: VideoPlayerModalType[]
   /**
    * Index to start playing video from.
    * @default 0
@@ -57,6 +57,14 @@ export function Mobile({
   }, [currentIndex])
 
   function InnerContent() {
+    if (isLoading) {
+      return (
+        <div className="absolute inset-0">
+          <FeedShimmer.mobile />
+        </div>
+      )
+    }
+
     if (videos)
       return (
         <Feed.mobile
@@ -67,26 +75,23 @@ export function Mobile({
           startIndex={startIndex}
         />
       )
-    return <FeedShimmer.mobile />
   }
 
   return (
     <CustomDialog open={open}>
       <CustomDialogTrigger>{children}</CustomDialogTrigger>
       <CustomDialogContent showDefaultClose={false}>
-        <span className="flex items-center gap-x-6">
-          <div className="relative h-full w-full overflow-clip bg-monochrome-white">
-            <TopBar showClose className="fixed left-0 top-0" variant="trasparent" onClose={close} />
-            {/* <CustomDialogClose
+        <div className="relative h-full w-full overflow-clip bg-monochrome-white">
+          <TopBar showClose className="fixed left-0 top-0" variant="trasparent" onClose={close} />
+          {/* <CustomDialogClose
                 onClick={() => {
                   close?.()
                 }}
                 className="absolute right-4 top-4 z-10">
                 <X className="h-6 w-6 stroke-monochrome-white" />
               </CustomDialogClose> */}
-            <InnerContent />
-          </div>
-        </span>
+          <InnerContent />
+        </div>
       </CustomDialogContent>
     </CustomDialog>
   )

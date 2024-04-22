@@ -1,19 +1,25 @@
+import { validateCommunityDetails } from '@lib/schemas/community'
+import { validateCommunityLoopList, type CommunityLoopListType } from '@lib/schemas/community/loops'
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import axios from 'axios'
+import { parseFeedResponse } from './api-response-parser'
+import { axiosInstance } from './instance'
 
 export async function fetchCommunityDetails(slug: string) {
-  return await axios
-    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/community/details', {
+  return await axiosInstance
+    .get('/api/v3/community', {
       params: {
-        community_id: { slug },
+        slug,
       },
     })
-    .then((res) => res.data.data)
+    .then((res) => {
+      return res.data.data
+    })
     .catch((e) => {
       // TODO:
       /**
        * Here in this api one request is being made undexpectedly.
-       * Which is "/api/v3/public/community/details?community_id[handle]=cow_face"
+       * Which is "/api/v3/community/details?community_id[handle]=cow_face"
        * Figure out why this error happening and solve the issue.
        * @example Community handle: @kvkic
        */
@@ -22,20 +28,29 @@ export async function fetchCommunityDetails(slug: string) {
     })
 }
 
+export function getCommunityDetails(slug: string) {
+  return useQuery({
+    queryKey: ['community', 'details', slug],
+    queryFn: async () => await fetchCommunityDetails(slug),
+  })
+}
+
 export function getCommunityVideos(slug: string) {
-  let promise: null | Promise<{ videos: any; ref: any; end?: boolean }> = null
+  let promise: null | Promise<{ videos: any; end?: boolean }> = null
   return useInfiniteQuery({
     queryFn: async ({ pageParam }) => {
       if (!promise) {
         promise = axios
-          .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/community/videos', {
+          .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/home/community_videos', {
             params: {
-              community_id: { slug },
-              ref: pageParam,
+              slug,
+              last_video_id: pageParam,
             },
           })
           .then((res) => {
-            return { videos: res.data.data.list, ref: res.data.data.ref, end: res.data.data.end_page }
+            const resData = res.data.data
+            const videos = parseFeedResponse(resData.feeds)
+            return { videos, end: resData.end_of_videos }
           })
           .catch((e) => {
             throw new Error('Something went wrong with community videos!')
@@ -49,22 +64,20 @@ export function getCommunityVideos(slug: string) {
     queryKey: ['community', 'videos', slug],
     getNextPageParam: (lastPage) => {
       if (lastPage.end) return
-      return lastPage.ref
+      return lastPage.videos
     },
   })
 }
 
-//  TODO: Add Pagination.
-// TODO: Check for pagination
-export async function fetchCommunityLoops(slug: string) {
+export async function fetchCommunityLoops(slug: string): Promise<{ loops: CommunityLoopListType }> {
   return await axios
-    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/community/loops', {
+    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/community/loops', {
       params: {
-        community_id: { slug },
+        slug,
       },
     })
     .then((res) => {
-      return res.data.data?.list
+      return { loops: validateCommunityLoopList(res.data.data.conversations) }
     })
     .catch((e) => {
       throw new Error('Something went wrong with loop detail!')
@@ -78,3 +91,26 @@ export function getCommunityLoops(slug: string) {
 // async function fetchVideoComments(handle: string) {
 //   return await axios.get(process.env.NEXT_PUBLIC_API_URL + '/api/')
 // }
+
+async function fetchCommunityMembers(slug: string) {
+  return await axios
+    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/community/members', {
+      params: {
+        slug,
+      },
+    })
+    .then((res) => {
+      const resData = res.data.data
+      return { members: resData?.members }
+    })
+    .catch((e) => {
+      throw new Error('Something went wrong in fetching community members.')
+    })
+}
+
+export function getCommunityMembers(slug: string) {
+  return useQuery({
+    queryKey: ['members'],
+    queryFn: async () => await fetchCommunityMembers(slug),
+  })
+}

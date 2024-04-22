@@ -6,7 +6,6 @@ import {
   CustomDialogTrigger,
 } from '@components/custom/custom-dialog'
 import { useEffect } from 'react'
-import { type VideoDataType } from '@lib/schemas/video'
 import { X } from 'lucide-react'
 import { useFeedModalStore } from './store'
 import { SinglePlayer } from '@components/common/feed/desktop'
@@ -17,10 +16,11 @@ import { Loader } from '@components/ui/loader'
 import { cn } from '@lib/utils'
 import { FeedShimmer } from '@components/common/shimmers/feed-shimmer'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
+import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 
 type Props = {
   children?: React.ReactNode
-  videos?: VideoDataType[]
+  videos: VideoPlayerModalType[]
   /**
    * Index to start playing video from.
    * @default 0
@@ -71,53 +71,52 @@ export function Desktop({
     if (videos && !isFetchingNextPage && currentIndex >= videos?.length - 2) fetchNextVideos()
   }, [currentIndex])
 
-  function InnerContent() {
-    if (isLoading) return <Loader size="md" />
-    if (videos) return <SinglePlayer videoDetails={videos[currentIndex]} sizeBox={sizeBox.modal.player} />
-  }
-
   return (
     <CustomDialog open={open}>
       <CustomDialogTrigger>{children}</CustomDialogTrigger>
       <CustomDialogContent showDefaultClose={false}>
-        {videos && (
-          <span className="flex items-center gap-x-6">
-            <div
-              style={{ height: sizeBox.modal.height, width: sizeBox.modal.width }}
-              className="relative min-w-[800px] overflow-clip rounded-2xl bg-monochrome-white">
-              <CustomDialogClose
-                onClick={() => {
-                  close?.()
-                }}
-                className="absolute right-4 top-4 z-10 focus:outline-none">
-                <X className="h-6 w-6" />
-              </CustomDialogClose>
-              <InnerContent />
-            </div>
-            <span className="flex flex-col gap-y-4">
-              <button
-                onClick={() => {
-                  setCurrentIndex(currentIndex - 1)
-                }}
-                className={cn(
-                  'rounded-full bg-monochrome-white/10 p-2 hover:bg-monochrome-white/20',
-                  currentIndex === 0 ? 'opacity-40' : undefined
-                )}>
-                <Image src={icUpArrow} alt="" />
-              </button>
-              <button
-                onClick={() => {
-                  setCurrentIndex(currentIndex + 1)
-                }}
-                className={cn(
-                  'rounded-full bg-monochrome-white/10 p-2 hover:bg-monochrome-white/20',
-                  currentIndex === videos?.length - 1 ? 'opacity-40' : undefined
-                )}>
-                <Image src={icDownArrow} alt="" />
-              </button>
-            </span>
+        <span className="flex items-center gap-x-6">
+          <div
+            style={{ height: sizeBox.modal.height, width: sizeBox.modal.width }}
+            className="relative min-w-[800px] overflow-clip rounded-2xl bg-monochrome-white">
+            <CustomDialogClose
+              onClick={() => {
+                close?.()
+              }}
+              className="absolute right-4 top-4 z-10 focus:outline-none">
+              <X className="h-6 w-6" />
+            </CustomDialogClose>
+            {isLoading ? (
+              <Loader size="md" />
+            ) : (
+              <SinglePlayer videoData={{ ...videos[currentIndex] }} sizeBox={sizeBox.modal.player} />
+            )}
+          </div>
+          <span className="flex flex-col gap-y-4">
+            <button
+              disabled={currentIndex === 0}
+              onClick={() => {
+                setCurrentIndex(currentIndex - 1)
+              }}
+              className={cn(
+                'rounded-full bg-monochrome-white/10 p-2 hover:bg-monochrome-white/20',
+                currentIndex === 0 ? 'opacity-40' : undefined
+              )}>
+              <Image src={icUpArrow} alt="" />
+            </button>
+            <button
+              disabled={currentIndex === videos.length - 1}
+              onClick={() => {
+                setCurrentIndex(currentIndex + 1)
+              }}
+              className={cn(
+                'rounded-full bg-monochrome-white/10 p-2 hover:bg-monochrome-white/20',
+                currentIndex === videos?.length - 1 ? 'opacity-40' : undefined
+              )}>
+              <Image src={icDownArrow} alt="" />
+            </button>
           </span>
-        )}
+        </span>
       </CustomDialogContent>
     </CustomDialog>
   )
@@ -128,7 +127,7 @@ type ProfileProps = {
   /**
    * If video is not available than it will show loader only.
    */
-  video?: VideoDataType
+  video?: VideoPlayerModalType
   /**
    * Controls if modal should open or not.
    * @default false
@@ -145,6 +144,7 @@ type ProfileProps = {
   hasPreviousVideo: boolean
   getNextVideo: () => void
   getPreviousVideo: () => void
+  isLoading: boolean
 }
 
 /**
@@ -160,13 +160,10 @@ export function Profile({
   hasNextVideo = true,
   hasPreviousVideo = true,
   getNextVideo,
+  isLoading = false,
   getPreviousVideo,
 }: ProfileProps) {
   const sizeBox = useGenuinOptions().sizeBoxes
-  function InnerContent() {
-    if (!video) return <FeedShimmer.desktop />
-    return <SinglePlayer videoDetails={video} sizeBox={{ ...sizeBox.modal.player }} />
-  }
 
   return (
     <CustomDialog open={open}>
@@ -183,7 +180,11 @@ export function Profile({
               className="absolute right-4 top-4 z-10">
               <X className="h-6 w-6" />
             </CustomDialogClose>
-            <InnerContent />
+            {isLoading ? (
+              <FeedShimmer.desktop />
+            ) : (
+              video && <SinglePlayer videoData={{ ...video }} sizeBox={{ ...sizeBox.modal.player }} />
+            )}
           </div>
           <span className="flex flex-col gap-y-4">
             <button

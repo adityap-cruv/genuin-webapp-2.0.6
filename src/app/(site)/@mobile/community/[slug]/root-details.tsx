@@ -3,13 +3,23 @@ import type { CommunityDetailsType } from '@lib/schemas/community'
 import dynamic from 'next/dynamic'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import { useEffect } from 'react'
+import { getCommunityDetails } from '@lib/api/community'
+import Loading from './loading'
 
 const Details = dynamic(
-  async () => await import('@components/pages/community/mobile/details').then((comp) => comp.ProfileDetails)
+  async () => await import('@components/pages/community/mobile/details').then((comp) => comp.Details)
 )
 
 type Props = {
   communityDetails: CommunityDetailsType
+}
+
+export function CommunityDetails({ slug }: { slug: string }) {
+  const { data, isLoading } = getCommunityDetails(slug)
+
+  if (isLoading) return <Loading />
+
+  if (data) return <RootDetails communityDetails={data} />
 }
 
 export function RootDetails({ communityDetails }: Props) {
@@ -17,10 +27,10 @@ export function RootDetails({ communityDetails }: Props) {
 
   useEffect(() => {
     addCommunity({
-      handle: communityDetails.info.handle,
-      name: communityDetails.info.name,
-      profileImage: communityDetails.info.profile_image,
-      slug: communityDetails.info.slug,
+      handle: communityDetails.handle,
+      name: communityDetails.name ?? '',
+      profileImage: communityDetails.dp ?? '',
+      slug: communityDetails.slug,
     })
   }, [])
 

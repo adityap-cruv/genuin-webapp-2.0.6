@@ -6,7 +6,6 @@ import { type CommentType } from '@lib/schemas/loop/comment'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { getTimeAgo } from '@lib/utils'
-import icMore from '@icons/icHorizotalDotsSecondary.svg'
 import Image from 'next/image'
 import icSpark from '@icons/icSparkBlack.svg'
 import { DownloadDialog } from '../download-dialog'
@@ -14,8 +13,9 @@ import { DownloadDialog } from '../download-dialog'
 const CommentPlayer = dynamic(async () => await import('./video-player').then((comp) => comp.CommentPlayer))
 const AudioPlayer = dynamic(async () => await import('./audio-player').then((comp) => comp.AudioPlayer))
 
+// TODO: pass data here only on need to know basis.
 export function CommentItem({ comment }: { comment: CommentType }) {
-  const UI = Comment[comment.comment.type]
+  const UI = Comment[comment.type]
   return (
     <div className="flex w-full flex-col gap-y-2 py-2">
       <span className="flex items-center justify-between">
@@ -29,7 +29,7 @@ export function CommentItem({ comment }: { comment: CommentType }) {
           <Link href={{ pathname: PATH_NAME.profile(comment.owner.nickname) }}>
             <p className="text-body-1-bold hover:underline">@{comment.owner.nickname}</p>
           </Link>
-          <p className="text-cap-1-demi text-tertiary">{getTimeAgo(comment.comment.created_at) + ' ago'}</p>
+          <p className="text-cap-1-demi text-tertiary">{getTimeAgo(comment.created_at) + ' ago'}</p>
         </span>
         {/* <Image src={icMore} alt="" className="h-5 w-5" /> */}
       </span>
@@ -38,7 +38,7 @@ export function CommentItem({ comment }: { comment: CommentType }) {
         <DownloadDialog subtitle="Get app to spark this comment." title="Get the Genuin app">
           <span className="flex items-center pt-2">
             <Image src={icSpark} alt="" className="h-4 w-4" />
-            <p className="text-cap-1-med">{comment.comment.no_of_sparks}</p>
+            <p className="text-cap-1-med">{comment.no_of_sparks}</p>
           </span>
         </DownloadDialog>
       </span>
@@ -53,15 +53,15 @@ const Comment = {
     if (comment)
       return (
         <CommentPlayer
-          videoSource={comment.comment.url ?? ''}
-          poster={comment.comment.thumbnail ?? ''}
-          commentShareString={comment.comment.share_string}
+          videoSource={comment.video_url_m3u8 ?? comment.url ?? ''}
+          poster={comment.thumbnail ?? ''}
+          commentShareString={comment.comment_id}
           onClick={() => {
-            if (activeCommentIndex === comment.comment.share_string) {
+            if (activeCommentIndex === comment.comment_id) {
               // if activeCommentIndex and share_string same than it will pause the video.
               setActiveCommentIndex('')
             } else {
-              setActiveCommentIndex(comment.comment.share_string)
+              setActiveCommentIndex(comment.comment_id)
             }
           }}
         />
@@ -72,19 +72,19 @@ const Comment = {
     const activeCommentIndex = useCommentStore((state) => state.activeCommentIndex)
     return (
       <AudioPlayer
-        commentShareString={comment.comment.share_string}
-        url={comment.comment.url ?? ''}
+        commentShareString={comment.comment_id}
+        url={comment.url ?? ''}
         onClick={() => {
-          if (activeCommentIndex === comment.comment.share_string) {
+          if (activeCommentIndex === comment.comment_id) {
             setActiveCommentIndex('')
           } else {
-            setActiveCommentIndex(comment.comment.share_string)
+            setActiveCommentIndex(comment.comment_id)
           }
         }}
       />
     )
   },
-  text({ comment }: any) {
-    return <ReadMore className="break-all text-body-1-med" text={comment.comment.text} />
+  text({ comment }: { comment: CommentType }) {
+    return <ReadMore className="break-all text-body-1-med" text={comment.comment_text} />
   },
 }

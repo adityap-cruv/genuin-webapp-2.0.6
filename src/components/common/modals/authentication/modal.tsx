@@ -12,7 +12,7 @@ import {
   UsernameInput,
   CompleteProfile,
   Guidelines,
-  Error
+  Error,
 } from './screens'
 import { useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'

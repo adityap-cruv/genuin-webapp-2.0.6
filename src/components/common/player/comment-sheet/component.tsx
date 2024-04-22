@@ -5,7 +5,6 @@ import { Comments } from '@components/common/comments'
 import Image from 'next/image'
 import icAudioRecord from '@icons/audioRecord.svg'
 import icVideoRecord from '@icons/videoRecord.svg'
-import { type VideoDataType } from '@lib/schemas/video'
 import { generateDeepLink, openGeneratedLink, openModal } from '@lib/utils'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
@@ -13,26 +12,29 @@ import { useState } from 'react'
 import { Input } from '@components/ui/input'
 import { createComment } from '@lib/api/video'
 import { DownloadDialog } from '@components/common/download-dialog'
-import { Textarea } from '@components/ui/textarea'
 import { useSearchParams } from 'next/navigation'
+import { type CommentListType } from '@lib/schemas/loop/comment'
+import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 
 type Props = {
-  container: React.MutableRefObject<HTMLDivElement | null>
-  videoDetails: VideoDataType
-  noOfComments: number
+  videoId: string
+  commentCount: number
+  videoDetails: VideoPlayerModalType
 }
 
 // TODO: remove comment sheet with general sheet because there is no difference between.
+// TODO: check the logic of adding new comment and optimize this component.
+// TODO: Here state Comment and setComments are bad they are causing multiple rerenders.
 // Sheet is only used in mobile component for now.
-export function Sheet({ container, videoDetails, noOfComments }: Props) {
+export function Sheet({ commentCount, videoId, videoDetails }: Props) {
   const { isOpen, close, currentVideoId } = useCommentSheetStore((state) => ({
     isOpen: state.modalIsOpen,
     close: state.closeModal,
     currentVideoId: state.currentVideoId,
   }))
-  const shouldOpen = isOpen && currentVideoId === videoDetails.video?.share_string
+  const shouldOpen = isOpen && currentVideoId === videoId
   const [currentComment, setCurrentComment] = useState('')
-  const [comments, setComments] = useState([])
+  const [comments, setComments] = useState<CommentListType>([])
 
   return (
     <CommentSheet open={shouldOpen} modal={true}>
@@ -42,7 +44,7 @@ export function Sheet({ container, videoDetails, noOfComments }: Props) {
         }}>
         <div className="h-full w-full rounded-t-[18px] bg-background outline-none sm:rounded-t-none">
           <div className="flex h-12 w-full items-center justify-between border-b border-monochrome-9 px-3 ">
-            <p className="text-title-3-demi">Comments{noOfComments !== 0 ? `(${noOfComments})` : ''}</p>
+            <p className="text-title-3-demi">Comments{commentCount ? `(${commentCount})` : ''}</p>
             <X
               className="h-6 w-6 cursor-pointer stroke-secondary"
               onClick={() => {
@@ -51,11 +53,7 @@ export function Sheet({ container, videoDetails, noOfComments }: Props) {
             />
           </div>
           <div style={{ height: 'calc(100% - 60px)' }}>
-            <Comments.withApi
-              setComments={setComments}
-              comments={comments}
-              videoId={videoDetails?.video?.share_string ?? ''}
-            />
+            <Comments.withApi videoId={videoId} comments={comments} setComments={setComments} />
           </div>
         </div>
         <CommentInput
@@ -78,23 +76,40 @@ function CommentInput({ setComments, currentComment, setCurrentComment, videoDet
     if (currentComment.length !== 0) {
       const newComment = {
         owner: {
+          member_id: user?.id,
+          name: user?.name,
           nickname: user?.nickname,
+          bio: user?.bio,
           is_avatar: user?.isAvatar,
           profile_image: user?.image,
         },
-        comment: {
-          created_at: new Date().toISOString(),
-          type: 'text',
-          text: currentComment,
-          no_of_sparks: 0,
-          url: null,
-          thumbnail: null,
-          share_string: null,
-        },
+        chat_id: null,
+        conversation_id: null,
+        comment_id: null,
+        type: 'text',
+        url: null,
+        video_url_m3u8: null,
+        thumbnail: null,
+        link: null,
+        duration: null,
+        meta_data: null,
+        created_at: Date.now(),
+        no_of_views: 0,
+        is_read: false,
+        comment_text: currentComment,
+        comment_data: JSON.stringify([currentComment]),
+        no_of_sparks: 0,
+        is_sparked: false,
       }
-      await createComment(videoDetails.video.id, videoDetails.loop.id, 3, currentComment)
-      setComments((prevComments: any) => [newComment, ...prevComments])
-      setCurrentComment('')
+      try {
+        const commentResponse = await createComment(videoDetails.video.id, videoDetails.loop.id, 3, currentComment)
+        if (commentResponse.code === 200) {
+          setComments((prevComments: any) => [newComment, ...prevComments])
+          setCurrentComment('')
+        }
+      } catch (e) {
+        throw new Error()
+      }
     }
   }
 
