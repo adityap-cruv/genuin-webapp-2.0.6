@@ -19,6 +19,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { BurgerIcon } from '@icons/burger-icon'
 import { LogoutIcon } from '@icons/logout'
+import CommunityIcon from '@icons/ks-cb-flow/icCommunity.svg'
 import { removeAllAuthToken } from '@lib/api/instance'
 import { MOBILE_DOWNLOAD_APP_LINK } from '@lib/constants'
 import { SearchBar } from '@components/common/search-bar'
@@ -95,6 +96,11 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
 }
 
 function Menu({ hamBurgerVariant = 'dark' }: { hamBurgerVariant: 'dark' | 'light' }) {
+  const { embed, user, brandName } = useGenuinOptions((state) => ({
+    embed: state.embed,
+    user: state.user,
+    brandName: state.config?.name ? state.config?.name : 'Genuin',
+  }))
   const pathName = usePathname()
   return (
     <Sheet>
@@ -127,6 +133,24 @@ function Menu({ hamBurgerVariant = 'dark' }: { hamBurgerVariant: 'dark' | 'light
                 <SearchIcon isActive={pathName === PATH_NAME.search()} />
               </MenuItem>
             </Link> */}
+            <hr className="border-1 mt-1 border-monochrome-black/10" />
+            <div
+              className="max-w-72 relative my-4 max-h-16 rounded-lg border border-[#E9CAF4] bg-primary-200 text-title-3-demi hover:cursor-pointer"
+              style={{
+                background: 'linear-gradient(30deg, #E9CAF4 5%, #F8F8F8 50%, #ADDAFF 100%)',
+              }}
+              onClick={() => {
+                AuthenticationModal.open(undefined, embed ? 'KS_CB_SUBDOMAIN' : 'KS_CB_WEB')
+              }}>
+              <p className="z-10 p-3 text-body-1-bold">
+                Become a{' '}
+                <span className="font-semibold">
+                  community <br /> builder
+                </span>{' '}
+                on {brandName} 🚀
+              </p>
+              <img src={CommunityIcon.src} alt="community" className="absolute bottom-0 right-4 h-12" />
+            </div>
             <RecentCommunities />
           </div>
           <div className="text-monochrome">

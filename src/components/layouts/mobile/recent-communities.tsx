@@ -12,7 +12,7 @@ export function RecentCommunities() {
 
   if (communities.length > 0)
     return (
-      <div className="mt-4 h-full w-full border-t border-monochrome-black/10 pt-4">
+      <div className="h-full w-full">
         <p className="w-full break-all pb-1 pl-1 text-title-2-demi text-monochrome lg:line-clamp-1">
           Recent Communities
         </p>

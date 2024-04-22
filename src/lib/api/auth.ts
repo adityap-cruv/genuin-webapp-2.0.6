@@ -336,3 +336,17 @@ export async function loginViaEmail({
       return { code: Number(e.response.data.code), data: e.response.data.data }
     })
 }
+
+export async function ksCbRequest(): Promise<{ code: number; data: any }> {
+  return await axiosInstance
+    .post('/api/v3/users/ks_cb_request', {
+      source: 'app_web',
+    })
+    .then((res) => {
+      return { code: res.data.code, data: res.data.data }
+    })
+    .catch((e) => {
+      console.log('::error in ks_cb_request api::', e.response.data.code)
+      return { code: Number(e.response.data.code), data: e.response.data.data }
+    })
+}
