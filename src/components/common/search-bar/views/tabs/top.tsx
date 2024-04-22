@@ -2,7 +2,6 @@ import { type VideoType, type CommunityType, type PeopleType } from '.'
 import { type RankingResType, type LoopResType } from '../../schema/top-resp'
 import { type ReactNode } from 'react'
 import { CommunityTile } from './communities'
-import { Navigation } from 'swiper/modules'
 import { useState } from 'react'
 import Link from 'next/link'
 import { Swiper, SwiperSlide, useSwiper } from 'swiper/react'
@@ -61,9 +60,7 @@ function CommunityView({ communities }: { communities: CommunityType[] }) {
           slidesOffsetBefore={16}
           slidesOffsetAfter={16}
           centeredSlidesBounds
-          direction="horizontal"
-          navigation
-          modules={[Navigation]}>
+          direction="horizontal">
           {communities.map((item) => (
             <SwiperSlide key={item.id} className="p-1">
               <CommunityTile key={item.id} community={item} />
@@ -84,7 +81,7 @@ function SlideButtons() {
       {!status.isStart && (
         <div className="absolute left-2 top-1/2 z-10 -translate-y-1/2">
           <Button
-            className="h-10 w-10 rounded-full bg-monochrome-white/80 drop-shadow-circle-shadow hover:bg-monochrome-white hover:shadow-md"
+            className="drop-shadow-circle-shadow h-10 w-10 rounded-full bg-monochrome-white/80 hover:bg-monochrome-white hover:shadow-md"
             size="custom"
             onClick={() => {
               slider.slidePrev()
@@ -97,7 +94,7 @@ function SlideButtons() {
       {!status.isEnd && (
         <div className="absolute right-2 top-1/2 z-10 -translate-y-1/2">
           <Button
-            className="h-10 w-10 rounded-full bg-monochrome-white/80 drop-shadow-circle-shadow hover:bg-monochrome-white hover:shadow-md"
+            className="drop-shadow-circle-shadow h-10 w-10 rounded-full bg-monochrome-white/80 hover:bg-monochrome-white hover:shadow-md"
             size="custom"
             onClick={() => {
               slider.slideNext()
@@ -135,9 +132,7 @@ function LoopView({ loops }: { loops: LoopResType[] }) {
           slidesOffsetBefore={16}
           slidesOffsetAfter={16}
           centeredSlidesBounds
-          direction="horizontal"
-          navigation
-          modules={[Navigation]}>
+          direction="horizontal">
           {loops.map((item) => (
             <SwiperSlide key={item.chat_id} className="p-1">
               <LoopItem key={item.chat_id} loop={item} />
