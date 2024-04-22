@@ -132,6 +132,7 @@ function Mobile({
             videoId={videoDetails.video.id}
             attachedLink={videoDetails.video.attachedLink}
             description={videoDetails.video.description}
+            isSparked={videoDetails.video.isSparked}
           />
         </div>
         <CommentSheet
@@ -147,6 +148,7 @@ function Mobile({
 
 type DesktopProps = {
   videoData: {
+    isSparked?: boolean | null | undefined
     source: string
     thumbnail: string
     shareUrl: string
@@ -274,6 +276,7 @@ function Desktop({
             videoId={videoData.id}
             attachedLink={videoData.attachedLink}
             description={videoData.description}
+            isSparked={videoData.isSparked}
           />
         </div>
       </div>

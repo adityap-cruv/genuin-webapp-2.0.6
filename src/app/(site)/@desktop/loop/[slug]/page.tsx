@@ -1,5 +1,4 @@
-import { fetchLoopDetails } from '@lib/api/loop'
-import { MainComponent } from './main-component'
+import { LoopDetails } from './main-component'
 import { type Metadata } from 'next'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { fetchMetadata } from '@lib/api/meta-data'
@@ -13,8 +12,7 @@ interface Props {
 
 // TODO: change the implementation of MainComponent.
 export default async function Component({ params }: Props) {
-  const loopDetails = await fetchLoopDetails(params.slug)
-  return <MainComponent loopDetails={loopDetails} />
+  return <LoopDetails slug={params.slug} />
 }
 
 interface LoopDataType {

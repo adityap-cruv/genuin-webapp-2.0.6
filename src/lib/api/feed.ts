@@ -1,9 +1,9 @@
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import { useInfiniteQuery } from '@tanstack/react-query'
-import axios from 'axios'
 import { parseFeedResponse } from './api-response-parser'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
+import { axiosInstance } from './instance'
 
 /**
  *
@@ -13,16 +13,18 @@ import { type VideoPlayerModalType } from '@lib/schemas/player/video'
  */
 async function fetchFeed(
   feedType: 1 | 2 | 3,
-  pageParam: { pageSession?: string; lastVideoId?: string }
+  pageParam: { pageSession?: string; lastVideoId?: string; lastVideoParentId?: string }
 ): Promise<{ reels: VideoPlayerModalType[]; pageSession: string }> {
-  return await axios
-    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/feeds', {
+  return await axiosInstance
+    .get('/api/v3/feeds', {
       params: {
         brand_id: useGenuinOptions.getState().brandId,
         type: feedType,
         last_video_id: pageParam?.lastVideoId ?? undefined,
         page_session: pageParam?.pageSession ?? undefined,
         device_id: encodeURI(useLocalStorage.getState().deviceId),
+        last_video_type: pageParam?.lastVideoId ? 'loop' : undefined,
+        last_video_parent_id: pageParam?.lastVideoId ? pageParam.lastVideoParentId : undefined,
       },
     })
     .then((res) => {
@@ -43,9 +45,15 @@ async function fetchFeed(
 export function getFeed(feedType: 1 | 2 | 3) {
   return useInfiniteQuery({
     queryKey: ['home', feedType],
-    queryFn: async ({ pageParam }) => await fetchFeed(feedType, pageParam),
+    queryFn: async ({ pageParam }) => {
+      return await fetchFeed(feedType, pageParam)
+    },
     getNextPageParam(lastPage, allPages) {
-      return { pageSession: lastPage.pageSession, lastVideoId: lastPage.reels[lastPage.reels.length - 1].video.id }
+      return {
+        pageSession: lastPage.pageSession,
+        lastVideoId: lastPage.reels[lastPage.reels.length - 1].video.id,
+        lastVideoParentId: lastPage.reels[lastPage.reels.length - 1].loop.id,
+      }
     },
   })
 }
