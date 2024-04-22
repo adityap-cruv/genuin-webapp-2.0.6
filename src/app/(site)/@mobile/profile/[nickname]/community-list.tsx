@@ -18,7 +18,7 @@ import { type ProfileCommunityType, type ProfileLoopType, type ProfileVideoType 
 import { fetchProfileCommunityLoops, getCommunities, fetchProfileVideos, getProfileFeed } from '@lib/api/profile'
 import icLock from '@icons/icLock.svg'
 import icLoopDark from '@icons/icLoopDark.svg'
-import { joinCommunity } from '@lib/api/video'
+import { joinCommunity, leaveCommunity } from '@lib/api/video'
 import { PlayerModal } from '@components/common/modals/player-modal'
 import icPlay from '@icons/player-controls/icPlay.svg'
 
@@ -64,10 +64,14 @@ export function CommunityList({ userId, scrollYProgress }: { userId: string; scr
           }
         })
       } else {
-        setCommunityJoinStates((prevState) => ({
-          ...prevState,
-          [communityId]: newState,
-        }))
+        await leaveCommunity(communityId).then((res) => {
+          if (res.code === 200) {
+            setCommunityJoinStates((prevState) => ({
+              ...prevState,
+              [communityId]: newState,
+            }))
+          }
+        })
       }
     } else {
       openModal({

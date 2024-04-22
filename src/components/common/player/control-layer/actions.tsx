@@ -62,11 +62,25 @@ function Mobile({
   // TODO: Why?
   const usersdata = JSON.parse(localStorage.getItem('_user_id_') ?? '')
   const userId = usersdata.state.userId ?? ''
-  const [isVideoSparked, setIsSparked] = useState(isSparked)
-  const [stateSparkCount, setStateSparkCount] = useState(sparkCount)
+  const [sparkData, setSparkData] = useState({
+    isSparked,
+    sparkCount,
+  })
   const embed = useGenuinOptions().embed
   const user = useGenuinOptions().user
   const searchParams = Object.fromEntries(useSearchParams())
+
+  async function toggleVideoSpark() {
+    await videoSpark(videoId, 2, !sparkData.isSparked).then((res) => {
+      if (res.code === 200) {
+        setSparkData((prevData) => ({
+          ...prevData,
+          isSparked: !prevData.isSparked,
+          sparkCount: prevData.isSparked ? prevData.sparkCount - 1 : prevData.sparkCount + 1,
+        }))
+      }
+    })
+  }
 
   return (
     <div
@@ -121,10 +135,7 @@ function Mobile({
             embed
               ? user
                 ? async () => {
-                    // TODO: remove api call from here and do not update states 2 times.
-                    await videoSpark(videoId, 2, !isVideoSparked)
-                    setIsSparked((prevIsSparked) => !prevIsSparked)
-                    setStateSparkCount((prevCount) => (isVideoSparked ? prevCount - 1 : prevCount + 1))
+                    await toggleVideoSpark()
                   }
                 : () => {
                     openModal({
@@ -155,9 +166,9 @@ function Mobile({
                     .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
                 }
           }>
-          <Image src={isVideoSparked ? icSparkTrue : icSpark} height={32} width={32} alt="spark" />
+          <Image src={sparkData.isSparked ? icSparkTrue : icSpark} height={32} width={32} alt="spark" />
           <p className="flex justify-center text-body-1-demi text-monochrome-white">
-            {abbreviateNumber(stateSparkCount)}
+            {abbreviateNumber(sparkData.sparkCount)}
           </p>
         </ActionItem>
       </span>
@@ -219,11 +230,25 @@ type DesktopActionsProps = {
 function Desktop({ shareUrl, sparkCount, videoId, attachedLink, description, isSparked }: DesktopActionsProps) {
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
-  const [isVideoSparked, setIsSparked] = useState(isSparked)
-  const [stateSparkCount, setStateSparkCount] = useState(sparkCount)
+  const [sparkData, setSparkData] = useState({
+    isSparked,
+    sparkCount,
+  })
   const usersdata = JSON.parse(localStorage.getItem('_user_id_') ?? '')
   const userId = usersdata.state.userId ?? ''
   const user = useGenuinOptions().user
+
+  async function toggleVideoSpark() {
+    await videoSpark(videoId, 2, !sparkData.isSparked).then((res) => {
+      if (res.code === 200) {
+        setSparkData((prevData) => ({
+          ...prevData,
+          isSparked: !prevData.isSparked,
+          sparkCount: prevData.isSparked ? prevData.sparkCount - 1 : prevData.sparkCount + 1,
+        }))
+      }
+    })
+  }
 
   return (
     <div
@@ -248,11 +273,7 @@ function Desktop({ shareUrl, sparkCount, videoId, attachedLink, description, isS
         onClick={
           user
             ? async () => {
-                // TODO: remove api call from here. don't manage 2 states for single functionality.
-                // TODO: update state if and only if api request to updation is successful.
-                await videoSpark(videoId, 2, !isVideoSparked)
-                setIsSparked((prevIsSparked) => !prevIsSparked)
-                setStateSparkCount((prevCount) => (isVideoSparked ? prevCount - 1 : prevCount + 1))
+                await toggleVideoSpark()
               }
             : () => {
                 openModal({
@@ -261,9 +282,9 @@ function Desktop({ shareUrl, sparkCount, videoId, attachedLink, description, isS
                 })
               }
         }>
-        <Image src={isVideoSparked ? icSparkTrue : icSpark} height={32} width={32} alt="spark" />
+        <Image src={sparkData.isSparked ? icSparkTrue : icSpark} height={32} width={32} alt="spark" />
         <p className="flex justify-center text-body-1-demi text-monochrome-white">
-          {abbreviateNumber(stateSparkCount)}
+          {abbreviateNumber(sparkData.sparkCount)}
         </p>
       </ActionItem>
       <ActionItem

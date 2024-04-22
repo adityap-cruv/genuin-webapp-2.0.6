@@ -5,7 +5,7 @@ import { DecorativeList } from '@components/custom/decorative-list'
 import { fetchProfileCommunityLoops, fetchProfileVideos, getCommunities, getProfileFeed } from '@lib/api/profile'
 import { Loader } from '@components/ui/loader'
 import { Shimmer } from '@components/ui/shimmer'
-import { joinCommunity } from '@lib/api/video'
+import { joinCommunity, leaveCommunity } from '@lib/api/video'
 import { PlayerModal } from '@components/common/modals/player-modal'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import icPlay from '@icons/player-controls/icPlay.svg'
@@ -65,10 +65,14 @@ export function CommunityList({ userId }: { userId: string }) {
           }
         })
       } else {
-        setCommunityJoinStates((prevState) => ({
-          ...prevState,
-          [communityId]: newState,
-        }))
+        await leaveCommunity(communityId).then((res) => {
+          if (res.code === 200) {
+            setCommunityJoinStates((prevState) => ({
+              ...prevState,
+              [communityId]: newState,
+            }))
+          }
+        })
       }
     } else {
       openModal({
