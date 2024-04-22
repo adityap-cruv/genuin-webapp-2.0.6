@@ -10,6 +10,8 @@ import { CommunityDiscussion02 } from '@icons/ks-cb-flow/community-02'
 import { Button } from '@components/ui/button'
 import { useAuthenticationModalStore } from '../store'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
+import { ksCbRequest } from '@lib/api/auth'
+import { signIn } from 'next-auth/react'
 
 SwiperCore.use([Pagination])
 export function KsToCbSubdomain() {
@@ -66,10 +68,27 @@ export function KsToCbSubdomain() {
           variant="default"
           className="w-full"
           disabled={user?.ks_cb_request_status === 2}
-          onClick={() => {
-            user ? setStep('VERIFY_MAIL') : setStep('EMAIL_INPUT')
+          onClick={async () => {
+            if (!user) {
+              setStep('EMAIL_INPUT')
+              return
+            }
+
+            if (!user.isEmailVerified) {
+              setStep('VERIFY_MAIL')
+              return
+            }
+
+            const res = await ksCbRequest()
+            if (res.code === 200) {
+              await signIn('credentials', {
+                ...user,
+                ks_cb_request_status: res.data.ks_cb_request_status,
+                redirect: false,
+              })
+            }
           }}>
-          {user?.isEmailVerified ? 'Requested' : `Become a community builder for ${brandName}`}
+          {user?.ks_cb_request_status === 2 ? 'Requested' : `Become a community builder for ${brandName}`}
         </Button>
       )}
     </ModalShell>

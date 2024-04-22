@@ -50,7 +50,7 @@ export function PasswordInputLogin() {
             is_email_verified: res.data.user.is_email_verified,
             is_password_set: true,
             accessToken: res.data.accessToken,
-            ks_cb_request_status: res.data.ks_cb_request_status,
+            ks_cb_request_status: res.data.user.ks_cb_request_status,
           }
           // console.log('user', user)
           void signIn('credentials', { ...user, redirect: false })
