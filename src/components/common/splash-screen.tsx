@@ -1,5 +1,4 @@
 import { Loader } from '@components/ui/loader'
-import { GenuinIcon } from '@icons/genuin-icon'
 
 export function SplashScreen() {
   return (
