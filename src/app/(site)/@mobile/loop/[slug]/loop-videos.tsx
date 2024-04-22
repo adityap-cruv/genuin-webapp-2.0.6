@@ -4,11 +4,12 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { CustomAvatar } from '@components/custom/custom-avatar'
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import icPlay from '@icons/player-controls/icPlay.svg'
 import { useMotionValueEvent, useScroll } from 'framer-motion'
 import { PlayerModal } from '@components/common/modals/player-modal'
 import { type VideoPlayerModalCommunityType, type VideoPlayerModalLoopType } from '@lib/schemas/player/video'
+import { useSearchParams } from 'next/navigation'
 
 type Props = {
   loop: VideoPlayerModalLoopType
@@ -21,6 +22,11 @@ export function LoopVideos({ loop, community }: Props) {
   const [modalControl, setModalControl] = useState({ open: false, startIndex: -1 })
   const scrollDivRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ container: scrollDivRef, layoutEffect: false })
+  const searchParams = useSearchParams()
+
+  useEffect(() => {
+    if (searchParams.get('show_videos') === '1') setModalControl({ startIndex: 0, open: true })
+  }, [searchParams])
 
   useMotionValueEvent(scrollYProgress, 'change', (latest) => {
     if (Number(latest.toFixed(1)) > 0.8 && !isFetchingNextPage) {

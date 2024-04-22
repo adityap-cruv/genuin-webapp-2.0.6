@@ -9,7 +9,7 @@ import { usePathname, useSearchParams } from 'next/navigation'
 import { PopularIcon, HomeIcon, LatestIcon } from '@icons/side-bar-icons'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { PATH_NAME } from '@lib/utils/constants/path'
-import { X } from 'lucide-react'
+import { Search, X } from 'lucide-react'
 import { RecentCommunities } from './recent-communities'
 import { AppLogo } from '@components/ui/app-logo'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
@@ -20,6 +20,8 @@ import { CustomAvatar } from '@components/custom/custom-avatar'
 import { BurgerIcon } from '@icons/burger-icon'
 import { LogoutIcon } from '@icons/logout'
 import { removeAllAuthToken } from '@lib/api/instance'
+import { MOBILE_DOWNLOAD_APP_LINK } from '@lib/constants'
+import { SearchBar } from '@components/common/search-bar'
 
 const navVariant = cva('sticky top-0 flex z-40 h-[76px] w-full items-center justify-between  px-2', {
   variants: {
@@ -43,7 +45,9 @@ type Props = {
 
 export function TopBar({ variant = 'light', className, showClose = false, onClose }: Props) {
   const isEmbed = useGenuinOptions().embed
-  const searchParams = Object.fromEntries(useSearchParams())
+  // If variant is transparent than we have removed show download button.
+  const showDownloadButton = variant !== 'trasparent'
+
   return (
     <nav className={cn(navVariant({ variant }), className)}>
       <span className="flex items-center ">
@@ -58,37 +62,22 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
         )}
       </span>
       <span className="flex items-center gap-x-2">
-        {!isEmbed ? (
-          <>
-            {/* <Link href={MOBILE_DOWNLOAD_APP_LINK} target="_blank"> */}
+        {!isEmbed && showDownloadButton && (
+          <Link href={MOBILE_DOWNLOAD_APP_LINK} target="_blank">
             <Button
-              onClick={() => {
-                void generateDeepLink({
-                  pathName: window.location.pathname,
-                  searchParams,
-                  title: '',
-                  description: '',
-                  utmSource: 'app_web',
-                  utmCampaign: 'download',
-                })
-                  .then((generatedLink) => {
-                    openGeneratedLink(generatedLink)
-                  })
-                  .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
-              }}
               className={
                 variant === 'light'
-                  ? 'bg-new-off-black hover:bg-new-dark-grey'
+                  ? 'bg-new-off-black text-monochrome-white hover:bg-new-dark-grey'
                   : 'bg-new-off-white text-new-off-black hover:bg-new-off-black hover:text-new-off-white'
               }>
               <p className="text-body-1-demi">Download Genuin</p>
             </Button>
-            {/* </Link> */}
-          </>
-        ) : (
-          <UserTick />
+          </Link>
         )}
-
+        <SearchBar.mobile>
+          <Search className={cn(variant === 'light' ? 'stroke-secondary' : 'stroke-monochrome-white')} />
+        </SearchBar.mobile>
+        {isEmbed && <UserTick />}
         {showClose && (
           <X
             onClick={() => {
@@ -100,23 +89,6 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
             )}
           />
         )}
-        {/* {showClose ? (
-          <X
-            className={cn(
-              'h-6 w-6',
-              variant === 'light' ? 'stroke-new-off-black' : 'stroke-new-off-white stroke-[3px]'
-            )}
-          />
-        ) : (
-          <Search
-            className={cn(
-              'h-7 w-7',
-              variant === 'light'
-                ? 'stroke-new-off-black'
-                : 'rounded-full bg-monochrome-black/20 stroke-new-off-white p-1.5'
-            )}
-          />
-        )} */}
       </span>
     </nav>
   )
