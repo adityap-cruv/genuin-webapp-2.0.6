@@ -33,3 +33,11 @@ export const VERIFICATION_TYPE = {
   sms: 1,
   call: 2,
 }
+
+export const RECENT_SEARCH_CONTENT_TYPE: Record<'text' | 'community' | 'loop' | 'user' | 'video', number> = {
+  community: 3,
+  loop: 4,
+  text: 1,
+  user: 2,
+  video: 5,
+}

@@ -23,19 +23,24 @@ import { Toaster } from '@components/ui/toaster'
 import { CommunityLoopTab } from './community-loop-tab'
 import { ListItem } from '@components/common/list-item'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
-import { joinCommunity } from '@lib/api/video'
+import { joinCommunity, leaveCommunity } from '@lib/api/video'
 import { ShareIcon } from '@icons/share-icon'
-import { getCommunityMembers } from '@lib/api/community'
+import { getCommunityDetails, getCommunityMembers } from '@lib/api/community'
 import { Loader } from '@components/ui/loader'
-
-interface Props {
-  communityDetails: CommunityDetailsType
-}
+import Loading from './loading'
 
 let communityDetailsModule: CommunityDetailsType
 
+export function CommunityDetails({ slug }: { slug: string }) {
+  const { data, isLoading } = getCommunityDetails(slug)
+
+  if (isLoading) return <Loading />
+
+  if (data) return <RootDetails communityDetails={data} />
+}
+
 // TODO: Separate this component.
-export function RootDetails({ communityDetails }: Props) {
+export function RootDetails({ communityDetails }: { communityDetails: CommunityDetailsType }) {
   communityDetailsModule = communityDetails
   const addCommunity = useLocalStorage((state) => state.addCommunity)
   const detailsDivRef = useRef<HTMLDivElement>(null)
@@ -43,8 +48,21 @@ export function RootDetails({ communityDetails }: Props) {
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
   const { isEmbed, parentUrl } = useGenuinOptions((state) => ({ isEmbed: state.embed, parentUrl: state.parentUrl }))
-  const [isCommunityJoined, setIsCommunityJoined] = useState(false)
+  const [isCommunityJoined, setIsCommunityJoined] = useState(!!communityDetails.logged_in_user_role)
   const user = useGenuinOptions().user
+  const [dimensions, setDimensions] = useState({
+    width: 0,
+    height: 0,
+  })
+
+  useEffect(() => {
+    if (detailsDivRef.current) {
+      setDimensions({
+        width: detailsDivRef.current.offsetWidth,
+        height: detailsDivRef.current.offsetHeight,
+      })
+    }
+  }, [detailsDivRef.current])
 
   useEffect(() => {
     addCommunity({
@@ -54,6 +72,28 @@ export function RootDetails({ communityDetails }: Props) {
       slug: communityDetails.slug,
     })
   }, [])
+
+  async function toggleCommunityJoinState() {
+    !isCommunityJoined
+      ? await joinCommunity(
+          false,
+          [communityDetails.community_id],
+          [
+            {
+              user_id: user?.id,
+            },
+          ]
+        ).then((res) => {
+          if (res.code === 200) {
+            setIsCommunityJoined((prev) => !prev)
+          }
+        })
+      : await leaveCommunity(communityDetails.community_id).then((res) => {
+          if (res.code === 200) {
+            setIsCommunityJoined((prev) => !prev)
+          }
+        })
+  }
 
   return (
     <>
@@ -66,13 +106,14 @@ export function RootDetails({ communityDetails }: Props) {
         communityId={communityDetails.community_id}
         isCommunityJoined={isCommunityJoined}
         setIsCommunityJoined={setIsCommunityJoined}
+        toggleCommunityJoinState={toggleCommunityJoinState}
       />
       <main className="hide-scrollbar absolute inset-0 h-full w-full overflow-auto">
         <div>
           <div
             className="-px-6 aspect-w-5 aspect-h-1 relative rounded-lg bg-tertiary-200"
             style={{
-              height: 'calc(100vw/5)',
+              height: `calc(${dimensions.width}px / 5)`,
             }}>
             {' '}
             <CustomAvatar
@@ -83,46 +124,41 @@ export function RootDetails({ communityDetails }: Props) {
             />
           </div>
           <div ref={detailsDivRef} className="my-3 flex items-center justify-end gap-x-2">
-            <Button
-              size="custom"
-              className={`${isCommunityJoined && 'border border-primary '}`}
-              variant={isCommunityJoined ? 'outline' : 'default'}
-              onClick={
-                user
-                  ? async () => {
-                      !isCommunityJoined
-                        ? await joinCommunity(
-                            false,
-                            [communityDetails.community_id],
-                            [
-                              {
-                                user_id: user?.id,
-                              },
-                            ]
-                          ).then((res) => {
-                            if (res.code === 200) {
-                              setIsCommunityJoined((prev) => !prev)
-                            }
-                          })
-                        : setIsCommunityJoined((prev) => !prev)
-                    }
-                  : () => {
-                      openModal({
-                        title: 'Get the Genuin app',
-                        subtitle: (
-                          <>
-                            Get the app to join the <br />
-                            <span className="font-bold">{communityDetails.name}</span> community.
-                          </>
-                        ),
-                      })
-                    }
-              }>
-              <p
-                className={`px-4 py-1.5 text-body-1-demi text-monochrome-white ${isCommunityJoined && 'text-primary'}`}>
-                {isCommunityJoined ? 'Joined' : 'Join Community'}
-              </p>
-            </Button>
+            {communityDetails.is_community_join_requested ? (
+              <Button size="custom" className="border border-primary" variant={'outline'}>
+                <p className={`px-4 py-1.5 text-body-1-demi text-monochrome-white text-primary`}>Requested</p>
+              </Button>
+            ) : (
+              <Button
+                size="custom"
+                className={`${isCommunityJoined && 'border border-primary '}`}
+                variant={isCommunityJoined ? 'outline' : 'default'}
+                onClick={
+                  user
+                    ? async () => {
+                        await toggleCommunityJoinState()
+                      }
+                    : () => {
+                        openModal({
+                          title: 'Get the Genuin app',
+                          subtitle: (
+                            <>
+                              Get the app to join the <br />
+                              <span className="font-bold">{communityDetails.name}</span> community.
+                            </>
+                          ),
+                        })
+                      }
+                }>
+                <p
+                  className={`px-4 py-1.5 text-body-1-demi text-monochrome-white ${
+                    isCommunityJoined && 'text-primary'
+                  }`}>
+                  {isCommunityJoined ? 'Joined' : 'Join Community'}
+                </p>
+              </Button>
+            )}
+
             <Button
               variant="outline"
               size="custom"

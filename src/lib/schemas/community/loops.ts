@@ -55,7 +55,7 @@ const CommunityLoopSchema = z.object({
   share_url: z.string(),
   latest_message_at: z.string().nullish(),
   is_ai_generated: z.boolean().default(false),
-  template_id: z.string().nullish(),
+  template_id: z.string().or(z.number()).nullish(),
   is_welcome_loop: z.boolean().nullish(),
   member_info: z.unknown().nullish(),
   is_subscriber: z.boolean().nullish(),
@@ -77,6 +77,7 @@ export function validateCommunityLoopList(data: any) {
   try {
     return CommunityLoopListSchema.parse(data)
   } catch (e) {
+    console.log('error::', e)
     throw new Error('Something went wrong with validation of community loop list validation.')
   }
 }

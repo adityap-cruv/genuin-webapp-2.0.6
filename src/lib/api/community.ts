@@ -3,16 +3,17 @@ import { validateCommunityLoopList, type CommunityLoopListType } from '@lib/sche
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import { parseFeedResponse } from './api-response-parser'
+import { axiosInstance } from './instance'
 
 export async function fetchCommunityDetails(slug: string) {
-  return await axios
-    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/community', {
+  return await axiosInstance
+    .get('/api/v3/community', {
       params: {
         slug,
       },
     })
     .then((res) => {
-      return validateCommunityDetails(res.data.data)
+      return res.data.data
     })
     .catch((e) => {
       // TODO:
@@ -25,6 +26,13 @@ export async function fetchCommunityDetails(slug: string) {
       console.log('error::', e)
       throw new Error('Something went wrong with community detail!')
     })
+}
+
+export function getCommunityDetails(slug: string) {
+  return useQuery({
+    queryKey: ['community', 'details', slug],
+    queryFn: async () => await fetchCommunityDetails(slug),
+  })
 }
 
 export function getCommunityVideos(slug: string) {
@@ -72,7 +80,7 @@ export async function fetchCommunityLoops(slug: string): Promise<{ loops: Commun
       return { loops: validateCommunityLoopList(res.data.data.conversations) }
     })
     .catch((e) => {
-      throw new Error('Something went wrong with loop detail!')
+      throw new Error('Something went wrong with loop community.!')
     })
 }
 

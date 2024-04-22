@@ -50,7 +50,6 @@
     "embla-carousel-react": "^8.0.0-rc22",
     "framer-motion": "^10.16.4",
     "gsap": "^3.12.5",
-    "immer": "^10.0.4",
     "input-otp": "^1.2.0",
     "lucide-react": "^0.279.0",
     "mobile-detect": "^1.4.5",
@@ -67,6 +66,7 @@
     "swiper": "^11.0.5",
     "tailwind-merge": "^1.14.0",
     "tailwindcss-animate": "^1.0.7",
+    "use-debounce": "^10.0.0",
     "uuid": "^9.0.1",
     "zod": "^3.22.2",
     "zustand": "^4.4.1"

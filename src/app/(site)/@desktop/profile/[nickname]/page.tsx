@@ -16,7 +16,7 @@ export default async function Component({ params }: CompProps) {
   return <MainComponent profileData={profileData} />
 }
 
-interface ProfileDataType {
+type ProfileDataType = {
   member_id: string
   title: string
   description: string
