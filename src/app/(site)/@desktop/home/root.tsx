@@ -11,6 +11,7 @@ const Feed = dynamic(async () => await import('@components/common/feed').then((c
 export function Root() {
   const { data, isError, fetchNextPage, isFetchingNextPage, isLoading } = getFeed(1)
   const videos = data?.pages.flatMap((item) => item.reels)
+
   if (isLoading) return <FeedShimmer.desktop />
 
   return (
