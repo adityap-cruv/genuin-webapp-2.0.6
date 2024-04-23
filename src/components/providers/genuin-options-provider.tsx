@@ -122,6 +122,7 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
     }
   }, [])
 
+  console.log('What happening::', isLoading, sessionStatus, sessionData)
   if (!config) {
     return (
       <>
