@@ -117,8 +117,11 @@ function Failure() {
 
 function VerifyMail() {
   const { setStep, setFormData } = useAuthenticationModalStore()
-  const user = useGenuinOptions().user
   const [error, setError] = useState({ message: '', code: 0 })
+  const { brandName, user } = useGenuinOptions((state) => ({
+    brandName: state.config?.name ? state.config?.name : 'Genuin',
+    user: state.user,
+  }))
 
   async function sendMail() {
     await resendVerificationMail(user?.email ?? '', 12)
@@ -137,7 +140,7 @@ function VerifyMail() {
     <ModalShell>
       <p className="text-center text-heading-3">Verify your email</p>
       <p className="text-text-title-1-med text-center">
-        Verify your email if you want to request to become a community builder for Ted.
+        Verify your email if you want to request to become a community builder for {brandName}.
       </p>
       <Button
         className="w-full"
