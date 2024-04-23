@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { ModalShell } from '../modal-shell'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Pagination } from 'swiper/modules'
@@ -11,17 +11,56 @@ import { Button } from '@components/ui/button'
 import { useAuthenticationModalStore } from '../store'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { ksCbRequest } from '@lib/api/auth'
-import { signIn } from 'next-auth/react'
+import { useSession } from 'next-auth/react'
+import { Loader } from '@components/ui/loader'
 
 SwiperCore.use([Pagination])
 export function KsToCbSubdomain() {
   const { setStep } = useAuthenticationModalStore()
+  const { data: sessionData, update: updateSession } = useSession()
   const { brandName, user } = useGenuinOptions((state) => ({
     brandName: state.config?.name ? state.config?.name : 'Genuin',
     user: state.user,
   }))
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const handleClick = () => {
+    setLoading(true)
+    setError(null)
+
+    if (!user) {
+      setStep('EMAIL_INPUT')
+      setLoading(false)
+      return
+    }
+
+    if (!user.isEmailVerified) {
+      setStep('VERIFY_MAIL')
+      setLoading(false)
+      return
+    }
+
+    ksCbRequest()
+      .then((res) => {
+        if (res.code === 200) {
+          void updateSession({
+            ...sessionData,
+            user: { ...sessionData?.user, ks_cb_request_status: res.data.ks_cb_request_status },
+          })
+          setLoading(false)
+        } else {
+          setError('Something went wrong.')
+          setLoading(false)
+        }
+      })
+      .catch((e) => {
+        setError('Something went wrong.')
+        setLoading(false)
+      })
+  }
   return (
-    <ModalShell>
+    <ModalShell className="sm:max-w-[384px]">
       <Swiper
         pagination={{
           clickable: true,
@@ -68,29 +107,17 @@ export function KsToCbSubdomain() {
           variant="default"
           className="w-full"
           disabled={user?.ks_cb_request_status === 2}
-          onClick={async () => {
-            if (!user) {
-              setStep('EMAIL_INPUT')
-              return
-            }
-
-            if (!user.isEmailVerified) {
-              setStep('VERIFY_MAIL')
-              return
-            }
-
-            const res = await ksCbRequest()
-            if (res.code === 200) {
-              await signIn('credentials', {
-                ...user,
-                ks_cb_request_status: res.data.ks_cb_request_status,
-                redirect: false,
-              })
-            }
-          }}>
-          {user?.ks_cb_request_status === 2 ? 'Requested' : `Become a community builder for ${brandName}`}
+          onClick={handleClick}>
+          {loading ? (
+            <Loader size="sm" />
+          ) : user?.ks_cb_request_status === 2 ? (
+            'Requested'
+          ) : (
+            `Become a community builder for ${brandName}`
+          )}
         </Button>
       )}
+      {error && <p style={{ color: 'red' }}>{error}</p>}
     </ModalShell>
   )
 }
