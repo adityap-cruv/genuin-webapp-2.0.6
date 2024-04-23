@@ -20,6 +20,7 @@ import { openModal } from '@lib/utils'
 import { ShareIcon } from '@icons/share-icon'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import Loading from './loading'
+import Error from '../../error'
 
 interface Props {
   loopDetails: LoopDetailsType
@@ -29,8 +30,8 @@ export function LoopDetails({ slug }: { slug: string }) {
   const { data, isLoading } = getLoopDetails(slug)
 
   if (isLoading) return <Loading />
-
   if (data) return <MainComponent loopDetails={data} />
+  if (!isLoading && !data) return <Error />
 }
 
 // TODO: Improve this component.
