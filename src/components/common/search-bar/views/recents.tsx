@@ -17,6 +17,9 @@ export function Recents() {
   } = useQuery({
     queryFn: async () => await fetchRecents(),
     queryKey: ['recent', 'search'],
+    retry(failureCount, error) {
+      return false
+    },
   })
 
   async function deleteClickHandler(id?: string, all?: boolean) {
