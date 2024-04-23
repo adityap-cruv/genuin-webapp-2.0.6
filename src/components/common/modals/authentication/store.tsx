@@ -21,6 +21,9 @@ export type StepsType =
   | 'PASSWORD_INPUT_LOGIN'
   | 'EMAIL_SENT_NOTE_ACCOUNT_EXISTS'
   | 'GUIDELINES'
+  | 'KS_CB_WEB'
+  | 'KS_CB_SUBDOMAIN'
+  | 'VERIFY_MAIL'
 
 type FormDataType = {
   displayName: string

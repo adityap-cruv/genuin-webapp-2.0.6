@@ -7,15 +7,15 @@
     --background: 0 0% 100%;
     --foreground: 0 0% 7%;
 
-    --primary: #0645FF;
+    --primary: #0645ff;
     --primary-foreground: 0 0% 100%;
     --primary-100: #e6ecff;
     --primary-200: #cddaff;
     --primary-300: #83a2ff;
     --primary-400: #517dff;
-    --primary: #0645FF;
+    --primary: #0645ff;
     --primary-600: #0430b3;
-    --primary-700: #032380; 
+    --primary-700: #032380;
 
     --secondary-300: #707070;
     --secondary-400: #414141;
@@ -28,7 +28,6 @@
     --tertiary-300: #d4d4d4;
     --tertiary-400: #b4b4b4;
     --tertiary: #949494;
-
 
     --transparent: 0 0% 0% 1
       /* --card: 0 0% 100%;

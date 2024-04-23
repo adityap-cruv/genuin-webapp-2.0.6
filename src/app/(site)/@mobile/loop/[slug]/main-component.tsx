@@ -21,6 +21,7 @@ import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { ShareIcon } from '@icons/share-icon'
 import { useSearchParams } from 'next/navigation'
 import Loading from './loading'
+import Error from '../../error'
 
 let loopDetailsModule: LoopDetailsType
 
@@ -32,8 +33,8 @@ export function LoopDetails({ slug }: { slug: string }) {
   const { data, isLoading } = getLoopDetails(slug)
 
   if (isLoading) return <Loading />
-
   if (data) return <MainComponent loopDetails={data} />
+  if (!isLoading && !data) return <Error />
 }
 
 // TODO: this page needs to be decoupled.

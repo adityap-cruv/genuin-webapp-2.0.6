@@ -12,6 +12,7 @@ import {
   type ProfileVideoResponseType,
 } from '@lib/schemas/profile/community-response'
 
+// TODO: add this file at better location.
 export function parseVideosFromLoop(
   data: LoopVideoListType,
   loop: VideoPlayerModalLoopType,

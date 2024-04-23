@@ -79,6 +79,7 @@ function NoLoops() {
   )
 }
 
+// TODO: create separate component named <LoopCard/> from this component and replace everywhere this component.
 function LoopItem({
   loopDetails,
   openModal,

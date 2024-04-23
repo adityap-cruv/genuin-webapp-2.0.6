@@ -86,9 +86,10 @@ function InfinityViewBox() {
     videoList: state.videoList,
   }))
   const videoDetails = videoList[currentIndex]
+  console.log('video: ', videoDetails)
   if (videoDetails)
     return (
-      <span className="absolute bottom-0 w-full">
+      <span className="absolute bottom-0 z-10 w-full">
         <AnimatedInfinityView
           community={{
             name: videoDetails.community.name ?? '',

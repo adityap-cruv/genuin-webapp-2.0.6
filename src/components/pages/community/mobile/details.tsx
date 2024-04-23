@@ -106,11 +106,13 @@ export function Details({ communityDetails }: Props) {
         <div className="px-4 py-2 pt-4">
           <div className="flex justify-end">
             <div className="flex items-center gap-x-2">
-              {isEmbed && communityDetails.is_community_join_requested ? (
+              {isEmbed && communityDetails.is_community_join_requested && (
                 <Button size="custom" className="border border-primary" variant={'outline'}>
                   <p className={`px-4 py-1.5 text-body-1-demi text-monochrome-white text-primary`}>Requested</p>
                 </Button>
-              ) : (
+              )}
+
+              {isEmbed && !communityDetails.is_community_join_requested && (
                 <Button
                   size="sm"
                   className={`${isCommunityJoined && 'border border-primary '}`}
@@ -137,6 +139,7 @@ export function Details({ communityDetails }: Props) {
                   </p>
                 </Button>
               )}
+
               {!isEmbed && (
                 <Button
                   variant="default"

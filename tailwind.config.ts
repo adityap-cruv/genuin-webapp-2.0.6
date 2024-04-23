@@ -159,6 +159,10 @@ module.exports = {
         6: '6',
         9: '9',
       },
+      dropShadow: {
+        // given by design team.
+        'circle-shadow': '0px 8px 16px rgba(17, 17, 17, 0.1)',
+      },
       container: {
         center: true,
         padding: {
