@@ -4,10 +4,12 @@ import { SearchBody } from './body'
 import { type ReactNode } from 'react'
 import { useSearchBarStore } from './store'
 import 'swiper/css'
+import './hide-swiper.module.css'
 import { Sheet, SheetContent, SheetTrigger } from '@components/ui/sheet'
 
 export const SearchBar = {
   mobile: Mobile,
+
   desktop: Desktop,
 }
 
