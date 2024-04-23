@@ -3,6 +3,7 @@ import { Root } from './root'
 import { type Metadata } from 'next'
 import { headers } from 'next/headers'
 import { PATH_NAME } from '@lib/utils/constants/path'
+import { getConfig } from '../../../../middleware'
 
 export default async function Page() {
   return <Root />
@@ -16,12 +17,6 @@ type HomeMetadata = {
 
 export async function generateMetadata(): Promise<Metadata> {
   const host = headers().get('host') ?? ''
-  function getConfig(host: string) {
-    const arr = host.split('.')
-    if (['app', 'begenuin', 'localhost:4005', 'www'].includes(arr[0])) return ''
-    if (!host.includes('begenuin')) return { domain: host }
-    return { subdomain: arr[0] }
-  }
   const config = getConfig(host)
 
   if (config) {

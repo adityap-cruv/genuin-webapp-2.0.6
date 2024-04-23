@@ -49,7 +49,7 @@ export const config = {
   ],
 }
 
-function getConfig(host: string) {
+export function getConfig(host: string) {
   const arr = host.split('.')
   if (['app', 'begenuin', 'localhost:4005', 'www'].includes(arr[0])) return ''
 
