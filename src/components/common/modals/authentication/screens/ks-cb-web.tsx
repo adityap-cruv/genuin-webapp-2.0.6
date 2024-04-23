@@ -3,7 +3,7 @@ import { ModalShell } from '../modal-shell'
 import imageAppStore from '@icons/ks-cb-flow/app-store-tab.svg'
 import imagePlayStore from '@icons/ks-cb-flow/play-store-tab.svg'
 import { Swiper, SwiperSlide } from 'swiper/react'
-import { Pagination } from 'swiper/modules'
+import { Pagination, Mousewheel, Keyboard } from 'swiper/modules'
 import SwiperCore from 'swiper'
 import 'swiper/swiper-bundle.css'
 import Image from 'next/image'
@@ -23,12 +23,14 @@ export function KsToCbWeb() {
     "data:image/svg+xml,%3Csvg width='200' height='200' viewBox='0 0 200 200' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M100 0C44.7783 0 0.222931 44.3332 0.000709297 99.5552C-0.165957 144.333 29.0562 182.333 69.5005 195.277C88.5004 201.333 109.334 192.777 117.834 174.722C120.5 169.055 122 162.722 122 155.999V154.111C122 152.388 120.278 151.166 118.667 151.777C112.5 153.999 105.834 155.166 98.8892 154.999C68.8893 154.388 44.7228 129.444 45.0005 99.4441C45.2783 69.3331 69.8338 44.9998 100 44.9998C130.389 44.9998 155 69.6109 155 99.9996V155.999C155 167.277 152.556 177.999 148.222 187.61C179.111 170.611 200 137.722 200 99.9996C200 44.7776 155.222 0 100 0Z' fill='%230645FF'/%3E%3C/svg%3E"
 
   return (
-    <ModalShell>
+    <ModalShell className="sm:max-w-[384px]">
       <Swiper
         pagination={{
           clickable: true,
         }}
-        modules={[Pagination]}
+        mousewheel={true}
+        keyboard={true}
+        modules={[Pagination, Mousewheel, Keyboard]}
         className="mySwiper h-fit w-full">
         <SwiperSlide>
           <div className="flex flex-col items-center gap-2">
@@ -65,7 +67,7 @@ export function KsToCbWeb() {
         </SwiperSlide>
       </Swiper>
       <div
-        className="flex max-h-40 w-full items-center rounded-lg bg-[#F8F8F8] p-4"
+        className="flex max-h-40 w-full items-center rounded-lg bg-[#F8F8F8] px-4 py-3"
         style={{
           background: 'linear-gradient(30deg, #E9CAF4 5%, #F8F8F8 50%, #ADDAFF 100%)',
         }}>
@@ -89,7 +91,8 @@ export function KsToCbWeb() {
             </a>
           </div>
         </div>
-        <div className="flex w-[35%] justify-center">
+        <div className="flex w-[35%] flex-col items-center justify-center">
+          <div className="h-1 w-[100px] rounded-t-md bg-monochrome-white "></div>
           <QRCode
             value="https://begenuin.com/"
             size={80}
@@ -102,7 +105,15 @@ export function KsToCbWeb() {
             logoOpacity={1}
             logoPaddingStyle="circle"
             removeQrCodeBehindLogo={true}
+            style={{ borderRadius: '100px' }}
           />
+          <div
+            className="w-[100px] rounded-b-md bg-monochrome-white p-0.5 pt-0 text-center"
+            style={{
+              fontSize: '10px',
+            }}>
+            Scan to download
+          </div>
         </div>
       </div>
     </ModalShell>

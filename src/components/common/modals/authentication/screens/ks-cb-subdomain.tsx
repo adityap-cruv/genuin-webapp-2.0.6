@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { ModalShell } from '../modal-shell'
 import { Swiper, SwiperSlide } from 'swiper/react'
-import { Pagination } from 'swiper/modules'
+import { Pagination, Mousewheel, Keyboard } from 'swiper/modules'
 import SwiperCore from 'swiper'
 import 'swiper/swiper-bundle.css'
 import { CommunityDiscussion03 } from '@icons/ks-cb-flow/community-03'
@@ -65,7 +65,9 @@ export function KsToCbSubdomain() {
         pagination={{
           clickable: true,
         }}
-        modules={[Pagination]}
+        mousewheel={true}
+        keyboard={true}
+        modules={[Pagination, Mousewheel, Keyboard]}
         className="mySwiper h-fit w-full">
         <SwiperSlide>
           <div className="flex flex-col items-center gap-2">
