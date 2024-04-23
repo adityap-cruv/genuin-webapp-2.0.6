@@ -5,15 +5,10 @@ import { useEffect } from 'react'
 export function ClientComponent({ user, redirectTo }: { user: any; redirectTo: string }) {
   useEffect(() => {
     user.is_email_verified = true
-    void signIn('credentials', { ...user, redirect: false })
-      .then((val) => {
-        if (val?.ok) {
-          // router.replace(redirectTo)
-          window.location.replace(redirectTo)
-        }
-      })
+    void signIn('credentials', { ...user, redirect: true, callbackUrl: redirectTo })
+      .then((val) => {})
       .catch((e) => {
-        console.log('::Error in signin::', e)
+        // console.log('::Error in signin::', e)
         // router.replace('/home?error_in_verification=1')
         window.location.replace('/home?error_in_verification=1')
       })

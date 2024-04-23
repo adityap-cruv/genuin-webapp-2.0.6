@@ -21,11 +21,6 @@ function Success() {
   const setStep = useAuthenticationModalStore().setStep
   const pathName = usePathname()
   const searchParams = useSearchParams()
-  const { data: sessionData, update } = useSession()
-
-  useEffect(() => {
-    void update({ ...sessionData, user: { ...sessionData?.user, isEmailVerified: true } })
-  }, [])
 
   return (
     <ModalShell>

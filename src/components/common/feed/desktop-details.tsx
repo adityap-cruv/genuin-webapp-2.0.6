@@ -3,9 +3,6 @@ import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { Button } from '@components/ui/button'
 import { DecorativeList } from '@components/custom/decorative-list'
-import Image from 'next/image'
-import icAudioRecord from '@icons/audioRecord.svg'
-import icVideoRecord from '@icons/videoRecord.svg'
 import { Comments, NoComments } from '@components/common/comments'
 import { getVideosComments } from '@lib/api/loop'
 import { type RefObject, useRef, useState, useEffect } from 'react'
@@ -20,7 +17,6 @@ import { createComment, joinCommunity, leaveCommunity } from '@lib/api/video'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { DownloadDialog } from '../download-dialog'
 import { ShareIcon } from '@icons/share-icon'
-import { Textarea } from '@components/ui/textarea'
 import { AudioRecordIcon } from '@icons/audio-record-icon'
 import { VideoRecordIcon } from '@icons/video-record-icon'
 import { type CommentListType } from '@lib/schemas/loop/comment'
@@ -70,9 +66,9 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
           />
           <span className="flex items-center gap-x-1">
             <Link href={PATH_NAME.profile(owner.userName)}>
-              <p className="text-title-3-demi">@{owner.userName}</p>
+              <p className="line-clamp-1 break-all text-title-3-demi">@{owner.userName}</p>
             </Link>
-            <p className="text-body-1-demi text-tertiary">{getTimeAgo(video.createdAt) + ' ago'}</p>
+            <p className="shrink-0 text-body-1-demi text-tertiary">{getTimeAgo(video.createdAt) + ' ago'}</p>
           </span>
         </span>
         {video.description && (
@@ -282,7 +278,7 @@ function CommentInput({
   }
   return (
     <div className="absolute bottom-0 left-0 max-h-16 w-full border-t-2 border-t-tertiary-200 bg-tertiary-200 py-3 shadow-md">
-      <button className="flex w-full flex-1 items-center gap-x-4 px-6">
+      <div className="flex w-full flex-1 items-center gap-x-4 px-6">
         {user ? (
           <>
             <div className="relative flex w-full items-center">
@@ -333,15 +329,15 @@ function CommentInput({
           </div>
         )}
 
-        <DownloadDialog title="Get the Genuin app" subtitle="Get the app to comment on this video." asChild>
+        <DownloadDialog title="Get the Genuin app" subtitle="Get the app to comment on this video.">
           {/* <Image src={icAudioRecord} alt="audio record" className="h-8 w-8" /> */}
           <AudioRecordIcon className="fill-secondary" />
         </DownloadDialog>
-        <DownloadDialog title="Get the Genuin app" subtitle="Get the app to comment on this video." asChild>
+        <DownloadDialog title="Get the Genuin app" subtitle="Get the app to comment on this video.">
           {/* <Image src={icVideoRecord} alt="audio record" className="h-8 w-8" /> */}
           <VideoRecordIcon className="fill-secondary" />
         </DownloadDialog>
-      </button>
+      </div>
     </div>
   )
 }

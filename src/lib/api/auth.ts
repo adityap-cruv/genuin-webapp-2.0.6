@@ -75,12 +75,10 @@ export async function ksSignup({
       device_id: encryptText(useLocalStorage.getState().deviceId, true),
     })
     .then((res) => {
-      console.log('response in axios:', res)
       const retryTime = res?.data?.data?.retryTime
       return { code: res.status, flow: res?.data?.data.flow, retryTime }
     })
     .catch((e) => {
-      console.log('error::', e)
       const retryTime = e.response?.data?.data?.retryTime
       return { code: Number(e?.response?.data?.code), flow: e?.data?.data.flow, retryTime }
     })
