@@ -2,7 +2,6 @@ import { type VideoType, type CommunityType, type PeopleType } from '.'
 import { type RankingResType, type LoopResType } from '../../schema/top-resp'
 import { type ReactNode } from 'react'
 import { CommunityTile } from './communities'
-import { Navigation } from 'swiper/modules'
 import { useState } from 'react'
 import Link from 'next/link'
 import { Swiper, SwiperSlide, useSwiper } from 'swiper/react'
@@ -61,9 +60,7 @@ function CommunityView({ communities }: { communities: CommunityType[] }) {
           slidesOffsetBefore={16}
           slidesOffsetAfter={16}
           centeredSlidesBounds
-          direction="horizontal"
-          navigation
-          modules={[Navigation]}>
+          direction="horizontal">
           {communities.map((item) => (
             <SwiperSlide key={item.id} className="p-1">
               <CommunityTile key={item.id} community={item} />
@@ -135,9 +132,7 @@ function LoopView({ loops }: { loops: LoopResType[] }) {
           slidesOffsetBefore={16}
           slidesOffsetAfter={16}
           centeredSlidesBounds
-          direction="horizontal"
-          navigation
-          modules={[Navigation]}>
+          direction="horizontal">
           {loops.map((item) => (
             <SwiperSlide key={item.chat_id} className="p-1">
               <LoopItem key={item.chat_id} loop={item} />
