@@ -1,5 +1,5 @@
 import { type CommentListType, validateCommentList } from '@lib/schemas/loop/comment'
-import { useInfiniteQuery } from '@tanstack/react-query'
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import { axiosInstance } from './instance'
 import { validateLoopCohosts } from '@lib/schemas/loop/cohosts'
@@ -8,8 +8,8 @@ import { parseVideosFromLoop } from './api-response-parser'
 import { type VideoPlayerModalCommunityType, type VideoPlayerModalLoopType } from '@lib/schemas/player/video'
 
 export async function fetchLoopDetails(slug: string) {
-  return await axios
-    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/conversation/details', {
+  return await axiosInstance
+    .get('/api/v3/conversation/details', {
       params: { slug },
     })
     .then((res) => {
@@ -20,13 +20,20 @@ export async function fetchLoopDetails(slug: string) {
     })
 }
 
+export function getLoopDetails(slug: string) {
+  return useQuery({
+    queryKey: ['loop', 'details', slug],
+    queryFn: async () => await fetchLoopDetails(slug),
+  })
+}
+
 async function fetchLoopVideos(
   pageParams: string,
   loop: VideoPlayerModalLoopType,
   community: VideoPlayerModalCommunityType
 ) {
-  return await axios
-    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/conversation/messages', {
+  return await axiosInstance
+    .get('/api/v3/conversation/messages', {
       params: {
         slug: loop.slug,
         last_message_id: pageParams,
@@ -61,27 +68,9 @@ export function getLoopVideos({
   })
 }
 
-// async function fetchLoopCohosts(slug: string, type: UserType) {
-//   return await axios
-//     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/rt/users', {
-//       params: {
-//         type,
-//         loop_id: { slug },
-//         ref: undefined,
-//       },
-//     })
-//     .then((res) => {
-//       const resData = res.data.data
-//       return { users: resData?.list, ref: resData.ref, end: resData.end_page }
-//     })
-//     .catch((e) => {
-//       throw new Error('Something went wrong in fetching videos.')
-//     })
-// }
-
 async function fetchLoopCohosts(slug: string, pageParam: string) {
-  return await axios
-    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/conversation/members', {
+  return await axiosInstance
+    .get('/api/v3/conversation/members', {
       params: {
         slug,
         last_member_id: pageParam,
@@ -108,8 +97,8 @@ export function getLoopCohosts(slug: string) {
 }
 
 async function fetchLoopSubscribers(slug: string, pageParam: string) {
-  return await axios
-    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/conversation/subscribers', {
+  return await axiosInstance
+    .get('/api/v3/conversation/subscribers', {
       params: {
         slug,
         last_member_id: pageParam,

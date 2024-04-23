@@ -24,6 +24,7 @@ export const {
         is_email_verified: { type: 'text' },
         is_password_set: { type: 'text' },
         accessToken: { type: 'text' },
+        ks_cb_request_status: { type: 'text' },
       },
       authorize(credentials, request) {
         return {
@@ -37,6 +38,7 @@ export const {
           isEmailVerified: credentials.is_email_verified === 'true',
           isPasswordSet: credentials.is_password_set === 'true',
           accessToken: String(credentials.accessToken),
+          ks_cb_request_status: credentials.ks_cb_request_status ? Number(credentials.ks_cb_request_status) : undefined,
         }
       },
     }),

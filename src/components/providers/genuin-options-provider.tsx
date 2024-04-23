@@ -3,11 +3,10 @@ import { SplashScreen } from '@components/common/splash-screen'
 import { type ConfigType, useGenuinOptions } from '@lib/stores/genuin-options'
 import { getSizeBoxes } from '@lib/utils/common/size-box'
 import { useSearchParams } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import FingerpringJS from '@fingerprintjs/fingerprintjs'
 import { useSession } from 'next-auth/react'
-import {} from '@components/common/modals/download-app'
 import { axiosInstance, setAuthTokenInAxiosInstance } from '@lib/api/instance'
 import { encryptText, parseUserAgent } from '@lib/utils'
 import dynamic from 'next/dynamic'
@@ -27,15 +26,22 @@ type Props = {
   config?: ConfigType
 }
 
+// it won't log any consoles in production.
+// eslint-disable-next-line no-console
+if (process.env.NEXT_PUBLIC_CURRENT_ENV === 'prod') console.log = () => {}
+
+// TODO: separate this component into 2 comps with once has auth and second doesn't have auth.
 export function GenuinOptionsProvider({ children, deviceType, os, browserType, config }: Props) {
+  const [isLoading, setIsLoading] = useState(true)
   const { data: sessionData, status: sessionStatus } = useSession()
-  const { setInitialData, isLoading } = useGenuinOptions((state) => ({
+  const { setInitialData } = useGenuinOptions((state) => ({
     setInitialData: state.setData,
-    isLoading: state.isLoading,
   }))
-  const setDeviceId = useLocalStorage().setDeviceId
-  const visitorAdded = useLocalStorage().visitorAdded
-  const setVisitor = useLocalStorage().setVisitor
+  const { setDeviceId, visitorAdded, setVisitor } = useLocalStorage((state) => ({
+    setDeviceId: state.setDeviceId,
+    visitorAdded: state.visitorAdded,
+    setVisitor: state.setVisitor,
+  }))
 
   const searchParams = useSearchParams()
 
@@ -50,15 +56,20 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
   function getBox() {
     return getSizeBoxes(isMobile, !hideNavbar)
   }
+
   useEffect(() => {
+    if (sessionStatus === 'loading') return
     if (sessionStatus === 'authenticated') {
       setAuthTokenInAxiosInstance(sessionData.user.accessToken)
       setInitialData({ user: sessionData.user })
-    } else {
+      if (isLoading) setIsLoading(false)
+    }
+    if (sessionStatus === 'unauthenticated') {
       setInitialData({ user: undefined })
       setAuthTokenInAxiosInstance(undefined)
+      if (isLoading) setIsLoading(false)
     }
-  }, [sessionStatus, sessionData])
+  }, [sessionStatus])
 
   function init() {
     const isIframe = window !== window.parent
@@ -69,7 +80,6 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
       brandId: config?.brand_id,
       showNavbar: !hideNavbar,
       isMobile,
-      isLoading: false,
       sizeBoxes: getBox(),
       isIframe,
       deviceType,
@@ -117,6 +127,31 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
     }
   }, [])
 
+  console.log('What happening::', isLoading, sessionStatus, sessionData)
+  // if (!config) {
+  //   return (
+  //     <>
+  //       {children}
+  //       <DownloadDialogModal />
+  //       <AuthenticationModal />
+  //     </>
+  //   )
+  // }
+
+  // if (isLoading) return <SplashScreen />
+
+  // if (config) {
+  //   if (sessionStatus === 'loading') return <SplashScreen />
+
+  //   return (
+  //     <>
+  //       {children}
+  //       <DownloadDialogModal />
+  //       <AuthenticationModal />
+  //     </>
+  //   )
+  // }
+
   if (isLoading) return <SplashScreen />
   return (
     <>
@@ -126,6 +161,8 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
     </>
   )
 }
+
+// TODO: move it to right location.
 async function saveVisitor(visitorId: string, brandId: string | undefined, userAgent: string) {
   const userInfo = parseUserAgent(userAgent)
   return await axiosInstance
@@ -141,7 +178,6 @@ async function saveVisitor(visitorId: string, brandId: string | undefined, userA
       else if (res.data.code === '5073') return false
     })
     .catch((e) => {
-      console.log('::ERROR in saving visitor api::', e)
       return false
     })
 }

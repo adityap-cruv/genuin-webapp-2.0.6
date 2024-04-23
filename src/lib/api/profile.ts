@@ -22,63 +22,6 @@ export async function fetchUserData(nickname: string) {
     })
 }
 
-type VideoType = 'rt' | 'public_video'
-async function fetchVideos(nickname: string, types: [VideoType?, VideoType?], ref: any) {
-  return await axios
-    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/public/profile_videos_v2', {
-      params: {
-        user_id: { nickname },
-        video_types: types,
-        ref,
-      },
-    })
-    .then((res) => {
-      return { videos: res.data.data.list, end: res.data.data.end_page || false, ref: res.data.data.ref }
-    })
-    .catch((e) => {
-      throw new Error('Something went wrong with profile videos api.')
-    })
-}
-
-export function getPaginatedAllVideos(nickname: string) {
-  return useInfiniteQuery({
-    queryKey: ['all', 'videos', nickname, ['public_video', 'rt']],
-    queryFn: async ({ pageParam }) => await fetchVideos(nickname, ['public_video', 'rt'], pageParam),
-    getNextPageParam(lastPage, allPages) {
-      if (lastPage.end) {
-        return
-      }
-      return lastPage.ref
-    },
-  })
-}
-
-export function getPaginatedLoopVideos(nickname: string) {
-  return useInfiniteQuery({
-    queryKey: ['loop', 'videos', nickname, ['rt']],
-    queryFn: async ({ pageParam }) => await fetchVideos(nickname, ['rt'], pageParam),
-    getNextPageParam(lastPage, allPages) {
-      if (lastPage.end) {
-        return
-      }
-      return lastPage.ref
-    },
-  })
-}
-
-export function getPaginatedGenuinVideos(nickname: string) {
-  return useInfiniteQuery({
-    queryKey: ['genuin', 'videos', nickname, ['public_video']],
-    queryFn: async ({ pageParam }) => await fetchVideos(nickname, ['public_video'], pageParam),
-    getNextPageParam(lastPage, allPages) {
-      if (lastPage.end) {
-        return
-      }
-      return lastPage.ref
-    },
-  })
-}
-
 let pageSession: string | undefined
 async function fetchCommunities(
   userId: string,
@@ -203,7 +146,7 @@ export async function fetchProfileFeed(userId: string, pageParam?: { lastMessage
 export function getProfileFeed(userId: string, fromVideoId: string) {
   return useInfiniteQuery({
     queryFn: async ({ pageParam }) => await fetchProfileFeed(userId, pageParam, fromVideoId),
-    queryKey: ['feed', userId],
+    queryKey: ['feed', userId, fromVideoId],
     getNextPageParam(lastPage) {
       if (lastPage.end) return
       return { lastMessageId: lastPage.feed[lastPage.feed.length - 1].video.id }

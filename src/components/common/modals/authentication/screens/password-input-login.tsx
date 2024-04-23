@@ -50,6 +50,7 @@ export function PasswordInputLogin() {
             is_email_verified: res.data.user.is_email_verified,
             is_password_set: true,
             accessToken: res.data.accessToken,
+            ks_cb_request_status: res.data.user.ks_cb_request_status,
           }
           // console.log('user', user)
           void signIn('credentials', { ...user, redirect: false })
@@ -76,7 +77,7 @@ export function PasswordInputLogin() {
 
   return (
     <ModalShell>
-      <h3 className="flex w-full items-center justify-center text-heading-3 ">Log in</h3>
+      <h3 className="flex w-full items-center justify-center text-title-1-demi sm:text-heading-3">Log in</h3>
       <div className="w-full">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>

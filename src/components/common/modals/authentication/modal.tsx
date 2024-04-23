@@ -12,6 +12,9 @@ import {
   UsernameInput,
   CompleteProfile,
   Guidelines,
+  KsToCbWeb,
+  KsToCbSubdomain,
+  Error,
 } from './screens'
 import { useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
@@ -120,8 +123,8 @@ export function Content() {
       return <Note.email />
     case 'EMAIL_SENT_NOTE_ACCOUNT_EXISTS':
       return <Note.email acountExists />
-    // case 'ERROR':
-    //   return <Error />
+    case 'ERROR':
+      return <Error />
     case 'USERNAME_INPUT':
       return <UsernameInput />
     case 'COMPLETE_PROFILE':
@@ -132,5 +135,11 @@ export function Content() {
       return <PasswordInputLogin />
     case 'GUIDELINES':
       return <Guidelines />
+    case 'KS_CB_WEB':
+      return <KsToCbWeb />
+    case 'KS_CB_SUBDOMAIN':
+      return <KsToCbSubdomain />
+    case 'VERIFY_MAIL':
+      return <EmailVerification.verifymail />
   }
 }

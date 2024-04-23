@@ -55,7 +55,7 @@ export function Signup() {
 
   return (
     <ModalShell>
-      <h3 className="flex w-full items-center justify-center pb-4 text-heading-3 ">
+      <h3 className="flex w-full items-center justify-center pb-4 text-title-1-demi sm:text-heading-3">
         Sign up for {brandName ?? 'genuin'}
       </h3>
       <Form {...form}>

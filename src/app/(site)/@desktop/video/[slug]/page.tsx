@@ -1,8 +1,8 @@
 import { type Metadata } from 'next'
 import { Root } from './root'
-import { fetchVideoDetails } from '@lib/api/video'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { fetchMetadata } from '@lib/api/meta-data'
+import { getVideoDetails } from '@lib/api/video'
 
 type PageProps = {
   params: {
@@ -16,19 +16,21 @@ type PageProps = {
 }
 
 export default async function Component({ params, searchParams }: PageProps) {
-  const videoData = await fetchVideoDetails(params.slug)
+  const videoDetails = await getVideoDetails(params.slug)
+
   return (
     <main className="h-full w-full">
-      <Root videoDetails={videoData} />
+      <Root videoDetails={videoDetails} />
     </main>
   )
 }
 
-interface VideoDataType {
+type VideoDataType = {
   title: string
   description: string
   preview_image: string
 }
+
 export async function generateMetadata({ params, searchParams }: PageProps): Promise<Metadata> {
   const videoDetails: VideoDataType = await fetchMetadata({ type: 4, slug: params.slug })
   const title = videoDetails.title

@@ -75,12 +75,10 @@ export async function ksSignup({
       device_id: encryptText(useLocalStorage.getState().deviceId, true),
     })
     .then((res) => {
-      console.log('response in axios:', res)
       const retryTime = res?.data?.data?.retryTime
       return { code: res.status, flow: res?.data?.data.flow, retryTime }
     })
     .catch((e) => {
-      console.log('error::', e)
       const retryTime = e.response?.data?.data?.retryTime
       return { code: Number(e?.response?.data?.code), flow: e?.data?.data.flow, retryTime }
     })
@@ -333,6 +331,20 @@ export async function loginViaEmail({
     })
     .catch((e) => {
       console.log('::error in sendotp api::', e.response.data.code)
+      return { code: Number(e.response.data.code), data: e.response.data.data }
+    })
+}
+
+export async function ksCbRequest(): Promise<{ code: number; data: any }> {
+  return await axiosInstance
+    .post('/api/v3/users/ks_cb_request', {
+      source: 'app_web',
+    })
+    .then((res) => {
+      return { code: res.data.code, data: res.data.data }
+    })
+    .catch((e) => {
+      console.log('::error in ks_cb_request api::', e.response.data.code)
       return { code: Number(e.response.data.code), data: e.response.data.data }
     })
 }

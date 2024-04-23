@@ -9,26 +9,23 @@ import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { deleteSearchParam } from '@lib/utils'
 import { Loader } from '@components/ui/loader'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
 
 export const EmailVerification = {
   success: Success,
   failure: Failure,
+  verifymail: VerifyMail,
 }
 
 function Success() {
   const setStep = useAuthenticationModalStore().setStep
   const pathName = usePathname()
   const searchParams = useSearchParams()
-  const { data: sessionData, update } = useSession()
-
-  useEffect(() => {
-    void update({ ...sessionData, user: { ...sessionData?.user, isEmailVerified: true } })
-  }, [])
 
   return (
     <ModalShell>
       <img src={imgSuccess.src} style={{ width: 120, height: 120 }} />
-      <p className="text-center text-heading-3">Email successfully verified</p>
+      <p className="text-center text-title-1-demi sm:text-heading-3">Email successfully verified</p>
       <p className="text-center text-title-3-med">
         Now you’ll receive important updates and notifications about your account, new features, and exciting news
         straight to your inbox. You can use the app now.{' '}
@@ -102,7 +99,7 @@ function Failure() {
   return (
     <ModalShell>
       <img src={imgError.src} style={{ width: 120, height: 120 }} />
-      <p className="text-center text-heading-3">Verification link expired</p>
+      <p className="text-center text-title-1-demi sm:text-heading-3">Verification link expired</p>
       <p className="text-center text-title-3-med">
         We're sorry, but it looks like the verification link has expired. Please request a new verification link.
       </p>
@@ -114,6 +111,48 @@ function Failure() {
         )}
       </Button>
       {error && <p className="flex items-center justify-center text-title-3-med text-supplementary-red">{error}</p>}
+    </ModalShell>
+  )
+}
+
+function VerifyMail() {
+  const { setStep, setFormData } = useAuthenticationModalStore()
+  const [error, setError] = useState({ message: '', code: 0 })
+  const { brandName, user } = useGenuinOptions((state) => ({
+    brandName: state.config?.name ? state.config?.name : 'Genuin',
+    user: state.user,
+  }))
+
+  async function sendMail() {
+    await resendVerificationMail(user?.email ?? '', 12)
+      .then((res) => {
+        setFormData({ retryTime: res?.retryTime })
+        setStep('EMAIL_SENT_NOTE_ACCOUNT_EXISTS')
+      })
+      .catch((e) => {
+        setError((x) => {
+          return { message: 'Something went wrong.Please try again.', code: -1 }
+        })
+      })
+  }
+
+  return (
+    <ModalShell>
+      <p className="text-center text-heading-3">Verify your email</p>
+      <p className="text-text-title-1-med text-center">
+        Verify your email if you want to request to become a community builder for {brandName}.
+      </p>
+      <Button
+        className="w-full"
+        variant="default"
+        onClick={() => {
+          void sendMail()
+        }}>
+        <p className="text-title-3-med">Send verification email</p>
+      </Button>
+      {error.message && (
+        <p className="flex items-center justify-center text-title-3-med text-supplementary-red">{error.message}</p>
+      )}
     </ModalShell>
   )
 }

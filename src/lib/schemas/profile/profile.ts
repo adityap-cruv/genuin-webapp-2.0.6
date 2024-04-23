@@ -26,7 +26,7 @@ const ProfileDetailsSchema = z.object({
   is_email_verified: z.boolean().nullish(),
   no_of_communities: z.number(),
   videos: z.number(),
-  views: z.string(),
+  views: z.string().or(z.number()),
 })
 
 export type ProfileDetailsType = z.infer<typeof ProfileDetailsSchema>

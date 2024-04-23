@@ -132,9 +132,14 @@ function Mobile({
             videoId={videoDetails.video.id}
             attachedLink={videoDetails.video.attachedLink}
             description={videoDetails.video.description}
+            isSparked={videoDetails.video.isSparked}
           />
         </div>
-        <CommentSheet videoId={videoDetails.video.id} commentCount={videoDetails.video.commentCount} />
+        <CommentSheet
+          videoDetails={videoDetails}
+          videoId={videoDetails.video.id}
+          commentCount={videoDetails.video.commentCount}
+        />
         <div className="absolute bottom-0 h-48 w-full bg-gradient-to-t from-[#111111b3] to-[#11111100]"></div>
       </div>
     </div>
@@ -143,6 +148,7 @@ function Mobile({
 
 type DesktopProps = {
   videoData: {
+    isSparked?: boolean | null | undefined
     source: string
     thumbnail: string
     shareUrl: string
@@ -265,11 +271,12 @@ function Desktop({
         )}
         <div className="absolute left-0 top-0 h-full w-full">
           <ControlLayer.desktop
-            shareUrl={videoData.source}
+            shareUrl={videoData.shareUrl}
             sparkCount={videoData.sparkCount}
             videoId={videoData.id}
             attachedLink={videoData.attachedLink}
             description={videoData.description}
+            isSparked={videoData.isSparked}
           />
         </div>
       </div>

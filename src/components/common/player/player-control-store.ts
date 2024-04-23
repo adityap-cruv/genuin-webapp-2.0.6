@@ -95,9 +95,9 @@ export const usePlayerControlStore = create<PlayerControlStoreType>((set) => {
             properties: {
               latency,
               user_id: userId,
-              video_id: finalVideoList[finalIndex].video?.id,
+              video_id: finalVideoList[finalIndex].video.id,
               video_length: state.duration,
-              video_url: finalVideoList[finalIndex].video?.url,
+              video_url: finalVideoList[finalIndex].video.source,
             },
           })
         }

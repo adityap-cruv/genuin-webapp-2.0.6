@@ -30,6 +30,7 @@ export async function fetchMetadata({ type, brandId, username, slug, domain, sub
     })
     return response.data.data
   } catch (error) {
+    console.log('erro::', error)
     throw new Error('Something went wrong with meta_data api.')
   }
 }

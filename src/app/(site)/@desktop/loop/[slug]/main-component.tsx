@@ -7,7 +7,7 @@ import { CustomAvatar } from '@components/custom/custom-avatar'
 import { useRef, useState } from 'react'
 import { useInView } from 'framer-motion'
 import { TopStickyBar } from './top-bar'
-import { getLoopCohosts, getLoopSubscribers, subscribeLoop } from '@lib/api/loop'
+import { getLoopCohosts, getLoopDetails, getLoopSubscribers, subscribeLoop } from '@lib/api/loop'
 import { Loader } from '@components/ui/loader'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
@@ -19,9 +19,19 @@ import { Toaster } from '@components/ui/toaster'
 import { openModal } from '@lib/utils'
 import { ShareIcon } from '@icons/share-icon'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
+import Loading from './loading'
+import Error from '../../error'
 
 interface Props {
   loopDetails: LoopDetailsType
+}
+
+export function LoopDetails({ slug }: { slug: string }) {
+  const { data, isLoading } = getLoopDetails(slug)
+
+  if (isLoading) return <Loading />
+  if (data) return <MainComponent loopDetails={data} />
+  if (!isLoading && !data) return <Error />
 }
 
 // TODO: Improve this component.
@@ -30,7 +40,7 @@ export function MainComponent({ loopDetails }: Props) {
   const { toast } = useToast()
   const detailsDivRef = useRef<HTMLDivElement>(null)
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
-  const [isLoopSubscribed, setIsLoopSubscribed] = useState(loopDetails.is_subscriber)
+  const [isLoopSubscribed, setIsLoopSubscribed] = useState(!!loopDetails.is_subscriber)
   const user = useGenuinOptions().user
 
   function toggleLoopSubscription() {
@@ -137,7 +147,7 @@ export function MainComponent({ loopDetails }: Props) {
             {loopDetails.group.group_description}
           </p>
           <div className="my-3 w-1/2 rounded-xl border border-tertiary-200 p-4">
-            <span className="flex" ref={detailsDivRef}>
+            <span className="flex gap-x-2" ref={detailsDivRef}>
               <span className="flex-1">
                 <p className="text-body-1-demi text-tertiary">Created by</p>
                 <Link href={{ pathname: PATH_NAME.profile(loopDetails.owner.username) }}>
@@ -148,7 +158,9 @@ export function MainComponent({ loopDetails }: Props) {
                       isAvatar={loopDetails.owner.is_avatar}
                       className="h-8 w-8"
                     />
-                    <p className="ml-1 text-body-1-bold text-secondary">@{loopDetails.owner.username}</p>
+                    <p className="ml-1 line-clamp-1 break-all text-body-1-bold text-secondary">
+                      @{loopDetails.owner.username}
+                    </p>
                   </div>
                 </Link>
               </span>
@@ -162,7 +174,9 @@ export function MainComponent({ loopDetails }: Props) {
                       isAvatar={false}
                       className="h-8 w-8"
                     />
-                    <p className="ml-1 text-body-1-bold text-secondary">{loopDetails.community.name}</p>
+                    <p className="ml-1 line-clamp-1 break-all text-body-1-bold text-secondary">
+                      {loopDetails.community.name}
+                    </p>
                   </div>
                 </Link>
               </span>

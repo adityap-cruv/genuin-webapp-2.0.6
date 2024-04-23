@@ -16,10 +16,10 @@ import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { TopBar } from '../../../layouts/mobile/top-bar'
 import { CommunityLoopTab } from './community-loop-tab'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useInView } from 'framer-motion'
 import { TopStickyBar } from '../../../../app/(site)/@desktop/community/[slug]/top-bar'
-import { joinCommunity } from '@lib/api/video'
+import { joinCommunity, leaveCommunity } from '@lib/api/video'
 import { ShareIcon } from '@icons/share-icon'
 import { useSearchParams } from 'next/navigation'
 import { getCommunityMembers } from '@lib/api/community'
@@ -32,16 +32,51 @@ interface Props {
   communityDetails: CommunityDetailsType
 }
 
-export function ProfileDetails({ communityDetails }: Props) {
+export function Details({ communityDetails }: Props) {
   communityDetailsModule = communityDetails
   const detailsDivRef = useRef<HTMLDivElement>(null)
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
   const { isEmbed, parentUrl } = useGenuinOptions((state) => ({ isEmbed: state.embed, parentUrl: state.parentUrl }))
-  const [isCommunityJoined, setIsCommunityJoined] = useState(false)
+  const [isCommunityJoined, setIsCommunityJoined] = useState(!!communityDetails.logged_in_user_role)
   const user = useGenuinOptions().user
   const searchParams = Object.fromEntries(useSearchParams())
+  const [dimensions, setDimensions] = useState({
+    width: 0,
+    height: 0,
+  })
+
+  useEffect(() => {
+    if (detailsDivRef.current) {
+      setDimensions({
+        width: detailsDivRef.current.offsetWidth,
+        height: detailsDivRef.current.offsetHeight,
+      })
+    }
+  }, [detailsDivRef.current])
+
+  async function toggleCommunityJoinState() {
+    !isCommunityJoined
+      ? await joinCommunity(
+          false,
+          [communityDetails.community_id],
+          [
+            {
+              user_id: user?.id,
+            },
+          ]
+        ).then((res) => {
+          if (res.code === 200) {
+            setIsCommunityJoined((prev: any) => !prev)
+          }
+        })
+      : await leaveCommunity(communityDetails.community_id).then((res) => {
+          if (res.code === 200) {
+            setIsCommunityJoined((prev) => !prev)
+          }
+        })
+  }
 
   return (
     <>
@@ -49,7 +84,7 @@ export function ProfileDetails({ communityDetails }: Props) {
       <TopStickyBar.mobile
         defaultOpen={false}
         isOpen={!detailsInView}
-        communityName={communityDetails.name}
+        communityName={communityDetails.name ?? ''}
         communityProfileImage={communityDetails.dp ?? ''}
         communtiyHandle={communityDetails.handle}
       />
@@ -59,11 +94,11 @@ export function ProfileDetails({ communityDetails }: Props) {
         <div
           className="aspect-w-5 aspect-h-1 relative h-20 bg-tertiary-200"
           style={{
-            height: 'calc(100vw/5)',
+            height: `calc(${dimensions.width}px / 5)`,
           }}>
           <CustomAvatar
             imageUrl={communityDetailsModule?.dp ?? ''}
-            fallbackString={communityDetailsModule?.name}
+            fallbackString={communityDetailsModule?.name ?? ''}
             isAvatar={false}
             className="absolute -bottom-14 left-4 h-20 w-20 border-2 border-monochrome-white bg-red-50"
           />
@@ -71,7 +106,13 @@ export function ProfileDetails({ communityDetails }: Props) {
         <div className="px-4 py-2 pt-4">
           <div className="flex justify-end">
             <div className="flex items-center gap-x-2">
-              {isEmbed ? (
+              {isEmbed && communityDetails.is_community_join_requested && (
+                <Button size="custom" className="border border-primary" variant={'outline'}>
+                  <p className={`px-4 py-1.5 text-body-1-demi text-monochrome-white text-primary`}>Requested</p>
+                </Button>
+              )}
+
+              {isEmbed && !communityDetails.is_community_join_requested && (
                 <Button
                   size="sm"
                   className={`${isCommunityJoined && 'border border-primary '}`}
@@ -79,21 +120,7 @@ export function ProfileDetails({ communityDetails }: Props) {
                   onClick={
                     user
                       ? async () => {
-                          !isCommunityJoined
-                            ? await joinCommunity(
-                                false,
-                                [communityDetails.community_id],
-                                [
-                                  {
-                                    user_id: user?.id,
-                                  },
-                                ]
-                              ).then((res) => {
-                                if (res.code === 200) {
-                                  setIsCommunityJoined((prev: any) => !prev)
-                                }
-                              })
-                            : setIsCommunityJoined((prev: any) => !prev)
+                          await toggleCommunityJoinState()
                         }
                       : () => {
                           openModal({
@@ -111,7 +138,9 @@ export function ProfileDetails({ communityDetails }: Props) {
                     {isCommunityJoined ? 'Joined' : 'Join Community'}
                   </p>
                 </Button>
-              ) : (
+              )}
+
+              {!isEmbed && (
                 <Button
                   variant="default"
                   size="sm"
@@ -358,7 +387,7 @@ function Leaders() {
         <ListItem
           title={leader.name ?? ''}
           subtitle={'@' + leader.nickname}
-          description={leader.bio}
+          description={leader.bio ?? ''}
           image={leader.profile_image}
           isAvatar={leader.is_avatar}
         />
@@ -413,7 +442,7 @@ function Members() {
               <ListItem
                 title={communityDetailsModule.leader.name ?? ''}
                 subtitle={'@' + communityDetailsModule.leader.nickname}
-                description={communityDetailsModule.leader.bio}
+                description={communityDetailsModule.leader.bio ?? ''}
                 image={communityDetailsModule.leader.profile_image}
                 isAvatar={communityDetailsModule.leader.is_avatar}
               />

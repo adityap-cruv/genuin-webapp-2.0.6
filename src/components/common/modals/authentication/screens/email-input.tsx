@@ -71,7 +71,7 @@ export function EmailInput() {
 
   return (
     <ModalShell>
-      <p className="text-center text-heading-3 ">Log in or sign up</p>
+      <p className="text-center text-title-1-demi sm:text-heading-3">Log in or sign up</p>
       <div className="w-full">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
