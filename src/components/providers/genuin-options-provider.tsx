@@ -123,29 +123,38 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
   }, [])
 
   console.log('What happening::', isLoading, sessionStatus, sessionData)
-  if (!config) {
-    return (
-      <>
-        {children}
-        <DownloadDialogModal />
-        <AuthenticationModal />
-      </>
-    )
-  }
+  // if (!config) {
+  //   return (
+  //     <>
+  //       {children}
+  //       <DownloadDialogModal />
+  //       <AuthenticationModal />
+  //     </>
+  //   )
+  // }
+
+  // if (isLoading) return <SplashScreen />
+
+  // if (config) {
+  //   if (sessionStatus === 'loading') return <SplashScreen />
+
+  //   return (
+  //     <>
+  //       {children}
+  //       <DownloadDialogModal />
+  //       <AuthenticationModal />
+  //     </>
+  //   )
+  // }
 
   if (isLoading) return <SplashScreen />
-
-  if (config) {
-    if (sessionStatus === 'loading') return <SplashScreen />
-
-    return (
-      <>
-        {children}
-        <DownloadDialogModal />
-        <AuthenticationModal />
-      </>
-    )
-  }
+  return (
+    <>
+      {children}
+      {!!config && <AuthenticationModal />}
+      {!config && <DownloadDialogModal />}
+    </>
+  )
 }
 
 // TODO: move it to right location.
