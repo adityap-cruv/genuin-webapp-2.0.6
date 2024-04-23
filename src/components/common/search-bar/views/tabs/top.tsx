@@ -81,7 +81,7 @@ function SlideButtons() {
       {!status.isStart && (
         <div className="absolute left-2 top-1/2 z-10 -translate-y-1/2">
           <Button
-            className="drop-shadow-circle-shadow h-10 w-10 rounded-full bg-monochrome-white/80 hover:bg-monochrome-white hover:shadow-md"
+            className="h-10 w-10 rounded-full bg-monochrome-white/80 drop-shadow-circle-shadow hover:bg-monochrome-white hover:shadow-md"
             size="custom"
             onClick={() => {
               slider.slidePrev()
@@ -94,7 +94,7 @@ function SlideButtons() {
       {!status.isEnd && (
         <div className="absolute right-2 top-1/2 z-10 -translate-y-1/2">
           <Button
-            className="drop-shadow-circle-shadow h-10 w-10 rounded-full bg-monochrome-white/80 hover:bg-monochrome-white hover:shadow-md"
+            className="h-10 w-10 rounded-full bg-monochrome-white/80 drop-shadow-circle-shadow hover:bg-monochrome-white hover:shadow-md"
             size="custom"
             onClick={() => {
               slider.slideNext()
