@@ -15,10 +15,13 @@ import { QRCode } from 'react-qrcode-logo'
 import { CommunityDiscussion03 } from '@icons/ks-cb-flow/community-03'
 import { CommunityDiscussion01 } from '@icons/ks-cb-flow/community-01'
 import { CommunityDiscussion02 } from '@icons/ks-cb-flow/community-02'
-// import logo from '@images/'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
 
 SwiperCore.use([Pagination])
 export function KsToCbWeb() {
+  const { brandName } = useGenuinOptions((state) => ({
+    brandName: state.config?.name ? state.config?.name : 'Genuin',
+  }))
   const logoImageDataUrl =
     "data:image/svg+xml,%3Csvg width='200' height='200' viewBox='0 0 200 200' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M100 0C44.7783 0 0.222931 44.3332 0.000709297 99.5552C-0.165957 144.333 29.0562 182.333 69.5005 195.277C88.5004 201.333 109.334 192.777 117.834 174.722C120.5 169.055 122 162.722 122 155.999V154.111C122 152.388 120.278 151.166 118.667 151.777C112.5 153.999 105.834 155.166 98.8892 154.999C68.8893 154.388 44.7228 129.444 45.0005 99.4441C45.2783 69.3331 69.8338 44.9998 100 44.9998C130.389 44.9998 155 69.6109 155 99.9996V155.999C155 167.277 152.556 177.999 148.222 187.61C179.111 170.611 200 137.722 200 99.9996C200 44.7776 155.222 0 100 0Z' fill='%230645FF'/%3E%3C/svg%3E"
 
@@ -48,8 +51,8 @@ export function KsToCbWeb() {
             <CommunityDiscussion02 className="h-40 fill-primary" />
             <p className="text-center text-title-1-bold">Make Connections & Spark Dialogues</p>
             <p className="text-center text-body-1-med">
-              Invite others to join your TED community, share engaging content, and spark meaningful conversations to
-              make connections and foster intellectual dialogue.
+              Invite others to join your {brandName} community, share engaging content, and spark meaningful
+              conversations to make connections and foster intellectual dialogue.
             </p>
             <br />
           </div>
@@ -97,7 +100,6 @@ export function KsToCbWeb() {
             value="https://begenuin.com/"
             size={80}
             qrStyle="dots"
-            // eyeRadius={50}
             logoImage={logoImageDataUrl}
             logoHeight={20}
             logoWidth={20}
