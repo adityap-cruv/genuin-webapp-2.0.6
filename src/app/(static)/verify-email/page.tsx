@@ -6,7 +6,7 @@ import { checkAndAppendHttps } from '@lib/utils'
 
 export default async function Page({ searchParams }: { searchParams: { token: string } }) {
   const { code, actionMetadata, user, emailType, email } = await verifyEmail(searchParams.token)
-
+  console.log('called:::', code, user)
   if (code === 200 && user) {
     return (
       <ClientComponent
@@ -42,25 +42,25 @@ function getRedirectTo({
   emailType: 11 | 12
   email?: string
 }) {
-  const urlObj = new URL(checkAndAppendHttps((headers().get('host') ?? process.env.HOST_NAME) + (path ?? '/home')))
+  // const urlObj = new URL(checkAndAppendHttps((headers().get('host') ?? process.env.HOST_NAME) + (path ?? '/home')))
   // const urlObj = new URL(('http://' + headers().get('host') ?? process.env.HOST_NAME) + (path ?? '/home'))
+  const urlObj = new URLSearchParams()
 
-  // console.log('::url object before manipulation::', urlObj.href)
   if (error) {
-    urlObj.searchParams.set('error_in_verification', '1')
+    urlObj.set('error_in_verification', '1')
   }
 
   if (emailType === 11) {
-    urlObj.searchParams.set('magic_link_verification', success ? '1' : '0')
+    urlObj.set('magic_link_verification', success ? '1' : '0')
   }
 
   if (emailType === 12) {
-    urlObj.searchParams.set('email_verification_status', success ? '1' : '0')
+    urlObj.set('email_verification_status', success ? '1' : '0')
   }
   if (!success) {
-    if (emailType) urlObj.searchParams.set('email_type', emailType.toString())
-    if (email) urlObj.searchParams.set('email', email)
+    if (emailType) urlObj.set('email_type', emailType.toString())
+    if (email) urlObj.set('email', email)
   }
 
-  return urlObj.href
+  return (path ?? '/home') + '?' + urlObj.toString()
 }

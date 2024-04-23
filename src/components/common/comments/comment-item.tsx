@@ -27,9 +27,9 @@ export function CommentItem({ comment }: { comment: CommentType }) {
             isAvatar={comment.owner.is_avatar}
           />
           <Link href={{ pathname: PATH_NAME.profile(comment.owner.nickname) }}>
-            <p className="text-body-1-bold hover:underline">@{comment.owner.nickname}</p>
+            <p className="line-clamp-1 break-all text-body-1-bold hover:underline">@{comment.owner.nickname}</p>
           </Link>
-          <p className="text-cap-1-demi text-tertiary">{getTimeAgo(comment.created_at) + ' ago'}</p>
+          <p className="shrink-0 text-cap-1-demi text-tertiary">{getTimeAgo(comment.created_at) + ' ago'}</p>
         </span>
         {/* <Image src={icMore} alt="" className="h-5 w-5" /> */}
       </span>
