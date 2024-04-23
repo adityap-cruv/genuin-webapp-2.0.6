@@ -6,15 +6,17 @@ type MetadataPayloadType = {
    * type:2 -> community
    * type:3 -> loop
    * type:4 -> video
-   * type:4 -> brand landing page (subdomain or white label)
+   * type:5 -> brand landing page (subdomain or white label)
    */
   type: number
   brandId?: number
   username?: string
   slug?: string
+  domain?: string
+  subdomain?: string
 }
 
-export async function fetchMetadata({ type, brandId, username, slug }: MetadataPayloadType) {
+export async function fetchMetadata({ type, brandId, username, slug, domain, subdomain }: MetadataPayloadType) {
   try {
     const response = await axios.get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/web/meta_data', {
       params: {
@@ -22,6 +24,8 @@ export async function fetchMetadata({ type, brandId, username, slug }: MetadataP
         brand_id: brandId ?? null,
         username: username ?? null,
         slug: slug ?? null,
+        domain,
+        subdomain,
       },
     })
     return response.data.data
