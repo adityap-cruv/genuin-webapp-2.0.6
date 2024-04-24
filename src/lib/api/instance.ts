@@ -20,6 +20,13 @@ export function setTempAuthTokenInAxiosInstance(token?: string) {
   })
 }
 
+export function setBrandIdInAxiosInstance(brandId?: number) {
+  axiosInstance.interceptors.request.use((config) => {
+    if (brandId) config.headers['x-brand-id'] = brandId
+    return config
+  })
+}
+
 export function removeAllAuthToken() {
   axiosInstance.interceptors.request.use((config) => {
     config.headers['x-auth-token'] = undefined
