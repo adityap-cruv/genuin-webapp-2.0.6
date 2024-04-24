@@ -109,11 +109,14 @@ export function SideBar() {
               if (user?.isEmailVerified) {
                 void miniProfile(user.accessToken).then((res) => {
                   if (res.code === 200) {
-                    AuthenticationModal.open(undefined, 'MINI_PROFILE_SUCCESS')
                     void updateSession({
                       ...sessionData,
                       user: { ...sessionData?.user, ...res.data },
                     })
+                    AuthenticationModal.open(
+                      undefined,
+                      res?.data?.ks_cb_request_status === 3 ? 'MINI_PROFILE_SUCCESS' : 'KS_CB_SUBDOMAIN'
+                    )
                   }
                 })
               } else {

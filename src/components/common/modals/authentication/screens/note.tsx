@@ -179,14 +179,16 @@ function MiniProfileSuccess() {
 
   return (
     <ModalShell className="!sm:px-0 sm:m-0">
+      <p className="text-center text-title-1-demi">You’ve been added as a Community Builder for {brandName}</p>
+
       <div
         className="flex max-h-40 w-full items-center rounded-lg p-4"
         style={{
           background: 'linear-gradient(30deg, var(--primary-400) -80%, #FFFFFF 50%, var(--primary-400) 120%)',
         }}>
         <div className="flex w-[65%] flex-col gap-2">
-          <p className="text-body-1-demi text-monochrome-black">
-            You’ve been added as a <span className="font-bold">Community Builder for {brandName}</span>{' '}
+          <p className="text-cap-1-bold text-monochrome-black">
+            Ready to embark on <span className="font-semibold">your community</span> building journey?
           </p>
           <div className="flex items-center">
             <p className="text-cap-1-med text-monochrome-black">Download the</p>
