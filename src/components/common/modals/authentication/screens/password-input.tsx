@@ -16,7 +16,7 @@ import { useSession } from 'next-auth/react'
 const passwordSchema = z.object({ password: z.string().min(8) })
 
 export function PasswordInput() {
-  const { data: sessionData, update: updateSession } = useSession()
+  // const { data: sessionData, update: updateSession } = useSession()
   const [passwordVisible, setPasswordVisible] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const setStep = useAuthenticationModalStore().setStep
@@ -29,10 +29,10 @@ export function PasswordInput() {
     try {
       const { status } = await updateUser({ password })
       if (status) {
-        await updateSession({
-          ...sessionData,
-          user: { ...sessionData?.user, isPasswordSet: true },
-        })
+        // await updateSession({
+        //   ...sessionData,
+        //   user: { ...sessionData?.user, isPasswordSet: true },
+        // })
         setStep('USERNAME_INPUT')
       } else {
         throw new Error()

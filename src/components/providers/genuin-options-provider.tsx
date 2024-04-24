@@ -26,6 +26,10 @@ type Props = {
   config?: ConfigType
 }
 
+// it won't log any consoles in production.
+// eslint-disable-next-line no-console
+if (process.env.NEXT_PUBLIC_CURRENT_ENV === 'prod') console.log = () => {}
+
 // TODO: separate this component into 2 comps with once has auth and second doesn't have auth.
 export function GenuinOptionsProvider({ children, deviceType, os, browserType, config }: Props) {
   const [isLoading, setIsLoading] = useState(true)
@@ -58,12 +62,13 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
     if (sessionStatus === 'authenticated') {
       setAuthTokenInAxiosInstance(sessionData.user.accessToken)
       setInitialData({ user: sessionData.user })
+      if (isLoading) setIsLoading(false)
     }
     if (sessionStatus === 'unauthenticated') {
       setInitialData({ user: undefined })
       setAuthTokenInAxiosInstance(undefined)
+      if (isLoading) setIsLoading(false)
     }
-    setIsLoading(false)
   }, [sessionStatus])
 
   function init() {
@@ -123,29 +128,38 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
   }, [])
 
   console.log('What happening::', isLoading, sessionStatus, sessionData)
-  if (!config) {
-    return (
-      <>
-        {children}
-        <DownloadDialogModal />
-        <AuthenticationModal />
-      </>
-    )
-  }
+  // if (!config) {
+  //   return (
+  //     <>
+  //       {children}
+  //       <DownloadDialogModal />
+  //       <AuthenticationModal />
+  //     </>
+  //   )
+  // }
+
+  // if (isLoading) return <SplashScreen />
+
+  // if (config) {
+  //   if (sessionStatus === 'loading') return <SplashScreen />
+
+  //   return (
+  //     <>
+  //       {children}
+  //       <DownloadDialogModal />
+  //       <AuthenticationModal />
+  //     </>
+  //   )
+  // }
 
   if (isLoading) return <SplashScreen />
-
-  if (config) {
-    if (sessionStatus === 'loading') return <SplashScreen />
-
-    return (
-      <>
-        {children}
-        <DownloadDialogModal />
-        <AuthenticationModal />
-      </>
-    )
-  }
+  return (
+    <>
+      {children}
+      {!!config && <AuthenticationModal />}
+      {!config && <DownloadDialogModal />}
+    </>
+  )
 }
 
 // TODO: move it to right location.
