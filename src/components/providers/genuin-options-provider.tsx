@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import FingerpringJS from '@fingerprintjs/fingerprintjs'
 import { useSession } from 'next-auth/react'
-import { axiosInstance, setAuthTokenInAxiosInstance } from '@lib/api/instance'
+import { axiosInstance, setAuthTokenInAxiosInstance, setBrandIdInAxiosInstance } from '@lib/api/instance'
 import { encryptText, parseUserAgent } from '@lib/utils'
 import dynamic from 'next/dynamic'
 
@@ -72,6 +72,7 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
   }, [sessionStatus])
 
   function init() {
+    if (config?.brand_id) setBrandIdInAxiosInstance(Number(config?.brand_id))
     const isIframe = window !== window.parent
     setInitialData({
       embed: !!config,
