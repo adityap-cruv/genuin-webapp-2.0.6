@@ -87,7 +87,12 @@ export function CommunityList({ userId, scrollYProgress }: { userId: string; scr
   }
 
   function Inner() {
-    if (isLoading) return <Loader size="md" />
+    if (isLoading)
+      return (
+        <div className="flex h-full w-full items-center justify-center">
+          <Loader size="md" />
+        </div>
+      )
     if (!communities || communities.length === 0)
       return (
         <div className="w-full overflow-hidden" style={{ height: `calc(100% - 250px)` }}>
@@ -140,7 +145,11 @@ export function CommunityList({ userId, scrollYProgress }: { userId: string; scr
             </div>
           )
         })}
-        {isFetchingNextPage && <Loader size="md" />}
+        {isFetchingNextPage && (
+          <div className="mb-4 flex w-full justify-center">
+            <Loader size="md" />
+          </div>
+        )}
       </div>
     )
   }
