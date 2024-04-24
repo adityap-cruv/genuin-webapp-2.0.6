@@ -24,6 +24,7 @@ export type StepsType =
   | 'KS_CB_WEB'
   | 'KS_CB_SUBDOMAIN'
   | 'VERIFY_MAIL'
+  | 'MINI_PROFILE_SUCCESS'
 
 type FormDataType = {
   displayName: string

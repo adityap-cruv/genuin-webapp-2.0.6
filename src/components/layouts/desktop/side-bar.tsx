@@ -14,6 +14,7 @@ import { GenuinIcon } from '@icons/genuin-icon'
 import CommunityIcon from '@icons/ks-cb-flow/icCommunity.svg'
 import { useSession } from 'next-auth/react'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
+import { miniProfile } from '@lib/api/auth'
 // import { Popover } from '@components/ui/popover'
 const RecentCommunities = dynamic(
   async () => await import('./recent-communities').then((comp) => comp.RecentCommunities),
@@ -27,8 +28,8 @@ export function SideBar() {
     user: state.user,
     brandName: state.config?.name ? state.config?.name : 'Genuin',
   }))
+  const { data: sessionData, update: updateSession, status } = useSession()
   const pathName = usePathname()
-  const { status } = useSession()
   return (
     <nav className="flex h-full w-fit flex-col justify-between overflow-auto border border-monochrome-9 px-1 py-4 transition-[width] lg:w-full lg:border-none">
       <div>
@@ -105,7 +106,19 @@ export function SideBar() {
               background: 'linear-gradient(30deg, var(--primary-400) -80%, #FFFFFF 50%, var(--primary-400) 120%)',
             }}
             onClick={() => {
-              AuthenticationModal.open(undefined, embed ? 'KS_CB_SUBDOMAIN' : 'KS_CB_WEB')
+              if (user?.isEmailVerified) {
+                void miniProfile(user.accessToken).then((res) => {
+                  if (res.code === 200) {
+                    AuthenticationModal.open(undefined, 'MINI_PROFILE_SUCCESS')
+                    void updateSession({
+                      ...sessionData,
+                      user: { ...sessionData?.user, ...res.data },
+                    })
+                  }
+                })
+              } else {
+                AuthenticationModal.open(undefined, embed ? 'KS_CB_SUBDOMAIN' : 'KS_CB_WEB')
+              }
             }}>
             <p className="z-10 p-3 text-body-1-bold">
               Become a{' '}
