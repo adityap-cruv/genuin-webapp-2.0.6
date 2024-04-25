@@ -35,8 +35,9 @@ if (process.env.NEXT_PUBLIC_CURRENT_ENV === 'prod') console.log = () => {}
 export function GenuinOptionsProvider({ children, deviceType, os, browserType, config }: Props) {
   const [isLoading, setIsLoading] = useState(true)
   const { data: sessionData, status: sessionStatus, update: updateSession } = useSession()
-  const { setInitialData } = useGenuinOptions((state) => ({
+  const { setInitialData, user } = useGenuinOptions((state) => ({
     setInitialData: state.setData,
+    user: state.user,
   }))
   const { setDeviceId, visitorAdded, setVisitor } = useLocalStorage((state) => ({
     setDeviceId: state.setDeviceId,
@@ -46,20 +47,31 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
 
   useEffect(() => {
     const intervalTime = 60 * 60 * 1000
+    let intervalId: NodeJS.Timeout | null = null
+
     const loadData = () => {
-      void miniProfile(sessionData?.user?.accessToken ?? '').then((res) => {
+      void miniProfile(true).then((res) => {
         if (res.code === 200) {
           void updateSession({
             ...sessionData,
             user: { ...sessionData?.user, ...res.data },
           })
+          if (res.data.ks_cb_request_status === 3) {
+            if (intervalId) clearInterval(intervalId)
+          }
         }
       })
     }
-    const intervalId = setInterval(loadData, intervalTime)
+
+    if (user?.accessToken && user.ks_cb_request_status !== 3) {
+      setTimeout(() => {
+        loadData()
+      }, 1000)
+      intervalId = setInterval(loadData, intervalTime)
+    }
 
     return () => {
-      clearInterval(intervalId)
+      if (intervalId) clearInterval(intervalId)
     }
   }, [])
 
