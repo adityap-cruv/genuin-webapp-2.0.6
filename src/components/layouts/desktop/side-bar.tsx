@@ -30,6 +30,26 @@ export function SideBar() {
   }))
   const { data: sessionData, update: updateSession, status } = useSession()
   const pathName = usePathname()
+
+  function handleCommunityBuilderClick() {
+    void miniProfile(user?.accessToken ?? '')
+      .then((res) => {
+        if (res.code === 200) {
+          void updateSession({
+            ...sessionData,
+            user: { ...sessionData?.user, ...res.data },
+          })
+          const messageType = res?.data?.ks_cb_request_status === 3 ? 'MINI_PROFILE_SUCCESS' : 'KS_CB_SUBDOMAIN'
+          AuthenticationModal.open(undefined, messageType)
+        } else {
+          AuthenticationModal.open(undefined, 'KS_CB_SUBDOMAIN')
+        }
+      })
+      .catch(() => {
+        AuthenticationModal.open(undefined, 'KS_CB_SUBDOMAIN')
+      })
+  }
+
   return (
     <nav className="flex h-full w-fit flex-col justify-between overflow-auto border border-monochrome-9 px-1 py-4 transition-[width] lg:w-full lg:border-none">
       <div>
@@ -107,18 +127,7 @@ export function SideBar() {
             }}
             onClick={() => {
               if (user?.isEmailVerified) {
-                void miniProfile(user.accessToken).then((res) => {
-                  if (res.code === 200) {
-                    void updateSession({
-                      ...sessionData,
-                      user: { ...sessionData?.user, ...res.data },
-                    })
-                    AuthenticationModal.open(
-                      undefined,
-                      res?.data?.ks_cb_request_status === 3 ? 'MINI_PROFILE_SUCCESS' : 'KS_CB_SUBDOMAIN'
-                    )
-                  }
-                })
+                handleCommunityBuilderClick()
               } else {
                 AuthenticationModal.open(undefined, embed ? 'KS_CB_SUBDOMAIN' : 'KS_CB_WEB')
               }
