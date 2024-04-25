@@ -1,6 +1,16 @@
 {
-  "spellright.language": ["en-GB-10-1."],
-  "spellright.documentTypes": ["markdown", "latex", "plaintext", "typescriptreact"],
+  "spellright.language": [
+    "en-GB-10-1."
+  ],
+  "spellright.documentTypes": [
+    "markdown",
+    "latex",
+    "plaintext",
+    "typescriptreact"
+  ],
   "svg.preview.background": "dark-transparent",
-  "cmake.configureOnOpen": false
+  "cmake.configureOnOpen": false,
+  "cSpell.words": [
+    "genuin"
+  ]
 }
