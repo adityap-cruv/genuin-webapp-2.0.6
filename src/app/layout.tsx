@@ -46,7 +46,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         ) : (
           <RedirectHandler config={config} shouldRedirect={Object.hasOwn(configParams ?? {}, 'subdomain')}>
             <ThirdPartyScriptProvider isEmbed={!!config}>
-              <SessionProvider>
+              <SessionProvider refetchOnWindowFocus={false} refetchInterval={3600}>
                 <GenuinOptionsProvider browserType={browserType} deviceType={deviceType} os={os} config={config}>
                   <ReactQueryProvider>{children}</ReactQueryProvider>
                 </GenuinOptionsProvider>
