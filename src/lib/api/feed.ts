@@ -14,7 +14,7 @@ import { axiosInstance } from './instance'
 async function fetchFeed(
   feedType: 1 | 2 | 3,
   pageParam: { pageSession?: string; lastVideoId?: string; lastVideoParentId?: string }
-): Promise<{ reels: VideoPlayerModalType[]; pageSession: string }> {
+): Promise<{ reels: VideoPlayerModalType[]; pageSession: string; end: boolean }> {
   return await axiosInstance
     .get('/api/v3/feeds', {
       params: {
@@ -30,7 +30,7 @@ async function fetchFeed(
     .then((res) => {
       const resData = res.data.data
       const reels = parseFeedResponse(resData.feeds)
-      return { reels, pageSession: resData.page_session }
+      return { reels, pageSession: resData.page_session, end: resData.feeds.length === 0 }
     })
     .catch((e) => {
       throw new Error('Something went wrong feed api.')
@@ -49,6 +49,7 @@ export function getFeed(feedType: 1 | 2 | 3) {
       return await fetchFeed(feedType, pageParam)
     },
     getNextPageParam(lastPage, allPages) {
+      if (lastPage.end) return
       return {
         pageSession: lastPage.pageSession,
         lastVideoId: lastPage.reels[lastPage.reels.length - 1].video.id,
