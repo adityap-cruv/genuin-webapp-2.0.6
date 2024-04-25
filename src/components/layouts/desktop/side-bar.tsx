@@ -32,7 +32,7 @@ export function SideBar() {
   const pathName = usePathname()
 
   function handleCommunityBuilderClick() {
-    void miniProfile(user?.accessToken ?? '')
+    void miniProfile(true)
       .then((res) => {
         if (res.code === 200) {
           void updateSession({

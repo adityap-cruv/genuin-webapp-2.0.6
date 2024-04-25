@@ -349,11 +349,11 @@ export async function ksCbRequest(): Promise<{ code: number; data: any }> {
     })
 }
 
-export async function miniProfile(token: string): Promise<{ code: number; data: any }> {
+export async function miniProfile(verifiedKsToken: boolean): Promise<{ code: number; data: any }> {
   return await axiosInstance
     .get('/api/v3/users/mini_profile', {
       params: {
-        verified_ks_token: token,
+        verified_ks_token: verifiedKsToken,
       },
     })
     .then((res) => {
