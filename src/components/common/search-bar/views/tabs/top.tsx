@@ -187,11 +187,11 @@ function VideoView({ videos }: { videos: VideoType[] }) {
   return (
     <span>
       <span className="flex justify-between px-4 pb-2">
-        <p className="text-title-3-bold">Videos</p>
+        <p className="text-title-3-bold">Posts</p>
         <p
           className="cursor-pointer text-body-1-demi text-tertiary"
           onClick={() => {
-            setView('TABS', 'PEOPLE')
+            setView('TABS', 'POSTS')
           }}>
           See all
         </p>

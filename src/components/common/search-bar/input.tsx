@@ -32,7 +32,7 @@ function Desktop() {
         className="rounded-full border-none bg-tertiary-200 pl-10 text-body-1-demi placeholder:text-tertiary focus:border-none"
         placeholder="Search"
       />
-      <Search className="absolute left-4 top-0 flex h-full items-center stroke-tertiary stroke-2" />
+      <Search className="absolute left-3 top-0 flex h-full w-5 items-center stroke-tertiary stroke-2" />
     </div>
   )
 }
