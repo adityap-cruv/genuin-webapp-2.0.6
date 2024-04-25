@@ -105,7 +105,9 @@ function Failure() {
       </p>
       <Button disabled={isLoading} className="w-full" variant="default" onClick={resendMail}>
         {isLoading ? (
-          <Loader size="sm" className="fill-new-off-white" />
+          <div className="flex w-full justify-center">
+            <Loader size="sm" className="fill-new-off-white" />
+          </div>
         ) : (
           <p className="text-title-3-demi">Resend verification email</p>
         )}

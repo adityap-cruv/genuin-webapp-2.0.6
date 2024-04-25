@@ -10,6 +10,7 @@ import { useMotionValueEvent, useScroll } from 'framer-motion'
 import { PlayerModal } from '@components/common/modals/player-modal'
 import { type VideoPlayerModalCommunityType, type VideoPlayerModalLoopType } from '@lib/schemas/player/video'
 import { useSearchParams } from 'next/navigation'
+import { Shimmer } from '@components/ui/shimmer'
 
 type Props = { loop: VideoPlayerModalLoopType; community: VideoPlayerModalCommunityType }
 export function LoopVideos({ loop, community }: Props) {
@@ -31,13 +32,21 @@ export function LoopVideos({ loop, community }: Props) {
     }
   })
 
-  // TODO: Implement shimmer.
-  if (isLoading) return <Loader size="md" />
+  if (isLoading)
+    return (
+      <div className="my-4 grid grid-cols-2 gap-4">
+        {Array.from({ length: 2 }).map((_, index) => (
+          <Shimmer
+            key={index}
+            className="group/video relative flex aspect-reel w-full items-center justify-center duration-300 hover:cursor-pointer"
+          />
+        ))}
+      </div>
+    )
 
   if (!videos || videos?.length === 0)
     return <div className="flex items-center justify-center pt-32 text-title-3-bold">No posts available</div>
 
-  // TODO: Add shimmer in images.
   // TODO: Remove this component from here. and put it  in better location.
   return (
     <div ref={scrollDivRef} className="h-full w-full overflow-y-auto">

@@ -131,7 +131,11 @@ export function PasswordInputLogin() {
               }}
             />
             <Button type="submit" variant="default" className="w-full" disabled={!isValid || isLoading}>
-              {isLoading ? <Loader size="sm" /> : <p className="text-title-3-demi">Log in</p>}
+              {isLoading ? (
+                <Loader size="sm" className="fill-new-off-white" />
+              ) : (
+                <p className="text-title-3-demi">Log in</p>
+              )}
             </Button>
             {form.formState.errors.root && (
               <p className="flex items-center justify-center text-title-3-med text-supplementary-red">
