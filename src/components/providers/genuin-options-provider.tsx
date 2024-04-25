@@ -10,6 +10,7 @@ import { useSession } from 'next-auth/react'
 import { axiosInstance, setAuthTokenInAxiosInstance, setBrandIdInAxiosInstance } from '@lib/api/instance'
 import { encryptText, parseUserAgent } from '@lib/utils'
 import dynamic from 'next/dynamic'
+import { miniProfile } from '@lib/api/auth'
 
 const AuthenticationModal = dynamic(
   async () => await import('@components/common/modals/authentication').then((comp) => comp.AuthenticationModal.ui)
@@ -33,7 +34,7 @@ if (process.env.NEXT_PUBLIC_CURRENT_ENV === 'prod') console.log = () => {}
 // TODO: separate this component into 2 comps with once has auth and second doesn't have auth.
 export function GenuinOptionsProvider({ children, deviceType, os, browserType, config }: Props) {
   const [isLoading, setIsLoading] = useState(true)
-  const { data: sessionData, status: sessionStatus } = useSession()
+  const { data: sessionData, status: sessionStatus, update: updateSession } = useSession()
   const { setInitialData } = useGenuinOptions((state) => ({
     setInitialData: state.setData,
   }))
@@ -42,6 +43,25 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
     visitorAdded: state.visitorAdded,
     setVisitor: state.setVisitor,
   }))
+
+  useEffect(() => {
+    const intervalTime = 60 * 60 * 1000
+    const loadData = () => {
+      void miniProfile(sessionData?.user?.accessToken ?? '').then((res) => {
+        if (res.code === 200) {
+          void updateSession({
+            ...sessionData,
+            user: { ...sessionData?.user, ...res.data },
+          })
+        }
+      })
+    }
+    const intervalId = setInterval(loadData, intervalTime)
+
+    return () => {
+      clearInterval(intervalId)
+    }
+  }, [])
 
   const searchParams = useSearchParams()
 
