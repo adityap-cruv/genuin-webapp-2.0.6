@@ -159,13 +159,13 @@ function PeopleView({ people }: { people: PeopleType[] }) {
           See all
         </p>
       </span>
-      <div className="flex justify-around gap-x-2 overflow-auto px-4">
+      <div className="flex gap-x-2 overflow-auto px-4">
         {people.slice(0, 4).map((person) => {
           return (
             <Link
               onClick={close}
               href={PATH_NAME.profile(person.userName)}
-              className="flex flex-1 flex-col items-center gap-y-1"
+              className="flex w-fit flex-col items-center gap-y-1"
               key={person.id}>
               <CustomAvatar
                 fallbackString={person.name ?? ''}
