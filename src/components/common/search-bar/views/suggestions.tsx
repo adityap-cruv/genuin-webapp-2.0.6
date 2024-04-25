@@ -14,7 +14,6 @@ export default function Suggestions() {
   return (
     <div className="relative h-full w-full overflow-auto">
       <Inner />
-      <Bottom />
     </div>
   )
 }
@@ -30,77 +29,80 @@ function Inner() {
 
   if (list && list?.length !== 0)
     return (
-      <div className="px-3 pb-14 pt-4">
-        {list.map((item) => {
-          if (item.type === 'community')
-            if (item.community)
-              return (
-                <div
-                  key={item.community.community_id}
-                  onClick={() => {
-                    postRecents(RECENT_SEARCH_CONTENT_TYPE.community, item.community?.community_id)
-                  }}>
-                  <ListItem
-                    avatar={
-                      <CustomAvatar
-                        className="h-12 w-12"
-                        fallbackString={item.community.name ?? ''}
-                        imageUrl={item.community.dp ?? ''}
-                        isAvatar={false}
-                      />
-                    }
-                    subtitle={`Community • ${item.community.description ?? ''}`}
-                    title={item.community.name ?? ''}
-                    urlToGo={PATH_NAME.community(item.community.slug)}
-                  />
-                </div>
-              )
-          if (item.type === 'loop')
-            if (item.loop)
-              return (
-                <div
-                  key={item.loop.chat_id}
-                  onClick={() => {
-                    postRecents(RECENT_SEARCH_CONTENT_TYPE.loop, item.loop?.chat_id)
-                  }}>
-                  <ListItem
-                    avatar={
-                      <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border border-tertiary-300">
-                        <IcLoop className="h-5 w-5 stroke-tertiary" />
-                      </div>
-                    }
-                    subtitle={`Loop • ${item.loop.group.group_description ?? ''}`}
-                    title={item.loop.group.group_name ?? ''}
-                    urlToGo={PATH_NAME.loop(item.loop.group.slug)}
-                  />
-                </div>
-              )
-          if (item.type === 'user')
-            if (item.user)
-              return (
-                <div
-                  key={item.user.user_id}
-                  onClick={() => {
-                    postRecents(RECENT_SEARCH_CONTENT_TYPE.user, item.user?.user_id)
-                  }}>
-                  <ListItem
-                    avatar={
-                      <CustomAvatar
-                        fallbackString={item.user.name ?? ''}
-                        imageUrl={item.user.profile_image ?? ''}
-                        isAvatar={item.user.is_avatar}
-                        className="h-12 w-12"
-                      />
-                    }
-                    subtitle={item.user?.name ?? ''}
-                    title={`@${item.user?.nickname}`}
-                    urlToGo={PATH_NAME.profile(item.user?.nickname)}
-                  />
-                </div>
-              )
-          return <></>
-        })}
-      </div>
+      <>
+        <div className="px-3 pb-14 pt-4">
+          {list.map((item) => {
+            if (item.type === 'community')
+              if (item.community)
+                return (
+                  <div
+                    key={item.community.community_id}
+                    onClick={() => {
+                      postRecents(RECENT_SEARCH_CONTENT_TYPE.community, item.community?.community_id)
+                    }}>
+                    <ListItem
+                      avatar={
+                        <CustomAvatar
+                          className="h-12 w-12"
+                          fallbackString={item.community.name ?? ''}
+                          imageUrl={item.community.dp ?? ''}
+                          isAvatar={false}
+                        />
+                      }
+                      subtitle={`Community • ${item.community.description ?? ''}`}
+                      title={item.community.name ?? ''}
+                      urlToGo={PATH_NAME.community(item.community.slug)}
+                    />
+                  </div>
+                )
+            if (item.type === 'loop')
+              if (item.loop)
+                return (
+                  <div
+                    key={item.loop.chat_id}
+                    onClick={() => {
+                      postRecents(RECENT_SEARCH_CONTENT_TYPE.loop, item.loop?.chat_id)
+                    }}>
+                    <ListItem
+                      avatar={
+                        <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border border-tertiary-300">
+                          <IcLoop className="h-5 w-5 stroke-tertiary" />
+                        </div>
+                      }
+                      subtitle={`Loop • ${item.loop.group.group_description ?? ''}`}
+                      title={item.loop.group.group_name ?? ''}
+                      urlToGo={PATH_NAME.loop(item.loop.group.slug)}
+                    />
+                  </div>
+                )
+            if (item.type === 'user')
+              if (item.user)
+                return (
+                  <div
+                    key={item.user.user_id}
+                    onClick={() => {
+                      postRecents(RECENT_SEARCH_CONTENT_TYPE.user, item.user?.user_id)
+                    }}>
+                    <ListItem
+                      avatar={
+                        <CustomAvatar
+                          fallbackString={item.user.name ?? ''}
+                          imageUrl={item.user.profile_image ?? ''}
+                          isAvatar={item.user.is_avatar}
+                          className="h-12 w-12"
+                        />
+                      }
+                      subtitle={item.user?.name ?? ''}
+                      title={`@${item.user?.nickname}`}
+                      urlToGo={PATH_NAME.profile(item.user?.nickname)}
+                    />
+                  </div>
+                )
+            return <></>
+          })}
+        </div>
+        <Bottom />
+      </>
     )
 
   return <NoResults />
