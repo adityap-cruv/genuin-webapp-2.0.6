@@ -97,7 +97,7 @@ export function KsToCbWeb() {
         <div className="flex w-[35%] flex-col items-center justify-center">
           <div className="h-1 w-[100px] rounded-t-md bg-monochrome-white "></div>
           <QRCode
-            value="https://begenuin.com/"
+            value="https://qabegenuin.page.link/a7Td"
             size={80}
             qrStyle="dots"
             logoImage={logoImageDataUrl}

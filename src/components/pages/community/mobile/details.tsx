@@ -25,6 +25,7 @@ import { useSearchParams } from 'next/navigation'
 import { getCommunityMembers } from '@lib/api/community'
 import { Loader } from '@components/ui/loader'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@components/ui/accordion'
+import { Shimmer } from '@components/ui/shimmer'
 
 let communityDetailsModule: CommunityDetailsType
 
@@ -430,7 +431,21 @@ function Members() {
   const { data, isLoading } = getCommunityMembers(communityDetailsModule.slug)
   const members = data?.members
 
-  if (isLoading) return <Loader size="md" />
+  if (isLoading)
+    return (
+      <>
+        {Array.from({ length: 4 }).map((_, index) => (
+          <div key={index} className="m-2 flex items-center justify-center">
+            <Shimmer className="h-12 w-12 shrink-0 rounded-full" />
+            <div className="ml-2 w-full">
+              <Shimmer className="my-1 h-4 w-1/4 rounded-full" />
+              <Shimmer className="my-1 h-4 w-1/5 rounded-full" />
+              <Shimmer className="my-1 h-4 w-full rounded-full" />
+            </div>
+          </div>
+        ))}
+      </>
+    )
 
   if (members && members.length !== 0)
     return (

@@ -111,7 +111,7 @@ export function KsToCbSubdomain() {
           disabled={user?.ks_cb_request_status === 2}
           onClick={handleClick}>
           {loading ? (
-            <Loader size="sm" />
+            <Loader size="sm" className="fill-new-off-white" />
           ) : user?.ks_cb_request_status === 2 ? (
             'Requested'
           ) : (

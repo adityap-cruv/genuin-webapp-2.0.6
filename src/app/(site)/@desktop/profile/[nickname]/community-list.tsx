@@ -88,7 +88,12 @@ export function CommunityList({ userId }: { userId: string }) {
   }
 
   function Inner() {
-    if (isLoading) return <Loader size="md" />
+    if (isLoading)
+      return (
+        <div className="flex h-full w-full items-center justify-center">
+          <Loader size="md" />
+        </div>
+      )
     if (!communities || communities.length === 0)
       return (
         <div className="w-full overflow-hidden" style={{ height: `calc(100% - 250px)` }}>
@@ -141,7 +146,11 @@ export function CommunityList({ userId }: { userId: string }) {
             </div>
           )
         })}
-        {isFetchingNextPage && <Loader size="md" />}
+        {isFetchingNextPage && (
+          <div className="flex w-full justify-center">
+            <Loader size="md" />
+          </div>
+        )}
       </div>
     )
   }
@@ -248,7 +257,17 @@ function Loops({
         </li>
       ))}
       {/** TODO: discus with design team about getting more loops pagination design. */}
-      {community.loopCount > community.loops.length && !isFetchingNextPage && <div onClick={fetchNext}>more</div>}
+      {community.loopCount > community.loops.length && !isFetchingNextPage && (
+        <div onClick={fetchNext}>
+          <li
+            className="profile-loop-li relative w-full rounded-lg border border-tertiary-200 p-2"
+            style={{ backgroundColor: '#F9F9F9' }}>
+            <p className="text-blue-500 flex w-full cursor-pointer justify-center text-cap-1-demi text-tertiary">
+              View more loops
+            </p>
+          </li>
+        </div>
+      )}
       {isFetchingNextPage && (
         <div className="h-auto">
           <li className="profile-loop-li relative my-4 w-full rounded-lg border border-tertiary-200 bg-tertiary-100 p-4">

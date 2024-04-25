@@ -141,5 +141,7 @@ export function Content() {
       return <KsToCbSubdomain />
     case 'VERIFY_MAIL':
       return <EmailVerification.verifymail />
+    case 'MINI_PROFILE_SUCCESS':
+      return <Note.miniprofilesuccess />
   }
 }

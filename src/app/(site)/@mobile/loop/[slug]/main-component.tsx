@@ -22,6 +22,7 @@ import { ShareIcon } from '@icons/share-icon'
 import { useSearchParams } from 'next/navigation'
 import Loading from './loading'
 import Error from '../../error'
+import { Shimmer } from '@components/ui/shimmer'
 
 let loopDetailsModule: LoopDetailsType
 
@@ -314,8 +315,21 @@ function LoopCollaborators({ slug }: { slug: string }) {
   const { data, isLoading } = getLoopCohosts(slug)
   const cohosts = data?.pages.flatMap((item) => item.members)
 
-  // TODO: Add shimmer.
-  if (isLoading) return <Loader className="pt-32" size="md" />
+  if (isLoading)
+    return (
+      <>
+        {Array.from({ length: 2 }).map((_, index) => (
+          <div key={index} className="m-2 flex items-center justify-center">
+            <Shimmer className="h-12 w-12 shrink-0 rounded-full" />
+            <div className="ml-2 w-full">
+              <Shimmer className="my-1 h-4 w-1/4 rounded-full" />
+              <Shimmer className="my-1 h-4 w-1/5 rounded-full" />
+              <Shimmer className="my-1 h-4 w-full rounded-full" />
+            </div>
+          </div>
+        ))}
+      </>
+    )
 
   if (!cohosts || cohosts.length === 0)
     return (
@@ -348,8 +362,21 @@ function LoopSubscribers({ slug }: any) {
   const { data, isLoading } = getLoopSubscribers(slug)
   const subscribers = data?.pages.flatMap((item) => item.subscribers)
 
-  // TODO: Add shimmer.
-  if (isLoading) return <Loader className="pt-32" size="md" />
+  if (isLoading)
+    return (
+      <>
+        {Array.from({ length: 2 }).map((_, index) => (
+          <div key={index} className="m-2 flex items-center justify-center">
+            <Shimmer className="h-12 w-12 shrink-0 rounded-full" />
+            <div className="ml-2 w-full">
+              <Shimmer className="my-1 h-4 w-1/4 rounded-full" />
+              <Shimmer className="my-1 h-4 w-1/5 rounded-full" />
+              <Shimmer className="my-1 h-4 w-full rounded-full" />
+            </div>
+          </div>
+        ))}
+      </>
+    )
 
   if (!subscribers || subscribers.length === 0)
     return (
