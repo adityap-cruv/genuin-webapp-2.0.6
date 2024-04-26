@@ -42,9 +42,9 @@ export function KsToCbSubdomain() {
     }
 
     ksCbRequest()
-      .then((res) => {
+      .then(async (res) => {
         if (res.code === 200) {
-          void updateSession({
+          await updateSession({
             ...sessionData,
             user: { ...sessionData?.user, ks_cb_request_status: res.data.ks_cb_request_status },
           })
