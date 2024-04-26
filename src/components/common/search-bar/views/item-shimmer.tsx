@@ -6,7 +6,7 @@ export function ItemShimmer({ count = 4 }: { count?: number }) {
 
   for (let i = 0; i < count; i++) {
     compArr.push(
-      <div className="flex w-full items-center gap-x-2">
+      <div key={i} className="flex w-full items-center gap-x-2">
         <Shimmer className="h-10 w-10 rounded-full" />
         <span className="flex w-full flex-col gap-y-2">
           <Shimmer className="h-4 w-1/4" />

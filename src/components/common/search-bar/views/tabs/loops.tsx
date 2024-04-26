@@ -74,7 +74,7 @@ export function LoopItem({ loop }: { loop: LoopResType }) {
           <div className="w-[70%] items-center p-[3%]">
             <p className="text-body-1-bold">{loop.group.group_name}</p>
             {loop.latest_messages.length !== 0 && loop.is_view_allowed && (
-              <p className="text-body-1-demi text-secondary-300">
+              <p className="line-clamp-1 w-full break-all text-body-1-demi text-secondary-300">
                 @{loop.latest_messages[0].owner.username} posted ∙ {getTimeAgo(loop.latest_messages[0].message_at)}
               </p>
             )}

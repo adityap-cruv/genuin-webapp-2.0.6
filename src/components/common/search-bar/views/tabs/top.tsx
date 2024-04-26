@@ -27,7 +27,7 @@ export function Top({ communities, loops, people, ranking, videos }: Props) {
 
   ranking?.forEach((item, _, __) => {
     if (item === 'communities' && communities) compoArr.push(<CommunityView communities={communities} />)
-    if (item === 'loops' && loops) compoArr.push(<LoopView loops={loops} />)
+    if (item === 'loops' && loops && loops.length !== 0) compoArr.push(<LoopView loops={loops} />)
     if (item === 'people' && people) compoArr.push(<PeopleView people={people} />)
   })
   if (videos) compoArr.push(<VideoView videos={videos} />)
@@ -51,23 +51,29 @@ function CommunityView({ communities }: { communities: CommunityType[] }) {
         </p>
       </span>
       <div className="relative w-full">
-        <Swiper
-          spaceBetween={8}
-          slidesPerView={1.2}
-          initialSlide={0}
-          centeredSlides
-          centerInsufficientSlides
-          slidesOffsetBefore={16}
-          slidesOffsetAfter={16}
-          centeredSlidesBounds
-          direction="horizontal">
-          {communities.map((item) => (
-            <SwiperSlide key={item.id} className="p-1">
-              <CommunityTile key={item.id} community={item} />
-            </SwiperSlide>
-          ))}
-          <SlideButtons />
-        </Swiper>
+        {communities.length === 1 ? (
+          <div className="px-4">
+            <CommunityTile community={communities[0]} />
+          </div>
+        ) : (
+          <Swiper
+            spaceBetween={8}
+            slidesPerView={1.2}
+            initialSlide={0}
+            centeredSlides
+            centerInsufficientSlides
+            slidesOffsetBefore={16}
+            slidesOffsetAfter={16}
+            centeredSlidesBounds
+            direction="horizontal">
+            {communities.map((item) => (
+              <SwiperSlide key={item.id} className="p-1">
+                <CommunityTile key={item.id} community={item} />
+              </SwiperSlide>
+            ))}
+            <SlideButtons />
+          </Swiper>
+        )}
       </div>
     </span>
   )
@@ -75,7 +81,7 @@ function CommunityView({ communities }: { communities: CommunityType[] }) {
 
 function SlideButtons() {
   const slider = useSwiper()
-  const [status, setStatus] = useState({ isStart: true, isEnd: false })
+  const [status, setStatus] = useState({ isStart: true, isEnd: slider.slides.length === 1 })
   return (
     <>
       {!status.isStart && (
@@ -123,23 +129,29 @@ function LoopView({ loops }: { loops: LoopResType[] }) {
         </p>
       </span>
       <div className="relative w-full">
-        <Swiper
-          spaceBetween={8}
-          slidesPerView={1.2}
-          initialSlide={0}
-          centeredSlides
-          centerInsufficientSlides
-          slidesOffsetBefore={16}
-          slidesOffsetAfter={16}
-          centeredSlidesBounds
-          direction="horizontal">
-          {loops.map((item) => (
-            <SwiperSlide key={item.chat_id} className="p-1">
-              <LoopItem key={item.chat_id} loop={item} />
-            </SwiperSlide>
-          ))}
-          <SlideButtons />
-        </Swiper>
+        {loops.length === 1 ? (
+          <div className="w-full px-4">
+            <LoopItem loop={loops[0]} />
+          </div>
+        ) : (
+          <Swiper
+            spaceBetween={8}
+            slidesPerView={1.2}
+            initialSlide={0}
+            centeredSlides
+            centerInsufficientSlides
+            slidesOffsetBefore={16}
+            slidesOffsetAfter={16}
+            centeredSlidesBounds
+            direction="horizontal">
+            {loops.map((item) => (
+              <SwiperSlide key={item.chat_id} className="w-full p-1">
+                <LoopItem key={item.chat_id} loop={item} />
+              </SwiperSlide>
+            ))}
+            <SlideButtons />
+          </Swiper>
+        )}
       </div>
     </span>
   )
