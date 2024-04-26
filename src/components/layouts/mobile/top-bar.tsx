@@ -23,6 +23,7 @@ import CommunityIcon from '@icons/ks-cb-flow/icCommunity.svg'
 import { removeAllAuthToken } from '@lib/api/instance'
 import { MOBILE_DOWNLOAD_APP_LINK } from '@lib/constants'
 import { SearchBar } from '@components/common/search-bar'
+import { miniProfile } from '@lib/api/auth'
 
 const navVariant = cva('sticky top-0 flex z-40 h-[76px] w-full items-center justify-between  px-2', {
   variants: {
@@ -102,6 +103,26 @@ function Menu({ hamBurgerVariant = 'dark' }: { hamBurgerVariant: 'dark' | 'light
     brandName: state.config?.name ? state.config?.name : 'Genuin',
   }))
   const pathName = usePathname()
+  const { data: sessionData, update: updateSession } = useSession()
+
+  function handleCommunityBuilderClick() {
+    void miniProfile(true)
+      .then((res) => {
+        if (res.code === 200) {
+          void updateSession({
+            ...sessionData,
+            user: { ...sessionData?.user, ...res.data },
+          })
+          const messageType = res?.data?.ks_cb_request_status === 3 ? 'MINI_PROFILE_SUCCESS' : 'KS_CB_SUBDOMAIN'
+          AuthenticationModal.open(undefined, messageType)
+        } else {
+          AuthenticationModal.open(undefined, 'KS_CB_SUBDOMAIN')
+        }
+      })
+      .catch(() => {
+        AuthenticationModal.open(undefined, 'KS_CB_SUBDOMAIN')
+      })
+  }
   return (
     <Sheet>
       <SheetTrigger>
@@ -134,23 +155,29 @@ function Menu({ hamBurgerVariant = 'dark' }: { hamBurgerVariant: 'dark' | 'light
               </MenuItem>
             </Link> */}
             <hr className="border-1 mt-1 border-monochrome-black/10" />
-            <div
-              className="max-w-72 relative my-4 max-h-16 rounded-lg border border-[#E9CAF4] bg-primary-200 text-title-3-demi hover:cursor-pointer"
-              style={{
-                background: 'linear-gradient(30deg, #E9CAF4 5%, #F8F8F8 50%, #ADDAFF 100%)',
-              }}
-              onClick={() => {
-                AuthenticationModal.open(undefined, embed ? 'KS_CB_SUBDOMAIN' : 'KS_CB_WEB')
-              }}>
-              <p className="z-10 p-3 text-body-1-bold">
-                Become a{' '}
-                <span className="font-semibold">
-                  community <br /> builder
-                </span>{' '}
-                on {brandName} 🚀
-              </p>
-              <img src={CommunityIcon.src} alt="community" className="absolute bottom-0 right-4 h-12" />
-            </div>
+            {user?.ks_cb_request_status !== 3 && (
+              <div
+                className="max-w-72 relative my-4 max-h-16 rounded-lg border border-[#E9CAF4] bg-primary-200 text-title-3-demi text-monochrome-black hover:cursor-pointer"
+                style={{
+                  background: 'linear-gradient(30deg, var(--primary-400) -80%, #FFFFFF 50%, var(--primary-400) 120%)',
+                }}
+                onClick={() => {
+                  if (user?.isEmailVerified) {
+                    handleCommunityBuilderClick()
+                  } else {
+                    AuthenticationModal.open(undefined, embed ? 'KS_CB_SUBDOMAIN' : 'KS_CB_WEB')
+                  }
+                }}>
+                <p className="z-10 p-3 text-body-1-bold">
+                  Become a{' '}
+                  <span className="font-semibold italic">
+                    community <br /> builder{' '}
+                  </span>
+                  {embed ? 'for' : 'on'} <span className="text-primary"> {brandName}</span> 🚀
+                </p>
+                <img src={CommunityIcon.src} alt="community" className="absolute bottom-0 right-4 h-12" />
+              </div>
+            )}
             <RecentCommunities />
           </div>
           <div className="text-monochrome">
