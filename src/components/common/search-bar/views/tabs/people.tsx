@@ -3,14 +3,17 @@ import { type PeopleType } from '.'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { NoResults } from './no-results'
+import { useSearchBarStore } from '../../store'
 
 export function People({ people }: { people?: PeopleType[] }) {
+  const { close } = useSearchBarStore((state) => ({ close: state.close }))
   if (people)
     return (
       <div className="flex flex-col px-2 pb-16 pt-2 sm:py-4">
         {people.map((item) => {
           return (
             <Link
+              onClick={close}
               href={PATH_NAME.profile(item.userName)}
               key={item.id}
               className="flex items-center gap-x-2 rounded-md px-2 py-2 hover:bg-primary-200">
