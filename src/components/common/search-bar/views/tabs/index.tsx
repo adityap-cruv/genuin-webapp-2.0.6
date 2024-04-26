@@ -57,7 +57,7 @@ export default function Component() {
   if (isLoading) return <CompShimmer />
 
   return (
-    <Tabs className="h-full w-full overflow-auto" defaultValue={defaultTab} value={defaultTab}>
+    <Tabs className="h-full w-full" defaultValue={defaultTab} value={defaultTab}>
       <TabsList className="sticky top-0 z-10 flex w-full border-b border-b-monochrome-8 bg-monochrome-white [&_p]:text-body-1-bold">
         <TabsTrigger
           value="TOP"
@@ -98,7 +98,7 @@ export default function Component() {
           <p className="text-body-1-bold">People</p>
         </TabsTrigger>
       </TabsList>
-      <TabsContent value="TOP">
+      <TabsContent value="TOP" className="overflow-auto pb-10">
         <Top
           communities={data?.communities}
           loops={data?.loops ?? undefined}
@@ -107,18 +107,18 @@ export default function Component() {
           videos={data?.videos}
         />
       </TabsContent>
-      <TabsContent value="POSTS">
+      <TabsContent value="POSTS" className="overflow-auto pb-10">
         <div className="pb-16 pt-4 sm:py-4">
           <Posts videos={data?.videos} />
         </div>
       </TabsContent>
-      <TabsContent value="COMMUNITIES">
+      <TabsContent value="COMMUNITIES" className="overflow-auto pb-10">
         <Communities communities={data?.communities} />
       </TabsContent>
-      <TabsContent value="LOOPS">
+      <TabsContent value="LOOPS" className="overflow-auto pb-10">
         <Loops loops={data?.loops ?? undefined} />
       </TabsContent>
-      <TabsContent value="PEOPLE">
+      <TabsContent value="PEOPLE" className="overflow-auto pb-10">
         <People people={data?.people} />
       </TabsContent>
     </Tabs>
