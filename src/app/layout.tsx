@@ -38,6 +38,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link rel="icon" type="image/x-icon" href={favicon || '/favicon.svg'} />
         <link rel="mask-icon" href={favicon || '/favicon.svg'} />
         <meta rel="x-brand-id" content={config?.subdomain} />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
         {/* <script src="https://www.google.com/recaptcha/enterprise.js?render=6LeQm4gpAAAAAC2o51SQj-ak7ojnfOlxyDiR9E7p"></script> */}
       </head>
       <body className="index-page-background !absolute inset-0 min-h-full min-w-full text-secondary">
