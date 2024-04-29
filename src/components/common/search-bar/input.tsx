@@ -59,6 +59,11 @@ function Mobile() {
           onChange={(e) => {
             debounced(e.target.value)
           }}
+          onKeyUp={(e) => {
+            if (e.key === 'Enter') {
+              e.currentTarget.blur()
+            }
+          }}
           id="search-input"
           className="h-10 rounded-full border-none bg-tertiary-200 pl-8 text-body-1-demi placeholder:text-tertiary focus:border-none"
           placeholder="Search"
