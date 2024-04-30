@@ -1,13 +1,11 @@
 'use client'
 import { CustomAvatar } from '@components/custom/custom-avatar'
-import infynityLeft from '@images/infinity-splits/infinityLeft.svg'
 import { useEffect, useState } from 'react'
-import infynityRight from '@images/infinity-splits/infinityRight.svg'
 import { useAnimationControls, motion } from 'framer-motion'
 import Link from 'next/link'
-import Image from 'next/image'
 import { PATH_NAME } from '@lib/utils/constants/path'
-
+import leftImg from '@images/infinity-splits/infinity-left.svg'
+import rightImg from '@images/infinity-splits/infinity-right.svg'
 type Props = {
   community: {
     name: string
@@ -72,10 +70,21 @@ export function AnimatedInfinityView({ community, loop }: Props) {
   }, [loop.slug])
 
   return (
-    <span className="mb-2 flex px-1">
-      <motion.div initial={{ rotateX: '90deg' }} animate={leftControls} className=" relative flex-1">
-        <Link href={{ pathname: PATH_NAME.community(community.slug) }}>
-          <Image src={infynityLeft} alt="bar" className="h-auto w-full min-w-max" />
+    <div className="relative mb-2 flex w-full px-1">
+      <motion.div
+        initial={{ rotateX: '90deg' }}
+        animate={leftControls}
+        style={{
+          background: `url(${leftImg.src})`,
+          height: 60,
+          backgroundRepeat: 'no-repeat',
+          content: 'contents',
+          backgroundPosition: 'center',
+          objectFit: 'cover',
+          backgroundSize: 'contain',
+        }}
+        className="relative w-full flex-1">
+        <Link className="bg-red-50" href={{ pathname: PATH_NAME.community(community.slug) }}>
           <span className="absolute inset-0 flex h-full w-full items-center gap-x-2 pl-2">
             <CustomAvatar
               imageUrl={localState.communityDp}
@@ -92,9 +101,20 @@ export function AnimatedInfinityView({ community, loop }: Props) {
           </span>
         </Link>
       </motion.div>
-      <motion.div initial={{ rotateX: '90deg' }} animate={rightControls} className="relative flex-1">
-        <a href={PATH_NAME.loop(loop.slug)}>
-          <Image src={infynityRight} alt="bar" className="h-auto w-full min-w-max" />
+      <motion.div
+        style={{
+          background: `url(${rightImg.src})`,
+          height: 60,
+          backgroundRepeat: 'no-repeat',
+          content: 'contents',
+          backgroundPosition: 'center',
+          objectFit: 'cover',
+          backgroundSize: 'contain',
+        }}
+        initial={{ rotateX: '90deg' }}
+        animate={rightControls}
+        className="relative flex-1 bg-blue">
+        <Link className="h-full w-full" href={PATH_NAME.loop(loop.slug)}>
           <span className="absolute inset-0 block w-full flex-1 justify-end">
             <span className="flex h-full items-center justify-end">
               <div className="w-[85%]">
@@ -103,8 +123,8 @@ export function AnimatedInfinityView({ community, loop }: Props) {
               </div>
             </span>
           </span>
-        </a>
+        </Link>
       </motion.div>
-    </span>
+    </div>
   )
 }
