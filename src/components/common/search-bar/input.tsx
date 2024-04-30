@@ -52,7 +52,7 @@ function Mobile() {
         onClick={() => {
           close()
         }}>
-        <ChevronLeft className="h-5 stroke-secondary stroke-2" />
+        <ChevronLeft className="h-5 stroke-secondary stroke-2 outline-none" />
       </SheetClose>
       <span className="relative w-full">
         <Input
