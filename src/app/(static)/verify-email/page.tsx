@@ -1,12 +1,9 @@
 import { redirect } from 'next/navigation'
 import { ClientComponent } from './client-component'
 import { verifyEmail } from '@lib/api/auth'
-import { headers } from 'next/headers'
-import { checkAndAppendHttps } from '@lib/utils'
 
 export default async function Page({ searchParams }: { searchParams: { token: string } }) {
   const { code, actionMetadata, user, emailType, email } = await verifyEmail(searchParams.token)
-  console.log('called:::', code, user)
   if (code === 200 && user) {
     return (
       <ClientComponent
@@ -18,11 +15,6 @@ export default async function Page({ searchParams }: { searchParams: { token: st
 
   // If verification link expired.
   if (code === 1003) {
-    // console.log('flfdlld:::', code, actionMetadata, user, emailType, email)
-    // console.log(
-    //   'redirect to::',
-    //   getRedirectTo({ email, emailType, error: false, path: actionMetadata?.path, success: false })
-    // )
     redirect(getRedirectTo({ email, emailType, error: false, path: actionMetadata?.path, success: false }))
   }
 
