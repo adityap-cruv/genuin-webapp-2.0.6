@@ -3,7 +3,7 @@ import { Root } from './root'
 import { type Metadata } from 'next'
 import { headers } from 'next/headers'
 import { PATH_NAME } from '@lib/utils/constants/path'
-import { getConfig } from '../../../../middleware'
+import { getConfig } from '../../../../../middleware'
 
 export default async function Page() {
   return <Root />
@@ -17,9 +17,9 @@ type HomeMetadata = {
 
 export async function generateMetadata(): Promise<Metadata> {
   const host = headers().get('host') ?? ''
-  console.log("Host::", host)
+  console.log('Host::', host)
   const config = getConfig(host)
-  console.log("Config::", config)
+  console.log('Config::', config)
   if (config) {
     const metadataParams = { type: 5, ...config }
     const metadata: HomeMetadata = await fetchMetadata(metadataParams)
