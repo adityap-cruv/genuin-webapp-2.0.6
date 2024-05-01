@@ -1,3 +1,4 @@
+'use client'
 import React from 'react'
 import style from './pricing.module.scss'
 import ComparePlan from '@components/business/pricing-page/compare-plan'
