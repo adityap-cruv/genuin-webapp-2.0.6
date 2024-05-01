@@ -51,9 +51,15 @@ function Desktop() {
 
 function Mobile({ children }: { children: ReactNode }) {
   return (
-    <Sheet>
+    <Sheet modal={false}>
       <SheetTrigger>{children}</SheetTrigger>
-      <SheetContent showDefaultClose={false} className="w-full border-0 p-0 outline-0" side={'right'}>
+      <SheetContent
+        onInteractOutside={(e) => {
+          e.preventDefault()
+        }}
+        showDefaultClose={false}
+        className="w-full border-0 p-0 outline-0"
+        side={'right'}>
         <SearchInput.mobile />
         <SearchBody />
       </SheetContent>

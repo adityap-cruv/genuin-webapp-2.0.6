@@ -68,7 +68,7 @@ export function LoopItem({ loop }: { loop: LoopResType }) {
   }
 
   return (
-    <span onClick={close} className="relative">
+    <div onClick={close} className="relative">
       <Link href={{ pathname: PATH_NAME.loop(loop.slug) }}>
         <div className="relative w-full rounded-lg border border-tertiary-300 bg-monochrome-white">
           <div className="w-[70%] items-center p-[3%]">
@@ -111,7 +111,7 @@ export function LoopItem({ loop }: { loop: LoopResType }) {
       ) : (
         <RenderedImages videos={loop.latest_messages} slug={loop.slug} />
       )}
-    </span>
+    </div>
   )
 }
 

@@ -17,14 +17,15 @@ type HomeMetadata = {
 
 export async function generateMetadata(): Promise<Metadata> {
   const host = headers().get('host') ?? ''
+  console.log("Host::", host)
   const config = getConfig(host)
-
+  console.log("Config::", config)
   if (config) {
     const metadataParams = { type: 5, ...config }
     const metadata: HomeMetadata = await fetchMetadata(metadataParams)
     return {
       title: metadata.title,
-      applicationName: 'Genuin',
+      // applicationName: 'Genuin',
       description: metadata.description || '',
       openGraph: {
         title: metadata.title,
