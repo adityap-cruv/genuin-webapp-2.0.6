@@ -3,7 +3,7 @@ import { NavBar } from '@components/common/nav-bar'
 import Image from 'next/image'
 import imageAppStore from '@images/appStore.svg'
 import imagePlayStore from '@images/playStore.svg'
-import { DownloadAppDialog } from '../components/pages/home/download-app-dialog'
+import { DownloadAppDialog } from '../../components/pages/home/download-app-dialog'
 import { Button } from '@components/ui/button'
 
 export default function Error({ error, reset }: { error: Error; reset: () => void }) {
