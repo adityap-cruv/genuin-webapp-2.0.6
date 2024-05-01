@@ -23,6 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
   if (config) {
     const metadataParams = { type: 5, ...config }
     const metadata: HomeMetadata = await fetchMetadata(metadataParams)
+    console.log("Metadata Resp:", metadata)
     return {
       title: metadata.title,
       // applicationName: 'Genuin',
@@ -35,6 +36,7 @@ export async function generateMetadata(): Promise<Metadata> {
       },
     }
   } else {
+    console.log("Metadata Resp ELSE")
     return {
       title: 'Home | Welcome to Genuin!',
     }
