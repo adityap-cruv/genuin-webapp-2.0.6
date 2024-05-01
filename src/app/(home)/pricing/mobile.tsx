@@ -1,3 +1,4 @@
+'use client'
 import React, { useEffect, useState } from 'react'
 import { NavBar } from '@components/pages/home/nav-bar'
 import { Button } from '@components/ui/button'

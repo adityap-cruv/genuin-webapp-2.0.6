@@ -1,3 +1,4 @@
+'use client'
 import { NavBar } from '@components/pages/home/nav-bar'
 import bg from '@images/business/discover/bg_discover.webp'
 import c1 from '@images/home-page/community/communityshare 1.webp'
@@ -10,8 +11,6 @@ import l2 from '@images/home-page/loop/Loop-Link-Share 2.webp'
 import l3 from '@images/home-page/loop/Loop-Link-Share 3.webp'
 import l4 from '@images/home-page/loop/Loop-Link-Share 4.webp'
 import l5 from '@images/home-page/loop/Loop-Link-Share 5.webp'
-import search from '@icons/icSearch.svg'
-import Link from 'next/link'
 import { useState } from 'react'
 import { Footer } from '@components/pages/home/footer'
 

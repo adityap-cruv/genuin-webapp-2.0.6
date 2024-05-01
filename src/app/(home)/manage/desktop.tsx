@@ -1,3 +1,4 @@
+'use client'
 import React from 'react'
 import style from './brand.module.scss'
 import OnlineCommunity from '@components/business/brand-page/online-community'

@@ -1,9 +1,8 @@
-'use client'
-import { useGenuinOptions } from '@lib/stores/genuin-options'
 import Mobile from './mobile'
 import Desktop from './desktop'
+import { cookies } from 'next/headers'
 
 export default function Component() {
-  const { isMobile } = useGenuinOptions((state) => ({ isMobile: state.isMobile }))
+  const isMobile = cookies().get('device_type')?.value === 'mobile'
   return isMobile ? <Mobile /> : <Desktop />
 }
