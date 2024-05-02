@@ -6,6 +6,10 @@ import { authConfig } from '../auth.config'
 export default NextAuth(authConfig).auth
 
 export async function middleware(request: NextRequest) {
+  if (request.nextUrl.protocol === 'http:') {
+    request.nextUrl.protocol = 'https:'
+    return NextResponse.redirect(request.nextUrl)
+  }
   const STATIC_PATHNAMES = ['/', '/manage', '/market', '/pricing', '/privacy', '/terms', '/discover']
   const parsedUA = userAgent(request)
   const deviceType = parsedUA.device.type
