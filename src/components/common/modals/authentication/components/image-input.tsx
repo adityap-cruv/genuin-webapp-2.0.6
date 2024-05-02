@@ -1,12 +1,14 @@
 import { useAuthenticationModalStore } from '../store'
 import { getAvatarUrl } from '@lib/utils'
 import { Label } from '@components/ui/label'
+import { AuthenticationModal } from '..'
 
 export function ImageInput() {
-  const { formData, setFormData, setStep } = useAuthenticationModalStore((state) => ({
+  const { formData, setFormData, setStep, isOpen } = useAuthenticationModalStore((state) => ({
     formData: state.formData,
     setStep: state.setStep,
     setFormData: state.setFormData,
+    isOpen: state.isOpen,
   }))
 
   return (
@@ -30,7 +32,7 @@ export function ImageInput() {
         accept="image/png, image/jpeg, image/jpg"
         onChange={(e) => {
           setFormData({ image: URL.createObjectURL(e.target.files?.[0] as any) })
-          setStep('IMAGE_CROPPER')
+          isOpen ? setStep('IMAGE_CROPPER') : AuthenticationModal.open(undefined, 'IMAGE_CROPPER')
         }}
       />
       <Label htmlFor="pic" className="cursor-pointer !text-body-1-demi text-primary">

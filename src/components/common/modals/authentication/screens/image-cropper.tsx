@@ -15,12 +15,13 @@ export function ImageCropper() {
     in case of signup we don't upload image we directly sent it by API.
     while in other cases we have to upload image to aws and then send response to api.
    because update_user_profile api is private. */
-  const { image, setImage, goBack, step } = useAuthenticationModalStore((state) => ({
+  const { image, setImage, goBack, step, close } = useAuthenticationModalStore((state) => ({
     image: state.formData.image,
     setImage: state.setFormData,
     setStep: state.setStep,
     goBack: state.goToPrevios,
     step: state.previousStep,
+    close: state.close,
   }))
 
   function getRoundedCanvas(sourceCanvas: any) {
@@ -43,13 +44,20 @@ export function ImageCropper() {
   }
 
   const getCropData = async () => {
+    console.log('step---------', step)
+
     if (typeof cropperRef.current?.cropper !== 'undefined') {
       const canvas = getRoundedCanvas(cropperRef.current?.cropper.getCroppedCanvas())
       if (canvas) {
         canvas.toBlob((blob: any) => {
           if (blob) {
             const file = new File([blob], `${v4()}.png`, { type: 'image/png' })
-            if (step === 'SIGN_UP') {
+            if (!step) {
+              // TODO Improve this
+              setImage({ imageName: file.name, image: file, isAvatar: false })
+              console.log('_________________hkjdasflkhsjdhk')
+              close()
+            } else if (step === 'SIGN_UP') {
               setImage({ image: file, isAvatar: false })
               goBack()
             } else {

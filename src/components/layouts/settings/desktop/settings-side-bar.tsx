@@ -6,6 +6,7 @@ import { cn } from '@lib/utils'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { AccountIcon, ContactUsIcon, EditIcon, LogOutIcon, NotificationIcon } from '@icons/settings-side-bar-icons'
 import { Dialog, DialogContent, DialogTrigger } from '@components/ui/dialog'
+import { AuthenticationModal } from '@components/common/modals/authentication'
 
 export function SideBar() {
   const pathName = usePathname()
@@ -35,18 +36,14 @@ export function SideBar() {
           </Item>
         </Link>
 
-        <Dialog>
-          <DialogTrigger asChild>
-            <>
-              <Item title="Log out">
-                <LogOutIcon isActive={false} />
-              </Item>
-            </>
-          </DialogTrigger>
-          <DialogContent>
-            <div className="grid gap-4 py-4">Heyyyyyyyyyyyyyyyyy</div>
-          </DialogContent>
-        </Dialog>
+        <div
+          onClick={() => {
+            AuthenticationModal.open(undefined, 'LOGOUT')
+          }}>
+          <Item title="Log out">
+            <LogOutIcon isActive={false} />
+          </Item>
+        </div>
       </div>
     </nav>
   )

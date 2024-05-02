@@ -1,48 +1,75 @@
 'use client'
-import { useState } from 'react'
 import icInstagram from '@icons/icInstagramBlack.svg'
 import icLinkedIn from '@icons/icLinkedIn.svg'
 import icUrl from '@icons/icUrl.svg'
 import icTwitter from '@icons/icTwitterBlack.svg'
 import icBack from '@icons/icBack.svg'
-import { cn, getAvatarUrl, getRandomAvatar } from '@lib/utils'
-import { Label } from '@components/ui/label'
+import { cn } from '@lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { Button } from '@components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, useFormField } from '@components/ui/form'
 import { Input } from '@components/ui/input'
 import { Textarea } from '@components/ui/textarea'
 import Image from 'next/image'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
+import { ImageInput } from '@components/common/modals/authentication/components/image-input'
+import { useAuthenticationModalStore } from '@components/common/modals/authentication/store'
+import { updateUser } from '@lib/api/auth'
+import { useSession } from 'next-auth/react'
+import Link from 'next/link'
+import { PATH_NAME } from '@lib/utils/constants/path'
 
 const formSchema = z.object({
   displayName: z.string().max(25, { message: 'Max length should be 25.' }).optional(),
-  bio: z.string().max(150, { message: 'Max length should be 150.' }).optional(),
+  bio: z.string().max(150, { message: 'Max length should be 150.' }).optional().nullable(),
   instagram: z.string().optional(),
   linkedIn: z.string().optional(),
   twitter: z.string().optional(),
-  custonUrl: z.string().optional(),
+  customUrl: z.string().optional(),
 })
 
 export default function Component() {
-  const isMobile = useGenuinOptions().isMobile
+  const { isMobile, user } = useGenuinOptions((state) => ({ isMobile: state.isMobile, user: state.user }))
+  const { formData } = useAuthenticationModalStore()
+  const { data: sessionData, update: updateSession } = useSession()
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      bio: '',
-      displayName: '',
+      bio: user?.bio,
+      displayName: user?.name ?? '',
       instagram: '',
       linkedIn: '',
       twitter: '',
-      custonUrl: '',
+      customUrl: '',
     },
     mode: 'onBlur',
   })
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values)
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const { status, user } = await updateUser({
+      name: values.displayName,
+      bio: values.bio,
+      is_avatar: formData.imageName ? formData.isAvatar : undefined,
+      profile_image: formData.imageName,
+      insta_id: values.instagram ?? null,
+      linkedin_id: values.linkedIn ?? null,
+      twitter_id: values.twitter ?? null,
+    })
+    if (status) {
+      await updateSession({
+        ...sessionData,
+        user: {
+          ...sessionData?.user,
+          is_avatar: user?.is_avatar,
+          image: user?.profile_image,
+          insta_id: user?.insta_id ?? null,
+          linkedin_id: user?.linkedin_id ?? null,
+          twitter_id: user?.twitter_id ?? null,
+        },
+      })
+    }
   }
 
   return (
@@ -50,7 +77,11 @@ export default function Component() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
           <div className={`${isMobile ? 'm-4' : 'mx-8 my-4'} flex items-center justify-between`}>
-            {isMobile && <Image src={icBack} alt="back" />}
+            {isMobile && (
+              <Link href={PATH_NAME.home()}>
+                <Image src={icBack} alt="back" />
+              </Link>
+            )}{' '}
             <p className="text-title-2-bold">Edit Profile</p>
             <button type="submit" className="text-title-3-demi text-primary">
               Save
@@ -107,6 +138,7 @@ export default function Component() {
                       <Textarea
                         maxLength={150}
                         {...field}
+                        value={field.value ?? ''}
                         className={cn(
                           'border-tertiary-200 bg-tertiary-100 p-2 py-3 text-title-3-med',
                           errors && '!border-red'
@@ -205,7 +237,7 @@ export default function Component() {
             />
 
             <FormField
-              name="custonUrl"
+              name="customUrl"
               control={form.control}
               render={({ field }) => {
                 const errors = useFormField().error
@@ -234,9 +266,6 @@ export default function Component() {
           </div>
 
           <span className="flex flex-col gap-y-3 text-title-3-demi">
-            {/* <Button type="submit" className="flex w-full cursor-pointer items-center justify-center rounded-lg">
-              Save
-            </Button> */}
             {form.formState.errors.root && (
               <p className="flex items-center justify-center text-title-3-med text-supplementary-red">
                 {form.formState.errors.root.message}
@@ -245,49 +274,6 @@ export default function Component() {
           </span>
         </form>
       </Form>
-    </div>
-  )
-}
-
-function ImageInput() {
-  type FormData = {
-    image: string | File
-    isAvatar: boolean
-  }
-  const [formData, setFormData] = useState<FormData>({
-    image: getRandomAvatar(),
-    isAvatar: true,
-  })
-
-  return (
-    <div className="flex w-full flex-col items-center justify-center gap-y-2">
-      <img
-        src={
-          formData.image
-            ? typeof formData.image === 'string'
-              ? formData.isAvatar
-                ? getAvatarUrl(formData.image)
-                : formData.image
-              : URL.createObjectURL(formData.image)
-            : null
-        }
-        className="h-20 w-20 rounded-full bg-blue-70"
-      />
-      <input
-        id="pic"
-        type="file"
-        className="hidden w-full"
-        accept="image/png, image/jpeg, image/jpg"
-        onChange={(e) => {
-          setFormData((prevFormData) => ({
-            ...prevFormData,
-            image: URL.createObjectURL(e.target.files?.[0] as any),
-          }))
-        }}
-      />
-      <Label htmlFor="pic" className="cursor-pointer !text-body-1-bold text-primary">
-        Change profile picture
-      </Label>
     </div>
   )
 }

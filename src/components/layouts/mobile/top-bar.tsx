@@ -54,8 +54,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
   return (
     <nav className={cn(navVariant({ variant }), className)}>
       <span className="flex items-center ">
-        {/* <Menu hamBurgerVariant={variant === 'trasparent' ? 'light' : 'dark'} /> */}
-        <SettingsLayout hamBurgerVariant={variant === 'trasparent' ? 'light' : 'dark'} />
+        <Menu hamBurgerVariant={variant === 'trasparent' ? 'light' : 'dark'} />
         {isEmbed && (
           <Link href={{ pathname: PATH_NAME.home() }}>
             <AppLogo.icon
@@ -262,16 +261,19 @@ function UserTick() {
             </div>
           </div>
           <hr className="border-b border-monochrome-9" />
-          <div className="flex items-center gap-x-2 p-4">
-            <LogoutIcon className="stroke-secondary" />
-            <p
-              className="text-body-1-demi"
-              onClick={() => {
-                void signOut({ callbackUrl: `${window.location.pathname}${window.location.search}`, redirect: true })
-                removeAllAuthToken()
-              }}>
-              Log out
-            </p>
+          <div className="flex flex-col gap-4 p-4">
+            <div className="flex items-center gap-x-2">
+              <LogoutIcon className="stroke-secondary" />
+              <p
+                className="text-body-1-demi"
+                onClick={() => {
+                  void signOut({ callbackUrl: `${window.location.pathname}${window.location.search}`, redirect: true })
+                  removeAllAuthToken()
+                }}>
+                Log out
+              </p>
+            </div>
+            <SettingsLayout />
           </div>
         </PopoverContent>
       </Popover>

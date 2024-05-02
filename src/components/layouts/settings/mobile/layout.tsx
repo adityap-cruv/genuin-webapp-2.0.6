@@ -1,28 +1,37 @@
 'use client'
-import { HamBurgerMenuIcon } from '@components/ui/ham-burger'
-import { Button } from '@components/ui/button'
 import { Sheet, SheetClose, SheetContent, SheetTrigger } from '@components/ui/sheet'
 import Link from 'next/link'
-import { usePathname, useSearchParams } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { PATH_NAME } from '@lib/utils/constants/path'
-import { Search, X } from 'lucide-react'
 import { AccountIcon, ContactUsIcon, EditIcon, LogOutIcon, NotificationIcon } from '@icons/settings-side-bar-icons'
 import { cn } from '@lib/utils'
+import icBack from '@icons/icBack.svg'
 import { type ReactNode } from 'react'
+import Image from 'next/image'
+import { SettingIcon } from '@icons/settings'
 
-export function SettingsLayout({ hamBurgerVariant = 'dark' }: { hamBurgerVariant: 'dark' | 'light' }) {
+export function SettingsLayout() {
   const pathName = usePathname()
 
   return (
     <Sheet>
       <SheetTrigger>
-        <HamBurgerMenuIcon toggleToClose={false} variant={hamBurgerVariant} />
+        <div className="flex items-center gap-x-2">
+          <SettingIcon className="fill-secondary" />
+          <p className="text-body-1-demi">Log out</p>
+        </div>
       </SheetTrigger>
-      <SheetContent showDefaultClose={false} side="right" className="w-full border-none shadow-none outline-none">
-        <SheetClose className="shadow-none outline-none">
-          <X strokeWidth="3px" className="h-6 w-6 stroke-new-off-black" />
-        </SheetClose>
-        <div className="flex h-full flex-col justify-between pb-5">
+      <SheetContent showDefaultClose={false} side="right" className="w-full border-none p-0 shadow-none outline-none">
+        <div className={`m-4 flex items-center justify-between`}>
+          <SheetClose className="shadow-none outline-none">
+            <Image src={icBack} alt="back" />
+          </SheetClose>
+          <p className="text-title-2-bold">Settings</p>
+
+          <div></div>
+        </div>
+        <hr className="bg-tertiary-300" />
+        <div className="flex h-body flex-col justify-between p-4">
           <div>
             <Link href={{ pathname: PATH_NAME.settings('edit') }}>
               <Item title="Edit Profile" isActive={pathName === PATH_NAME.settings('edit')}>
@@ -49,17 +58,6 @@ export function SettingsLayout({ hamBurgerVariant = 'dark' }: { hamBurgerVariant
               <LogOutIcon isActive={false} />
             </Item>
           </div>
-          <div className="text-monochrome">
-            <span className="flex gap-x-2 pb-2">
-              <Link href={PATH_NAME.terms}>
-                <p className="text-body-1-demi">Terms and Conditions</p>
-              </Link>
-              <Link href={PATH_NAME.privacy}>
-                <p className="text-body-1-demi">Privacy Policy</p>
-              </Link>
-            </span>
-            <p className="text-body-1-demi"> &#169; 2023 Genuin Inc.</p>
-          </div>
         </div>
       </SheetContent>
     </Sheet>
@@ -74,9 +72,12 @@ type ItemProps = {
 
 function Item({ title, isActive, children }: ItemProps) {
   return (
-    <div className="flex w-full max-w-full items-center gap-x-3 rounded-md p-2 hover:cursor-pointer hover:bg-monochrome-6/10">
-      {children}
-      <p className={cn('break-all !text-title-3-demi', isActive && 'text-primary')}>{title}</p>
+    <div className="flex w-full max-w-full items-center justify-between gap-x-3 rounded-md p-2 hover:cursor-pointer hover:bg-monochrome-6/10">
+      <div className="flex items-center gap-4">
+        {children}
+        <p className={cn('break-all !text-title-3-demi', isActive && 'text-primary')}>{title}</p>
+      </div>
+      <Image src={icBack} alt="back" className="rotate-180" />
     </div>
   )
 }

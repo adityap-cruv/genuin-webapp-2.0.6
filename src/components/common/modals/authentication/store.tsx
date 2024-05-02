@@ -25,6 +25,9 @@ export type StepsType =
   | 'KS_CB_SUBDOMAIN'
   | 'VERIFY_MAIL'
   | 'MINI_PROFILE_SUCCESS'
+  | 'EDIT_USERNAME'
+  | 'CHANGE_PASSWORD'
+  | 'LOGOUT'
 
 type FormDataType = {
   displayName: string

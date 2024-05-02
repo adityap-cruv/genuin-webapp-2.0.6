@@ -10,10 +10,13 @@ import { Input } from '@components/ui/input'
 import { Textarea } from '@components/ui/textarea'
 import Image from 'next/image'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
+import { Feedback, Settings } from '@lib/api/settings'
+import Link from 'next/link'
+import { PATH_NAME } from '@lib/utils/constants/path'
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Please enter valid email.' }),
-  issue: z.string().optional(),
+  issue: z.string(),
 })
 
 export default function Component() {
@@ -26,9 +29,21 @@ export default function Component() {
     },
     mode: 'onBlur',
   })
+  const { isValid, isDirty } = form.formState
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values)
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      const { status, data } = await Feedback({
+        email: values.email,
+        message: values.issue ?? '',
+        type: 'contact_us',
+      })
+      if (status) {
+        form.reset()
+      }
+    } catch (error) {
+      throw new Error()
+    }
   }
 
   return (
@@ -36,10 +51,17 @@ export default function Component() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="relative h-full w-full">
           <div className={`${isMobile ? 'm-4' : 'mx-8 my-4'} flex items-center justify-between`}>
-            {isMobile && <Image src={icBack} alt="back" />}
+            {isMobile && (
+              <Link href={PATH_NAME.home()}>
+                <Image src={icBack} alt="back" />
+              </Link>
+            )}
             <p className="text-title-2-bold">Contact Us</p>
             {isMobile && (
-              <button type="submit" className="text-title-3-demi text-primary">
+              <button
+                type="submit"
+                className={`text-title-3-demi ${!isValid ? 'text-primary-600' : 'text-primary'} `}
+                disabled={!isValid || !isDirty}>
                 Send
               </button>
             )}
@@ -60,6 +82,7 @@ export default function Component() {
                     <FormLabel className="w-full text-body-1-med">Email Address</FormLabel>
                     <FormControl>
                       <Input
+                        required
                         className={cn(
                           'border border-tertiary-200 bg-tertiary-100 text-title-3-med',
                           errors && '!border-red'
@@ -84,6 +107,7 @@ export default function Component() {
                     <FormControl>
                       <Textarea
                         {...field}
+                        required
                         className={cn(
                           'border-tertiary-200 bg-tertiary-100 p-2 py-3 text-title-3-med',
                           errors && '!border-red'
@@ -109,6 +133,7 @@ export default function Component() {
               variant="default"
               type="submit"
               size={'custom'}
+              disabled={!isValid || !isDirty}
               className="absolute -bottom-5 right-8 bg-new-off-black px-6 py-3 hover:bg-new-dark-grey">
               <p className="text-new-para-2 text-tertiary-100">Send</p>
             </Button>
