@@ -12,18 +12,18 @@ export function RedirectHandler({
   config?: ConfigType
   shouldRedirect: boolean
 }) {
-  // if (
-  //   config &&
-  //   config?.integrations.white_label.enable &&
-  //   config?.integrations.white_label.allowed_domains[0] &&
-  //   shouldRedirect
-  // ) {
-  //   const searchParamStr = headers().get('x-search-params')
-  //   const pathParamStr = headers().get('x-path-params')
-  //   permanentRedirect(
-  //     checkAndAppendHttps(config.integrations.white_label.allowed_domains[0]) + pathParamStr + searchParamStr
-  //   )
-  // }
+  if (
+    config &&
+    config?.integrations.white_label.enable &&
+    config?.integrations.white_label.allowed_domains[0] &&
+    shouldRedirect
+  ) {
+    const searchParamStr = headers().get('x-search-params')
+    const pathParamStr = headers().get('x-path-params')
+    permanentRedirect(
+      checkAndAppendHttps(config.integrations.white_label.allowed_domains[0]) + pathParamStr + searchParamStr
+    )
+  }
 
   return children
 }

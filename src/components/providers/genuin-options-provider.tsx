@@ -5,12 +5,11 @@ import { getSizeBoxes } from '@lib/utils/common/size-box'
 import { useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useLocalStorage } from '@lib/stores/local-storage'
-import FingerpringJS from '@fingerprintjs/fingerprintjs'
+import FingerprintJS from '@fingerprintjs/fingerprintjs'
 import { useSession } from 'next-auth/react'
-import { axiosInstance, setAuthTokenInAxiosInstance, setBrandIdInAxiosInstance } from '@lib/api/instance'
-import { encryptText, parseUserAgent } from '@lib/utils'
+import { setAuthTokenInAxiosInstance, setBrandIdInAxiosInstance } from '@lib/api/instance'
 import dynamic from 'next/dynamic'
-import { miniProfile } from '@lib/api/auth'
+import { miniProfile, saveVisitor } from '@lib/api/auth'
 
 const AuthenticationModal = dynamic(
   async () => await import('@components/common/modals/authentication').then((comp) => comp.AuthenticationModal.ui)
@@ -138,7 +137,7 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
 
   useEffect(() => {
     init()
-    const fpPromise = FingerpringJS.load()
+    const fpPromise = FingerprintJS.load()
     void (async () => {
       const fp = await fpPromise
       const result = await fp.get()
@@ -146,7 +145,7 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
         // Call API for visitor registration
         setDeviceId(result.visitorId)
         setVisitor(true)
-        await saveVisitor(result.visitorId, config?.brand_id, window.navigator.userAgent)
+        await saveVisitor(result.visitorId, browserType, deviceType, os, config?.brand_id)
       }
     })()
 
@@ -160,31 +159,6 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
     }
   }, [])
 
-  console.log('What happening::', isLoading, sessionStatus, sessionData)
-  // if (!config) {
-  //   return (
-  //     <>
-  //       {children}
-  //       <DownloadDialogModal />
-  //       <AuthenticationModal />
-  //     </>
-  //   )
-  // }
-
-  // if (isLoading) return <SplashScreen />
-
-  // if (config) {
-  //   if (sessionStatus === 'loading') return <SplashScreen />
-
-  //   return (
-  //     <>
-  //       {children}
-  //       <DownloadDialogModal />
-  //       <AuthenticationModal />
-  //     </>
-  //   )
-  // }
-
   if (isLoading) return <SplashScreen />
   return (
     <>
@@ -193,24 +167,4 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
       {!config && <DownloadDialogModal />}
     </>
   )
-}
-
-// TODO: move it to right location.
-async function saveVisitor(visitorId: string, brandId: string | undefined, userAgent: string) {
-  const userInfo = parseUserAgent(userAgent)
-  return await axiosInstance
-    .post('/api/v3/guestusers/visit', {
-      device_id: encryptText(visitorId || '', true),
-      brand_id: brandId,
-      meta_data: {
-        ...userInfo,
-      },
-    })
-    .then((res) => {
-      if (res.data.code === 200) return true
-      else if (res.data.code === '5073') return false
-    })
-    .catch((e) => {
-      return false
-    })
 }
