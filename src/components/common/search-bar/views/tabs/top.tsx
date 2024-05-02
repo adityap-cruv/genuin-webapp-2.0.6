@@ -85,7 +85,7 @@ function SlideButtons() {
   return (
     <>
       {!status.isStart && (
-        <div className="absolute left-2 top-1/2 z-10 -translate-y-1/2">
+        <div className="absolute left-2 top-1/2 z-50 -translate-y-1/2">
           <Button
             className="h-10 w-10 rounded-full bg-monochrome-white/80 drop-shadow-circle-shadow hover:bg-monochrome-white hover:shadow-md"
             size="custom"
@@ -98,7 +98,7 @@ function SlideButtons() {
         </div>
       )}
       {!status.isEnd && (
-        <div className="absolute right-2 top-1/2 z-10 -translate-y-1/2">
+        <div className="absolute right-2 top-1/2 z-50 -translate-y-1/2">
           <Button
             className="h-10 w-10 rounded-full bg-monochrome-white/80 drop-shadow-circle-shadow hover:bg-monochrome-white hover:shadow-md"
             size="custom"

@@ -364,3 +364,30 @@ export async function miniProfile(verifiedKsToken: boolean): Promise<{ code: num
       return { code: Number(e.response.data.code), data: e.response.data.data }
     })
 }
+
+export async function saveVisitor(
+  visitorId: string,
+  browserType: string,
+  deviceType: string,
+  os: string,
+  brandId: string | undefined
+) {
+  await axiosInstance
+    .post('/api/v3/guestusers/visit', {
+      device_id: encryptText(visitorId || '', true),
+      brand_id: brandId,
+      meta_data: {
+        os_type: os,
+        device_type: deviceType,
+        browser_type: browserType,
+      },
+    })
+    .then((res) => {
+      return true
+      // if (res.data.code === 200) return true
+      // else if (res.data.code === '5073') return false
+    })
+    .catch((e) => {
+      return false
+    })
+}
