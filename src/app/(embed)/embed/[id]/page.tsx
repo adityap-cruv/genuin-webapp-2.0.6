@@ -1,4 +1,5 @@
-import { ClientComp } from './client-comp'
+import { Root } from './root'
+import { SizeProvider } from './size-provider'
 
 type Props = {
   params: {
@@ -15,5 +16,9 @@ type Props = {
 }
 
 export default function Page(props: Props) {
-  return <ClientComp />
+  return (
+    <SizeProvider>
+      <Root />
+    </SizeProvider>
+  )
 }

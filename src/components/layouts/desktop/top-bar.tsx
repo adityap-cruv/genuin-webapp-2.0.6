@@ -22,7 +22,7 @@ export function TopBar() {
       {/* <div className="h-10 w-full bg-supplementary-red">heldldl</div> */}
       <div className="z-20 flex w-full justify-center border-b border-monochrome-9  bg-monochrome-white sm:flex">
         <nav className="sticky top-0 flex h-[76px] w-full items-center justify-between px-2 xl:container">
-          <Link href={{ pathname: PATH_NAME.home() }}>
+          <Link draggable={false} href={{ pathname: PATH_NAME.home() }}>
             <AppLogo.logo className="fill-new-off-black" imageHeight={42} />
             {/* <GenuinIcon.logo className="fill-new-off-black" /> */}
           </Link>
