@@ -24,6 +24,7 @@ import { removeAllAuthToken } from '@lib/api/instance'
 import { MOBILE_DOWNLOAD_APP_LINK } from '@lib/constants'
 import { SearchBar } from '@components/common/search-bar'
 import { miniProfile } from '@lib/api/auth'
+import { SettingsLayout } from '../settings/mobile/layout'
 
 const navVariant = cva('sticky top-0 flex z-40 h-[76px] w-full items-center justify-between  px-2', {
   variants: {
@@ -53,7 +54,8 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
   return (
     <nav className={cn(navVariant({ variant }), className)}>
       <span className="flex items-center ">
-        <Menu hamBurgerVariant={variant === 'trasparent' ? 'light' : 'dark'} />
+        {/* <Menu hamBurgerVariant={variant === 'trasparent' ? 'light' : 'dark'} /> */}
+        <SettingsLayout hamBurgerVariant={variant === 'trasparent' ? 'light' : 'dark'} />
         {isEmbed && (
           <Link href={{ pathname: PATH_NAME.home() }}>
             <AppLogo.icon
