@@ -8,6 +8,7 @@ import { PATH_NAME } from '@lib/utils/constants/path'
 import { Search, X } from 'lucide-react'
 import { AccountIcon, ContactUsIcon, EditIcon, LogOutIcon, NotificationIcon } from '@icons/settings-side-bar-icons'
 import { cn } from '@lib/utils'
+import { type ReactNode } from 'react'
 
 export function SettingsLayout({ hamBurgerVariant = 'dark' }: { hamBurgerVariant: 'dark' | 'light' }) {
   const pathName = usePathname()
