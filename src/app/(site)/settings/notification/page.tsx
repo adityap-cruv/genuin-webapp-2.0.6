@@ -5,8 +5,8 @@ import Image from 'next/image'
 import { Switch } from '@components/ui/switch'
 import { useEffect, useState } from 'react'
 import { NotificationsSettings, Settings } from '@lib/api/settings'
-import Link from 'next/link'
-import { PATH_NAME } from '@lib/utils/constants/path'
+import { Loader } from '@components/ui/loader'
+import { useRouter } from 'next/navigation'
 
 export default function Component() {
   const isMobile = useGenuinOptions().isMobile
@@ -24,19 +24,36 @@ export default function Component() {
     void fetchSettings()
   }, [])
 
+  if (!settingsData)
+    return (
+      <div className="flex h-full w-full items-center justify-center">
+        <Loader size="md" />
+      </div>
+    )
+  if (settingsData)
+    return <Notifications settingsData={settingsData} setSettingsData={setSettingsData} isMobile={isMobile} />
+}
+
+function Notifications({
+  settingsData,
+  setSettingsData,
+  isMobile,
+}: {
+  settingsData: { roundtable_notification: boolean }
+  setSettingsData: any
+  isMobile: boolean
+}) {
+  const router = useRouter()
+
   async function onToggle(value: boolean) {
-    try {
-      const { status } = await NotificationsSettings({
+    const { status } = await NotificationsSettings({
+      roundtable_notification: value,
+    })
+    if (status) {
+      setSettingsData((prevSettingsData: any) => ({
+        ...prevSettingsData,
         roundtable_notification: value,
-      })
-      if (status) {
-        setSettingsData((prevSettingsData) => ({
-          ...prevSettingsData,
-          roundtable_notification: value,
-        }))
-      }
-    } catch (error) {
-      throw new Error()
+      }))
     }
   }
 
@@ -44,9 +61,13 @@ export default function Component() {
     <div>
       <div className={`${isMobile ? 'm-4' : 'mx-8 my-4'} flex items-center justify-between`}>
         {isMobile && (
-          <Link href={PATH_NAME.home()}>
-            <Image src={icBack} alt="back" />
-          </Link>
+          <Image
+            src={icBack}
+            alt="back"
+            onClick={() => {
+              router.back()
+            }}
+          />
         )}
         <p className="text-title-2-bold">Notifications</p>
         <div></div>

@@ -10,9 +10,8 @@ import { Input } from '@components/ui/input'
 import { Textarea } from '@components/ui/textarea'
 import Image from 'next/image'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
-import { Feedback, Settings } from '@lib/api/settings'
-import Link from 'next/link'
-import { PATH_NAME } from '@lib/utils/constants/path'
+import { Feedback } from '@lib/api/settings'
+import { useRouter } from 'next/navigation'
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Please enter valid email.' }),
@@ -21,6 +20,7 @@ const formSchema = z.object({
 
 export default function Component() {
   const isMobile = useGenuinOptions().isMobile
+  const router = useRouter()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -32,17 +32,13 @@ export default function Component() {
   const { isValid, isDirty } = form.formState
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    try {
-      const { status, data } = await Feedback({
-        email: values.email,
-        message: values.issue ?? '',
-        type: 'contact_us',
-      })
-      if (status) {
-        form.reset()
-      }
-    } catch (error) {
-      throw new Error()
+    const { status } = await Feedback({
+      email: values.email,
+      message: values.issue ?? '',
+      type: 'contact_us',
+    })
+    if (status) {
+      form.reset()
     }
   }
 
@@ -52,9 +48,13 @@ export default function Component() {
         <form onSubmit={form.handleSubmit(onSubmit)} className="relative h-full w-full">
           <div className={`${isMobile ? 'm-4' : 'mx-8 my-4'} flex items-center justify-between`}>
             {isMobile && (
-              <Link href={PATH_NAME.home()}>
-                <Image src={icBack} alt="back" />
-              </Link>
+              <Image
+                src={icBack}
+                alt="back"
+                onClick={() => {
+                  router.back()
+                }}
+              />
             )}
             <p className="text-title-2-bold">Contact Us</p>
             {isMobile && (
@@ -82,7 +82,6 @@ export default function Component() {
                     <FormLabel className="w-full text-body-1-med">Email Address</FormLabel>
                     <FormControl>
                       <Input
-                        required
                         className={cn(
                           'border border-tertiary-200 bg-tertiary-100 text-title-3-med',
                           errors && '!border-red'

@@ -5,7 +5,6 @@ import { type ReactNode } from 'react'
 import { cn } from '@lib/utils'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { AccountIcon, ContactUsIcon, EditIcon, LogOutIcon, NotificationIcon } from '@icons/settings-side-bar-icons'
-import { Dialog, DialogContent, DialogTrigger } from '@components/ui/dialog'
 import { AuthenticationModal } from '@components/common/modals/authentication'
 
 export function SideBar() {

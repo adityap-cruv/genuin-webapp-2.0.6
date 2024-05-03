@@ -9,6 +9,7 @@ import icBack from '@icons/icBack.svg'
 import { type ReactNode } from 'react'
 import Image from 'next/image'
 import { SettingIcon } from '@icons/settings'
+import { AuthenticationModal } from '@components/common/modals/authentication'
 
 export function SettingsLayout() {
   const pathName = usePathname()
@@ -18,7 +19,7 @@ export function SettingsLayout() {
       <SheetTrigger>
         <div className="flex items-center gap-x-2">
           <SettingIcon className="fill-secondary" />
-          <p className="text-body-1-demi">Log out</p>
+          <p className="text-body-1-demi">Settings</p>
         </div>
       </SheetTrigger>
       <SheetContent showDefaultClose={false} side="right" className="w-full border-none p-0 shadow-none outline-none">
@@ -54,9 +55,14 @@ export function SettingsLayout() {
               </Item>
             </Link>
 
-            <Item title="Log out">
-              <LogOutIcon isActive={false} />
-            </Item>
+            <div
+              onClick={() => {
+                AuthenticationModal.open(undefined, 'LOGOUT')
+              }}>
+              <Item title="Log out">
+                <LogOutIcon isActive={false} />
+              </Item>
+            </div>
           </div>
         </div>
       </SheetContent>

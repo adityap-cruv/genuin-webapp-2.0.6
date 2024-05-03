@@ -6,6 +6,7 @@ import { useAuthenticationModalStore } from '../store'
 import { ModalShell } from '../modal-shell'
 import { v4 } from 'uuid'
 import { uploadProfileImage } from '@lib/api/auth'
+import { usePathname } from 'next/navigation'
 
 export function ImageCropper() {
   const cropperRef = createRef<any>()
@@ -23,6 +24,7 @@ export function ImageCropper() {
     step: state.previousStep,
     close: state.close,
   }))
+  const pathname = usePathname()
 
   function getRoundedCanvas(sourceCanvas: any) {
     const canvas = document.createElement('canvas')
@@ -44,20 +46,13 @@ export function ImageCropper() {
   }
 
   const getCropData = async () => {
-    console.log('step---------', step)
-
     if (typeof cropperRef.current?.cropper !== 'undefined') {
       const canvas = getRoundedCanvas(cropperRef.current?.cropper.getCroppedCanvas())
       if (canvas) {
         canvas.toBlob((blob: any) => {
           if (blob) {
             const file = new File([blob], `${v4()}.png`, { type: 'image/png' })
-            if (!step) {
-              // TODO Improve this
-              setImage({ imageName: file.name, image: file, isAvatar: false })
-              console.log('_________________hkjdasflkhsjdhk')
-              close()
-            } else if (step === 'SIGN_UP') {
+            if (step === 'SIGN_UP') {
               setImage({ image: file, isAvatar: false })
               goBack()
             } else {
@@ -66,7 +61,7 @@ export function ImageCropper() {
                 .then((res) => {
                   if (res) {
                     setImage({ imageName: file.name, image: file, isAvatar: false })
-                    goBack()
+                    pathname.includes('settings') ? close() : goBack()
                   } else {
                     setError('Something went wrong. Please try again.')
                   }

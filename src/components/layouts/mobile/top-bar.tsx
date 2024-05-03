@@ -208,7 +208,7 @@ function MenuItem({ title, isActive, children }: ItemProps) {
   return (
     <div className="flex w-full items-center gap-x-3 rounded-md p-2 hover:bg-monochrome-6/10">
       {children}
-      <p className={cn('text-title-2-bold font-semibold', isActive ? 'text-primary' : 'text-new-off-black')}>{title}</p>
+      <p className={`text-title-2-bold font-semibold ${isActive && 'text-primary'}`}>{title}</p>
     </div>
   )
 }

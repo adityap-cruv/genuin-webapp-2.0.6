@@ -1,4 +1,4 @@
-import { Form, FormField, useFormField, FormItem, FormLabel, FormControl, FormMessage } from '@components/ui/form'
+import { Form, FormField, useFormField, FormItem, FormControl, FormMessage } from '@components/ui/form'
 import { cn } from '@lib/utils'
 import { Input } from '@components/ui/input'
 import { useForm } from 'react-hook-form'
@@ -120,7 +120,7 @@ export function EditUsername() {
             {isLoading ? (
               <Loader size="sm" className="fill-new-off-white" />
             ) : (
-              <p className="text-title-3-demi text-new-off-white">Save and proceed</p>
+              <p className="text-title-3-demi text-new-off-white">Save</p>
             )}
           </Button>
           {form.formState.errors.root && (

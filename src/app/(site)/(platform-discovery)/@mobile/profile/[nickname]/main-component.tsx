@@ -19,6 +19,8 @@ import { useCommunityListStore } from './store'
 import { ShareIcon } from '@icons/share-icon'
 import { type ProfileDetailsType } from '@lib/schemas/profile/profile'
 import { CommunityList } from './community-list'
+import { PATH_NAME } from '@lib/utils/constants/path'
+import { usePathname } from 'next/navigation'
 
 interface CompProps {
   profileData: ProfileDetailsType
@@ -33,7 +35,12 @@ export function MainComponent({ profileData }: CompProps) {
   const scrollDivRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ container: scrollDivRef, layoutEffect: false })
   const resetData = useCommunityListStore((state) => state.reset)
-  const { isEmbed, parentUrl } = useGenuinOptions((state) => ({ isEmbed: state.embed, parentUrl: state.parentUrl }))
+  const pathName = usePathname()
+  const { isEmbed, parentUrl, user } = useGenuinOptions((state) => ({
+    isEmbed: state.embed,
+    parentUrl: state.parentUrl,
+    user: state.user,
+  }))
 
   useEffect(() => {
     return () => {
@@ -64,7 +71,7 @@ export function MainComponent({ profileData }: CompProps) {
               imageUrl={profileData?.profile_image}
               isAvatar={profileData?.is_avatar}
             />
-            <div className="flex">
+            <div className="flex gap-2">
               {/* <Button
                 className="mr-2"
                 variant="outline"
@@ -78,6 +85,16 @@ export function MainComponent({ profileData }: CompProps) {
                 }>
                 <p className="text-body-1-bold text-blue">Edit Profile</p>
               </Button> */}
+              {pathName === PATH_NAME.profile(user?.nickname) && (
+                <Link href={PATH_NAME.settings('edit')}>
+                  <Button size="custom" variant="outline" className="border border-primary">
+                    <p className="px-4 py-1.5 text-title-3-bold text-primary" style={{ fontSize: '15px' }}>
+                      Edit Profile
+                    </p>
+                  </Button>
+                </Link>
+              )}
+
               <Button
                 variant="outline"
                 size="custom"
