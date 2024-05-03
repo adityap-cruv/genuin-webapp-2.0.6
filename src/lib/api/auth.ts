@@ -146,10 +146,10 @@ type UserType = {
   is_avatar: boolean
   profile_image: string
   birthday: string
-  linkedin_id: string
-  insta_id: string
-  twitter_id: string
-  tiktok_id: string
+  linkedin_id?: string | null
+  insta_id?: string | null
+  twitter_id?: string | null
+  tiktok_id?: string | null
   platform_guidelines: boolean
   community_walkthrough: boolean
   password: string

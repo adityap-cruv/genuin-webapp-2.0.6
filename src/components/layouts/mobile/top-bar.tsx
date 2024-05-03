@@ -24,6 +24,7 @@ import { removeAllAuthToken } from '@lib/api/instance'
 import { MOBILE_DOWNLOAD_APP_LINK } from '@lib/constants'
 import { SearchBar } from '@components/common/search-bar'
 import { miniProfile } from '@lib/api/auth'
+import { SettingsLayout } from '../settings/mobile/layout'
 
 const navVariant = cva('sticky top-0 flex z-40 h-[76px] w-full items-center justify-between  px-2', {
   variants: {
@@ -207,7 +208,7 @@ function MenuItem({ title, isActive, children }: ItemProps) {
   return (
     <div className="flex w-full items-center gap-x-3 rounded-md p-2 hover:bg-monochrome-6/10">
       {children}
-      <p className={cn('text-title-2-bold font-semibold', isActive ? 'text-primary' : 'text-new-off-black')}>{title}</p>
+      <p className={`text-title-2-bold font-semibold ${isActive && 'text-primary'}`}>{title}</p>
     </div>
   )
 }
@@ -260,16 +261,19 @@ function UserTick() {
             </div>
           </div>
           <hr className="border-b border-monochrome-9" />
-          <div className="flex items-center gap-x-2 p-4">
-            <LogoutIcon className="stroke-secondary" />
-            <p
-              className="text-body-1-demi"
-              onClick={() => {
-                void signOut({ callbackUrl: `${window.location.pathname}${window.location.search}`, redirect: true })
-                removeAllAuthToken()
-              }}>
-              Log out
-            </p>
+          <div className="flex flex-col gap-4 p-4">
+            <div className="flex items-center gap-x-2">
+              <LogoutIcon className="stroke-secondary" />
+              <p
+                className="text-body-1-demi"
+                onClick={() => {
+                  void signOut({ callbackUrl: `${window.location.pathname}${window.location.search}`, redirect: true })
+                  removeAllAuthToken()
+                }}>
+                Log out
+              </p>
+            </div>
+            <SettingsLayout />
           </div>
         </PopoverContent>
       </Popover>

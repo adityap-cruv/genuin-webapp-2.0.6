@@ -13,6 +13,7 @@ import { LogoutIcon } from '@icons/logout'
 import { BurgerIcon } from '@icons/burger-icon'
 import { removeAllAuthToken } from '@lib/api/instance'
 import { SearchBar } from '@components/common/search-bar'
+import { AccountIcon, NotificationIcon } from '@icons/settings-side-bar-icons'
 
 export function TopBar() {
   const { config, embed: isEmbed } = useGenuinOptions()
@@ -106,16 +107,32 @@ function UserTick() {
             </div>
           </div>
           <hr className="border-b border-monochrome-9" />
-          <div className="flex items-center gap-x-2 p-4">
-            <LogoutIcon className="stroke-secondary" />
-            <p
-              className="cursor-pointer text-body-1-demi"
-              onClick={() => {
-                void signOut({ callbackUrl: `${window.location.pathname}${window.location.search}`, redirect: true })
-                removeAllAuthToken()
-              }}>
-              Log out
-            </p>
+          <div className="flex flex-col gap-3 p-4">
+            <Link href={PATH_NAME.settings('edit')}>
+              <div className="flex items-center gap-2">
+                <AccountIcon isActive={false} className="h-6 w-6" />
+                <p className="text-body-1-demi">Account Settings</p>
+              </div>
+            </Link>
+
+            <Link href={PATH_NAME.settings('notification')}>
+              <div className="flex items-center gap-2">
+                <NotificationIcon isActive={false} className="h-6 w-6" />
+                <p className="text-body-1-demi">Notification Settings</p>
+              </div>
+            </Link>
+
+            <div className="flex items-center gap-2">
+              <LogoutIcon className="stroke-secondary" />
+              <p
+                className="cursor-pointer text-body-1-demi"
+                onClick={() => {
+                  void signOut({ callbackUrl: `${window.location.pathname}${window.location.search}`, redirect: true })
+                  removeAllAuthToken()
+                }}>
+                Log out
+              </p>
+            </div>
           </div>
         </PopoverContent>
       </Popover>
