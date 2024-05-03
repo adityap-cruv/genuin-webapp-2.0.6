@@ -61,6 +61,10 @@ type MobileProps = {
    * defaults to false.
    */
   isFirstPlayerInList?: boolean
+  /**
+   * Pass this parameter if you want to configure custom size box.
+   */
+  customSizeBox?: VideoSizeBoxType
 }
 
 function Mobile({
@@ -70,8 +74,9 @@ function Mobile({
   playIfInViewPort,
   shouldShowBackgroundBlurImage = true,
   isFirstPlayerInList = false,
+  customSizeBox,
 }: Omit<MobileProps, 'sizeBox'>) {
-  const sizeBox = useGenuinOptions().sizeBoxes.default
+  const sizeBox = customSizeBox ?? useGenuinOptions().sizeBoxes.default
   const hasFocus = useGenuinOptions().userHasFocus
   const { setShouldPlay, toggleShouldPlay } = usePlayerControlStore((state) => ({
     setShouldPlay: state.setShouldPlay,

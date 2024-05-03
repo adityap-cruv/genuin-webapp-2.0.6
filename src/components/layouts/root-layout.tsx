@@ -1,16 +1,15 @@
-import { type ReactNode } from 'react'
+import { cn } from '@lib/utils'
+import { type ComponentProps, type ReactNode } from 'react'
 
-export function RootHTML({
-  brandColors,
-  favicon,
-  subdomain,
-  children,
-}: {
+type Props = ComponentProps<'body'> & {
   brandColors?: any
   favicon?: string
   subdomain?: string
   children: ReactNode
-}) {
+  noIndex?: boolean
+}
+
+export function RootHTML({ brandColors, favicon, subdomain, children, className, noIndex = false, ...props }: Props) {
   return (
     <html lang="en" style={{ ...brandColors }}>
       <head>
@@ -21,8 +20,13 @@ export function RootHTML({
           name="viewport"
           content="height=device-height,width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"
         />
+        {noIndex && <meta name="robots" content="noindex" />}
       </head>
-      <body className="index-page-background !absolute inset-0 min-h-full min-w-full text-secondary">{children}</body>
+      <body
+        className={cn('index-page-background !absolute inset-0 min-h-full min-w-full text-secondary', className)}
+        {...props}>
+        {children}
+      </body>
     </html>
   )
 }
