@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react'
 import { NotificationsSettings, Settings } from '@lib/api/settings'
 import { Loader } from '@components/ui/loader'
 import { useRouter } from 'next/navigation'
+import { PATH_NAME } from '@lib/utils/constants/path'
 
 export default function Component() {
   const isMobile = useGenuinOptions().isMobile
@@ -65,7 +66,8 @@ function Notifications({
             src={icBack}
             alt="back"
             onClick={() => {
-              router.back()
+              const path = localStorage.getItem('previous_path')
+              router.push(path ?? PATH_NAME.home())
             }}
           />
         )}

@@ -19,6 +19,7 @@ import { useSession } from 'next-auth/react'
 import { type ProfileDetailsType } from '@lib/schemas/profile/profile'
 import { useToast } from '@components/ui/use-toast'
 import { useRouter } from 'next/navigation'
+import { PATH_NAME } from '@lib/utils/constants/path'
 
 const formSchema = z.object({
   displayName: z.string().max(25, { message: 'Max length should be 25.' }).optional(),
@@ -88,7 +89,8 @@ export function EditProfile({ profileData, isMobile }: { profileData: ProfileDet
                 src={icBack}
                 alt="back"
                 onClick={() => {
-                  router.back()
+                  const path = localStorage.getItem('previous_path')
+                  router.push(path ?? PATH_NAME.home())
                 }}
               />
             )}

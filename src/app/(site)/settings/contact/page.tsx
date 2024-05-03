@@ -12,6 +12,9 @@ import Image from 'next/image'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { Feedback } from '@lib/api/settings'
 import { useRouter } from 'next/navigation'
+import { Toaster } from '@components/ui/toaster'
+import { useToast } from '@components/ui/use-toast'
+import { PATH_NAME } from '@lib/utils/constants/path'
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Please enter valid email.' }),
@@ -21,6 +24,7 @@ const formSchema = z.object({
 export default function Component() {
   const isMobile = useGenuinOptions().isMobile
   const router = useRouter()
+  const { toast } = useToast()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -39,6 +43,9 @@ export default function Component() {
     })
     if (status) {
       form.reset()
+      toast({
+        description: 'Thanks for sending us a message. We’ll reach out as soon as we can',
+      })
     }
   }
 
@@ -52,7 +59,8 @@ export default function Component() {
                 src={icBack}
                 alt="back"
                 onClick={() => {
-                  router.back()
+                  const path = localStorage.getItem('previous_path')
+                  router.push(path ?? PATH_NAME.home())
                 }}
               />
             )}
@@ -139,6 +147,7 @@ export default function Component() {
           )}
         </form>
       </Form>
+      <Toaster />
     </div>
   )
 }

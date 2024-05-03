@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { AuthenticationModal } from '@components/common/modals/authentication'
 import { Toaster } from '@components/ui/toaster'
 import { useRouter } from 'next/navigation'
+import { PATH_NAME } from '@lib/utils/constants/path'
 
 export default function Component() {
   const { isMobile, user } = useGenuinOptions((state) => ({ isMobile: state.isMobile, user: state.user }))
@@ -18,7 +19,8 @@ export default function Component() {
             src={icBack}
             alt="back"
             onClick={() => {
-              router.back()
+              const path = localStorage.getItem('previous_path')
+              router.push(path ?? PATH_NAME.home())
             }}
           />
         )}

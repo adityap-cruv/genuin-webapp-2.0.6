@@ -4,6 +4,7 @@ import { SideBar } from './settings-side-bar'
 import icBack from '@icons/icBack.svg'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
+import { PATH_NAME } from '@lib/utils/constants/path'
 
 export function SettingsLayout(props: any) {
   const router = useRouter()
@@ -16,7 +17,8 @@ export function SettingsLayout(props: any) {
           <div
             className="mt-2 flex h-12 w-12 items-center justify-center rounded-full bg-monochrome-8 hover:cursor-pointer"
             onClick={() => {
-              router.back()
+              const path = localStorage.getItem('previous_path')
+              router.push(path ?? PATH_NAME.home())
             }}>
             <Image src={icBack} alt="back" />
           </div>

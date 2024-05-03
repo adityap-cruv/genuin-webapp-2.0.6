@@ -134,7 +134,13 @@ function Links({ profileData }: CompProps) {
       )}
       {pathName === PATH_NAME.profile(user?.nickname) && (
         <Link href={PATH_NAME.settings('edit')}>
-          <Button size="custom" variant="outline" className="border border-primary">
+          <Button
+            size="custom"
+            variant="outline"
+            className="border border-primary"
+            onClick={() => {
+              localStorage.setItem('previous_path', pathName)
+            }}>
             <p className="px-4 py-1 text-title-3-bold text-primary" style={{ fontSize: '15px' }}>
               Edit Profile
             </p>
