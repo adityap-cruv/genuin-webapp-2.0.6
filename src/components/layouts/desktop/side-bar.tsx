@@ -123,7 +123,6 @@ export function SideBar() {
           </div>
         )}
         {user?.ks_cb_request_status !== 3 && (
-<<<<<<< HEAD
           <>
             <hr className="border-1 mt-1 border-monochrome-black/10" />
             <div
@@ -148,29 +147,6 @@ export function SideBar() {
               <img src={CommunityIcon.src} alt="community" className="absolute bottom-0 right-4 h-12" />
             </div>
           </>
-=======
-          <div
-            className="relative my-4 hidden max-h-16 w-11/12 max-w-[280px] rounded-lg border border-[#E9CAF4] bg-primary-200 text-title-3-demi text-monochrome-black hover:cursor-pointer lg:block"
-            style={{
-              background: 'linear-gradient(30deg, var(--primary-400) -80%, #FFFFFF 50%, var(--primary-400) 120%)',
-            }}
-            onClick={() => {
-              if (user?.isEmailVerified) {
-                handleCommunityBuilderClick()
-              } else {
-                AuthenticationModal.open(undefined, embed ? 'KS_CB_SUBDOMAIN' : 'KS_CB_WEB')
-              }
-            }}>
-            <p className="z-10 p-3 text-body-1-bold">
-              Become a{' '}
-              <span className="font-semibold italic">
-                community <br /> builder{' '}
-              </span>
-              {embed ? 'for' : 'on'} <span className="text-primary"> {brandName}</span> 🚀
-            </p>
-            <img src={CommunityIcon.src} alt="community" className="absolute bottom-0 right-4 h-12" />
-          </div>
->>>>>>> qa
         )}
         <RecentCommunities />
       </div>
