@@ -71,8 +71,8 @@ export function LoopItem({ loop }: { loop: LoopResType }) {
     <div onClick={close} className="relative">
       <Link href={{ pathname: PATH_NAME.loop(loop.slug) }}>
         <div className="relative w-full rounded-lg border border-tertiary-300 bg-monochrome-white">
-          <div className="w-[70%] items-center p-[3%]">
-            <p className="text-body-1-bold">{loop.group.group_name}</p>
+          <div className="w-[60%] items-center p-[3%]">
+            <p className="line-clamp-1 break-all text-body-1-bold">{loop.group.group_name}</p>
             {loop.latest_messages.length !== 0 && loop.is_view_allowed && (
               <p className="line-clamp-1 w-full break-all text-body-1-demi text-secondary-300">
                 @{loop.latest_messages[0].owner.username} posted ∙ {getTimeAgo(loop.latest_messages[0].message_at)}
@@ -80,25 +80,25 @@ export function LoopItem({ loop }: { loop: LoopResType }) {
             )}
           </div>
           <div className="h-[60%] rounded-b-lg border border-tertiary-200 bg-tertiary-100 p-4">
-            <div className="flex w-[70%] items-center">
-              <div className="relative flex">
-                <Members />
+            <div className="w-[60%]">
+              <div className="flex items-center">
+                <div className="relative flex">
+                  <Members />
+                </div>
+                <p
+                  className={`ml-1 line-clamp-1 text-body-1-med text-secondary-300 ${
+                    loop.group.members.length !== 1 && 'ml-7'
+                  } ${loop.group.members.length === 3 && 'ml-6'}`}>
+                  {loop.group.members[0].username}
+                  {getCollaboratorsCountString(loop.group.members.length - 1)}
+                </p>
               </div>
-              <p
-                className={`ml-1 line-clamp-1 text-body-1-med text-secondary-300 ${
-                  loop.group.members.length !== 1 && 'ml-7'
-                } ${loop.group.members.length === 3 && 'ml-6'}`}>
-                {loop.group.members[0].username}
-                {getCollaboratorsCountString(loop.group.members.length - 1)}
+              <p className="my-[2%] line-clamp-2 text-body-1-demi text-secondary-300">{loop.group.group_description}</p>
+              <p className="line-clamp-1 break-all text-body-1-med text-secondary-300">
+                {abbreviateNumber(loop.group.members.length)} subscribers ∙ {abbreviateNumber(loop.group.no_of_views)}{' '}
+                views
               </p>
             </div>
-            <p className="my-[2%] line-clamp-2 w-[70%] text-body-1-demi text-secondary-300">
-              {loop.group.group_description}
-            </p>
-            <p className="w-[70%] text-body-1-med text-secondary-300">
-              {abbreviateNumber(loop.group.members.length)} subscribers ∙ {abbreviateNumber(loop.group.no_of_views)}{' '}
-              views
-            </p>
           </div>
         </div>
       </Link>
@@ -135,27 +135,23 @@ function RenderedImages({ videos, slug }: { videos: any[]; slug: string }) {
     3: [1, 0.66, 0.4],
   }
 
-  return (
-    <span>
-      {videos.map((item: any, index: number) => {
-        return (
-          <Link
-            href={{ pathname: PATH_NAME.loop(slug), query: 'show_videos=1' }}
-            key={index}
-            className="group/video absolute top-[50%] flex aspect-reel h-[80%] items-center justify-center rounded hover:cursor-pointer"
-            style={{
-              right: `${rightValues[videosLength][index]}px`,
-              transform: `translateY(-${transformValues[videosLength][index]}%)`,
-              zIndex: videosLength - index + 1,
-              opacity: `${opacitValues[videosLength][index]}`,
-            }}>
-            <img className="rounded" src={item.thumbnail_url} />
-            <div className="absolute inset-0 hidden h-full w-full items-center justify-center bg-monochrome-black/30 group-hover/video:flex">
-              <Image src={icPlay} alt="play" className="absolute" />
-            </div>
-          </Link>
-        )
-      })}
-    </span>
-  )
+  return videos.map((item: any, index: number) => {
+    return (
+      <Link
+        href={{ pathname: PATH_NAME.loop(slug), query: 'show_videos=1' }}
+        key={index}
+        className="group/video absolute top-[50%] flex aspect-reel h-[90%] items-center justify-center rounded hover:cursor-pointer"
+        style={{
+          right: `${rightValues[videosLength][index]}px`,
+          transform: `translateY(-${transformValues[videosLength][index]}%)`,
+          zIndex: videosLength - index + 1,
+          opacity: `${opacitValues[videosLength][index]}`,
+        }}>
+        <img className="h-5/6 rounded" src={item.thumbnail_url} />
+        <div className="absolute inset-0 hidden h-full w-full items-center justify-center bg-monochrome-black/30 group-hover/video:flex">
+          <Image src={icPlay} alt="play" className="absolute" />
+        </div>
+      </Link>
+    )
+  })
 }
