@@ -8,11 +8,11 @@ export default NextAuth(authConfig).auth
 export async function middleware(request: NextRequest) {
   const host = request.headers.get('host')
 
-  if (request.nextUrl.protocol === 'http:' && host) {
-    request.nextUrl.protocol = 'https:'
-    request.nextUrl.host = host
-    return NextResponse.redirect(request.nextUrl)
-  }
+  // if (request.nextUrl.protocol === 'http:' && host) {
+  //   request.nextUrl.protocol = 'https:'
+  //   request.nextUrl.host = host
+  //   return NextResponse.redirect(request.nextUrl)
+  // }
   const STATIC_PATHNAMES = ['/', '/manage', '/market', '/pricing', '/privacy', '/terms', '/discover']
   const parsedUA = userAgent(request)
   const deviceType = parsedUA.device.type
