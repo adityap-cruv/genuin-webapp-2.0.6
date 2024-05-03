@@ -51,7 +51,7 @@ export function SideBar() {
   }
 
   return (
-    <nav className="flex h-full w-fit flex-col justify-between overflow-auto border border-monochrome-9 px-1 py-4 transition-[width] lg:w-full lg:border-none">
+    <nav className="flex h-full w-fit flex-col justify-between overflow-auto border border-monochrome-9 px-1 py-4 transition-[width] lg:w-full lg:max-w-[280px] lg:border-none">
       <div>
         <Link href={{ pathname: PATH_NAME.home() }}>
           <Item title="Home" isActive={pathName === PATH_NAME.home()}>
@@ -121,7 +121,7 @@ export function SideBar() {
         <hr className="border-1 mt-1 border-monochrome-black/10" />
         {user?.ks_cb_request_status !== 3 && (
           <div
-            className="max-w-72 relative my-4 hidden max-h-16 w-11/12 rounded-lg border border-[#E9CAF4] bg-primary-200 text-title-3-demi text-monochrome-black hover:cursor-pointer lg:block"
+            className="relative my-4 hidden max-h-16 w-11/12 max-w-[280px] rounded-lg border border-[#E9CAF4] bg-primary-200 text-title-3-demi text-monochrome-black hover:cursor-pointer lg:block"
             style={{
               background: 'linear-gradient(30deg, var(--primary-400) -80%, #FFFFFF 50%, var(--primary-400) 120%)',
             }}
