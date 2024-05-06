@@ -1,6 +1,7 @@
 import { SizeProvider } from './size-provider'
 import { StandardView } from './standard-view'
 import { VerticalView } from './vertical-view'
+import { CarouselView } from './carousel-view'
 import 'swiper/css'
 
 type Props = {
@@ -20,7 +21,7 @@ type Props = {
 export default function Page(props: Props) {
   return (
     <SizeProvider>
-      <VerticalView />
+      <CarouselView />
     </SizeProvider>
   )
 }

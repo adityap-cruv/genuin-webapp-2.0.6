@@ -12,12 +12,20 @@ const CommentSheet = dynamic(async () => await import('./comment-sheet').then((c
 
 const InnerPlayer = dynamic(async () => await import('./inner-player').then((comp) => comp.InnerPlayer), {
   loading: (_) => {
-    return <Loader size="lg" />
+    return (
+      <div className="flex h-full w-full items-center justify-center">
+        <Loader size="lg" />
+      </div>
+    )
   },
 })
 const ViewportPlayer = dynamic(async () => await import('./inner-player').then((comp) => comp.ViewportPlayer), {
   loading: (_) => {
-    return <Loader size="lg" />
+    return (
+      <div className="flex h-full w-full items-center justify-center">
+        <Loader size="lg" />
+      </div>
+    )
   },
 })
 
@@ -247,64 +255,54 @@ function Desktop({
   //   )
 
   return (
-    <div className="relative flex h-full w-full snap-start items-center justify-center overflow-clip">
-      {/* {shouldShowBackgroundBlurImage && (
-        <div
-          className="absolute inset-0 z-0 h-full w-full bg-secondary bg-cover bg-center bg-no-repeat blur-2xl"
-          style={{ backgroundImage: `url(${videoData.thumbnail})` }}
+    <div
+      className="overflow-hidden"
+      onClick={(e) => {
+        if (!stateShouldPlay) {
+          setActiveComment('')
+        }
+        setShouldPlay(!stateShouldPlay)
+      }}>
+      {playIfInViewPort ? (
+        <ViewportPlayer
+          videoSource={videoData.source}
+          poster={videoData.thumbnail}
+          isFirstElement={isFirstPlayerInList}
+          loop={loop}
         />
-      )} */}
-      <div
-        className="overflow-hidden"
-        onClick={(e) => {
-          if (!stateShouldPlay) {
-            setActiveComment('')
-          }
-          setShouldPlay(!stateShouldPlay)
-        }}
-        style={{ ...sizeBox }}>
-        {playIfInViewPort ? (
-          <ViewportPlayer
-            videoSource={videoData.source}
-            poster={videoData.thumbnail}
-            isFirstElement={isFirstPlayerInList}
-            loop={loop}
-          />
-        ) : (
-          <InnerPlayer loop={loop} videoSource={videoData.source} poster={videoData.thumbnail} />
-        )}
-        <div className="absolute left-0 top-0 h-full w-full">
-          <ControlLayer.desktop
-            shareUrl={videoData.shareUrl}
-            sparkCount={videoData.sparkCount}
-            videoId={videoData.id}
-            attachedLink={videoData.attachedLink}
-            description={videoData.description}
-            isSparked={videoData.isSparked}
-          />
-        </div>
+      ) : (
+        <InnerPlayer loop={loop} videoSource={videoData.source} poster={videoData.thumbnail} />
+      )}
+      <div className="absolute left-0 top-0 h-full w-full">
+        <ControlLayer.desktop
+          shareUrl={videoData.shareUrl}
+          sparkCount={videoData.sparkCount}
+          videoId={videoData.id}
+          attachedLink={videoData.attachedLink}
+          description={videoData.description}
+          isSparked={videoData.isSparked}
+        />
       </div>
     </div>
   )
 }
 
 function Hover({ videoDetails, shouldPlay }: { videoDetails: VideoPlayerModalType; shouldPlay: boolean }) {
-  const { setShouldPlay, stateShouldPlay } = usePlayerControlStore((state) => ({
+  const { setShouldPlay } = usePlayerControlStore((state) => ({
     setShouldPlay: state.setShouldPlay,
-    stateShouldPlay: state.shouldPlay,
-  }))
-  const { activeComment, setActiveComment } = useCommentStore((state) => ({
-    activeComment: state.activeCommentIndex,
-    setActiveComment: state.setActiveCommentIndex,
   }))
 
   useEffect(() => {
     setShouldPlay(shouldPlay)
   }, [shouldPlay])
 
-  useEffect(() => {
-    setShouldPlay(activeComment === '')
-  }, [activeComment])
-
-  return <InnerPlayer videoSource={videoDetails.video.source} />
+  return (
+    <InnerPlayer
+      videoSource={videoDetails.video.source}
+      muted
+      onMouseOver={(e) => {
+        console.log('mouse over::', e)
+      }}
+    />
+  )
 }
