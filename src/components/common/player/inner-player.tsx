@@ -124,10 +124,6 @@ export function InnerPlayer({
         loop={loop}
         src={videoSource}
         playsInline
-        // style={{
-        //   height: videoSizeBox.height,
-        //   width: videoSizeBox.width,
-        // }}
         onPlay={onPlay}
         onPlaying={onPlaying}
         onError={onError}

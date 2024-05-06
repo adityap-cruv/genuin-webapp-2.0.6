@@ -21,6 +21,8 @@ import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { ShareIcon } from '@icons/share-icon'
 import { type ProfileDetailsType } from '@lib/schemas/profile/profile'
 import { CommunityList } from './community-list'
+import { PATH_NAME } from '@lib/utils/constants/path'
+import { usePathname } from 'next/navigation'
 
 interface CompProps {
   profileData: ProfileDetailsType
@@ -93,10 +95,15 @@ function Links({ profileData }: CompProps) {
   }
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
-  const { isEmbed, parentUrl } = useGenuinOptions((state) => ({ isEmbed: state.embed, parentUrl: state.parentUrl }))
+  const pathName = usePathname()
+  const { isEmbed, parentUrl, user } = useGenuinOptions((state) => ({
+    isEmbed: state.embed,
+    parentUrl: state.parentUrl,
+    user: state.user,
+  }))
 
   return (
-    <div className="my-2 flex items-center">
+    <div className="flex items-center gap-1">
       {links?.linkedin && (
         <div className="mr-2 flex h-8 w-8 items-center justify-center rounded-md bg-tertiary-200 p-1">
           <Link href={checkAndAppendHttps(links.linkedin)} target="_blank">
@@ -124,6 +131,15 @@ function Links({ profileData }: CompProps) {
             <Image src={icTiktok} alt="linkedin" />
           </Link>
         </div>
+      )}
+      {pathName === PATH_NAME.profile(user?.nickname) && (
+        <Link href={PATH_NAME.settings('edit')}>
+          <Button size="custom" variant="outline" className="border border-primary">
+            <p className="px-4 py-1 text-title-3-bold text-primary" style={{ fontSize: '15px' }}>
+              Edit Profile
+            </p>
+          </Button>
+        </Link>
       )}
       <Button
         variant="outline"

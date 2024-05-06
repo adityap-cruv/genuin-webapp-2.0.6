@@ -4,6 +4,7 @@ export const PATH_NAME = {
   video: (id?: string) => `/video/${id}`,
   profile: (id?: string) => `/profile/${id}`,
   community: (id?: string) => `/community/${id}`,
+  settings: (page?: string) => `/settings/${page}`,
   home: () => `/home`,
   popular: () => `/popular`,
   latest: () => `/latest`,

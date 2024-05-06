@@ -4,6 +4,7 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import { Loader } from '@components/ui/loader'
 import { getFeed } from '@lib/api/feed'
 import { useSize } from './size-provider'
+import { Player } from '@components/common/player'
 
 export function VerticalView() {
   const { height, width } = useSize()
@@ -21,8 +22,6 @@ export function VerticalView() {
     videoWidth = (9 / 16) * videoHeight
     ratio *= 0.7
   }
-  console.log('video Height:', videoWidth, videoHeight)
-  console.log('ration::', ratio)
 
   if (videos)
     return (
@@ -34,14 +33,17 @@ export function VerticalView() {
           direction="vertical"
           centeredSlides={false}
           slidesPerView={ratio}
-          spaceBetween={16}>
+          spaceBetween={16}
+          onActiveIndexChange={(swiper) => {
+            console.log('active: index::', swiper.activeIndex)
+          }}>
           {videos.map((item, index) => {
             return (
               <SwiperSlide
                 key={item.video.id}
                 style={{ height: videoHeight, width: videoWidth }}
                 className="overflow-clip rounded-lg">
-                <img className="overflow-clip object-cover" src={item.video.thumbnail} />
+                <Player.hover videoDetails={item} shouldPlay={index === 0} />
               </SwiperSlide>
             )
           })}

@@ -15,6 +15,9 @@ import {
   KsToCbWeb,
   KsToCbSubdomain,
   Error,
+  EditUsername,
+  ChangePassword,
+  Logout,
 } from './screens'
 import { useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
@@ -143,5 +146,11 @@ export function Content() {
       return <EmailVerification.verifymail />
     case 'MINI_PROFILE_SUCCESS':
       return <Note.miniprofilesuccess />
+    case 'EDIT_USERNAME':
+      return <EditUsername />
+    case 'CHANGE_PASSWORD':
+      return <ChangePassword />
+    case 'LOGOUT':
+      return <Logout />
   }
 }

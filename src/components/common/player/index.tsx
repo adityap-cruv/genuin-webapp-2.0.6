@@ -1,7 +1,7 @@
 'use client'
 import dynamic from 'next/dynamic'
 import { Loader } from '@components/ui/loader'
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import { usePlayerControlStore } from './player-control-store'
 import { useCommentStore } from '../comments/store'
 import { useGenuinOptions, type VideoSizeBoxType } from '@lib/stores/genuin-options'
@@ -24,6 +24,7 @@ const ViewportPlayer = dynamic(async () => await import('./inner-player').then((
 export const Player = {
   mobile: Mobile,
   desktop: Desktop,
+  hover: Hover,
 }
 
 type MobileProps = {
@@ -206,7 +207,6 @@ function Desktop({
   shouldShowBackgroundBlurImage = true,
   isFirstPlayerInList = false,
 }: DesktopProps) {
-  const containerRef = useRef<HTMLDivElement | null>(null)
   const hasFocus = useGenuinOptions().userHasFocus
   const { setShouldPlay, stateShouldPlay } = usePlayerControlStore((state) => ({
     setShouldPlay: state.setShouldPlay,
@@ -248,15 +248,14 @@ function Desktop({
 
   return (
     <div className="relative flex h-full w-full snap-start items-center justify-center overflow-clip">
-      {shouldShowBackgroundBlurImage && (
+      {/* {shouldShowBackgroundBlurImage && (
         <div
           className="absolute inset-0 z-0 h-full w-full bg-secondary bg-cover bg-center bg-no-repeat blur-2xl"
           style={{ backgroundImage: `url(${videoData.thumbnail})` }}
         />
-      )}
+      )} */}
       <div
-        ref={containerRef}
-        className="relative overflow-hidden"
+        className="overflow-hidden"
         onClick={(e) => {
           if (!stateShouldPlay) {
             setActiveComment('')
@@ -287,4 +286,25 @@ function Desktop({
       </div>
     </div>
   )
+}
+
+function Hover({ videoDetails, shouldPlay }: { videoDetails: VideoPlayerModalType; shouldPlay: boolean }) {
+  const { setShouldPlay, stateShouldPlay } = usePlayerControlStore((state) => ({
+    setShouldPlay: state.setShouldPlay,
+    stateShouldPlay: state.shouldPlay,
+  }))
+  const { activeComment, setActiveComment } = useCommentStore((state) => ({
+    activeComment: state.activeCommentIndex,
+    setActiveComment: state.setActiveCommentIndex,
+  }))
+
+  useEffect(() => {
+    setShouldPlay(shouldPlay)
+  }, [shouldPlay])
+
+  useEffect(() => {
+    setShouldPlay(activeComment === '')
+  }, [activeComment])
+
+  return <InnerPlayer videoSource={videoDetails.video.source} />
 }
