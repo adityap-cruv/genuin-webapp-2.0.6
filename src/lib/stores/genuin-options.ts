@@ -61,6 +61,7 @@ type User = {
   image?: string | null
   accessToken: string
   id?: string
+  ks_cb_request_status?: number
 }
 
 type StateType = {

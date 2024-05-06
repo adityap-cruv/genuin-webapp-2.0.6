@@ -26,7 +26,11 @@ function WithApi({ videoId, comments, setComments }: Props) {
   }, [data])
 
   if (isLoading) {
-    return <Loader size="md" />
+    return (
+      <div className="flex h-full w-full items-center justify-center">
+        <Loader size="md" />
+      </div>
+    )
   }
   if (isError) {
     throw new Error('Something went wrong!')
@@ -70,7 +74,11 @@ function CommentList({ comments, isFetchingNextPage, fetchNextPage }: CommentLis
       {comments.map((comment, index) => {
         return <CommentItem key={index} comment={comment} />
       })}
-      {isFetchingNextPage && <Loader className="h-40 w-full" size="md" />}
+      {isFetchingNextPage && (
+        <div className="flex w-full justify-center">
+          <Loader size="md" />
+        </div>
+      )}
     </div>
   )
 }

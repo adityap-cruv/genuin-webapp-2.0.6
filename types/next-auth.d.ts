@@ -20,6 +20,7 @@ declare module 'next-auth' {
     isPasswordSet: boolean
     image: string
     accessToken: string
+    ks_cb_request_status?: number
   }
 
   // interface AdapterUser {
@@ -47,6 +48,7 @@ declare module 'next-auth/jwt' {
       isPasswordSet: boolean
       image?: string | null
       accessToken: string
+      ks_cb_request_status?: number
     }
   }
 }

@@ -28,7 +28,7 @@ async function fetchCommunities(
   pageParam: { pageSession: string; lastCommunityId: string },
   limit: number
 ) {
-  return await axios
+  return await axiosInstance
     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/profile/communities', {
       params: {
         user_id: userId,

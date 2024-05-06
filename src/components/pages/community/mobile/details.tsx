@@ -18,13 +18,14 @@ import { TopBar } from '../../../layouts/mobile/top-bar'
 import { CommunityLoopTab } from './community-loop-tab'
 import { useEffect, useRef, useState } from 'react'
 import { useInView } from 'framer-motion'
-import { TopStickyBar } from '../../../../app/(site)/@desktop/community/[slug]/top-bar'
+import { TopStickyBar } from '../../../../app/(site)/(platform-discovery)/@desktop/community/[slug]/top-bar'
 import { joinCommunity, leaveCommunity } from '@lib/api/video'
 import { ShareIcon } from '@icons/share-icon'
 import { useSearchParams } from 'next/navigation'
 import { getCommunityMembers } from '@lib/api/community'
 import { Loader } from '@components/ui/loader'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@components/ui/accordion'
+import { Shimmer } from '@components/ui/shimmer'
 
 let communityDetailsModule: CommunityDetailsType
 
@@ -106,11 +107,13 @@ export function Details({ communityDetails }: Props) {
         <div className="px-4 py-2 pt-4">
           <div className="flex justify-end">
             <div className="flex items-center gap-x-2">
-              {isEmbed && communityDetails.is_community_join_requested ? (
+              {isEmbed && communityDetails.is_community_join_requested && (
                 <Button size="custom" className="border border-primary" variant={'outline'}>
                   <p className={`px-4 py-1.5 text-body-1-demi text-monochrome-white text-primary`}>Requested</p>
                 </Button>
-              ) : (
+              )}
+
+              {isEmbed && !communityDetails.is_community_join_requested && (
                 <Button
                   size="sm"
                   className={`${isCommunityJoined && 'border border-primary '}`}
@@ -137,6 +140,7 @@ export function Details({ communityDetails }: Props) {
                   </p>
                 </Button>
               )}
+
               {!isEmbed && (
                 <Button
                   variant="default"
@@ -427,7 +431,21 @@ function Members() {
   const { data, isLoading } = getCommunityMembers(communityDetailsModule.slug)
   const members = data?.members
 
-  if (isLoading) return <Loader size="md" />
+  if (isLoading)
+    return (
+      <>
+        {Array.from({ length: 4 }).map((_, index) => (
+          <div key={index} className="m-2 flex items-center justify-center">
+            <Shimmer className="h-12 w-12 shrink-0 rounded-full" />
+            <div className="ml-2 w-full">
+              <Shimmer className="my-1 h-4 w-1/4 rounded-full" />
+              <Shimmer className="my-1 h-4 w-1/5 rounded-full" />
+              <Shimmer className="my-1 h-4 w-full rounded-full" />
+            </div>
+          </div>
+        ))}
+      </>
+    )
 
   if (members && members.length !== 0)
     return (

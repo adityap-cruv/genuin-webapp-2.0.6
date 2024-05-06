@@ -12,6 +12,8 @@ import {
   UsernameInput,
   CompleteProfile,
   Guidelines,
+  KsToCbWeb,
+  KsToCbSubdomain,
   Error,
 } from './screens'
 import { useSearchParams } from 'next/navigation'
@@ -133,5 +135,13 @@ export function Content() {
       return <PasswordInputLogin />
     case 'GUIDELINES':
       return <Guidelines />
+    case 'KS_CB_WEB':
+      return <KsToCbWeb />
+    case 'KS_CB_SUBDOMAIN':
+      return <KsToCbSubdomain />
+    case 'VERIFY_MAIL':
+      return <EmailVerification.verifymail />
+    case 'MINI_PROFILE_SUCCESS':
+      return <Note.miniprofilesuccess />
   }
 }

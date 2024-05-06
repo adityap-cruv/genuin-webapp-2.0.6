@@ -27,7 +27,7 @@ export function ProfileIcon({ isActive, className, ...props }: Props) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      className={`${cn(isActive && 'stroke-primary', className)} p-1`}
+      className={`${cn(isActive && 'fill-primary stroke-primary', className)} p-1`}
       width="32"
       height="32"
       viewBox="0 0 24 24"
