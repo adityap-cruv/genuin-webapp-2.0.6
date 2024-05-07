@@ -10,10 +10,10 @@ import {
 import { axiosInstance } from './instance'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 
-export async function fetchUserData(brand_slug: string) {
+export async function fetchUserData(slug: string) {
   return await axios
     .post(process.env.NEXT_PUBLIC_API_URL + '/api/v3/users/get_profile', {
-      brand_slug,
+      brand_slug : slug,
     })
     .then((res) => {
       return validateProfileDetails(res.data.data)
