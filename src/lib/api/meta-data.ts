@@ -7,6 +7,7 @@ type MetadataPayloadType = {
    * type:3 -> loop
    * type:4 -> video
    * type:5 -> brand landing page (subdomain or white label)
+   * type:6 -> brand slug (subdomain or white label)
    */
   type: number
   brandId?: number
