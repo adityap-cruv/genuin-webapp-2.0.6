@@ -14,7 +14,6 @@ export function getLoopAndCommunityShareString(shareUrl: string) {
   const urlObj = new URL(shareUrl)
   const loopShareString = urlObj.searchParams.get('loop')
   const communityShareString = urlObj.searchParams.get('community')
-  console.log('communu:', communityShareString)
   return { loopShareString, communityShareString }
 }
 

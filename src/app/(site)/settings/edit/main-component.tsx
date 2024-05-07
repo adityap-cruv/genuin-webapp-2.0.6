@@ -19,6 +19,43 @@ import { useSession } from 'next-auth/react'
 import { type ProfileDetailsType } from '@lib/schemas/profile/profile'
 import { useToast } from '@components/ui/use-toast'
 import { useRouter } from 'next/navigation'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
+import { fetchUserData } from '@lib/api/profile'
+import { Loader } from '@components/ui/loader'
+import { useEffect, useState } from 'react'
+import { Toaster } from '@components/ui/toaster'
+import { PATH_NAME } from '@lib/utils/constants/path'
+
+export default function MainComponent() {
+  const { isMobile, user } = useGenuinOptions((state) => ({ isMobile: state.isMobile, user: state.user }))
+  const [profileData, setProfileData] = useState<ProfileDetailsType | null>(null)
+
+  useEffect(() => {
+    async function fetchSettings() {
+      try {
+        const data = await fetchUserData(user?.nickname ?? '')
+        setProfileData(data)
+      } catch (error) {
+        throw new Error()
+      }
+    }
+    void fetchSettings()
+  }, [])
+
+  if (!profileData)
+    return (
+      <div className="flex h-full w-full items-center justify-center">
+        <Loader size="md" />
+      </div>
+    )
+  if (profileData)
+    return (
+      <>
+        <EditProfile profileData={profileData} isMobile={isMobile} />
+        <Toaster />
+      </>
+    )
+}
 
 const formSchema = z.object({
   displayName: z.string().max(25, { message: 'Max length should be 25.' }).optional(),
@@ -29,7 +66,7 @@ const formSchema = z.object({
   tiktok: z.string().optional(),
 })
 
-export function EditProfile({ profileData, isMobile }: { profileData: ProfileDetailsType; isMobile: boolean }) {
+function EditProfile({ profileData, isMobile }: { profileData: ProfileDetailsType; isMobile: boolean }) {
   const { formData } = useAuthenticationModalStore()
   const { data: sessionData, update: updateSession } = useSession()
   const { toast } = useToast()
@@ -88,7 +125,8 @@ export function EditProfile({ profileData, isMobile }: { profileData: ProfileDet
                 src={icBack}
                 alt="back"
                 onClick={() => {
-                  router.back()
+                  const path = localStorage.getItem('previous_path')
+                  router.push(path ?? PATH_NAME.home())
                 }}
               />
             )}

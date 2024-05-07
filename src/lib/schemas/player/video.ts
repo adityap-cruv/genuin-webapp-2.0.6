@@ -29,6 +29,7 @@ const communitySchema = z.object({
   slug: z.string(),
   handle: z.string(),
   id: z.string(),
+  type: z.number().nullish(),
 })
 
 // Define the owner schema

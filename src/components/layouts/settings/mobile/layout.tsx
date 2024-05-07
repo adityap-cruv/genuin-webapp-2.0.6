@@ -17,7 +17,13 @@ export function SettingsLayout() {
   return (
     <Sheet>
       <SheetTrigger>
-        <div className="flex items-center gap-x-2">
+        <div
+          className="flex items-center gap-x-2"
+          onClick={() => {
+            if (!pathName.includes('settings')) {
+              localStorage.setItem('previous_path', pathName)
+            }
+          }}>
           <SettingIcon className="fill-secondary" />
           <p className="text-body-1-demi">Settings</p>
         </div>

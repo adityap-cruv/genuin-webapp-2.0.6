@@ -12,6 +12,13 @@ const messageSchema = z.object({
   message_at: z.number().nullish(),
 })
 
+const actionsSchema = z.array(
+  z.object({
+    action_id: z.number(),
+    access_type_id: z.number(),
+  })
+)
+
 const loopSchema = z.object({
   chat_id: z.string(),
   is_view_allowed: z.boolean(),
@@ -23,6 +30,7 @@ const loopSchema = z.object({
     no_of_videos: z.number(),
   }),
   messages: z.array(messageSchema),
+  actions: actionsSchema,
 })
 
 const CommunitySchema = z.object({

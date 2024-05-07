@@ -15,7 +15,8 @@ export async function fetchUserData(nickname: string) {
       nickname,
     })
     .then((res) => {
-      return validateProfileDetails(res.data.data)
+      // TODO ADD BRAND OBJECT VALIDATION
+      return res.data.data
     })
     .catch((e) => {
       throw new Error('Something went wrong in profile details api.')

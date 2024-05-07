@@ -58,6 +58,7 @@ export function parseFeedResponse(videos: FeedResponseType) {
         slug: video.community?.slug ?? '',
         name: video.community?.name ?? '',
         profileImage: video.community?.dp ?? '',
+        type: video.type ?? null,
       },
       loop: {
         id: video.chat_id,
@@ -98,6 +99,7 @@ export function parseProfileCommunityResponse(communities: ProfileCommunityRespo
       name: item.name,
       profileImage: item.dp,
       loopCount: item.no_of_loops,
+      type: item.type ?? null,
       loops: item.loops.map((item) => {
         return {
           id: item.chat_id,
@@ -105,6 +107,11 @@ export function parseProfileCommunityResponse(communities: ProfileCommunityRespo
           name: item.group.group_name,
           private: !item.is_view_allowed,
           videoCount: item.group.no_of_videos,
+          actions: item.actions
+            ? item.actions.map((item) => {
+                return { action_id: item.action_id, access_type_id: item.access_type_id }
+              })
+            : null,
           videos: item.messages.map((item) => {
             return {
               id: item.message_id,
@@ -128,6 +135,11 @@ export function parseProfileLoopResponse(loops: ProfileLoopResponseType[]) {
       slug: item.slug,
       videoCount: item.group.no_of_videos,
       name: item.group.group_name,
+      actions: item.actions
+        ? item.actions.map((item) => {
+            return { action_id: item.action_id, access_type_id: item.access_type_id }
+          })
+        : null,
       videos: item.messages.map((item) => {
         // TODO: Add spark count if needed after discussion with design and backend.
         return { id: item.message_id, sparkCount: 0, viewCount: item.no_of_views, thumbnail: item.thumbnail_url }

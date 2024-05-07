@@ -26,6 +26,8 @@ import { getCommunityMembers } from '@lib/api/community'
 import { Loader } from '@components/ui/loader'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@components/ui/accordion'
 import { Shimmer } from '@components/ui/shimmer'
+import { LockIcon } from '@icons/LockIcon'
+import { PrivateModal } from '@components/common/modals/private'
 
 let communityDetailsModule: CommunityDetailsType
 
@@ -93,10 +95,13 @@ export function Details({ communityDetails }: Props) {
         className="hide-scrollbar absolute inset-0 mt-navbar w-full overflow-auto"
         style={{ height: 'calc(100% - 74px)' }}>
         <div
-          className="aspect-w-5 aspect-h-1 relative h-20 bg-tertiary-200"
+          className="aspect-w-5 aspect-h-1 relative bg-tertiary-200"
           style={{
             height: `calc(${dimensions.width}px / 5)`,
           }}>
+          {communityDetails?.banner && (
+            <img src={communityDetails?.banner} alt="banner" className="h-full w-full object-cover" />
+          )}
           <CustomAvatar
             imageUrl={communityDetailsModule?.dp ?? ''}
             fallbackString={communityDetailsModule?.name ?? ''}
@@ -185,10 +190,19 @@ export function Details({ communityDetails }: Props) {
               </Button> */}
             </div>
           </div>
-          <div ref={detailsDivRef}>
+          <div ref={detailsDivRef} className="flex items-center justify-start gap-2 pt-2">
             <p className="my-1 mt-2 line-clamp-1 break-all text-title-3-bold ">{communityDetailsModule?.name}</p>
-            <p className="my-1 line-clamp-2 break-all text-body-1-demi ">{communityDetailsModule?.description}</p>
+            <p className="text-body-1-med text-tertiary">@{communityDetails.handle}</p>
+            {communityDetailsModule.type === 2 && (
+              <PrivateModal>
+                <div className="flex items-center justify-center rounded-full bg-tertiary-200 p-1 px-1.5">
+                  <LockIcon className="h-4 w-4 stroke-tertiary" />
+                  <p className="text-cap-1-demi text-tertiary">Private</p>
+                </div>
+              </PrivateModal>
+            )}
           </div>
+          <p className="my-1 line-clamp-2 break-all text-body-1-demi ">{communityDetailsModule?.description}</p>
           <Stats />
         </div>
         {communityDetails.type === 2 ? (

@@ -21,14 +21,19 @@ import icLoopDark from '@icons/icLoopDark.svg'
 import { joinCommunity, leaveCommunity } from '@lib/api/video'
 import { PlayerModal } from '@components/common/modals/player-modal'
 import icPlay from '@icons/player-controls/icPlay.svg'
+import { LockIcon } from '@icons/LockIcon'
+import { usePathname } from 'next/navigation'
+import { EarthIcon } from '@icons/earth-icon'
+import { loopPrivacyInfo } from '@components/common/loop-privacy-info'
+import { PrivateModal } from '@components/common/modals/private'
 
 export function CommunityList({ userId, scrollYProgress }: { userId: string; scrollYProgress: MotionValue<number> }) {
   const { data, isLoading, fetchNextPage, isFetchingNextPage } = getCommunities(userId, 8)
   const communities = data?.pages.flatMap((item) => item.communities)
   const [communityJoinStates, setCommunityJoinStates] = useState<Record<string, boolean>>({})
   const user = useGenuinOptions().user
-
   const { addCommunities, currentVideoId } = useCommunityListStore()
+  const pathName = usePathname()
 
   useEffect(() => {
     const newCommunites = data?.pages[data.pages.length - 1].communities
@@ -114,29 +119,45 @@ export function CommunityList({ userId, scrollYProgress }: { userId: string; scr
                   isAvatar={false}
                 />
                 <div className="flex w-full items-center justify-between">
-                  <Link href={{ pathname: PATH_NAME.community(item.slug) }}>
-                    <div className="mx-2">
+                  <div className="mx-2">
+                    <Link href={{ pathname: PATH_NAME.community(item.slug) }}>
                       <p
                         className="line-clamp-1 text-left"
                         style={{ fontWeight: 600, fontSize: '20px', lineHeight: '24px' }}>
                         {item.name ?? `${item.handle}`}
                       </p>
-                    </div>
-                  </Link>
-                  <Button
-                    size="custom"
-                    className={`${communityJoinStates[item.id] && 'border border-primary '}`}
-                    variant={communityJoinStates[item.id] ? 'outline' : 'default'}
-                    onClick={async () => {
-                      await toggleCommunityJoinState(item.id, item.handle)
-                    }}>
-                    <p
-                      className={`px-4 py-1.5 text-title-3-demi text-monochrome-white ${
-                        communityJoinStates[item.id] && 'text-primary'
-                      }`}>
-                      {communityJoinStates[item.id] ? 'Joined' : 'Join'}
-                    </p>
-                  </Button>
+                    </Link>
+                    {item.type === 2 && (
+                      <PrivateModal>
+                        <div className="flex items-center justify-start rounded-full">
+                          <LockIcon className="h-4 w-4 stroke-tertiary" />
+                          <p className="text-cap-1-demi text-tertiary">Private</p>
+                        </div>
+                      </PrivateModal>
+                    )}
+                    {item.type !== 2 && pathName === PATH_NAME.profile(user?.nickname) && (
+                      <div className="mb-2 flex items-center justify-start gap-1 rounded-full">
+                        <EarthIcon className="h-4 w-4 stroke-tertiary" />
+                        <p className="text-cap-1-demi text-tertiary">Public</p>
+                      </div>
+                    )}
+                  </div>
+                  {pathName !== PATH_NAME.profile(user?.nickname) && (
+                    <Button
+                      size="custom"
+                      className={`${communityJoinStates[item.id] && 'border border-primary '}`}
+                      variant={communityJoinStates[item.id] ? 'outline' : 'default'}
+                      onClick={async () => {
+                        await toggleCommunityJoinState(item.id, item.handle)
+                      }}>
+                      <p
+                        className={`px-4 py-1.5 text-title-3-demi text-monochrome-white ${
+                          communityJoinStates[item.id] && 'text-primary'
+                        }`}>
+                        {communityJoinStates[item.id] ? 'Joined' : 'Join'}
+                      </p>
+                    </Button>
+                  )}
                 </div>
               </div>
               <DecorativeList>
@@ -284,6 +305,7 @@ function LoopVideos({ userId, loop, communityId }: LoopVideosProps) {
     addVideos: state.addVideos,
     open: state.open,
   }))
+  const privacyMessage = loopPrivacyInfo(loop?.actions?.[0]?.action_id ?? 0, loop?.actions?.[0]?.access_type_id ?? 0)
 
   const { fetchNext, isFetchingNextPage } = getNextPage<ProfileVideoType[]>(
     async () => await fetchProfileVideos(userId, 16, communityId, loop.id, loop.videos[loop.videos.length - 1].id),
@@ -337,6 +359,7 @@ function LoopVideos({ userId, loop, communityId }: LoopVideosProps) {
       <Link href={PATH_NAME.loop(loop.slug)}>
         <p className="mb-3 text-body-1-bold">{loop.name}</p>
       </Link>
+      {privacyMessage}
       <div className="my-2 grid w-full grid-cols-4 gap-2 md:grid-cols-8">
         <InnerComponent />
         {isFetchingNextPage &&

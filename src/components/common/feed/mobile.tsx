@@ -98,6 +98,7 @@ function InfinityViewBox() {
             handle: videoDetails.community.handle,
             profileImage: videoDetails.community.profileImage ?? '',
             slug: videoDetails.community.slug,
+            type: videoDetails.community.type ?? null,
           }}
           loop={{
             name: videoDetails.loop.name ?? '',
