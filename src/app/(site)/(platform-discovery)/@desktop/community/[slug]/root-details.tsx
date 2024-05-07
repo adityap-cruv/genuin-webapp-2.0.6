@@ -29,6 +29,7 @@ import { getCommunityDetails, getCommunityMembers } from '@lib/api/community'
 import { Loader } from '@components/ui/loader'
 import Loading from './loading'
 import { Shimmer } from '@components/ui/shimmer'
+import { LockIcon } from '@icons/LockIcon'
 
 let communityDetailsModule: CommunityDetailsType
 
@@ -116,7 +117,9 @@ export function RootDetails({ communityDetails }: { communityDetails: CommunityD
             style={{
               height: `calc(${dimensions.width}px / 5)`,
             }}>
-            {' '}
+            {communityDetails?.banner && (
+              <img src={communityDetails?.banner} alt="banner" className="h-full w-full object-cover" />
+            )}
             <CustomAvatar
               isAvatar={false}
               imageUrl={communityDetails.dp ?? ''}
@@ -181,6 +184,12 @@ export function RootDetails({ communityDetails }: { communityDetails: CommunityD
           <span className="flex items-center gap-x-2 px-6 py-2">
             <p className="text-title-1-bold">{communityDetails.name}</p>
             <p className="text-body-1-med text-tertiary">@{communityDetails.handle}</p>
+            {communityDetailsModule.type === 2 && (
+              <div className="flex items-center justify-center rounded-full bg-tertiary-200 p-1 px-1.5">
+                <LockIcon className="h-4 w-4 stroke-tertiary" />
+                <p className="text-cap-1-demi text-tertiary">Private</p>
+              </div>
+            )}
           </span>
         </div>
 

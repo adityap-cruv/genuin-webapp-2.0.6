@@ -49,8 +49,16 @@ const settingsSchema = z.object({
   discoverable: z.boolean(),
 })
 
+const actionsSchema = z.array(
+  z.object({
+    action_id: z.number(),
+    access_type_id: z.number(),
+  })
+)
+
 // Define main schema
 const LoopDetailsSchema = z.object({
+  actions: actionsSchema,
   chat_id: z.string(),
   is_welcome_loop: z.boolean(),
   type: z.number(),

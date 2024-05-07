@@ -66,6 +66,7 @@ const MembersSchema = z.object({
 })
 
 const CommunityDetailsSchema = z.object({
+  banner: z.string().nullish(),
   community_id: z.string(),
   handle: z.string(),
   slug: z.string(),

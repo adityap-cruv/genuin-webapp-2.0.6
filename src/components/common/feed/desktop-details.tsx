@@ -21,6 +21,7 @@ import { AudioRecordIcon } from '@icons/audio-record-icon'
 import { VideoRecordIcon } from '@icons/video-record-icon'
 import { type CommentListType } from '@lib/schemas/loop/comment'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
+import { LockIcon } from '@icons/LockIcon'
 
 export function DesktopDetails({ loop, community, owner, video }: VideoPlayerModalType) {
   const { shareFn } = useAdaptiveShare()
@@ -80,18 +81,21 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
           <p className="text-title-3-bold">Posted in</p>
           <div className="pt-3">
             <span className="flex items-center justify-between">
-              <span className="flex flex-1 items-center gap-x-3">
-                <CustomAvatar
-                  imageUrl={community.profileImage ?? ''}
-                  fallbackString={community.name ?? ''}
-                  isAvatar={false}
-                  className="h-11 w-11"
-                />
-                {/* TODO: What if there is no community name. */}
-                <Link href={{ pathname: PATH_NAME.community(community.slug) }}>
-                  <p className="line-clamp-1 break-all pr-2 text-title-3-bold">{community.name}</p>
-                </Link>
-              </span>
+              <div className="flex items-center justify-center">
+                <span className="flex flex-1 items-center gap-x-3">
+                  <CustomAvatar
+                    imageUrl={community.profileImage ?? ''}
+                    fallbackString={community.name ?? ''}
+                    isAvatar={false}
+                    className="h-11 w-11"
+                  />
+                  {/* TODO: What if there is no community name. */}
+                  <Link href={{ pathname: PATH_NAME.community(community.slug) }}>
+                    <p className="line-clamp-1 break-all pr-2 text-title-3-bold">{community.name}</p>
+                  </Link>
+                </span>
+                {community?.type === 2 && <LockIcon className="h-4 w-4 stroke-tertiary" />}
+              </div>
               <span className="flex h-min flex-1 items-center justify-end gap-x-3">
                 <Button
                   size="custom"

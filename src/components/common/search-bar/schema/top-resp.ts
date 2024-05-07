@@ -105,6 +105,7 @@ const CommunitySchema = z.object({
     .regex(/^#[0-9A-Fa-f]{6}$/)
     .nullish(),
   share_url: z.string(),
+  type: z.number().nullish(),
 })
 
 const metaDataSchema = z.object({

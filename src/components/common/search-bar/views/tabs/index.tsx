@@ -17,6 +17,7 @@ export type CommunityType = {
   slug: string
   profileImage?: string | null
   name?: string | null
+  type?: number | null
 }
 
 export type LoopType = {

@@ -49,6 +49,7 @@ const communitySchema = z.object({
   dp_s: z.string().nullish(),
   dp_m: z.string().nullish(),
   dp_l: z.string().nullish(),
+  type: z.number().nullish(),
 })
 
 // Create a Zod schema for each element in the array

@@ -16,6 +16,7 @@ export function parseCommunities(communities: CommunitiesResType) {
     description: item.description,
     name: item.name,
     profileImage: item.dp,
+    type: item.type,
   }))
 }
 

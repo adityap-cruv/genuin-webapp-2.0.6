@@ -22,6 +22,8 @@ import { useGenuinOptions } from '@lib/stores/genuin-options'
 import Loading from './loading'
 import Error from '../../error'
 import { Shimmer } from '@components/ui/shimmer'
+import { LockIcon } from '@icons/LockIcon'
+import { loopPrivacyInfo } from '@components/common/loop-privacy-info'
 
 interface Props {
   loopDetails: LoopDetailsType
@@ -43,6 +45,10 @@ export function MainComponent({ loopDetails }: Props) {
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
   const [isLoopSubscribed, setIsLoopSubscribed] = useState(!!loopDetails.is_subscriber)
   const user = useGenuinOptions().user
+  const privacyMessage = loopPrivacyInfo(
+    loopDetails?.actions?.[0]?.action_id ?? 0,
+    loopDetails?.actions?.[0]?.access_type_id ?? 0
+  )
 
   function toggleLoopSubscription() {
     const newValue = !isLoopSubscribed
@@ -143,6 +149,7 @@ export function MainComponent({ loopDetails }: Props) {
             </Button>
           </div>
         </div>
+        {privacyMessage}
         <span className="w-1/2">
           <p className="my-1 line-clamp-2 w-1/2 break-words text-body-1-med text-secondary">
             {loopDetails.group.group_description}
@@ -178,6 +185,7 @@ export function MainComponent({ loopDetails }: Props) {
                     <p className="ml-1 line-clamp-1 break-all text-body-1-bold text-secondary">
                       {loopDetails.community.name}
                     </p>
+                    {loopDetails.community.type === 2 && <LockIcon className="ml-1 h-4 w-4 stroke-tertiary" />}
                   </div>
                 </Link>
               </span>
