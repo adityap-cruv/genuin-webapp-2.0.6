@@ -142,22 +142,37 @@ export function CommunityList({ userId, scrollYProgress }: { userId: string; scr
                       </div>
                     )}
                   </div>
-                  {pathName !== PATH_NAME.profile(user?.nickname) && (
-                    <Button
-                      size="custom"
-                      className={`${communityJoinStates[item.id] && 'border border-primary '}`}
-                      variant={communityJoinStates[item.id] ? 'outline' : 'default'}
-                      onClick={async () => {
-                        await toggleCommunityJoinState(item.id, item.handle)
-                      }}>
-                      <p
-                        className={`px-4 py-1.5 text-title-3-demi text-monochrome-white ${
-                          communityJoinStates[item.id] && 'text-primary'
-                        }`}>
-                        {communityJoinStates[item.id] ? 'Joined' : 'Join'}
-                      </p>
-                    </Button>
-                  )}
+                  <div className="flex items-center gap-2">
+                    {item.brand && (
+                      <Link href={{ pathname: PATH_NAME.profile(item.brand?.brand_slug) }}>
+                        <div className="flex items-center gap-1 rounded-full bg-tertiary-200 p-1 ">
+                          <CustomAvatar
+                            imageUrl={item.brand?.favicon ?? ''}
+                            fallbackString={item.brand?.name ?? ''}
+                            isAvatar={false}
+                            className="h-4 w-4"
+                          />
+                          <p className="text-cap-1-demi text-secondary">{item.brand?.name}</p>
+                        </div>
+                      </Link>
+                    )}
+                    {pathName !== PATH_NAME.profile(user?.nickname) && (
+                      <Button
+                        size="custom"
+                        className={`${communityJoinStates[item.id] && 'border border-primary '}`}
+                        variant={communityJoinStates[item.id] ? 'outline' : 'default'}
+                        onClick={async () => {
+                          await toggleCommunityJoinState(item.id, item.handle)
+                        }}>
+                        <p
+                          className={`px-4 py-1.5 text-title-3-demi text-monochrome-white ${
+                            communityJoinStates[item.id] && 'text-primary'
+                          }`}>
+                          {communityJoinStates[item.id] ? 'Joined' : 'Join'}
+                        </p>
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </div>
               <DecorativeList>

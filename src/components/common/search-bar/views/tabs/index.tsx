@@ -18,6 +18,19 @@ export type CommunityType = {
   profileImage?: string | null
   name?: string | null
   type?: number | null
+  brand: BrandType
+}
+
+export type BrandType = {
+  brand_id: number
+  name: string | null
+  subdomain: string | null
+  logo: string | null
+  created_at: number
+  brand_web_logo: string | null
+  favicon: string
+  brand_system_user_id: string | null
+  brand_slug: string
 }
 
 export type LoopType = {

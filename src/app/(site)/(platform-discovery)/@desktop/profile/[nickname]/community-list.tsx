@@ -120,13 +120,28 @@ export function CommunityList({ userId }: { userId: string }) {
                 />
                 <div className="flex w-full items-center justify-between">
                   <div className="mx-2">
-                    <Link href={{ pathname: PATH_NAME.community(item.slug) }}>
-                      <p
-                        className="line-clamp-1 text-left"
-                        style={{ fontWeight: 600, fontSize: '20px', lineHeight: '24px' }}>
-                        {item.name ?? `${item.handle}`}
-                      </p>
-                    </Link>
+                    <div className="flex gap-1">
+                      <Link href={{ pathname: PATH_NAME.community(item.slug) }}>
+                        <p
+                          className="line-clamp-1 text-left"
+                          style={{ fontWeight: 600, fontSize: '20px', lineHeight: '24px' }}>
+                          {item.name ?? `${item.handle}`}
+                        </p>
+                      </Link>
+                      {item.brand && (
+                        <Link href={{ pathname: PATH_NAME.profile(item.brand?.brand_slug) }}>
+                          <div className="flex items-center gap-1 rounded-full bg-tertiary-200 p-1">
+                            <CustomAvatar
+                              imageUrl={item.brand?.favicon ?? ''}
+                              fallbackString={item.brand?.name ?? ''}
+                              isAvatar={false}
+                              className="h-4 w-4"
+                            />
+                            <p className="text-cap-1-demi text-secondary">{item.brand?.name}</p>
+                          </div>
+                        </Link>
+                      )}
+                    </div>
                     {item.type === 2 && (
                       <div className="flex items-center justify-start rounded-full">
                         <LockIcon className="h-4 w-4 stroke-tertiary" />

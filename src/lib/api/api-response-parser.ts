@@ -59,6 +59,19 @@ export function parseFeedResponse(videos: FeedResponseType) {
         name: video.community?.name ?? '',
         profileImage: video.community?.dp ?? '',
         type: video.type ?? null,
+        brand: video.community?.brand
+          ? {
+              brand_id: video.community.brand.brand_id,
+              name: video.community.brand.name,
+              subdomain: video.community.brand.subdomain,
+              logo: video.community.brand.logo,
+              created_at: video.community.brand.created_at,
+              brand_web_logo: video.community.brand.brand_web_logo,
+              favicon: video.community.brand.favicon,
+              brand_system_user_id: video.community.brand.brand_system_user_id,
+              brand_slug: video.community.brand.brand_slug,
+            }
+          : null,
       },
       loop: {
         id: video.chat_id,
@@ -70,6 +83,12 @@ export function parseFeedResponse(videos: FeedResponseType) {
         profileImage: video.messages[0].owner.profile_image,
         userName: video.messages[0].owner.username,
         name: video.messages[0].owner.name,
+        brand: video.community?.brand
+          ? {
+              brand_id: video.community.brand.brand_id,
+              brand_slug: video.community.brand.brand_slug,
+            }
+          : null,
       },
       video: {
         commentCount: video.messages[0].no_of_comments,
@@ -91,6 +110,19 @@ export function parseFeedResponse(videos: FeedResponseType) {
 export function parseProfileCommunityResponse(communities: ProfileCommunityResponseType[]) {
   return communities.map<ProfileCommunityType>((item) => {
     return {
+      brand: item?.brand
+        ? {
+            brand_id: item.brand.brand_id,
+            name: item.brand.name,
+            subdomain: item.brand.subdomain,
+            logo: item.brand.logo,
+            created_at: item.brand.created_at,
+            brand_web_logo: item.brand.brand_web_logo,
+            favicon: item.brand.favicon,
+            brand_system_user_id: item.brand.brand_system_user_id,
+            brand_slug: item.brand.brand_slug,
+          }
+        : null,
       handle: item.handle,
       id: item.community_id,
       // TODO: Addition from backend required.

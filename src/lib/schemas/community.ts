@@ -65,7 +65,20 @@ const MembersSchema = z.object({
   phone: z.string().nullish(),
 })
 
+const BrandSchema = z.object({
+  brand_id: z.number(),
+  name: z.string(),
+  subdomain: z.string(),
+  logo: z.string().url(),
+  created_at: z.number(),
+  brand_web_logo: z.string().url(),
+  favicon: z.string().url(),
+  brand_system_user_id: z.string(),
+  brand_slug: z.string(),
+})
+
 const CommunityDetailsSchema = z.object({
+  brand: BrandSchema,
   banner: z.string().nullish(),
   community_id: z.string(),
   handle: z.string(),

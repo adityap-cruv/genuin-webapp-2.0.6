@@ -22,6 +22,7 @@ import { VideoRecordIcon } from '@icons/video-record-icon'
 import { type CommentListType } from '@lib/schemas/loop/comment'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import { LockIcon } from '@icons/LockIcon'
+import { TickIcon } from '@icons/tick-icon'
 
 export function DesktopDetails({ loop, community, owner, video }: VideoPlayerModalType) {
   const { shareFn } = useAdaptiveShare()
@@ -66,9 +67,21 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
             className="h-9 w-9"
           />
           <span className="flex items-center gap-x-1">
-            <Link href={PATH_NAME.profile(owner.userName)}>
-              <p className="line-clamp-1 break-all text-title-3-demi">@{owner.userName}</p>
-            </Link>
+            {owner.brand ? (
+              <div className="flex items-center gap-1">
+                <Link href={PATH_NAME.profile(owner.brand.brand_slug)}>
+                  <p className="line-clamp-1 break-all text-title-3-demi">{owner.userName}</p>
+                </Link>
+                <div className="flex items-center">
+                  <TickIcon className="h-4 w-4 fill-primary" />
+                  <p className="text-cap-1-demi">Brand</p>
+                </div>
+              </div>
+            ) : (
+              <Link href={PATH_NAME.profile(owner.userName)}>
+                <p className="line-clamp-1 break-all text-title-3-demi">@{owner.userName}</p>
+              </Link>
+            )}
             <p className="shrink-0 text-body-1-demi text-tertiary">{getTimeAgo(video.createdAt) + ' ago'}</p>
           </span>
         </span>
@@ -95,6 +108,19 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
                   </Link>
                 </span>
                 {community?.type === 2 && <LockIcon className="h-4 w-4 stroke-tertiary" />}
+                {community.brand && (
+                  <Link href={{ pathname: PATH_NAME.profile(community.brand?.brand_slug) }}>
+                    <div className="flex items-center gap-1 rounded-full bg-tertiary-200 p-1">
+                      <CustomAvatar
+                        imageUrl={community.brand?.favicon ?? ''}
+                        fallbackString={community.brand?.name ?? ''}
+                        isAvatar={false}
+                        className="h-4 w-4"
+                      />
+                      <p className="text-cap-1-demi text-secondary">{community.brand?.name}</p>
+                    </div>
+                  </Link>
+                )}
               </div>
               <span className="flex h-min flex-1 items-center justify-end gap-x-3">
                 <Button

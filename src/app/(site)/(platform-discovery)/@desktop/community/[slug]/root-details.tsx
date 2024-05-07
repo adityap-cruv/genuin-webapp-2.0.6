@@ -190,6 +190,19 @@ export function RootDetails({ communityDetails }: { communityDetails: CommunityD
                 <p className="text-cap-1-demi text-tertiary">Private</p>
               </div>
             )}
+            {communityDetailsModule.brand && (
+              <Link href={{ pathname: PATH_NAME.profile(communityDetailsModule.brand?.brand_slug) }}>
+                <div className="flex items-center gap-1 rounded-full bg-tertiary-200 p-1 ">
+                  <CustomAvatar
+                    imageUrl={communityDetailsModule.brand?.favicon ?? ''}
+                    fallbackString={communityDetailsModule.brand?.name ?? ''}
+                    isAvatar={false}
+                    className="h-4 w-4"
+                  />
+                  <p className="text-cap-1-demi text-secondary">{communityDetailsModule.brand?.name}</p>
+                </div>
+              </Link>
+            )}
           </span>
         </div>
 

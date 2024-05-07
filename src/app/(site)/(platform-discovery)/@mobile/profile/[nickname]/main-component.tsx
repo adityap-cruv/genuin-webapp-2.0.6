@@ -21,6 +21,7 @@ import { type ProfileDetailsType } from '@lib/schemas/profile/profile'
 import { CommunityList } from './community-list'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { usePathname } from 'next/navigation'
+import { TickIcon } from '@icons/tick-icon'
 
 interface CompProps {
   profileData: ProfileDetailsType
@@ -120,6 +121,12 @@ export function MainComponent({ profileData }: CompProps) {
               <>
                 <p className="line-clamp-1 pr-2 text-title-3-bold text-tertiary">@{profileData.nickname}</p>
               </>
+            )}
+            {profileData.brand && (
+              <div className="ml-2 flex items-center gap-1 rounded-full bg-primary-200 p-1">
+                <TickIcon className="h-4 w-4 fill-primary" />
+                <p className="text-cap-1-demi text-primary">Brand</p>
+              </div>
             )}
           </div>
           <p className="my-1 line-clamp-2 text-body-1-demi">{profileData?.bio}</p>
