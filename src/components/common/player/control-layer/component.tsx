@@ -129,10 +129,13 @@ type MobileProps = {
     profileImage: string
     isAvatar: boolean
     name?: string | null
-    brand?: {
-      brand_id: number
-      brand_slug: string
-    }
+    brand?:
+      | {
+          brand_id: number
+          brand_slug: string
+        }
+      | undefined
+      | null
   }
 }
 

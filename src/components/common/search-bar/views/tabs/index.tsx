@@ -18,7 +18,7 @@ export type CommunityType = {
   profileImage?: string | null
   name?: string | null
   type?: number | null
-  brand: BrandType
+  brand?: BrandType | null | undefined
 }
 
 export type BrandType = {
