@@ -36,21 +36,23 @@ export function CommunityTile({ community }: { community: CommunityType }) {
               <p className="text-body-1-bold hover:underline">{community.name}</p>
               <div className="flex items-center gap-1">
                 {community.brand && (
-                  <div className="flex items-center gap-1 rounded-full bg-tertiary-200 p-1 ">
-                    <CustomAvatar
-                      imageUrl={community.brand?.logo ?? ''}
-                      fallbackString={community.brand?.name ?? ''}
-                      isAvatar={false}
-                      className="h-4 w-4"
-                    />
-                    <p
-                      className="text-cap-1-demi text-secondary"
-                      style={{
-                        maxWidth: '10ch',
-                      }}>
-                      {community.brand?.name}
-                    </p>
-                  </div>
+                  <Link href={{ pathname: PATH_NAME.brand(community.brand.brand_slug) }}>
+                    <div className="flex items-center gap-1 rounded-full bg-tertiary-200 p-1 ">
+                      <CustomAvatar
+                        imageUrl={community.brand?.logo ?? ''}
+                        fallbackString={community.brand?.name ?? ''}
+                        isAvatar={false}
+                        className="h-4 w-4"
+                      />
+                      <p
+                        className="text-cap-1-demi text-secondary"
+                        style={{
+                          maxWidth: '10ch',
+                        }}>
+                        {community.brand?.name}
+                      </p>
+                    </div>
+                  </Link>
                 )}
                 <p className="text-body-1-demi text-tertiary">{`${community.memberCount} members`}</p>
                 {community.type === 2 && (

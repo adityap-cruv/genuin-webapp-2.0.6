@@ -204,21 +204,23 @@ export function RootDetails({ communityDetails }: { communityDetails: CommunityD
               </TooltipProvider>
             )}
             {communityDetailsModule.brand && (
-              <div className="flex items-center gap-1 rounded-full bg-tertiary-200 p-1 ">
-                <CustomAvatar
-                  imageUrl={communityDetailsModule.brand?.logo ?? ''}
-                  fallbackString={communityDetailsModule.brand?.name ?? ''}
-                  isAvatar={false}
-                  className="h-4 w-4"
-                />
-                <p
-                  className="truncate text-cap-1-demi text-secondary"
-                  style={{
-                    maxWidth: '10ch',
-                  }}>
-                  {communityDetailsModule.brand?.name}
-                </p>
-              </div>
+              <Link href={{ pathname: PATH_NAME.brand(communityDetailsModule.brand.brand_slug) }}>
+                <div className="flex items-center gap-1 rounded-full bg-tertiary-200 p-1 ">
+                  <CustomAvatar
+                    imageUrl={communityDetailsModule.brand?.logo ?? ''}
+                    fallbackString={communityDetailsModule.brand?.name ?? ''}
+                    isAvatar={false}
+                    className="h-4 w-4"
+                  />
+                  <p
+                    className="truncate text-cap-1-demi text-secondary"
+                    style={{
+                      maxWidth: '10ch',
+                    }}>
+                    {communityDetailsModule.brand?.name}
+                  </p>
+                </div>
+              </Link>
             )}
           </span>
         </div>

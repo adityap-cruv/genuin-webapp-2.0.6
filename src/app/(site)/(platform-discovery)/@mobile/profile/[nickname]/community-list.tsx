@@ -144,21 +144,23 @@ export function CommunityList({ userId, scrollYProgress }: { userId: string; scr
                   </div>
                   <div className="flex items-center gap-2">
                     {item.brand && (
-                      <div className="flex items-center gap-1 rounded-full bg-tertiary-200 p-1 ">
-                        <CustomAvatar
-                          imageUrl={item.brand?.logo ?? ''}
-                          fallbackString={item.brand?.name ?? ''}
-                          isAvatar={false}
-                          className="h-4 w-4"
-                        />
-                        <p
-                          className="text-cap-1-demi text-secondary"
-                          style={{
-                            maxWidth: '10ch',
-                          }}>
-                          {item.brand?.name}
-                        </p>
-                      </div>
+                      <Link href={{ pathname: PATH_NAME.brand(item.brand.brand_slug) }}>
+                        <div className="flex items-center gap-1 rounded-full bg-tertiary-200 p-1 ">
+                          <CustomAvatar
+                            imageUrl={item.brand?.logo ?? ''}
+                            fallbackString={item.brand?.name ?? ''}
+                            isAvatar={false}
+                            className="h-4 w-4"
+                          />
+                          <p
+                            className="text-cap-1-demi text-secondary"
+                            style={{
+                              maxWidth: '10ch',
+                            }}>
+                            {item.brand?.name}
+                          </p>
+                        </div>
+                      </Link>
                     )}
                     {pathName !== PATH_NAME.profile(user?.nickname) && (
                       <Button

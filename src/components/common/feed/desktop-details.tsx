@@ -75,7 +75,7 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
                 </Link>
                 <div className="flex items-center">
                   <TickIcon className="h-4 w-4 fill-primary" />
-                  <p className="text-cap-1-demi">Brand</p>
+                  <p className="text-cap-1-demi text-primary">Brand</p>
                 </div>
               </div>
             ) : (
@@ -124,21 +124,23 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
                   </TooltipProvider>
                 )}
                 {community.brand && (
-                  <div className="flex items-center gap-1 rounded-full bg-tertiary-200 p-1">
-                    <CustomAvatar
-                      imageUrl={community.brand?.logo ?? ''}
-                      fallbackString={community.brand?.name ?? ''}
-                      isAvatar={false}
-                      className="h-4 w-4"
-                    />
-                    <p
-                      className="text-cap-1-demi text-secondary"
-                      style={{
-                        maxWidth: '10ch',
-                      }}>
-                      {community.brand?.name}
-                    </p>
-                  </div>
+                  <Link href={{ pathname: PATH_NAME.brand(community.brand.brand_slug) }}>
+                    <div className="flex items-center gap-1 rounded-full bg-tertiary-200 p-1">
+                      <CustomAvatar
+                        imageUrl={community.brand?.logo ?? ''}
+                        fallbackString={community.brand?.name ?? ''}
+                        isAvatar={false}
+                        className="h-4 w-4"
+                      />
+                      <p
+                        className="text-cap-1-demi text-secondary"
+                        style={{
+                          maxWidth: '10ch',
+                        }}>
+                        {community.brand?.name}
+                      </p>
+                    </div>
+                  </Link>
                 )}
               </div>
               <span className="flex h-min flex-1 items-center justify-end gap-x-3">
