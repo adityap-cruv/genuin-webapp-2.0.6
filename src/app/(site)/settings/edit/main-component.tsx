@@ -67,6 +67,7 @@ const formSchema = z.object({
 })
 
 function EditProfile({ profileData, isMobile }: { profileData: ProfileDetailsType; isMobile: boolean }) {
+  const [hasChanged, setHasChanges] = useState(false)
   const { formData } = useAuthenticationModalStore()
   const { data: sessionData, update: updateSession } = useSession()
   const { toast } = useToast()
@@ -84,6 +85,26 @@ function EditProfile({ profileData, isMobile }: { profileData: ProfileDetailsTyp
     },
     mode: 'onBlur',
   })
+
+  useEffect(() => {
+    const w = form.watch((value) => {
+      setHasChanges(true)
+    })
+    return () => {
+      w.unsubscribe()
+    }
+  }, [form.watch])
+
+  useEffect(() => {
+    function beforeLoad(e: BeforeUnloadEvent) {
+      e.preventDefault()
+      return (e.returnValue = '')
+    }
+    window.addEventListener('beforeunload', beforeLoad, { capture: true })
+    return () => {
+      window.removeEventListener('beforeunload', beforeLoad)
+    }
+  }, [hasChanged])
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const { status, user } = await updateUser({
