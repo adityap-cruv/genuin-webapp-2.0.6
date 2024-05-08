@@ -132,7 +132,7 @@ export function CommunityList({ userId }: { userId: string }) {
                         <Link href={{ pathname: PATH_NAME.profile(item.brand?.brand_slug) }}>
                           <div className="flex items-center gap-1 rounded-full bg-tertiary-200 p-1">
                             <CustomAvatar
-                              imageUrl={item.brand?.favicon ?? ''}
+                              imageUrl={item.brand?.logo ?? ''}
                               fallbackString={item.brand?.name ?? ''}
                               isAvatar={false}
                               className="h-4 w-4"
@@ -174,7 +174,7 @@ export function CommunityList({ userId }: { userId: string }) {
                 </div>
               </div>
               <DecorativeList>
-                <Loops userId={userId} community={item} communityId={item.id} />
+                <Loops userId={userId} community={item} communityId={item.id} user={user} pathName={pathName} />
               </DecorativeList>
             </div>
           )
@@ -227,14 +227,32 @@ function PlayerModalWrapper({ userId, currentVideoId }: { userId: string; curren
   )
 }
 
+type User = {
+  bio?: string
+  email?: string | null
+  isAvatar: boolean
+  name?: string | null
+  nickname: string
+  isEmailVerified: boolean
+  isPasswordSet: boolean
+  image?: string | null
+  accessToken: string
+  id?: string
+  ks_cb_request_status?: number
+}
+
 function Loops({
   userId,
   community,
   communityId,
+  pathName,
+  user,
 }: {
   userId: string
   community: ProfileCommunityType
   communityId: string
+  pathName: string
+  user: User | undefined
 }) {
   const addLoops = useCommunityListStore((state) => state.addLoops)
   const { fetchNext, isFetchingNextPage } = getNextPage<ProfileLoopType[]>(
@@ -285,7 +303,7 @@ function Loops({
               </div>
             </div>
           ) : (
-            <LoopVideos userId={userId} loop={item} communityId={communityId} />
+            <LoopVideos userId={userId} loop={item} communityId={communityId} user={user} pathName={pathName} />
           )}
         </li>
       ))}
@@ -323,9 +341,11 @@ type LoopVideosProps = {
   userId: string
   loop: ProfileLoopType
   communityId: string
+  pathName: string
+  user: User | undefined
 }
 
-function LoopVideos({ userId, loop, communityId }: LoopVideosProps) {
+function LoopVideos({ userId, loop, communityId, pathName, user }: LoopVideosProps) {
   const { addVideos, open } = useCommunityListStore((state) => ({
     addVideos: state.addVideos,
     open: state.open,
@@ -384,7 +404,7 @@ function LoopVideos({ userId, loop, communityId }: LoopVideosProps) {
       <Link href={PATH_NAME.loop(loop.slug)}>
         <p className="mb-1 text-body-1-bold">{loop.name}</p>
       </Link>
-      {privacyMessage}
+      {pathName === PATH_NAME.profile(user?.nickname) && privacyMessage}
       <div className="my-2 grid w-full grid-cols-4 gap-2 md:grid-cols-8">
         <InnerComponent />
         {isFetchingNextPage &&

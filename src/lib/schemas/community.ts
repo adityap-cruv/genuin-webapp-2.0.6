@@ -53,6 +53,11 @@ const guidelineSchema = z.object({
   description: z.string(),
 })
 
+const BrandUserSchema = z.object({
+  brand_id: z.number(),
+  brand_slug: z.string(),
+})
+
 const MembersSchema = z.object({
   member_id: z.string(),
   status: z.number(),
@@ -63,6 +68,7 @@ const MembersSchema = z.object({
   profile_image: z.string(),
   role: z.number(),
   phone: z.string().nullish(),
+  brand: BrandUserSchema,
 })
 
 const BrandSchema = z.object({

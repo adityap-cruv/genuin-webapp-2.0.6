@@ -123,7 +123,7 @@ export function MainComponent({ profileData }: CompProps) {
               </>
             )}
             {profileData.brand && (
-              <div className="ml-2 flex items-center gap-1 rounded-full bg-primary-200 p-1">
+              <div className="ml-2 flex items-center gap-1 rounded-full bg-primary-200 p-1 px-1.5">
                 <TickIcon className="h-4 w-4 fill-primary" />
                 <p className="text-cap-1-demi text-primary">Brand</p>
               </div>

@@ -207,7 +207,7 @@ export function Details({ communityDetails }: Props) {
               <Link href={{ pathname: PATH_NAME.profile(communityDetailsModule.brand?.brand_slug) }}>
                 <div className="flex items-center gap-1 rounded-full bg-tertiary-200 p-1 ">
                   <CustomAvatar
-                    imageUrl={communityDetailsModule.brand?.favicon ?? ''}
+                    imageUrl={communityDetailsModule.brand?.logo ?? ''}
                     fallbackString={communityDetailsModule.brand?.name ?? ''}
                     isAvatar={false}
                     className="h-4 w-4"
@@ -220,7 +220,7 @@ export function Details({ communityDetails }: Props) {
           <p className="my-1 line-clamp-2 break-all text-body-1-demi ">{communityDetailsModule?.description}</p>
           <Stats />
         </div>
-        {communityDetails.type === 2 ? (
+        {communityDetailsModule.type === 2 && !communityDetailsModule.logged_in_user_role ? (
           <div
             className="mt-4 flex w-full items-center justify-center overflow-hidden border-t border-tertiary-200"
             style={{ height: 'calc(100% - 220px)' }}>

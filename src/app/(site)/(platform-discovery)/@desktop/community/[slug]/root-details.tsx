@@ -194,7 +194,7 @@ export function RootDetails({ communityDetails }: { communityDetails: CommunityD
               <Link href={{ pathname: PATH_NAME.profile(communityDetailsModule.brand?.brand_slug) }}>
                 <div className="flex items-center gap-1 rounded-full bg-tertiary-200 p-1 ">
                   <CustomAvatar
-                    imageUrl={communityDetailsModule.brand?.favicon ?? ''}
+                    imageUrl={communityDetailsModule.brand?.logo ?? ''}
                     fallbackString={communityDetailsModule.brand?.name ?? ''}
                     isAvatar={false}
                     className="h-4 w-4"
@@ -206,7 +206,7 @@ export function RootDetails({ communityDetails }: { communityDetails: CommunityD
           </span>
         </div>
 
-        {communityDetailsModule.type === 2 ? (
+        {communityDetailsModule.type === 2 && !communityDetailsModule.logged_in_user_role ? (
           <div
             className="mt-4 flex w-full items-center justify-center overflow-hidden"
             style={{ height: 'calc(100% - 285px)', backgroundColor: '#F9F9F9' }}>
@@ -411,19 +411,6 @@ function Members() {
   if (members && members.length !== 0)
     return (
       <div className="py-2">
-        {communityDetailsModule.leader && (
-          <div>
-            <Link href={{ pathname: PATH_NAME.profile(communityDetailsModule.leader.nickname) }}>
-              <ListItem
-                title={communityDetailsModule.leader.name ?? ''}
-                subtitle={'@' + communityDetailsModule.leader.nickname}
-                description={communityDetailsModule.leader.bio ?? ''}
-                image={communityDetailsModule.leader.profile_image}
-                isAvatar={communityDetailsModule.leader.is_avatar}
-              />
-            </Link>
-          </div>
-        )}
         {members.map((member: MembersSchemaType, index: number) => {
           if (member.nickname)
             return (

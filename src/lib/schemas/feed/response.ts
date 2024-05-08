@@ -46,6 +46,7 @@ const messageSchema = z.object({
   message_at: z.number().nullish(),
   owner: ownerSchema,
   meta_data: metaDataSchema,
+  brand: BrandUserSchema,
 })
 
 const BrandSchema = z.object({

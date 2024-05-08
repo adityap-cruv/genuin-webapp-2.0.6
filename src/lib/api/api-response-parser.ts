@@ -83,10 +83,10 @@ export function parseFeedResponse(videos: FeedResponseType) {
         profileImage: video.messages[0].owner.profile_image,
         userName: video.messages[0].owner.username,
         name: video.messages[0].owner.name,
-        brand: video.community?.brand
+        brand: video.messages[0]?.owner.brand
           ? {
-              brand_id: video.community.brand.brand_id,
-              brand_slug: video.community.brand.brand_slug,
+              brand_id: video.messages[0].owner.brand?.brand_id,
+              brand_slug: video.messages[0].owner.brand?.brand_slug,
             }
           : null,
       },

@@ -112,7 +112,7 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
                   <Link href={{ pathname: PATH_NAME.profile(community.brand?.brand_slug) }}>
                     <div className="flex items-center gap-1 rounded-full bg-tertiary-200 p-1">
                       <CustomAvatar
-                        imageUrl={community.brand?.favicon ?? ''}
+                        imageUrl={community.brand?.logo ?? ''}
                         fallbackString={community.brand?.name ?? ''}
                         isAvatar={false}
                         className="h-4 w-4"
