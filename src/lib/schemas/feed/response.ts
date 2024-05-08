@@ -1,5 +1,12 @@
 import { z } from 'zod'
 
+const BrandUserSchema = z
+  .object({
+    brand_id: z.number(),
+    brand_slug: z.string(),
+  })
+  .nullish()
+
 const ownerSchema = z.object({
   member_id: z.string(),
   name: z.string().nullish(),
@@ -8,6 +15,7 @@ const ownerSchema = z.object({
   bio: z.string().nullish(),
   is_avatar: z.boolean(),
   profile_image: z.string(),
+  brand: BrandUserSchema,
 })
 
 // Define the meta data schema
@@ -38,11 +46,25 @@ const messageSchema = z.object({
   message_at: z.number().nullish(),
   owner: ownerSchema,
   meta_data: metaDataSchema,
+  brand: BrandUserSchema,
+})
+
+const BrandSchema = z.object({
+  brand_id: z.number(),
+  name: z.string(),
+  subdomain: z.string(),
+  logo: z.string().url(),
+  created_at: z.number(),
+  brand_web_logo: z.string().url(),
+  favicon: z.string().url(),
+  brand_system_user_id: z.string(),
+  brand_slug: z.string(),
 })
 
 // Define the community schema
 const communitySchema = z
   .object({
+    brand: BrandSchema,
     community_id: z.string(),
     handle: z.string(),
     slug: z.string(),

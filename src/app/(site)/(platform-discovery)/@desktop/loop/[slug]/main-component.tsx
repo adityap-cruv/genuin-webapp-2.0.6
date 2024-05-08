@@ -24,6 +24,7 @@ import Error from '../../error'
 import { Shimmer } from '@components/ui/shimmer'
 import { LockIcon } from '@icons/LockIcon'
 import { loopPrivacyInfo } from '@components/common/loop-privacy-info'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@components/ui/tooltip'
 
 interface Props {
   loopDetails: LoopDetailsType
@@ -174,20 +175,36 @@ export function MainComponent({ loopDetails }: Props) {
               </span>
               <span className="flex-1">
                 <p className="text-body-1-demi text-tertiary">Posted in</p>
-                <Link href={{ pathname: PATH_NAME.community(loopDetails.community.slug) }}>
-                  <div className="my-2 flex items-center">
-                    <CustomAvatar
-                      imageUrl={loopDetails.community.dp ?? ''}
-                      fallbackString={loopDetails.community.name ?? ''}
-                      isAvatar={false}
-                      className="h-8 w-8"
-                    />
-                    <p className="ml-1 line-clamp-1 break-all text-body-1-bold text-secondary">
-                      {loopDetails.community.name}
-                    </p>
-                    {loopDetails.community.type === 2 && <LockIcon className="ml-1 h-4 w-4 stroke-tertiary" />}
-                  </div>
-                </Link>
+                <div className="my-2 flex items-center">
+                  <Link href={{ pathname: PATH_NAME.community(loopDetails.community.slug) }}>
+                    <div className="flex items-center">
+                      <CustomAvatar
+                        imageUrl={loopDetails.community.dp ?? ''}
+                        fallbackString={loopDetails.community.name ?? ''}
+                        isAvatar={false}
+                        className="h-8 w-8"
+                      />
+                      <p className="ml-1 line-clamp-1 break-all text-body-1-bold text-secondary">
+                        {loopDetails.community.name}
+                      </p>
+                    </div>
+                  </Link>
+                  {loopDetails.community.type === 2 && (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <LockIcon className="z-10 ml-1 h-4 w-4 stroke-tertiary" />
+                        </TooltipTrigger>
+                        <TooltipContent className="w-64 bg-monochrome-black">
+                          <p className="text-center text-cap-1-med text-monochrome-white">
+                            This community is private. Only people approved by it's moderators can see and participate
+                            in this community.
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  )}
+                </div>
               </span>
             </span>
             <Stats

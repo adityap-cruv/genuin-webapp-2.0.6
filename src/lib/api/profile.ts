@@ -15,8 +15,7 @@ export async function fetchUserData(nickname: string) {
       nickname,
     })
     .then((res) => {
-      // TODO ADD BRAND OBJECT VALIDATION
-      return res.data.data
+      return validateProfileDetails(res.data.data)
     })
     .catch((e) => {
       throw new Error('Something went wrong in profile details api.')
@@ -136,6 +135,7 @@ export async function fetchProfileFeed(userId: string, pageParam?: { lastMessage
     .then((res) => {
       const resData = res.data.data
       pageSession = resData.page_session
+      console.log('resData', resData)
       return { feed: parseFeedResponse(resData.feeds), end: resData.end_of_messages }
     })
     .catch((e) => {

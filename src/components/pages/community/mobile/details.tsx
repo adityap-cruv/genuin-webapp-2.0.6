@@ -190,22 +190,43 @@ export function Details({ communityDetails }: Props) {
               </Button> */}
             </div>
           </div>
-          <div ref={detailsDivRef} className="flex items-center justify-start gap-2 pt-2">
-            <p className="my-1 mt-2 line-clamp-1 break-all text-title-3-bold ">{communityDetailsModule?.name}</p>
-            <p className="text-body-1-med text-tertiary">@{communityDetails.handle}</p>
-            {communityDetailsModule.type === 2 && (
-              <PrivateModal>
-                <div className="flex items-center justify-center rounded-full bg-tertiary-200 p-1 px-1.5">
-                  <LockIcon className="h-4 w-4 stroke-tertiary" />
-                  <p className="text-cap-1-demi text-tertiary">Private</p>
+          <div ref={detailsDivRef} className="flex items-center justify-between gap-2 pt-2">
+            <div className="flex items-center">
+              <p className="my-1 mt-2 line-clamp-1 break-all text-title-3-bold ">{communityDetailsModule?.name}</p>
+              {/* <p className="text-body-1-med text-tertiary">@{communityDetails.handle}</p> */}
+              {communityDetailsModule.type === 2 && (
+                <PrivateModal>
+                  <div className="flex items-center justify-center rounded-full bg-tertiary-200 p-1 px-1.5">
+                    <LockIcon className="h-4 w-4 stroke-tertiary" />
+                    <p className="text-cap-1-demi text-tertiary">Private</p>
+                  </div>
+                </PrivateModal>
+              )}
+            </div>
+            {communityDetailsModule.brand && (
+              <Link href={{ pathname: PATH_NAME.brand(communityDetailsModule.brand.brand_slug) }}>
+                <div className="flex items-center gap-1 rounded-full bg-tertiary-200 p-1 ">
+                  <CustomAvatar
+                    imageUrl={communityDetailsModule.brand?.logo ?? ''}
+                    fallbackString={communityDetailsModule.brand?.name ?? ''}
+                    isAvatar={false}
+                    className="h-4 w-4"
+                  />
+                  <p
+                    className="text-cap-1-demi text-secondary"
+                    style={{
+                      maxWidth: '10ch',
+                    }}>
+                    {communityDetailsModule.brand?.name}
+                  </p>
                 </div>
-              </PrivateModal>
+              </Link>
             )}
           </div>
           <p className="my-1 line-clamp-2 break-all text-body-1-demi ">{communityDetailsModule?.description}</p>
           <Stats />
         </div>
-        {communityDetails.type === 2 ? (
+        {communityDetailsModule.type === 2 && !communityDetailsModule.logged_in_user_role ? (
           <div
             className="mt-4 flex w-full items-center justify-center overflow-hidden border-t border-tertiary-200"
             style={{ height: 'calc(100% - 220px)' }}>
@@ -465,19 +486,6 @@ function Members() {
     return (
       <div>
         {/* <p className="my-2 text-title-3-bold">Members</p> */}
-        {communityDetailsModule.leader && (
-          <div>
-            <Link href={{ pathname: PATH_NAME.profile(communityDetailsModule.leader.nickname) }}>
-              <ListItem
-                title={communityDetailsModule.leader.name ?? ''}
-                subtitle={'@' + communityDetailsModule.leader.nickname}
-                description={communityDetailsModule.leader.bio ?? ''}
-                image={communityDetailsModule.leader.profile_image}
-                isAvatar={communityDetailsModule.leader.is_avatar}
-              />
-            </Link>
-          </div>
-        )}
         {members.map((member: MembersSchemaType, index: number) => {
           if (member.nickname)
             return (

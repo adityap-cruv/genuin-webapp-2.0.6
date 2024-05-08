@@ -30,6 +30,7 @@ import { Loader } from '@components/ui/loader'
 import Loading from './loading'
 import { Shimmer } from '@components/ui/shimmer'
 import { LockIcon } from '@icons/LockIcon'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@components/ui/tooltip'
 
 let communityDetailsModule: CommunityDetailsType
 
@@ -185,15 +186,46 @@ export function RootDetails({ communityDetails }: { communityDetails: CommunityD
             <p className="text-title-1-bold">{communityDetails.name}</p>
             <p className="text-body-1-med text-tertiary">@{communityDetails.handle}</p>
             {communityDetailsModule.type === 2 && (
-              <div className="flex items-center justify-center rounded-full bg-tertiary-200 p-1 px-1.5">
-                <LockIcon className="h-4 w-4 stroke-tertiary" />
-                <p className="text-cap-1-demi text-tertiary">Private</p>
-              </div>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="flex items-center justify-center rounded-full bg-tertiary-200 p-1 px-1.5">
+                      <LockIcon className="h-4 w-4 stroke-tertiary" />
+                      <p className="text-cap-1-demi text-tertiary">Private</p>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent className="w-64 bg-monochrome-black">
+                    <p className="text-cap-1-med text-monochrome-white">
+                      This community is private. Only people approved by it's moderators can see and participate in this
+                      community.
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+            {communityDetailsModule.brand && (
+              <Link href={{ pathname: PATH_NAME.brand(communityDetailsModule.brand.brand_slug) }}>
+                <div className="flex items-center gap-1 rounded-full bg-tertiary-200 p-1 ">
+                  <CustomAvatar
+                    imageUrl={communityDetailsModule.brand?.logo ?? ''}
+                    fallbackString={communityDetailsModule.brand?.name ?? ''}
+                    isAvatar={false}
+                    className="h-4 w-4"
+                  />
+                  <p
+                    className="truncate text-cap-1-demi text-secondary"
+                    style={{
+                      maxWidth: '10ch',
+                    }}>
+                    {communityDetailsModule.brand?.name}
+                  </p>
+                </div>
+              </Link>
             )}
           </span>
         </div>
 
-        {communityDetailsModule.type === 2 ? (
+        {communityDetailsModule.type === 2 && !communityDetailsModule.logged_in_user_role ? (
           <div
             className="mt-4 flex w-full items-center justify-center overflow-hidden"
             style={{ height: 'calc(100% - 285px)', backgroundColor: '#F9F9F9' }}>
@@ -398,19 +430,6 @@ function Members() {
   if (members && members.length !== 0)
     return (
       <div className="py-2">
-        {communityDetailsModule.leader && (
-          <div>
-            <Link href={{ pathname: PATH_NAME.profile(communityDetailsModule.leader.nickname) }}>
-              <ListItem
-                title={communityDetailsModule.leader.name ?? ''}
-                subtitle={'@' + communityDetailsModule.leader.nickname}
-                description={communityDetailsModule.leader.bio ?? ''}
-                image={communityDetailsModule.leader.profile_image}
-                isAvatar={communityDetailsModule.leader.is_avatar}
-              />
-            </Link>
-          </div>
-        )}
         {members.map((member: MembersSchemaType, index: number) => {
           if (member.nickname)
             return (

@@ -23,6 +23,7 @@ import { type ProfileDetailsType } from '@lib/schemas/profile/profile'
 import { CommunityList } from './community-list'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { usePathname } from 'next/navigation'
+import { TickIcon } from '@icons/tick-icon'
 
 interface CompProps {
   profileData: ProfileDetailsType
@@ -76,6 +77,7 @@ export function MainComponent({ profileData }: CompProps) {
               </>
             )}
           </div>
+
           <p className="my-1 line-clamp-2 break-all text-body-1-med">{profileData?.bio}</p>
           <Stats profileData={profileData} />
         </div>

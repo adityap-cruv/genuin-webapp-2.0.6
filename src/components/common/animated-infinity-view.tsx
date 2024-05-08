@@ -7,6 +7,7 @@ import { PATH_NAME } from '@lib/utils/constants/path'
 import leftImg from '@images/infinity-splits/infinity-left.svg'
 import rightImg from '@images/infinity-splits/infinity-right.svg'
 import { LockIcon } from '@icons/LockIcon'
+import { PrivateModal } from './modals/private'
 type Props = {
   community: {
     name: string
@@ -99,7 +100,11 @@ export function AnimatedInfinityView({ community, loop }: Props) {
                 <p className="line-clamp-1 w-full break-all text-body-1-med text-monochrome-white">
                   {localState.communityName}
                 </p>
-                {community.type === 2 && <LockIcon className="h-5 w-5 stroke-tertiary" />}
+                {community.type === 2 && (
+                  <PrivateModal>
+                    <LockIcon className="h-5 w-5 stroke-tertiary" />
+                  </PrivateModal>
+                )}
               </div>
               <p className="line-clamp-1 w-full break-all text-cap-1-med text-monochrome-white/60">Browse Community</p>
             </span>

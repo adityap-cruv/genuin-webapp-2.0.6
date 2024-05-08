@@ -21,6 +21,7 @@ import { type ProfileDetailsType } from '@lib/schemas/profile/profile'
 import { CommunityList } from './community-list'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { usePathname } from 'next/navigation'
+import { TickIcon } from '@icons/tick-icon'
 
 interface CompProps {
   profileData: ProfileDetailsType

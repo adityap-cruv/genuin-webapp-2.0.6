@@ -25,6 +25,7 @@ import Error from '../../error'
 import { Shimmer } from '@components/ui/shimmer'
 import { LockIcon } from '@icons/LockIcon'
 import { loopPrivacyInfo } from '@components/common/loop-privacy-info'
+import { PrivateModal } from '@components/common/modals/private'
 
 let loopDetailsModule: LoopDetailsType
 
@@ -130,7 +131,13 @@ export function MainComponent({ loopDetails }: Props) {
                     <p className="ml-1 line-clamp-1 break-all text-body-1-bold text-secondary">
                       {loopDetails.community.name}
                     </p>
-                    {loopDetails.community.type === 2 && <LockIcon className="ml-1 h-4 w-4 stroke-tertiary" />}
+                    {loopDetails.community.type === 2 && (
+                      <>
+                        <PrivateModal>
+                          <LockIcon className="ml-1 h-4 w-4 stroke-tertiary" />
+                        </PrivateModal>
+                      </>
+                    )}
                   </div>
                 </Link>
               </div>
