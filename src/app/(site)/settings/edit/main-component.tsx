@@ -87,14 +87,14 @@ function EditProfile({ profileData, isMobile }: { profileData: ProfileDetailsTyp
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const { status, user } = await updateUser({
-      name: values.displayName,
-      bio: values.bio,
+      name: values.displayName ? values.displayName : null,
+      bio: values.bio ? values.bio : null,
       is_avatar: formData.imageName ? formData.isAvatar : undefined,
       profile_image: formData.imageName,
-      insta_id: values.instagram ?? null,
-      linkedin_id: values.linkedIn ?? null,
-      twitter_id: values.twitter ?? null,
-      tiktok_id: values.tiktok ?? null,
+      insta_id: values.instagram ? values.instagram : null,
+      linkedin_id: values.linkedIn ? values.linkedIn : null,
+      twitter_id: values.twitter ? values.twitter : null,
+      tiktok_id: values.tiktok ? values.tiktok : null,
     })
     if (status) {
       await updateSession({

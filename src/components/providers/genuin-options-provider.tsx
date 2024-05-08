@@ -164,7 +164,7 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
     <>
       {children}
       <AuthenticationModal />
-      {!config && <DownloadDialogModal />}
+      <DownloadDialogModal />
     </>
   )
 }
