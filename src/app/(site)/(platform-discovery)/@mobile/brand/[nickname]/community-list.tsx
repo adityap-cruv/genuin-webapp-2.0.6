@@ -27,8 +27,8 @@ import { EarthIcon } from '@icons/earth-icon'
 import { loopPrivacyInfo } from '@components/common/loop-privacy-info'
 import { PrivateModal } from '@components/common/modals/private'
 
-export function CommunityList({ userId, scrollYProgress }: { userId: string; scrollYProgress: MotionValue<number> }) {
-  const { data, isLoading, fetchNextPage, isFetchingNextPage } = getCommunities(userId, 8)
+export function CommunityList({ brandId, scrollYProgress }: { brandId: number; scrollYProgress: MotionValue<number> }) {
+  const { data, isLoading, fetchNextPage, isFetchingNextPage } = getCommunities(brandId, 8)
   const communities = data?.pages.flatMap((item) => item.communities)
   const [communityJoinStates, setCommunityJoinStates] = useState<Record<string, boolean>>({})
   const user = useGenuinOptions().user
@@ -182,7 +182,7 @@ export function CommunityList({ userId, scrollYProgress }: { userId: string; scr
                 </div>
               </div>
               <DecorativeList>
-                <Loops userId={userId} community={item} communityId={item.id} user={user} pathName={pathName} />
+                <Loops brandId={brandId} community={item} communityId={item.id} user={user} pathName={pathName} />
               </DecorativeList>
             </div>
           )
@@ -200,13 +200,13 @@ export function CommunityList({ userId, scrollYProgress }: { userId: string; scr
   return (
     <div className="h-full w-full p-4">
       <Inner />
-      {currentVideoId && <PlayerModalWrapper userId={userId} currentVideoId={currentVideoId} />}
+      {currentVideoId && <PlayerModalWrapper brandId={brandId} currentVideoId={currentVideoId} />}
     </div>
   )
 }
 
-function PlayerModalWrapper({ userId, currentVideoId }: { userId: string; currentVideoId: string }) {
-  const { data, isLoading, fetchNextPage } = getProfileFeed(userId, currentVideoId)
+function PlayerModalWrapper({ brandId, currentVideoId }: { brandId: number; currentVideoId: string }) {
+  const { data, isLoading, fetchNextPage } = getProfileFeed(brandId, currentVideoId)
   const { close } = useCommunityListStore()
   const videos = data?.pages.flatMap((item) => item.feed)
 
@@ -239,13 +239,13 @@ type User = {
 }
 
 function Loops({
-  userId,
+  brandId,
   community,
   communityId,
   pathName,
   user,
 }: {
-  userId: string
+  brandId: number
   community: ProfileCommunityType
   communityId: string
   pathName: string
@@ -254,7 +254,7 @@ function Loops({
   const addLoops = useCommunityListStore((state) => state.addLoops)
   const { fetchNext, isFetchingNextPage } = getNextPage<ProfileLoopType[]>(
     async () =>
-      await fetchProfileCommunityLoops(userId, 16, communityId, community.loops[community.loops.length - 1].id),
+      await fetchProfileCommunityLoops(brandId, 16, communityId, community.loops[community.loops.length - 1].id),
     (data) => {
       addLoops(communityId, data)
     }
@@ -299,7 +299,7 @@ function Loops({
               </div>
             </div>
           ) : (
-            <LoopVideos userId={userId} loop={item} communityId={communityId} user={user} pathName={pathName} />
+            <LoopVideos brandId={brandId} loop={item} communityId={communityId} user={user} pathName={pathName} />
           )}
         </li>
       ))}
@@ -334,14 +334,14 @@ function Loops({
 }
 
 type LoopVideosProps = {
-  userId: string
+  brandId: number
   loop: ProfileLoopType
   communityId: string
   pathName: string
   user: User | undefined
 }
 
-function LoopVideos({ userId, loop, communityId, pathName, user }: LoopVideosProps) {
+function LoopVideos({ brandId, loop, communityId, pathName, user }: LoopVideosProps) {
   const { addVideos, open } = useCommunityListStore((state) => ({
     addVideos: state.addVideos,
     open: state.open,
@@ -349,7 +349,7 @@ function LoopVideos({ userId, loop, communityId, pathName, user }: LoopVideosPro
   const privacyMessage = loopPrivacyInfo(loop?.actions?.[0]?.action_id ?? 0, loop?.actions?.[0]?.access_type_id ?? 0)
 
   const { fetchNext, isFetchingNextPage } = getNextPage<ProfileVideoType[]>(
-    async () => await fetchProfileVideos(userId, 16, communityId, loop.id, loop.videos[loop.videos.length - 1].id),
+    async () => await fetchProfileVideos(brandId, 16, communityId, loop.id, loop.videos[loop.videos.length - 1].id),
     (data) => {
       addVideos(communityId, loop.id, data)
     }
