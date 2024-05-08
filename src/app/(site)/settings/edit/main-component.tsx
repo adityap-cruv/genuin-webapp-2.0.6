@@ -96,6 +96,7 @@ function EditProfile({ profileData, isMobile }: { profileData: ProfileDetailsTyp
   }, [form.watch])
 
   useEffect(() => {
+    if (!hasChanged) return
     function beforeLoad(e: BeforeUnloadEvent) {
       e.preventDefault()
       return (e.returnValue = '')
