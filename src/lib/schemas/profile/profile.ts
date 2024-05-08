@@ -1,12 +1,4 @@
 import { z } from 'zod'
-const BrandDetailsSchema = z.object({
-  brand_id: z.number(),
-  videos:  z.number(),
-  views: z.number(),
-  no_of_communities:  z.number(),
-  brand_slug: z.string(),
-  brand_url: z.string(),
-  })
 
 const brandSchema = z
   .object({
@@ -47,7 +39,6 @@ const ProfileDetailsSchema = z.object({
   no_of_communities: z.number(),
   videos: z.number(),
   views: z.string().or(z.number()),
-  brand : BrandDetailsSchema.nullish()
 })
 
 export type ProfileDetailsType = z.infer<typeof ProfileDetailsSchema>
