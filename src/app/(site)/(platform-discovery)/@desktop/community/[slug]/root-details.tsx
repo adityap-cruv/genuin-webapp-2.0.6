@@ -394,13 +394,17 @@ function Leaders() {
   return (
     <div className="mb-4">
       <p className="my-2 text-title-3-bold">Leader</p>
-      <Link href={{ pathname: PATH_NAME.profile(leader.nickname) }}>
+      <Link
+        href={{
+          pathname: leader.brand ? PATH_NAME.brand(leader.brand.brand_slug) : PATH_NAME.profile(leader.nickname),
+        }}>
         <ListItem
           title={leader.name ?? ''}
           subtitle={'@' + leader.nickname}
           description={leader.bio ?? ''}
           image={leader.profile_image}
           isAvatar={leader.is_avatar}
+          brand={leader.brand ?? null}
         />
       </Link>
     </div>
@@ -433,13 +437,20 @@ function Members() {
         {members.map((member: MembersSchemaType, index: number) => {
           if (member.nickname)
             return (
-              <Link key={index} href={{ pathname: PATH_NAME.profile(member.nickname) }}>
+              <Link
+                key={index}
+                href={{
+                  pathname: member.brand
+                    ? PATH_NAME.brand(member.brand.brand_slug)
+                    : PATH_NAME.profile(member.nickname),
+                }}>
                 <ListItem
                   title={member.name ?? ''}
                   subtitle={'@' + member.nickname}
                   description={member?.bio ?? ''}
                   image={member.profile_image}
                   isAvatar={member.is_avatar}
+                  brand={member.brand ?? null}
                 />
               </Link>
             )

@@ -1,5 +1,10 @@
 import { z } from 'zod'
 
+const BrandUserSchema = z.object({
+  brand_id: z.number(),
+  brand_slug: z.string(),
+})
+
 const socialLinksSchema = z.object({
   social_web_url: z.string().nullish(),
   twitter: z
@@ -43,6 +48,7 @@ const leaderSchema = z.object({
   is_avatar: z.boolean(),
   profile_image: z.string(),
   role: z.number().optional(),
+  brand: BrandUserSchema,
 })
 
 const guidelineSchema = z.object({
@@ -51,11 +57,6 @@ const guidelineSchema = z.object({
   title: z.string(),
   guideline_id: z.number(),
   description: z.string(),
-})
-
-const BrandUserSchema = z.object({
-  brand_id: z.number(),
-  brand_slug: z.string(),
 })
 
 const MembersSchema = z.object({

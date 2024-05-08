@@ -67,6 +67,7 @@ const formSchema = z.object({
 })
 
 function EditProfile({ profileData, isMobile }: { profileData: ProfileDetailsType; isMobile: boolean }) {
+  const [hasChanged, setHasChanges] = useState(false)
   const { formData } = useAuthenticationModalStore()
   const { data: sessionData, update: updateSession } = useSession()
   const { toast } = useToast()
@@ -85,16 +86,37 @@ function EditProfile({ profileData, isMobile }: { profileData: ProfileDetailsTyp
     mode: 'onBlur',
   })
 
+  useEffect(() => {
+    const w = form.watch((value) => {
+      setHasChanges(true)
+    })
+    return () => {
+      w.unsubscribe()
+    }
+  }, [form.watch])
+
+  useEffect(() => {
+    if (!hasChanged) return
+    function beforeLoad(e: BeforeUnloadEvent) {
+      e.preventDefault()
+      return (e.returnValue = '')
+    }
+    window.addEventListener('beforeunload', beforeLoad, { capture: true })
+    return () => {
+      window.removeEventListener('beforeunload', beforeLoad)
+    }
+  }, [hasChanged])
+
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const { status, user } = await updateUser({
-      name: values.displayName,
-      bio: values.bio,
+      name: values.displayName ? values.displayName : null,
+      bio: values.bio ? values.bio : null,
       is_avatar: formData.imageName ? formData.isAvatar : undefined,
       profile_image: formData.imageName,
-      insta_id: values.instagram ?? null,
-      linkedin_id: values.linkedIn ?? null,
-      twitter_id: values.twitter ?? null,
-      tiktok_id: values.tiktok ?? null,
+      insta_id: values.instagram ? values.instagram : null,
+      linkedin_id: values.linkedIn ? values.linkedIn : null,
+      twitter_id: values.twitter ? values.twitter : null,
+      tiktok_id: values.tiktok ? values.tiktok : null,
     })
     if (status) {
       await updateSession({

@@ -1,5 +1,10 @@
 import { z } from 'zod'
 
+const BrandUserSchema = z.object({
+  brand_id: z.number(),
+  brand_slug: z.string(),
+})
+
 const ownerSchema = z.object({
   member_id: z.string(),
   name: z.string().nullish(),
@@ -8,6 +13,7 @@ const ownerSchema = z.object({
   phone: z.string().nullish(),
   is_avatar: z.boolean(),
   profile_image: z.string(),
+  brand: BrandUserSchema,
 })
 
 // Define group schema

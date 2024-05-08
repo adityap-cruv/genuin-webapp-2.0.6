@@ -28,6 +28,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@c
 import { Shimmer } from '@components/ui/shimmer'
 import { LockIcon } from '@icons/LockIcon'
 import { PrivateModal } from '@components/common/modals/private'
+import { TickIcon } from '@icons/tick-icon'
 
 let communityDetailsModule: CommunityDetailsType
 
@@ -419,13 +420,17 @@ function Leaders() {
   return (
     <div className="mb-4">
       <p className="my-2 text-title-3-bold">Leader</p>
-      <Link href={{ pathname: PATH_NAME.profile(leader.nickname) }}>
+      <Link
+        href={{
+          pathname: leader.brand ? PATH_NAME.brand(leader.brand.brand_slug) : PATH_NAME.profile(leader.nickname),
+        }}>
         <ListItem
           title={leader.name ?? ''}
           subtitle={'@' + leader.nickname}
           description={leader.bio ?? ''}
           image={leader.profile_image}
           isAvatar={leader.is_avatar}
+          brand={leader.brand ?? null}
         />
       </Link>
     </div>
@@ -438,12 +443,17 @@ function ListItem({
   description,
   image,
   isAvatar,
+  brand,
 }: {
   title: string
   subtitle?: string
   description?: string
   image?: string
   isAvatar: boolean
+  brand?: {
+    brand_id: number
+    brand_slug: string
+  }
 }) {
   return (
     <div className="flex items-center gap-x-1 rounded-lg p-2">
@@ -454,7 +464,15 @@ function ListItem({
         isAvatar={isAvatar}
       />
       <div className="mx-2">
-        <p className="line-clamp-1 text-body-1-bold ">{subtitle}</p>
+        <div className="flex items-center gap-2">
+          <p className="line-clamp-1 text-body-1-bold ">{subtitle}</p>
+          {brand && (
+            <div className="flex items-center gap-0.5">
+              <TickIcon className="h-3 w-3 fill-primary" />
+              <p className="text-cap-2-demi text-primary">Brand</p>
+            </div>
+          )}
+        </div>
         {subtitle && <p className="line-clamp-1 text-body-1-demi ">{title}</p>}
         {description && <p className="line-clamp-1 text-cap-1-demi text-tertiary">{description}</p>}
       </div>
@@ -489,13 +507,20 @@ function Members() {
         {members.map((member: MembersSchemaType, index: number) => {
           if (member.nickname)
             return (
-              <Link key={index} href={{ pathname: PATH_NAME.profile(member.nickname) }}>
+              <Link
+                key={index}
+                href={{
+                  pathname: member.brand
+                    ? PATH_NAME.brand(member.brand.brand_slug)
+                    : PATH_NAME.profile(member.nickname),
+                }}>
                 <ListItem
                   title={member.name ?? ''}
                   subtitle={'@' + member.nickname}
                   description={member?.bio ?? ''}
                   image={member.profile_image}
                   isAvatar={member.is_avatar}
+                  brand={member.brand ?? null}
                 />
               </Link>
             )

@@ -71,11 +71,11 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
             {owner.brand ? (
               <div className="flex items-center gap-1">
                 <Link href={PATH_NAME.brand(owner.brand.brand_slug)}>
-                  <p className="line-clamp-1 break-all text-title-3-demi">{owner.userName}</p>
+                  <p className="line-clamp-1 break-all text-title-3-demi">@{owner.userName}</p>
                 </Link>
                 <div className="flex items-center">
-                  <TickIcon className="h-4 w-4 fill-primary" />
-                  <p className="text-cap-1-demi text-primary">Brand</p>
+                  <TickIcon className="h-3 w-3 fill-primary" />
+                  <p className="text-cap-2-demi text-primary">Brand</p>
                 </div>
               </div>
             ) : (

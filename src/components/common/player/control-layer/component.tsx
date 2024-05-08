@@ -165,11 +165,11 @@ function Loop({
                   fallbackString={owner.name ?? 'U'}
                   isAvatar={owner.isAvatar}
                 />
-                <p className="line-clamp-1 px-2 text-title-3-bold text-monochrome-white">{owner.userName}</p>
+                <p className="line-clamp-1 px-2 text-title-3-bold text-monochrome-white">@{owner.userName}</p>
               </Link>
-              <div className="flex items-center gap-1">
-                <TickIcon className="h-4 w-4 fill-monochrome-white" />
-                <p className="text-cap-1-demi text-monochrome-white">Brand</p>
+              <div className="flex items-center gap-0.5">
+                <TickIcon className="h-3 w-3 fill-primary" />
+                <p className="text-cap-2-demi text-primary">Brand</p>
               </div>
             </div>
           ) : (
