@@ -204,17 +204,21 @@ export function Details({ communityDetails }: Props) {
               )}
             </div>
             {communityDetailsModule.brand && (
-              <Link href={{ pathname: PATH_NAME.profile(communityDetailsModule.brand?.brand_slug) }}>
-                <div className="flex items-center gap-1 rounded-full bg-tertiary-200 p-1 ">
-                  <CustomAvatar
-                    imageUrl={communityDetailsModule.brand?.logo ?? ''}
-                    fallbackString={communityDetailsModule.brand?.name ?? ''}
-                    isAvatar={false}
-                    className="h-4 w-4"
-                  />
-                  <p className="text-cap-1-demi text-secondary">{communityDetailsModule.brand?.name}</p>
-                </div>
-              </Link>
+              <div className="flex items-center gap-1 rounded-full bg-tertiary-200 p-1 ">
+                <CustomAvatar
+                  imageUrl={communityDetailsModule.brand?.logo ?? ''}
+                  fallbackString={communityDetailsModule.brand?.name ?? ''}
+                  isAvatar={false}
+                  className="h-4 w-4"
+                />
+                <p
+                  className="text-cap-1-demi text-secondary"
+                  style={{
+                    maxWidth: '10ch',
+                  }}>
+                  {communityDetailsModule.brand?.name}
+                </p>
+              </div>
             )}
           </div>
           <p className="my-1 line-clamp-2 break-all text-body-1-demi ">{communityDetailsModule?.description}</p>

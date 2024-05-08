@@ -24,6 +24,7 @@ import { LockIcon } from '@icons/LockIcon'
 import { usePathname } from 'next/navigation'
 import { EarthIcon } from '@icons/earth-icon'
 import { loopPrivacyInfo } from '@components/common/loop-privacy-info'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@components/ui/tooltip'
 
 export function CommunityList({ userId }: { userId: string }) {
   const { data, isLoading, fetchNextPage, isFetchingNextPage } = getCommunities(userId, 8)
@@ -129,24 +130,40 @@ export function CommunityList({ userId }: { userId: string }) {
                         </p>
                       </Link>
                       {item.brand && (
-                        <Link href={{ pathname: PATH_NAME.profile(item.brand?.brand_slug) }}>
-                          <div className="flex items-center gap-1 rounded-full bg-tertiary-200 p-1">
-                            <CustomAvatar
-                              imageUrl={item.brand?.logo ?? ''}
-                              fallbackString={item.brand?.name ?? ''}
-                              isAvatar={false}
-                              className="h-4 w-4"
-                            />
-                            <p className="text-cap-1-demi text-secondary">{item.brand?.name}</p>
-                          </div>
-                        </Link>
+                        <div className="flex items-center gap-1 rounded-full bg-tertiary-200 p-1">
+                          <CustomAvatar
+                            imageUrl={item.brand?.logo ?? ''}
+                            fallbackString={item.brand?.name ?? ''}
+                            isAvatar={false}
+                            className="h-4 w-4"
+                          />
+                          <p
+                            className="text-cap-1-demi text-secondary"
+                            style={{
+                              maxWidth: '10ch',
+                            }}>
+                            {item.brand?.name}
+                          </p>
+                        </div>
                       )}
                     </div>
                     {item.type === 2 && (
-                      <div className="flex items-center justify-start rounded-full">
-                        <LockIcon className="h-4 w-4 stroke-tertiary" />
-                        <p className="text-cap-1-demi text-tertiary">Private</p>
-                      </div>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="flex items-center justify-start rounded-full">
+                              <LockIcon className="h-4 w-4 stroke-tertiary" />
+                              <p className="text-cap-1-demi text-tertiary">Private</p>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent className="w-64 bg-monochrome-black">
+                            <p className="text-center text-cap-1-med text-monochrome-white">
+                              This community is private. Only people approved by it's moderators can see and participate
+                              in this community.
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     )}
                     {item.type !== 2 && pathName === PATH_NAME.profile(user?.nickname) && (
                       <div className="mb-2 flex items-center justify-start gap-1 rounded-full">

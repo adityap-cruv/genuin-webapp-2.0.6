@@ -122,12 +122,6 @@ export function MainComponent({ profileData }: CompProps) {
                 <p className="line-clamp-1 pr-2 text-title-3-bold text-tertiary">@{profileData.nickname}</p>
               </>
             )}
-            {profileData.brand && (
-              <div className="ml-2 flex items-center gap-1 rounded-full bg-primary-200 p-1 px-1.5">
-                <TickIcon className="h-4 w-4 fill-primary" />
-                <p className="text-cap-1-demi text-primary">Brand</p>
-              </div>
-            )}
           </div>
           <p className="my-1 line-clamp-2 text-body-1-demi">{profileData?.bio}</p>
           <Stats profileData={profileData} />

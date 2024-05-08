@@ -158,7 +158,7 @@ function Loop({
             <div className="flex items-center">
               <Link
                 className="flex cursor-pointer items-center hover:opacity-60"
-                href={{ pathname: PATH_NAME.profile(owner.brand.brand_slug) }}>
+                href={{ pathname: PATH_NAME.brand(owner.brand.brand_slug) }}>
                 <CustomAvatar
                   className="bg-red-40"
                   imageUrl={owner.profileImage}
@@ -168,8 +168,8 @@ function Loop({
                 <p className="line-clamp-1 px-2 text-title-3-bold text-monochrome-white">{owner.userName}</p>
               </Link>
               <div className="flex items-center gap-1">
-                <TickIcon className="h-4 w-4 fill-primary" />
-                <p className="text-cap-1-demi">Brand</p>
+                <TickIcon className="h-4 w-4 fill-monochrome-white" />
+                <p className="text-cap-1-demi text-monochrome-white">Brand</p>
               </div>
             </div>
           ) : (
