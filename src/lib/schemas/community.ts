@@ -53,6 +53,11 @@ const guidelineSchema = z.object({
   description: z.string(),
 })
 
+const BrandUserSchema = z.object({
+  brand_id: z.number(),
+  brand_slug: z.string(),
+})
+
 const MembersSchema = z.object({
   member_id: z.string(),
   status: z.number(),
@@ -63,9 +68,23 @@ const MembersSchema = z.object({
   profile_image: z.string(),
   role: z.number(),
   phone: z.string().nullish(),
+  brand: BrandUserSchema,
+})
+
+const BrandSchema = z.object({
+  brand_id: z.number(),
+  name: z.string(),
+  subdomain: z.string(),
+  logo: z.string().url(),
+  created_at: z.number(),
+  brand_web_logo: z.string().url(),
+  favicon: z.string().url(),
+  brand_system_user_id: z.string(),
+  brand_slug: z.string(),
 })
 
 const CommunityDetailsSchema = z.object({
+  brand: BrandSchema,
   banner: z.string().nullish(),
   community_id: z.string(),
   handle: z.string(),

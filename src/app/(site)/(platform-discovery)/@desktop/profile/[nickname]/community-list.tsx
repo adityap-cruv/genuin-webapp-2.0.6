@@ -24,6 +24,7 @@ import { LockIcon } from '@icons/LockIcon'
 import { usePathname } from 'next/navigation'
 import { EarthIcon } from '@icons/earth-icon'
 import { loopPrivacyInfo } from '@components/common/loop-privacy-info'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@components/ui/tooltip'
 
 export function CommunityList({ userId }: { userId: string }) {
   const { data, isLoading, fetchNextPage, isFetchingNextPage } = getCommunities(userId, 8)
@@ -120,18 +121,51 @@ export function CommunityList({ userId }: { userId: string }) {
                 />
                 <div className="flex w-full items-center justify-between">
                   <div className="mx-2">
-                    <Link href={{ pathname: PATH_NAME.community(item.slug) }}>
-                      <p
-                        className="line-clamp-1 text-left"
-                        style={{ fontWeight: 600, fontSize: '20px', lineHeight: '24px' }}>
-                        {item.name ?? `${item.handle}`}
-                      </p>
-                    </Link>
+                    <div className="flex gap-1">
+                      <Link href={{ pathname: PATH_NAME.community(item.slug) }}>
+                        <p
+                          className="line-clamp-1 text-left"
+                          style={{ fontWeight: 600, fontSize: '20px', lineHeight: '24px' }}>
+                          {item.name ?? `${item.handle}`}
+                        </p>
+                      </Link>
+                      {item.brand && (
+                        <Link href={{ pathname: PATH_NAME.brand(item.brand.brand_slug) }}>
+                          <div className="flex items-center gap-1 rounded-full bg-tertiary-200 p-1">
+                            <CustomAvatar
+                              imageUrl={item.brand?.logo ?? ''}
+                              fallbackString={item.brand?.name ?? ''}
+                              isAvatar={false}
+                              className="h-4 w-4"
+                            />
+                            <p
+                              className="text-cap-1-demi text-secondary"
+                              style={{
+                                maxWidth: '10ch',
+                              }}>
+                              {item.brand?.name}
+                            </p>
+                          </div>
+                        </Link>
+                      )}
+                    </div>
                     {item.type === 2 && (
-                      <div className="flex items-center justify-start rounded-full">
-                        <LockIcon className="h-4 w-4 stroke-tertiary" />
-                        <p className="text-cap-1-demi text-tertiary">Private</p>
-                      </div>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="flex items-center justify-start rounded-full">
+                              <LockIcon className="h-4 w-4 stroke-tertiary" />
+                              <p className="text-cap-1-demi text-tertiary">Private</p>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent className="w-64 bg-monochrome-black">
+                            <p className="text-center text-cap-1-med text-monochrome-white">
+                              This community is private. Only people approved by it's moderators can see and participate
+                              in this community.
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     )}
                     {item.type !== 2 && pathName === PATH_NAME.profile(user?.nickname) && (
                       <div className="mb-2 flex items-center justify-start gap-1 rounded-full">
@@ -159,7 +193,7 @@ export function CommunityList({ userId }: { userId: string }) {
                 </div>
               </div>
               <DecorativeList>
-                <Loops userId={userId} community={item} communityId={item.id} />
+                <Loops userId={userId} community={item} communityId={item.id} user={user} pathName={pathName} />
               </DecorativeList>
             </div>
           )
@@ -212,14 +246,32 @@ function PlayerModalWrapper({ userId, currentVideoId }: { userId: string; curren
   )
 }
 
+type User = {
+  bio?: string
+  email?: string | null
+  isAvatar: boolean
+  name?: string | null
+  nickname: string
+  isEmailVerified: boolean
+  isPasswordSet: boolean
+  image?: string | null
+  accessToken: string
+  id?: string
+  ks_cb_request_status?: number
+}
+
 function Loops({
   userId,
   community,
   communityId,
+  pathName,
+  user,
 }: {
   userId: string
   community: ProfileCommunityType
   communityId: string
+  pathName: string
+  user: User | undefined
 }) {
   const addLoops = useCommunityListStore((state) => state.addLoops)
   const { fetchNext, isFetchingNextPage } = getNextPage<ProfileLoopType[]>(
@@ -270,7 +322,7 @@ function Loops({
               </div>
             </div>
           ) : (
-            <LoopVideos userId={userId} loop={item} communityId={communityId} />
+            <LoopVideos userId={userId} loop={item} communityId={communityId} user={user} pathName={pathName} />
           )}
         </li>
       ))}
@@ -308,9 +360,11 @@ type LoopVideosProps = {
   userId: string
   loop: ProfileLoopType
   communityId: string
+  pathName: string
+  user: User | undefined
 }
 
-function LoopVideos({ userId, loop, communityId }: LoopVideosProps) {
+function LoopVideos({ userId, loop, communityId, pathName, user }: LoopVideosProps) {
   const { addVideos, open } = useCommunityListStore((state) => ({
     addVideos: state.addVideos,
     open: state.open,
@@ -369,7 +423,7 @@ function LoopVideos({ userId, loop, communityId }: LoopVideosProps) {
       <Link href={PATH_NAME.loop(loop.slug)}>
         <p className="mb-1 text-body-1-bold">{loop.name}</p>
       </Link>
-      {privacyMessage}
+      {pathName === PATH_NAME.profile(user?.nickname) && privacyMessage}
       <div className="my-2 grid w-full grid-cols-4 gap-2 md:grid-cols-8">
         <InnerComponent />
         {isFetchingNextPage &&

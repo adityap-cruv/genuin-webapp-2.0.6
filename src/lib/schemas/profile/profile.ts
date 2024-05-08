@@ -8,7 +8,19 @@ const BrandDetailsSchema = z.object({
   brand_url: z.string(),
   })
 
+const brandSchema = z
+  .object({
+    brand_id: z.number(),
+    videos: z.number(),
+    views: z.number(),
+    no_of_communities: z.number(),
+    brand_slug: z.string(),
+    brand_url: z.string(),
+  })
+  .nullish()
+
 const ProfileDetailsSchema = z.object({
+  brand: brandSchema,
   user_id: z.string(),
   nickname: z.string(),
   name: z.string().nullish(),
