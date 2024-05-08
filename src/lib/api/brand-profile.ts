@@ -8,7 +8,6 @@ import {
   parseProfileVideoResponse,
 } from './api-response-parser'
 import { axiosInstance } from './instance'
-import { useGenuinOptions } from '@lib/stores/genuin-options'
 
 export async function fetchUserData(slug: string) {
   return await axios
@@ -25,15 +24,14 @@ export async function fetchUserData(slug: string) {
 
 let pageSession: string | undefined
 async function fetchCommunities(
-  userId: string,
+  brandId: number,
   pageParam: { pageSession: string; lastCommunityId: string },
   limit: number
 ) {
-  console.log("Brand Id:",useGenuinOptions.getState().brandId)
   return await axiosInstance
     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/brand/communities', {
       params: {
-        brand_id: useGenuinOptions.getState().brandId,
+        brand_id: brandId,
         // page_session: pageParam?.pageSession ?? undefined,
         last_community_id: pageParam?.lastCommunityId ?? undefined,
         page_limit_profile_videos: limit,
@@ -55,10 +53,10 @@ async function fetchCommunities(
     })
 }
 
-export function getCommunities(userId: string, limit: number) {
+export function getCommunities(brandId: number, limit: number) {
   return useInfiniteQuery({
-    queryKey: ['communities', userId],
-    queryFn: async ({ pageParam }) => await fetchCommunities(userId, pageParam, limit),
+    queryKey: ['communities', brandId],
+    queryFn: async ({ pageParam }) => await fetchCommunities(brandId, pageParam, limit),
     getNextPageParam(lastPage, allPages) {
       if (lastPage.end) {
         return
@@ -72,7 +70,7 @@ export function getCommunities(userId: string, limit: number) {
 }
 
 export async function fetchProfileCommunityLoops(
-  userId: string,
+  brandId: number,
   limit: number,
   communityId: string,
   lastLoopId: string
@@ -80,7 +78,7 @@ export async function fetchProfileCommunityLoops(
   return await axiosInstance
     .get('/api/v3/brand/loops', {
       params: {
-        brand_id: useGenuinOptions.getState().brandId,
+        brand_id: brandId,
         community_id: communityId,
         last_chat_id: lastLoopId,
         page_limit_profile_videos: limit,
@@ -96,7 +94,7 @@ export async function fetchProfileCommunityLoops(
 }
 
 export async function fetchProfileVideos(
-  userId: string,
+  brandId: number,
   limit: number,
   communityId: string,
   loopId: string,
@@ -105,7 +103,7 @@ export async function fetchProfileVideos(
   return await axiosInstance
     .get('/api/v3/brand/loop_videos', {
       params: {
-        brand_id: useGenuinOptions.getState().brandId,       
+        brand_id: brandId,       
         community_id: communityId,
         chat_id: loopId,
         last_message_id: lastVideoId,
@@ -123,11 +121,11 @@ export async function fetchProfileVideos(
     })
 }
 
-export async function fetchProfileFeed(userId: string, pageParam?: { lastMessageId: string }, fromVideoId?: string) {
+export async function fetchProfileFeed(brandId: number, pageParam?: { lastMessageId: string }, fromVideoId?: string) {
   return await axiosInstance
     .get('/api/v3/brand/feed', {
       params: {
-        brand_id: useGenuinOptions.getState().brandId,       
+        brand_id: brandId,       
         page_session: pageSession,
         from_message_id: pageParam?.lastMessageId ? undefined : fromVideoId,
         last_message_id: pageParam?.lastMessageId,
@@ -144,10 +142,10 @@ export async function fetchProfileFeed(userId: string, pageParam?: { lastMessage
     })
 }
 
-export function getProfileFeed(userId: string, fromVideoId: string) {
+export function getProfileFeed(brandId: number, fromVideoId: string) {
   return useInfiniteQuery({
-    queryFn: async ({ pageParam }) => await fetchProfileFeed(userId, pageParam, fromVideoId),
-    queryKey: ['feed', userId, fromVideoId],
+    queryFn: async ({ pageParam }) => await fetchProfileFeed(brandId, pageParam, fromVideoId),
+    queryKey: ['feed', brandId, fromVideoId],
     getNextPageParam(lastPage) {
       if (lastPage.end) return
       return { lastMessageId: lastPage.feed[lastPage.feed.length - 1].video.id }

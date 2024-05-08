@@ -77,7 +77,7 @@ export function MainComponent({ profileData }: CompProps) {
           <p className="my-1 line-clamp-2 break-all text-body-1-med">{profileData?.bio}</p>
           <Stats profileData={profileData} />
         </div>
-        <CommunityList userId={profileData.user_id} />
+        <CommunityList brandId={profileData.brand.brand_id} />
       </div>
       <Toaster />
     </>

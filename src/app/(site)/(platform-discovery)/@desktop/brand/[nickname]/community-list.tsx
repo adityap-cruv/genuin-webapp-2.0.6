@@ -21,8 +21,8 @@ import Image from 'next/image'
 import { type ProfileLoopType, type ProfileCommunityType, type ProfileVideoType } from '@lib/schemas/profile/community'
 import { getNextPage } from './hook'
 
-export function CommunityList({ userId }: { userId: string }) {
-  const { data, isLoading, fetchNextPage, isFetchingNextPage } = getCommunities(userId, 8)
+export function CommunityList({ brandId }: { brandId: number }) {
+  const { data, isLoading, fetchNextPage, isFetchingNextPage } = getCommunities(brandId, 8)
   const communities = data?.pages.flatMap((item) => item.communities)
   const [communityJoinStates, setCommunityJoinStates] = useState<Record<string, boolean>>({})
   const user = useGenuinOptions().user
@@ -141,7 +141,7 @@ export function CommunityList({ userId }: { userId: string }) {
                 </div>
               </div>
               <DecorativeList>
-                <Loops userId={userId} community={item} communityId={item.id} />
+                <Loops brandId={brandId} community={item} communityId={item.id} />
               </DecorativeList>
             </div>
           )
@@ -158,13 +158,13 @@ export function CommunityList({ userId }: { userId: string }) {
   return (
     <div ref={scrollDivRef} className="w-full overflow-scroll" style={{ height: 'calc(100% - 56px)' }}>
       <Inner />
-      {currentVideoId && <PlayerModalWrapper userId={userId} currentVideoId={currentVideoId} />}
+      {currentVideoId && <PlayerModalWrapper brandId={brandId} currentVideoId={currentVideoId} />}
     </div>
   )
 }
 
-function PlayerModalWrapper({ userId, currentVideoId }: { userId: string; currentVideoId: string }) {
-  const { data, isLoading, fetchNextPage } = getProfileFeed(userId, currentVideoId)
+function PlayerModalWrapper({ brandId, currentVideoId }: { brandId: number; currentVideoId: string }) {
+  const { data, isLoading, fetchNextPage } = getProfileFeed(brandId, currentVideoId)
   const { close } = useCommunityListStore()
   const videos = data?.pages.flatMap((item) => item.feed)
   const [activeIndex, setActiveIndex] = useState(0)
@@ -195,18 +195,18 @@ function PlayerModalWrapper({ userId, currentVideoId }: { userId: string; curren
 }
 
 function Loops({
-  userId,
+  brandId,
   community,
   communityId,
 }: {
-  userId: string
+  brandId: number
   community: ProfileCommunityType
   communityId: string
 }) {
   const addLoops = useCommunityListStore((state) => state.addLoops)
   const { fetchNext, isFetchingNextPage } = getNextPage<ProfileLoopType[]>(
     async () =>
-      await fetchProfileCommunityLoops(userId, 16, communityId, community.loops[community.loops.length - 1].id),
+      await fetchProfileCommunityLoops(brandId, 16, communityId, community.loops[community.loops.length - 1].id),
     (data) => {
       addLoops(communityId, data)
     }
@@ -252,7 +252,7 @@ function Loops({
               </div>
             </div>
           ) : (
-            <LoopVideos userId={userId} loop={item} communityId={communityId} />
+            <LoopVideos brandId={brandId} loop={item} communityId={communityId} />
           )}
         </li>
       ))}
@@ -287,19 +287,19 @@ function Loops({
 }
 
 type LoopVideosProps = {
-  userId: string
+  brandId: number
   loop: ProfileLoopType
   communityId: string
 }
 
-function LoopVideos({ userId, loop, communityId }: LoopVideosProps) {
+function LoopVideos({ brandId, loop, communityId }: LoopVideosProps) {
   const { addVideos, open } = useCommunityListStore((state) => ({
     addVideos: state.addVideos,
     open: state.open,
   }))
 
   const { fetchNext, isFetchingNextPage } = getNextPage<ProfileVideoType[]>(
-    async () => await fetchProfileVideos(userId, 16, communityId, loop.id, loop.videos[loop.videos.length - 1].id),
+    async () => await fetchProfileVideos(brandId, 16, communityId, loop.id, loop.videos[loop.videos.length - 1].id),
     (data) => {
       addVideos(communityId, loop.id, data)
     }
