@@ -24,10 +24,10 @@ export function RedirectHandler({
       checkAndAppendHttps(config.integrations.white_label.allowed_domains[0]) + pathParamStr + searchParamStr
     )
   } else {
-    console.log('Permanent Redirect Handler')
     const searchParamStr = headers().get('x-search-params')
     const pathParamStr = headers().get('x-path-params')
     const host = headers().get('host')
+    console.log('Permanent Redirect Handler', checkAndAppendHttps(host?? ''))
     permanentRedirect(checkAndAppendHttps(host ?? '') + pathParamStr + searchParamStr)
   }
 
