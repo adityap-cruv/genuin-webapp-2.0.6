@@ -1,5 +1,10 @@
 import { z } from 'zod'
 
+const BrandUserSchema = z.object({
+  brand_id: z.number(),
+  brand_slug: z.string(),
+})
+
 const socialLinksSchema = z.object({
   social_web_url: z.string().nullish(),
   twitter: z
@@ -43,6 +48,7 @@ const leaderSchema = z.object({
   is_avatar: z.boolean(),
   profile_image: z.string(),
   role: z.number().optional(),
+  brand: BrandUserSchema,
 })
 
 const guidelineSchema = z.object({
@@ -63,9 +69,23 @@ const MembersSchema = z.object({
   profile_image: z.string(),
   role: z.number(),
   phone: z.string().nullish(),
+  brand: BrandUserSchema,
+})
+
+const BrandSchema = z.object({
+  brand_id: z.number(),
+  name: z.string(),
+  subdomain: z.string(),
+  logo: z.string().url(),
+  created_at: z.number(),
+  brand_web_logo: z.string().url(),
+  favicon: z.string().url(),
+  brand_system_user_id: z.string(),
+  brand_slug: z.string(),
 })
 
 const CommunityDetailsSchema = z.object({
+  brand: BrandSchema,
   banner: z.string().nullish(),
   community_id: z.string(),
   handle: z.string(),

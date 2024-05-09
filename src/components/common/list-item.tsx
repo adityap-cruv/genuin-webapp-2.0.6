@@ -1,4 +1,5 @@
 import { CustomAvatar } from '@components/custom/custom-avatar'
+import { TickIcon } from '@icons/tick-icon'
 
 export function ListItem({
   title,
@@ -6,12 +7,17 @@ export function ListItem({
   description,
   image,
   isAvatar,
+  brand,
 }: {
   title: string
   subtitle?: string
   description?: string
   image?: string
   isAvatar: boolean
+  brand?: {
+    brand_id: number
+    brand_slug: string
+  }
 }) {
   return (
     <div className="flex items-center gap-x-1 rounded-lg p-2 hover:bg-monochrome-10">
@@ -22,7 +28,15 @@ export function ListItem({
         isAvatar={isAvatar}
       />
       <div className="mx-2">
-        <p className="line-clamp-1 text-body-1-demi">{subtitle}</p>
+        <div className="flex items-center gap-2">
+          <p className="line-clamp-1 text-body-1-demi">{subtitle}</p>
+          {brand && (
+            <div className="flex items-center gap-0.5">
+              <TickIcon className="h-3 w-3 fill-primary" />
+              <p className="text-cap-2-demi text-primary">Brand</p>
+            </div>
+          )}
+        </div>
         {title && <p className="line-clamp-1 text-body-1-med">{title}</p>}
         {description && <p className="line-clamp-1 text-body-1-med text-tertiary">{description}</p>}
       </div>

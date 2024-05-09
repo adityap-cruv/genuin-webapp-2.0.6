@@ -20,6 +20,7 @@ import { useCommunityListStore } from './store'
 import { ShareIcon } from '@icons/share-icon'
 import { type ProfileDetailsType } from '@lib/schemas/profile/profile'
 import { CommunityList } from './community-list'
+import { TickIcon } from '@icons/tick-icon'
 
 interface CompProps {
   profileData: ProfileDetailsType
@@ -73,11 +74,17 @@ export function MainComponent({ profileData }: CompProps) {
                 <p className="line-clamp-1 pr-2 text-title-1-bold text-tertiary">@{profileData?.nickname}</p>
               </>
             )}
+            {profileData.brand && (
+              <div className="ml-2 flex items-center gap-1 rounded-full bg-primary-200 p-1 px-1.5">
+                <TickIcon className="h-4 w-4 fill-primary" />
+                <p className="text-cap-1-demi text-primary">Brand</p>
+              </div>
+            )}
           </div>
           <p className="my-1 line-clamp-2 break-all text-body-1-med">{profileData?.bio}</p>
           <Stats profileData={profileData} />
         </div>
-        <CommunityList userId={profileData.user_id} />
+        <CommunityList brandId={profileData?.brand?.brand_id ?? 0} />
       </div>
       <Toaster />
     </>

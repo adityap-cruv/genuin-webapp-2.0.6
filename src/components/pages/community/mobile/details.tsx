@@ -27,6 +27,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@c
 import { Shimmer } from '@components/ui/shimmer'
 import { LockIcon } from '@icons/LockIcon'
 import { PrivateModal } from '@components/common/modals/private'
+import { TickIcon } from '@icons/tick-icon'
 
 let communityDetailsModule: CommunityDetailsType
 
@@ -190,22 +191,43 @@ export function Details({ communityDetails }: Props) {
               </Button> */}
             </div>
           </div>
-          <div ref={detailsDivRef} className="flex items-center justify-start gap-2 pt-2">
-            <p className="my-1 mt-2 line-clamp-1 break-all text-title-3-bold ">{communityDetailsModule?.name}</p>
-            <p className="text-body-1-med text-tertiary">@{communityDetails.handle}</p>
-            {communityDetailsModule.type === 2 && (
-              <PrivateModal>
-                <div className="flex items-center justify-center rounded-full bg-tertiary-200 p-1 px-1.5">
-                  <LockIcon className="h-4 w-4 stroke-tertiary" />
-                  <p className="text-cap-1-demi text-tertiary">Private</p>
+          <div ref={detailsDivRef} className="flex items-center justify-between gap-2 pt-2">
+            <div className="flex items-center">
+              <p className="my-1 mt-2 line-clamp-1 break-all text-title-3-bold ">{communityDetailsModule?.name}</p>
+              {/* <p className="text-body-1-med text-tertiary">@{communityDetails.handle}</p> */}
+              {communityDetailsModule.type === 2 && (
+                <PrivateModal>
+                  <div className="flex items-center justify-center rounded-full bg-tertiary-200 p-1 px-1.5">
+                    <LockIcon className="h-4 w-4 stroke-tertiary" />
+                    <p className="text-cap-1-demi text-tertiary">Private</p>
+                  </div>
+                </PrivateModal>
+              )}
+            </div>
+            {communityDetailsModule.brand && (
+              <Link href={{ pathname: PATH_NAME.brand(communityDetailsModule.brand.brand_slug) }}>
+                <div className="flex items-center gap-1 rounded-full bg-tertiary-200 p-1 ">
+                  <CustomAvatar
+                    imageUrl={communityDetailsModule.brand?.logo ?? ''}
+                    fallbackString={communityDetailsModule.brand?.name ?? ''}
+                    isAvatar={false}
+                    className="h-4 w-4"
+                  />
+                  <p
+                    className="text-cap-1-demi text-secondary"
+                    style={{
+                      maxWidth: '10ch',
+                    }}>
+                    {communityDetailsModule.brand?.name}
+                  </p>
                 </div>
-              </PrivateModal>
+              </Link>
             )}
           </div>
           <p className="my-1 line-clamp-2 break-all text-body-1-demi ">{communityDetailsModule?.description}</p>
           <Stats />
         </div>
-        {communityDetails.type === 2 ? (
+        {communityDetailsModule.type === 2 && !communityDetailsModule.logged_in_user_role ? (
           <div
             className="mt-4 flex w-full items-center justify-center overflow-hidden border-t border-tertiary-200"
             style={{ height: 'calc(100% - 220px)' }}>
@@ -398,13 +420,17 @@ function Leaders() {
   return (
     <div className="mb-4">
       <p className="my-2 text-title-3-bold">Leader</p>
-      <Link href={{ pathname: PATH_NAME.profile(leader.nickname) }}>
+      <Link
+        href={{
+          pathname: leader.brand ? PATH_NAME.brand(leader.brand.brand_slug) : PATH_NAME.profile(leader.nickname),
+        }}>
         <ListItem
           title={leader.name ?? ''}
           subtitle={'@' + leader.nickname}
           description={leader.bio ?? ''}
           image={leader.profile_image}
           isAvatar={leader.is_avatar}
+          brand={leader.brand ?? null}
         />
       </Link>
     </div>
@@ -417,12 +443,17 @@ function ListItem({
   description,
   image,
   isAvatar,
+  brand,
 }: {
   title: string
   subtitle?: string
   description?: string
   image?: string
   isAvatar: boolean
+  brand?: {
+    brand_id: number
+    brand_slug: string
+  }
 }) {
   return (
     <div className="flex items-center gap-x-1 rounded-lg p-2">
@@ -433,7 +464,15 @@ function ListItem({
         isAvatar={isAvatar}
       />
       <div className="mx-2">
-        <p className="line-clamp-1 text-body-1-bold ">{subtitle}</p>
+        <div className="flex items-center gap-2">
+          <p className="line-clamp-1 text-body-1-bold ">{subtitle}</p>
+          {brand && (
+            <div className="flex items-center gap-0.5">
+              <TickIcon className="h-3 w-3 fill-primary" />
+              <p className="text-cap-2-demi text-primary">Brand</p>
+            </div>
+          )}
+        </div>
         {subtitle && <p className="line-clamp-1 text-body-1-demi ">{title}</p>}
         {description && <p className="line-clamp-1 text-cap-1-demi text-tertiary">{description}</p>}
       </div>
@@ -465,29 +504,23 @@ function Members() {
     return (
       <div>
         {/* <p className="my-2 text-title-3-bold">Members</p> */}
-        {communityDetailsModule.leader && (
-          <div>
-            <Link href={{ pathname: PATH_NAME.profile(communityDetailsModule.leader.nickname) }}>
-              <ListItem
-                title={communityDetailsModule.leader.name ?? ''}
-                subtitle={'@' + communityDetailsModule.leader.nickname}
-                description={communityDetailsModule.leader.bio ?? ''}
-                image={communityDetailsModule.leader.profile_image}
-                isAvatar={communityDetailsModule.leader.is_avatar}
-              />
-            </Link>
-          </div>
-        )}
         {members.map((member: MembersSchemaType, index: number) => {
           if (member.nickname)
             return (
-              <Link key={index} href={{ pathname: PATH_NAME.profile(member.nickname) }}>
+              <Link
+                key={index}
+                href={{
+                  pathname: member.brand
+                    ? PATH_NAME.brand(member.brand.brand_slug)
+                    : PATH_NAME.profile(member.nickname),
+                }}>
                 <ListItem
                   title={member.name ?? ''}
                   subtitle={'@' + member.nickname}
                   description={member?.bio ?? ''}
                   image={member.profile_image}
                   isAvatar={member.is_avatar}
+                  brand={member.brand ?? null}
                 />
               </Link>
             )
