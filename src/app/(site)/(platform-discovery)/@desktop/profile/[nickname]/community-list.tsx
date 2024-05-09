@@ -1,6 +1,5 @@
 import icSpark from '@icons/player-controls/icBulb.svg'
 import icLock from '@icons/icLock.svg'
-import icLoopDark from '@icons/icLoopDark.svg'
 import { DecorativeList } from '@components/custom/decorative-list'
 import { fetchProfileCommunityLoops, fetchProfileVideos, getCommunities, getProfileFeed } from '@lib/api/profile'
 import { Loader } from '@components/ui/loader'
@@ -9,7 +8,7 @@ import { joinCommunity, leaveCommunity } from '@lib/api/video'
 import { PlayerModal } from '@components/common/modals/player-modal'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import icPlay from '@icons/player-controls/icPlay.svg'
-import { useGenuinOptions } from '@lib/stores/genuin-options'
+import { type User, useGenuinOptions } from '@lib/stores/genuin-options'
 import { useMotionValueEvent, useScroll } from 'framer-motion'
 import React, { useState, useEffect, useRef } from 'react'
 import { useCommunityListStore } from './store'
@@ -25,6 +24,7 @@ import { usePathname } from 'next/navigation'
 import { EarthIcon } from '@icons/earth-icon'
 import { loopPrivacyInfo } from '@components/common/loop-privacy-info'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@components/ui/tooltip'
+import { IcLoop } from '@icons/ic-loop'
 
 export function CommunityList({ userId }: { userId: string }) {
   const { data, isLoading, fetchNextPage, isFetchingNextPage } = getCommunities(userId, 8)
@@ -246,20 +246,6 @@ function PlayerModalWrapper({ userId, currentVideoId }: { userId: string; curren
   )
 }
 
-type User = {
-  bio?: string
-  email?: string | null
-  isAvatar: boolean
-  name?: string | null
-  nickname: string
-  isEmailVerified: boolean
-  isPasswordSet: boolean
-  image?: string | null
-  accessToken: string
-  id?: string
-  ks_cb_request_status?: number
-}
-
 function Loops({
   userId,
   community,
@@ -310,15 +296,13 @@ function Loops({
           style={{ backgroundColor: '#F9F9F9' }}
           key={index}>
           {item.private ? (
-            <div className="mb-2 flex items-center">
-              <div className="mr-4 h-14 w-14 shrink-0 rounded-full bg-tertiary-200 p-3">
-                <Image src={icLoopDark} alt="share" className=" fill-primary" />
-              </div>
-              <div>
-                <a href={PATH_NAME.loop(item.slug)}>
-                  <p className="text-title-3-bold">{item.name}</p>
-                </a>
-                <p className="text-body-1-med">This Loop is visible to its Collaborators only.</p>
+            <div className="mb-2">
+              <a href={PATH_NAME.loop(item.slug)}>
+                <p className="text-title-3-demi">{item.name}</p>
+              </a>
+              <div className="my-1 flex items-center gap-1">
+                <IcLoop className="h-6 w-6 fill-tertiary" />
+                <p className="text-body-1-med text-tertiary">Visible to collaborators only</p>
               </div>
             </div>
           ) : (

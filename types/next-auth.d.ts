@@ -21,6 +21,9 @@ declare module 'next-auth' {
     image: string
     accessToken: string
     ks_cb_request_status?: number
+    is_brand_system_user?: boolean
+    brand_id?: number
+    brand_slug?: string
   }
 
   // interface AdapterUser {
@@ -49,6 +52,9 @@ declare module 'next-auth/jwt' {
       image?: string | null
       accessToken: string
       ks_cb_request_status?: number
+      is_brand_system_user?: boolean
+      brand_id?: number
+      brand_slug?: string
     }
   }
 }

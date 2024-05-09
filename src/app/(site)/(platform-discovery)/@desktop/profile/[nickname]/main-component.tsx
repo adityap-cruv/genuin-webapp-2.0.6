@@ -97,8 +97,6 @@ function Links({ profileData }: CompProps) {
   const { toast } = useToast()
   const pathName = usePathname()
   const { user } = useGenuinOptions((state) => ({
-    isEmbed: state.embed,
-    parentUrl: state.parentUrl,
     user: state.user,
   }))
 
@@ -132,7 +130,7 @@ function Links({ profileData }: CompProps) {
           </Link>
         </div>
       )}
-      {pathName === PATH_NAME.profile(user?.nickname) && (
+      {pathName === PATH_NAME.profile(user?.nickname) && !user?.is_brand_system_user && (
         <Link href={PATH_NAME.settings('edit')}>
           <Button
             size="custom"

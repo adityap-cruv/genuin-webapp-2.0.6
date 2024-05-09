@@ -51,6 +51,9 @@ export function PasswordInputLogin() {
             is_password_set: true,
             accessToken: res.data.accessToken,
             ks_cb_request_status: res.data.user.ks_cb_request_status,
+            is_brand_system_user: res.data.user.is_brand_system_user,
+            brand_id: res.data.user.brand.brand_id,
+            brand_slug: res.data.user.brand.brand_slug,
           }
           // console.log('user', user)
           void signIn('credentials', { ...user, redirect: false })

@@ -25,6 +25,9 @@ export const {
         is_password_set: { type: 'text' },
         accessToken: { type: 'text' },
         ks_cb_request_status: { type: 'text' },
+        is_brand_system_user: { type: 'text' },
+        brand_id: { type: 'text' },
+        brand_slug: { type: 'text' },
       },
       authorize(credentials, request) {
         return {
@@ -39,6 +42,9 @@ export const {
           isPasswordSet: credentials.is_password_set === 'true',
           accessToken: String(credentials.accessToken),
           ks_cb_request_status: credentials.ks_cb_request_status ? Number(credentials.ks_cb_request_status) : undefined,
+          is_brand_system_user: credentials.is_brand_system_user === 'true',
+          brand_id: credentials.brand_id ? Number(credentials.brand_id) : undefined,
+          brand_slug: String(credentials.brand_slug),
         }
       },
     }),

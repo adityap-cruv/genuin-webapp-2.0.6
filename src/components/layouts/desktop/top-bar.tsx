@@ -28,7 +28,9 @@ export function TopBar() {
             <AppLogo.logo className="fill-new-off-black" imageHeight={42} />
             {/* <GenuinIcon.logo className="fill-new-off-black" /> */}
           </Link>
-          {config?.slogan?.image && <img src={config.slogan.image} className="h-10" alt="brand_web_logo" />}
+          {config?.slogan?.image && (
+            <img src={config.slogan.image} className="h-10 object-cover" alt="brand_web_logo" />
+          )}
           <div className="flex gap-x-3">
             <SearchBar.desktop />
             {!isEmbed ? (
@@ -104,48 +106,54 @@ function UserTick() {
             />
             <div>
               <p className="line-clamp-1 break-words break-all text-title-3-bold">{data.user.email}</p>
-              <p
-                className="text-body-1-demi text-monochrome-6 hover:cursor-pointer"
-                onClick={() => {
-                  !data.user.isEmailVerified
-                    ? router.push(PATH_NAME.settings('account'))
-                    : router.push(PATH_NAME.settings('edit'))
+              {!data.user?.is_brand_system_user && (
+                <p
+                  className="text-body-1-demi text-monochrome-6 hover:cursor-pointer"
+                  onClick={() => {
+                    !data.user.isEmailVerified
+                      ? router.push(PATH_NAME.settings('account'))
+                      : router.push(PATH_NAME.settings('edit'))
 
-                  if (!pathName.includes('settings')) {
-                    localStorage.setItem('previous_path', pathName)
-                  }
-                }}>
-                {!data.user.isEmailVerified ? 'Send verification email' : 'Complete profile'}
-              </p>
+                    if (!pathName.includes('settings')) {
+                      localStorage.setItem('previous_path', pathName)
+                    }
+                  }}>
+                  {!data.user.isEmailVerified ? 'Send verification email' : 'Complete profile'}
+                </p>
+              )}
             </div>
           </div>
           <hr className="border-b border-monochrome-9" />
           <div className="flex flex-col gap-3 p-4">
-            <Link href={PATH_NAME.settings('account')}>
-              <div
-                className="flex items-center gap-2"
-                onClick={() => {
-                  if (!pathName.includes('settings')) {
-                    localStorage.setItem('previous_path', pathName)
-                  }
-                }}>
-                <AccountIcon isActive={false} className="h-6 w-6" />
-                <p className="text-body-1-demi">Account Settings</p>
-              </div>
-            </Link>
+            {!data.user?.is_brand_system_user && (
+              <>
+                <Link href={PATH_NAME.settings('account')}>
+                  <div
+                    className="flex items-center gap-2"
+                    onClick={() => {
+                      if (!pathName.includes('settings')) {
+                        localStorage.setItem('previous_path', pathName)
+                      }
+                    }}>
+                    <AccountIcon isActive={false} className="h-6 w-6" />
+                    <p className="text-body-1-demi">Account Settings</p>
+                  </div>
+                </Link>
 
-            <Link href={PATH_NAME.settings('notification')}>
-              <div
-                className="flex items-center gap-2"
-                onClick={() => {
-                  if (!pathName.includes('settings')) {
-                    localStorage.setItem('previous_path', pathName)
-                  }
-                }}>
-                <NotificationIcon isActive={false} className="h-6 w-6" />
-                <p className="text-body-1-demi">Notification Settings</p>
-              </div>
-            </Link>
+                <Link href={PATH_NAME.settings('notification')}>
+                  <div
+                    className="flex items-center gap-2"
+                    onClick={() => {
+                      if (!pathName.includes('settings')) {
+                        localStorage.setItem('previous_path', pathName)
+                      }
+                    }}>
+                    <NotificationIcon isActive={false} className="h-6 w-6" />
+                    <p className="text-body-1-demi">Notification Settings</p>
+                  </div>
+                </Link>
+              </>
+            )}
 
             <div className="flex items-center gap-2">
               <LogoutIcon className="stroke-secondary" />

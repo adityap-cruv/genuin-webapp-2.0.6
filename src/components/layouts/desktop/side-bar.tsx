@@ -72,12 +72,19 @@ export function SideBar() {
 
         {user && (
           <>
-            <Link href={{ pathname: PATH_NAME.settings('notification') }}>
-              <Item title="Notification" isActive={pathName === PATH_NAME.settings('notification')}>
-                <NotificationIcon isActive={pathName === PATH_NAME.settings('notification')} />
-              </Item>
-            </Link>
-            <Link href={{ pathname: PATH_NAME.profile(user.nickname) }}>
+            {!user.is_brand_system_user && (
+              <Link href={{ pathname: PATH_NAME.settings('notification') }}>
+                <Item title="Notification" isActive={pathName === PATH_NAME.settings('notification')}>
+                  <NotificationIcon isActive={pathName === PATH_NAME.settings('notification')} />
+                </Item>
+              </Link>
+            )}
+            <Link
+              href={{
+                pathname: user.is_brand_system_user
+                  ? PATH_NAME.brand(user.brand_slug)
+                  : PATH_NAME.profile(user.nickname),
+              }}>
               <Item title="Profile" isActive={pathName === PATH_NAME.profile(user.nickname)}>
                 <ProfileIcon isActive={pathName === PATH_NAME.profile(user.nickname)} />
               </Item>
