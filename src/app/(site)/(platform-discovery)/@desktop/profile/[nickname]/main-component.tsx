@@ -1,14 +1,12 @@
 'use client'
-import { abbreviateNumber, checkAndAppendHttps, getCurrentShareUrl, openModal } from '@lib/utils'
+import { abbreviateNumber, checkAndAppendHttps, getCurrentShareUrl } from '@lib/utils'
 import { Button } from '@components/ui/button'
 import Image from 'next/image'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
 import { CustomAvatar } from '@components/custom/custom-avatar'
-
 import React, { useEffect, useRef } from 'react'
-
 import icInstagram from '@icons/icInstagramBlack.svg'
 import icTiktok from '@icons/icTiktok.svg'
 import icLinkedIn from '@icons/icLinkedIn.svg'
@@ -23,7 +21,6 @@ import { type ProfileDetailsType } from '@lib/schemas/profile/profile'
 import { CommunityList } from './community-list'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { usePathname } from 'next/navigation'
-import { TickIcon } from '@icons/tick-icon'
 
 interface CompProps {
   profileData: ProfileDetailsType
@@ -51,6 +48,7 @@ export function MainComponent({ profileData }: CompProps) {
         profileName={profileData.name ?? ''}
         profileNickname={profileData?.nickname}
         isAvatar={profileData?.is_avatar}
+        shareUrl={profileData.share_url}
       />
       <div className="hide-scrollbar absolute inset-0 h-full w-full overflow-auto px-4">
         <div className="mt-4 flex items-center justify-between">
@@ -98,7 +96,7 @@ function Links({ profileData }: CompProps) {
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
   const pathName = usePathname()
-  const { isEmbed, parentUrl, user } = useGenuinOptions((state) => ({
+  const { user } = useGenuinOptions((state) => ({
     isEmbed: state.embed,
     parentUrl: state.parentUrl,
     user: state.user,
@@ -156,7 +154,7 @@ function Links({ profileData }: CompProps) {
         className="mx-1 hover:border-primary-600"
         onClick={async () =>
           await shareFn({
-            shareLink: getCurrentShareUrl({ isEmbed, parentUrl }),
+            shareLink: getCurrentShareUrl({ url: profileData.share_url }),
             toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
           })
         }>

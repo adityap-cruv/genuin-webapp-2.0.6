@@ -27,6 +27,7 @@ export default async function RootLayout(props: any) {
     try {
       config = await getEmbedConfig(configParams)
     } catch (e) {
+      console.log('error::', e)
       error = true
     }
   }
