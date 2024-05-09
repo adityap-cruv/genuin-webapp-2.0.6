@@ -293,6 +293,7 @@ function ProfileTabs() {
       <TabsContent value="Loops" className="mx-4 h-full">
         <CommunityLoopTab
           community={{
+            shareUrl: communityDetailsModule.share_url,
             handle: communityDetailsModule.handle,
             id: communityDetailsModule.community_id,
             slug: communityDetailsModule.slug,
