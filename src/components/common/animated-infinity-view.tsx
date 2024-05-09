@@ -42,7 +42,7 @@ export function AnimatedInfinityView({ community, loop }: Props) {
       leftControls.start({ rotateX: '90deg', transition: { ease: 'linear', duration: 0.4, repeat: 0 } }).then(
         () => {
           setLocalState((x) => {
-            x.communityName = community.handle
+            x.communityName = community.name
             x.communityDp = community.profileImage
             return { ...x }
           })
