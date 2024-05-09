@@ -134,7 +134,7 @@ function Links({ profileData }: CompProps) {
           </Link>
         </div>
       )}
-      {pathName === PATH_NAME.profile(user?.nickname) && (
+      {pathName === PATH_NAME.profile(user?.nickname) && !user?.is_brand_system_user && (
         <Link href={PATH_NAME.settings('edit')}>
           <Button
             size="custom"

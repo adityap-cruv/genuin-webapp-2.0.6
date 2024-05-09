@@ -314,28 +314,28 @@ function Categories() {
 
 function Links() {
   const links = communityDetailsModule?.social_links
-  if (links?.insta?.url ?? links?.linkedin?.url ?? links?.twitter?.url ?? links?.social_web_url)
+  if (links?.insta?.id ?? links?.linkedin?.id ?? links?.twitter?.id ?? links?.social_web_url)
     return (
       <div className="mb-4">
         <p className="my-2 text-title-3-bold">Links</p>
         <div className="flex">
-          {links?.insta?.url && (
+          {links?.insta?.id && (
             <div className="mx-1 flex items-center rounded-md bg-tertiary-200 p-1">
-              <Link href={checkAndAppendHttps(links?.insta?.url)} target="_blank">
+              <Link href={checkAndAppendHttps(links?.insta?.url + links.insta.id)} target="_blank">
                 <Image src={icInstagram} alt="instagram" />
               </Link>
             </div>
           )}
-          {links?.linkedin?.url && (
+          {links?.linkedin?.id && (
             <div className="mx-1 flex items-center rounded-md bg-tertiary-200 p-1">
-              <Link href={checkAndAppendHttps(links?.linkedin?.url)} target="_blank">
+              <Link href={checkAndAppendHttps(links?.linkedin?.url + links?.linkedin?.id)} target="_blank">
                 <Image src={icLinkedIn} alt="linkedin" />
               </Link>
             </div>
           )}
-          {links?.twitter?.url && (
+          {links?.twitter?.id && (
             <div className="mx-1 flex items-center rounded-md bg-tertiary-200 p-1">
-              <Link href={checkAndAppendHttps(links?.twitter?.url)} target="_blank">
+              <Link href={checkAndAppendHttps(links?.twitter?.url + links?.twitter?.id)} target="_blank">
                 <Image src={icTwitter} alt="twitter" />
               </Link>
             </div>

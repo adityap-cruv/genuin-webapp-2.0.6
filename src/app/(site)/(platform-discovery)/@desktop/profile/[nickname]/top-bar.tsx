@@ -83,7 +83,7 @@ function Desktop({
         )}
       </span>
       <div className="flex gap-1">
-        {pathName === PATH_NAME.profile(user?.nickname) && (
+        {pathName === PATH_NAME.profile(user?.nickname) && !user?.is_brand_system_user && (
           <Link href={PATH_NAME.settings('edit')}>
             <Button
               size="custom"

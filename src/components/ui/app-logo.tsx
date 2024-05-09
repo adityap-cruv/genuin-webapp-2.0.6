@@ -35,7 +35,7 @@ function LogoProcessor({ imageHeight, type, ...props }: ProcessorProps) {
 
   // TODO: Find a way to use next/image here.
   if (brandWebLogo)
-    return <img src={brandWebLogo} style={{ height: imageHeight }} className="w-auto" alt="brand logo" />
+    return <img src={brandWebLogo} style={{ height: imageHeight }} className="w-full object-cover" alt="brand logo" />
 
   switch (type) {
     case 'text':

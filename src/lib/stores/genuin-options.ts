@@ -62,6 +62,9 @@ type User = {
   accessToken: string
   id?: string
   ks_cb_request_status?: number
+  is_brand_system_user?: boolean
+  brand_id?: number
+  brand_slug?: string
 }
 
 type StateType = {

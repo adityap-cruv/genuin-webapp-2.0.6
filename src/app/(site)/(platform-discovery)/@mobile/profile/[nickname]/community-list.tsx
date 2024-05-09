@@ -17,7 +17,6 @@ import { useCommunityListStore } from './store'
 import { type ProfileCommunityType, type ProfileLoopType, type ProfileVideoType } from '@lib/schemas/profile/community'
 import { fetchProfileCommunityLoops, getCommunities, fetchProfileVideos, getProfileFeed } from '@lib/api/profile'
 import icLock from '@icons/icLock.svg'
-import icLoopDark from '@icons/icLoopDark.svg'
 import { joinCommunity, leaveCommunity } from '@lib/api/video'
 import { PlayerModal } from '@components/common/modals/player-modal'
 import icPlay from '@icons/player-controls/icPlay.svg'
@@ -26,6 +25,7 @@ import { usePathname } from 'next/navigation'
 import { EarthIcon } from '@icons/earth-icon'
 import { loopPrivacyInfo } from '@components/common/loop-privacy-info'
 import { PrivateModal } from '@components/common/modals/private'
+import { IcLoop } from '@icons/ic-loop'
 
 export function CommunityList({ userId, scrollYProgress }: { userId: string; scrollYProgress: MotionValue<number> }) {
   const { data, isLoading, fetchNextPage, isFetchingNextPage } = getCommunities(userId, 8)
@@ -236,6 +236,7 @@ type User = {
   accessToken: string
   id?: string
   ks_cb_request_status?: number
+  is_brand_system_user?: boolean
 }
 
 function Loops({
@@ -287,15 +288,13 @@ function Loops({
           style={{ backgroundColor: '#F9F9F9' }}
           key={index}>
           {item.private ? (
-            <div className="mb-2 flex items-center">
-              <div className="mr-4 h-14 w-14 shrink-0 rounded-full bg-tertiary-200 p-3">
-                <Image src={icLoopDark} alt="share" className=" fill-primary" />
-              </div>
-              <div>
-                <a href={PATH_NAME.loop(item.slug)}>
-                  <p className="text-title-3-bold">{item.name}</p>
-                </a>
-                <p className="text-body-1-med">This Loop is visible to its Collaborators only.</p>
+            <div className="mb-2">
+              <a href={PATH_NAME.loop(item.slug)}>
+                <p className="text-title-3-demi">{item.name}</p>
+              </a>
+              <div className="my-1 flex items-center gap-1">
+                <IcLoop className="h-4 w-4 fill-tertiary" />
+                <p className="text-body-1-med text-tertiary">Visible to collaborators only</p>
               </div>
             </div>
           ) : (
