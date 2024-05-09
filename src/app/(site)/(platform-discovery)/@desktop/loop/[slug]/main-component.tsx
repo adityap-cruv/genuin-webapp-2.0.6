@@ -206,7 +206,9 @@ export function MainComponent({ loopDetails }: Props) {
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <LockIcon className="z-10 ml-1 h-4 w-4 stroke-tertiary" />
+                          <div>
+                            <LockIcon className="z-10 ml-1 h-4 w-4 stroke-tertiary" />
+                          </div>
                         </TooltipTrigger>
                         <TooltipContent className="w-64 bg-monochrome-black">
                           <p className="text-center text-cap-1-med text-monochrome-white">

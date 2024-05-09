@@ -58,7 +58,7 @@ export function parseFeedResponse(videos: FeedResponseType) {
         slug: video.community?.slug ?? '',
         name: video.community?.name ?? '',
         profileImage: video.community?.dp ?? '',
-        type: video.type ?? null,
+        type: video.community?.type ?? null,
         brand: video.community?.brand
           ? {
               brand_id: video.community.brand.brand_id,

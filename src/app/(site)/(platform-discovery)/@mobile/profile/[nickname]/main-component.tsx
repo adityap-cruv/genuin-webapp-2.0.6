@@ -87,7 +87,7 @@ export function MainComponent({ profileData }: CompProps) {
                 }>
                 <p className="text-body-1-bold text-blue">Edit Profile</p>
               </Button> */}
-              {pathName === PATH_NAME.profile(user?.nickname) && (
+              {pathName === PATH_NAME.profile(user?.nickname) && !user?.is_brand_system_user && (
                 <Link href={PATH_NAME.settings('edit')}>
                   <Button size="custom" variant="outline" className="border border-primary">
                     <p className="px-4 py-1.5 text-title-3-bold text-primary" style={{ fontSize: '15px' }}>

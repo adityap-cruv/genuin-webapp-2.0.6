@@ -194,7 +194,7 @@ export function RootDetails({ communityDetails }: { communityDetails: CommunityD
                     </div>
                   </TooltipTrigger>
                   <TooltipContent className="w-64 bg-monochrome-black">
-                    <p className="text-cap-1-med text-monochrome-white">
+                    <p className="text-center text-cap-1-med text-monochrome-white">
                       This community is private. Only people approved by it's moderators can see and participate in this
                       community.
                     </p>
@@ -313,28 +313,28 @@ function Categories() {
 
 function Links() {
   const links = communityDetailsModule?.social_links
-  if (links?.insta?.url ?? links?.linkedin?.url ?? links?.twitter?.url ?? links?.social_web_url)
+  if (links?.insta?.id ?? links?.linkedin?.id ?? links?.twitter?.id ?? links?.social_web_url)
     return (
       <div className="mb-4">
         <p className="my-2 text-title-3-bold">Links</p>
         <div className="flex">
-          {links?.insta?.url && (
+          {links?.insta?.id && (
             <div className="mx-1 flex items-center rounded-md bg-tertiary-200 p-1">
-              <Link href={checkAndAppendHttps(links?.insta?.url)} target="_blank">
+              <Link href={checkAndAppendHttps(links?.insta?.url + links.insta.id)} target="_blank">
                 <Image src={icInstagram} alt="instagram" />
               </Link>
             </div>
           )}
-          {links?.linkedin?.url && (
+          {links?.linkedin?.id && (
             <div className="mx-1 flex items-center rounded-md bg-tertiary-200 p-1">
-              <Link href={checkAndAppendHttps(links?.linkedin?.url)} target="_blank">
+              <Link href={checkAndAppendHttps(links?.linkedin?.url + links?.linkedin?.id)} target="_blank">
                 <Image src={icLinkedIn} alt="linkedin" />
               </Link>
             </div>
           )}
-          {links?.twitter?.url && (
+          {links?.twitter?.id && (
             <div className="mx-1 flex items-center rounded-md bg-tertiary-200 p-1">
-              <Link href={checkAndAppendHttps(links?.twitter?.url)} target="_blank">
+              <Link href={checkAndAppendHttps(links?.twitter?.url + links?.twitter?.id)} target="_blank">
                 <Image src={icTwitter} alt="twitter" />
               </Link>
             </div>
