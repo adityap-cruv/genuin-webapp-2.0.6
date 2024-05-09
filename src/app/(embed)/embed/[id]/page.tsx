@@ -1,5 +1,8 @@
-import { Root } from './root'
 import { SizeProvider } from './size-provider'
+import { StandardView } from './standard-view'
+import { VerticalView } from './vertical-view'
+import { CarouselView } from './carousel-view'
+import 'swiper/css'
 
 type Props = {
   params: {
@@ -18,7 +21,7 @@ type Props = {
 export default function Page(props: Props) {
   return (
     <SizeProvider>
-      <Root />
+      <CarouselView />
     </SizeProvider>
   )
 }
