@@ -32,7 +32,6 @@ const ViewportPlayer = dynamic(async () => await import('./inner-player').then((
 export const Player = {
   mobile: Mobile,
   desktop: Desktop,
-  hover: Hover,
 }
 
 type MobileProps = {
@@ -284,17 +283,5 @@ function Desktop({
         />
       </div>
     </div>
-  )
-}
-
-function Hover({ videoDetails, shouldPlay }: { videoDetails: VideoPlayerModalType; shouldPlay: boolean }) {
-  return (
-    <InnerPlayer
-      videoSource={videoDetails.video.source}
-      muted
-      onMouseOver={(e) => {
-        console.log('mouse over::', e)
-      }}
-    />
   )
 }

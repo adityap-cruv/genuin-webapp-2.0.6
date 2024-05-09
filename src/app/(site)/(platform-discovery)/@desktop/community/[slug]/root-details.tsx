@@ -283,6 +283,7 @@ function CommunityDetailsTabs() {
             slug: communityDetailsModule.slug,
             name: communityDetailsModule.name,
             profileImage: communityDetailsModule.dp,
+            shareUrl: communityDetailsModule.share_url,
           }}
         />
       </TabsContent>

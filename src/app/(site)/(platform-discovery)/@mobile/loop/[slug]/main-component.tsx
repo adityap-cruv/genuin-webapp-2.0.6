@@ -304,6 +304,7 @@ function LoopTabs() {
         <LoopVideos
           community={{
             handle: loopDetailsModule.community.handle,
+            shareUrl: loopDetailsModule.community.share_url ?? '',
             id: loopDetailsModule.community.community_id,
             slug: loopDetailsModule.community.slug,
             name: loopDetailsModule.community.name,
