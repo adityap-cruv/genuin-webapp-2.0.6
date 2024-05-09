@@ -12,6 +12,13 @@ const messageSchema = z.object({
   message_at: z.number().nullish(),
 })
 
+const actionsSchema = z.array(
+  z.object({
+    action_id: z.number(),
+    access_type_id: z.number(),
+  })
+)
+
 const loopSchema = z.object({
   chat_id: z.string(),
   is_view_allowed: z.boolean(),
@@ -23,9 +30,23 @@ const loopSchema = z.object({
     no_of_videos: z.number(),
   }),
   messages: z.array(messageSchema),
+  actions: actionsSchema,
+})
+
+const BrandSchema = z.object({
+  brand_id: z.number(),
+  name: z.string(),
+  subdomain: z.string(),
+  logo: z.string().url(),
+  created_at: z.number(),
+  brand_web_logo: z.string().url(),
+  favicon: z.string().url(),
+  brand_system_user_id: z.string(),
+  brand_slug: z.string(),
 })
 
 const CommunitySchema = z.object({
+  brand: BrandSchema,
   community_id: z.string(),
   type: z.number().nullish(),
   slug: z.string(),

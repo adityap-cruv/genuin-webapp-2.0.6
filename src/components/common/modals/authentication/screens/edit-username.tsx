@@ -11,6 +11,7 @@ import { Button } from '@components/ui/button'
 import { Loader } from '@components/ui/loader'
 import { ModalShell } from '../modal-shell'
 import { useSession } from 'next-auth/react'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
 
 const usernameSchema = z.object({
   username: z
@@ -24,10 +25,11 @@ export function EditUsername() {
   const { setFormData, formData, close } = useAuthenticationModalStore()
   // prefield username is always valid.
   const [isUsernameValid, setIsUsernameValid] = useState(true)
+  const user = useGenuinOptions().user
   const form = useForm<z.infer<typeof usernameSchema>>({
     resolver: zodResolver(usernameSchema),
     mode: 'onBlur',
-    defaultValues: { username: '' },
+    defaultValues: { username: user?.nickname },
   })
   const { isValid, isDirty } = form.formState
 

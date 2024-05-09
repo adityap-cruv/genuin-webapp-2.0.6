@@ -23,6 +23,9 @@ import { useSearchParams } from 'next/navigation'
 import Loading from './loading'
 import Error from '../../error'
 import { Shimmer } from '@components/ui/shimmer'
+import { LockIcon } from '@icons/LockIcon'
+import { loopPrivacyInfo } from '@components/common/loop-privacy-info'
+import { PrivateModal } from '@components/common/modals/private'
 
 let loopDetailsModule: LoopDetailsType
 
@@ -48,6 +51,10 @@ export function MainComponent({ loopDetails }: Props) {
   const [isLoopSubscribed, setIsLoopSubscribed] = useState(!!loopDetails.is_subscriber)
   const { embed, user } = useGenuinOptions()
   const searchParams = Object.fromEntries(useSearchParams())
+  const privacyMessage = loopPrivacyInfo(
+    loopDetails?.actions?.[0]?.action_id ?? 0,
+    loopDetails?.actions?.[0]?.access_type_id ?? 0
+  )
 
   function toggleLoopSubscription() {
     const newValue = !isLoopSubscribed
@@ -83,6 +90,7 @@ export function MainComponent({ loopDetails }: Props) {
         <div className="w-full">
           <div ref={detailsDivRef}>
             <p className="line-clamp-1 text-title-1-bold text-secondary">{loopDetails.group.group_name}</p>
+            {privacyMessage}
             <p className="my-2 line-clamp-2 break-words text-title-3-demi text-secondary">
               {loopDetails.group.group_description}
             </p>
@@ -123,6 +131,13 @@ export function MainComponent({ loopDetails }: Props) {
                     <p className="ml-1 line-clamp-1 break-all text-body-1-bold text-secondary">
                       {loopDetails.community.name}
                     </p>
+                    {loopDetails.community.type === 2 && (
+                      <>
+                        <PrivateModal>
+                          <LockIcon className="ml-1 h-4 w-4 stroke-tertiary" />
+                        </PrivateModal>
+                      </>
+                    )}
                   </div>
                 </Link>
               </div>

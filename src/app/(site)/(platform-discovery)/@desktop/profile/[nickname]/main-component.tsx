@@ -1,14 +1,12 @@
 'use client'
-import { abbreviateNumber, checkAndAppendHttps, getCurrentShareUrl, openModal } from '@lib/utils'
+import { abbreviateNumber, checkAndAppendHttps, getCurrentShareUrl } from '@lib/utils'
 import { Button } from '@components/ui/button'
 import Image from 'next/image'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
 import { CustomAvatar } from '@components/custom/custom-avatar'
-
 import React, { useEffect, useRef } from 'react'
-
 import icInstagram from '@icons/icInstagramBlack.svg'
 import icTiktok from '@icons/icTiktok.svg'
 import icLinkedIn from '@icons/icLinkedIn.svg'
@@ -50,6 +48,7 @@ export function MainComponent({ profileData }: CompProps) {
         profileName={profileData.name ?? ''}
         profileNickname={profileData?.nickname}
         isAvatar={profileData?.is_avatar}
+        shareUrl={profileData.share_url}
       />
       <div className="hide-scrollbar absolute inset-0 h-full w-full overflow-auto px-4">
         <div className="mt-4 flex items-center justify-between">
@@ -76,6 +75,7 @@ export function MainComponent({ profileData }: CompProps) {
               </>
             )}
           </div>
+
           <p className="my-1 line-clamp-2 break-all text-body-1-med">{profileData?.bio}</p>
           <Stats profileData={profileData} />
         </div>
@@ -96,9 +96,7 @@ function Links({ profileData }: CompProps) {
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
   const pathName = usePathname()
-  const { isEmbed, parentUrl, user } = useGenuinOptions((state) => ({
-    isEmbed: state.embed,
-    parentUrl: state.parentUrl,
+  const { user } = useGenuinOptions((state) => ({
     user: state.user,
   }))
 
@@ -134,7 +132,13 @@ function Links({ profileData }: CompProps) {
       )}
       {pathName === PATH_NAME.profile(user?.nickname) && (
         <Link href={PATH_NAME.settings('edit')}>
-          <Button size="custom" variant="outline" className="border border-primary">
+          <Button
+            size="custom"
+            variant="outline"
+            className="border border-primary"
+            onClick={() => {
+              localStorage.setItem('previous_path', pathName)
+            }}>
             <p className="px-4 py-1 text-title-3-bold text-primary" style={{ fontSize: '15px' }}>
               Edit Profile
             </p>
@@ -148,7 +152,7 @@ function Links({ profileData }: CompProps) {
         className="mx-1 hover:border-primary-600"
         onClick={async () =>
           await shareFn({
-            shareLink: getCurrentShareUrl({ isEmbed, parentUrl }),
+            shareLink: getCurrentShareUrl({ url: profileData.share_url }),
             toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
           })
         }>

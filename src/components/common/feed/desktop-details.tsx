@@ -21,6 +21,9 @@ import { AudioRecordIcon } from '@icons/audio-record-icon'
 import { VideoRecordIcon } from '@icons/video-record-icon'
 import { type CommentListType } from '@lib/schemas/loop/comment'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
+import { LockIcon } from '@icons/LockIcon'
+import { TickIcon } from '@icons/tick-icon'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@components/ui/tooltip'
 
 export function DesktopDetails({ loop, community, owner, video }: VideoPlayerModalType) {
   const { shareFn } = useAdaptiveShare()
@@ -65,9 +68,21 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
             className="h-9 w-9"
           />
           <span className="flex items-center gap-x-1">
-            <Link href={PATH_NAME.profile(owner.userName)}>
-              <p className="line-clamp-1 break-all text-title-3-demi">@{owner.userName}</p>
-            </Link>
+            {owner.brand ? (
+              <div className="flex items-center gap-1">
+                <Link href={PATH_NAME.brand(owner.brand.brand_slug)}>
+                  <p className="line-clamp-1 break-all text-title-3-demi">@{owner.userName}</p>
+                </Link>
+                <div className="flex items-center">
+                  <TickIcon className="h-3 w-3 fill-primary" />
+                  <p className="text-cap-2-demi text-primary">Brand</p>
+                </div>
+              </div>
+            ) : (
+              <Link href={PATH_NAME.profile(owner.userName)}>
+                <p className="line-clamp-1 break-all text-title-3-demi">@{owner.userName}</p>
+              </Link>
+            )}
             <p className="shrink-0 text-body-1-demi text-tertiary">{getTimeAgo(video.createdAt) + ' ago'}</p>
           </span>
         </span>
@@ -80,18 +95,54 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
           <p className="text-title-3-bold">Posted in</p>
           <div className="pt-3">
             <span className="flex items-center justify-between">
-              <span className="flex flex-1 items-center gap-x-3">
-                <CustomAvatar
-                  imageUrl={community.profileImage ?? ''}
-                  fallbackString={community.name ?? ''}
-                  isAvatar={false}
-                  className="h-11 w-11"
-                />
-                {/* TODO: What if there is no community name. */}
-                <Link href={{ pathname: PATH_NAME.community(community.slug) }}>
-                  <p className="line-clamp-1 break-all pr-2 text-title-3-bold">{community.name}</p>
-                </Link>
-              </span>
+              <div className="flex items-center justify-center">
+                <span className="flex flex-1 items-center gap-x-3">
+                  <CustomAvatar
+                    imageUrl={community.profileImage ?? ''}
+                    fallbackString={community.name ?? ''}
+                    isAvatar={false}
+                    className="h-11 w-11"
+                  />
+                  {/* TODO: What if there is no community name. */}
+                  <Link href={{ pathname: PATH_NAME.community(community.slug) }}>
+                    <p className="line-clamp-1 break-all pr-2 text-title-3-bold">{community.name}</p>
+                  </Link>
+                </span>
+                {community?.type === 2 && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <LockIcon className="h-4 w-4 stroke-tertiary" />
+                      </TooltipTrigger>
+                      <TooltipContent className="w-64 bg-monochrome-black">
+                        <p className="text-center text-cap-1-med text-monochrome-white">
+                          This community is private. Only people approved by it's moderators can see and participate in
+                          this community.
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
+                {community.brand && (
+                  <Link href={{ pathname: PATH_NAME.brand(community.brand.brand_slug) }}>
+                    <div className="flex items-center gap-1 rounded-full bg-tertiary-200 p-1">
+                      <CustomAvatar
+                        imageUrl={community.brand?.logo ?? ''}
+                        fallbackString={community.brand?.name ?? ''}
+                        isAvatar={false}
+                        className="h-4 w-4"
+                      />
+                      <p
+                        className="text-cap-1-demi text-secondary"
+                        style={{
+                          maxWidth: '10ch',
+                        }}>
+                        {community.brand?.name}
+                      </p>
+                    </div>
+                  </Link>
+                )}
+              </div>
               <span className="flex h-min flex-1 items-center justify-end gap-x-3">
                 <Button
                   size="custom"

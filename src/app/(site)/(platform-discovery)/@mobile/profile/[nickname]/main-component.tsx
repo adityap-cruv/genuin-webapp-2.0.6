@@ -21,6 +21,7 @@ import { type ProfileDetailsType } from '@lib/schemas/profile/profile'
 import { CommunityList } from './community-list'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { usePathname } from 'next/navigation'
+import { TickIcon } from '@icons/tick-icon'
 
 interface CompProps {
   profileData: ProfileDetailsType
@@ -36,9 +37,7 @@ export function MainComponent({ profileData }: CompProps) {
   const { scrollYProgress } = useScroll({ container: scrollDivRef, layoutEffect: false })
   const resetData = useCommunityListStore((state) => state.reset)
   const pathName = usePathname()
-  const { isEmbed, parentUrl, user } = useGenuinOptions((state) => ({
-    isEmbed: state.embed,
-    parentUrl: state.parentUrl,
+  const { user } = useGenuinOptions((state) => ({
     user: state.user,
   }))
 
@@ -58,6 +57,7 @@ export function MainComponent({ profileData }: CompProps) {
         profileName={profileData?.name ?? ''}
         profileNickname={profileData?.nickname}
         isAvatar={profileData?.is_avatar}
+        shareUrl={profileData.share_url}
       />
       <div
         ref={scrollDivRef}
@@ -102,7 +102,7 @@ export function MainComponent({ profileData }: CompProps) {
                 className="p-1.5"
                 onClick={async () =>
                   await shareFn({
-                    shareLink: getCurrentShareUrl({ isEmbed, parentUrl }),
+                    shareLink: getCurrentShareUrl({ url: profileData.share_url }),
                     toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                   })
                 }>

@@ -22,6 +22,20 @@ const loopSchema = z.object({
   id: z.string(),
 })
 
+const BrandSchema = z
+  .object({
+    brand_id: z.number(),
+    name: z.string(),
+    subdomain: z.string(),
+    logo: z.string().nullish(),
+    created_at: z.number(),
+    brand_web_logo: z.string().nullish(),
+    favicon: z.string().nullish(),
+    brand_system_user_id: z.string(),
+    brand_slug: z.string(),
+  })
+  .nullish()
+
 // Define the community schema
 const communitySchema = z.object({
   profileImage: z.string().nullable().optional(),
@@ -29,7 +43,16 @@ const communitySchema = z.object({
   slug: z.string(),
   handle: z.string(),
   id: z.string(),
+  type: z.number().nullish(),
+  brand: BrandSchema,
 })
+
+const BrandUserSchema = z
+  .object({
+    brand_id: z.number(),
+    brand_slug: z.string(),
+  })
+  .nullish()
 
 // Define the owner schema
 const ownerSchema = z.object({
@@ -37,6 +60,7 @@ const ownerSchema = z.object({
   profileImage: z.string(),
   userName: z.string(),
   name: z.string().nullish(),
+  brand: BrandUserSchema,
 })
 
 // Define the PlayerVideoModal schema

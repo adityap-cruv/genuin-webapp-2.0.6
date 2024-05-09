@@ -70,7 +70,7 @@ export function getCommunityVideos(slug: string) {
 }
 
 export async function fetchCommunityLoops(slug: string): Promise<{ loops: CommunityLoopListType }> {
-  return await axios
+  return await axiosInstance
     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/community/loops', {
       params: {
         slug,
@@ -93,7 +93,7 @@ export function getCommunityLoops(slug: string) {
 // }
 
 async function fetchCommunityMembers(slug: string) {
-  return await axios
+  return await axiosInstance
     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/community/members', {
       params: {
         slug,

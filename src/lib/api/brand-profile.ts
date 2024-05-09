@@ -9,10 +9,10 @@ import {
 } from './api-response-parser'
 import { axiosInstance } from './instance'
 
-export async function fetchUserData(nickname: string) {
+export async function fetchUserData(slug: string) {
   return await axios
     .post(process.env.NEXT_PUBLIC_API_URL + '/api/v3/users/get_profile', {
-      nickname,
+      brand_slug : slug,
     })
     .then((res) => {
       return validateProfileDetails(res.data.data)
@@ -24,15 +24,15 @@ export async function fetchUserData(nickname: string) {
 
 let pageSession: string | undefined
 async function fetchCommunities(
-  userId: string,
+  brandId: number,
   pageParam: { pageSession: string; lastCommunityId: string },
   limit: number
 ) {
   return await axiosInstance
-    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/profile/communities', {
+    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/brand/communities', {
       params: {
-        user_id: userId,
-        page_session: pageParam?.pageSession ?? undefined,
+        brand_id: brandId,
+        // page_session: pageParam?.pageSession ?? undefined,
         last_community_id: pageParam?.lastCommunityId ?? undefined,
         page_limit_profile_videos: limit,
       },
@@ -48,14 +48,15 @@ async function fetchCommunities(
       }
     })
     .catch((e) => {
+      console.log("Error:", e)
       throw new Error('Something went wrong with profile community api.')
     })
 }
 
-export function getCommunities(userId: string, limit: number) {
+export function getCommunities(brandId: number, limit: number) {
   return useInfiniteQuery({
-    queryKey: ['communities', userId],
-    queryFn: async ({ pageParam }) => await fetchCommunities(userId, pageParam, limit),
+    queryKey: ['communities', brandId],
+    queryFn: async ({ pageParam }) => await fetchCommunities(brandId, pageParam, limit),
     getNextPageParam(lastPage, allPages) {
       if (lastPage.end) {
         return
@@ -69,16 +70,15 @@ export function getCommunities(userId: string, limit: number) {
 }
 
 export async function fetchProfileCommunityLoops(
-  userId: string,
+  brandId: number,
   limit: number,
   communityId: string,
   lastLoopId: string
 ) {
   return await axiosInstance
-    .get('/api/v3/profile/loops', {
+    .get('/api/v3/brand/loops', {
       params: {
-        user_id: userId,
-        page_session: pageSession,
+        brand_id: brandId,
         community_id: communityId,
         last_chat_id: lastLoopId,
         page_limit_profile_videos: limit,
@@ -94,21 +94,20 @@ export async function fetchProfileCommunityLoops(
 }
 
 export async function fetchProfileVideos(
-  userId: string,
+  brandId: number,
   limit: number,
   communityId: string,
   loopId: string,
   lastVideoId: string
 ) {
   return await axiosInstance
-    .get('/api/v3/profile/loop_videos', {
+    .get('/api/v3/brand/loop_videos', {
       params: {
-        user_id: userId,
+        brand_id: brandId,       
         community_id: communityId,
         chat_id: loopId,
         last_message_id: lastVideoId,
         page_limit_profile_videos: limit,
-        page_session: pageSession,
       },
     })
     .then((res) => {
@@ -122,11 +121,11 @@ export async function fetchProfileVideos(
     })
 }
 
-export async function fetchProfileFeed(userId: string, pageParam?: { lastMessageId: string }, fromVideoId?: string) {
+export async function fetchProfileFeed(brandId: number, pageParam?: { lastMessageId: string }, fromVideoId?: string) {
   return await axiosInstance
-    .get('/api/v3/profile/feed', {
+    .get('/api/v3/brand/feed', {
       params: {
-        user_id: userId,
+        brand_id: brandId,       
         page_session: pageSession,
         from_message_id: pageParam?.lastMessageId ? undefined : fromVideoId,
         last_message_id: pageParam?.lastMessageId,
@@ -135,7 +134,6 @@ export async function fetchProfileFeed(userId: string, pageParam?: { lastMessage
     .then((res) => {
       const resData = res.data.data
       pageSession = resData.page_session
-      console.log('resData', resData)
       return { feed: parseFeedResponse(resData.feeds), end: resData.end_of_messages }
     })
     .catch((e) => {
@@ -144,10 +142,10 @@ export async function fetchProfileFeed(userId: string, pageParam?: { lastMessage
     })
 }
 
-export function getProfileFeed(userId: string, fromVideoId: string) {
+export function getProfileFeed(brandId: number, fromVideoId: string) {
   return useInfiniteQuery({
-    queryFn: async ({ pageParam }) => await fetchProfileFeed(userId, pageParam, fromVideoId),
-    queryKey: ['feed', userId, fromVideoId],
+    queryFn: async ({ pageParam }) => await fetchProfileFeed(brandId, pageParam, fromVideoId),
+    queryKey: ['feed', brandId, fromVideoId],
     getNextPageParam(lastPage) {
       if (lastPage.end) return
       return { lastMessageId: lastPage.feed[lastPage.feed.length - 1].video.id }

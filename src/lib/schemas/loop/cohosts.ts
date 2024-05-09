@@ -1,5 +1,10 @@
 import { z } from 'zod'
 
+const BrandUserSchema = z.object({
+  brand_id: z.number(),
+  brand_slug: z.string(),
+})
+
 const CohostSchema = z.object({
   nickname: z.string(),
   name: z.string().nullish(),
@@ -13,6 +18,7 @@ const CohostSchema = z.object({
   profile_image_s: z.string().nullish(),
   profile_image_m: z.string().nullish(),
   profile_image_l: z.string().nullish(),
+  brand: BrandUserSchema,
 })
 
 const CohostListSchema = z.array(CohostSchema)

@@ -84,7 +84,22 @@ const ProfileSchema = z.object({
   profile_image_l: z.string().nullish(), // `profile_image_l` should be a valid URL
 })
 
+const BrandTypeSchema = z
+  .object({
+    brand_id: z.number(),
+    name: z.string().nullable(),
+    subdomain: z.string().nullable(),
+    logo: z.string().nullable(),
+    created_at: z.number(),
+    brand_web_logo: z.string().nullable(),
+    favicon: z.string(),
+    brand_system_user_id: z.string().nullable(),
+    brand_slug: z.string(),
+  })
+  .nullish()
+
 const CommunitySchema = z.object({
+  brand: BrandTypeSchema,
   community_id: z.string(),
   handle: z.string(),
   name: z.string().nullish(),
@@ -105,6 +120,7 @@ const CommunitySchema = z.object({
     .regex(/^#[0-9A-Fa-f]{6}$/)
     .nullish(),
   share_url: z.string(),
+  type: z.number().nullish(),
 })
 
 const metaDataSchema = z.object({

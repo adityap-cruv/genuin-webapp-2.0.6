@@ -22,6 +22,11 @@ import { useGenuinOptions } from '@lib/stores/genuin-options'
 import Loading from './loading'
 import Error from '../../error'
 import { Shimmer } from '@components/ui/shimmer'
+import { LockIcon } from '@icons/LockIcon'
+import { loopPrivacyInfo } from '@components/common/loop-privacy-info'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@components/ui/tooltip'
+import { DownloadDialogModal } from '@components/common/modals/download-app'
+import { TickIcon } from '@icons/tick-icon'
 
 interface Props {
   loopDetails: LoopDetailsType
@@ -43,6 +48,10 @@ export function MainComponent({ loopDetails }: Props) {
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
   const [isLoopSubscribed, setIsLoopSubscribed] = useState(!!loopDetails.is_subscriber)
   const user = useGenuinOptions().user
+  const privacyMessage = loopPrivacyInfo(
+    loopDetails?.actions?.[0]?.action_id ?? 0,
+    loopDetails?.actions?.[0]?.access_type_id ?? 0
+  )
 
   function toggleLoopSubscription() {
     const newValue = !isLoopSubscribed
@@ -103,7 +112,7 @@ export function MainComponent({ loopDetails }: Props) {
                 variant="outline"
                 className="border border-primary"
                 onClick={() => {
-                  openModal({
+                  DownloadDialogModal.open({
                     title: 'Get the Genuin app',
                     subtitle: (
                       <>
@@ -143,6 +152,7 @@ export function MainComponent({ loopDetails }: Props) {
             </Button>
           </div>
         </div>
+        {privacyMessage}
         <span className="w-1/2">
           <p className="my-1 line-clamp-2 w-1/2 break-words text-body-1-med text-secondary">
             {loopDetails.group.group_description}
@@ -151,35 +161,63 @@ export function MainComponent({ loopDetails }: Props) {
             <span className="flex gap-x-2" ref={detailsDivRef}>
               <span className="flex-1">
                 <p className="text-body-1-demi text-tertiary">Created by</p>
-                <Link href={{ pathname: PATH_NAME.profile(loopDetails.owner.username) }}>
-                  <div className="my-2 flex items-center">
+                <Link
+                  href={{
+                    pathname: loopDetails.owner.brand
+                      ? PATH_NAME.brand(loopDetails.owner.brand.brand_slug)
+                      : PATH_NAME.profile(loopDetails.owner.username),
+                  }}>
+                  <div className="my-2 flex items-center gap-1">
                     <CustomAvatar
                       fallbackString={loopDetails.owner.name ?? ''}
                       imageUrl={loopDetails.owner.profile_image ?? ''}
                       isAvatar={loopDetails.owner.is_avatar}
                       className="h-8 w-8"
                     />
-                    <p className="ml-1 line-clamp-1 break-all text-body-1-bold text-secondary">
+                    <p className="line-clamp-1 break-all text-body-1-bold text-secondary">
                       @{loopDetails.owner.username}
                     </p>
+                    {loopDetails.owner.brand && (
+                      <div className="flex items-center">
+                        <TickIcon className="h-3 w-3 fill-primary" />
+                        <p className="text-cap-2-demi text-primary">Brand</p>
+                      </div>
+                    )}
                   </div>
                 </Link>
               </span>
               <span className="flex-1">
                 <p className="text-body-1-demi text-tertiary">Posted in</p>
-                <Link href={{ pathname: PATH_NAME.community(loopDetails.community.slug) }}>
-                  <div className="my-2 flex items-center">
-                    <CustomAvatar
-                      imageUrl={loopDetails.community.dp ?? ''}
-                      fallbackString={loopDetails.community.name ?? ''}
-                      isAvatar={false}
-                      className="h-8 w-8"
-                    />
-                    <p className="ml-1 line-clamp-1 break-all text-body-1-bold text-secondary">
-                      {loopDetails.community.name}
-                    </p>
-                  </div>
-                </Link>
+                <div className="my-2 flex items-center">
+                  <Link href={{ pathname: PATH_NAME.community(loopDetails.community.slug) }}>
+                    <div className="flex items-center">
+                      <CustomAvatar
+                        imageUrl={loopDetails.community.dp ?? ''}
+                        fallbackString={loopDetails.community.name ?? ''}
+                        isAvatar={false}
+                        className="h-8 w-8"
+                      />
+                      <p className="ml-1 line-clamp-1 break-all text-body-1-bold text-secondary">
+                        {loopDetails.community.name}
+                      </p>
+                    </div>
+                  </Link>
+                  {loopDetails.community.type === 2 && (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <LockIcon className="z-10 ml-1 h-4 w-4 stroke-tertiary" />
+                        </TooltipTrigger>
+                        <TooltipContent className="w-64 bg-monochrome-black">
+                          <p className="text-center text-cap-1-med text-monochrome-white">
+                            This community is private. Only people approved by it's moderators can see and participate
+                            in this community.
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  )}
+                </div>
               </span>
             </span>
             <Stats
@@ -262,13 +300,18 @@ function LoopCohosts({ slug }: { slug: string }) {
         <p className="my-2 text-title-3-bold">Collaborators</p>
         <div className="h-full w-full overflow-auto">
           {cohosts.map((item, index) => (
-            <Link key={index} href={{ pathname: PATH_NAME.profile(item.nickname) }}>
+            <Link
+              key={index}
+              href={{
+                pathname: item.brand ? PATH_NAME.brand(item.brand.brand_slug) : PATH_NAME.profile(item.nickname),
+              }}>
               <ListItem
                 title={item.name ?? ''}
                 subtitle={'@' + item.nickname}
                 description={item.bio ?? ''}
                 image={item.profile_image}
                 isAvatar={item.is_avatar}
+                brand={item.brand ?? null}
               />
             </Link>
           ))}
@@ -304,13 +347,18 @@ function LoopSubscribers({ slug }: { slug: string }) {
         <p className="my-2 text-title-3-bold">Subscribers</p>
         <div className="h-full w-full overflow-auto">
           {subscribers.map((item, index) => (
-            <Link key={index} href={{ pathname: PATH_NAME.profile(item.nickname) }}>
+            <Link
+              key={index}
+              href={{
+                pathname: item.brand ? PATH_NAME.brand(item.brand.brand_slug) : PATH_NAME.profile(item.nickname),
+              }}>
               <ListItem
                 title={item.name ?? ''}
                 subtitle={'@' + item.nickname}
                 description={item.bio ?? ''}
                 image={item.profile_image}
                 isAvatar={item.is_avatar}
+                brand={item.brand ?? null}
               />
             </Link>
           ))}

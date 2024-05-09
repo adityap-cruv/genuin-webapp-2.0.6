@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { NoResults } from './no-results'
 import { useSearchBarStore } from '../../store'
+import { LockIcon } from '@icons/LockIcon'
 
 export function Communities({ communities }: { communities?: CommunityType[] }) {
   if (communities)
@@ -33,7 +34,34 @@ export function CommunityTile({ community }: { community: CommunityType }) {
             />
             <span>
               <p className="text-body-1-bold hover:underline">{community.name}</p>
-              <p className="text-body-1-demi text-tertiary">{`${community.memberCount} members`}</p>
+              <div className="flex items-center gap-1">
+                {community.brand && (
+                  <Link href={{ pathname: PATH_NAME.brand(community.brand.brand_slug) }}>
+                    <div className="flex items-center gap-1 rounded-full bg-tertiary-200 p-1 ">
+                      <CustomAvatar
+                        imageUrl={community.brand?.logo ?? ''}
+                        fallbackString={community.brand?.name ?? ''}
+                        isAvatar={false}
+                        className="h-4 w-4"
+                      />
+                      <p
+                        className="text-cap-1-demi text-secondary"
+                        style={{
+                          maxWidth: '10ch',
+                        }}>
+                        {community.brand?.name}
+                      </p>
+                    </div>
+                  </Link>
+                )}
+                <p className="text-body-1-demi text-tertiary">{`${community.memberCount} members`}</p>
+                {community.type === 2 && (
+                  <div className="flex items-center justify-center">
+                    <LockIcon className="h-4 w-4 stroke-tertiary" />
+                    <p className="text-cap-1-demi text-tertiary">Private</p>
+                  </div>
+                )}
+              </div>
             </span>
           </span>
         </div>

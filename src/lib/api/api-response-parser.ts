@@ -58,6 +58,20 @@ export function parseFeedResponse(videos: FeedResponseType) {
         slug: video.community?.slug ?? '',
         name: video.community?.name ?? '',
         profileImage: video.community?.dp ?? '',
+        type: video.type ?? null,
+        brand: video.community?.brand
+          ? {
+              brand_id: video.community.brand.brand_id,
+              name: video.community.brand.name,
+              subdomain: video.community.brand.subdomain,
+              logo: video.community.brand.logo,
+              created_at: video.community.brand.created_at,
+              brand_web_logo: video.community.brand.brand_web_logo,
+              favicon: video.community.brand.favicon,
+              brand_system_user_id: video.community.brand.brand_system_user_id,
+              brand_slug: video.community.brand.brand_slug,
+            }
+          : null,
       },
       loop: {
         id: video.chat_id,
@@ -69,6 +83,12 @@ export function parseFeedResponse(videos: FeedResponseType) {
         profileImage: video.messages[0].owner.profile_image,
         userName: video.messages[0].owner.username,
         name: video.messages[0].owner.name,
+        brand: video.messages[0]?.owner.brand
+          ? {
+              brand_id: video.messages[0].owner.brand?.brand_id,
+              brand_slug: video.messages[0].owner.brand?.brand_slug,
+            }
+          : null,
       },
       video: {
         commentCount: video.messages[0].no_of_comments,
@@ -90,6 +110,19 @@ export function parseFeedResponse(videos: FeedResponseType) {
 export function parseProfileCommunityResponse(communities: ProfileCommunityResponseType[]) {
   return communities.map<ProfileCommunityType>((item) => {
     return {
+      brand: item?.brand
+        ? {
+            brand_id: item.brand.brand_id,
+            name: item.brand.name,
+            subdomain: item.brand.subdomain,
+            logo: item.brand.logo,
+            created_at: item.brand.created_at,
+            brand_web_logo: item.brand.brand_web_logo,
+            favicon: item.brand.favicon,
+            brand_system_user_id: item.brand.brand_system_user_id,
+            brand_slug: item.brand.brand_slug,
+          }
+        : null,
       handle: item.handle,
       id: item.community_id,
       // TODO: Addition from backend required.
@@ -98,6 +131,7 @@ export function parseProfileCommunityResponse(communities: ProfileCommunityRespo
       name: item.name,
       profileImage: item.dp,
       loopCount: item.no_of_loops,
+      type: item.type ?? null,
       loops: item.loops.map((item) => {
         return {
           id: item.chat_id,
@@ -105,6 +139,11 @@ export function parseProfileCommunityResponse(communities: ProfileCommunityRespo
           name: item.group.group_name,
           private: !item.is_view_allowed,
           videoCount: item.group.no_of_videos,
+          actions: item.actions
+            ? item.actions.map((item) => {
+                return { action_id: item.action_id, access_type_id: item.access_type_id }
+              })
+            : null,
           videos: item.messages.map((item) => {
             return {
               id: item.message_id,
@@ -128,6 +167,11 @@ export function parseProfileLoopResponse(loops: ProfileLoopResponseType[]) {
       slug: item.slug,
       videoCount: item.group.no_of_videos,
       name: item.group.group_name,
+      actions: item.actions
+        ? item.actions.map((item) => {
+            return { action_id: item.action_id, access_type_id: item.access_type_id }
+          })
+        : null,
       videos: item.messages.map((item) => {
         // TODO: Add spark count if needed after discussion with design and backend.
         return { id: item.message_id, sparkCount: 0, viewCount: item.no_of_views, thumbnail: item.thumbnail_url }

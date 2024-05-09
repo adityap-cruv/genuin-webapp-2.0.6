@@ -9,6 +9,7 @@ import { Actions } from './actions'
 import { ReadMore } from '@components/common/read-more'
 import { cn } from '@lib/utils'
 import { AnimatedMuteIcon } from './animated-mute-icon'
+import { TickIcon } from '@icons/tick-icon'
 
 export const ControlLayer = {
   desktop: Desktop,
@@ -128,6 +129,13 @@ type MobileProps = {
     profileImage: string
     isAvatar: boolean
     name?: string | null
+    brand?:
+      | {
+          brand_id: number
+          brand_slug: string
+        }
+      | undefined
+      | null
   }
 }
 
@@ -146,17 +154,37 @@ function Loop({
     <div className="flex justify-between px-2">
       <div className="flex w-4/5 flex-col justify-end">
         <div className="z-10 flex items-center">
-          <Link
-            className="flex cursor-pointer items-center hover:opacity-60"
-            href={{ pathname: PATH_NAME.profile(owner.userName) }}>
-            <CustomAvatar
-              className="bg-red-40"
-              imageUrl={owner.profileImage}
-              fallbackString={owner.name ?? 'U'}
-              isAvatar={owner.isAvatar}
-            />
-            <p className="line-clamp-1 px-2 text-title-3-bold text-monochrome-white">@{owner.userName}</p>
-          </Link>
+          {owner.brand ? (
+            <div className="flex items-center">
+              <Link
+                className="flex cursor-pointer items-center hover:opacity-60"
+                href={{ pathname: PATH_NAME.brand(owner.brand.brand_slug) }}>
+                <CustomAvatar
+                  className="bg-red-40"
+                  imageUrl={owner.profileImage}
+                  fallbackString={owner.name ?? 'U'}
+                  isAvatar={owner.isAvatar}
+                />
+                <p className="line-clamp-1 px-2 text-title-3-bold text-monochrome-white">@{owner.userName}</p>
+              </Link>
+              <div className="flex items-center gap-0.5">
+                <TickIcon className="h-3 w-3 fill-primary" />
+                <p className="text-cap-2-demi text-primary">Brand</p>
+              </div>
+            </div>
+          ) : (
+            <Link
+              className="flex cursor-pointer items-center hover:opacity-60"
+              href={{ pathname: PATH_NAME.profile(owner.userName) }}>
+              <CustomAvatar
+                className="bg-red-40"
+                imageUrl={owner.profileImage}
+                fallbackString={owner.name ?? 'U'}
+                isAvatar={owner.isAvatar}
+              />
+              <p className="line-clamp-1 px-2 text-title-3-bold text-monochrome-white">@{owner.userName}</p>
+            </Link>
+          )}
         </div>
         <span className="py-2">
           <ReadMore
