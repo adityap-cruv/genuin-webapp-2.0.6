@@ -112,7 +112,9 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <LockIcon className="h-4 w-4 stroke-tertiary" />
+                        <div>
+                          <LockIcon className="h-4 w-4 stroke-tertiary" />
+                        </div>
                       </TooltipTrigger>
                       <TooltipContent className="w-64 bg-monochrome-black">
                         <p className="text-center text-cap-1-med text-monochrome-white">

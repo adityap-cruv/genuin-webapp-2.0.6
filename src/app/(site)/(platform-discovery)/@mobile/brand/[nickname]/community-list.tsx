@@ -1,6 +1,6 @@
 'use client'
 import { abbreviateNumber, openModal } from '@lib/utils'
-import { useGenuinOptions } from '@lib/stores/genuin-options'
+import { type User, useGenuinOptions } from '@lib/stores/genuin-options'
 import { Button } from '@components/ui/button'
 import Image from 'next/image'
 import { CustomAvatar } from '@components/custom/custom-avatar'
@@ -224,21 +224,6 @@ function PlayerModalWrapper({ brandId, currentVideoId }: { brandId: number; curr
   )
 }
 
-type User = {
-  bio?: string
-  email?: string | null
-  isAvatar: boolean
-  name?: string | null
-  nickname: string
-  isEmailVerified: boolean
-  isPasswordSet: boolean
-  image?: string | null
-  accessToken: string
-  id?: string
-  ks_cb_request_status?: number
-  is_brand_system_user?: boolean
-}
-
 function Loops({
   brandId,
   community,
@@ -399,7 +384,7 @@ function LoopVideos({ brandId, loop, communityId, pathName, user }: LoopVideosPr
       <Link href={PATH_NAME.loop(loop.slug)}>
         <p className="mb-3 text-body-1-bold">{loop.name}</p>
       </Link>
-      {pathName === PATH_NAME.profile(user?.nickname) && privacyMessage}
+      {pathName === PATH_NAME.brand(user?.brand_slug) && privacyMessage}
       <div className="my-2 grid w-full grid-cols-4 gap-2 md:grid-cols-8">
         <InnerComponent />
         {isFetchingNextPage &&

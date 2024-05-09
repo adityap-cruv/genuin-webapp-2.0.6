@@ -195,7 +195,7 @@ export function RootDetails({ communityDetails }: { communityDetails: CommunityD
                     </div>
                   </TooltipTrigger>
                   <TooltipContent className="w-64 bg-monochrome-black">
-                    <p className="text-cap-1-med text-monochrome-white">
+                    <p className="text-center text-cap-1-med text-monochrome-white">
                       This community is private. Only people approved by it's moderators can see and participate in this
                       community.
                     </p>

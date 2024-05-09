@@ -8,7 +8,7 @@ import { joinCommunity, leaveCommunity } from '@lib/api/video'
 import { PlayerModal } from '@components/common/modals/player-modal'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import icPlay from '@icons/player-controls/icPlay.svg'
-import { useGenuinOptions } from '@lib/stores/genuin-options'
+import { type User, useGenuinOptions } from '@lib/stores/genuin-options'
 import { useMotionValueEvent, useScroll } from 'framer-motion'
 import React, { useState, useEffect, useRef } from 'react'
 import { useCommunityListStore } from './store'
@@ -247,21 +247,6 @@ function PlayerModalWrapper({ brandId, currentVideoId }: { brandId: number; curr
   )
 }
 
-type User = {
-  bio?: string
-  email?: string | null
-  isAvatar: boolean
-  name?: string | null
-  nickname: string
-  isEmailVerified: boolean
-  isPasswordSet: boolean
-  image?: string | null
-  accessToken: string
-  id?: string
-  ks_cb_request_status?: number
-  is_brand_system_user?: boolean
-}
-
 function Loops({
   brandId,
   community,
@@ -421,9 +406,9 @@ function LoopVideos({ brandId, loop, communityId, pathName, user }: LoopVideosPr
   return (
     <>
       <Link href={PATH_NAME.loop(loop.slug)}>
-        <p className="mb-3 text-body-1-bold">{loop.name}</p>
+        <p className="mb-1 text-body-1-bold">{loop.name}</p>
       </Link>
-      {pathName === PATH_NAME.profile(user?.nickname) && privacyMessage}
+      {pathName === PATH_NAME.brand(user?.brand_slug) && privacyMessage}
       <div className="my-2 grid w-full grid-cols-4 gap-2 md:grid-cols-8">
         <InnerComponent />
         {isFetchingNextPage &&

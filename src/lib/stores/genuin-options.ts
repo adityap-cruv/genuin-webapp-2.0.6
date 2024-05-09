@@ -50,7 +50,7 @@ export type ConfigType = {
   brand_web_logo: string
 } | null
 
-type User = {
+export type User = {
   bio?: string
   email?: string | null
   isAvatar: boolean

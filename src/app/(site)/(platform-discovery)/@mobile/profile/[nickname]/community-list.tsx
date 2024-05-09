@@ -1,6 +1,6 @@
 'use client'
 import { abbreviateNumber, openModal } from '@lib/utils'
-import { useGenuinOptions } from '@lib/stores/genuin-options'
+import { type User, useGenuinOptions } from '@lib/stores/genuin-options'
 import { Button } from '@components/ui/button'
 import Image from 'next/image'
 import { CustomAvatar } from '@components/custom/custom-avatar'
@@ -222,21 +222,6 @@ function PlayerModalWrapper({ userId, currentVideoId }: { userId: string; curren
       open={Boolean(currentVideoId)}
     />
   )
-}
-
-type User = {
-  bio?: string
-  email?: string | null
-  isAvatar: boolean
-  name?: string | null
-  nickname: string
-  isEmailVerified: boolean
-  isPasswordSet: boolean
-  image?: string | null
-  accessToken: string
-  id?: string
-  ks_cb_request_status?: number
-  is_brand_system_user?: boolean
 }
 
 function Loops({

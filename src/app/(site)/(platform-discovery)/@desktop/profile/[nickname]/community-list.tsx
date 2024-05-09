@@ -8,7 +8,7 @@ import { joinCommunity, leaveCommunity } from '@lib/api/video'
 import { PlayerModal } from '@components/common/modals/player-modal'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import icPlay from '@icons/player-controls/icPlay.svg'
-import { useGenuinOptions } from '@lib/stores/genuin-options'
+import { type User, useGenuinOptions } from '@lib/stores/genuin-options'
 import { useMotionValueEvent, useScroll } from 'framer-motion'
 import React, { useState, useEffect, useRef } from 'react'
 import { useCommunityListStore } from './store'
@@ -244,21 +244,6 @@ function PlayerModalWrapper({ userId, currentVideoId }: { userId: string; curren
       isLoading={isLoading}
     />
   )
-}
-
-type User = {
-  bio?: string
-  email?: string | null
-  isAvatar: boolean
-  name?: string | null
-  nickname: string
-  isEmailVerified: boolean
-  isPasswordSet: boolean
-  image?: string | null
-  accessToken: string
-  id?: string
-  ks_cb_request_status?: number
-  is_brand_system_user?: boolean
 }
 
 function Loops({
