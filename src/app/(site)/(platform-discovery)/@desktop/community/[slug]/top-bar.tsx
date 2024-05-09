@@ -25,6 +25,7 @@ type Props = {
   isCommunityJoined?: any
   setIsCommunityJoined?: any
   toggleCommunityJoinState?: any
+  shareUrl: string
 }
 
 export const TopStickyBar = {
@@ -42,6 +43,7 @@ export function Desktop({
   isCommunityJoined,
   setIsCommunityJoined,
   toggleCommunityJoinState,
+  shareUrl,
   ...props
 }: Props) {
   const navAnimationControl = useAnimationControls()
@@ -115,7 +117,7 @@ export function Desktop({
           className="border border-primary p-0.5 hover:border-primary-600"
           onClick={async () =>
             await shareFn({
-              shareLink: getCurrentShareUrl({ isEmbed, parentUrl }),
+              shareLink: getCurrentShareUrl({ url: shareUrl }),
               toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
             })
           }>

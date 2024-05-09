@@ -33,7 +33,6 @@ export function MainComponent({ profileData }: CompProps) {
   const scrollDivRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ container: scrollDivRef, layoutEffect: false })
   const resetData = useCommunityListStore((state) => state.reset)
-  const { isEmbed, parentUrl } = useGenuinOptions((state) => ({ isEmbed: state.embed, parentUrl: state.parentUrl }))
 
   useEffect(() => {
     return () => {
@@ -51,6 +50,7 @@ export function MainComponent({ profileData }: CompProps) {
         profileName={profileData?.name ?? ''}
         profileNickname={profileData?.nickname}
         isAvatar={profileData?.is_avatar}
+        shareUrl={profileData.share_url}
       />
       <div
         ref={scrollDivRef}
@@ -85,7 +85,7 @@ export function MainComponent({ profileData }: CompProps) {
                 className="p-1.5"
                 onClick={async () =>
                   await shareFn({
-                    shareLink: getCurrentShareUrl({ isEmbed, parentUrl }),
+                    shareLink: getCurrentShareUrl({ url: profileData.share_url }),
                     toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                   })
                 }>

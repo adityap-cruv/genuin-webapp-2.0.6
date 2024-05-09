@@ -109,6 +109,7 @@ export function RootDetails({ communityDetails }: { communityDetails: CommunityD
         isCommunityJoined={isCommunityJoined}
         setIsCommunityJoined={setIsCommunityJoined}
         toggleCommunityJoinState={toggleCommunityJoinState}
+        shareUrl={communityDetails.share_url}
       />
       <main className="hide-scrollbar absolute inset-0 h-full w-full overflow-auto">
         <div>
@@ -167,12 +168,12 @@ export function RootDetails({ communityDetails }: { communityDetails: CommunityD
               variant="outline"
               size="custom"
               className="border border-primary p-0.5 hover:border-primary-600"
-              onClick={async () =>
+              onClick={async () => {
                 await shareFn({
-                  shareLink: getCurrentShareUrl({ isEmbed, parentUrl }),
+                  shareLink: getCurrentShareUrl({ url: communityDetails.share_url }),
                   toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                 })
-              }>
+              }}>
               <ShareIcon className="h-6 w-6 fill-primary hover:fill-primary-600" />
             </Button>
             {/* <Button variant="outline" size="custom" className="border border-primary p-1">

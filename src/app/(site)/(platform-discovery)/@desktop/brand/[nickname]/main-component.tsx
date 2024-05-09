@@ -48,6 +48,7 @@ export function MainComponent({ profileData }: CompProps) {
         profileName={profileData.name ?? ''}
         profileNickname={profileData?.nickname}
         isAvatar={profileData?.is_avatar}
+        shareUrl={profileData.share_url}
       />
       <div className="hide-scrollbar absolute inset-0 h-full w-full overflow-auto px-4">
         <div className="mt-4 flex items-center justify-between">
@@ -93,7 +94,6 @@ function Links({ profileData }: CompProps) {
   }
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
-  const { isEmbed, parentUrl } = useGenuinOptions((state) => ({ isEmbed: state.embed, parentUrl: state.parentUrl }))
 
   return (
     <div className="my-2 flex items-center">
@@ -132,7 +132,7 @@ function Links({ profileData }: CompProps) {
         className="mx-1 hover:border-primary-600"
         onClick={async () =>
           await shareFn({
-            shareLink: getCurrentShareUrl({ isEmbed, parentUrl }),
+            shareLink: getCurrentShareUrl({ url: profileData.share_url }),
             toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
           })
         }>

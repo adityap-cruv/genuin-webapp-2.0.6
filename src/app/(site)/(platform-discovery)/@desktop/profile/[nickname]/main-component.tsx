@@ -23,6 +23,7 @@ import { type ProfileDetailsType } from '@lib/schemas/profile/profile'
 import { CommunityList } from './community-list'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { usePathname } from 'next/navigation'
+import { profile } from 'console'
 
 interface CompProps {
   profileData: ProfileDetailsType
@@ -50,6 +51,7 @@ export function MainComponent({ profileData }: CompProps) {
         profileName={profileData.name ?? ''}
         profileNickname={profileData?.nickname}
         isAvatar={profileData?.is_avatar}
+        shareUrl={profileData.share_url}
       />
       <div className="hide-scrollbar absolute inset-0 h-full w-full overflow-auto px-4">
         <div className="mt-4 flex items-center justify-between">
@@ -154,7 +156,7 @@ function Links({ profileData }: CompProps) {
         className="mx-1 hover:border-primary-600"
         onClick={async () =>
           await shareFn({
-            shareLink: getCurrentShareUrl({ isEmbed, parentUrl }),
+            shareLink: getCurrentShareUrl({ url: profileData.share_url }),
             toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
           })
         }>

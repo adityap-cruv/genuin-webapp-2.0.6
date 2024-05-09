@@ -21,6 +21,7 @@ type Props = {
   profileName: string
   profileNickname: string
   isAvatar: boolean
+  shareUrl: string
 }
 
 export const TopStickyBar = {
@@ -35,12 +36,12 @@ function Desktop({
   profileName,
   profileNickname,
   isAvatar,
+  shareUrl,
   ...props
 }: Props) {
   const navAnimationControl = useAnimationControls()
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
-  const { isEmbed, parentUrl } = useGenuinOptions((state) => ({ isEmbed: state.embed, parentUrl: state.parentUrl }))
 
   useEffect(() => {
     if (defaultOpen || isOpen) {
@@ -81,7 +82,7 @@ function Desktop({
         className="mx-1 hover:border-primary-600"
         onClick={async () =>
           await shareFn({
-            shareLink: getCurrentShareUrl({ isEmbed, parentUrl }),
+            shareLink: getCurrentShareUrl({ url: shareUrl }),
             toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
           })
         }>

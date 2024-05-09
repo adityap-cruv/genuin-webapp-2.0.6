@@ -23,7 +23,6 @@ import { joinCommunity, leaveCommunity } from '@lib/api/video'
 import { ShareIcon } from '@icons/share-icon'
 import { useSearchParams } from 'next/navigation'
 import { getCommunityMembers } from '@lib/api/community'
-import { Loader } from '@components/ui/loader'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@components/ui/accordion'
 import { Shimmer } from '@components/ui/shimmer'
 import { LockIcon } from '@icons/LockIcon'
@@ -41,7 +40,7 @@ export function Details({ communityDetails }: Props) {
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
-  const { isEmbed, parentUrl } = useGenuinOptions((state) => ({ isEmbed: state.embed, parentUrl: state.parentUrl }))
+  const { isEmbed } = useGenuinOptions((state) => ({ isEmbed: state.embed, parentUrl: state.parentUrl }))
   const [isCommunityJoined, setIsCommunityJoined] = useState(!!communityDetails.logged_in_user_role)
   const user = useGenuinOptions().user
   const searchParams = Object.fromEntries(useSearchParams())
@@ -90,6 +89,7 @@ export function Details({ communityDetails }: Props) {
         communityName={communityDetails.name ?? ''}
         communityProfileImage={communityDetails.dp ?? ''}
         communtiyHandle={communityDetails.handle}
+        shareUrl={communityDetails.share_url}
       />
       <div
         className="hide-scrollbar absolute inset-0 mt-navbar w-full overflow-auto"
@@ -179,7 +179,7 @@ export function Details({ communityDetails }: Props) {
                 className="p-1"
                 onClick={async () =>
                   await shareFn({
-                    shareLink: getCurrentShareUrl({ isEmbed, parentUrl }),
+                    shareLink: getCurrentShareUrl({ url: communityDetails.share_url }),
                     toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                   })
                 }>

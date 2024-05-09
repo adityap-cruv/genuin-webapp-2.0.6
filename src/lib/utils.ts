@@ -226,15 +226,9 @@ export function getParentUrl(url: string): string {
  * Call this function client side only.
  * Make sure window object is there.
  */
-export function getCurrentShareUrl({ isEmbed, parentUrl }: { isEmbed: boolean; parentUrl: string }) {
-  if (!window) return ''
-  const urlObj = new URL(window.location.href)
-  if (isEmbed) {
-    urlObj.pathname = parentUrl
-    urlObj.searchParams.append('utm_source', 'app_web_sdk')
-  } else {
-    urlObj.searchParams.append('utm_source', 'app_web')
-  }
+export function getCurrentShareUrl({ url }: { url: string }) {
+  const urlObj = new URL(url)
+  urlObj.searchParams.append('utm_source', 'app_web')
   return urlObj.href
 }
 
