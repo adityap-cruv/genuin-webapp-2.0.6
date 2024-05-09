@@ -288,14 +288,6 @@ function Desktop({
 }
 
 function Hover({ videoDetails, shouldPlay }: { videoDetails: VideoPlayerModalType; shouldPlay: boolean }) {
-  const { setShouldPlay } = usePlayerControlStore((state) => ({
-    setShouldPlay: state.setShouldPlay,
-  }))
-
-  useEffect(() => {
-    setShouldPlay(shouldPlay)
-  }, [shouldPlay])
-
   return (
     <InnerPlayer
       videoSource={videoDetails.video.source}

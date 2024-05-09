@@ -4,10 +4,12 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import { Loader } from '@components/ui/loader'
 import { getFeed } from '@lib/api/feed'
 import { useSize } from './size-provider'
-import { Player } from '@components/common/player'
+import { EmbedPlayer } from '@components/embed/embed-player'
+import { useEmbedPlayerState } from '@components/embed/embed-player-state'
 
 export function VerticalView() {
   const { height, width } = useSize()
+  const { setActiveVideoId } = useEmbedPlayerState()
   const { data: videoPages, isError, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } = getFeed(1)
   const videos = videoPages?.pages.flatMap((item) => item.reels)
 
@@ -35,7 +37,10 @@ export function VerticalView() {
           slidesPerView={ratio}
           spaceBetween={16}
           onActiveIndexChange={(swiper) => {
-            console.log('active: index::', swiper.activeIndex)
+            setActiveVideoId(videos[swiper.activeIndex].video.id)
+          }}
+          onInit={(swiper) => {
+            setActiveVideoId(videos[swiper.activeIndex].video.id)
           }}>
           {videos.map((item, index) => {
             return (
@@ -43,7 +48,7 @@ export function VerticalView() {
                 key={item.video.id}
                 style={{ height: videoHeight, width: videoWidth }}
                 className="overflow-clip rounded-lg">
-                <Player.hover videoDetails={item} shouldPlay={index === 0} />
+                <EmbedPlayer videoId={item.video.id} videoSource={item.video.source} />
               </SwiperSlide>
             )
           })}

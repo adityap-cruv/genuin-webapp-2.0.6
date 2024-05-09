@@ -3,7 +3,7 @@ import { useInView } from 'framer-motion'
 import { type DetailedHTMLProps, type ReactEventHandler, type VideoHTMLAttributes, useEffect, useRef } from 'react'
 import { usePlayerControlStore } from './player-control-store'
 
-// TODO: work on why player is sendding multiple request.
+// TODO: work on why player is sending multiple request.
 interface Props extends DetailedHTMLProps<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement> {
   // videoSizeBox: { width: number; height: number }
   videoSource: string
@@ -104,7 +104,6 @@ export function InnerPlayer({
     } else {
       player.pause()
     }
-    console.log('should play::', shouldPlay)
   }, [shouldPlay])
 
   // const onDurationChangeEventHandler: ReactEventHandler<HTMLVideoElement> = (event) => {
