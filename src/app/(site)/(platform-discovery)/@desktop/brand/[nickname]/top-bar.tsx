@@ -5,7 +5,6 @@ import { CustomAvatar } from '@components/custom/custom-avatar'
 import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { getCurrentShareUrl } from '@lib/utils'
-import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { ShareIcon } from '@icons/share-icon'
 
 type Props = {

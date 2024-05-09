@@ -26,7 +26,6 @@ import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { joinCommunity, leaveCommunity } from '@lib/api/video'
 import { ShareIcon } from '@icons/share-icon'
 import { getCommunityDetails, getCommunityMembers } from '@lib/api/community'
-import { Loader } from '@components/ui/loader'
 import Loading from './loading'
 import { Shimmer } from '@components/ui/shimmer'
 import { LockIcon } from '@icons/LockIcon'
@@ -49,7 +48,6 @@ export function RootDetails({ communityDetails }: { communityDetails: CommunityD
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
-  const { isEmbed, parentUrl } = useGenuinOptions((state) => ({ isEmbed: state.embed, parentUrl: state.parentUrl }))
   const [isCommunityJoined, setIsCommunityJoined] = useState(!!communityDetails.logged_in_user_role)
   const user = useGenuinOptions().user
   const [dimensions, setDimensions] = useState({
