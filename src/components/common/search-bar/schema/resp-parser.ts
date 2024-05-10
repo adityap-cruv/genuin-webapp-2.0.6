@@ -46,6 +46,12 @@ export function parsePeople(people: PeopleResType) {
       name: item.name,
       profileImage: item.profile_image,
       isAvatar: item.is_avatar,
+      brand: item.brand
+        ? {
+            brand_id: item.brand.brand_id,
+            brand_slug: item.brand.brand_slug,
+          }
+        : null,
     }
   })
 }

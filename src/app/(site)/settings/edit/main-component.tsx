@@ -1,8 +1,4 @@
 'use client'
-import icInstagram from '@icons/icInstagramBlack.svg'
-import icLinkedIn from '@icons/icLinkedIn.svg'
-import icTiktok from '@icons/icTiktok.svg'
-import icTwitter from '@icons/icTwitterBlack.svg'
 import icBack from '@icons/icBack.svg'
 import { cn } from '@lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -25,6 +21,10 @@ import { Loader } from '@components/ui/loader'
 import { useEffect, useState } from 'react'
 import { Toaster } from '@components/ui/toaster'
 import { PATH_NAME } from '@lib/utils/constants/path'
+import { InstagramIcon } from '@icons/instagram-icon'
+import { TikTokIcon } from '@icons/tiktok-icon'
+import { LinkedInIcon } from '@icons/linkedin-icon'
+import { TwitterIcon } from '@icons/twitter-icon'
 
 export default function MainComponent() {
   const { isMobile, user } = useGenuinOptions((state) => ({ isMobile: state.isMobile, user: state.user }))
@@ -232,7 +232,7 @@ function EditProfile({ profileData, isMobile }: { profileData: ProfileDetailsTyp
                     <FormLabel className="text-body-1-med">Instagram profile</FormLabel>
                     <FormControl>
                       <div className="relative flex items-center">
-                        <Image src={icInstagram} className="absolute ml-4 " alt="instagram" />
+                        <InstagramIcon className="absolute ml-4 h-5 w-5 fill-primary" />
                         <Input
                           type="text"
                           placeholder="@username"
@@ -260,7 +260,7 @@ function EditProfile({ profileData, isMobile }: { profileData: ProfileDetailsTyp
                     <FormLabel className="text-body-1-med">LinkedIn profile</FormLabel>
                     <FormControl>
                       <div className="relative flex items-center">
-                        <Image src={icLinkedIn} className="absolute ml-4 " alt="linkedin" />
+                        <LinkedInIcon className="absolute ml-4 h-5 w-5 fill-primary" />
                         <Input
                           type="text"
                           placeholder="@username"
@@ -288,7 +288,7 @@ function EditProfile({ profileData, isMobile }: { profileData: ProfileDetailsTyp
                     <FormLabel className="text-body-1-med">Twitter profile</FormLabel>
                     <FormControl>
                       <div className="relative flex items-center">
-                        <Image src={icTwitter} className="absolute ml-4 " alt="twitter" />
+                        <TwitterIcon className="absolute ml-4 h-5 w-5 fill-primary " />
                         <Input
                           type="text"
                           placeholder="@username"
@@ -316,7 +316,7 @@ function EditProfile({ profileData, isMobile }: { profileData: ProfileDetailsTyp
                     <FormLabel className="text-body-1-med">TikTok profile</FormLabel>
                     <FormControl>
                       <div className="relative flex items-center">
-                        <Image src={icTiktok} className="absolute ml-4 " alt="url" />
+                        <TikTokIcon className="absolute ml-4 h-5 w-5 fill-primary" />
                         <Input
                           type="text"
                           placeholder="@username"
