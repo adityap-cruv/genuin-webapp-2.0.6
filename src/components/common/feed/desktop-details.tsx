@@ -105,9 +105,12 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
                     className="h-11 w-11"
                   />
                   {/* TODO: What if there is no community name. */}
-                  <Link href={{ pathname: PATH_NAME.community(community.slug) }}>
-                    <p className="line-clamp-1 break-all pr-2 text-title-3-bold">{community.name}</p>
-                  </Link>
+                  <div>
+                    <Link href={{ pathname: PATH_NAME.community(community.slug) }}>
+                      <p className="line-clamp-1 break-all pr-2 text-title-3-bold">{community.name}</p>
+                    </Link>
+                    {community.brand && <p className="text-body-1-med text-tertiary">on {community.brand?.name}</p>}
+                  </div>
                 </span>
                 {community?.type === 2 && (
                   <TooltipProvider>
@@ -125,13 +128,6 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
-                )}
-                {community.brand && (
-                  <BrandCommunityTag
-                    brandSlug={community.brand.brand_slug}
-                    brandLogo={community.brand?.logo}
-                    brandName={community.brand?.name}
-                  />
                 )}
               </div>
               <span className="flex h-min flex-1 items-center justify-end gap-x-3">

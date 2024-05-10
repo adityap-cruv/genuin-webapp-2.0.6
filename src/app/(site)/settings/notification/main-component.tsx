@@ -72,7 +72,7 @@ function Notifications({
         <p className="text-title-2-bold">Notifications</p>
         <div></div>
       </div>
-      {isMobile && <hr className="bg-monochrome-9" />}
+      {isMobile && <hr className="bg-monochrome-black/10" />}
       {settingsData && (
         <div className={`${isMobile ? 'm-4 my-6' : 'mx-8 my-4'} flex items-center justify-between`}>
           <p>Loops</p>

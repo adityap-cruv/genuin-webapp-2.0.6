@@ -28,25 +28,25 @@ export default function MainComponent() {
         </button> */}
         <div></div>
       </div>
-      {isMobile && <hr className="bg-monochrome-9" />}
+      {isMobile && <hr className="bg-monochrome-black/10" />}
 
       <div className={`${isMobile ? 'm-4 my-6' : 'mx-8 my-4'}`}>
         <div
-          className="flex justify-between border-b border-monochrome-6 py-4 hover:cursor-pointer"
+          className="flex justify-between border-b border-tertiary py-4 hover:cursor-pointer"
           onClick={() => {
             AuthenticationModal.open(undefined, 'EDIT_USERNAME')
           }}>
           <p className="text-body-1-demi">Username</p>
           <div className="flex items-center">
-            <p className="text-body-1-demi text-monochrome-6">{user?.nickname}</p>
+            <p className="text-body-1-demi text-tertiary">{user?.nickname}</p>
             <Image src={icBack} alt="back" className="h-5 rotate-180" />
           </div>
         </div>
 
-        <div className="flex justify-between border-b border-monochrome-6 py-4">
+        <div className="flex justify-between border-b border-tertiary py-4">
           <p className="text-body-1-demi">Email</p>
           <div className="flex items-center">
-            <p className="text-body-1-demi text-monochrome-6">{user?.email}</p>
+            <p className="text-body-1-demi text-tertiary">{user?.email}</p>
             {/* <Image src={icBack} alt="back" className="h-5 rotate-180" /> */}
           </div>
         </div>

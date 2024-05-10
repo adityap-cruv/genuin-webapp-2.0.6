@@ -157,7 +157,7 @@ function EditProfile({ profileData, isMobile }: { profileData: ProfileDetailsTyp
               Save
             </button>
           </div>
-          {isMobile && <hr className="bg-monochrome-9" />}
+          {isMobile && <hr className="bg-monochrome-black/10" />}
 
           <div className="px-8 py-4">
             <ImageInput />
