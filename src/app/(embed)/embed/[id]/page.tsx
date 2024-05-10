@@ -19,15 +19,15 @@ type Props = {
 }
 
 export default function Page(props: Props) {
-  const { embed_page } = props.searchParams
+  const embedPage = props.searchParams.embed_page
 
   let viewComponent
 
-  if (embed_page === 'carousel') {
+  if (embedPage === 'carousel') {
     viewComponent = <CarouselView />
-  } else if (embed_page === 'standard') {
+  } else if (embedPage === 'standard') {
     viewComponent = <StandardView />
-  } else if (embed_page === 'vertical') {
+  } else if (embedPage === 'vertical') {
     viewComponent = <VerticalView />
   } else {
     // Default view if embed_page doesn't match any condition
