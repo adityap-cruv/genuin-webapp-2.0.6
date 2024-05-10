@@ -99,6 +99,13 @@ function InfinityViewBox() {
             profileImage: videoDetails.community.profileImage ?? '',
             slug: videoDetails.community.slug,
             type: videoDetails.community.type ?? null,
+            brand: videoDetails.community.brand
+              ? {
+                  name: videoDetails.community.brand?.name ?? '',
+                  brand_system_user_id: videoDetails.community.brand?.brand_system_user_id ?? '',
+                  brand_slug: videoDetails.community.brand?.brand_slug ?? '',
+                }
+              : null,
           }}
           loop={{
             name: videoDetails.loop.name ?? '',

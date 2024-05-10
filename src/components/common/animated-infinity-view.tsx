@@ -15,6 +15,14 @@ type Props = {
     profileImage: string
     slug: string
     type: number | null
+    brand?:
+      | {
+          name: string | null | undefined
+          brand_system_user_id: string | null | undefined
+          brand_slug: string | null | undefined
+        }
+      | null
+      | undefined
   }
   loop: {
     name: string
@@ -106,7 +114,15 @@ export function AnimatedInfinityView({ community, loop }: Props) {
                   </PrivateModal>
                 )}
               </div>
-              <p className="line-clamp-1 w-full break-all text-cap-1-med text-monochrome-white/60">Browse Community</p>
+              {community.brand ? (
+                <p className="line-clamp-1 w-full break-all text-cap-1-med text-monochrome-white/60">
+                  on {community.brand.name}
+                </p>
+              ) : (
+                <p className="line-clamp-1 w-full break-all text-cap-1-med text-monochrome-white/60">
+                  Browse Community
+                </p>
+              )}
             </span>
           </span>
         </Link>

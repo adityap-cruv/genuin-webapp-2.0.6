@@ -133,7 +133,7 @@ export function SideBar() {
           <>
             <hr className="border-1 mt-1 border-monochrome-black/10" />
             <div
-              className="max-w-72 relative my-4 hidden max-h-16 w-11/12 rounded-lg border border-[#E9CAF4] bg-primary-200 text-title-3-demi text-monochrome-black hover:cursor-pointer lg:block"
+              className="max-w-72 relative my-4 hidden max-h-16 w-11/12 rounded-lg border border-[#E9CAF4] bg-primary-200 text-title-3-demi text-monochrome-black hover:cursor-pointer lg:block lg:flex"
               style={{
                 background: 'linear-gradient(30deg, var(--primary-400) -80%, #FFFFFF 50%, var(--primary-400) 120%)',
               }}
@@ -144,14 +144,18 @@ export function SideBar() {
                   AuthenticationModal.open(undefined, embed ? 'KS_CB_SUBDOMAIN' : 'KS_CB_WEB')
                 }
               }}>
-              <p className="z-10 p-3 text-body-1-bold">
-                Become a{' '}
-                <span className="font-semibold italic">
-                  community <br /> builder{' '}
-                </span>
-                {embed ? 'for' : 'on'} <span className="text-primary"> {brandName}</span> 🚀
-              </p>
-              <img src={CommunityIcon.src} alt="community" className="absolute bottom-0 right-4 h-12" />
+              <div className="z-20 w-3/5">
+                <p className="w-72 overflow-hidden p-3 text-body-1-bold">
+                  Become a{' '}
+                  <span className="font-semibold italic">
+                    community <br /> builder{' '}
+                  </span>
+                  {embed ? 'for' : 'on'} <span className="text-primary"> {brandName}</span> 🚀
+                </p>
+              </div>
+              <div className="z-10 flex w-2/5 items-end justify-center">
+                <img src={CommunityIcon.src} alt="community" className="h-12" />
+              </div>
             </div>
           </>
         )}
