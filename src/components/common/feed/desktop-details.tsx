@@ -24,6 +24,7 @@ import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import { LockIcon } from '@icons/LockIcon'
 import { TickIcon } from '@icons/tick-icon'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@components/ui/tooltip'
+import { BrandCommunityTag } from '../brand-community-tag'
 
 export function DesktopDetails({ loop, community, owner, video }: VideoPlayerModalType) {
   const { shareFn } = useAdaptiveShare()
@@ -104,9 +105,12 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
                     className="h-11 w-11"
                   />
                   {/* TODO: What if there is no community name. */}
-                  <Link href={{ pathname: PATH_NAME.community(community.slug) }}>
-                    <p className="line-clamp-1 break-all pr-2 text-title-3-bold">{community.name}</p>
-                  </Link>
+                  <div>
+                    <Link href={{ pathname: PATH_NAME.community(community.slug) }}>
+                      <p className="line-clamp-1 break-all pr-2 text-title-3-bold">{community.name}</p>
+                    </Link>
+                    {community.brand && <p className="text-body-1-med text-tertiary">on {community.brand?.name}</p>}
+                  </div>
                 </span>
                 {community?.type === 2 && (
                   <TooltipProvider>
@@ -124,25 +128,6 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
-                )}
-                {community.brand && (
-                  <Link href={{ pathname: PATH_NAME.brand(community.brand.brand_slug) }}>
-                    <div className="flex items-center gap-1 rounded-full bg-tertiary-200 p-1">
-                      <CustomAvatar
-                        imageUrl={community.brand?.logo ?? ''}
-                        fallbackString={community.brand?.name ?? ''}
-                        isAvatar={false}
-                        className="h-4 w-4"
-                      />
-                      <p
-                        className="text-cap-1-demi text-secondary"
-                        style={{
-                          maxWidth: '10ch',
-                        }}>
-                        {community.brand?.name}
-                      </p>
-                    </div>
-                  </Link>
                 )}
               </div>
               <span className="flex h-min flex-1 items-center justify-end gap-x-3">

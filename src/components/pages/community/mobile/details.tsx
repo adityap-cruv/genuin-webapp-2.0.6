@@ -28,6 +28,7 @@ import { Shimmer } from '@components/ui/shimmer'
 import { LockIcon } from '@icons/LockIcon'
 import { PrivateModal } from '@components/common/modals/private'
 import { TickIcon } from '@icons/tick-icon'
+import { BrandCommunityTag } from '@components/common/brand-community-tag'
 
 let communityDetailsModule: CommunityDetailsType
 
@@ -205,23 +206,11 @@ export function Details({ communityDetails }: Props) {
               )}
             </div>
             {communityDetailsModule.brand && (
-              <Link href={{ pathname: PATH_NAME.brand(communityDetailsModule.brand.brand_slug) }}>
-                <div className="flex items-center gap-1 rounded-full bg-tertiary-200 p-1 ">
-                  <CustomAvatar
-                    imageUrl={communityDetailsModule.brand?.logo ?? ''}
-                    fallbackString={communityDetailsModule.brand?.name ?? ''}
-                    isAvatar={false}
-                    className="h-4 w-4"
-                  />
-                  <p
-                    className="text-cap-1-demi text-secondary"
-                    style={{
-                      maxWidth: '10ch',
-                    }}>
-                    {communityDetailsModule.brand?.name}
-                  </p>
-                </div>
-              </Link>
+              <BrandCommunityTag
+                brandSlug={communityDetailsModule.brand.brand_slug}
+                brandLogo={communityDetailsModule.brand?.logo}
+                brandName={communityDetailsModule.brand?.name}
+              />
             )}
           </div>
           <p className="my-1 line-clamp-2 break-all text-body-1-demi ">{communityDetailsModule?.description}</p>
