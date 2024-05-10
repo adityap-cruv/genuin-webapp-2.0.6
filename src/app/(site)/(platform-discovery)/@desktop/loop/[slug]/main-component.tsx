@@ -249,6 +249,7 @@ export function MainComponent({ loopDetails }: Props) {
             <div className="h-full snap-y snap-proximity overflow-auto scroll-smooth">
               <LoopVideos
                 community={{
+                  shareUrl: loopDetails.community.share_url ?? '',
                   handle: loopDetails.community.handle,
                   slug: loopDetails.community.slug,
                   id: loopDetails.community.community_id,

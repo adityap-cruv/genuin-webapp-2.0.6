@@ -48,6 +48,11 @@ type Props = {
 } & VariantProps<typeof navVariant>
 
 export function TopBar({ variant = 'light', className, showClose = false, onClose }: Props) {
+  // TODO: Added for redirection to https
+  // const protocol = window.location.protocol
+  // if (protocol === 'http:') {
+  //   window.location.href = window.location.href.replace(/^http:/, 'https:')
+  // }
   const isEmbed = useGenuinOptions().embed
   // If variant is transparent than we have removed show download button.
   const showDownloadButton = variant !== 'trasparent'

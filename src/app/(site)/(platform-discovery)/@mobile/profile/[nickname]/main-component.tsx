@@ -37,9 +37,7 @@ export function MainComponent({ profileData }: CompProps) {
   const { scrollYProgress } = useScroll({ container: scrollDivRef, layoutEffect: false })
   const resetData = useCommunityListStore((state) => state.reset)
   const pathName = usePathname()
-  const { isEmbed, parentUrl, user } = useGenuinOptions((state) => ({
-    isEmbed: state.embed,
-    parentUrl: state.parentUrl,
+  const { user } = useGenuinOptions((state) => ({
     user: state.user,
   }))
 

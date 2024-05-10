@@ -1,5 +1,4 @@
 'use client'
-
 import { useSize } from './size-provider'
 import { getFeed } from '@lib/api/feed'
 import { FeedShimmer } from '@components/common/shimmers/feed-shimmer'
@@ -9,7 +8,8 @@ import { type VideoSizeBoxType } from '@lib/stores/genuin-options'
 import { TopBar } from '@components/layouts/mobile/top-bar'
 const DesktopFeed = dynamic(async () => await import('@components/common/feed').then((comp) => comp.Feed.desktop))
 const MobileFeed = dynamic(async () => await import('@components/common/feed').then((comp) => comp.Feed.mobile))
-export function Root() {
+
+export function StandardView() {
   const { showMobileView, sizeBox } = useSize()
 
   if (showMobileView) {
@@ -17,7 +17,6 @@ export function Root() {
   }
   return <Desktop sizeBox={sizeBox} />
 }
-
 function Mobile({ sizeBox }: { sizeBox: VideoSizeBoxType }) {
   const { data: videoPages, isError, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } = getFeed(1)
   const videos = videoPages?.pages.flatMap((item) => item.reels)

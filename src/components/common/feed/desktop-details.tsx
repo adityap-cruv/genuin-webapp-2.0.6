@@ -10,7 +10,7 @@ import { useMotionValueEvent, useScroll } from 'framer-motion'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
-import { getTimeAgo, openModal } from '@lib/utils'
+import { getCurrentShareUrl, getTimeAgo, openModal } from '@lib/utils'
 import { FeedShimmer } from '../shimmers/feed-shimmer'
 import { Input } from '@components/ui/input'
 import { createComment, joinCommunity, leaveCommunity } from '@lib/api/video'
@@ -169,7 +169,7 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
                   className="min-w-max border border-primary p-1 hover:border-primary-600 "
                   onClick={async () =>
                     await shareFn({
-                      shareLink: window.location.host + PATH_NAME.community(community.slug) + '?utm_source=app_web',
+                      shareLink: getCurrentShareUrl({ url: community.shareUrl }),
                       toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                     })
                   }>
