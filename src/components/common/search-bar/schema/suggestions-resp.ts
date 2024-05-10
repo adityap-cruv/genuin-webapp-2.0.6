@@ -23,6 +23,14 @@ const loopSchema = z.object({
   share_url: z.string(),
 })
 
+const BrandUserSchema = z
+  .object({
+    brand_id: z.number(),
+    brand_slug: z.string(),
+  })
+  .nullish()
+  .optional()
+
 // Create a Zod schema for the user object
 const userSchema = z.object({
   name: z.string().nullish(),
@@ -34,6 +42,7 @@ const userSchema = z.object({
   profile_image_s: z.string().nullish(),
   profile_image_m: z.string().nullish(),
   profile_image_l: z.string().nullish(),
+  brand: BrandUserSchema,
 })
 
 const BrandSchema = z.object({

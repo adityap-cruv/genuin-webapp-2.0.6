@@ -69,6 +69,14 @@ const LoopSchema = z.object({
   group: groupSchema,
 })
 
+const BrandUserSchema = z
+  .object({
+    brand_id: z.number(),
+    brand_slug: z.string(),
+  })
+  .nullish()
+  .optional()
+
 const ProfileSchema = z.object({
   id: z.number(),
   user_id: z.string(), // `user_id` should be a valid UUID
@@ -82,6 +90,7 @@ const ProfileSchema = z.object({
   profile_image_s: z.string().nullish(), // `profile_image_s` should be a valid URL
   profile_image_m: z.string().nullish(), // `profile_image_m` should be a valid URL
   profile_image_l: z.string().nullish(), // `profile_image_l` should be a valid URL
+  brand: BrandUserSchema,
 })
 
 const BrandTypeSchema = z

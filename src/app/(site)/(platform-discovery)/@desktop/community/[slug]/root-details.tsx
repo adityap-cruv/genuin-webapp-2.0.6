@@ -11,10 +11,7 @@ import { useInView } from 'framer-motion'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
 import Link from 'next/link'
 import { checkAndAppendHttps, getCurrentShareUrl, openModal } from '@lib/utils'
-import icInstagram from '@icons/icInstagramBlack.svg'
-import icLinkedIn from '@icons/icLinkedIn.svg'
 import icLink from '@icons/icLinkBlack.svg'
-import icTwitter from '@icons/icTwitterBlack.svg'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@components/ui/accordion'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
@@ -31,6 +28,9 @@ import { Shimmer } from '@components/ui/shimmer'
 import { LockIcon } from '@icons/LockIcon'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@components/ui/tooltip'
 import { BrandCommunityTag } from '@components/common/brand-community-tag'
+import { InstagramIcon } from '@icons/instagram-icon'
+import { LinkedInIcon } from '@icons/linkedin-icon'
+import { TwitterIcon } from '@icons/twitter-icon'
 
 let communityDetailsModule: CommunityDetailsType
 
@@ -311,21 +311,21 @@ function Links() {
           {links?.insta?.id && (
             <div className="mx-1 flex items-center rounded-md bg-tertiary-200 p-1">
               <Link href={checkAndAppendHttps(links?.insta?.url + links.insta.id)} target="_blank">
-                <Image src={icInstagram} alt="instagram" />
+                <InstagramIcon className="h-5 w-5 fill-primary " />
               </Link>
             </div>
           )}
           {links?.linkedin?.id && (
             <div className="mx-1 flex items-center rounded-md bg-tertiary-200 p-1">
               <Link href={checkAndAppendHttps(links?.linkedin?.url + links?.linkedin?.id)} target="_blank">
-                <Image src={icLinkedIn} alt="linkedin" />
+                <LinkedInIcon className="h-5 w-5 fill-primary " />
               </Link>
             </div>
           )}
           {links?.twitter?.id && (
             <div className="mx-1 flex items-center rounded-md bg-tertiary-200 p-1">
               <Link href={checkAndAppendHttps(links?.twitter?.url + links?.twitter?.id)} target="_blank">
-                <Image src={icTwitter} alt="twitter" />
+                <TwitterIcon className="h-5 w-5 fill-primary " />
               </Link>
             </div>
           )}

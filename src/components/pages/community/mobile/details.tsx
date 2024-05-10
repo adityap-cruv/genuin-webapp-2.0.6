@@ -6,10 +6,7 @@ import { checkAndAppendHttps, generateDeepLink, getCurrentShareUrl, openGenerate
 import Image from 'next/image'
 import icLock from '@icons/icLock.svg'
 import Link from 'next/link'
-import icInstagram from '@icons/icInstagramBlack.svg'
-import icLinkedIn from '@icons/icLinkedIn.svg'
 import icLink from '@icons/icLinkBlack.svg'
-import icTwitter from '@icons/icTwitterBlack.svg'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
@@ -29,6 +26,9 @@ import { LockIcon } from '@icons/LockIcon'
 import { PrivateModal } from '@components/common/modals/private'
 import { TickIcon } from '@icons/tick-icon'
 import { BrandCommunityTag } from '@components/common/brand-community-tag'
+import { InstagramIcon } from '@icons/instagram-icon'
+import { LinkedInIcon } from '@icons/linkedin-icon'
+import { TwitterIcon } from '@icons/twitter-icon'
 
 let communityDetailsModule: CommunityDetailsType
 
@@ -367,21 +367,21 @@ function Links() {
           {links?.insta?.id && (
             <div className="mx-1 flex items-center rounded-md bg-tertiary-200 p-1">
               <Link href={checkAndAppendHttps(links?.insta?.url + links?.insta?.id)} target="_blank">
-                <Image src={icInstagram} alt="instagram" />
+                <InstagramIcon className="h-5 w-5 fill-primary " />
               </Link>
             </div>
           )}
           {links?.linkedin?.id && (
             <div className="mx-1 flex items-center rounded-md bg-tertiary-200 p-1">
               <Link href={checkAndAppendHttps(links?.linkedin?.url + links?.linkedin?.id)} target="_blank">
-                <Image src={icLinkedIn} alt="linkedin" />
+                <LinkedInIcon className="h-5 w-5 fill-primary " />
               </Link>
             </div>
           )}
           {links?.twitter?.id && (
             <div className="mx-1 flex items-center rounded-md bg-tertiary-200 p-1">
               <Link href={checkAndAppendHttps(links?.twitter?.url + links?.twitter?.id)} target="_blank">
-                <Image src={icTwitter} alt="twitter" />
+                <TwitterIcon className="h-5 w-5 fill-primary " />
               </Link>
             </div>
           )}
