@@ -43,7 +43,7 @@ const BrandSchema = z.object({
   favicon: z.string().url(),
   brand_system_user_id: z.string(),
   brand_slug: z.string(),
-})
+}).nullish()
 
 const CommunitySchema = z.object({
   brand: BrandSchema,

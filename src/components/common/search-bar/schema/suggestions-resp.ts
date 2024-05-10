@@ -13,7 +13,7 @@ const loopSchema = z.object({
     dp_s: z.string().nullish(),
     dp_m: z.string().nullish(),
     dp_l: z.string().nullish(),
-    slug: z.string(),
+    slug: z.string().nullish(),
   }),
   settings: z
     .object({
@@ -55,7 +55,7 @@ const BrandSchema = z.object({
   favicon: z.string().url(),
   brand_system_user_id: z.string(),
   brand_slug: z.string(),
-})
+}).nullish()
 
 // Create a Zod schema for the community object
 const communitySchema = z.object({
