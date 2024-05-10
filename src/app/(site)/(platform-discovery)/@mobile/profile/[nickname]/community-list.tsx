@@ -26,6 +26,7 @@ import { EarthIcon } from '@icons/earth-icon'
 import { loopPrivacyInfo } from '@components/common/loop-privacy-info'
 import { PrivateModal } from '@components/common/modals/private'
 import { IcLoop } from '@icons/ic-loop'
+import { BrandCommunityTag } from '@components/common/brand-community-tag'
 
 export function CommunityList({ userId, scrollYProgress }: { userId: string; scrollYProgress: MotionValue<number> }) {
   const { data, isLoading, fetchNextPage, isFetchingNextPage } = getCommunities(userId, 8)
@@ -144,23 +145,11 @@ export function CommunityList({ userId, scrollYProgress }: { userId: string; scr
                   </div>
                   <div className="flex items-center gap-2">
                     {item.brand && (
-                      <Link href={{ pathname: PATH_NAME.brand(item.brand.brand_slug) }}>
-                        <div className="flex items-center gap-1 rounded-full bg-tertiary-200 p-1 ">
-                          <CustomAvatar
-                            imageUrl={item.brand?.logo ?? ''}
-                            fallbackString={item.brand?.name ?? ''}
-                            isAvatar={false}
-                            className="h-4 w-4"
-                          />
-                          <p
-                            className="text-cap-1-demi text-secondary"
-                            style={{
-                              maxWidth: '10ch',
-                            }}>
-                            {item.brand?.name}
-                          </p>
-                        </div>
-                      </Link>
+                      <BrandCommunityTag
+                        brandSlug={item.brand.brand_slug}
+                        brandLogo={item.brand?.logo}
+                        brandName={item.brand?.name}
+                      />
                     )}
                     {pathName !== PATH_NAME.profile(user?.nickname) && (
                       <Button
