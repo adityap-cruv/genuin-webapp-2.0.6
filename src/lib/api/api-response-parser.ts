@@ -60,6 +60,7 @@ export function parseFeedResponse(videos: FeedResponseType) {
         profileImage: video.community?.dp ?? '',
         type: video.community?.type ?? null,
         shareUrl: video.community?.share_url ?? '',
+        logged_in_user_role: video.community?.logged_in_user_role,
         brand: video.community?.brand
           ? {
               brand_id: video.community.brand.brand_id,

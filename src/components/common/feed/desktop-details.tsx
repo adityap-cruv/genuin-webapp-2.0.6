@@ -30,11 +30,15 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
   const scrollDivRef = useRef<HTMLDivElement>(null)
-  const [isCommunityJoined, setIsCommunityJoined] = useState(false)
+  const [isCommunityJoined, setIsCommunityJoined] = useState(!!community.logged_in_user_role)
   // TODO: Here state Comment and setComments are bad they are causing multiple rerenders.
   const [currentComment, setCurrentComment] = useState('')
   const [comments, setComments] = useState<CommentListType>([])
   const user = useGenuinOptions().user
+
+  useEffect(() => {
+    setIsCommunityJoined(!!community.logged_in_user_role)
+  }, [community])
 
   async function toggleCommunityJoinState() {
     !isCommunityJoined
