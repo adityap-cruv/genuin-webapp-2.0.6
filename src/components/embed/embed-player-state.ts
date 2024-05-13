@@ -7,6 +7,7 @@ type State = {
 
 type Actions = {
   setActiveVideoId: (id: string) => void
+  toggleMuted: () => void
 }
 
 export const useEmbedPlayerState = create<State & Actions>((set) => {
@@ -14,8 +15,10 @@ export const useEmbedPlayerState = create<State & Actions>((set) => {
     activeVideoId: '',
     muted: true,
     setActiveVideoId(id) {
-      console.log('set::2', id)
       set({ activeVideoId: id })
+    },
+    toggleMuted() {
+      set({ muted: false })
     },
   }
 })
