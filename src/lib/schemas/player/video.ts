@@ -45,6 +45,7 @@ const communitySchema = z.object({
   id: z.string(),
   type: z.number().nullish(),
   shareUrl: z.string(),
+  logged_in_user_role: z.number().nullish(),
   brand: BrandSchema,
 })
 

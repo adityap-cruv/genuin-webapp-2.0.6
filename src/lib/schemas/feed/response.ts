@@ -49,17 +49,19 @@ const messageSchema = z.object({
   brand: BrandUserSchema,
 })
 
-const BrandSchema = z.object({
-  brand_id: z.number(),
-  name: z.string(),
-  subdomain: z.string(),
-  logo: z.string().url(),
-  created_at: z.number(),
-  brand_web_logo: z.string().url(),
-  favicon: z.string().url(),
-  brand_system_user_id: z.string(),
-  brand_slug: z.string(),
-}).nullish()
+const BrandSchema = z
+  .object({
+    brand_id: z.number(),
+    name: z.string(),
+    subdomain: z.string(),
+    logo: z.string().url(),
+    created_at: z.number(),
+    brand_web_logo: z.string().url(),
+    favicon: z.string().url(),
+    brand_system_user_id: z.string(),
+    brand_slug: z.string(),
+  })
+  .nullish()
 
 // Define the community schema
 const communitySchema = z
@@ -71,6 +73,7 @@ const communitySchema = z
     name: z.string().nullish(),
     description: z.string().nullish(),
     color_code: z.string().nullish(),
+    logged_in_user_role: z.number().nullish(),
     text_color_code: z.string().nullish(),
     dp: z.string().nullish(),
     dp_s: z.string().nullish(),
