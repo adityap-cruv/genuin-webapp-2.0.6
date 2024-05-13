@@ -2,21 +2,26 @@ import { type DetailedHTMLProps, type VideoHTMLAttributes, useRef } from 'react'
 import OpenPlayerJS from 'openplayerjs'
 import { useEffect } from 'react'
 import { useEmbedPlayerState } from './embed-player-state'
+import { AnimatedMuteIcon } from '@components/common/player/control-layer/animated-mute-icon'
 
 type Props = DetailedHTMLProps<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement> & {
   // videoSizeBox: { width: number; height: number }
   videoId: string
   videoSource: string
+  /**
+   * Pass if player is first element of list to get it playing.
+   */
+  isFirstElement: boolean
 }
 
-export function EmbedPlayer({ videoId, videoSource, onCanPlay, ...props }: Props) {
+export function EmbedPlayer({ videoId, videoSource, isFirstElement, onCanPlay, ...props }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const localRef = useRef<{
     player: OpenPlayerJS | null
   }>({
     player: null,
   })
-  const { activeVideoId, muted } = useEmbedPlayerState()
+  const { activeVideoId, muted, toggleMuted } = useEmbedPlayerState()
   // const onTimeUpdateEventHandler: ReactEventHandler<HTMLVideoElement> = (event) => {
   //   setTimeState(event.currentTarget.currentTime, event.currentTarget.duration)
   // }
@@ -45,13 +50,12 @@ export function EmbedPlayer({ videoId, videoSource, onCanPlay, ...props }: Props
         /**
          * eme -> Encrypted Media Extensions (EME)
          */
-        emeEnabled: true,
+        // emeEnabled: true,
       },
     })
     void player.init().then((value) => {
       void player.load().then(() => {
-        console.log('loadded::', activeVideoId === videoId)
-        if (activeVideoId === videoId) {
+        if (isFirstElement) {
           player
             .getMedia()
             .play()
@@ -62,18 +66,18 @@ export function EmbedPlayer({ videoId, videoSource, onCanPlay, ...props }: Props
               // console.log('something went wrong..', e)
             })
         }
+        // console.log('loadded::', activeVideoId === videoId)
+
         localRef.current.player = player
       })
     })
-  }, [activeVideoId])
+  }, [])
 
   useEffect(() => {
     const player = localRef.current.player
     if (!player) return
-    console.log('activeIndex', activeVideoId)
     // const startTime = performance.now()
     if (videoId === activeVideoId) {
-      console.log('in')
       player
         .play()
         .then(() => {
@@ -91,16 +95,28 @@ export function EmbedPlayer({ videoId, videoSource, onCanPlay, ...props }: Props
   }, [activeVideoId])
 
   return (
-    <video
-      className="absolute h-full w-full object-cover"
-      ref={videoRef}
-      src={videoSource}
-      muted
-      playsInline
-      onCanPlay={(ev) => {
-        onCanPlay?.(ev)
-      }}
-      {...props}
-    />
+    <>
+      <video
+        className="absolute h-full w-full object-cover"
+        ref={videoRef}
+        src={videoSource}
+        muted={muted}
+        playsInline
+        onCanPlay={(ev) => {
+          onCanPlay?.(ev)
+        }}
+        {...props}
+      />
+      {muted && (
+        <div
+          className="absolute inset-0 left-2 top-2 w-auto cursor-pointer"
+          onClick={(e) => {
+            e.stopPropagation()
+            toggleMuted()
+          }}>
+          <AnimatedMuteIcon />
+        </div>
+      )}
+    </>
   )
 }
