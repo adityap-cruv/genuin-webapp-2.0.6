@@ -255,7 +255,7 @@ function Desktop({
 
   return (
     <div
-      className="overflow-hidden"
+      className="relative h-full overflow-hidden"
       onClick={(e) => {
         if (!stateShouldPlay) {
           setActiveComment('')
