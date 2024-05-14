@@ -16,7 +16,7 @@ export function VerticalView() {
   const videos = videoPages?.pages.flatMap((item) => item.reels)
 
   function postMessage(link: string) {
-    window.parent.postMessage(JSON.stringify({ action: 'open_link', link }), '*')
+    window.parent.postMessage({ action: 'open_link', link }, '*')
   }
 
   let videoHeight = (width * 16) / 9
