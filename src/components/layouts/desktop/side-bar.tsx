@@ -1,7 +1,7 @@
 'use client'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { HomeIcon, LatestIcon, MoreIcon, PopularIcon, ProfileIcon } from '@icons/side-bar-icons'
 import { cn } from '@lib/utils'
 import { PATH_NAME } from '@lib/utils/constants/path'
@@ -16,6 +16,7 @@ import { useSession } from 'next-auth/react'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { miniProfile } from '@lib/api/auth'
 import { NotificationIcon } from '@icons/settings-side-bar-icons'
+import { notificationsCount } from '@lib/api/notification'
 // import { Popover } from '@components/ui/popover'
 const RecentCommunities = dynamic(
   async () => await import('./recent-communities').then((comp) => comp.RecentCommunities),
@@ -31,6 +32,18 @@ export function SideBar() {
   }))
   const { data: sessionData, update: updateSession, status } = useSession()
   const pathName = usePathname()
+  const [count, setCount] = useState(null)
+
+  useEffect(() => {
+    async function fetchNotificationCount() {
+      const { status, count } = await notificationsCount()
+      if (status) {
+        setCount(count)
+      }
+    }
+
+    void fetchNotificationCount()
+  }, [])
 
   function handleCommunityBuilderClick() {
     void miniProfile(true)
@@ -70,15 +83,20 @@ export function SideBar() {
           </Item>
         </Link>
 
+        <Link href={{ pathname: PATH_NAME.notification() }}>
+          <Item title="Notification" isActive={pathName === PATH_NAME.notification()} count={count}>
+            <NotificationIcon isActive={pathName === PATH_NAME.notification()} />
+          </Item>
+        </Link>
         {user && (
           <>
-            {!user.is_brand_system_user && (
-              <Link href={{ pathname: PATH_NAME.settings('notification') }}>
-                <Item title="Notification" isActive={pathName === PATH_NAME.settings('notification')}>
-                  <NotificationIcon isActive={pathName === PATH_NAME.settings('notification')} />
+            {/* {!user.is_brand_system_user && (
+              <Link href={{ pathname: PATH_NAME.notification() }}>
+                <Item title="Notification" isActive={pathName === PATH_NAME.notification()} count={count}>
+                  <NotificationIcon isActive={pathName === PATH_NAME.notification()} />
                 </Item>
               </Link>
-            )}
+            )} */}
             <Link
               href={{
                 pathname: user.is_brand_system_user
@@ -180,13 +198,19 @@ type ItemProps = {
   title: string
   isActive?: boolean
   children: ReactNode
+  count?: number | null
 }
 
-function Item({ title, isActive, children }: ItemProps) {
+function Item({ title, isActive, children, count }: ItemProps) {
   return (
     <div className="flex w-full max-w-full items-center gap-x-3 rounded-md p-3 hover:bg-monochrome-6/10">
       {children}
       <p className={cn('hidden break-all !text-title-2-demi lg:block', isActive && 'text-primary')}>{title}</p>
+      {count && count !== 0 && (
+        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-monochrome-white">
+          {count}
+        </div>
+      )}
     </div>
   )
 }
