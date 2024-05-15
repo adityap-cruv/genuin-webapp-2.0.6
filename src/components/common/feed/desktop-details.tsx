@@ -15,7 +15,6 @@ import { FeedShimmer } from '../shimmers/feed-shimmer'
 import { Input } from '@components/ui/input'
 import { createComment, joinCommunity, leaveCommunity } from '@lib/api/video'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
-import { DownloadDialog } from '../download-dialog'
 import { ShareIcon } from '@icons/share-icon'
 import { AudioRecordIcon } from '@icons/audio-record-icon'
 import { VideoRecordIcon } from '@icons/video-record-icon'
@@ -24,7 +23,7 @@ import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import { LockIcon } from '@icons/LockIcon'
 import { TickIcon } from '@icons/tick-icon'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@components/ui/tooltip'
-import { BrandCommunityTag } from '../brand-community-tag'
+import { DownloadDialogModal } from '../modals/download-app'
 
 export function DesktopDetails({ loop, community, owner, video }: VideoPlayerModalType) {
   const { shareFn } = useAdaptiveShare()
@@ -371,14 +370,21 @@ function CommentInput({
           </div>
         )}
 
-        <DownloadDialog title="Get the Genuin app" subtitle="Get the app to comment on this video.">
-          {/* <Image src={icAudioRecord} alt="audio record" className="h-8 w-8" /> */}
-          <AudioRecordIcon className="fill-secondary" />
-        </DownloadDialog>
-        <DownloadDialog title="Get the Genuin app" subtitle="Get the app to comment on this video.">
-          {/* <Image src={icVideoRecord} alt="audio record" className="h-8 w-8" /> */}
-          <VideoRecordIcon className="fill-secondary" />
-        </DownloadDialog>
+        <AudioRecordIcon
+          className="fill-secondary"
+          onClick={() => {
+            DownloadDialogModal.open({ title: 'Get the Genuin app', subtitle: 'Get the app to comment on this video.' })
+          }}
+        />
+        <VideoRecordIcon
+          className="fill-secondary"
+          onClick={() => {
+            DownloadDialogModal.open({
+              title: 'Get the Genuin app',
+              subtitle: 'Get the app to comment on this video.',
+            })
+          }}
+        />
       </div>
     </div>
   )

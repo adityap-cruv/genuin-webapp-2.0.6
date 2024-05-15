@@ -10,6 +10,9 @@ import { useSession } from 'next-auth/react'
 import { setAuthTokenInAxiosInstance, setBrandIdInAxiosInstance } from '@lib/api/instance'
 import dynamic from 'next/dynamic'
 import { miniProfile, saveVisitor } from '@lib/api/auth'
+const RepostModal = dynamic(
+  async () => await import('@components/common/modals/repost').then((comp) => comp.RepostModal.ui)
+)
 
 const AuthenticationModal = dynamic(
   async () => await import('@components/common/modals/authentication').then((comp) => comp.AuthenticationModal.ui)
@@ -165,6 +168,7 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
       {children}
       <AuthenticationModal />
       <DownloadDialogModal />
+      {sessionStatus === 'authenticated' && <RepostModal />}
     </>
   )
 }

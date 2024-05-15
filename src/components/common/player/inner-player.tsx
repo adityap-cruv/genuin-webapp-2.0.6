@@ -232,28 +232,27 @@ export function ViewportPlayer({
     // console.log('invew;:', inView, shouldPlay)
   }, [inView, shouldPlay])
 
-  if (videoSource)
-    return (
-      <video
-        className="absolute h-full w-full object-cover"
-        poster={poster}
-        ref={videoRef}
-        muted={muted}
-        loop={loop}
-        src={videoSource}
-        playsInline
-        onPlay={onPlay}
-        onPlaying={onPlaying}
-        onError={onError}
-        onCanPlay={(ev) => {
-          localRef.current.loaded = true
-          if (onCanPlay) onCanPlay(ev)
-        }}
-        onPause={onPause}
-        onEnded={onEnded}
-        onTimeUpdate={onTimeUpdateEventHandler}
-        // onDurationChange={onDurationChangeEventHandler}
-        {...props}
-      />
-    )
+  return (
+    <video
+      className="absolute h-full w-full object-cover"
+      poster={poster}
+      ref={videoRef}
+      muted={muted}
+      loop={loop}
+      src={videoSource}
+      playsInline
+      onPlay={onPlay}
+      onPlaying={onPlaying}
+      onError={onError}
+      onCanPlay={(ev) => {
+        localRef.current.loaded = true
+        if (onCanPlay) onCanPlay(ev)
+      }}
+      onPause={onPause}
+      onEnded={onEnded}
+      onTimeUpdate={onTimeUpdateEventHandler}
+      // onDurationChange={onDurationChangeEventHandler}
+      {...props}
+    />
+  )
 }

@@ -8,7 +8,7 @@ import { PATH_NAME } from '@lib/utils/constants/path'
 import { getTimeAgo } from '@lib/utils'
 import Image from 'next/image'
 import icSpark from '@icons/icSparkBlack.svg'
-import { DownloadDialog } from '../download-dialog'
+import { DownloadDialogModal } from '../modals/download-app'
 
 const CommentPlayer = dynamic(async () => await import('./video-player').then((comp) => comp.CommentPlayer))
 const AudioPlayer = dynamic(async () => await import('./audio-player').then((comp) => comp.AudioPlayer))
@@ -35,12 +35,14 @@ export function CommentItem({ comment }: { comment: CommentType }) {
       </span>
       <span className="h-full w-full pl-6">
         <UI comment={comment} />
-        <DownloadDialog subtitle="Get app to spark this comment." title="Get the Genuin app">
-          <span className="flex items-center pt-2">
-            <Image src={icSpark} alt="" className="h-4 w-4" />
-            <p className="text-cap-1-med">{comment.no_of_sparks}</p>
-          </span>
-        </DownloadDialog>
+        <button
+          className="flex items-center pt-2"
+          onClick={(e) => {
+            DownloadDialogModal.open({ title: 'Get the Genuin app', subtitle: 'Get app to spark this comment.' })
+          }}>
+          <Image src={icSpark} alt="" className="h-4 w-4" />
+          <p className="text-cap-1-med">{comment.no_of_sparks}</p>
+        </button>
       </span>
     </div>
   )

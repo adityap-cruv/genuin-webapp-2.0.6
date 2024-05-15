@@ -17,7 +17,6 @@ import icRepost from '@icons/player-controls/icRepost.svg'
 import ic3Dot from '@icons/player-controls/3Dot.svg'
 import Link from 'next/link'
 import Image from 'next/image'
-import { DownloadDialog } from '@components/common/download-dialog'
 import { useCommentSheetStore } from '../comment-sheet/store'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { analyticsService } from '../../../../services/analytics_service'
@@ -25,6 +24,8 @@ import { videoSpark } from '@lib/api/video'
 import { useState } from 'react'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { useSearchParams } from 'next/navigation'
+import { DownloadDialogModal } from '@components/common/modals/download-app'
+import { RepostModal } from '@components/common/modals/repost'
 
 export const Actions = {
   mobile: Mobile,
@@ -41,7 +42,7 @@ type MobileActionsProps = {
   description?: string | null
   isSparked?: boolean | null | undefined
 }
-// TODO: Fix their is bug when text length is bigger than devicesize fix it.
+// TODO: Fix their is bug when text length is bigger than device size fix it.
 function Mobile({
   attachedLink,
   shareUrl,
@@ -96,11 +97,13 @@ function Mobile({
       )}
       <span className=" flex flex-col">
         {embed ? (
-          <DownloadDialog title="Get the Genuin app" subtitle="Get the app to spark the video.">
-            <ActionItem title="Repost the video!">
-              <Image src={icRepost} height={32} width={32} alt="repost" />
-            </ActionItem>
-          </DownloadDialog>
+          <ActionItem
+            title="Repost the video!"
+            onClick={() => {
+              DownloadDialogModal.open({ title: 'Get the Genuin app', subtitle: 'Get the app to spark the video.' })
+            }}>
+            <Image src={icRepost} height={32} width={32} alt="repost" />
+          </ActionItem>
         ) : (
           <ActionItem
             title="Repost the video!"
@@ -209,11 +212,13 @@ function Mobile({
         }}>
         <Image src={icShare} alt="share" height={32} width={32} />
       </ActionItem>
-      <DownloadDialog title="Get the Genuin app" subtitle="Get the app to report the video.">
-        <ActionItem title="more options!">
-          <Image src={ic3Dot} alt="more options" height={32} width={32} />
-        </ActionItem>
-      </DownloadDialog>
+      <ActionItem
+        title="more options!"
+        onClick={() => {
+          DownloadDialogModal.open({ title: 'Get the Genuin app', subtitle: 'Get the app to report the video.' })
+        }}>
+        <Image src={ic3Dot} alt="more options" height={32} width={32} />
+      </ActionItem>
     </div>
   )
 }
@@ -225,18 +230,27 @@ type DesktopActionsProps = {
   attachedLink?: string | null
   description?: string | null
   isSparked?: boolean | null | undefined
+  // /**
+  //  * Determines whether repost is allowed or not.
+  //  */
+  // isPostAllowed: boolean
 }
 
-function Desktop({ shareUrl, sparkCount, videoId, attachedLink, description, isSparked }: DesktopActionsProps) {
+function Desktop({
+  shareUrl,
+  sparkCount,
+  videoId,
+  attachedLink,
+  description,
+  isSparked, // isPostAllowed,
+}: DesktopActionsProps) {
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
   const [sparkData, setSparkData] = useState({
     isSparked,
     sparkCount,
   })
-  const usersdata = JSON.parse(localStorage.getItem('_user_id_') ?? '')
-  const userId = usersdata.state.userId ?? ''
-  const user = useGenuinOptions().user
+  const { user } = useGenuinOptions((state) => ({ user: state.user }))
 
   async function toggleVideoSpark() {
     await videoSpark(videoId, 2, !sparkData.isSparked).then((res) => {
@@ -263,11 +277,19 @@ function Desktop({ shareUrl, sparkCount, videoId, attachedLink, description, isS
           </ActionItem>
         </Link>
       )}
-      <DownloadDialog title="Get the Genuin app" subtitle="Get the app to repost the video.">
-        <ActionItem title="Repost the video!">
-          <Image src={icRepost} alt="repost" height={32} width={32} />
-        </ActionItem>
-      </DownloadDialog>
+      <ActionItem
+        title="Repost the video!"
+        onClick={() => {
+          console.log('opting::')
+          RepostModal.open()
+          if (user) {
+            console.log('nto')
+          } else {
+            // DownloadDialogModal.open({ title: 'Get the Genuin app', subtitle: 'Get the app to repost the video.' })
+          }
+        }}>
+        <Image src={icRepost} alt="repost" height={32} width={32} />
+      </ActionItem>
       <ActionItem
         title="Give spark!"
         onClick={
@@ -278,7 +300,7 @@ function Desktop({ shareUrl, sparkCount, videoId, attachedLink, description, isS
             : () => {
                 openModal({
                   title: 'Get the Genuin app',
-                  subtitle: <>Get the app to spark the video.</>,
+                  subtitle: 'Get the app to spark the video.',
                 })
               }
         }>
@@ -297,7 +319,7 @@ function Desktop({ shareUrl, sparkCount, videoId, attachedLink, description, isS
               content_id: videoId,
               event_record_screen: 'feed',
               event_target_screen: 'none',
-              user_id: userId,
+              user_id: user?.id,
             },
           })
           await shareFn({
@@ -309,11 +331,13 @@ function Desktop({ shareUrl, sparkCount, videoId, attachedLink, description, isS
         }}>
         <Image src={icShare} alt="share" height={32} width={32} />
       </ActionItem>
-      <DownloadDialog title="Get the Genuin app" subtitle="Get the app to report video.">
-        <ActionItem title="More options!">
-          <Image src={ic3Dot} height={32} width={32} alt="More Options!" />
-        </ActionItem>
-      </DownloadDialog>
+      <ActionItem
+        title="More options!"
+        onClick={() => {
+          DownloadDialogModal.open({ title: 'Get the Genuin app', subtitle: 'Get the app to report video.' })
+        }}>
+        <Image src={ic3Dot} height={32} width={32} alt="More Options!" />
+      </ActionItem>
     </div>
   )
 }
@@ -322,9 +346,9 @@ interface ActionItemProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode
 }
 
-function ActionItem({ children, onClick, title }: ActionItemProps) {
+function ActionItem({ children, onClick, title, ...props }: ActionItemProps) {
   return (
-    <div onClick={onClick} title={title} className="my-2 cursor-pointer">
+    <div onClick={onClick} title={title} className="my-2 cursor-pointer" {...props}>
       {children}
     </div>
   )
