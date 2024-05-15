@@ -7,7 +7,7 @@ export function loopPrivacyInfo(actionId: number, accessTypeId: number) {
     return (
       <div className="flex gap-1">
         <EarthIcon className="h-4 w-4 stroke-tertiary" />
-        <p className="text-cap-1-med text-tertiary">Visible to everyone</p>
+        <p className="line-clamp-1 break-all text-cap-1-med text-tertiary">Visible to everyone</p>
       </div>
     )
   }
@@ -16,7 +16,7 @@ export function loopPrivacyInfo(actionId: number, accessTypeId: number) {
     return (
       <div className="flex gap-1">
         <CommunityIcon className="h-4 w-4 stroke-tertiary" />
-        <p className="text-cap-1-med text-tertiary">Visible to community members only</p>
+        <p className="line-clamp-1 break-all text-cap-1-med text-tertiary">Visible to community members only</p>
       </div>
     )
   }
@@ -24,7 +24,7 @@ export function loopPrivacyInfo(actionId: number, accessTypeId: number) {
   return (
     <div className="flex gap-1">
       <IcLoop className="h-4 w-4 fill-tertiary stroke-tertiary" />
-      <p className="text-cap-1-med text-tertiary">Visible to Collaborators only</p>
+      <p className="line-clamp-1 break-all text-cap-1-med text-tertiary">Visible to Collaborators only</p>
     </div>
   )
 }

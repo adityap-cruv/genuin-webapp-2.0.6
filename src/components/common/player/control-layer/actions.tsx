@@ -60,15 +60,11 @@ function Mobile({
     commentsIsOpen: state.modalIsOpen,
   }))
 
-  // TODO: Why?
-  const usersdata = JSON.parse(localStorage.getItem('_user_id_') ?? '')
-  const userId = usersdata.state.userId ?? ''
   const [sparkData, setSparkData] = useState({
     isSparked,
     sparkCount,
   })
-  const embed = useGenuinOptions().embed
-  const user = useGenuinOptions().user
+  const { embed, user } = useGenuinOptions((state) => ({ user: state.user, embed: state.embed }))
   const searchParams = Object.fromEntries(useSearchParams())
 
   async function toggleVideoSpark() {
@@ -100,7 +96,8 @@ function Mobile({
           <ActionItem
             title="Repost the video!"
             onClick={() => {
-              DownloadDialogModal.open({ title: 'Get the Genuin app', subtitle: 'Get the app to spark the video.' })
+              // DownloadDialogModal.open({ title: 'Get the Genuin app', subtitle: 'Get the app to spark the video.' })
+              RepostModal.open(videoId)
             }}>
             <Image src={icRepost} height={32} width={32} alt="repost" />
           </ActionItem>
@@ -194,7 +191,7 @@ function Mobile({
               content_id: videoId,
               event_record_screen: 'feed',
               event_target_screen: 'none',
-              user_id: userId,
+              user_id: user?.id,
             },
           })
           void window.navigator.share({
@@ -250,7 +247,7 @@ function Desktop({
     isSparked,
     sparkCount,
   })
-  const { user } = useGenuinOptions((state) => ({ user: state.user }))
+  const { user, embed } = useGenuinOptions((state) => ({ user: state.user, embed: state.embed }))
 
   async function toggleVideoSpark() {
     await videoSpark(videoId, 2, !sparkData.isSparked).then((res) => {
@@ -265,80 +262,80 @@ function Desktop({
   }
 
   return (
-    <div
-      className="flex flex-col"
-      onClick={(e) => {
-        e.stopPropagation()
-      }}>
-      {attachedLink && (
-        <Link href={checkAndAppendHttps(attachedLink)} target="_blank">
-          <ActionItem title="Click Here!">
-            <Image src={icLinkout} alt="link" height={32} width={32} />
-          </ActionItem>
-        </Link>
-      )}
-      <ActionItem
-        title="Repost the video!"
-        onClick={() => {
-          console.log('opting::')
-          RepostModal.open()
-          if (user) {
-            console.log('nto')
-          } else {
-            // DownloadDialogModal.open({ title: 'Get the Genuin app', subtitle: 'Get the app to repost the video.' })
-          }
+    <>
+      <div
+        className="flex flex-col"
+        onClick={(e) => {
+          e.stopPropagation()
         }}>
-        <Image src={icRepost} alt="repost" height={32} width={32} />
-      </ActionItem>
-      <ActionItem
-        title="Give spark!"
-        onClick={
-          user
-            ? async () => {
-                await toggleVideoSpark()
-              }
-            : () => {
-                openModal({
-                  title: 'Get the Genuin app',
-                  subtitle: 'Get the app to spark the video.',
-                })
-              }
-        }>
-        <Image src={sparkData.isSparked ? icSparkTrue : icSpark} height={32} width={32} alt="spark" />
-        <p className="flex justify-center text-body-1-demi text-monochrome-white">
-          {abbreviateNumber(sparkData.sparkCount)}
-        </p>
-      </ActionItem>
-      <ActionItem
-        title="Share Video!"
-        onClick={async () => {
-          await analyticsService({
-            eventName: 'Video Shared',
-            properties: {
-              content_category: 'loop',
-              content_id: videoId,
-              event_record_screen: 'feed',
-              event_target_screen: 'none',
-              user_id: user?.id,
-            },
-          })
-          await shareFn({
-            description: description ?? '',
-            title: description ?? '',
-            shareLink: shareUrl,
-            toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
-          })
-        }}>
-        <Image src={icShare} alt="share" height={32} width={32} />
-      </ActionItem>
-      <ActionItem
-        title="More options!"
-        onClick={() => {
-          DownloadDialogModal.open({ title: 'Get the Genuin app', subtitle: 'Get the app to report video.' })
-        }}>
-        <Image src={ic3Dot} height={32} width={32} alt="More Options!" />
-      </ActionItem>
-    </div>
+        {attachedLink && (
+          <Link href={checkAndAppendHttps(attachedLink)} target="_blank">
+            <ActionItem title="Click Here!">
+              <Image src={icLinkout} alt="link" height={32} width={32} />
+            </ActionItem>
+          </Link>
+        )}
+        <ActionItem
+          title="Repost the video!"
+          onClick={() => {
+            if (embed) {
+              RepostModal.open(videoId)
+            } else {
+              DownloadDialogModal.open({ title: 'Get the Genuin app', subtitle: 'Get the app to repost the video.' })
+            }
+          }}>
+          <Image src={icRepost} alt="repost" height={32} width={32} />
+        </ActionItem>
+        <ActionItem
+          title="Give spark!"
+          onClick={
+            user
+              ? async () => {
+                  await toggleVideoSpark()
+                }
+              : () => {
+                  openModal({
+                    title: 'Get the Genuin app',
+                    subtitle: 'Get the app to spark the video.',
+                  })
+                }
+          }>
+          <Image src={sparkData.isSparked ? icSparkTrue : icSpark} height={32} width={32} alt="spark" />
+          <p className="flex justify-center text-body-1-demi text-monochrome-white">
+            {abbreviateNumber(sparkData.sparkCount)}
+          </p>
+        </ActionItem>
+        <ActionItem
+          title="Share Video!"
+          onClick={async () => {
+            await analyticsService({
+              eventName: 'Video Shared',
+              properties: {
+                content_category: 'loop',
+                content_id: videoId,
+                event_record_screen: 'feed',
+                event_target_screen: 'none',
+                user_id: user?.id,
+              },
+            })
+            await shareFn({
+              description: description ?? '',
+              title: description ?? '',
+              shareLink: shareUrl,
+              toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
+            })
+          }}>
+          <Image src={icShare} alt="share" height={32} width={32} />
+        </ActionItem>
+        <ActionItem
+          title="More options!"
+          onClick={() => {
+            DownloadDialogModal.open({ title: 'Get the Genuin app', subtitle: 'Get the app to report video.' })
+          }}>
+          <Image src={ic3Dot} height={32} width={32} alt="More Options!" />
+        </ActionItem>
+      </div>
+    </>
   )
 }
 

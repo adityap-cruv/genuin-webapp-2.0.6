@@ -1,8 +1,8 @@
 'use client'
-import { Body } from './body'
+import { Modal } from './modal'
 import { useRepostModalStore } from './state'
 
 export const RepostModal = {
-  ui: Body,
+  ui: Modal,
   open: useRepostModalStore.getState().open,
 }

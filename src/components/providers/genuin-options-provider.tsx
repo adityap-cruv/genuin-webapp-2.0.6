@@ -168,7 +168,7 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
       {children}
       <AuthenticationModal />
       <DownloadDialogModal />
-      {sessionStatus === 'authenticated' && <RepostModal />}
+      <RepostModal />
     </>
   )
 }
