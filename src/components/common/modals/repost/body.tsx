@@ -9,24 +9,35 @@ import { repostVideo } from './api'
 import { useState } from 'react'
 import { Loader } from '@components/ui/loader'
 import { cn } from '@lib/utils'
+import { NoSearchResults } from '@components/common/no-search-results'
 
 export function Body() {
-  const { data } = useRepostModalStore((state) => ({
+  const { data, filteredData, searchString } = useRepostModalStore((state) => ({
     data: state.repostCommunityData,
+    filteredData: state.filteredRepostCommunityData,
+    searchString: state.searchStr,
   }))
+  const dataToRender = filteredData ?? data
 
-  if (data)
+  if (!dataToRender || dataToRender.length === 0) {
     return (
-      <div className="relative h-full w-full overflow-scroll py-3 pr-2">
-        {data.map((item, index) => {
-          return (
-            <div key={item.community_id}>
-              <CommunityCard communityInfo={item} />
-            </div>
-          )
-        })}
+      <div className="flex h-full w-full items-center justify-center">
+        <NoSearchResults forKeyword={searchString} />
       </div>
     )
+  }
+
+  return (
+    <div className="relative h-full w-full overflow-scroll py-3 pr-2">
+      {dataToRender.map((item, index) => {
+        return (
+          <div key={item.community_id}>
+            <CommunityCard communityInfo={item} />
+          </div>
+        )
+      })}
+    </div>
+  )
 }
 
 function CommunityCard({ communityInfo }: { communityInfo: RepostCommunityType }) {
