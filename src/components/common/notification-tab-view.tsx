@@ -12,7 +12,7 @@ export function GetNotificationAttributedText({ notification }: { notification: 
     case 'delete_rt':
       return (
         <div>
-          {ProfileTag(notification?.user?.nickname)}
+          {ProfileTag(notification)}
           deleted the loop
           {LoopTag(notification?.conversation?.group?.slug, notification?.conversation?.group?.name)}
           of
@@ -22,7 +22,7 @@ export function GetNotificationAttributedText({ notification }: { notification: 
     case 'rt_comment':
       return (
         <div>
-          {ProfileTag(notification?.user?.nickname)}
+          {ProfileTag(notification)}
           commented on your post in
           <strong>
             {' '}
@@ -34,7 +34,7 @@ export function GetNotificationAttributedText({ notification }: { notification: 
     case 'rt_comment_to_other_users':
       return (
         <div>
-          {ProfileTag(notification?.user?.nickname)}
+          {ProfileTag(notification)}
           also commented on a post in
           <strong>
             {' '}
@@ -46,7 +46,7 @@ export function GetNotificationAttributedText({ notification }: { notification: 
     case 'delete_video_rt_by_owner':
       return (
         <div>
-          {ProfileTag(notification?.user?.nickname)}
+          {ProfileTag(notification)}
           removed your post from
           <strong>
             {' '}
@@ -58,7 +58,7 @@ export function GetNotificationAttributedText({ notification }: { notification: 
     case 'reply_rt':
       return (
         <div>
-          {ProfileTag(notification?.user?.nickname)}
+          {ProfileTag(notification)}
           posted to
           <strong> {LoopTag(notification?.conversation?.group?.slug, notification?.conversation?.group?.name)} </strong>
           See it now. {agoTimeString}
@@ -67,7 +67,7 @@ export function GetNotificationAttributedText({ notification }: { notification: 
     case 'rt_participation_request':
       return (
         <div>
-          {ProfileTag(notification?.user?.nickname)}
+          {ProfileTag(notification)}
           requested to join as a collaborator in
           <strong> {LoopTag(notification?.conversation?.group?.slug, notification?.conversation?.group?.name)} </strong>
           Review their request now. {agoTimeString}
@@ -76,7 +76,7 @@ export function GetNotificationAttributedText({ notification }: { notification: 
     case 'invite_rt':
       return (
         <div>
-          {ProfileTag(notification?.user?.nickname)}
+          {ProfileTag(notification)}
           added you as a collaborator of
           <strong> {LoopTag(notification?.conversation?.group?.slug, notification?.conversation?.group?.name)} </strong>
           in
@@ -87,7 +87,7 @@ export function GetNotificationAttributedText({ notification }: { notification: 
     case 'remove_rt':
       return (
         <div>
-          {ProfileTag(notification?.user?.nickname)}
+          {ProfileTag(notification)}
           removed you as a collaborator of
           <strong> {LoopTag(notification?.conversation?.group?.slug, notification?.conversation?.group?.name)}</strong>
           If you believe this was a mistake, contact the Loop's Collaborators. {agoTimeString}
@@ -96,7 +96,7 @@ export function GetNotificationAttributedText({ notification }: { notification: 
     case 'reposted_rt_to_rt':
       return (
         <div>
-          {ProfileTag(notification?.user?.nickname)}
+          {ProfileTag(notification)}
           reposted your post from
           <strong> {notification?.repostedConversation?.group?.name} </strong>
           to
@@ -117,13 +117,13 @@ export function GetNotificationAttributedText({ notification }: { notification: 
         <div>
           Welcome to
           <strong> {CommunityTag(notification?.community?.slug, notification?.community?.name)} </strong>
-          community, {ProfileTag(notification?.user?.nickname)}! {agoTimeString}
+          community, {ProfileTag(notification)}! {agoTimeString}
         </div>
       )
     case 'community_join_request':
       return (
         <div>
-          {ProfileTag(notification?.user?.nickname)}
+          {ProfileTag(notification)}
           requested to join
           <strong> {CommunityTag(notification?.community?.slug, notification?.community?.name)}</strong>.{' '}
           {agoTimeString}
@@ -132,7 +132,7 @@ export function GetNotificationAttributedText({ notification }: { notification: 
     case 'community_member_invited':
       return (
         <div>
-          {ProfileTag(notification?.user?.nickname)}
+          {ProfileTag(notification)}
           added you in
           <strong> {CommunityTag(notification?.community?.slug, notification?.community?.name)}</strong>.{' '}
           {agoTimeString}
@@ -141,7 +141,7 @@ export function GetNotificationAttributedText({ notification }: { notification: 
     case 'community_moderator_removed':
       return (
         <div>
-          {ProfileTag(notification?.user?.nickname)}
+          {ProfileTag(notification)}
           removed you as moderator from
           <strong> {CommunityTag(notification?.community?.slug, notification?.community?.name)} </strong>
           You can still post and interact with the community. {agoTimeString}
@@ -203,7 +203,7 @@ export function GetNotificationAttributedText({ notification }: { notification: 
     case 'post_sparked':
       return (
         <div>
-          {ProfileTag(notification?.user?.nickname)}
+          {ProfileTag(notification)}
           sparked your post in
           <strong>
             {' '}
@@ -214,7 +214,7 @@ export function GetNotificationAttributedText({ notification }: { notification: 
     case 'comment_sparked':
       return (
         <div>
-          {ProfileTag(notification?.user?.nickname)}
+          {ProfileTag(notification)}
           sparked your comment in
           <strong>
             {' '}
@@ -267,7 +267,12 @@ export function GetNotificationAttributedText({ notification }: { notification: 
     case 'bcc_to_cb_added':
       return (
         <div>
-          <strong> {notification?.brand?.name} </strong>
+          <Link
+            href={{
+              pathname: PATH_NAME.brand(notification?.user?.brand?.brand_slug),
+            }}>
+            <strong> {notification?.brand?.name} </strong>
+          </Link>
           added you as a community builder. Create your community now. {agoTimeString}
         </div>
       )
@@ -276,14 +281,16 @@ export function GetNotificationAttributedText({ notification }: { notification: 
   }
 }
 
-function ProfileTag(nickname: string) {
+function ProfileTag(notification: any) {
   return (
     <>
       <Link
         href={{
-          pathname: PATH_NAME.profile(nickname),
+          pathname: notification?.user?.brand
+            ? PATH_NAME.brand(notification?.user?.brand?.brand_slug)
+            : PATH_NAME.profile(notification?.user?.nickname),
         }}>
-        <strong> @{nickname} </strong>
+        <strong> @{notification?.user?.nickname} </strong>
       </Link>
     </>
   )

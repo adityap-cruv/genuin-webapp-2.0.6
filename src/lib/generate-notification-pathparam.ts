@@ -48,9 +48,9 @@ export function generatePathname(notification: any) {
       return PATH_NAME.community(notification?.community?.slug)
     // case 'upload_failed':
     //   return PATH_NAME.loop(notification?.conversation?.group?.slug)
-    // case 'bcc_to_cb_added':
-    //   return PATH_NAME.loop(notification?.conversation?.group?.slug)
+    case 'bcc_to_cb_added':
+      return PATH_NAME.brand(notification?.user?.brand?.brand_slug)
     default:
-      return PATH_NAME.loop(notification?.user?.nickname)
+      return null
   }
 }

@@ -37,13 +37,10 @@ export function getNotifications(limit: number) {
   })
 }
 
-export async function readNotifications(notificationId: any, readAll: any) {
+export async function readNotifications(readAll: boolean) {
   return await axiosInstance
     .put('/api/v3/notification_read', {
-      params: {
-        notification_id: notificationId,
-        read_all: readAll,
-      },
+      read_all: readAll,
     })
     .then((res) => {
       return res.data.data

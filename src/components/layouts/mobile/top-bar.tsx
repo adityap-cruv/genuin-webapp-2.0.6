@@ -26,6 +26,9 @@ import { SearchBar } from '@components/common/search-bar'
 import { miniProfile } from '@lib/api/auth'
 import { SettingsLayout } from '../settings/mobile/layout'
 import { NotificationIcon } from '@icons/settings-side-bar-icons'
+import icBack from '@icons/icBack.svg'
+import Image from 'next/image'
+import { MainComponent } from '../../../app/(site)/(platform-discovery)/@mobile/notification/main-component'
 
 const navVariant = cva('sticky top-0 flex z-40 h-[76px] w-full items-center justify-between  px-2', {
   variants: {
@@ -53,15 +56,24 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
   // if (protocol === 'http:') {
   //   window.location.href = window.location.href.replace(/^http:/, 'https:')
   // }
-  const isEmbed = useGenuinOptions().embed
-  // If variant is transparent than we have removed show download button.
+  const { embed, user, brandName, notificationsCount } = useGenuinOptions((state) => ({
+    embed: state.embed,
+    user: state.user,
+    brandName: state.config?.name ? state.config?.name : 'Genuin',
+    notificationsCount: state.notificationCount,
+  })) // If variant is transparent than we have removed show download button.
   const showDownloadButton = variant !== 'trasparent'
 
   return (
     <nav className={cn(navVariant({ variant }), className)}>
       <span className="flex items-center ">
-        <Menu hamBurgerVariant={variant === 'trasparent' ? 'light' : 'dark'} />
-        {isEmbed && (
+        <Menu
+          hamBurgerVariant={variant === 'trasparent' ? 'light' : 'dark'}
+          embed={embed}
+          user={user}
+          brandName={brandName}
+        />
+        {embed && (
           <Link href={{ pathname: PATH_NAME.home() }}>
             <AppLogo.icon
               imageHeight={32}
@@ -71,7 +83,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
         )}
       </span>
       <span className="flex items-center gap-x-2">
-        {!isEmbed && showDownloadButton && (
+        {!embed && showDownloadButton && (
           <Link href={MOBILE_DOWNLOAD_APP_LINK} target="_blank">
             <Button
               className={
@@ -83,10 +95,11 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
             </Button>
           </Link>
         )}
+        {user && <NotificationSheet notificationsCount={notificationsCount} />}
         <SearchBar.mobile>
           <Search className={cn(variant === 'light' ? 'stroke-secondary' : 'stroke-monochrome-white')} />
         </SearchBar.mobile>
-        {isEmbed && <UserTick />}
+        {embed && <UserTick />}
         {showClose && (
           <X
             onClick={() => {
@@ -103,12 +116,55 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
   )
 }
 
-function Menu({ hamBurgerVariant = 'dark' }: { hamBurgerVariant: 'dark' | 'light' }) {
-  const { embed, user, brandName } = useGenuinOptions((state) => ({
-    embed: state.embed,
-    user: state.user,
-    brandName: state.config?.name ? state.config?.name : 'Genuin',
-  }))
+function NotificationSheet({ notificationsCount }: { notificationsCount: number | null | undefined }) {
+  const pathName = usePathname()
+  return (
+    <>
+      <Sheet>
+        <SheetTrigger>
+          <div className="relative">
+            {!notificationsCount ||
+              (notificationsCount > 0 && (
+                <div
+                  className="absolute right-0 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-primary text-monochrome-white"
+                  style={{
+                    fontSize: '8px',
+                  }}>
+                  {notificationsCount}
+                </div>
+              ))}
+            <NotificationIcon
+              variant={pathName === '/home' || pathName === '/popular' || pathName === '/latest' ? 'white' : ''}
+              className="h-7"
+            />
+          </div>
+        </SheetTrigger>
+        <SheetContent showDefaultClose={false} side="right" className="w-full border-none p-0 shadow-none outline-none">
+          <div className={`relative m-4 flex w-full items-center justify-center`}>
+            <SheetClose className="absolute left-0 shadow-none outline-none">
+              <Image src={icBack} alt="back" />
+            </SheetClose>
+            <p className="text-title-2-bold">Notifications</p>
+          </div>
+          <hr className="bg-tertiary-300" />
+          <MainComponent />
+        </SheetContent>
+      </Sheet>
+    </>
+  )
+}
+
+function Menu({
+  hamBurgerVariant = 'dark',
+  brandName,
+  user,
+  embed,
+}: {
+  hamBurgerVariant: 'dark' | 'light'
+  brandName: string
+  user: any
+  embed: boolean
+}) {
   const pathName = usePathname()
   const { data: sessionData, update: updateSession } = useSession()
 
@@ -158,13 +214,6 @@ function Menu({ hamBurgerVariant = 'dark' }: { hamBurgerVariant: 'dark' | 'light
             </Link>
             {user && (
               <>
-                {!user.is_brand_system_user && (
-                  <Link href={{ pathname: PATH_NAME.settings('notification') }}>
-                    <MenuItem title="Notification" isActive={pathName === PATH_NAME.settings('notification')}>
-                      <NotificationIcon isActive={pathName === PATH_NAME.settings('notification')} />
-                    </MenuItem>
-                  </Link>
-                )}
                 <Link
                   href={{
                     pathname: user.is_brand_system_user

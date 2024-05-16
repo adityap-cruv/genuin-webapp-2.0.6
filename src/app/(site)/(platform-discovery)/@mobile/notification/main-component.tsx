@@ -64,8 +64,7 @@ function Notifications({
   }, [])
 
   return (
-    <div className="h-full w-full p-6 sm:w-1/2">
-      <p className="mb-2 text-title-1-bold">Latest Activity</p>
+    <div className="h-full w-full">
       {notificationDetails?.length === 0 && (
         <div className="flex h-full w-full flex-col items-center justify-center py-2">
           <div className="flex h-14 w-14 items-center justify-center rounded-full bg-tertiary-200">
@@ -79,7 +78,7 @@ function Notifications({
       )}
 
       {notificationDetails?.length !== 0 && (
-        <div ref={scrollDivRef} className="h-full overflow-scroll py-2">
+        <div ref={scrollDivRef} className="h-full overflow-scroll pb-14">
           {notificationDetails?.map((item: any, index: number) => (
             <>
               <Link
