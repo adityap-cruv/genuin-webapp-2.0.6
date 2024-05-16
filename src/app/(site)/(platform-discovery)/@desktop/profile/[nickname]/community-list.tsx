@@ -181,7 +181,7 @@ export function CommunityList({ userId }: { userId: string }) {
                   )}
                 </div>
               </div>
-              <DecorativeList>
+              <DecorativeList className="pt-4">
                 <Loops userId={userId} community={item} communityId={item.id} user={user} pathName={pathName} />
               </DecorativeList>
             </div>
