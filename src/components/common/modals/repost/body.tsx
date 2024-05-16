@@ -10,6 +10,8 @@ import { useState } from 'react'
 import { Loader } from '@components/ui/loader'
 import { cn } from '@lib/utils'
 import { NoSearchResults } from '@components/common/no-search-results'
+import { EarthIcon } from '@icons/earth-icon'
+import { Lock } from 'lucide-react'
 
 export function Body() {
   const { data, filteredData, searchString } = useRepostModalStore((state) => ({
@@ -53,7 +55,16 @@ function CommunityCard({ communityInfo }: { communityInfo: RepostCommunityType }
           />
           <span className="flex flex-col items-start justify-center">
             <p className="line-clamp-1 break-all text-title-3-bold">{communityInfo.name}</p>
-            <p className="line-clamp-1 break-all text-cap-1-med text-tertiary">Public</p>
+            <span className="flex items-center justify-center gap-1">
+              {communityInfo.type === 'PUBLIC' ? (
+                <EarthIcon className="h-4 w-4 stroke-tertiary" />
+              ) : (
+                <Lock className="h-4 w-4 stroke-tertiary" />
+              )}
+              <p className="line-clamp-1 break-all text-cap-1-med text-tertiary">
+                {communityInfo.type === 'PUBLIC' ? 'Public' : 'Private'}
+              </p>
+            </span>
           </span>
         </span>
         {/* TODO: check if any link must be put here. */}

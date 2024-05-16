@@ -49,6 +49,9 @@ const CommunitySchema = z.object({
   text_color_code: z.string().nullish(),
   chats: z.array(Chat),
   brand: Brand,
+  type: z.number().transform((item) => {
+    return item === 1 ? 'PUBLIC' : 'PRIVATE'
+  }),
 })
 
 const CommunityListSchema = z.array(CommunitySchema)
