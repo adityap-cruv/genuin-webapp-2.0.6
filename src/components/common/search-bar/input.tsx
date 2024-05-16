@@ -5,6 +5,7 @@ import { useDebouncedCallback } from 'use-debounce'
 import { postRecents } from './api'
 import { RECENT_SEARCH_CONTENT_TYPE } from '@lib/constants'
 import { SheetClose } from '@components/ui/sheet'
+import { SearchIcon } from '@icons/search-icon'
 
 export const SearchInput = {
   desktop: Desktop,
@@ -32,7 +33,7 @@ function Desktop() {
         className="rounded-full border-none bg-tertiary-200 pl-10 text-body-1-demi placeholder:text-tertiary focus:border-none"
         placeholder="Search"
       />
-      <Search className="absolute left-3 top-0 flex h-full w-5 items-center stroke-tertiary stroke-2" />
+      <SearchIcon className={`absolute left-3 top-0 flex h-full w-5 items-center stroke-tertiary`} />
     </div>
   )
 }
@@ -68,7 +69,7 @@ function Mobile() {
           className="h-10 rounded-full border-none bg-tertiary-200 pl-8 text-body-1-demi placeholder:text-tertiary focus:border-none"
           placeholder="Search"
         />
-        <Search className="absolute left-2 top-0 flex h-full w-4 items-center stroke-tertiary stroke-2" />
+        <SearchIcon className={`absolute left-2 top-0 flex h-full w-5 items-center stroke-tertiary`} />
       </span>
     </div>
   )
