@@ -517,7 +517,7 @@ function Component8() {
   return (
     <>
       <div className=" hidden h-32 bg-monochrome-9 lg:flex xl:px-0">
-        <div className="flex items-center justify-between xl:container">
+        <div className="container flex items-center justify-between">
           <p className="text-new-h2">As Seen In</p>
           <div className="flex gap-10">
             <div className="flex items-center justify-center rounded-lg bg-monochrome-white px-8 py-2 ">
