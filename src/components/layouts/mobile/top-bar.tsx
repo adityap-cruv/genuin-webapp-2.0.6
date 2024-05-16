@@ -29,6 +29,7 @@ import { NotificationIcon } from '@icons/settings-side-bar-icons'
 import icBack from '@icons/icBack.svg'
 import Image from 'next/image'
 import { MainComponent } from '../../../app/(site)/(platform-discovery)/@mobile/notification/main-component'
+import { SearchIcon } from '@icons/search-icon'
 
 const navVariant = cva('sticky top-0 flex z-40 h-[76px] w-full items-center justify-between  px-2', {
   variants: {
@@ -63,6 +64,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
     notificationsCount: state.notificationCount,
   })) // If variant is transparent than we have removed show download button.
   const showDownloadButton = variant !== 'trasparent'
+  const pathName = usePathname()
 
   return (
     <nav className={cn(navVariant({ variant }), className)}>
@@ -95,9 +97,13 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
             </Button>
           </Link>
         )}
-        {user && <NotificationSheet notificationsCount={notificationsCount} />}
+        {user && <NotificationSheet notificationsCount={notificationsCount} pathName={pathName} />}
         <SearchBar.mobile>
-          <Search className={cn(variant === 'light' ? 'stroke-secondary' : 'stroke-monochrome-white')} />
+          <SearchIcon
+            className={`${
+              pathName === '/home' || pathName === '/popular' || pathName === '/latest' ? 'stroke-monochrome-white' : ''
+            }`}
+          />
         </SearchBar.mobile>
         {embed && <UserTick />}
         {showClose && (
@@ -116,8 +122,13 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
   )
 }
 
-function NotificationSheet({ notificationsCount }: { notificationsCount: number | null | undefined }) {
-  const pathName = usePathname()
+function NotificationSheet({
+  notificationsCount,
+  pathName,
+}: {
+  notificationsCount: number | null | undefined
+  pathName: string
+}) {
   return (
     <>
       <Sheet>
