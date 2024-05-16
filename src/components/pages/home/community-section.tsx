@@ -9,10 +9,8 @@ import c3 from '@images/home-page/community/communityshare 3.webp'
 import c4 from '@images/home-page/community/communityshare 4.webp'
 import c5 from '@images/home-page/community/communityshare 5.webp'
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@components/ui/carousel'
-import { useGenuinOptions } from '@lib/stores/genuin-options'
 
 export function CommunitySection() {
-  const { isMobile } = useGenuinOptions((state) => ({ isMobile: state.isMobile }))
   const communityList = [
     {
       image: c1,
@@ -43,29 +41,7 @@ export function CommunitySection() {
 
   return (
     <>
-      {isMobile ? (
-        <Carousel className="mb-20 w-full max-w-sm">
-          <CarouselContent>
-            {communityList.map((item, index) => {
-              return (
-                <CarouselItem key={index}>
-                  <div>
-                    <Link href={item.link}>
-                      <img src={item.image.src} className="lg:h-[25vh]" alt="genuin" />
-                    </Link>
-                  </div>
-                </CarouselItem>
-              )
-            })}
-          </CarouselContent>
-          <div className="absolute -bottom-14 right-14">
-            <CarouselNext />
-          </div>
-          <div className="absolute -bottom-14 left-14">
-            <CarouselPrevious />
-          </div>
-        </Carousel>
-      ) : (
+      <div className="hidden w-full lg:flex xl:px-0">
         <div className="flex w-full flex-col gap-y-10">
           <div
             ref={divRef}
@@ -114,7 +90,31 @@ export function CommunitySection() {
             </Button>
           </div>
         </div>
-      )}
+      </div>
+
+      <div className="container flex w-full justify-center lg:hidden">
+        <Carousel className="mb-20 w-full max-w-sm">
+          <CarouselContent>
+            {communityList.map((item, index) => {
+              return (
+                <CarouselItem key={index}>
+                  <div>
+                    <Link href={item.link}>
+                      <img src={item.image.src} className="lg:h-[25vh]" alt="genuin" />
+                    </Link>
+                  </div>
+                </CarouselItem>
+              )
+            })}
+          </CarouselContent>
+          <div className="absolute -bottom-14 right-14">
+            <CarouselNext />
+          </div>
+          <div className="absolute -bottom-14 left-14">
+            <CarouselPrevious />
+          </div>
+        </Carousel>
+      </div>
     </>
   )
 }
