@@ -24,43 +24,14 @@ import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import { LockIcon } from '@icons/LockIcon'
 import { TickIcon } from '@icons/tick-icon'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@components/ui/tooltip'
-import { BrandCommunityTag } from '../brand-community-tag'
 
 export function DesktopDetails({ loop, community, owner, video }: VideoPlayerModalType) {
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
   const scrollDivRef = useRef<HTMLDivElement>(null)
-  const [isCommunityJoined, setIsCommunityJoined] = useState(!!community.logged_in_user_role)
   // TODO: Here state Comment and setComments are bad they are causing multiple rerenders.
   const [currentComment, setCurrentComment] = useState('')
   const [comments, setComments] = useState<CommentListType>([])
-  const user = useGenuinOptions().user
-
-  useEffect(() => {
-    setIsCommunityJoined(!!community.logged_in_user_role)
-  }, [community])
-
-  async function toggleCommunityJoinState() {
-    !isCommunityJoined
-      ? await joinCommunity(
-          false,
-          [community.id],
-          [
-            {
-              user_id: user?.id,
-            },
-          ]
-        ).then((res) => {
-          if (res.code === 200) {
-            setIsCommunityJoined((prev) => !prev)
-          }
-        })
-      : await leaveCommunity(community.id).then((res) => {
-          if (res.code === 200) {
-            setIsCommunityJoined((prev) => !prev)
-          }
-        })
-  }
 
   return (
     <div className="relative flex h-full flex-1 flex-col overflow-x-clip bg-monochrome-white pb-16 pl-2">
@@ -135,34 +106,7 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
                 )}
               </div>
               <span className="flex h-min flex-1 items-center justify-end gap-x-3">
-                <Button
-                  size="custom"
-                  className={`${isCommunityJoined && 'rounded border border-primary '}`}
-                  variant={isCommunityJoined ? 'outline' : 'default'}
-                  onClick={
-                    user
-                      ? async () => {
-                          await toggleCommunityJoinState()
-                        }
-                      : () => {
-                          openModal({
-                            title: 'Get the Genuin app',
-                            subtitle: (
-                              <>
-                                Get the app to join the <br />
-                                <span className="font-bold">@{community.handle}</span> community.
-                              </>
-                            ),
-                          })
-                        }
-                  }>
-                  <p
-                    className={`whitespace-nowrap px-4 py-1.5 text-body-1-demi  ${
-                      isCommunityJoined ? 'text-primary' : 'text-monochrome-white'
-                    }`}>
-                    {isCommunityJoined ? 'Joined' : 'Join Community'}
-                  </p>
-                </Button>
+                <JoinButton handle={community.handle} id={community.id} userRole={community.userRole} />
                 <Button
                   size="custom"
                   variant="outline"
@@ -381,5 +325,66 @@ function CommentInput({
         </DownloadDialog>
       </div>
     </div>
+  )
+}
+
+function JoinButton({ userRole, handle, id }: { userRole?: 'LEADER' | 'MEMBER' | null; handle: string; id: string }) {
+  const [role, setRole] = useState(userRole)
+  console.log('role::', role)
+  const user = useGenuinOptions().user
+  async function toggleCommunityJoinState() {
+    role !== 'MEMBER'
+      ? await joinCommunity(
+          false,
+          [id],
+          [
+            {
+              user_id: user?.id,
+            },
+          ]
+        ).then((res) => {
+          if (res.code === 200) {
+            setRole('MEMBER')
+          }
+        })
+      : await leaveCommunity(id).then((res) => {
+          if (res.code === 200) {
+            setRole(null)
+          }
+        })
+  }
+
+  if (userRole === 'LEADER') return
+
+  const isCommunityJoined = role === 'MEMBER'
+  return (
+    <Button
+      size="custom"
+      className={`${isCommunityJoined && 'rounded border border-primary '}`}
+      variant={isCommunityJoined ? 'outline' : 'default'}
+      onClick={
+        user
+          ? async () => {
+              await toggleCommunityJoinState()
+            }
+          : () => {
+              openModal({
+                title: 'Get the Genuin app',
+                subtitle: (
+                  <>
+                    Get the app to join the <br />
+                    <span className="font-bold">@{handle}</span> community.
+                  </>
+                ),
+              })
+            }
+      }>
+      <p
+        className={`whitespace-nowrap px-4 py-1.5 text-body-1-demi  ${
+          isCommunityJoined ? 'text-primary' : 'text-monochrome-white'
+        }`}>
+        {isCommunityJoined ? 'Joined' : 'Join Community'}
+      </p>
+    </Button>
   )
 }
