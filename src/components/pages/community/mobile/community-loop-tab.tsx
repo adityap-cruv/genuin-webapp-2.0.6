@@ -1,6 +1,6 @@
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { getCommunityLoops } from '@lib/api/community'
-import { abbreviateNumber, getTimeAgo } from '@lib/utils'
+import { abbreviateNumber, getTimeAgo, cn } from '@lib/utils'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -13,7 +13,6 @@ import icLock from '@icons/icLock.svg'
 import { Shimmer } from '@components/ui/shimmer'
 import { type VideoPlayerModalCommunityType, type VideoPlayerModalLoopType } from '@lib/schemas/player/video'
 import { type CommunityLoopType } from '@lib/schemas/community/loops'
-import { IcLoop } from '@icons/ic-loop'
 
 // TODO: remove this component from here and put at better location
 export function CommunityLoopTab({ community }: { community: VideoPlayerModalCommunityType }) {
@@ -123,20 +122,35 @@ function LoopItem({
     <div className="relative">
       <Link href={PATH_NAME.loop(loopDetails.slug)}>
         <div className="py-2">
-          <div className="relative w-full rounded-lg border border-tertiary-200 bg-monochrome-white">
+          <div
+            className={cn(
+              'relative my-4 w-full rounded-lg border border-tertiary-200 bg-monochrome-white',
+              loopDetails.unread_message_count > 0 && 'border-primary-200 bg-primary-100 '
+            )}>
             <div className="w-[70%] items-center p-[3%]">
               <p className="text-body-1-bold">{loopDetails.group.group_name}</p>
               {!loopDetails.is_view_allowed && (
                 <p className="text-cap-1-med text-tertiary">Visible to Collaborators only</p>
               )}
-              {loopDetails.latest_messages.length !== 0 && loopDetails.is_view_allowed && (
-                <p className="text-body-1-demi text-secondary-300">
-                  @{loopDetails.latest_messages[0].owner.username} posted ∙{' '}
-                  {getTimeAgo(loopDetails.latest_messages[0].message_at)}
-                </p>
+              {loopDetails.unread_message_count > 0 ? (
+                <p className="line-clamp-1 break-all text-body-1-bold text-primary">{`${
+                  loopDetails.unread_message_count
+                } new videos ∙ ${getTimeAgo(loopDetails.latest_messages[0].message_at)}`}</p>
+              ) : (
+                loopDetails.latest_messages.length !== 0 &&
+                loopDetails.is_view_allowed && (
+                  <p className="line-clamp-1 break-all text-body-1-demi text-secondary-300">
+                    @{loopDetails.latest_messages[0].owner.username} posted ∙{' '}
+                    {getTimeAgo(loopDetails.latest_messages[0].message_at)}
+                  </p>
+                )
               )}
             </div>
-            <div className="h-[60%] rounded-b-lg border border-tertiary-200 bg-tertiary-100 p-4">
+            <div
+              className={cn(
+                'h-[60%] rounded-b-lg border border-tertiary-200 p-4',
+                loopDetails.unread_message_count > 0 ? 'bg-primary-200' : 'bg-tertiary-200'
+              )}>
               <div className="flex w-[68%] items-center">
                 <div className="relative flex">
                   <Members />
@@ -227,7 +241,7 @@ function RenderedImages({ videos, onClick }: { videos: any; onClick: () => void 
               zIndex: videosLength - index + 1,
               opacity: `${opacitValues[videosLength][index]}`,
             }}>
-            <img className="rounded" src={item.thumbnail_url} />
+            <img className="h-5/6 rounded" src={item.thumbnail_url} />
             <div className="absolute inset-0 hidden h-full w-full items-center justify-center bg-monochrome-black/30 group-hover/video:flex">
               <Image src={icPlay} alt="play" className="absolute" />
             </div>
