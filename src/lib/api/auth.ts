@@ -196,7 +196,7 @@ export async function resendVerificationMail(
   email: string,
   emailType: number,
   actionMetadata?: ActionMetadataType
-): Promise<{ code: number; retryTime: number }> {
+): Promise<{ code: number; retryTime: number; data: any }> {
   return await axiosInstance
     .post('api/v3/resend_email_verification', {
       email: encryptText(email, false),
@@ -207,12 +207,12 @@ export async function resendVerificationMail(
     })
     .then((res) => {
       const retryTime = res?.data?.data?.retryTime || 0
-      return { code: res.status, retryTime }
+      return { code: res.status, retryTime, data: res?.data?.data }
     })
     .catch((e) => {
       console.log('::Error in resend api::', e)
       const retryTime = e.response?.data?.data?.retryTime || 0
-      return { code: Number(e.response.data.code), retryTime }
+      return { code: Number(e.response.data.code), retryTime, data: e.response?.data?.data }
     })
 }
 

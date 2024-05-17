@@ -39,9 +39,9 @@
       "@images/*": [
         "./public/images/*"
       ],
-      "@analytics/*": [
-        "./src/services/analytics/*"
-      ],
+      "@services/*": [
+        "./src/services/*"
+      ]
     },
   },
   "include": [

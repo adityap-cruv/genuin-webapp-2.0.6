@@ -72,17 +72,19 @@ const MembersSchema = z.object({
   brand: BrandUserSchema,
 })
 
-const BrandSchema = z.object({
-  brand_id: z.number(),
-  name: z.string(),
-  subdomain: z.string(),
-  logo: z.string().url(),
-  created_at: z.number(),
-  brand_web_logo: z.string().url(),
-  favicon: z.string().url(),
-  brand_system_user_id: z.string(),
-  brand_slug: z.string(),
-}).nullish()
+const BrandSchema = z
+  .object({
+    brand_id: z.number(),
+    name: z.string(),
+    subdomain: z.string(),
+    logo: z.string().url(),
+    created_at: z.number(),
+    brand_web_logo: z.string().url(),
+    favicon: z.string().url(),
+    brand_system_user_id: z.string(),
+    brand_slug: z.string(),
+  })
+  .nullish()
 
 const CommunityDetailsSchema = z.object({
   brand: BrandSchema,
@@ -95,7 +97,14 @@ const CommunityDetailsSchema = z.object({
   description: z.string().nullish(),
   is_community_join_requested: z.boolean(),
   is_loop_creation_allowed: z.boolean().nullish(),
-  logged_in_user_role: z.number().nullish(),
+  logged_in_user_role: z
+    .number()
+    .nullish()
+    .transform((item) => {
+      if (!item) return
+      if (item === 1) return 'LEADER'
+      if (item === 2) return 'MEMBER'
+    }),
   color_code: z.string().nullish(),
   text_color_code: z.string().nullish(),
   welcome_loop_id: z.number().nullish(),
