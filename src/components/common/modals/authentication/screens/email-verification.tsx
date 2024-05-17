@@ -21,7 +21,6 @@ function Success() {
   const setStep = useAuthenticationModalStore().setStep
   const pathName = usePathname()
   const searchParams = useSearchParams()
-  const embed = useGenuinOptions().embed
 
   return (
     <ModalShell>
@@ -31,21 +30,19 @@ function Success() {
         Now you’ll receive important updates and notifications about your account, new features, and exciting news
         straight to your inbox. You can use the app now.{' '}
       </p>
-      {embed && (
-        <Button
-          className="w-full"
-          variant="default"
-          onClick={() => {
-            deleteSearchParam({
-              paramToDelete: 'email_verification_status',
-              pathName,
-              searchParams: searchParams.toString(),
-            })
-            setStep('PASSWORD_INPUT')
-          }}>
-          <p className="text-title-3-med">Continue</p>
-        </Button>
-      )}
+      <Button
+        className="w-full"
+        variant="default"
+        onClick={() => {
+          deleteSearchParam({
+            paramToDelete: 'email_verification_status',
+            pathName,
+            searchParams: searchParams.toString(),
+          })
+          setStep('PASSWORD_INPUT')
+        }}>
+        <p className="text-title-3-med">Continue</p>
+      </Button>
     </ModalShell>
   )
 }
