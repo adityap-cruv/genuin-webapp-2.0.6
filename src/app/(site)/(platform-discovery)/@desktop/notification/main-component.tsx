@@ -68,12 +68,13 @@ function Notifications({
       <p className="mb-2 text-title-1-bold">Latest Activity</p>
       {notificationDetails?.length === 0 && (
         <div className="flex h-full w-full flex-col items-center justify-center py-2">
-          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-tertiary-200">
-            <NotificationIcon />
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-tertiary-200">
+            <NotificationIcon className="fill-secondary" />
           </div>
           <p className="text-title-2-bold">Nothing here - yet</p>
-          <p className="w-1/2 text-center text-body-1-med">
-            Try exploring your home feed, creating a post, or replying to someone you'd like to connect with.
+          <p className="w-2/3 text-center text-body-1-demi">
+            Try exploring and participating in the existing communities or create one of your own. Their updates will be
+            shown here!
           </p>
         </div>
       )}
