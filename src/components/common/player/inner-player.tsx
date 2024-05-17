@@ -271,6 +271,6 @@ function restartAndLog(player: OpenPlayerJS | null, loop:boolean,id: string){
   if(loop && player) {
     void player.play()
   }
-  void pushVideoWatch(id)
+  pushVideoWatch(id)
 
 }
