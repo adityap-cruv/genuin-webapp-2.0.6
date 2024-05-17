@@ -66,7 +66,7 @@ export function CommentPlayer({ videoSource, poster, commentShareString, onClick
         localRef.current.player = player
       })
     })
-  }, [videoSource])
+  }, [])
 
   useEffect(() => {
     const player = localRef.current.player
@@ -78,25 +78,24 @@ export function CommentPlayer({ videoSource, poster, commentShareString, onClick
     }
   }, [shouldPlay])
 
-  if (videoSource)
-    return (
-      <div className="cursor-pointe relative w-[40%]" onClick={onClick}>
-        <video
-          className="h-full w-full rounded-2xl object-cover transition-all"
-          poster={poster}
-          ref={videoRef}
-          src={videoSource}
-          playsInline
-          loop
-          muted={false}
-        />
-        <div className="absolute inset-0 flex h-full w-full items-center justify-center rounded-2xl">
-          {!shouldPlay && (
-            <span className="rounded-full bg-monochrome-black/60 p-3">
-              <Image src={icPlay} alt="play" className=" h-5 w-5 " />
-            </span>
-          )}
-        </div>
+  return (
+    <div className="cursor-pointe relative w-[40%]" onClick={onClick}>
+      <video
+        className="h-full w-full rounded-2xl object-cover transition-all"
+        poster={poster}
+        ref={videoRef}
+        src={videoSource}
+        playsInline
+        loop
+        muted={false}
+      />
+      <div className="absolute inset-0 flex h-full w-full items-center justify-center rounded-2xl">
+        {!shouldPlay && (
+          <span className="rounded-full bg-monochrome-black/60 p-3">
+            <Image src={icPlay} alt="play" className=" h-5 w-5 " />
+          </span>
+        )}
       </div>
-    )
+    </div>
+  )
 }

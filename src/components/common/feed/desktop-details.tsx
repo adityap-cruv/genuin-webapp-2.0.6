@@ -330,7 +330,6 @@ function CommentInput({
 
 function JoinButton({ userRole, handle, id }: { userRole?: 'LEADER' | 'MEMBER' | null; handle: string; id: string }) {
   const [role, setRole] = useState(userRole)
-  console.log('role::', role)
   const user = useGenuinOptions().user
   async function toggleCommunityJoinState() {
     role !== 'MEMBER'
