@@ -1,6 +1,6 @@
 'use client'
 import { abbreviateNumber, openModal } from '@lib/utils'
-import { useGenuinOptions } from '@lib/stores/genuin-options'
+import { type User, useGenuinOptions } from '@lib/stores/genuin-options'
 import { Button } from '@components/ui/button'
 import Image from 'next/image'
 import { CustomAvatar } from '@components/custom/custom-avatar'
@@ -17,18 +17,24 @@ import { useCommunityListStore } from './store'
 import { type ProfileCommunityType, type ProfileLoopType, type ProfileVideoType } from '@lib/schemas/profile/community'
 import { fetchProfileCommunityLoops, getCommunities, fetchProfileVideos, getProfileFeed } from '@lib/api/profile'
 import icLock from '@icons/icLock.svg'
-import icLoopDark from '@icons/icLoopDark.svg'
 import { joinCommunity, leaveCommunity } from '@lib/api/video'
 import { PlayerModal } from '@components/common/modals/player-modal'
 import icPlay from '@icons/player-controls/icPlay.svg'
+import { LockIcon } from '@icons/LockIcon'
+import { usePathname } from 'next/navigation'
+import { EarthIcon } from '@icons/earth-icon'
+import { loopPrivacyInfo } from '@components/common/loop-privacy-info'
+import { PrivateModal } from '@components/common/modals/private'
+import { IcLoop } from '@icons/ic-loop'
+import { BrandCommunityTag } from '@components/common/brand-community-tag'
 
 export function CommunityList({ userId, scrollYProgress }: { userId: string; scrollYProgress: MotionValue<number> }) {
   const { data, isLoading, fetchNextPage, isFetchingNextPage } = getCommunities(userId, 8)
   const communities = data?.pages.flatMap((item) => item.communities)
   const [communityJoinStates, setCommunityJoinStates] = useState<Record<string, boolean>>({})
   const user = useGenuinOptions().user
-
   const { addCommunities, currentVideoId } = useCommunityListStore()
+  const pathName = usePathname()
 
   useEffect(() => {
     const newCommunites = data?.pages[data.pages.length - 1].communities
@@ -114,33 +120,58 @@ export function CommunityList({ userId, scrollYProgress }: { userId: string; scr
                   isAvatar={false}
                 />
                 <div className="flex w-full items-center justify-between">
-                  <Link href={{ pathname: PATH_NAME.community(item.slug) }}>
-                    <div className="mx-2">
+                  <div className="mx-2">
+                    <Link href={{ pathname: PATH_NAME.community(item.slug) }}>
                       <p
                         className="line-clamp-1 text-left"
                         style={{ fontWeight: 600, fontSize: '20px', lineHeight: '24px' }}>
                         {item.name ?? `${item.handle}`}
                       </p>
-                    </div>
-                  </Link>
-                  <Button
-                    size="custom"
-                    className={`${communityJoinStates[item.id] && 'border border-primary '}`}
-                    variant={communityJoinStates[item.id] ? 'outline' : 'default'}
-                    onClick={async () => {
-                      await toggleCommunityJoinState(item.id, item.handle)
-                    }}>
-                    <p
-                      className={`px-4 py-1.5 text-title-3-demi text-monochrome-white ${
-                        communityJoinStates[item.id] && 'text-primary'
-                      }`}>
-                      {communityJoinStates[item.id] ? 'Joined' : 'Join'}
-                    </p>
-                  </Button>
+                    </Link>
+                    {item.type === 2 && (
+                      <PrivateModal>
+                        <div className="flex items-center justify-start rounded-full">
+                          <LockIcon className="h-4 w-4 stroke-tertiary" />
+                          <p className="text-cap-1-demi text-tertiary">Private</p>
+                        </div>
+                      </PrivateModal>
+                    )}
+                    {item.type !== 2 && pathName === PATH_NAME.profile(user?.nickname) && (
+                      <div className="mb-2 flex items-center justify-start gap-1 rounded-full">
+                        <EarthIcon className="h-4 w-4 stroke-tertiary" />
+                        <p className="text-cap-1-demi text-tertiary">Public</p>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {item.brand && (
+                      <BrandCommunityTag
+                        brandSlug={item.brand.brand_slug}
+                        brandLogo={item.brand?.logo}
+                        brandName={item.brand?.name}
+                      />
+                    )}
+                    {pathName !== PATH_NAME.profile(user?.nickname) && (
+                      <Button
+                        size="custom"
+                        className={`${communityJoinStates[item.id] && 'border border-primary '}`}
+                        variant={communityJoinStates[item.id] ? 'outline' : 'default'}
+                        onClick={async () => {
+                          await toggleCommunityJoinState(item.id, item.handle)
+                        }}>
+                        <p
+                          className={`px-4 py-1.5 text-title-3-demi text-monochrome-white ${
+                            communityJoinStates[item.id] && 'text-primary'
+                          }`}>
+                          {communityJoinStates[item.id] ? 'Joined' : 'Join'}
+                        </p>
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </div>
               <DecorativeList>
-                <Loops userId={userId} community={item} communityId={item.id} />
+                <Loops userId={userId} community={item} communityId={item.id} user={user} pathName={pathName} />
               </DecorativeList>
             </div>
           )
@@ -186,10 +217,14 @@ function Loops({
   userId,
   community,
   communityId,
+  pathName,
+  user,
 }: {
   userId: string
   community: ProfileCommunityType
   communityId: string
+  pathName: string
+  user: User | undefined
 }) {
   const addLoops = useCommunityListStore((state) => state.addLoops)
   const { fetchNext, isFetchingNextPage } = getNextPage<ProfileLoopType[]>(
@@ -227,19 +262,17 @@ function Loops({
           style={{ backgroundColor: '#F9F9F9' }}
           key={index}>
           {item.private ? (
-            <div className="mb-2 flex items-center">
-              <div className="mr-4 h-14 w-14 shrink-0 rounded-full bg-tertiary-200 p-3">
-                <Image src={icLoopDark} alt="share" className=" fill-primary" />
-              </div>
-              <div>
-                <a href={PATH_NAME.loop(item.slug)}>
-                  <p className="text-title-3-bold">{item.name}</p>
-                </a>
-                <p className="text-body-1-med">This Loop is visible to its Collaborators only.</p>
+            <div className="mb-2">
+              <a href={PATH_NAME.loop(item.slug)}>
+                <p className="text-title-3-demi">{item.name}</p>
+              </a>
+              <div className="my-1 flex items-center gap-1">
+                <IcLoop className="h-4 w-4 fill-tertiary" />
+                <p className="text-body-1-med text-tertiary">Visible to collaborators only</p>
               </div>
             </div>
           ) : (
-            <LoopVideos userId={userId} loop={item} communityId={communityId} />
+            <LoopVideos userId={userId} loop={item} communityId={communityId} user={user} pathName={pathName} />
           )}
         </li>
       ))}
@@ -277,13 +310,16 @@ type LoopVideosProps = {
   userId: string
   loop: ProfileLoopType
   communityId: string
+  pathName: string
+  user: User | undefined
 }
 
-function LoopVideos({ userId, loop, communityId }: LoopVideosProps) {
+function LoopVideos({ userId, loop, communityId, pathName, user }: LoopVideosProps) {
   const { addVideos, open } = useCommunityListStore((state) => ({
     addVideos: state.addVideos,
     open: state.open,
   }))
+  const privacyMessage = loopPrivacyInfo(loop?.actions?.[0]?.action_id ?? 0, loop?.actions?.[0]?.access_type_id ?? 0)
 
   const { fetchNext, isFetchingNextPage } = getNextPage<ProfileVideoType[]>(
     async () => await fetchProfileVideos(userId, 16, communityId, loop.id, loop.videos[loop.videos.length - 1].id),
@@ -337,6 +373,7 @@ function LoopVideos({ userId, loop, communityId }: LoopVideosProps) {
       <Link href={PATH_NAME.loop(loop.slug)}>
         <p className="mb-3 text-body-1-bold">{loop.name}</p>
       </Link>
+      {pathName === PATH_NAME.profile(user?.nickname) && privacyMessage}
       <div className="my-2 grid w-full grid-cols-4 gap-2 md:grid-cols-8">
         <InnerComponent />
         {isFetchingNextPage &&

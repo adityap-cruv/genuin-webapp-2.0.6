@@ -122,6 +122,7 @@ module.exports = {
       'cap-1-bold': ['12px', { fontWeight: 700, lineHeight: '16px' }],
       'cap-1-demi': ['12px', { fontWeight: 600, lineHeight: '16px' }],
       'cap-1-med': ['12px', { fontWeight: 500, lineHeight: '16px' }],
+      'cap-2-demi': ['10px', { fontWeight: 600, lineHeight: '16px' }],
       // This typography is only used for index page.
       'new-h1': ['60px', { fontWeight: 700, lineHeight: '110%', letterSpacing: '-1.8px' }],
       'new-h2': ['48px', { fontWeight: 700, lineHeight: '110%', letterSpacing: '-1.44px' }],

@@ -3,10 +3,10 @@ import { HamBurgerMenuIcon } from '@components/ui/ham-burger'
 import { Button } from '@components/ui/button'
 import { Sheet, SheetClose, SheetContent, SheetTrigger } from '@components/ui/sheet'
 import { type ReactNode } from 'react'
-import { cn, generateDeepLink, openGeneratedLink } from '@lib/utils'
+import { cn } from '@lib/utils'
 import Link from 'next/link'
-import { usePathname, useSearchParams } from 'next/navigation'
-import { PopularIcon, HomeIcon, LatestIcon } from '@icons/side-bar-icons'
+import { usePathname } from 'next/navigation'
+import { PopularIcon, HomeIcon, LatestIcon, ProfileIcon } from '@icons/side-bar-icons'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { Search, X } from 'lucide-react'
@@ -24,6 +24,8 @@ import { removeAllAuthToken } from '@lib/api/instance'
 import { MOBILE_DOWNLOAD_APP_LINK } from '@lib/constants'
 import { SearchBar } from '@components/common/search-bar'
 import { miniProfile } from '@lib/api/auth'
+import { SettingsLayout } from '../settings/mobile/layout'
+import { NotificationIcon } from '@icons/settings-side-bar-icons'
 
 const navVariant = cva('sticky top-0 flex z-40 h-[76px] w-full items-center justify-between  px-2', {
   variants: {
@@ -46,6 +48,11 @@ type Props = {
 } & VariantProps<typeof navVariant>
 
 export function TopBar({ variant = 'light', className, showClose = false, onClose }: Props) {
+  // TODO: Added for redirection to https
+  // const protocol = window.location.protocol
+  // if (protocol === 'http:') {
+  //   window.location.href = window.location.href.replace(/^http:/, 'https:')
+  // }
   const isEmbed = useGenuinOptions().embed
   // If variant is transparent than we have removed show download button.
   const showDownloadButton = variant !== 'trasparent'
@@ -149,6 +156,27 @@ function Menu({ hamBurgerVariant = 'dark' }: { hamBurgerVariant: 'dark' | 'light
                 <LatestIcon isActive={pathName === PATH_NAME.latest()} />
               </MenuItem>
             </Link>
+            {user && (
+              <>
+                {!user.is_brand_system_user && (
+                  <Link href={{ pathname: PATH_NAME.settings('notification') }}>
+                    <MenuItem title="Notification" isActive={pathName === PATH_NAME.settings('notification')}>
+                      <NotificationIcon isActive={pathName === PATH_NAME.settings('notification')} />
+                    </MenuItem>
+                  </Link>
+                )}
+                <Link
+                  href={{
+                    pathname: user.is_brand_system_user
+                      ? PATH_NAME.brand(user.brand_slug)
+                      : PATH_NAME.profile(user.nickname),
+                  }}>
+                  <MenuItem title="Profile" isActive={pathName === PATH_NAME.profile(user.nickname)}>
+                    <ProfileIcon isActive={pathName === PATH_NAME.profile(user.nickname)} />
+                  </MenuItem>
+                </Link>
+              </>
+            )}
             {/* <Link href={{ pathname: PATH_NAME.search() }}>
               <MenuItem title="Search" isActive={pathName.includes('search')}>
                 <SearchIcon isActive={pathName === PATH_NAME.search()} />
@@ -207,7 +235,7 @@ function MenuItem({ title, isActive, children }: ItemProps) {
   return (
     <div className="flex w-full items-center gap-x-3 rounded-md p-2 hover:bg-monochrome-6/10">
       {children}
-      <p className={cn('text-title-2-bold font-semibold', isActive ? 'text-primary' : 'text-new-off-black')}>{title}</p>
+      <p className={`text-title-2-bold font-semibold ${isActive && 'text-primary'}`}>{title}</p>
     </div>
   )
 }
@@ -254,22 +282,27 @@ function UserTick() {
             />
             <div>
               <p className="line-clamp-1 break-words break-all text-title-3-bold">{data.user.email}</p>
-              <p className="text-body-1-demi text-monochrome-6">
-                {!data.user.isEmailVerified ? 'Send verification email' : 'Complete profile'}
-              </p>
+              {!data.user.is_brand_system_user && (
+                <p className="text-body-1-demi text-monochrome-6">
+                  {!data.user.isEmailVerified ? 'Send verification email' : 'Complete profile'}
+                </p>
+              )}
             </div>
           </div>
           <hr className="border-b border-monochrome-9" />
-          <div className="flex items-center gap-x-2 p-4">
-            <LogoutIcon className="stroke-secondary" />
-            <p
-              className="text-body-1-demi"
-              onClick={() => {
-                void signOut({ callbackUrl: `${window.location.pathname}${window.location.search}`, redirect: true })
-                removeAllAuthToken()
-              }}>
-              Log out
-            </p>
+          <div className="flex flex-col gap-4 p-4">
+            <div className="flex items-center gap-x-2">
+              <LogoutIcon className="stroke-secondary" />
+              <p
+                className="text-body-1-demi"
+                onClick={() => {
+                  void signOut({ callbackUrl: `${window.location.pathname}${window.location.search}`, redirect: true })
+                  removeAllAuthToken()
+                }}>
+                Log out
+              </p>
+            </div>
+            {!data.user.is_brand_system_user && <SettingsLayout />}
           </div>
         </PopoverContent>
       </Popover>

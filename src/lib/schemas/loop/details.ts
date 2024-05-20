@@ -1,5 +1,10 @@
 import { z } from 'zod'
 
+const BrandUserSchema = z.object({
+  brand_id: z.number(),
+  brand_slug: z.string(),
+})
+
 const ownerSchema = z.object({
   member_id: z.string(),
   name: z.string().nullish(),
@@ -8,6 +13,7 @@ const ownerSchema = z.object({
   phone: z.string().nullish(),
   is_avatar: z.boolean(),
   profile_image: z.string(),
+  brand: BrandUserSchema,
 })
 
 // Define group schema
@@ -49,8 +55,16 @@ const settingsSchema = z.object({
   discoverable: z.boolean(),
 })
 
+const actionsSchema = z.array(
+  z.object({
+    action_id: z.number(),
+    access_type_id: z.number(),
+  })
+)
+
 // Define main schema
 const LoopDetailsSchema = z.object({
+  actions: actionsSchema,
   chat_id: z.string(),
   is_welcome_loop: z.boolean(),
   type: z.number(),

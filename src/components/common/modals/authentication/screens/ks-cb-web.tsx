@@ -80,9 +80,11 @@ export function KsToCbWeb() {
           </p>
           <div className="flex items-center">
             <p className="text-cap-1-med">Download the</p>
-            <Link href={{ pathname: PATH_NAME.home() }}>
-              <GenuinIcon.logo className="mr-2 h-4 w-full fill-new-off-black" />
-            </Link>
+            <div>
+              <Link href={{ pathname: PATH_NAME.home() }}>
+                <GenuinIcon.logo className="mr-2 h-4 w-16 fill-new-off-black" />
+              </Link>
+            </div>
             <p className="text-cap-1-med">app.</p>
           </div>
           <div className="flex gap-x-2">

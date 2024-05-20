@@ -5,7 +5,7 @@ import { useGenuinOptions } from '@lib/stores/genuin-options'
 
 type RecaptchaActionType = 'LOGIN' | 'SIGNUP'
 
-export type AuthActionType = 'JOIN_COMMUNITY' | 'SUBSCRIBE'
+export type AuthActionType = 'JOIN_COMMUNITY' | 'SUBSCRIBE' | 'KS_CB_REQUEST'
 
 type ActionMetadataType = {
   action?: AuthActionType
@@ -35,6 +35,9 @@ export async function signup({
   signupSource,
   actionMetadata,
 }: SignupProps): Promise<{ code: number; data: any; accessToken?: string }> {
+  console.log('emai::', email)
+  console.log('signup soruce::', signupSource)
+  console.log('action::', actionMetadata)
   return await axiosInstance
     .post('/api/v3/signup', {
       // name,
@@ -67,12 +70,14 @@ type KsSignupProps = {
 
 export async function ksSignup({
   email,
+  actionMetadata,
 }: KsSignupProps): Promise<{ code: number; flow?: 'login' | 'signup'; message?: string; retryTime: number }> {
   return await axiosInstance
     .post('/api/v3/ks_login_signup', {
       email: encryptText(email, false),
       brand_id: useGenuinOptions.getState().brandId,
       device_id: encryptText(useLocalStorage.getState().deviceId, true),
+      action_meta_data: actionMetadata,
     })
     .then((res) => {
       const retryTime = res?.data?.data?.retryTime
@@ -100,16 +105,20 @@ export async function verifyEmail(token: string): Promise<{
     .get('/api/v3/verify_email_token', { params: { token }, baseURL: process.env.NEXT_PUBLIC_INTERNAL_API_URL })
     .then((res) => {
       const data = res?.data?.data
+      console.log('dta::', data)
       const user = data?.user
-      Object.assign(user, { accessToken: res.headers['x-auth-token'] })
+      if (user) {
+        Object.assign(user, { accessToken: res.headers['x-auth-token'] })
+      }
       return {
         code: Number(res?.data?.code),
-        actionMetadata: data?.action_metadata as ActionMetadataType,
+        actionMetadata: data?.action_meta_data as ActionMetadataType,
         user,
         emailType: data?.email_type,
       }
     })
     .catch((e) => {
+      console.log('ERROR in Email Verify: ', e)
       const data = e?.response?.data
       return {
         code: Number(data?.code),
@@ -146,10 +155,10 @@ type UserType = {
   is_avatar: boolean
   profile_image: string
   birthday: string
-  linkedin_id: string
-  insta_id: string
-  twitter_id: string
-  tiktok_id: string
+  linkedin_id?: string | null
+  insta_id?: string | null
+  twitter_id?: string | null
+  tiktok_id?: string | null
   platform_guidelines: boolean
   community_walkthrough: boolean
   password: string
@@ -192,7 +201,7 @@ export async function resendVerificationMail(
   email: string,
   emailType: number,
   actionMetadata?: ActionMetadataType
-): Promise<{ code: number; retryTime: number }> {
+): Promise<{ code: number; retryTime: number; data: any }> {
   return await axiosInstance
     .post('api/v3/resend_email_verification', {
       email: encryptText(email, false),
@@ -203,12 +212,12 @@ export async function resendVerificationMail(
     })
     .then((res) => {
       const retryTime = res?.data?.data?.retryTime || 0
-      return { code: res.status, retryTime }
+      return { code: res.status, retryTime, data: res?.data?.data }
     })
     .catch((e) => {
       console.log('::Error in resend api::', e)
       const retryTime = e.response?.data?.data?.retryTime || 0
-      return { code: Number(e.response.data.code), retryTime }
+      return { code: Number(e.response.data.code), retryTime, data: e.response?.data?.data }
     })
 }
 
@@ -335,11 +344,17 @@ export async function loginViaEmail({
     })
 }
 
-export async function ksCbRequest(): Promise<{ code: number; data: any }> {
+export async function ksCbRequest(accessToken?: string): Promise<{ code: number; data: any }> {
   return await axiosInstance
-    .post('/api/v3/users/ks_cb_request', {
-      source: 'app_web',
-    })
+    .post(
+      '/api/v3/users/ks_cb_request',
+      {
+        source: 'app_web',
+      },
+      {
+        headers: { 'x-auth-token': accessToken },
+      }
+    )
     .then((res) => {
       return { code: res.data.code, data: res.data.data }
     })

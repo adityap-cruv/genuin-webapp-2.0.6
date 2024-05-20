@@ -1,4 +1,8 @@
-import { ClientComp } from './client-comp'
+import { SizeProvider } from './size-provider'
+import { StandardView } from './standard-view'
+import { VerticalView } from './vertical-view'
+import { CarouselView } from './carousel-view'
+import 'swiper/css'
 
 type Props = {
   params: {
@@ -15,5 +19,20 @@ type Props = {
 }
 
 export default function Page(props: Props) {
-  return <ClientComp />
+  const embedPage = props.searchParams.embed_page
+
+  let viewComponent
+
+  if (embedPage === 'carousel') {
+    viewComponent = <CarouselView />
+  } else if (embedPage === 'standard') {
+    viewComponent = <StandardView />
+  } else if (embedPage === 'vertical') {
+    viewComponent = <VerticalView />
+  } else {
+    // Default view if embed_page doesn't match any condition
+    viewComponent = <StandardView />
+  }
+
+  return <SizeProvider>{viewComponent}</SizeProvider>
 }

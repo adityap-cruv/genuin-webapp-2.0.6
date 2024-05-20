@@ -19,10 +19,14 @@ type DesktopProps = {
   isFetchingNextPage: boolean
   fetchNextPage?: () => void
   className?: string
+  /**
+   * Pass this parameter if you want to configure custom size box.
+   */
+  customSizeBox?: VideoSizeBoxType
 }
 
-export function Desktop({ fetchNextPage, isFetchingNextPage, videos, className }: DesktopProps) {
-  const sizeBox = useGenuinOptions().sizeBoxes.default
+export function Desktop({ fetchNextPage, isFetchingNextPage, videos, className, customSizeBox }: DesktopProps) {
+  const sizeBox = customSizeBox ?? useGenuinOptions((state) => ({ sizeBox: state.sizeBoxes.default })).sizeBox
   const { setNewVideos, videoList, setCurrentIndex, currentIndex } = useFeedListStore((state) => ({
     setNewVideos: state.setVideoList,
     videoList: state.videoList,
@@ -62,17 +66,15 @@ export function Desktop({ fetchNextPage, isFetchingNextPage, videos, className }
           {videoList.map((item, index) => {
             return (
               <SwiperSlide key={index}>
-                {() => (
-                  <DesktopPlayer
-                    playIfInViewPort
-                    isFirstPlayerInList={index === 0}
-                    shouldPlay
-                    sizeBox={sizeBox}
-                    videoData={{ ...item.video }}
-                    loop
-                    key={index}
-                  />
-                )}
+                <DesktopPlayer
+                  playIfInViewPort
+                  isFirstPlayerInList={index === 0}
+                  shouldPlay
+                  sizeBox={sizeBox}
+                  videoData={{ ...item.video }}
+                  loop
+                  key={index}
+                />
               </SwiperSlide>
             )
           })}
