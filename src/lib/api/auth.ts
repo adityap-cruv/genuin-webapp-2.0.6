@@ -99,7 +99,7 @@ export async function verifyEmail(token: string): Promise<{
   return await axiosInstance
     .get('/api/v3/verify_email_token', { params: { token }, baseURL: process.env.NEXT_PUBLIC_INTERNAL_API_URL })
     .then((res) => {
-      console.log("SUCC:", res.data.data)
+      console.log('SUCC:', res.data.data)
       const data = res?.data?.data
       const user = data?.user
       if (user) {
@@ -393,5 +393,25 @@ export async function saveVisitor(
     })
     .catch((e) => {
       return false
+    })
+}
+
+export async function updatePassword({
+  oldPassword,
+  newPassword,
+}: {
+  oldPassword: string
+  newPassword: string
+}): Promise<{ code: number; data: any }> {
+  return await axiosInstance
+    .post('/api/v3/update_password', {
+      password: encryptText(newPassword, false),
+      old_password: encryptText(oldPassword, false),
+    })
+    .then((res) => {
+      return { code: res.data.code, data: res.data.data }
+    })
+    .catch((e) => {
+      return { code: Number(e?.response?.data.code), data: e?.response?.data.data }
     })
 }

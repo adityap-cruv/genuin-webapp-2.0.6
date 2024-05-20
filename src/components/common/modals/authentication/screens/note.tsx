@@ -7,6 +7,7 @@ import { useGenuinOptions } from '@lib/stores/genuin-options'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { GenuinIcon } from '@icons/genuin-icon'
+import icSuccess from '@icons/icSuccess.svg'
 import imageAppStore from '@icons/ks-cb-flow/app-store-tab.svg'
 import imagePlayStore from '@icons/ks-cb-flow/play-store-tab.svg'
 import 'swiper/swiper-bundle.css'
@@ -19,6 +20,8 @@ export const Note = {
   email: Email,
   magicLink: MagicLink,
   miniprofilesuccess: MiniProfileSuccess,
+  changepasswordsuccess: ChangePasswordSuccess,
+  setpasswordsuccess: SetPasswordSuccess,
 }
 
 function Email({ acountExists = false }: { acountExists?: boolean }) {
@@ -230,6 +233,24 @@ function MiniProfileSuccess() {
           </div>
         </div>
       </div>
+    </ModalShell>
+  )
+}
+
+function ChangePasswordSuccess() {
+  return (
+    <ModalShell>
+      <img className="h-28" alt="genuin" src={icSuccess.src} />
+      <p className="text-center text-heading-3">Your password has been changed</p>
+    </ModalShell>
+  )
+}
+
+function SetPasswordSuccess() {
+  return (
+    <ModalShell>
+      <img className="h-28" alt="genuin" src={icSuccess.src} />
+      <p className="text-center text-heading-3">Your password has been set</p>
     </ModalShell>
   )
 }
