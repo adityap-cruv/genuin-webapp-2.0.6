@@ -1,9 +1,14 @@
 import { redirect } from 'next/navigation'
 import { ClientComponent } from './client-component'
-import { verifyEmail } from '@lib/api/auth'
+import { ksCbRequest, verifyEmail } from '@lib/api/auth'
 
 export default async function Page({ searchParams }: { searchParams: { token: string } }) {
   const { code, actionMetadata, user, emailType, email } = await verifyEmail(searchParams.token)
+  console.log('code::', code, actionMetadata)
+  if (code === 200 && actionMetadata?.action === 'KS_CB_REQUEST') {
+    await ksCbRequest()
+  }
+
   if (code === 200) {
     return (
       <ClientComponent
