@@ -17,6 +17,7 @@ export async function getVideoDetails(slug: string): Promise<VideoPlayerModalTyp
       slug: loopDetails.community.slug,
       name: loopDetails.community.name,
       profileImage: loopDetails.community.dp,
+      shareUrl: loopDetails.community.share_url ?? '',
     },
     loop: { id: loopDetails.chat_id, slug: loopDetails.slug, name: loopDetails.group.group_name },
     owner: {

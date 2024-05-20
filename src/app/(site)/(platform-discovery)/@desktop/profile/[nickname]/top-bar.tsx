@@ -7,6 +7,9 @@ import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { getCurrentShareUrl } from '@lib/utils'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { ShareIcon } from '@icons/share-icon'
+import Link from 'next/link'
+import { PATH_NAME } from '@lib/utils/constants/path'
+import { usePathname } from 'next/navigation'
 
 type Props = {
   /**
@@ -21,6 +24,7 @@ type Props = {
   profileName: string
   profileNickname: string
   isAvatar: boolean
+  shareUrl: string
 }
 
 export const TopStickyBar = {
@@ -35,12 +39,18 @@ function Desktop({
   profileName,
   profileNickname,
   isAvatar,
+  shareUrl,
   ...props
 }: Props) {
   const navAnimationControl = useAnimationControls()
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
-  const { isEmbed, parentUrl } = useGenuinOptions((state) => ({ isEmbed: state.embed, parentUrl: state.parentUrl }))
+  const pathName = usePathname()
+  const { user } = useGenuinOptions((state) => ({
+    isEmbed: state.embed,
+    parentUrl: state.parentUrl,
+    user: state.user,
+  }))
 
   useEffect(() => {
     if (defaultOpen || isOpen) {
@@ -74,21 +84,38 @@ function Desktop({
           <p className="text-title-2-demi">@{profileNickname}</p>
         )}
       </span>
-      <Button
-        variant="outline"
-        size="custom"
-        outlineColor="genuin-blue"
-        className="mx-1 hover:border-primary-600"
-        onClick={async () =>
-          await shareFn({
-            shareLink: getCurrentShareUrl({ isEmbed, parentUrl }),
-            toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
-          })
-        }>
-        <span className="flex items-center p-1">
-          <ShareIcon className="h-6 w-6 fill-primary hover:fill-primary-600" />{' '}
-        </span>
-      </Button>
+      <div className="flex gap-1">
+        {pathName === PATH_NAME.profile(user?.nickname) && !user?.is_brand_system_user && (
+          <Link href={PATH_NAME.settings('edit')}>
+            <Button
+              size="custom"
+              variant="outline"
+              className="border border-primary"
+              onClick={() => {
+                localStorage.setItem('previous_path', pathName)
+              }}>
+              <p className="px-4 py-1 text-title-3-bold text-primary" style={{ fontSize: '15px' }}>
+                Edit Profile
+              </p>
+            </Button>
+          </Link>
+        )}
+        <Button
+          variant="outline"
+          size="custom"
+          outlineColor="genuin-blue"
+          className="mx-1 hover:border-primary-600"
+          onClick={async () =>
+            await shareFn({
+              shareLink: getCurrentShareUrl({ url: shareUrl }),
+              toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
+            })
+          }>
+          <span className="flex items-center p-1">
+            <ShareIcon className="h-6 w-6 fill-primary hover:fill-primary-600" />{' '}
+          </span>
+        </Button>
+      </div>
     </motion.div>
   )
 }

@@ -1,7 +1,7 @@
 'use client'
 import dynamic from 'next/dynamic'
 import { Loader } from '@components/ui/loader'
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import { usePlayerControlStore } from './player-control-store'
 import { useCommentStore } from '../comments/store'
 import { useGenuinOptions, type VideoSizeBoxType } from '@lib/stores/genuin-options'
@@ -12,12 +12,20 @@ const CommentSheet = dynamic(async () => await import('./comment-sheet').then((c
 
 const InnerPlayer = dynamic(async () => await import('./inner-player').then((comp) => comp.InnerPlayer), {
   loading: (_) => {
-    return <Loader size="lg" />
+    return (
+      <div className="flex h-full w-full items-center justify-center">
+        <Loader size="lg" />
+      </div>
+    )
   },
 })
 const ViewportPlayer = dynamic(async () => await import('./inner-player').then((comp) => comp.ViewportPlayer), {
   loading: (_) => {
-    return <Loader size="lg" />
+    return (
+      <div className="flex h-full w-full items-center justify-center">
+        <Loader size="lg" />
+      </div>
+    )
   },
 })
 
@@ -61,6 +69,10 @@ type MobileProps = {
    * defaults to false.
    */
   isFirstPlayerInList?: boolean
+  /**
+   * Pass this parameter if you want to configure custom size box.
+   */
+  customSizeBox?: VideoSizeBoxType
 }
 
 function Mobile({
@@ -70,8 +82,9 @@ function Mobile({
   playIfInViewPort,
   shouldShowBackgroundBlurImage = true,
   isFirstPlayerInList = false,
+  customSizeBox,
 }: Omit<MobileProps, 'sizeBox'>) {
-  const sizeBox = useGenuinOptions().sizeBoxes.default
+  const sizeBox = customSizeBox ?? useGenuinOptions().sizeBoxes.default
   const hasFocus = useGenuinOptions().userHasFocus
   const { setShouldPlay, toggleShouldPlay } = usePlayerControlStore((state) => ({
     setShouldPlay: state.setShouldPlay,
@@ -114,13 +127,19 @@ function Mobile({
       <div className="relative overflow-hidden" style={{ width: sizeBox.width, height: sizeBox.height }}>
         {playIfInViewPort ? (
           <ViewportPlayer
+            id={videoDetails.video.id}
             videoSource={videoDetails.video.source}
             poster={videoDetails.video.thumbnail}
             isFirstElement={isFirstPlayerInList}
             loop={loop}
           />
         ) : (
-          <InnerPlayer loop={loop} videoSource={videoDetails.video.source} poster={videoDetails.video.thumbnail} />
+          <InnerPlayer
+            id={videoDetails.video.id}
+            loop={loop}
+            videoSource={videoDetails.video.source}
+            poster={videoDetails.video.thumbnail}
+          />
         )}
         <div className="absolute left-0 top-0 h-full w-full">
           <ControlLayer.mobile
@@ -201,7 +220,6 @@ function Desktop({
   shouldShowBackgroundBlurImage = true,
   isFirstPlayerInList = false,
 }: DesktopProps) {
-  const containerRef = useRef<HTMLDivElement | null>(null)
   const hasFocus = useGenuinOptions().userHasFocus
   const { setShouldPlay, stateShouldPlay } = usePlayerControlStore((state) => ({
     setShouldPlay: state.setShouldPlay,
@@ -242,43 +260,34 @@ function Desktop({
   //   )
 
   return (
-    <div className="relative flex h-full w-full snap-start items-center justify-center overflow-clip">
-      {shouldShowBackgroundBlurImage && (
-        <div
-          className="absolute inset-0 z-0 h-full w-full bg-secondary bg-cover bg-center bg-no-repeat blur-2xl"
-          style={{ backgroundImage: `url(${videoData.thumbnail})` }}
+    <div
+      className="relative h-full overflow-hidden"
+      onClick={(e) => {
+        if (!stateShouldPlay) {
+          setActiveComment('')
+        }
+        setShouldPlay(!stateShouldPlay)
+      }}>
+      {playIfInViewPort ? (
+        <ViewportPlayer
+          id={videoData.id}
+          videoSource={videoData.source}
+          poster={videoData.thumbnail}
+          isFirstElement={isFirstPlayerInList}
+          loop={loop}
         />
+      ) : (
+        <InnerPlayer id={videoData.id} loop={loop} videoSource={videoData.source} poster={videoData.thumbnail} />
       )}
-      <div
-        ref={containerRef}
-        className="relative overflow-hidden"
-        onClick={(e) => {
-          if (!stateShouldPlay) {
-            setActiveComment('')
-          }
-          setShouldPlay(!stateShouldPlay)
-        }}
-        style={{ ...sizeBox }}>
-        {playIfInViewPort ? (
-          <ViewportPlayer
-            videoSource={videoData.source}
-            poster={videoData.thumbnail}
-            isFirstElement={isFirstPlayerInList}
-            loop={loop}
-          />
-        ) : (
-          <InnerPlayer loop={loop} videoSource={videoData.source} poster={videoData.thumbnail} />
-        )}
-        <div className="absolute left-0 top-0 h-full w-full">
-          <ControlLayer.desktop
-            shareUrl={videoData.shareUrl}
-            sparkCount={videoData.sparkCount}
-            videoId={videoData.id}
-            attachedLink={videoData.attachedLink}
-            description={videoData.description}
-            isSparked={videoData.isSparked}
-          />
-        </div>
+      <div className="absolute left-0 top-0 h-full w-full">
+        <ControlLayer.desktop
+          shareUrl={videoData.shareUrl}
+          sparkCount={videoData.sparkCount}
+          videoId={videoData.id}
+          attachedLink={videoData.attachedLink}
+          description={videoData.description}
+          isSparked={videoData.isSparked}
+        />
       </div>
     </div>
   )

@@ -17,6 +17,20 @@ export type CommunityType = {
   slug: string
   profileImage?: string | null
   name?: string | null
+  type?: number | null
+  brand?: BrandType | null | undefined
+}
+
+export type BrandType = {
+  brand_id: number
+  name: string | null
+  subdomain: string | null
+  logo: string | null
+  created_at: number
+  brand_web_logo: string | null
+  favicon: string
+  brand_system_user_id: string | null
+  brand_slug: string
 }
 
 export type LoopType = {
@@ -32,6 +46,13 @@ export type PeopleType = {
   bio?: string | null
   profileImage?: string | null
   isAvatar: boolean
+  brand?:
+    | {
+        brand_id: number
+        brand_slug: string
+      }
+    | null
+    | undefined
 }
 
 export type VideoType = {

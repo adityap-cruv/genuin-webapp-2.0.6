@@ -1,5 +1,5 @@
 import { MainComponent } from './main-component'
-import { fetchUserData } from '@lib/api/profile'
+import { fetchUserData } from '@lib/api/brand-profile'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { fetchMetadata } from '@lib/api/meta-data'
 import { type Metadata } from 'next'
@@ -24,13 +24,12 @@ type ProfileDataType = {
 }
 
 export async function generateMetadata({ params }: CompProps): Promise<Metadata> {
-  const data: ProfileDataType = await fetchMetadata({ type: 1, username: params.nickname })
+  const data: ProfileDataType = await fetchMetadata({ type: 6, slug: params.nickname })
   const title = data.title
   const desc = data.description
-
   return {
     title,
-    applicationName: 'Genuin',
+    // applicationName: 'Genuin',
     description: desc,
     openGraph: {
       title,

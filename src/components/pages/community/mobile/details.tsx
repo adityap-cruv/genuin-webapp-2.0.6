@@ -6,10 +6,7 @@ import { checkAndAppendHttps, generateDeepLink, getCurrentShareUrl, openGenerate
 import Image from 'next/image'
 import icLock from '@icons/icLock.svg'
 import Link from 'next/link'
-import icInstagram from '@icons/icInstagramBlack.svg'
-import icLinkedIn from '@icons/icLinkedIn.svg'
 import icLink from '@icons/icLinkBlack.svg'
-import icTwitter from '@icons/icTwitterBlack.svg'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
@@ -23,9 +20,15 @@ import { joinCommunity, leaveCommunity } from '@lib/api/video'
 import { ShareIcon } from '@icons/share-icon'
 import { useSearchParams } from 'next/navigation'
 import { getCommunityMembers } from '@lib/api/community'
-import { Loader } from '@components/ui/loader'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@components/ui/accordion'
 import { Shimmer } from '@components/ui/shimmer'
+import { LockIcon } from '@icons/LockIcon'
+import { PrivateModal } from '@components/common/modals/private'
+import { TickIcon } from '@icons/tick-icon'
+import { BrandCommunityTag } from '@components/common/brand-community-tag'
+import { InstagramIcon } from '@icons/instagram-icon'
+import { LinkedInIcon } from '@icons/linkedin-icon'
+import { TwitterIcon } from '@icons/twitter-icon'
 
 let communityDetailsModule: CommunityDetailsType
 
@@ -39,9 +42,7 @@ export function Details({ communityDetails }: Props) {
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
-  const { isEmbed, parentUrl } = useGenuinOptions((state) => ({ isEmbed: state.embed, parentUrl: state.parentUrl }))
-  const [isCommunityJoined, setIsCommunityJoined] = useState(!!communityDetails.logged_in_user_role)
-  const user = useGenuinOptions().user
+  const { isEmbed } = useGenuinOptions((state) => ({ isEmbed: state.embed, parentUrl: state.parentUrl }))
   const searchParams = Object.fromEntries(useSearchParams())
   const [dimensions, setDimensions] = useState({
     width: 0,
@@ -57,28 +58,6 @@ export function Details({ communityDetails }: Props) {
     }
   }, [detailsDivRef.current])
 
-  async function toggleCommunityJoinState() {
-    !isCommunityJoined
-      ? await joinCommunity(
-          false,
-          [communityDetails.community_id],
-          [
-            {
-              user_id: user?.id,
-            },
-          ]
-        ).then((res) => {
-          if (res.code === 200) {
-            setIsCommunityJoined((prev: any) => !prev)
-          }
-        })
-      : await leaveCommunity(communityDetails.community_id).then((res) => {
-          if (res.code === 200) {
-            setIsCommunityJoined((prev) => !prev)
-          }
-        })
-  }
-
   return (
     <>
       <TopBar />
@@ -87,16 +66,22 @@ export function Details({ communityDetails }: Props) {
         isOpen={!detailsInView}
         communityName={communityDetails.name ?? ''}
         communityProfileImage={communityDetails.dp ?? ''}
-        communtiyHandle={communityDetails.handle}
+        communityHandle={communityDetails.handle}
+        shareUrl={communityDetails.share_url}
+        role={communityDetails.logged_in_user_role}
+        communityId={communityDetails.community_id}
       />
       <div
         className="hide-scrollbar absolute inset-0 mt-navbar w-full overflow-auto"
         style={{ height: 'calc(100% - 74px)' }}>
         <div
-          className="aspect-w-5 aspect-h-1 relative h-20 bg-tertiary-200"
+          className="aspect-w-5 aspect-h-1 relative bg-tertiary-200"
           style={{
             height: `calc(${dimensions.width}px / 5)`,
           }}>
+          {communityDetails?.banner && (
+            <img src={communityDetails?.banner} alt="banner" className="h-full w-full object-cover" />
+          )}
           <CustomAvatar
             imageUrl={communityDetailsModule?.dp ?? ''}
             fallbackString={communityDetailsModule?.name ?? ''}
@@ -114,31 +99,11 @@ export function Details({ communityDetails }: Props) {
               )}
 
               {isEmbed && !communityDetails.is_community_join_requested && (
-                <Button
-                  size="sm"
-                  className={`${isCommunityJoined && 'border border-primary '}`}
-                  variant={isCommunityJoined ? 'outline' : 'default'}
-                  onClick={
-                    user
-                      ? async () => {
-                          await toggleCommunityJoinState()
-                        }
-                      : () => {
-                          openModal({
-                            title: 'Get the Genuin app',
-                            subtitle: (
-                              <>
-                                Get the app to join the <br />
-                                <span className="font-bold">@{communityDetails.handle}</span> community.
-                              </>
-                            ),
-                          })
-                        }
-                  }>
-                  <p className={`mx-2 text-body-1-bold text-monochrome-white ${isCommunityJoined && 'text-primary'}`}>
-                    {isCommunityJoined ? 'Joined' : 'Join Community'}
-                  </p>
-                </Button>
+                <JoinButton
+                  handle={communityDetails.handle}
+                  id={communityDetails.community_id}
+                  userRole={communityDetails.logged_in_user_role}
+                />
               )}
 
               {!isEmbed && (
@@ -174,7 +139,7 @@ export function Details({ communityDetails }: Props) {
                 className="p-1"
                 onClick={async () =>
                   await shareFn({
-                    shareLink: getCurrentShareUrl({ isEmbed, parentUrl }),
+                    shareLink: getCurrentShareUrl({ url: communityDetails.share_url }),
                     toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                   })
                 }>
@@ -185,13 +150,31 @@ export function Details({ communityDetails }: Props) {
               </Button> */}
             </div>
           </div>
-          <div ref={detailsDivRef}>
-            <p className="my-1 mt-2 line-clamp-1 break-all text-title-3-bold ">{communityDetailsModule?.name}</p>
-            <p className="my-1 line-clamp-2 break-all text-body-1-demi ">{communityDetailsModule?.description}</p>
+          <div ref={detailsDivRef} className="flex items-center justify-between gap-2 pt-2">
+            <div className="flex items-center">
+              <p className="my-1 mt-2 line-clamp-1 break-all text-title-3-bold ">{communityDetailsModule?.name}</p>
+              {/* <p className="text-body-1-med text-tertiary">@{communityDetails.handle}</p> */}
+              {communityDetailsModule.type === 2 && (
+                <PrivateModal>
+                  <div className="flex items-center justify-center rounded-full bg-tertiary-200 p-1 px-1.5">
+                    <LockIcon className="h-4 w-4 stroke-tertiary" />
+                    <p className="text-cap-1-demi text-tertiary">Private</p>
+                  </div>
+                </PrivateModal>
+              )}
+            </div>
+            {communityDetailsModule.brand && (
+              <BrandCommunityTag
+                brandSlug={communityDetailsModule.brand.brand_slug}
+                brandLogo={communityDetailsModule.brand?.logo}
+                brandName={communityDetailsModule.brand?.name}
+              />
+            )}
           </div>
+          <p className="my-1 line-clamp-2 break-all text-body-1-demi ">{communityDetailsModule?.description}</p>
           <Stats />
         </div>
-        {communityDetails.type === 2 ? (
+        {communityDetailsModule.type === 2 && !communityDetailsModule.logged_in_user_role ? (
           <div
             className="mt-4 flex w-full items-center justify-center overflow-hidden border-t border-tertiary-200"
             style={{ height: 'calc(100% - 220px)' }}>
@@ -257,6 +240,7 @@ function ProfileTabs() {
       <TabsContent value="Loops" className="mx-4 h-full">
         <CommunityLoopTab
           community={{
+            shareUrl: communityDetailsModule.share_url,
             handle: communityDetailsModule.handle,
             id: communityDetailsModule.community_id,
             slug: communityDetailsModule.slug,
@@ -330,32 +314,32 @@ function Categories() {
 
 function Links() {
   const links = communityDetailsModule?.social_links
-  if (links?.insta?.url ?? links?.linkedin?.url ?? links?.twitter?.url ?? links?.social_web_url)
+  if (links?.insta?.id ?? links?.linkedin?.id ?? links?.twitter?.id ?? links?.social_web_url)
     return (
       <div>
         <p className="my-2 text-title-3-bold">Links</p>
-        {!links?.insta?.url && !links?.linkedin?.url && !links?.twitter?.url && !links?.social_web_url && (
+        {!links?.insta?.id && !links?.linkedin?.id && !links?.twitter?.id && !links?.social_web_url && (
           <div className="flex items-center justify-center text-title-3-bold ">No links available</div>
         )}
         <div className="flex">
-          {links?.insta?.url && (
+          {links?.insta?.id && (
             <div className="mx-1 flex items-center rounded-md bg-tertiary-200 p-1">
-              <Link href={checkAndAppendHttps(links?.insta?.url)} target="_blank">
-                <Image src={icInstagram} alt="instagram" />
+              <Link href={checkAndAppendHttps(links?.insta?.url + links?.insta?.id)} target="_blank">
+                <InstagramIcon className="h-5 w-5 fill-primary " />
               </Link>
             </div>
           )}
-          {links?.linkedin?.url && (
+          {links?.linkedin?.id && (
             <div className="mx-1 flex items-center rounded-md bg-tertiary-200 p-1">
-              <Link href={checkAndAppendHttps(links?.linkedin?.url)} target="_blank">
-                <Image src={icLinkedIn} alt="linkedin" />
+              <Link href={checkAndAppendHttps(links?.linkedin?.url + links?.linkedin?.id)} target="_blank">
+                <LinkedInIcon className="h-5 w-5 fill-primary " />
               </Link>
             </div>
           )}
-          {links?.twitter?.url && (
+          {links?.twitter?.id && (
             <div className="mx-1 flex items-center rounded-md bg-tertiary-200 p-1">
-              <Link href={checkAndAppendHttps(links?.twitter?.url)} target="_blank">
-                <Image src={icTwitter} alt="twitter" />
+              <Link href={checkAndAppendHttps(links?.twitter?.url + links?.twitter?.id)} target="_blank">
+                <TwitterIcon className="h-5 w-5 fill-primary " />
               </Link>
             </div>
           )}
@@ -384,13 +368,17 @@ function Leaders() {
   return (
     <div className="mb-4">
       <p className="my-2 text-title-3-bold">Leader</p>
-      <Link href={{ pathname: PATH_NAME.profile(leader.nickname) }}>
+      <Link
+        href={{
+          pathname: leader.brand ? PATH_NAME.brand(leader.brand.brand_slug) : PATH_NAME.profile(leader.nickname),
+        }}>
         <ListItem
           title={leader.name ?? ''}
           subtitle={'@' + leader.nickname}
           description={leader.bio ?? ''}
           image={leader.profile_image}
           isAvatar={leader.is_avatar}
+          brand={leader.brand ?? null}
         />
       </Link>
     </div>
@@ -403,12 +391,17 @@ function ListItem({
   description,
   image,
   isAvatar,
+  brand,
 }: {
   title: string
   subtitle?: string
   description?: string
   image?: string
   isAvatar: boolean
+  brand?: {
+    brand_id: number
+    brand_slug: string
+  }
 }) {
   return (
     <div className="flex items-center gap-x-1 rounded-lg p-2">
@@ -419,7 +412,15 @@ function ListItem({
         isAvatar={isAvatar}
       />
       <div className="mx-2">
-        <p className="line-clamp-1 text-body-1-bold ">{subtitle}</p>
+        <div className="flex items-center gap-2">
+          <p className="line-clamp-1 text-body-1-bold ">{subtitle}</p>
+          {brand && (
+            <div className="flex items-center gap-0.5">
+              <TickIcon className="h-3 w-3 fill-primary" />
+              <p className="text-cap-2-demi text-primary">Brand</p>
+            </div>
+          )}
+        </div>
         {subtitle && <p className="line-clamp-1 text-body-1-demi ">{title}</p>}
         {description && <p className="line-clamp-1 text-cap-1-demi text-tertiary">{description}</p>}
       </div>
@@ -451,29 +452,23 @@ function Members() {
     return (
       <div>
         {/* <p className="my-2 text-title-3-bold">Members</p> */}
-        {communityDetailsModule.leader && (
-          <div>
-            <Link href={{ pathname: PATH_NAME.profile(communityDetailsModule.leader.nickname) }}>
-              <ListItem
-                title={communityDetailsModule.leader.name ?? ''}
-                subtitle={'@' + communityDetailsModule.leader.nickname}
-                description={communityDetailsModule.leader.bio ?? ''}
-                image={communityDetailsModule.leader.profile_image}
-                isAvatar={communityDetailsModule.leader.is_avatar}
-              />
-            </Link>
-          </div>
-        )}
         {members.map((member: MembersSchemaType, index: number) => {
           if (member.nickname)
             return (
-              <Link key={index} href={{ pathname: PATH_NAME.profile(member.nickname) }}>
+              <Link
+                key={index}
+                href={{
+                  pathname: member.brand
+                    ? PATH_NAME.brand(member.brand.brand_slug)
+                    : PATH_NAME.profile(member.nickname),
+                }}>
                 <ListItem
                   title={member.name ?? ''}
                   subtitle={'@' + member.nickname}
                   description={member?.bio ?? ''}
                   image={member.profile_image}
                   isAvatar={member.is_avatar}
+                  brand={member.brand ?? null}
                 />
               </Link>
             )
@@ -481,4 +476,72 @@ function Members() {
         })}
       </div>
     )
+}
+
+export function JoinButton({
+  userRole,
+  handle,
+  id,
+}: {
+  userRole?: 'LEADER' | 'MEMBER' | null
+  handle: string
+  id: string
+}) {
+  const [role, setRole] = useState(userRole)
+  const user = useGenuinOptions().user
+  async function toggleCommunityJoinState() {
+    role !== 'MEMBER'
+      ? await joinCommunity(
+          false,
+          [id],
+          [
+            {
+              user_id: user?.id,
+            },
+          ]
+        ).then((res) => {
+          if (res.code === 200) {
+            setRole('MEMBER')
+          }
+        })
+      : await leaveCommunity(id).then((res) => {
+          if (res.code === 200) {
+            setRole(null)
+          }
+        })
+  }
+
+  if (userRole === 'LEADER') return
+
+  const isCommunityJoined = role === 'MEMBER'
+  return (
+    <Button
+      size="custom"
+      className={`${isCommunityJoined && 'rounded border border-primary '}`}
+      variant={isCommunityJoined ? 'outline' : 'default'}
+      onClick={
+        user
+          ? async () => {
+              await toggleCommunityJoinState()
+            }
+          : () => {
+              openModal({
+                title: 'Get the Genuin app',
+                subtitle: (
+                  <>
+                    Get the app to join the <br />
+                    <span className="font-bold">@{handle}</span> community.
+                  </>
+                ),
+              })
+            }
+      }>
+      <p
+        className={`whitespace-nowrap px-4 py-1.5 text-body-1-demi  ${
+          isCommunityJoined ? 'text-primary' : 'text-monochrome-white'
+        }`}>
+        {isCommunityJoined ? 'Joined' : 'Join Community'}
+      </p>
+    </Button>
+  )
 }

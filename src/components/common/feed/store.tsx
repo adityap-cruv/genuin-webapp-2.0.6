@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { usePlayerControlStore } from '../player/player-control-store'
-import { analyticsService } from '../../../services/analytics_service'
+import { analyticsService, pushVideoWatch } from '../../../services/analytics_service'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 
 type FeedListStoreType = {
@@ -48,6 +48,7 @@ export const useFeedListStore = create<FeedListStoreType>((set) => {
                 eventName: 'Video Watched',
                 properties,
               })
+              pushVideoWatch(state.videoList[state.currentIndex]?.video?.id)
             }
           }
         }

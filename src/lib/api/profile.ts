@@ -135,6 +135,7 @@ export async function fetchProfileFeed(userId: string, pageParam?: { lastMessage
     .then((res) => {
       const resData = res.data.data
       pageSession = resData.page_session
+      console.log('resData', resData)
       return { feed: parseFeedResponse(resData.feeds), end: resData.end_of_messages }
     })
     .catch((e) => {

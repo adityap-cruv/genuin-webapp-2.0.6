@@ -6,12 +6,23 @@ import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import leftImg from '@images/infinity-splits/infinity-left.svg'
 import rightImg from '@images/infinity-splits/infinity-right.svg'
+import { LockIcon } from '@icons/LockIcon'
+import { PrivateModal } from './modals/private'
 type Props = {
   community: {
     name: string
     handle: string
     profileImage: string
     slug: string
+    type: number | null
+    brand?:
+      | {
+          name: string | null | undefined
+          brand_system_user_id: string | null | undefined
+          brand_slug: string | null | undefined
+        }
+      | null
+      | undefined
   }
   loop: {
     name: string
@@ -39,7 +50,7 @@ export function AnimatedInfinityView({ community, loop }: Props) {
       leftControls.start({ rotateX: '90deg', transition: { ease: 'linear', duration: 0.4, repeat: 0 } }).then(
         () => {
           setLocalState((x) => {
-            x.communityName = community.handle
+            x.communityName = community.name
             x.communityDp = community.profileImage
             return { ...x }
           })
@@ -93,10 +104,25 @@ export function AnimatedInfinityView({ community, loop }: Props) {
               className="h-6 w-6"
             />
             <span className="pr-5">
-              <p className="line-clamp-1 w-full break-all text-body-1-med text-monochrome-white">
-                {localState.communityName}
-              </p>
-              <p className="w-full whitespace-nowrap text-cap-1-med text-monochrome-white/60">Browse Community</p>
+              <div className="flex items-center">
+                <p className="line-clamp-1 w-full break-all text-body-1-med text-monochrome-white">
+                  {localState.communityName}
+                </p>
+                {community.type === 2 && (
+                  <PrivateModal>
+                    <LockIcon className="h-5 w-5 stroke-tertiary" />
+                  </PrivateModal>
+                )}
+              </div>
+              {community.brand ? (
+                <p className="line-clamp-1 w-full break-all text-cap-1-med text-monochrome-white/60">
+                  on {community.brand.name}
+                </p>
+              ) : (
+                <p className="line-clamp-1 w-full break-all text-cap-1-med text-monochrome-white/60">
+                  Browse Community
+                </p>
+              )}
             </span>
           </span>
         </Link>

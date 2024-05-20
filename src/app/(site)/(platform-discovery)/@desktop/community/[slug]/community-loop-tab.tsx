@@ -13,6 +13,7 @@ import { useState } from 'react'
 import { Shimmer } from '@components/ui/shimmer'
 import { type CommunityLoopType } from '@lib/schemas/community/loops'
 import { type VideoPlayerModalCommunityType, type VideoPlayerModalLoopType } from '@lib/schemas/player/video'
+import { IcLoop } from '@icons/ic-loop'
 
 // TODO: remove this component from here and put at better location
 // TODO: improve player-modal opening logic. As not meeting standards.
@@ -136,6 +137,9 @@ function LoopItem({
         <div className="relative my-4 w-full rounded-lg border border-tertiary-200 bg-monochrome-white">
           <div className="w-[70%] items-center p-[3%]">
             <p className="text-body-1-bold">{loopDetails.group.group_name}</p>
+            {!loopDetails.is_view_allowed && (
+              <p className="text-cap-1-med text-tertiary">Visible to Collaborators only</p>
+            )}
             {loopDetails.latest_messages.length !== 0 && loopDetails.is_view_allowed && (
               <p className="text-body-1-demi text-secondary-300">
                 @{loopDetails.latest_messages[0].owner.username} posted ∙{' '}

@@ -5,7 +5,7 @@ import { useEffect } from 'react'
 import { useCommentSheetStore } from '../player/comment-sheet/store'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Mousewheel } from 'swiper/modules'
-import { useGenuinOptions } from '@lib/stores/genuin-options'
+import { useGenuinOptions, type VideoSizeBoxType } from '@lib/stores/genuin-options'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 const Player = dynamic(async () => await import('@components/common/player').then((comp) => comp.Player.mobile))
 
@@ -21,18 +21,14 @@ type MobileProps = {
    * @default 0
    */
   startIndex: number
+  /**
+   * Pass this parameter if you want to configure custom size box.
+   */
+  customSizeBox?: VideoSizeBoxType
 }
 
-export function Mobile({
-  videos,
-  fetchNextPage,
-  isError,
-  isFetchingNextPage,
-  isLoading,
-  hasNextPage,
-  startIndex = 0,
-}: MobileProps) {
-  const videoSizeBox = useGenuinOptions().sizeBoxes.default
+export function Mobile({ videos, fetchNextPage, isFetchingNextPage, startIndex = 0, customSizeBox }: MobileProps) {
+  const videoSizeBox = customSizeBox ?? useGenuinOptions().sizeBoxes.default
   const { setCurrentIndex, setVideoList, currentIndex, videoList } = useFeedListStore((state) => ({
     setCurrentIndex: state.setCurrentIndex,
     setVideoList: state.setVideoList,
@@ -57,7 +53,7 @@ export function Mobile({
   }, [videos])
 
   return (
-    <div style={{ height: videoSizeBox.height, width: videoSizeBox.width }} className="overflow-clip">
+    <div style={{ ...videoSizeBox }} className="overflow-clip">
       <Swiper
         modules={[Mousewheel]}
         mousewheel={true}
@@ -68,10 +64,17 @@ export function Mobile({
         }}
         allowSlideNext={!commentIsOpen}
         allowSlidePrev={!commentIsOpen}
-        style={{ height: videoSizeBox.height, width: videoSizeBox.width }}>
+        style={videoSizeBox}>
         {videos.map((item, index) => (
           <SwiperSlide key={index}>
-            {() => <Player playIfInViewPort isFirstPlayerInList={index === 0} shouldPlay loop videoDetails={item} />}
+            <Player
+              playIfInViewPort
+              isFirstPlayerInList={index === 0}
+              shouldPlay
+              loop
+              videoDetails={item}
+              customSizeBox={videoSizeBox}
+            />
           </SwiperSlide>
         ))}
       </Swiper>
@@ -95,6 +98,14 @@ function InfinityViewBox() {
             handle: videoDetails.community.handle,
             profileImage: videoDetails.community.profileImage ?? '',
             slug: videoDetails.community.slug,
+            type: videoDetails.community.type ?? null,
+            brand: videoDetails.community.brand
+              ? {
+                  name: videoDetails.community.brand?.name ?? '',
+                  brand_system_user_id: videoDetails.community.brand?.brand_system_user_id ?? '',
+                  brand_slug: videoDetails.community.brand?.brand_slug ?? '',
+                }
+              : null,
           }}
           loop={{
             name: videoDetails.loop.name ?? '',

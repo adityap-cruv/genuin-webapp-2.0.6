@@ -1,6 +1,37 @@
 import { type ReactNode } from 'react'
 import { RootHTML } from '@components/layouts/root-layout'
+import { SessionProvider } from 'next-auth/react'
+import '../globals.css'
+import { ReactQueryProvider } from '@components/providers/query-client-provider'
+import { cookies } from 'next/headers'
+import { type ConfigType } from '@lib/stores/genuin-options'
+import { getEmbedConfig } from '@lib/api/config'
+import { parseColors } from '@lib/utils'
+import { BrandNotFound } from '@components/common/brand-not-found'
 
-export default function Layout({ children }: { children: ReactNode }) {
-  return <RootHTML>{children}</RootHTML>
+export default async function Layout({ children }: { children: ReactNode }) {
+  const configParamsStr = cookies().get('config_params')?.value ?? ''
+  let configParams = null
+  if (configParamsStr) configParams = JSON.parse(configParamsStr)
+
+  let config: ConfigType | undefined
+  let error = false
+
+  if (configParams) {
+    try {
+      config = await getEmbedConfig(configParams)
+    } catch (e) {
+      error = true
+    }
+  }
+  const brandColors = parseColors(config?.brand_colors)
+
+  if (error) return <BrandNotFound />
+  return (
+    <RootHTML brandColors={brandColors} noIndex>
+      <SessionProvider>
+        <ReactQueryProvider>{children}</ReactQueryProvider>
+      </SessionProvider>
+    </RootHTML>
+  )
 }

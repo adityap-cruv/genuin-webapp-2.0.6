@@ -11,10 +11,7 @@ import { useInView } from 'framer-motion'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
 import Link from 'next/link'
 import { checkAndAppendHttps, getCurrentShareUrl, openModal } from '@lib/utils'
-import icInstagram from '@icons/icInstagramBlack.svg'
-import icLinkedIn from '@icons/icLinkedIn.svg'
 import icLink from '@icons/icLinkBlack.svg'
-import icTwitter from '@icons/icTwitterBlack.svg'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@components/ui/accordion'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
@@ -26,9 +23,14 @@ import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { joinCommunity, leaveCommunity } from '@lib/api/video'
 import { ShareIcon } from '@icons/share-icon'
 import { getCommunityDetails, getCommunityMembers } from '@lib/api/community'
-import { Loader } from '@components/ui/loader'
 import Loading from './loading'
 import { Shimmer } from '@components/ui/shimmer'
+import { LockIcon } from '@icons/LockIcon'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@components/ui/tooltip'
+import { BrandCommunityTag } from '@components/common/brand-community-tag'
+import { InstagramIcon } from '@icons/instagram-icon'
+import { LinkedInIcon } from '@icons/linkedin-icon'
+import { TwitterIcon } from '@icons/twitter-icon'
 
 let communityDetailsModule: CommunityDetailsType
 
@@ -48,9 +50,6 @@ export function RootDetails({ communityDetails }: { communityDetails: CommunityD
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
-  const { isEmbed, parentUrl } = useGenuinOptions((state) => ({ isEmbed: state.embed, parentUrl: state.parentUrl }))
-  const [isCommunityJoined, setIsCommunityJoined] = useState(!!communityDetails.logged_in_user_role)
-  const user = useGenuinOptions().user
   const [dimensions, setDimensions] = useState({
     width: 0,
     height: 0,
@@ -74,28 +73,6 @@ export function RootDetails({ communityDetails }: { communityDetails: CommunityD
     })
   }, [])
 
-  async function toggleCommunityJoinState() {
-    !isCommunityJoined
-      ? await joinCommunity(
-          false,
-          [communityDetails.community_id],
-          [
-            {
-              user_id: user?.id,
-            },
-          ]
-        ).then((res) => {
-          if (res.code === 200) {
-            setIsCommunityJoined((prev) => !prev)
-          }
-        })
-      : await leaveCommunity(communityDetails.community_id).then((res) => {
-          if (res.code === 200) {
-            setIsCommunityJoined((prev) => !prev)
-          }
-        })
-  }
-
   return (
     <>
       <TopStickyBar.desktop
@@ -103,11 +80,10 @@ export function RootDetails({ communityDetails }: { communityDetails: CommunityD
         isOpen={!detailsInView}
         communityName={communityDetails.name ?? ''}
         communityProfileImage={communityDetails.dp ?? ''}
-        communtiyHandle={communityDetails.handle}
+        communityHandle={communityDetails.handle}
+        role={communityDetails.logged_in_user_role}
         communityId={communityDetails.community_id}
-        isCommunityJoined={isCommunityJoined}
-        setIsCommunityJoined={setIsCommunityJoined}
-        toggleCommunityJoinState={toggleCommunityJoinState}
+        shareUrl={communityDetails.share_url}
       />
       <main className="hide-scrollbar absolute inset-0 h-full w-full overflow-auto">
         <div>
@@ -116,7 +92,9 @@ export function RootDetails({ communityDetails }: { communityDetails: CommunityD
             style={{
               height: `calc(${dimensions.width}px / 5)`,
             }}>
-            {' '}
+            {communityDetails?.banner && (
+              <img src={communityDetails?.banner} alt="banner" className="h-full w-full object-cover" />
+            )}
             <CustomAvatar
               isAvatar={false}
               imageUrl={communityDetails.dp ?? ''}
@@ -130,46 +108,23 @@ export function RootDetails({ communityDetails }: { communityDetails: CommunityD
                 <p className={`px-4 py-1.5 text-body-1-demi text-monochrome-white text-primary`}>Requested</p>
               </Button>
             ) : (
-              <Button
-                size="custom"
-                className={`${isCommunityJoined && 'border border-primary '}`}
-                variant={isCommunityJoined ? 'outline' : 'default'}
-                onClick={
-                  user
-                    ? async () => {
-                        await toggleCommunityJoinState()
-                      }
-                    : () => {
-                        openModal({
-                          title: 'Get the Genuin app',
-                          subtitle: (
-                            <>
-                              Get the app to join the <br />
-                              <span className="font-bold">{communityDetails.name}</span> community.
-                            </>
-                          ),
-                        })
-                      }
-                }>
-                <p
-                  className={`px-4 py-1.5 text-body-1-demi text-monochrome-white ${
-                    isCommunityJoined && 'text-primary'
-                  }`}>
-                  {isCommunityJoined ? 'Joined' : 'Join Community'}
-                </p>
-              </Button>
+              <JoinButton
+                handle={communityDetails.handle}
+                id={communityDetails.community_id}
+                userRole={communityDetails.logged_in_user_role}
+              />
             )}
 
             <Button
               variant="outline"
               size="custom"
               className="border border-primary p-0.5 hover:border-primary-600"
-              onClick={async () =>
+              onClick={async () => {
                 await shareFn({
-                  shareLink: getCurrentShareUrl({ isEmbed, parentUrl }),
+                  shareLink: getCurrentShareUrl({ url: communityDetails.share_url }),
                   toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                 })
-              }>
+              }}>
               <ShareIcon className="h-6 w-6 fill-primary hover:fill-primary-600" />
             </Button>
             {/* <Button variant="outline" size="custom" className="border border-primary p-1">
@@ -181,10 +136,35 @@ export function RootDetails({ communityDetails }: { communityDetails: CommunityD
           <span className="flex items-center gap-x-2 px-6 py-2">
             <p className="text-title-1-bold">{communityDetails.name}</p>
             <p className="text-body-1-med text-tertiary">@{communityDetails.handle}</p>
+            {communityDetailsModule.type === 2 && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="flex items-center justify-center rounded-full bg-tertiary-200 p-1 px-1.5">
+                      <LockIcon className="h-4 w-4 stroke-tertiary" />
+                      <p className="text-cap-1-demi text-tertiary">Private</p>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent className="w-64 bg-monochrome-black">
+                    <p className="text-center text-cap-1-med text-monochrome-white">
+                      This community is private. Only people approved by it's moderators can see and participate in this
+                      community.
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+            {communityDetailsModule.brand && (
+              <BrandCommunityTag
+                brandSlug={communityDetailsModule.brand.brand_slug}
+                brandLogo={communityDetailsModule.brand?.logo}
+                brandName={communityDetailsModule.brand?.name}
+              />
+            )}
           </span>
         </div>
 
-        {communityDetailsModule.type === 2 ? (
+        {communityDetailsModule.type === 2 && !communityDetailsModule.logged_in_user_role ? (
           <div
             className="mt-4 flex w-full items-center justify-center overflow-hidden"
             style={{ height: 'calc(100% - 285px)', backgroundColor: '#F9F9F9' }}>
@@ -243,6 +223,7 @@ function CommunityDetailsTabs() {
             slug: communityDetailsModule.slug,
             name: communityDetailsModule.name,
             profileImage: communityDetailsModule.dp,
+            shareUrl: communityDetailsModule.share_url,
           }}
         />
       </TabsContent>
@@ -273,29 +254,29 @@ function Categories() {
 
 function Links() {
   const links = communityDetailsModule?.social_links
-  if (links?.insta?.url ?? links?.linkedin?.url ?? links?.twitter?.url ?? links?.social_web_url)
+  if (links?.insta?.id ?? links?.linkedin?.id ?? links?.twitter?.id ?? links?.social_web_url)
     return (
       <div className="mb-4">
         <p className="my-2 text-title-3-bold">Links</p>
         <div className="flex">
-          {links?.insta?.url && (
+          {links?.insta?.id && (
             <div className="mx-1 flex items-center rounded-md bg-tertiary-200 p-1">
-              <Link href={checkAndAppendHttps(links?.insta?.url)} target="_blank">
-                <Image src={icInstagram} alt="instagram" />
+              <Link href={checkAndAppendHttps(links?.insta?.url + links.insta.id)} target="_blank">
+                <InstagramIcon className="h-5 w-5 fill-primary " />
               </Link>
             </div>
           )}
-          {links?.linkedin?.url && (
+          {links?.linkedin?.id && (
             <div className="mx-1 flex items-center rounded-md bg-tertiary-200 p-1">
-              <Link href={checkAndAppendHttps(links?.linkedin?.url)} target="_blank">
-                <Image src={icLinkedIn} alt="linkedin" />
+              <Link href={checkAndAppendHttps(links?.linkedin?.url + links?.linkedin?.id)} target="_blank">
+                <LinkedInIcon className="h-5 w-5 fill-primary " />
               </Link>
             </div>
           )}
-          {links?.twitter?.url && (
+          {links?.twitter?.id && (
             <div className="mx-1 flex items-center rounded-md bg-tertiary-200 p-1">
-              <Link href={checkAndAppendHttps(links?.twitter?.url)} target="_blank">
-                <Image src={icTwitter} alt="twitter" />
+              <Link href={checkAndAppendHttps(links?.twitter?.url + links?.twitter?.id)} target="_blank">
+                <TwitterIcon className="h-5 w-5 fill-primary " />
               </Link>
             </div>
           )}
@@ -353,13 +334,17 @@ function Leaders() {
   return (
     <div className="mb-4">
       <p className="my-2 text-title-3-bold">Leader</p>
-      <Link href={{ pathname: PATH_NAME.profile(leader.nickname) }}>
+      <Link
+        href={{
+          pathname: leader.brand ? PATH_NAME.brand(leader.brand.brand_slug) : PATH_NAME.profile(leader.nickname),
+        }}>
         <ListItem
           title={leader.name ?? ''}
           subtitle={'@' + leader.nickname}
           description={leader.bio ?? ''}
           image={leader.profile_image}
           isAvatar={leader.is_avatar}
+          brand={leader.brand ?? null}
         />
       </Link>
     </div>
@@ -389,29 +374,23 @@ function Members() {
   if (members && members.length !== 0)
     return (
       <div className="py-2">
-        {communityDetailsModule.leader && (
-          <div>
-            <Link href={{ pathname: PATH_NAME.profile(communityDetailsModule.leader.nickname) }}>
-              <ListItem
-                title={communityDetailsModule.leader.name ?? ''}
-                subtitle={'@' + communityDetailsModule.leader.nickname}
-                description={communityDetailsModule.leader.bio ?? ''}
-                image={communityDetailsModule.leader.profile_image}
-                isAvatar={communityDetailsModule.leader.is_avatar}
-              />
-            </Link>
-          </div>
-        )}
         {members.map((member: MembersSchemaType, index: number) => {
           if (member.nickname)
             return (
-              <Link key={index} href={{ pathname: PATH_NAME.profile(member.nickname) }}>
+              <Link
+                key={index}
+                href={{
+                  pathname: member.brand
+                    ? PATH_NAME.brand(member.brand.brand_slug)
+                    : PATH_NAME.profile(member.nickname),
+                }}>
                 <ListItem
                   title={member.name ?? ''}
                   subtitle={'@' + member.nickname}
                   description={member?.bio ?? ''}
                   image={member.profile_image}
                   isAvatar={member.is_avatar}
+                  brand={member.brand ?? null}
                 />
               </Link>
             )
@@ -441,5 +420,73 @@ function Stats({ communityDetails }: { communityDetails: CommunityDetailsType })
         </p>
       </span>
     </div>
+  )
+}
+
+export function JoinButton({
+  userRole,
+  handle,
+  id,
+}: {
+  userRole?: 'LEADER' | 'MEMBER' | null
+  handle: string
+  id: string
+}) {
+  const [role, setRole] = useState(userRole)
+  const user = useGenuinOptions().user
+  async function toggleCommunityJoinState() {
+    role !== 'MEMBER'
+      ? await joinCommunity(
+          false,
+          [id],
+          [
+            {
+              user_id: user?.id,
+            },
+          ]
+        ).then((res) => {
+          if (res.code === 200) {
+            setRole('MEMBER')
+          }
+        })
+      : await leaveCommunity(id).then((res) => {
+          if (res.code === 200) {
+            setRole(null)
+          }
+        })
+  }
+
+  if (userRole === 'LEADER') return
+
+  const isCommunityJoined = role === 'MEMBER'
+  return (
+    <Button
+      size="custom"
+      className={`${isCommunityJoined && 'rounded border border-primary '}`}
+      variant={isCommunityJoined ? 'outline' : 'default'}
+      onClick={
+        user
+          ? async () => {
+              await toggleCommunityJoinState()
+            }
+          : () => {
+              openModal({
+                title: 'Get the Genuin app',
+                subtitle: (
+                  <>
+                    Get the app to join the <br />
+                    <span className="font-bold">@{handle}</span> community.
+                  </>
+                ),
+              })
+            }
+      }>
+      <p
+        className={`whitespace-nowrap px-4 py-1.5 text-body-1-demi  ${
+          isCommunityJoined ? 'text-primary' : 'text-monochrome-white'
+        }`}>
+        {isCommunityJoined ? 'Joined' : 'Join Community'}
+      </p>
+    </Button>
   )
 }

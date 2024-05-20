@@ -30,7 +30,7 @@ export function KsToCbSubdomain() {
     setError(null)
 
     if (!user) {
-      setStep('EMAIL_INPUT')
+      setStep('EMAIL_INPUT', 'KS_CB_REQUEST')
       setLoading(false)
       return
     }

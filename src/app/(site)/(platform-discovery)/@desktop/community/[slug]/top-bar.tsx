@@ -2,12 +2,11 @@ import { CustomAvatar } from '@components/custom/custom-avatar'
 import { Button } from '@components/ui/button'
 import { motion, useAnimationControls } from 'framer-motion'
 import { useEffect } from 'react'
-import Image from 'next/image'
 import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
-import { getCurrentShareUrl, openModal } from '@lib/utils'
-import { useGenuinOptions } from '@lib/stores/genuin-options'
+import { getCurrentShareUrl } from '@lib/utils'
 import { ShareIcon } from '@icons/share-icon'
+import { JoinButton } from './root-details'
 
 type Props = {
   /**
@@ -20,11 +19,10 @@ type Props = {
   isOpen: boolean
   communityName: string
   communityProfileImage: string
-  communtiyHandle: string
-  communityId?: string
-  isCommunityJoined?: any
-  setIsCommunityJoined?: any
-  toggleCommunityJoinState?: any
+  communityHandle: string
+  communityId: string
+  shareUrl: string
+  role: any
 }
 
 export const TopStickyBar = {
@@ -37,18 +35,15 @@ export function Desktop({
   isOpen = false,
   communityName,
   communityProfileImage,
-  communtiyHandle,
+  communityHandle,
   communityId,
-  isCommunityJoined,
-  setIsCommunityJoined,
-  toggleCommunityJoinState,
+  shareUrl,
+  role,
   ...props
 }: Props) {
   const navAnimationControl = useAnimationControls()
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
-  const { isEmbed, parentUrl } = useGenuinOptions((state) => ({ isEmbed: state.embed, parentUrl: state.parentUrl }))
-  const user = useGenuinOptions().user
 
   useEffect(() => {
     if (defaultOpen || isOpen) {
@@ -84,38 +79,14 @@ export function Desktop({
         <p className="text-title-2-demi">{communityName}</p>
       </span>
       <span className="flex items-center gap-x-2">
-        <Button
-          size="custom"
-          className={`${isCommunityJoined && 'border border-primary '}`}
-          variant={isCommunityJoined ? 'outline' : 'default'}
-          onClick={
-            user
-              ? async () => {
-                  await toggleCommunityJoinState()
-                }
-              : () => {
-                  openModal({
-                    title: 'Get the Genuin app',
-                    subtitle: (
-                      <>
-                        Get the app to join the <br />
-                        <span className="font-bold">{communityName}</span> community.
-                      </>
-                    ),
-                  })
-                }
-          }>
-          <p className={`px-4 py-1.5 text-body-1-demi text-monochrome-white ${isCommunityJoined && 'text-primary'}`}>
-            {isCommunityJoined ? 'Joined' : 'Join Community'}
-          </p>
-        </Button>
+        <JoinButton handle={communityHandle} id={communityId} userRole={role} />
         <Button
           variant="outline"
           size="custom"
           className="border border-primary p-0.5 hover:border-primary-600"
           onClick={async () =>
             await shareFn({
-              shareLink: getCurrentShareUrl({ isEmbed, parentUrl }),
+              shareLink: getCurrentShareUrl({ url: shareUrl }),
               toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
             })
           }>
@@ -131,7 +102,7 @@ export function Mobile({
   isOpen = false,
   communityName,
   communityProfileImage,
-  communtiyHandle,
+  communityHandle,
   ...props
 }: Props) {
   const navAnimationControl = useAnimationControls()

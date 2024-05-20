@@ -2,17 +2,20 @@ import OpenPlayerJS from 'openplayerjs'
 import { useInView } from 'framer-motion'
 import { type DetailedHTMLProps, type ReactEventHandler, type VideoHTMLAttributes, useEffect, useRef } from 'react'
 import { usePlayerControlStore } from './player-control-store'
+import { pushVideoWatch } from '@services/analytics_service'
 
-// TODO: work on why player is sendding multiple request.
+// TODO: work on why player is sending multiple request.
 interface Props extends DetailedHTMLProps<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement> {
   // videoSizeBox: { width: number; height: number }
-  videoSource?: string
+  videoSource: string
   isFirstElement?: boolean
+  id: string
 }
 
 export function InnerPlayer({
   // videoSizeBox,
   videoSource,
+  id,
   poster,
   loop,
   onEnded,
@@ -114,39 +117,38 @@ export function InnerPlayer({
     setTimeState(event.currentTarget.currentTime, event.currentTarget.duration)
   }
 
-  if (videoSource)
-    return (
-      <video
-        className="absolute h-full w-full object-cover"
-        poster={poster}
-        ref={videoRef}
-        muted={muted}
-        loop={loop}
-        src={videoSource}
-        playsInline
-        // style={{
-        //   height: videoSizeBox.height,
-        //   width: videoSizeBox.width,
-        // }}
-        onPlay={onPlay}
-        onPlaying={onPlaying}
-        onError={onError}
-        onCanPlay={(ev) => {
-          localRef.current.loaded = true
-          if (onCanPlay) onCanPlay(ev)
-        }}
-        // onDurationChange={onDurationChangeEventHandler}
-        onTimeUpdate={onTimeUpdateEventHandler}
-        onPause={onPause}
-        onEnded={onEnded}
-        {...props}
-      />
-    )
+  return (
+    <video
+      className="absolute h-full w-full object-cover"
+      poster={poster}
+      ref={videoRef}
+      muted={muted}
+      loop={false}
+      src={videoSource}
+      playsInline
+      onPlay={onPlay}
+      onPlaying={onPlaying}
+      onError={onError}
+      onCanPlay={(ev) => {
+        localRef.current.loaded = true
+        if (onCanPlay) onCanPlay(ev)
+      }}
+      // onDurationChange={onDurationChangeEventHandler}
+      onTimeUpdate={onTimeUpdateEventHandler}
+      onPause={onPause}
+      onEnded={(e) =>{
+        onEnded?.(e)
+        restartAndLog(localRef.current.player,loop ?? false, id)
+      }}
+      {...props}
+    />
+  )
 }
 
 export function ViewportPlayer({
   videoSource,
   poster,
+  id,
   loop,
   isFirstElement = false,
   onEnded,
@@ -237,28 +239,38 @@ export function ViewportPlayer({
     // console.log('invew;:', inView, shouldPlay)
   }, [inView, shouldPlay])
 
-  if (videoSource)
-    return (
-      <video
-        className="absolute h-full w-full object-cover"
-        poster={poster}
-        ref={videoRef}
-        muted={muted}
-        loop={loop}
-        src={videoSource}
-        playsInline
-        onPlay={onPlay}
-        onPlaying={onPlaying}
-        onError={onError}
-        onCanPlay={(ev) => {
-          localRef.current.loaded = true
-          if (onCanPlay) onCanPlay(ev)
-        }}
-        onPause={onPause}
-        onEnded={onEnded}
-        onTimeUpdate={onTimeUpdateEventHandler}
-        // onDurationChange={onDurationChangeEventHandler}
-        {...props}
-      />
-    )
+  return (
+    <video
+      className="absolute h-full w-full object-cover"
+      poster={poster}
+      ref={videoRef}
+      muted={muted}
+      loop={false}
+      src={videoSource}
+      playsInline
+      onPlay={onPlay}
+      onPlaying={onPlaying}
+      onError={onError}
+      onCanPlay={(ev) => {
+        localRef.current.loaded = true
+        if (onCanPlay) onCanPlay(ev)
+      }}
+      onPause={onPause}
+      onEnded={(e) => {
+        onEnded?.(e)
+        restartAndLog(localRef.current.player,loop ?? false, id)
+      }}
+      onTimeUpdate={onTimeUpdateEventHandler}
+      // onDurationChange={onDurationChangeEventHandler}
+      {...props}
+    />
+  )
+}
+
+function restartAndLog(player: OpenPlayerJS | null, loop:boolean,id: string){
+  if(loop && player) {
+    void player.play()
+  }
+  pushVideoWatch(id)
+
 }

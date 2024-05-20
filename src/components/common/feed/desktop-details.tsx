@@ -10,7 +10,7 @@ import { useMotionValueEvent, useScroll } from 'framer-motion'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
-import { getTimeAgo, openModal } from '@lib/utils'
+import { getCurrentShareUrl, getTimeAgo, openModal } from '@lib/utils'
 import { FeedShimmer } from '../shimmers/feed-shimmer'
 import { Input } from '@components/ui/input'
 import { createComment, joinCommunity, leaveCommunity } from '@lib/api/video'
@@ -21,38 +21,17 @@ import { AudioRecordIcon } from '@icons/audio-record-icon'
 import { VideoRecordIcon } from '@icons/video-record-icon'
 import { type CommentListType } from '@lib/schemas/loop/comment'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
+import { LockIcon } from '@icons/LockIcon'
+import { TickIcon } from '@icons/tick-icon'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@components/ui/tooltip'
 
 export function DesktopDetails({ loop, community, owner, video }: VideoPlayerModalType) {
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
   const scrollDivRef = useRef<HTMLDivElement>(null)
-  const [isCommunityJoined, setIsCommunityJoined] = useState(false)
   // TODO: Here state Comment and setComments are bad they are causing multiple rerenders.
   const [currentComment, setCurrentComment] = useState('')
   const [comments, setComments] = useState<CommentListType>([])
-  const user = useGenuinOptions().user
-
-  async function toggleCommunityJoinState() {
-    !isCommunityJoined
-      ? await joinCommunity(
-          false,
-          [community.id],
-          [
-            {
-              user_id: user?.id,
-            },
-          ]
-        ).then((res) => {
-          if (res.code === 200) {
-            setIsCommunityJoined((prev) => !prev)
-          }
-        })
-      : await leaveCommunity(community.id).then((res) => {
-          if (res.code === 200) {
-            setIsCommunityJoined((prev) => !prev)
-          }
-        })
-  }
 
   return (
     <div className="relative flex h-full flex-1 flex-col overflow-x-clip bg-monochrome-white pb-16 pl-2">
@@ -65,9 +44,21 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
             className="h-9 w-9"
           />
           <span className="flex items-center gap-x-1">
-            <Link href={PATH_NAME.profile(owner.userName)}>
-              <p className="line-clamp-1 break-all text-title-3-demi">@{owner.userName}</p>
-            </Link>
+            {owner.brand ? (
+              <div className="flex items-center gap-1">
+                <Link href={PATH_NAME.brand(owner.brand.brand_slug)}>
+                  <p className="line-clamp-1 break-all text-title-3-demi">@{owner.userName}</p>
+                </Link>
+                <div className="flex items-center">
+                  <TickIcon className="h-3 w-3 fill-primary" />
+                  <p className="text-cap-2-demi text-primary">Brand</p>
+                </div>
+              </div>
+            ) : (
+              <Link href={PATH_NAME.profile(owner.userName)}>
+                <p className="line-clamp-1 break-all text-title-3-demi">@{owner.userName}</p>
+              </Link>
+            )}
             <p className="shrink-0 text-body-1-demi text-tertiary">{getTimeAgo(video.createdAt) + ' ago'}</p>
           </span>
         </span>
@@ -80,54 +71,49 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
           <p className="text-title-3-bold">Posted in</p>
           <div className="pt-3">
             <span className="flex items-center justify-between">
-              <span className="flex flex-1 items-center gap-x-3">
-                <CustomAvatar
-                  imageUrl={community.profileImage ?? ''}
-                  fallbackString={community.name ?? ''}
-                  isAvatar={false}
-                  className="h-11 w-11"
-                />
-                {/* TODO: What if there is no community name. */}
-                <Link href={{ pathname: PATH_NAME.community(community.slug) }}>
-                  <p className="line-clamp-1 break-all pr-2 text-title-3-bold">{community.name}</p>
-                </Link>
-              </span>
+              <div className="flex items-center justify-center">
+                <span className="flex flex-1 items-center gap-x-3">
+                  <CustomAvatar
+                    imageUrl={community.profileImage ?? ''}
+                    fallbackString={community.name ?? ''}
+                    isAvatar={false}
+                    className="h-11 w-11"
+                  />
+                  {/* TODO: What if there is no community name. */}
+                  <div>
+                    <Link href={{ pathname: PATH_NAME.community(community.slug) }}>
+                      <p className="line-clamp-1 break-all pr-2 text-title-3-bold">{community.name}</p>
+                    </Link>
+                    {community.brand && <p className="text-body-1-med text-tertiary">on {community.brand?.name}</p>}
+                  </div>
+                </span>
+                {community?.type === 2 && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div>
+                          <LockIcon className="h-4 w-4 stroke-tertiary" />
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent className="w-64 bg-monochrome-black">
+                        <p className="text-center text-cap-1-med text-monochrome-white">
+                          This community is private. Only people approved by it's moderators can see and participate in
+                          this community.
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
+              </div>
               <span className="flex h-min flex-1 items-center justify-end gap-x-3">
-                <Button
-                  size="custom"
-                  className={`${isCommunityJoined && 'rounded border border-primary '}`}
-                  variant={isCommunityJoined ? 'outline' : 'default'}
-                  onClick={
-                    user
-                      ? async () => {
-                          await toggleCommunityJoinState()
-                        }
-                      : () => {
-                          openModal({
-                            title: 'Get the Genuin app',
-                            subtitle: (
-                              <>
-                                Get the app to join the <br />
-                                <span className="font-bold">@{community.handle}</span> community.
-                              </>
-                            ),
-                          })
-                        }
-                  }>
-                  <p
-                    className={`whitespace-nowrap px-4 py-1.5 text-body-1-demi  ${
-                      isCommunityJoined ? 'text-primary' : 'text-monochrome-white'
-                    }`}>
-                    {isCommunityJoined ? 'Joined' : 'Join Community'}
-                  </p>
-                </Button>
+                <JoinButton handle={community.handle} id={community.id} userRole={community.userRole} />
                 <Button
                   size="custom"
                   variant="outline"
                   className="min-w-max border border-primary p-1 hover:border-primary-600 "
                   onClick={async () =>
                     await shareFn({
-                      shareLink: window.location.host + PATH_NAME.community(community.slug) + '?utm_source=app_web',
+                      shareLink: getCurrentShareUrl({ url: community.shareUrl }),
                       toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                     })
                   }>
@@ -339,5 +325,65 @@ function CommentInput({
         </DownloadDialog>
       </div>
     </div>
+  )
+}
+
+function JoinButton({ userRole, handle, id }: { userRole?: 'LEADER' | 'MEMBER' | null; handle: string; id: string }) {
+  const [role, setRole] = useState(userRole)
+  const user = useGenuinOptions().user
+  async function toggleCommunityJoinState() {
+    role !== 'MEMBER'
+      ? await joinCommunity(
+          false,
+          [id],
+          [
+            {
+              user_id: user?.id,
+            },
+          ]
+        ).then((res) => {
+          if (res.code === 200) {
+            setRole('MEMBER')
+          }
+        })
+      : await leaveCommunity(id).then((res) => {
+          if (res.code === 200) {
+            setRole(null)
+          }
+        })
+  }
+
+  if (userRole === 'LEADER') return
+
+  const isCommunityJoined = role === 'MEMBER'
+  return (
+    <Button
+      size="custom"
+      className={`${isCommunityJoined && 'rounded border border-primary '}`}
+      variant={isCommunityJoined ? 'outline' : 'default'}
+      onClick={
+        user
+          ? async () => {
+              await toggleCommunityJoinState()
+            }
+          : () => {
+              openModal({
+                title: 'Get the Genuin app',
+                subtitle: (
+                  <>
+                    Get the app to join the <br />
+                    <span className="font-bold">@{handle}</span> community.
+                  </>
+                ),
+              })
+            }
+      }>
+      <p
+        className={`whitespace-nowrap px-4 py-1.5 text-body-1-demi  ${
+          isCommunityJoined ? 'text-primary' : 'text-monochrome-white'
+        }`}>
+        {isCommunityJoined ? 'Joined' : 'Join Community'}
+      </p>
+    </Button>
   )
 }

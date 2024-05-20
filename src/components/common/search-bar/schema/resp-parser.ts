@@ -16,6 +16,20 @@ export function parseCommunities(communities: CommunitiesResType) {
     description: item.description,
     name: item.name,
     profileImage: item.dp,
+    type: item.type,
+    brand: item.brand
+      ? {
+          brand_id: item.brand.brand_id,
+          name: item.brand.name,
+          subdomain: item.brand.subdomain,
+          logo: item.brand.logo,
+          created_at: item.brand.created_at,
+          brand_web_logo: item.brand.brand_web_logo,
+          favicon: item.brand.favicon,
+          brand_system_user_id: item.brand.brand_system_user_id,
+          brand_slug: item.brand.brand_slug,
+        }
+      : null,
   }))
 }
 
@@ -32,6 +46,12 @@ export function parsePeople(people: PeopleResType) {
       name: item.name,
       profileImage: item.profile_image,
       isAvatar: item.is_avatar,
+      brand: item.brand
+        ? {
+            brand_id: item.brand.brand_id,
+            brand_slug: item.brand.brand_slug,
+          }
+        : null,
     }
   })
 }
