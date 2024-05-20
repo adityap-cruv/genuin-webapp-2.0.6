@@ -18,7 +18,10 @@ import { type VideoPlayerModalCommunityType, type VideoPlayerModalLoopType } fro
 // TODO: improve player-modal opening logic. As not meeting standards.
 export function CommunityLoopTab({ community }: { community: VideoPlayerModalCommunityType }) {
   const { isLoading, data } = getCommunityLoops(community.slug)
-  const [modalController, setModalController] = useState<{ open: boolean; loop: VideoPlayerModalLoopType | null }>({
+  const [modalController, setModalController] = useState<{
+    open: boolean
+    loop: VideoPlayerModalLoopType | null
+  }>({
     open: false,
     loop: null,
   })
@@ -32,7 +35,13 @@ export function CommunityLoopTab({ community }: { community: VideoPlayerModalCom
       </>
     )
   if (!data || data.loops.length === 0) return <NoLoops />
+  function getUnreadMessageCount(id: string) {
+    const ans = data?.loops.find((item, index, arr) => {
+      return item.chat_id === id
+    })
 
+    return ans?.unread_message_count ?? 0
+  }
   return (
     <>
       {data.loops.map((item, index) => (
@@ -48,9 +57,9 @@ export function CommunityLoopTab({ community }: { community: VideoPlayerModalCom
           }}
         />
       ))}
-
       {modalController.loop && (
         <PlayerModalWrapper
+          unreadMessageCount={getUnreadMessageCount(modalController.loop.id)}
           open={modalController.open}
           loop={modalController.loop}
           community={community}
@@ -129,7 +138,6 @@ function LoopItem({
       </>
     )
   }
-
   return (
     <div className="relative">
       <Link href={{ pathname: PATH_NAME.loop(loopDetails.slug) }}>
@@ -251,9 +259,10 @@ type PlayerModalWrapperProps = {
   community: VideoPlayerModalCommunityType
   loop: VideoPlayerModalLoopType
   close: () => void
+  unreadMessageCount: number
 }
 
-function PlayerModalWrapper({ open = false, close, community, loop }: PlayerModalWrapperProps) {
+function PlayerModalWrapper({ open = false, close, community, loop, unreadMessageCount }: PlayerModalWrapperProps) {
   const { data, fetchNextPage, isError, isFetchingNextPage, isFetching } = getLoopVideos({ community, loop })
   const videos = data?.pages.flatMap((item) => item.videos)
 
@@ -268,6 +277,7 @@ function PlayerModalWrapper({ open = false, close, community, loop }: PlayerModa
         open={open}
         videos={videos}
         close={close}
+        unreadMessageCount={unreadMessageCount}
       />
     )
 }

@@ -33,6 +33,13 @@ export function CommunityLoopTab({ community }: { community: VideoPlayerModalCom
 
   if (!data || data.loops.length === 0) return <NoLoops />
 
+  function getUnreadMessageCount(id: string) {
+    const loop = data?.loops.find((item, index) => {
+      return item.chat_id === id
+    })
+    return loop?.unread_message_count ?? 0
+  }
+
   if (data.loops.length !== 0)
     return (
       <>
@@ -62,6 +69,7 @@ export function CommunityLoopTab({ community }: { community: VideoPlayerModalCom
             loop={modalController.loop}
             community={community}
             open={modalController.open}
+            unreadMessageCount={getUnreadMessageCount(modalController.loop.id)}
           />
         )}
       </>
@@ -257,9 +265,10 @@ type PlayerModalWrapperProps = {
   loop: VideoPlayerModalLoopType
   community: VideoPlayerModalCommunityType
   close: () => void
+  unreadMessageCount: number
 }
 
-function PlayerModalWrapper({ open = false, loop, community, close }: PlayerModalWrapperProps) {
+function PlayerModalWrapper({ open = false, loop, community, close, unreadMessageCount }: PlayerModalWrapperProps) {
   const { data, fetchNextPage, isError, isFetchingNextPage, isFetching } = getLoopVideos({ community, loop })
   const videos = data?.pages.flatMap((item) => item.videos)
 
@@ -273,6 +282,7 @@ function PlayerModalWrapper({ open = false, loop, community, close }: PlayerModa
       open={open}
       videos={videos}
       close={close}
+      unreadMessageCount={unreadMessageCount}
     />
   )
 }

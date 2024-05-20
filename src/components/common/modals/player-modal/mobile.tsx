@@ -6,6 +6,7 @@ import { Feed } from '@components/common/feed'
 import { TopBar } from '@components/layouts/mobile/top-bar'
 import { FeedShimmer } from '@components/common/shimmers/feed-shimmer'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
+import { UnseenMessageRibbon } from '@components/common/unseen-message-ribbon'
 
 type Props = {
   children?: React.ReactNode
@@ -25,6 +26,7 @@ type Props = {
   open: boolean
   close: () => void
   isLoading: boolean
+  unreadMessageCount: number
 }
 
 export function Mobile({
@@ -37,6 +39,7 @@ export function Mobile({
   isFetchingNextPage,
   isError,
   fetchNextVideos,
+  unreadMessageCount,
 }: Props) {
   const { currentIndex, setCurrentIndex, setStateVideos } = useFeedModalStore((state) => ({
     currentIndex: state.currentIndex,
@@ -83,13 +86,11 @@ export function Mobile({
       <CustomDialogContent showDefaultClose={false}>
         <div className="relative h-full w-full overflow-clip bg-monochrome-white">
           <TopBar showClose className="fixed left-0 top-0" variant="trasparent" onClose={close} />
-          {/* <CustomDialogClose
-                onClick={() => {
-                  close?.()
-                }}
-                className="absolute right-4 top-4 z-10">
-                <X className="h-6 w-6 stroke-monochrome-white" />
-              </CustomDialogClose> */}
+          {unreadMessageCount && (
+            <div className="absolute inset-0 z-10 flex h-fit w-full items-center justify-center ">
+              <UnseenMessageRibbon messageCount={unreadMessageCount} />
+            </div>
+          )}
           <InnerContent />
         </div>
       </CustomDialogContent>
