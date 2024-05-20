@@ -4,9 +4,11 @@ import { ksCbRequest, verifyEmail } from '@lib/api/auth'
 
 export default async function Page({ searchParams }: { searchParams: { token: string } }) {
   const { code, actionMetadata, user, emailType, email } = await verifyEmail(searchParams.token)
-  console.log('code::', code, actionMetadata)
+  console.log('code::', code, actionMetadata, user)
   if (code === 200 && actionMetadata?.action === 'KS_CB_REQUEST') {
-    await ksCbRequest()
+    console.log('ks cb req;;')
+    const ans = await ksCbRequest(user.accessToken)
+    console.log('ans::', ans)
   }
 
   if (code === 200) {

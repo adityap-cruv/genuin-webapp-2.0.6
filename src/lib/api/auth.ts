@@ -344,11 +344,17 @@ export async function loginViaEmail({
     })
 }
 
-export async function ksCbRequest(): Promise<{ code: number; data: any }> {
+export async function ksCbRequest(accessToken?: string): Promise<{ code: number; data: any }> {
   return await axiosInstance
-    .post('/api/v3/users/ks_cb_request', {
-      source: 'app_web',
-    })
+    .post(
+      '/api/v3/users/ks_cb_request',
+      {
+        source: 'app_web',
+      },
+      {
+        headers: { 'x-auth-token': accessToken },
+      }
+    )
     .then((res) => {
       return { code: res.data.code, data: res.data.data }
     })
