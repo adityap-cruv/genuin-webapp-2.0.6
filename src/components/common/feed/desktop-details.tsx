@@ -84,7 +84,15 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
                     <Link href={{ pathname: PATH_NAME.community(community.slug) }}>
                       <p className="line-clamp-1 break-all pr-2 text-title-3-bold">{community.name}</p>
                     </Link>
-                    {community.brand && <p className="text-body-1-med text-tertiary">on {community.brand?.name}</p>}
+                    {community.brand && (
+                      <p
+                        className="truncate text-body-1-med text-tertiary"
+                        style={{
+                          maxWidth: '10ch',
+                        }}>
+                        on {community.brand?.name}
+                      </p>
+                    )}
                   </div>
                 </span>
                 {community?.type === 2 && (

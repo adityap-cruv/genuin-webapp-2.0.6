@@ -23,7 +23,7 @@ import Loading from './loading'
 import Error from '../../error'
 import { Shimmer } from '@components/ui/shimmer'
 import { LockIcon } from '@icons/LockIcon'
-import { loopPrivacyInfo } from '@components/common/loop-privacy-info'
+import { LoopPrivacyInfo } from '@components/common/loop-privacy-info'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@components/ui/tooltip'
 import { DownloadDialogModal } from '@components/common/modals/download-app'
 import { TickIcon } from '@icons/tick-icon'
@@ -48,10 +48,6 @@ export function MainComponent({ loopDetails }: Props) {
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
   const [isLoopSubscribed, setIsLoopSubscribed] = useState(!!loopDetails.is_subscriber)
   const user = useGenuinOptions().user
-  const privacyMessage = loopPrivacyInfo(
-    loopDetails?.actions?.[0]?.action_id ?? 0,
-    loopDetails?.actions?.[0]?.access_type_id ?? 0
-  )
 
   function toggleLoopSubscription() {
     const newValue = !isLoopSubscribed
@@ -152,7 +148,10 @@ export function MainComponent({ loopDetails }: Props) {
             </Button>
           </div>
         </div>
-        {privacyMessage}
+        <LoopPrivacyInfo
+          actionId={loopDetails?.actions?.[0]?.action_id ?? 0}
+          accessTypeId={loopDetails?.actions?.[0]?.access_type_id ?? 0}
+        />
         <span className="w-1/2">
           <p className="my-1 line-clamp-2 w-1/2 break-words text-body-1-med text-secondary">
             {loopDetails.group.group_description}

@@ -28,6 +28,8 @@ export type StepsType =
   | 'EDIT_USERNAME'
   | 'CHANGE_PASSWORD'
   | 'LOGOUT'
+  | 'CHANGE_PASSWORD_SUCCESS_NOTE'
+  | 'SET_PASSWORD_SUCCESS_NOTE'
 
 type FormDataType = {
   displayName: string
