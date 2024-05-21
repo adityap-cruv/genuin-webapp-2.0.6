@@ -378,7 +378,7 @@ function Leaders() {
           description={leader.bio ?? ''}
           image={leader.profile_image}
           isAvatar={leader.is_avatar}
-          brand={leader.brand ?? null}
+          brand={leader.brand}
         />
       </Link>
     </div>

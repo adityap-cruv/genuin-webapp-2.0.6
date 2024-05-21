@@ -61,7 +61,7 @@ const CommunityLoopSchema = z.object({
   is_subscriber: z.boolean().nullish(),
   is_post_allowed: z.boolean().nullish(),
   is_view_allowed: z.boolean().default(true),
-  unread_message_count: z.number().nullish(),
+  unread_message_count: z.number(),
   latest_messages: z.array(latestMessageSchema),
   group: groupSchema,
   settings: settingsSchema,
