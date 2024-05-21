@@ -415,3 +415,48 @@ export async function updatePassword({
       return { code: Number(e?.response?.data.code), data: e?.response?.data.data }
     })
 }
+
+export async function forgotPassword({
+  email,
+  deviceId,
+  brandId,
+}: {
+  email: string
+  deviceId: string
+  brandId?: number
+}): Promise<{ code: number; retryTime: number }> {
+  return await axiosInstance
+    .post('/api/v3/forgot_password', {
+      email: encryptText(email, false),
+      device_id: encryptText(deviceId, true),
+      brand_id: useGenuinOptions.getState().brandId,
+    })
+    .then((res) => {
+      const retryTime = res?.data?.data?.retryTime
+      return { code: res.data.code, retryTime }
+    })
+    .catch((e) => {
+      const retryTime = e?.response?.data?.data?.retryTime
+      return { code: Number(e?.response?.data.code), retryTime }
+    })
+}
+
+export async function setForgotPassword({
+  forgotPasswordToken,
+  password,
+}: {
+  forgotPasswordToken: string
+  password: string
+}): Promise<{ code: number; data: any }> {
+  return await axiosInstance
+    .post('/api/v3/set_forgot_password', {
+      forgot_password_token: encryptText(forgotPasswordToken, false),
+      password: encryptText(password, false),
+    })
+    .then((res) => {
+      return { code: res.data.code, data: res.data.data }
+    })
+    .catch((e) => {
+      return { code: Number(e?.response?.data.code), data: e?.response?.data.data }
+    })
+}

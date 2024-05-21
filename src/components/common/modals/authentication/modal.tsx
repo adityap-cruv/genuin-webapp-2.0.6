@@ -18,6 +18,8 @@ import {
   EditUsername,
   ChangePassword,
   Logout,
+  ForgotPassword,
+  ResetPassword,
 } from './screens'
 import { useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
@@ -60,11 +62,14 @@ export function Modal({ children, ...props }: Props) {
   const showClose = !stepSet.has(step)
 
   useEffect(() => {
+    const resetPasswordEmailVerification = searchParams.get('reset_email_verification_status') ?? ''
     const emailVerification = searchParams.get('email_verification_status') ?? ''
     const magicLinkVerification = searchParams.get('magic_link_verification') ?? ''
     const error = searchParams.get('error_in_verification') ?? ''
 
     if (Boolean(emailVerification) || Boolean(magicLinkVerification) || Boolean(error)) {
+      if (resetPasswordEmailVerification === '1') setStep('RESET_PASSWORD')
+      if (resetPasswordEmailVerification === '0') setStep('EMAIL_VERIFICATION_FAILURE')
       if (emailVerification === '0') setStep('EMAIL_VERIFICATION_FAILURE')
       if (emailVerification === '1') setStep('EMAIL_VERIFICATION_SUCCESS')
       if (magicLinkVerification === '0') setStep('MAGIC_LINK_VERIFICATION_FAILURE')
@@ -156,5 +161,13 @@ export function Content() {
       return <Note.changepasswordsuccess />
     case 'SET_PASSWORD_SUCCESS_NOTE':
       return <Note.setpasswordsuccess />
+    case 'FORGOT_PASSWORD':
+      return <ForgotPassword />
+    case 'PASSWORD_RESET_LINK_SENT_NOTE':
+      return <Note.passwordresetlink />
+    case 'RESET_PASSWORD':
+      return <ResetPassword />
+    case 'RESET_PASSWORD_SUCCESS_NOTE':
+      return <Note.resetpasswordsuccess />
   }
 }
