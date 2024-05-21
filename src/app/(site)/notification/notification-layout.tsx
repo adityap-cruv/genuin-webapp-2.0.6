@@ -1,6 +1,5 @@
 'use client'
 import { type NotificationsType, type NotificationDetailsType } from '@lib/schemas/notification/notification'
-import Loading from '../../../app/(site)/(platform-discovery)/@desktop/notification/loading'
 import { GetNotificationAttributedText } from './notification-tab-view'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { getNotifications, notificationsCount, readNotifications } from '@lib/api/notification'
@@ -13,9 +12,12 @@ import { Loader } from '@components/ui/loader'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { NotificationIcon } from '@icons/settings-side-bar-icons'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
+import icBack from '@icons/icBack.svg'
+import { Shimmer } from '@components/ui/shimmer'
 
 export function NotificationLayout() {
-  const { data, isLoading, fetchNextPage, isError, isFetchingNextPage } = getNotifications(10)
+  const { data, isLoading, fetchNextPage, isFetchingNextPage } = getNotifications(10)
   const notifications = data?.pages.flatMap((item) => item.notifications)
   const { isMobile, user, setInitialData } = useGenuinOptions((state) => ({
     isMobile: state.isMobile,
@@ -46,7 +48,27 @@ export function NotificationLayout() {
     }
   }, [])
 
-  if (isLoading) return <Loading />
+  if (isLoading)
+    return (
+      <div className={`h-full w-full p-6 sm:w-1/2`}>
+        <Shimmer className="h-8 w-2/3" />
+        <div className="my-4 flex flex-col gap-2">
+          <Shimmer className="h-12 w-full" />
+          <Shimmer className="h-12 w-full" />
+          <Shimmer className="h-12 w-full" />
+          <Shimmer className="h-12 w-full" />
+          <Shimmer className="h-12 w-full" />
+          <Shimmer className="h-12 w-full" />
+          <Shimmer className="h-12 w-full" />
+          <Shimmer className="h-12 w-full" />
+          <Shimmer className="h-12 w-full" />
+          <Shimmer className="h-12 w-full" />
+          <Shimmer className="h-12 w-full" />
+          <Shimmer className="h-12 w-full" />
+        </div>
+      </div>
+    )
+
   if (data)
     return (
       <Notifications
@@ -71,6 +93,7 @@ function Notifications({
 }) {
   const scrollDivRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ container: scrollDivRef, layoutEffect: false })
+  const router = useRouter()
 
   useMotionValueEvent(scrollYProgress, 'change', (latest) => {
     if (Number(latest.toFixed(1)) > 0.8 && !isFetchingNextPage) {
@@ -79,8 +102,24 @@ function Notifications({
   })
 
   return (
-    <div className={`h-full w-full ${!isMobile && 'p-6'} sm:w-1/2`}>
-      {!isMobile && <p className="mb-2 text-title-1-bold">Latest Activity</p>}
+    <div className={`w-full ${isMobile ? 'h-body' : 'h-full p-6'} sm:w-1/2`}>
+      {isMobile ? (
+        <div className="sticky">
+          <div className={`relative flex w-full items-center justify-center border-b border-tertiary p-4`}>
+            <Image
+              src={icBack}
+              alt="back"
+              onClick={() => {
+                router.back()
+              }}
+              className="absolute left-2"
+            />
+            <p className="text-title-2-bold">Notifications</p>
+          </div>
+        </div>
+      ) : (
+        <p className="mb-2 text-title-1-bold">Latest Activity</p>
+      )}
       {notificationDetails?.length === 0 && (
         <div className="flex h-full w-full flex-col items-center justify-center py-2">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-tertiary-200">
@@ -95,7 +134,7 @@ function Notifications({
       )}
 
       {notificationDetails?.length !== 0 && (
-        <div ref={scrollDivRef} className={`h-full overflow-scroll ${isMobile ? 'pb-14' : 'py-2'}`}>
+        <div ref={scrollDivRef} className={`h-full overflow-scroll py-2`}>
           {notificationDetails?.map((item: any, index: number) => (
             <>
               <Link
