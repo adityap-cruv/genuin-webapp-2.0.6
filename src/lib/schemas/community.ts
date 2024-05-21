@@ -69,7 +69,7 @@ const MembersSchema = z.object({
   profile_image: z.string(),
   role: z.number(),
   phone: z.string().nullish(),
-  brand: BrandUserSchema,
+  brand: BrandUserSchema.optional(),
 })
 
 const BrandSchema = z
