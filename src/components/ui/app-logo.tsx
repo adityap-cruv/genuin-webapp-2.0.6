@@ -1,5 +1,6 @@
 import { GenuinIcon } from '@icons/genuin-icon'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
+import { cn } from '@lib/utils'
 // import Image from 'next/image'
 import { type ComponentProps } from 'react'
 
@@ -30,12 +31,19 @@ function Logo({ ...props }: Props) {
 
 type ProcessorProps = { type: 'icon' | 'text' | 'logo' } & Props
 
-function LogoProcessor({ imageHeight, type, ...props }: ProcessorProps) {
+function LogoProcessor({ className, imageHeight, type, ...props }: ProcessorProps) {
   const { brandWebLogo } = useGenuinOptions((state) => ({ embed: state.embed, brandWebLogo: state.brandWebLogo }))
 
   // TODO: Find a way to use next/image here.
   if (brandWebLogo)
-    return <img src={brandWebLogo} style={{ height: imageHeight }} className="w-full object-cover" alt="brand logo" />
+    return (
+      <img
+        src={brandWebLogo}
+        style={{ height: imageHeight }}
+        className={cn('object-cover', className)}
+        alt="brand logo"
+      />
+    )
 
   switch (type) {
     case 'text':
