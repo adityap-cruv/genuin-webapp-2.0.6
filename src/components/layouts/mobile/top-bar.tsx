@@ -9,7 +9,7 @@ import { usePathname } from 'next/navigation'
 import { PopularIcon, HomeIcon, LatestIcon, ProfileIcon } from '@icons/side-bar-icons'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { PATH_NAME } from '@lib/utils/constants/path'
-import { Search, X } from 'lucide-react'
+import { X } from 'lucide-react'
 import { RecentCommunities } from './recent-communities'
 import { AppLogo } from '@components/ui/app-logo'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
@@ -28,8 +28,8 @@ import { SettingsLayout } from '../settings/mobile/layout'
 import { NotificationIcon } from '@icons/settings-side-bar-icons'
 import icBack from '@icons/icBack.svg'
 import Image from 'next/image'
-import { MainComponent } from '../../../app/(site)/(platform-discovery)/@mobile/notification/main-component'
 import { SearchIcon } from '@icons/search-icon'
+import { NotificationLayout } from '@components/common/notification/notification-layout'
 
 const navVariant = cva('sticky top-0 flex z-40 h-[76px] w-full items-center justify-between  px-2', {
   variants: {
@@ -101,7 +101,9 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
         <SearchBar.mobile>
           <SearchIcon
             className={`${
-              pathName === '/home' || pathName === '/popular' || pathName === '/latest' ? 'stroke-monochrome-white' : ''
+              pathName === '/home' || pathName === '/popular' || pathName === '/latest' || pathName.includes('/video')
+                ? 'stroke-monochrome-white'
+                : ''
             }`}
           />
         </SearchBar.mobile>
@@ -145,7 +147,11 @@ function NotificationSheet({
                 </div>
               ))}
             <NotificationIcon
-              variant={pathName === '/home' || pathName === '/popular' || pathName === '/latest' ? 'white' : ''}
+              variant={
+                pathName === '/home' || pathName === '/popular' || pathName === '/latest' || pathName.includes('/video')
+                  ? 'white'
+                  : ''
+              }
               className="h-7"
             />
           </div>
@@ -158,7 +164,7 @@ function NotificationSheet({
             <p className="text-title-2-bold">Notifications</p>
           </div>
           <hr className="bg-tertiary-300" />
-          <MainComponent />
+          <NotificationLayout />
         </SheetContent>
       </Sheet>
     </>

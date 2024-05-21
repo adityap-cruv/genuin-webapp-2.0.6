@@ -1,7 +1,7 @@
 'use client'
 import { type NotificationsType, type NotificationDetailsType } from '@lib/schemas/notification/notification'
-import Loading from './loading'
-import { GetNotificationAttributedText } from '@components/common/notification-tab-view'
+import Loading from '../../../app/(site)/(platform-discovery)/@desktop/notification/loading'
+import { GetNotificationAttributedText } from './notification-tab-view'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { getNotifications, notificationsCount, readNotifications } from '@lib/api/notification'
 import Link from 'next/link'
@@ -12,42 +12,23 @@ import { useEffect, useRef } from 'react'
 import { Loader } from '@components/ui/loader'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { NotificationIcon } from '@icons/settings-side-bar-icons'
+import { useRouter } from 'next/navigation'
 
-export function MainComponent() {
+export function NotificationLayout() {
   const { data, isLoading, fetchNextPage, isError, isFetchingNextPage } = getNotifications(10)
   const notifications = data?.pages.flatMap((item) => item.notifications)
-
-  if (isLoading) return <Loading />
-  if (data)
-    return (
-      <Notifications
-        notificationDetails={notifications}
-        fetchNextPage={fetchNextPage}
-        isFetchingNextPage={isFetchingNextPage}
-      />
-    )
-}
-
-function Notifications({
-  notificationDetails,
-  fetchNextPage,
-  isFetchingNextPage,
-}: {
-  notificationDetails: NotificationsType
-  fetchNextPage: any
-  isFetchingNextPage: boolean
-}) {
-  const scrollDivRef = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({ container: scrollDivRef, layoutEffect: false })
-  const { setInitialData } = useGenuinOptions((state) => ({
+  const { isMobile, user, setInitialData } = useGenuinOptions((state) => ({
+    isMobile: state.isMobile,
+    user: state.user,
     setInitialData: state.setData,
   }))
+  const router = useRouter()
 
-  useMotionValueEvent(scrollYProgress, 'change', (latest) => {
-    if (Number(latest.toFixed(1)) > 0.8 && !isFetchingNextPage) {
-      void fetchNextPage()
+  useEffect(() => {
+    if (!user) {
+      router.push(PATH_NAME.home())
     }
-  })
+  }, [user, router])
 
   async function fetchNotificationCount() {
     const { status, count } = await notificationsCount()
@@ -58,13 +39,48 @@ function Notifications({
 
   useEffect(() => {
     return () => {
-      void fetchNotificationCount()
-      void readNotifications(true)
+      if (user) {
+        void fetchNotificationCount()
+        void readNotifications(true)
+      }
     }
   }, [])
 
+  if (isLoading) return <Loading />
+  if (data)
+    return (
+      <Notifications
+        notificationDetails={notifications}
+        fetchNextPage={fetchNextPage}
+        isFetchingNextPage={isFetchingNextPage}
+        isMobile={isMobile}
+      />
+    )
+}
+
+function Notifications({
+  notificationDetails,
+  fetchNextPage,
+  isFetchingNextPage,
+  isMobile,
+}: {
+  notificationDetails: NotificationsType
+  fetchNextPage: any
+  isFetchingNextPage: boolean
+  isMobile: boolean
+}) {
+  const scrollDivRef = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({ container: scrollDivRef, layoutEffect: false })
+
+  useMotionValueEvent(scrollYProgress, 'change', (latest) => {
+    if (Number(latest.toFixed(1)) > 0.8 && !isFetchingNextPage) {
+      void fetchNextPage()
+    }
+  })
+
   return (
-    <div className="h-full w-full">
+    <div className={`h-full w-full ${!isMobile && 'p-6'} sm:w-1/2`}>
+      {!isMobile && <p className="mb-2 text-title-1-bold">Latest Activity</p>}
       {notificationDetails?.length === 0 && (
         <div className="flex h-full w-full flex-col items-center justify-center py-2">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-tertiary-200">
@@ -79,7 +95,7 @@ function Notifications({
       )}
 
       {notificationDetails?.length !== 0 && (
-        <div ref={scrollDivRef} className="h-full overflow-scroll pb-14">
+        <div ref={scrollDivRef} className={`h-full overflow-scroll ${isMobile ? 'pb-14' : 'py-2'}`}>
           {notificationDetails?.map((item: any, index: number) => (
             <>
               <Link
@@ -111,11 +127,9 @@ function Notifications({
                         href={{
                           pathname: PATH_NAME.video(item?.conversation_video?.slug),
                         }}>
-                        <img
-                          src={item?.conversation_video?.thumbnail_url}
-                          alt="thumbnail"
-                          className="aspect-reel h-14"
-                        />
+                        <div className="aspect-reel h-14">
+                          <img src={item?.conversation_video?.thumbnail_url} alt="thumbnail" className="h-full" />
+                        </div>
                       </Link>
                     )}
                     {item?.community?.dp && (

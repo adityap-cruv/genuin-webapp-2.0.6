@@ -8,6 +8,7 @@ import { IcLoop } from '@icons/ic-loop'
 import { type ReactNode } from 'react'
 import Link from 'next/link'
 import { ItemShimmer } from './item-shimmer'
+import { SearchIcon } from '@icons/search-icon'
 
 export function Recents() {
   const {
@@ -50,7 +51,7 @@ export function Recents() {
                 key={item.id}
                 avatar={
                   <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border border-tertiary-300">
-                    <Search className="h-5 w-5 stroke-tertiary" />
+                    <SearchIcon className="h-5 w-5 stroke-tertiary" />
                   </div>
                 }
                 title={item.text}
