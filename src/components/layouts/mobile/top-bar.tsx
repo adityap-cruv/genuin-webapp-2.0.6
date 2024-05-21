@@ -79,7 +79,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
           <Link href={{ pathname: PATH_NAME.home() }}>
             <AppLogo.icon
               imageHeight={32}
-              className={cn(variant === 'trasparent' ? 'fill-new-off-white' : 'fill-new-off-black')}
+              className={cn(variant === 'trasparent' ? 'fill-new-off-white' : 'fill-new-off-black', 'max-w-[100px]')}
             />
           </Link>
         )}
