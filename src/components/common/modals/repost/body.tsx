@@ -2,7 +2,7 @@ import { CustomAvatar } from '@components/custom/custom-avatar'
 import { type RepostCommunityType } from './schema'
 import { useRepostModalStore } from './state'
 import { DecorativeList } from '@components/custom/decorative-list'
-import { loopPrivacyInfo } from '@components/common/loop-privacy-info'
+import { LoopPrivacyInfo } from '@components/common/loop-privacy-info'
 import { Button } from '@components/ui/button'
 import { RepostIcon } from '@icons/player-controls/repost-icon'
 import { repostVideo } from './api'
@@ -86,7 +86,7 @@ function CommunityCard({ communityInfo }: { communityInfo: RepostCommunityType }
               className="relative mb-4 flex w-full items-center justify-between rounded-lg border border-tertiary-200 bg-tertiary-100 px-4 py-3">
               <span>
                 <p className="line-clamp-1 break-all text-title-3-demi">{item.group.group_name}</p>
-                {loopPrivacyInfo(item.actions[0].action_id, item.actions[0].access_type_id)}
+                <LoopPrivacyInfo accessTypeId={item.actions[0].access_type_id} actionId={item.actions[0].action_id} />
               </span>
               <RepostButton destinationId={item.chat_id} />
             </li>

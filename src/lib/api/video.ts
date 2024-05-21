@@ -64,7 +64,7 @@ export async function fetchLoopDetails(id: string) {
       params: { chat_id: id },
     })
     .then((res) => {
-      return validateLoopDetails(res?.data?.data)
+      return res?.data?.data
     })
     .catch((e) => {
       throw new Error('Something went wrong!!')

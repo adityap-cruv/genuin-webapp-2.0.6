@@ -1,6 +1,6 @@
 import { cn } from '@lib/utils'
 import { type ComponentProps } from 'react'
-type Props = { isActive: boolean; className?: string } & ComponentProps<'svg'>
+type Props = { variant?: string; isActive?: boolean; className?: string } & ComponentProps<'svg'>
 
 export function EditIcon({ isActive, className, ...props }: Props) {
   return (
@@ -65,7 +65,7 @@ export function AccountIcon({ isActive, className, ...props }: Props) {
   )
 }
 
-export function NotificationIcon({ isActive, className, ...props }: Props) {
+export function NotificationIcon({ variant, isActive, className, ...props }: Props) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -74,13 +74,16 @@ export function NotificationIcon({ isActive, className, ...props }: Props) {
       viewBox="0 0 32 32"
       fill="none"
       {...props}
-      className={cn(isActive ? 'stroke-primary' : 'stroke-secondary', className)}>
+      className={cn(
+        variant === 'white' ? 'stroke-new-off-white' : isActive ? 'stroke-primary' : 'stroke-secondary',
+        className
+      )}>
       <path
         fillRule="evenodd"
         clipRule="evenodd"
         d="M15.9993 4C20.4176 4 23.9993 7.58166 23.9993 11.9999C23.9993 14.5508 23.9993 17.1122 23.9993 18.6667C23.9993 22.6667 26.666 24 26.666 24L5.33268 24C5.33268 24 7.99935 22.6667 7.99935 18.6667C7.99935 17.1122 7.99935 14.5508 7.99935 11.9999C7.99935 7.58166 11.5811 4 15.9993 4V4Z"
         style={{
-          stroke: `${isActive ? 'var(--primary)' : 'var(--secondary)'}`,
+          stroke: `${variant === 'white' ? 'white' : isActive ? 'var(--primary)' : 'var(--secondary)'}`,
         }}
         strokeWidth="2"
         strokeLinejoin="round"
@@ -102,7 +105,7 @@ export function NotificationIcon({ isActive, className, ...props }: Props) {
       </mask>
       <path
         d="M11.3327 24C11.3327 26.5773 13.422 28.6667 15.9993 28.6667V24.6667C15.6312 24.6667 15.3327 24.3682 15.3327 24H11.3327ZM15.9993 28.6667C18.5767 28.6667 20.666 26.5773 20.666 24H16.666C16.666 24.3682 16.3675 24.6667 15.9993 24.6667V28.6667Z"
-        className={cn(isActive ? 'fill-primary' : 'fill-secondary')}
+        className={cn(variant === 'white' ? 'stroke-new-off-white' : isActive ? 'fill-primary' : 'fill-secondary')}
         mask="url(#path-2-outside-1_16004_222099)"
       />
     </svg>

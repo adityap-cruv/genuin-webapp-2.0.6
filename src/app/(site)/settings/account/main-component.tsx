@@ -51,14 +51,25 @@ export default function MainComponent() {
           </div>
         </div>
 
-        {/* <div
-          className="flex justify-between border-b border-monochrome-6 py-4 hover:cursor-pointer"
-          onClick={() => {
-            AuthenticationModal.open(undefined, 'CHANGE_PASSWORD')
-          }}>
-          <p className="text-body-1-demi text-red">Set Password</p>
-          <Image src={icBack} alt="back" className="h-5 rotate-180" />
-        </div> */}
+        {user?.isPasswordSet ? (
+          <div
+            className="flex justify-between border-b border-monochrome-6 py-4 hover:cursor-pointer"
+            onClick={() => {
+              AuthenticationModal.open(undefined, 'CHANGE_PASSWORD')
+            }}>
+            <p className="text-body-1-demi">Change Password</p>
+            <Image src={icBack} alt="back" className="h-5 rotate-180" />
+          </div>
+        ) : (
+          <div
+            className="flex justify-between border-b border-monochrome-6 py-4 hover:cursor-pointer"
+            onClick={() => {
+              AuthenticationModal.open(undefined, 'PASSWORD_INPUT')
+            }}>
+            <p className="text-body-1-demi text-red">Set Password</p>
+            <Image src={icBack} alt="back" className="h-5 rotate-180" />
+          </div>
+        )}
       </div>
       <Toaster />
     </div>

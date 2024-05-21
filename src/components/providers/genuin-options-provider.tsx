@@ -10,6 +10,7 @@ import { useSession } from 'next-auth/react'
 import { setAuthTokenInAxiosInstance, setBrandIdInAxiosInstance } from '@lib/api/instance'
 import dynamic from 'next/dynamic'
 import { miniProfile, saveVisitor } from '@lib/api/auth'
+import { notificationsCount } from '@lib/api/notification'
 const RepostModal = dynamic(
   async () => await import('@components/common/modals/repost').then((comp) => comp.RepostModal.ui)
 )
@@ -91,11 +92,19 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
     return getSizeBoxes(isMobile, !hideNavbar)
   }
 
+  async function fetchNotificationCount() {
+    const { status, count } = await notificationsCount()
+    if (status) {
+      setInitialData({ notificationCount: count })
+    }
+  }
+
   useEffect(() => {
     if (sessionStatus === 'loading') return
     if (sessionStatus === 'authenticated') {
       setAuthTokenInAxiosInstance(sessionData.user.accessToken)
       setInitialData({ user: sessionData.user })
+      void fetchNotificationCount()
       if (isLoading) setIsLoading(false)
     }
     if (sessionStatus === 'unauthenticated') {

@@ -152,5 +152,9 @@ export function Content() {
       return <ChangePassword />
     case 'LOGOUT':
       return <Logout />
+    case 'CHANGE_PASSWORD_SUCCESS_NOTE':
+      return <Note.changepasswordsuccess />
+    case 'SET_PASSWORD_SUCCESS_NOTE':
+      return <Note.setpasswordsuccess />
   }
 }

@@ -99,6 +99,7 @@ type StateType = {
   parentUrl: string
   config: ConfigType
   user?: User
+  notificationCount?: number | null
 }
 
 type ActionsType = {
@@ -124,6 +125,7 @@ const initialState: StateType = {
   userHasFocus: true,
   parentUrl: '',
   config: null,
+  notificationCount: -1,
 }
 
 export const useGenuinOptions = create(

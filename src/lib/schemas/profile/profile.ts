@@ -1,10 +1,10 @@
 import { z } from 'zod'
 
-const brandSchema = z
+const BrandSchema = z
   .object({
     brand_id: z.number(),
     videos: z.number(),
-    views: z.number(),
+    views: z.string().or(z.number()),
     no_of_communities: z.number(),
     brand_slug: z.string(),
     brand_url: z.string(),
@@ -12,7 +12,7 @@ const brandSchema = z
   .nullish()
 
 const ProfileDetailsSchema = z.object({
-  brand: brandSchema,
+  brand: BrandSchema,
   user_id: z.string(),
   nickname: z.string(),
   name: z.string().nullish(),
@@ -42,6 +42,7 @@ const ProfileDetailsSchema = z.object({
 })
 
 export type ProfileDetailsType = z.infer<typeof ProfileDetailsSchema>
+export type BrandSchemaType = z.infer<typeof BrandSchema>
 
 export function validateProfileDetails(data: any) {
   try {

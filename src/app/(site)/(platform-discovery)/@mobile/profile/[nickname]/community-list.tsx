@@ -23,7 +23,7 @@ import icPlay from '@icons/player-controls/icPlay.svg'
 import { LockIcon } from '@icons/LockIcon'
 import { usePathname } from 'next/navigation'
 import { EarthIcon } from '@icons/earth-icon'
-import { loopPrivacyInfo } from '@components/common/loop-privacy-info'
+import { LoopPrivacyInfo } from '@components/common/loop-privacy-info'
 import { PrivateModal } from '@components/common/modals/private'
 import { IcLoop } from '@icons/ic-loop'
 import { BrandCommunityTag } from '@components/common/brand-community-tag'
@@ -319,7 +319,6 @@ function LoopVideos({ userId, loop, communityId, pathName, user }: LoopVideosPro
     addVideos: state.addVideos,
     open: state.open,
   }))
-  const privacyMessage = loopPrivacyInfo(loop?.actions?.[0]?.action_id ?? 0, loop?.actions?.[0]?.access_type_id ?? 0)
 
   const { fetchNext, isFetchingNextPage } = getNextPage<ProfileVideoType[]>(
     async () => await fetchProfileVideos(userId, 16, communityId, loop.id, loop.videos[loop.videos.length - 1].id),
@@ -373,7 +372,12 @@ function LoopVideos({ userId, loop, communityId, pathName, user }: LoopVideosPro
       <Link href={PATH_NAME.loop(loop.slug)}>
         <p className="mb-3 text-body-1-bold">{loop.name}</p>
       </Link>
-      {pathName === PATH_NAME.profile(user?.nickname) && privacyMessage}
+      {pathName === PATH_NAME.profile(user?.nickname) && (
+        <LoopPrivacyInfo
+          actionId={loop?.actions?.[0]?.action_id ?? 0}
+          accessTypeId={loop?.actions?.[0]?.access_type_id ?? 0}
+        />
+      )}
       <div className="my-2 grid w-full grid-cols-4 gap-2 md:grid-cols-8">
         <InnerComponent />
         {isFetchingNextPage &&

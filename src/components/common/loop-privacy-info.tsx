@@ -2,7 +2,7 @@ import { CommunityIcon } from '@icons/community-icon'
 import { EarthIcon } from '@icons/earth-icon'
 import { IcLoop } from '@icons/ic-loop'
 
-export function loopPrivacyInfo(actionId: number, accessTypeId: number) {
+export function LoopPrivacyInfo({ actionId, accessTypeId }: { actionId: number; accessTypeId: number }) {
   if (actionId === 3 && accessTypeId === 5) {
     return (
       <div className="flex gap-1">

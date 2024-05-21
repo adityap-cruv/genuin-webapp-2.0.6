@@ -6,7 +6,6 @@ import { useAuthenticationModalStore } from '../store'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { resendVerificationMail } from '@lib/api/auth'
 import { useEffect, useState } from 'react'
-import { useSession } from 'next-auth/react'
 import { deleteSearchParam } from '@lib/utils'
 import { Loader } from '@components/ui/loader'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
@@ -21,6 +20,7 @@ function Success() {
   const setStep = useAuthenticationModalStore().setStep
   const pathName = usePathname()
   const searchParams = useSearchParams()
+  const embed = useGenuinOptions().embed
 
   return (
     <ModalShell>
@@ -30,19 +30,21 @@ function Success() {
         Now you’ll receive important updates and notifications about your account, new features, and exciting news
         straight to your inbox. You can use the app now.{' '}
       </p>
-      <Button
-        className="w-full"
-        variant="default"
-        onClick={() => {
-          deleteSearchParam({
-            paramToDelete: 'email_verification_status',
-            pathName,
-            searchParams: searchParams.toString(),
-          })
-          setStep('PASSWORD_INPUT')
-        }}>
-        <p className="text-title-3-med">Continue</p>
-      </Button>
+      {embed && (
+        <Button
+          className="w-full"
+          variant="default"
+          onClick={() => {
+            deleteSearchParam({
+              paramToDelete: 'email_verification_status',
+              pathName,
+              searchParams: searchParams.toString(),
+            })
+            setStep('PASSWORD_INPUT')
+          }}>
+          <p className="text-title-3-med">Continue</p>
+        </Button>
+      )}
     </ModalShell>
   )
 }

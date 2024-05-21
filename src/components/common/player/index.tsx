@@ -127,13 +127,19 @@ function Mobile({
       <div className="relative overflow-hidden" style={{ width: sizeBox.width, height: sizeBox.height }}>
         {playIfInViewPort ? (
           <ViewportPlayer
+            id={videoDetails.video.id}
             videoSource={videoDetails.video.source}
             poster={videoDetails.video.thumbnail}
             isFirstElement={isFirstPlayerInList}
             loop={loop}
           />
         ) : (
-          <InnerPlayer loop={loop} videoSource={videoDetails.video.source} poster={videoDetails.video.thumbnail} />
+          <InnerPlayer
+            id={videoDetails.video.id}
+            loop={loop}
+            videoSource={videoDetails.video.source}
+            poster={videoDetails.video.thumbnail}
+          />
         )}
         <div className="absolute left-0 top-0 h-full w-full">
           <ControlLayer.mobile
@@ -262,13 +268,14 @@ function Desktop({
       }}>
       {playIfInViewPort ? (
         <ViewportPlayer
+          id={videoData.id}
           videoSource={videoData.source}
           poster={videoData.thumbnail}
           isFirstElement={isFirstPlayerInList}
           loop={loop}
         />
       ) : (
-        <InnerPlayer loop={loop} videoSource={videoData.source} poster={videoData.thumbnail} />
+        <InnerPlayer id={videoData.id} loop={loop} videoSource={videoData.source} poster={videoData.thumbnail} />
       )}
       <div className="absolute left-0 top-0 h-full w-full">
         <ControlLayer.desktop
