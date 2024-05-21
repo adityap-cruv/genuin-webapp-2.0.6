@@ -48,7 +48,7 @@ const leaderSchema = z.object({
   is_avatar: z.boolean(),
   profile_image: z.string(),
   role: z.number().optional(),
-  brand: BrandUserSchema,
+  brand: BrandUserSchema.optional(),
 })
 
 const guidelineSchema = z.object({
