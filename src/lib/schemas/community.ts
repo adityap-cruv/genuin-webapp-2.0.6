@@ -69,7 +69,7 @@ const MembersSchema = z.object({
   profile_image: z.string(),
   role: z.number(),
   phone: z.string().nullish(),
-  brand: BrandUserSchema,
+  brand: BrandUserSchema.optional(),
 })
 
 const BrandSchema = z
@@ -87,7 +87,7 @@ const BrandSchema = z
   .nullish()
 
 const CommunityDetailsSchema = z.object({
-  brand: BrandSchema,
+  brand: BrandSchema.optional(),
   banner: z.string().nullish(),
   community_id: z.string(),
   handle: z.string(),

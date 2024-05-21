@@ -48,7 +48,7 @@ const BrandSchema = z
   .nullish()
 
 const CommunitySchema = z.object({
-  brand: BrandSchema,
+  brand: BrandSchema.optional(),
   community_id: z.string(),
   type: z.number().nullish(),
   slug: z.string(),

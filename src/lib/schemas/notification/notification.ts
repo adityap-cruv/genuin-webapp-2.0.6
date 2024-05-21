@@ -39,7 +39,7 @@ const Community = z.object({
   slug: z.string(),
   text_color_code: z.string(),
   share_url: z.string(),
-  brand: Brand,
+  brand: Brand.optional(),
 })
 
 const Owner = z.object({

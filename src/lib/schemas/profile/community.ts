@@ -42,7 +42,7 @@ const BrandSchema = z
   .nullish()
 
 const CommunitySchema = z.object({
-  brand: BrandSchema,
+  brand: BrandSchema.optional(),
   name: z.string().nullish(),
   id: z.string(),
   isJoined: z.boolean().default(false),
