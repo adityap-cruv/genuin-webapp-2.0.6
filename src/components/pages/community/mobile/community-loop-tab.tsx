@@ -163,13 +163,15 @@ function LoopItem({
                 <div className="relative flex">
                   <Members />
                 </div>
-                <p
-                  className={`ml-1 line-clamp-1 text-body-1-med text-secondary-300 ${
-                    loopDetails.group.members.length !== 1 && 'ml-7'
-                  } ${loopDetails.group.members.length === 3 && 'ml-6'}`}>
-                  {loopDetails.group.members[0].username}
-                  {getCollaboratorsCountString(loopDetails.group.members.length - 1)}
-                </p>
+                {loopDetails.group.members.length > 0 && (
+                  <p
+                    className={`ml-1 line-clamp-1 text-body-1-med text-secondary-300 ${
+                      loopDetails.group.members.length !== 1 && 'ml-7'
+                    } ${loopDetails.group.members.length === 3 && 'ml-6'}`}>
+                    {loopDetails.group.members[0].username}
+                    {getCollaboratorsCountString(loopDetails.group.members.length - 1)}
+                  </p>
+                )}
               </div>
               <p className="my-[2%] line-clamp-2 w-[68%] text-body-1-demi text-secondary-300">
                 {loopDetails.group.group_description}
