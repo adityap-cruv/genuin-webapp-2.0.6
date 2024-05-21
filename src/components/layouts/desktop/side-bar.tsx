@@ -144,7 +144,7 @@ export function SideBar() {
                 if (user?.isEmailVerified) {
                   handleCommunityBuilderClick()
                 } else {
-                  AuthenticationModal.open(undefined, embed ? 'KS_CB_SUBDOMAIN' : 'KS_CB_WEB')
+                  AuthenticationModal.open('KS_CB_REQUEST', embed ? 'KS_CB_SUBDOMAIN' : 'KS_CB_WEB')
                 }
               }}>
               <div className="z-20 w-3/5">

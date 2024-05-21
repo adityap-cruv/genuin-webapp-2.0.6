@@ -61,7 +61,7 @@ type Actions = {
   openWithStep: (action?: AuthActionType, step?: StepsType) => void
   goToPrevios: () => void
   close: () => void
-  setStep: (step: StepsType) => void
+  setStep: (step: StepsType, action?: AuthActionType) => void
   reset: () => void
   setFormData: (formData: Partial<FormDataType>) => void
 }
@@ -87,10 +87,11 @@ export const useAuthenticationModalStore = create<Actions & States>((set) => {
     close() {
       set({ isOpen: false })
     },
-    setStep(step) {
+    setStep(step, action) {
       set((state) => {
         state.previousStep = state.step
         state.step = step
+        if (action) state.action = action
         return { ...state }
       })
     },

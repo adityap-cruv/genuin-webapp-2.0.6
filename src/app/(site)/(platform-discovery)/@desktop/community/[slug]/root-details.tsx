@@ -50,8 +50,6 @@ export function RootDetails({ communityDetails }: { communityDetails: CommunityD
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
-  const [isCommunityJoined, setIsCommunityJoined] = useState(!!communityDetails.logged_in_user_role)
-  const user = useGenuinOptions().user
   const [dimensions, setDimensions] = useState({
     width: 0,
     height: 0,
@@ -75,28 +73,6 @@ export function RootDetails({ communityDetails }: { communityDetails: CommunityD
     })
   }, [])
 
-  async function toggleCommunityJoinState() {
-    !isCommunityJoined
-      ? await joinCommunity(
-          false,
-          [communityDetails.community_id],
-          [
-            {
-              user_id: user?.id,
-            },
-          ]
-        ).then((res) => {
-          if (res.code === 200) {
-            setIsCommunityJoined((prev) => !prev)
-          }
-        })
-      : await leaveCommunity(communityDetails.community_id).then((res) => {
-          if (res.code === 200) {
-            setIsCommunityJoined((prev) => !prev)
-          }
-        })
-  }
-
   return (
     <>
       <TopStickyBar.desktop
@@ -104,11 +80,9 @@ export function RootDetails({ communityDetails }: { communityDetails: CommunityD
         isOpen={!detailsInView}
         communityName={communityDetails.name ?? ''}
         communityProfileImage={communityDetails.dp ?? ''}
-        communtiyHandle={communityDetails.handle}
+        communityHandle={communityDetails.handle}
+        role={communityDetails.logged_in_user_role}
         communityId={communityDetails.community_id}
-        isCommunityJoined={isCommunityJoined}
-        setIsCommunityJoined={setIsCommunityJoined}
-        toggleCommunityJoinState={toggleCommunityJoinState}
         shareUrl={communityDetails.share_url}
       />
       <main className="hide-scrollbar absolute inset-0 h-full w-full overflow-auto">
@@ -134,34 +108,11 @@ export function RootDetails({ communityDetails }: { communityDetails: CommunityD
                 <p className={`px-4 py-1.5 text-body-1-demi text-monochrome-white text-primary`}>Requested</p>
               </Button>
             ) : (
-              <Button
-                size="custom"
-                className={`${isCommunityJoined && 'border border-primary '}`}
-                variant={isCommunityJoined ? 'outline' : 'default'}
-                onClick={
-                  user
-                    ? async () => {
-                        await toggleCommunityJoinState()
-                      }
-                    : () => {
-                        openModal({
-                          title: 'Get the Genuin app',
-                          subtitle: (
-                            <>
-                              Get the app to join the <br />
-                              <span className="font-bold">{communityDetails.name}</span> community.
-                            </>
-                          ),
-                        })
-                      }
-                }>
-                <p
-                  className={`px-4 py-1.5 text-body-1-demi text-monochrome-white ${
-                    isCommunityJoined && 'text-primary'
-                  }`}>
-                  {isCommunityJoined ? 'Joined' : 'Join Community'}
-                </p>
-              </Button>
+              <JoinButton
+                handle={communityDetails.handle}
+                id={communityDetails.community_id}
+                userRole={communityDetails.logged_in_user_role}
+              />
             )}
 
             <Button
@@ -469,5 +420,73 @@ function Stats({ communityDetails }: { communityDetails: CommunityDetailsType })
         </p>
       </span>
     </div>
+  )
+}
+
+export function JoinButton({
+  userRole,
+  handle,
+  id,
+}: {
+  userRole?: 'LEADER' | 'MEMBER' | null
+  handle: string
+  id: string
+}) {
+  const [role, setRole] = useState(userRole)
+  const user = useGenuinOptions().user
+  async function toggleCommunityJoinState() {
+    role !== 'MEMBER'
+      ? await joinCommunity(
+          false,
+          [id],
+          [
+            {
+              user_id: user?.id,
+            },
+          ]
+        ).then((res) => {
+          if (res.code === 200) {
+            setRole('MEMBER')
+          }
+        })
+      : await leaveCommunity(id).then((res) => {
+          if (res.code === 200) {
+            setRole(null)
+          }
+        })
+  }
+
+  if (userRole === 'LEADER') return
+
+  const isCommunityJoined = role === 'MEMBER'
+  return (
+    <Button
+      size="custom"
+      className={`${isCommunityJoined && 'rounded border border-primary '}`}
+      variant={isCommunityJoined ? 'outline' : 'default'}
+      onClick={
+        user
+          ? async () => {
+              await toggleCommunityJoinState()
+            }
+          : () => {
+              openModal({
+                title: 'Get the Genuin app',
+                subtitle: (
+                  <>
+                    Get the app to join the <br />
+                    <span className="font-bold">@{handle}</span> community.
+                  </>
+                ),
+              })
+            }
+      }>
+      <p
+        className={`whitespace-nowrap px-4 py-1.5 text-body-1-demi  ${
+          isCommunityJoined ? 'text-primary' : 'text-monochrome-white'
+        }`}>
+        {isCommunityJoined ? 'Joined' : 'Join Community'}
+      </p>
+    </Button>
   )
 }

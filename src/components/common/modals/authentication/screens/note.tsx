@@ -15,6 +15,8 @@ import Image from 'next/image'
 import { URL_TO_APP_STORE, URL_TO_PLAY_STORE } from '@lib/constants'
 import { QRCode } from 'react-qrcode-logo'
 import { CommunityDiscussion01 } from '@icons/ks-cb-flow/community-01'
+import { signOut } from 'next-auth/react'
+import { removeAllAuthToken } from '@lib/api/instance'
 
 export const Note = {
   email: Email,
@@ -25,7 +27,7 @@ export const Note = {
 }
 
 function Email({ acountExists = false }: { acountExists?: boolean }) {
-  const { formData } = useAuthenticationModalStore()
+  const { formData, setStep } = useAuthenticationModalStore()
   const [error, setError] = useState({ message: '', code: 0 })
   const [emailSentText, setEmailSentText] = useState('')
   const [timer, setTimer] = useState(formData.retryTime ?? 0)
@@ -52,6 +54,13 @@ function Email({ acountExists = false }: { acountExists?: boolean }) {
             setError((x) => {
               return { message: 'Email has already been verified', code: res.code }
             })
+            if (res.data.is_email_verified && res.data.is_password_set) {
+              void signOut({ callbackUrl: `${window.location.pathname}${window.location.search}`, redirect: true })
+              removeAllAuthToken()
+              setStep('EMAIL_INPUT')
+            } else {
+              setStep('PASSWORD_INPUT')
+            }
           } else {
             setTimer(res?.retryTime)
             throw new Error()
