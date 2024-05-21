@@ -13,6 +13,7 @@ export async function fetchCommunityDetails(slug: string) {
       },
     })
     .then((res) => {
+      console.log('res.data:', res.data.data)
       return validateCommunityDetails(res.data.data)
     })
     .catch((e) => {

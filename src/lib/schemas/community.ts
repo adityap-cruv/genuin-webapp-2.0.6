@@ -48,7 +48,7 @@ const leaderSchema = z.object({
   is_avatar: z.boolean(),
   profile_image: z.string(),
   role: z.number().optional(),
-  brand: BrandUserSchema,
+  brand: BrandUserSchema.optional(),
 })
 
 const guidelineSchema = z.object({
@@ -139,6 +139,7 @@ export function validateCommunityDetails(communityDetails: CommunityDetailsType)
   try {
     return CommunityDetailsSchema.parse(communityDetails)
   } catch (e) {
+    console.log('error:', e)
     throw new Error('parsing not done right!!!')
   }
 }

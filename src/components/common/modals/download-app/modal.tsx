@@ -2,7 +2,7 @@
 import { Dialog, DialogContent, DialogClose } from '@components/ui/dialog'
 import { type DialogProps } from '@radix-ui/react-dialog'
 import { useDownloadDialogModalStore } from './store'
-import { DownloadDialog } from './download-dialog'
+import { Body } from './body'
 import { X } from 'lucide-react'
 
 type Props = DialogProps
@@ -30,7 +30,7 @@ export function Modal({ ...props }: Props) {
             }}
           />
         </DialogClose>
-        <DownloadDialog title={title} subtitle={subtitle} />
+        <Body title={title} subtitle={subtitle} />
       </DialogContent>
     </Dialog>
   )
