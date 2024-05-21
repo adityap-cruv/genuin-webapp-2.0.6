@@ -26,7 +26,7 @@ type Props = {
   open: boolean
   close: () => void
   isLoading: boolean
-  unreadMessageCount: number
+  unreadMessageCount?: number
 }
 
 export function Mobile({

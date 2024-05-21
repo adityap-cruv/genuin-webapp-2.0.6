@@ -128,7 +128,7 @@ export function SideBar() {
               }}
               variant={'outline'}
               className="hidden w-3/4 border-primary lg:block">
-              <p className="text-title-3-bold text-primary"> Log in</p>
+              <p className="text-title-3-bold text-primary">Log in</p>
             </Button>
           </div>
         )}

@@ -70,7 +70,6 @@ export function Desktop({ fetchNextPage, isFetchingNextPage, videos, className, 
                   playIfInViewPort
                   isFirstPlayerInList={index === 0}
                   shouldPlay
-                  sizeBox={sizeBox}
                   videoData={{ ...item.video }}
                   loop
                   key={index}
@@ -97,7 +96,6 @@ export function SinglePlayer({ sizeBox, className, videoData }: SinglePlayerProp
       <div style={{ ...sizeBox }} className="hide-scrollbar overflow-x-clip">
         <DesktopPlayer
           shouldPlay
-          sizeBox={sizeBox}
           videoData={{
             id: videoData.video.id,
             shareUrl: videoData.video.shareUrl,
