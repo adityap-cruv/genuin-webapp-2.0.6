@@ -26,6 +26,7 @@ import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { useSearchParams } from 'next/navigation'
 import { DownloadDialogModal } from '@components/common/modals/download-app'
 import { RepostModal } from '@components/common/modals/repost'
+import { AuthenticationModal } from '@components/common/modals/authentication'
 
 export const Actions = {
   mobile: Mobile,
@@ -91,21 +92,14 @@ function Mobile({
           </ActionItem>
         </Link>
       )}
-      <span className=" flex flex-col">
-        {embed ? (
-          <ActionItem
-            title="Repost the video!"
-            onClick={() => {
-              // DownloadDialogModal.open({ title: 'Get the Genuin app', subtitle: 'Get the app to spark the video.' })
-              RepostModal.open(videoId)
-            }}>
-            <Image src={icRepost} height={32} width={32} alt="repost" />
-          </ActionItem>
-        ) : (
-          <ActionItem
-            title="Repost the video!"
-            onClick={() => {
-              const { communityShareString, loopShareString } = getLoopAndCommunityShareString(shareUrl)
+      <span className="flex flex-col">
+        <ActionItem
+          title="Repost the video!"
+          onClick={() => {
+            const { communityShareString, loopShareString } = getLoopAndCommunityShareString(shareUrl)
+            if (embed) {
+              user ? RepostModal.open(videoId) : AuthenticationModal.open()
+            } else {
               generateDeepLink({
                 action: 'repost',
                 contentType: 'video',
@@ -125,47 +119,39 @@ function Mobile({
                   openGeneratedLink(generatedLink)
                 })
                 .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
-            }}>
-            <Image src={icRepost} height={32} width={32} alt="repost" />
-          </ActionItem>
-        )}
+            }
+            // DownloadDialogModal.open({ title: 'Get the Genuin app', subtitle: 'Get the app to spark the video.' })
+          }}>
+          <Image src={icRepost} height={32} width={32} alt="repost" />
+        </ActionItem>
         <ActionItem
           title="Give spark!"
-          onClick={
+          onClick={async () => {
+            const { communityShareString, loopShareString } = getLoopAndCommunityShareString(shareUrl)
             embed
               ? user
-                ? async () => {
-                    await toggleVideoSpark()
-                  }
-                : () => {
-                    openModal({
-                      title: 'Get the Genuin app',
-                      subtitle: <>Get the app to spark the video.</>,
-                    })
-                  }
-              : (e) => {
-                  const { communityShareString, loopShareString } = getLoopAndCommunityShareString(shareUrl)
-                  generateDeepLink({
-                    action: 'spark',
-                    contentType: 'video',
-                    description: ``,
-                    title: ``,
-                    previewImage: null,
-                    fromUserName: null,
-                    pathName: PATH_NAME.video(videoSlug),
-                    utmCampaign: 'share',
-                    utmMedium: 'web',
-                    utmSource: window.location.hostname,
-                    community: communityShareString,
-                    loop: loopShareString,
-                    searchParams,
+                ? await toggleVideoSpark()
+                : AuthenticationModal.open()
+              : generateDeepLink({
+                  action: 'spark',
+                  contentType: 'video',
+                  description: ``,
+                  title: ``,
+                  previewImage: null,
+                  fromUserName: null,
+                  pathName: PATH_NAME.video(videoSlug),
+                  utmCampaign: 'share',
+                  utmMedium: 'web',
+                  utmSource: window.location.hostname,
+                  community: communityShareString,
+                  loop: loopShareString,
+                  searchParams,
+                })
+                  .then((generatedLink) => {
+                    openGeneratedLink(generatedLink)
                   })
-                    .then((generatedLink) => {
-                      openGeneratedLink(generatedLink)
-                    })
-                    .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
-                }
-          }>
+                  .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
+          }}>
           <Image src={sparkData.isSparked ? icSparkTrue : icSpark} height={32} width={32} alt="spark" />
           <p className="flex justify-center text-body-1-demi text-monochrome-white">
             {abbreviateNumber(sparkData.sparkCount)}
@@ -247,7 +233,7 @@ function Desktop({
     isSparked,
     sparkCount,
   })
-  const { user, embed } = useGenuinOptions((state) => ({ user: state.user, embed: state.embed }))
+  const { user } = useGenuinOptions((state) => ({ user: state.user }))
 
   async function toggleVideoSpark() {
     await videoSpark(videoId, 2, !sparkData.isSparked).then((res) => {
@@ -278,10 +264,10 @@ function Desktop({
         <ActionItem
           title="Repost the video!"
           onClick={() => {
-            if (embed) {
+            if (user) {
               RepostModal.open(videoId)
             } else {
-              DownloadDialogModal.open({ title: 'Get the Genuin app', subtitle: 'Get the app to repost the video.' })
+              openModal({ title: 'Get the Genuin app', subtitle: 'Get the app to repost the video.' })
             }
           }}>
           <Image src={icRepost} alt="repost" height={32} width={32} />
