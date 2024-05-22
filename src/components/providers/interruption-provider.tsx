@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
 'use client'
 import { AuthenticationModal } from '@components/common/modals/authentication'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
@@ -11,8 +12,8 @@ const DELAY_FOR_INTERRUPTION = 60000
  */
 export function showInterruption() {
   const { embed, user } = useGenuinOptions.getState()
-  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-  if (!embed || (user && user.isPasswordSet && user.hasTopics) || AuthenticationModal.isOpen) return
+  if (!embed || (user && user.isPasswordSet && user.hasTopics) || AuthenticationModal.isOpen || !user?.isEmailVerified)
+    return
   if (!user) {
     AuthenticationModal.open(undefined, 'EMAIL_INPUT')
   } else if (!user.hasTopics) {
@@ -26,8 +27,13 @@ export function InterruptionProvider() {
   const { user, embed } = useGenuinOptions((state) => ({ user: state.user, embed: state.embed }))
 
   function showInterruption() {
-    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-    if (!embed || (user && user.isPasswordSet && user.hasTopics) || AuthenticationModal.isOpen) return
+    if (
+      !embed ||
+      (user && user.isPasswordSet && user.hasTopics) ||
+      AuthenticationModal.isOpen ||
+      !user?.isEmailVerified
+    )
+      return
 
     if (!user) {
       AuthenticationModal.open(undefined, 'EMAIL_INPUT')
