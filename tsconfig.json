@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "target": "es5",
+    "downlevelIteration": true,
     "lib": [
       "dom",
       "dom.iterable",
@@ -39,9 +40,9 @@
       "@images/*": [
         "./public/images/*"
       ],
-      "@analytics/*": [
-        "./src/services/analytics/*"
-      ],
+      "@services/*": [
+        "./src/services/*"
+      ]
     },
   },
   "include": [

@@ -127,13 +127,19 @@ function Mobile({
       <div className="relative overflow-hidden" style={{ width: sizeBox.width, height: sizeBox.height }}>
         {playIfInViewPort ? (
           <ViewportPlayer
+            id={videoDetails.video.id}
             videoSource={videoDetails.video.source}
             poster={videoDetails.video.thumbnail}
             isFirstElement={isFirstPlayerInList}
             loop={loop}
           />
         ) : (
-          <InnerPlayer loop={loop} videoSource={videoDetails.video.source} poster={videoDetails.video.thumbnail} />
+          <InnerPlayer
+            id={videoDetails.video.id}
+            loop={loop}
+            videoSource={videoDetails.video.source}
+            poster={videoDetails.video.thumbnail}
+          />
         )}
         <div className="absolute left-0 top-0 h-full w-full">
           <ControlLayer.mobile
@@ -188,7 +194,7 @@ type DesktopProps = {
    * Sizebox is mandatory. To get sizebox see hooke useVideoSizeBox.
    * Tip: Please don't render withour sizebox
    */
-  sizeBox: VideoSizeBoxType
+  // sizeBox: VideoSizeBoxType
   /**
    * If it is enabled video will play if only if video is in viewport.
    */
@@ -196,7 +202,7 @@ type DesktopProps = {
   /**
    * Default is true, if you want to remove backgroundblur than make it false
    */
-  shouldShowBackgroundBlurImage?: boolean
+  // shouldShowBackgroundBlurImage?: boolean
   /**
    * If you are playing reels in list and you want first video to play automatically and next
    * video will be playing once it is in viewport.
@@ -209,9 +215,7 @@ function Desktop({
   videoData,
   loop = false,
   shouldPlay = true,
-  sizeBox,
   playIfInViewPort,
-  shouldShowBackgroundBlurImage = true,
   isFirstPlayerInList = false,
 }: DesktopProps) {
   const hasFocus = useGenuinOptions().userHasFocus
@@ -255,7 +259,7 @@ function Desktop({
 
   return (
     <div
-      className="overflow-hidden"
+      className="relative h-full overflow-hidden"
       onClick={(e) => {
         if (!stateShouldPlay) {
           setActiveComment('')
@@ -264,13 +268,14 @@ function Desktop({
       }}>
       {playIfInViewPort ? (
         <ViewportPlayer
+          id={videoData.id}
           videoSource={videoData.source}
           poster={videoData.thumbnail}
           isFirstElement={isFirstPlayerInList}
           loop={loop}
         />
       ) : (
-        <InnerPlayer loop={loop} videoSource={videoData.source} poster={videoData.thumbnail} />
+        <InnerPlayer id={videoData.id} loop={loop} videoSource={videoData.source} poster={videoData.thumbnail} />
       )}
       <div className="absolute left-0 top-0 h-full w-full">
         <ControlLayer.desktop

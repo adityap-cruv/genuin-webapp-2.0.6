@@ -11,7 +11,7 @@ import { useEmbedPlayerState } from '@components/embed/embed-player-state'
 export function CarouselView() {
   const { width, height } = useSize()
   const { setActiveVideoId } = useEmbedPlayerState()
-  const { data: videoPages, isError, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } = getFeed(3)
+  const { data: videoPages } = getFeed(3)
   const videos = videoPages?.pages.flatMap((item) => item.reels)
 
   const videoWidth = (height * 9) / 16
@@ -21,7 +21,6 @@ export function CarouselView() {
     return (
       <div className="relative h-full w-full">
         <Swiper
-          className="h-full w-full"
           direction="horizontal"
           spaceBetween={16}
           mousewheel={{ forceToAxis: true }}
@@ -37,9 +36,15 @@ export function CarouselView() {
             return (
               <SwiperSlide key={index}>
                 <div
-                  style={{ width: height * (9 / 16), height, background: `url(${item.video.thumbnail})` }}
+                  style={{ width: height * (9 / 16), height }}
                   className="relative inset-0 aspect-reel overflow-clip rounded-lg bg-contain bg-center bg-no-repeat object-contain">
-                  <EmbedPlayer videoId={item.video.id} videoSource={item.video.source} />
+                  <EmbedPlayer
+                    videoId={item.video.id}
+                    videoSource={item.video.source}
+                    isFirstElement={index === 0}
+                    poster={item.video.thumbnail}
+                    loop
+                  />
                 </div>
               </SwiperSlide>
             )

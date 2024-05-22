@@ -4,6 +4,10 @@ import { useEffect } from 'react'
 
 export function ClientComponent({ user, redirectTo }: { user: any; redirectTo: string }) {
   useEffect(() => {
+    if (!user) {
+      window.location.replace(redirectTo)
+      return
+    }
     user.is_email_verified = true
     void signIn('credentials', { ...user, redirect: true, callbackUrl: redirectTo })
       .then((val) => {})

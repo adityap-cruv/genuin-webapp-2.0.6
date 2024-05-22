@@ -16,7 +16,7 @@ const SubscriberSchema = z.object({
   profile_image_s: z.string().nullish(),
   profile_image_m: z.string().nullish(),
   profile_image_l: z.string().nullish(),
-  brand: BrandUserSchema,
+  brand: BrandUserSchema.optional(),
 })
 
 const SubscriberListSchema = z.array(SubscriberSchema)

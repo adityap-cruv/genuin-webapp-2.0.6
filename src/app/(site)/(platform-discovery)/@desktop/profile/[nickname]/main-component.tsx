@@ -1,16 +1,11 @@
 'use client'
 import { abbreviateNumber, checkAndAppendHttps, getCurrentShareUrl } from '@lib/utils'
 import { Button } from '@components/ui/button'
-import Image from 'next/image'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import React, { useEffect, useRef } from 'react'
-import icInstagram from '@icons/icInstagramBlack.svg'
-import icTiktok from '@icons/icTiktok.svg'
-import icLinkedIn from '@icons/icLinkedIn.svg'
-import icTwitter from '@icons/icTwitterBlack.svg'
 import Link from 'next/link'
 import { useInView } from 'framer-motion'
 import { TopStickyBar } from './top-bar'
@@ -21,6 +16,10 @@ import { type ProfileDetailsType } from '@lib/schemas/profile/profile'
 import { CommunityList } from './community-list'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { usePathname } from 'next/navigation'
+import { InstagramIcon } from '@icons/instagram-icon'
+import { TwitterIcon } from '@icons/twitter-icon'
+import { TikTokIcon } from '@icons/tiktok-icon'
+import { LinkedInIcon } from '@icons/linkedin-icon'
 
 interface CompProps {
   profileData: ProfileDetailsType
@@ -105,32 +104,32 @@ function Links({ profileData }: CompProps) {
       {links?.linkedin && (
         <div className="mr-2 flex h-8 w-8 items-center justify-center rounded-md bg-tertiary-200 p-1">
           <Link href={checkAndAppendHttps(links.linkedin)} target="_blank">
-            <Image src={icLinkedIn} alt="linkedin" />
+            <LinkedInIcon className="h-5 w-5 fill-primary " />
           </Link>
         </div>
       )}
       {links?.instagram && (
         <div className="mr-2 flex h-8 w-8 items-center justify-center rounded-md bg-tertiary-200 p-1">
           <Link href={checkAndAppendHttps(links.instagram)} target="_blank">
-            <Image src={icInstagram} alt="instagram" />
+            <InstagramIcon className="h-5 w-5 fill-primary " />
           </Link>
         </div>
       )}
       {links?.twitter && (
         <div className="mr-2 flex h-8 w-8 items-center justify-center rounded-md bg-tertiary-200 p-1">
           <Link href={checkAndAppendHttps(links.twitter)} target="_blank">
-            <Image src={icTwitter} alt="twitter" />
+            <TwitterIcon className="h-5 w-5 fill-primary " />
           </Link>
         </div>
       )}
       {links?.tiktok && (
         <div className="mr-2 flex h-8 w-8 items-center justify-center rounded-md bg-tertiary-200 p-1 px-2">
           <Link href={checkAndAppendHttps(links.tiktok)} target="_blank">
-            <Image src={icTiktok} alt="linkedin" />
+            <TikTokIcon className="h-5 w-5 fill-primary " />
           </Link>
         </div>
       )}
-      {pathName === PATH_NAME.profile(user?.nickname) && !user?.is_brand_system_user && (
+      {pathName === PATH_NAME.profile(user?.nickname) && !user?.isBrandSystemUser && (
         <Link href={PATH_NAME.settings('edit')}>
           <Button
             size="custom"

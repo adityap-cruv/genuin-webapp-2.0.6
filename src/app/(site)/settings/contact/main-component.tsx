@@ -66,7 +66,7 @@ export default function MainComponent() {
               </button>
             )}
           </div>
-          {isMobile && <hr className="bg-monochrome-9" />}
+          {isMobile && <hr className="bg-monochrome-black/10" />}
           <p className={`${isMobile ? 'm-4 mb-0' : 'mx-8'} text-body-1-med text-monochrome`}>
             Need help, experiencing problems or want to share feedback? Share the details below.
           </p>

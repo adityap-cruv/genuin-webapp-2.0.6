@@ -176,7 +176,7 @@ function PeopleView({ people }: { people: PeopleType[] }) {
           return (
             <Link
               onClick={close}
-              href={PATH_NAME.profile(person.userName)}
+              href={person.brand ? PATH_NAME.brand(person.brand.brand_slug) : PATH_NAME.profile(person.userName)}
               className="flex w-fit flex-col items-center gap-y-1"
               key={person.id}>
               <CustomAvatar

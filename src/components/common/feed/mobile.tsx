@@ -7,6 +7,7 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import { Mousewheel } from 'swiper/modules'
 import { useGenuinOptions, type VideoSizeBoxType } from '@lib/stores/genuin-options'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
+import { showInterruption } from '@components/providers/inerruption-provider'
 const Player = dynamic(async () => await import('@components/common/player').then((comp) => comp.Player.mobile))
 
 type MobileProps = {
@@ -42,6 +43,7 @@ export function Mobile({ videos, fetchNextPage, isFetchingNextPage, startIndex =
     if (!isFetchingNextPage && videoList.length - 3 <= currentIndex) {
       fetchNextPage?.()
     }
+    if ((currentIndex + 1) % 5) showInterruption()
   }, [currentIndex])
 
   useEffect(() => {
@@ -99,6 +101,13 @@ function InfinityViewBox() {
             profileImage: videoDetails.community.profileImage ?? '',
             slug: videoDetails.community.slug,
             type: videoDetails.community.type ?? null,
+            brand: videoDetails.community.brand
+              ? {
+                  name: videoDetails.community.brand?.name ?? '',
+                  brand_system_user_id: videoDetails.community.brand?.brand_system_user_id ?? '',
+                  brand_slug: videoDetails.community.brand?.brand_slug ?? '',
+                }
+              : null,
           }}
           loop={{
             name: videoDetails.loop.name ?? '',

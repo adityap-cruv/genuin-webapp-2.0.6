@@ -11,10 +11,10 @@ import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { useState } from 'react'
 import { Input } from '@components/ui/input'
 import { createComment } from '@lib/api/video'
-import { DownloadDialog } from '@components/common/download-dialog'
 import { useSearchParams } from 'next/navigation'
 import { type CommentListType } from '@lib/schemas/loop/comment'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
+import { DownloadDialogModal } from '@components/common/modals/download-app'
 
 type Props = {
   videoId: string
@@ -170,12 +170,28 @@ function CommentInput({ setComments, currentComment, setCurrentComment, videoDet
                 <p className="text-start text-title-3-demi text-monochrome">Add a Comment</p>
               </div>
             )}
-            <DownloadDialog title="Get the Genuin app" subtitle="Get the app to comment on this video." asChild>
-              <Image src={icAudioRecord} alt="audio record" className="h-8 w-8" />
-            </DownloadDialog>
-            <DownloadDialog title="Get the Genuin app" subtitle="Get the app to comment on this video." asChild>
-              <Image src={icVideoRecord} alt="audio record" className="h-8 w-8" />
-            </DownloadDialog>
+            <Image
+              src={icAudioRecord}
+              alt="audio record"
+              className="h-8 w-8"
+              onClick={() => {
+                DownloadDialogModal.open({
+                  title: 'Get the Genuin app',
+                  subtitle: 'Get the app to comment on this video.',
+                })
+              }}
+            />
+            <Image
+              src={icVideoRecord}
+              alt="audio record"
+              className="h-8 w-8"
+              onClick={() => {
+                DownloadDialogModal.open({
+                  title: 'Get the Genuin app',
+                  subtitle: 'Get the app to comment on this video.',
+                })
+              }}
+            />
           </div>
         </div>
       ) : (

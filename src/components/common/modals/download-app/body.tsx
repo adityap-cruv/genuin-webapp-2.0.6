@@ -1,5 +1,4 @@
 'use client'
-import { AppLogo } from '@components/ui/app-logo'
 import { ModalShell } from '../authentication/modal-shell'
 import Image from 'next/image'
 import imageAppStore from '@images/appStore.svg'
@@ -12,7 +11,7 @@ type DownloadDialogType = {
   subtitle?: React.ReactNode
 }
 
-export function DownloadDialog({ title, subtitle }: DownloadDialogType) {
+export function Body({ title, subtitle }: DownloadDialogType) {
   return (
     <ModalShell>
       <div className="flex w-full flex-col items-center justify-center px-4 pt-6">

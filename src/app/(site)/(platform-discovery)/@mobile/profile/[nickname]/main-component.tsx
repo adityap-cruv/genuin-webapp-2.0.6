@@ -9,12 +9,8 @@ import { TopBar } from '@components/layouts/mobile/top-bar'
 import Link from 'next/link'
 import { useInView, useScroll } from 'framer-motion'
 import { TopStickyBar } from '../../../@desktop/profile/[nickname]/top-bar'
-import icInstagram from '@icons/icInstagramBlack.svg'
-import icLinkedIn from '@icons/icLinkedIn.svg'
-import icTwitter from '@icons/icTwitterBlack.svg'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
-import icTiktok from '@icons/icTiktok.svg'
 import { useCommunityListStore } from './store'
 import { ShareIcon } from '@icons/share-icon'
 import { type ProfileDetailsType } from '@lib/schemas/profile/profile'
@@ -22,6 +18,10 @@ import { CommunityList } from './community-list'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { usePathname } from 'next/navigation'
 import { TickIcon } from '@icons/tick-icon'
+import { InstagramIcon } from '@icons/instagram-icon'
+import { TikTokIcon } from '@icons/tiktok-icon'
+import { LinkedInIcon } from '@icons/linkedin-icon'
+import { TwitterIcon } from '@icons/twitter-icon'
 
 interface CompProps {
   profileData: ProfileDetailsType
@@ -85,7 +85,7 @@ export function MainComponent({ profileData }: CompProps) {
                 }>
                 <p className="text-body-1-bold text-blue">Edit Profile</p>
               </Button> */}
-              {pathName === PATH_NAME.profile(user?.nickname) && !user?.is_brand_system_user && (
+              {pathName === PATH_NAME.profile(user?.nickname) && !user?.isBrandSystemUser && (
                 <Link href={PATH_NAME.settings('edit')}>
                   <Button size="custom" variant="outline" className="border border-primary">
                     <p className="px-4 py-1.5 text-title-3-bold text-primary" style={{ fontSize: '15px' }}>
@@ -147,28 +147,28 @@ function Links({ profileData }: CompProps) {
       {links?.linkedin && (
         <div className="mr-2 flex h-8 w-8 items-center justify-center rounded-md bg-tertiary-200 p-1">
           <Link href={checkAndAppendHttps(links.linkedin)} target="_blank">
-            <Image src={icLinkedIn} alt="linkedin" />
+            <LinkedInIcon className="h-5 w-5 fill-primary " />
           </Link>
         </div>
       )}
       {links?.instagram && (
         <div className="mr-2 flex h-8 w-8 items-center justify-center rounded-md bg-tertiary-200 p-1">
           <Link href={checkAndAppendHttps(links.instagram)} target="_blank">
-            <Image src={icInstagram} alt="instagram" />
+            <InstagramIcon className="h-5 w-5 fill-primary " />
           </Link>
         </div>
       )}
       {links?.twitter && (
         <div className="mr-2 flex h-8 w-8 items-center justify-center rounded-md bg-tertiary-200 p-1">
           <Link href={checkAndAppendHttps(links.twitter)} target="_blank">
-            <Image src={icTwitter} alt="twitter" />
+            <TwitterIcon className="h-5 w-5 fill-primary " />
           </Link>
         </div>
       )}
       {links?.tiktok && (
         <div className="mr-2 flex h-8 w-8 items-center justify-center rounded-md bg-tertiary-200 p-1 px-2">
           <Link href={checkAndAppendHttps(links.tiktok)} target="_blank">
-            <Image src={icTiktok} alt="linkedin" />
+            <TikTokIcon className="h-5 w-5 fill-primary " />
           </Link>
         </div>
       )}

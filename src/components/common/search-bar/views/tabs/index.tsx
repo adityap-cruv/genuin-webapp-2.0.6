@@ -46,6 +46,13 @@ export type PeopleType = {
   bio?: string | null
   profileImage?: string | null
   isAvatar: boolean
+  brand?:
+    | {
+        brand_id: number
+        brand_slug: string
+      }
+    | null
+    | undefined
 }
 
 export type VideoType = {

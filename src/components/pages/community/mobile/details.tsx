@@ -6,10 +6,7 @@ import { checkAndAppendHttps, generateDeepLink, getCurrentShareUrl, openGenerate
 import Image from 'next/image'
 import icLock from '@icons/icLock.svg'
 import Link from 'next/link'
-import icInstagram from '@icons/icInstagramBlack.svg'
-import icLinkedIn from '@icons/icLinkedIn.svg'
 import icLink from '@icons/icLinkBlack.svg'
-import icTwitter from '@icons/icTwitterBlack.svg'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
@@ -29,6 +26,9 @@ import { LockIcon } from '@icons/LockIcon'
 import { PrivateModal } from '@components/common/modals/private'
 import { TickIcon } from '@icons/tick-icon'
 import { BrandCommunityTag } from '@components/common/brand-community-tag'
+import { InstagramIcon } from '@icons/instagram-icon'
+import { LinkedInIcon } from '@icons/linkedin-icon'
+import { TwitterIcon } from '@icons/twitter-icon'
 
 let communityDetailsModule: CommunityDetailsType
 
@@ -43,8 +43,6 @@ export function Details({ communityDetails }: Props) {
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
   const { isEmbed } = useGenuinOptions((state) => ({ isEmbed: state.embed, parentUrl: state.parentUrl }))
-  const [isCommunityJoined, setIsCommunityJoined] = useState(!!communityDetails.logged_in_user_role)
-  const user = useGenuinOptions().user
   const searchParams = Object.fromEntries(useSearchParams())
   const [dimensions, setDimensions] = useState({
     width: 0,
@@ -60,28 +58,6 @@ export function Details({ communityDetails }: Props) {
     }
   }, [detailsDivRef.current])
 
-  async function toggleCommunityJoinState() {
-    !isCommunityJoined
-      ? await joinCommunity(
-          false,
-          [communityDetails.community_id],
-          [
-            {
-              user_id: user?.id,
-            },
-          ]
-        ).then((res) => {
-          if (res.code === 200) {
-            setIsCommunityJoined((prev: any) => !prev)
-          }
-        })
-      : await leaveCommunity(communityDetails.community_id).then((res) => {
-          if (res.code === 200) {
-            setIsCommunityJoined((prev) => !prev)
-          }
-        })
-  }
-
   return (
     <>
       <TopBar />
@@ -90,8 +66,10 @@ export function Details({ communityDetails }: Props) {
         isOpen={!detailsInView}
         communityName={communityDetails.name ?? ''}
         communityProfileImage={communityDetails.dp ?? ''}
-        communtiyHandle={communityDetails.handle}
+        communityHandle={communityDetails.handle}
         shareUrl={communityDetails.share_url}
+        role={communityDetails.logged_in_user_role}
+        communityId={communityDetails.community_id}
       />
       <div
         className="hide-scrollbar absolute inset-0 mt-navbar w-full overflow-auto"
@@ -121,31 +99,11 @@ export function Details({ communityDetails }: Props) {
               )}
 
               {isEmbed && !communityDetails.is_community_join_requested && (
-                <Button
-                  size="sm"
-                  className={`${isCommunityJoined && 'border border-primary '}`}
-                  variant={isCommunityJoined ? 'outline' : 'default'}
-                  onClick={
-                    user
-                      ? async () => {
-                          await toggleCommunityJoinState()
-                        }
-                      : () => {
-                          openModal({
-                            title: 'Get the Genuin app',
-                            subtitle: (
-                              <>
-                                Get the app to join the <br />
-                                <span className="font-bold">@{communityDetails.handle}</span> community.
-                              </>
-                            ),
-                          })
-                        }
-                  }>
-                  <p className={`mx-2 text-body-1-bold text-monochrome-white ${isCommunityJoined && 'text-primary'}`}>
-                    {isCommunityJoined ? 'Joined' : 'Join Community'}
-                  </p>
-                </Button>
+                <JoinButton
+                  handle={communityDetails.handle}
+                  id={communityDetails.community_id}
+                  userRole={communityDetails.logged_in_user_role}
+                />
               )}
 
               {!isEmbed && (
@@ -367,21 +325,21 @@ function Links() {
           {links?.insta?.id && (
             <div className="mx-1 flex items-center rounded-md bg-tertiary-200 p-1">
               <Link href={checkAndAppendHttps(links?.insta?.url + links?.insta?.id)} target="_blank">
-                <Image src={icInstagram} alt="instagram" />
+                <InstagramIcon className="h-5 w-5 fill-primary " />
               </Link>
             </div>
           )}
           {links?.linkedin?.id && (
             <div className="mx-1 flex items-center rounded-md bg-tertiary-200 p-1">
               <Link href={checkAndAppendHttps(links?.linkedin?.url + links?.linkedin?.id)} target="_blank">
-                <Image src={icLinkedIn} alt="linkedin" />
+                <LinkedInIcon className="h-5 w-5 fill-primary " />
               </Link>
             </div>
           )}
           {links?.twitter?.id && (
             <div className="mx-1 flex items-center rounded-md bg-tertiary-200 p-1">
               <Link href={checkAndAppendHttps(links?.twitter?.url + links?.twitter?.id)} target="_blank">
-                <Image src={icTwitter} alt="twitter" />
+                <TwitterIcon className="h-5 w-5 fill-primary " />
               </Link>
             </div>
           )}
@@ -420,7 +378,7 @@ function Leaders() {
           description={leader.bio ?? ''}
           image={leader.profile_image}
           isAvatar={leader.is_avatar}
-          brand={leader.brand ?? null}
+          brand={leader.brand}
         />
       </Link>
     </div>
@@ -443,7 +401,7 @@ function ListItem({
   brand?: {
     brand_id: number
     brand_slug: string
-  }
+  } | null
 }) {
   return (
     <div className="flex items-center gap-x-1 rounded-lg p-2">
@@ -518,4 +476,72 @@ function Members() {
         })}
       </div>
     )
+}
+
+export function JoinButton({
+  userRole,
+  handle,
+  id,
+}: {
+  userRole?: 'LEADER' | 'MEMBER' | null
+  handle: string
+  id: string
+}) {
+  const [role, setRole] = useState(userRole)
+  const user = useGenuinOptions().user
+  async function toggleCommunityJoinState() {
+    role !== 'MEMBER'
+      ? await joinCommunity(
+          false,
+          [id],
+          [
+            {
+              user_id: user?.id,
+            },
+          ]
+        ).then((res) => {
+          if (res.code === 200) {
+            setRole('MEMBER')
+          }
+        })
+      : await leaveCommunity(id).then((res) => {
+          if (res.code === 200) {
+            setRole(null)
+          }
+        })
+  }
+
+  if (userRole === 'LEADER') return
+
+  const isCommunityJoined = role === 'MEMBER'
+  return (
+    <Button
+      size="custom"
+      className={`${isCommunityJoined && 'rounded border border-primary '}`}
+      variant={isCommunityJoined ? 'outline' : 'default'}
+      onClick={
+        user
+          ? async () => {
+              await toggleCommunityJoinState()
+            }
+          : () => {
+              openModal({
+                title: 'Get the Genuin app',
+                subtitle: (
+                  <>
+                    Get the app to join the <br />
+                    <span className="font-bold">@{handle}</span> community.
+                  </>
+                ),
+              })
+            }
+      }>
+      <p
+        className={`whitespace-nowrap px-4 py-1.5 text-body-1-demi  ${
+          isCommunityJoined ? 'text-primary' : 'text-monochrome-white'
+        }`}>
+        {isCommunityJoined ? 'Joined' : 'Join Community'}
+      </p>
+    </Button>
+  )
 }

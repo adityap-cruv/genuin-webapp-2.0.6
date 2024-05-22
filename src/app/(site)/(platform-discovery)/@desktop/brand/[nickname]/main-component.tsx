@@ -1,4 +1,5 @@
 'use client'
+import React, { useEffect, useRef } from 'react'
 import { abbreviateNumber, checkAndAppendHttps, getCurrentShareUrl } from '@lib/utils'
 import { Button } from '@components/ui/button'
 import Image from 'next/image'
@@ -6,21 +7,18 @@ import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
 import { CustomAvatar } from '@components/custom/custom-avatar'
-
-import React, { useEffect, useRef } from 'react'
-
-import icInstagram from '@icons/icInstagramBlack.svg'
-import icTiktok from '@icons/icTiktok.svg'
-import icLinkedIn from '@icons/icLinkedIn.svg'
-import icTwitter from '@icons/icTwitterBlack.svg'
 import Link from 'next/link'
 import { useInView } from 'framer-motion'
 import { TopStickyBar } from './top-bar'
 import { useCommunityListStore } from './store'
 import { ShareIcon } from '@icons/share-icon'
-import { type ProfileDetailsType } from '@lib/schemas/profile/profile'
+import { type BrandSchemaType, type ProfileDetailsType } from '@lib/schemas/profile/profile'
 import { CommunityList } from './community-list'
 import { TickIcon } from '@icons/tick-icon'
+import { InstagramIcon } from '@icons/instagram-icon'
+import { TikTokIcon } from '@icons/tiktok-icon'
+import { LinkedInIcon } from '@icons/linkedin-icon'
+import { TwitterIcon } from '@icons/twitter-icon'
 
 interface CompProps {
   profileData: ProfileDetailsType
@@ -82,7 +80,7 @@ export function MainComponent({ profileData }: CompProps) {
             )}
           </div>
           <p className="my-1 line-clamp-2 break-all text-body-1-med">{profileData?.bio}</p>
-          <Stats profileData={profileData} />
+          <Stats brandData={profileData.brand} />
         </div>
         <CommunityList brandId={profileData?.brand?.brand_id ?? 0} />
       </div>
@@ -106,28 +104,28 @@ function Links({ profileData }: CompProps) {
       {links?.linkedin && (
         <div className="mr-2 flex h-8 w-8 items-center justify-center rounded-md bg-tertiary-200 p-1">
           <Link href={checkAndAppendHttps(links.linkedin)} target="_blank">
-            <Image src={icLinkedIn} alt="linkedin" />
+            <LinkedInIcon className="h-5 w-5 fill-primary " />
           </Link>
         </div>
       )}
       {links?.instagram && (
         <div className="mr-2 flex h-8 w-8 items-center justify-center rounded-md bg-tertiary-200 p-1">
           <Link href={checkAndAppendHttps(links.instagram)} target="_blank">
-            <Image src={icInstagram} alt="instagram" />
+            <InstagramIcon className="h-5 w-5 fill-primary " />
           </Link>
         </div>
       )}
       {links?.twitter && (
         <div className="mr-2 flex h-8 w-8 items-center justify-center rounded-md bg-tertiary-200 p-1">
           <Link href={checkAndAppendHttps(links.twitter)} target="_blank">
-            <Image src={icTwitter} alt="twitter" />
+            <TwitterIcon className="h-5 w-5 fill-primary " />
           </Link>
         </div>
       )}
       {links?.tiktok && (
         <div className="mr-2 flex h-8 w-8 items-center justify-center rounded-md bg-tertiary-200 p-1 px-2">
           <Link href={checkAndAppendHttps(links.tiktok)} target="_blank">
-            <Image src={icTiktok} alt="linkedin" />
+            <TikTokIcon className="h-5 w-5 fill-primary " />
           </Link>
         </div>
       )}
@@ -150,19 +148,19 @@ function Links({ profileData }: CompProps) {
   )
 }
 
-function Stats({ profileData }: { profileData: ProfileDetailsType }) {
+function Stats({ brandData }: { brandData: BrandSchemaType }) {
   return (
     <div className="m-1 ml-0 flex max-w-[250px]  justify-between gap-x-6 p-1 pl-0">
       <div className="flex items-center">
-        <p className="text-title-3-bold">{abbreviateNumber(Number(profileData?.views)) ?? 0}</p>
+        <p className="text-title-3-bold">{abbreviateNumber(Number(brandData?.views)) ?? 0}</p>
         <p className="px-1 text-body-1-med text-tertiary">Views</p>
       </div>
       <div className="flex items-center">
-        <p className="text-title-3-bold">{abbreviateNumber(profileData?.videos) ?? 0}</p>
+        <p className="text-title-3-bold">{abbreviateNumber(brandData?.videos ?? 0) ?? 0}</p>
         <p className="px-1 text-body-1-med text-tertiary">Posts</p>
       </div>
       <div className="flex items-center">
-        <p className="text-title-3-bold">{abbreviateNumber(profileData?.no_of_communities) ?? 0}</p>
+        <p className="text-title-3-bold">{abbreviateNumber(brandData?.no_of_communities ?? 0) ?? 0}</p>
         <p className="px-1 text-body-1-med text-tertiary">Communities</p>
       </div>
     </div>

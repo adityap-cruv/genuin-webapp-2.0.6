@@ -1,5 +1,8 @@
 import { useGenuinOptions } from '@lib/stores/genuin-options'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type ComponentProps } from 'react'
+import { cn } from '@lib/utils'
+
+type Props = ComponentProps<'ul'>
 
 // TODO: refactor use of is mobile and issafari.
 /**
@@ -7,7 +10,7 @@ import { useEffect, useRef, useState } from 'react'
  * @param param0
  * @returns
  */
-export function DecorativeList({ children }: any) {
+export function DecorativeList({ children, className, ...props }: Props) {
   const { isMobile, isSafari } = useGenuinOptions((state) => ({ isMobile: state.isMobile, isSafari: state.isSafari }))
   const [lastLiHeight, setLastLiHeight] = useState(0)
   const ul = useRef<HTMLUListElement>(null)
@@ -27,7 +30,7 @@ export function DecorativeList({ children }: any) {
     }
   }, [ul])
   return (
-    <div>
+    <>
       <style>
         {`          
                 ul.custom-list li.has-child::before {
@@ -50,7 +53,7 @@ export function DecorativeList({ children }: any) {
               `}
       </style>
       <ul
-        className="custom-list"
+        className={cn('custom-list', className)}
         ref={ul}
         style={{
           borderLeft: '2px solid',
@@ -64,6 +67,6 @@ export function DecorativeList({ children }: any) {
         }}>
         {children}
       </ul>
-    </div>
+    </>
   )
 }

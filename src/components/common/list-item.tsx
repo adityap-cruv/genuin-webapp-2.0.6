@@ -17,7 +17,7 @@ export function ListItem({
   brand?: {
     brand_id: number
     brand_slug: string
-  }
+  } | null
 }) {
   return (
     <div className="flex items-center gap-x-1 rounded-lg p-2 hover:bg-monochrome-10">

@@ -1,7 +1,7 @@
 'use client'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { HomeIcon, LatestIcon, MoreIcon, PopularIcon, ProfileIcon } from '@icons/side-bar-icons'
 import { cn } from '@lib/utils'
 import { PATH_NAME } from '@lib/utils/constants/path'
@@ -24,10 +24,11 @@ const RecentCommunities = dynamic(
 
 // TODO: Improve active states on all items.
 export function SideBar() {
-  const { embed, user, brandName } = useGenuinOptions((state) => ({
+  const { embed, user, brandName, notificationCount } = useGenuinOptions((state) => ({
     embed: state.embed,
     user: state.user,
     brandName: state.config?.name ? state.config?.name : 'Genuin',
+    notificationCount: state.notificationCount,
   }))
   const { data: sessionData, update: updateSession, status } = useSession()
   const pathName = usePathname()
@@ -40,7 +41,7 @@ export function SideBar() {
             ...sessionData,
             user: { ...sessionData?.user, ...res.data },
           })
-          const messageType = res?.data?.ks_cb_request_status === 3 ? 'MINI_PROFILE_SUCCESS' : 'KS_CB_SUBDOMAIN'
+          const messageType = res?.data?.ksCbRequestStatus === 3 ? 'MINI_PROFILE_SUCCESS' : 'KS_CB_SUBDOMAIN'
           AuthenticationModal.open(undefined, messageType)
         } else {
           AuthenticationModal.open(undefined, 'KS_CB_SUBDOMAIN')
@@ -72,18 +73,17 @@ export function SideBar() {
 
         {user && (
           <>
-            {!user.is_brand_system_user && (
-              <Link href={{ pathname: PATH_NAME.settings('notification') }}>
-                <Item title="Notification" isActive={pathName === PATH_NAME.settings('notification')}>
-                  <NotificationIcon isActive={pathName === PATH_NAME.settings('notification')} />
-                </Item>
-              </Link>
-            )}
+            <Link href={{ pathname: PATH_NAME.notification() }}>
+              <Item
+                title="Notification"
+                isActive={pathName === PATH_NAME.notification()}
+                notificationCount={notificationCount}>
+                <NotificationIcon isActive={pathName === PATH_NAME.notification()} />
+              </Item>
+            </Link>
             <Link
               href={{
-                pathname: user.is_brand_system_user
-                  ? PATH_NAME.brand(user.brand_slug)
-                  : PATH_NAME.profile(user.nickname),
+                pathname: user.isBrandSystemUser ? PATH_NAME.brand(user.brandSlug) : PATH_NAME.profile(user.nickname),
               }}>
               <Item title="Profile" isActive={pathName === PATH_NAME.profile(user.nickname)}>
                 <ProfileIcon isActive={pathName === PATH_NAME.profile(user.nickname)} />
@@ -125,15 +125,15 @@ export function SideBar() {
               }}
               variant={'outline'}
               className="hidden w-3/4 border-primary lg:block">
-              <p className="text-title-3-bold text-primary"> Log in</p>
+              <p className="text-title-3-bold text-primary">Log in</p>
             </Button>
           </div>
         )}
-        {user?.ks_cb_request_status !== 3 && (
+        {user?.ksCbRequestStatus !== 3 && (
           <>
             <hr className="border-1 mt-1 border-monochrome-black/10" />
             <div
-              className="max-w-72 relative my-4 hidden max-h-16 w-11/12 rounded-lg border border-[#E9CAF4] bg-primary-200 text-title-3-demi text-monochrome-black hover:cursor-pointer lg:block"
+              className="max-w-72 relative my-4 hidden max-h-16 w-11/12 rounded-lg border border-[#E9CAF4] bg-primary-200 text-title-3-demi text-monochrome-black hover:cursor-pointer lg:block lg:flex"
               style={{
                 background: 'linear-gradient(30deg, var(--primary-400) -80%, #FFFFFF 50%, var(--primary-400) 120%)',
               }}
@@ -141,17 +141,21 @@ export function SideBar() {
                 if (user?.isEmailVerified) {
                   handleCommunityBuilderClick()
                 } else {
-                  AuthenticationModal.open(undefined, embed ? 'KS_CB_SUBDOMAIN' : 'KS_CB_WEB')
+                  AuthenticationModal.open('KS_CB_REQUEST', embed ? 'KS_CB_SUBDOMAIN' : 'KS_CB_WEB')
                 }
               }}>
-              <p className="z-10 p-3 text-body-1-bold">
-                Become a{' '}
-                <span className="font-semibold italic">
-                  community <br /> builder{' '}
-                </span>
-                {embed ? 'for' : 'on'} <span className="text-primary"> {brandName}</span> 🚀
-              </p>
-              <img src={CommunityIcon.src} alt="community" className="absolute bottom-0 right-4 h-12" />
+              <div className="z-20 w-3/5">
+                <p className="w-72 overflow-hidden p-3 text-body-1-bold">
+                  Become a{' '}
+                  <span className="font-semibold italic">
+                    community <br /> builder{' '}
+                  </span>
+                  {embed ? 'for' : 'on'} <span className="text-primary"> {brandName}</span> 🚀
+                </p>
+              </div>
+              <div className="z-10 flex w-2/5 items-end justify-center">
+                <img src={CommunityIcon.src} alt="community" className="h-12" />
+              </div>
             </div>
           </>
         )}
@@ -176,13 +180,26 @@ type ItemProps = {
   title: string
   isActive?: boolean
   children: ReactNode
+  notificationCount?: number | null
 }
 
-function Item({ title, isActive, children }: ItemProps) {
+function Item({ title, isActive, children, notificationCount }: ItemProps) {
   return (
-    <div className="flex w-full max-w-full items-center gap-x-3 rounded-md p-3 hover:bg-monochrome-6/10">
+    <div className="relative flex w-full max-w-full items-center gap-x-3 rounded-md p-3 hover:bg-monochrome-6/10">
       {children}
+
       <p className={cn('hidden break-all !text-title-2-demi lg:block', isActive && 'text-primary')}>{title}</p>
+      {!notificationCount ||
+        (notificationCount > 0 && (
+          <>
+            <div className="absolute right-2.5 top-2.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary  text-cap-1-med text-monochrome-white lg:hidden">
+              {notificationCount}
+            </div>
+            <div className="hidden h-6 w-6 items-center justify-center rounded-full bg-primary text-monochrome-white lg:flex">
+              {notificationCount}
+            </div>
+          </>
+        ))}
     </div>
   )
 }

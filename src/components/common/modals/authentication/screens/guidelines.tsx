@@ -19,7 +19,7 @@ const FormSchema = z.object({
 })
 
 export function Guidelines() {
-  const { setStep, formData } = useAuthenticationModalStore()
+  const { setStep, formData, action } = useAuthenticationModalStore()
   const [isLoading, setIsLoading] = useState(false)
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -36,8 +36,8 @@ export function Guidelines() {
       const signupResponse = await signup({
         email: formData.email ?? '',
         signupSource: SIGNUP_SOURCE.web,
+        actionMetadata: { path: window.location.pathname, action },
       })
-
       await signIn('credentials', {
         ...signupResponse.data.user,
         accessToken: signupResponse.accessToken,

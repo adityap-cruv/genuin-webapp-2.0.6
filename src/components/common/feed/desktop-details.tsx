@@ -15,7 +15,6 @@ import { FeedShimmer } from '../shimmers/feed-shimmer'
 import { Input } from '@components/ui/input'
 import { createComment, joinCommunity, leaveCommunity } from '@lib/api/video'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
-import { DownloadDialog } from '../download-dialog'
 import { ShareIcon } from '@icons/share-icon'
 import { AudioRecordIcon } from '@icons/audio-record-icon'
 import { VideoRecordIcon } from '@icons/video-record-icon'
@@ -24,39 +23,15 @@ import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import { LockIcon } from '@icons/LockIcon'
 import { TickIcon } from '@icons/tick-icon'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@components/ui/tooltip'
-import { BrandCommunityTag } from '../brand-community-tag'
+import { DownloadDialogModal } from '../modals/download-app'
 
 export function DesktopDetails({ loop, community, owner, video }: VideoPlayerModalType) {
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
   const scrollDivRef = useRef<HTMLDivElement>(null)
-  const [isCommunityJoined, setIsCommunityJoined] = useState(false)
   // TODO: Here state Comment and setComments are bad they are causing multiple rerenders.
   const [currentComment, setCurrentComment] = useState('')
   const [comments, setComments] = useState<CommentListType>([])
-  const user = useGenuinOptions().user
-
-  async function toggleCommunityJoinState() {
-    !isCommunityJoined
-      ? await joinCommunity(
-          false,
-          [community.id],
-          [
-            {
-              user_id: user?.id,
-            },
-          ]
-        ).then((res) => {
-          if (res.code === 200) {
-            setIsCommunityJoined((prev) => !prev)
-          }
-        })
-      : await leaveCommunity(community.id).then((res) => {
-          if (res.code === 200) {
-            setIsCommunityJoined((prev) => !prev)
-          }
-        })
-  }
 
   return (
     <div className="relative flex h-full flex-1 flex-col overflow-x-clip bg-monochrome-white pb-16 pl-2">
@@ -105,9 +80,20 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
                     className="h-11 w-11"
                   />
                   {/* TODO: What if there is no community name. */}
-                  <Link href={{ pathname: PATH_NAME.community(community.slug) }}>
-                    <p className="line-clamp-1 break-all pr-2 text-title-3-bold">{community.name}</p>
-                  </Link>
+                  <div>
+                    <Link href={{ pathname: PATH_NAME.community(community.slug) }}>
+                      <p className="line-clamp-1 break-all pr-2 text-title-3-bold">{community.name}</p>
+                    </Link>
+                    {community.brand && (
+                      <p
+                        className="truncate text-body-1-med text-tertiary"
+                        style={{
+                          maxWidth: '10ch',
+                        }}>
+                        on {community.brand?.name}
+                      </p>
+                    )}
+                  </div>
                 </span>
                 {community?.type === 2 && (
                   <TooltipProvider>
@@ -126,43 +112,9 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
                     </Tooltip>
                   </TooltipProvider>
                 )}
-                {community.brand && (
-                  <BrandCommunityTag
-                    brandSlug={community.brand.brand_slug}
-                    brandLogo={community.brand?.logo}
-                    brandName={community.brand?.name}
-                  />
-                )}
               </div>
               <span className="flex h-min flex-1 items-center justify-end gap-x-3">
-                <Button
-                  size="custom"
-                  className={`${isCommunityJoined && 'rounded border border-primary '}`}
-                  variant={isCommunityJoined ? 'outline' : 'default'}
-                  onClick={
-                    user
-                      ? async () => {
-                          await toggleCommunityJoinState()
-                        }
-                      : () => {
-                          openModal({
-                            title: 'Get the Genuin app',
-                            subtitle: (
-                              <>
-                                Get the app to join the <br />
-                                <span className="font-bold">@{community.handle}</span> community.
-                              </>
-                            ),
-                          })
-                        }
-                  }>
-                  <p
-                    className={`whitespace-nowrap px-4 py-1.5 text-body-1-demi  ${
-                      isCommunityJoined ? 'text-primary' : 'text-monochrome-white'
-                    }`}>
-                    {isCommunityJoined ? 'Joined' : 'Join Community'}
-                  </p>
-                </Button>
+                <JoinButton handle={community.handle} id={community.id} userRole={community.userRole} />
                 <Button
                   size="custom"
                   variant="outline"
@@ -371,15 +323,82 @@ function CommentInput({
           </div>
         )}
 
-        <DownloadDialog title="Get the Genuin app" subtitle="Get the app to comment on this video.">
-          {/* <Image src={icAudioRecord} alt="audio record" className="h-8 w-8" /> */}
-          <AudioRecordIcon className="fill-secondary" />
-        </DownloadDialog>
-        <DownloadDialog title="Get the Genuin app" subtitle="Get the app to comment on this video.">
-          {/* <Image src={icVideoRecord} alt="audio record" className="h-8 w-8" /> */}
-          <VideoRecordIcon className="fill-secondary" />
-        </DownloadDialog>
+        <AudioRecordIcon
+          className="fill-secondary"
+          onClick={() => {
+            DownloadDialogModal.open({ title: 'Get the Genuin app', subtitle: 'Get the app to comment on this video.' })
+          }}
+        />
+        <VideoRecordIcon
+          className="fill-secondary"
+          onClick={() => {
+            DownloadDialogModal.open({
+              title: 'Get the Genuin app',
+              subtitle: 'Get the app to comment on this video.',
+            })
+          }}
+        />
       </div>
     </div>
+  )
+}
+
+function JoinButton({ userRole, handle, id }: { userRole?: 'LEADER' | 'MEMBER' | null; handle: string; id: string }) {
+  const [role, setRole] = useState(userRole)
+  const user = useGenuinOptions().user
+  async function toggleCommunityJoinState() {
+    role !== 'MEMBER'
+      ? await joinCommunity(
+          false,
+          [id],
+          [
+            {
+              user_id: user?.id,
+            },
+          ]
+        ).then((res) => {
+          if (res.code === 200) {
+            setRole('MEMBER')
+          }
+        })
+      : await leaveCommunity(id).then((res) => {
+          if (res.code === 200) {
+            setRole(null)
+          }
+        })
+  }
+
+  if (userRole === 'LEADER') return
+
+  const isCommunityJoined = role === 'MEMBER'
+  return (
+    <Button
+      size="custom"
+      className={`${isCommunityJoined && 'rounded border border-primary '}`}
+      variant={isCommunityJoined ? 'outline' : 'default'}
+      onClick={
+        user
+          ? async () => {
+              await toggleCommunityJoinState()
+            }
+          : () => {
+              openModal({
+                title: 'Get the Genuin app',
+                subtitle: (
+                  <>
+                    Get the app to join the <br />
+                    <span className="font-bold">@{handle}</span> community.
+                  </>
+                ),
+              })
+            }
+      }>
+      <p
+        className={`whitespace-nowrap px-4 py-1.5 text-body-1-demi  ${
+          isCommunityJoined ? 'text-primary' : 'text-monochrome-white'
+        }`}>
+        {isCommunityJoined ? 'Joined' : 'Join Community'}
+      </p>
+    </Button>
   )
 }

@@ -21,11 +21,10 @@ export function TopBar() {
 
   return (
     <>
-      {/* <div className="h-10 w-full bg-supplementary-red">heldldl</div> */}
       <div className="z-20 flex w-full justify-center border-b border-monochrome-9  bg-monochrome-white sm:flex">
         <nav className="sticky top-0 flex h-[76px] w-full items-center justify-between px-2 xl:container">
           <Link draggable={false} href={{ pathname: PATH_NAME.home() }}>
-            <AppLogo.logo className="fill-new-off-black" imageHeight={42} />
+            <AppLogo.logo className="aspect-[1/2] w-44 shrink-0 fill-new-off-black" imageHeight={44} />
             {/* <GenuinIcon.logo className="fill-new-off-black" /> */}
           </Link>
           {config?.slogan?.image && (
@@ -106,7 +105,7 @@ function UserTick() {
             />
             <div>
               <p className="line-clamp-1 break-words break-all text-title-3-bold">{data.user.email}</p>
-              {!data.user?.is_brand_system_user && (
+              {!data.user?.isBrandSystemUser && (
                 <p
                   className="text-body-1-demi text-monochrome-6 hover:cursor-pointer"
                   onClick={() => {
@@ -125,7 +124,7 @@ function UserTick() {
           </div>
           <hr className="border-b border-monochrome-9" />
           <div className="flex flex-col gap-3 p-4">
-            {!data.user?.is_brand_system_user && (
+            {!data.user?.isBrandSystemUser && (
               <>
                 <Link href={PATH_NAME.settings('account')}>
                   <div

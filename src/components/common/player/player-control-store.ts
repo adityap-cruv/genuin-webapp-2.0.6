@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { analyticsService } from '../../../services/analytics_service'
+import { analyticsService, pushVideoWatch } from '../../../services/analytics_service'
 import { useFeedListStore } from '../feed/store'
 import { useFeedModalStore } from '../modals/player-modal/store'
 

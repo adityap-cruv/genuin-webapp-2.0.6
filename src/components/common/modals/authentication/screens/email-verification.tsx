@@ -6,7 +6,6 @@ import { useAuthenticationModalStore } from '../store'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { resendVerificationMail } from '@lib/api/auth'
 import { useEffect, useState } from 'react'
-import { useSession } from 'next-auth/react'
 import { deleteSearchParam } from '@lib/utils'
 import { Loader } from '@components/ui/loader'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
@@ -21,6 +20,7 @@ function Success() {
   const setStep = useAuthenticationModalStore().setStep
   const pathName = usePathname()
   const searchParams = useSearchParams()
+  const embed = useGenuinOptions().embed
 
   return (
     <ModalShell>
@@ -35,9 +35,9 @@ function Success() {
         variant="default"
         onClick={() => {
           deleteSearchParam({
-            paramToDelete: 'email_verification_status',
             pathName,
             searchParams: searchParams.toString(),
+            paramsToDelete: ['email_verification_status'],
           })
           setStep('PASSWORD_INPUT')
         }}>
@@ -47,7 +47,6 @@ function Success() {
   )
 }
 
-// TODO: Create a deleteSearchParam function such that it accepts array of string and delete that list search params from the url.
 function Failure() {
   const { setStep, setFormData } = useAuthenticationModalStore()
   const searchParams = useSearchParams()
@@ -70,17 +69,7 @@ function Failure() {
             deleteSearchParam({
               pathName,
               searchParams: searchParams.toString(),
-              paramToDelete: 'email_verification_status',
-            })
-            deleteSearchParam({
-              pathName,
-              searchParams: searchParams.toString(),
-              paramToDelete: 'email',
-            })
-            deleteSearchParam({
-              pathName,
-              searchParams: searchParams.toString(),
-              paramToDelete: 'email_type',
+              paramsToDelete: ['email_verification_status', 'email', 'email_type'],
             })
             setStep('EMAIL_SENT_NOTE')
           } else {
