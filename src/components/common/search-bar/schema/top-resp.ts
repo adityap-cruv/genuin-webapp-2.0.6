@@ -75,7 +75,6 @@ const BrandUserSchema = z
     brand_slug: z.string(),
   })
   .nullish()
-  .optional()
 
 const ProfileSchema = z.object({
   id: z.number(),
@@ -90,7 +89,7 @@ const ProfileSchema = z.object({
   profile_image_s: z.string().nullish(), // `profile_image_s` should be a valid URL
   profile_image_m: z.string().nullish(), // `profile_image_m` should be a valid URL
   profile_image_l: z.string().nullish(), // `profile_image_l` should be a valid URL
-  brand: BrandUserSchema,
+  brand: BrandUserSchema.optional(),
 })
 
 const BrandTypeSchema = z
@@ -108,7 +107,7 @@ const BrandTypeSchema = z
   .nullish()
 
 const CommunitySchema = z.object({
-  brand: BrandTypeSchema,
+  brand: BrandTypeSchema.optional(),
   community_id: z.string(),
   handle: z.string(),
   name: z.string().nullish(),

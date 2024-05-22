@@ -12,7 +12,7 @@ const BrandSchema = z
   .nullish()
 
 const ProfileDetailsSchema = z.object({
-  brand: BrandSchema,
+  brand: BrandSchema.optional(),
   user_id: z.string(),
   nickname: z.string(),
   name: z.string().nullish(),
