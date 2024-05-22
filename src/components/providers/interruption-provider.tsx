@@ -11,7 +11,8 @@ const DELAY_FOR_INTERRUPTION = 60000
  */
 export function showInterruption() {
   const { embed, user } = useGenuinOptions.getState()
-  if (!embed || (user && user.isPasswordSet && user.hasTopics)) return
+  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+  if (!embed || (user && user.isPasswordSet && user.hasTopics) || AuthenticationModal.isOpen) return
   if (!user) {
     AuthenticationModal.open(undefined, 'EMAIL_INPUT')
   } else if (!user.hasTopics) {
@@ -25,7 +26,8 @@ export function InterruptionProvider() {
   const { user, embed } = useGenuinOptions((state) => ({ user: state.user, embed: state.embed }))
 
   function showInterruption() {
-    if (!embed || (user && user.isPasswordSet && user.hasTopics)) return
+    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+    if (!embed || (user && user.isPasswordSet && user.hasTopics) || AuthenticationModal.isOpen) return
 
     if (!user) {
       AuthenticationModal.open(undefined, 'EMAIL_INPUT')
@@ -37,7 +39,8 @@ export function InterruptionProvider() {
   }
 
   useEffect(() => {
-    if (!embed || (user && user.isPasswordSet && user.hasTopics)) return
+    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+    if (!embed || (user && user.isPasswordSet && user.hasTopics) || AuthenticationModal.isOpen) return
 
     let timeout: NodeJS.Timeout
     timeout = setTimeout(showInterruption, DELAY_FOR_INTERRUPTION)
