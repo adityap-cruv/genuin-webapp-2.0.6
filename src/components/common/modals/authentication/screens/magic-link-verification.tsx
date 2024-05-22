@@ -30,7 +30,7 @@ export function Success() {
             deleteSearchParam({
               pathName,
               searchParams: searchParams.toString(),
-              paramToDelete: 'magic_link_verification',
+              paramsToDelete: ['magic_link_verification'],
             })
             setStep('PASSWORD_INPUT')
           }}>
@@ -41,7 +41,6 @@ export function Success() {
 }
 
 // TODO: Handle API success and failure case.
-// TODO: Create a deleteSearchParam function such that it accepts array of string and delete that list search params from the url.
 export function Failure() {
   const [error, setError] = useState('')
   const { setStep, setFormData } = useAuthenticationModalStore()
@@ -64,17 +63,7 @@ export function Failure() {
             deleteSearchParam({
               pathName,
               searchParams: searchParams.toString(),
-              paramToDelete: 'magic_link_verification',
-            })
-            deleteSearchParam({
-              pathName,
-              searchParams: searchParams.toString(),
-              paramToDelete: 'email',
-            })
-            deleteSearchParam({
-              pathName,
-              searchParams: searchParams.toString(),
-              paramToDelete: 'email_type',
+              paramsToDelete: ['magic_link_verification', 'email', 'email_type'],
             })
             setStep('MAGIC_LINK_SENT_NOTE')
           }

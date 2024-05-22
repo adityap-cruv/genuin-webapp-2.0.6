@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { ModalShell } from '../modal-shell'
 import { useAuthenticationModalStore } from '../store'
-import { forgotPassword, resendVerificationMail } from '@lib/api/auth'
+import { resendVerificationMail } from '@lib/api/auth'
 import { shortenedEmail } from '@lib/utils'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import Link from 'next/link'
@@ -19,6 +19,7 @@ import { CommunityDiscussion01 } from '@icons/ks-cb-flow/community-01'
 import { Button } from '@components/ui/button'
 import { Loader } from '@components/ui/loader'
 import { useLocalStorage } from '@lib/stores/local-storage'
+import { forgotPassword } from '@lib/api/auth-passwords'
 
 export const Note = {
   email: Email,

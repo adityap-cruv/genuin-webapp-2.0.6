@@ -58,18 +58,23 @@ export function Modal({ children, ...props }: Props) {
     'MAGIC_LINK_VERIFICATION_FAILURE',
     'MAGIC_LINK_VERIFICATION_SUCCESS',
     'IMAGE_CROPPER',
+    'RESET_PASSWORD',
   ])
   const showClose = !stepSet.has(step)
 
   useEffect(() => {
-    const resetPasswordEmailVerification = searchParams.get('reset_email_verification_status') ?? ''
+    const resetPasswordEmailVerification = searchParams.get('reset_password_status') ?? ''
     const emailVerification = searchParams.get('email_verification_status') ?? ''
     const magicLinkVerification = searchParams.get('magic_link_verification') ?? ''
     const error = searchParams.get('error_in_verification') ?? ''
 
-    if (Boolean(emailVerification) || Boolean(magicLinkVerification) || Boolean(error)) {
+    if (
+      Boolean(emailVerification) ||
+      Boolean(magicLinkVerification) ||
+      Boolean(error) ||
+      Boolean(resetPasswordEmailVerification)
+    ) {
       if (resetPasswordEmailVerification === '1') setStep('RESET_PASSWORD')
-      if (resetPasswordEmailVerification === '0') setStep('EMAIL_VERIFICATION_FAILURE')
       if (emailVerification === '0') setStep('EMAIL_VERIFICATION_FAILURE')
       if (emailVerification === '1') setStep('EMAIL_VERIFICATION_SUCCESS')
       if (magicLinkVerification === '0') setStep('MAGIC_LINK_VERIFICATION_FAILURE')

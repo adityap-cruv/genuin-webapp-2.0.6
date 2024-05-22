@@ -9,9 +9,9 @@ import { useAuthenticationModalStore } from '../store'
 import { useEffect, useState } from 'react'
 import { ModalShell } from '../modal-shell'
 import { Button } from '@components/ui/button'
-import { forgotPassword } from '@lib/api/auth'
 import { Loader } from '@components/ui/loader'
 import { useLocalStorage } from '@lib/stores/local-storage'
+import { forgotPassword } from '@lib/api/auth-passwords'
 
 export function ForgotPassword() {
   const { setStep, setFormData, formData } = useAuthenticationModalStore()

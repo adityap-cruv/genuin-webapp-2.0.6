@@ -50,10 +50,6 @@ function getRedirectTo({
     urlObj.set('email_verification_status', success ? '1' : '0')
   }
 
-  if (emailType === 16) {
-    urlObj.set('reset_email_verification_status', success ? '1' : '0')
-  }
-
   if (!success) {
     if (emailType) urlObj.set('email_type', emailType.toString())
     if (email) urlObj.set('email', email)

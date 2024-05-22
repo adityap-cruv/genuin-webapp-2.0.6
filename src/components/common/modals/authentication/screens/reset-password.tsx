@@ -1,35 +1,44 @@
 import { Form, FormField, useFormField, FormItem, FormLabel, FormControl, FormMessage } from '@components/ui/form'
-import { cn } from '@lib/utils'
+import { cn, deleteSearchParam } from '@lib/utils'
 import { Input } from '@components/ui/input'
 import { useForm } from 'react-hook-form'
 import { EyeIcon, EyeOffIcon } from 'lucide-react'
 import { useState } from 'react'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { setForgotPassword } from '@lib/api/auth'
 import { useAuthenticationModalStore } from '../store'
 import { Button } from '@components/ui/button'
 import { Loader } from '@components/ui/loader'
 import { ModalShell } from '../modal-shell'
-import { useSession } from 'next-auth/react'
-import { usePathname } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
+import { setForgotPassword } from '@lib/api/auth-passwords'
 
 const passwordSchema = z.object({ password: z.string().min(8) })
 
 export function ResetPassword() {
-  const { data: sessionData, update: updateSession } = useSession()
   const [passwordVisible, setPasswordVisible] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const { setStep } = useAuthenticationModalStore()
   const form = useForm<z.infer<typeof passwordSchema>>({ resolver: zodResolver(passwordSchema), mode: 'onSubmit' })
   const { isDirty, isValid } = form.formState
-  const pathname = usePathname()
+  const pathName = usePathname()
+  const searchParams = useSearchParams()
 
-  // TODO: Handle reset password logic here
   async function onSubmit({ password }: { password: string }) {
+    const forgotPasswordToken = searchParams.get('token') ?? ''
     setIsLoading(true)
     try {
-      const { code, data } = await setForgotPassword({ password, forgotPasswordToken: 'jk' })
+      const { code } = await setForgotPassword({ password, forgotPasswordToken })
+      if (code === 200) {
+        deleteSearchParam({
+          pathName,
+          searchParams: searchParams.toString(),
+          paramsToDelete: ['reset_password_status', 'token'],
+        })
+        setStep('RESET_PASSWORD_SUCCESS_NOTE')
+      } else {
+        form.control.setError('root', { message: 'Something went wrong. Please try again!' })
+      }
     } catch (e) {
       form.setError('root', { message: 'Something went wrong.' })
     } finally {

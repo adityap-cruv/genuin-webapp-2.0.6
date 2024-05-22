@@ -35,9 +35,9 @@ function Success() {
         variant="default"
         onClick={() => {
           deleteSearchParam({
-            paramToDelete: 'email_verification_status',
             pathName,
             searchParams: searchParams.toString(),
+            paramsToDelete: ['email_verification_status'],
           })
           setStep('PASSWORD_INPUT')
         }}>
@@ -47,7 +47,6 @@ function Success() {
   )
 }
 
-// TODO: Create a deleteSearchParam function such that it accepts array of string and delete that list search params from the url.
 function Failure() {
   const { setStep, setFormData } = useAuthenticationModalStore()
   const searchParams = useSearchParams()
@@ -70,17 +69,7 @@ function Failure() {
             deleteSearchParam({
               pathName,
               searchParams: searchParams.toString(),
-              paramToDelete: 'email_verification_status',
-            })
-            deleteSearchParam({
-              pathName,
-              searchParams: searchParams.toString(),
-              paramToDelete: 'email',
-            })
-            deleteSearchParam({
-              pathName,
-              searchParams: searchParams.toString(),
-              paramToDelete: 'email_type',
+              paramsToDelete: ['email_verification_status', 'email', 'email_type'],
             })
             setStep('EMAIL_SENT_NOTE')
           } else {
