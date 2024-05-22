@@ -8,6 +8,7 @@ import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { GenuinIcon } from '@icons/genuin-icon'
 import icSuccess from '@icons/icSuccess.svg'
+import icPasswordApproved from '@icons/icPasswordApproved.svg'
 import imageAppStore from '@icons/ks-cb-flow/app-store-tab.svg'
 import imagePlayStore from '@icons/ks-cb-flow/play-store-tab.svg'
 import 'swiper/swiper-bundle.css'
@@ -15,6 +16,10 @@ import Image from 'next/image'
 import { URL_TO_APP_STORE, URL_TO_PLAY_STORE } from '@lib/constants'
 import { QRCode } from 'react-qrcode-logo'
 import { CommunityDiscussion01 } from '@icons/ks-cb-flow/community-01'
+import { Button } from '@components/ui/button'
+import { Loader } from '@components/ui/loader'
+import { useLocalStorage } from '@lib/stores/local-storage'
+import { forgotPassword } from '@lib/api/auth-passwords'
 import { signOut } from 'next-auth/react'
 import { removeAllAuthToken } from '@lib/api/instance'
 
@@ -24,6 +29,8 @@ export const Note = {
   miniprofilesuccess: MiniProfileSuccess,
   changepasswordsuccess: ChangePasswordSuccess,
   setpasswordsuccess: SetPasswordSuccess,
+  passwordresetlink: PasswordResetLink,
+  resetpasswordsuccess: ResetPasswordSuccess,
 }
 
 function Email({ acountExists = false }: { acountExists?: boolean }) {
@@ -127,7 +134,7 @@ function MagicLink() {
     }
   }, [timer])
 
-  async function resendMail() {
+  async function resendMagicLink() {
     if (formData.email && timer <= 0) {
       await resendVerificationMail(formData.email, 12)
         .then((res) => {
@@ -165,7 +172,7 @@ function MagicLink() {
       {error.code !== 5239 && (
         <p className="text-title-3-demi">
           {timer <= 0 ? (
-            <span onClick={resendMail} className="cursor-pointer text-primary">
+            <span onClick={resendMagicLink} className="cursor-pointer text-primary">
               Resend
             </span>
           ) : (
@@ -250,7 +257,7 @@ function ChangePasswordSuccess() {
   return (
     <ModalShell>
       <img className="h-28" alt="genuin" src={icSuccess.src} />
-      <p className="text-center text-heading-3">Your password has been changed</p>
+      <p className="text-center text-title-1-bold">Your password has been changed</p>
     </ModalShell>
   )
 }
@@ -259,7 +266,113 @@ function SetPasswordSuccess() {
   return (
     <ModalShell>
       <img className="h-28" alt="genuin" src={icSuccess.src} />
-      <p className="text-center text-heading-3">Your password has been set</p>
+      <p className="text-center text-title-1-bold">Your password has been set</p>
+    </ModalShell>
+  )
+}
+
+function PasswordResetLink() {
+  const { formData, setStep } = useAuthenticationModalStore()
+  const [error, setError] = useState({ message: '', code: 0 })
+  const [emailSentText, setEmailSentText] = useState('')
+  const [timer, setTimer] = useState(formData.retryTime ?? 0)
+  const deviceId = useLocalStorage().deviceId
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (timer > 0) {
+        setTimer(timer - 1)
+      }
+    }, 1000)
+    return () => {
+      clearInterval(interval)
+    }
+  }, [timer])
+
+  async function resendPasswordResetLink() {
+    if (formData.email && timer <= 0) {
+      await forgotPassword({
+        email: formData.email ?? '',
+        deviceId,
+      })
+        .then((res) => {
+          // console.log('res', res)
+          if (res.code === 200) {
+            setEmailSentText('Email has been sent sucessfully')
+            setTimer(res?.retryTime)
+          } else {
+            setTimer(res?.retryTime)
+            throw new Error()
+          }
+        })
+        .catch((e) => {
+          setError((x) => {
+            return { message: 'Something went wrong.Please try again.', code: -1 }
+          })
+        })
+    }
+  }
+
+  function formatTime() {
+    const minutes = Math.floor(timer / 60)
+    const seconds = timer % 60
+    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+  }
+  return (
+    <ModalShell>
+      <p className="text-center text-title-1-med">
+        We have sent a password reset link to{' '}
+        <span className="text-title-1-bold">{shortenedEmail(formData.email)}</span>. Click the link to reset your
+        password.
+      </p>
+      {error.code !== 5239 && (
+        <p className="text-title-3-demi">
+          {timer <= 0 ? (
+            <span onClick={resendPasswordResetLink} className="cursor-pointer text-primary">
+              Resend
+            </span>
+          ) : (
+            <span className="text-center text-body-1-med text-secondary">
+              Resend email in <strong>{formatTime()}</strong>
+            </span>
+          )}
+        </p>
+      )}
+      <Button
+        type="submit"
+        variant="default"
+        className="w-full"
+        onClick={() => {
+          setStep('EMAIL_INPUT')
+        }}>
+        <p className="text-title-3-demi">Back to login</p>
+      </Button>
+      {emailSentText && (
+        <p className="flex items-center justify-center text-title-3-med text-supplementary-green">{emailSentText}</p>
+      )}
+      {error.message && !emailSentText && (
+        <p className="flex items-center justify-center text-title-3-med text-supplementary-red">{error.message}</p>
+      )}
+    </ModalShell>
+  )
+}
+
+function ResetPasswordSuccess() {
+  const { setStep } = useAuthenticationModalStore()
+
+  return (
+    <ModalShell>
+      <img className="h-20" alt="genuin" src={icPasswordApproved.src} />
+      <p className="text-center text-title-1-bold">Password reset successfully</p>
+      <Button
+        type="submit"
+        variant="default"
+        className="w-full"
+        onClick={() => {
+          setStep('EMAIL_INPUT')
+        }}>
+        <p className="text-title-3-demi">Continue to login</p>
+      </Button>
     </ModalShell>
   )
 }

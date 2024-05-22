@@ -38,7 +38,7 @@ function getRedirectTo({
   path?: string
   error: boolean
   success?: boolean
-  emailType: 11 | 12 | 2
+  emailType: 11 | 12 | 2 | 16
   email?: string
 }) {
   // const urlObj = new URL(checkAndAppendHttps((headers().get('host') ?? process.env.HOST_NAME) + (path ?? '/home')))
@@ -56,6 +56,7 @@ function getRedirectTo({
   if (emailType === 12 || emailType === 2) {
     urlObj.set('email_verification_status', success ? '1' : '0')
   }
+
   if (!success) {
     if (emailType) urlObj.set('email_type', emailType.toString())
     if (email) urlObj.set('email', email)

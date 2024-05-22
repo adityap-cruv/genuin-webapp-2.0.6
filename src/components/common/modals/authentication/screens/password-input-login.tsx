@@ -19,7 +19,7 @@ import { signIn } from 'next-auth/react'
 const passwordSchema = z.object({ password: z.string().min(8) })
 
 export function PasswordInputLogin() {
-  const { close, formData, action } = useAuthenticationModalStore()
+  const { close, formData, action, setStep } = useAuthenticationModalStore()
   const [passwordVisible, setPasswordVisible] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const deviceId = useLocalStorage().deviceId
@@ -130,7 +130,13 @@ export function PasswordInputLogin() {
                       </div>
                     </FormControl>
                     <FormMessage className={cn('!text-cap-1-demi')} />
-                    {/* <p className="mt-2 text-center text-body-1-demi text-monochrome-6">Forgot password?</p> */}
+                    <p
+                      className="mt-2 text-center text-body-1-demi text-monochrome-6 hover:cursor-pointer"
+                      onClick={() => {
+                        setStep('FORGOT_PASSWORD')
+                      }}>
+                      Forgot password?
+                    </p>
                   </FormItem>
                 )
               }}

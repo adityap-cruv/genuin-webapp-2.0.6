@@ -30,26 +30,23 @@ function Success() {
         Now you’ll receive important updates and notifications about your account, new features, and exciting news
         straight to your inbox. You can use the app now.{' '}
       </p>
-      {embed && (
-        <Button
-          className="w-full"
-          variant="default"
-          onClick={() => {
-            deleteSearchParam({
-              paramToDelete: 'email_verification_status',
-              pathName,
-              searchParams: searchParams.toString(),
-            })
-            setStep('PASSWORD_INPUT')
-          }}>
-          <p className="text-title-3-med">Continue</p>
-        </Button>
-      )}
+      <Button
+        className="w-full"
+        variant="default"
+        onClick={() => {
+          deleteSearchParam({
+            pathName,
+            searchParams: searchParams.toString(),
+            paramsToDelete: ['email_verification_status'],
+          })
+          setStep('PASSWORD_INPUT')
+        }}>
+        <p className="text-title-3-med">Continue</p>
+      </Button>
     </ModalShell>
   )
 }
 
-// TODO: Create a deleteSearchParam function such that it accepts array of string and delete that list search params from the url.
 function Failure() {
   const { setStep, setFormData } = useAuthenticationModalStore()
   const searchParams = useSearchParams()
@@ -72,17 +69,7 @@ function Failure() {
             deleteSearchParam({
               pathName,
               searchParams: searchParams.toString(),
-              paramToDelete: 'email_verification_status',
-            })
-            deleteSearchParam({
-              pathName,
-              searchParams: searchParams.toString(),
-              paramToDelete: 'email',
-            })
-            deleteSearchParam({
-              pathName,
-              searchParams: searchParams.toString(),
-              paramToDelete: 'email_type',
+              paramsToDelete: ['email_verification_status', 'email', 'email_type'],
             })
             setStep('EMAIL_SENT_NOTE')
           } else {

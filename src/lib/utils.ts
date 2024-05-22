@@ -42,14 +42,18 @@ export function openModal({
 export function deleteSearchParam({
   pathName,
   searchParams,
-  paramToDelete,
+  paramsToDelete,
 }: {
   pathName: string
   searchParams: string
-  paramToDelete: string
+  paramsToDelete: string[]
 }) {
   const searchParamObject = new URLSearchParams(searchParams)
-  searchParamObject.delete(paramToDelete)
+
+  paramsToDelete.forEach((param) => {
+    searchParamObject.delete(param)
+  })
+
   if (searchParamObject.size === 0) {
     window.history.replaceState('', '', `${pathName}`)
   } else {
