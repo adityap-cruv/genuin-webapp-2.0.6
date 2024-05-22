@@ -66,6 +66,7 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
       })
     }
 
+    // ks_cb_request_status is 3 than
     if (user?.accessToken && user.ks_cb_request_status !== 3) {
       setTimeout(() => {
         loadData()

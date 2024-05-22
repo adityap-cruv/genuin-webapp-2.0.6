@@ -30,6 +30,7 @@ export type StepsType =
   | 'LOGOUT'
   | 'CHANGE_PASSWORD_SUCCESS_NOTE'
   | 'SET_PASSWORD_SUCCESS_NOTE'
+  | 'CATEGORY_INPUT'
 
 type FormDataType = {
   displayName: string
@@ -59,7 +60,7 @@ type States = {
 type Actions = {
   open: () => void
   openWithStep: (action?: AuthActionType, step?: StepsType) => void
-  goToPrevios: () => void
+  goToPrevious: () => void
   close: () => void
   setStep: (step: StepsType, action?: AuthActionType) => void
   reset: () => void
@@ -95,7 +96,7 @@ export const useAuthenticationModalStore = create<Actions & States>((set) => {
         return { ...state }
       })
     },
-    goToPrevios() {
+    goToPrevious() {
       set((state) => {
         state.step = state.previousStep ?? 'EMAIL_INPUT'
         return state

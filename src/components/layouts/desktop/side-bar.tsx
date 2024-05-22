@@ -16,7 +16,6 @@ import { useSession } from 'next-auth/react'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { miniProfile } from '@lib/api/auth'
 import { NotificationIcon } from '@icons/settings-side-bar-icons'
-import { notificationsCount } from '@lib/api/notification'
 // import { Popover } from '@components/ui/popover'
 const RecentCommunities = dynamic(
   async () => await import('./recent-communities').then((comp) => comp.RecentCommunities),
