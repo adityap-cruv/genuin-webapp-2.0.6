@@ -73,6 +73,12 @@ export function ResetPassword() {
                           'border border-tertiary-200 bg-tertiary-100 text-title-3-med',
                           errors && '!border-red'
                         )}
+                        onKeyDown={(e) => {
+                          if (e.key === ' ') {
+                            e.preventDefault()
+                            return false
+                          }
+                        }}
                         {...field}
                       />
                       <div className="absolute right-4 top-0 flex h-full items-center">
