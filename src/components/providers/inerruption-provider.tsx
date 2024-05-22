@@ -3,34 +3,56 @@ import { AuthenticationModal } from '@components/common/modals/authentication'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { useEffect } from 'react'
 
+const DELAY_FOR_INTERRUPTION = 60000
+
+/**
+ * Only for use in outside of interruption provider.
+ * And Can only be used in component not outside of the component.
+ */
+export function showInterruption() {
+  const { embed, user } = useGenuinOptions.getState()
+  if (!embed || (user && user.isPasswordSet && user.hasTopics)) return
+  if (!user) {
+    AuthenticationModal.open(undefined, 'EMAIL_INPUT')
+  } else if (!user.hasTopics) {
+    AuthenticationModal.open(undefined, 'CATEGORY_INPUT')
+  } else if (!user.isPasswordSet) {
+    AuthenticationModal.open(undefined, 'PASSWORD_INPUT')
+  }
+}
+
 export function InterruptionProvider() {
   const { user, embed } = useGenuinOptions((state) => ({ user: state.user, embed: state.embed }))
-  const shouldShowInterruptions = embed && (!user || !user.isPasswordSet)
 
   function showInterruption() {
-    if (!shouldShowInterruptions) return
+    if (!embed || (user && user.isPasswordSet && user.hasTopics)) return
+
     if (!user) {
       AuthenticationModal.open(undefined, 'EMAIL_INPUT')
+    } else if (!user.hasTopics) {
+      AuthenticationModal.open(undefined, 'CATEGORY_INPUT')
     } else if (!user.isPasswordSet) {
       AuthenticationModal.open(undefined, 'PASSWORD_INPUT')
     }
   }
 
   useEffect(() => {
-    if (!shouldShowInterruptions) return
+    if (!embed || (user && user.isPasswordSet && user.hasTopics)) return
 
     let timeout: NodeJS.Timeout
-    timeout = setTimeout(showInterruption, 60000)
+    timeout = setTimeout(showInterruption, DELAY_FOR_INTERRUPTION)
 
     function handleInterruption() {
       if (timeout) clearTimeout(timeout)
-      if (!shouldShowInterruptions) timeout = setTimeout(showInterruption, 60000)
+      if (!user?.isPasswordSet || !user?.hasTopics || !user)
+        timeout = setTimeout(showInterruption, DELAY_FOR_INTERRUPTION)
     }
 
     document.addEventListener('click', handleInterruption)
     return () => {
       document.removeEventListener('click', handleInterruption)
     }
-  }, [])
+  }, [user])
+
   return <></>
 }

@@ -10,6 +10,8 @@ declare module 'next-auth' {
     user: User
   }
 
+  type UpdateSession = (data: { name: string }) => Promise<Session | null>
+
   interface User {
     bio?: string
     email: string
@@ -20,10 +22,17 @@ declare module 'next-auth' {
     isPasswordSet: boolean
     image: string
     accessToken: string
-    ks_cb_request_status?: number
-    is_brand_system_user?: boolean
-    brand_id?: number
-    brand_slug?: string
+    ksCbRequestStatus?: number
+    /**
+     * if user is brand user.
+     */
+    isBrandSystemUser?: boolean
+    brandId?: number
+    brandSlug?: string
+    /**
+     * Checks if use has already topics.
+     */
+    hasTopics?: boolean
   }
 
   // interface AdapterUser {

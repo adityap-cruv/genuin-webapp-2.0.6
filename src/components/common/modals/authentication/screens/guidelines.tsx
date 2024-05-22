@@ -38,7 +38,6 @@ export function Guidelines() {
         signupSource: SIGNUP_SOURCE.web,
         actionMetadata: { path: window.location.pathname, action },
       })
-
       await signIn('credentials', {
         ...signupResponse.data.user,
         accessToken: signupResponse.accessToken,

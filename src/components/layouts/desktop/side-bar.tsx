@@ -41,7 +41,7 @@ export function SideBar() {
             ...sessionData,
             user: { ...sessionData?.user, ...res.data },
           })
-          const messageType = res?.data?.ks_cb_request_status === 3 ? 'MINI_PROFILE_SUCCESS' : 'KS_CB_SUBDOMAIN'
+          const messageType = res?.data?.ksCbRequestStatus === 3 ? 'MINI_PROFILE_SUCCESS' : 'KS_CB_SUBDOMAIN'
           AuthenticationModal.open(undefined, messageType)
         } else {
           AuthenticationModal.open(undefined, 'KS_CB_SUBDOMAIN')
@@ -83,9 +83,7 @@ export function SideBar() {
             </Link>
             <Link
               href={{
-                pathname: user.is_brand_system_user
-                  ? PATH_NAME.brand(user.brand_slug)
-                  : PATH_NAME.profile(user.nickname),
+                pathname: user.isBrandSystemUser ? PATH_NAME.brand(user.brandSlug) : PATH_NAME.profile(user.nickname),
               }}>
               <Item title="Profile" isActive={pathName === PATH_NAME.profile(user.nickname)}>
                 <ProfileIcon isActive={pathName === PATH_NAME.profile(user.nickname)} />
@@ -131,7 +129,7 @@ export function SideBar() {
             </Button>
           </div>
         )}
-        {user?.ks_cb_request_status !== 3 && (
+        {user?.ksCbRequestStatus !== 3 && (
           <>
             <hr className="border-1 mt-1 border-monochrome-black/10" />
             <div
