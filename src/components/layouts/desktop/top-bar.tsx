@@ -105,7 +105,7 @@ function UserTick() {
             />
             <div>
               <p className="line-clamp-1 break-words break-all text-title-3-bold">{data.user.email}</p>
-              {!data.user?.is_brand_system_user && (
+              {!data.user?.isBrandSystemUser && (
                 <p
                   className="text-body-1-demi text-monochrome-6 hover:cursor-pointer"
                   onClick={() => {
@@ -124,7 +124,7 @@ function UserTick() {
           </div>
           <hr className="border-b border-monochrome-9" />
           <div className="flex flex-col gap-3 p-4">
-            {!data.user?.is_brand_system_user && (
+            {!data.user?.isBrandSystemUser && (
               <>
                 <Link href={PATH_NAME.settings('account')}>
                   <div
