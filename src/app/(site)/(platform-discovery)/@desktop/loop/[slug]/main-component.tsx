@@ -8,7 +8,6 @@ import { useRef, useState } from 'react'
 import { useInView } from 'framer-motion'
 import { TopStickyBar } from './top-bar'
 import { getLoopCohosts, getLoopDetails, getLoopSubscribers, subscribeLoop } from '@lib/api/loop'
-import { Loader } from '@components/ui/loader'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { ListItem } from '@components/common/list-item'
@@ -34,7 +33,7 @@ interface Props {
 
 export function LoopDetails({ slug }: { slug: string }) {
   const { data, isLoading } = getLoopDetails(slug)
-
+  console.log('data;:', data)
   if (isLoading) return <Loading />
   if (data) return <MainComponent loopDetails={data} />
   if (!isLoading && !data) return <Error />

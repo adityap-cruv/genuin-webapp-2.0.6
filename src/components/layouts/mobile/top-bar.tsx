@@ -9,7 +9,7 @@ import { usePathname } from 'next/navigation'
 import { PopularIcon, HomeIcon, LatestIcon, ProfileIcon } from '@icons/side-bar-icons'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { PATH_NAME } from '@lib/utils/constants/path'
-import { Search, X } from 'lucide-react'
+import { X } from 'lucide-react'
 import { RecentCommunities } from './recent-communities'
 import { AppLogo } from '@components/ui/app-logo'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
@@ -26,9 +26,6 @@ import { SearchBar } from '@components/common/search-bar'
 import { miniProfile } from '@lib/api/auth'
 import { SettingsLayout } from '../settings/mobile/layout'
 import { NotificationIcon } from '@icons/settings-side-bar-icons'
-import icBack from '@icons/icBack.svg'
-import Image from 'next/image'
-import { MainComponent } from '../../../app/(site)/(platform-discovery)/@mobile/notification/main-component'
 import { SearchIcon } from '@icons/search-icon'
 
 const navVariant = cva('sticky top-0 flex z-40 h-[76px] w-full items-center justify-between  px-2', {
@@ -79,7 +76,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
           <Link href={{ pathname: PATH_NAME.home() }}>
             <AppLogo.icon
               imageHeight={32}
-              className={cn(variant === 'trasparent' ? 'fill-new-off-white' : 'fill-new-off-black')}
+              className={cn(variant === 'trasparent' ? 'fill-new-off-white' : 'fill-new-off-black', 'max-w-[100px]')}
             />
           </Link>
         )}
@@ -97,11 +94,39 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
             </Button>
           </Link>
         )}
-        {user && <NotificationSheet notificationsCount={notificationsCount} pathName={pathName} />}
+        {user && (
+          <Link href={PATH_NAME.notification()}>
+            <div className="relative">
+              {!notificationsCount ||
+                (notificationsCount > 0 && (
+                  <div
+                    className="absolute right-0 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-primary text-monochrome-white"
+                    style={{
+                      fontSize: '8px',
+                    }}>
+                    {notificationsCount}
+                  </div>
+                ))}
+              <NotificationIcon
+                variant={
+                  pathName === '/home' ||
+                  pathName === '/popular' ||
+                  pathName === '/latest' ||
+                  pathName.includes('/video')
+                    ? 'white'
+                    : ''
+                }
+                className="h-7"
+              />
+            </div>
+          </Link>
+        )}
         <SearchBar.mobile>
           <SearchIcon
             className={`${
-              pathName === '/home' || pathName === '/popular' || pathName === '/latest' ? 'stroke-monochrome-white' : ''
+              pathName === '/home' || pathName === '/popular' || pathName === '/latest' || pathName.includes('/video')
+                ? 'stroke-monochrome-white'
+                : ''
             }`}
           />
         </SearchBar.mobile>
@@ -119,49 +144,6 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
         )}
       </span>
     </nav>
-  )
-}
-
-function NotificationSheet({
-  notificationsCount,
-  pathName,
-}: {
-  notificationsCount: number | null | undefined
-  pathName: string
-}) {
-  return (
-    <>
-      <Sheet>
-        <SheetTrigger>
-          <div className="relative">
-            {!notificationsCount ||
-              (notificationsCount > 0 && (
-                <div
-                  className="absolute right-0 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-primary text-monochrome-white"
-                  style={{
-                    fontSize: '8px',
-                  }}>
-                  {notificationsCount}
-                </div>
-              ))}
-            <NotificationIcon
-              variant={pathName === '/home' || pathName === '/popular' || pathName === '/latest' ? 'white' : ''}
-              className="h-7"
-            />
-          </div>
-        </SheetTrigger>
-        <SheetContent showDefaultClose={false} side="right" className="w-full border-none p-0 shadow-none outline-none">
-          <div className={`relative m-4 flex w-full items-center justify-center`}>
-            <SheetClose className="absolute left-0 shadow-none outline-none">
-              <Image src={icBack} alt="back" />
-            </SheetClose>
-            <p className="text-title-2-bold">Notifications</p>
-          </div>
-          <hr className="bg-tertiary-300" />
-          <MainComponent />
-        </SheetContent>
-      </Sheet>
-    </>
   )
 }
 

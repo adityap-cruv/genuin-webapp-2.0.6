@@ -45,8 +45,8 @@ const communitySchema = z.object({
   id: z.string(),
   type: z.number().nullish(),
   shareUrl: z.string(),
-  logged_in_user_role: z.number().nullish(),
-  brand: BrandSchema,
+  userRole: z.enum(['LEADER', 'MEMBER']).nullish(),
+  brand: BrandSchema.optional(),
 })
 
 const BrandUserSchema = z
@@ -62,7 +62,7 @@ const ownerSchema = z.object({
   profileImage: z.string(),
   userName: z.string(),
   name: z.string().nullish(),
-  brand: BrandUserSchema,
+  brand: BrandUserSchema.optional(),
 })
 
 // Define the PlayerVideoModal schema

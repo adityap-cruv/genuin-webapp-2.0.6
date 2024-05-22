@@ -2,17 +2,20 @@ import OpenPlayerJS from 'openplayerjs'
 import { useInView } from 'framer-motion'
 import { type DetailedHTMLProps, type ReactEventHandler, type VideoHTMLAttributes, useEffect, useRef } from 'react'
 import { usePlayerControlStore } from './player-control-store'
+import { pushVideoWatch } from '@services/analytics_service'
 
 // TODO: work on why player is sending multiple request.
 interface Props extends DetailedHTMLProps<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement> {
   // videoSizeBox: { width: number; height: number }
   videoSource: string
   isFirstElement?: boolean
+  id: string
 }
 
 export function InnerPlayer({
   // videoSizeBox,
   videoSource,
+  id,
   poster,
   loop,
   onEnded,
@@ -120,7 +123,7 @@ export function InnerPlayer({
       poster={poster}
       ref={videoRef}
       muted={muted}
-      loop={loop}
+      loop={false}
       src={videoSource}
       playsInline
       onPlay={onPlay}
@@ -133,7 +136,10 @@ export function InnerPlayer({
       // onDurationChange={onDurationChangeEventHandler}
       onTimeUpdate={onTimeUpdateEventHandler}
       onPause={onPause}
-      onEnded={onEnded}
+      onEnded={(e) =>{
+        onEnded?.(e)
+        restartAndLog(localRef.current.player,loop ?? false, id)
+      }}
       {...props}
     />
   )
@@ -142,6 +148,7 @@ export function InnerPlayer({
 export function ViewportPlayer({
   videoSource,
   poster,
+  id,
   loop,
   isFirstElement = false,
   onEnded,
@@ -238,7 +245,7 @@ export function ViewportPlayer({
       poster={poster}
       ref={videoRef}
       muted={muted}
-      loop={loop}
+      loop={false}
       src={videoSource}
       playsInline
       onPlay={onPlay}
@@ -249,10 +256,21 @@ export function ViewportPlayer({
         if (onCanPlay) onCanPlay(ev)
       }}
       onPause={onPause}
-      onEnded={onEnded}
+      onEnded={(e) => {
+        onEnded?.(e)
+        restartAndLog(localRef.current.player,loop ?? false, id)
+      }}
       onTimeUpdate={onTimeUpdateEventHandler}
       // onDurationChange={onDurationChangeEventHandler}
       {...props}
     />
   )
+}
+
+function restartAndLog(player: OpenPlayerJS | null, loop:boolean,id: string){
+  if(loop && player) {
+    void player.play()
+  }
+  pushVideoWatch(id)
+
 }

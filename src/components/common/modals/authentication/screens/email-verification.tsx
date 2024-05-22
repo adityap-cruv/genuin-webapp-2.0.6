@@ -6,7 +6,6 @@ import { useAuthenticationModalStore } from '../store'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { resendVerificationMail } from '@lib/api/auth'
 import { useEffect, useState } from 'react'
-import { useSession } from 'next-auth/react'
 import { deleteSearchParam } from '@lib/utils'
 import { Loader } from '@components/ui/loader'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
@@ -21,6 +20,7 @@ function Success() {
   const setStep = useAuthenticationModalStore().setStep
   const pathName = usePathname()
   const searchParams = useSearchParams()
+  const embed = useGenuinOptions().embed
 
   return (
     <ModalShell>

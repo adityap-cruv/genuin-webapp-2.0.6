@@ -13,7 +13,7 @@ const ownerSchema = z.object({
   phone: z.string().nullish(),
   is_avatar: z.boolean(),
   profile_image: z.string(),
-  brand: BrandUserSchema,
+  brand: BrandUserSchema.optional(),
 })
 
 // Define group schema

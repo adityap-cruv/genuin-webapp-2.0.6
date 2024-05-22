@@ -33,20 +33,22 @@ const loopSchema = z.object({
   actions: actionsSchema,
 })
 
-const BrandSchema = z.object({
-  brand_id: z.number(),
-  name: z.string(),
-  subdomain: z.string(),
-  logo: z.string().url(),
-  created_at: z.number(),
-  brand_web_logo: z.string().url(),
-  favicon: z.string().url(),
-  brand_system_user_id: z.string(),
-  brand_slug: z.string(),
-}).nullish()
+const BrandSchema = z
+  .object({
+    brand_id: z.number(),
+    name: z.string(),
+    subdomain: z.string(),
+    logo: z.string().url(),
+    created_at: z.number(),
+    brand_web_logo: z.string().url(),
+    favicon: z.string().url(),
+    brand_system_user_id: z.string(),
+    brand_slug: z.string(),
+  })
+  .nullish()
 
 const CommunitySchema = z.object({
-  brand: BrandSchema,
+  brand: BrandSchema.optional(),
   community_id: z.string(),
   type: z.number().nullish(),
   slug: z.string(),

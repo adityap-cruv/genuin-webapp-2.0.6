@@ -1,6 +1,6 @@
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { getCommunityLoops } from '@lib/api/community'
-import { abbreviateNumber, getTimeAgo } from '@lib/utils'
+import { abbreviateNumber, getTimeAgo, cn } from '@lib/utils'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -13,13 +13,15 @@ import { useState } from 'react'
 import { Shimmer } from '@components/ui/shimmer'
 import { type CommunityLoopType } from '@lib/schemas/community/loops'
 import { type VideoPlayerModalCommunityType, type VideoPlayerModalLoopType } from '@lib/schemas/player/video'
-import { IcLoop } from '@icons/ic-loop'
 
 // TODO: remove this component from here and put at better location
 // TODO: improve player-modal opening logic. As not meeting standards.
 export function CommunityLoopTab({ community }: { community: VideoPlayerModalCommunityType }) {
   const { isLoading, data } = getCommunityLoops(community.slug)
-  const [modalController, setModalController] = useState<{ open: boolean; loop: VideoPlayerModalLoopType | null }>({
+  const [modalController, setModalController] = useState<{
+    open: boolean
+    loop: VideoPlayerModalLoopType | null
+  }>({
     open: false,
     loop: null,
   })
@@ -33,7 +35,13 @@ export function CommunityLoopTab({ community }: { community: VideoPlayerModalCom
       </>
     )
   if (!data || data.loops.length === 0) return <NoLoops />
+  function getUnreadMessageCount(id: string) {
+    const ans = data?.loops.find((item, index, arr) => {
+      return item.chat_id === id
+    })
 
+    return ans?.unread_message_count ?? 0
+  }
   return (
     <>
       {data.loops.map((item, index) => (
@@ -49,9 +57,9 @@ export function CommunityLoopTab({ community }: { community: VideoPlayerModalCom
           }}
         />
       ))}
-
       {modalController.loop && (
         <PlayerModalWrapper
+          unreadMessageCount={getUnreadMessageCount(modalController.loop.id)}
           open={modalController.open}
           loop={modalController.loop}
           community={community}
@@ -130,35 +138,51 @@ function LoopItem({
       </>
     )
   }
-
   return (
     <div className="relative">
       <Link href={{ pathname: PATH_NAME.loop(loopDetails.slug) }}>
-        <div className="relative my-4 w-full rounded-lg border border-tertiary-200 bg-monochrome-white">
+        <div
+          className={cn(
+            'relative my-4 w-full rounded-lg border border-tertiary-200 bg-monochrome-white',
+            loopDetails.unread_message_count > 0 && 'border-primary-200 bg-primary-100 '
+          )}>
           <div className="w-[70%] items-center p-[3%]">
             <p className="text-body-1-bold">{loopDetails.group.group_name}</p>
             {!loopDetails.is_view_allowed && (
               <p className="text-cap-1-med text-tertiary">Visible to Collaborators only</p>
             )}
-            {loopDetails.latest_messages.length !== 0 && loopDetails.is_view_allowed && (
-              <p className="text-body-1-demi text-secondary-300">
-                @{loopDetails.latest_messages[0].owner.username} posted ∙{' '}
-                {getTimeAgo(loopDetails.latest_messages[0].message_at)}
-              </p>
+            {loopDetails.unread_message_count > 0 ? (
+              <p className="line-clamp-1 break-all text-body-1-bold text-primary">{`${
+                loopDetails.unread_message_count
+              } new videos ∙ ${getTimeAgo(loopDetails.latest_messages[0].message_at)}`}</p>
+            ) : (
+              loopDetails.latest_messages.length !== 0 &&
+              loopDetails.is_view_allowed && (
+                <p className="line-clamp-1 break-all text-body-1-demi text-secondary-300">
+                  @{loopDetails.latest_messages[0].owner.username} posted ∙{' '}
+                  {getTimeAgo(loopDetails.latest_messages[0].message_at)}
+                </p>
+              )
             )}
           </div>
-          <div className="h-[60%] rounded-b-lg border border-tertiary-200 bg-tertiary-200 p-4">
+          <div
+            className={cn(
+              'h-[60%] rounded-b-lg border border-tertiary-200 p-4',
+              loopDetails.unread_message_count > 0 ? 'bg-primary-200' : 'bg-tertiary-200'
+            )}>
             <div className="flex w-[70%] items-center">
               <div className="relative flex">
                 <Members />
               </div>
-              <p
-                className={`ml-1 line-clamp-1 text-body-1-med text-secondary-300 ${
-                  loopDetails.group.members.length !== 1 && 'ml-7'
-                } ${loopDetails.group.members.length === 3 && 'ml-6'}`}>
-                {loopDetails.group.members[0].username}
-                {getCollaboratorsCountString(loopDetails.group.members.length - 1)}
-              </p>
+              {loopDetails.group.members.length > 0 && (
+                <p
+                  className={`ml-1 line-clamp-1 text-body-1-med text-secondary-300 ${
+                    loopDetails.group.members.length !== 1 && 'ml-7'
+                  } ${loopDetails.group.members.length === 3 && 'ml-6'}`}>
+                  {loopDetails.group?.members[0]?.username}
+                  {getCollaboratorsCountString(loopDetails.group.members.length - 1)}
+                </p>
+              )}
             </div>
             <p className="my-[2%] line-clamp-2 w-[70%] text-body-1-demi text-secondary-300">
               {loopDetails.group.group_description}
@@ -209,7 +233,7 @@ function RenderedImages({ videos, onClick }: { videos: any[]; onClick: () => voi
   }
 
   return (
-    <span onClick={onClick}>
+    <div className="" onClick={onClick}>
       {videos.map((item: any, index: number) => {
         return (
           <div
@@ -228,7 +252,7 @@ function RenderedImages({ videos, onClick }: { videos: any[]; onClick: () => voi
           </div>
         )
       })}
-    </span>
+    </div>
   )
 }
 
@@ -237,9 +261,10 @@ type PlayerModalWrapperProps = {
   community: VideoPlayerModalCommunityType
   loop: VideoPlayerModalLoopType
   close: () => void
+  unreadMessageCount: number
 }
 
-function PlayerModalWrapper({ open = false, close, community, loop }: PlayerModalWrapperProps) {
+function PlayerModalWrapper({ open = false, close, community, loop, unreadMessageCount }: PlayerModalWrapperProps) {
   const { data, fetchNextPage, isError, isFetchingNextPage, isFetching } = getLoopVideos({ community, loop })
   const videos = data?.pages.flatMap((item) => item.videos)
 
@@ -254,6 +279,7 @@ function PlayerModalWrapper({ open = false, close, community, loop }: PlayerModa
         open={open}
         videos={videos}
         close={close}
+        unreadMessageCount={unreadMessageCount}
       />
     )
 }
