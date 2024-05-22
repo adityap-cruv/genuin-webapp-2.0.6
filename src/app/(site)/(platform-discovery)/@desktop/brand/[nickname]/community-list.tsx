@@ -396,7 +396,7 @@ function LoopVideos({ brandId, loop, communityId, pathName, user }: LoopVideosPr
       <Link href={PATH_NAME.loop(loop.slug)}>
         <p className="mb-1 text-body-1-bold">{loop.name}</p>
       </Link>
-      {pathName === PATH_NAME.brand(user?.brand_slug) && (
+      {pathName === PATH_NAME.brand(user?.brandSlug) && (
         <LoopPrivacyInfo
           actionId={loop?.actions?.[0]?.action_id ?? 0}
           accessTypeId={loop?.actions?.[0]?.access_type_id ?? 0}

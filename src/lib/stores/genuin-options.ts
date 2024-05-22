@@ -61,10 +61,22 @@ export type User = {
   image?: string | null
   accessToken: string
   id?: string
-  ks_cb_request_status?: number
-  is_brand_system_user?: boolean
-  brand_id?: number
-  brand_slug?: string
+  /**
+   * 1 → 'no request or all request are rejected'
+   * 2 → 'all request is in progress'
+   * 3 → 'any request is approved or user is already CB'
+   */
+  ksCbRequestStatus?: number
+  /**
+   *
+   */
+  isBrandSystemUser?: boolean
+  brandId?: number
+  brandSlug?: string
+  /**
+   * Checks if use has already topics.
+   */
+  hasTopics?: boolean
 }
 
 type StateType = {

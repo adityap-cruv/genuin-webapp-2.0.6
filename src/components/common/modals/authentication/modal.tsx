@@ -20,6 +20,7 @@ import {
   Logout,
   ForgotPassword,
   ResetPassword,
+  CategoryInput,
 } from './screens'
 import { useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
@@ -174,5 +175,7 @@ export function Content() {
       return <ResetPassword />
     case 'RESET_PASSWORD_SUCCESS_NOTE':
       return <Note.resetpasswordsuccess />
+    case 'CATEGORY_INPUT':
+      return <CategoryInput />
   }
 }

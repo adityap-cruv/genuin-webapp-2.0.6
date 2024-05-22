@@ -12,7 +12,7 @@ import { PATH_NAME } from '@lib/utils/constants/path'
 import { X } from 'lucide-react'
 import { RecentCommunities } from './recent-communities'
 import { AppLogo } from '@components/ui/app-logo'
-import { useGenuinOptions } from '@lib/stores/genuin-options'
+import { type User, useGenuinOptions } from '@lib/stores/genuin-options'
 import { AuthenticationModal } from '@components/common/modals/authentication'
 import { useSession, signOut } from 'next-auth/react'
 import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
@@ -155,7 +155,7 @@ function Menu({
 }: {
   hamBurgerVariant: 'dark' | 'light'
   brandName: string
-  user: any
+  user?: User
   embed: boolean
 }) {
   const pathName = usePathname()
@@ -209,8 +209,8 @@ function Menu({
               <>
                 <Link
                   href={{
-                    pathname: user.is_brand_system_user
-                      ? PATH_NAME.brand(user.brand_slug)
+                    pathname: user.isBrandSystemUser
+                      ? PATH_NAME.brand(user.brandSlug)
                       : PATH_NAME.profile(user.nickname),
                   }}>
                   <MenuItem title="Profile" isActive={pathName === PATH_NAME.profile(user.nickname)}>
@@ -225,7 +225,7 @@ function Menu({
               </MenuItem>
             </Link> */}
             <hr className="border-1 mt-1 border-monochrome-black/10" />
-            {user?.ks_cb_request_status !== 3 && (
+            {user?.ksCbRequestStatus !== 3 && (
               <div
                 className="max-w-72 relative my-4 max-h-16 rounded-lg border border-[#E9CAF4] bg-primary-200 text-title-3-demi text-monochrome-black hover:cursor-pointer"
                 style={{
@@ -324,7 +324,7 @@ function UserTick() {
             />
             <div>
               <p className="line-clamp-1 break-words break-all text-title-3-bold">{data.user.email}</p>
-              {!data.user.is_brand_system_user && (
+              {!data.user.isBrandSystemUser && (
                 <p className="text-body-1-demi text-monochrome-6">
                   {!data.user.isEmailVerified ? 'Send verification email' : 'Complete profile'}
                 </p>
@@ -344,7 +344,7 @@ function UserTick() {
                 Log out
               </p>
             </div>
-            {!data.user.is_brand_system_user && <SettingsLayout />}
+            {!data.user.isBrandSystemUser && <SettingsLayout />}
           </div>
         </PopoverContent>
       </Popover>

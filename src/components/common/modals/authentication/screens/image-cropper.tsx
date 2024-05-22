@@ -22,7 +22,7 @@ export function ImageCropper() {
     image: state.formData.image,
     setImage: state.setFormData,
     setStep: state.setStep,
-    goBack: state.goToPrevios,
+    goBack: state.goToPrevious,
     step: state.previousStep,
     close: state.close,
   }))
