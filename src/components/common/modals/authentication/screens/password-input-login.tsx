@@ -39,6 +39,7 @@ export function PasswordInputLogin() {
       .then(async (res) => {
         if (res?.code === 200) {
           // console.log(res.data)
+          // TODO: create a simple method to map user object.
           const user = {
             is_avatar: res.data.user.is_avatar,
             user_id: res.data.user.user_id,
@@ -48,12 +49,13 @@ export function PasswordInputLogin() {
             bio: res.data.user.bio,
             name: res.data.user.name,
             is_email_verified: res.data.user.is_email_verified,
-            is_password_set: true,
+            is_password_set: res.data.user.is_password_set,
             accessToken: res.data.accessToken,
             ks_cb_request_status: res.data.user.ks_cb_request_status,
-            is_brand_system_user: res.data.user.is_brand_system_user ? res.data.user.is_brand_system_user : null,
+            is_brand_system_user: res.data.user.is_brand_system_user,
             brand_id: res.data.user.brand ? res.data.user.brand.brand_id : null,
             brand_slug: res.data.user.brand ? res.data.user.brand.brand_slug : null,
+            onboarding_topics: res.data.user.onboarding_topics,
           }
           // console.log('user', user)
           void signIn('credentials', { ...user, redirect: false })

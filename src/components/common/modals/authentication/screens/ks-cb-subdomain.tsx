@@ -103,16 +103,16 @@ export function KsToCbSubdomain() {
           </div>
         </SwiperSlide>
       </Swiper>
-      {user?.ks_cb_request_status !== 3 && (
+      {user?.ksCbRequestStatus !== 3 && (
         <Button
           type="submit"
           variant="default"
           className="w-full"
-          disabled={user?.ks_cb_request_status === 2}
+          disabled={user?.ksCbRequestStatus === 2}
           onClick={handleClick}>
           {loading ? (
             <Loader size="sm" className="fill-new-off-white" />
-          ) : user?.ks_cb_request_status === 2 ? (
+          ) : user?.ksCbRequestStatus === 2 ? (
             'Requested'
           ) : (
             `Become a community builder for ${brandName}`
