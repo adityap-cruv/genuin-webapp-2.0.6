@@ -52,7 +52,7 @@ export function Modal() {
 
 function NoData() {
   return (
-    <div className="flex h-full min-h-full flex-col items-center justify-center">
+    <div className="flex h-auto flex-1 flex-col items-center justify-center">
       <div className="w-fit rounded-full bg-tertiary-200 p-2">
         <IcLoop className="h-20 fill-monochrome-black" />
       </div>
