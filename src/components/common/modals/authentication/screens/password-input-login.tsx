@@ -62,8 +62,9 @@ export function PasswordInputLogin() {
             .then((res) => {
               if (res?.ok) {
                 close()
+              } else {
+                form.setError('root', { message: 'Oops! something went wrong. try again.' })
               }
-              form.setError('root', { message: 'Oops! something went wrong. try again.' })
             })
             .catch((e) => {
               form.setError('root', { message: 'Oops! something went wrong. try again.' })
@@ -108,6 +109,12 @@ export function PasswordInputLogin() {
                             'border border-tertiary-200 bg-tertiary-100 text-title-3-med',
                             errors && '!border-red'
                           )}
+                          onKeyDown={(e) => {
+                            if (e.key === ' ') {
+                              e.preventDefault()
+                              return false
+                            }
+                          }}
                           {...field}
                         />
                         <div className="absolute right-4 top-0 flex h-full items-center">
@@ -131,7 +138,7 @@ export function PasswordInputLogin() {
                     </FormControl>
                     <FormMessage className={cn('!text-cap-1-demi')} />
                     <p
-                      className="mt-2 text-center text-body-1-demi text-monochrome-6 hover:cursor-pointer"
+                      className="pt-2 text-center text-body-1-demi text-monochrome-6 hover:cursor-pointer"
                       onClick={() => {
                         setStep('FORGOT_PASSWORD')
                       }}>

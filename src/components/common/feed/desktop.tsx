@@ -7,7 +7,7 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import { Mousewheel, Keyboard } from 'swiper/modules'
 import { type VideoSizeBoxType, useGenuinOptions } from '@lib/stores/genuin-options'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
-import { showInterruption } from '@components/providers/inerruption-provider'
+import { showInterruption } from '@components/providers/interruption-provider'
 
 const DesktopPlayer = dynamic(async () => await import('@components/common/player').then((comp) => comp.Player.desktop))
 

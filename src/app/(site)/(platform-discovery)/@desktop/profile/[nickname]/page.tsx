@@ -3,6 +3,7 @@ import { fetchUserData } from '@lib/api/profile'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { fetchMetadata } from '@lib/api/meta-data'
 import { type Metadata } from 'next'
+import { redirect } from 'next/navigation'
 import { headers } from 'next/headers'
 import { getConfig } from '../../../../../../middleware'
 
@@ -15,6 +16,9 @@ interface CompProps {
 
 export default async function Component({ params }: CompProps) {
   const profileData = await fetchUserData(params.nickname)
+  if (profileData.brand) {
+    redirect(PATH_NAME.brand(profileData.brand.brand_slug))
+  }
   return <MainComponent profileData={profileData} />
 }
 
