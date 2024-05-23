@@ -3,6 +3,9 @@ import { MainComponent } from './main-component'
 import { fetchUserData } from '@lib/api/profile'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { fetchMetadata } from '@lib/api/meta-data'
+import { redirect } from 'next/navigation'
+import { headers } from 'next/headers'
+import { getConfig } from '../../../../../../middleware'
 
 interface CompProps {
   params: {
@@ -13,6 +16,9 @@ interface CompProps {
 
 export default async function Component({ params }: CompProps) {
   const profileData = await fetchUserData(params.nickname)
+  if (profileData.brand) {
+    redirect(PATH_NAME.brand(profileData.brand.brand_slug))
+  }
   return <MainComponent profileData={profileData} />
 }
 
@@ -23,13 +29,19 @@ interface ProfileDataType {
   preview_image: string
 }
 export async function generateMetadata({ params }: CompProps): Promise<Metadata> {
-  const data: ProfileDataType = await fetchMetadata({ type: 1, username: params.nickname })
+  const host = headers().get('host') ?? ''
+  const config = getConfig(host)
+  let metadataParams = { type: 1, username: params.nickname }
+  if (config) {
+    metadataParams = { type: 1, username: params.nickname, ...config }
+  }
+  const data: ProfileDataType = await fetchMetadata(metadataParams)
   const title = data.title
   const desc = data.description
 
   return {
     title,
-    applicationName: 'Genuin',
+    // applicationName: 'Genuin',
     description: desc,
     openGraph: {
       title,

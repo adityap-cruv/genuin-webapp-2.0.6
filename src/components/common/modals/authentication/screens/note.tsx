@@ -102,7 +102,9 @@ function Email({ acountExists = false }: { acountExists?: boolean }) {
               Resend
             </span>
           ) : (
-            <span className="text-center text-body-1-med font-bold text-secondary">Resend email in {formatTime()}</span>
+            <span className="text-center text-body-1-med text-secondary">
+              Resend email in <strong>{formatTime()}</strong>
+            </span>
           )}
         </p>
       )}
@@ -136,7 +138,7 @@ function MagicLink() {
 
   async function resendMagicLink() {
     if (formData.email && timer <= 0) {
-      await resendVerificationMail(formData.email, 12)
+      await resendVerificationMail(formData.email, 11)
         .then((res) => {
           if (res.code === 200) {
             setEmailSentText('Email has been sent sucessfully')
@@ -176,7 +178,9 @@ function MagicLink() {
               Resend
             </span>
           ) : (
-            <span className="text-center text-body-1-med font-bold text-secondary">Resend email in {formatTime()}</span>
+            <span className="text-center text-body-1-med text-secondary">
+              Resend email in <strong>{formatTime()}</strong>
+            </span>
           )}
         </p>
       )}

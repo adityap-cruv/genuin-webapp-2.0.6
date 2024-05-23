@@ -52,7 +52,7 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
 
   return {
     title,
-    applicationName: 'genuin',
+    // applicationName: 'genuin',
     description,
     openGraph: {
       title,

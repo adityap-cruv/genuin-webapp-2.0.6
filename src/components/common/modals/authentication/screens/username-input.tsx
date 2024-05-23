@@ -91,8 +91,12 @@ export function UsernameInput() {
 
   return (
     <ModalShell>
-      <h3 className="flex w-full items-center justify-center text-title-1-demi sm:text-heading-3 ">Create username</h3>
-      <p className="flex w-full justify-center text-title-3-med ">Enter a name to show on your videos</p>
+      <div>
+        <h3 className="flex w-full items-center justify-center text-title-1-demi sm:text-heading-3 ">
+          Create username
+        </h3>
+        <p className="flex w-full justify-center text-title-3-med text-tertiary">Enter a name to show on your videos</p>
+      </div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
           <FormField
@@ -101,7 +105,7 @@ export function UsernameInput() {
             render={({ field }) => {
               const errors = useFormField().error
               return (
-                <FormItem className="sm:w-full">
+                <FormItem className="pb-6 sm:w-full">
                   <FormLabel className="text-body-1-med">
                     <div className="flex w-full justify-between">
                       <p className="">Username</p>
