@@ -62,8 +62,9 @@ export function PasswordInputLogin() {
             .then((res) => {
               if (res?.ok) {
                 close()
+              } else {
+                form.setError('root', { message: 'Oops! something went wrong. try again.' })
               }
-              form.setError('root', { message: 'Oops! something went wrong. try again.' })
             })
             .catch((e) => {
               form.setError('root', { message: 'Oops! something went wrong. try again.' })
@@ -137,7 +138,7 @@ export function PasswordInputLogin() {
                     </FormControl>
                     <FormMessage className={cn('!text-cap-1-demi')} />
                     <p
-                      className="mt-2 text-center text-body-1-demi text-monochrome-6 hover:cursor-pointer"
+                      className="pt-2 text-center text-body-1-demi text-monochrome-6 hover:cursor-pointer"
                       onClick={() => {
                         setStep('FORGOT_PASSWORD')
                       }}>
