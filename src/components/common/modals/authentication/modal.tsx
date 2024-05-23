@@ -24,7 +24,7 @@ import {
 } from './screens'
 import { useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
-import { X } from 'lucide-react'
+import icClose from '@icons/icClose.svg'
 import { PasswordInputLogin } from './screens/password-input-login'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 
@@ -95,8 +95,11 @@ export function Modal({ children, ...props }: Props) {
         }}
         className="rounded-t-lg !py-10">
         {showClose && (
-          <DialogClose className="absolute right-2 top-2">
-            <X
+          <DialogClose className="absolute right-4 top-4">
+            <img
+              src={icClose.src}
+              alt="close"
+              className="h-6"
               onClick={() => {
                 closeModal()
               }}
