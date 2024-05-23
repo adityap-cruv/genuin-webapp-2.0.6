@@ -8,7 +8,12 @@ export const analyticsService = async ({
   eventName: string
   properties: any
 }): Promise<void> => {
-  await rudderStackTrack(eventName, properties)
+  const userIdString = localStorage.getItem('_user_id_')
+  const userId = userIdString ? JSON.parse(userIdString).state.userId ?? '' : ''
+  const defaultProperties = { user_id: userId }
+
+  const updatedProperties = { ...properties, ...defaultProperties }
+  await rudderStackTrack(eventName, updatedProperties)
 }
 
 export function pushVideoWatch(videoId: string) {
