@@ -3,6 +3,8 @@ import { fetchUserData } from '@lib/api/profile'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { fetchMetadata } from '@lib/api/meta-data'
 import { type Metadata } from 'next'
+import { headers } from 'next/headers'
+import { getConfig } from '../../../../../../middleware'
 
 interface CompProps {
   params: {
@@ -24,13 +26,19 @@ type ProfileDataType = {
 }
 
 export async function generateMetadata({ params }: CompProps): Promise<Metadata> {
-  const data: ProfileDataType = await fetchMetadata({ type: 1, username: params.nickname })
+  const host = headers().get('host') ?? ''
+  const config = getConfig(host)
+  let metadataParams = { type: 1, username: params.nickname }
+  if (config) {
+    metadataParams = { type: 1, username: params.nickname, ...config }
+  }
+  const data: ProfileDataType = await fetchMetadata(metadataParams)
   const title = data.title
   const desc = data.description
 
   return {
     title,
-    applicationName: 'Genuin',
+    // applicationName: 'Genuin',
     description: desc,
     openGraph: {
       title,
