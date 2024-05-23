@@ -344,7 +344,7 @@ function UserTick() {
                 Log out
               </p>
             </div>
-            {!data.user.isBrandSystemUser && <SettingsLayout />}
+            {!data.user.isBrandSystemUser && data.user?.isEmailVerified && <SettingsLayout />}
           </div>
         </PopoverContent>
       </Popover>

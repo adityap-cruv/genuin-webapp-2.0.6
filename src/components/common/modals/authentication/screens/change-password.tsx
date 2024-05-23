@@ -80,6 +80,12 @@ export function ChangePassword() {
                           errors && '!border-red'
                         )}
                         {...field}
+                        onKeyDown={(e) => {
+                          if (e.key === ' ') {
+                            e.preventDefault()
+                            return false
+                          }
+                        }}
                       />
                       <div className="absolute right-4 top-0 flex h-full items-center">
                         {!passwordVisible.oldPassword ? (
@@ -143,6 +149,12 @@ export function ChangePassword() {
                           errors && '!border-red'
                         )}
                         {...field}
+                        onKeyDown={(e) => {
+                          if (e.key === ' ') {
+                            e.preventDefault()
+                            return false
+                          }
+                        }}
                       />
                       <div className="absolute right-4 top-0 flex h-full items-center">
                         {!passwordVisible.newPassword ? (
