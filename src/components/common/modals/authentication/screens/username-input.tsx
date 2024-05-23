@@ -11,6 +11,7 @@ import { Button } from '@components/ui/button'
 import { Loader } from '@components/ui/loader'
 import { ModalShell } from '../modal-shell'
 import { useSession } from 'next-auth/react'
+import { analyticsService } from '@services/analytics_service'
 
 const usernameSchema = z.object({
   username: z
@@ -73,6 +74,10 @@ export function UsernameInput() {
             user: { ...sessionData?.user, nickname: username },
           })
           setStep('COMPLETE_PROFILE')
+          void analyticsService({
+            eventName: 'ks_username_set ',
+            properties: { username },
+          })
         }
       } else {
         form.setError('username', { message: 'This username isn’t available. Choose a different username.' })

@@ -13,6 +13,7 @@ import { signIn } from 'next-auth/react'
 import { useAuthenticationModalStore } from '../store'
 import { useState } from 'react'
 import { Loader } from '@components/ui/loader'
+import { analyticsService } from '@services/analytics_service'
 
 const FormSchema = z.object({
   mobile: z.boolean().default(false).optional(),
@@ -46,6 +47,10 @@ export function Guidelines() {
         .then((res) => {
           if (res?.ok) {
             setStep('EMAIL_SENT_NOTE')
+            void analyticsService({
+              eventName: 'ks_signed_up',
+              properties: { email: formData.email },
+            })
           } else {
             form.control.setError('root', { message: 'Something went wrong. Please try again!' })
             throw new Error()
