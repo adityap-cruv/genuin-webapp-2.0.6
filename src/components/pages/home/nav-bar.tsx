@@ -46,7 +46,7 @@ export function NavBar() {
                 Market
               </p>
             </Link>
-            <Link href={PATH_NAME.pricing()}>
+            {/* <Link href={PATH_NAME.pricing()}>
               <p
                 className={`pr-4 text-new-para-2 ${
                   pathname === '/pricing' ? 'font-bold text-monochrome-black' : 'text-monochrome-3'
@@ -54,7 +54,7 @@ export function NavBar() {
                 {' '}
                 Pricing
               </p>
-            </Link>
+            </Link> */}
             <Link href={PATH_NAME.discover()}>
               <p
                 className={`pr-4 text-new-para-2 ${
@@ -117,9 +117,9 @@ export function NavBar() {
                     <Link href={PATH_NAME.market()}>
                       <h3 className="text-new-h3-mobile font-semibold">Market</h3>
                     </Link>
-                    <Link href={PATH_NAME.pricing()}>
+                    {/* <Link href={PATH_NAME.pricing()}>
                       <h3 className="text-new-h3-mobile font-semibold">Pricing</h3>
-                    </Link>
+                    </Link> */}
                     <Link href={PATH_NAME.discover()}>
                       <h3 className="text-new-h3-mobile font-semibold">Discover</h3>
                     </Link>
