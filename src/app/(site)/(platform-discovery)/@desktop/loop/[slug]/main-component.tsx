@@ -161,7 +161,7 @@ export function MainComponent({ loopDetails }: Props) {
                 <p className="text-body-1-demi text-tertiary">Created by</p>
                 <Link
                   href={{
-                    pathname: loopDetails.owner.brand
+                    pathname: loopDetails.owner.brand?.brand_slug
                       ? PATH_NAME.brand(loopDetails.owner.brand.brand_slug)
                       : PATH_NAME.profile(loopDetails.owner.username),
                   }}>
