@@ -9,6 +9,11 @@ const MetaDataSchema = z.object({
   contains_external_videos: z.boolean().nullish(),
 })
 
+const BrandUserSchema = z.object({
+  brand_id: z.number(),
+  brand_slug: z.string(),
+})
+
 const OwnerSchema = z.object({
   member_id: z.string(),
   name: z.string().nullable(),
@@ -20,6 +25,7 @@ const OwnerSchema = z.object({
   profile_image_s: z.string().nullish(),
   profile_image_m: z.string().nullish(),
   profile_image_l: z.string().nullish(),
+  brand: BrandUserSchema.optional(),
 })
 
 const LoopVideoSchema = z.object({
