@@ -151,7 +151,7 @@ export function CommunityList({ brandId, scrollYProgress }: { brandId: number; s
                         brandName={item.brand?.name}
                       />
                     )}
-                    {pathName !== PATH_NAME.profile(user?.nickname) && (
+                    {pathName !== PATH_NAME.profile(user?.nickname) && item.userRole !== 'LEADER' && (
                       <Button
                         size="custom"
                         className={`${communityJoinStates[item.id] && 'border border-primary '}`}

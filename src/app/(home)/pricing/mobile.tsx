@@ -181,13 +181,13 @@ function Component1() {
                 <p className="text-center text-new-h3">
                   $1999<span className="text-new-md">/month</span>
                 </p>
-                <a href={process.env.NEXT_PUBLIC_BCC_URL} target="_blank" rel="noopener noreferrer">
+                <ContactUs>
                   <Button
                     size="custom"
                     className="mt-8 bg-new-off-black px-12 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
-                    <p className="text-new-para-2">Get Started</p>
+                    <p className="text-new-para-2">Contact Us</p>
                   </Button>
-                </a>
+                </ContactUs>
               </div>
               <div className="flex flex-col gap-2">
                 <p className="text-new-md">

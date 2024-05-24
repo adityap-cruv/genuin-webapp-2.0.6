@@ -133,6 +133,7 @@ export function parseProfileCommunityResponse(communities: ProfileCommunityRespo
       id: item.community_id,
       // TODO: Addition from backend required.
       isJoined: false,
+      userRole: item.logged_in_user_role ? (item.logged_in_user_role === 1 ? 'LEADER' : 'MEMBER') : undefined,
       slug: item.slug,
       name: item.name,
       profileImage: item.dp,

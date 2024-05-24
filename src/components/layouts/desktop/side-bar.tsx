@@ -190,21 +190,19 @@ type ItemProps = {
 
 function Item({ title, isActive, children, notificationCount }: ItemProps) {
   return (
-    <div className="relative flex w-full max-w-full items-center gap-x-3 rounded-md p-3 hover:bg-monochrome-6/10">
-      {children}
-
+    <div className="flex w-full max-w-full items-center gap-x-3 rounded-md p-3 hover:bg-monochrome-6/10">
+      <div className="relative">
+        {children}
+        {!notificationCount ||
+          (notificationCount > 0 && (
+            <>
+              <div className="absolute right-0 top-0 flex h-4 w-4 items-center justify-center rounded-full bg-primary  text-cap-1-med text-monochrome-white">
+                {notificationCount}
+              </div>
+            </>
+          ))}
+      </div>
       <p className={cn('hidden break-all !text-title-2-demi lg:block', isActive && 'text-primary')}>{title}</p>
-      {!notificationCount ||
-        (notificationCount > 0 && (
-          <>
-            <div className="absolute right-2.5 top-2.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary  text-cap-1-med text-monochrome-white lg:hidden">
-              {notificationCount}
-            </div>
-            <div className="hidden h-6 w-6 items-center justify-center rounded-full bg-primary text-monochrome-white lg:flex">
-              {notificationCount}
-            </div>
-          </>
-        ))}
     </div>
   )
 }
