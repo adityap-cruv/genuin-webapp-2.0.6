@@ -20,7 +20,6 @@ function Success() {
   const setStep = useAuthenticationModalStore().setStep
   const pathName = usePathname()
   const searchParams = useSearchParams()
-  const embed = useGenuinOptions().embed
 
   return (
     <ModalShell>
@@ -39,7 +38,7 @@ function Success() {
             searchParams: searchParams.toString(),
             paramsToDelete: ['email_verification_status'],
           })
-          setStep('PASSWORD_INPUT')
+          setStep('CATEGORY_INPUT')
         }}>
         <p className="text-title-3-med">Continue</p>
       </Button>
