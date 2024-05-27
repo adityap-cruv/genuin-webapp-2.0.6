@@ -31,6 +31,7 @@ export function ForgotPassword() {
 
   useEffect(() => {
     const w = form.watch((value) => {
+      form.clearErrors()
       setFormData({ email: value.email })
     })
     return () => {
@@ -46,12 +47,12 @@ export function ForgotPassword() {
         email: formData.email ?? '',
         deviceId,
       })
-      if (code === 200) {
+      if (code === 200 || code === 5174) {
         setFormData({ retryTime })
         setStep('PASSWORD_RESET_LINK_SENT_NOTE')
-      } else if (code === 5174) {
+      } else if (code === 5025) {
         setFormData({ retryTime })
-        setStep('PASSWORD_RESET_LINK_SENT_NOTE')
+        form.control.setError('root', { message: 'The entered email is not registered' })
       } else {
         form.control.setError('root', { message: 'Something went wrong. Please try again!' })
       }

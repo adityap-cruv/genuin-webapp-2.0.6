@@ -4,7 +4,6 @@ import { DecorativeList } from '@components/custom/decorative-list'
 import { fetchProfileCommunityLoops, fetchProfileVideos, getCommunities, getProfileFeed } from '@lib/api/profile'
 import { Loader } from '@components/ui/loader'
 import { Shimmer } from '@components/ui/shimmer'
-import { joinCommunity, leaveCommunity } from '@lib/api/video'
 import { PlayerModal } from '@components/common/modals/player-modal'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import icPlay from '@icons/player-controls/icPlay.svg'
@@ -15,7 +14,7 @@ import { useCommunityListStore } from './store'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { Button } from '@components/ui/button'
 import Link from 'next/link'
-import { openModal, abbreviateNumber } from '@lib/utils'
+import { abbreviateNumber } from '@lib/utils'
 import Image from 'next/image'
 import { type ProfileLoopType, type ProfileCommunityType, type ProfileVideoType } from '@lib/schemas/profile/community'
 import { getNextPage } from './hook'
@@ -26,14 +25,36 @@ import { LoopPrivacyInfo } from '@components/common/loop-privacy-info'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@components/ui/tooltip'
 import { IcLoop } from '@icons/ic-loop'
 import { BrandCommunityTag } from '@components/common/brand-community-tag'
+import { ToggleCommunityJoinState } from '@components/common/toggle-community-join-state'
 
 export function CommunityList({ userId }: { userId: string }) {
   const { data, isLoading, fetchNextPage, isFetchingNextPage } = getCommunities(userId, 8)
   const communities = data?.pages.flatMap((item) => item.communities)
-  const [communityJoinStates, setCommunityJoinStates] = useState<Record<string, boolean>>({})
+  const [communityJoinStates, setCommunityJoinStates] = useState<Record<string, string>>({})
   const user = useGenuinOptions().user
   const { addCommunities, currentVideoId } = useCommunityListStore()
   const pathName = usePathname()
+
+  useEffect(() => {
+    if (communities) {
+      const initialStates: Record<string, string> = {}
+      let shouldUpdate = false
+
+      communities.forEach((item) => {
+        const userRole = item.userRole ?? ''
+        if (communityJoinStates[item.id] !== userRole) {
+          initialStates[item.id] = userRole
+          shouldUpdate = true
+        } else {
+          initialStates[item.id] = communityJoinStates[item.id]
+        }
+      })
+
+      if (shouldUpdate) {
+        setCommunityJoinStates(initialStates)
+      }
+    }
+  }, [communities?.length])
 
   useEffect(() => {
     const newCommunites = data?.pages[data.pages.length - 1].communities
@@ -49,49 +70,6 @@ export function CommunityList({ userId }: { userId: string }) {
       void fetchNextPage()
     }
   })
-  // TODO: Manage it in better way
-  const toggleCommunityJoinState = async (communityId: string, communityHandle: string) => {
-    if (user) {
-      const newState = !communityJoinStates[communityId]
-      if (newState) {
-        await joinCommunity(
-          false,
-          [communityId],
-          [
-            {
-              user_id: user?.id,
-            },
-          ]
-        ).then((res) => {
-          if (res.code === 200) {
-            setCommunityJoinStates((prevState) => ({
-              ...prevState,
-              [communityId]: newState,
-            }))
-          }
-        })
-      } else {
-        await leaveCommunity(communityId).then((res) => {
-          if (res.code === 200) {
-            setCommunityJoinStates((prevState) => ({
-              ...prevState,
-              [communityId]: newState,
-            }))
-          }
-        })
-      }
-    } else {
-      openModal({
-        title: 'Get the Genuin app',
-        subtitle: (
-          <>
-            Get the app to join the <br />
-            <span className="font-bold">@{communityHandle}</span> community.
-          </>
-        ),
-      })
-    }
-  }
 
   function Inner() {
     if (isLoading)
@@ -163,21 +141,20 @@ export function CommunityList({ userId }: { userId: string }) {
                       </div>
                     )}
                   </div>
-                  {pathName !== PATH_NAME.profile(user?.nickname) && item.userRole !== 'LEADER' && (
-                    <Button
-                      size="custom"
-                      className={`${communityJoinStates[item.id] && 'border border-primary '}`}
-                      variant={communityJoinStates[item.id] ? 'outline' : 'default'}
-                      onClick={async () => {
-                        await toggleCommunityJoinState(item.id, item.handle)
-                      }}>
-                      <p
-                        className={`px-4 py-1.5 text-title-3-demi text-monochrome-white ${
-                          communityJoinStates[item.id] && 'text-primary'
-                        }`}>
-                        {communityJoinStates[item.id] ? 'Joined' : 'Join'}
-                      </p>
+                  {pathName !== PATH_NAME.profile(user?.nickname) && item.isCommunityJoinRequested && (
+                    <Button size="custom" className="border border-primary" variant={'outline'}>
+                      <p className={`px-4 py-1.5 text-body-1-demi text-monochrome-white text-primary`}>Requested</p>
                     </Button>
+                  )}
+                  {pathName !== PATH_NAME.profile(user?.nickname) && !item.isCommunityJoinRequested && (
+                    <ToggleCommunityJoinState
+                      communityJoinStates={communityJoinStates}
+                      setCommunityJoinStates={setCommunityJoinStates}
+                      handle={item.handle}
+                      id={item.id}
+                      userRole={item.userRole}
+                      isCommunityPrivate={item.type === 2}
+                    />
                   )}
                 </div>
               </div>

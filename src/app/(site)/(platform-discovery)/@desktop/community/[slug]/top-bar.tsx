@@ -23,6 +23,7 @@ type Props = {
   communityId: string
   shareUrl: string
   role: any
+  isCommunityPrivate: boolean
 }
 
 export const TopStickyBar = {
@@ -39,6 +40,7 @@ export function Desktop({
   communityId,
   shareUrl,
   role,
+  isCommunityPrivate,
   ...props
 }: Props) {
   const navAnimationControl = useAnimationControls()
@@ -67,7 +69,7 @@ export function Desktop({
       initial={{
         translateY: '-100%',
       }}
-      className="sticky top-0 z-30 flex h-14 w-full items-center justify-between border-b border-tertiary-200 bg-monochrome-white px-6"
+      className="sticky top-0 z-20 flex h-14 w-full items-center justify-between border-b border-tertiary-200 bg-monochrome-white px-6"
       {...props}>
       <span className="flex items-center gap-x-2">
         <CustomAvatar
@@ -79,7 +81,7 @@ export function Desktop({
         <p className="text-title-2-demi">{communityName}</p>
       </span>
       <span className="flex items-center gap-x-2">
-        <JoinButton handle={communityHandle} id={communityId} userRole={role} />
+        <JoinButton handle={communityHandle} id={communityId} userRole={role} isCommunityPrivate={isCommunityPrivate} />
         <Button
           variant="outline"
           size="custom"
