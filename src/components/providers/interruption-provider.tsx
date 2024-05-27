@@ -32,6 +32,7 @@ export function InterruptionProvider() {
   const { user, embed } = useGenuinOptions((state) => ({ user: state.user, embed: state.embed }))
 
   function showInterruption() {
+    const { user, embed } = useGenuinOptions.getState()
     if (
       !embed ||
       (user && user.isPasswordSet && user.hasTopics) ||
@@ -39,7 +40,6 @@ export function InterruptionProvider() {
       (user && !user.isEmailVerified)
     )
       return
-
     if (!user) {
       AuthenticationModal.open(undefined, 'EMAIL_INPUT')
     } else if (!user.hasTopics) {
