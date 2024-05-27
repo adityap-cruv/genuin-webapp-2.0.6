@@ -27,6 +27,7 @@ import { miniProfile } from '@lib/api/auth'
 import { SettingsLayout } from '../settings/mobile/layout'
 import { NotificationIcon } from '@icons/settings-side-bar-icons'
 import { SearchIcon } from '@icons/search-icon'
+import { analyticsService } from '@services/analytics_service'
 
 const navVariant = cva('sticky top-0 flex z-40 h-[76px] w-full items-center justify-between  px-2', {
   variants: {
@@ -171,6 +172,10 @@ function Menu({
           })
           const messageType = res?.data?.ks_cb_request_status === 3 ? 'MINI_PROFILE_SUCCESS' : 'KS_CB_SUBDOMAIN'
           AuthenticationModal.open(undefined, messageType)
+          void analyticsService({
+            eventName: 'become_cb_clicked',
+            properties: {},
+          })
         } else {
           AuthenticationModal.open(undefined, 'KS_CB_SUBDOMAIN')
         }
@@ -344,7 +349,7 @@ function UserTick() {
                 Log out
               </p>
             </div>
-            {!data.user.isBrandSystemUser && <SettingsLayout />}
+            {!data.user.isBrandSystemUser && data.user?.isEmailVerified && <SettingsLayout />}
           </div>
         </PopoverContent>
       </Popover>

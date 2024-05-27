@@ -12,6 +12,7 @@ import Image from 'next/image'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { Feedback } from '@lib/api/settings'
 import { useRouter } from 'next/navigation'
+import { analyticsService } from '@services/analytics_service'
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Please enter valid email.' }),
@@ -39,6 +40,10 @@ export default function MainComponent() {
     })
     if (status) {
       form.reset()
+      void analyticsService({
+        eventName: 'Settings Contact Us Form Sent',
+        properties: {},
+      })
     }
   }
 

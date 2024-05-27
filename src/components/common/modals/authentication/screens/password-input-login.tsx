@@ -15,6 +15,7 @@ import { useLocalStorage } from '@lib/stores/local-storage'
 import { usePathname } from 'next/navigation'
 import { Loader } from '@components/ui/loader'
 import { signIn } from 'next-auth/react'
+import { analyticsService } from '@services/analytics_service'
 
 const passwordSchema = z.object({ password: z.string().min(8) })
 
@@ -62,8 +63,13 @@ export function PasswordInputLogin() {
             .then((res) => {
               if (res?.ok) {
                 close()
+                void analyticsService({
+                  eventName: 'ks_logged_in',
+                  properties: { email: formData.email },
+                })
+              } else {
+                form.setError('root', { message: 'Oops! something went wrong. try again.' })
               }
-              form.setError('root', { message: 'Oops! something went wrong. try again.' })
             })
             .catch((e) => {
               form.setError('root', { message: 'Oops! something went wrong. try again.' })
@@ -137,7 +143,7 @@ export function PasswordInputLogin() {
                     </FormControl>
                     <FormMessage className={cn('!text-cap-1-demi')} />
                     <p
-                      className="mt-2 text-center text-body-1-demi text-monochrome-6 hover:cursor-pointer"
+                      className="pt-2 text-center text-body-1-demi text-monochrome-6 hover:cursor-pointer"
                       onClick={() => {
                         setStep('FORGOT_PASSWORD')
                       }}>

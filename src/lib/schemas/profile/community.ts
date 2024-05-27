@@ -50,6 +50,7 @@ const CommunitySchema = z.object({
   slug: z.string(),
   profileImage: z.string().nullish(),
   loopCount: z.number().default(0),
+  userRole: z.enum(['LEADER', 'MEMBER']).nullish(),
   loops: z.array(LoopSchema),
   type: z.number().nullish(),
 })

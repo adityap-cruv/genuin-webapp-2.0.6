@@ -23,7 +23,7 @@ export function Success() {
   if (status !== 'loading')
     return (
       <ModalShell>
-        <h3 className="text-title-1-demi sm:text-heading-3">Welcome back, {data?.user.name} </h3>
+        <h3 className="text-center text-title-1-demi sm:text-heading-3">Welcome back, {data?.user.name} </h3>
         <Button
           className="w-full"
           onClick={() => {

@@ -18,6 +18,19 @@ export async function getVideoDetails(slug: string): Promise<VideoPlayerModalTyp
       name: loopDetails.community.name,
       profileImage: loopDetails.community.dp,
       shareUrl: loopDetails.community.share_url ?? '',
+      brand: loopDetails.community?.brand
+        ? {
+            brand_id: loopDetails.community.brand.brand_id,
+            name: loopDetails.community.brand.name ?? '',
+            subdomain: loopDetails.community.brand.subdomain,
+            logo: loopDetails.community.brand.logo,
+            created_at: loopDetails.community.brand.created_at,
+            brand_web_logo: loopDetails.community.brand.brand_web_logo,
+            favicon: loopDetails.community.brand.favicon,
+            brand_system_user_id: loopDetails.community.brand.brand_system_user_id,
+            brand_slug: loopDetails.community.brand.brand_slug,
+          }
+        : null,
     },
     loop: { id: loopDetails.chat_id, slug: loopDetails.slug, name: loopDetails.group.group_name },
     owner: {
@@ -25,6 +38,12 @@ export async function getVideoDetails(slug: string): Promise<VideoPlayerModalTyp
       profileImage: videoDetails.owner.profile_image,
       userName: videoDetails.owner.username,
       name: videoDetails.owner.name,
+      brand: videoDetails.owner.brand
+        ? {
+            brand_id: videoDetails.owner.brand.brand_id,
+            brand_slug: videoDetails.owner.brand.brand_slug,
+          }
+        : null,
     },
     video: {
       id: videoDetails.message_id,
@@ -64,7 +83,7 @@ export async function fetchLoopDetails(id: string) {
       params: { chat_id: id },
     })
     .then((res) => {
-      return res?.data?.data
+      return validateLoopDetails(res?.data?.data)
     })
     .catch((e) => {
       throw new Error('Something went wrong!!')

@@ -58,6 +58,7 @@ const CommunitySchema = z.object({
   color_code: z.string().nullish(),
   text_color_code: z.string().nullish(),
   dp: z.string().url().nullish(),
+  logged_in_user_role: z.number().nullish(),
   dp_s: z.string().url().nullish(),
   dp_m: z.string().url().nullish(),
   dp_l: z.string().url().nullish(),

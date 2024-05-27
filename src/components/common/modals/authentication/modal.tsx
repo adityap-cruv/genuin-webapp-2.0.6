@@ -24,22 +24,26 @@ import {
 } from './screens'
 import { useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
-import { X } from 'lucide-react'
+import icClose from '@icons/icClose.svg'
 import { PasswordInputLogin } from './screens/password-input-login'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
+import icBack from '@icons/icBack.svg'
 
 type Props = DialogProps
 
 export function Modal({ children, ...props }: Props) {
   const user = useGenuinOptions().user
-  const { isModalOpen, openModal, setStep, closeModal, step, setFormData } = useAuthenticationModalStore((state) => ({
-    isModalOpen: state.isOpen,
-    openModal: state.open,
-    setStep: state.setStep,
-    closeModal: state.close,
-    step: state.step,
-    setFormData: state.setFormData,
-  }))
+  const { isModalOpen, openModal, setStep, closeModal, step, setFormData, previousStep } = useAuthenticationModalStore(
+    (state) => ({
+      isModalOpen: state.isOpen,
+      openModal: state.open,
+      setStep: state.setStep,
+      closeModal: state.close,
+      step: state.step,
+      setFormData: state.setFormData,
+      previousStep: state.previousStep,
+    })
+  )
   const searchParams = useSearchParams()
 
   useEffect(() => {
@@ -62,6 +66,9 @@ export function Modal({ children, ...props }: Props) {
     'RESET_PASSWORD',
   ])
   const showClose = !stepSet.has(step)
+
+  const stepForBack: Set<StepsType> = new Set<StepsType>(['PASSWORD_INPUT_LOGIN'])
+  const showBack = stepForBack.has(step)
 
   useEffect(() => {
     const resetPasswordEmailVerification = searchParams.get('reset_password_status') ?? ''
@@ -94,9 +101,24 @@ export function Modal({ children, ...props }: Props) {
           e.preventDefault()
         }}
         className="rounded-t-lg !py-10">
+        {showBack && (
+          <img
+            src={icBack.src}
+            alt="back"
+            className="absolute left-4 top-4 h-6 hover:cursor-pointer"
+            onClick={() => {
+              if (previousStep !== undefined) {
+                setStep(previousStep)
+              }
+            }}
+          />
+        )}
         {showClose && (
-          <DialogClose className="absolute right-2 top-2">
-            <X
+          <DialogClose className="absolute right-4 top-4">
+            <img
+              src={icClose.src}
+              alt="close"
+              className="h-6"
               onClick={() => {
                 closeModal()
               }}

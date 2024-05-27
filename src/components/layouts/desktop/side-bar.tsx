@@ -16,6 +16,7 @@ import { useSession } from 'next-auth/react'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { miniProfile } from '@lib/api/auth'
 import { NotificationIcon } from '@icons/settings-side-bar-icons'
+import { analyticsService } from '@services/analytics_service'
 // import { Popover } from '@components/ui/popover'
 const RecentCommunities = dynamic(
   async () => await import('./recent-communities').then((comp) => comp.RecentCommunities),
@@ -43,6 +44,10 @@ export function SideBar() {
           })
           const messageType = res?.data?.ksCbRequestStatus === 3 ? 'MINI_PROFILE_SUCCESS' : 'KS_CB_SUBDOMAIN'
           AuthenticationModal.open(undefined, messageType)
+          void analyticsService({
+            eventName: 'become_cb_clicked',
+            properties: {},
+          })
         } else {
           AuthenticationModal.open(undefined, 'KS_CB_SUBDOMAIN')
         }
@@ -185,21 +190,19 @@ type ItemProps = {
 
 function Item({ title, isActive, children, notificationCount }: ItemProps) {
   return (
-    <div className="relative flex w-full max-w-full items-center gap-x-3 rounded-md p-3 hover:bg-monochrome-6/10">
-      {children}
-
+    <div className="flex w-full max-w-full items-center gap-x-3 rounded-md p-3 hover:bg-monochrome-6/10">
+      <div className="relative">
+        {children}
+        {!notificationCount ||
+          (notificationCount > 0 && (
+            <>
+              <div className="absolute right-0 top-0 flex h-4 w-4 items-center justify-center rounded-full bg-primary  text-cap-1-med text-monochrome-white">
+                {notificationCount}
+              </div>
+            </>
+          ))}
+      </div>
       <p className={cn('hidden break-all !text-title-2-demi lg:block', isActive && 'text-primary')}>{title}</p>
-      {!notificationCount ||
-        (notificationCount > 0 && (
-          <>
-            <div className="absolute right-2.5 top-2.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary  text-cap-1-med text-monochrome-white lg:hidden">
-              {notificationCount}
-            </div>
-            <div className="hidden h-6 w-6 items-center justify-center rounded-full bg-primary text-monochrome-white lg:flex">
-              {notificationCount}
-            </div>
-          </>
-        ))}
     </div>
   )
 }
