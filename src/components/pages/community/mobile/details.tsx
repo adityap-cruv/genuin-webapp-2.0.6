@@ -70,6 +70,7 @@ export function Details({ communityDetails }: Props) {
         shareUrl={communityDetails.share_url}
         role={communityDetails.logged_in_user_role}
         communityId={communityDetails.community_id}
+        isCommunityPrivate={communityDetails.type === 2}
       />
       <div
         className="hide-scrollbar absolute inset-0 mt-navbar w-full overflow-auto"
