@@ -32,7 +32,7 @@ export function Success() {
               searchParams: searchParams.toString(),
               paramsToDelete: ['magic_link_verification'],
             })
-            setStep('PASSWORD_INPUT')
+            setStep('CATEGORY_INPUT')
           }}>
           <p>Continue</p>
         </Button>
