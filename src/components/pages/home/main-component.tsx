@@ -31,6 +31,7 @@ import nikeBanner from '@images/home-page/brands-section/nikeBanner.webp'
 import cocacolaLogo from '@images/home-page/brands-section/cocacola_logo.webp'
 import cocacolaBanner from '@images/home-page/brands-section/cocacola.webp'
 import { LoopSection } from './loop-section'
+import { ContactUs } from '@components/common/modals/contact-us'
 
 export function MainComponent() {
   return (
@@ -87,13 +88,13 @@ function Component1() {
                   On your website, in your app, under your brand and
                   <br /> distributed on the open web.
                 </p>
-                <Link href={{ pathname: PATH_NAME.home() }}>
+                <ContactUs>
                   <Button
                     size="custom"
                     className="bg-new-off-black px-4 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
-                    <p className="text-new-sm text-monochrome-white">Explore Genuin</p>
+                    <p className="text-new-sm text-monochrome-white">Contact Us</p>
                   </Button>
-                </Link>
+                </ContactUs>
               </div>
               <div>
                 <img
@@ -142,11 +143,11 @@ function Component1() {
           On your website, in your app, under your brand and distributed on the open web.
         </p>
         <div className="flex flex-col gap-y-4">
-          <Link href={{ pathname: PATH_NAME.home() }}>
+          <ContactUs>
             <Button size="custom" className="bg-new-off-black px-4 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
-              <p className="text-new-sm">Explore Genuin</p>
+              <p className="text-new-sm">Contact Us</p>
             </Button>
-          </Link>
+          </ContactUs>
         </div>
         <div className=" my-4 flex min-h-[300px] items-center justify-center">
           <img loading="lazy" fetchPriority="low" decoding="async" className="" src={toyotaBanne2.src} />
