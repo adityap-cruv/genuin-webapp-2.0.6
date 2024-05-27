@@ -12,7 +12,12 @@ const DELAY_FOR_INTERRUPTION = 60000
  */
 export function showInterruption() {
   const { embed, user } = useGenuinOptions.getState()
-  if (!embed || (user && user.isPasswordSet && user.hasTopics) || AuthenticationModal.isOpen || !user?.isEmailVerified)
+  if (
+    !embed ||
+    (user && user.isPasswordSet && user.hasTopics) ||
+    AuthenticationModal.isOpen ||
+    (user && !user?.isEmailVerified)
+  )
     return
   if (!user) {
     AuthenticationModal.open(undefined, 'EMAIL_INPUT')
@@ -31,7 +36,7 @@ export function InterruptionProvider() {
       !embed ||
       (user && user.isPasswordSet && user.hasTopics) ||
       AuthenticationModal.isOpen ||
-      !user?.isEmailVerified
+      (user && !user.isEmailVerified)
     )
       return
 
