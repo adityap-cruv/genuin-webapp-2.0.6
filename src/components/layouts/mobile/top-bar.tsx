@@ -248,7 +248,16 @@ function Menu({
                   <span className="font-semibold italic">
                     community <br /> builder{' '}
                   </span>
-                  {embed ? 'for' : 'on'} <span className="text-primary"> {brandName}</span> 🚀
+                  {embed ? 'for' : 'on'}{' '}
+                  <span
+                    className="truncate text-primary"
+                    style={{
+                      maxWidth: '12ch',
+                    }}>
+                    {' '}
+                    {brandName}
+                  </span>{' '}
+                  🚀
                 </p>
                 <img src={CommunityIcon.src} alt="community" className="absolute bottom-0 right-4 h-12" />
               </div>

@@ -155,7 +155,16 @@ export function SideBar() {
                   <span className="font-semibold italic">
                     community <br /> builder{' '}
                   </span>
-                  {embed ? 'for' : 'on'} <span className="text-primary"> {brandName}</span> 🚀
+                  {embed ? 'for' : 'on'}{' '}
+                  <span
+                    className="truncate text-primary"
+                    style={{
+                      maxWidth: '12ch',
+                    }}>
+                    {' '}
+                    {brandName}
+                  </span>{' '}
+                  🚀
                 </p>
               </div>
               <div className="z-10 flex w-2/5 items-end justify-center">

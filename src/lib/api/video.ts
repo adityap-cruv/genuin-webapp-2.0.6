@@ -144,6 +144,19 @@ export async function joinCommunity(onboardingCommunities: boolean, communities:
     })
 }
 
+export async function requestCommunity(communityId: string | undefined) {
+  return await axiosInstance
+    .post('/api/v3/community/join_request', {
+      community_id: communityId,
+    })
+    .then((res) => {
+      return { code: res.status, data: res.data.data }
+    })
+    .catch((e) => {
+      return { code: Number(e.response.data.code) }
+    })
+}
+
 export async function leaveCommunity(communityId: string | undefined) {
   return await axiosInstance
     .delete('/api/v3/community/leave', {

@@ -48,6 +48,7 @@ const CommunitySchema = z.object({
   isJoined: z.boolean().default(false),
   handle: z.string(),
   slug: z.string(),
+  isCommunityJoinRequested: z.boolean().nullish().optional(),
   profileImage: z.string().nullish(),
   loopCount: z.number().default(0),
   userRole: z.enum(['LEADER', 'MEMBER']).nullish(),
