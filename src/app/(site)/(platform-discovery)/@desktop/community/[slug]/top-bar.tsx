@@ -69,7 +69,7 @@ export function Desktop({
       initial={{
         translateY: '-100%',
       }}
-      className="sticky top-0 z-20 flex h-14 w-full items-center justify-between border-b border-tertiary-200 bg-monochrome-white px-6"
+      className="sticky top-0 z-10 flex h-14 w-full items-center justify-between border-b border-tertiary-200 bg-monochrome-white px-6"
       {...props}>
       <span className="flex items-center gap-x-2">
         <CustomAvatar
@@ -105,6 +105,7 @@ export function Mobile({
   communityName,
   communityProfileImage,
   communityHandle,
+  isCommunityPrivate,
   ...props
 }: Props) {
   const navAnimationControl = useAnimationControls()
