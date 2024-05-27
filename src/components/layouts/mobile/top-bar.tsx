@@ -249,11 +249,7 @@ function Menu({
                     community <br /> builder{' '}
                   </span>
                   {embed ? 'for' : 'on'}{' '}
-                  <span
-                    className="truncate text-primary"
-                    style={{
-                      maxWidth: '12ch',
-                    }}>
+                  <span className="inline-block truncate text-primary" style={{ maxWidth: '12ch' }}>
                     {' '}
                     {brandName}
                   </span>{' '}
