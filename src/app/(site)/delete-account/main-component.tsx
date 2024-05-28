@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { PhoneNumberInput } from './number-input'
-import { OtpInput, SuccessMessage } from './otp-input'
+import { ConformationMessage, OtpInput, SuccessMessage } from './otp-input'
 import { useDeleteAccountStore } from './store'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { GenuinIcon } from '@icons/genuin-icon'
@@ -31,6 +31,8 @@ function RenderingContent() {
       return <PhoneNumberInput />
     case 'OTP_INPUT':
       return <OtpInput />
+    case 'DELETE_CONFORMATION':
+      return <ConformationMessage />
     case 'DELETE_SUCCESS':
       return <SuccessMessage />
   }

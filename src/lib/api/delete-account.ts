@@ -40,13 +40,27 @@ export async function verifyAccountDeleteCode({
   userId: string | undefined
   otp: string | undefined
   deviceType: number
-}): Promise<{ code: number; data: any }> {
+}): Promise<{ code: number; data: any; authToken: string | null }> {
   return await axiosInstance
     .post('/api/v3/verify_code', {
       user_id: userId,
       otp,
       device_id: encryptText(useLocalStorage.getState().deviceId, true),
       device_type: deviceType,
+    })
+    .then((res) => {
+      const authToken = res.headers['x-auth-token']
+      return { code: res.data.code, data: res.data.data, authToken }
+    })
+    .catch((e) => {
+      return { code: Number(e?.response?.data.code), data: e?.response?.data.data, authToken: null }
+    })
+}
+
+export async function deleteUserAccount({ authToken }: { authToken: string }): Promise<{ code: number; data: any }> {
+  return await axiosInstance
+    .delete('/api/v3/users/delete', {
+      headers: { 'x-auth-token': authToken },
     })
     .then((res) => {
       return { code: res.data.code, data: res.data.data }

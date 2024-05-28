@@ -3,7 +3,6 @@ import { Button } from '@components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@components/ui/form'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { TickIcon } from '@icons/tick-icon'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { useRouter } from 'next/navigation'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -14,7 +13,7 @@ import { useDeleteAccountStore } from './store'
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@components/ui/input-otp'
 import icBack from '@icons/icBack.svg'
 import icConfirmationTick from '@icons/icConfirmationTick.svg'
-import { sendAccountDeleteCode, verifyAccountDeleteCode } from '@lib/api/delete-account'
+import { deleteUserAccount, sendAccountDeleteCode, verifyAccountDeleteCode } from '@lib/api/delete-account'
 
 const formSchema = z.object({
   otp: z.string(),
@@ -25,7 +24,6 @@ export function OtpInput() {
   const [isValidOtp, setIsValidOtp] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [timer, setTimer] = useState(formData?.retryTime ?? 30)
-  const [isConformationOpen, setIsConformationOpen] = useState(false)
   const otpform = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     mode: 'onSubmit',
@@ -72,16 +70,14 @@ export function OtpInput() {
     })
       .then(async (res) => {
         if (res?.code === 200) {
-          setStep('DELETE_SUCCESS')
+          setFormData({ authToken: res.authToken })
+          setStep('DELETE_CONFORMATION')
         } else if (res?.code === 1008) {
           otpform.control.setError('root', { message: 'That doesn`t look right. Please check your code and try again' })
-          setIsConformationOpen(false)
         } else if (res?.code === 5025) {
           otpform.control.setError('root', { message: 'The user you are looking for is no longer available.' })
-          setIsConformationOpen(false)
         } else {
           otpform.control.setError('root', { message: 'Something went wrong please try again after sometime!' })
-          setIsConformationOpen(false)
         }
       })
       .finally(() => {
@@ -119,9 +115,6 @@ export function OtpInput() {
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
   }
 
-  if (isConformationOpen) {
-    return <ConformationMessage otpSubmit={otpSubmit} isLoading={isLoading} />
-  }
   return (
     <>
       <div className="flex w-full flex-col items-center gap-3">
@@ -195,13 +188,7 @@ export function OtpInput() {
                   </p>
                 )}
               </div>
-              <Button
-                variant="default"
-                className="w-full"
-                disabled={!isValidOtp || isLoading}
-                onClick={() => {
-                  setIsConformationOpen(true)
-                }}>
+              <Button type="submit" variant="default" className="w-full" disabled={!isValidOtp || isLoading}>
                 {isLoading ? (
                   <Loader size="sm" className="fill-new-off-white" />
                 ) : (
@@ -221,8 +208,25 @@ export function OtpInput() {
   )
 }
 
-export function ConformationMessage({ otpSubmit, isLoading }: { otpSubmit: any; isLoading: boolean }) {
+export function ConformationMessage() {
   const router = useRouter()
+  const { setStep, formData } = useDeleteAccountStore()
+  const [isLoading, setIsLoading] = useState(false)
+
+  async function onDelete() {
+    // setStep('DELETE_CONFORMATION')
+    setIsLoading(true)
+    await deleteUserAccount({ authToken: formData?.authToken ?? '' })
+      .then(async (res) => {
+        if (res?.code === 200) {
+          setStep('DELETE_SUCCESS')
+        }
+      })
+      .finally(() => {
+        setIsLoading(false)
+      })
+  }
+
   return (
     <div className="flex flex-col gap-2">
       <p className="text-center text-heading-3">Delete account?</p>
@@ -239,7 +243,7 @@ export function ConformationMessage({ otpSubmit, isLoading }: { otpSubmit: any; 
           }}>
           Cancel
         </Button>
-        <Button variant="default" className="w-full bg-red hover:bg-red-40" onClick={otpSubmit}>
+        <Button variant="default" className="w-full bg-red hover:bg-red-40" onClick={onDelete}>
           {isLoading ? (
             <Loader size="sm" className="fill-new-off-white" />
           ) : (
