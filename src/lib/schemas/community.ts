@@ -95,10 +95,10 @@ const BrandSchema = z
     brand_id: z.number(),
     name: z.string(),
     subdomain: z.string(),
-    logo: z.string().url(),
+    logo: z.string().url().nullish(),
     created_at: z.number(),
-    brand_web_logo: z.string().url(),
-    favicon: z.string().url(),
+    brand_web_logo: z.string().url().nullish(),
+    favicon: z.string().url().nullish(),
     brand_system_user_id: z.string(),
     brand_slug: z.string(),
   })
