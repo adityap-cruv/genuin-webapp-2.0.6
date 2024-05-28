@@ -88,7 +88,7 @@ const CountrySelect = ({ disabled, value, onChange, options }: CountrySelectProp
       <PopoverContent className="w-[300px] p-0">
         <Command>
           <CommandList>
-            <CommandInput placeholder="Search country..." />
+            {/* <CommandInput placeholder="Search country..." /> */}
             <CommandEmpty>No country found.</CommandEmpty>
             <CommandGroup>
               {options
@@ -101,7 +101,7 @@ const CountrySelect = ({ disabled, value, onChange, options }: CountrySelectProp
                       handleSelect(option.value)
                     }}>
                     <FlagComponent country={option.value} countryName={option.label} />
-                    <span className="text-sm flex-1">{option.label}</span>
+                    <span className="text-sm flex-1 text-left">{option.label}</span>
                     {option.value && (
                       <span className="text-sm text-foreground/50">
                         {`+${RPNInput.getCountryCallingCode(option.value)}`}
