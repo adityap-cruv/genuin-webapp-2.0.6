@@ -282,6 +282,8 @@ export function GetNotificationAttributedText({ notification }: { notification: 
 }
 
 function ProfileTag(notification: any) {
+  if (!notification?.user?.nickname) return
+
   return (
     <>
       <Link
