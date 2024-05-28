@@ -7,6 +7,7 @@ type FormDataType = {
   otp: string
   userId?: string
   retryTime?: number
+  authToken?: string | null
 } | null
 
 type States = {
