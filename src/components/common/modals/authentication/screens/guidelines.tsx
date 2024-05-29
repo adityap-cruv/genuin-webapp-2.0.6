@@ -14,6 +14,7 @@ import { useAuthenticationModalStore } from '../store'
 import { useState } from 'react'
 import { Loader } from '@components/ui/loader'
 import { analyticsService } from '@services/analytics_service'
+import { rudderStackIdentify } from '@services/useRudderAnalytics'
 
 const FormSchema = z.object({
   mobile: z.boolean().default(false).optional(),
@@ -47,6 +48,7 @@ export function Guidelines() {
         .then((res) => {
           if (res?.ok) {
             setStep('EMAIL_SENT_NOTE')
+            rudderStackIdentify()
             void analyticsService({
               eventName: 'ks_signed_up',
               properties: { email: formData.email },
