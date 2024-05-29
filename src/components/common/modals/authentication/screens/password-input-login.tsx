@@ -64,7 +64,7 @@ export function PasswordInputLogin() {
             .then((res) => {
               if (res?.ok) {
                 close()
-                rudderStackIdentify()
+                void rudderStackIdentify()
                 void analyticsService({
                   eventName: 'ks_logged_in',
                   properties: { email: formData.email },

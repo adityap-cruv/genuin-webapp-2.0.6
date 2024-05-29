@@ -48,7 +48,7 @@ export function Guidelines() {
         .then((res) => {
           if (res?.ok) {
             setStep('EMAIL_SENT_NOTE')
-            rudderStackIdentify()
+            void rudderStackIdentify()
             void analyticsService({
               eventName: 'ks_signed_up',
               properties: { email: formData.email },

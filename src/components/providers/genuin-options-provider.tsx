@@ -123,7 +123,7 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
       if (isLoading) setIsLoading(false)
     }
     // Added Identify User to pass userId in all the
-    rudderStackIdentify()
+    void rudderStackIdentify()
   }, [sessionStatus])
 
   function init() {
