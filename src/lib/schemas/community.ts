@@ -25,7 +25,24 @@ const socialLinksSchema = z.object({
       url: z.string().nullish(),
     })
     .nullish(),
+  discord_url: z.string().nullish(),
+  reddit_id: z
+    .object({
+      id: z.string().nullish(),
+      url: z.string().nullish(),
+    })
+    .nullish(),
 })
+
+const brandGuidelineSchema = z
+  .object({
+    id: z.number(),
+    position: z.number(),
+    title: z.string(),
+    guideline_id: z.number().nullable(),
+    description: z.string(),
+  })
+  .optional()
 
 const moderatorSchema = z.object({
   member_id: z.string(),
@@ -48,6 +65,7 @@ const leaderSchema = z.object({
   is_avatar: z.boolean(),
   profile_image: z.string(),
   role: z.number().optional(),
+  is_brand_system_user: z.boolean().optional(),
   brand: BrandUserSchema.optional(),
 })
 
@@ -55,7 +73,7 @@ const guidelineSchema = z.object({
   id: z.number(),
   position: z.number(),
   title: z.string(),
-  guideline_id: z.number(),
+  guideline_id: z.number().nullish(),
   description: z.string(),
 })
 
@@ -77,17 +95,17 @@ const BrandSchema = z
     brand_id: z.number(),
     name: z.string(),
     subdomain: z.string(),
-    logo: z.string().url(),
+    logo: z.string().url().nullish(),
     created_at: z.number(),
-    brand_web_logo: z.string().url(),
-    favicon: z.string().url(),
+    brand_web_logo: z.string().url().nullish(),
+    favicon: z.string().url().nullish(),
     brand_system_user_id: z.string(),
     brand_slug: z.string(),
   })
   .nullish()
 
 const CommunityDetailsSchema = z.object({
-  brand: BrandSchema,
+  brand: BrandSchema.optional(),
   banner: z.string().nullish(),
   community_id: z.string(),
   handle: z.string(),
@@ -129,6 +147,7 @@ const CommunityDetailsSchema = z.object({
   is_ai_generated: z.boolean(),
   leader: leaderSchema,
   guidelines: z.array(guidelineSchema),
+  brand_guidelines: z.array(brandGuidelineSchema),
   preview_image: z.string().optional(),
 })
 
@@ -139,6 +158,7 @@ export function validateCommunityDetails(communityDetails: CommunityDetailsType)
   try {
     return CommunityDetailsSchema.parse(communityDetails)
   } catch (e) {
+    console.log('error:', e)
     throw new Error('parsing not done right!!!')
   }
 }

@@ -7,6 +7,7 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import { Mousewheel, Keyboard } from 'swiper/modules'
 import { type VideoSizeBoxType, useGenuinOptions } from '@lib/stores/genuin-options'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
+import { showInterruption } from '@components/providers/interruption-provider'
 
 const DesktopPlayer = dynamic(async () => await import('@components/common/player').then((comp) => comp.Player.desktop))
 
@@ -38,6 +39,7 @@ export function Desktop({ fetchNextPage, isFetchingNextPage, videos, className, 
     if (currentIndex > videoList.length - 3 && !isFetchingNextPage) {
       fetchNextPage?.()
     }
+    if ((currentIndex + 1) % 5 === 0) showInterruption()
   }, [currentIndex])
 
   // TODO improvement pending
@@ -70,7 +72,6 @@ export function Desktop({ fetchNextPage, isFetchingNextPage, videos, className, 
                   playIfInViewPort
                   isFirstPlayerInList={index === 0}
                   shouldPlay
-                  sizeBox={sizeBox}
                   videoData={{ ...item.video }}
                   loop
                   key={index}
@@ -97,7 +98,6 @@ export function SinglePlayer({ sizeBox, className, videoData }: SinglePlayerProp
       <div style={{ ...sizeBox }} className="hide-scrollbar overflow-x-clip">
         <DesktopPlayer
           shouldPlay
-          sizeBox={sizeBox}
           videoData={{
             id: videoData.video.id,
             shareUrl: videoData.video.shareUrl,

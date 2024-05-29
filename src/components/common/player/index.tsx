@@ -194,7 +194,7 @@ type DesktopProps = {
    * Sizebox is mandatory. To get sizebox see hooke useVideoSizeBox.
    * Tip: Please don't render withour sizebox
    */
-  sizeBox: VideoSizeBoxType
+  // sizeBox: VideoSizeBoxType
   /**
    * If it is enabled video will play if only if video is in viewport.
    */
@@ -202,7 +202,7 @@ type DesktopProps = {
   /**
    * Default is true, if you want to remove backgroundblur than make it false
    */
-  shouldShowBackgroundBlurImage?: boolean
+  // shouldShowBackgroundBlurImage?: boolean
   /**
    * If you are playing reels in list and you want first video to play automatically and next
    * video will be playing once it is in viewport.
@@ -215,9 +215,7 @@ function Desktop({
   videoData,
   loop = false,
   shouldPlay = true,
-  sizeBox,
   playIfInViewPort,
-  shouldShowBackgroundBlurImage = true,
   isFirstPlayerInList = false,
 }: DesktopProps) {
   const hasFocus = useGenuinOptions().userHasFocus

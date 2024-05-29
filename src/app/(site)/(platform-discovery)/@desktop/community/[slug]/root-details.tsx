@@ -20,7 +20,7 @@ import { Toaster } from '@components/ui/toaster'
 import { CommunityLoopTab } from './community-loop-tab'
 import { ListItem } from '@components/common/list-item'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
-import { joinCommunity, leaveCommunity } from '@lib/api/video'
+import { joinCommunity, leaveCommunity, requestCommunity } from '@lib/api/video'
 import { ShareIcon } from '@icons/share-icon'
 import { getCommunityDetails, getCommunityMembers } from '@lib/api/community'
 import Loading from './loading'
@@ -38,7 +38,6 @@ export function CommunityDetails({ slug }: { slug: string }) {
   const { data, isLoading } = getCommunityDetails(slug)
 
   if (isLoading) return <Loading />
-
   if (data) return <RootDetails communityDetails={data} />
 }
 
@@ -84,6 +83,7 @@ export function RootDetails({ communityDetails }: { communityDetails: CommunityD
         role={communityDetails.logged_in_user_role}
         communityId={communityDetails.community_id}
         shareUrl={communityDetails.share_url}
+        isCommunityPrivate={communityDetails.type === 2}
       />
       <main className="hide-scrollbar absolute inset-0 h-full w-full overflow-auto">
         <div>
@@ -112,6 +112,7 @@ export function RootDetails({ communityDetails }: { communityDetails: CommunityD
                 handle={communityDetails.handle}
                 id={communityDetails.community_id}
                 userRole={communityDetails.logged_in_user_role}
+                isCommunityPrivate={communityDetails.type === 2}
               />
             )}
 
@@ -344,7 +345,7 @@ function Leaders() {
           description={leader.bio ?? ''}
           image={leader.profile_image}
           isAvatar={leader.is_avatar}
-          brand={leader.brand ?? null}
+          brand={leader.brand}
         />
       </Link>
     </div>
@@ -427,16 +428,25 @@ export function JoinButton({
   userRole,
   handle,
   id,
+  isCommunityPrivate,
 }: {
-  userRole?: 'LEADER' | 'MEMBER' | null
+  userRole?: 'LEADER' | 'MEMBER' | 'REQUESTED' | null
   handle: string
   id: string
+  isCommunityPrivate: boolean
 }) {
   const [role, setRole] = useState(userRole)
   const user = useGenuinOptions().user
   async function toggleCommunityJoinState() {
-    role !== 'MEMBER'
-      ? await joinCommunity(
+    if (role !== 'MEMBER') {
+      if (isCommunityPrivate) {
+        await requestCommunity(id).then((res) => {
+          if (res.code === 200) {
+            setRole('REQUESTED')
+          }
+        })
+      } else {
+        await joinCommunity(
           false,
           [id],
           [
@@ -449,21 +459,23 @@ export function JoinButton({
             setRole('MEMBER')
           }
         })
-      : await leaveCommunity(id).then((res) => {
-          if (res.code === 200) {
-            setRole(null)
-          }
-        })
+      }
+    } else {
+      await leaveCommunity(id).then((res) => {
+        if (res.code === 200) {
+          setRole(null)
+        }
+      })
+    }
   }
 
   if (userRole === 'LEADER') return
 
-  const isCommunityJoined = role === 'MEMBER'
   return (
     <Button
       size="custom"
-      className={`${isCommunityJoined && 'rounded border border-primary '}`}
-      variant={isCommunityJoined ? 'outline' : 'default'}
+      className={`${role && 'rounded border border-primary '}`}
+      variant={role ? 'outline' : 'default'}
       onClick={
         user
           ? async () => {
@@ -483,9 +495,9 @@ export function JoinButton({
       }>
       <p
         className={`whitespace-nowrap px-4 py-1.5 text-body-1-demi  ${
-          isCommunityJoined ? 'text-primary' : 'text-monochrome-white'
+          role ? 'text-primary' : 'text-monochrome-white'
         }`}>
-        {isCommunityJoined ? 'Joined' : 'Join Community'}
+        {role ? (role === 'REQUESTED' ? 'Requested' : 'Joined') : 'Join Community'}
       </p>
     </Button>
   )

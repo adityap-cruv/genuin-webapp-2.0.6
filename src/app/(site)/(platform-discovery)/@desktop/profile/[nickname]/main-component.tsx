@@ -1,7 +1,6 @@
 'use client'
 import { abbreviateNumber, checkAndAppendHttps, getCurrentShareUrl } from '@lib/utils'
 import { Button } from '@components/ui/button'
-import Image from 'next/image'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
@@ -130,7 +129,7 @@ function Links({ profileData }: CompProps) {
           </Link>
         </div>
       )}
-      {pathName === PATH_NAME.profile(user?.nickname) && !user?.is_brand_system_user && (
+      {pathName === PATH_NAME.profile(user?.nickname) && !user?.isBrandSystemUser && user?.isEmailVerified && (
         <Link href={PATH_NAME.settings('edit')}>
           <Button
             size="custom"

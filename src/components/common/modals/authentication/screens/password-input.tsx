@@ -12,16 +12,19 @@ import { Button } from '@components/ui/button'
 import { Loader } from '@components/ui/loader'
 import { ModalShell } from '../modal-shell'
 import { useSession } from 'next-auth/react'
+import { usePathname } from 'next/navigation'
+import { analyticsService } from '@services/analytics_service'
 
 const passwordSchema = z.object({ password: z.string().min(8) })
 
 export function PasswordInput() {
-  // const { data: sessionData, update: updateSession } = useSession()
+  const { data: sessionData, update: updateSession } = useSession()
   const [passwordVisible, setPasswordVisible] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const setStep = useAuthenticationModalStore().setStep
+  const { setStep } = useAuthenticationModalStore()
   const form = useForm<z.infer<typeof passwordSchema>>({ resolver: zodResolver(passwordSchema), mode: 'onSubmit' })
   const { isDirty, isValid } = form.formState
+  const pathname = usePathname()
 
   // TODO: Handle password here.
   async function onSubmit({ password }: { password: string }) {
@@ -29,11 +32,15 @@ export function PasswordInput() {
     try {
       const { status } = await updateUser({ password })
       if (status) {
-        // await updateSession({
-        //   ...sessionData,
-        //   user: { ...sessionData?.user, isPasswordSet: true },
-        // })
-        setStep('USERNAME_INPUT')
+        await updateSession({
+          ...sessionData,
+          user: { ...sessionData?.user, isPasswordSet: true },
+        })
+        pathname.includes('settings') ? setStep('SET_PASSWORD_SUCCESS_NOTE') : setStep('USERNAME_INPUT')
+        void analyticsService({
+          eventName: 'ks_password_set',
+          properties: {},
+        })
       } else {
         throw new Error()
       }
@@ -73,6 +80,12 @@ export function PasswordInput() {
                           'border border-tertiary-200 bg-tertiary-100 text-title-3-med',
                           errors && '!border-red'
                         )}
+                        onKeyDown={(e) => {
+                          if (e.key === ' ') {
+                            e.preventDefault()
+                            return false
+                          }
+                        }}
                         {...field}
                       />
                       <div className="absolute right-4 top-0 flex h-full items-center">
@@ -114,7 +127,9 @@ export function PasswordInput() {
             {isLoading ? (
               <Loader size="sm" className="fill-new-off-white" />
             ) : (
-              <p className="text-title-3-demi text-new-off-white">Save and proceed</p>
+              <p className="text-title-3-demi text-new-off-white">
+                {pathname.includes('settings') ? 'Save' : 'Save and proceed'}
+              </p>
             )}
           </Button>
           {form.formState.errors.root && (

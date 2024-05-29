@@ -12,7 +12,7 @@ import { axiosInstance } from './instance'
 export async function fetchUserData(slug: string) {
   return await axios
     .post(process.env.NEXT_PUBLIC_API_URL + '/api/v3/users/get_profile', {
-      brand_slug : slug,
+      brand_slug: slug,
     })
     .then((res) => {
       return validateProfileDetails(res.data.data)
@@ -48,7 +48,7 @@ async function fetchCommunities(
       }
     })
     .catch((e) => {
-      console.log("Error:", e)
+      console.log('Error:', e)
       throw new Error('Something went wrong with profile community api.')
     })
 }
@@ -103,7 +103,7 @@ export async function fetchProfileVideos(
   return await axiosInstance
     .get('/api/v3/brand/loop_videos', {
       params: {
-        brand_id: brandId,       
+        brand_id: brandId,
         community_id: communityId,
         chat_id: loopId,
         last_message_id: lastVideoId,
@@ -125,7 +125,7 @@ export async function fetchProfileFeed(brandId: number, pageParam?: { lastMessag
   return await axiosInstance
     .get('/api/v3/brand/feed', {
       params: {
-        brand_id: brandId,       
+        brand_id: brandId,
         page_session: pageSession,
         from_message_id: pageParam?.lastMessageId ? undefined : fromVideoId,
         last_message_id: pageParam?.lastMessageId,

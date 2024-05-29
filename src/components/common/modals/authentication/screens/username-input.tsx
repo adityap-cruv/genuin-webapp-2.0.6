@@ -11,6 +11,7 @@ import { Button } from '@components/ui/button'
 import { Loader } from '@components/ui/loader'
 import { ModalShell } from '../modal-shell'
 import { useSession } from 'next-auth/react'
+import { analyticsService } from '@services/analytics_service'
 
 const usernameSchema = z.object({
   username: z
@@ -73,6 +74,10 @@ export function UsernameInput() {
             user: { ...sessionData?.user, nickname: username },
           })
           setStep('COMPLETE_PROFILE')
+          void analyticsService({
+            eventName: 'ks_username_set ',
+            properties: { username },
+          })
         }
       } else {
         form.setError('username', { message: 'This username isn’t available. Choose a different username.' })
@@ -86,8 +91,12 @@ export function UsernameInput() {
 
   return (
     <ModalShell>
-      <h3 className="flex w-full items-center justify-center text-title-1-demi sm:text-heading-3 ">Create username</h3>
-      <p className="flex w-full justify-center text-title-3-med ">Enter a name to show on your videos</p>
+      <div>
+        <h3 className="flex w-full items-center justify-center text-title-1-demi sm:text-heading-3 ">
+          Create username
+        </h3>
+        <p className="flex w-full justify-center text-title-3-med text-tertiary">Enter a name to show on your videos</p>
+      </div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
           <FormField
@@ -96,7 +105,7 @@ export function UsernameInput() {
             render={({ field }) => {
               const errors = useFormField().error
               return (
-                <FormItem className="sm:w-full">
+                <FormItem className="pb-6 sm:w-full">
                   <FormLabel className="text-body-1-med">
                     <div className="flex w-full justify-between">
                       <p className="">Username</p>

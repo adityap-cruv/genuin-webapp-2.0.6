@@ -29,7 +29,6 @@ const BrandUserSchema = z
     brand_slug: z.string(),
   })
   .nullish()
-  .optional()
 
 // Create a Zod schema for the user object
 const userSchema = z.object({
@@ -42,24 +41,26 @@ const userSchema = z.object({
   profile_image_s: z.string().nullish(),
   profile_image_m: z.string().nullish(),
   profile_image_l: z.string().nullish(),
-  brand: BrandUserSchema,
+  brand: BrandUserSchema.optional(),
 })
 
-const BrandSchema = z.object({
-  brand_id: z.number(),
-  name: z.string(),
-  subdomain: z.string(),
-  logo: z.string().url(),
-  created_at: z.number(),
-  brand_web_logo: z.string().url(),
-  favicon: z.string().url(),
-  brand_system_user_id: z.string(),
-  brand_slug: z.string(),
-}).nullish()
+const BrandSchema = z
+  .object({
+    brand_id: z.number(),
+    name: z.string(),
+    subdomain: z.string(),
+    logo: z.string().url(),
+    created_at: z.number(),
+    brand_web_logo: z.string().url(),
+    favicon: z.string().url(),
+    brand_system_user_id: z.string(),
+    brand_slug: z.string(),
+  })
+  .nullish()
 
 // Create a Zod schema for the community object
 const communitySchema = z.object({
-  brand: BrandSchema,
+  brand: BrandSchema.optional(),
   community_id: z.string(),
   handle: z.string(),
   slug: z.string(),
