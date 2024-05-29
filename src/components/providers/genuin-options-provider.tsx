@@ -11,6 +11,7 @@ import { setAuthTokenInAxiosInstance, setBrandIdInAxiosInstance } from '@lib/api
 import dynamic from 'next/dynamic'
 import { miniProfile, saveVisitor } from '@lib/api/auth'
 import { notificationsCount } from '@lib/api/notification'
+import { rudderStackIdentify } from '@services/useRudderAnalytics'
 const RepostModal = dynamic(
   async () => await import('@components/common/modals/repost').then((comp) => comp.RepostModal.ui)
 )
@@ -121,6 +122,8 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
       setAuthTokenInAxiosInstance(undefined)
       if (isLoading) setIsLoading(false)
     }
+    // Added Identify User to pass userId in all the
+    void rudderStackIdentify()
   }, [sessionStatus])
 
   function init() {
