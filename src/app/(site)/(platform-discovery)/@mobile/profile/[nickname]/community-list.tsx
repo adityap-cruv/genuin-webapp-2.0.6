@@ -1,5 +1,5 @@
 'use client'
-import { abbreviateNumber, openModal } from '@lib/utils'
+import { abbreviateNumber } from '@lib/utils'
 import { type User, useGenuinOptions } from '@lib/stores/genuin-options'
 import { Button } from '@components/ui/button'
 import Image from 'next/image'
@@ -17,24 +17,45 @@ import { useCommunityListStore } from './store'
 import { type ProfileCommunityType, type ProfileLoopType, type ProfileVideoType } from '@lib/schemas/profile/community'
 import { fetchProfileCommunityLoops, getCommunities, fetchProfileVideos, getProfileFeed } from '@lib/api/profile'
 import icLock from '@icons/icLock.svg'
-import { joinCommunity, leaveCommunity } from '@lib/api/video'
 import { PlayerModal } from '@components/common/modals/player-modal'
 import icPlay from '@icons/player-controls/icPlay.svg'
 import { LockIcon } from '@icons/LockIcon'
 import { usePathname } from 'next/navigation'
 import { EarthIcon } from '@icons/earth-icon'
-import { loopPrivacyInfo } from '@components/common/loop-privacy-info'
+import { LoopPrivacyInfo } from '@components/common/loop-privacy-info'
 import { PrivateModal } from '@components/common/modals/private'
 import { IcLoop } from '@icons/ic-loop'
 import { BrandCommunityTag } from '@components/common/brand-community-tag'
+import { ToggleCommunityJoinState } from '@components/common/toggle-community-join-state'
 
 export function CommunityList({ userId, scrollYProgress }: { userId: string; scrollYProgress: MotionValue<number> }) {
   const { data, isLoading, fetchNextPage, isFetchingNextPage } = getCommunities(userId, 8)
   const communities = data?.pages.flatMap((item) => item.communities)
-  const [communityJoinStates, setCommunityJoinStates] = useState<Record<string, boolean>>({})
+  const [communityJoinStates, setCommunityJoinStates] = useState<Record<string, string>>({})
   const user = useGenuinOptions().user
   const { addCommunities, currentVideoId } = useCommunityListStore()
   const pathName = usePathname()
+
+  useEffect(() => {
+    if (communities) {
+      const initialStates: Record<string, string> = {}
+      let shouldUpdate = false
+
+      communities.forEach((item) => {
+        const userRole = item.userRole ?? ''
+        if (communityJoinStates[item.id] !== userRole) {
+          initialStates[item.id] = userRole
+          shouldUpdate = true
+        } else {
+          initialStates[item.id] = communityJoinStates[item.id]
+        }
+      })
+
+      if (shouldUpdate) {
+        setCommunityJoinStates(initialStates)
+      }
+    }
+  }, [communities?.length])
 
   useEffect(() => {
     const newCommunites = data?.pages[data.pages.length - 1].communities
@@ -48,49 +69,6 @@ export function CommunityList({ userId, scrollYProgress }: { userId: string; scr
       void fetchNextPage()
     }
   })
-
-  const toggleCommunityJoinState = async (communityId: string, communityHandle: string) => {
-    if (user) {
-      const newState = !communityJoinStates[communityId]
-      if (newState) {
-        await joinCommunity(
-          false,
-          [communityId],
-          [
-            {
-              user_id: user?.id,
-            },
-          ]
-        ).then((res) => {
-          if (res.code === 200) {
-            setCommunityJoinStates((prevState) => ({
-              ...prevState,
-              [communityId]: newState,
-            }))
-          }
-        })
-      } else {
-        await leaveCommunity(communityId).then((res) => {
-          if (res.code === 200) {
-            setCommunityJoinStates((prevState) => ({
-              ...prevState,
-              [communityId]: newState,
-            }))
-          }
-        })
-      }
-    } else {
-      openModal({
-        title: 'Get the Genuin app',
-        subtitle: (
-          <>
-            Get the app to join the <br />
-            <span className="font-bold">@{communityHandle}</span> community.
-          </>
-        ),
-      })
-    }
-  }
 
   function Inner() {
     if (isLoading)
@@ -151,26 +129,25 @@ export function CommunityList({ userId, scrollYProgress }: { userId: string; scr
                         brandName={item.brand?.name}
                       />
                     )}
-                    {pathName !== PATH_NAME.profile(user?.nickname) && (
-                      <Button
-                        size="custom"
-                        className={`${communityJoinStates[item.id] && 'border border-primary '}`}
-                        variant={communityJoinStates[item.id] ? 'outline' : 'default'}
-                        onClick={async () => {
-                          await toggleCommunityJoinState(item.id, item.handle)
-                        }}>
-                        <p
-                          className={`px-4 py-1.5 text-title-3-demi text-monochrome-white ${
-                            communityJoinStates[item.id] && 'text-primary'
-                          }`}>
-                          {communityJoinStates[item.id] ? 'Joined' : 'Join'}
-                        </p>
+                    {pathName !== PATH_NAME.profile(user?.nickname) && item.isCommunityJoinRequested && (
+                      <Button size="custom" className="border border-primary" variant={'outline'}>
+                        <p className={`px-4 py-1.5 text-body-1-demi text-monochrome-white text-primary`}>Requested</p>
                       </Button>
+                    )}
+                    {pathName !== PATH_NAME.profile(user?.nickname) && !item.isCommunityJoinRequested && (
+                      <ToggleCommunityJoinState
+                        communityJoinStates={communityJoinStates}
+                        setCommunityJoinStates={setCommunityJoinStates}
+                        handle={item.handle}
+                        id={item.id}
+                        userRole={item.userRole}
+                        isCommunityPrivate={item.type === 2}
+                      />
                     )}
                   </div>
                 </div>
               </div>
-              <DecorativeList>
+              <DecorativeList className="pt-4">
                 <Loops userId={userId} community={item} communityId={item.id} user={user} pathName={pathName} />
               </DecorativeList>
             </div>
@@ -319,7 +296,6 @@ function LoopVideos({ userId, loop, communityId, pathName, user }: LoopVideosPro
     addVideos: state.addVideos,
     open: state.open,
   }))
-  const privacyMessage = loopPrivacyInfo(loop?.actions?.[0]?.action_id ?? 0, loop?.actions?.[0]?.access_type_id ?? 0)
 
   const { fetchNext, isFetchingNextPage } = getNextPage<ProfileVideoType[]>(
     async () => await fetchProfileVideos(userId, 16, communityId, loop.id, loop.videos[loop.videos.length - 1].id),
@@ -373,7 +349,12 @@ function LoopVideos({ userId, loop, communityId, pathName, user }: LoopVideosPro
       <Link href={PATH_NAME.loop(loop.slug)}>
         <p className="mb-3 text-body-1-bold">{loop.name}</p>
       </Link>
-      {pathName === PATH_NAME.profile(user?.nickname) && privacyMessage}
+      {pathName === PATH_NAME.profile(user?.nickname) && (
+        <LoopPrivacyInfo
+          actionId={loop?.actions?.[0]?.action_id ?? 0}
+          accessTypeId={loop?.actions?.[0]?.access_type_id ?? 0}
+        />
+      )}
       <div className="my-2 grid w-full grid-cols-4 gap-2 md:grid-cols-8">
         <InnerComponent />
         {isFetchingNextPage &&

@@ -23,16 +23,16 @@ export function Success() {
   if (status !== 'loading')
     return (
       <ModalShell>
-        <h3 className="text-title-1-demi sm:text-heading-3">Welcome back, {data?.user.name} </h3>
+        <h3 className="text-center text-title-1-demi sm:text-heading-3">Welcome back, {data?.user.name} </h3>
         <Button
           className="w-full"
           onClick={() => {
             deleteSearchParam({
               pathName,
               searchParams: searchParams.toString(),
-              paramToDelete: 'magic_link_verification',
+              paramsToDelete: ['magic_link_verification'],
             })
-            setStep('PASSWORD_INPUT')
+            setStep('CATEGORY_INPUT')
           }}>
           <p>Continue</p>
         </Button>
@@ -41,7 +41,6 @@ export function Success() {
 }
 
 // TODO: Handle API success and failure case.
-// TODO: Create a deleteSearchParam function such that it accepts array of string and delete that list search params from the url.
 export function Failure() {
   const [error, setError] = useState('')
   const { setStep, setFormData } = useAuthenticationModalStore()
@@ -64,17 +63,7 @@ export function Failure() {
             deleteSearchParam({
               pathName,
               searchParams: searchParams.toString(),
-              paramToDelete: 'magic_link_verification',
-            })
-            deleteSearchParam({
-              pathName,
-              searchParams: searchParams.toString(),
-              paramToDelete: 'email',
-            })
-            deleteSearchParam({
-              pathName,
-              searchParams: searchParams.toString(),
-              paramToDelete: 'email_type',
+              paramsToDelete: ['magic_link_verification', 'email', 'email_type'],
             })
             setStep('MAGIC_LINK_SENT_NOTE')
           }

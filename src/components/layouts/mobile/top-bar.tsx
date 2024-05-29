@@ -9,10 +9,10 @@ import { usePathname } from 'next/navigation'
 import { PopularIcon, HomeIcon, LatestIcon, ProfileIcon } from '@icons/side-bar-icons'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { PATH_NAME } from '@lib/utils/constants/path'
-import { Search, X } from 'lucide-react'
+import { X } from 'lucide-react'
 import { RecentCommunities } from './recent-communities'
 import { AppLogo } from '@components/ui/app-logo'
-import { useGenuinOptions } from '@lib/stores/genuin-options'
+import { type User, useGenuinOptions } from '@lib/stores/genuin-options'
 import { AuthenticationModal } from '@components/common/modals/authentication'
 import { useSession, signOut } from 'next-auth/react'
 import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
@@ -26,6 +26,8 @@ import { SearchBar } from '@components/common/search-bar'
 import { miniProfile } from '@lib/api/auth'
 import { SettingsLayout } from '../settings/mobile/layout'
 import { NotificationIcon } from '@icons/settings-side-bar-icons'
+import { SearchIcon } from '@icons/search-icon'
+import { analyticsService } from '@services/analytics_service'
 
 const navVariant = cva('sticky top-0 flex z-40 h-[76px] w-full items-center justify-between  px-2', {
   variants: {
@@ -53,15 +55,25 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
   // if (protocol === 'http:') {
   //   window.location.href = window.location.href.replace(/^http:/, 'https:')
   // }
-  const isEmbed = useGenuinOptions().embed
-  // If variant is transparent than we have removed show download button.
+  const { embed, user, brandName, notificationsCount } = useGenuinOptions((state) => ({
+    embed: state.embed,
+    user: state.user,
+    brandName: state.config?.name ? state.config?.name : 'Genuin',
+    notificationsCount: state.notificationCount,
+  })) // If variant is transparent than we have removed show download button.
   const showDownloadButton = variant !== 'trasparent'
+  const pathName = usePathname()
 
   return (
     <nav className={cn(navVariant({ variant }), className)}>
       <span className="flex items-center ">
-        <Menu hamBurgerVariant={variant === 'trasparent' ? 'light' : 'dark'} />
-        {isEmbed && (
+        <Menu
+          hamBurgerVariant={variant === 'trasparent' ? 'light' : 'dark'}
+          embed={embed}
+          user={user}
+          brandName={brandName}
+        />
+        {embed && (
           <Link href={{ pathname: PATH_NAME.home() }}>
             <AppLogo.icon
               imageHeight={32}
@@ -71,7 +83,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
         )}
       </span>
       <span className="flex items-center gap-x-2">
-        {!isEmbed && showDownloadButton && (
+        {!embed && showDownloadButton && (
           <Link href={MOBILE_DOWNLOAD_APP_LINK} target="_blank">
             <Button
               className={
@@ -83,10 +95,43 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
             </Button>
           </Link>
         )}
+        {user && (
+          <Link href={PATH_NAME.notification()}>
+            <div className="relative">
+              {!notificationsCount ||
+                (notificationsCount > 0 && (
+                  <div
+                    className="absolute right-0 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-primary text-monochrome-white"
+                    style={{
+                      fontSize: '8px',
+                    }}>
+                    {notificationsCount}
+                  </div>
+                ))}
+              <NotificationIcon
+                variant={
+                  pathName === '/home' ||
+                  pathName === '/popular' ||
+                  pathName === '/latest' ||
+                  pathName.includes('/video')
+                    ? 'white'
+                    : ''
+                }
+                className="h-7"
+              />
+            </div>
+          </Link>
+        )}
         <SearchBar.mobile>
-          <Search className={cn(variant === 'light' ? 'stroke-secondary' : 'stroke-monochrome-white')} />
+          <SearchIcon
+            className={`${
+              pathName === '/home' || pathName === '/popular' || pathName === '/latest' || pathName.includes('/video')
+                ? 'stroke-monochrome-white'
+                : ''
+            }`}
+          />
         </SearchBar.mobile>
-        {isEmbed && <UserTick />}
+        {embed && <UserTick />}
         {showClose && (
           <X
             onClick={() => {
@@ -103,12 +148,17 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
   )
 }
 
-function Menu({ hamBurgerVariant = 'dark' }: { hamBurgerVariant: 'dark' | 'light' }) {
-  const { embed, user, brandName } = useGenuinOptions((state) => ({
-    embed: state.embed,
-    user: state.user,
-    brandName: state.config?.name ? state.config?.name : 'Genuin',
-  }))
+function Menu({
+  hamBurgerVariant = 'dark',
+  brandName,
+  user,
+  embed,
+}: {
+  hamBurgerVariant: 'dark' | 'light'
+  brandName: string
+  user?: User
+  embed: boolean
+}) {
   const pathName = usePathname()
   const { data: sessionData, update: updateSession } = useSession()
 
@@ -122,6 +172,10 @@ function Menu({ hamBurgerVariant = 'dark' }: { hamBurgerVariant: 'dark' | 'light
           })
           const messageType = res?.data?.ks_cb_request_status === 3 ? 'MINI_PROFILE_SUCCESS' : 'KS_CB_SUBDOMAIN'
           AuthenticationModal.open(undefined, messageType)
+          void analyticsService({
+            eventName: 'become_cb_clicked',
+            properties: {},
+          })
         } else {
           AuthenticationModal.open(undefined, 'KS_CB_SUBDOMAIN')
         }
@@ -158,17 +212,10 @@ function Menu({ hamBurgerVariant = 'dark' }: { hamBurgerVariant: 'dark' | 'light
             </Link>
             {user && (
               <>
-                {!user.is_brand_system_user && (
-                  <Link href={{ pathname: PATH_NAME.settings('notification') }}>
-                    <MenuItem title="Notification" isActive={pathName === PATH_NAME.settings('notification')}>
-                      <NotificationIcon isActive={pathName === PATH_NAME.settings('notification')} />
-                    </MenuItem>
-                  </Link>
-                )}
                 <Link
                   href={{
-                    pathname: user.is_brand_system_user
-                      ? PATH_NAME.brand(user.brand_slug)
+                    pathname: user.isBrandSystemUser
+                      ? PATH_NAME.brand(user.brandSlug)
                       : PATH_NAME.profile(user.nickname),
                   }}>
                   <MenuItem title="Profile" isActive={pathName === PATH_NAME.profile(user.nickname)}>
@@ -183,7 +230,7 @@ function Menu({ hamBurgerVariant = 'dark' }: { hamBurgerVariant: 'dark' | 'light
               </MenuItem>
             </Link> */}
             <hr className="border-1 mt-1 border-monochrome-black/10" />
-            {user?.ks_cb_request_status !== 3 && (
+            {user?.ksCbRequestStatus !== 3 && (
               <div
                 className="max-w-72 relative my-4 max-h-16 rounded-lg border border-[#E9CAF4] bg-primary-200 text-title-3-demi text-monochrome-black hover:cursor-pointer"
                 style={{
@@ -201,7 +248,12 @@ function Menu({ hamBurgerVariant = 'dark' }: { hamBurgerVariant: 'dark' | 'light
                   <span className="font-semibold italic">
                     community <br /> builder{' '}
                   </span>
-                  {embed ? 'for' : 'on'} <span className="text-primary"> {brandName}</span> 🚀
+                  {embed ? 'for' : 'on'}{' '}
+                  <span className="inline-block truncate text-primary" style={{ maxWidth: '12ch' }}>
+                    {' '}
+                    {brandName}
+                  </span>{' '}
+                  🚀
                 </p>
                 <img src={CommunityIcon.src} alt="community" className="absolute bottom-0 right-4 h-12" />
               </div>
@@ -282,7 +334,7 @@ function UserTick() {
             />
             <div>
               <p className="line-clamp-1 break-words break-all text-title-3-bold">{data.user.email}</p>
-              {!data.user.is_brand_system_user && (
+              {!data.user.isBrandSystemUser && (
                 <p className="text-body-1-demi text-monochrome-6">
                   {!data.user.isEmailVerified ? 'Send verification email' : 'Complete profile'}
                 </p>
@@ -302,7 +354,7 @@ function UserTick() {
                 Log out
               </p>
             </div>
-            {!data.user.is_brand_system_user && <SettingsLayout />}
+            {!data.user.isBrandSystemUser && data.user?.isEmailVerified && <SettingsLayout />}
           </div>
         </PopoverContent>
       </Popover>

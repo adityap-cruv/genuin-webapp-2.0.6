@@ -15,11 +15,12 @@ import { useLocalStorage } from '@lib/stores/local-storage'
 import { usePathname } from 'next/navigation'
 import { Loader } from '@components/ui/loader'
 import { signIn } from 'next-auth/react'
+import { analyticsService } from '@services/analytics_service'
 
 const passwordSchema = z.object({ password: z.string().min(8) })
 
 export function PasswordInputLogin() {
-  const { close, formData, action } = useAuthenticationModalStore()
+  const { close, formData, action, setStep } = useAuthenticationModalStore()
   const [passwordVisible, setPasswordVisible] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const deviceId = useLocalStorage().deviceId
@@ -39,6 +40,7 @@ export function PasswordInputLogin() {
       .then(async (res) => {
         if (res?.code === 200) {
           // console.log(res.data)
+          // TODO: create a simple method to map user object.
           const user = {
             is_avatar: res.data.user.is_avatar,
             user_id: res.data.user.user_id,
@@ -48,20 +50,26 @@ export function PasswordInputLogin() {
             bio: res.data.user.bio,
             name: res.data.user.name,
             is_email_verified: res.data.user.is_email_verified,
-            is_password_set: true,
+            is_password_set: res.data.user.is_password_set,
             accessToken: res.data.accessToken,
             ks_cb_request_status: res.data.user.ks_cb_request_status,
-            is_brand_system_user: res.data.user.is_brand_system_user ? res.data.user.is_brand_system_user : null,
+            is_brand_system_user: res.data.user.is_brand_system_user,
             brand_id: res.data.user.brand ? res.data.user.brand.brand_id : null,
             brand_slug: res.data.user.brand ? res.data.user.brand.brand_slug : null,
+            onboarding_topics: res.data.user.onboarding_topics,
           }
           // console.log('user', user)
           void signIn('credentials', { ...user, redirect: false })
             .then((res) => {
               if (res?.ok) {
                 close()
+                void analyticsService({
+                  eventName: 'ks_logged_in',
+                  properties: { email: formData.email },
+                })
+              } else {
+                form.setError('root', { message: 'Oops! something went wrong. try again.' })
               }
-              form.setError('root', { message: 'Oops! something went wrong. try again.' })
             })
             .catch((e) => {
               form.setError('root', { message: 'Oops! something went wrong. try again.' })
@@ -106,6 +114,12 @@ export function PasswordInputLogin() {
                             'border border-tertiary-200 bg-tertiary-100 text-title-3-med',
                             errors && '!border-red'
                           )}
+                          onKeyDown={(e) => {
+                            if (e.key === ' ') {
+                              e.preventDefault()
+                              return false
+                            }
+                          }}
                           {...field}
                         />
                         <div className="absolute right-4 top-0 flex h-full items-center">
@@ -128,7 +142,13 @@ export function PasswordInputLogin() {
                       </div>
                     </FormControl>
                     <FormMessage className={cn('!text-cap-1-demi')} />
-                    {/* <p className="mt-2 text-center text-body-1-demi text-monochrome-6">Forgot password?</p> */}
+                    <p
+                      className="pt-2 text-center text-body-1-demi text-monochrome-6 hover:cursor-pointer"
+                      onClick={() => {
+                        setStep('FORGOT_PASSWORD')
+                      }}>
+                      Forgot password?
+                    </p>
                   </FormItem>
                 )
               }}

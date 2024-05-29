@@ -1,6 +1,6 @@
 'use client'
 import { SplashScreen } from '@components/common/splash-screen'
-import { type ConfigType, useGenuinOptions } from '@lib/stores/genuin-options'
+import { type ConfigType, useGenuinOptions, type User } from '@lib/stores/genuin-options'
 import { getSizeBoxes } from '@lib/utils/common/size-box'
 import { useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -10,6 +10,10 @@ import { useSession } from 'next-auth/react'
 import { setAuthTokenInAxiosInstance, setBrandIdInAxiosInstance } from '@lib/api/instance'
 import dynamic from 'next/dynamic'
 import { miniProfile, saveVisitor } from '@lib/api/auth'
+import { notificationsCount } from '@lib/api/notification'
+const RepostModal = dynamic(
+  async () => await import('@components/common/modals/repost').then((comp) => comp.RepostModal.ui)
+)
 
 const AuthenticationModal = dynamic(
   async () => await import('@components/common/modals/authentication').then((comp) => comp.AuthenticationModal.ui)
@@ -44,35 +48,44 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
     setVisitor: state.setVisitor,
   }))
 
-  useEffect(() => {
-    const intervalTime = 60 * 60 * 1000
-    let intervalId: NodeJS.Timeout | null = null
+  // useEffect(() => {
+  //   if (!user?.accessToken) return
+  //   const intervalTime = 60 * 60 * 1000
+  //   const intervalId: NodeJS.Timeout | null = null
 
-    const loadData = () => {
-      void miniProfile(true).then((res) => {
-        if (res.code === 200) {
-          void updateSession({
-            ...sessionData,
-            user: { ...sessionData?.user, ...res.data },
-          })
-          if (res.data.ks_cb_request_status === 3) {
-            if (intervalId) clearInterval(intervalId)
-          }
-        }
-      })
-    }
+  //   const loadData = () => {
+  //     void miniProfile(true).then((res) => {
+  //       if (res.code === 200) {
+  //         const userData = res.data
+  //         console.log('res::', res)
+  //         void updateSession({
+  //           ...sessionData,
+  //           user: {
+  //             ksCbRequestStatus: userData.ks_cb_request_status,
+  //             brandId: userData.brand.brand_id,
+  //             brandSlug: userData.brand.brand_slug,
+  //             isEmailVerified: userData.is_email_verified,
+  //             isAvatar: userData.is_avatar,
+  //             isPasswordSet: userData.is_password_set,
+  //             image: userData.profile_image,
+  //             isBrandSystemUser: userData.is_brand_system_user,
+  //             hasTopics: userData.onboarding_topics,
+  //             ...sessionData?.user,
+  //           } as User,
+  //         })
+  //         if (res.data.ks_cb_request_status === 3) {
+  //           if (intervalId) clearInterval(intervalId)
+  //         }
+  //       }
+  //     })
+  //   }
 
-    if (user?.accessToken && user.ks_cb_request_status !== 3) {
-      setTimeout(() => {
-        loadData()
-      }, 1000)
-      intervalId = setInterval(loadData, intervalTime)
-    }
+  //   if (user?.accessToken) loadData()
 
-    return () => {
-      if (intervalId) clearInterval(intervalId)
-    }
-  }, [])
+  //   return () => {
+  //     if (intervalId) clearInterval(intervalId)
+  //   }
+  // }, [user])
 
   const searchParams = useSearchParams()
 
@@ -88,11 +101,19 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
     return getSizeBoxes(isMobile, !hideNavbar)
   }
 
+  async function fetchNotificationCount() {
+    const { status, count } = await notificationsCount()
+    if (status) {
+      setInitialData({ notificationCount: count })
+    }
+  }
+
   useEffect(() => {
     if (sessionStatus === 'loading') return
     if (sessionStatus === 'authenticated') {
       setAuthTokenInAxiosInstance(sessionData.user.accessToken)
       setInitialData({ user: sessionData.user })
+      void fetchNotificationCount()
       if (isLoading) setIsLoading(false)
     }
     if (sessionStatus === 'unauthenticated') {
@@ -165,6 +186,7 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
       {children}
       <AuthenticationModal />
       <DownloadDialogModal />
+      <RepostModal />
     </>
   )
 }

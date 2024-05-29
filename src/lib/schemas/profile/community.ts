@@ -42,14 +42,16 @@ const BrandSchema = z
   .nullish()
 
 const CommunitySchema = z.object({
-  brand: BrandSchema,
+  brand: BrandSchema.optional(),
   name: z.string().nullish(),
   id: z.string(),
   isJoined: z.boolean().default(false),
   handle: z.string(),
   slug: z.string(),
+  isCommunityJoinRequested: z.boolean().nullish().optional(),
   profileImage: z.string().nullish(),
   loopCount: z.number().default(0),
+  userRole: z.enum(['LEADER', 'MEMBER']).nullish(),
   loops: z.array(LoopSchema),
   type: z.number().nullish(),
 })

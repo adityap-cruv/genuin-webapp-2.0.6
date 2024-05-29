@@ -105,7 +105,7 @@ export async function verifyEmail(token: string): Promise<{
     .get('/api/v3/verify_email_token', { params: { token }, baseURL: process.env.NEXT_PUBLIC_INTERNAL_API_URL })
     .then((res) => {
       const data = res?.data?.data
-      console.log('dta::', data)
+      // console.log('dta::', data)
       const user = data?.user
       if (user) {
         Object.assign(user, { accessToken: res.headers['x-auth-token'] })

@@ -13,6 +13,7 @@ import { PATH_NAME } from '@lib/utils/constants/path'
 import { ksSignup } from '@lib/api/auth'
 import { usePathname } from 'next/navigation'
 import { Loader } from '@components/ui/loader'
+import { analyticsService } from '@services/analytics_service'
 
 export function EmailInput() {
   const { setStep, setFormData, formData, action } = useAuthenticationModalStore()
@@ -53,6 +54,10 @@ export function EmailInput() {
         } else {
           setStep('PASSWORD_INPUT_LOGIN')
         }
+        void analyticsService({
+          eventName: 'ks_login_initiated',
+          properties: {},
+        })
       } else if (ksResponse.code === 5237) {
         setFormData({ retryTime: ksResponse?.retryTime })
         setStep('MAGIC_LINK_SENT_NOTE')

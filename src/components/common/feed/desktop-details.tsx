@@ -13,9 +13,8 @@ import { Toaster } from '@components/ui/toaster'
 import { getCurrentShareUrl, getTimeAgo, openModal } from '@lib/utils'
 import { FeedShimmer } from '../shimmers/feed-shimmer'
 import { Input } from '@components/ui/input'
-import { createComment, joinCommunity, leaveCommunity } from '@lib/api/video'
+import { createComment, joinCommunity, leaveCommunity, requestCommunity } from '@lib/api/video'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
-import { DownloadDialog } from '../download-dialog'
 import { ShareIcon } from '@icons/share-icon'
 import { AudioRecordIcon } from '@icons/audio-record-icon'
 import { VideoRecordIcon } from '@icons/video-record-icon'
@@ -24,6 +23,7 @@ import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import { LockIcon } from '@icons/LockIcon'
 import { TickIcon } from '@icons/tick-icon'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@components/ui/tooltip'
+import { DownloadDialogModal } from '../modals/download-app'
 
 export function DesktopDetails({ loop, community, owner, video }: VideoPlayerModalType) {
   const { shareFn } = useAdaptiveShare()
@@ -84,7 +84,15 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
                     <Link href={{ pathname: PATH_NAME.community(community.slug) }}>
                       <p className="line-clamp-1 break-all pr-2 text-title-3-bold">{community.name}</p>
                     </Link>
-                    {community.brand && <p className="text-body-1-med text-tertiary">on {community.brand?.name}</p>}
+                    {community.brand && (
+                      <p
+                        className="truncate text-body-1-med text-tertiary"
+                        style={{
+                          maxWidth: '10ch',
+                        }}>
+                        on {community.brand?.name}
+                      </p>
+                    )}
                   </div>
                 </span>
                 {community?.type === 2 && (
@@ -106,7 +114,12 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
                 )}
               </div>
               <span className="flex h-min flex-1 items-center justify-end gap-x-3">
-                <JoinButton handle={community.handle} id={community.id} userRole={community.userRole} />
+                <JoinButton
+                  handle={community.handle}
+                  id={community.id}
+                  userRole={community.userRole}
+                  isCommunityPrivate={community.type === 2}
+                />
                 <Button
                   size="custom"
                   variant="outline"
@@ -315,25 +328,49 @@ function CommentInput({
           </div>
         )}
 
-        <DownloadDialog title="Get the Genuin app" subtitle="Get the app to comment on this video.">
-          {/* <Image src={icAudioRecord} alt="audio record" className="h-8 w-8" /> */}
-          <AudioRecordIcon className="fill-secondary" />
-        </DownloadDialog>
-        <DownloadDialog title="Get the Genuin app" subtitle="Get the app to comment on this video.">
-          {/* <Image src={icVideoRecord} alt="audio record" className="h-8 w-8" /> */}
-          <VideoRecordIcon className="fill-secondary" />
-        </DownloadDialog>
+        <AudioRecordIcon
+          className="fill-secondary"
+          onClick={() => {
+            DownloadDialogModal.open({ title: 'Get the Genuin app', subtitle: 'Get the app to comment on this video.' })
+          }}
+        />
+        <VideoRecordIcon
+          className="fill-secondary"
+          onClick={() => {
+            DownloadDialogModal.open({
+              title: 'Get the Genuin app',
+              subtitle: 'Get the app to comment on this video.',
+            })
+          }}
+        />
       </div>
     </div>
   )
 }
 
-function JoinButton({ userRole, handle, id }: { userRole?: 'LEADER' | 'MEMBER' | null; handle: string; id: string }) {
+function JoinButton({
+  userRole,
+  handle,
+  id,
+  isCommunityPrivate,
+}: {
+  userRole?: 'LEADER' | 'MEMBER' | 'REQUESTED' | null
+  handle: string
+  id: string
+  isCommunityPrivate: boolean
+}) {
   const [role, setRole] = useState(userRole)
   const user = useGenuinOptions().user
   async function toggleCommunityJoinState() {
-    role !== 'MEMBER'
-      ? await joinCommunity(
+    if (role !== 'MEMBER') {
+      if (isCommunityPrivate) {
+        await requestCommunity(id).then((res) => {
+          if (res.code === 200) {
+            setRole('REQUESTED')
+          }
+        })
+      } else {
+        await joinCommunity(
           false,
           [id],
           [
@@ -346,21 +383,23 @@ function JoinButton({ userRole, handle, id }: { userRole?: 'LEADER' | 'MEMBER' |
             setRole('MEMBER')
           }
         })
-      : await leaveCommunity(id).then((res) => {
-          if (res.code === 200) {
-            setRole(null)
-          }
-        })
+      }
+    } else {
+      await leaveCommunity(id).then((res) => {
+        if (res.code === 200) {
+          setRole(null)
+        }
+      })
+    }
   }
 
   if (userRole === 'LEADER') return
 
-  const isCommunityJoined = role === 'MEMBER'
   return (
     <Button
       size="custom"
-      className={`${isCommunityJoined && 'rounded border border-primary '}`}
-      variant={isCommunityJoined ? 'outline' : 'default'}
+      className={`${role && 'rounded border border-primary '}`}
+      variant={role ? 'outline' : 'default'}
       onClick={
         user
           ? async () => {
@@ -380,9 +419,9 @@ function JoinButton({ userRole, handle, id }: { userRole?: 'LEADER' | 'MEMBER' |
       }>
       <p
         className={`whitespace-nowrap px-4 py-1.5 text-body-1-demi  ${
-          isCommunityJoined ? 'text-primary' : 'text-monochrome-white'
+          role ? 'text-primary' : 'text-monochrome-white'
         }`}>
-        {isCommunityJoined ? 'Joined' : 'Join Community'}
+        {role ? (role === 'REQUESTED' ? 'Requested' : 'Joined') : 'Join Community'}
       </p>
     </Button>
   )

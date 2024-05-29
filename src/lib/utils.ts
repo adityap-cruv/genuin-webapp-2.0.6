@@ -5,6 +5,7 @@ import { createCipheriv } from 'crypto'
 import { twMerge } from 'tailwind-merge'
 import { useGenuinOptions } from './stores/genuin-options'
 import { AuthenticationModal } from '@components/common/modals/authentication'
+import { type ReactNode } from 'react'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -17,7 +18,15 @@ export function getLoopAndCommunityShareString(shareUrl: string) {
   return { loopShareString, communityShareString }
 }
 
-export function openModal({ title, subtitle, action }: any) {
+export function openModal({
+  title,
+  subtitle,
+  action,
+}: {
+  title: string | ReactNode
+  subtitle: string | ReactNode
+  action?: any
+}) {
   const embed = useGenuinOptions.getState().embed
 
   if (embed) {
@@ -33,14 +42,18 @@ export function openModal({ title, subtitle, action }: any) {
 export function deleteSearchParam({
   pathName,
   searchParams,
-  paramToDelete,
+  paramsToDelete,
 }: {
   pathName: string
   searchParams: string
-  paramToDelete: string
+  paramsToDelete: string[]
 }) {
   const searchParamObject = new URLSearchParams(searchParams)
-  searchParamObject.delete(paramToDelete)
+
+  paramsToDelete.forEach((param) => {
+    searchParamObject.delete(param)
+  })
+
   if (searchParamObject.size === 0) {
     window.history.replaceState('', '', `${pathName}`)
   } else {

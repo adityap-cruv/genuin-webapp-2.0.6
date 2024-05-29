@@ -17,6 +17,7 @@ import { cn } from '@lib/utils'
 import { FeedShimmer } from '@components/common/shimmers/feed-shimmer'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
+import { UnseenMessageRibbon } from '../../unseen-message-ribbon'
 
 type Props = {
   children?: React.ReactNode
@@ -37,6 +38,7 @@ type Props = {
   open: boolean
   close: () => void
   isLoading: boolean
+  unreadMessageCount?: number
 }
 
 export function Desktop({
@@ -47,9 +49,9 @@ export function Desktop({
   close,
   isLoading,
   isFetchingNextPage,
-  isError,
   fetchNextVideos,
   fetchPreviousVideos,
+  unreadMessageCount,
 }: Props) {
   const sizeBox = useGenuinOptions().sizeBoxes
   const { currentIndex, setCurrentIndex, setStateVideos } = useFeedModalStore((state) => ({
@@ -75,10 +77,17 @@ export function Desktop({
     <CustomDialog open={open}>
       <CustomDialogTrigger>{children}</CustomDialogTrigger>
       <CustomDialogContent showDefaultClose={false}>
-        <span className="flex items-center gap-x-6">
+        <span className="relative flex items-center gap-x-6">
           <div
             style={{ height: sizeBox.modal.height, width: sizeBox.modal.width }}
             className="relative min-w-[800px] overflow-clip rounded-2xl bg-monochrome-white">
+            {unreadMessageCount && (
+              <div
+                style={{ width: sizeBox.modal.player.width }}
+                className="absolute inset-0 z-10 flex h-fit w-full items-center justify-center">
+                <UnseenMessageRibbon messageCount={unreadMessageCount} />
+              </div>
+            )}
             <CustomDialogClose
               onClick={() => {
                 close?.()

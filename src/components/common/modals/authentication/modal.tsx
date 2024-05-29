@@ -18,25 +18,32 @@ import {
   EditUsername,
   ChangePassword,
   Logout,
+  ForgotPassword,
+  ResetPassword,
+  CategoryInput,
 } from './screens'
 import { useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
-import { X } from 'lucide-react'
+import icClose from '@icons/icClose.svg'
 import { PasswordInputLogin } from './screens/password-input-login'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
+import icBack from '@icons/icBack.svg'
 
 type Props = DialogProps
 
 export function Modal({ children, ...props }: Props) {
   const user = useGenuinOptions().user
-  const { isModalOpen, openModal, setStep, closeModal, step, setFormData } = useAuthenticationModalStore((state) => ({
-    isModalOpen: state.isOpen,
-    openModal: state.open,
-    setStep: state.setStep,
-    closeModal: state.close,
-    step: state.step,
-    setFormData: state.setFormData,
-  }))
+  const { isModalOpen, openModal, setStep, closeModal, step, setFormData, previousStep } = useAuthenticationModalStore(
+    (state) => ({
+      isModalOpen: state.isOpen,
+      openModal: state.open,
+      setStep: state.setStep,
+      closeModal: state.close,
+      step: state.step,
+      setFormData: state.setFormData,
+      previousStep: state.previousStep,
+    })
+  )
   const searchParams = useSearchParams()
 
   useEffect(() => {
@@ -56,15 +63,26 @@ export function Modal({ children, ...props }: Props) {
     'MAGIC_LINK_VERIFICATION_FAILURE',
     'MAGIC_LINK_VERIFICATION_SUCCESS',
     'IMAGE_CROPPER',
+    'RESET_PASSWORD',
   ])
   const showClose = !stepSet.has(step)
 
+  const stepForBack: Set<StepsType> = new Set<StepsType>(['PASSWORD_INPUT_LOGIN'])
+  const showBack = stepForBack.has(step)
+
   useEffect(() => {
+    const resetPasswordEmailVerification = searchParams.get('reset_password_status') ?? ''
     const emailVerification = searchParams.get('email_verification_status') ?? ''
     const magicLinkVerification = searchParams.get('magic_link_verification') ?? ''
     const error = searchParams.get('error_in_verification') ?? ''
 
-    if (Boolean(emailVerification) || Boolean(magicLinkVerification) || Boolean(error)) {
+    if (
+      Boolean(emailVerification) ||
+      Boolean(magicLinkVerification) ||
+      Boolean(error) ||
+      Boolean(resetPasswordEmailVerification)
+    ) {
+      if (resetPasswordEmailVerification === '1') setStep('RESET_PASSWORD')
       if (emailVerification === '0') setStep('EMAIL_VERIFICATION_FAILURE')
       if (emailVerification === '1') setStep('EMAIL_VERIFICATION_SUCCESS')
       if (magicLinkVerification === '0') setStep('MAGIC_LINK_VERIFICATION_FAILURE')
@@ -83,9 +101,24 @@ export function Modal({ children, ...props }: Props) {
           e.preventDefault()
         }}
         className="rounded-t-lg !py-10">
+        {showBack && (
+          <img
+            src={icBack.src}
+            alt="back"
+            className="absolute left-4 top-4 h-6 hover:cursor-pointer"
+            onClick={() => {
+              if (previousStep !== undefined) {
+                setStep(previousStep)
+              }
+            }}
+          />
+        )}
         {showClose && (
-          <DialogClose className="absolute right-2 top-2">
-            <X
+          <DialogClose className="absolute right-4 top-4">
+            <img
+              src={icClose.src}
+              alt="close"
+              className="h-6"
               onClick={() => {
                 closeModal()
               }}
@@ -152,5 +185,19 @@ export function Content() {
       return <ChangePassword />
     case 'LOGOUT':
       return <Logout />
+    case 'CHANGE_PASSWORD_SUCCESS_NOTE':
+      return <Note.changepasswordsuccess />
+    case 'SET_PASSWORD_SUCCESS_NOTE':
+      return <Note.setpasswordsuccess />
+    case 'FORGOT_PASSWORD':
+      return <ForgotPassword />
+    case 'PASSWORD_RESET_LINK_SENT_NOTE':
+      return <Note.passwordresetlink />
+    case 'RESET_PASSWORD':
+      return <ResetPassword />
+    case 'RESET_PASSWORD_SUCCESS_NOTE':
+      return <Note.resetpasswordsuccess />
+    case 'CATEGORY_INPUT':
+      return <CategoryInput />
   }
 }

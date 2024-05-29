@@ -1,17 +1,19 @@
 import { redirect } from 'next/navigation'
 import { ClientComponent } from './client-component'
 import { ksCbRequest, verifyEmail } from '@lib/api/auth'
+import { analyticsService } from '@services/analytics_service'
 
 export default async function Page({ searchParams }: { searchParams: { token: string } }) {
   const { code, actionMetadata, user, emailType, email } = await verifyEmail(searchParams.token)
-  console.log('code::', code, actionMetadata, user)
   if (code === 200 && actionMetadata?.action === 'KS_CB_REQUEST') {
-    console.log('ks cb req;;')
     const ans = await ksCbRequest(user.accessToken)
-    console.log('ans::', ans)
   }
 
   if (code === 200) {
+    void analyticsService({
+      eventName: 'ks_email_verify',
+      properties: { email },
+    })
     return (
       <ClientComponent
         user={user}
@@ -38,7 +40,7 @@ function getRedirectTo({
   path?: string
   error: boolean
   success?: boolean
-  emailType: 11 | 12 | 2
+  emailType: 11 | 12 | 2 | 16
   email?: string
 }) {
   // const urlObj = new URL(checkAndAppendHttps((headers().get('host') ?? process.env.HOST_NAME) + (path ?? '/home')))
@@ -56,6 +58,7 @@ function getRedirectTo({
   if (emailType === 12 || emailType === 2) {
     urlObj.set('email_verification_status', success ? '1' : '0')
   }
+
   if (!success) {
     if (emailType) urlObj.set('email_type', emailType.toString())
     if (email) urlObj.set('email', email)

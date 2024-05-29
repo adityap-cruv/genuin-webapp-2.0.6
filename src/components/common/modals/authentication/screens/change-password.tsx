@@ -3,39 +3,47 @@ import { cn } from '@lib/utils'
 import { Input } from '@components/ui/input'
 import { useForm } from 'react-hook-form'
 import { EyeIcon, EyeOffIcon } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { updateUser } from '@lib/api/auth'
+import { updatePassword } from '@lib/api/auth-passwords'
 import { useAuthenticationModalStore } from '../store'
 import { Button } from '@components/ui/button'
 import { Loader } from '@components/ui/loader'
 import { ModalShell } from '../modal-shell'
-import { useSession } from 'next-auth/react'
 
-const passwordSchema = z.object({ oldpassword: z.string().min(8), newpassword: z.string().min(8) })
+const passwordSchema = z.object({
+  oldPassword: z.string().min(8, 'Old password must be at least 8 characters'),
+  newPassword: z.string().min(8, 'New password must be at least 8 characters'),
+})
 
 export function ChangePassword() {
-  // const { data: sessionData, update: updateSession } = useSession()
-  const [passwordVisible, setPasswordVisible] = useState(false)
+  const [passwordVisible, setPasswordVisible] = useState({ oldPassword: false, newPassword: false })
   const [isLoading, setIsLoading] = useState(false)
-  const setStep = useAuthenticationModalStore().setStep
+  const { setStep } = useAuthenticationModalStore()
   const form = useForm<z.infer<typeof passwordSchema>>({ resolver: zodResolver(passwordSchema), mode: 'onSubmit' })
-  const { isDirty, isValid } = form.formState
+  const { isDirty, isValid, errors } = form.formState
 
-  // TODO: Handle password here.
-  async function onSubmit({ oldpassword, newpassword }: { oldpassword: string; newpassword: string }) {
+  useEffect(() => {
+    const watch = form.watch((value) => {
+      form.clearErrors()
+      if (value.newPassword && value.oldPassword && value.newPassword === value.oldPassword) {
+        form.setError('newPassword', { message: 'New password cannot be the same as old password.' })
+      }
+    })
+    return () => {
+      watch.unsubscribe()
+    }
+  }, [form.watch])
+
+  async function onSubmit({ oldPassword, newPassword }: { oldPassword: string; newPassword: string }) {
     setIsLoading(true)
     try {
-      const { status } = await updateUser({ password: oldpassword })
-      if (status) {
-        // await updateSession({
-        //   ...sessionData,
-        //   user: { ...sessionData?.user, isPasswordSet: true },
-        // })
-        setStep('USERNAME_INPUT')
-      } else {
-        throw new Error()
+      const { code } = await updatePassword({ oldPassword, newPassword })
+      if (code === 200) {
+        setStep('CHANGE_PASSWORD_SUCCESS_NOTE')
+      } else if (code === 5238) {
+        form.setError('oldPassword', { message: 'Old password is incorrect. Please try again.' })
       }
     } catch (e) {
       form.setError('root', { message: 'Something went wrong.' })
@@ -51,7 +59,7 @@ export function ChangePassword() {
         <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
           <FormField
             control={form.control}
-            name="oldpassword"
+            name="oldPassword"
             render={({ field }) => {
               const errors = useFormField().error
               return (
@@ -66,32 +74,53 @@ export function ChangePassword() {
                       <Input
                         maxLength={24}
                         minLength={8}
-                        type={passwordVisible ? 'text' : 'password'}
+                        type={passwordVisible.oldPassword ? 'text' : 'password'}
                         className={cn(
                           'border border-tertiary-200 bg-tertiary-100 text-title-3-med',
                           errors && '!border-red'
                         )}
                         {...field}
+                        onKeyDown={(e) => {
+                          if (e.key === ' ') {
+                            e.preventDefault()
+                            return false
+                          }
+                        }}
                       />
                       <div className="absolute right-4 top-0 flex h-full items-center">
-                        {!passwordVisible ? (
+                        {!passwordVisible.oldPassword ? (
                           <EyeOffIcon
                             className="cursor-pointer"
                             onClick={() => {
-                              setPasswordVisible(true)
+                              setPasswordVisible({ ...passwordVisible, oldPassword: true })
                             }}
                           />
                         ) : (
                           <EyeIcon
                             className="cursor-pointer"
                             onClick={() => {
-                              setPasswordVisible(false)
+                              setPasswordVisible({ ...passwordVisible, oldPassword: false })
                             }}
                           />
                         )}
                       </div>
                     </div>
                   </FormControl>
+                  {/* <FormMessage
+                    className={cn(
+                      '!text-cap-1-demi',
+                      isValid && 'text-supplementary-green',
+                      (!isDirty || !isValid) && 'text-tertiary-400'
+                    )}>
+                    {(!isDirty || !isValid) && 'Must be at least 8 characters'}
+                    {isValid && 'Looks good!'}
+                  </FormMessage> */}
+
+                  {form.formState.errors.oldPassword && (
+                    <p className="text-cap-1-demi text-supplementary-red">
+                      {form.formState.errors.oldPassword.message}
+                    </p>
+                  )}
                 </FormItem>
               )
             }}
@@ -99,7 +128,7 @@ export function ChangePassword() {
 
           <FormField
             control={form.control}
-            name="newpassword"
+            name="newPassword"
             render={({ field }) => {
               const errors = useFormField().error
               return (
@@ -114,49 +143,56 @@ export function ChangePassword() {
                       <Input
                         maxLength={24}
                         minLength={8}
-                        type={passwordVisible ? 'text' : 'password'}
+                        type={passwordVisible.newPassword ? 'text' : 'password'}
                         className={cn(
                           'border border-tertiary-200 bg-tertiary-100 text-title-3-med',
                           errors && '!border-red'
                         )}
                         {...field}
+                        onKeyDown={(e) => {
+                          if (e.key === ' ') {
+                            e.preventDefault()
+                            return false
+                          }
+                        }}
                       />
                       <div className="absolute right-4 top-0 flex h-full items-center">
-                        {!passwordVisible ? (
+                        {!passwordVisible.newPassword ? (
                           <EyeOffIcon
                             className="cursor-pointer"
                             onClick={() => {
-                              setPasswordVisible(true)
+                              setPasswordVisible({ ...passwordVisible, newPassword: true })
                             }}
                           />
                         ) : (
                           <EyeIcon
                             className="cursor-pointer"
                             onClick={() => {
-                              setPasswordVisible(false)
+                              setPasswordVisible({ ...passwordVisible, newPassword: false })
                             }}
                           />
                         )}
                       </div>
                     </div>
                   </FormControl>
+
+                  <FormMessage
+                    className={cn(
+                      '!text-cap-1-demi',
+                      isValid && 'text-supplementary-green',
+                      (!isDirty || !isValid) && 'text-tertiary-400'
+                    )}>
+                    {(!isDirty || !isValid) && 'Must be at least 8 characters'}
+                    {isValid && 'Looks good!'}
+                  </FormMessage>
                 </FormItem>
               )
             }}
           />
-          <FormMessage
-            className={cn(
-              '!text-cap-1-demi',
-              isValid && 'text-supplementary-green',
-              (!isDirty || !isValid) && 'text-tertiary-400'
-            )}>
-            {(!isDirty || !isValid) && 'Must be at least 8 characters'}
-            {isValid && 'Looks good!'}
-          </FormMessage>
           <Button
             type="submit"
-            disabled={!isDirty || !isValid || isLoading}
-            className="mt-6 flex w-full items-center justify-center border-0">
+            disabled={!isDirty || !isValid || isLoading || Object.keys(errors).length > 0}
+            className="flex w-full items-center justify-center border-0">
             {isLoading ? (
               <Loader size="sm" className="fill-new-off-white" />
             ) : (

@@ -15,7 +15,7 @@ const ownerSchema = z.object({
   bio: z.string().nullish(),
   is_avatar: z.boolean(),
   profile_image: z.string(),
-  brand: BrandUserSchema,
+  brand: BrandUserSchema.optional(),
 })
 
 // Define the meta data schema
@@ -46,7 +46,7 @@ const messageSchema = z.object({
   message_at: z.number().nullish(),
   owner: ownerSchema,
   meta_data: metaDataSchema,
-  brand: BrandUserSchema,
+  brand: BrandUserSchema.optional(),
 })
 
 const BrandSchema = z
@@ -66,7 +66,7 @@ const BrandSchema = z
 // Define the community schema
 const communitySchema = z
   .object({
-    brand: BrandSchema,
+    brand: BrandSchema.optional(),
     community_id: z.string(),
     handle: z.string(),
     slug: z.string(),

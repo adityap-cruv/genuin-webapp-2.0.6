@@ -9,7 +9,7 @@
     "dev": "next dev -p 4005",
     "build": "next build",
     "start": "next start -p 4000",
-    "lint": "next l int",
+    "lint": "eslint .",
     "format": "prettier --write .",
     "lint:fix": "lint . --fix",
     "br": "next build && next start",
