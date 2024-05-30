@@ -1,12 +1,11 @@
 'use client'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
-import { useEffect, useState, type ReactNode } from 'react'
+import { type ReactNode } from 'react'
 import { HomeIcon, LatestIcon, MoreIcon, PopularIcon, ProfileIcon } from '@icons/side-bar-icons'
 import { cn } from '@lib/utils'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
-// import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@components/ui/tooltip'
 import dynamic from 'next/dynamic'
 import { Button } from '@components/ui/button'
 import { AuthenticationModal } from '@components/common/modals/authentication'
@@ -17,7 +16,7 @@ import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { miniProfile } from '@lib/api/auth'
 import { NotificationIcon } from '@icons/settings-side-bar-icons'
 import { analyticsService } from '@services/analytics_service'
-// import { Popover } from '@components/ui/popover'
+import { type User } from 'next-auth'
 const RecentCommunities = dynamic(
   async () => await import('./recent-communities').then((comp) => comp.RecentCommunities),
   { ssr: false }
@@ -40,9 +39,9 @@ export function SideBar() {
         if (res.code === 200) {
           void updateSession({
             ...sessionData,
-            user: { ...sessionData?.user, ...res.data },
+            user: { ...sessionData?.user, ksCbRequestStatus: res.data.ks_cb_request_status } as User,
           })
-          const messageType = res?.data?.ksCbRequestStatus === 3 ? 'MINI_PROFILE_SUCCESS' : 'KS_CB_SUBDOMAIN'
+          const messageType = res?.data?.ks_cb_request_status === 3 ? 'MINI_PROFILE_SUCCESS' : 'KS_CB_SUBDOMAIN'
           AuthenticationModal.open(undefined, messageType)
           void analyticsService({
             eventName: 'become_cb_clicked',
@@ -157,7 +156,7 @@ export function SideBar() {
                   </span>
                   {embed ? 'for' : 'on'}{' '}
                   <span
-                    className="inline-block overflow-clip text-primary"
+                    className="inline-block  overflow-clip text-primary"
                     style={{ maxWidth: '12ch', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
                     {' '}
                     {brandName}

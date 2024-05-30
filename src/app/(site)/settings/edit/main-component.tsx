@@ -25,6 +25,7 @@ import { InstagramIcon } from '@icons/instagram-icon'
 import { TikTokIcon } from '@icons/tiktok-icon'
 import { LinkedInIcon } from '@icons/linkedin-icon'
 import { TwitterIcon } from '@icons/twitter-icon'
+import { type User } from 'next-auth'
 
 export default function MainComponent() {
   const { isMobile, user } = useGenuinOptions((state) => ({ isMobile: state.isMobile, user: state.user }))
@@ -140,13 +141,13 @@ function EditProfile({ profileData, isMobile }: { profileData: ProfileDetailsTyp
         ...sessionData,
         user: {
           ...sessionData?.user,
-          is_avatar: user?.is_avatar,
+          isAvatar: user?.is_avatar,
           image: user?.profile_image,
           insta_id: user?.insta_id ?? null,
           linkedin_id: user?.linkedin_id ?? null,
           twitter_id: user?.twitter_id ?? null,
           tiktok_id: user?.tiktok_id ?? null,
-        },
+        } as User,
       })
       toast({
         description: 'Your profile has been successfully updated.',

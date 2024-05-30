@@ -8,3 +8,11 @@ export async function rudderStackTrack(...args: Parameters<RudderAnalytics['trac
   if (args[1] && brandId) (args[1] as any).brand_id = brandId
   x?.track(...args)
 }
+
+export async function rudderStackIdentify() {
+  const x = window.rudderanalytics as RudderAnalytics | undefined | null
+  const usersdata = JSON.parse(localStorage.getItem('_user_id_') ?? '')
+  const userId = usersdata.state.userId ?? ''
+  console.log("UserId:", userId)
+  x?.identify(userId)
+}
