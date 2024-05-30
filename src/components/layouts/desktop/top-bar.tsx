@@ -2,7 +2,7 @@
 import { Button } from '@components/ui/button'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
-import { DownloadAppDialog } from '@components/pages/home/download-app-dialog'
+import { DownloadAppDialog } from '@components/pages/build/download-app-dialog'
 import { AppLogo } from '@components/ui/app-logo'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { AuthenticationModal } from '@components/common/modals/authentication'

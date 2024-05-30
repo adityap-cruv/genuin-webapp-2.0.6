@@ -1,5 +1,5 @@
 'use client'
-import { NavBar } from '@components/pages/home/nav-bar'
+import { NavBar } from '@components/pages/build/nav-bar'
 import bg from '@images/business/discover/bg_discover_mobile.webp'
 import c1 from '@images/home-page/community/communityshare 1.webp'
 import c2 from '@images/home-page/community/communityshare 2.webp'
@@ -12,7 +12,7 @@ import l3 from '@images/home-page/loop/Loop-Link-Share 3.webp'
 import l4 from '@images/home-page/loop/Loop-Link-Share 4.webp'
 import l5 from '@images/home-page/loop/Loop-Link-Share 5.webp'
 import { useState } from 'react'
-import { Footer } from '@components/pages/home/footer'
+import { Footer } from '@components/pages/build/footer'
 
 export default function Mobile() {
   return (

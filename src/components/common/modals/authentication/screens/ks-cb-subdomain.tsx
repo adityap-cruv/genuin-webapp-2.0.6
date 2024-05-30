@@ -47,7 +47,7 @@ export function KsToCbSubdomain() {
         if (res.code === 200) {
           await updateSession({
             ...sessionData,
-            user: { ...sessionData?.user, ks_cb_request_status: res.data.ks_cb_request_status },
+            user: { ...sessionData?.user, ksCbRequestStatus: res.data.ks_cb_request_status },
           })
           void analyticsService({
             eventName: 'become_cb_request_clicked',
