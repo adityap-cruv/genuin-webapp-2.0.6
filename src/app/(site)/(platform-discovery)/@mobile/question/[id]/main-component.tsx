@@ -1,5 +1,5 @@
 'use client'
-import { DownloadAppDialog } from '@components/pages/home/download-app-dialog'
+import { DownloadAppDialog } from '@components/pages/build/download-app-dialog'
 import { Button } from '@components/ui/button'
 
 interface Props {

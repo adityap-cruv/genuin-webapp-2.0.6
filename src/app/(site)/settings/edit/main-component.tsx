@@ -66,10 +66,22 @@ const tikTokUsernamePattern = /^[a-zA-Z0-9À-ž._]+$/
 const formSchema = z.object({
   displayName: z.string().max(25, { message: 'Max length should be 25.' }).optional(),
   bio: z.string().max(150, { message: 'Max length should be 150.' }).optional().nullable(),
-  instagram: z.string().regex(instaUsernamePattern, { message: 'Invalid Instagram username.' }).optional(),
-  linkedIn: z.string().regex(linkedInUsernamePattern, { message: 'Invalid LinkedIn username.' }).optional(),
-  twitter: z.string().regex(twitterUsernamePattern, { message: 'Invalid Twitter username.' }).optional(),
-  tiktok: z.string().regex(tikTokUsernamePattern, { message: 'Invalid TikTok username.' }).optional(),
+  instagram: z
+    .string()
+    .regex(instaUsernamePattern, { message: 'Invalid Instagram username.' })
+    .optional()
+    .or(z.literal('')),
+  linkedIn: z
+    .string()
+    .regex(linkedInUsernamePattern, { message: 'Invalid LinkedIn username.' })
+    .optional()
+    .or(z.literal('')),
+  twitter: z
+    .string()
+    .regex(twitterUsernamePattern, { message: 'Invalid Twitter username.' })
+    .optional()
+    .or(z.literal('')),
+  tiktok: z.string().regex(tikTokUsernamePattern, { message: 'Invalid TikTok username.' }).optional().or(z.literal('')),
 })
 
 function EditProfile({ profileData, isMobile }: { profileData: ProfileDetailsType; isMobile: boolean }) {

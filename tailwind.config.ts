@@ -106,6 +106,19 @@ module.exports = {
       // },
     },
     fontSize: {
+      // Updated Typography for new index page
+      'title-1-bold-home': ['100px', { fontWeight: 700, lineHeight: '100%' }],
+      'title-2-bold-home': ['52px', { fontWeight: 700, lineHeight: '100%' }],
+      'title-1-bold-home-m': ['48px', { fontWeight: 700, lineHeight: '100%' }],
+      'title-2-bold-home-m': ['36px', { fontWeight: 700, lineHeight: '100%' }],
+      'body-1-home': ['28px', { fontWeight: 500, lineHeight: '140%' }],
+      'body-2-bold-home': ['24px', { fontWeight: 700, lineHeight: '100%' }],
+      'body-2-home': ['24px', { fontWeight: 400, lineHeight: '140%' }],
+      'cap-1-bold-home': ['16px', { fontWeight: 700, lineHeight: '100%' }],
+      'cap-1-demi-home': ['16px', { fontWeight: 600, lineHeight: '100%' }],
+      'cap-1-home': ['16px', { fontWeight: 500, lineHeight: '100%' }],
+      'cap-1-home-m': ['16px', { fontWeight: 500, lineHeight: '140%' }],
+      'cap-2-home-m': ['16px', { fontWeight: 400, lineHeight: '140%' }],
       // New Typography developed by design team for new web.
       'heading-3': ['32px', { fontWeight: 600, lineHeight: '120%', letterSpacing: '-0.96px' }],
       'title-1-bold': ['24px', { fontWeight: 700, lineHeight: '32px' }],
@@ -144,14 +157,29 @@ module.exports = {
     },
     fontFamily: {
       sans: ['"Avenir Next"', ...defaultTheme.fontFamily.sans], // Here sans is default font in tailwindcss so updated it to avenir next
+      // manrope: ['"Manrope"', ...defaultTheme.fontFamily.sans],
     },
     aspectRatio: {
       reel: '9 / 16',
     },
     extend: {
+      transitionDuration: {
+        '8000': '8000ms',
+        '1800': '1800ms',
+        '1600': '1600ms',
+        '1400': '1400ms',
+        '1200': '1200ms',
+      },
+      backgroundColor: {
+        'white-alpha': 'rgba(255, 255, 255, 0.13)',
+      },
+      backdropBlur: {
+        '20px': '20px',
+      },
       height: {
         body: 'calc(100% - 74px)',
         navbar: '74px',
+        customscreen: 'calc(100vh - 74px)',
       },
       flexGrow: {
         3: '3',
@@ -197,6 +225,10 @@ module.exports = {
         1440: '1440px',
       },
       keyframes: {
+        marquee: {
+          '0%': { transform: 'translateX(0%)' },
+          '100%': { transform: 'translateX(-100%)' },
+        },
         'accordion-down': {
           from: { height: '0' },
           to: { height: 'var(--radix-accordion-content-height)' },
@@ -209,6 +241,7 @@ module.exports = {
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        marquee: 'marquee 12.5s linear infinite',
       },
       linearGradientColors: {
         'black-70': ['rgba(17, 17, 17, 0.00)', 'rgba(17, 17, 17, 0.70)'],
