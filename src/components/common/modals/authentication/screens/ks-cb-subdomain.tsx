@@ -14,6 +14,7 @@ import { ksCbRequest } from '@lib/api/auth'
 import { useSession } from 'next-auth/react'
 import { Loader } from '@components/ui/loader'
 import { analyticsService } from '@services/analytics_service'
+import { type User } from 'next-auth'
 
 SwiperCore.use([Pagination])
 export function KsToCbSubdomain() {
@@ -47,7 +48,7 @@ export function KsToCbSubdomain() {
         if (res.code === 200) {
           await updateSession({
             ...sessionData,
-            user: { ...sessionData?.user, ks_cb_request_status: res.data.ks_cb_request_status },
+            user: { ...sessionData?.user, ksCbRequestStatus: res.data.ks_cb_request_status } as User,
           })
           void analyticsService({
             eventName: 'become_cb_request_clicked',
