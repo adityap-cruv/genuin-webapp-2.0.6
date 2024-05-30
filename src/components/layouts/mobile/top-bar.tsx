@@ -168,7 +168,7 @@ function Menu({
         if (res.code === 200) {
           void updateSession({
             ...sessionData,
-            user: { ...sessionData?.user, ...res.data },
+            user: { ...sessionData?.user, ksCbRequestStatus: res.data.ks_cb_request_status } as User,
           })
           const messageType = res?.data?.ks_cb_request_status === 3 ? 'MINI_PROFILE_SUCCESS' : 'KS_CB_SUBDOMAIN'
           AuthenticationModal.open(undefined, messageType)
