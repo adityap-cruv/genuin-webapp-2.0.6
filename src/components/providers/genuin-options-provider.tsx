@@ -38,10 +38,9 @@ if (process.env.NEXT_PUBLIC_CURRENT_ENV === 'prod') console.log = () => {}
 // TODO: separate this component into 2 comps with once has auth and second doesn't have auth.
 export function GenuinOptionsProvider({ children, deviceType, os, browserType, config }: Props) {
   const [isLoading, setIsLoading] = useState(true)
-  const { data: sessionData, status: sessionStatus, update: updateSession } = useSession()
-  const { setInitialData, user } = useGenuinOptions((state) => ({
+  const { data: sessionData, status: sessionStatus } = useSession()
+  const { setInitialData } = useGenuinOptions((state) => ({
     setInitialData: state.setData,
-    user: state.user,
   }))
   const { setDeviceId, visitorAdded, setVisitor } = useLocalStorage((state) => ({
     setDeviceId: state.setDeviceId,
@@ -91,9 +90,6 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
   const searchParams = useSearchParams()
 
   const hideNavbar = searchParams.get('hide_navbar') === '1'
-  // const embed = searchParams.get('embed') === '1'
-  // const brandId = searchParams.get('brand_id') ?? ''
-  // const logoUrl = searchParams.get('logo_url') ?? ''
   const from = searchParams.get('from') ?? ''
   const isMobile = deviceType === 'mobile'
   const isSafari = browserType.toLowerCase().includes('safari')
