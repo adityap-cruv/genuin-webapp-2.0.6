@@ -113,7 +113,11 @@ module.exports = {
       'title-2-bold-home-m': ['36px', { fontWeight: 700, lineHeight: '100%' }],
       'body-1-home': ['28px', { fontWeight: 500, lineHeight: '140%' }],
       'body-2-bold-home': ['24px', { fontWeight: 700, lineHeight: '100%' }],
+      'body-2-demi-home': ['24px', { fontWeight: 500, lineHeight: '140%' }],
       'body-2-home': ['24px', { fontWeight: 400, lineHeight: '140%' }],
+      'des-1-bold-home': ['18px', { fontWeight: 700, lineHeight: '140%' }],
+      'des-1-demi-home': ['18px', { fontWeight: 500, lineHeight: '140%' }],
+      'des-1-home': ['18px', { fontWeight: 400, lineHeight: '140%' }],
       'cap-1-bold-home': ['16px', { fontWeight: 700, lineHeight: '100%' }],
       'cap-1-demi-home': ['16px', { fontWeight: 600, lineHeight: '100%' }],
       'cap-1-home': ['16px', { fontWeight: 500, lineHeight: '100%' }],
@@ -161,10 +165,14 @@ module.exports = {
     },
     aspectRatio: {
       reel: '9 / 16',
+      animatedDiv: '11 / 10',
+      square: '1 / 1',
     },
     extend: {
       transitionDuration: {
         '8000': '8000ms',
+        '4000': '4000ms',
+        '2200': '2200ms',
         '1800': '1800ms',
         '1600': '1600ms',
         '1400': '1400ms',
@@ -229,6 +237,23 @@ module.exports = {
           '0%': { transform: 'translateX(0%)' },
           '100%': { transform: 'translateX(-100%)' },
         },
+        zoomIn: {
+          '0%': { transform: 'scale(0.8)' },
+          '100%': { transform: 'scale(1)' },
+        },
+        zoomInOut: {
+          '0%': { transform: 'scale(0.8)' },
+          '70%': { transform: 'scale(1.2)' },
+          '100%': { transform: 'scale(1)' },
+        },
+        rotateRight: {
+          '0%': { transform: 'rotate(15deg)' },
+          '100%': { transform: 'rotate(0)' },
+        },
+        rotateLeft: {
+          '0%': { transform: 'rotate(-15deg)' },
+          '100%': { transform: 'rotate(0)' },
+        },
         'accordion-down': {
           from: { height: '0' },
           to: { height: 'var(--radix-accordion-content-height)' },
@@ -242,6 +267,10 @@ module.exports = {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         marquee: 'marquee 12.5s linear infinite',
+        zoomIn: 'zoomIn 3s ease-in-out forwards',
+        zoomInOut: 'zoomInOut 2s ease-in-out forwards',
+        rotateRight: 'rotateRight 2s ease-in-out forwards',
+        rotateLeft: 'rotateLeft 2s ease-in-out forwards',
       },
       linearGradientColors: {
         'black-70': ['rgba(17, 17, 17, 0.00)', 'rgba(17, 17, 17, 0.70)'],

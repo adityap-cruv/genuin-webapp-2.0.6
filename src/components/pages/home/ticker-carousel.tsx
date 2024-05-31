@@ -37,10 +37,10 @@ export function TickerCarousel() {
               <img key={index} src={src} />
             ))}
             {logos.map((src: any, index: number) => (
-              <img key={index} src={src} />
+              <img key={index + 10} src={src} />
             ))}
             {logos.map((src: any, index: number) => (
-              <img key={index} src={src} />
+              <img key={index + 20} src={src} />
             ))}
           </div>
         </div>

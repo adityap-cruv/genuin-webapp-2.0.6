@@ -59,7 +59,7 @@ export function PartnershipEcosystem() {
   const InnerComp = ({ title, imageSources }: { title: string; imageSources: string[] }) => {
     return (
       <div className="h-full w-full p-2">
-        <div className="border-1 h-full w-full rounded-3xl border-monochrome-9 bg-monochrome-white p-9 shadow-md">
+        <div className="border-1 h-full w-full rounded-3xl border-monochrome-9 bg-monochrome-white p-9 shadow-sm">
           <p className="pb-9 text-center text-cap-1-demi-home">{title}</p>
           <div className="flex flex-wrap items-center justify-center gap-12">
             {imageSources.map((src: any, index: number) => (
@@ -88,7 +88,7 @@ export function PartnershipEcosystem() {
       </div>
 
       <div className="w-full py-9 md:hidden">
-        <p className="text-title-2-bold-home-m pb-9 text-center">
+        <p className="pb-9 text-center text-title-2-bold-home-m">
           Join Genuin's
           <br /> Partnership Ecosystem
         </p>
