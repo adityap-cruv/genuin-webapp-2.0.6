@@ -11,6 +11,7 @@ export const PATH_NAME = {
   latest: () => `/latest`,
   search: () => `/search`,
   build: () => `/build`,
+  about: () => `/about`,
   index: () => `/`,
   notification: () => `/notification`,
   manage: () => `/manage`,

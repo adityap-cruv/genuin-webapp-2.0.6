@@ -4,6 +4,7 @@ import { useRef } from 'react'
 interface CustomAnimatedSectionProps {
   children: React.ReactNode
   classname?: string
+  animationClass?: string
 }
 
 export function CustomAnimatedSection({ children, classname }: CustomAnimatedSectionProps) {
@@ -13,7 +14,7 @@ export function CustomAnimatedSection({ children, classname }: CustomAnimatedSec
   return (
     <section ref={ref} className="flex h-full w-full justify-start overflow-hidden">
       <span
-        className={`${classname} duration-1800 block transition-all ${
+        className={`${classname} block transition-all duration-1800 ${
           isInView ? 'transform-none opacity-100' : '-translate-y-10 transform opacity-0'
         }`}>
         {children}
@@ -22,15 +23,15 @@ export function CustomAnimatedSection({ children, classname }: CustomAnimatedSec
   )
 }
 
-export function CustomAnimatedLogos({ children, classname }: CustomAnimatedSectionProps) {
+export function CustomAnimatedLogos({ children, classname, animationClass }: CustomAnimatedSectionProps) {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true })
 
   return (
     <section ref={ref}>
       <span
-        className={`${classname} duration-8000 block transition-all ${
-          isInView ? 'transform-none opacity-100' : '-translate-y-10 transform opacity-0'
+        className={`${classname} block transition-all ${
+          isInView ? `${animationClass} transform-none opacity-100` : 'transform opacity-0'
         }`}>
         {children}
       </span>

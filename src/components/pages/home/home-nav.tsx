@@ -1,5 +1,9 @@
+'use client'
+import { ContactUs } from '@components/common/modals/contact-us'
 import { Button } from '@components/ui/button'
 import { GenuinIcon } from '@icons/genuin-icon'
+import { PATH_NAME } from '@lib/utils/constants/path'
+import Link from 'next/link'
 
 export function HomeNavBar() {
   return (
@@ -7,15 +11,19 @@ export function HomeNavBar() {
       <div className="container flex h-full w-full items-center justify-between">
         <GenuinIcon.logo className="fill-primary" />
         <div className="flex gap-2">
-          <Button variant={'outline'} size={'custom'} className="my-3.5 rounded-[35px] border-0 md:mx-6">
-            <p className="text-cap-1-home hover:text-cap-1-bold-home">About us</p>
-          </Button>
-          <Button
-            variant={'outline'}
-            size={'custom'}
-            className="hidden rounded-[35px] px-6 py-3.5 text-cap-1-bold-home md:flex">
-            Book a demo
-          </Button>
+          <Link href={PATH_NAME.about()}>
+            <Button variant={'outline'} size={'custom'} className="my-3.5 rounded-[35px] border-0 md:mx-6">
+              <p className="text-cap-1-home hover:text-cap-1-bold-home">About us</p>
+            </Button>
+          </Link>
+          <ContactUs>
+            <Button
+              variant={'outline'}
+              size={'custom'}
+              className="hidden rounded-[35px] px-6 py-3.5 text-cap-1-bold-home md:flex">
+              Book a demo
+            </Button>
+          </ContactUs>
         </div>
       </div>
     </nav>
