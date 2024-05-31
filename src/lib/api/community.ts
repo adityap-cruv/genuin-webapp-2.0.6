@@ -13,7 +13,6 @@ export async function fetchCommunityDetails(slug: string) {
       },
     })
     .then((res) => {
-      console.log('res.data:', res.data.data)
       return validateCommunityDetails(res.data.data)
     })
     .catch((e) => {
@@ -89,10 +88,6 @@ export function getCommunityLoops(slug: string) {
   return useQuery({ queryFn: async () => await fetchCommunityLoops(slug), queryKey: ['community', 'loops', slug] })
 }
 
-// async function fetchVideoComments(handle: string) {
-//   return await axios.get(process.env.NEXT_PUBLIC_API_URL + '/api/')
-// }
-
 async function fetchCommunityMembers(slug: string) {
   return await axiosInstance
     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/community/members', {
@@ -114,4 +109,19 @@ export function getCommunityMembers(slug: string) {
     queryKey: ['members'],
     queryFn: async () => await fetchCommunityMembers(slug),
   })
+}
+
+async function fetchFeaturedCommunity() {
+  return await axiosInstance
+    .get('/api/v3/featured_community')
+    .then((res) => {
+      return res.data.data
+    })
+    .catch((e) => {
+      throw new Error('Something went wrong with featchin featured community!')
+    })
+}
+
+export function getFeaturedCommunity() {
+  return useQuery({ queryKey: ['featured_community'], queryFn: async () => await fetchFeaturedCommunity() })
 }

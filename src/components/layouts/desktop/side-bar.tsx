@@ -2,7 +2,7 @@
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { type ReactNode } from 'react'
-import { HomeIcon, LatestIcon, MoreIcon, PopularIcon, ProfileIcon } from '@icons/side-bar-icons'
+import { ExploreIcon, HomeIcon, LatestIcon, MoreIcon, PopularIcon, ProfileIcon } from '@icons/side-bar-icons'
 import { cn } from '@lib/utils'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
@@ -74,6 +74,11 @@ export function SideBar() {
             <LatestIcon isActive={pathName === PATH_NAME.latest()} />
           </Item>
         </Link>
+        <Link href={{ pathname: PATH_NAME.explore() }}>
+          <Item title="Explore" isActive={pathName === PATH_NAME.explore()}>
+            <ExploreIcon isActive={pathName === PATH_NAME.explore()} />
+          </Item>
+        </Link>
 
         {user && (
           <>
@@ -137,7 +142,7 @@ export function SideBar() {
           <>
             <hr className="border-1 mt-1 border-monochrome-black/10" />
             <div
-              className="max-w-72 relative my-4 hidden max-h-16 w-11/12 rounded-lg border border-[#E9CAF4] bg-primary-200 text-title-3-demi text-monochrome-black hover:cursor-pointer lg:block lg:flex"
+              className="max-w-72 relative my-4 hidden max-h-16 w-11/12 rounded-lg border border-[#E9CAF4] bg-primary-200 text-title-3-demi text-monochrome-black hover:cursor-pointer lg:flex"
               style={{
                 background: 'linear-gradient(30deg, var(--primary-400) -80%, #FFFFFF 50%, var(--primary-400) 120%)',
               }}

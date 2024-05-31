@@ -32,8 +32,6 @@ import { InstagramIcon } from '@icons/instagram-icon'
 import { LinkedInIcon } from '@icons/linkedin-icon'
 import { TwitterIcon } from '@icons/twitter-icon'
 
-let communityDetailsModule: CommunityDetailsType
-
 export function CommunityDetails({ slug }: { slug: string }) {
   const { data, isLoading } = getCommunityDetails(slug)
 
@@ -42,8 +40,7 @@ export function CommunityDetails({ slug }: { slug: string }) {
 }
 
 // TODO: Separate this component.
-export function RootDetails({ communityDetails }: { communityDetails: CommunityDetailsType }) {
-  communityDetailsModule = communityDetails
+function RootDetails({ communityDetails }: { communityDetails: CommunityDetailsType }) {
   const addCommunity = useLocalStorage((state) => state.addCommunity)
   const detailsDivRef = useRef<HTMLDivElement>(null)
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
@@ -137,7 +134,7 @@ export function RootDetails({ communityDetails }: { communityDetails: CommunityD
           <span className="flex items-center gap-x-2 px-6 py-2">
             <p className="text-title-1-bold">{communityDetails.name}</p>
             <p className="text-body-1-med text-tertiary">@{communityDetails.handle}</p>
-            {communityDetailsModule.type === 2 && (
+            {communityDetails.type === 2 && (
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -155,17 +152,17 @@ export function RootDetails({ communityDetails }: { communityDetails: CommunityD
                 </Tooltip>
               </TooltipProvider>
             )}
-            {communityDetailsModule.brand && (
+            {communityDetails.brand && (
               <BrandCommunityTag
-                brandSlug={communityDetailsModule.brand.brand_slug}
-                brandLogo={communityDetailsModule.brand?.logo}
-                brandName={communityDetailsModule.brand?.name}
+                brandSlug={communityDetails.brand.brand_slug}
+                brandLogo={communityDetails.brand?.logo}
+                brandName={communityDetails.brand?.name}
               />
             )}
           </span>
         </div>
 
-        {communityDetailsModule.type === 2 && !communityDetailsModule.logged_in_user_role ? (
+        {communityDetails.type === 2 && !communityDetails.logged_in_user_role ? (
           <div
             className="mt-4 flex w-full items-center justify-center overflow-hidden"
             style={{ height: 'calc(100% - 285px)', backgroundColor: '#F9F9F9' }}>
@@ -187,14 +184,14 @@ export function RootDetails({ communityDetails }: { communityDetails: CommunityD
                 <p className="mb-2 line-clamp-2 break-all text-body-1-med">{communityDetails.description}</p>
               )}
               <Stats communityDetails={communityDetails} />
-              <CommunityDetailsTabs />
+              <CommunityDetailsTabs communityDetails={communityDetails} />
             </div>
 
             <div className="snap-y snap-proximity overflow-auto overflow-x-hidden scroll-smooth">
-              <Categories />
-              <Links />
-              <Guidelines />
-              <Leaders />
+              <Categories communityDetails={communityDetails} />
+              <Links communityDetails={communityDetails} />
+              <Guidelines communityDetails={communityDetails} />
+              <Leaders communityDetails={communityDetails} />
             </div>
           </div>
         )}
@@ -204,7 +201,7 @@ export function RootDetails({ communityDetails }: { communityDetails: CommunityD
   )
 }
 
-function CommunityDetailsTabs() {
+function CommunityDetailsTabs({ communityDetails }: { communityDetails: CommunityDetailsType }) {
   return (
     <Tabs defaultValue="Loops" style={{ height: 'calc(100% - 114px)' }}>
       <TabsList className="flex max-w-min">
@@ -219,29 +216,29 @@ function CommunityDetailsTabs() {
       <TabsContent value="Loops" className="mr-2 h-full py-4">
         <CommunityLoopTab
           community={{
-            handle: communityDetailsModule.handle,
-            id: communityDetailsModule.community_id,
-            slug: communityDetailsModule.slug,
-            name: communityDetailsModule.name,
-            profileImage: communityDetailsModule.dp,
-            shareUrl: communityDetailsModule.share_url,
+            handle: communityDetails.handle,
+            id: communityDetails.community_id,
+            slug: communityDetails.slug,
+            name: communityDetails.name,
+            profileImage: communityDetails.dp,
+            shareUrl: communityDetails.share_url,
           }}
         />
       </TabsContent>
       <TabsContent value="Members">
-        <Members />
+        <Members communityDetails={communityDetails} />
       </TabsContent>
     </Tabs>
   )
 }
 
-function Categories() {
-  if (communityDetailsModule.categories?.length !== 0)
+function Categories({ communityDetails }: { communityDetails: CommunityDetailsType }) {
+  if (communityDetails.categories?.length !== 0)
     return (
       <div className="mb-4">
         <p className="my-2 text-title-3-bold">Categories</p>
         <div>
-          {communityDetailsModule?.categories?.map((cat, index) => {
+          {communityDetails?.categories?.map((cat, index) => {
             return (
               <p key={index} className="my-1 mr-1 inline-block rounded-full bg-tertiary-200 p-2 px-4 text-body-1-med">
                 <span className="line-clamp-1 break-all">{cat.title}</span>
@@ -253,8 +250,8 @@ function Categories() {
     )
 }
 
-function Links() {
-  const links = communityDetailsModule?.social_links
+function Links({ communityDetails }: { communityDetails: CommunityDetailsType }) {
+  const links = communityDetails?.social_links
   if (links?.insta?.id ?? links?.linkedin?.id ?? links?.twitter?.id ?? links?.social_web_url)
     return (
       <div className="mb-4">
@@ -296,14 +293,14 @@ function Links() {
     )
 }
 
-function Guidelines() {
-  if (communityDetailsModule.guidelines.length !== 0)
+function Guidelines({ communityDetails }: { communityDetails: CommunityDetailsType }) {
+  if (communityDetails.guidelines.length !== 0)
     return (
       <div className="mb-4">
         <p className="my-2 text-title-3-bold">Guidelines</p>
         <>
           <Accordion type="single" collapsible>
-            {communityDetailsModule?.guidelines.map((guideline: any, index: any) => {
+            {communityDetails?.guidelines.map((guideline: any, index: any) => {
               return (
                 <div key={index}>
                   <AccordionItem value={guideline.title} className="border-none">
@@ -325,8 +322,8 @@ function Guidelines() {
     )
 }
 
-function Leaders() {
-  const leader = communityDetailsModule?.leader
+function Leaders({ communityDetails }: { communityDetails: CommunityDetailsType }) {
+  const leader = communityDetails?.leader
 
   if (!leader || leader.nickname.length === 0) {
     return null
@@ -352,8 +349,8 @@ function Leaders() {
   )
 }
 
-function Members() {
-  const { data, isLoading } = getCommunityMembers(communityDetailsModule.slug)
+function Members({ communityDetails }: { communityDetails: CommunityDetailsType }) {
+  const { data, isLoading } = getCommunityMembers(communityDetails.slug)
   const members = data?.members
 
   if (isLoading)
