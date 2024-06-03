@@ -158,7 +158,6 @@ export function Component({
                 onClick={(e) => {
                   if (!linkOnImage) {
                     e.preventDefault()
-                  } else {
                     onClickOnImage(id)
                   }
                 }}

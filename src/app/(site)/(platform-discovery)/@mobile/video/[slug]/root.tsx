@@ -9,7 +9,7 @@ export function Root({ videoData }: { videoData: VideoPlayerModalType }) {
     return (
       <main className="relative h-full w-full">
         <span className="absolute top-0 w-full">
-          <TopBar variant="trasparent" />
+          <TopBar variant="transparent" />
         </span>
         <Feed startIndex={0} isError={false} isFetchingNextPage={false} isLoading={false} videos={[videoData]} />
       </main>
