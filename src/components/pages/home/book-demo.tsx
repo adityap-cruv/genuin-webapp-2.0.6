@@ -1,3 +1,4 @@
+import { ContactUs } from '@components/common/modals/contact-us'
 import { Button } from '@components/ui/button'
 
 export function BookDemo() {
@@ -11,12 +12,14 @@ export function BookDemo() {
             Network to boost your media revenue.
           </p>
           <div>
-            <Button
-              variant={'outline'}
-              size={'custom'}
-              className="rounded-[35px] border-monochrome-white px-9 py-5 text-body-2-bold-home">
-              <p className="text-monochrome-white">Book a demo</p>
-            </Button>
+            <ContactUs>
+              <Button
+                variant={'outline'}
+                size={'custom'}
+                className="rounded-[35px] border-monochrome-white px-9 py-5 text-body-2-bold-home">
+                <p className="text-monochrome-white">Book a demo</p>
+              </Button>
+            </ContactUs>
           </div>
         </div>
       </div>
@@ -27,7 +30,7 @@ export function BookDemo() {
             Book a demo with
             <br /> Genuin!
           </p>
-          <p className="text-cap-2-home-m text-center text-monochrome-white">
+          <p className="text-center text-cap-2-home-m text-monochrome-white">
             Request our quick-start demo and learn about increasing customer engagement with your new Community Media
             Network to boost your media revenue.
           </p>

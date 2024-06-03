@@ -58,14 +58,12 @@ export function PartnershipEcosystem() {
 
   const InnerComp = ({ title, imageSources }: { title: string; imageSources: string[] }) => {
     return (
-      <div className="h-full w-full p-2">
-        <div className="border-1 h-full w-full rounded-3xl border-monochrome-9 bg-monochrome-white p-9 shadow-sm">
-          <p className="pb-9 text-center text-cap-1-demi-home">{title}</p>
-          <div className="flex flex-wrap items-center justify-center gap-12">
-            {imageSources.map((src: any, index: number) => (
-              <img key={index} src={src} />
-            ))}
-          </div>
+      <div className="border-1 h-full w-full rounded-3xl border-monochrome-9 bg-monochrome-white p-9 shadow-sm">
+        <p className="pb-9 text-center text-cap-1-demi-home">{title}</p>
+        <div className="flex flex-wrap items-center justify-center gap-12">
+          {imageSources.map((src: any, index: number) => (
+            <img key={index} src={src} />
+          ))}
         </div>
       </div>
     )
@@ -73,12 +71,12 @@ export function PartnershipEcosystem() {
 
   return (
     <>
-      <div className="hidden w-full flex-col py-16 md:flex">
+      <div className="hidden h-full w-full flex-col py-16 md:flex">
         <p className="pb-16 text-center text-title-2-bold-home">
           Join Genuin's
           <br /> Partnership Ecosystem
         </p>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-3 p-2">
           {partnershipData.map((item: any, index: number) => (
             <CustomAnimatedSection classname={item.class} key={index}>
               <InnerComp title={item.title} imageSources={item.imageSource} />

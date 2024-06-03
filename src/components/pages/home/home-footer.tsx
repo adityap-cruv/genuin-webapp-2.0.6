@@ -28,7 +28,9 @@ export function HomeFooter() {
   return (
     <div className="bg-[#D0DCFF]">
       <div className="container hidden h-full w-full items-center justify-between py-24 md:flex">
-        <GenuinIcon.logo className="fill-primary" />
+        <Link href={PATH_NAME.index()}>
+          <GenuinIcon.logo className="fill-primary" />
+        </Link>
         <div className="flex gap-2">
           {footerLinks.map((item, index) => (
             <div key={index}>
