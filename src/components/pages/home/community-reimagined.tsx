@@ -28,7 +28,15 @@ export function CommunityReimagined() {
           </div>
         </div>
         <div className="flex h-full w-2/5 items-center justify-center">
-          <img src={index01.src} className="h-4/5" alt="01" />
+          <video
+            src="https://media.begenuin.com/backend_assets/hero_video_genuin.mp4"
+            className="h-4/5 rounded-3xl"
+            controls={false}
+            loop={true}
+            autoPlay
+            muted
+            playsInline
+          />
         </div>
       </div>
 
@@ -46,7 +54,15 @@ export function CommunityReimagined() {
         <p className="text-center text-cap-1-home-m">
           Create video-based communities within your retail media network to drive engagement and new revenue.
         </p>
-        <img src={index01.src} className="mt-3 w-44" alt="01" />
+        <video
+          src="https://media.begenuin.com/backend_assets/hero_video_genuin.mp4"
+          className="mt-3 w-44 rounded-2xl"
+          controls={false}
+          loop={true}
+          autoPlay
+          muted
+          playsInline
+        />
       </div>
     </>
   )
