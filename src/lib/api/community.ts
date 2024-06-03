@@ -4,6 +4,7 @@ import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import { parseFeedResponse } from './api-response-parser'
 import { axiosInstance } from './instance'
+import { parseFeaturedCommunityList } from '@lib/schemas/community/featured-community'
 
 export async function fetchCommunityDetails(slug: string) {
   return await axiosInstance
@@ -113,15 +114,32 @@ export function getCommunityMembers(slug: string) {
 
 async function fetchFeaturedCommunity() {
   return await axiosInstance
-    .get('/api/v3/featured_community')
+    .get('/api/v3/featured_communities')
     .then((res) => {
-      return res.data.data
+      return parseFeaturedCommunityList(res.data.data.communities)
     })
     .catch((e) => {
-      throw new Error('Something went wrong with featchin featured community!')
+      console.log('error in featured api::', e)
+      throw new Error('Something went wrong with fetching featured community!')
     })
 }
 
 export function getFeaturedCommunity() {
   return useQuery({ queryKey: ['featured_community'], queryFn: async () => await fetchFeaturedCommunity() })
+}
+
+async function fetchFeaturedLoop() {
+  return await axiosInstance
+    .get('/api/v3/featured_loops')
+    .then((res) => {
+      return validateCommunityLoopList(res.data.data.loops)
+    })
+    .catch((e) => {
+      console.log('error in featured api::', e)
+      throw new Error('Something went wrong with fetching featured community!')
+    })
+}
+
+export function getFeaturedLoops() {
+  return useQuery({ queryKey: ['featured_loops'], queryFn: async () => await fetchFeaturedLoop() })
 }
