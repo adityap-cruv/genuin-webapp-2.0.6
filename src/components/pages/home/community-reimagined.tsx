@@ -30,7 +30,7 @@ export function CommunityReimagined() {
         <div className="flex h-full w-2/5 items-center justify-center">
           <video
             src="https://media.begenuin.com/backend_assets/hero_video_genuin.mp4"
-            className="h-4/5 rounded-3xl"
+            className="h-4/5 rounded-[30px] border-[6px] border-monochrome-white"
             controls={false}
             loop={true}
             autoPlay
@@ -56,7 +56,7 @@ export function CommunityReimagined() {
         </p>
         <video
           src="https://media.begenuin.com/backend_assets/hero_video_genuin.mp4"
-          className="mt-3 w-44 rounded-2xl"
+          className="mt-3 w-44 rounded-3xl border-[4px] border-monochrome-white"
           controls={false}
           loop={true}
           autoPlay
