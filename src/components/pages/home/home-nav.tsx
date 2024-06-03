@@ -9,7 +9,9 @@ export function HomeNavBar() {
   return (
     <nav className="sticky top-0 z-50 h-navbar w-full bg-white-alpha backdrop-blur-20px">
       <div className="container flex h-full w-full items-center justify-between">
-        <GenuinIcon.logo className="fill-primary" />
+        <Link href={PATH_NAME.index()}>
+          <GenuinIcon.logo className="fill-primary" />
+        </Link>
         <div className="flex gap-2">
           <Link href={PATH_NAME.about()}>
             <Button variant={'outline'} size={'custom'} className="my-3.5 rounded-[35px] border-0 md:mx-6">
