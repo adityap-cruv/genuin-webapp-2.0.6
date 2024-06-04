@@ -21,7 +21,10 @@ export function CommunityReimagined() {
           </p>
           <div>
             <ContactUs>
-              <Button variant={'outline'} size={'custom'} className="rounded-[35px] px-9 py-5 text-body-2-bold-home">
+              <Button
+                variant={'outline'}
+                size={'custom'}
+                className="hover:bg-home-black rounded-[35px] px-9 py-5 text-body-2-bold-home hover:text-monochrome-white">
                 Book a demo
               </Button>
             </ContactUs>

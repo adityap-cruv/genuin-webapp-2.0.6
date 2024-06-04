@@ -81,6 +81,10 @@ module.exports = {
         'dark-grey': '#3F3F3F',
         'light-grey': '#BBB',
       },
+      home: {
+        black: '#101010',
+        black_70: '#101010B3',
+      },
       // border: 'hsl(var(--border))',
       // input: 'hsl(var(--input))',
       // ring: 'hsl(var(--ring))',
@@ -109,6 +113,7 @@ module.exports = {
       // Updated Typography for new index page
       'title-1-bold-home': ['100px', { fontWeight: 700, lineHeight: '100%' }],
       'title-2-bold-home': ['52px', { fontWeight: 700, lineHeight: '100%' }],
+      'title-3-bold-home': ['36px', { fontWeight: 700, lineHeight: '140%' }],
       'title-1-bold-home-m': ['48px', { fontWeight: 700, lineHeight: '100%' }],
       'title-2-bold-home-m': ['36px', { fontWeight: 700, lineHeight: '100%' }],
       'body-1-home': ['28px', { fontWeight: 500, lineHeight: '140%' }],
@@ -180,7 +185,7 @@ module.exports = {
         '1200': '1200ms',
       },
       backgroundColor: {
-        'white-alpha': 'rgba(255, 255, 255, 0.13)',
+        'white-alpha': 'rgba(255, 255, 255, 0.50)',
       },
       backdropBlur: {
         '20px': '20px',
