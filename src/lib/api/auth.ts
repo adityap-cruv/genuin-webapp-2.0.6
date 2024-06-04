@@ -406,3 +406,26 @@ export async function saveVisitor(
       return false
     })
 }
+
+export async function getBrandGuidelines({
+  brandId,
+  idDefault,
+}: {
+  brandId: string | undefined
+  idDefault: boolean
+}): Promise<{ code: number; data: any }> {
+  return await axiosInstance
+    .get('/api/v3/brand/guidelines', {
+      params: {
+        brand_id: brandId,
+        is_default: idDefault,
+      },
+    })
+    .then((res) => {
+      return { code: res.data.code, data: res.data.data }
+    })
+    .catch((e) => {
+      console.log('::error in guidelines api::', e.response.data.code)
+      return { code: Number(e.response.data.code), data: e.response.data.data }
+    })
+}
