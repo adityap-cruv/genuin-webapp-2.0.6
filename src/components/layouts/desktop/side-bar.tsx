@@ -2,7 +2,7 @@
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { type ReactNode } from 'react'
-import { HomeIcon, LatestIcon, MoreIcon, PopularIcon, ProfileIcon } from '@icons/side-bar-icons'
+import { ExploreIcon, HomeIcon, LatestIcon, MoreIcon, PopularIcon, ProfileIcon } from '@icons/side-bar-icons'
 import { cn } from '@lib/utils'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
@@ -73,6 +73,11 @@ export function SideBar() {
         <Link href={{ pathname: PATH_NAME.latest() }}>
           <Item title="Latest" isActive={pathName === PATH_NAME.latest()}>
             <LatestIcon isActive={pathName === PATH_NAME.latest()} />
+          </Item>
+        </Link>
+        <Link href={{ pathname: PATH_NAME.explore() }}>
+          <Item title="Explore" isActive={pathName === PATH_NAME.explore()}>
+            <ExploreIcon isActive={pathName === PATH_NAME.explore()} />
           </Item>
         </Link>
 
