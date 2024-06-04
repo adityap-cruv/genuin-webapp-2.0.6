@@ -28,19 +28,27 @@ export function HomeFooter() {
   return (
     <div className="bg-[#D0DCFF]">
       <div className="container hidden h-full w-full items-center justify-between py-24 md:flex">
-        <GenuinIcon.logo className="fill-primary" />
+        <Link href={PATH_NAME.index()}>
+          <GenuinIcon.logo className="fill-primary" />
+        </Link>
         <div className="flex gap-2">
           {footerLinks.map((item, index) => (
             <div key={index}>
               {item.title === 'Contact' ? (
                 <ContactUs>
-                  <Button variant={'outline'} size={'custom'} className="mx-6 my-3.5 rounded-[35px] border-0">
+                  <Button
+                    variant={'outline'}
+                    size={'custom'}
+                    className="text-home-black_70 hover:text-home-black mx-6 my-3.5 rounded-[35px] border-0 transition-all duration-200 hover:scale-110 ">
                     <p className="text-cap-1-home">{item.title}</p>
                   </Button>
                 </ContactUs>
               ) : (
                 <Link href={item.pathname}>
-                  <Button variant={'outline'} size={'custom'} className="mx-6 my-3.5 rounded-[35px] border-0">
+                  <Button
+                    variant={'outline'}
+                    size={'custom'}
+                    className="text-home-black_70 hover:text-home-black mx-6 my-3.5 rounded-[35px] border-0 transition-all duration-200 hover:scale-110 ">
                     <p className="text-cap-1-home">{item.title}</p>
                   </Button>
                 </Link>
@@ -51,7 +59,9 @@ export function HomeFooter() {
       </div>
 
       <div className="flex h-full w-full flex-col-reverse items-center justify-between gap-9 pb-24 pt-9 md:hidden">
-        <GenuinIcon.logo className="fill-primary" />
+        <Link href={PATH_NAME.index()}>
+          <GenuinIcon.logo className="fill-primary" />
+        </Link>{' '}
         <div className="flex flex-col items-center gap-2">
           {footerLinks.map((item, index) => (
             <div key={index}>

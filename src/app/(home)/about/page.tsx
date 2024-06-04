@@ -23,7 +23,7 @@ export default function Component() {
           <Button
             variant={'outline'}
             size={'custom'}
-            className="pointer-events-auto rounded-[35px] bg-white-alpha px-6 py-3.5 backdrop-blur-20px">
+            className="pointer-events-auto rounded-[35px] bg-white-alpha px-6 py-3.5 backdrop-blur-20px hover:bg-monochrome-black hover:text-monochrome-white">
             <p className="text-cap-1-bold-home">Contact us</p>
           </Button>
         </div>
@@ -50,7 +50,7 @@ function AboutUs() {
         </div>
         <div className="flex w-full py-24">
           <div className="w-1/2">
-            <p className="text-title-2-bold-home-m">What we do</p>
+            <p className="text-title-3-bold-home">What we do</p>
           </div>
           <div className="flex w-1/2 justify-center">
             <p className="text-body-2-demi-home">
@@ -75,7 +75,7 @@ function AboutUs() {
           </div>
         </div>
         <div className="flex w-full flex-col gap-6 py-9">
-          <p className="text-title-2-bold-home-m">What we do</p>
+          <p className="text-body-2-bold-home">What we do</p>
           <p className="text-cap-1-home-m">
             Our white-labeled, video-based communities are built to sit within websites and inside apps, providing a new
             space for consumers to engage with brands they love through relevant, organic, and sponsored content.
@@ -91,9 +91,9 @@ function HowWeDo() {
     <>
       <div className="hidden bg-monochrome-black sm:block">
         <div className="container grid grid-cols-2 py-24 text-monochrome-white">
-          <p className="text-title-2-bold-home-m">How we do it</p>
+          <p className="text-title-3-bold-home">How we do it</p>
           <div className="grid gap-4 text-[#959AA9]">
-            <p className="text-body-2-demi-home pb-4 text-monochrome-white">
+            <p className="pb-4 text-body-2-demi-home text-monochrome-white">
               Our platform provides a combination of benefits that are not offered anywhere else:
             </p>
             <hr />
@@ -193,11 +193,11 @@ function Team() {
 
   const CardLayout = ({ image, name, position }: { image: any; name: string; position: string }) => {
     return (
-      <div className="flex h-44 w-full flex-col items-center justify-between rounded-3xl bg-monochrome-white p-6 shadow-sm sm:w-44">
+      <div className="flex h-44 w-full flex-col items-center justify-between rounded-3xl bg-monochrome-white p-6 shadow-sm sm:w-44 sm:items-start">
         <img src={image} className="h-16 w-16 rounded-full" alt="profile" />
         <div>
-          <p className="text-des-1-bold-home text-center">{name}</p>
-          <p className="text-des-1-demi-home text-center text-[#959AA9]">{position}</p>
+          <p className="text-center text-des-1-bold-home sm:text-left">{name}</p>
+          <p className="text-center text-des-1-demi-home text-[#959AA9] sm:text-left">{position}</p>
         </div>
       </div>
     )
@@ -208,7 +208,7 @@ function Team() {
         background: 'linear-gradient(180deg, rgba(208, 220, 255, 0.00) 0%, rgba(208, 220, 255, 0.40) 100%)',
       }}>
       <div className="container hidden gap-14 py-24 sm:grid">
-        <p className="text-title-2-bold-home-m">Meet our team</p>
+        <p className="text-title-3-bold-home">Meet our team</p>
         <div className="flex flex-wrap gap-6">
           {Team.map((item, index) => (
             <CardLayout key={index} image={item.image} name={item.name} position={item.position} />
@@ -216,7 +216,10 @@ function Team() {
         </div>
         <div>
           <ContactUs>
-            <Button variant={'outline'} size={'custom'} className="rounded-[35px] px-9 py-5">
+            <Button
+              variant={'outline'}
+              size={'custom'}
+              className="rounded-[35px] px-9 py-5 hover:bg-monochrome-black hover:text-monochrome-white">
               <p className="text-body-2-bold-home">Contact us</p>
             </Button>
           </ContactUs>

@@ -34,15 +34,15 @@ const infoData = [
     subtitle:
       'Establish no-code, social communities with short videos that seamlessly integrate into your owned digital properties and beyond.',
     imageSrc: (
-      <div className="relative flex aspect-square w-full items-center md:w-1/2">
-        <img src={buildArt.src} className="absolute w-full rounded-[36px] shadow-md" alt="Information Section" />
+      <div className="relative flex aspect-square w-full items-center md:w-5/12">
+        <img src={buildArt.src} className="absolute w-full rounded-[36px]" alt="Information Section" />
         <CustomAnimatedLogos
-          classname="absolute bottom-[35%] right-[8%] opacity-100 transform-none z-0"
+          classname="absolute bottom-[35%] right-[8%] transform-none z-0"
           animationClass="animate-rotateLeft">
           <img src={BAJoinCommunity.src} alt="joincommunity" className="h-10 lg:h-12 " />
         </CustomAnimatedLogos>
         <CustomAnimatedLogos
-          classname="absolute bottom-[12%] right-[24%] opacity-100 transform-none z-0"
+          classname="absolute bottom-[12%] right-[24%] transform-none z-0"
           animationClass="animate-rotateRight">
           <img src={BAcommunityTab.src} alt="communitytab" className="h-20 lg:h-32 " />
         </CustomAnimatedLogos>
@@ -58,22 +58,22 @@ const infoData = [
     ),
     subtitle: 'Engage with your audience through interactive and engaging content tailored to their interests.',
     imageSrc: (
-      <div className="relative aspect-animatedDiv w-full rounded-[36px] bg-monochrome-white shadow-md md:w-1/2">
+      <div className="relative aspect-animatedDiv w-full rounded-[36px] bg-[#F7F9FC] md:w-5/12">
         <img src={EngageArtBg.src} alt="community" className="absolute w-full" />
         <CustomAnimatedLogos
-          classname="absolute top-[30%] left-[5%] opacity-100 transform-none z-0"
+          classname="absolute top-[30%] left-[5%] transform-none z-0"
           animationClass="animate-zoomInOut">
-          <img src={EAComment.src} alt="comment" className="h-14 md:h-16 lg:h-20" />
+          <img src={EAComment.src} alt="comment" className="h-14 md:h-16" />
         </CustomAnimatedLogos>
         <CustomAnimatedLogos
-          classname="absolute bottom-[25%] left-[3%] opacity-100 transform-none z-0"
+          classname="absolute bottom-[25%] left-[3%] transform-none z-0"
           animationClass="animate-zoomInOut">
-          <img src={EAShare.src} alt="share" className="h-14 md:h-16 lg:h-20" />
+          <img src={EAShare.src} alt="share" className="h-14 md:h-16" />
         </CustomAnimatedLogos>
         <CustomAnimatedLogos
-          classname="absolute bottom-[34%] right-[10%] opacity-100 transform-none z-0"
+          classname="absolute bottom-[34%] right-[10%] transform-none z-0"
           animationClass="animate-zoomInOut">
-          <img src={EAJoin.src} alt="join" className="h-10 md:h-12 lg:h-14" />
+          <img src={EAJoin.src} alt="join" className="h-10 md:h-12" />
         </CustomAnimatedLogos>
       </div>
     ),
@@ -88,12 +88,12 @@ const infoData = [
     subtitle:
       'Discover new revenue streams by leveraging your content through strategic partnerships and sponsorships.',
     imageSrc: (
-      <div className="relative aspect-animatedDiv w-full rounded-[36px] bg-monochrome-white md:w-1/2 ">
+      <div className="relative aspect-animatedDiv w-full rounded-[36px] bg-[#F7F9FC] md:w-5/12">
         <CustomAnimatedLogos classname="absolute duration-1800 h-full flex items-end -translate-x-20 right-[12%] z-0">
           <img src={Mobile.src} alt="community" className="h-[90%]" />
         </CustomAnimatedLogos>
         <CustomAnimatedLogos
-          classname="absolute duration-4000 h-full flex items-end opacity-100 transform-none right-[15%] z-0"
+          classname="absolute duration-4000 h-full flex items-end transform-none right-[15%] z-0"
           animationClass="animate-zoomIn">
           <img src={Graph.src} alt="community" className="h-[90%]" />
         </CustomAnimatedLogos>
@@ -111,15 +111,15 @@ export function HomeComponent() {
         style={{
           backgroundImage: `url(${bg.src})`,
         }}>
-        <CustomAnimatedLogos classname="absolute duration-8000 md:block hidden translate-x-10 -translate-y-20 left-[30%] top-[13%] z-0">
+        <CustomAnimatedLogos classname="absolute duration-3000 md:block hidden translate-x-10 -translate-y-20 left-[30%] top-[13%] z-0">
           <img src={icCommunity.src} alt="community" />
         </CustomAnimatedLogos>
 
-        <CustomAnimatedLogos classname="absolute duration-8000 md:block -translate-x-28 translate-y-16  hidden left-[10%] top-[43%] z-0">
+        <CustomAnimatedLogos classname="absolute duration-3000 md:block -translate-x-28 translate-y-16  hidden left-[6%] top-[48%] z-0">
           <img src={icGraph.src} alt="graph" />
         </CustomAnimatedLogos>
 
-        <CustomAnimatedLogos classname="absolute duration-8000 md:block hidden translate-y-20 translate-x-32 left-[23%] bottom-[13%] z-0">
+        <CustomAnimatedLogos classname="absolute duration-3000 md:block hidden translate-y-20 translate-x-32 left-[23%] bottom-[13%] z-0">
           <img src={icVideo.src} alt="graph" />
         </CustomAnimatedLogos>
 
@@ -153,7 +153,7 @@ export function HomeComponent() {
           <Button
             variant={'outline'}
             size={'custom'}
-            className="pointer-events-auto rounded-[35px] bg-white-alpha px-6 py-3.5 backdrop-blur-20px">
+            className="pointer-events-auto rounded-[35px] bg-white-alpha px-6 py-3.5 backdrop-blur-20px hover:bg-monochrome-black hover:text-monochrome-white">
             <p className="text-cap-1-bold-home">Book a demo</p>
           </Button>
         </div>

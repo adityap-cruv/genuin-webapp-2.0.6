@@ -81,6 +81,10 @@ module.exports = {
         'dark-grey': '#3F3F3F',
         'light-grey': '#BBB',
       },
+      home: {
+        black: '#101010',
+        black_70: '#101010B3',
+      },
       // border: 'hsl(var(--border))',
       // input: 'hsl(var(--input))',
       // ring: 'hsl(var(--ring))',
@@ -109,6 +113,7 @@ module.exports = {
       // Updated Typography for new index page
       'title-1-bold-home': ['100px', { fontWeight: 700, lineHeight: '100%' }],
       'title-2-bold-home': ['52px', { fontWeight: 700, lineHeight: '100%' }],
+      'title-3-bold-home': ['36px', { fontWeight: 700, lineHeight: '140%' }],
       'title-1-bold-home-m': ['48px', { fontWeight: 700, lineHeight: '100%' }],
       'title-2-bold-home-m': ['36px', { fontWeight: 700, lineHeight: '100%' }],
       'body-1-home': ['28px', { fontWeight: 500, lineHeight: '140%' }],
@@ -172,6 +177,7 @@ module.exports = {
       transitionDuration: {
         '8000': '8000ms',
         '4000': '4000ms',
+        '3000': '3000ms',
         '2200': '2200ms',
         '1800': '1800ms',
         '1600': '1600ms',
@@ -179,7 +185,7 @@ module.exports = {
         '1200': '1200ms',
       },
       backgroundColor: {
-        'white-alpha': 'rgba(255, 255, 255, 0.13)',
+        'white-alpha': 'rgba(255, 255, 255, 0.50)',
       },
       backdropBlur: {
         '20px': '20px',
@@ -238,7 +244,7 @@ module.exports = {
           '100%': { transform: 'translateX(-100%)' },
         },
         zoomIn: {
-          '0%': { transform: 'scale(0.8)' },
+          '0%': { transform: 'scale(0.9)' },
           '100%': { transform: 'scale(1)' },
         },
         zoomInOut: {
@@ -267,10 +273,10 @@ module.exports = {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         marquee: 'marquee 12.5s linear infinite',
-        zoomIn: 'zoomIn 3s ease-in-out forwards',
+        zoomIn: 'zoomIn 1s ease-in-out forwards',
         zoomInOut: 'zoomInOut 2s ease-in-out forwards',
-        rotateRight: 'rotateRight 2s ease-in-out forwards',
-        rotateLeft: 'rotateLeft 2s ease-in-out forwards',
+        rotateRight: 'rotateRight 1s ease-in-out forwards',
+        rotateLeft: 'rotateLeft 1s ease-in-out forwards',
       },
       linearGradientColors: {
         'black-70': ['rgba(17, 17, 17, 0.00)', 'rgba(17, 17, 17, 0.70)'],

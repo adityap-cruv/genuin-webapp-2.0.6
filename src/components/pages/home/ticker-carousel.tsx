@@ -26,9 +26,9 @@ export function TickerCarousel() {
   return (
     <div className="flex w-screen flex-col items-center py-9 md:py-16">
       <div className="pb-9">
-        <Button variant={'outline'} size={'custom'} className="rounded-lg border-monochrome-9 px-4 py-2">
+        <div className="border-1 rounded-lg border border-monochrome-9 px-4 py-2">
           <p className="text-cap-1-demi-home">Built by a world-class team</p>
-        </Button>
+        </div>
       </div>
       <div className="container w-full overflow-x-hidden">
         <div className="animate-marquee whitespace-nowrap">
