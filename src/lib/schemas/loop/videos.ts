@@ -32,6 +32,7 @@ const LoopVideoSchema = z.object({
   is_sparked: z.boolean().nullish(),
   message_id: z.string(),
   slug: z.string(),
+  description_text: z.string().nullable().optional(),
   no_of_views: z.number().nullable(),
   no_of_comments: z.number().nullable(),
   message_summary: z.string().nullish(),
