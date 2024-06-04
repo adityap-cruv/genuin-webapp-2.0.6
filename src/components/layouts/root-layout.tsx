@@ -1,4 +1,5 @@
 import { cn } from '@lib/utils'
+import { type Viewport } from 'next'
 import { type ComponentProps, type ReactNode } from 'react'
 
 type Props = ComponentProps<'body'> & {
@@ -16,10 +17,6 @@ export function RootHTML({ brandColors, favicon, subdomain, children, className,
         <link rel="icon" type="image/x-icon" href={favicon ?? '/favicon.svg'} />
         <link rel="mask-icon" href={favicon ?? '/favicon.svg'} />
         <meta rel="x-brand-id" content={subdomain} />
-        <meta
-          name="viewport"
-          content="height=device-height,width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"
-        />
         {noIndex && <meta name="robots" content="noindex" />}
       </head>
       <body
@@ -29,4 +26,14 @@ export function RootHTML({ brandColors, favicon, subdomain, children, className,
       </body>
     </html>
   )
+}
+
+export function getViewport(): Viewport {
+  return {
+    height: 'device-height',
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
+  }
 }
