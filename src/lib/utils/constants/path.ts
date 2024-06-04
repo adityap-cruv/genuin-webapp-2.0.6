@@ -18,6 +18,7 @@ export const PATH_NAME = {
   market: () => `/market`,
   pricing: () => `/pricing`,
   discover: () => '/discover',
+  explore: () => '/explore',
   careers: () => 'https://careers.begenuin.com',
   adreels: () => 'https://creatives.begenuin.com/',
   yahoo: () => 'https://finance.yahoo.com/news/genuin-unveils-social-paradigm-empowering-140027873.html',

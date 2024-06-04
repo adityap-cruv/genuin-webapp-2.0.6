@@ -16,7 +16,7 @@ export function RootFeed({ slug }: { slug: string }) {
     return (
       <main className="relative h-full w-full">
         <span className="absolute inset-0">
-          <TopBar variant="trasparent" />
+          <TopBar variant="transparent" />
         </span>
         <Feed
           videos={videos}
