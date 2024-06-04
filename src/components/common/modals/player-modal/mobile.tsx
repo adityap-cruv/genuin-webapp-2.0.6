@@ -85,10 +85,10 @@ export function Mobile({
       <CustomDialogTrigger>{children}</CustomDialogTrigger>
       <CustomDialogContent showDefaultClose={false}>
         <div className="relative h-full w-full overflow-clip bg-monochrome-white">
-          <TopBar showClose className="fixed left-0 top-0" variant="trasparent" onClose={close} />
-          {unreadMessageCount && (
+          <TopBar showClose className="fixed left-0 top-0" variant="transparent" onClose={close} />
+          {unreadMessageCount !== 0 && (
             <div className="absolute inset-0 z-10 flex h-fit w-full items-center justify-center ">
-              <UnseenMessageRibbon messageCount={unreadMessageCount} />
+              <UnseenMessageRibbon messageCount={unreadMessageCount ?? 0} />
             </div>
           )}
           <InnerContent />
