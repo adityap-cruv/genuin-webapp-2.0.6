@@ -28,6 +28,7 @@ import { SettingsLayout } from '../settings/mobile/layout'
 import { NotificationIcon } from '@icons/settings-side-bar-icons'
 import { SearchIcon } from '@icons/search-icon'
 import { analyticsService } from '@services/analytics_service'
+import { CategoryView } from '@components/common/category-view'
 
 const navVariant = cva('sticky top-0 flex z-40 h-[76px] w-full items-center justify-between  px-2', {
   variants: {
@@ -258,6 +259,7 @@ function Menu({
                 <img src={CommunityIcon.src} alt="community" className="absolute bottom-0 right-4 h-12" />
               </div>
             )}
+            <CategoryView />
             <RecentCommunities />
           </div>
           <div className="text-monochrome">

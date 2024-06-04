@@ -17,6 +17,7 @@ import { miniProfile } from '@lib/api/auth'
 import { NotificationIcon } from '@icons/settings-side-bar-icons'
 import { analyticsService } from '@services/analytics_service'
 import { type User } from 'next-auth'
+import { CategoryView } from '@components/common/category-view'
 const RecentCommunities = dynamic(
   async () => await import('./recent-communities').then((comp) => comp.RecentCommunities),
   { ssr: false }
@@ -142,7 +143,7 @@ export function SideBar() {
           <>
             <hr className="border-1 mt-1 border-monochrome-black/10" />
             <div
-              className="max-w-72 relative my-4 hidden max-h-16 w-11/12 rounded-lg border border-[#E9CAF4] bg-primary-200 text-title-3-demi text-monochrome-black hover:cursor-pointer lg:flex"
+              className="max-w-64 relative my-4 hidden max-h-16 w-11/12 rounded-lg border border-[#E9CAF4] bg-primary-200 text-title-3-demi text-monochrome-black hover:cursor-pointer lg:block lg:flex"
               style={{
                 background: 'linear-gradient(30deg, var(--primary-400) -80%, #FFFFFF 50%, var(--primary-400) 120%)',
               }}
@@ -154,7 +155,7 @@ export function SideBar() {
                 }
               }}>
               <div className="z-20 w-3/5">
-                <p className="w-72 overflow-hidden p-3 text-body-1-bold">
+                <p className="w-64 overflow-hidden p-3 text-body-1-bold">
                   Become a{' '}
                   <span className="font-semibold italic">
                     community <br /> builder{' '}
@@ -175,6 +176,7 @@ export function SideBar() {
             </div>
           </>
         )}
+        <CategoryView />
         <RecentCommunities />
       </div>
       {embed && (
