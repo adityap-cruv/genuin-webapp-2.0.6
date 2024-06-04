@@ -149,7 +149,7 @@ export function HomeComponent() {
       <HomeFooter />
 
       <ContactUs>
-        <div className="pointer-events-none fixed inset-x-0 bottom-8 flex justify-center md:hidden">
+        <div className="pointer-events-none fixed inset-x-0 bottom-8 z-20 flex justify-center md:hidden">
           <Button
             variant={'outline'}
             size={'custom'}
