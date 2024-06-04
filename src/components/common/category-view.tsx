@@ -27,11 +27,8 @@ interface Community {
 
 export function CategoryView() {
   const [categories, setCategories] = useState<Category[] | null>(null)
-  const embed = useGenuinOptions().embed
 
   useEffect(() => {
-    if (!embed) return
-
     async function fetchCategories() {
       void getCategories().then((res) => {
         if (res.code === 200) {

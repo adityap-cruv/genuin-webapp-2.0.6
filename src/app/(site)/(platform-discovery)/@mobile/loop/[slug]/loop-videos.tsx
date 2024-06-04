@@ -87,7 +87,11 @@ export function LoopVideos({ loop, community }: Props) {
                   <p className="ml-1 text-body-1-bold text-monochrome-white">@{item.owner.userName}</p>
                 </div>
               </Link>
-              <p className="ml-1 line-clamp-2 text-body-1-demi text-monochrome-white">{item.video.description}</p>
+              {item.video.description && (
+                <p className="line-clamp-2 w-5/6 overflow-hidden break-all pt-2 text-body-1-med text-monochrome-white">
+                  {item.video.description}
+                </p>
+              )}
             </div>
             <div className="absolute inset-0  hidden h-full w-full items-center justify-center rounded-lg bg-monochrome-black/40 group-hover/video:flex">
               <Image src={icPlay} alt="" />

@@ -12,6 +12,7 @@ const videoSchema = z.object({
   sparkCount: z.number(),
   thumbnail: z.string(),
   description: z.string().nullable().optional(),
+  description_text: z.string().nullable().optional(),
   slug: z.string(),
 })
 
