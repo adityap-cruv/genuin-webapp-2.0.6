@@ -212,6 +212,7 @@ export function ConformationMessage() {
   const router = useRouter()
   const { setStep, formData } = useDeleteAccountStore()
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   async function onDelete() {
     // setStep('DELETE_CONFORMATION')
@@ -220,6 +221,10 @@ export function ConformationMessage() {
       .then(async (res) => {
         if (res?.code === 200) {
           setStep('DELETE_SUCCESS')
+        } else if (res?.code === 5250) {
+          setError('The Account deletion is not permitted for this user')
+        } else {
+          setError('Something went wrong please try again after sometime!')
         }
       })
       .finally(() => {
@@ -251,6 +256,11 @@ export function ConformationMessage() {
           )}
         </Button>
       </div>
+      {error && (
+        <p className="text-text-new-para-2-mobile flex items-center justify-center text-center text-supplementary-red">
+          {error}
+        </p>
+      )}
     </div>
   )
 }

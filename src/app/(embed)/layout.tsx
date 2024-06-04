@@ -1,5 +1,5 @@
 import { type ReactNode } from 'react'
-import { RootHTML } from '@components/layouts/root-layout'
+import { RootHTML, getViewport } from '@components/layouts/root-layout'
 import { SessionProvider } from 'next-auth/react'
 import '../globals.css'
 import { ReactQueryProvider } from '@components/providers/query-client-provider'
@@ -35,3 +35,5 @@ export default async function Layout({ children }: { children: ReactNode }) {
     </RootHTML>
   )
 }
+
+export const viewport = getViewport()
