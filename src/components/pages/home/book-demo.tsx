@@ -16,8 +16,8 @@ export function BookDemo() {
               <Button
                 variant={'outline'}
                 size={'custom'}
-                className="rounded-[35px] border-monochrome-white px-9 py-5 text-body-2-bold-home">
-                <p className="text-monochrome-white">Book a demo</p>
+                className="rounded-[35px] border-monochrome-white px-9 py-5 text-monochrome-white hover:bg-monochrome-white hover:text-monochrome-black">
+                <p className="text-body-2-bold-home">Book a demo</p>
               </Button>
             </ContactUs>
           </div>

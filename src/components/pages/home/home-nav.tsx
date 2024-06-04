@@ -12,17 +12,17 @@ export function HomeNavBar() {
         <Link href={PATH_NAME.index()}>
           <GenuinIcon.logo className="fill-primary" />
         </Link>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-6">
           <Link href={PATH_NAME.about()}>
-            <Button variant={'outline'} size={'custom'} className="my-3.5 rounded-[35px] border-0 md:mx-6">
-              <p className="text-cap-1-home hover:text-cap-1-bold-home">About us</p>
-            </Button>
+            <p className="text-home-black_70 hover:text-home-black text-center text-cap-1-home transition-all duration-200 hover:scale-110 md:min-w-[100px]">
+              About us
+            </p>
           </Link>
           <ContactUs>
             <Button
               variant={'outline'}
               size={'custom'}
-              className="hidden rounded-[35px] px-6 py-3.5 text-cap-1-bold-home md:flex">
+              className="hover:bg-home-black hidden rounded-[35px] px-6 py-3.5 text-cap-1-bold-home hover:text-monochrome-white md:flex">
               Book a demo
             </Button>
           </ContactUs>
