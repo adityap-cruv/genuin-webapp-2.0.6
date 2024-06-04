@@ -16,6 +16,7 @@ const formSchema = z.object({
   companyName: z.string().nonempty({ message: 'Company name is required' }),
   companyType: z.string().nonempty({ message: 'Company type is required' }),
   country: z.string().nonempty({ message: 'Country is required' }),
+  website: z.string().url(),
   piquedInterest: z.string(),
   companySize: z.string(),
 })
@@ -31,6 +32,7 @@ export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => 
       companyName: '',
       companyType: '',
       country: '',
+      website: '',
       piquedInterest: '',
       companySize: '',
     },
@@ -52,6 +54,7 @@ export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => 
         lastname: values.lastName,
         what_piqued_your_interest_in_genuin_: values.piquedInterest,
         country: values.country,
+        website: values.website,
       }
 
       const filteredPayload = Object.fromEntries(
@@ -102,8 +105,32 @@ export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => 
             {renderFormField('lastName', 'Last Name')}
           </div>
           {renderFormField('email', 'Email')}
-          {renderFormField('companyName', 'Company Name')}
-          {renderFormField('country', 'Country')}
+          <div className="flex gap-x-4">
+            {renderFormField('companyName', 'Company Name')}
+            <FormField
+              name="companySize"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem className="py-1.5 sm:w-full">
+                  <FormControl>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <SelectTrigger className="border border-tertiary-200 bg-tertiary-100">
+                        <SelectValue placeholder="Company Size" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-monochrome-white">
+                        <SelectItem value="none">None</SelectItem>
+                        <SelectItem value="<10">{'<'}10</SelectItem>
+                        <SelectItem value="11-99">11-99</SelectItem>
+                        <SelectItem value="100-249">100-249</SelectItem>
+                        <SelectItem value=">250">{'>'}250</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage className="!text-cap-1-demi" />
+                </FormItem>
+              )}
+            />{' '}
+          </div>
           <FormField
             name="companyType"
             control={form.control}
@@ -128,30 +155,9 @@ export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => 
               </FormItem>
             )}
           />
+          {renderFormField('website', 'Website Url')}
+          {renderFormField('country', 'Country')}
           {renderFormField('piquedInterest', 'What piqued your interest in Genuin')}
-          <FormField
-            name="companySize"
-            control={form.control}
-            render={({ field }) => (
-              <FormItem className="py-1.5 sm:w-full">
-                <FormControl>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <SelectTrigger className="border border-tertiary-200 bg-tertiary-100">
-                      <SelectValue placeholder="Company Size" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-monochrome-white">
-                      <SelectItem value="none">None</SelectItem>
-                      <SelectItem value="<10">{'<'}10</SelectItem>
-                      <SelectItem value="11-99">11-99</SelectItem>
-                      <SelectItem value="100-249">100-249</SelectItem>
-                      <SelectItem value=">250">{'>'}250</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </FormControl>
-                <FormMessage className="!text-cap-1-demi" />
-              </FormItem>
-            )}
-          />{' '}
           <span className="mt-4 flex flex-col gap-y-3 text-title-3-demi">
             <Button
               type="submit"
