@@ -6,6 +6,8 @@ import { getFeaturedCommunity, getFeaturedLoops } from '@lib/api/community'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { LoopCard } from '@components/common/loop-card'
 import { Swiper, SwiperSlide } from 'swiper/react'
+import Link from 'next/link'
+import { JoinCommunityButton } from '@components/pages/community/join-community-button'
 
 export const Communities = {
   desktop: CommunitiesForDesktop,
@@ -30,6 +32,8 @@ function CommunitiesForDesktop() {
               profileImage={item.dp ?? ''}
               description={item.description ?? ''}
               name={item.name}
+              slug={item.slug}
+              handle={item.handle}
             />
           )
         })}
@@ -53,6 +57,8 @@ function CommunitiesForMobile() {
               memberCount={item.no_of_members}
               profileImage={item.dp ?? ''}
               description={item.description ?? ''}
+              slug={item.slug}
+              handle={item.handle}
             />
           </SwiperSlide>
         ))}
@@ -67,24 +73,32 @@ type CommunityItemProps = {
   profileImage: string
   memberCount: number
   description?: string
+  slug: string
+  handle: string
 }
 
-function CommunityItem({ id, memberCount, profileImage, description, name }: CommunityItemProps) {
+function CommunityItem({ id, memberCount, handle, profileImage, description, name, slug }: CommunityItemProps) {
   return (
     <div className="min-w[320px] max-w-[450px] rounded-lg border border-tertiary-300 p-4">
       <div className="flex items-center justify-between">
         <span className="flex items-center gap-x-2">
           <CustomAvatar fallbackString={name ?? ''} imageUrl={profileImage} isAvatar={false} className="h-12 w-12" />
           <span>
-            <p className="line-clamp-1 break-all text-body-1-bold">{name}</p>
+            <Link href={PATH_NAME.community(slug)}>
+              <p className="line-clamp-1 break-all text-body-1-bold">{name}</p>
+            </Link>
             <p className="text-body-1-demi text-tertiary">{`${abbreviateNumber(memberCount)} ${
               memberCount === 1 ? 'member' : 'members'
             }`}</p>
           </span>
         </span>
-        <Button className="shrink-0 p-0 px-4 py-1">
-          <p>Join</p>
-        </Button>
+        <JoinCommunityButton
+          buttonText="Join"
+          handle={handle}
+          id={id}
+          isCommunityPrivate={false}
+          isJoinRequested={false}
+        />
       </div>
       <p className="line-clamp-2 h-12 break-all pt-2 text-body-1-demi">{description}</p>
     </div>

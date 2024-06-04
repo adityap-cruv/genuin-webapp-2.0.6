@@ -10,7 +10,7 @@ import icLock from '@icons/icLock.svg'
 import { useInView } from 'framer-motion'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
 import Link from 'next/link'
-import { checkAndAppendHttps, getCurrentShareUrl, openModal } from '@lib/utils'
+import { checkAndAppendHttps, getCurrentShareUrl } from '@lib/utils'
 import icLink from '@icons/icLinkBlack.svg'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@components/ui/accordion'
@@ -19,8 +19,6 @@ import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
 import { CommunityLoopTab } from './community-loop-tab'
 import { ListItem } from '@components/common/list-item'
-import { useGenuinOptions } from '@lib/stores/genuin-options'
-import { joinCommunity, leaveCommunity, requestCommunity } from '@lib/api/video'
 import { ShareIcon } from '@icons/share-icon'
 import { getCommunityDetails, getCommunityMembers } from '@lib/api/community'
 import Loading from './loading'
@@ -31,6 +29,7 @@ import { BrandCommunityTag } from '@components/common/brand-community-tag'
 import { InstagramIcon } from '@icons/instagram-icon'
 import { LinkedInIcon } from '@icons/linkedin-icon'
 import { TwitterIcon } from '@icons/twitter-icon'
+import { JoinCommunityButton } from '@components/pages/community/join-community-button'
 
 export function CommunityDetails({ slug }: { slug: string }) {
   const { data, isLoading } = getCommunityDetails(slug)
@@ -81,6 +80,7 @@ function RootDetails({ communityDetails }: { communityDetails: CommunityDetailsT
         communityId={communityDetails.community_id}
         shareUrl={communityDetails.share_url}
         isCommunityPrivate={communityDetails.type === 2}
+        isJoinRequested={communityDetails.is_community_join_requested}
       />
       <main className="hide-scrollbar absolute inset-0 h-full w-full overflow-auto">
         <div>
@@ -100,19 +100,14 @@ function RootDetails({ communityDetails }: { communityDetails: CommunityDetailsT
             />
           </div>
           <div ref={detailsDivRef} className="my-3 flex items-center justify-end gap-x-2">
-            {communityDetails.is_community_join_requested ? (
-              <Button size="custom" className="border border-primary" variant={'outline'}>
-                <p className={`px-4 py-1.5 text-body-1-demi text-monochrome-white text-primary`}>Requested</p>
-              </Button>
-            ) : (
-              <JoinButton
-                handle={communityDetails.handle}
-                id={communityDetails.community_id}
-                userRole={communityDetails.logged_in_user_role}
-                isCommunityPrivate={communityDetails.type === 2}
-              />
-            )}
-
+            <JoinCommunityButton
+              buttonText="Join Community"
+              isJoinRequested={communityDetails.is_community_join_requested}
+              handle={communityDetails.handle}
+              id={communityDetails.community_id}
+              userRole={communityDetails.logged_in_user_role}
+              isCommunityPrivate={communityDetails.type === 2}
+            />
             <Button
               variant="outline"
               size="custom"
@@ -418,84 +413,5 @@ function Stats({ communityDetails }: { communityDetails: CommunityDetailsType })
         </p>
       </span>
     </div>
-  )
-}
-
-export function JoinButton({
-  userRole,
-  handle,
-  id,
-  isCommunityPrivate,
-}: {
-  userRole?: 'LEADER' | 'MEMBER' | 'REQUESTED' | null
-  handle: string
-  id: string
-  isCommunityPrivate: boolean
-}) {
-  const [role, setRole] = useState(userRole)
-  const user = useGenuinOptions().user
-  async function toggleCommunityJoinState() {
-    if (role !== 'MEMBER') {
-      if (isCommunityPrivate) {
-        await requestCommunity(id).then((res) => {
-          if (res.code === 200) {
-            setRole('REQUESTED')
-          }
-        })
-      } else {
-        await joinCommunity(
-          false,
-          [id],
-          [
-            {
-              user_id: user?.id,
-            },
-          ]
-        ).then((res) => {
-          if (res.code === 200) {
-            setRole('MEMBER')
-          }
-        })
-      }
-    } else {
-      await leaveCommunity(id).then((res) => {
-        if (res.code === 200) {
-          setRole(null)
-        }
-      })
-    }
-  }
-
-  if (userRole === 'LEADER') return
-
-  return (
-    <Button
-      size="custom"
-      className={`${role && 'rounded border border-primary '}`}
-      variant={role ? 'outline' : 'default'}
-      onClick={
-        user
-          ? async () => {
-              await toggleCommunityJoinState()
-            }
-          : () => {
-              openModal({
-                title: 'Get the Genuin app',
-                subtitle: (
-                  <>
-                    Get the app to join the <br />
-                    <span className="font-bold">@{handle}</span> community.
-                  </>
-                ),
-              })
-            }
-      }>
-      <p
-        className={`whitespace-nowrap px-4 py-1.5 text-body-1-demi  ${
-          role ? 'text-primary' : 'text-monochrome-white'
-        }`}>
-        {role ? (role === 'REQUESTED' ? 'Requested' : 'Joined') : 'Join Community'}
-      </p>
-    </Button>
   )
 }
