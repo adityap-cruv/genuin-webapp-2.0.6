@@ -3,6 +3,7 @@ import { StandardView } from './standard-view'
 import { VerticalView } from './vertical-view'
 import { CarouselView } from './carousel-view'
 import 'swiper/css'
+import { getEmbedDetails } from '@lib/api/embed'
 
 type Props = {
   params: {
@@ -18,14 +19,17 @@ type Props = {
   }
 }
 
-export default function Page(props: Props) {
-  const embedPage = props.searchParams.embed_page
+export default async function Page(props: Props) {
+  const embedDetails = await getEmbedDetails(props.params.id)
+  console.log(embedDetails)
+  // const embedPage = props.searchParams.embed_page
+  const embedPage = embedDetails.data.style
 
   let viewComponent
 
   if (embedPage === 'carousel') {
     viewComponent = <CarouselView />
-  } else if (embedPage === 'standard') {
+  } else if (embedPage === 'standard_wall') {
     viewComponent = <StandardView />
   } else if (embedPage === 'vertical') {
     viewComponent = <VerticalView />
