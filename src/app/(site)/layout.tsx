@@ -10,7 +10,7 @@ import { BrandNotFound } from '@components/common/brand-not-found'
 import { SessionProvider } from 'next-auth/react'
 import { parseColors } from '@lib/utils'
 import { ReactQueryProvider } from '@components/providers/query-client-provider'
-import { RootHTML } from '@components/layouts/root-layout'
+import { RootHTML, getViewport } from '@components/layouts/root-layout'
 
 export default async function RootLayout(props: any) {
   const deviceType = cookies().get('device_type')?.value ?? ''
@@ -63,3 +63,5 @@ export function generateMetadata(): Metadata {
     metadataBase: new URL('https://media.begenuin.com'),
   }
 }
+
+export const viewport = getViewport()
