@@ -1,6 +1,6 @@
 'use client'
 import { HomeNavBar } from './home-nav'
-import bg from '@images/home/index-bg.png'
+import bg from '@images/home/index-bg.svg'
 import buildArt from '@images/home/build-art.png'
 import icCommunity from '@images/home/icon-community.svg'
 import icGraph from '@images/home/icon-graph.svg'
@@ -89,12 +89,12 @@ const infoData = [
       'Discover new revenue streams by leveraging your content through strategic partnerships and sponsorships.',
     imageSrc: (
       <div className="relative aspect-animatedDiv w-full rounded-[36px] bg-[#F7F9FC] md:w-5/12">
-        <CustomAnimatedLogos classname="absolute duration-1800 h-full flex items-end -translate-x-20 right-[12%] z-0">
+        <CustomAnimatedLogos classname="absolute duration-1000 h-full flex items-end -translate-x-20 right-[12%] z-0">
           <img src={Mobile.src} alt="community" className="h-[90%]" />
         </CustomAnimatedLogos>
         <CustomAnimatedLogos
-          classname="absolute duration-4000 h-full flex items-end transform-none right-[15%] z-0"
-          animationClass="animate-zoomIn">
+          classname="absolute h-full flex items-end transform-none right-[15%] z-0"
+          animationClass="animate-zoomIn duration-2200">
           <img src={Graph.src} alt="community" className="h-[90%]" />
         </CustomAnimatedLogos>
       </div>
@@ -120,7 +120,7 @@ export function HomeComponent() {
         </CustomAnimatedLogos>
 
         <CustomAnimatedLogos classname="absolute duration-3000 md:block hidden translate-y-20 translate-x-32 left-[23%] bottom-[13%] z-0">
-          <img src={icVideo.src} alt="graph" />
+          <img src={icVideo.src} alt="video" />
         </CustomAnimatedLogos>
 
         <CustomAnimatedSection classname="container z-10">
@@ -133,16 +133,16 @@ export function HomeComponent() {
       </CustomAnimatedSection>
 
       {infoData.map((data, index) => (
-        <CustomAnimatedSection key={index} classname="container duration-2200">
+        <CustomAnimatedSection key={index} classname="duration-2200">
           <BuildEnagageBoost title={data.title} subtitle={data.subtitle} imageSrc={data.imageSrc} />
         </CustomAnimatedSection>
       ))}
 
-      <CustomAnimatedSection classname="container">
+      <CustomAnimatedSection>
         <PartnershipEcosystem />
       </CustomAnimatedSection>
 
-      <CustomAnimatedSection classname="container transform-none">
+      <CustomAnimatedSection classname="transform-none">
         <BookDemo />
       </CustomAnimatedSection>
 

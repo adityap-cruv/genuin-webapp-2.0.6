@@ -8,7 +8,7 @@ import Link from 'next/link'
 export function HomeFooter() {
   const footerLinks = [
     {
-      title: 'Company',
+      title: 'About us',
       pathname: PATH_NAME.about(),
     },
     {
@@ -39,7 +39,7 @@ export function HomeFooter() {
                   <Button
                     variant={'outline'}
                     size={'custom'}
-                    className="text-home-black_70 hover:text-home-black mx-6 my-3.5 rounded-[35px] border-0 transition-all duration-200 hover:scale-110 ">
+                    className="mx-6 my-3.5 rounded-[35px] border-0 text-home-black_70 transition-all duration-200 hover:scale-110 hover:text-home-black ">
                     <p className="text-cap-1-home">{item.title}</p>
                   </Button>
                 </ContactUs>
@@ -48,7 +48,7 @@ export function HomeFooter() {
                   <Button
                     variant={'outline'}
                     size={'custom'}
-                    className="text-home-black_70 hover:text-home-black mx-6 my-3.5 rounded-[35px] border-0 transition-all duration-200 hover:scale-110 ">
+                    className="mx-6 my-3.5 rounded-[35px] border-0 text-home-black_70 transition-all duration-200 hover:scale-110 hover:text-home-black ">
                     <p className="text-cap-1-home">{item.title}</p>
                   </Button>
                 </Link>
@@ -67,13 +67,19 @@ export function HomeFooter() {
             <div key={index}>
               {item.title === 'Contact' ? (
                 <ContactUs>
-                  <Button variant={'outline'} size={'custom'} className="mx-6 my-3.5 rounded-[35px] border-0">
+                  <Button
+                    variant={'outline'}
+                    size={'custom'}
+                    className="mx-6 my-3.5 rounded-[35px] border-0 text-home-black_70 transition-all duration-200 hover:scale-110 hover:text-home-black ">
                     <p className="text-cap-1-home">{item.title}</p>
                   </Button>
                 </ContactUs>
               ) : (
                 <Link href={item.pathname}>
-                  <Button variant={'outline'} size={'custom'} className="mx-6 my-3.5 rounded-[35px] border-0">
+                  <Button
+                    variant={'outline'}
+                    size={'custom'}
+                    className="mx-6 my-3.5 rounded-[35px] border-0 text-home-black_70 transition-all duration-200 hover:scale-110 hover:text-home-black ">
                     <p className="text-cap-1-home">{item.title}</p>
                   </Button>
                 </Link>

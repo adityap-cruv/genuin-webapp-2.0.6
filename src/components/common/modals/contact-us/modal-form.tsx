@@ -168,7 +168,7 @@ export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => 
               type="submit"
               className="flex w-full cursor-pointer items-center justify-center rounded-lg bg-new-off-black hover:bg-new-dark-grey"
               disabled={isLoading || !isValid || !isDirty}>
-              {isLoading ? <Loader size="sm" className="fill-new-off-white" /> : <p>Save</p>}
+              {isLoading ? <Loader size="sm" className="fill-new-off-white" /> : <p>Submit</p>}
             </Button>
             <p className="mt-1 text-center text-new-para-2-mobile text-new-dark-grey">
               By submitting this form, you agree to receive promotional messages from Genuin about its products and

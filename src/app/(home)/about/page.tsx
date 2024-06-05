@@ -12,7 +12,11 @@ import shabbir from '@images/home/team/shabbir.svg'
 
 export default function Component() {
   return (
-    <div className="font-manrope">
+    <div
+      className="font-manrope"
+      style={{
+        background: 'linear-gradient(180deg, rgba(208, 220, 255, 0.00) 0%, rgba(208, 220, 255, 0.40) 100%)',
+      }}>
       <HomeNavBar />
       <AboutUs />
       <HowWeDo />
@@ -203,10 +207,7 @@ function Team() {
     )
   }
   return (
-    <div
-      style={{
-        background: 'linear-gradient(180deg, rgba(208, 220, 255, 0.00) 0%, rgba(208, 220, 255, 0.40) 100%)',
-      }}>
+    <div>
       <div className="container hidden gap-14 py-24 sm:grid">
         <p className="text-title-3-bold-home">Meet our team</p>
         <div className="flex flex-wrap gap-6">
