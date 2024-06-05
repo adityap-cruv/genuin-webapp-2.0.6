@@ -95,7 +95,7 @@ export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => 
               {...field}
             />
           </FormControl>
-          <FormMessage className="!text-cap-1-demi" />
+          {isDirty && <FormMessage className="!text-cap-1-demi" />}
         </FormItem>
       )}
     />
@@ -131,7 +131,7 @@ export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => 
                       </SelectContent>
                     </Select>
                   </FormControl>
-                  <FormMessage className="!text-cap-1-demi" />
+                  {isDirty && <FormMessage className="!text-cap-1-demi" />}
                 </FormItem>
               )}
             />{' '}
@@ -156,7 +156,7 @@ export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => 
                     </SelectContent>
                   </Select>
                 </FormControl>
-                <FormMessage className="!text-cap-1-demi" />
+                {isDirty && <FormMessage className="!text-cap-1-demi" />}
               </FormItem>
             )}
           />

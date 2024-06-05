@@ -89,12 +89,12 @@ const infoData = [
       'Discover new revenue streams by leveraging your content through strategic partnerships and sponsorships.',
     imageSrc: (
       <div className="relative aspect-animatedDiv w-full rounded-[36px] bg-[#F7F9FC] md:w-5/12">
-        <CustomAnimatedLogos classname="absolute duration-1000 h-full flex items-end -translate-x-20 right-[12%] z-0">
+        <CustomAnimatedLogos classname="absolute duration-1800 h-full flex items-end -translate-x-20 right-[12%] z-0">
           <img src={Mobile.src} alt="community" className="h-[90%]" />
         </CustomAnimatedLogos>
         <CustomAnimatedLogos
           classname="absolute h-full flex items-end transform-none right-[15%] z-0"
-          animationClass="animate-zoomIn duration-2200">
+          animationClass="animate-zoomIn duration-2600">
           <img src={Graph.src} alt="community" className="h-[90%]" />
         </CustomAnimatedLogos>
       </div>
@@ -104,23 +104,23 @@ const infoData = [
 
 export function HomeComponent() {
   return (
-    <div className="font-manrope">
+    <div className="font-manrope bg-monochrome-white">
       <HomeNavBar />
       <div
         className="relative h-full w-full bg-cover bg-center md:h-customscreen"
         style={{
           backgroundImage: `url(${bg.src})`,
         }}>
-        <CustomAnimatedLogos classname="absolute duration-3000 md:block hidden translate-x-10 -translate-y-20 left-[30%] top-[13%] z-0">
-          <img src={icCommunity.src} alt="community" />
+        <CustomAnimatedLogos classname="absolute duration-3000 md:block hidden translate-x-10 -translate-y-20 left-[32vw] top-[6vh] z-0">
+          <img src={icCommunity.src} alt="community" className="h-14" />
         </CustomAnimatedLogos>
 
-        <CustomAnimatedLogos classname="absolute duration-3000 md:block -translate-x-28 translate-y-16  hidden left-[6%] top-[48%] z-0">
-          <img src={icGraph.src} alt="graph" />
+        <CustomAnimatedLogos classname="absolute duration-3000 md:block -translate-x-28 translate-y-16  hidden left-[7vw] top-[44vh] z-0">
+          <img src={icGraph.src} alt="graph" className="h-9" />
         </CustomAnimatedLogos>
 
-        <CustomAnimatedLogos classname="absolute duration-3000 md:block hidden translate-y-20 translate-x-32 left-[23%] bottom-[13%] z-0">
-          <img src={icVideo.src} alt="video" />
+        <CustomAnimatedLogos classname="absolute duration-3000 md:block hidden translate-y-20 translate-x-32 left-[26vw] bottom-[8vh] z-0">
+          <img src={icVideo.src} alt="video" className="h-12" />
         </CustomAnimatedLogos>
 
         <CustomAnimatedSection classname="container z-10">
