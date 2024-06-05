@@ -31,7 +31,7 @@ export default async function Page(props: Props) {
     viewComponent = <CarouselView />
   } else if (embedPage === 'standard_wall') {
     viewComponent = <StandardView />
-  } else if (embedPage === 'vertical') {
+  } else if (embedPage === 'feed') {
     viewComponent = <VerticalView />
   } else {
     // Default view if embed_page doesn't match any condition
