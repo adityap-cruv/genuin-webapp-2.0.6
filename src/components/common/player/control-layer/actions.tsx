@@ -195,13 +195,17 @@ function Mobile({
         }}>
         <Image src={icShare} alt="share" height={32} width={32} />
       </ActionItem>
-      <ActionItem
+      {/* <ActionItem
         title="more options!"
         onClick={() => {
-          DownloadDialogModal.open({ title: 'Get the Genuin app', subtitle: 'Get the app to report the video.' })
+          if (user) {
+            DownloadDialogModal.open({ title: 'Get the Genuin app', subtitle: 'Get the app to report video.' })
+          } else {
+            AuthenticationModal.open()
+          }
         }}>
         <Image src={ic3Dot} alt="more options" height={32} width={32} />
-      </ActionItem>
+      </ActionItem> */}
     </div>
   )
 }
@@ -313,13 +317,17 @@ function Desktop({
           }}>
           <Image src={icShare} alt="share" height={32} width={32} />
         </ActionItem>
-        <ActionItem
+        {/* <ActionItem
           title="More options!"
           onClick={() => {
-            DownloadDialogModal.open({ title: 'Get the Genuin app', subtitle: 'Get the app to report video.' })
+            if (user) {
+              DownloadDialogModal.open({ title: 'Get the Genuin app', subtitle: 'Get the app to report video.' })
+            } else {
+              AuthenticationModal.open()
+            }
           }}>
           <Image src={ic3Dot} height={32} width={32} alt="More Options!" />
-        </ActionItem>
+        </ActionItem> */}
       </div>
     </>
   )

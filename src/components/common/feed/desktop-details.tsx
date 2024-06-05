@@ -323,12 +323,12 @@ function CommentInput({
               })
             }}
             placeholder="Add a comment"
-            className="h-full w-2/3 rounded-full border-2 border-tertiary-200 bg-monochrome-white py-2 pl-6">
+            className="h-full w-full rounded-full border-2 border-tertiary-200 bg-monochrome-white py-2 pl-6">
             <p className="text-start text-title-3-demi text-tertiary">Add a Comment</p>
           </div>
         )}
 
-        <AudioRecordIcon
+        {/* <AudioRecordIcon
           className="fill-secondary"
           onClick={() => {
             DownloadDialogModal.open({ title: 'Get the Genuin app', subtitle: 'Get the app to comment on this video.' })
@@ -342,7 +342,7 @@ function CommentInput({
               subtitle: 'Get the app to comment on this video.',
             })
           }}
-        />
+        /> */}
       </div>
     </div>
   )
