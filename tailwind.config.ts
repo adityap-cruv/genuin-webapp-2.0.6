@@ -178,6 +178,7 @@ module.exports = {
         '8000': '8000ms',
         '4000': '4000ms',
         '3000': '3000ms',
+        '2600': '2600ms',
         '2200': '2200ms',
         '1800': '1800ms',
         '1600': '1600ms',
@@ -244,7 +245,7 @@ module.exports = {
           '100%': { transform: 'translateX(-100%)' },
         },
         zoomIn: {
-          '0%': { transform: 'scale(0.9)' },
+          '0%': { transform: 'scale(0.7)' },
           '100%': { transform: 'scale(1)' },
         },
         zoomInOut: {
@@ -273,7 +274,7 @@ module.exports = {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         marquee: 'marquee 12.5s linear infinite',
-        zoomIn: 'zoomIn 1s ease-in-out forwards',
+        zoomIn: 'zoomIn 0.2s ease-in-out forwards',
         zoomInOut: 'zoomInOut 2s ease-in-out forwards',
         rotateRight: 'rotateRight 1s ease-in-out forwards',
         rotateLeft: 'rotateLeft 1s ease-in-out forwards',
