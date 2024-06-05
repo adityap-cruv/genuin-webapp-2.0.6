@@ -49,13 +49,13 @@ export default function MainComponent() {
         <Loader size="md" />
       </div>
     )
-  if (profileData)
-    return (
-      <>
-        <EditProfile profileData={profileData} isMobile={isMobile} />
-        <Toaster />
-      </>
-    )
+
+  return (
+    <>
+      <EditProfile profileData={profileData} isMobile={isMobile} />
+      <Toaster />
+    </>
+  )
 }
 
 const linkedInUsernamePattern = /^[a-zA-Z0-9À-ž-]+$/
