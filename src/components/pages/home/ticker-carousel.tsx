@@ -1,4 +1,3 @@
-import { Button } from '@components/ui/button'
 import adobe from '@images/home/ticker-logos/adobe.svg'
 import eko from '@images/home/ticker-logos/eko.svg'
 import infy from '@images/home/ticker-logos/infy.svg'
@@ -24,7 +23,7 @@ export function TickerCarousel() {
     adobe.src,
   ]
   return (
-    <div className="flex w-screen flex-col items-center py-9 md:py-16">
+    <div className="flex w-screen flex-col items-center bg-monochrome-white py-9 md:py-16">
       <div className="pb-9">
         <div className="border-1 rounded-lg border border-monochrome-9 px-4 py-2">
           <p className="text-cap-1-demi-home">Built by a world-class team</p>

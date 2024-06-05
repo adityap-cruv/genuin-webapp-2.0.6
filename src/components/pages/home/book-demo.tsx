@@ -3,7 +3,7 @@ import { Button } from '@components/ui/button'
 
 export function BookDemo() {
   return (
-    <>
+    <div className="flex w-screen justify-center bg-[#F5F7FA]">
       <div className="container hidden py-16 md:block">
         <div className="flex flex-col items-center gap-9 rounded-[36px] bg-gradient-to-r from-[#9395FF] to-[#1685FD] p-14">
           <p className="text-title-2-bold-home text-monochrome-white">Book a demo with Genuin!</p>
@@ -36,6 +36,6 @@ export function BookDemo() {
           </p>
         </div>
       </div>
-    </>
+    </div>
   )
 }

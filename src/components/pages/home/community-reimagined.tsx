@@ -1,6 +1,5 @@
 import { ContactUs } from '@components/common/modals/contact-us'
 import { Button } from '@components/ui/button'
-import index01 from '@images/home/index-01.png'
 import bg_genuin_logo from '@images/home/index_genuin_logo.png'
 
 export function CommunityReimagined() {
@@ -24,7 +23,7 @@ export function CommunityReimagined() {
               <Button
                 variant={'outline'}
                 size={'custom'}
-                className="hover:bg-home-black rounded-[35px] px-9 py-5 text-body-2-bold-home hover:text-monochrome-white">
+                className="rounded-[35px] px-9 py-5 text-body-2-bold-home hover:bg-home-black hover:text-monochrome-white">
                 Book a demo
               </Button>
             </ContactUs>
@@ -44,9 +43,11 @@ export function CommunityReimagined() {
       </div>
 
       <div
-        className="flex h-full w-full flex-col items-center justify-center gap-6 bg-cover bg-center bg-no-repeat px-11 py-9 md:hidden"
+        className="flex h-full w-full flex-col items-center justify-center gap-6 bg-no-repeat px-11 py-9 md:hidden"
         style={{
           backgroundImage: `url(${bg_genuin_logo.src})`,
+          backgroundPosition: 'center',
+          backgroundSize: '100%',
         }}>
         <p className="text-center text-title-1-bold-home-m">
           Community{' '}
