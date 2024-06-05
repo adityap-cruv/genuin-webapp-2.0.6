@@ -9,7 +9,7 @@ import {
 } from './api-response-parser'
 import { axiosInstance } from './instance'
 
-export async function fetchUserData(slug: string) {
+export async function fetchBrandData(slug: string) {
   return await axios
     .post(process.env.NEXT_PUBLIC_API_URL + '/api/v3/users/get_profile', {
       brand_slug: slug,

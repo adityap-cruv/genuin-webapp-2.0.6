@@ -9,11 +9,23 @@ import {
 } from './api-response-parser'
 import { axiosInstance } from './instance'
 
-export async function fetchUserData(nickname: string) {
+type Headers = Record<string, string>
+
+export async function fetchUserData(nickname: string, headers?: Headers) {
+  let parsedHeader
+  if (headers)
+    parsedHeader = Object.keys(headers).includes('subdomain')
+      ? { 'x-brand-subdomain': headers.subdomain }
+      : { 'x-brand-domain': headers.domain }
+
   return await axios
-    .post(process.env.NEXT_PUBLIC_API_URL + '/api/v3/users/get_profile', {
-      nickname,
-    })
+    .post(
+      process.env.NEXT_PUBLIC_API_URL + '/api/v3/users/get_profile',
+      {
+        nickname,
+      },
+      { headers: parsedHeader }
+    )
     .then((res) => {
       return validateProfileDetails(res.data.data)
     })

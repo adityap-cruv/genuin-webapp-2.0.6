@@ -217,6 +217,7 @@ function CommunityDetailsTabs({ communityDetails }: { communityDetails: Communit
             name: communityDetails.name,
             profileImage: communityDetails.dp,
             shareUrl: communityDetails.share_url,
+            isJoinRequested: communityDetails.is_community_join_requested,
           }}
         />
       </TabsContent>
