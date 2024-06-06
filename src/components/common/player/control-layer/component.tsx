@@ -188,7 +188,7 @@ function Loop({
           )}
         </div>
         <span className="py-2">
-          <ReadMore
+          <ReadMore.default
             text={description}
             className="line-clamp-2 w-full break-all text-body-1-demi text-monochrome-white"
           />
