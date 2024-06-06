@@ -29,16 +29,17 @@ export function CommunityReimagined() {
             </ContactUs>
           </div>
         </div>
-        <div className="flex h-full w-2/5 items-center justify-center">
+        <div className="relative flex h-full w-2/5 items-center justify-center">
           <video
             src="https://media.begenuin.com/backend_assets/hero_video_genuin.mp4"
-            className="h-4/5 rounded-[30px] border-[6px] border-monochrome-white"
+            className="aspect-[32/67] h-4/5 rounded-[30px]"
             controls={false}
             loop={true}
             autoPlay
             muted
             playsInline
           />
+          <div className="absolute aspect-[32/67] h-[81.3%] rounded-[32px] border-[7px] border-monochrome-white"></div>
         </div>
       </div>
 
@@ -58,15 +59,18 @@ export function CommunityReimagined() {
         <p className="text-center text-cap-1-home-m">
           Create video-based communities within your retail media network to drive engagement and new revenue.
         </p>
-        <video
-          src="https://media.begenuin.com/backend_assets/hero_video_genuin.mp4"
-          className="mt-3 w-44 rounded-3xl border-[4px] border-monochrome-white"
-          controls={false}
-          loop={true}
-          autoPlay
-          muted
-          playsInline
-        />
+        <div className="relative flex w-44 items-center justify-center">
+          <video
+            src="https://media.begenuin.com/backend_assets/hero_video_genuin.mp4"
+            className="aspect-[32/67] w-full rounded-3xl"
+            controls={false}
+            loop={true}
+            autoPlay
+            muted
+            playsInline
+          />
+          <div className="absolute aspect-[31/67] w-full rounded-[25px] border-[6px] border-monochrome-white"></div>
+        </div>
       </div>
     </>
   )
