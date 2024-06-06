@@ -316,3 +316,27 @@
 #onetrust-banner-sdk {
   z-index: 40 !important;
 }
+
+.containerHome {
+  width: 100%;
+  padding-right: 1rem;
+  padding-left: 1rem;
+}
+@media (min-width: 992px) {
+  .containerHome {
+    padding-right: 80px;
+    padding-left: 80px;
+  }
+}
+@media (min-width: 1200px) {
+  .containerHome {
+    padding-right: 100px;
+    padding-left: 100px;
+  }
+}
+@media (min-width: 1400px) {
+  .containerHome {
+    padding-right: 200px;
+    padding-left: 200px;
+  }
+}
