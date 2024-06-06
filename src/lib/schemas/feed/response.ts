@@ -129,7 +129,8 @@ export function validateFeedResponse(data: any) {
   try {
     return FeedResponseSchema.parse(data)
   } catch (e) {
-    console.log('error in validation::', e)
-    throw new Error('error in valdation of feed response.')
+    // eslint-disable-next-line no-console
+    console.log('error in parsing feed response::', e)
+    throw new Error('error in validation of feed response.')
   }
 }

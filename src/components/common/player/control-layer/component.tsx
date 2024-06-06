@@ -10,7 +10,6 @@ import { ReadMore } from '@components/common/read-more'
 import { cn } from '@lib/utils'
 import { AnimatedMuteIcon } from './animated-mute-icon'
 import { TickIcon } from '@icons/tick-icon'
-import { RepostModal } from '@components/common/modals/repost'
 
 export const ControlLayer = {
   desktop: Desktop,

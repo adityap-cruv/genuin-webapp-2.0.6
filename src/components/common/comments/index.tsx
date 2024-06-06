@@ -21,7 +21,6 @@ function WithApi({ videoId, comments, setComments }: Props) {
   const { isLoading, data, isError, isFetchingNextPage, fetchNextPage } = getVideosComments(videoId)
 
   useEffect(() => {
-    console.log('dat::', data)
     if (data) setComments(data.pages.flatMap((item) => item.comments))
   }, [data])
 

@@ -1,6 +1,5 @@
 'use client'
 import React, { useState } from 'react'
-import Button from '../../button'
 import style from './impressions.module.scss'
 import HeadingComponent from '../../heading'
 import ParagraphComponent from '../../paragraph'

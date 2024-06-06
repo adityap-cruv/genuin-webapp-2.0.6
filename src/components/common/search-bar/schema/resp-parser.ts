@@ -1,4 +1,4 @@
-import { type PeopleType, type CommunityType, type VideoType, type LoopType } from '../views/tabs/index'
+import { type PeopleType, type CommunityType, type VideoType } from '../views/tabs/index'
 import {
   type PeopleResType,
   type CommunitiesResType,

@@ -1,5 +1,5 @@
 'use client'
-import { type NotificationsType, type NotificationDetailsType } from '@lib/schemas/notification/notification'
+import { type NotificationsType } from '@lib/schemas/notification/notification'
 import { GetNotificationAttributedText } from './notification-tab-view'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { getNotifications, notificationsCount, readNotifications } from '@lib/api/notification'

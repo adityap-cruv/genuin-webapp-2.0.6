@@ -31,7 +31,8 @@ export async function fetchMetadata({ type, brandId, username, slug, domain, sub
     })
     return response.data.data
   } catch (error) {
-    console.log('erro::', error)
+    // eslint-disable-next-line no-console
+    console.log('error in metadata api::', error)
     throw new Error('Something went wrong with meta_data api.')
   }
 }

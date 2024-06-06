@@ -1,5 +1,5 @@
 import { Input } from '@components/ui/input'
-import { ChevronLeft, Search } from 'lucide-react'
+import { ChevronLeft } from 'lucide-react'
 import { useSearchBarStore } from './store'
 import { useDebouncedCallback } from 'use-debounce'
 import { postRecents } from './api'

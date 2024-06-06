@@ -29,6 +29,7 @@ export function validateLoopSubscribers(data: any) {
   try {
     return SubscriberListSchema.parse(data)
   } catch (e) {
+    // eslint-disable-next-line no-console
     console.log('error in validation::', e)
     throw new Error('Something went wrong with loop members validation!!')
   }

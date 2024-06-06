@@ -72,6 +72,7 @@ export async function fetchLoopVideo(loopId: string, videoId: string) {
       return res.data.data.messages[0] as LoopVideoType
     })
     .catch((e) => {
+      // eslint-disable-next-line no-console
       console.log('error in conversation messages::', e)
       throw new Error('Something went wrong in conversation messages.')
     })
@@ -102,7 +103,8 @@ export async function fetchVideoMetadata(videoSlug: string) {
       return res.data.data
     })
     .catch((e) => {
-      console.log('error::', e)
+      // eslint-disable-next-line no-console
+      console.log('error in deep_link/meta_data::', e)
     })
 }
 

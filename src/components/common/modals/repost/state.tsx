@@ -35,6 +35,7 @@ export const useRepostModalStore = create<Actions & States>((set) => {
         const data = await fetchRepostDestinations(videoId)
         set({ repostCommunityData: data, isLoading: false })
       } catch (e) {
+        // eslint-disable-next-line no-console
         console.log('error in getting data::', e)
       }
     },
