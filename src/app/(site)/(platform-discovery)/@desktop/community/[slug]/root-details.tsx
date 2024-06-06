@@ -1,6 +1,6 @@
 'use client'
 import type { CommunityDetailsType, MembersSchemaType } from '@lib/schemas/community'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { TopStickyBar } from './top-bar'
@@ -17,11 +17,9 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@c
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
-import { CommunityLoopTab } from './community-loop-tab'
 import { ListItem } from '@components/common/list-item'
 import { ShareIcon } from '@icons/share-icon'
 import { getCommunityDetails, getCommunityMembers } from '@lib/api/community'
-import Loading from './loading'
 import { Shimmer } from '@components/ui/shimmer'
 import { LockIcon } from '@icons/LockIcon'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@components/ui/tooltip'
@@ -30,11 +28,13 @@ import { InstagramIcon } from '@icons/instagram-icon'
 import { LinkedInIcon } from '@icons/linkedin-icon'
 import { TwitterIcon } from '@icons/twitter-icon'
 import { JoinCommunityButton } from '@components/pages/community/join-community-button'
+import { CommunityLoopTab } from './community-loop-tab'
+import Loader from './loading'
 
 export function CommunityDetails({ slug }: { slug: string }) {
   const { data, isLoading } = getCommunityDetails(slug)
 
-  if (isLoading) return <Loading />
+  if (isLoading) return <Loader />
   if (data) return <RootDetails communityDetails={data} />
 }
 
@@ -45,19 +45,6 @@ function RootDetails({ communityDetails }: { communityDetails: CommunityDetailsT
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
-  const [dimensions, setDimensions] = useState({
-    width: 0,
-    height: 0,
-  })
-
-  useEffect(() => {
-    if (detailsDivRef.current) {
-      setDimensions({
-        width: detailsDivRef.current.offsetWidth,
-        height: detailsDivRef.current.offsetHeight,
-      })
-    }
-  }, [detailsDivRef.current])
 
   useEffect(() => {
     addCommunity({
@@ -84,11 +71,7 @@ function RootDetails({ communityDetails }: { communityDetails: CommunityDetailsT
       />
       <main className="hide-scrollbar absolute inset-0 h-full w-full overflow-auto">
         <div>
-          <div
-            className="-px-6 aspect-w-5 aspect-h-1 relative rounded-lg bg-tertiary-200"
-            style={{
-              height: `calc(${dimensions.width}px / 5)`,
-            }}>
+          <div className="-px-6 aspect-w-5 aspect-h-1 relative h-40  rounded-b-lg bg-tertiary-200">
             {communityDetails?.banner && (
               <img src={communityDetails?.banner} alt="banner" className="h-full w-full object-cover" />
             )}
@@ -210,15 +193,13 @@ function CommunityDetailsTabs({ communityDetails }: { communityDetails: Communit
       <hr className="border-t border-tertiary-200" />
       <TabsContent value="Loops" className="mr-2 h-full py-4">
         <CommunityLoopTab
-          community={{
-            handle: communityDetails.handle,
-            id: communityDetails.community_id,
-            slug: communityDetails.slug,
-            name: communityDetails.name,
-            profileImage: communityDetails.dp,
-            shareUrl: communityDetails.share_url,
-            isJoinRequested: communityDetails.is_community_join_requested,
-          }}
+          handle={communityDetails.handle}
+          id={communityDetails.community_id}
+          slug={communityDetails.slug}
+          name={communityDetails.name}
+          profileImage={communityDetails.dp}
+          shareUrl={communityDetails.share_url}
+          isJoinRequested={communityDetails.is_community_join_requested}
         />
       </TabsContent>
       <TabsContent value="Members">
