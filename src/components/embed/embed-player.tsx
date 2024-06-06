@@ -3,18 +3,22 @@ import OpenPlayerJS from 'openplayerjs'
 import { useEffect } from 'react'
 import { useEmbedPlayerState } from './embed-player-state'
 import { AnimatedMuteIcon } from '@components/common/player/control-layer/animated-mute-icon'
+import { Actions } from '@components/common/player/control-layer/actions'
+import { ReadMore } from '@components/common/read-more'
+import { CustomAvatar } from '@components/custom/custom-avatar'
+import { type VideoPlayerModalType } from '@lib/schemas/player/video'
+import Link from 'next/link'
 
 type Props = DetailedHTMLProps<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement> & {
   // videoSizeBox: { width: number; height: number }
-  videoId: string
-  videoSource: string
+  videoData: VideoPlayerModalType
   /**
    * Pass if player is first element of list to get it playing.
    */
   isFirstElement: boolean
 }
 
-export function EmbedPlayer({ videoId, videoSource, isFirstElement, onCanPlay, ...props }: Props) {
+export function EmbedPlayer({ videoData, isFirstElement, onCanPlay, ...props }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const localRef = useRef<{
     player: OpenPlayerJS | null
@@ -77,7 +81,7 @@ export function EmbedPlayer({ videoId, videoSource, isFirstElement, onCanPlay, .
     const player = localRef.current.player
     if (!player) return
     // const startTime = performance.now()
-    if (videoId === activeVideoId) {
+    if (videoData.video.id === activeVideoId) {
       player
         .play()
         .then(() => {
@@ -99,7 +103,7 @@ export function EmbedPlayer({ videoId, videoSource, isFirstElement, onCanPlay, .
       <video
         className="absolute h-full w-full object-cover"
         ref={videoRef}
-        src={videoSource}
+        src={videoData.video.source}
         muted={muted}
         playsInline
         onCanPlay={(ev) => {
@@ -117,6 +121,41 @@ export function EmbedPlayer({ videoId, videoSource, isFirstElement, onCanPlay, .
           <AnimatedMuteIcon />
         </div>
       )}
+      <div className="absolute bottom-0 w-full">
+        <div className="flex justify-between p-2">
+          <div className="flex w-4/5 flex-col justify-end">
+            <Link href={videoData.video.shareUrl} target="_blank">
+              <div className="z-10 flex items-center">
+                <CustomAvatar
+                  className="bg-red-40"
+                  imageUrl={videoData.owner.profileImage}
+                  fallbackString={videoData.owner.name ?? ''}
+                  isAvatar={videoData.owner.isAvatar}
+                />
+                <p className="line-clamp-1 px-2 text-title-3-bold text-monochrome-white">@{videoData.owner.userName}</p>
+              </div>
+            </Link>
+            {videoData.video.description && (
+              <span className="pt-2">
+                <ReadMore
+                  text={videoData.video.description}
+                  className="line-clamp-2 w-full break-all text-body-1-demi text-monochrome-white"
+                />
+              </span>
+            )}
+          </div>
+          <div className="z-10">
+            <Actions.desktop
+              shareUrl={videoData.video.shareUrl}
+              sparkCount={videoData.video.sparkCount}
+              videoId={videoData.video.id}
+              attachedLink={videoData.video.attachedLink}
+              description={videoData.video.description}
+              isSparked={false}
+            />
+          </div>
+        </div>
+      </div>
     </>
   )
 }

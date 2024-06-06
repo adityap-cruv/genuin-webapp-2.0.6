@@ -72,13 +72,7 @@ export function VerticalView() {
                 key={item.video.id}
                 style={{ height: videoHeight, width: videoWidth }}
                 className="overflow-clip rounded-lg">
-                <EmbedPlayer
-                  videoId={item.video.id}
-                  videoSource={item.video.source}
-                  isFirstElement={index === 0}
-                  poster={item.video.thumbnail}
-                  loop
-                />
+                <EmbedPlayer videoData={item} isFirstElement={index === 0} loop />
               </SwiperSlide>
             )
           })}
