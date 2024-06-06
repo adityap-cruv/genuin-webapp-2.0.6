@@ -87,6 +87,7 @@ const Comment = {
     )
   },
   text({ comment }: { comment: CommentType }) {
-    return <ReadMore className="break-all text-body-1-med" text={comment.comment_text} />
+    if (comment.comment_data)
+      return <ReadMore.withMention className="text-body-1-med" textArr={JSON.parse(comment.comment_data)} />
   },
 }

@@ -203,7 +203,7 @@ type ItemProps = {
 
 function Item({ title, isActive, children, notificationCount }: ItemProps) {
   return (
-    <div className="flex w-full max-w-full items-center gap-x-3 rounded-md p-3 hover:bg-monochrome-6/10">
+    <div className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-3 hover:bg-monochrome-6/10">
       <div className="relative">
         {children}
         {!notificationCount ||
@@ -215,7 +215,7 @@ function Item({ title, isActive, children, notificationCount }: ItemProps) {
             </>
           ))}
       </div>
-      <p className={cn('hidden break-all !text-title-2-demi lg:block', isActive && 'text-primary')}>{title}</p>
+      <p className={cn('hidden whitespace-nowrap !text-title-2-demi lg:block', isActive && 'text-primary')}>{title}</p>
     </div>
   )
 }
