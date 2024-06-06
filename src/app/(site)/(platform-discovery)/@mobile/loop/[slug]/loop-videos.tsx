@@ -72,7 +72,7 @@ export function LoopVideos({ loop, community }: Props) {
             /> */}
             <img
               src={item.video.thumbnail}
-              alt={item.video.description ?? ''}
+              alt={item.video.descriptionText ?? ''}
               className="h-full w-full rounded-xl object-fill"
             />
             <div className="absolute bottom-2 left-2">
@@ -87,9 +87,9 @@ export function LoopVideos({ loop, community }: Props) {
                   <p className="ml-1 text-body-1-bold text-monochrome-white">@{item.owner.userName}</p>
                 </div>
               </Link>
-              {item.video.description && (
+              {item.video.descriptionText && (
                 <p className="line-clamp-2 w-5/6 overflow-hidden break-all pt-2 text-body-1-med text-monochrome-white">
-                  {item.video.description}
+                  {item.video.descriptionText}
                 </p>
               )}
             </div>

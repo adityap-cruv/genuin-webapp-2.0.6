@@ -1,5 +1,5 @@
 import { CustomAvatar } from '@components/custom/custom-avatar'
-import { type ReactNode, type RefObject, useRef, useState, useEffect } from 'react'
+import { type RefObject, useRef, useState, useEffect } from 'react'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { Button } from '@components/ui/button'
@@ -16,15 +16,13 @@ import { Input } from '@components/ui/input'
 import { createComment } from '@lib/api/video'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { ShareIcon } from '@icons/share-icon'
-import { AudioRecordIcon } from '@icons/audio-record-icon'
-import { VideoRecordIcon } from '@icons/video-record-icon'
 import { type CommentListType } from '@lib/schemas/loop/comment'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import { LockIcon } from '@icons/LockIcon'
 import { TickIcon } from '@icons/tick-icon'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@components/ui/tooltip'
-import { DownloadDialogModal } from '../modals/download-app'
 import { JoinCommunityButton } from '@components/pages/community/join-community-button'
+import { ReadMore } from '../read-more'
 
 export function DesktopDetails({ loop, community, owner, video }: VideoPlayerModalType) {
   const { shareFn } = useAdaptiveShare()
@@ -63,9 +61,7 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
             <p className="shrink-0 text-body-1-demi text-tertiary">{getTimeAgo(video.createdAt) + ' ago'}</p>
           </span>
         </span>
-        {video.description && (
-          <p className="line-clamp-2 w-5/6 overflow-hidden break-all pt-3 text-title-3-med">{video.description}</p>
-        )}
+        {video.descriptionArr && <ReadMore.withMention textArr={video.descriptionArr} />}
       </div>
       <div ref={scrollDivRef} className="flex h-full flex-col overflow-auto overflow-x-clip">
         <div className="p-4">
