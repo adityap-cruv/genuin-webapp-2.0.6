@@ -73,7 +73,12 @@ export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => 
     }
   }
 
-  const renderFormField = (name: keyof z.infer<typeof formSchema>, placeholder: string, type = 'text') => (
+  const renderFormField = (
+    name: keyof z.infer<typeof formSchema>,
+    placeholder: string,
+    type: string,
+    maxLength?: number
+  ) => (
     <FormField
       name={name}
       control={form.control}
@@ -81,7 +86,7 @@ export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => 
         <FormItem className="py-1.5 sm:w-full">
           <FormControl>
             <Input
-              maxLength={25}
+              maxLength={maxLength}
               type={type}
               placeholder={placeholder}
               className={`border border-tertiary-200 bg-tertiary-100 text-title-3-med ${
@@ -90,7 +95,7 @@ export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => 
               {...field}
             />
           </FormControl>
-          <FormMessage className="!text-cap-1-demi" />
+          {isDirty && <FormMessage className="!text-cap-1-demi" />}
         </FormItem>
       )}
     />
@@ -101,12 +106,12 @@ export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
           <div className="flex gap-x-4">
-            {renderFormField('firstName', 'First Name')}
-            {renderFormField('lastName', 'Last Name')}
+            {renderFormField('firstName', 'First Name', 'text', 25)}
+            {renderFormField('lastName', 'Last Name', 'text', 25)}
           </div>
-          {renderFormField('email', 'Email')}
+          {renderFormField('email', 'Email', 'email', 25)}
           <div className="flex gap-x-4">
-            {renderFormField('companyName', 'Company Name')}
+            {renderFormField('companyName', 'Company Name', 'text', 50)}
             <FormField
               name="companySize"
               control={form.control}
@@ -126,7 +131,7 @@ export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => 
                       </SelectContent>
                     </Select>
                   </FormControl>
-                  <FormMessage className="!text-cap-1-demi" />
+                  {isDirty && <FormMessage className="!text-cap-1-demi" />}
                 </FormItem>
               )}
             />{' '}
@@ -151,19 +156,19 @@ export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => 
                     </SelectContent>
                   </Select>
                 </FormControl>
-                <FormMessage className="!text-cap-1-demi" />
+                {isDirty && <FormMessage className="!text-cap-1-demi" />}
               </FormItem>
             )}
           />
-          {renderFormField('website', 'Website Url')}
-          {renderFormField('country', 'Country')}
-          {renderFormField('piquedInterest', 'What piqued your interest in Genuin')}
+          {renderFormField('website', 'Website Url', 'text', 50)}
+          {renderFormField('country', 'Country', 'text', 25)}
+          {renderFormField('piquedInterest', 'What piqued your interest in Genuin', 'text', 150)}
           <span className="mt-4 flex flex-col gap-y-3 text-title-3-demi">
             <Button
               type="submit"
               className="flex w-full cursor-pointer items-center justify-center rounded-lg bg-new-off-black hover:bg-new-dark-grey"
               disabled={isLoading || !isValid || !isDirty}>
-              {isLoading ? <Loader size="sm" className="fill-new-off-white" /> : <p>Save</p>}
+              {isLoading ? <Loader size="sm" className="fill-new-off-white" /> : <p>Submit</p>}
             </Button>
             <p className="mt-1 text-center text-new-para-2-mobile text-new-dark-grey">
               By submitting this form, you agree to receive promotional messages from Genuin about its products and

@@ -10,7 +10,7 @@ import icLock from '@icons/icLock.svg'
 import { useInView } from 'framer-motion'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
 import Link from 'next/link'
-import { checkAndAppendHttps, getCurrentShareUrl, openModal } from '@lib/utils'
+import { checkAndAppendHttps, getCurrentShareUrl } from '@lib/utils'
 import icLink from '@icons/icLinkBlack.svg'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@components/ui/accordion'
@@ -19,8 +19,6 @@ import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
 import { CommunityLoopTab } from './community-loop-tab'
 import { ListItem } from '@components/common/list-item'
-import { useGenuinOptions } from '@lib/stores/genuin-options'
-import { joinCommunity, leaveCommunity, requestCommunity } from '@lib/api/video'
 import { ShareIcon } from '@icons/share-icon'
 import { getCommunityDetails, getCommunityMembers } from '@lib/api/community'
 import Loading from './loading'
@@ -31,8 +29,7 @@ import { BrandCommunityTag } from '@components/common/brand-community-tag'
 import { InstagramIcon } from '@icons/instagram-icon'
 import { LinkedInIcon } from '@icons/linkedin-icon'
 import { TwitterIcon } from '@icons/twitter-icon'
-
-let communityDetailsModule: CommunityDetailsType
+import { JoinCommunityButton } from '@components/pages/community/join-community-button'
 
 export function CommunityDetails({ slug }: { slug: string }) {
   const { data, isLoading } = getCommunityDetails(slug)
@@ -42,8 +39,7 @@ export function CommunityDetails({ slug }: { slug: string }) {
 }
 
 // TODO: Separate this component.
-export function RootDetails({ communityDetails }: { communityDetails: CommunityDetailsType }) {
-  communityDetailsModule = communityDetails
+function RootDetails({ communityDetails }: { communityDetails: CommunityDetailsType }) {
   const addCommunity = useLocalStorage((state) => state.addCommunity)
   const detailsDivRef = useRef<HTMLDivElement>(null)
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
@@ -84,6 +80,7 @@ export function RootDetails({ communityDetails }: { communityDetails: CommunityD
         communityId={communityDetails.community_id}
         shareUrl={communityDetails.share_url}
         isCommunityPrivate={communityDetails.type === 2}
+        isJoinRequested={communityDetails.is_community_join_requested}
       />
       <main className="hide-scrollbar absolute inset-0 h-full w-full overflow-auto">
         <div>
@@ -103,19 +100,14 @@ export function RootDetails({ communityDetails }: { communityDetails: CommunityD
             />
           </div>
           <div ref={detailsDivRef} className="my-3 flex items-center justify-end gap-x-2">
-            {communityDetails.is_community_join_requested ? (
-              <Button size="custom" className="border border-primary" variant={'outline'}>
-                <p className={`px-4 py-1.5 text-body-1-demi text-monochrome-white text-primary`}>Requested</p>
-              </Button>
-            ) : (
-              <JoinButton
-                handle={communityDetails.handle}
-                id={communityDetails.community_id}
-                userRole={communityDetails.logged_in_user_role}
-                isCommunityPrivate={communityDetails.type === 2}
-              />
-            )}
-
+            <JoinCommunityButton
+              buttonText="Join Community"
+              isJoinRequested={communityDetails.is_community_join_requested}
+              handle={communityDetails.handle}
+              id={communityDetails.community_id}
+              userRole={communityDetails.logged_in_user_role}
+              isCommunityPrivate={communityDetails.type === 2}
+            />
             <Button
               variant="outline"
               size="custom"
@@ -137,7 +129,7 @@ export function RootDetails({ communityDetails }: { communityDetails: CommunityD
           <span className="flex items-center gap-x-2 px-6 py-2">
             <p className="text-title-1-bold">{communityDetails.name}</p>
             <p className="text-body-1-med text-tertiary">@{communityDetails.handle}</p>
-            {communityDetailsModule.type === 2 && (
+            {communityDetails.type === 2 && (
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -155,17 +147,17 @@ export function RootDetails({ communityDetails }: { communityDetails: CommunityD
                 </Tooltip>
               </TooltipProvider>
             )}
-            {communityDetailsModule.brand && (
+            {communityDetails.brand && (
               <BrandCommunityTag
-                brandSlug={communityDetailsModule.brand.brand_slug}
-                brandLogo={communityDetailsModule.brand?.logo}
-                brandName={communityDetailsModule.brand?.name}
+                brandSlug={communityDetails.brand.brand_slug}
+                brandLogo={communityDetails.brand?.logo}
+                brandName={communityDetails.brand?.name}
               />
             )}
           </span>
         </div>
 
-        {communityDetailsModule.type === 2 && !communityDetailsModule.logged_in_user_role ? (
+        {communityDetails.type === 2 && !communityDetails.logged_in_user_role ? (
           <div
             className="mt-4 flex w-full items-center justify-center overflow-hidden"
             style={{ height: 'calc(100% - 285px)', backgroundColor: '#F9F9F9' }}>
@@ -187,14 +179,14 @@ export function RootDetails({ communityDetails }: { communityDetails: CommunityD
                 <p className="mb-2 line-clamp-2 break-all text-body-1-med">{communityDetails.description}</p>
               )}
               <Stats communityDetails={communityDetails} />
-              <CommunityDetailsTabs />
+              <CommunityDetailsTabs communityDetails={communityDetails} />
             </div>
 
             <div className="snap-y snap-proximity overflow-auto overflow-x-hidden scroll-smooth">
-              <Categories />
-              <Links />
-              <Guidelines />
-              <Leaders />
+              <Categories communityDetails={communityDetails} />
+              <Links communityDetails={communityDetails} />
+              <Guidelines communityDetails={communityDetails} />
+              <Leaders communityDetails={communityDetails} />
             </div>
           </div>
         )}
@@ -204,7 +196,7 @@ export function RootDetails({ communityDetails }: { communityDetails: CommunityD
   )
 }
 
-function CommunityDetailsTabs() {
+function CommunityDetailsTabs({ communityDetails }: { communityDetails: CommunityDetailsType }) {
   return (
     <Tabs defaultValue="Loops" style={{ height: 'calc(100% - 114px)' }}>
       <TabsList className="flex max-w-min">
@@ -219,29 +211,30 @@ function CommunityDetailsTabs() {
       <TabsContent value="Loops" className="mr-2 h-full py-4">
         <CommunityLoopTab
           community={{
-            handle: communityDetailsModule.handle,
-            id: communityDetailsModule.community_id,
-            slug: communityDetailsModule.slug,
-            name: communityDetailsModule.name,
-            profileImage: communityDetailsModule.dp,
-            shareUrl: communityDetailsModule.share_url,
+            handle: communityDetails.handle,
+            id: communityDetails.community_id,
+            slug: communityDetails.slug,
+            name: communityDetails.name,
+            profileImage: communityDetails.dp,
+            shareUrl: communityDetails.share_url,
+            isJoinRequested: communityDetails.is_community_join_requested,
           }}
         />
       </TabsContent>
       <TabsContent value="Members">
-        <Members />
+        <Members communityDetails={communityDetails} />
       </TabsContent>
     </Tabs>
   )
 }
 
-function Categories() {
-  if (communityDetailsModule.categories?.length !== 0)
+function Categories({ communityDetails }: { communityDetails: CommunityDetailsType }) {
+  if (communityDetails.categories?.length !== 0)
     return (
       <div className="mb-4">
         <p className="my-2 text-title-3-bold">Categories</p>
         <div>
-          {communityDetailsModule?.categories?.map((cat, index) => {
+          {communityDetails?.categories?.map((cat, index) => {
             return (
               <p key={index} className="my-1 mr-1 inline-block rounded-full bg-tertiary-200 p-2 px-4 text-body-1-med">
                 <span className="line-clamp-1 break-all">{cat.title}</span>
@@ -253,8 +246,8 @@ function Categories() {
     )
 }
 
-function Links() {
-  const links = communityDetailsModule?.social_links
+function Links({ communityDetails }: { communityDetails: CommunityDetailsType }) {
+  const links = communityDetails?.social_links
   if (links?.insta?.id ?? links?.linkedin?.id ?? links?.twitter?.id ?? links?.social_web_url)
     return (
       <div className="mb-4">
@@ -296,14 +289,14 @@ function Links() {
     )
 }
 
-function Guidelines() {
-  if (communityDetailsModule.guidelines.length !== 0)
+function Guidelines({ communityDetails }: { communityDetails: CommunityDetailsType }) {
+  if (communityDetails.guidelines.length !== 0)
     return (
       <div className="mb-4">
         <p className="my-2 text-title-3-bold">Guidelines</p>
         <>
           <Accordion type="single" collapsible>
-            {communityDetailsModule?.guidelines.map((guideline: any, index: any) => {
+            {communityDetails?.guidelines.map((guideline: any, index: any) => {
               return (
                 <div key={index}>
                   <AccordionItem value={guideline.title} className="border-none">
@@ -325,8 +318,8 @@ function Guidelines() {
     )
 }
 
-function Leaders() {
-  const leader = communityDetailsModule?.leader
+function Leaders({ communityDetails }: { communityDetails: CommunityDetailsType }) {
+  const leader = communityDetails?.leader
 
   if (!leader || leader.nickname.length === 0) {
     return null
@@ -352,8 +345,8 @@ function Leaders() {
   )
 }
 
-function Members() {
-  const { data, isLoading } = getCommunityMembers(communityDetailsModule.slug)
+function Members({ communityDetails }: { communityDetails: CommunityDetailsType }) {
+  const { data, isLoading } = getCommunityMembers(communityDetails.slug)
   const members = data?.members
 
   if (isLoading)
@@ -421,84 +414,5 @@ function Stats({ communityDetails }: { communityDetails: CommunityDetailsType })
         </p>
       </span>
     </div>
-  )
-}
-
-export function JoinButton({
-  userRole,
-  handle,
-  id,
-  isCommunityPrivate,
-}: {
-  userRole?: 'LEADER' | 'MEMBER' | 'REQUESTED' | null
-  handle: string
-  id: string
-  isCommunityPrivate: boolean
-}) {
-  const [role, setRole] = useState(userRole)
-  const user = useGenuinOptions().user
-  async function toggleCommunityJoinState() {
-    if (role !== 'MEMBER') {
-      if (isCommunityPrivate) {
-        await requestCommunity(id).then((res) => {
-          if (res.code === 200) {
-            setRole('REQUESTED')
-          }
-        })
-      } else {
-        await joinCommunity(
-          false,
-          [id],
-          [
-            {
-              user_id: user?.id,
-            },
-          ]
-        ).then((res) => {
-          if (res.code === 200) {
-            setRole('MEMBER')
-          }
-        })
-      }
-    } else {
-      await leaveCommunity(id).then((res) => {
-        if (res.code === 200) {
-          setRole(null)
-        }
-      })
-    }
-  }
-
-  if (userRole === 'LEADER') return
-
-  return (
-    <Button
-      size="custom"
-      className={`${role && 'rounded border border-primary '}`}
-      variant={role ? 'outline' : 'default'}
-      onClick={
-        user
-          ? async () => {
-              await toggleCommunityJoinState()
-            }
-          : () => {
-              openModal({
-                title: 'Get the Genuin app',
-                subtitle: (
-                  <>
-                    Get the app to join the <br />
-                    <span className="font-bold">@{handle}</span> community.
-                  </>
-                ),
-              })
-            }
-      }>
-      <p
-        className={`whitespace-nowrap px-4 py-1.5 text-body-1-demi  ${
-          role ? 'text-primary' : 'text-monochrome-white'
-        }`}>
-        {role ? (role === 'REQUESTED' ? 'Requested' : 'Joined') : 'Join Community'}
-      </p>
-    </Button>
   )
 }

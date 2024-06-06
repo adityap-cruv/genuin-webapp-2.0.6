@@ -32,6 +32,7 @@ const messageSchema = z.object({
   media_url_m3u8: z.string().nullish(),
   attached_link: z.string().nullish(),
   slug: z.string(),
+  description_text: z.string().nullable().optional(),
   no_of_views: z.number().default(0),
   no_of_comments: z.number().default(0),
   no_of_sparks: z.number().default(0),

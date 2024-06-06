@@ -37,8 +37,7 @@ export function parseVideosFromLoop(
         sparkCount: item.no_of_sparks ?? 0,
         thumbnail: item.thumbnail_url ?? '',
         attachedLink: item.attached_link,
-        // TODO: Description is not being showed in mobile.
-        description: null,
+        description: item.description_text,
         slug: item.slug,
       },
     }
@@ -106,7 +105,7 @@ export function parseFeedResponse(videos: FeedResponseType) {
         sparkCount: video.messages[0].no_of_sparks,
         thumbnail: video.messages[0].thumbnail_url ?? '',
         attachedLink: video.messages[0].attached_link,
-        description: '',
+        description: video.messages[0].description_text,
         isSparked: video.messages[0].is_sparked,
       },
     }

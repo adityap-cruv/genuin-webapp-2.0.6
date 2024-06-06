@@ -6,7 +6,7 @@ import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { getCurrentShareUrl } from '@lib/utils'
 import { ShareIcon } from '@icons/share-icon'
-import { JoinButton } from './root-details'
+import { JoinCommunityButton } from '@components/pages/community/join-community-button'
 
 type Props = {
   /**
@@ -24,6 +24,7 @@ type Props = {
   shareUrl: string
   role: any
   isCommunityPrivate: boolean
+  isJoinRequested: boolean
 }
 
 export const TopStickyBar = {
@@ -41,6 +42,7 @@ export function Desktop({
   shareUrl,
   role,
   isCommunityPrivate,
+  isJoinRequested,
   ...props
 }: Props) {
   const navAnimationControl = useAnimationControls()
@@ -81,7 +83,14 @@ export function Desktop({
         <p className="text-title-2-demi">{communityName}</p>
       </span>
       <span className="flex items-center gap-x-2">
-        <JoinButton handle={communityHandle} id={communityId} userRole={role} isCommunityPrivate={isCommunityPrivate} />
+        <JoinCommunityButton
+          buttonText="Join Community"
+          isJoinRequested={isJoinRequested}
+          handle={communityHandle}
+          id={communityId}
+          userRole={role}
+          isCommunityPrivate={isCommunityPrivate}
+        />
         <Button
           variant="outline"
           size="custom"
@@ -107,7 +116,7 @@ export function Mobile({
   communityHandle,
   isCommunityPrivate,
   ...props
-}: Props) {
+}: Omit<Props, 'isJoinRequested'>) {
   const navAnimationControl = useAnimationControls()
 
   useEffect(() => {

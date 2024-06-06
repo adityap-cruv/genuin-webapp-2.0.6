@@ -41,7 +41,7 @@ export function Guidelines() {
 
   useEffect(() => {
     async function fetchGuidelines() {
-      void getBrandGuidelines({ brandId, idDefault: true }).then((res) => {
+      void getBrandGuidelines({ brandId, idDefault: false }).then((res) => {
         if (res.code === 200) {
           setGuidelines(res.data)
         }

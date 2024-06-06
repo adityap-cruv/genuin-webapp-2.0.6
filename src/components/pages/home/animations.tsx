@@ -9,7 +9,7 @@ interface CustomAnimatedSectionProps {
 
 export function CustomAnimatedSection({ children, classname }: CustomAnimatedSectionProps) {
   const ref = useRef(null)
-  const isInView = useInView(ref, { once: true })
+  const isInView = useInView(ref, { once: true, amount: 0.3 })
 
   return (
     <section ref={ref} className="flex h-full w-full justify-start overflow-hidden">
@@ -25,7 +25,7 @@ export function CustomAnimatedSection({ children, classname }: CustomAnimatedSec
 
 export function CustomAnimatedLogos({ children, classname, animationClass }: CustomAnimatedSectionProps) {
   const ref = useRef(null)
-  const isInView = useInView(ref, { once: true })
+  const isInView = useInView(ref, { once: true, amount: 0.2 })
 
   return (
     <section ref={ref}>

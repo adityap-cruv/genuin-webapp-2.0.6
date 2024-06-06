@@ -28,12 +28,13 @@ import { SettingsLayout } from '../settings/mobile/layout'
 import { NotificationIcon } from '@icons/settings-side-bar-icons'
 import { SearchIcon } from '@icons/search-icon'
 import { analyticsService } from '@services/analytics_service'
+import { CategoryView } from '@components/common/category-view'
 
 const navVariant = cva('sticky top-0 flex z-40 h-[76px] w-full items-center justify-between  px-2', {
   variants: {
     variant: {
       light: 'border-b-2 border-monochrome-9 bg-monochrome-white',
-      trasparent: 'bg-transparent bg-gradient-to-b from-monochrome-2/40 to-transparent',
+      transparent: 'bg-transparent bg-gradient-to-b from-monochrome-2/40 to-transparent',
     },
   },
 })
@@ -61,14 +62,14 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
     brandName: state.config?.name ? state.config?.name : 'Genuin',
     notificationsCount: state.notificationCount,
   })) // If variant is transparent than we have removed show download button.
-  const showDownloadButton = variant !== 'trasparent'
+  const showDownloadButton = variant !== 'transparent'
   const pathName = usePathname()
 
   return (
     <nav className={cn(navVariant({ variant }), className)}>
       <span className="flex items-center ">
         <Menu
-          hamBurgerVariant={variant === 'trasparent' ? 'light' : 'dark'}
+          hamBurgerVariant={variant === 'transparent' ? 'light' : 'dark'}
           embed={embed}
           user={user}
           brandName={brandName}
@@ -77,7 +78,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
           <Link href={{ pathname: PATH_NAME.home() }}>
             <AppLogo.icon
               imageHeight={32}
-              className={cn(variant === 'trasparent' ? 'fill-new-off-white' : 'fill-new-off-black', 'max-w-[100px]')}
+              className={cn(variant === 'transparent' ? 'fill-new-off-white' : 'fill-new-off-black', 'max-w-[100px]')}
             />
           </Link>
         )}
@@ -258,6 +259,7 @@ function Menu({
                 <img src={CommunityIcon.src} alt="community" className="absolute bottom-0 right-4 h-12" />
               </div>
             )}
+            <CategoryView />
             <RecentCommunities />
           </div>
           <div className="text-monochrome">

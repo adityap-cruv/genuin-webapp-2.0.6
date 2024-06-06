@@ -1,6 +1,6 @@
 'use client'
 import { HomeNavBar } from './home-nav'
-import bg from '@images/home/index-bg.png'
+import bg from '@images/home/index-bg.svg'
 import buildArt from '@images/home/build-art.png'
 import icCommunity from '@images/home/icon-community.svg'
 import icGraph from '@images/home/icon-graph.svg'
@@ -93,8 +93,8 @@ const infoData = [
           <img src={Mobile.src} alt="community" className="h-[90%]" />
         </CustomAnimatedLogos>
         <CustomAnimatedLogos
-          classname="absolute duration-4000 h-full flex items-end transform-none right-[15%] z-0"
-          animationClass="animate-zoomIn">
+          classname="absolute h-full flex items-end transform-none right-[15%] z-0"
+          animationClass="animate-zoomIn duration-2600">
           <img src={Graph.src} alt="community" className="h-[90%]" />
         </CustomAnimatedLogos>
       </div>
@@ -104,23 +104,23 @@ const infoData = [
 
 export function HomeComponent() {
   return (
-    <div className="font-manrope">
+    <div className="font-manrope bg-monochrome-white">
       <HomeNavBar />
       <div
         className="relative h-full w-full bg-cover bg-center md:h-customscreen"
         style={{
           backgroundImage: `url(${bg.src})`,
         }}>
-        <CustomAnimatedLogos classname="absolute duration-3000 md:block hidden translate-x-10 -translate-y-20 left-[30%] top-[13%] z-0">
-          <img src={icCommunity.src} alt="community" />
+        <CustomAnimatedLogos classname="absolute duration-3000 md:block hidden translate-x-10 -translate-y-20 left-[32vw] top-[6vh] z-0">
+          <img src={icCommunity.src} alt="community" className="h-14" />
         </CustomAnimatedLogos>
 
-        <CustomAnimatedLogos classname="absolute duration-3000 md:block -translate-x-28 translate-y-16  hidden left-[6%] top-[48%] z-0">
-          <img src={icGraph.src} alt="graph" />
+        <CustomAnimatedLogos classname="absolute duration-3000 md:block -translate-x-28 translate-y-16  hidden left-[7vw] top-[44vh] z-0">
+          <img src={icGraph.src} alt="graph" className="h-9" />
         </CustomAnimatedLogos>
 
-        <CustomAnimatedLogos classname="absolute duration-3000 md:block hidden translate-y-20 translate-x-32 left-[23%] bottom-[13%] z-0">
-          <img src={icVideo.src} alt="graph" />
+        <CustomAnimatedLogos classname="absolute duration-3000 md:block hidden translate-y-20 translate-x-32 left-[26vw] bottom-[8vh] z-0">
+          <img src={icVideo.src} alt="video" className="h-12" />
         </CustomAnimatedLogos>
 
         <CustomAnimatedSection classname="container z-10">
@@ -133,23 +133,23 @@ export function HomeComponent() {
       </CustomAnimatedSection>
 
       {infoData.map((data, index) => (
-        <CustomAnimatedSection key={index} classname="container duration-2200">
+        <CustomAnimatedSection key={index} classname="duration-2200">
           <BuildEnagageBoost title={data.title} subtitle={data.subtitle} imageSrc={data.imageSrc} />
         </CustomAnimatedSection>
       ))}
 
-      <CustomAnimatedSection classname="container">
+      <CustomAnimatedSection>
         <PartnershipEcosystem />
       </CustomAnimatedSection>
 
-      <CustomAnimatedSection classname="container transform-none">
+      <CustomAnimatedSection classname="transform-none">
         <BookDemo />
       </CustomAnimatedSection>
 
       <HomeFooter />
 
       <ContactUs>
-        <div className="pointer-events-none fixed inset-x-0 bottom-8 flex justify-center md:hidden">
+        <div className="pointer-events-none fixed inset-x-0 bottom-8 z-20 flex justify-center md:hidden">
           <Button
             variant={'outline'}
             size={'custom'}

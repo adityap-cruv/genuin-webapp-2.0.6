@@ -12,6 +12,7 @@ const videoSchema = z.object({
   sparkCount: z.number(),
   thumbnail: z.string(),
   description: z.string().nullable().optional(),
+  description_text: z.string().nullable().optional(),
   slug: z.string(),
 })
 
@@ -47,6 +48,7 @@ const communitySchema = z.object({
   shareUrl: z.string(),
   userRole: z.enum(['LEADER', 'MEMBER']).nullish(),
   brand: BrandSchema.optional(),
+  isJoinRequested: z.boolean().optional(),
 })
 
 const BrandUserSchema = z
