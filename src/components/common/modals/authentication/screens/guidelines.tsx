@@ -7,22 +7,29 @@ import { z } from 'zod'
 import { Button } from '@components/ui/button'
 import { Checkbox } from '@components/ui/checkbox'
 import { Form, FormControl, FormField, FormItem, FormLabel } from '@components/ui/form'
-import { signup } from '@lib/api/auth'
+import { getBrandGuidelines, signup } from '@lib/api/auth'
 import { SIGNUP_SOURCE } from '@lib/constants'
 import { signIn } from 'next-auth/react'
 import { useAuthenticationModalStore } from '../store'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Loader } from '@components/ui/loader'
 import { analyticsService } from '@services/analytics_service'
-import { rudderStackIdentify } from '@services/useRudderAnalytics'
+// import { rudderStackIdentify } from '@services/useRudderAnalytics'
 
 const FormSchema = z.object({
   mobile: z.boolean().default(false).optional(),
 })
 
+interface Guideline {
+  title: string
+  description: string
+}
+
 export function Guidelines() {
   const { setStep, formData, action } = useAuthenticationModalStore()
   const [isLoading, setIsLoading] = useState(false)
+  const [guidelines, setGuidelines] = useState<Guideline[] | null>(null)
+  const brandId = useGenuinOptions().brandId
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -31,6 +38,18 @@ export function Guidelines() {
     },
   })
   const { isDirty } = form.formState
+
+  useEffect(() => {
+    async function fetchGuidelines() {
+      void getBrandGuidelines({ brandId, idDefault: false }).then((res) => {
+        if (res.code === 200) {
+          setGuidelines(res.data)
+        }
+      })
+    }
+
+    void fetchGuidelines()
+  }, [])
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     setIsLoading(true)
@@ -48,7 +67,7 @@ export function Guidelines() {
         .then((res) => {
           if (res?.ok) {
             setStep('EMAIL_SENT_NOTE')
-            void rudderStackIdentify()
+            // void rudderStackIdentify()
             void analyticsService({
               eventName: 'ks_signed_up',
               properties: { email: formData.email },
@@ -69,10 +88,17 @@ export function Guidelines() {
     }
   }
 
-  const { brandName, brandLogo } = useGenuinOptions((state) => ({
-    brandName: state.config?.name ? state.config?.name : 'Genuin',
+  const { brandLogo } = useGenuinOptions((state) => ({
     brandLogo: state.brandWebLogo,
   }))
+
+  if (!guidelines) {
+    return (
+      <ModalShell>
+        <Loader size="md" />
+      </ModalShell>
+    )
+  }
 
   return (
     <ModalShell>
@@ -82,55 +108,14 @@ export function Guidelines() {
       <div className="h-[50vh] w-full overflow-auto">
         <h2 className="text-title-1-bold">Brand Guidelines</h2>
         <br />
-        <span className="text-body-1-med">
-          Welcome to {brandName}! As you get settled, we wanted to introduce you to our Platform Guidelines. To keep{' '}
-          {brandName} a space for authentic connection and ongoing learning, here are a few ground rules, you, as a
-          user, acknowledge and agree to by using this platform.
-        </span>
-        <br />
-        <br />
-        <span className="text-body-1-bold">Learn together: </span>
-        <span className="text-body-1-med">
-          {brandName} is all about learning and sharing knowledge with people who share your interests, passions, and
-          experiences. We prioritize content that helps us to learn and grow together.
-        </span>
-        <br />
-        <br />
-        <span className="text-body-1-bold">Be Authentic: </span>
-        <span className="text-body-1-med">
-          Let's keep it genuine (see what we did there?) and secure. Do not impersonate another person or entity on
-          {brandName}, and refrain from misrepresenting your expertise or title.
-        </span>
-        <br />
-        <br />
-        <span className="text-body-1-bold">Keep conversations respectful: </span>
-        <span className="text-body-1-med">
-          As humans, we don't always agree, and that's ok. We welcome sharing of opinions and respectful dialogue which
-          means that we lead with positive intent and choose curiosity over conflict. Harassment and hate speech have no
-          place here.
-        </span>
-        <br />
-        <br />
-        <span className="text-body-1-bold">Respect the privacy of your fellow users: </span>
-        <span className="text-body-1-med">
-          Do not reveal confidential or personal identifier information about another person or entity while on{' '}
-          {brandName}.
-        </span>
-        <br />
-        <br />
-        <span className="text-body-1-bold">Enforcement</span>
-        <br />
-        <span className="text-body-1-med">We will enforce these guidelines as needed in the following manners :</span>
-        <ul
-          className="p-4"
-          style={{
-            listStyle: 'inside',
-          }}>
-          <li className="text-body-1-med">Ask you nicely to abide by our rules</li>
-          <li className="text-body-1-med">Remove offending content</li>
-          <li className="text-body-1-med">Limitation or termination of a user or community's access to {brandName}</li>
-          <li className="text-body-1-med">If illegal activity is reported, we may notify relevant law enforcement.</li>
-        </ul>
+        {guidelines.map((guideline, index) => (
+          <div key={index} className="mb-4 grid gap-1">
+            <p className="text-body-1-bold">
+              {index + 1}. {guideline.title}
+            </p>
+            <p className="ml-4 text-body-1-med">{guideline.description}</p>
+          </div>
+        ))}
       </div>
       <div className="w-full">
         <Form {...form}>

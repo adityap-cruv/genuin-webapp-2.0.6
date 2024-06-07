@@ -312,3 +312,11 @@ export function parseColors(colors: any) {
   }
   return parsedColors
 }
+
+export function tryJsonParse(data: string) {
+  try {
+    return JSON.parse(data)
+  } catch (e) {
+    return data
+  }
+}

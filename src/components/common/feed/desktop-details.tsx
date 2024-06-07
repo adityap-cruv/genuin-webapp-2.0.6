@@ -1,11 +1,11 @@
 import { CustomAvatar } from '@components/custom/custom-avatar'
+import { type RefObject, useRef, useState, useEffect } from 'react'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { Button } from '@components/ui/button'
 import { DecorativeList } from '@components/custom/decorative-list'
 import { Comments, NoComments } from '@components/common/comments'
 import { getVideosComments } from '@lib/api/loop'
-import { type RefObject, useRef, useState, useEffect } from 'react'
 import { useMotionValueEvent, useScroll } from 'framer-motion'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
@@ -13,17 +13,16 @@ import { Toaster } from '@components/ui/toaster'
 import { getCurrentShareUrl, getTimeAgo, openModal } from '@lib/utils'
 import { FeedShimmer } from '../shimmers/feed-shimmer'
 import { Input } from '@components/ui/input'
-import { createComment, joinCommunity, leaveCommunity, requestCommunity } from '@lib/api/video'
+import { createComment } from '@lib/api/video'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { ShareIcon } from '@icons/share-icon'
-import { AudioRecordIcon } from '@icons/audio-record-icon'
-import { VideoRecordIcon } from '@icons/video-record-icon'
 import { type CommentListType } from '@lib/schemas/loop/comment'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import { LockIcon } from '@icons/LockIcon'
 import { TickIcon } from '@icons/tick-icon'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@components/ui/tooltip'
-import { DownloadDialogModal } from '../modals/download-app'
+import { JoinCommunityButton } from '@components/pages/community/join-community-button'
+import { ReadMore } from '../read-more'
 
 export function DesktopDetails({ loop, community, owner, video }: VideoPlayerModalType) {
   const { shareFn } = useAdaptiveShare()
@@ -62,9 +61,7 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
             <p className="shrink-0 text-body-1-demi text-tertiary">{getTimeAgo(video.createdAt) + ' ago'}</p>
           </span>
         </span>
-        {video.description && (
-          <p className="line-clamp-2 w-5/6 overflow-hidden break-all pt-3 text-title-3-med">{video.description}</p>
-        )}
+        {video.descriptionArr && <ReadMore.withMention textArr={video.descriptionArr} />}
       </div>
       <div ref={scrollDivRef} className="flex h-full flex-col overflow-auto overflow-x-clip">
         <div className="p-4">
@@ -114,11 +111,18 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
                 )}
               </div>
               <span className="flex h-min flex-1 items-center justify-end gap-x-3">
-                <JoinButton
+                {/* <JoinButton
                   handle={community.handle}
                   id={community.id}
                   userRole={community.userRole}
                   isCommunityPrivate={community.type === 2}
+                /> */}
+                <JoinCommunityButton
+                  handle={community.handle}
+                  buttonText="Join Community"
+                  id={community.id}
+                  isCommunityPrivate={community.type === 2}
+                  isJoinRequested={false}
                 />
                 <Button
                   size="custom"
@@ -323,12 +327,12 @@ function CommentInput({
               })
             }}
             placeholder="Add a comment"
-            className="h-full w-2/3 rounded-full border-2 border-tertiary-200 bg-monochrome-white py-2 pl-6">
+            className="h-full w-full rounded-full border-2 border-tertiary-200 bg-monochrome-white py-2 pl-6">
             <p className="text-start text-title-3-demi text-tertiary">Add a Comment</p>
           </div>
         )}
 
-        <AudioRecordIcon
+        {/* <AudioRecordIcon
           className="fill-secondary"
           onClick={() => {
             DownloadDialogModal.open({ title: 'Get the Genuin app', subtitle: 'Get the app to comment on this video.' })
@@ -342,87 +346,8 @@ function CommentInput({
               subtitle: 'Get the app to comment on this video.',
             })
           }}
-        />
+        /> */}
       </div>
     </div>
-  )
-}
-
-function JoinButton({
-  userRole,
-  handle,
-  id,
-  isCommunityPrivate,
-}: {
-  userRole?: 'LEADER' | 'MEMBER' | 'REQUESTED' | null
-  handle: string
-  id: string
-  isCommunityPrivate: boolean
-}) {
-  const [role, setRole] = useState(userRole)
-  const user = useGenuinOptions().user
-  async function toggleCommunityJoinState() {
-    if (role !== 'MEMBER') {
-      if (isCommunityPrivate) {
-        await requestCommunity(id).then((res) => {
-          if (res.code === 200) {
-            setRole('REQUESTED')
-          }
-        })
-      } else {
-        await joinCommunity(
-          false,
-          [id],
-          [
-            {
-              user_id: user?.id,
-            },
-          ]
-        ).then((res) => {
-          if (res.code === 200) {
-            setRole('MEMBER')
-          }
-        })
-      }
-    } else {
-      await leaveCommunity(id).then((res) => {
-        if (res.code === 200) {
-          setRole(null)
-        }
-      })
-    }
-  }
-
-  if (userRole === 'LEADER') return
-
-  return (
-    <Button
-      size="custom"
-      className={`${role && 'rounded border border-primary '}`}
-      variant={role ? 'outline' : 'default'}
-      onClick={
-        user
-          ? async () => {
-              await toggleCommunityJoinState()
-            }
-          : () => {
-              openModal({
-                title: 'Get the Genuin app',
-                subtitle: (
-                  <>
-                    Get the app to join the <br />
-                    <span className="font-bold">@{handle}</span> community.
-                  </>
-                ),
-              })
-            }
-      }>
-      <p
-        className={`whitespace-nowrap px-4 py-1.5 text-body-1-demi  ${
-          role ? 'text-primary' : 'text-monochrome-white'
-        }`}>
-        {role ? (role === 'REQUESTED' ? 'Requested' : 'Joined') : 'Join Community'}
-      </p>
-    </Button>
   )
 }

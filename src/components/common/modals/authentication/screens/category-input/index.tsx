@@ -1,7 +1,7 @@
 import { Button } from '@components/ui/button'
 import { ModalShell } from '../../modal-shell'
 import { addTopics, getCategoryList } from './api'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { cn } from '@lib/utils'
 import { Loader } from '@components/ui/loader'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
@@ -16,21 +16,21 @@ export function CategoryInput() {
   const { user } = useGenuinOptions((state) => ({ user: state.user }))
   const { close, setStep } = useAuthenticationModalStore((state) => ({ close: state.close, setStep: state.setStep }))
 
-  useEffect(() => {
-    if (!data) return
-    const newSet = new Set<string>()
-    data.forEach((item) => {
-      item.topics.forEach((item) => {
-        if (item.is_selected) newSet.add(item.topic_id)
-      })
-    })
-    if (newSet.size > 0) {
-      setSelectedItem(newSet)
-    }
-  }, [data])
+  // useEffect(() => {
+  //   if (!data) return
+  //   const newSet = new Set<string>()
+  //   data.forEach((item) => {
+  //     item.topics.forEach((item) => {
+  //       if (item.is_selected) newSet.add(item.topic_id)
+  //     })
+  //   })
+  //   if (newSet.size > 0) {
+  //     setSelectedItem(newSet)
+  //   }
+  // }, [data])
 
   return (
-    <ModalShell className="h-full max-h-[60vh] !pb-0">
+    <ModalShell className="max-h-[60vh] pb-0">
       <span className="text-center">
         <p className="text-heading-3">What are you interested in?</p>
         <p className="text-title-3-med text-tertiary">

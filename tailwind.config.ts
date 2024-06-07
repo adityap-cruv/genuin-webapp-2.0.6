@@ -81,6 +81,10 @@ module.exports = {
         'dark-grey': '#3F3F3F',
         'light-grey': '#BBB',
       },
+      home: {
+        black: '#101010',
+        black_70: '#101010B3',
+      },
       // border: 'hsl(var(--border))',
       // input: 'hsl(var(--input))',
       // ring: 'hsl(var(--ring))',
@@ -106,6 +110,25 @@ module.exports = {
       // },
     },
     fontSize: {
+      // Updated Typography for new index page
+      'title-1-bold-home': ['100px', { fontWeight: 700, lineHeight: '100%' }],
+      'title-2-bold-home': ['52px', { fontWeight: 700, lineHeight: '100%' }],
+      'title-3-bold-home': ['36px', { fontWeight: 700, lineHeight: '140%' }],
+      'title-1-bold-home-m': ['48px', { fontWeight: 700, lineHeight: '100%' }],
+      'title-2-bold-home-m': ['36px', { fontWeight: 700, lineHeight: '100%' }],
+      'body-1-home': ['28px', { fontWeight: 500, lineHeight: '140%' }],
+      'body-2-bold-home': ['24px', { fontWeight: 700, lineHeight: '100%' }],
+      'body-2-demi-home': ['24px', { fontWeight: 500, lineHeight: '140%' }],
+      'body-2-home': ['24px', { fontWeight: 400, lineHeight: '140%' }],
+      'des-1-bold-home': ['18px', { fontWeight: 700, lineHeight: '140%' }],
+      'des-1-demi-home': ['18px', { fontWeight: 500, lineHeight: '140%' }],
+      'des-1-home': ['18px', { fontWeight: 400, lineHeight: '140%' }],
+      'cap-1-bold-home': ['16px', { fontWeight: 700, lineHeight: '100%' }],
+      'cap-1-demi-home': ['16px', { fontWeight: 600, lineHeight: '100%' }],
+      'cap-1-home': ['16px', { fontWeight: 500, lineHeight: '100%' }],
+      'cap-1-home-m': ['16px', { fontWeight: 500, lineHeight: '140%' }],
+      'cap-2-home-m': ['16px', { fontWeight: 400, lineHeight: '140%' }],
+      'para-1-home-m': ['10px', { fontWeight: 400, lineHeight: '140%' }],
       // New Typography developed by design team for new web.
       'heading-3': ['32px', { fontWeight: 600, lineHeight: '120%', letterSpacing: '-0.96px' }],
       'title-1-bold': ['24px', { fontWeight: 700, lineHeight: '32px' }],
@@ -144,14 +167,35 @@ module.exports = {
     },
     fontFamily: {
       sans: ['"Avenir Next"', ...defaultTheme.fontFamily.sans], // Here sans is default font in tailwindcss so updated it to avenir next
+      // manrope: ['"Manrope"', ...defaultTheme.fontFamily.sans],
     },
     aspectRatio: {
       reel: '9 / 16',
+      animatedDiv: '11 / 10',
+      square: '1 / 1',
     },
     extend: {
+      transitionDuration: {
+        '8000': '8000ms',
+        '4000': '4000ms',
+        '3000': '3000ms',
+        '2600': '2600ms',
+        '2200': '2200ms',
+        '1800': '1800ms',
+        '1600': '1600ms',
+        '1400': '1400ms',
+        '1200': '1200ms',
+      },
+      backgroundColor: {
+        'white-alpha': 'rgba(255, 255, 255, 0.50)',
+      },
+      backdropBlur: {
+        '20px': '20px',
+      },
       height: {
         body: 'calc(100% - 74px)',
         navbar: '74px',
+        customscreen: 'calc(100vh - 74px)',
       },
       flexGrow: {
         3: '3',
@@ -197,6 +241,27 @@ module.exports = {
         1440: '1440px',
       },
       keyframes: {
+        marquee: {
+          '0%': { transform: 'translateX(0%)' },
+          '100%': { transform: 'translateX(-100%)' },
+        },
+        zoomIn: {
+          '0%': { transform: 'scale(0.7)' },
+          '100%': { transform: 'scale(1)' },
+        },
+        zoomInOut: {
+          '0%': { transform: 'scale(0.8)' },
+          '70%': { transform: 'scale(1.2)' },
+          '100%': { transform: 'scale(1)' },
+        },
+        rotateRight: {
+          '0%': { transform: 'rotate(15deg)' },
+          '100%': { transform: 'rotate(0)' },
+        },
+        rotateLeft: {
+          '0%': { transform: 'rotate(-15deg)' },
+          '100%': { transform: 'rotate(0)' },
+        },
         'accordion-down': {
           from: { height: '0' },
           to: { height: 'var(--radix-accordion-content-height)' },
@@ -209,6 +274,11 @@ module.exports = {
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        marquee: 'marquee 25s linear infinite',
+        zoomIn: 'zoomIn 0.2s ease-in-out forwards',
+        zoomInOut: 'zoomInOut 2s ease-in-out forwards',
+        rotateRight: 'rotateRight 1s ease-in-out forwards',
+        rotateLeft: 'rotateLeft 1s ease-in-out forwards',
       },
       linearGradientColors: {
         'black-70': ['rgba(17, 17, 17, 0.00)', 'rgba(17, 17, 17, 0.70)'],

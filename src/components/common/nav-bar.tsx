@@ -1,6 +1,6 @@
 'use client'
 import { Button } from '@components/ui/button'
-import { DownloadAppDialog } from '../pages/home/download-app-dialog'
+import { DownloadAppDialog } from '../pages/build/download-app-dialog'
 import Link from 'next/link'
 import { cn } from '@lib/utils'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@components/ui/dropdown-menu'

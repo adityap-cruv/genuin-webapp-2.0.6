@@ -1,18 +1,11 @@
-import { CustomAvatar } from '@components/custom/custom-avatar'
 import { getCommunityLoops } from '@lib/api/community'
-import { abbreviateNumber, getTimeAgo, cn } from '@lib/utils'
-import { PATH_NAME } from '@lib/utils/constants/path'
 import Image from 'next/image'
-import Link from 'next/link'
 import noLoopsImage from '@images/noLoopImage.svg'
-import icPlay from '@icons/player-controls/icPlay.svg'
 import { useState } from 'react'
 import { PlayerModal } from '@components/common/modals/player-modal'
 import { getLoopVideos } from '@lib/api/loop'
-import icLock from '@icons/icLock.svg'
-import { Shimmer } from '@components/ui/shimmer'
 import { type VideoPlayerModalCommunityType, type VideoPlayerModalLoopType } from '@lib/schemas/player/video'
-import { type CommunityLoopType } from '@lib/schemas/community/loops'
+import { LoopCard, LoopCardShimmer } from '@components/common/loop-card'
 
 // TODO: remove this component from here and put at better location
 export function CommunityLoopTab({ community }: { community: VideoPlayerModalCommunityType }) {
@@ -21,13 +14,12 @@ export function CommunityLoopTab({ community }: { community: VideoPlayerModalCom
     open: false,
     loop: null,
   })
-
   if (isLoading)
     return (
       <>
-        <LoopDetailsTabShimmer />
-        <LoopDetailsTabShimmer />
-        <LoopDetailsTabShimmer />
+        <LoopCardShimmer />
+        <LoopCardShimmer />
+        <LoopCardShimmer />
       </>
     )
 
@@ -45,16 +37,34 @@ export function CommunityLoopTab({ community }: { community: VideoPlayerModalCom
       <>
         {data.loops.map((item, index) => {
           return (
-            <LoopItem
+            <LoopCard
               key={index}
-              loopDetails={item}
-              openModal={() => {
+              description={item.group.group_description ?? ''}
+              id={item.chat_id}
+              isViewAllowed={item.is_view_allowed}
+              latestMessages={item.latest_messages.map((item) => ({
+                owner: { userName: item.owner.username },
+                thumbnail: item.thumbnail_url ?? '',
+                createdAt: item.message_at,
+              }))}
+              loopSlug={item.slug}
+              memberCount={item.group.no_of_members}
+              members={item.group.members.map((item) => ({
+                isAvatar: item.is_avatar,
+                name: item.name ?? '',
+                profileImage: item.profile_image,
+                userName: item.username,
+              }))}
+              name={item.group.group_name ?? ''}
+              onClickOnImage={(id) => {
                 setModalController((x) => {
+                  const newLoop = data.loops.find((item) => item.chat_id === id)
                   x.open = true
-                  x.loop = { id: item.chat_id, slug: item.slug, name: item.group.group_name }
+                  if (newLoop && id) x.loop = { id, slug: newLoop.slug, name: newLoop.group.group_name }
                   return { ...x }
                 })
               }}
+              viewCount={item.group.no_of_views}
             />
           )
         })}
@@ -76,133 +86,6 @@ export function CommunityLoopTab({ community }: { community: VideoPlayerModalCom
     )
 }
 
-function LoopItem({
-  loopDetails,
-  openModal,
-}: {
-  loopDetails: CommunityLoopType
-  openModal: (slug: VideoPlayerModalLoopType) => void
-}) {
-  function getCollaboratorsCountString(count: any) {
-    let str = ' + '
-    if (!count) return
-    if (count === 1) {
-      str += abbreviateNumber(count) + ' Collaborator'
-    } else {
-      str += abbreviateNumber(count) + ' Collaborators'
-    }
-    return str
-  }
-
-  function Members() {
-    const members = loopDetails.group.members
-    return (
-      <>
-        {members[0] && (
-          <CustomAvatar
-            className="z-20 h-6 w-6 border-2 border-tertiary-100 bg-red-50"
-            imageUrl={members[0].profile_image ?? ''}
-            isAvatar={members[0].is_avatar}
-            fallbackString={members[0].name ?? ''}
-          />
-        )}
-        {members.length !== 0 && members[1] && (
-          <CustomAvatar
-            className="absolute left-3 z-10 h-6 w-6 border-2 border-tertiary-100 bg-red-50"
-            imageUrl={members[1].profile_image ?? ''}
-            isAvatar={members[1].is_avatar}
-            fallbackString={members[1].name ?? ''}
-          />
-        )}
-        {members.length !== 0 && members[2] && (
-          <CustomAvatar
-            className="absolute left-6 h-6 w-6 border-2 border-tertiary-100 bg-red-50"
-            imageUrl={members[2].profile_image ?? ''}
-            isAvatar={members[2].is_avatar}
-            fallbackString={members[2].name ?? ''}
-          />
-        )}
-      </>
-    )
-  }
-
-  return (
-    <div className="relative">
-      <Link href={PATH_NAME.loop(loopDetails.slug)}>
-        <div className="py-2">
-          <div
-            className={cn(
-              'relative my-4 w-full rounded-lg border border-tertiary-200 bg-monochrome-white',
-              loopDetails.unread_message_count > 0 && 'border-primary-200 bg-primary-100 '
-            )}>
-            <div className="w-[70%] items-center p-[3%]">
-              <p className="text-body-1-bold">{loopDetails.group.group_name}</p>
-              {!loopDetails.is_view_allowed && (
-                <p className="text-cap-1-med text-tertiary">Visible to Collaborators only</p>
-              )}
-              {loopDetails.unread_message_count > 0 ? (
-                <p className="line-clamp-1 break-all text-body-1-bold text-primary">{`${
-                  loopDetails.unread_message_count
-                } new videos ∙ ${getTimeAgo(loopDetails.latest_messages[0].message_at)}`}</p>
-              ) : (
-                loopDetails.latest_messages.length !== 0 &&
-                loopDetails.is_view_allowed && (
-                  <p className="line-clamp-1 break-all text-body-1-demi text-secondary-300">
-                    @{loopDetails.latest_messages[0].owner.username} posted ∙{' '}
-                    {getTimeAgo(loopDetails.latest_messages[0].message_at)}
-                  </p>
-                )
-              )}
-            </div>
-            <div
-              className={cn(
-                'h-[60%] rounded-b-lg border border-tertiary-200 p-4',
-                loopDetails.unread_message_count > 0 ? 'bg-primary-200' : 'bg-tertiary-200'
-              )}>
-              <div className="flex w-[68%] items-center">
-                <div className="relative flex">
-                  <Members />
-                </div>
-                {loopDetails.group.members.length > 0 && (
-                  <p
-                    className={`ml-1 line-clamp-1 text-body-1-med text-secondary-300 ${
-                      loopDetails.group.members.length !== 1 && 'ml-7'
-                    } ${loopDetails.group.members.length === 3 && 'ml-6'}`}>
-                    {loopDetails.group.members[0].username}
-                    {getCollaboratorsCountString(loopDetails.group.members.length - 1)}
-                  </p>
-                )}
-              </div>
-              <p className="my-[2%] line-clamp-2 w-[68%] text-body-1-demi text-secondary-300">
-                {loopDetails.group.group_description}
-              </p>
-              <p className="w-[68%] text-body-1-med text-secondary-300">
-                {abbreviateNumber(loopDetails.group.members.length)} subscribers ∙{' '}
-                {abbreviateNumber(loopDetails.group.no_of_views)} views
-              </p>
-            </div>
-            {/* {renderedImages} */}
-          </div>
-        </div>
-      </Link>
-      {!loopDetails.is_view_allowed ? (
-        <div className="group/video absolute right-7 top-[50%] flex aspect-reel h-[80%] -translate-y-1/2 items-center justify-center rounded border border-tertiary-200 bg-monochrome-white hover:cursor-pointer">
-          <div className="rounded-full bg-tertiary-200 p-2">
-            <Image src={icLock} alt="share" className="h-4 w-4" />
-          </div>
-        </div>
-      ) : (
-        <RenderedImages
-          videos={loopDetails.latest_messages}
-          onClick={() => {
-            openModal({ id: loopDetails.chat_id, slug: loopDetails.slug, name: loopDetails.group.group_name })
-          }}
-        />
-      )}
-    </div>
-  )
-}
-
 function NoLoops() {
   return (
     <div className="flex h-full">
@@ -215,50 +98,6 @@ function NoLoops() {
         </p>
       </div>
     </div>
-  )
-}
-
-function RenderedImages({ videos, onClick }: { videos: any; onClick: () => void }) {
-  const transformValues: any = {
-    1: [50],
-    2: [48, 52],
-    3: [46, 50, 54],
-  }
-
-  const rightValues: any = {
-    1: [20],
-    2: [24, 16],
-    3: [28, 20, 12],
-  }
-
-  const opacitValues: any = {
-    1: [1],
-    2: [1, 0.5],
-    3: [1, 0.66, 0.4],
-  }
-  const videosLength = videos.length
-
-  return (
-    <span onClick={onClick}>
-      {videos.map((item: any, index: number) => {
-        return (
-          <div
-            key={index}
-            className="group/video absolute top-[50%] flex aspect-reel h-[80%] items-center justify-center rounded hover:cursor-pointer"
-            style={{
-              right: `${rightValues[videosLength][index]}px`,
-              transform: `translateY(-${transformValues[videosLength][index]}%)`,
-              zIndex: videosLength - index + 1,
-              opacity: `${opacitValues[videosLength][index]}`,
-            }}>
-            <img className="h-5/6 rounded" src={item.thumbnail_url} />
-            <div className="absolute inset-0 hidden h-full w-full items-center justify-center bg-monochrome-black/30 group-hover/video:flex">
-              <Image src={icPlay} alt="play" className="absolute" />
-            </div>
-          </div>
-        )
-      })}
-    </span>
   )
 }
 
@@ -286,68 +125,5 @@ function PlayerModalWrapper({ open = false, loop, community, close, unreadMessag
       close={close}
       unreadMessageCount={unreadMessageCount}
     />
-  )
-}
-
-function LoopDetailsTabShimmer() {
-  const videos = [1, 2, 3]
-  const videosLength = videos.length
-  const transformValues: any = {
-    1: [50],
-    2: [48, 52],
-    3: [46, 50, 54],
-  }
-
-  const rightValues: any = {
-    1: [20],
-    2: [24, 16],
-    3: [28, 20, 12],
-  }
-
-  const opacitValues: any = {
-    1: [1],
-    2: [1, 0.5],
-    3: [1, 0.66, 0.4],
-  }
-
-  return (
-    <div className="relative">
-      <div className="relative my-4 w-full rounded-lg border border-tertiary-200 bg-monochrome-white">
-        <div className="w-[70%] items-center p-[3%]">
-          <Shimmer className="h-4 w-2/3" />
-          <div className="my-1 flex gap-2">
-            <Shimmer className="h-4 w-1/2" />
-            <Shimmer className="h-4 w-1/12" />
-          </div>
-        </div>
-        <div className="h-[60%] p-4">
-          <div className="flex w-[70%] items-center">
-            <div className="relative flex">
-              <Shimmer className="z-20 h-6 w-6 rounded-full" />
-              <Shimmer className="absolute left-3 z-10 h-6 w-6 rounded-full" />
-              <Shimmer className="absolute left-6 h-6 w-6 rounded-full" />
-            </div>
-            <Shimmer className="ml-7 h-3 w-1/2" />
-          </div>
-          <Shimmer className="my-1 h-3 w-2/3" />
-          <Shimmer className="my-1 h-3 w-2/3" />
-          <div className="my-2 flex gap-2">
-            <Shimmer className="h-3 w-1/5" />
-            <Shimmer className="h-3 w-1/6" />
-          </div>
-        </div>
-      </div>
-      {videos.map((item: any, index: number) => (
-        <Shimmer
-          key={index}
-          className="group/video absolute top-[50%] flex aspect-reel h-[80%] items-center justify-center rounded hover:cursor-pointer"
-          style={{
-            right: `${rightValues[videosLength][index]}px`,
-            transform: `translateY(-${transformValues[videosLength][index]}%)`,
-            zIndex: videosLength - index + 1,
-            opacity: `${opacitValues[videosLength][index]}`,
-          }}></Shimmer>
-      ))}
-    </div>
   )
 }

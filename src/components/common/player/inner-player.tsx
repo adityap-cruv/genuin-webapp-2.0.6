@@ -136,9 +136,9 @@ export function InnerPlayer({
       // onDurationChange={onDurationChangeEventHandler}
       onTimeUpdate={onTimeUpdateEventHandler}
       onPause={onPause}
-      onEnded={(e) =>{
+      onEnded={(e) => {
         onEnded?.(e)
-        restartAndLog(localRef.current.player,loop ?? false, id)
+        restartAndLog(localRef.current.player, loop ?? false, id)
       }}
       {...props}
     />
@@ -258,7 +258,7 @@ export function ViewportPlayer({
       onPause={onPause}
       onEnded={(e) => {
         onEnded?.(e)
-        restartAndLog(localRef.current.player,loop ?? false, id)
+        restartAndLog(localRef.current.player, loop ?? false, id)
       }}
       onTimeUpdate={onTimeUpdateEventHandler}
       // onDurationChange={onDurationChangeEventHandler}
@@ -267,10 +267,9 @@ export function ViewportPlayer({
   )
 }
 
-function restartAndLog(player: OpenPlayerJS | null, loop:boolean,id: string){
-  if(loop && player) {
+function restartAndLog(player: OpenPlayerJS | null, loop: boolean, id: string) {
+  if (loop && player) {
     void player.play()
   }
   pushVideoWatch(id)
-
 }

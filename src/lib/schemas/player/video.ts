@@ -1,5 +1,15 @@
 import { z } from 'zod'
 
+const descriptionArrSchema = z.array(
+  z
+    .object({ member_id: z.string(), text: z.string() })
+    .or(z.object({ community_id: z.string(), text: z.string() }))
+    .or(z.string())
+)
+// .nullish()
+
+export type DescriptionArrType = z.infer<typeof descriptionArrSchema>
+
 // Define the video schema
 const videoSchema = z.object({
   id: z.string(),
@@ -11,7 +21,8 @@ const videoSchema = z.object({
   isSparked: z.boolean().nullable().optional(),
   sparkCount: z.number(),
   thumbnail: z.string(),
-  description: z.string().nullable().optional(),
+  descriptionArr: descriptionArrSchema.nullish(),
+  descriptionText: z.string().nullish(),
   slug: z.string(),
 })
 
@@ -47,6 +58,7 @@ const communitySchema = z.object({
   shareUrl: z.string(),
   userRole: z.enum(['LEADER', 'MEMBER']).nullish(),
   brand: BrandSchema.optional(),
+  isJoinRequested: z.boolean().optional(),
 })
 
 const BrandUserSchema = z

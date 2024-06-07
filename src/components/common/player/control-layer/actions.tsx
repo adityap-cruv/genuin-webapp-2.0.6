@@ -14,7 +14,6 @@ import icLinkout from '@icons/player-controls/icLinkout.svg'
 import icSpark from '@icons/player-controls/icBulb.svg'
 import icSparkTrue from '@icons/player-controls/icSparkTrue.svg'
 import icRepost from '@icons/player-controls/icRepost.svg'
-import ic3Dot from '@icons/player-controls/3Dot.svg'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useCommentSheetStore } from '../comment-sheet/store'
@@ -24,7 +23,6 @@ import { videoSpark } from '@lib/api/video'
 import { useState } from 'react'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { useSearchParams } from 'next/navigation'
-import { DownloadDialogModal } from '@components/common/modals/download-app'
 import { RepostModal } from '@components/common/modals/repost'
 import { AuthenticationModal } from '@components/common/modals/authentication'
 
@@ -195,13 +193,17 @@ function Mobile({
         }}>
         <Image src={icShare} alt="share" height={32} width={32} />
       </ActionItem>
-      <ActionItem
+      {/* <ActionItem
         title="more options!"
         onClick={() => {
-          DownloadDialogModal.open({ title: 'Get the Genuin app', subtitle: 'Get the app to report the video.' })
+          if (user) {
+            DownloadDialogModal.open({ title: 'Get the Genuin app', subtitle: 'Get the app to report video.' })
+          } else {
+            AuthenticationModal.open()
+          }
         }}>
         <Image src={ic3Dot} alt="more options" height={32} width={32} />
-      </ActionItem>
+      </ActionItem> */}
     </div>
   )
 }
@@ -313,13 +315,17 @@ function Desktop({
           }}>
           <Image src={icShare} alt="share" height={32} width={32} />
         </ActionItem>
-        <ActionItem
+        {/* <ActionItem
           title="More options!"
           onClick={() => {
-            DownloadDialogModal.open({ title: 'Get the Genuin app', subtitle: 'Get the app to report video.' })
+            if (user) {
+              DownloadDialogModal.open({ title: 'Get the Genuin app', subtitle: 'Get the app to report video.' })
+            } else {
+              AuthenticationModal.open()
+            }
           }}>
           <Image src={ic3Dot} height={32} width={32} alt="More Options!" />
-        </ActionItem>
+        </ActionItem> */}
       </div>
     </>
   )

@@ -3,12 +3,12 @@ import React from 'react'
 import style from './marketing.module.scss'
 import Precision from '@components/business/marketing-page/precision'
 import Communities from '@components/business/marketing-page/communities'
-import { NavBar } from '@components/pages/home/nav-bar'
+import { NavBar } from '@components/pages/build/nav-bar'
 import whatsapp from '@images/business/marketing-page/communities/whatsapp.webp'
 import AsSeenIn from '@components/business/as-seen-in'
 import { Button } from '@components/ui/button'
 import { ContactUs } from '@components/common/modals/contact-us'
-import { Footer } from '@components/pages/home/footer'
+import { Footer } from '@components/pages/build/footer'
 
 export const Desktop = () => {
   return (

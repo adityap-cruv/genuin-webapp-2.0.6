@@ -3,11 +3,11 @@ import { LeftScrollButtonIcon, RightScrollButtonIcon } from './horizontal-scroll
 import React, { useRef } from 'react'
 import Link from 'next/link'
 import { useInView } from 'framer-motion'
-import c1 from '@images/home-page/community/communityshare 1.webp'
-import c2 from '@images/home-page/community/communityshare 2.webp'
-import c3 from '@images/home-page/community/communityshare 3.webp'
-import c4 from '@images/home-page/community/communityshare 4.webp'
-import c5 from '@images/home-page/community/communityshare 5.webp'
+import c1 from '@images/home-page/community/community-share-1.webp'
+import c2 from '@images/home-page/community/community-share-2.webp'
+import c3 from '@images/home-page/community/community-share-3.webp'
+import c4 from '@images/home-page/community/community-share-4.webp'
+import c5 from '@images/home-page/community/community-share-5.webp'
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@components/ui/carousel'
 
 export function CommunitySection() {

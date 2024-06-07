@@ -1,15 +1,11 @@
 import { type Metadata } from 'next'
-import { NavBar } from '@components/pages/home/nav-bar'
-import { Footer } from '@components/pages/home/footer'
-import { MainComponent } from '@components/pages/home/main-component'
+import { HomeComponent } from '@components/pages/home/home-component'
 
 // TODO: optimize uses of dynamic function.
 export default async function Page() {
   return (
     <main id="indexPage" className="absolute inset-0 text-new-off-black">
-      <NavBar />
-      <MainComponent />
-      <Footer />
+      <HomeComponent />
     </main>
   )
 }
