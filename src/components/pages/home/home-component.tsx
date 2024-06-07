@@ -139,9 +139,9 @@ export function HomeComponent() {
         </CustomAnimatedSection>
       ))}
 
-      <CustomAnimatedSection>
+      {/* <CustomAnimatedSection>
         <PartnershipEcosystem />
-      </CustomAnimatedSection>
+      </CustomAnimatedSection> */}
 
       <CustomAnimatedSection classname="transform-none">
         <BookDemo />

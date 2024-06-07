@@ -1,4 +1,5 @@
 import { ContactUs } from '@components/common/modals/contact-us'
+import { InnerPlayer } from '@components/common/player/inner-player'
 import { Button } from '@components/ui/button'
 import bg_genuin_logo from '@images/home/index_genuin_logo.png'
 
@@ -30,14 +31,12 @@ export function CommunityReimagined() {
           </div>
         </div>
         <div className="relative flex h-full w-2/5 items-center justify-center">
-          <video
-            src="https://media.begenuin.com/backend_assets/hero_video_genuin.mp4"
+          <InnerPlayer
             className="aspect-[32/67] h-4/5 rounded-[30px]"
-            controls={false}
+            id={'1'}
             loop={true}
-            autoPlay
-            muted
-            playsInline
+            videoSource="https://media.begenuin.com/backend_assets/hero-video/comp-1_2.m3u8"
+            poster={''}
           />
           <div className="absolute aspect-[32/67] h-[81.3%] rounded-[32px] border-[7px] border-monochrome-white"></div>
         </div>
@@ -60,14 +59,12 @@ export function CommunityReimagined() {
           Create video-based communities within your retail media network to drive engagement and new revenue.
         </p>
         <div className="relative flex w-44 items-center justify-center">
-          <video
-            src="https://media.begenuin.com/backend_assets/hero_video_genuin.mp4"
+          <InnerPlayer
             className="aspect-[32/67] w-full rounded-3xl"
-            controls={false}
+            id={'1'}
             loop={true}
-            autoPlay
-            muted
-            playsInline
+            videoSource="https://media.begenuin.com/backend_assets/hero-video/comp-1_2.m3u8"
+            poster={''}
           />
           <div className="absolute aspect-[31/67] w-full rounded-[25px] border-[6px] border-monochrome-white"></div>
         </div>
