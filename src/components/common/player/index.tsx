@@ -150,7 +150,8 @@ function Mobile({
             sparkCount={videoDetails.video.sparkCount}
             videoId={videoDetails.video.id}
             attachedLink={videoDetails.video.attachedLink}
-            description={videoDetails.video.description}
+            descriptionArr={videoDetails.video.descriptionArr}
+            descriptionText={videoDetails.video.descriptionText}
             isSparked={videoDetails.video.isSparked}
           />
         </div>

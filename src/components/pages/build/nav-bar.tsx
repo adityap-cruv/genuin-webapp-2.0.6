@@ -23,7 +23,7 @@ export function NavBar() {
             <Link href={PATH_NAME.build()}>
               <p
                 className={`pr-4 text-new-para-2 ${
-                  pathname === '/' ? 'font-bold text-monochrome-black' : 'text-monochrome-3'
+                  pathname === '/build' ? 'font-bold text-monochrome-black' : 'text-monochrome-3'
                 } transition-all`}>
                 Build
               </p>

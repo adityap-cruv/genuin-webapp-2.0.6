@@ -1,6 +1,5 @@
 'use client'
 import React, { useEffect } from 'react'
-import style from './getintuch.module.scss'
 import HeadingComponent from '@components/business/heading'
 import ParagraphComponent from '@components/business/paragraph'
 import InlineButtonInput from '@components/business/input'

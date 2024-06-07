@@ -87,6 +87,7 @@ export async function resetPassword(token: string): Promise<{
       }
     })
     .catch((e) => {
+      // eslint-disable-next-line no-console
       console.log('ERROR in Email Verify: ', e)
       const data = e?.response?.data
       return {

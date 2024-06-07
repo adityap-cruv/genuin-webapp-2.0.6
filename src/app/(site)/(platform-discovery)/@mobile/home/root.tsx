@@ -16,7 +16,7 @@ export function Root() {
   if (videos)
     return (
       <main className="h-full w-full">
-        <TopBar variant="trasparent" />
+        <TopBar variant="transparent" />
         <span className="absolute inset-0">
           <Feed
             startIndex={0}

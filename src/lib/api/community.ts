@@ -4,6 +4,7 @@ import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import { parseFeedResponse } from './api-response-parser'
 import { axiosInstance } from './instance'
+import { parseFeaturedCommunityList } from '@lib/schemas/community/featured-community'
 
 export async function fetchCommunityDetails(slug: string) {
   return await axiosInstance
@@ -13,7 +14,6 @@ export async function fetchCommunityDetails(slug: string) {
       },
     })
     .then((res) => {
-      console.log('res.data:', res.data.data)
       return validateCommunityDetails(res.data.data)
     })
     .catch((e) => {
@@ -24,6 +24,7 @@ export async function fetchCommunityDetails(slug: string) {
        * Figure out why this error happening and solve the issue.
        * @example Community handle: @kvkic
        */
+      // eslint-disable-next-line no-console
       console.log('error::', e)
       throw new Error('Something went wrong with community detail!')
     })
@@ -89,10 +90,6 @@ export function getCommunityLoops(slug: string) {
   return useQuery({ queryFn: async () => await fetchCommunityLoops(slug), queryKey: ['community', 'loops', slug] })
 }
 
-// async function fetchVideoComments(handle: string) {
-//   return await axios.get(process.env.NEXT_PUBLIC_API_URL + '/api/')
-// }
-
 async function fetchCommunityMembers(slug: string) {
   return await axiosInstance
     .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/community/members', {
@@ -114,4 +111,38 @@ export function getCommunityMembers(slug: string) {
     queryKey: ['members'],
     queryFn: async () => await fetchCommunityMembers(slug),
   })
+}
+
+async function fetchFeaturedCommunity() {
+  return await axiosInstance
+    .get('/api/v3/featured_communities')
+    .then((res) => {
+      return parseFeaturedCommunityList(res.data.data.communities)
+    })
+    .catch((e) => {
+      // eslint-disable-next-line no-console
+      console.log('error in featured api::', e)
+      throw new Error('Something went wrong with fetching featured community!')
+    })
+}
+
+export function getFeaturedCommunity() {
+  return useQuery({ queryKey: ['featured_community'], queryFn: async () => await fetchFeaturedCommunity() })
+}
+
+async function fetchFeaturedLoop() {
+  return await axiosInstance
+    .get('/api/v3/featured_loops')
+    .then((res) => {
+      return validateCommunityLoopList(res.data.data.loops)
+    })
+    .catch((e) => {
+      // eslint-disable-next-line no-console
+      console.log('error in featured api::', e)
+      throw new Error('Something went wrong with fetching featured community!')
+    })
+}
+
+export function getFeaturedLoops() {
+  return useQuery({ queryKey: ['featured_loops'], queryFn: async () => await fetchFeaturedLoop() })
 }

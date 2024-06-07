@@ -8,7 +8,7 @@ import star2 from '@images/business/pricing/star2.webp'
 import exclamation from '@icons/business/exclamation.svg'
 import { Button } from '@components/ui/button'
 import style from './subscriptionPlan.module.scss'
-import { DownloadAppDialog } from '@components/pages/home/download-app-dialog'
+import { DownloadAppDialog } from '@components/pages/build/download-app-dialog'
 import { ContactUs } from '@components/common/modals/contact-us'
 
 export default function SubscriptionPlan() {

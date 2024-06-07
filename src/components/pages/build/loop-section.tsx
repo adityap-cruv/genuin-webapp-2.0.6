@@ -3,36 +3,36 @@ import { LeftScrollButtonIcon, RightScrollButtonIcon } from './horizontal-scroll
 import React, { useRef } from 'react'
 import Link from 'next/link'
 import { useInView } from 'framer-motion'
-import c1 from '@images/home-page/community/communityshare 1.webp'
-import c2 from '@images/home-page/community/communityshare 2.webp'
-import c3 from '@images/home-page/community/communityshare 3.webp'
-import c4 from '@images/home-page/community/communityshare 4.webp'
-import c5 from '@images/home-page/community/communityshare 5.webp'
+import c1 from '@images/home-page/loop/loop-link-share-1.webp'
+import c2 from '@images/home-page/loop/loop-link-share-2.webp'
+import c3 from '@images/home-page/loop/loop-link-share-3.webp'
+import c4 from '@images/home-page/loop/loop-link-share-4.webp'
+import c5 from '@images/home-page/loop/loop-link-share-5.webp'
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@components/ui/carousel'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 
-export function CommunitySection() {
+export function LoopSection() {
   const { isMobile } = useGenuinOptions((state) => ({ isMobile: state.isMobile }))
-  const communityList = [
+  const loopList = [
     {
       image: c1,
-      link: 'https://begenuin.com/community/meaningful-love-gifts',
+      link: 'https://begenuin.com/loop/customized-gifts-impact-loved-ones',
     },
     {
       image: c2,
-      link: 'https://begenuin.com/community/flawless-makeup-secrets',
+      link: 'https://begenuin.com/loop/welcome-to-lms-beauty',
     },
     {
       image: c3,
-      link: 'https://begenuin.com/community/knowledge-sharing-talks',
+      link: 'https://begenuin.com/loop/new-vision-perspective',
     },
     {
       image: c4,
-      link: 'https://begenuin.com/community/home-improvement-community',
+      link: 'https://begenuin.com/loop/lowes-loyalty-rewards-tips',
     },
     {
       image: c5,
-      link: 'https://begenuin.com/community/vibrant-creative-community',
+      link: 'https://begenuin.com/loop/latest-features-tools-creations',
     },
   ]
   const divRef = useRef<HTMLDivElement>(null)
@@ -44,9 +44,9 @@ export function CommunitySection() {
   return (
     <>
       {isMobile ? (
-        <Carousel className="mb-20 w-full max-w-sm">
+        <Carousel className="mb-32 w-full max-w-sm">
           <CarouselContent>
-            {communityList.map((item, index) => {
+            {loopList.map((item, index) => {
               return (
                 <CarouselItem key={index}>
                   <div>
@@ -73,7 +73,7 @@ export function CommunitySection() {
             <div ref={firstDivRef} className="w-0.5">
               &nbsp;
             </div>
-            {communityList.map((item, index) => {
+            {loopList.map((item, index) => {
               return (
                 <React.Fragment key={index}>
                   <div

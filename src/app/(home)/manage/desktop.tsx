@@ -6,12 +6,12 @@ import EngagementHooks from '@components/business/brand-page/engagement-hooks'
 import VideoBasedCommunities from '@components/business/brand-page/video-based-communities'
 import Testimonial from '@components/business/brand-page/testimonials'
 import GetInTouch from '@components/business/brand-page/get-in-touch'
-import { NavBar } from '@components/pages/home/nav-bar'
+import { NavBar } from '@components/pages/build/nav-bar'
 import AsSeenIn from '@components/business/as-seen-in'
 import onlinecommunity from '@images/business/brand-page/online-community-group.webp'
 import { Button } from '@components/ui/button'
 import { ContactUs } from '@components/common/modals/contact-us'
-import { Footer } from '@components/pages/home/footer'
+import { Footer } from '@components/pages/build/footer'
 
 export default function Desktop() {
   return (

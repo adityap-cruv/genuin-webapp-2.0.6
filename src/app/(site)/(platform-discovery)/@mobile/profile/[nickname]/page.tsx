@@ -4,7 +4,7 @@ import { fetchUserData } from '@lib/api/profile'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { fetchMetadata } from '@lib/api/meta-data'
 import { redirect } from 'next/navigation'
-import { headers } from 'next/headers'
+import { headers, cookies } from 'next/headers'
 import { getConfig } from '../../../../../../middleware'
 
 interface CompProps {
@@ -15,7 +15,9 @@ interface CompProps {
 }
 
 export default async function Component({ params }: CompProps) {
-  const profileData = await fetchUserData(params.nickname)
+  const configs = cookies().get('config_params')?.value
+  const profileData = await fetchUserData(params.nickname, configs ? JSON.parse(configs) : undefined)
+
   if (profileData.brand) {
     redirect(PATH_NAME.brand(profileData.brand.brand_slug))
   }

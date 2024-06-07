@@ -2,6 +2,7 @@ import { validateLoopDetails } from '@lib/schemas/loop/details'
 import { axiosInstance } from './instance'
 import { type LoopVideoType } from '@lib/schemas/loop/videos'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
+import { tryJsonParse } from '@lib/utils'
 
 export async function getVideoDetails(slug: string): Promise<VideoPlayerModalType> {
   const metadata = await fetchVideoMetadata(slug)
@@ -9,7 +10,6 @@ export async function getVideoDetails(slug: string): Promise<VideoPlayerModalTyp
     await fetchLoopDetails(metadata.chat_id),
     await fetchLoopVideo(metadata.chat_id, metadata.message_id),
   ])
-
   return {
     community: {
       handle: loopDetails.community.handle,
@@ -55,7 +55,8 @@ export async function getVideoDetails(slug: string): Promise<VideoPlayerModalTyp
       thumbnail: videoDetails.thumbnail_url ?? '',
       attachedLink: videoDetails.attached_link,
       createdAt: videoDetails.message_at,
-      description: '',
+      descriptionArr: tryJsonParse(videoDetails.description_data),
+      descriptionText: videoDetails.description_text,
     },
   }
 }
@@ -72,6 +73,7 @@ export async function fetchLoopVideo(loopId: string, videoId: string) {
       return res.data.data.messages[0] as LoopVideoType
     })
     .catch((e) => {
+      // eslint-disable-next-line no-console
       console.log('error in conversation messages::', e)
       throw new Error('Something went wrong in conversation messages.')
     })
@@ -102,7 +104,8 @@ export async function fetchVideoMetadata(videoSlug: string) {
       return res.data.data
     })
     .catch((e) => {
-      console.log('error::', e)
+      // eslint-disable-next-line no-console
+      console.log('error in deep_link/meta_data::', e)
     })
 }
 

@@ -9,11 +9,23 @@ import {
 } from './api-response-parser'
 import { axiosInstance } from './instance'
 
-export async function fetchUserData(nickname: string) {
+type Headers = Record<string, string>
+
+export async function fetchUserData(nickname: string, headers?: Headers) {
+  let parsedHeader
+  if (headers)
+    parsedHeader = Object.keys(headers).includes('subdomain')
+      ? { 'x-brand-subdomain': headers.subdomain }
+      : { 'x-brand-domain': headers.domain }
+
   return await axios
-    .post(process.env.NEXT_PUBLIC_API_URL + '/api/v3/users/get_profile', {
-      nickname,
-    })
+    .post(
+      process.env.NEXT_PUBLIC_API_URL + '/api/v3/users/get_profile',
+      {
+        nickname,
+      },
+      { headers: parsedHeader }
+    )
     .then((res) => {
       return validateProfileDetails(res.data.data)
     })
@@ -88,7 +100,8 @@ export async function fetchProfileCommunityLoops(
       return parseProfileLoopResponse(res.data.data.loops)
     })
     .catch((e) => {
-      console.log('e::', e)
+      // eslint-disable-next-line no-console
+      console.log('error in  api/v3/profile/loops::', e)
       throw new Error('Something went wrong with profile loops api.')
     })
 }
@@ -117,6 +130,7 @@ export async function fetchProfileVideos(
       return parseProfileVideoResponse(resData.messages)
     })
     .catch((e) => {
+      // eslint-disable-next-line no-console
       console.log('Error in profile videos api::', e)
       throw new Error('Something went wrong with profile videos api.')
     })
@@ -135,10 +149,10 @@ export async function fetchProfileFeed(userId: string, pageParam?: { lastMessage
     .then((res) => {
       const resData = res.data.data
       pageSession = resData.page_session
-      console.log('resData', resData)
       return { feed: parseFeedResponse(resData.feeds), end: resData.end_of_messages }
     })
     .catch((e) => {
+      // eslint-disable-next-line no-console
       console.log('error::', e)
       throw new Error('Something went wrong!!')
     })

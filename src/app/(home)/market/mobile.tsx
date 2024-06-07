@@ -1,17 +1,17 @@
 'use client'
-import React, { useEffect, useState } from 'react'
-import { NavBar } from '@components/pages/home/nav-bar'
-import cxr from '@images/business/marketing-page/communities/cxr.webp'
-import social_share from '@images/business/marketing-page/communities/social_share.webp'
-import mail from '@images/business/marketing-page/communities/mail.webp'
-import sms from '@images/business/marketing-page/communities/sms.webp'
+import React, { useState } from 'react'
+import { NavBar } from '@components/pages/build/nav-bar'
+// import cxr from '@images/business/marketing-page/communities/cxr.webp'
+// import social_share from '@images/business/marketing-page/communities/social_share.webp'
+// import mail from '@images/business/marketing-page/communities/mail.webp'
+// import sms from '@images/business/marketing-page/communities/sms.webp'
 import whatsapp from '@images/business/marketing-page/communities/whatsapp.webp'
 import Link from 'next/link'
 import businessInsider from '@images/business/marketing-page/as-seen-in/business-insider.png'
 import yahoo from '@images/business/marketing-page/as-seen-in/yahoo.png'
 import marketbg from '@images/business/marketing-page/market-bg-mobile.webp'
 import { Button } from '@components/ui/button'
-import { Footer } from '@components/pages/home/footer'
+import { Footer } from '@components/pages/build/footer'
 import m1 from '@images/business/marketing-page/m_01.webp'
 import m2 from '@images/business/marketing-page/m_02.webp'
 import m3 from '@images/business/marketing-page/m_03.webp'
@@ -38,24 +38,24 @@ export const Mobile = () => {
 }
 
 function Component1() {
-  const brandImages: any = [
-    { alt: 'cxr', banner: cxr },
-    { alt: 'social_share', banner: social_share },
-    { alt: 'mail', banner: mail },
-    { alt: 'sms', banner: sms },
-    { alt: 'whatsapp', banner: whatsapp },
-  ]
-  const [currentIndex, setCurrentIndex] = useState(0)
+  // const brandImages: any = [
+  //   { alt: 'cxr', banner: cxr },
+  //   { alt: 'social_share', banner: social_share },
+  //   { alt: 'mail', banner: mail },
+  //   { alt: 'sms', banner: sms },
+  //   { alt: 'whatsapp', banner: whatsapp },
+  // ]
+  // const [currentIndex, setCurrentIndex] = useState(0)
 
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      setCurrentIndex((prevIndex: any) => (prevIndex + 1) % brandImages?.length)
-    }, 3000)
+  // useEffect(() => {
+  //   // const intervalId = setInterval(() => {
+  //   //   setCurrentIndex((prevIndex: any) => (prevIndex + 1) % brandImages?.length)
+  //   // }, 3000)
 
-    return () => {
-      clearInterval(intervalId)
-    }
-  }, [brandImages])
+  //   return () => {
+  //     clearInterval(intervalId)
+  //   }
+  // }, [brandImages])
   return (
     <div
       className="flex items-center pb-24 pt-36"

@@ -3,7 +3,7 @@ import { axiosInstance, setAuthTokenInAxiosInstance, setTempAuthTokenInAxiosInst
 import { useLocalStorage } from '@lib/stores/local-storage'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 
-type RecaptchaActionType = 'LOGIN' | 'SIGNUP'
+// type RecaptchaActionType = 'LOGIN' | 'SIGNUP'
 
 export type AuthActionType = 'JOIN_COMMUNITY' | 'SUBSCRIBE' | 'KS_CB_REQUEST'
 
@@ -35,9 +35,6 @@ export async function signup({
   signupSource,
   actionMetadata,
 }: SignupProps): Promise<{ code: number; data: any; accessToken?: string }> {
-  console.log('emai::', email)
-  console.log('signup soruce::', signupSource)
-  console.log('action::', actionMetadata)
   return await axiosInstance
     .post('/api/v3/signup', {
       // name,
@@ -56,6 +53,7 @@ export async function signup({
       return { code: 200, data: res.data.data, accessToken: res.headers['x-auth-token'] }
     })
     .catch((e) => {
+      // eslint-disable-next-line no-console
       console.log('::error in signup api::', e.response.data)
       return { code: Number(e.response.data.code), data: undefined, accessToken: undefined }
     })
@@ -118,6 +116,7 @@ export async function verifyEmail(token: string): Promise<{
       }
     })
     .catch((e) => {
+      // eslint-disable-next-line no-console
       console.log('ERROR in Email Verify: ', e)
       const data = e?.response?.data
       return {
@@ -143,6 +142,7 @@ export async function uploadProfileImage(file: File) {
     })
     return uploadResponse.status === 200
   } catch (e) {
+    // eslint-disable-next-line no-console
     console.log('::ERROR IN UPLOAD API::', e)
     return false
   }
@@ -168,10 +168,10 @@ export async function updateUser(user: Partial<UserType>): Promise<{ status: boo
   return await axiosInstance
     .patch('/api/v3/users/update_user_profile', { user })
     .then((res) => {
-      console.log(res.data.data)
       return { status: res.status === 200, user: res.data.data }
     })
     .catch((e) => {
+      // eslint-disable-next-line no-console
       console.log('::ERROR in updata user profile::', e)
       throw new Error('Something went wrong')
     })
@@ -185,6 +185,7 @@ export async function validateUsername(nickname: string) {
       else if (res.data.code === '5073') return false
     })
     .catch((e) => {
+      // eslint-disable-next-line no-console
       console.log('::ERROR in validata username::', e)
       return false
     })
@@ -215,6 +216,7 @@ export async function resendVerificationMail(
       return { code: res.status, retryTime, data: res?.data?.data }
     })
     .catch((e) => {
+      // eslint-disable-next-line no-console
       console.log('::Error in resend api::', e)
       const retryTime = e.response?.data?.data?.retryTime || 0
       return { code: Number(e.response.data.code), retryTime, data: e.response?.data?.data }
@@ -260,7 +262,8 @@ export async function loginViaPhone({
       return { code: 200, data: res.data.data }
     })
     .catch((e) => {
-      console.log('::error in sendotp api::', e.response.data.code)
+      // eslint-disable-next-line no-console
+      console.log('::error in send otp api::', e.response.data.code)
       return { code: Number(e.response.data.code), data: undefined }
     })
 }
@@ -301,6 +304,7 @@ export async function verifyOtp({
       return { code: 200, data: res.data.data }
     })
     .catch((e) => {
+      // eslint-disable-next-line no-console
       console.log('::error in verifyotp api::', e.response.data.code)
       return { code: Number(e.response.data.code), data: undefined }
     })
@@ -339,7 +343,8 @@ export async function loginViaEmail({
       return { code: 200, data: res.data.data }
     })
     .catch((e) => {
-      console.log('::error in sendotp api::', e.response.data.code)
+      // eslint-disable-next-line no-console
+      console.log('::error in send otp api::', e.response.data.code)
       return { code: Number(e.response.data.code), data: e.response.data.data }
     })
 }
@@ -359,6 +364,7 @@ export async function ksCbRequest(accessToken?: string): Promise<{ code: number;
       return { code: res.data.code, data: res.data.data }
     })
     .catch((e) => {
+      // eslint-disable-next-line no-console
       console.log('::error in ks_cb_request api::', e.response.data.code)
       return { code: Number(e.response.data.code), data: e.response.data.data }
     })
@@ -375,6 +381,7 @@ export async function miniProfile(verifiedKsToken: boolean): Promise<{ code: num
       return { code: res.data.code, data: res.data.data }
     })
     .catch((e) => {
+      // eslint-disable-next-line no-console
       console.log('::error in mini_profile api::', e.response.data.code)
       return { code: Number(e.response.data.code), data: e.response.data.data }
     })
@@ -404,5 +411,29 @@ export async function saveVisitor(
     })
     .catch((e) => {
       return false
+    })
+}
+
+export async function getBrandGuidelines({
+  brandId,
+  idDefault,
+}: {
+  brandId: string | undefined
+  idDefault: boolean
+}): Promise<{ code: number; data: any }> {
+  return await axiosInstance
+    .get('/api/v3/brand/guidelines', {
+      params: {
+        brand_id: brandId,
+        is_default: idDefault,
+      },
+    })
+    .then((res) => {
+      return { code: res.data.code, data: res.data.data }
+    })
+    .catch((e) => {
+      // eslint-disable-next-line no-console
+      console.log('::error in guidelines api::', e.response.data.code)
+      return { code: Number(e.response.data.code), data: e.response.data.data }
     })
 }

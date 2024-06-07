@@ -24,7 +24,7 @@ function Mobile({ sizeBox }: { sizeBox: VideoSizeBoxType }) {
   if (videos)
     return (
       <main className="h-full w-full">
-        <TopBar variant="trasparent" />
+        <TopBar variant="transparent" />
         <span className="absolute inset-0">
           <MobileFeed
             startIndex={0}

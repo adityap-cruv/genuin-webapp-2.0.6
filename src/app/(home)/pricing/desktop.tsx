@@ -5,9 +5,9 @@ import ComparePlan from '@components/business/pricing-page/compare-plan'
 import PlanDetails from '@components/business/pricing-page/plan-details'
 import SubscriptionPlan from '@components/business/pricing-page/subscription-plan'
 import Support from '@components/business/pricing-page/support'
-import { NavBar } from '@components/pages/home/nav-bar'
+import { NavBar } from '@components/pages/build/nav-bar'
 import AsSeenIn from '@components/business/as-seen-in'
-import { Footer } from '@components/pages/home/footer'
+import { Footer } from '@components/pages/build/footer'
 
 export default function Desktop() {
   return (

@@ -10,6 +10,7 @@ export function getNextPage<T>(funcToCall: () => Promise<T>, stateUpdationFunc: 
         stateUpdationFunc(res)
       })
       .catch((e) => {
+        // eslint-disable-next-line no-console
         console.log('error in loops:', e)
       })
       .finally(() => {
