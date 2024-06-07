@@ -7,10 +7,10 @@ import { useGenuinOptions } from '@lib/stores/genuin-options'
 export function Layout(props: any) {
   const showNavbar = useGenuinOptions().showNavbar
   // TODO: Added for redirection to https
-  // const protocol = window.location.protocol
-  // if (protocol === 'http:') {
-  //   window.location.href = window.location.href.replace(/^http:/, 'https:')
-  // }
+  const protocol = window.location.protocol
+  if (protocol === 'http:') {
+    window.location.href = window.location.href.replace(/^http:/, 'https:')
+  }
   return (
     <main className="absolute inset-0 flex h-full min-h-max w-full flex-col items-center overflow-clip">
       {showNavbar && <TopBar />}
