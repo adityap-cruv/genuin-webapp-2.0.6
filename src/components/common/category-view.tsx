@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
-import { useGenuinOptions } from '@lib/stores/genuin-options'
 
 interface Category {
   category: string

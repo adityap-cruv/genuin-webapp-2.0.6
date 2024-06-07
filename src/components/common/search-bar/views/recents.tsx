@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { deleteRecent, fetchRecents } from '../api'
-import { Search, X } from 'lucide-react'
+import { X } from 'lucide-react'
 import { useSearchBarStore } from '../store'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { PATH_NAME } from '@lib/utils/constants/path'

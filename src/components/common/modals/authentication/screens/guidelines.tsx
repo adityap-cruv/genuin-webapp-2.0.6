@@ -14,7 +14,7 @@ import { useAuthenticationModalStore } from '../store'
 import { useEffect, useState } from 'react'
 import { Loader } from '@components/ui/loader'
 import { analyticsService } from '@services/analytics_service'
-import { rudderStackIdentify } from '@services/useRudderAnalytics'
+// import { rudderStackIdentify } from '@services/useRudderAnalytics'
 
 const FormSchema = z.object({
   mobile: z.boolean().default(false).optional(),
@@ -67,7 +67,7 @@ export function Guidelines() {
         .then((res) => {
           if (res?.ok) {
             setStep('EMAIL_SENT_NOTE')
-            void rudderStackIdentify()
+            // void rudderStackIdentify()
             void analyticsService({
               eventName: 'ks_signed_up',
               properties: { email: formData.email },
@@ -88,8 +88,7 @@ export function Guidelines() {
     }
   }
 
-  const { brandName, brandLogo } = useGenuinOptions((state) => ({
-    brandName: state.config?.name ? state.config?.name : 'Genuin',
+  const { brandLogo } = useGenuinOptions((state) => ({
     brandLogo: state.brandWebLogo,
   }))
 

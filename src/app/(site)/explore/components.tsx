@@ -1,7 +1,6 @@
 'use client'
 import { abbreviateNumber, cn } from '@lib/utils'
 import { CustomAvatar } from '@components/custom/custom-avatar'
-import { Button } from '@components/ui/button'
 import { getFeaturedCommunity, getFeaturedLoops } from '@lib/api/community'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { LoopCard } from '@components/common/loop-card'

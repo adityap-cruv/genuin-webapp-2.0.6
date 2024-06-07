@@ -95,6 +95,7 @@ export function validateSuggestionsResp(data: any) {
   try {
     return SuggestionsResSchema.parse(data)
   } catch (e) {
+    // eslint-disable-next-line no-console
     console.log('error::', e)
     throw new Error('Something went wrong suggestions validation.')
   }
@@ -123,6 +124,7 @@ export function validateRecentsResp(data: any) {
   try {
     return RecentsRespSchema.parse(data)
   } catch (e) {
+    // eslint-disable-next-line no-console
     console.log('error in validation::', e)
     throw new Error('Something went wrong...')
   }

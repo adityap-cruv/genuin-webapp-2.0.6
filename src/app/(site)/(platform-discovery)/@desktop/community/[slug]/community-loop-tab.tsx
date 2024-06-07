@@ -1,16 +1,29 @@
+'use client'
 import { getCommunityLoops } from '@lib/api/community'
 import Image from 'next/image'
 import noLoopsImage from '@images/noLoopImage.svg'
 import { PlayerModal } from '@components/common/modals/player-modal'
 import { getLoopVideos } from '@lib/api/loop'
-import { useState } from 'react'
+import { memo, useState } from 'react'
 import { type VideoPlayerModalCommunityType, type VideoPlayerModalLoopType } from '@lib/schemas/player/video'
 import { LoopCard, LoopCardShimmer } from '@components/common/loop-card'
 
 // TODO: remove this component from here and put at better location
 // TODO: improve player-modal opening logic. As not meeting standards.
-export function CommunityLoopTab({ community }: { community: VideoPlayerModalCommunityType }) {
-  const { isLoading, data } = getCommunityLoops(community.slug)
+export const CommunityLoopTab = memo(Component)
+function Component({
+  handle,
+  id,
+  shareUrl,
+  slug,
+  brand,
+  isJoinRequested,
+  name,
+  profileImage,
+  type,
+  userRole,
+}: VideoPlayerModalCommunityType) {
+  const { isLoading, data } = getCommunityLoops(slug)
   const [modalController, setModalController] = useState<{
     open: boolean
     loop: VideoPlayerModalLoopType | null
@@ -77,7 +90,7 @@ export function CommunityLoopTab({ community }: { community: VideoPlayerModalCom
           unreadMessageCount={getUnreadMessageCount(modalController.loop.id)}
           open={modalController.open}
           loop={modalController.loop}
-          community={community}
+          community={{ handle, id, shareUrl, slug, brand, isJoinRequested, name, profileImage, type, userRole }}
           close={() => {
             setModalController((x) => {
               x.open = false

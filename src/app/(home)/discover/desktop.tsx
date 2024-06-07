@@ -1,17 +1,16 @@
 'use client'
 import { NavBar } from '@components/pages/build/nav-bar'
 import bg from '@images/business/discover/bg_discover.webp'
-import c1 from '@images/home-page/community/communityshare 1.webp'
-import c2 from '@images/home-page/community/communityshare 2.webp'
-import c3 from '@images/home-page/community/communityshare 3.webp'
-import c4 from '@images/home-page/community/communityshare 4.webp'
-import c5 from '@images/home-page/community/communityshare 5.webp'
-import l1 from '@images/home-page/loop/Loop-Link-Share 1.webp'
-import l2 from '@images/home-page/loop/Loop-Link-Share 2.webp'
-import l3 from '@images/home-page/loop/Loop-Link-Share 3.webp'
-import l4 from '@images/home-page/loop/Loop-Link-Share 4.webp'
-import l5 from '@images/home-page/loop/Loop-Link-Share 5.webp'
-import { useState } from 'react'
+import c1 from '@images/home-page/community/community-share-1.webp'
+import c2 from '@images/home-page/community/community-share-2.webp'
+import c3 from '@images/home-page/community/community-share-3.webp'
+import c4 from '@images/home-page/community/community-share-4.webp'
+import c5 from '@images/home-page/community/community-share-5.webp'
+import l1 from '@images/home-page/loop/loop-link-share-1.webp'
+import l2 from '@images/home-page/loop/loop-link-share-2.webp'
+import l3 from '@images/home-page/loop/loop-link-share-3.webp'
+import l4 from '@images/home-page/loop/loop-link-share-4.webp'
+import l5 from '@images/home-page/loop/loop-link-share-5.webp'
 import { Footer } from '@components/pages/build/footer'
 
 export default function Desktop() {
@@ -27,12 +26,12 @@ export default function Desktop() {
 }
 
 function SearchSection() {
-  const [searchItem, setSearchItem] = useState('')
+  // const [searchItem, setSearchItem] = useState('')
 
-  const handleInputChange = (e: any) => {
-    const searchTerm = e.target.value
-    setSearchItem(searchTerm)
-  }
+  // const handleInputChange = (e: any) => {
+  //   const searchTerm = e.target.value
+  //   setSearchItem(searchTerm)
+  // }
 
   return (
     <div

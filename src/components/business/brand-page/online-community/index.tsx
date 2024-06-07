@@ -1,11 +1,8 @@
 import React from 'react'
 import style from './community.module.scss'
 import HeadingComponent from '../../heading'
-import ParagraphComponent from '../../paragraph'
 import content from '../../../../content/brands-page.json'
 import community1 from '@images/business/brand-page/online-community-1.webp'
-import community2 from '@images/business/brand-page/online-community-2.webp'
-import Image from 'next/image'
 import { ContactUs } from '@components/common/modals/contact-us'
 import { Button } from '@components/ui/button'
 

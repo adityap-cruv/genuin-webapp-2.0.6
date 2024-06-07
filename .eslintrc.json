@@ -34,10 +34,7 @@
     ],
     "@typescript-eslint/explicit-function-return-type": "off",
     // I have kept this rules off. For fixing eslin's error.
-    "@typescript-eslint/consistent-type-definitions": [
-      "off",
-      "type"
-    ],
+    "@typescript-eslint/consistent-type-definitions": "off",
     "@typescript-eslint/consistent-type-assertions": "off",
     "no-console": "warn",
     "@next/next/no-img-element": "off",

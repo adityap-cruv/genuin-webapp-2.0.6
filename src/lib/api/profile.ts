@@ -100,7 +100,8 @@ export async function fetchProfileCommunityLoops(
       return parseProfileLoopResponse(res.data.data.loops)
     })
     .catch((e) => {
-      console.log('e::', e)
+      // eslint-disable-next-line no-console
+      console.log('error in  api/v3/profile/loops::', e)
       throw new Error('Something went wrong with profile loops api.')
     })
 }
@@ -129,6 +130,7 @@ export async function fetchProfileVideos(
       return parseProfileVideoResponse(resData.messages)
     })
     .catch((e) => {
+      // eslint-disable-next-line no-console
       console.log('Error in profile videos api::', e)
       throw new Error('Something went wrong with profile videos api.')
     })
@@ -147,10 +149,10 @@ export async function fetchProfileFeed(userId: string, pageParam?: { lastMessage
     .then((res) => {
       const resData = res.data.data
       pageSession = resData.page_session
-      console.log('resData', resData)
       return { feed: parseFeedResponse(resData.feeds), end: resData.end_of_messages }
     })
     .catch((e) => {
+      // eslint-disable-next-line no-console
       console.log('error::', e)
       throw new Error('Something went wrong!!')
     })

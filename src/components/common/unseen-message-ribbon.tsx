@@ -6,7 +6,6 @@ import { useEffect, useState } from 'react'
 export function UnseenMessageRibbon({ messageCount }: { messageCount: number }) {
   const [isOpen, setIsOpen] = useState(true)
   const animation = useAnimationControls()
-  console.log('message count::', messageCount)
   useEffect(() => {
     void (isOpen
       ? animation.start({ y: 70, transitionDelay: '2s', transitionDuration: '1s' })

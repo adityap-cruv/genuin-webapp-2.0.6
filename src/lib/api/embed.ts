@@ -4,7 +4,7 @@ export async function getEmbedDetails(id: string): Promise<{ status: boolean; da
   return await axiosInstance
     .get('/api/v3/embed', {
       params: {
-        id: id,
+        id,
       },
     })
     .then((res) => {
