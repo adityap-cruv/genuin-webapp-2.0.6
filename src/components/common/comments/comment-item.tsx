@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic'
 import { type CommentType } from '@lib/schemas/loop/comment'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
-import { getTimeAgo } from '@lib/utils'
+import { getTimeAgo, tryJsonParse } from '@lib/utils'
 import Image from 'next/image'
 import icSpark from '@icons/icSparkBlack.svg'
 import { DownloadDialogModal } from '../modals/download-app'
@@ -88,6 +88,6 @@ const Comment = {
   },
   text({ comment }: { comment: CommentType }) {
     if (comment.comment_data)
-      return <ReadMore.withMention className="text-body-1-med" textArr={JSON.parse(comment.comment_data)} />
+      return <ReadMore.withMention className="text-body-1-med" textArr={tryJsonParse(comment.comment_data)} />
   },
 }

@@ -1,5 +1,6 @@
 import { axiosInstance } from '@lib/api/instance'
 import { rudderStackTrack } from './useRudderAnalytics'
+import { tryJsonParse } from '@lib/utils'
 
 export const analyticsService = async ({
   eventName,
@@ -9,7 +10,7 @@ export const analyticsService = async ({
   properties: any
 }): Promise<void> => {
   const userIdString = localStorage.getItem('_user_id_')
-  const userId = userIdString ? JSON.parse(userIdString).state.userId ?? '' : ''
+  const userId = userIdString ? tryJsonParse(userIdString).state.userId ?? '' : ''
   const defaultProperties = { user_id: userId }
 
   const updatedProperties = { ...properties, ...defaultProperties }

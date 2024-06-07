@@ -10,6 +10,7 @@ type FeedListStoreType = {
   setCurrentIndex: (index: number) => void
 }
 
+// TODO: REMOVE this bad use of localstorage.
 export const useFeedListStore = create<FeedListStoreType>((set) => {
   return {
     videoList: [],
