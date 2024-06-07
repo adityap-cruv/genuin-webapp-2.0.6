@@ -52,7 +52,7 @@ export function CategoryView() {
                   </AccordionTrigger>
                   {category.communities.map((item: Community, index: number) => (
                     <AccordionContent key={index} className="p-0">
-                      <Link href={PATH_NAME.community(item.handle)}>
+                      <Link href={PATH_NAME.community(item.slug) + '?feed=1'}>
                         <div className="flex items-center gap-3 px-3 py-1.5 hover:bg-monochrome-6/10">
                           <CustomAvatar
                             className="h-8 w-8 bg-red-40"
