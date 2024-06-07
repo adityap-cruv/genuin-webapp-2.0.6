@@ -22,7 +22,7 @@ export default function DownloadAppForm() {
   const [isLinkSent, setIsLinkSent] = useState(false)
 
   return (
-    <>
+    <div className="font-manrope">
       <div className="hidden md:block">
         {isLinkSent ? (
           <div className="m-8 flex h-80 flex-col items-center justify-center gap-4 sm:w-[600px] md:w-[800px]">
@@ -34,13 +34,9 @@ export default function DownloadAppForm() {
           </div>
         ) : (
           <div className="m-8 flex justify-around gap-12 sm:w-[600px] md:w-[800px]">
-            <div className="w-1/2">
-              <h3 className="text-new-h1" style={{ fontSize: '56px' }}>
-                Get in touch with an expert. Talk with sales.
-              </h3>
-              <p className="my-4 text-new-para-1">
-                Enter your details and a member of our team will contact you shortly.
-              </p>
+            <div className="flex w-1/2 flex-col gap-4">
+              <h3 className="text-title-2-bold-home">Let’s talk!</h3>
+              <p className="text-body-2-home">Enter your contact info and our team will be in touch shortly.</p>
             </div>
             <div className="w-1/2">
               <ModalForm setIsLinkSent={setIsLinkSent} />
@@ -64,13 +60,13 @@ export default function DownloadAppForm() {
         ) : (
           <div className="hide-scrollbar m-4 max-h-[70vh] gap-12 overflow-auto p-2">
             <div>
-              <h3 className="text-new-h2-mobile">Get in touch with an expert. Talk with sales.</h3>
-              <p className="my-4 text-new-sm">Enter your details and a member of our team will contact you shortly.</p>
+              <h3 className="text-new-h2-mobile">Let’s talk!</h3>
+              <p className="my-4 text-new-sm">Enter your contact info and our team will be in touch shortly.</p>
             </div>
             <ModalForm setIsLinkSent={setIsLinkSent} />
           </div>
         )}
       </div>
-    </>
+    </div>
   )
 }

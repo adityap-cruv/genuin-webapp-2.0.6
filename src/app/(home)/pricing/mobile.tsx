@@ -275,31 +275,31 @@ function Component2() {
   )
 }
 
-function Component3() {
-  return (
-    <div className="container mt-20">
-      <p className="my-10 text-center text-new-h1-mobile">Pro Plan</p>
-      <p className="my-4 text-new-h2-mobile">Want a fully customized plan for your goals?</p>
-      <p className="my-4 text-new-sm">With pro plan, you’ll get the white label capabilities with your own URL.</p>
-      <ContactUs>
-        <Button size="custom" className="my-2 bg-new-off-black px-5 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
-          <p className="text-new-para-2">Contact us for pricing</p>
-        </Button>
-      </ContactUs>
-      <div className="mt my-4 rounded-2xl bg-[#F7F1F9] p-6">
-        <p className="mb-8 text-new-h4">What do you get from a pro plan?</p>
-        <div className="flex items-center gap-2">
-          <Image priority loading="eager" src={check} width={24} height={24} alt="Star" />
-          <p className="text-new-sm">Advanced analytics tools and insights</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Image priority loading="eager" src={check} width={24} height={24} alt="Star" />
-          <p className="text-new-sm">AI tools</p>
-        </div>
-      </div>
-    </div>
-  )
-}
+// function Component3() {
+//   return (
+//     <div className="container mt-20">
+//       <p className="my-10 text-center text-new-h1-mobile">Pro Plan</p>
+//       <p className="my-4 text-new-h2-mobile">Want a fully customized plan for your goals?</p>
+//       <p className="my-4 text-new-sm">With pro plan, you’ll get the white label capabilities with your own URL.</p>
+//       <ContactUs>
+//         <Button size="custom" className="my-2 bg-new-off-black px-5 py-3 after:bg-new-dark-grey hover:bg-new-dark-grey">
+//           <p className="text-new-para-2">Contact us for pricing</p>
+//         </Button>
+//       </ContactUs>
+//       <div className="mt my-4 rounded-2xl bg-[#F7F1F9] p-6">
+//         <p className="mb-8 text-new-h4">What do you get from a pro plan?</p>
+//         <div className="flex items-center gap-2">
+//           <Image priority loading="eager" src={check} width={24} height={24} alt="Star" />
+//           <p className="text-new-sm">Advanced analytics tools and insights</p>
+//         </div>
+//         <div className="flex items-center gap-2">
+//           <Image priority loading="eager" src={check} width={24} height={24} alt="Star" />
+//           <p className="text-new-sm">AI tools</p>
+//         </div>
+//       </div>
+//     </div>
+//   )
+// }
 
 function Component4() {
   const features = [

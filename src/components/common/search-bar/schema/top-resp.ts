@@ -202,6 +202,7 @@ export function validateTopResponse(data: any) {
   try {
     return TopResponseSchema.parse(data)
   } catch (e) {
+    // eslint-disable-next-line no-console
     console.log('Validataion error::', e)
     throw new Error('Something went wront with search api.')
   }

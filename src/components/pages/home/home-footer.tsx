@@ -27,7 +27,7 @@ export function HomeFooter() {
 
   return (
     <div className="bg-[#D0DCFF]">
-      <div className="container hidden h-full w-full items-center justify-between py-24 md:flex">
+      <div className="containerHome hidden h-full w-full items-center justify-between py-24 md:flex">
         <Link href={PATH_NAME.index()}>
           <GenuinIcon.logo className="fill-primary" />
         </Link>

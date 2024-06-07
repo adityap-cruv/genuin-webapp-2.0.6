@@ -32,7 +32,8 @@ const messageSchema = z.object({
   media_url_m3u8: z.string().nullish(),
   attached_link: z.string().nullish(),
   slug: z.string(),
-  description_text: z.string().nullable().optional(),
+  description_text: z.string().nullish(),
+  description_data: z.string().nullish(),
   no_of_views: z.number().default(0),
   no_of_comments: z.number().default(0),
   no_of_sparks: z.number().default(0),
@@ -129,7 +130,8 @@ export function validateFeedResponse(data: any) {
   try {
     return FeedResponseSchema.parse(data)
   } catch (e) {
-    console.log('error in validation::', e)
-    throw new Error('error in valdation of feed response.')
+    // eslint-disable-next-line no-console
+    console.log('error in parsing feed response::', e)
+    throw new Error('error in validation of feed response.')
   }
 }

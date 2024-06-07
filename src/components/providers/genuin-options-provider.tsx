@@ -1,6 +1,6 @@
 'use client'
 import { SplashScreen } from '@components/common/splash-screen'
-import { type ConfigType, useGenuinOptions, type User } from '@lib/stores/genuin-options'
+import { type ConfigType, useGenuinOptions } from '@lib/stores/genuin-options'
 import { getSizeBoxes } from '@lib/utils/common/size-box'
 import { useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -9,9 +9,9 @@ import FingerprintJS from '@fingerprintjs/fingerprintjs'
 import { useSession } from 'next-auth/react'
 import { setAuthTokenInAxiosInstance, setBrandIdInAxiosInstance } from '@lib/api/instance'
 import dynamic from 'next/dynamic'
-import { miniProfile, saveVisitor } from '@lib/api/auth'
+import { saveVisitor } from '@lib/api/auth'
 import { notificationsCount } from '@lib/api/notification'
-import { rudderStackIdentify } from '@services/useRudderAnalytics'
+// import { rudderStackIdentify } from '@services/useRudderAnalytics'
 const RepostModal = dynamic(
   async () => await import('@components/common/modals/repost').then((comp) => comp.RepostModal.ui)
 )
@@ -119,7 +119,7 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
       if (isLoading) setIsLoading(false)
     }
     // Added Identify User to pass userId in all the
-    void rudderStackIdentify()
+    // void rudderStackIdentify()
   }, [sessionStatus])
 
   function init() {

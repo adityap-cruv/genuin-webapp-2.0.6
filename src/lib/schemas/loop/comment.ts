@@ -59,7 +59,8 @@ export function validateCommentList(data: any) {
   try {
     return CommentListSchema.parse(data)
   } catch (e) {
-    console.log('valdiation error::', e)
+    // eslint-disable-next-line no-console
+    console.log('error in parsing comment list::', e)
     throw new Error('Something went wrong with comments fetching api. Error is::', e as ErrorOptions | undefined)
   }
 }

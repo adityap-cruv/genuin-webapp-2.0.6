@@ -10,7 +10,7 @@ import { ReadMore } from '@components/common/read-more'
 import { cn } from '@lib/utils'
 import { AnimatedMuteIcon } from './animated-mute-icon'
 import { TickIcon } from '@icons/tick-icon'
-import { RepostModal } from '@components/common/modals/repost'
+import { type DescriptionArrType } from '@lib/schemas/player/video'
 
 export const ControlLayer = {
   desktop: Desktop,
@@ -121,7 +121,8 @@ type MobileProps = {
   videoId: string
   shareUrl: string
   attachedLink?: string | null
-  description?: string | null
+  descriptionArr?: DescriptionArrType | null
+  descriptionText?: string | null
   commentCount: number
   slug: string
   isSparked?: boolean | null | undefined
@@ -147,7 +148,8 @@ function Loop({
   slug,
   videoId,
   attachedLink,
-  description,
+  descriptionArr,
+  descriptionText,
   owner,
   isSparked,
 }: MobileProps) {
@@ -187,12 +189,14 @@ function Loop({
             </Link>
           )}
         </div>
-        <span className="py-2">
-          <ReadMore
-            text={description}
-            className="line-clamp-2 w-full break-all text-body-1-demi text-monochrome-white"
-          />
-        </span>
+        {descriptionArr && (
+          <span className="py-2">
+            <ReadMore.withMention
+              textArr={descriptionArr}
+              className="line-clamp-2 w-full break-all text-body-1-demi text-monochrome-white"
+            />
+          </span>
+        )}
       </div>
       <div className="z-10">
         <Actions.mobile
@@ -202,7 +206,7 @@ function Loop({
           videoId={videoId}
           videoSlug={slug}
           attachedLink={attachedLink}
-          description={description}
+          description={descriptionText}
           isSparked={isSparked}
         />
       </div>

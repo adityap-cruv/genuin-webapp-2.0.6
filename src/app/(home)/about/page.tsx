@@ -9,6 +9,7 @@ import matt from '@images/home/team/matt.svg'
 import nayan_mevada from '@images/home/team/nayan_mevada.svg'
 import rahul from '@images/home/team/rahul.svg'
 import shabbir from '@images/home/team/shabbir.svg'
+import Link from 'next/link'
 
 export default function Component() {
   return (
@@ -39,7 +40,7 @@ export default function Component() {
 function AboutUs() {
   return (
     <>
-      <div className="container hidden sm:block">
+      <div className="containerHome hidden sm:block">
         <div className="flex w-full items-center py-24">
           <div className="flex w-1/2 flex-col gap-9">
             <p className="text-title-1-bold-home-m">About us</p>
@@ -65,7 +66,7 @@ function AboutUs() {
         </div>
       </div>
 
-      <div className="container sm:hidden">
+      <div className="containerHome sm:hidden">
         <div className="flex w-full flex-col-reverse gap-6 py-9">
           <div className="grid gap-6">
             <p className="text-title-2-bold-home-m">About us</p>
@@ -94,7 +95,7 @@ function HowWeDo() {
   return (
     <>
       <div className="hidden bg-monochrome-black sm:block">
-        <div className="container grid grid-cols-2 py-24 text-monochrome-white">
+        <div className="containerHome grid grid-cols-2 py-24 text-monochrome-white">
           <p className="text-title-3-bold-home">How we do it</p>
           <div className="grid gap-4 text-[#959AA9]">
             <p className="pb-4 text-body-2-demi-home text-monochrome-white">
@@ -129,7 +130,7 @@ function HowWeDo() {
       </div>
 
       <div className="bg-monochrome-black sm:hidden">
-        <div className="container grid py-9 text-monochrome-white">
+        <div className="containerHome grid py-9 text-monochrome-white">
           <p className="pb-9 text-body-2-bold-home">How we do it</p>
           <div className="grid gap-4 text-[#959AA9]">
             <p className="pb-4 text-cap-1-home-m text-monochrome-white">
@@ -172,47 +173,72 @@ function Team() {
       image: bhargav.src,
       name: 'Bhargav Patel',
       position: 'CEO',
+      linkedin: 'https://www.linkedin.com/in/patelbhargav',
     },
     {
       image: matt.src,
       name: 'Matt Wurst',
       position: 'CMO',
+      linkedin: 'https://www.linkedin.com/in/matthewwurst',
     },
     {
       image: shabbir.src,
       name: 'Shabbir Helay',
       position: 'Head of Sales',
+      linkedin: 'https://www.linkedin.com/in/shabbirhelaly',
     },
     {
       image: rahul.src,
       name: 'Rahul Sheth',
       position: 'CFO',
+      linkedin: 'https://www.linkedin.com/in/rahul-sheth-3225164/',
     },
     {
       image: nayan_mevada.src,
       name: 'Nayan Mevada',
       position: 'CTO',
+      linkedin: 'https://www.linkedin.com/in/nayanmevada',
     },
   ]
 
-  const CardLayout = ({ image, name, position }: { image: any; name: string; position: string }) => {
+  const CardLayout = ({
+    image,
+    name,
+    position,
+    linkedin,
+  }: {
+    image: any
+    name: string
+    position: string
+    linkedin: string
+  }) => {
     return (
-      <div className="flex h-44 w-full flex-col items-center justify-between rounded-3xl bg-monochrome-white p-6 shadow-sm sm:w-44 sm:items-start">
-        <img src={image} className="h-16 w-16 rounded-full" alt="profile" />
-        <div>
-          <p className="text-center text-des-1-bold-home sm:text-left">{name}</p>
-          <p className="text-center text-des-1-demi-home text-[#959AA9] sm:text-left">{position}</p>
-        </div>
-      </div>
+      <>
+        <Link href={linkedin} target="_blank">
+          <div className="flex h-44 w-full flex-col items-center justify-between rounded-3xl bg-monochrome-white p-6 shadow-sm hover:cursor-pointer hover:shadow-lg sm:w-44 sm:items-start">
+            <img src={image} className="h-16 w-16 rounded-full" alt="profile" />
+            <div>
+              <p className="text-center text-des-1-bold-home sm:text-left">{name}</p>
+              <p className="text-center text-des-1-demi-home text-[#959AA9] sm:text-left">{position}</p>
+            </div>
+          </div>
+        </Link>
+      </>
     )
   }
   return (
     <div>
-      <div className="container hidden gap-14 py-24 sm:grid">
+      <div className="containerHome hidden gap-14 py-24 sm:grid">
         <p className="text-title-3-bold-home">Meet our team</p>
         <div className="flex flex-wrap gap-6">
           {Team.map((item, index) => (
-            <CardLayout key={index} image={item.image} name={item.name} position={item.position} />
+            <CardLayout
+              key={index}
+              image={item.image}
+              name={item.name}
+              position={item.position}
+              linkedin={item.linkedin}
+            />
           ))}
         </div>
         <div>
@@ -227,11 +253,17 @@ function Team() {
         </div>
       </div>
 
-      <div className="container grid gap-14 py-9 sm:hidden">
+      <div className="containerHome grid gap-14 py-9 sm:hidden">
         <p className="text-body-2-bold-home">Meet our team</p>
         <div className="grid gap-6">
           {Team.map((item, index) => (
-            <CardLayout key={index} image={item.image} name={item.name} position={item.position} />
+            <CardLayout
+              key={index}
+              image={item.image}
+              name={item.name}
+              position={item.position}
+              linkedin={item.linkedin}
+            />
           ))}
         </div>
       </div>

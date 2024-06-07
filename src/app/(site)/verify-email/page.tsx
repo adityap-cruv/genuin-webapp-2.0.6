@@ -6,7 +6,7 @@ import { analyticsService } from '@services/analytics_service'
 export default async function Page({ searchParams }: { searchParams: { token: string } }) {
   const { code, actionMetadata, user, emailType, email } = await verifyEmail(searchParams.token)
   if (code === 200 && actionMetadata?.action === 'KS_CB_REQUEST') {
-    const ans = await ksCbRequest(user.accessToken)
+    await ksCbRequest(user.accessToken)
   }
 
   if (code === 200) {

@@ -77,7 +77,8 @@ export function validateCommunityLoopList(data: any) {
   try {
     return CommunityLoopListSchema.parse(data)
   } catch (e) {
-    console.log('error::', e)
+    // eslint-disable-next-line no-console
+    console.log('error in parsing community loop list::', e)
     throw new Error('Something went wrong with validation of community loop list validation.')
   }
 }

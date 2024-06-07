@@ -137,7 +137,7 @@ export function getVideosComments(videoId: string) {
             return { comments: validateCommentList(resData.comments), end: resData.end_of_result }
           })
           .catch((e) => {
-            throw new Error('Something went wrong with comments api!')
+            throw new Error('Something went wrong with comxxxments api!')
           })
           .finally(() => {
             promise = null

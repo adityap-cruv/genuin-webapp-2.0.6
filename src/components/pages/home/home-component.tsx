@@ -44,7 +44,7 @@ const infoData = [
         <CustomAnimatedLogos
           classname="absolute bottom-[12%] right-[24%] transform-none z-0"
           animationClass="animate-rotateRight">
-          <img src={BAcommunityTab.src} alt="communitytab" className="h-20 lg:h-32 " />
+          <img src={BAcommunityTab.src} alt="communitytab" className="h-20 md:h-24 xl:h-28" />
         </CustomAnimatedLogos>
       </div>
     ),
@@ -56,7 +56,8 @@ const infoData = [
         your consumers with partner content
       </p>
     ),
-    subtitle: 'Engage with your audience through interactive and engaging content tailored to their interests.',
+    subtitle:
+      'Populate with both brand and performance content from partners, advertisers, and creators to ignite your community. ',
     imageSrc: (
       <div className="relative aspect-animatedDiv w-full rounded-[36px] bg-[#F7F9FC] md:w-5/12">
         <img src={EngageArtBg.src} alt="community" className="absolute w-full" />
@@ -86,7 +87,7 @@ const infoData = [
       </p>
     ),
     subtitle:
-      'Discover new revenue streams by leveraging your content through strategic partnerships and sponsorships.',
+      'Monetize new vertical video inventory to increase time spent on your owned and operated channels, conversion, and LTV.',
     imageSrc: (
       <div className="relative aspect-animatedDiv w-full rounded-[36px] bg-[#F7F9FC] md:w-5/12">
         <CustomAnimatedLogos classname="absolute duration-1800 h-full flex items-end -translate-x-20 right-[12%] z-0">
@@ -104,7 +105,7 @@ const infoData = [
 
 export function HomeComponent() {
   return (
-    <div className="font-manrope bg-monochrome-white">
+    <div className="font-manrope bg-monochrome-white text-[#101010]">
       <HomeNavBar />
       <div
         className="relative h-full w-full bg-cover bg-center md:h-customscreen"
@@ -123,7 +124,7 @@ export function HomeComponent() {
           <img src={icVideo.src} alt="video" className="h-12" />
         </CustomAnimatedLogos>
 
-        <CustomAnimatedSection classname="container z-10">
+        <CustomAnimatedSection classname="containerHome z-10">
           <CommunityReimagined />
         </CustomAnimatedSection>
       </div>
@@ -138,9 +139,9 @@ export function HomeComponent() {
         </CustomAnimatedSection>
       ))}
 
-      <CustomAnimatedSection>
+      {/* <CustomAnimatedSection>
         <PartnershipEcosystem />
-      </CustomAnimatedSection>
+      </CustomAnimatedSection> */}
 
       <CustomAnimatedSection classname="transform-none">
         <BookDemo />

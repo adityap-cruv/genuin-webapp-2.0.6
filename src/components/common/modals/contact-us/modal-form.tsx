@@ -90,7 +90,7 @@ export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => 
               type={type}
               placeholder={placeholder}
               className={`border border-tertiary-200 bg-tertiary-100 text-title-3-med ${
-                errors[name] ? '!border-red' : ''
+                errors[name] && isDirty ? '!border-red' : ''
               }`}
               {...field}
             />
@@ -170,7 +170,7 @@ export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => 
               disabled={isLoading || !isValid || !isDirty}>
               {isLoading ? <Loader size="sm" className="fill-new-off-white" /> : <p>Submit</p>}
             </Button>
-            <p className="mt-1 text-center text-new-para-2-mobile text-new-dark-grey">
+            <p className="text-para-1-home-m mt-0.5 text-left text-new-dark-grey">
               By submitting this form, you agree to receive promotional messages from Genuin about its products and
               services. You can unsubscribe at any time by clicking on the link at the bottom of our emails.
             </p>

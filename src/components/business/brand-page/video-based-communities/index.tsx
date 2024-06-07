@@ -7,7 +7,7 @@ export default function VideoBasedCommunities() {
   return (
     <section className={style.container}>
       <HeadingComponent headingLevel={2} title={'Collect and Manage New First Party Data'} colorVariant={'black'} />
-      <p className="text-new-para-1 my-4">
+      <p className="my-4 text-new-para-1">
         Gain insights and access your community participants directly, integrate with existing identity and data clean
         rooms
       </p>

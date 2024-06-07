@@ -11,6 +11,7 @@ import {
   type ProfileCommunityResponseType,
   type ProfileVideoResponseType,
 } from '@lib/schemas/profile/community-response'
+import { tryJsonParse } from '@lib/utils'
 
 // TODO: add this file at better location.
 export function parseVideosFromLoop(
@@ -37,8 +38,9 @@ export function parseVideosFromLoop(
         sparkCount: item.no_of_sparks ?? 0,
         thumbnail: item.thumbnail_url ?? '',
         attachedLink: item.attached_link,
-        description: item.description_text,
         slug: item.slug,
+        descriptionArr: tryJsonParse(item.description_data),
+        descriptionText: item.description_text,
       },
     }
   })
@@ -105,8 +107,11 @@ export function parseFeedResponse(videos: FeedResponseType) {
         sparkCount: video.messages[0].no_of_sparks,
         thumbnail: video.messages[0].thumbnail_url ?? '',
         attachedLink: video.messages[0].attached_link,
-        description: video.messages[0].description_text,
         isSparked: video.messages[0].is_sparked,
+        descriptionArr: video.messages[0].description_data
+          ? tryJsonParse(video.messages[0].description_data)
+          : undefined,
+        descriptionText: video.messages[0].description_text,
       },
     }
   })
