@@ -128,6 +128,7 @@ module.exports = {
       'cap-1-home': ['16px', { fontWeight: 500, lineHeight: '100%' }],
       'cap-1-home-m': ['16px', { fontWeight: 500, lineHeight: '140%' }],
       'cap-2-home-m': ['16px', { fontWeight: 400, lineHeight: '140%' }],
+      'para-1-home-m': ['10px', { fontWeight: 400, lineHeight: '140%' }],
       // New Typography developed by design team for new web.
       'heading-3': ['32px', { fontWeight: 600, lineHeight: '120%', letterSpacing: '-0.96px' }],
       'title-1-bold': ['24px', { fontWeight: 700, lineHeight: '32px' }],
@@ -273,7 +274,7 @@ module.exports = {
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
-        marquee: 'marquee 12.5s linear infinite',
+        marquee: 'marquee 25s linear infinite',
         zoomIn: 'zoomIn 0.2s ease-in-out forwards',
         zoomInOut: 'zoomInOut 2s ease-in-out forwards',
         rotateRight: 'rotateRight 1s ease-in-out forwards',

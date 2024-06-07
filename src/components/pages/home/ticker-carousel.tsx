@@ -29,18 +29,30 @@ export function TickerCarousel() {
           <p className="text-cap-1-demi-home">Built by a world-class team</p>
         </div>
       </div>
-      <div className="container w-full overflow-x-hidden">
-        <div className="animate-marquee whitespace-nowrap">
-          <div className="flex gap-12">
-            {logos.map((src: any, index: number) => (
-              <img key={index} src={src} />
-            ))}
-            {logos.map((src: any, index: number) => (
-              <img key={index + 10} src={src} />
-            ))}
-            {logos.map((src: any, index: number) => (
-              <img key={index + 20} src={src} />
-            ))}
+      <div className="container relative px-0">
+        <div
+          className="absolute left-0 z-20 h-full w-1 bg-monochrome-white"
+          style={{
+            boxShadow: '10px 0 16px 20px rgba(255, 255, 255, 1)',
+          }}></div>
+        <div
+          className="absolute right-0 z-20 h-full w-1 bg-monochrome-white"
+          style={{
+            boxShadow: '-10px 0 16px 20px rgba(255, 255, 255, 1)',
+          }}></div>
+        <div className="w-full overflow-x-hidden">
+          <div className="animate-marquee whitespace-nowrap">
+            <div className="flex gap-12">
+              {logos.map((src: any, index: number) => (
+                <img key={index} src={src} />
+              ))}
+              {logos.map((src: any, index: number) => (
+                <img key={index + 10} src={src} />
+              ))}
+              {logos.map((src: any, index: number) => (
+                <img key={index + 20} src={src} />
+              ))}
+            </div>
           </div>
         </div>
       </div>
