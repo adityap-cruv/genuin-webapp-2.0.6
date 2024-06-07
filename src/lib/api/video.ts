@@ -9,7 +9,6 @@ export async function getVideoDetails(slug: string): Promise<VideoPlayerModalTyp
     await fetchLoopDetails(metadata.chat_id),
     await fetchLoopVideo(metadata.chat_id, metadata.message_id),
   ])
-
   return {
     community: {
       handle: loopDetails.community.handle,
@@ -55,7 +54,8 @@ export async function getVideoDetails(slug: string): Promise<VideoPlayerModalTyp
       thumbnail: videoDetails.thumbnail_url ?? '',
       attachedLink: videoDetails.attached_link,
       createdAt: videoDetails.message_at,
-      description: '',
+      descriptionArr: JSON.parse(videoDetails.description_data),
+      descriptionText: videoDetails.description_text,
     },
   }
 }

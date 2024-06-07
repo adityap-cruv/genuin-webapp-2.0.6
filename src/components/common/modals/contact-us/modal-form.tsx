@@ -90,7 +90,7 @@ export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => 
               type={type}
               placeholder={placeholder}
               className={`border border-tertiary-200 bg-tertiary-100 text-title-3-med ${
-                errors[name] ? '!border-red' : ''
+                errors[name] && isDirty ? '!border-red' : ''
               }`}
               {...field}
             />

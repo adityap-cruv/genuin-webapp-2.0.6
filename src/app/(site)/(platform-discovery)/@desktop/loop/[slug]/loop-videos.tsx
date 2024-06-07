@@ -80,9 +80,9 @@ export function LoopVideos({ loop, community }: Props) {
                   />
                   <p className="ml-1 text-body-1-bold text-monochrome-white">@{item.owner.userName}</p>
                 </div>
-                {item.video.description && (
+                {item.video.descriptionText && (
                   <p className="line-clamp-2 w-5/6 overflow-hidden break-all pt-2 text-body-1-med text-monochrome-white">
-                    {item.video.description}
+                    {item.video.descriptionText}
                   </p>
                 )}
               </Link>

@@ -71,7 +71,7 @@ export function PartnershipEcosystem() {
 
   return (
     <div className="flex w-screen justify-center bg-[#F5F7FA]">
-      <div className="container hidden h-full w-full flex-col py-16 md:flex">
+      <div className="containerHome hidden h-full w-full flex-col py-16 md:flex">
         <p className="pb-16 text-center text-title-2-bold-home">
           Join Genuin's
           <br /> Partnership Ecosystem
@@ -85,7 +85,7 @@ export function PartnershipEcosystem() {
         </div>
       </div>
 
-      <div className="container w-full py-9 md:hidden">
+      <div className="containerHome w-full py-9 md:hidden">
         <p className="pb-9 text-center text-title-2-bold-home-m">
           Join Genuin's
           <br /> Partnership Ecosystem

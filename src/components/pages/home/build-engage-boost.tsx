@@ -11,7 +11,7 @@ export function BuildEnagageBoost({
 }) {
   return (
     <div className="flex w-screen justify-center bg-monochrome-white">
-      <div className="container hidden gap-9 py-16 md:flex">
+      <div className="containerHome hidden gap-24 py-16 md:flex">
         <div className="flex w-1/2 flex-col justify-center gap-6">
           {title}
           <p className="text-body-2-home">{subtitle}</p>
@@ -19,7 +19,7 @@ export function BuildEnagageBoost({
         {imageSrc}
       </div>
 
-      <div className="container flex flex-col gap-6 py-9 md:hidden">
+      <div className="containerHome flex flex-col gap-6 py-9 md:hidden">
         {title}
         <p className="text-center text-cap-2-home-m">{subtitle}</p>
         {imageSrc}

@@ -1,11 +1,11 @@
 import { CustomAvatar } from '@components/custom/custom-avatar'
+import { type RefObject, useRef, useState, useEffect } from 'react'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { Button } from '@components/ui/button'
 import { DecorativeList } from '@components/custom/decorative-list'
 import { Comments, NoComments } from '@components/common/comments'
 import { getVideosComments } from '@lib/api/loop'
-import { type RefObject, useRef, useState, useEffect } from 'react'
 import { useMotionValueEvent, useScroll } from 'framer-motion'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
@@ -22,6 +22,7 @@ import { LockIcon } from '@icons/LockIcon'
 import { TickIcon } from '@icons/tick-icon'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@components/ui/tooltip'
 import { JoinCommunityButton } from '@components/pages/community/join-community-button'
+import { ReadMore } from '../read-more'
 
 export function DesktopDetails({ loop, community, owner, video }: VideoPlayerModalType) {
   const { shareFn } = useAdaptiveShare()
@@ -60,9 +61,7 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
             <p className="shrink-0 text-body-1-demi text-tertiary">{getTimeAgo(video.createdAt) + ' ago'}</p>
           </span>
         </span>
-        {video.description && (
-          <p className="line-clamp-2 w-5/6 overflow-hidden break-all pt-3 text-title-3-med">{video.description}</p>
-        )}
+        {video.descriptionArr && <ReadMore.withMention textArr={video.descriptionArr} />}
       </div>
       <div ref={scrollDivRef} className="flex h-full flex-col overflow-auto overflow-x-clip">
         <div className="p-4">

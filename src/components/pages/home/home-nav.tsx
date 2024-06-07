@@ -8,7 +8,7 @@ import Link from 'next/link'
 export function HomeNavBar() {
   return (
     <nav className="sticky top-0 z-50 h-navbar w-full bg-white-alpha backdrop-blur-20px">
-      <div className="container flex h-full w-full items-center justify-between">
+      <div className="containerHome flex h-full w-full items-center justify-between">
         <Link href={PATH_NAME.index()}>
           <GenuinIcon.logo className="fill-primary" />
         </Link>
