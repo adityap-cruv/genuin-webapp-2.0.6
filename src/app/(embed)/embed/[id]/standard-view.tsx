@@ -16,7 +16,7 @@ export function StandardView({ embedId, embedStyle }: { embedId: string; embedSt
     setInitialData: state.setData,
   }))
   useEffect(() => {
-    setInitialData({ embedId, embedStyle, embedType: '' })
+    setInitialData({ embedId, embedStyle, embedType: 'standard_wall' })
   }, [])
 
   if (showMobileView) {

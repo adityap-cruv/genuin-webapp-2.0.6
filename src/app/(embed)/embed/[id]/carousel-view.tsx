@@ -18,7 +18,7 @@ export function CarouselView({ embedId, embedStyle }: { embedId: string; embedSt
     setInitialData: state.setData,
   }))
   useEffect(() => {
-    setInitialData({ embedId, embedStyle })
+    setInitialData({ embedId, embedStyle, embedType: 'carousel' })
   }, [])
 
   const videoWidth = (height * 9) / 16
