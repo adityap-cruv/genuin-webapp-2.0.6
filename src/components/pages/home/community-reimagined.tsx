@@ -36,7 +36,7 @@ export function CommunityReimagined() {
             id={'1'}
             loop={true}
             videoSource="https://media.begenuin.com/backend_assets/hero-video/comp-1_2.m3u8"
-            poster={''}
+            poster={'https://media.begenuin.com/backend_assets/hero-video/hero-video.png'}
           />
           <div className="absolute aspect-[32/67] h-[81.3%] rounded-[32px] border-[7px] border-monochrome-white"></div>
         </div>
@@ -64,7 +64,7 @@ export function CommunityReimagined() {
             id={'1'}
             loop={true}
             videoSource="https://media.begenuin.com/backend_assets/hero-video/comp-1_2.m3u8"
-            poster={''}
+            poster={'https://media.begenuin.com/backend_assets/hero-video/hero-video.png'}
           />
           <div className="absolute aspect-[31/67] w-full rounded-[25px] border-[6px] border-monochrome-white"></div>
         </div>
