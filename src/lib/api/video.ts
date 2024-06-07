@@ -2,6 +2,7 @@ import { validateLoopDetails } from '@lib/schemas/loop/details'
 import { axiosInstance } from './instance'
 import { type LoopVideoType } from '@lib/schemas/loop/videos'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
+import { tryJsonParse } from '@lib/utils'
 
 export async function getVideoDetails(slug: string): Promise<VideoPlayerModalType> {
   const metadata = await fetchVideoMetadata(slug)
@@ -54,7 +55,7 @@ export async function getVideoDetails(slug: string): Promise<VideoPlayerModalTyp
       thumbnail: videoDetails.thumbnail_url ?? '',
       attachedLink: videoDetails.attached_link,
       createdAt: videoDetails.message_at,
-      descriptionArr: JSON.parse(videoDetails.description_data),
+      descriptionArr: tryJsonParse(videoDetails.description_data),
       descriptionText: videoDetails.description_text,
     },
   }
