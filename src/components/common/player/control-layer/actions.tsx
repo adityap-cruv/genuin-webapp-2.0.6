@@ -236,7 +236,13 @@ function Desktop({
     isSparked,
     sparkCount,
   })
-  const { user } = useGenuinOptions((state) => ({ user: state.user }))
+  const { brandId, user, embedId, embedType, embedStyle } = useGenuinOptions((state) => ({
+    brandId: state.brandId,
+    user: state.user,
+    embedId: state.embedId,
+    embedType: state.embedType,
+    embedStyle: state.embedStyle,
+  }))
   const pathname = usePathname()
 
   async function toggleVideoSpark() {
@@ -277,6 +283,26 @@ function Desktop({
                 openModal({ title: 'Get the Genuin app', subtitle: 'Get the app to repost the video.' })
               }
             }
+
+            const properties = {
+              content_category: 'loop',
+              content_id: videoId,
+              event_record_screen: 'feed',
+              event_target_screen: 'none',
+              user_id: user?.id,
+            }
+            if (pathname.includes('embed')) {
+              Object.assign(properties, {
+                embed_id: embedId,
+                embed_type: embedType,
+                embed_style: embedStyle,
+                brand_id: brandId,
+              })
+            }
+            void analyticsService({
+              eventName: 'repost',
+              properties,
+            })
           }}>
           <Image src={icRepost} alt="repost" height={32} width={32} />
         </ActionItem>
@@ -293,6 +319,26 @@ function Desktop({
                     subtitle: 'Get the app to spark the video.',
                   })
             }
+
+            const properties = {
+              content_category: 'loop',
+              content_id: videoId,
+              event_record_screen: 'feed',
+              event_target_screen: 'none',
+              user_id: user?.id,
+            }
+            if (pathname.includes('embed')) {
+              Object.assign(properties, {
+                embed_id: embedId,
+                embed_type: embedType,
+                embed_style: embedStyle,
+                brand_id: brandId,
+              })
+            }
+            void analyticsService({
+              eventName: 'spark',
+              properties,
+            })
           }}>
           <Image src={sparkData.isSparked ? icSparkTrue : icSpark} height={32} width={32} alt="spark" />
           <p className="flex justify-center text-body-1-demi text-monochrome-white">
@@ -305,16 +351,6 @@ function Desktop({
             if (pathname.includes('embed')) {
               window.open(shareUrl, '_blank', 'noopener,noreferrer')
             } else {
-              await analyticsService({
-                eventName: 'Video Shared',
-                properties: {
-                  content_category: 'loop',
-                  content_id: videoId,
-                  event_record_screen: 'feed',
-                  event_target_screen: 'none',
-                  user_id: user?.id,
-                },
-              })
               await shareFn({
                 description: description ?? '',
                 title: description ?? '',
@@ -322,6 +358,26 @@ function Desktop({
                 toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
               })
             }
+
+            const properties = {
+              content_category: 'loop',
+              content_id: videoId,
+              event_record_screen: 'feed',
+              event_target_screen: 'none',
+              user_id: user?.id,
+            }
+            if (pathname.includes('embed')) {
+              Object.assign(properties, {
+                embed_id: embedId,
+                embed_type: embedType,
+                embed_style: embedStyle,
+                brand_id: brandId,
+              })
+            }
+            void analyticsService({
+              eventName: 'Video Shared',
+              properties,
+            })
           }}>
           <Image src={icShare} alt="share" height={32} width={32} />
         </ActionItem>

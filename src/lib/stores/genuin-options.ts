@@ -112,6 +112,9 @@ type StateType = {
   config: ConfigType
   user?: User
   notificationCount?: number | null
+  embedId?: string
+  embedStyle?: string
+  embedType?: string
 }
 
 type ActionsType = {
@@ -138,6 +141,9 @@ const initialState: StateType = {
   parentUrl: '',
   config: null,
   notificationCount: -1,
+  embedId: '',
+  embedStyle: '',
+  embedType: '',
 }
 
 export const useGenuinOptions = create(

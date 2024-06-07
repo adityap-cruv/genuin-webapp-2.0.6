@@ -8,12 +8,20 @@ import { EmbedPlayer } from '@components/embed/embed-player'
 import { useEmbedPlayerState } from '@components/embed/embed-player-state'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { Button } from '@components/ui/button'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
+import { useEffect } from 'react'
 
-export function VerticalView() {
+export function VerticalView({ embedId, embedStyle }: { embedId: string; embedStyle: string }) {
   const { height, width } = useSize()
   const { setActiveVideoId } = useEmbedPlayerState()
   const { data: videoPages } = getFeed(1)
   const videos = videoPages?.pages.flatMap((item) => item.reels)
+  const { setInitialData } = useGenuinOptions((state) => ({
+    setInitialData: state.setData,
+  }))
+  useEffect(() => {
+    setInitialData({ embedId, embedStyle })
+  }, [])
 
   function postMessage(link: string) {
     window.parent.postMessage({ action: 'open_link', link }, '*')

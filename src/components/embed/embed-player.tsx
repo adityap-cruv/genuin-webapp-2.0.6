@@ -4,7 +4,6 @@ import { useEffect } from 'react'
 import { useEmbedPlayerState } from './embed-player-state'
 import { AnimatedMuteIcon } from '@components/common/player/control-layer/animated-mute-icon'
 import { Actions } from '@components/common/player/control-layer/actions'
-import { ReadMore } from '@components/common/read-more'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import Link from 'next/link'
@@ -135,12 +134,9 @@ export function EmbedPlayer({ videoData, isFirstElement, onCanPlay, ...props }: 
                 <p className="line-clamp-1 px-2 text-title-3-bold text-monochrome-white">@{videoData.owner.userName}</p>
               </div>
             </Link>
-            {videoData.video.description && (
-              <span className="pt-2">
-                <ReadMore
-                  text={videoData.video.description}
-                  className="line-clamp-2 w-full break-all text-body-1-demi text-monochrome-white"
-                />
+            {videoData.video.descriptionText && (
+              <span className="line-clamp-2 w-full break-all text-body-1-demi text-monochrome-white">
+                {videoData.video.descriptionText}
               </span>
             )}
           </div>
@@ -150,7 +146,7 @@ export function EmbedPlayer({ videoData, isFirstElement, onCanPlay, ...props }: 
               sparkCount={videoData.video.sparkCount}
               videoId={videoData.video.id}
               attachedLink={videoData.video.attachedLink}
-              description={videoData.video.description}
+              description={videoData.video.descriptionText}
               isSparked={false}
             />
           </div>
