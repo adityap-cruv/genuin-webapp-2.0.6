@@ -3,6 +3,7 @@ import { useInView } from 'framer-motion'
 import { type DetailedHTMLProps, type ReactEventHandler, type VideoHTMLAttributes, useEffect, useRef } from 'react'
 import { usePlayerControlStore } from './player-control-store'
 import { pushVideoWatch } from '@services/analytics_service'
+import { usePathname } from 'next/navigation'
 
 // TODO: work on why player is sending multiple request.
 interface Props extends DetailedHTMLProps<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement> {
@@ -42,6 +43,7 @@ export function InnerPlayer({
     setTimeState: state.setTimeState,
     setLatency: state.setLatency,
   }))
+  const pathname = usePathname()
 
   useEffect(() => {
     if (!videoRef.current) return
@@ -137,8 +139,10 @@ export function InnerPlayer({
       onTimeUpdate={onTimeUpdateEventHandler}
       onPause={onPause}
       onEnded={(e) => {
-        onEnded?.(e)
-        restartAndLog(localRef.current.player, loop ?? false, id)
+        if (pathname !== '/') {
+          onEnded?.(e)
+          restartAndLog(localRef.current.player, loop ?? false, id)
+        }
       }}
       {...props}
     />

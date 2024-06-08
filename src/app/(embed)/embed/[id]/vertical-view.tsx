@@ -8,12 +8,23 @@ import { EmbedPlayer } from '@components/embed/embed-player'
 import { useEmbedPlayerState } from '@components/embed/embed-player-state'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { Button } from '@components/ui/button'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
+import { useEffect } from 'react'
+import { analyticsService } from '@services/analytics_service'
 
-export function VerticalView() {
+export function VerticalView({ embedId, embedStyle }: { embedId: string; embedStyle: string }) {
   const { height, width } = useSize()
   const { setActiveVideoId } = useEmbedPlayerState()
   const { data: videoPages } = getFeed(1)
   const videos = videoPages?.pages.flatMap((item) => item.reels)
+  const { setInitialData, brandId, user } = useGenuinOptions((state) => ({
+    setInitialData: state.setData,
+    brandId: state.brandId,
+    user: state.user,
+  }))
+  useEffect(() => {
+    setInitialData({ embedId, embedStyle, embedType: 'feed' })
+  }, [])
 
   function postMessage(link: string) {
     window.parent.postMessage({ action: 'open_link', link }, '*')
@@ -47,6 +58,20 @@ export function VerticalView() {
           <Button
             className="px-4"
             onClick={() => {
+              const properties = {
+                content_category: 'loop',
+                event_record_screen: 'feed',
+                event_target_screen: 'none',
+                user_id: user?.id,
+                embed_id: embedId,
+                embed_type: 'feed',
+                embed_style: embedStyle,
+                brand_id: brandId,
+              }
+              void analyticsService({
+                eventName: 'Join Community',
+                properties,
+              })
               postMessage(videos[0].community.shareUrl)
             }}>
             <p className="text-cap-1-demi">Join Community</p>
@@ -72,13 +97,7 @@ export function VerticalView() {
                 key={item.video.id}
                 style={{ height: videoHeight, width: videoWidth }}
                 className="overflow-clip rounded-lg">
-                <EmbedPlayer
-                  videoId={item.video.id}
-                  videoSource={item.video.source}
-                  isFirstElement={index === 0}
-                  poster={item.video.thumbnail}
-                  loop
-                />
+                <EmbedPlayer videoData={item} isFirstElement={index === 0} loop />
               </SwiperSlide>
             )
           })}

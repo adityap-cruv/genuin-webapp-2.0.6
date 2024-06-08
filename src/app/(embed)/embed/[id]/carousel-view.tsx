@@ -4,15 +4,22 @@ import { Mousewheel } from 'swiper/modules'
 import { Swiper, SwiperSlide, useSwiper } from 'swiper/react'
 import { useSize } from './size-provider'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { EmbedPlayer } from '@components/embed/embed-player'
 import { useEmbedPlayerState } from '@components/embed/embed-player-state'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
 
-export function CarouselView() {
+export function CarouselView({ embedId, embedStyle }: { embedId: string; embedStyle: string }) {
   const { width, height } = useSize()
   const { setActiveVideoId } = useEmbedPlayerState()
   const { data: videoPages } = getFeed(3)
   const videos = videoPages?.pages.flatMap((item) => item.reels)
+  const { setInitialData } = useGenuinOptions((state) => ({
+    setInitialData: state.setData,
+  }))
+  useEffect(() => {
+    setInitialData({ embedId, embedStyle, embedType: 'carousel' })
+  }, [])
 
   const videoWidth = (height * 9) / 16
   const ratio = width / videoWidth
@@ -38,13 +45,7 @@ export function CarouselView() {
                 <div
                   style={{ width: height * (9 / 16), height }}
                   className="relative inset-0 aspect-reel overflow-clip rounded-lg bg-contain bg-center bg-no-repeat object-contain">
-                  <EmbedPlayer
-                    videoId={item.video.id}
-                    videoSource={item.video.source}
-                    isFirstElement={index === 0}
-                    poster={item.video.thumbnail}
-                    loop
-                  />
+                  <EmbedPlayer videoData={item} isFirstElement={index === 0} loop />
                 </div>
               </SwiperSlide>
             )

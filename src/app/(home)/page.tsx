@@ -12,14 +12,14 @@ export default async function Page() {
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: 'Learn, connect and engage—all under one roof.',
+    title: 'Launch a Community Media Network for your retail Media Network.',
     applicationName: 'genuin',
     description:
-      'Discover videos that level up your life. Learn new things, share your knowledge, and create authentic connections.',
+      'Video-based communities that connect consumers with their favorite brands and creators, while boosting consumer engagement and revenue for retailers.',
     openGraph: {
       title: 'Learn, connect and engage—all under one roof.',
       description:
-        'Discover videos that level up your life. Learn new things, share your knowledge, and create authentic connections.',
+        'Video-based communities that connect consumers with their favorite brands and creators, while boosting consumer engagement and revenue for retailers.',
       url: 'https://begenuin.com',
       images: [
         {
