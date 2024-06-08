@@ -22,7 +22,8 @@ import { analyticsService } from '../../../../services/analytics_service'
 import { videoSpark } from '@lib/api/video'
 import { useState } from 'react'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
-import { useSearchParams } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
+import { DownloadDialogModal } from '@components/common/modals/download-app'
 import { RepostModal } from '@components/common/modals/repost'
 import { AuthenticationModal } from '@components/common/modals/authentication'
 
@@ -235,7 +236,14 @@ function Desktop({
     isSparked,
     sparkCount,
   })
-  const { user } = useGenuinOptions((state) => ({ user: state.user }))
+  const { brandId, user, embedId, embedType, embedStyle } = useGenuinOptions((state) => ({
+    brandId: state.brandId,
+    user: state.user,
+    embedId: state.embedId,
+    embedType: state.embedType,
+    embedStyle: state.embedStyle,
+  }))
+  const pathname = usePathname()
 
   async function toggleVideoSpark() {
     await videoSpark(videoId, 2, !sparkData.isSparked).then((res) => {
@@ -266,28 +274,72 @@ function Desktop({
         <ActionItem
           title="Repost the video!"
           onClick={() => {
-            if (user) {
-              RepostModal.open(videoId)
+            if (pathname.includes('embed')) {
+              window.open(shareUrl, '_blank', 'noopener,noreferrer')
             } else {
-              openModal({ title: 'Get the Genuin app', subtitle: 'Get the app to repost the video.' })
+              if (user) {
+                RepostModal.open(videoId)
+              } else {
+                openModal({ title: 'Get the Genuin app', subtitle: 'Get the app to repost the video.' })
+              }
             }
+
+            const properties = {
+              content_category: 'loop',
+              content_id: videoId,
+              event_record_screen: 'feed',
+              event_target_screen: 'none',
+              user_id: user?.id,
+            }
+            if (pathname.includes('embed')) {
+              Object.assign(properties, {
+                embed_id: embedId,
+                embed_type: embedType,
+                embed_style: embedStyle,
+                brand_id: brandId,
+              })
+            }
+            void analyticsService({
+              eventName: 'repost',
+              properties,
+            })
           }}>
           <Image src={icRepost} alt="repost" height={32} width={32} />
         </ActionItem>
         <ActionItem
           title="Give spark!"
-          onClick={
-            user
-              ? async () => {
-                  await toggleVideoSpark()
-                }
-              : () => {
-                  openModal({
+          onClick={async () => {
+            if (pathname.includes('embed')) {
+              window.open(shareUrl, '_blank', 'noopener,noreferrer')
+            } else {
+              user
+                ? await toggleVideoSpark()
+                : openModal({
                     title: 'Get the Genuin app',
                     subtitle: 'Get the app to spark the video.',
                   })
-                }
-          }>
+            }
+
+            const properties = {
+              content_category: 'loop',
+              content_id: videoId,
+              event_record_screen: 'feed',
+              event_target_screen: 'none',
+              user_id: user?.id,
+            }
+            if (pathname.includes('embed')) {
+              Object.assign(properties, {
+                embed_id: embedId,
+                embed_type: embedType,
+                embed_style: embedStyle,
+                brand_id: brandId,
+              })
+            }
+            void analyticsService({
+              eventName: 'spark',
+              properties,
+            })
+          }}>
           <Image src={sparkData.isSparked ? icSparkTrue : icSpark} height={32} width={32} alt="spark" />
           <p className="flex justify-center text-body-1-demi text-monochrome-white">
             {abbreviateNumber(sparkData.sparkCount)}
@@ -296,21 +348,35 @@ function Desktop({
         <ActionItem
           title="Share Video!"
           onClick={async () => {
-            await analyticsService({
+            if (pathname.includes('embed')) {
+              window.open(shareUrl, '_blank', 'noopener,noreferrer')
+            } else {
+              await shareFn({
+                description: description ?? '',
+                title: description ?? '',
+                shareLink: shareUrl,
+                toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
+              })
+            }
+
+            const properties = {
+              content_category: 'loop',
+              content_id: videoId,
+              event_record_screen: 'feed',
+              event_target_screen: 'none',
+              user_id: user?.id,
+            }
+            if (pathname.includes('embed')) {
+              Object.assign(properties, {
+                embed_id: embedId,
+                embed_type: embedType,
+                embed_style: embedStyle,
+                brand_id: brandId,
+              })
+            }
+            void analyticsService({
               eventName: 'Video Shared',
-              properties: {
-                content_category: 'loop',
-                content_id: videoId,
-                event_record_screen: 'feed',
-                event_target_screen: 'none',
-                user_id: user?.id,
-              },
-            })
-            await shareFn({
-              description: description ?? '',
-              title: description ?? '',
-              shareLink: shareUrl,
-              toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
+              properties,
             })
           }}>
           <Image src={icShare} alt="share" height={32} width={32} />

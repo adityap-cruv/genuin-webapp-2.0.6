@@ -51,11 +51,6 @@ type Props = {
 } & VariantProps<typeof navVariant>
 
 export function TopBar({ variant = 'light', className, showClose = false, onClose }: Props) {
-  // TODO: Added for redirection to https
-  // const protocol = window.location.protocol
-  // if (protocol === 'http:') {
-  //   window.location.href = window.location.href.replace(/^http:/, 'https:')
-  // }
   const { embed, user, brandName, notificationsCount } = useGenuinOptions((state) => ({
     embed: state.embed,
     user: state.user,
