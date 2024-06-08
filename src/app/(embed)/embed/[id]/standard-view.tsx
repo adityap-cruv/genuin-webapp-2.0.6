@@ -4,13 +4,20 @@ import { getFeed } from '@lib/api/feed'
 import { FeedShimmer } from '@components/common/shimmers/feed-shimmer'
 import dynamic from 'next/dynamic'
 import { SideBar } from '@components/layouts/desktop/side-bar'
-import { type VideoSizeBoxType } from '@lib/stores/genuin-options'
+import { useGenuinOptions, type VideoSizeBoxType } from '@lib/stores/genuin-options'
 import { TopBar } from '@components/layouts/mobile/top-bar'
+import { useEffect } from 'react'
 const DesktopFeed = dynamic(async () => await import('@components/common/feed').then((comp) => comp.Feed.desktop))
 const MobileFeed = dynamic(async () => await import('@components/common/feed').then((comp) => comp.Feed.mobile))
 
-export function StandardView() {
+export function StandardView({ embedId, embedStyle }: { embedId: string; embedStyle: string }) {
   const { showMobileView, sizeBox } = useSize()
+  const { setInitialData } = useGenuinOptions((state) => ({
+    setInitialData: state.setData,
+  }))
+  useEffect(() => {
+    setInitialData({ embedId, embedStyle, embedType: 'standard_wall' })
+  }, [])
 
   if (showMobileView) {
     return <Mobile sizeBox={sizeBox} />

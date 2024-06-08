@@ -9,6 +9,7 @@ import matt from '@images/home/team/matt.svg'
 import nayan_mevada from '@images/home/team/nayan_mevada.svg'
 import rahul from '@images/home/team/rahul.svg'
 import shabbir from '@images/home/team/shabbir.svg'
+import ankit from '@images/home/team/ankit.svg'
 import Link from 'next/link'
 
 export default function Component() {
@@ -198,6 +199,12 @@ function Team() {
       name: 'Nayan Mevada',
       position: 'CTO',
       linkedin: 'https://www.linkedin.com/in/nayanmevada',
+    },
+    {
+      image: ankit.src,
+      name: 'Ankit Desai',
+      position: 'DPO',
+      linkedin: 'https://www.linkedin.com/in/desaiankitb',
     },
   ]
 
