@@ -1,6 +1,7 @@
 import { cn } from '@lib/utils'
 import { type Viewport } from 'next'
 import { type ComponentProps, type ReactNode } from 'react'
+import { RedirectToHTTPS } from './redirect-to-https'
 
 type Props = ComponentProps<'body'> & {
   brandColors?: any
@@ -23,6 +24,7 @@ export function RootHTML({ brandColors, favicon, subdomain, children, className,
         className={cn('index-page-background !absolute inset-0 min-h-full min-w-full text-secondary', className)}
         {...props}>
         {children}
+        <RedirectToHTTPS />
       </body>
     </html>
   )
