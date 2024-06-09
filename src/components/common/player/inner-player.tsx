@@ -125,7 +125,7 @@ export function InnerPlayer({
       poster={poster}
       ref={videoRef}
       muted={muted}
-      loop={false}
+      loop={loop}
       src={videoSource}
       playsInline
       onPlay={onPlay}
@@ -139,10 +139,8 @@ export function InnerPlayer({
       onTimeUpdate={onTimeUpdateEventHandler}
       onPause={onPause}
       onEnded={(e) => {
-        if (pathname !== '/') {
-          onEnded?.(e)
-          restartAndLog(localRef.current.player, loop ?? false, id)
-        }
+        onEnded?.(e)
+        restartAndLog(localRef.current.player, loop ?? false, id, pathname)
       }}
       {...props}
     />
@@ -271,9 +269,11 @@ export function ViewportPlayer({
   )
 }
 
-function restartAndLog(player: OpenPlayerJS | null, loop: boolean, id: string) {
+function restartAndLog(player: OpenPlayerJS | null, loop: boolean, id: string, pathname?: string) {
   if (loop && player) {
     void player.play()
   }
-  pushVideoWatch(id)
+  if (pathname !== '/') {
+    pushVideoWatch(id)
+  }
 }
