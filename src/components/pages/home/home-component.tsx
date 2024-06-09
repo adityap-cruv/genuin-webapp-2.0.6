@@ -104,11 +104,6 @@ const infoData = [
 ]
 
 export function HomeComponent() {
-  // TODO: https handle
-  const protocol = window.location.protocol
-  if (protocol === 'http:') {
-    window.location.href = window.location.href.replace(/^http:/, 'https:')
-  }
   return (
     <div className="font-manrope bg-monochrome-white text-[#101010]">
       <HomeNavBar />
