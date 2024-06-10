@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
+import { usePathname } from 'next/navigation'
 
 interface Category {
   category: string
@@ -24,8 +25,9 @@ interface Community {
   slug: string
 }
 
-export function CategoryView() {
+export function CategoryView({ classname }: { classname: string }) {
   const [categories, setCategories] = useState<Category[] | null>(null)
+  const pathName = usePathname()
 
   useEffect(() => {
     async function fetchCategories() {
@@ -38,9 +40,11 @@ export function CategoryView() {
     void fetchCategories()
   }, [])
 
-  const CommonComponent = () => {
-    return (
-      <>
+  if (!categories || categories.length === 0) return
+
+  return (
+    <>
+      <div className={classname}>
         <p className="text-title-2-demi text-tertiary">Categories</p>
         <Accordion type="single" collapsible className="my-1.5">
           {categories?.map((category: Category, index: number) => {
@@ -60,7 +64,12 @@ export function CategoryView() {
                             fallbackString={item.name ?? ''}
                             isAvatar={false}
                           />
-                          <p className="text-title-2-demi">{item.name}</p>
+                          <p
+                            className={`break-all text-title-2-demi lg:line-clamp-1 ${
+                              pathName === PATH_NAME.community(item.slug) && 'text-primary'
+                            }`}>
+                            {item.name}
+                          </p>
                         </div>
                       </Link>
                     </AccordionContent>
@@ -70,19 +79,6 @@ export function CategoryView() {
             )
           })}
         </Accordion>
-      </>
-    )
-  }
-
-  if (!categories || categories.length === 0) return
-
-  return (
-    <>
-      <div className="hidden lg:block">
-        <CommonComponent />
-      </div>
-      <div className="lg:hidden">
-        <CommonComponent />
       </div>
     </>
   )
