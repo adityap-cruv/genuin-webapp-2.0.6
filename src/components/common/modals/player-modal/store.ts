@@ -28,7 +28,7 @@ export const useFeedModalStore = create<FeedModalStore>((set, get) => {
           const userId = usersdata.state.userId ?? ''
 
           if (index !== -1 && numberOfVideos > index) {
-            const eventName = index < state.currentIndex ? 'Swipe Up' : 'Swipe Down'
+            const eventName = index < state.currentIndex ? 'Swipe Down' : 'Swipe Up'
             const properties = {
               content_category: 'loop',
               content_id: state.videos[state.currentIndex]?.video.id,
