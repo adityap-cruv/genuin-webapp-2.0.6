@@ -10,15 +10,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { userContactDetails } from '@lib/api/contact-us'
 
 const formSchema = z.object({
-  firstName: z.string().nonempty({ message: 'First name is required' }),
-  lastName: z.string().nonempty({ message: 'Last name is required' }),
-  email: z.string().nonempty({ message: 'Email is required' }).email({ message: 'Invalid email format' }),
-  companyName: z.string().nonempty({ message: 'Company name is required' }),
-  companyType: z.string().nonempty({ message: 'Company type is required' }),
-  country: z.string().nonempty({ message: 'Country is required' }),
-  website: z.string().url(),
-  piquedInterest: z.string(),
-  companySize: z.string(),
+  firstName: z.string().trim().min(1, { message: 'First name is required' }),
+  lastName: z.string().trim().min(1, { message: 'Last name is required' }),
+  email: z.string().trim().min(1, { message: 'Email is required' }).email({ message: 'Invalid email format' }),
+  companyName: z.string().trim().min(1, { message: 'Company name is required' }),
+  companyType: z.string().trim().min(1, { message: 'Company type is required' }),
+  country: z.string().trim().min(1, { message: 'Country is required' }),
+  website: z.string().trim().url().optional(),
+  piquedInterest: z.string().trim().optional(),
+  companySize: z.string().trim().optional(),
 })
 
 export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => void }) {
@@ -90,12 +90,12 @@ export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => 
               type={type}
               placeholder={placeholder}
               className={`border border-tertiary-200 bg-tertiary-100 text-title-3-med ${
-                errors[name] && isDirty ? '!border-red' : ''
+                errors[name] ? '!border-red' : ''
               }`}
               {...field}
             />
           </FormControl>
-          {isDirty && <FormMessage className="!text-cap-1-demi" />}
+          <FormMessage className="!text-cap-1-demi" />
         </FormItem>
       )}
     />
@@ -131,7 +131,7 @@ export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => 
                       </SelectContent>
                     </Select>
                   </FormControl>
-                  {isDirty && <FormMessage className="!text-cap-1-demi" />}
+                  <FormMessage className="!text-cap-1-demi" />
                 </FormItem>
               )}
             />{' '}
@@ -156,7 +156,7 @@ export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => 
                     </SelectContent>
                   </Select>
                 </FormControl>
-                {isDirty && <FormMessage className="!text-cap-1-demi" />}
+                <FormMessage className="!text-cap-1-demi" />
               </FormItem>
             )}
           />
@@ -170,7 +170,7 @@ export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => 
               disabled={isLoading || !isValid || !isDirty}>
               {isLoading ? <Loader size="sm" className="fill-new-off-white" /> : <p>Submit</p>}
             </Button>
-            <p className="text-para-1-home-m mt-0.5 text-left text-new-dark-grey">
+            <p className="mt-0.5 text-left text-para-1-home-m text-new-dark-grey">
               By submitting this form, you agree to receive promotional messages from Genuin about its products and
               services. You can unsubscribe at any time by clicking on the link at the bottom of our emails.
             </p>
