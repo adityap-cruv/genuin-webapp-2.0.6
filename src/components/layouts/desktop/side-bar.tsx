@@ -176,7 +176,7 @@ export function SideBar() {
             </div>
           </>
         )}
-        <CategoryView />
+        <CategoryView classname="hidden lg:block" />
         <RecentCommunities />
       </div>
       {embed && (

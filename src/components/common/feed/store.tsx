@@ -30,7 +30,7 @@ export const useFeedListStore = create<FeedListStoreType>((set) => {
 
           // console.log('state::', state.videoList, state.currentIndex)
           if (index !== -1 && numberOfVideos > index) {
-            const eventName = index < state.currentIndex ? 'Swipe Up' : 'Swipe Down'
+            const eventName = index < state.currentIndex ? 'Swipe Down' : 'Swipe Up'
             const properties = {
               content_category: 'loop',
               content_id: state.videoList[state.currentIndex]?.video?.id,
