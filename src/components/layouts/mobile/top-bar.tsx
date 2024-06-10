@@ -254,7 +254,7 @@ function Menu({
                 <img src={CommunityIcon.src} alt="community" className="absolute bottom-0 right-4 h-12" />
               </div>
             )}
-            <CategoryView />
+            <CategoryView classname="lg:hidden" />
             <RecentCommunities />
           </div>
           <div className="text-monochrome">

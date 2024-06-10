@@ -184,7 +184,7 @@ function Team() {
     },
     {
       image: shabbir.src,
-      name: 'Shabbir Helay',
+      name: 'Shabbir Helaly',
       position: 'Head of Sales',
       linkedin: 'https://www.linkedin.com/in/shabbirhelaly',
     },
