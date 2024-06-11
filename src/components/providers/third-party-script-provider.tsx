@@ -41,11 +41,23 @@ export function ThirdPartyScriptProvider({ children, isEmbed }: { children: Reac
               gtag('js', new Date());
               gtag('config', '${process.env.GA_MEASUREMENT_ID}');
             }
-              
-            if(OnetrustActiveGroups.indexOf("C0003,C0002,C0001") > 0){
+            // console.log(window.OneTrust)
+            const handleConsentChanged = () => {
+              // console.log("V");
               var consentDiv = document.getElementById("onetrust-consent-sdk");
               if (consentDiv) {
-                  consentDiv.style.display = "none";
+                consentDiv.style.display = "none";
+              }
+            };
+
+            // console.log(window.OneTrust.OnConsentChanged)
+            window.OneTrust.OnConsentChanged(handleConsentChanged);
+            
+            if ((OnetrustActiveGroups.indexOf("C0003") > 0) 
+                || (OnetrustActiveGroups.indexOf("C0002") > 0)){
+              var consentDiv = document.getElementById("onetrust-consent-sdk");
+              if (consentDiv) {
+                consentDiv.style.display = "none";
               }
             }
           }
