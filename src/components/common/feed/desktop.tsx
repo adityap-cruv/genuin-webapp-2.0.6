@@ -51,6 +51,13 @@ export function Desktop({ fetchNextPage, isFetchingNextPage, videos, className, 
     setNewVideos(videos ?? [])
   }, [videos])
 
+  if (videoList.length === 0)
+    return (
+      <div className={cn('flex aspect-reel h-full items-center justify-center bg-tertiary-200', className)}>
+        <p className="text-title-3-demi text-tertiary">No activity yet</p>
+      </div>
+    )
+
   if (videoList.length > 0)
     return (
       <div className={cn('flex h-full w-full', className)}>
