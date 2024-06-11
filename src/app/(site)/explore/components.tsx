@@ -21,7 +21,7 @@ function CommunitiesForDesktop() {
   return (
     <>
       <p className="pb-2 pt-6 text-title-1-bold">Featured Communities</p>
-      <div className="grid h-auto w-fit min-w-fit grid-cols-1 gap-4 md:grid-cols-2 md:grid-rows-2">
+      <div className="grid h-auto w-full min-w-fit grid-cols-1 gap-4 md:grid-cols-2 md:grid-rows-2">
         {data?.map((item) => {
           return (
             <CommunityItem
@@ -78,7 +78,7 @@ type CommunityItemProps = {
 
 function CommunityItem({ id, memberCount, handle, profileImage, description, name, slug }: CommunityItemProps) {
   return (
-    <div className="min-w[320px] max-w-[450px] rounded-lg border border-tertiary-300 p-4">
+    <div className="min-w[320px] max-w-full rounded-lg border border-tertiary-300 p-4">
       <div className="flex items-center justify-between">
         <span className="flex items-center gap-x-2">
           <CustomAvatar fallbackString={name ?? ''} imageUrl={profileImage} isAvatar={false} className="h-12 w-12" />
