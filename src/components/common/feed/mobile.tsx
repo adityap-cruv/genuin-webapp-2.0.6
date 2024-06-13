@@ -43,7 +43,7 @@ export function Mobile({ videos, fetchNextPage, isFetchingNextPage, startIndex =
     if (!isFetchingNextPage && videoList.length - 3 <= currentIndex) {
       fetchNextPage?.()
     }
-    if ((currentIndex + 1) % 5) showInterruption()
+    if ((currentIndex + 1) % 5 === 0) showInterruption()
   }, [currentIndex])
 
   useEffect(() => {
