@@ -16,14 +16,14 @@ export default async function Page() {
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: 'Learn, connect and engage—all under one roof.',
+    title: 'Build your Community Media Network.',
     applicationName: 'genuin',
     description:
-      'Discover videos that level up your life. Learn new things, share your knowledge, and create authentic connections.',
+      'Establish no-code, social communities with short videos that seamlessly integrate into  your owned digital properties and beyond.',
     openGraph: {
-      title: 'Learn, connect and engage—all under one roof.',
+      title: 'Build your Community Media Network.',
       description:
-        'Discover videos that level up your life. Learn new things, share your knowledge, and create authentic connections.',
+        'Establish no-code, social communities with short videos that seamlessly integrate into  your owned digital properties and beyond.',
       url: 'https://begenuin.com',
       images: [
         {
