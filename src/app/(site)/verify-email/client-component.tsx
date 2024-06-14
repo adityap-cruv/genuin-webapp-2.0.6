@@ -20,10 +20,3 @@ export function ClientComponentEmail({ user, redirectTo }: { user: any; redirect
 
   return <></>
 }
-
-export function ClientComponentSMS({ redirectTo }: { redirectTo: string }) {
-  useEffect(() => {
-    window.location.replace(redirectTo)
-  }, [])
-  return <></>
-}
