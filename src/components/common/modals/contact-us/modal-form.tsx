@@ -16,7 +16,11 @@ const formSchema = z.object({
   companyName: z.string().trim().min(1, { message: 'Company name is required' }),
   companyType: z.string().trim().min(1, { message: 'Company type is required' }),
   country: z.string().trim().min(1, { message: 'Country is required' }),
-  website: z.string().trim().url().optional(),
+  website: z
+    .string()
+    .trim()
+    .regex(/^(https?:\/\/)?([\da-z.-]+\.[a-z.]{2,6})([/\w .-]*)*\/?$/, { message: 'Invalid website URL' })
+    .optional(),
   piquedInterest: z.string().trim().optional(),
   companySize: z.string().trim().optional(),
 })

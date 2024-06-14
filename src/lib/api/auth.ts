@@ -2,6 +2,7 @@ import { encryptText } from '@lib/utils'
 import { axiosInstance, setAuthTokenInAxiosInstance, setTempAuthTokenInAxiosInstance } from './instance'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
+import axios from 'axios'
 
 // type RecaptchaActionType = 'LOGIN' | 'SIGNUP'
 
@@ -95,7 +96,7 @@ export async function verifyEmail(token: string): Promise<{
    * 11 -> magic link
    * 12 -> verify email
    */
-  emailType: 11 | 12
+  emailType: 11 | 12 | 2 | 19 | 20 | 21 | 22
   accessToken?: string
   email?: string
 }> {
@@ -124,6 +125,47 @@ export async function verifyEmail(token: string): Promise<{
         emailType: data?.data?.email_type,
         actionMetadata: data?.data?.action_meta_data,
         email: data?.data?.email,
+      }
+    })
+}
+
+export async function verifySMS(token: string): Promise<{
+  code: number
+  userId?: string
+  brandId?: string
+  /**
+   * 8 -> community sms
+   * 9 -> loop sms
+   */
+  smsType: 8 | 9
+  accessToken?: string | null
+}> {
+  return await axios
+    .get(process.env.NEXT_PUBLIC_INTERNAL_API_URL + '/api/v3/verify_sms_token', {
+      params: {
+        token,
+      },
+    })
+    .then((res) => {
+      const data = res?.data?.data
+      return {
+        code: Number(res?.data?.code),
+        userId: data?.user_id,
+        brandId: data?.brand_id,
+        smsType: data?.sms_type,
+        accessToken: res.headers['x-auth-token'],
+      }
+    })
+    .catch((e) => {
+      // eslint-disable-next-line no-console
+      console.log('ERROR in sms Verify: ', e)
+      const data = e?.response?.data
+      return {
+        code: Number(data?.code),
+        userId: data?.user_id,
+        brandId: data?.brand_id,
+        smsType: data?.sms_type,
+        accessToken: null,
       }
     })
 }
@@ -435,5 +477,36 @@ export async function getBrandGuidelines({
       // eslint-disable-next-line no-console
       console.log('::error in guidelines api::', e.response.data.code)
       return { code: Number(e.response.data.code), data: e.response.data.data }
+    })
+}
+
+export async function addEmailForKs({
+  email,
+  token,
+}: {
+  email: string | undefined
+  token: string | undefined
+}): Promise<{ code: number; data: any; accessToken: string | null }> {
+  return await axios
+    .post(
+      process.env.NEXT_PUBLIC_API_URL + '/api/v3/users/add_email_for_ks',
+      {
+        email: encryptText(email ?? '', false),
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'x-auth-token': token,
+        },
+      }
+    )
+    .then((res) => {
+      setAuthTokenInAxiosInstance(res.headers['x-auth-token'])
+      return { code: res.data.code, data: res.data.data, accessToken: res.headers['x-auth-token'] }
+    })
+    .catch((e) => {
+      // eslint-disable-next-line no-console
+      console.log('::error in guidelines api::', e.response.data.code)
+      return { code: Number(e.response.data.code), data: e.response.data.data, accessToken: null }
     })
 }
