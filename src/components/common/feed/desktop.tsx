@@ -36,11 +36,11 @@ export function Desktop({ fetchNextPage, isFetchingNextPage, videos, className, 
   }))
 
   useEffect(() => {
-    if (currentIndex > videoList.length - 3 && !isFetchingNextPage) {
+    if (videoList.length !== 0 && currentIndex > videoList.length - 3 && !isFetchingNextPage) {
       fetchNextPage?.()
     }
     if ((currentIndex + 1) % 5 === 0) showInterruption()
-  }, [currentIndex])
+  }, [currentIndex, videoList.length])
 
   // TODO improvement pending
   useEffect(() => {
