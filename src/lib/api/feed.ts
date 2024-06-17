@@ -48,6 +48,7 @@ export function getFeed(feedType: 1 | 2 | 3) {
     queryFn: async ({ pageParam }) => {
       return await fetchFeed(feedType, pageParam)
     },
+    refetchOnWindowFocus: false,
     getNextPageParam(lastPage, allPages) {
       if (lastPage.end) return
       return {
