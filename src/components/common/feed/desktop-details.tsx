@@ -61,7 +61,7 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
             <p className="shrink-0 text-body-1-demi text-tertiary">{getTimeAgo(video.createdAt) + ' ago'}</p>
           </span>
         </span>
-        {video.descriptionArr && <ReadMore.withMention textArr={video.descriptionArr} />}
+        {video.descriptionArr && <ReadMore.withMention text={video.descriptionText} textArr={video.descriptionArr} />}
       </div>
       <div ref={scrollDivRef} className="flex h-full flex-col overflow-auto overflow-x-clip">
         <div className="p-4">
