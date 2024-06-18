@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { Button } from '@components/ui/button'
 import { openModal } from '@lib/utils'
 import { useQueryClient } from '@tanstack/react-query'
-import theme from 'tailwindcss/defaultTheme'
 
 type Props = {
   userRole?: 'LEADER' | 'MEMBER' | 'REQUESTED'
@@ -52,7 +51,6 @@ export function JoinCommunityButton({ userRole, handle, id, isCommunityPrivate, 
         })
       }
     } finally {
-      console.log('iN')
       void queryClient.invalidateQueries({ queryKey: ['community', 'details'], type: 'all' })
     }
   }
