@@ -162,6 +162,16 @@ function Mobile({
         onClick={() => {
           // TODO: USE OTHER VARIABLE FOR COMMENT OPENING
           commentsIsOpen ? closeComments() : openComments(videoId)
+          void analyticsService({
+            eventName: 'RT Comment Clicked',
+            properties: {
+              content_category: 'loop',
+              content_id: videoId,
+              event_record_screen: 'feed',
+              event_target_screen: 'none',
+              user_id: user?.id,
+            },
+          })
         }}>
         <Image src={icComment} alt="comments" height={32} width={32} />
         <p className="flex justify-center text-body-1-demi text-monochrome-white">{abbreviateNumber(commentCount)}</p>

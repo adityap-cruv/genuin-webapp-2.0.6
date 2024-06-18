@@ -5,10 +5,11 @@ import { useSearchBarStore } from '../store'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { IcLoop } from '@icons/ic-loop'
-import { type ReactNode } from 'react'
+import { useEffect, type ReactNode } from 'react'
 import Link from 'next/link'
 import { ItemShimmer } from './item-shimmer'
 import { SearchIcon } from '@icons/search-icon'
+import { analyticsService } from '@services/analytics_service'
 
 export function Recents() {
   const {
@@ -23,10 +24,23 @@ export function Recents() {
     },
   })
 
+  useEffect(() => {
+    if (list && list?.length !== 0) {
+      void analyticsService({
+        eventName: 'Check Recent Search',
+        properties: {},
+      })
+    }
+  }, [list])
+
   async function deleteClickHandler(id?: string, all?: boolean) {
     const response = await deleteRecent(id, all)
     // TODO: What should we do in case of failuere in deletion api.
     if (response) void refetch()
+    void analyticsService({
+      eventName: 'Clear Recent Search',
+      properties: {},
+    })
   }
 
   if (isLoading) return <ItemShimmer count={10} />
@@ -150,6 +164,10 @@ function ListItem({
           onClick={(e) => {
             e.stopPropagation()
             deletionHandler()
+            void analyticsService({
+              eventName: 'Keyword Search Cancel',
+              properties: {},
+            })
           }}
         />
       </span>
@@ -180,6 +198,10 @@ function TextItem({ subtitle = '', title = '', avatar: Avatar, deletionHandler }
           onClick={(e) => {
             e.stopPropagation()
             deletionHandler()
+            void analyticsService({
+              eventName: 'Keyword Search Cancel',
+              properties: {},
+            })
           }}
         />
       </span>
