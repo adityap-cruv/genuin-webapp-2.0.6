@@ -26,6 +26,7 @@ import { TikTokIcon } from '@icons/tiktok-icon'
 import { LinkedInIcon } from '@icons/linkedin-icon'
 import { TwitterIcon } from '@icons/twitter-icon'
 import { type User } from 'next-auth'
+import { analyticsService } from '@services/analytics_service'
 
 export default function MainComponent() {
   const { isMobile, user } = useGenuinOptions((state) => ({ isMobile: state.isMobile, user: state.user }))
@@ -167,6 +168,10 @@ function EditProfile({ profileData, isMobile }: { profileData: ProfileDetailsTyp
                 onClick={() => {
                   const path = localStorage.getItem('previous_path')
                   router.push(path ?? PATH_NAME.home())
+                  void analyticsService({
+                    eventName: 'Settings Closed',
+                    properties: {},
+                  })
                 }}
               />
             )}

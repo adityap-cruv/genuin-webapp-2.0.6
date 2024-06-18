@@ -7,6 +7,7 @@ import { Actions } from '@components/common/player/control-layer/actions'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import Link from 'next/link'
+import { analyticsService } from '@services/analytics_service'
 
 type Props = DetailedHTMLProps<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement> & {
   // videoSizeBox: { width: number; height: number }
@@ -116,6 +117,10 @@ export function EmbedPlayer({ videoData, isFirstElement, onCanPlay, ...props }: 
           onClick={(e) => {
             e.stopPropagation()
             toggleMuted()
+            void analyticsService({
+              eventName: 'Unmute',
+              properties: {},
+            })
           }}>
           <AnimatedMuteIcon />
         </div>

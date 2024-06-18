@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { AuthenticationModal } from '@components/common/modals/authentication'
 import { Toaster } from '@components/ui/toaster'
 import { useRouter } from 'next/navigation'
+import { analyticsService } from '@services/analytics_service'
 
 export default function MainComponent() {
   const { isMobile, user } = useGenuinOptions((state) => ({ isMobile: state.isMobile, user: state.user }))
@@ -19,6 +20,10 @@ export default function MainComponent() {
             alt="back"
             onClick={() => {
               router.back()
+              void analyticsService({
+                eventName: 'Settings Closed',
+                properties: {},
+              })
             }}
           />
         )}
