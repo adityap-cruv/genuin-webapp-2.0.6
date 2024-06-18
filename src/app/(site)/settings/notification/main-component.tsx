@@ -71,6 +71,10 @@ function Notifications({
             alt="back"
             onClick={() => {
               router.back()
+              void analyticsService({
+                eventName: 'Settings Closed',
+                properties: {},
+              })
             }}
           />
         )}
