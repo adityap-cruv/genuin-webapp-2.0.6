@@ -11,6 +11,7 @@ import { cn } from '@lib/utils'
 import { AnimatedMuteIcon } from './animated-mute-icon'
 import { TickIcon } from '@icons/tick-icon'
 import { type DescriptionArrType } from '@lib/schemas/player/video'
+import { analyticsService } from '@services/analytics_service'
 
 export const ControlLayer = {
   desktop: Desktop,
@@ -53,6 +54,10 @@ function Desktop({ shareUrl, sparkCount, videoId, attachedLink, description, isS
           onClick={(e) => {
             e.stopPropagation()
             toggleMuted()
+            void analyticsService({
+              eventName: 'Unmute',
+              properties: { video_id: videoId },
+            })
           }}
           className="absolute inset-0 h-full w-full">
           <span className="absolute inset-0 left-6 top-6 h-fit w-fit cursor-pointer">
@@ -89,6 +94,10 @@ function Mobile({ ...props }: MobileProps) {
           onClick={(e) => {
             e.stopPropagation()
             toggleMuted()
+            void analyticsService({
+              eventName: 'Unmute',
+              properties: { video_id: props.videoId },
+            })
           }}
           className="absolute z-[3] h-full w-full ">
           <span className="absolute left-4 top-20">
