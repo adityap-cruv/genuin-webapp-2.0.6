@@ -69,11 +69,11 @@ function UserTick() {
   if (status === 'unauthenticated')
     return (
       <Button
-        className="px-4 "
+        className="px-4"
         onClick={() => {
           AuthenticationModal.open()
         }}>
-        <p className="text-title-3-demi">Log in</p>
+        <p className="min-w-max text-title-3-demi">Log in</p>
       </Button>
     )
 

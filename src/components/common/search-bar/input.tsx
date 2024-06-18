@@ -21,7 +21,7 @@ function Desktop() {
   }, 500)
 
   return (
-    <div className="relative w-96">
+    <div className="relative min-w-[100px] md:w-64 lg:w-72 xl:w-96">
       <Input
         onFocus={() => {
           updateFocus(true, false)
