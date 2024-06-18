@@ -166,32 +166,10 @@ function CommentInput({ setComments, currentComment, setCurrentComment, videoDet
                   })
                 }}
                 placeholder="Add a comment"
-                className="h-full w-2/3 rounded-full border-2 border-monochrome-9 bg-monochrome-white py-2 pl-6">
+                className="h-full w-full rounded-full border-2 border-monochrome-9 bg-monochrome-white py-2 pl-6">
                 <p className="text-start text-title-3-demi text-monochrome">Add a Comment</p>
               </div>
             )}
-            <Image
-              src={icAudioRecord}
-              alt="audio record"
-              className="h-8 w-8"
-              onClick={() => {
-                DownloadDialogModal.open({
-                  title: 'Get the Genuin app',
-                  subtitle: 'Get the app to comment on this video.',
-                })
-              }}
-            />
-            <Image
-              src={icVideoRecord}
-              alt="audio record"
-              className="h-8 w-8"
-              onClick={() => {
-                DownloadDialogModal.open({
-                  title: 'Get the Genuin app',
-                  subtitle: 'Get the app to comment on this video.',
-                })
-              }}
-            />
           </div>
         </div>
       ) : (
@@ -219,11 +197,9 @@ function CommentInput({ setComments, currentComment, setCurrentComment, videoDet
           <div className="flex w-full flex-1 items-center gap-x-4">
             <div
               placeholder="Add a comment"
-              className="h-full w-2/3 rounded-full border-2 border-monochrome-9 bg-monochrome-white py-2 pl-6">
+              className="h-full w-full rounded-full border-2 border-monochrome-9 bg-monochrome-white py-2 pl-6">
               <p className="text-start text-title-3-demi text-monochrome">Add a Comment</p>
             </div>
-            <Image src={icAudioRecord} alt="audio record" className="h-8 w-8" />
-            <Image src={icVideoRecord} alt="audio record" className="h-8 w-8" />
           </div>
         </div>
       )}
