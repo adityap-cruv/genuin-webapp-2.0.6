@@ -6,6 +6,7 @@ import { postRecents } from './api'
 import { RECENT_SEARCH_CONTENT_TYPE } from '@lib/constants'
 import { SheetClose } from '@components/ui/sheet'
 import { SearchIcon } from '@icons/search-icon'
+import { analyticsService } from '@services/analytics_service'
 
 export const SearchInput = {
   desktop: Desktop,
@@ -18,10 +19,14 @@ function Desktop() {
   const debounced = useDebouncedCallback((value) => {
     setKeyword(value)
     if (value) postRecents(RECENT_SEARCH_CONTENT_TYPE.text, undefined, value)
+    void analyticsService({
+      eventName: 'Keyword Searched',
+      properties: { keyword_searched: value, search_source: 'web' },
+    })
   }, 500)
 
   return (
-    <div className="relative w-96">
+    <div className="relative min-w-[100px] md:w-64 lg:w-72 xl:w-96">
       <Input
         onFocus={() => {
           updateFocus(true, false)
@@ -44,6 +49,10 @@ function Mobile() {
   const debounced = useDebouncedCallback((value) => {
     setKeyword(value)
     if (value) postRecents(RECENT_SEARCH_CONTENT_TYPE.text, undefined, value)
+    void analyticsService({
+      eventName: 'Keyword Searched',
+      properties: { keyword_searched: value, search_source: 'web' },
+    })
   }, 500)
 
   return (

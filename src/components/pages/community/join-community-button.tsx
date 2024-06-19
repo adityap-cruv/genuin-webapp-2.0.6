@@ -3,6 +3,7 @@ import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { useState } from 'react'
 import { Button } from '@components/ui/button'
 import { openModal } from '@lib/utils'
+import { useQueryClient } from '@tanstack/react-query'
 
 type Props = {
   userRole?: 'LEADER' | 'MEMBER' | 'REQUESTED'
@@ -14,37 +15,43 @@ type Props = {
 }
 
 export function JoinCommunityButton({ userRole, handle, id, isCommunityPrivate, isJoinRequested, buttonText }: Props) {
+  const queryClient = useQueryClient()
   const [role, setRole] = useState(userRole)
   const user = useGenuinOptions().user
+
   async function toggleCommunityJoinState() {
-    if (role !== 'MEMBER') {
-      if (isCommunityPrivate) {
-        await requestCommunity(id).then((res) => {
-          if (res.code === 200) {
-            setRole('REQUESTED')
-          }
-        })
+    try {
+      if (role !== 'MEMBER') {
+        if (isCommunityPrivate) {
+          await requestCommunity(id).then((res) => {
+            if (res.code === 200) {
+              setRole('REQUESTED')
+            }
+          })
+        } else {
+          await joinCommunity(
+            false,
+            [id],
+            [
+              {
+                user_id: user?.id,
+              },
+            ]
+          ).then((res) => {
+            if (res.code === 200) {
+              setRole('MEMBER')
+            }
+          })
+        }
       } else {
-        await joinCommunity(
-          false,
-          [id],
-          [
-            {
-              user_id: user?.id,
-            },
-          ]
-        ).then((res) => {
+        await leaveCommunity(id).then((res) => {
           if (res.code === 200) {
-            setRole('MEMBER')
+            setRole(undefined)
           }
         })
       }
-    } else {
-      await leaveCommunity(id).then((res) => {
-        if (res.code === 200) {
-          setRole(undefined)
-        }
-      })
+    } finally {
+      void queryClient.invalidateQueries({ queryKey: ['community', 'details'], type: 'all' })
     }
   }
 

@@ -18,52 +18,54 @@ function CommunitiesForDesktop() {
 
   if (isLoading) return null
 
-  return (
-    <>
-      <p className="pb-2 pt-6 text-title-1-bold">Featured Communities</p>
-      <div className="grid h-auto w-fit min-w-fit grid-cols-1 gap-4 md:grid-cols-2 md:grid-rows-2">
-        {data?.map((item) => {
-          return (
-            <CommunityItem
-              key={item.community_id}
-              id={item.community_id}
-              memberCount={item.no_of_members}
-              profileImage={item.dp ?? ''}
-              description={item.description ?? ''}
-              name={item.name}
-              slug={item.slug}
-              handle={item.handle}
-            />
-          )
-        })}
-      </div>
-    </>
-  )
+  if (data?.length !== 0)
+    return (
+      <>
+        <p className="pb-2 pt-6 text-title-1-bold">Featured Communities</p>
+        <div className="grid h-auto w-full min-w-fit grid-cols-1 gap-4 md:grid-cols-2 md:grid-rows-2">
+          {data?.map((item) => {
+            return (
+              <CommunityItem
+                key={item.community_id}
+                id={item.community_id}
+                memberCount={item.no_of_members}
+                profileImage={item.dp ?? ''}
+                description={item.description ?? ''}
+                name={item.name}
+                slug={item.slug}
+                handle={item.handle}
+              />
+            )
+          })}
+        </div>
+      </>
+    )
 }
 
 function CommunitiesForMobile() {
   const { isLoading, data } = getFeaturedCommunity()
 
   if (isLoading) return null
-  return (
-    <>
-      <p className="pb-2 pt-6 text-title-1-bold">Featured Communities</p>
-      <Swiper direction="horizontal" loop spaceBetween={16} centeredSlides slidesPerView={1.2}>
-        {data?.map((item) => (
-          <SwiperSlide key={item.community_id}>
-            <CommunityItem
-              id={item.community_id}
-              memberCount={item.no_of_members}
-              profileImage={item.dp ?? ''}
-              description={item.description ?? ''}
-              slug={item.slug}
-              handle={item.handle}
-            />
-          </SwiperSlide>
-        ))}
-      </Swiper>
-    </>
-  )
+  if (data?.length !== 0)
+    return (
+      <>
+        <p className="pb-2 pt-6 text-title-1-bold">Featured Communities</p>
+        <Swiper direction="horizontal" loop spaceBetween={16} centeredSlides slidesPerView={1.2}>
+          {data?.map((item) => (
+            <SwiperSlide key={item.community_id}>
+              <CommunityItem
+                id={item.community_id}
+                memberCount={item.no_of_members}
+                profileImage={item.dp ?? ''}
+                description={item.description ?? ''}
+                slug={item.slug}
+                handle={item.handle}
+              />
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </>
+    )
 }
 
 type CommunityItemProps = {
@@ -78,7 +80,7 @@ type CommunityItemProps = {
 
 function CommunityItem({ id, memberCount, handle, profileImage, description, name, slug }: CommunityItemProps) {
   return (
-    <div className="min-w[320px] max-w-[450px] rounded-lg border border-tertiary-300 p-4">
+    <div className="min-w[320px] max-w-full rounded-lg border border-tertiary-300 p-4">
       <div className="flex items-center justify-between">
         <span className="flex items-center gap-x-2">
           <CustomAvatar fallbackString={name ?? ''} imageUrl={profileImage} isAvatar={false} className="h-12 w-12" />

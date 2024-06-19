@@ -45,10 +45,11 @@ function WithoutMentions({ text, maxChars = 150, ...props }: Props) {
 }
 
 type WithMentionsProps = {
+  text?: string | null
   textArr: Array<string | { member_id: string; text: string } | { community_id: string; text: string }>
 } & Omit<Props, 'text'>
 
-export function WithMentions({ textArr, maxChars = 50, className, ...props }: WithMentionsProps) {
+export function WithMentions({ text, textArr, maxChars = 50, className, ...props }: WithMentionsProps) {
   const [showMore, setShowMore] = useState(true)
   const [processedComponent, setProcessedComponent] = useState<Array<string | JSX.Element>>([])
 
@@ -126,7 +127,7 @@ export function WithMentions({ textArr, maxChars = 50, className, ...props }: Wi
 
   return (
     <p className={cn('', className)} {...props}>
-      {processedComponent}
+      {!Array.isArray(textArr) ? text : processedComponent}
     </p>
   )
 }

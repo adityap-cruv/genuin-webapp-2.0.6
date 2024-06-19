@@ -43,7 +43,7 @@ export function Mobile({ videos, fetchNextPage, isFetchingNextPage, startIndex =
     if (!isFetchingNextPage && videoList.length - 3 <= currentIndex) {
       fetchNextPage?.()
     }
-    if ((currentIndex + 1) % 5) showInterruption()
+    if ((currentIndex + 1) % 5 === 0) showInterruption()
   }, [currentIndex])
 
   useEffect(() => {
@@ -54,35 +54,43 @@ export function Mobile({ videos, fetchNextPage, isFetchingNextPage, startIndex =
     setVideoList(videos)
   }, [videos])
 
-  return (
-    <div style={{ ...videoSizeBox }} className="overflow-clip">
-      <Swiper
-        modules={[Mousewheel]}
-        mousewheel={true}
-        direction="vertical"
-        initialSlide={startIndex}
-        onActiveIndexChange={(swiper) => {
-          setCurrentIndex(swiper.activeIndex)
-        }}
-        allowSlideNext={!commentIsOpen}
-        allowSlidePrev={!commentIsOpen}
-        style={videoSizeBox}>
-        {videos.map((item, index) => (
-          <SwiperSlide key={index}>
-            <Player
-              playIfInViewPort
-              isFirstPlayerInList={index === 0}
-              shouldPlay
-              loop
-              videoDetails={item}
-              customSizeBox={videoSizeBox}
-            />
-          </SwiperSlide>
-        ))}
-      </Swiper>
-      <InfinityViewBox />
-    </div>
-  )
+  if (videoList.length === 0)
+    return (
+      <div className="flex h-full w-full items-center justify-center bg-tertiary-200">
+        <p className="text-title-3-demi text-tertiary">No activity yet</p>
+      </div>
+    )
+
+  if (videoList.length > 0)
+    return (
+      <div style={{ ...videoSizeBox }} className="overflow-clip">
+        <Swiper
+          modules={[Mousewheel]}
+          mousewheel={true}
+          direction="vertical"
+          initialSlide={startIndex}
+          onActiveIndexChange={(swiper) => {
+            setCurrentIndex(swiper.activeIndex)
+          }}
+          allowSlideNext={!commentIsOpen}
+          allowSlidePrev={!commentIsOpen}
+          style={videoSizeBox}>
+          {videos.map((item, index) => (
+            <SwiperSlide key={index}>
+              <Player
+                playIfInViewPort
+                isFirstPlayerInList={index === 0}
+                shouldPlay
+                loop
+                videoDetails={item}
+                customSizeBox={videoSizeBox}
+              />
+            </SwiperSlide>
+          ))}
+        </Swiper>
+        <InfinityViewBox />
+      </div>
+    )
 }
 
 function InfinityViewBox() {

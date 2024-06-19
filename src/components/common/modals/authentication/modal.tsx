@@ -21,6 +21,7 @@ import {
   ForgotPassword,
   ResetPassword,
   CategoryInput,
+  GetStarted,
 } from './screens'
 import { useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
@@ -64,6 +65,8 @@ export function Modal({ children, ...props }: Props) {
     'MAGIC_LINK_VERIFICATION_SUCCESS',
     'IMAGE_CROPPER',
     'RESET_PASSWORD',
+    'GET_STARTED',
+    'GUIDELINES',
   ])
   const showClose = !stepSet.has(step)
 
@@ -75,18 +78,21 @@ export function Modal({ children, ...props }: Props) {
     const emailVerification = searchParams.get('email_verification_status') ?? ''
     const magicLinkVerification = searchParams.get('magic_link_verification') ?? ''
     const error = searchParams.get('error_in_verification') ?? ''
+    const smsVerificationStatus = searchParams.get('sms_verification_status') ?? ''
 
     if (
       Boolean(emailVerification) ||
       Boolean(magicLinkVerification) ||
       Boolean(error) ||
-      Boolean(resetPasswordEmailVerification)
+      Boolean(resetPasswordEmailVerification) ||
+      Boolean(smsVerificationStatus)
     ) {
       if (resetPasswordEmailVerification === '1') setStep('RESET_PASSWORD')
       if (emailVerification === '0') setStep('EMAIL_VERIFICATION_FAILURE')
       if (emailVerification === '1') setStep('EMAIL_VERIFICATION_SUCCESS')
       if (magicLinkVerification === '0') setStep('MAGIC_LINK_VERIFICATION_FAILURE')
       if (magicLinkVerification === '1') setStep('MAGIC_LINK_VERIFICATION_SUCCESS')
+      if (smsVerificationStatus === '1') setStep('GET_STARTED')
       if (error === '1') setStep('ERROR')
       openModal()
     }
@@ -199,5 +205,7 @@ export function Content() {
       return <Note.resetpasswordsuccess />
     case 'CATEGORY_INPUT':
       return <CategoryInput />
+    case 'GET_STARTED':
+      return <GetStarted />
   }
 }

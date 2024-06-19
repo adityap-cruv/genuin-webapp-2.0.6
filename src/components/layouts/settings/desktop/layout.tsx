@@ -5,6 +5,7 @@ import icBack from '@icons/icBack.svg'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { PATH_NAME } from '@lib/utils/constants/path'
+import { analyticsService } from '@services/analytics_service'
 
 export function SettingsLayout(props: any) {
   const router = useRouter()
@@ -19,6 +20,10 @@ export function SettingsLayout(props: any) {
             onClick={() => {
               const path = localStorage.getItem('previous_path')
               router.push(path ?? PATH_NAME.home())
+              void analyticsService({
+                eventName: 'Settings Closed',
+                properties: {},
+              })
             }}>
             <Image src={icBack} alt="back" />
           </div>
