@@ -7,13 +7,15 @@ import { z } from 'zod'
 import { Button } from '@components/ui/button'
 import { Checkbox } from '@components/ui/checkbox'
 import { Form, FormControl, FormField, FormItem, FormLabel } from '@components/ui/form'
-import { getBrandGuidelines, signup } from '@lib/api/auth'
+import { addEmailForKs, getBrandGuidelines, signup } from '@lib/api/auth'
 import { SIGNUP_SOURCE } from '@lib/constants'
 import { signIn } from 'next-auth/react'
 import { useAuthenticationModalStore } from '../store'
 import { useEffect, useState } from 'react'
 import { Loader } from '@components/ui/loader'
 import { analyticsService } from '@services/analytics_service'
+import { usePathname, useSearchParams } from 'next/navigation'
+import { deleteSearchParam } from '@lib/utils'
 // import { rudderStackIdentify } from '@services/useRudderAnalytics'
 
 const FormSchema = z.object({
@@ -30,6 +32,8 @@ export function Guidelines() {
   const [isLoading, setIsLoading] = useState(false)
   const [guidelines, setGuidelines] = useState<Guideline[] | null>(null)
   const brandId = useGenuinOptions().brandId
+  const pathName = usePathname()
+  const searchParams = useSearchParams()
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -51,7 +55,42 @@ export function Guidelines() {
     void fetchGuidelines()
   }, [])
 
-  async function onSubmit(data: z.infer<typeof FormSchema>) {
+  async function submitViaSms() {
+    const token = searchParams.get('token') ?? ''
+
+    setIsLoading(true)
+    try {
+      await addEmailForKs({ email: formData.email, token })
+        .then((res) => {
+          if (res?.code === 200) {
+            deleteSearchParam({
+              pathName,
+              searchParams: searchParams.toString(),
+              paramsToDelete: ['utm_medium', 'token', 'sms_verification_status'],
+            })
+            void signIn('credentials', {
+              ...res.data.user,
+              accessToken: res.accessToken,
+              redirect: false,
+            })
+            setStep('EMAIL_SENT_NOTE')
+          } else {
+            form.control.setError('root', { message: 'Something went wrong. Please try again!' })
+            throw new Error()
+          }
+        })
+        .catch((e) => {
+          form.control.setError('root', { message: 'Something went wrong. Please try again!' })
+          throw new Error()
+        })
+    } catch (e) {
+      form.control.setError('root', { message: 'Something went wrong. Please try again!' })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  async function submitViaMail() {
     setIsLoading(true)
     try {
       const signupResponse = await signup({
@@ -85,6 +124,16 @@ export function Guidelines() {
       form.control.setError('root', { message: 'Something went wrong. Please try again!' })
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  async function onSubmit() {
+    const fromSms = searchParams.get('utm_medium') ?? ''
+
+    if (fromSms === 'sms') {
+      await submitViaSms()
+    } else {
+      await submitViaMail()
     }
   }
 

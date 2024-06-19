@@ -11,7 +11,7 @@ type Actions = {
   close: () => void
   // setCurrentVideoId: (newVideoId: string) => void
   reset: () => void
-  addLoops: (communyId: string, loops: ProfileLoopType[]) => void
+  addLoops: (communityId: string, loops: ProfileLoopType[]) => void
   addCommunities: (communities: ProfileCommunityType[]) => void
   addVideos: (communityId: string, loopId: string, videos: ProfileVideoType[]) => void
 }
@@ -27,7 +27,7 @@ export const useCommunityListStore = create<State & Actions>((set) => {
     ...initialState,
     reset() {
       set((state) => {
-        return { activeIndex: 0, videoList: [], currentVideoShareString: '', communities: [] }
+        return { ...initialState }
       })
     },
     open(videoId) {

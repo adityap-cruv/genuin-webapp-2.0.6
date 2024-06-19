@@ -245,7 +245,9 @@ function Menu({
                     community <br /> builder{' '}
                   </span>
                   {embed ? 'for' : 'on'}{' '}
-                  <span className="inline-block truncate text-primary" style={{ maxWidth: '12ch' }}>
+                  <span
+                    className="inline-block  overflow-clip text-primary"
+                    style={{ maxWidth: '12ch', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
                     {' '}
                     {brandName}
                   </span>{' '}

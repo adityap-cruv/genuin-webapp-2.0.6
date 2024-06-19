@@ -1,10 +1,11 @@
 import { redirect } from 'next/navigation'
-import { ClientComponent } from './client-component'
+import { ClientComponentEmail } from './client-component'
 import { ksCbRequest, verifyEmail } from '@lib/api/auth'
 import { analyticsService } from '@services/analytics_service'
 
 export default async function Page({ searchParams }: { searchParams: { token: string } }) {
   const { code, actionMetadata, user, emailType, email } = await verifyEmail(searchParams.token)
+
   if (code === 200 && actionMetadata?.action === 'KS_CB_REQUEST') {
     await ksCbRequest(user.accessToken)
   }
@@ -15,7 +16,7 @@ export default async function Page({ searchParams }: { searchParams: { token: st
       properties: { email },
     })
     return (
-      <ClientComponent
+      <ClientComponentEmail
         user={user}
         redirectTo={getRedirectTo({ emailType, error: false, path: actionMetadata?.path, success: true })}
       />
@@ -40,22 +41,20 @@ function getRedirectTo({
   path?: string
   error: boolean
   success?: boolean
-  emailType: 11 | 12 | 2 | 16
+  emailType: 11 | 12 | 2 | 19 | 20 | 21 | 22
   email?: string
 }) {
-  // const urlObj = new URL(checkAndAppendHttps((headers().get('host') ?? process.env.HOST_NAME) + (path ?? '/home')))
-  // const urlObj = new URL(('http://' + headers().get('host') ?? process.env.HOST_NAME) + (path ?? '/home'))
   const urlObj = new URLSearchParams()
 
   if (error) {
     urlObj.set('error_in_verification', '1')
   }
 
-  if (emailType === 11) {
+  if (emailType === 11 || emailType === 21 || emailType === 22) {
     urlObj.set('magic_link_verification', success ? '1' : '0')
   }
 
-  if (emailType === 12 || emailType === 2) {
+  if (emailType === 12 || emailType === 2 || emailType === 19 || emailType === 20) {
     urlObj.set('email_verification_status', success ? '1' : '0')
   }
 

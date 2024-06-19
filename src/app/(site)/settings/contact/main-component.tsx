@@ -58,6 +58,10 @@ export default function MainComponent() {
                 alt="back"
                 onClick={() => {
                   router.back()
+                  void analyticsService({
+                    eventName: 'Settings Closed',
+                    properties: {},
+                  })
                 }}
               />
             )}

@@ -36,11 +36,11 @@ export function Desktop({ fetchNextPage, isFetchingNextPage, videos, className, 
   }))
 
   useEffect(() => {
-    if (currentIndex > videoList.length - 3 && !isFetchingNextPage) {
+    if (videoList.length !== 0 && currentIndex > videoList.length - 3 && !isFetchingNextPage) {
       fetchNextPage?.()
     }
     if ((currentIndex + 1) % 5 === 0) showInterruption()
-  }, [currentIndex])
+  }, [currentIndex, videoList.length])
 
   // TODO improvement pending
   useEffect(() => {
@@ -50,6 +50,13 @@ export function Desktop({ fetchNextPage, isFetchingNextPage, videos, className, 
   useEffect(() => {
     setNewVideos(videos ?? [])
   }, [videos])
+
+  if (videoList.length === 0)
+    return (
+      <div className={cn('flex aspect-reel h-full items-center justify-center bg-tertiary-200', className)}>
+        <p className="text-title-3-demi text-tertiary">No activity yet</p>
+      </div>
+    )
 
   if (videoList.length > 0)
     return (

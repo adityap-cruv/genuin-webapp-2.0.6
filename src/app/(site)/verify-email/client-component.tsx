@@ -2,7 +2,7 @@
 import { signIn } from 'next-auth/react'
 import { useEffect } from 'react'
 
-export function ClientComponent({ user, redirectTo }: { user: any; redirectTo: string }) {
+export function ClientComponentEmail({ user, redirectTo }: { user: any; redirectTo: string }) {
   useEffect(() => {
     if (!user) {
       window.location.replace(redirectTo)

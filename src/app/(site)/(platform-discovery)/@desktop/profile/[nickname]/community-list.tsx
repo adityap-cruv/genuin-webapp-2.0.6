@@ -32,8 +32,14 @@ export function CommunityList({ userId }: { userId: string }) {
   const communities = data?.pages.flatMap((item) => item.communities)
   const [communityJoinStates, setCommunityJoinStates] = useState<Record<string, string>>({})
   const user = useGenuinOptions().user
-  const { addCommunities, currentVideoId } = useCommunityListStore()
+  const { addCommunities, currentVideoId, reset } = useCommunityListStore()
   const pathName = usePathname()
+
+  useEffect(() => {
+    return () => {
+      reset()
+    }
+  }, [])
 
   useEffect(() => {
     if (communities) {
@@ -57,9 +63,9 @@ export function CommunityList({ userId }: { userId: string }) {
   }, [communities?.length])
 
   useEffect(() => {
-    const newCommunites = data?.pages[data.pages.length - 1].communities
-    // if (localCommunities && newCommunites && localCommunities?.length !== communities.length) {
-    if (newCommunites) addCommunities(newCommunites)
+    const newCommunities = data?.pages[data.pages.length - 1].communities
+    // if (localCommunities && newCommunities && localCommunities?.length !== communities.length) {
+    if (newCommunities) addCommunities(newCommunities)
     // }
   }, [communities?.length])
 
@@ -176,7 +182,7 @@ export function CommunityList({ userId }: { userId: string }) {
   return (
     <div ref={scrollDivRef} className="w-full overflow-scroll" style={{ height: 'calc(100% - 56px)' }}>
       <Inner />
-      {currentVideoId && <PlayerModalWrapper userId={userId} currentVideoId={currentVideoId} />}
+      <PlayerModalWrapper userId={userId} currentVideoId={currentVideoId ?? ''} />
     </div>
   )
 }
