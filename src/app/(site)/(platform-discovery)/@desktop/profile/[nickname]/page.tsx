@@ -24,7 +24,7 @@ export default async function Component({ params }: CompProps) {
   return <MainComponent profileData={profileData} />
 }
 
-type ProfileDataType = {
+type ProfileMetaDataType = {
   member_id: string
   title: string
   description: string
@@ -38,21 +38,20 @@ export async function generateMetadata({ params }: CompProps): Promise<Metadata>
   if (config) {
     metadataParams = { type: 1, username: params.nickname, ...config }
   }
-  const data: ProfileDataType = await fetchMetadata(metadataParams)
-  const title = data.title
-  const desc = data.description
+  const profileMetadata: ProfileMetaDataType = await fetchMetadata(metadataParams)
 
   return {
-    title,
+    title: profileMetadata.title,
+    // appleWebApp: { capable: true },
     // applicationName: 'Genuin',
-    description: desc,
+    description: profileMetadata.description,
     openGraph: {
-      title,
-      description: desc,
+      title: profileMetadata.title,
+      description: profileMetadata.description,
       url: `${process.env.NEXT_PUBLIC_HOST_URL}${PATH_NAME.profile(params.nickname)}`,
       images: [
         {
-          url: data.preview_image,
+          url: profileMetadata.preview_image,
         },
       ],
     },
