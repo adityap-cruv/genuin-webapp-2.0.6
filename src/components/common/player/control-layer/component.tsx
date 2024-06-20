@@ -198,11 +198,18 @@ function Loop({
             </Link>
           )}
         </div>
-        {descriptionArr && (
-          <span className="py-2">
+        {Array.isArray(descriptionArr) ? (
+          <span className="z-10 py-2">
             <ReadMore.withMention
               textArr={descriptionArr}
-              className="line-clamp-2 w-full break-all text-body-1-demi text-monochrome-white"
+              className="w-full break-all text-body-1-demi text-monochrome-white"
+            />
+          </span>
+        ) : (
+          <span className="z-10 py-2">
+            <ReadMore.default
+              text={descriptionText}
+              className="w-full break-all text-body-1-demi text-monochrome-white"
             />
           </span>
         )}
