@@ -33,8 +33,7 @@ type VideoDataType = {
 
 export async function generateMetadata({ params, searchParams }: PageProps): Promise<Metadata> {
   const videoDetails: VideoDataType = await fetchMetadata({ type: 4, slug: params.slug })
-  const title = videoDetails.title
-  const description = videoDetails.description
+
   let shareLink = `${process.env.NEXT_PUBLIC_HOST_URL}${PATH_NAME.video(params.slug)}`
   const queryParams = []
   if (searchParams?.community) {
@@ -51,14 +50,14 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   }
 
   return {
-    title,
-    // applicationName: 'genuin',
-    description,
+    title: videoDetails.title,
+    description: videoDetails.description,
     openGraph: {
-      title,
-      description,
+      title: videoDetails.title,
+      description: videoDetails.description,
       url: shareLink,
-      images: [{ url: `${videoDetails.preview_image}#primaryimage` }],
+      type: 'video.other',
+      images: [{ url: `${videoDetails.preview_image}` }],
     },
   }
 }

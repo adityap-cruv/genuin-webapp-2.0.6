@@ -3,7 +3,7 @@ import { ClientComponentSMS } from './client-component'
 import { verifySMS } from '@lib/api/auth'
 
 export default async function Page({ params }: { params: { token: string } }) {
-  const { code, userId, brandId, smsType, accessToken } = await verifySMS(params.token)
+  const { code, smsType, accessToken } = await verifySMS(params.token)
 
   if (code === 200) {
     return <ClientComponentSMS redirectTo={getRedirectTo({ smsType, error: false, success: true, accessToken })} />

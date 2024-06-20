@@ -1,5 +1,6 @@
 import { NotificationLayout } from './notification-layout'
 import { Layout } from '@components/layouts/desktop/layout'
+import { type Metadata } from 'next'
 import { cookies } from 'next/headers'
 
 export default function Page() {
@@ -10,4 +11,10 @@ export default function Page() {
       <NotificationLayout />
     </Layout>
   )
+}
+
+export function generateMetadata(): Metadata {
+  return {
+    robots: { index: false, follow: false },
+  }
 }

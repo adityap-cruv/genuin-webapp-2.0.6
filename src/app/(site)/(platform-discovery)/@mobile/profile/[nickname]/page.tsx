@@ -38,16 +38,14 @@ export async function generateMetadata({ params }: CompProps): Promise<Metadata>
     metadataParams = { type: 1, username: params.nickname, ...config }
   }
   const data: ProfileDataType = await fetchMetadata(metadataParams)
-  const title = data.title
-  const desc = data.description
 
   return {
-    title,
+    title: data.title,
     // applicationName: 'Genuin',
-    description: desc,
+    description: data.description,
     openGraph: {
-      title,
-      description: desc,
+      title: data.title,
+      description: data.description,
       url: `${process.env.NEXT_PUBLIC_HOST_URL}${PATH_NAME.profile(params.nickname)}`,
       images: [
         {

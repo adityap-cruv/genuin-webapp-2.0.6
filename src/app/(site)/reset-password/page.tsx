@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { resetPassword } from '@lib/api/auth-passwords'
 import { PATH_NAME } from '@lib/utils/constants/path'
+import { type Metadata } from 'next'
 
 export default async function Page({ searchParams }: { searchParams: { token: string } }) {
   const { code, emailType, forgotPasswordToken } = await resetPassword(searchParams.token)
@@ -14,6 +15,15 @@ export default async function Page({ searchParams }: { searchParams: { token: st
   }
 
   redirect(getRedirectTo({ emailType, error: true }))
+}
+
+export function generateMetadata(): Metadata {
+  return {
+    robots: {
+      index: false,
+      follow: false,
+    },
+  }
 }
 
 function getRedirectTo({
