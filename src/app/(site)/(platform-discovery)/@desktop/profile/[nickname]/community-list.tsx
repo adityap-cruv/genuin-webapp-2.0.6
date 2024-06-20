@@ -182,7 +182,7 @@ export function CommunityList({ userId }: { userId: string }) {
   return (
     <div ref={scrollDivRef} className="w-full overflow-scroll" style={{ height: 'calc(100% - 56px)' }}>
       <Inner />
-      <PlayerModalWrapper userId={userId} currentVideoId={currentVideoId ?? ''} />
+      {currentVideoId && <PlayerModalWrapper userId={userId} currentVideoId={currentVideoId ?? ''} />}
     </div>
   )
 }
