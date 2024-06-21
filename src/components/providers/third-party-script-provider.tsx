@@ -6,16 +6,12 @@ export function ThirdPartyScriptProvider({ children, isEmbed }: { children: Reac
       {children}
       {!isEmbed && (
         <>
+          <Script src={`https://cdn.cookielaw.org/consent/${process.env.ONETRUST_KEY}/OtAutoBlock.js`} />
           <Script
-            strategy="worker"
-            src={`https://cdn.cookielaw.org/consent/${process.env.ONETRUST_KEY}/OtAutoBlock.js`}
-          />
-          <Script
-            strategy="worker"
             src="https://cdn.cookielaw.org/scripttemplates/otSDKStub.js"
             data-domain-script={`${process.env.ONETRUST_KEY}`}></Script>
           {/* <Script>function OptanonWrapper() {}</Script> */}
-          <Script strategy="worker">
+          <Script>
             {`
           function OptanonWrapper() { 
             console.log("Value")
