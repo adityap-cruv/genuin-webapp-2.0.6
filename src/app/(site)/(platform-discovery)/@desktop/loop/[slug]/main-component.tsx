@@ -35,7 +35,7 @@ export function LoopDetails({ slug }: { slug: string }) {
   const { data, isLoading } = getLoopDetails(slug)
   if (isLoading) return <Loading />
   if (data) return <MainComponent loopDetails={data} />
-  if (!isLoading && !data) return <Error />
+  return <Error />
 }
 
 // TODO: Improve this component.
