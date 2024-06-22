@@ -12,7 +12,7 @@ export default async function Page() {
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: 'Launch a Community Media Network for your retail Media Network.',
+    title: 'Launch a Community Media Network for your Retail Media Network.',
     applicationName: 'genuin',
     description:
       'Video-based communities that connect consumers with their favorite brands and creators, while boosting consumer engagement and revenue for retailers.',

@@ -6,7 +6,6 @@ export function ThirdPartyScriptProvider({ children, isEmbed }: { children: Reac
       {children}
       {!isEmbed && (
         <>
-          <Script>{``}</Script>
           <Script src={`https://cdn.cookielaw.org/consent/${process.env.ONETRUST_KEY}/OtAutoBlock.js`} />
           <Script
             src="https://cdn.cookielaw.org/scripttemplates/otSDKStub.js"
@@ -68,8 +67,11 @@ export function ThirdPartyScriptProvider({ children, isEmbed }: { children: Reac
 
       {isEmbed && (
         <>
-          <Script src={`https://www.googletagmanager.com/gtag/js?id=${process.env.GA_MEASUREMENT_ID}`} />
-          <Script id="google-analytics">
+          <Script
+            strategy="worker"
+            src={`https://www.googletagmanager.com/gtag/js?id=${process.env.GA_MEASUREMENT_ID}`}
+          />
+          <Script strategy="worker" id="google-analytics">
             {`
               !function(){"use strict";window.RudderSnippetVersion="3.0.3";var sdkBaseUrl="https://cdn.rudderlabs.com/v3"
               ;var sdkName="rsa.min.js";var asyncScript=true;window.rudderAnalyticsBuildType="legacy",window.rudderanalytics=[]

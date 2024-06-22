@@ -2,6 +2,16 @@ import { redirect } from 'next/navigation'
 import { ClientComponentEmail } from './client-component'
 import { ksCbRequest, verifyEmail } from '@lib/api/auth'
 import { analyticsService } from '@services/analytics_service'
+import { type Metadata } from 'next'
+
+export function generateMetadata(): Metadata {
+  return {
+    robots: {
+      index: false,
+      follow: false,
+    },
+  }
+}
 
 export default async function Page({ searchParams }: { searchParams: { token: string } }) {
   const { code, actionMetadata, user, emailType, email } = await verifyEmail(searchParams.token)
