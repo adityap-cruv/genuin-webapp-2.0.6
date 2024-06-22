@@ -2,9 +2,6 @@ import { CommentSheet, CommentSheetContent } from '@components/custom/comment-sh
 import { X } from 'lucide-react'
 import { useCommentSheetStore } from './store'
 import { Comments } from '@components/common/comments'
-import Image from 'next/image'
-import icAudioRecord from '@icons/audioRecord.svg'
-import icVideoRecord from '@icons/videoRecord.svg'
 import { generateDeepLink, openGeneratedLink, openModal } from '@lib/utils'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
@@ -14,7 +11,6 @@ import { createComment } from '@lib/api/video'
 import { useSearchParams } from 'next/navigation'
 import { type CommentListType } from '@lib/schemas/loop/comment'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
-import { DownloadDialogModal } from '@components/common/modals/download-app'
 
 type Props = {
   videoId: string

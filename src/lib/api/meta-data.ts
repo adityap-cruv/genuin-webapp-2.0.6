@@ -1,20 +1,26 @@
 import axios from 'axios'
 
-type MetadataPayloadType = {
-  /**
-   * type:1 -> profile
-   * type:2 -> community
-   * type:3 -> loop
-   * type:4 -> video
-   * type:5 -> brand landing page (subdomain or white label)
-   * type:6 -> brand slug (subdomain or white label)
-   */
+/**
+ * type:1 -> profile
+ *
+ * type:2 -> community
+ *
+ * type:3 -> loop
+ *
+ * type:4 -> video
+ *
+ * type:5 -> brand landing page (subdomain or white label)
+ *
+ * type:6 -> brand slug (subdomain or white label)
+ */
+type MetadataPayloadType = Partial<{
+  brandId: number
+  username: string
+  slug: string
+  domain: string
+  subdomain: string
+}> & {
   type: number
-  brandId?: number
-  username?: string
-  slug?: string
-  domain?: string
-  subdomain?: string
 }
 
 export async function fetchMetadata({ type, brandId, username, slug, domain, subdomain }: MetadataPayloadType) {
@@ -22,9 +28,9 @@ export async function fetchMetadata({ type, brandId, username, slug, domain, sub
     const response = await axios.get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/web/meta_data', {
       params: {
         type,
-        brand_id: brandId ?? null,
-        username: username ?? null,
-        slug: slug ?? null,
+        brand_id: brandId,
+        username,
+        slug,
         domain,
         subdomain,
       },
@@ -33,6 +39,6 @@ export async function fetchMetadata({ type, brandId, username, slug, domain, sub
   } catch (error) {
     // eslint-disable-next-line no-console
     console.log('error in metadata api::', error)
-    throw new Error('Something went wrong with meta_data api.')
+    // throw new Error('Something went wrong with meta_data api.')
   }
 }

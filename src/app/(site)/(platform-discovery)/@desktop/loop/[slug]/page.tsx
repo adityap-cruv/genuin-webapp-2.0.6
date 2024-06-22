@@ -23,16 +23,13 @@ interface LoopDataType {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const loopDetails: LoopDataType = await fetchMetadata({ type: 3, slug: params.slug })
-  const title = loopDetails.title
-  const description = loopDetails.description
-
   return {
-    title,
+    title: loopDetails.title,
     // applicationName: 'Genuin',
-    description,
+    description: loopDetails.description,
     openGraph: {
-      title,
-      description,
+      title: loopDetails.title,
+      description: loopDetails.description,
       url: process.env.NEXT_PUBLIC_HOST_URL + PATH_NAME.loop(params.slug),
       images: [
         {

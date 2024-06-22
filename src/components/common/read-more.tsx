@@ -18,15 +18,23 @@ type Props = {
 } & ComponentProps<'p'>
 
 function WithoutMentions({ text, maxChars = 150, ...props }: Props) {
-  if (!text) return
+  const [showMore, setShowMore] = useState<boolean>(false)
+  const [slicedText, setSlicedText] = useState<string>('')
 
-  const [showMore, setShowMore] = useState(text.length > maxChars)
-  let slicedText: string = ''
+  useEffect(() => {
+    const validText = text ?? ''
+    setShowMore(validText.length > maxChars)
 
-  if (text && text.length > maxChars) {
-    slicedText = text.slice(0, maxChars)
-    slicedText = slicedText.endsWith('...') ? slicedText : slicedText + '...'
-  }
+    if (validText.length > maxChars) {
+      let tempSlicedText = validText.slice(0, maxChars)
+      tempSlicedText = tempSlicedText.endsWith('...') ? tempSlicedText : tempSlicedText + '...'
+      setSlicedText(tempSlicedText)
+    } else {
+      setSlicedText(validText)
+    }
+  }, [text, maxChars])
+
+  if (!text) return null
 
   return (
     <p {...props}>
@@ -36,7 +44,7 @@ function WithoutMentions({ text, maxChars = 150, ...props }: Props) {
           onClick={() => {
             setShowMore((old) => !old)
           }}
-          className="cursor-pointer pl-1 text-body-1-med">
+          className="cursor-pointer pl-1 text-body-1-med text-tertiary">
           (View more)
         </span>
       )}
@@ -45,11 +53,10 @@ function WithoutMentions({ text, maxChars = 150, ...props }: Props) {
 }
 
 type WithMentionsProps = {
-  text?: string | null
   textArr: Array<string | { member_id: string; text: string } | { community_id: string; text: string }>
 } & Omit<Props, 'text'>
 
-export function WithMentions({ text, textArr, maxChars = 50, className, ...props }: WithMentionsProps) {
+export function WithMentions({ textArr, maxChars = 50, className, ...props }: WithMentionsProps) {
   const [showMore, setShowMore] = useState(true)
   const [processedComponent, setProcessedComponent] = useState<Array<string | JSX.Element>>([])
 
@@ -127,7 +134,7 @@ export function WithMentions({ text, textArr, maxChars = 50, className, ...props
 
   return (
     <p className={cn('', className)} {...props}>
-      {!Array.isArray(textArr) ? text : processedComponent}
+      {processedComponent}
     </p>
   )
 }

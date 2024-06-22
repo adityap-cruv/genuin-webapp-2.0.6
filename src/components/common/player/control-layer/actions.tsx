@@ -23,7 +23,6 @@ import { videoSpark } from '@lib/api/video'
 import { useState } from 'react'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { usePathname, useSearchParams } from 'next/navigation'
-import { DownloadDialogModal } from '@components/common/modals/download-app'
 import { RepostModal } from '@components/common/modals/repost'
 import { AuthenticationModal } from '@components/common/modals/authentication'
 
@@ -42,7 +41,7 @@ type MobileActionsProps = {
   description?: string | null
   isSparked?: boolean | null | undefined
 }
-// TODO: Fix their is bug when text length is bigger than device size fix it.
+
 function Mobile({
   attachedLink,
   shareUrl,
