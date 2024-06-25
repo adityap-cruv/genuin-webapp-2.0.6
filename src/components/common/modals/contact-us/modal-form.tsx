@@ -122,7 +122,7 @@ export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => 
               render={({ field }) => (
                 <FormItem className="py-1.5 sm:w-full">
                   <FormControl>
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <Select onValueChange={field.onChange} defaultValue="<10">
                       <SelectTrigger className="border border-tertiary-200 bg-tertiary-100">
                         <SelectValue placeholder="Company Size" />
                       </SelectTrigger>
