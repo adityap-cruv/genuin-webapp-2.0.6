@@ -22,7 +22,7 @@ const formSchema = z.object({
     .regex(/^(https?:\/\/)?([\da-z.-]+\.[a-z.]{2,6})([/\w .-]*)*\/?$/, { message: 'Invalid website URL' })
     .optional(),
   piquedInterest: z.string().trim().optional(),
-  companySize: z.string().trim().optional(),
+  companySize: z.string().trim().min(1, { message: 'companySize is required' }),
 })
 
 export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => void }) {
@@ -38,7 +38,7 @@ export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => 
       country: '',
       website: '',
       piquedInterest: '',
-      companySize: '<10',
+      companySize: '',
     },
     mode: 'onBlur',
   })
@@ -122,12 +122,12 @@ export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => 
               render={({ field }) => (
                 <FormItem className="py-1.5 sm:w-full">
                   <FormControl>
-                    <Select onValueChange={field.onChange} value={field.value} defaultValue="<10">
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <SelectTrigger className="border border-tertiary-200 bg-tertiary-100">
                         <SelectValue placeholder="Company Size" />
                       </SelectTrigger>
                       <SelectContent className="bg-monochrome-white">
-                        <SelectItem value="none">None</SelectItem>
+                        {/* <SelectItem value="none">None</SelectItem> */}
                         <SelectItem value="<10">{'<'}10</SelectItem>
                         <SelectItem value="11-99">11-99</SelectItem>
                         <SelectItem value="100-249">100-249</SelectItem>
