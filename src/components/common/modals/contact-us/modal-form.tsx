@@ -46,7 +46,6 @@ export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => 
   const { isValid, isDirty, errors } = form.formState
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    // console.log(values)
     setIsLoading(true)
     try {
       const payload = {
@@ -97,6 +96,15 @@ export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => 
                 errors[name] ? '!border-red' : ''
               }`}
               {...field}
+              onKeyPress={
+                name === 'country'
+                  ? (e) => {
+                      if (!/^[a-zA-Z\s]*$/.test(e.key)) {
+                        e.preventDefault()
+                      }
+                    }
+                  : undefined
+              }
             />
           </FormControl>
           <FormMessage className="!text-cap-1-demi" />
