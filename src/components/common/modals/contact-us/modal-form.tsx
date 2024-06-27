@@ -22,7 +22,7 @@ const formSchema = z.object({
     .regex(/^(https?:\/\/)?([\da-z.-]+\.[a-z.]{2,6})([/\w .-]*)*\/?$/, { message: 'Invalid website URL' })
     .optional(),
   piquedInterest: z.string().trim().optional(),
-  companySize: z.string().trim().optional(),
+  companySize: z.string().trim().min(1, { message: 'companySize is required' }),
 })
 
 export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => void }) {
@@ -46,7 +46,6 @@ export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => 
   const { isValid, isDirty, errors } = form.formState
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    // console.log(values)
     setIsLoading(true)
     try {
       const payload = {
@@ -97,6 +96,15 @@ export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => 
                 errors[name] ? '!border-red' : ''
               }`}
               {...field}
+              onKeyPress={
+                name === 'country'
+                  ? (e) => {
+                      if (!/^[a-zA-Z\s]*$/.test(e.key)) {
+                        e.preventDefault()
+                      }
+                    }
+                  : undefined
+              }
             />
           </FormControl>
           <FormMessage className="!text-cap-1-demi" />
@@ -113,7 +121,7 @@ export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => 
             {renderFormField('firstName', 'First Name', 'text', 25)}
             {renderFormField('lastName', 'Last Name', 'text', 25)}
           </div>
-          {renderFormField('email', 'Email', 'email', 25)}
+          {renderFormField('email', 'Email', 'email', 50)}
           <div className="flex gap-x-4">
             {renderFormField('companyName', 'Company Name', 'text', 50)}
             <FormField
@@ -127,7 +135,7 @@ export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => 
                         <SelectValue placeholder="Company Size" />
                       </SelectTrigger>
                       <SelectContent className="bg-monochrome-white">
-                        <SelectItem value="none">None</SelectItem>
+                        {/* <SelectItem value="none">None</SelectItem> */}
                         <SelectItem value="<10">{'<'}10</SelectItem>
                         <SelectItem value="11-99">11-99</SelectItem>
                         <SelectItem value="100-249">100-249</SelectItem>

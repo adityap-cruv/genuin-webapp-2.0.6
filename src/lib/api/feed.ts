@@ -16,7 +16,7 @@ async function fetchFeed(
   pageParam: { pageSession?: string; lastVideoId?: string; lastVideoParentId?: string }
 ): Promise<{ reels: VideoPlayerModalType[]; pageSession: string; end: boolean }> {
   return await axiosInstance
-    .get('/api/v3/feeds', {
+    .get('/api/v3/v1/feeds', {
       params: {
         brand_id: useGenuinOptions.getState().brandId,
         type: feedType,
