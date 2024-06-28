@@ -10,7 +10,6 @@ import Link from 'next/link'
 import { analyticsService } from '@services/analytics_service'
 
 type Props = DetailedHTMLProps<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement> & {
-  // videoSizeBox: { width: number; height: number }
   videoData: VideoPlayerModalType
   /**
    * Pass if player is first element of list to get it playing.
@@ -104,6 +103,7 @@ export function EmbedPlayer({ videoData, isFirstElement, onCanPlay, ...props }: 
         className="absolute h-full w-full object-cover"
         ref={videoRef}
         src={videoData.video.source}
+        poster={videoData.video.thumbnail}
         muted={muted}
         playsInline
         onCanPlay={(ev) => {
