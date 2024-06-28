@@ -46,6 +46,7 @@ export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => 
   const { isValid, isDirty, errors } = form.formState
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    // console.log(values)
     setIsLoading(true)
     try {
       const payload = {
@@ -148,32 +149,34 @@ export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => 
               )}
             />{' '}
           </div>
-          <FormField
-            name="companyType"
-            control={form.control}
-            render={({ field }) => (
-              <FormItem className="py-1.5 sm:w-full">
-                <FormControl>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <SelectTrigger className="border border-tertiary-200 bg-tertiary-100">
-                      <SelectValue placeholder="Company Type" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-monochrome-white">
-                      {/* <SelectItem value="none">None</SelectItem> */}
-                      <SelectItem value="Retail Media Network">Retail Media Network</SelectItem>
-                      <SelectItem value="Brand/Advertiser">Brand/Advertiser</SelectItem>
-                      <SelectItem value="Media Network">Media Network</SelectItem>
-                      <SelectItem value="Content Creator">Content Creator</SelectItem>
-                      <SelectItem value="Community Member">Community Member</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </FormControl>
-                <FormMessage className="!text-cap-1-demi" />
-              </FormItem>
-            )}
-          />
           {renderFormField('website', 'Website Url', 'text', 50)}
-          {renderFormField('country', 'Country', 'text', 25)}
+          <div className="flex gap-x-4">
+            <FormField
+              name="companyType"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem className="py-1.5 sm:w-full">
+                  <FormControl>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <SelectTrigger className="border border-tertiary-200 bg-tertiary-100">
+                        <SelectValue placeholder="Company Type" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-monochrome-white">
+                        {/* <SelectItem value="none">None</SelectItem> */}
+                        <SelectItem value="Retail Media Network">Retail Media Network</SelectItem>
+                        <SelectItem value="Brand/Advertiser">Brand/Advertiser</SelectItem>
+                        <SelectItem value="Media Network">Media Network</SelectItem>
+                        <SelectItem value="Content Creator">Content Creator</SelectItem>
+                        <SelectItem value="Community Member">Community Member</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage className="!text-cap-1-demi" />
+                </FormItem>
+              )}
+            />
+            {renderFormField('country', 'Country', 'text', 25)}
+          </div>
           {renderFormField('piquedInterest', 'What piqued your interest in Genuin', 'text', 150)}
           <span className="mt-4 flex flex-col gap-y-3 text-title-3-demi">
             <Button
