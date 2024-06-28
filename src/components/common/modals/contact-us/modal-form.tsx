@@ -22,7 +22,7 @@ const formSchema = z.object({
     .regex(/^(https?:\/\/)?([\da-z.-]+\.[a-z.]{2,6})([/\w .-]*)*\/?$/, { message: 'Invalid website URL' })
     .optional(),
   piquedInterest: z.string().trim().optional(),
-  companySize: z.string().trim().optional(),
+  companySize: z.string().trim().min(1, { message: 'companySize is required' }),
 })
 
 export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => void }) {
@@ -97,6 +97,15 @@ export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => 
                 errors[name] ? '!border-red' : ''
               }`}
               {...field}
+              onKeyPress={
+                name === 'country'
+                  ? (e) => {
+                      if (!/^[a-zA-Z\s]*$/.test(e.key)) {
+                        e.preventDefault()
+                      }
+                    }
+                  : undefined
+              }
             />
           </FormControl>
           <FormMessage className="!text-cap-1-demi" />
@@ -113,7 +122,7 @@ export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => 
             {renderFormField('firstName', 'First Name', 'text', 25)}
             {renderFormField('lastName', 'Last Name', 'text', 25)}
           </div>
-          {renderFormField('email', 'Email', 'email', 25)}
+          {renderFormField('email', 'Email', 'email', 50)}
           <div className="flex gap-x-4">
             {renderFormField('companyName', 'Company Name', 'text', 50)}
             <FormField
@@ -127,7 +136,7 @@ export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => 
                         <SelectValue placeholder="Company Size" />
                       </SelectTrigger>
                       <SelectContent className="bg-monochrome-white">
-                        <SelectItem value="none">None</SelectItem>
+                        {/* <SelectItem value="none">None</SelectItem> */}
                         <SelectItem value="<10">{'<'}10</SelectItem>
                         <SelectItem value="11-99">11-99</SelectItem>
                         <SelectItem value="100-249">100-249</SelectItem>
@@ -140,32 +149,34 @@ export function ModalForm({ setIsLinkSent }: { setIsLinkSent: (val: boolean) => 
               )}
             />{' '}
           </div>
-          <FormField
-            name="companyType"
-            control={form.control}
-            render={({ field }) => (
-              <FormItem className="py-1.5 sm:w-full">
-                <FormControl>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <SelectTrigger className="border border-tertiary-200 bg-tertiary-100">
-                      <SelectValue placeholder="Company Type" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-monochrome-white">
-                      {/* <SelectItem value="none">None</SelectItem> */}
-                      <SelectItem value="Retail Media Network">Retail Media Network</SelectItem>
-                      <SelectItem value="Brand/Advertiser">Brand/Advertiser</SelectItem>
-                      <SelectItem value="Media Network">Media Network</SelectItem>
-                      <SelectItem value="Content Creator">Content Creator</SelectItem>
-                      <SelectItem value="Community Member">Community Member</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </FormControl>
-                <FormMessage className="!text-cap-1-demi" />
-              </FormItem>
-            )}
-          />
           {renderFormField('website', 'Website Url', 'text', 50)}
-          {renderFormField('country', 'Country', 'text', 25)}
+          <div className="flex gap-x-4">
+            <FormField
+              name="companyType"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem className="py-1.5 sm:w-full">
+                  <FormControl>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <SelectTrigger className="border border-tertiary-200 bg-tertiary-100">
+                        <SelectValue placeholder="Company Type" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-monochrome-white">
+                        {/* <SelectItem value="none">None</SelectItem> */}
+                        <SelectItem value="Retail Media Network">Retail Media Network</SelectItem>
+                        <SelectItem value="Brand/Advertiser">Brand/Advertiser</SelectItem>
+                        <SelectItem value="Media Network">Media Network</SelectItem>
+                        <SelectItem value="Content Creator">Content Creator</SelectItem>
+                        <SelectItem value="Community Member">Community Member</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage className="!text-cap-1-demi" />
+                </FormItem>
+              )}
+            />
+            {renderFormField('country', 'Country', 'text', 25)}
+          </div>
           {renderFormField('piquedInterest', 'What piqued your interest in Genuin', 'text', 150)}
           <span className="mt-4 flex flex-col gap-y-3 text-title-3-demi">
             <Button

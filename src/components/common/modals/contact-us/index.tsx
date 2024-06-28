@@ -34,11 +34,11 @@ export default function DownloadAppForm() {
           </div>
         ) : (
           <div className="m-8 flex justify-around gap-12 sm:w-[600px] md:w-[800px]">
-            <div className="flex w-1/2 flex-col gap-4">
+            <div className="flex w-2/5 flex-col gap-4">
               <h3 className="text-title-2-bold-home">Let’s talk!</h3>
               <p className="text-body-2-home">Enter your contact info and our team will be in touch shortly.</p>
             </div>
-            <div className="w-1/2">
+            <div className="w-3/5">
               <ModalForm setIsLinkSent={setIsLinkSent} />
             </div>
           </div>
