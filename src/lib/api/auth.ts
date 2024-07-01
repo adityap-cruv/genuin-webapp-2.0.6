@@ -114,6 +114,7 @@ export async function verifyEmail(token: string): Promise<{
         actionMetadata: data?.action_meta_data as ActionMetadataType,
         user,
         emailType: data?.email_type,
+        email: user?.email,
       }
     })
     .catch((e) => {

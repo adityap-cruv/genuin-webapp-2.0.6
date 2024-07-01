@@ -1,5 +1,5 @@
 import { Form, FormField, useFormField, FormItem, FormLabel, FormControl, FormMessage } from '@components/ui/form'
-import { cn } from '@lib/utils'
+import { cn, deleteSearchParam } from '@lib/utils'
 import { Input } from '@components/ui/input'
 import { useForm } from 'react-hook-form'
 import { EyeIcon, EyeOffIcon } from 'lucide-react'
@@ -12,7 +12,7 @@ import { Button } from '@components/ui/button'
 import { Loader } from '@components/ui/loader'
 import { ModalShell } from '../modal-shell'
 import { useSession } from 'next-auth/react'
-import { usePathname } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { analyticsService } from '@services/analytics_service'
 
 const passwordSchema = z.object({ password: z.string().min(8) })
@@ -24,7 +24,9 @@ export function PasswordInput() {
   const { setStep } = useAuthenticationModalStore()
   const form = useForm<z.infer<typeof passwordSchema>>({ resolver: zodResolver(passwordSchema), mode: 'onSubmit' })
   const { isDirty, isValid } = form.formState
-  const pathname = usePathname()
+  const pathName = usePathname()
+  const searchParams = useSearchParams()
+  const email = searchParams.get('email') ?? ''
 
   // TODO: Handle password here.
   async function onSubmit({ password }: { password: string }) {
@@ -36,7 +38,12 @@ export function PasswordInput() {
           ...sessionData,
           user: { ...sessionData?.user, isPasswordSet: true },
         })
-        pathname.includes('settings') ? setStep('SET_PASSWORD_SUCCESS_NOTE') : setStep('USERNAME_INPUT')
+        pathName.includes('settings') ? setStep('SET_PASSWORD_SUCCESS_NOTE') : setStep('USERNAME_INPUT')
+        deleteSearchParam({
+          pathName,
+          searchParams: searchParams.toString(),
+          paramsToDelete: ['email', 'email_verification_status'],
+        })
         void analyticsService({
           eventName: 'ks_password_set',
           properties: {},
@@ -56,6 +63,9 @@ export function PasswordInput() {
       <h3 className="flex w-full items-center justify-center text-title-1-demi sm:text-heading-3 ">
         Set your password
       </h3>
+      <p className="text-center text-title-3-med">
+        You are setting a new password for your account linked to <strong>{email}</strong>
+      </p>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
           <FormField
@@ -128,7 +138,7 @@ export function PasswordInput() {
               <Loader size="sm" className="fill-new-off-white" />
             ) : (
               <p className="text-title-3-demi text-new-off-white">
-                {pathname.includes('settings') ? 'Save' : 'Save and proceed'}
+                {pathName.includes('settings') ? 'Save' : 'Save and proceed'}
               </p>
             )}
           </Button>
