@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import { ClientComponentEmail } from './client-component'
 import { ksCbRequest, verifyEmail } from '@lib/api/auth'
-import { analyticsService } from '@services/analytics_service'
+import Analytics from '@services/analytics'
 import { type Metadata } from 'next'
 
 export function generateMetadata(): Metadata {
@@ -21,7 +21,7 @@ export default async function Page({ searchParams }: { searchParams: { token: st
   }
 
   if (code === 200) {
-    void analyticsService({
+    void Analytics.track({
       eventName: 'ks_email_verify',
       properties: { email },
     })

@@ -13,7 +13,7 @@ import { Loader } from '@components/ui/loader'
 import { ModalShell } from '../modal-shell'
 import { useSession } from 'next-auth/react'
 import { usePathname, useSearchParams } from 'next/navigation'
-import { analyticsService } from '@services/analytics_service'
+import Analytics from '@services/analytics'
 
 const passwordSchema = z.object({ password: z.string().min(8) })
 
@@ -44,7 +44,7 @@ export function PasswordInput() {
           searchParams: searchParams.toString(),
           paramsToDelete: ['email', 'email_verification_status'],
         })
-        void analyticsService({
+        void Analytics.track({
           eventName: 'ks_password_set',
           properties: {},
         })

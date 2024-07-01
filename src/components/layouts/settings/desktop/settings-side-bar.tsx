@@ -6,7 +6,7 @@ import { cn } from '@lib/utils'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { AccountIcon, ContactUsIcon, EditIcon, LogOutIcon, NotificationIcon } from '@icons/settings-side-bar-icons'
 import { AuthenticationModal } from '@components/common/modals/authentication'
-import { analyticsService } from '@services/analytics_service'
+import Analytics from '@services/analytics'
 
 export function SideBar() {
   const pathName = usePathname()
@@ -39,7 +39,7 @@ export function SideBar() {
         <div
           onClick={() => {
             AuthenticationModal.open(undefined, 'LOGOUT')
-            void analyticsService({
+            void Analytics.track({
               eventName: 'Log Out',
               properties: {},
             })

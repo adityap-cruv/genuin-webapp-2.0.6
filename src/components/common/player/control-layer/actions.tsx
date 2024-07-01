@@ -18,7 +18,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useCommentSheetStore } from '../comment-sheet/store'
 import { PATH_NAME } from '@lib/utils/constants/path'
-import { analyticsService } from '../../../../services/analytics_service'
+import Analytics from '@services/analytics'
 import { videoSpark } from '@lib/api/video'
 import { useState } from 'react'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
@@ -161,7 +161,7 @@ function Mobile({
         onClick={() => {
           // TODO: USE OTHER VARIABLE FOR COMMENT OPENING
           commentsIsOpen ? closeComments() : openComments(videoId)
-          void analyticsService({
+          void Analytics.track({
             eventName: 'RT Comment Clicked',
             properties: {
               content_category: 'loop',
@@ -178,7 +178,7 @@ function Mobile({
       <ActionItem
         title="Share Video!"
         onClick={async (e) => {
-          await analyticsService({
+          await Analytics.track({
             eventName: 'Video Shared',
             properties: {
               content_category: 'loop',
@@ -308,7 +308,7 @@ function Desktop({
                 brand_id: brandId,
               })
             }
-            void analyticsService({
+            void Analytics.track({
               eventName: 'repost',
               properties,
             })
@@ -318,17 +318,6 @@ function Desktop({
         <ActionItem
           title="Give spark!"
           onClick={async () => {
-            if (pathname.includes('embed')) {
-              window.open(shareUrl, '_blank', 'noopener,noreferrer')
-            } else {
-              user
-                ? await toggleVideoSpark()
-                : openModal({
-                    title: 'Get the Genuin app',
-                    subtitle: 'Get the app to spark the video.',
-                  })
-            }
-
             const properties = {
               content_category: 'loop',
               content_id: videoId,
@@ -344,10 +333,21 @@ function Desktop({
                 brand_id: brandId,
               })
             }
-            void analyticsService({
+            void Analytics.track({
               eventName: 'spark',
               properties,
             })
+
+            if (pathname.includes('embed')) {
+              window.open(shareUrl, '_blank', 'noopener,noreferrer')
+            } else {
+              user
+                ? await toggleVideoSpark()
+                : openModal({
+                    title: 'Get the Genuin app',
+                    subtitle: 'Get the app to spark the video.',
+                  })
+            }
           }}>
           <Image src={sparkData.isSparked ? icSparkTrue : icSpark} height={32} width={32} alt="spark" />
           <p className="flex justify-center text-body-1-demi text-monochrome-white">
@@ -383,7 +383,7 @@ function Desktop({
                 brand_id: brandId,
               })
             }
-            void analyticsService({
+            void Analytics.track({
               eventName: 'Video Shared',
               properties,
             })

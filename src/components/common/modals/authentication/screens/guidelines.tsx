@@ -13,7 +13,7 @@ import { signIn } from 'next-auth/react'
 import { useAuthenticationModalStore } from '../store'
 import { useEffect, useState } from 'react'
 import { Loader } from '@components/ui/loader'
-import { analyticsService } from '@services/analytics_service'
+import Analytics from '@services/analytics'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { deleteSearchParam } from '@lib/utils'
 // import { rudderStackIdentify } from '@services/useRudderAnalytics'
@@ -107,7 +107,7 @@ export function Guidelines() {
           if (res?.ok) {
             setStep('EMAIL_SENT_NOTE')
             // void rudderStackIdentify()
-            void analyticsService({
+            void Analytics.track({
               eventName: 'ks_signed_up',
               properties: { email: formData.email },
             })

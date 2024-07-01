@@ -7,18 +7,18 @@ import { Actions } from '@components/common/player/control-layer/actions'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import Link from 'next/link'
-import { analyticsService } from '@services/analytics_service'
+import Analytics from '@services/analytics'
 
 type Props = DetailedHTMLProps<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement> & {
-  // videoSizeBox: { width: number; height: number }
   videoData: VideoPlayerModalType
   /**
    * Pass if player is first element of list to get it playing.
    */
   isFirstElement: boolean
+  isActive: boolean
 }
 
-export function EmbedPlayer({ videoData, isFirstElement, onCanPlay, ...props }: Props) {
+export function EmbedPlayer({ videoData, isFirstElement, isActive, onCanPlay, ...props }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const localRef = useRef<{
     player: OpenPlayerJS | null
@@ -104,20 +104,32 @@ export function EmbedPlayer({ videoData, isFirstElement, onCanPlay, ...props }: 
         className="absolute h-full w-full object-cover"
         ref={videoRef}
         src={videoData.video.source}
+        poster={videoData.video.thumbnail}
         muted={muted}
         playsInline
         onCanPlay={(ev) => {
           onCanPlay?.(ev)
         }}
+        onEnded={(e) => {
+          void Analytics.track({
+            eventName: 'Video Watched',
+            properties: {
+              content_id: videoData.video.id,
+              content_category: 'loop',
+              event_record_screen: 'embed',
+              content_url: videoData.video.source,
+            },
+          })
+        }}
         {...props}
       />
-      {muted && (
+      {muted && isActive && (
         <div
           className="absolute inset-0 left-2 top-2 w-auto cursor-pointer"
           onClick={(e) => {
             e.stopPropagation()
             toggleMuted()
-            void analyticsService({
+            void Analytics.track({
               eventName: 'Unmute',
               properties: {},
             })
@@ -125,38 +137,42 @@ export function EmbedPlayer({ videoData, isFirstElement, onCanPlay, ...props }: 
           <AnimatedMuteIcon />
         </div>
       )}
-      <div className="absolute bottom-0 w-full">
-        <div className="flex justify-between p-2">
-          <div className="flex w-4/5 flex-col justify-end">
-            <Link href={videoData.video.shareUrl} target="_blank">
-              <div className="z-10 flex items-center">
-                <CustomAvatar
-                  className="bg-red-40"
-                  imageUrl={videoData.owner.profileImage}
-                  fallbackString={videoData.owner.name ?? ''}
-                  isAvatar={videoData.owner.isAvatar}
-                />
-                <p className="line-clamp-1 px-2 text-title-3-bold text-monochrome-white">@{videoData.owner.userName}</p>
-              </div>
-            </Link>
-            {videoData.video.descriptionText && (
-              <span className="line-clamp-2 w-full break-all text-body-1-demi text-monochrome-white">
-                {videoData.video.descriptionText}
-              </span>
-            )}
-          </div>
-          <div className="z-10">
-            <Actions.desktop
-              shareUrl={videoData.video.shareUrl}
-              sparkCount={videoData.video.sparkCount}
-              videoId={videoData.video.id}
-              attachedLink={videoData.video.attachedLink}
-              description={videoData.video.descriptionText}
-              isSparked={false}
-            />
+      {isActive && (
+        <div className="absolute bottom-0 w-full">
+          <div className="flex justify-between p-2">
+            <div className="flex w-4/5 flex-col justify-end">
+              <Link href={videoData.video.shareUrl} target="_blank">
+                <div className="z-10 flex items-center">
+                  <CustomAvatar
+                    className="bg-red-40"
+                    imageUrl={videoData.owner.profileImage}
+                    fallbackString={videoData.owner.name ?? ''}
+                    isAvatar={videoData.owner.isAvatar}
+                  />
+                  <p className="line-clamp-1 px-2 text-title-3-bold text-monochrome-white">
+                    @{videoData.owner.userName}
+                  </p>
+                </div>
+              </Link>
+              {videoData.video.descriptionText && (
+                <span className="line-clamp-2 w-full break-all text-body-1-demi text-monochrome-white">
+                  {videoData.video.descriptionText}
+                </span>
+              )}
+            </div>
+            <div className="z-10">
+              <Actions.desktop
+                shareUrl={videoData.video.shareUrl}
+                sparkCount={videoData.video.sparkCount}
+                videoId={videoData.video.id}
+                attachedLink={videoData.video.attachedLink}
+                description={videoData.video.descriptionText}
+                isSparked={false}
+              />
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </>
   )
 }

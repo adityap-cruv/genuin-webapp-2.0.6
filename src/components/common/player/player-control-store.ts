@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { analyticsService } from '../../../services/analytics_service'
+import { Analytics } from '../../../services/analytics'
 import { useFeedListStore } from '../feed/store'
 import { useFeedModalStore } from '../modals/player-modal/store'
 
@@ -61,7 +61,7 @@ export const usePlayerControlStore = create<PlayerControlStoreType>((set) => {
       const userId = usersdata.state.userId ?? ''
 
       if (progressValue > 95 && duration !== 0) {
-        void analyticsService({
+        void Analytics.track({
           eventName: 'Video Watched',
           properties: {
             content_category: 'loop',
@@ -90,7 +90,7 @@ export const usePlayerControlStore = create<PlayerControlStoreType>((set) => {
           const usersdata = JSON.parse(localStorage.getItem('_user_id_') ?? '')
           const userId = usersdata.state.userId ?? ''
 
-          void analyticsService({
+          void Analytics.track({
             eventName: 'Video Started',
             properties: {
               latency,

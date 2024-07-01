@@ -1,5 +1,7 @@
 'use client'
 import { type VideoSizeBoxType } from '@lib/stores/genuin-options'
+import Analytics from '@services/analytics'
+import { usePathname } from 'next/navigation'
 import { useEffect, type ReactNode } from 'react'
 import { create } from 'zustand'
 
@@ -30,9 +32,11 @@ export const useSize = create<State & Actions>((set) => {
 })
 
 export function SizeProvider({ children }: { children: ReactNode }) {
+  const pathName = usePathname()
   const { setSize, isLoading } = useSize((state) => ({ setSize: state.setSizes, isLoading: state.isLoading }))
   useEffect(() => {
     setSize(window.innerWidth, window.innerHeight)
+    void Analytics.track({ eventName: 'embed_viewed', properties: { embed_id: pathName.split('/')[2] } })
   }, [])
 
   if (!isLoading) return children
