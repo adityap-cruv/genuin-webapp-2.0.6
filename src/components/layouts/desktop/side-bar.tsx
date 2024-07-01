@@ -15,7 +15,7 @@ import { useSession } from 'next-auth/react'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { miniProfile } from '@lib/api/auth'
 import { NotificationIcon } from '@icons/settings-side-bar-icons'
-import { analyticsService } from '@services/analytics_service'
+import Analytics from '@services/analytics'
 import { type User } from 'next-auth'
 import { CategoryView } from '@components/common/category-view'
 const RecentCommunities = dynamic(
@@ -44,7 +44,7 @@ export function SideBar() {
           })
           const messageType = res?.data?.ks_cb_request_status === 3 ? 'MINI_PROFILE_SUCCESS' : 'KS_CB_SUBDOMAIN'
           AuthenticationModal.open(undefined, messageType)
-          void analyticsService({
+          void Analytics.track({
             eventName: 'become_cb_clicked',
             properties: {},
           })

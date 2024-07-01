@@ -27,7 +27,7 @@ import { miniProfile } from '@lib/api/auth'
 import { SettingsLayout } from '../settings/mobile/layout'
 import { NotificationIcon } from '@icons/settings-side-bar-icons'
 import { SearchIcon } from '@icons/search-icon'
-import { analyticsService } from '@services/analytics_service'
+import Analytics from '@services/analytics'
 import { CategoryView } from '@components/common/category-view'
 
 const navVariant = cva('sticky top-0 flex z-40 h-[76px] w-full items-center justify-between  px-2', {
@@ -168,7 +168,7 @@ function Menu({
           })
           const messageType = res?.data?.ks_cb_request_status === 3 ? 'MINI_PROFILE_SUCCESS' : 'KS_CB_SUBDOMAIN'
           AuthenticationModal.open(undefined, messageType)
-          void analyticsService({
+          void Analytics.track({
             eventName: 'become_cb_clicked',
             properties: {},
           })

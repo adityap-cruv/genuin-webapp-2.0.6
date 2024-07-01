@@ -2,7 +2,7 @@ import OpenPlayerJS from 'openplayerjs'
 import { useInView } from 'framer-motion'
 import { type DetailedHTMLProps, type ReactEventHandler, type VideoHTMLAttributes, useEffect, useRef } from 'react'
 import { usePlayerControlStore } from './player-control-store'
-import { pushVideoWatch } from '@services/analytics_service'
+import Analytics from '@services/analytics'
 import { usePathname } from 'next/navigation'
 
 // TODO: work on why player is sending multiple request.
@@ -140,7 +140,7 @@ export function InnerPlayer({
       onPause={onPause}
       onEnded={(e) => {
         onEnded?.(e)
-        restartAndLog(localRef.current.player, loop ?? false, id, pathname)
+        handleEnded(localRef.current.player, loop ?? false, id, pathname)
       }}
       {...props}
     />
@@ -260,7 +260,7 @@ export function ViewportPlayer({
       onPause={onPause}
       onEnded={(e) => {
         onEnded?.(e)
-        restartAndLog(localRef.current.player, loop ?? false, id)
+        handleEnded(localRef.current.player, loop ?? false, id)
       }}
       onTimeUpdate={onTimeUpdateEventHandler}
       // onDurationChange={onDurationChangeEventHandler}
@@ -269,11 +269,11 @@ export function ViewportPlayer({
   )
 }
 
-function restartAndLog(player: OpenPlayerJS | null, loop: boolean, id: string, pathname?: string) {
+function handleEnded(player: OpenPlayerJS | null, loop: boolean, id: string, pathname?: string) {
   if (loop && player) {
     void player.play()
   }
   if (pathname !== '/') {
-    pushVideoWatch(id)
+    Analytics.pushVideoWatch(id)
   }
 }

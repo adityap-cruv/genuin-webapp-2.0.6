@@ -13,7 +13,7 @@ import { Loader } from '@components/ui/loader'
 import { ModalShell } from '../modal-shell'
 import { useSession } from 'next-auth/react'
 import { usePathname } from 'next/navigation'
-import { analyticsService } from '@services/analytics_service'
+import Analytics from '@services/analytics'
 
 const passwordSchema = z.object({ password: z.string().min(8) })
 
@@ -37,7 +37,7 @@ export function PasswordInput() {
           user: { ...sessionData?.user, isPasswordSet: true },
         })
         pathname.includes('settings') ? setStep('SET_PASSWORD_SUCCESS_NOTE') : setStep('USERNAME_INPUT')
-        void analyticsService({
+        void Analytics.track({
           eventName: 'ks_password_set',
           properties: {},
         })

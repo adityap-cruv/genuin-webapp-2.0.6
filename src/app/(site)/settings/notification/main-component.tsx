@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react'
 import { NotificationsSettings, Settings } from '@lib/api/settings'
 import { Loader } from '@components/ui/loader'
 import { useRouter } from 'next/navigation'
-import { analyticsService } from '@services/analytics_service'
+import Analytics from '@services/analytics'
 
 export default function MainComponent() {
   const isMobile = useGenuinOptions().isMobile
@@ -55,7 +55,7 @@ function Notifications({
         ...prevSettingsData,
         roundtable_notification: value,
       }))
-      void analyticsService({
+      void Analytics.track({
         eventName: 'Notification Settings Modified',
         properties: {},
       })
@@ -71,7 +71,7 @@ function Notifications({
             alt="back"
             onClick={() => {
               router.back()
-              void analyticsService({
+              void Analytics.track({
                 eventName: 'Settings Closed',
                 properties: {},
               })
