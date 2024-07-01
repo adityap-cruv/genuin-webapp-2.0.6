@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { analyticsService, pushVideoWatch } from '@services/analytics_service'
+import Analytics from '@services/analytics'
 import { usePlayerControlStore } from '@components/common/player/player-control-store'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 
@@ -40,16 +40,16 @@ export const useFeedModalStore = create<FeedModalStore>((set, get) => {
             }
 
             if (hasCrossed50) {
-              void analyticsService({
+              void Analytics.track({
                 eventName,
                 properties,
               })
 
-              void analyticsService({
+              void Analytics.track({
                 eventName: 'Video Watched',
                 properties,
               })
-              pushVideoWatch(state.videos[state.currentIndex]?.video.id)
+              Analytics.pushVideoWatch(state.videos[state.currentIndex]?.video.id)
             }
           }
           return { currentIndex: index }

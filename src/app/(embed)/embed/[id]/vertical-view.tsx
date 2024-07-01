@@ -10,7 +10,7 @@ import { CustomAvatar } from '@components/custom/custom-avatar'
 import { Button } from '@components/ui/button'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { useEffect } from 'react'
-import { analyticsService } from '@services/analytics_service'
+import Analytics from '@services/analytics'
 
 export function VerticalView({ embedId, embedStyle }: { embedId: string; embedStyle: string }) {
   const { height, width } = useSize()
@@ -68,7 +68,7 @@ export function VerticalView({ embedId, embedStyle }: { embedId: string; embedSt
                 embed_style: embedStyle,
                 brand_id: brandId,
               }
-              void analyticsService({
+              void Analytics.track({
                 eventName: 'Join Community',
                 properties,
               })

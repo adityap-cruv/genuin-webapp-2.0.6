@@ -24,40 +24,44 @@ export function CarouselView({ embedId, embedStyle }: { embedId: string; embedSt
   const videoWidth = (height * 9) / 16
   const ratio = width / videoWidth
 
-  if (videos)
-    return (
-      <div className="relative h-full w-full">
-        <Swiper
-          direction="horizontal"
-          spaceBetween={16}
-          mousewheel={{ forceToAxis: true }}
-          slidesPerView={ratio}
-          modules={[Mousewheel]}
-          onActiveIndexChange={(swiper) => {
-            setActiveVideoId(videos[swiper.activeIndex].video.id)
-          }}
-          onInit={(swiper) => {
-            setActiveVideoId(videos[swiper.activeIndex].video.id)
-          }}>
-          {videos.map((item, index) => {
-            return (
-              <SwiperSlide key={index}>
-                {({ isActive }) => {
-                  return (
-                    <div
-                      style={{ width: height * (9 / 16), height }}
-                      className="relative inset-0 aspect-reel overflow-clip rounded-lg bg-contain bg-center bg-no-repeat object-contain">
-                      <EmbedPlayer videoData={item} isFirstElement={index === 0} loop isActive={isActive} />
-                    </div>
-                  )
-                }}
-              </SwiperSlide>
-            )
-          })}
-          <SwiperButtons />
-        </Swiper>
-      </div>
-    )
+  if (!videos) {
+    return <div className="flex h-full w-full items-center justify-center">Loading...</div>
+  }
+
+  return (
+    <div className="relative h-full w-full">
+      <Swiper
+        direction="horizontal"
+        centeredSlides
+        spaceBetween={16}
+        mousewheel={{ forceToAxis: true }}
+        slidesPerView={ratio}
+        modules={[Mousewheel]}
+        onActiveIndexChange={(swiper) => {
+          setActiveVideoId(videos[swiper.activeIndex].video.id)
+        }}
+        onInit={(swiper) => {
+          setActiveVideoId(videos[swiper.activeIndex].video.id)
+        }}>
+        {videos.map((item, index) => {
+          return (
+            <SwiperSlide key={index}>
+              {({ isActive }) => {
+                return (
+                  <div
+                    style={{ width: height * (9 / 16), height }}
+                    className="relative inset-0 aspect-reel overflow-clip rounded-lg bg-contain bg-center bg-no-repeat object-contain">
+                    <EmbedPlayer videoData={item} isFirstElement={index === 0} loop isActive={isActive} />
+                  </div>
+                )
+              }}
+            </SwiperSlide>
+          )
+        })}
+        <SwiperButtons />
+      </Swiper>
+    </div>
+  )
 }
 
 function SwiperButtons() {

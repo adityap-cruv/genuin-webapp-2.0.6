@@ -13,7 +13,7 @@ import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { ksCbRequest } from '@lib/api/auth'
 import { useSession } from 'next-auth/react'
 import { Loader } from '@components/ui/loader'
-import { analyticsService } from '@services/analytics_service'
+import Analytics from '@services/analytics'
 import { type User } from 'next-auth'
 
 SwiperCore.use([Pagination])
@@ -50,7 +50,7 @@ export function KsToCbSubdomain() {
             ...sessionData,
             user: { ...sessionData?.user, ksCbRequestStatus: res.data.ks_cb_request_status } as User,
           })
-          void analyticsService({
+          void Analytics.track({
             eventName: 'become_cb_request_clicked',
             properties: {},
           })

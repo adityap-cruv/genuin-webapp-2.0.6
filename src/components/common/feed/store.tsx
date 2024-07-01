@@ -1,7 +1,8 @@
 import { create } from 'zustand'
 import { usePlayerControlStore } from '../player/player-control-store'
-import { analyticsService, pushVideoWatch } from '../../../services/analytics_service'
+import Analytics from '@services/analytics'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
+import { useGenuinOptions } from '@lib/stores/genuin-options'
 
 type FeedListStoreType = {
   videoList: VideoPlayerModalType[]
@@ -10,7 +11,6 @@ type FeedListStoreType = {
   setCurrentIndex: (index: number) => void
 }
 
-// TODO: REMOVE this bad use of localstorage.
 export const useFeedListStore = create<FeedListStoreType>((set) => {
   return {
     videoList: [],
@@ -25,8 +25,7 @@ export const useFeedListStore = create<FeedListStoreType>((set) => {
           const numberOfVideos = state.videoList.length
           const progressValue = Math.round((currentTime / duration) * 100)
           const hasCrossed50 = progressValue > 50
-          const usersdata = JSON.parse(localStorage.getItem('_user_id_') ?? '')
-          const userId = usersdata.state.userId ?? ''
+          const userId = useGenuinOptions.getState().user?.id
 
           // console.log('state::', state.videoList, state.currentIndex)
           if (index !== -1 && numberOfVideos > index) {
@@ -40,16 +39,16 @@ export const useFeedListStore = create<FeedListStoreType>((set) => {
               video_view_length: currentTime,
               user_id: userId,
             }
-            void analyticsService({
+            void Analytics.track({
               eventName,
               properties,
             })
             if (hasCrossed50) {
-              void analyticsService({
+              void Analytics.track({
                 eventName: 'Video Watched',
                 properties,
               })
-              pushVideoWatch(state.videoList[state.currentIndex]?.video?.id)
+              Analytics.pushVideoWatch(state.videoList[state.currentIndex]?.video?.id)
             }
           }
         }

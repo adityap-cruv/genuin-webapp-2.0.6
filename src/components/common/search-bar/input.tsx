@@ -6,7 +6,7 @@ import { postRecents } from './api'
 import { RECENT_SEARCH_CONTENT_TYPE } from '@lib/constants'
 import { SheetClose } from '@components/ui/sheet'
 import { SearchIcon } from '@icons/search-icon'
-import { analyticsService } from '@services/analytics_service'
+import Analytics from '@services/analytics'
 
 export const SearchInput = {
   desktop: Desktop,
@@ -19,7 +19,7 @@ function Desktop() {
   const debounced = useDebouncedCallback((value) => {
     setKeyword(value)
     if (value) postRecents(RECENT_SEARCH_CONTENT_TYPE.text, undefined, value)
-    void analyticsService({
+    void Analytics.track({
       eventName: 'Keyword Searched',
       properties: { keyword_searched: value, search_source: 'web' },
     })
@@ -49,7 +49,7 @@ function Mobile() {
   const debounced = useDebouncedCallback((value) => {
     setKeyword(value)
     if (value) postRecents(RECENT_SEARCH_CONTENT_TYPE.text, undefined, value)
-    void analyticsService({
+    void Analytics.track({
       eventName: 'Keyword Searched',
       properties: { keyword_searched: value, search_source: 'web' },
     })

@@ -9,7 +9,7 @@ import { useEffect, type ReactNode } from 'react'
 import Link from 'next/link'
 import { ItemShimmer } from './item-shimmer'
 import { SearchIcon } from '@icons/search-icon'
-import { analyticsService } from '@services/analytics_service'
+import Analytics from '@services/analytics'
 
 export function Recents() {
   const {
@@ -26,7 +26,7 @@ export function Recents() {
 
   useEffect(() => {
     if (list && list?.length !== 0) {
-      void analyticsService({
+      void Analytics.track({
         eventName: 'Check Recent Search',
         properties: {},
       })
@@ -37,7 +37,7 @@ export function Recents() {
     const response = await deleteRecent(id, all)
     // TODO: What should we do in case of failuere in deletion api.
     if (response) void refetch()
-    void analyticsService({
+    void Analytics.track({
       eventName: 'Clear Recent Search',
       properties: {},
     })
@@ -164,7 +164,7 @@ function ListItem({
           onClick={(e) => {
             e.stopPropagation()
             deletionHandler()
-            void analyticsService({
+            void Analytics.track({
               eventName: 'Keyword Search Cancel',
               properties: {},
             })
@@ -198,7 +198,7 @@ function TextItem({ subtitle = '', title = '', avatar: Avatar, deletionHandler }
           onClick={(e) => {
             e.stopPropagation()
             deletionHandler()
-            void analyticsService({
+            void Analytics.track({
               eventName: 'Keyword Search Cancel',
               properties: {},
             })

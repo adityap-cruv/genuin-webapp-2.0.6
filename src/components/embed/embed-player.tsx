@@ -7,7 +7,7 @@ import { Actions } from '@components/common/player/control-layer/actions'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import Link from 'next/link'
-import { analyticsService } from '@services/analytics_service'
+import Analytics from '@services/analytics'
 
 type Props = DetailedHTMLProps<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement> & {
   videoData: VideoPlayerModalType
@@ -110,6 +110,17 @@ export function EmbedPlayer({ videoData, isFirstElement, isActive, onCanPlay, ..
         onCanPlay={(ev) => {
           onCanPlay?.(ev)
         }}
+        onEnded={(e) => {
+          void Analytics.track({
+            eventName: 'Video Watched',
+            properties: {
+              content_id: videoData.video.id,
+              content_category: 'loop',
+              event_record_screen: 'embed',
+              content_url: videoData.video.source,
+            },
+          })
+        }}
         {...props}
       />
       {muted && isActive && (
@@ -118,7 +129,7 @@ export function EmbedPlayer({ videoData, isFirstElement, isActive, onCanPlay, ..
           onClick={(e) => {
             e.stopPropagation()
             toggleMuted()
-            void analyticsService({
+            void Analytics.track({
               eventName: 'Unmute',
               properties: {},
             })
