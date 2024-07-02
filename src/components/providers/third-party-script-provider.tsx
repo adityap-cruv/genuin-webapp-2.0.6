@@ -1,7 +1,6 @@
 import Script from 'next/script'
 
 export function ThirdPartyScriptProvider({ children, isEmbed }: { children: React.ReactNode; isEmbed: boolean }) {
-  console.log('is embed::', isEmbed)
   return (
     <>
       {children}
