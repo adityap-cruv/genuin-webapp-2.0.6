@@ -120,7 +120,7 @@ export function Modal({ children, ...props }: Props) {
           />
         )}
         {showClose && (
-          <DialogClose className="absolute right-4 top-4">
+          <DialogClose className="absolute right-4 top-4 outline-none">
             <img
               src={icClose.src}
               alt="close"

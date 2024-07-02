@@ -29,6 +29,11 @@ import { NotificationIcon } from '@icons/settings-side-bar-icons'
 import { SearchIcon } from '@icons/search-icon'
 import Analytics from '@services/analytics'
 import { CategoryView } from '@components/common/category-view'
+import dynamic from 'next/dynamic'
+
+const DownloadAppDialog = dynamic(
+  async () => await import('../download-app-dialog').then((comp) => comp.DownloadAppDialog)
+)
 
 const navVariant = cva('sticky top-0 flex z-40 h-[76px] w-full items-center justify-between  px-2', {
   variants: {
@@ -121,9 +126,11 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
         <SearchBar.mobile>
           <SearchIcon
             className={`${
-              pathName === '/home' || pathName === '/popular' || pathName === '/latest' || pathName.includes('/video')
-                ? 'stroke-monochrome-white'
-                : ''
+              (pathName.includes('/home') ||
+                pathName.includes('/popular') ||
+                pathName.includes('/latest') ||
+                pathName.includes('/video')) &&
+              'stroke-monochrome-white'
             }`}
           />
         </SearchBar.mobile>
@@ -180,96 +187,87 @@ function Menu({
         AuthenticationModal.open(undefined, 'KS_CB_SUBDOMAIN')
       })
   }
+
   return (
     <Sheet>
       <SheetTrigger>
         <HamBurgerMenuIcon toggleToClose={false} variant={hamBurgerVariant} />
       </SheetTrigger>
-      <SheetContent showDefaultClose={false} side="left" className="w-full border-none shadow-none outline-none">
+      <SheetContent showDefaultClose={false} side="left" className="z-40 w-full border-none shadow-none outline-none">
         <SheetClose className="shadow-none outline-none">
           <X strokeWidth="3px" className="h-6 w-6 stroke-new-off-black" />
         </SheetClose>
-        <div className="flex h-full flex-col justify-between pb-5">
-          <div>
-            <Link href={{ pathname: PATH_NAME.home() }}>
-              <MenuItem title="Home" isActive={pathName === PATH_NAME.home()}>
-                <HomeIcon isActive={pathName === PATH_NAME.home()} />
+        <Link href={{ pathname: PATH_NAME.home() }}>
+          <MenuItem title="Home" isActive={pathName === PATH_NAME.home()}>
+            <HomeIcon isActive={pathName === PATH_NAME.home()} />
+          </MenuItem>
+        </Link>
+        <Link href={{ pathname: PATH_NAME.popular() }}>
+          <MenuItem title="Popular" isActive={pathName === PATH_NAME.popular()}>
+            <PopularIcon isActive={pathName === PATH_NAME.popular()} />
+          </MenuItem>
+        </Link>
+        <Link href={{ pathname: PATH_NAME.latest() }}>
+          <MenuItem title="Latest" isActive={pathName === PATH_NAME.latest()}>
+            <LatestIcon isActive={pathName === PATH_NAME.latest()} />
+          </MenuItem>
+        </Link>
+        {user && (
+          <>
+            <Link
+              href={{
+                pathname: user.isBrandSystemUser ? PATH_NAME.brand(user.brandSlug) : PATH_NAME.profile(user.nickname),
+              }}>
+              <MenuItem title="Profile" isActive={pathName === PATH_NAME.profile(user.nickname)}>
+                <ProfileIcon isActive={pathName === PATH_NAME.profile(user.nickname)} />
               </MenuItem>
             </Link>
-            <Link href={{ pathname: PATH_NAME.popular() }}>
-              <MenuItem title="Popular" isActive={pathName === PATH_NAME.popular()}>
-                <PopularIcon isActive={pathName === PATH_NAME.popular()} />
-              </MenuItem>
-            </Link>
-            <Link href={{ pathname: PATH_NAME.latest() }}>
-              <MenuItem title="Latest" isActive={pathName === PATH_NAME.latest()}>
-                <LatestIcon isActive={pathName === PATH_NAME.latest()} />
-              </MenuItem>
-            </Link>
-            {user && (
-              <>
-                <Link
-                  href={{
-                    pathname: user.isBrandSystemUser
-                      ? PATH_NAME.brand(user.brandSlug)
-                      : PATH_NAME.profile(user.nickname),
-                  }}>
-                  <MenuItem title="Profile" isActive={pathName === PATH_NAME.profile(user.nickname)}>
-                    <ProfileIcon isActive={pathName === PATH_NAME.profile(user.nickname)} />
-                  </MenuItem>
-                </Link>
-              </>
-            )}
-            {/* <Link href={{ pathname: PATH_NAME.search() }}>
-              <MenuItem title="Search" isActive={pathName.includes('search')}>
-                <SearchIcon isActive={pathName === PATH_NAME.search()} />
-              </MenuItem>
-            </Link> */}
-            <hr className="border-1 mt-1 border-monochrome-black/10" />
-            {user?.ksCbRequestStatus !== 3 && (
-              <div
-                className="max-w-72 relative my-4 max-h-16 rounded-lg border border-[#E9CAF4] bg-primary-200 text-title-3-demi text-monochrome-black hover:cursor-pointer"
-                style={{
-                  background: 'linear-gradient(30deg, var(--primary-400) -80%, #FFFFFF 50%, var(--primary-400) 120%)',
-                }}
-                onClick={() => {
-                  if (user?.isEmailVerified) {
-                    handleCommunityBuilderClick()
-                  } else {
-                    AuthenticationModal.open(undefined, embed ? 'KS_CB_SUBDOMAIN' : 'KS_CB_WEB')
-                  }
-                }}>
-                <p className="z-10 p-3 text-body-1-bold">
-                  Become a{' '}
-                  <span className="font-semibold italic">
-                    community <br /> builder{' '}
-                  </span>
-                  {embed ? 'for' : 'on'}{' '}
-                  <span
-                    className="inline-block  overflow-clip text-primary"
-                    style={{ maxWidth: '12ch', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-                    {' '}
-                    {brandName}
-                  </span>{' '}
-                  🚀
-                </p>
-                <img src={CommunityIcon.src} alt="community" className="absolute bottom-0 right-4 h-12" />
-              </div>
-            )}
-            <CategoryView classname="lg:hidden" />
-            <RecentCommunities />
+          </>
+        )}
+        {user?.ksCbRequestStatus !== 3 && <DownloadAppDialog />}
+        <hr className="border-1 mt-1 border-tertiary-200" />
+        {user?.ksCbRequestStatus !== 3 && (
+          <div
+            className="max-w-72 relative my-4 max-h-16 rounded-lg border border-[#E9CAF4] bg-primary-200 text-title-3-demi text-monochrome-black hover:cursor-pointer"
+            style={{
+              background: 'linear-gradient(30deg, var(--primary-400) -80%, #FFFFFF 50%, var(--primary-400) 120%)',
+            }}
+            onClick={() => {
+              if (user?.isEmailVerified) {
+                handleCommunityBuilderClick()
+              } else {
+                AuthenticationModal.open(undefined, embed ? 'KS_CB_SUBDOMAIN' : 'KS_CB_WEB')
+              }
+            }}>
+            <p className="z-10 p-3 text-body-1-bold">
+              Become a{' '}
+              <span className="font-semibold italic">
+                community <br /> builder{' '}
+              </span>
+              {embed ? 'for' : 'on'}{' '}
+              <span
+                className="inline-block  overflow-clip text-primary"
+                style={{ maxWidth: '12ch', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                {' '}
+                {brandName}
+              </span>{' '}
+              🚀
+            </p>
+            <img src={CommunityIcon.src} alt="community" className="absolute bottom-0 right-4 h-12" />
           </div>
-          <div className="text-monochrome">
-            <span className="flex gap-x-2 pb-2">
-              <Link href={PATH_NAME.terms}>
-                <p className="text-body-1-demi">Terms and Conditions</p>
-              </Link>
-              <Link href={PATH_NAME.privacy}>
-                <p className="text-body-1-demi">Privacy Policy</p>
-              </Link>
-            </span>
-            <p className="text-body-1-demi"> &#169; 2023 Genuin Inc.</p>
-          </div>
+        )}
+        <CategoryView className="lg:hidden" />
+        <RecentCommunities />
+        <div className="text-tertiary">
+          <span className="flex gap-x-2 pb-2">
+            <Link href={PATH_NAME.terms}>
+              <p className="text-body-1-demi">Terms and Conditions</p>
+            </Link>
+            <Link href={PATH_NAME.privacy}>
+              <p className="text-body-1-demi">Privacy Policy</p>
+            </Link>
+          </span>
+          <p className="text-body-1-demi"> &#169; 2023 Genuin Inc.</p>
         </div>
       </SheetContent>
     </Sheet>

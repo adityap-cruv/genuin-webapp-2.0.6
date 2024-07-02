@@ -63,7 +63,9 @@ export type User = {
   id?: string
   /**
    * 1 → 'no request or all request are rejected'
+   *
    * 2 → 'all request is in progress'
+   *
    * 3 → 'any request is approved or user is already CB'
    */
   ksCbRequestStatus?: number
