@@ -2,7 +2,6 @@ import { create } from 'zustand'
 import { usePlayerControlStore } from '../player/player-control-store'
 import Analytics from '@services/analytics'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
-import { useGenuinOptions } from '@lib/stores/genuin-options'
 
 type FeedListStoreType = {
   videoList: VideoPlayerModalType[]
@@ -25,7 +24,6 @@ export const useFeedListStore = create<FeedListStoreType>((set) => {
           const numberOfVideos = state.videoList.length
           const progressValue = Math.round((currentTime / duration) * 100)
           const hasCrossed50 = progressValue > 50
-          const userId = useGenuinOptions.getState().user?.id
 
           // console.log('state::', state.videoList, state.currentIndex)
           if (index !== -1 && numberOfVideos > index) {
@@ -37,7 +35,6 @@ export const useFeedListStore = create<FeedListStoreType>((set) => {
               event_target_screen: 'none',
               video_length: duration,
               video_view_length: currentTime,
-              user_id: userId,
             }
             void Analytics.track({
               eventName,

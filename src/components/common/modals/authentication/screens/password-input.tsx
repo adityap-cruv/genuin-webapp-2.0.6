@@ -137,9 +137,7 @@ export function PasswordInput() {
             {isLoading ? (
               <Loader size="sm" className="fill-new-off-white" />
             ) : (
-              <p className="text-title-3-demi text-new-off-white">
-                {pathName.includes('settings') ? 'Save' : 'Save and proceed'}
-              </p>
+              <p className="text-title-3-demi text-new-off-white">Save and Proceed</p>
             )}
           </Button>
           {form.formState.errors.root && (

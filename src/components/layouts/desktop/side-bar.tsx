@@ -69,22 +69,22 @@ export function SideBar() {
     <nav className="flex h-full w-fit flex-col justify-between overflow-auto border border-monochrome-9 px-1 py-4 transition-[width] lg:w-full lg:max-w-[280px] lg:border-none">
       <div>
         <Link href={{ pathname: PATH_NAME.home() }}>
-          <Item title="Home" isActive={pathName === PATH_NAME.home()}>
+          <Item brandName={brandName} title="Home" isActive={pathName === PATH_NAME.home()}>
             <HomeIcon isActive={pathName === PATH_NAME.home()} />
           </Item>
         </Link>
         <Link href={{ pathname: PATH_NAME.popular() }}>
-          <Item title="Popular" isActive={pathName === PATH_NAME.popular()}>
+          <Item brandName={brandName} title="Popular" isActive={pathName === PATH_NAME.popular()}>
             <PopularIcon isActive={pathName === PATH_NAME.popular()} />
           </Item>
         </Link>
         <Link href={{ pathname: PATH_NAME.latest() }}>
-          <Item title="Latest" isActive={pathName === PATH_NAME.latest()}>
+          <Item brandName={brandName} title="Latest" isActive={pathName === PATH_NAME.latest()}>
             <LatestIcon isActive={pathName === PATH_NAME.latest()} />
           </Item>
         </Link>
         <Link href={{ pathname: PATH_NAME.explore() }}>
-          <Item title="Explore" isActive={pathName === PATH_NAME.explore()}>
+          <Item brandName={brandName} title="Explore" isActive={pathName === PATH_NAME.explore()}>
             <ExploreIcon isActive={pathName === PATH_NAME.explore()} />
           </Item>
         </Link>
@@ -93,6 +93,7 @@ export function SideBar() {
           <>
             <Link href={{ pathname: PATH_NAME.notification() }}>
               <Item
+                brandName={brandName}
                 title="Notification"
                 isActive={pathName === PATH_NAME.notification()}
                 notificationCount={notificationCount}>
@@ -103,7 +104,7 @@ export function SideBar() {
               href={{
                 pathname: user.isBrandSystemUser ? PATH_NAME.brand(user.brandSlug) : PATH_NAME.profile(user.nickname),
               }}>
-              <Item title="Profile" isActive={pathName === PATH_NAME.profile(user.nickname)}>
+              <Item brandName={brandName} title="Profile" isActive={pathName === PATH_NAME.profile(user.nickname)}>
                 <ProfileIcon isActive={pathName === PATH_NAME.profile(user.nickname)} />
               </Item>
             </Link>
@@ -208,11 +209,23 @@ type ItemProps = {
   isActive?: boolean
   children: ReactNode
   notificationCount?: number | null
+  brandName?: string
 }
 
-function Item({ title, isActive, children, notificationCount }: ItemProps) {
+function Item({ title, isActive, children, notificationCount, brandName }: ItemProps) {
   return (
-    <div className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-3 hover:bg-monochrome-6/10">
+    <div
+      onClick={() => {
+        if (title === 'Popular' || title === 'Latest') {
+          void Analytics.track({
+            eventName: `${title}_clicked`,
+            properties: {
+              brandName,
+            },
+          })
+        }
+      }}
+      className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-3 hover:bg-monochrome-6/10">
       <div className="relative">
         {children}
         {!notificationCount ||

@@ -25,6 +25,7 @@ import { Shimmer } from '@components/ui/shimmer'
 import { LockIcon } from '@icons/LockIcon'
 import { LoopPrivacyInfo } from '@components/common/loop-privacy-info'
 import { PrivateModal } from '@components/common/modals/private'
+import Analytics from '@services/analytics'
 
 let loopDetailsModule: LoopDetailsType
 
@@ -57,6 +58,35 @@ export function MainComponent({ loopDetails }: Props) {
       if (res.code === 200) {
         setIsLoopSubscribed(newValue)
       }
+    })
+  }
+
+  const handleSubscribeClick = () => {
+    generateDeepLink({
+      action: 'subscribe',
+      contentType: 'loop',
+      description: ldDescription,
+      title: loopDetails.group.group_name,
+      previewImage: null,
+      fromUserName: null,
+      pathName: window.location.pathname,
+      // sourceId: loopDetails.share_string,
+      utmCampaign: 'share',
+      utmMedium: 'web',
+      utmSource: window.location.hostname,
+      community: getLoopAndCommunityShareString(loopDetails.share_url).communityShareString,
+      searchParams,
+    })
+      .then((generatedLink) => {
+        openGeneratedLink(generatedLink)
+      })
+      .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
+
+    void Analytics.track({
+      eventName: `subscription_clicked`,
+      properties: {
+        loop_id: loopDetails.chat_id,
+      },
     })
   }
 
@@ -151,29 +181,7 @@ export function MainComponent({ loopDetails }: Props) {
 
           <div className="flex items-center gap-x-2">
             {loopDetails.is_view_allowed && !embed && (
-              <Button
-                size="custom"
-                onClick={() => {
-                  generateDeepLink({
-                    action: 'subscribe',
-                    contentType: 'loop',
-                    description: ldDescription,
-                    title: loopDetails.group.group_name,
-                    previewImage: null,
-                    fromUserName: null,
-                    pathName: window.location.pathname,
-                    // sourceId: loopDetails.share_string,
-                    utmCampaign: 'share',
-                    utmMedium: 'web',
-                    utmSource: window.location.hostname,
-                    community: getLoopAndCommunityShareString(loopDetails.share_url).communityShareString,
-                    searchParams,
-                  })
-                    .then((generatedLink) => {
-                      openGeneratedLink(generatedLink)
-                    })
-                    .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
-                }}>
+              <Button size="custom" onClick={handleSubscribeClick}>
                 <p className="px-4 py-1 text-title-3-demi text-monochrome-white">Subscribe</p>
               </Button>
             )}

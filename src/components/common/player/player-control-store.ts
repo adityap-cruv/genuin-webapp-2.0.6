@@ -50,29 +50,38 @@ export const usePlayerControlStore = create<PlayerControlStoreType>((set) => {
       set((state) => ({ currentTime }))
     },
     setTimeState(currentTime, duration) {
-      const { videoList: feedVideoList, currentIndex: feedCurrentIndex } = useFeedListStore.getState()
-      const { videos: modalVideoList, currentIndex: modalCurrentIndex } = useFeedModalStore.getState()
+      const feedStore = useFeedListStore.getState()
+      const modalStore = useFeedModalStore.getState()
 
-      const finalVideoList = feedVideoList.length === 0 ? modalVideoList : feedVideoList
-      const finalIndex = feedVideoList.length === 0 ? modalCurrentIndex : feedCurrentIndex
+      const videoList = feedStore.videoList.length === 0 ? modalStore.videos : feedStore.videoList
+      const currentIndex = feedStore.videoList.length === 0 ? modalStore.currentIndex : feedStore.currentIndex
 
       const progressValue = Math.round((currentTime / duration) * 100)
-      const usersdata = JSON.parse(localStorage.getItem('_user_id_') ?? '')
-      const userId = usersdata.state.userId ?? ''
 
-      if (progressValue > 95 && duration !== 0) {
-        void Analytics.track({
-          eventName: 'Video Watched',
+      let eventName, progressEvent
+
+      if (progressValue >= 25 && progressValue < 26) {
+        eventName = 'video_first_quartile'
+      } else if (progressValue >= 75 && progressValue < 76) {
+        eventName = 'video_third_quartile'
+      } else if (currentTime >= duration) {
+        eventName = 'video_complete'
+      }
+
+      if (eventName) {
+        progressEvent = {
+          eventName,
           properties: {
             content_category: 'loop',
-            content_id: finalVideoList[finalIndex].video?.id,
+            content_id: videoList[currentIndex].video?.id,
             event_record_screen: 'feed',
             event_target_screen: 'none',
             video_length: duration,
             video_view_length: currentTime,
-            user_id: userId,
           },
-        })
+        }
+
+        void Analytics.track(progressEvent)
       }
 
       set({ currentTime, duration })
@@ -87,14 +96,10 @@ export const usePlayerControlStore = create<PlayerControlStoreType>((set) => {
           const finalVideoList = feedVideoList.length === 0 ? modalVideoList : feedVideoList
           const finalIndex = feedVideoList.length === 0 ? modalCurrentIndex : feedCurrentIndex
 
-          const usersdata = JSON.parse(localStorage.getItem('_user_id_') ?? '')
-          const userId = usersdata.state.userId ?? ''
-
           void Analytics.track({
             eventName: 'Video Started',
             properties: {
               latency,
-              user_id: userId,
               video_id: finalVideoList[finalIndex].video.id,
               video_length: state.duration,
               video_url: finalVideoList[finalIndex].video.source,

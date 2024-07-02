@@ -3,9 +3,7 @@ import { motion, useAnimationControls } from 'framer-motion'
 import { useEffect } from 'react'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
-import { openModal } from '@lib/utils'
 import { ShareIcon } from '@icons/share-icon'
-import { useGenuinOptions } from '@lib/stores/genuin-options'
 
 type Props = {
   /**
@@ -21,7 +19,7 @@ type Props = {
   communitySlug: string
   chatId?: string
   isLoopSubscribed?: boolean
-  toggleSuscription?: () => void
+  handleSubscribeClick?: () => void
 }
 
 export const TopStickyBar = {
@@ -37,13 +35,12 @@ function Desktop({
   communitySlug,
   chatId,
   isLoopSubscribed,
-  toggleSuscription,
+  handleSubscribeClick,
   ...props
 }: Props) {
   const navAnimationControl = useAnimationControls()
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
-  const user = useGenuinOptions().user
 
   useEffect(() => {
     if (defaultOpen || isOpen) {
@@ -77,23 +74,7 @@ function Desktop({
           size="custom"
           className={`${isLoopSubscribed && 'border border-primary '}`}
           variant={isLoopSubscribed ? 'outline' : 'default'}
-          onClick={
-            user
-              ? () => {
-                  toggleSuscription?.()
-                }
-              : () => {
-                  openModal({
-                    title: 'Get the Genuin app',
-                    subtitle: (
-                      <>
-                        Get the app to subscribe to
-                        <span className="font-bold"> {loopName}</span> Loop.
-                      </>
-                    ),
-                  })
-                }
-          }>
+          onClick={handleSubscribeClick}>
           <p className={`px-4 py-1 text-title-3-demi ${isLoopSubscribed && 'text-primary'}`}>
             {isLoopSubscribed ? 'Subscribed' : 'Subscribe'}
           </p>
