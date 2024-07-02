@@ -16,7 +16,7 @@ import { Loader } from '@components/ui/loader'
 import Analytics from '@services/analytics'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { deleteSearchParam } from '@lib/utils'
-// import { rudderStackIdentify } from '@services/useRudderAnalytics'
+import { rudderStackIdentify } from '@services/useRudderAnalytics'
 
 const FormSchema = z.object({
   mobile: z.boolean().default(false).optional(),
@@ -106,7 +106,7 @@ export function Guidelines() {
         .then((res) => {
           if (res?.ok) {
             setStep('EMAIL_SENT_NOTE')
-            // void rudderStackIdentify()
+            void rudderStackIdentify()
             void Analytics.track({
               eventName: 'ks_signed_up',
               properties: { email: formData.email },

@@ -13,6 +13,6 @@ export async function getEmbedConfig(params: any) {
     .catch((e) => {
       // eslint-disable-next-line no-console
       console.log('error:;', e)
-      throw new Error('Something went wrogn::')
+      throw new Error('Something went wrong::')
     })
 }

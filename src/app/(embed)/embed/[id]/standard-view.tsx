@@ -1,17 +1,18 @@
 'use client'
-import { useSize } from './size-provider'
-import { getFeed } from '@lib/api/feed'
+import { useSizeStore } from '@components/embed/size-provider'
 import { FeedShimmer } from '@components/common/shimmers/feed-shimmer'
 import dynamic from 'next/dynamic'
 import { SideBar } from '@components/layouts/desktop/side-bar'
 import { useGenuinOptions, type VideoSizeBoxType } from '@lib/stores/genuin-options'
 import { TopBar } from '@components/layouts/mobile/top-bar'
 import { useEffect } from 'react'
+import { getFeedForEmbed } from '@/components/embed/api'
+
 const DesktopFeed = dynamic(async () => await import('@components/common/feed').then((comp) => comp.Feed.desktop))
 const MobileFeed = dynamic(async () => await import('@components/common/feed').then((comp) => comp.Feed.mobile))
 
 export function StandardView({ embedId, embedStyle }: { embedId: string; embedStyle: string }) {
-  const { showMobileView, sizeBox } = useSize()
+  const { showMobileView, sizeBox } = useSizeStore()
   const { setInitialData } = useGenuinOptions((state) => ({
     setInitialData: state.setData,
   }))
@@ -25,7 +26,7 @@ export function StandardView({ embedId, embedStyle }: { embedId: string; embedSt
   return <Desktop sizeBox={sizeBox} />
 }
 function Mobile({ sizeBox }: { sizeBox: VideoSizeBoxType }) {
-  const { data: videoPages, isError, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } = getFeed(1)
+  const { data: videoPages, isError, isLoading, isFetchingNextPage, hasNextPage, fetchNextPage } = getFeedForEmbed(1)
   const videos = videoPages?.pages.flatMap((item) => item.reels)
 
   if (videos)
@@ -51,7 +52,7 @@ function Mobile({ sizeBox }: { sizeBox: VideoSizeBoxType }) {
 }
 
 function Desktop({ sizeBox }: { sizeBox: VideoSizeBoxType }) {
-  const { data, isError, fetchNextPage, isFetchingNextPage, isLoading } = getFeed(1)
+  const { data, isError, fetchNextPage, isFetchingNextPage, isLoading } = getFeedForEmbed(1)
   const videos = data?.pages.flatMap((item) => item.reels)
 
   if (isLoading) return <FeedShimmer.desktop />

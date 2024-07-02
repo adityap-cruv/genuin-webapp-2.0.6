@@ -2,8 +2,7 @@
 import { Mousewheel } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Loader } from '@components/ui/loader'
-import { getFeed } from '@lib/api/feed'
-import { useSize } from './size-provider'
+import { useSizeStore } from '@components/embed/size-provider'
 import { EmbedPlayer } from '@components/embed/embed-player'
 import { useEmbedPlayerState } from '@components/embed/embed-player-state'
 import { CustomAvatar } from '@components/custom/custom-avatar'
@@ -11,11 +10,12 @@ import { Button } from '@components/ui/button'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { useEffect } from 'react'
 import Analytics from '@services/analytics'
+import { getFeedForEmbed } from '@/components/embed/api'
 
 export function VerticalView({ embedId, embedStyle }: { embedId: string; embedStyle: string }) {
-  const { height, width } = useSize()
+  const { height, width } = useSizeStore()
   const { setActiveVideoId } = useEmbedPlayerState()
-  const { data: videoPages } = getFeed(1)
+  const { data: videoPages } = getFeedForEmbed(1)
   const videos = videoPages?.pages.flatMap((item) => item.reels)
   const { setInitialData, brandId, user } = useGenuinOptions((state) => ({
     setInitialData: state.setData,
@@ -98,7 +98,7 @@ export function VerticalView({ embedId, embedStyle }: { embedId: string; embedSt
                 style={{ height: videoHeight, width: videoWidth }}
                 className="overflow-clip rounded-lg">
                 {({ isActive }) => {
-                  return <EmbedPlayer videoData={item} isFirstElement={index === 0} loop isActive={isActive} />
+                  return <EmbedPlayer videoData={item} isFirstElement={index === 0} loop={false} isActive={isActive} />
                 }}
               </SwiperSlide>
             )

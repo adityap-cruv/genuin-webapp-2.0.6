@@ -18,6 +18,12 @@ import { NotificationIcon } from '@icons/settings-side-bar-icons'
 import Analytics from '@services/analytics'
 import { type User } from 'next-auth'
 import { CategoryView } from '@components/common/category-view'
+import { useShallow } from 'zustand/react/shallow'
+
+const DownloadAppDialog = dynamic(
+  async () => await import('../download-app-dialog').then((comp) => comp.DownloadAppDialog)
+)
+
 const RecentCommunities = dynamic(
   async () => await import('./recent-communities').then((comp) => comp.RecentCommunities),
   { ssr: false }
@@ -25,12 +31,14 @@ const RecentCommunities = dynamic(
 
 // TODO: Improve active states on all items.
 export function SideBar() {
-  const { embed, user, brandName, notificationCount } = useGenuinOptions((state) => ({
-    embed: state.embed,
-    user: state.user,
-    brandName: state.config?.name ? state.config?.name : 'Genuin',
-    notificationCount: state.notificationCount,
-  }))
+  const { embed, user, brandName, notificationCount } = useGenuinOptions(
+    useShallow((state) => ({
+      embed: state.embed,
+      user: state.user,
+      brandName: state.config?.name ? state.config?.name : 'Genuin',
+      notificationCount: state.notificationCount,
+    }))
+  )
   const { data: sessionData, update: updateSession, status } = useSession()
   const pathName = usePathname()
 
@@ -128,6 +136,7 @@ export function SideBar() {
             </PopoverContent>
           </Popover>
         )}
+        {user?.ksCbRequestStatus === 3 && <DownloadAppDialog />}
         {status === 'unauthenticated' && embed && (
           <div className="p-4">
             <Button
@@ -177,7 +186,7 @@ export function SideBar() {
             </div>
           </>
         )}
-        <CategoryView classname="hidden lg:block" />
+        <CategoryView className="hidden lg:block" />
         <RecentCommunities />
       </div>
       {embed && (
