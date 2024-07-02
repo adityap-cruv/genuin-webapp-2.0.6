@@ -30,7 +30,7 @@ export default async function Layout({ children }: { children: ReactNode }) {
   if (error) return <BrandNotFound />
   return (
     <RootHTML brandColors={brandColors} noIndex>
-      <ThirdPartyScriptProvider isEmbed={!!config}>
+      <ThirdPartyScriptProvider isEmbed>
         <SessionProvider>
           <ReactQueryProvider>{children}</ReactQueryProvider>
         </SessionProvider>

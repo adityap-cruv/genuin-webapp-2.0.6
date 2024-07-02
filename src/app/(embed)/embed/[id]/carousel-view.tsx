@@ -51,7 +51,7 @@ export function CarouselView({ embedId, embedStyle }: { embedId: string; embedSt
                   <div
                     style={{ width: height * (9 / 16), height }}
                     className="relative inset-0 aspect-reel overflow-clip rounded-lg bg-contain bg-center bg-no-repeat object-contain">
-                    <EmbedPlayer videoData={item} isFirstElement={index === 0} loop isActive={isActive} />
+                    <EmbedPlayer videoData={item} isFirstElement={index === 0} loop={false} isActive={isActive} />
                   </div>
                 )
               }}

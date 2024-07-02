@@ -21,8 +21,7 @@ type Props = {
 
 export default async function Page(props: Props) {
   const embedDetails = await getEmbedDetails(props.params.id)
-  // console.log(embedDetails)
-  // const embedPage = props.searchParams.embed_page
+
   const embedPage = embedDetails.data.style
 
   let viewComponent
