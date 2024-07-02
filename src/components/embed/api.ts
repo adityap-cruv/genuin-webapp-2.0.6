@@ -1,9 +1,25 @@
-import { useGenuinOptions } from '@lib/stores/genuin-options'
+import { axiosInstance } from '../../lib/api/instance'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import { useInfiniteQuery } from '@tanstack/react-query'
-import { parseFeedResponse } from './api-response-parser'
+import { parseFeedResponse } from '../../lib/api/api-response-parser'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
-import { axiosInstance } from './instance'
+import { useSizeStore } from './size-provider'
+
+export async function getEmbedDetails(id: string): Promise<{ status: boolean; data: any }> {
+  return await axiosInstance
+    .get('/api/v3/embed', {
+      params: {
+        id,
+      },
+    })
+    .then((res) => {
+      return { status: res.status === 200, data: res.data.data }
+    })
+    .catch((e) => {
+      throw new Error()
+      // console.log('error')
+    })
+}
 
 /**
  *
@@ -18,7 +34,7 @@ async function fetchFeed(
   return await axiosInstance
     .get('/api/v3/v1/feeds', {
       params: {
-        brand_id: useGenuinOptions.getState().brandId ?? undefined,
+        brand_id: useSizeStore.getState().config?.brand_id ?? undefined,
         type: feedType,
         last_video_id: pageParam?.lastVideoId ?? undefined,
         page_session: pageParam?.pageSession ?? undefined,
@@ -42,7 +58,7 @@ async function fetchFeed(
  * @param feedType 1 for home, 2 for latest, 3 for popular
  * @returns
  */
-export function getFeed(feedType: 1 | 2 | 3) {
+export function getFeedForEmbed(feedType: 1 | 2 | 3) {
   return useInfiniteQuery({
     queryKey: ['home', feedType],
     queryFn: async ({ pageParam }) => {
