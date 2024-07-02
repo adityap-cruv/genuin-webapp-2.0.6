@@ -192,17 +192,17 @@ function Menu({
         <div className="flex h-full flex-col justify-between pb-5">
           <div>
             <Link href={{ pathname: PATH_NAME.home() }}>
-              <MenuItem title="Home" isActive={pathName === PATH_NAME.home()}>
+              <MenuItem brandName={brandName} title="Home" isActive={pathName === PATH_NAME.home()}>
                 <HomeIcon isActive={pathName === PATH_NAME.home()} />
               </MenuItem>
             </Link>
             <Link href={{ pathname: PATH_NAME.popular() }}>
-              <MenuItem title="Popular" isActive={pathName === PATH_NAME.popular()}>
+              <MenuItem brandName={brandName} title="Popular" isActive={pathName === PATH_NAME.popular()}>
                 <PopularIcon isActive={pathName === PATH_NAME.popular()} />
               </MenuItem>
             </Link>
             <Link href={{ pathname: PATH_NAME.latest() }}>
-              <MenuItem title="Latest" isActive={pathName === PATH_NAME.latest()}>
+              <MenuItem brandName={brandName} title="Latest" isActive={pathName === PATH_NAME.latest()}>
                 <LatestIcon isActive={pathName === PATH_NAME.latest()} />
               </MenuItem>
             </Link>
@@ -214,7 +214,7 @@ function Menu({
                       ? PATH_NAME.brand(user.brandSlug)
                       : PATH_NAME.profile(user.nickname),
                   }}>
-                  <MenuItem title="Profile" isActive={pathName === PATH_NAME.profile(user.nickname)}>
+                  <MenuItem brandName={brandName} title="Profile" isActive={pathName === PATH_NAME.profile(user.nickname)}>
                     <ProfileIcon isActive={pathName === PATH_NAME.profile(user.nickname)} />
                   </MenuItem>
                 </Link>
@@ -280,11 +280,23 @@ type ItemProps = {
   title: string
   isActive?: boolean
   children: ReactNode
+  brandName?: string
 }
 
-function MenuItem({ title, isActive, children }: ItemProps) {
+function MenuItem({ title, isActive, children, brandName }: ItemProps) {
   return (
-    <div className="flex w-full items-center gap-x-3 rounded-md p-2 hover:bg-monochrome-6/10">
+    <div
+      onClick={() => {
+        if (title === 'Popular' || title === 'Latest') {
+          void Analytics.track({
+            eventName: `${title}_clicked`,
+            properties: {
+              brandName,
+            },
+          })
+        }
+      }}
+      className="flex w-full items-center gap-x-3 rounded-md p-2 hover:bg-monochrome-6/10">
       {children}
       <p className={`text-title-2-bold font-semibold ${isActive && 'text-primary'}`}>{title}</p>
     </div>
