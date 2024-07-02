@@ -11,7 +11,7 @@ export function ContactUs({ children }: Props) {
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="rounded-t-2xl">
+      <DialogContent className="overflow-hidden rounded-t-2xl" style={{ maxHeight: '90vh' }}>
         <DownloadAppForm />
       </DialogContent>
     </Dialog>
@@ -38,7 +38,7 @@ export default function DownloadAppForm() {
               <h3 className="text-title-2-bold-home">Let’s talk!</h3>
               <p className="text-body-2-home">Enter your contact info and our team will be in touch shortly.</p>
             </div>
-            <div className="w-3/5">
+            <div className="w-3/5 overflow-y-auto" style={{ maxHeight: '70vh' }}>
               <ModalForm setIsLinkSent={setIsLinkSent} />
             </div>
           </div>
