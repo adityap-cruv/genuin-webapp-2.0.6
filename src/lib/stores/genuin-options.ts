@@ -19,6 +19,14 @@ type IntegrationSettingsType = {
       enable: boolean
       hide_navbar: boolean
     }
+    android: {
+      enable: boolean
+      playstore_link: string
+    }
+    ios: {
+      enable: boolean
+      appstore_link: string
+    }
   }
   white_label: {
     enable: boolean
