@@ -1,5 +1,6 @@
 'use client'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
+import {useLocalStorage } from '@lib/stores/local-storage'
 import type { RudderAnalytics } from '@rudderstack/analytics-js'
 
 export async function rudderStackTrack(...args: Parameters<RudderAnalytics['track']>) {
@@ -9,10 +10,8 @@ export async function rudderStackTrack(...args: Parameters<RudderAnalytics['trac
   x?.track(...args)
 }
 
-// export async function rudderStackIdentify() {
-//   const x = window.rudderanalytics as RudderAnalytics | undefined | null
-//   const usersdata = JSON.parse(localStorage.getItem('_user_id_') ?? '')
-//   const userId = usersdata.state.userId ?? ''
-//   console.log("UserId:", userId)
-//   x?.identify(userId)
-// }
+export async function rudderStackIdentify() {
+  const x = window.rudderanalytics as RudderAnalytics | undefined | null
+  const userId = useLocalStorage.getState().userId
+  x?.identify(userId)
+}
