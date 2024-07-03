@@ -13,6 +13,9 @@ import Link from 'next/link'
 import { URL_TO_APP_STORE, URL_TO_PLAY_STORE } from '@/lib/constants'
 
 export function DownloadAppDialog() {
+  const ksCbRequestStatus = useGenuinOptions().user?.ksCbRequestStatus
+  if (!ksCbRequestStatus || ksCbRequestStatus !== 3) return
+
   const { brandLogo, brandName, isMobile, links } = useGenuinOptions(
     useShallow((state) => ({
       brandName: state.config?.name,
@@ -26,7 +29,7 @@ export function DownloadAppDialog() {
   )
   return (
     <Dialog>
-      <DialogTrigger>
+      <DialogTrigger asChild>
         <Button variant="outline" className="my-2 px-6 py-2 text-title-3-demi">
           Create a community
         </Button>

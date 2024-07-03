@@ -224,7 +224,7 @@ function Menu({
             </Link>
           </>
         )}
-        {user?.ksCbRequestStatus !== 3 && <DownloadAppDialog />}
+        <DownloadAppDialog />
         <hr className="border-1 mt-1 border-tertiary-200" />
         {user?.ksCbRequestStatus !== 3 && (
           <div

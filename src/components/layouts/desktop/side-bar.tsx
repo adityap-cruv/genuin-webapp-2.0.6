@@ -129,11 +129,9 @@ export function SideBar() {
             </PopoverContent>
           </Popover>
         )}
-        {user?.ksCbRequestStatus === 3 && (
-          <span className="hidden lg:block">
-            <DownloadAppDialog />
-          </span>
-        )}
+        <span className="hidden lg:block">
+          <DownloadAppDialog />
+        </span>
         {status === 'unauthenticated' && embed && (
           <div className="p-4">
             <Button
