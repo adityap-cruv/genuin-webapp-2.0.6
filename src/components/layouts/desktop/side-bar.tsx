@@ -218,7 +218,7 @@ function Item({ title, isActive, children, notificationCount, brandName }: ItemP
       onClick={() => {
         if (title === 'Popular' || title === 'Latest') {
           void Analytics.track({
-            eventName: `${title}_clicked`,
+            eventName: `${title.toLocaleLowerCase()}_clicked`,
             properties: {
               brandName,
             },

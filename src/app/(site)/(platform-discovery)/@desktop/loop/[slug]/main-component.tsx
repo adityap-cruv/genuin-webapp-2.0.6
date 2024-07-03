@@ -62,6 +62,8 @@ export function MainComponent({ loopDetails }: Props) {
       eventName: 'subscription_clicked',
       properties: {
         loop_id: loopDetails.chat_id,
+        loop_slug: loopDetails.slug,
+        loop_name: loopDetails.group.group_name ?? '',
       },
     })
 
