@@ -35,9 +35,10 @@ export function MainComponent({ profileData }: CompProps) {
   useEffect(() => {
     if (!hasMounted.current) {
       void Analytics.track({
-        eventName: 'Brandprofile_Opened',
+        eventName: 'brand_profile_opened',
         properties: {
-          brand_profile_id: profileData.user_id,
+          brand_id: profileData.brand?.brand_id,
+          brand_slug: profileData.brand?.brand_slug,
         },
       })
       hasMounted.current = true
