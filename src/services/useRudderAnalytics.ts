@@ -12,6 +12,6 @@ export async function rudderStackTrack(...args: Parameters<RudderAnalytics['trac
 
 export async function rudderStackIdentify() {
   const x = window.rudderanalytics as RudderAnalytics | undefined | null
-  const userId = useLocalStorage.getState().userId
+  const userId = useGenuinOptions.getState().user?.id
   x?.identify(userId)
 }
