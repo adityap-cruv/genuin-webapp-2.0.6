@@ -9,10 +9,20 @@ import appStoreImage from '@images/appStore.svg'
 import { axiosInstance } from '@/lib/api/instance'
 import { useState } from 'react'
 import { Loader } from '../ui/loader'
+import Link from 'next/link'
+import { URL_TO_APP_STORE, URL_TO_PLAY_STORE } from '@/lib/constants'
 
 export function DownloadAppDialog() {
-  const { brandLogo, brandName, isMobile } = useGenuinOptions(
-    useShallow((state) => ({ brandName: state.config?.name, brandLogo: state.config?.logo, isMobile: state.isMobile }))
+  const { brandLogo, brandName, isMobile, links } = useGenuinOptions(
+    useShallow((state) => ({
+      brandName: state.config?.name,
+      brandLogo: state.config?.logo,
+      isMobile: state.isMobile,
+      links: {
+        appStoreLink: state.config?.integrations.sdk.ios.appstore_link,
+        playStoreLink: state.config?.integrations.sdk.android.playstore_link,
+      },
+    }))
   )
   return (
     <Dialog>
@@ -39,8 +49,12 @@ export function DownloadAppDialog() {
         </p>
         {isMobile ? (
           <div className="flex gap-4">
-            <Image src={playStoreImage} alt="play store" />
-            <Image src={appStoreImage} alt="app store" />
+            <Link href={links.playStoreLink ?? URL_TO_PLAY_STORE}>
+              <Image src={playStoreImage} alt="play store" />
+            </Link>
+            <Link href={links.appStoreLink ?? URL_TO_APP_STORE}>
+              <Image src={appStoreImage} alt="app store" />
+            </Link>
           </div>
         ) : (
           <SubmitButton />

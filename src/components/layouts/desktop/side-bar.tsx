@@ -88,7 +88,6 @@ export function SideBar() {
             <ExploreIcon isActive={pathName === PATH_NAME.explore()} />
           </Item>
         </Link>
-
         {user && (
           <>
             <Link href={{ pathname: PATH_NAME.notification() }}>
@@ -109,11 +108,6 @@ export function SideBar() {
             </Link>
           </>
         )}
-        {/* <Link href={PATH_NAME.search()}>
-          <Item title="Search" isActive={pathName === PATH_NAME.search()}>
-            <SearchIcon isActive={pathName.includes('search')} />
-          </Item>
-        </Link> */}
         {!embed && (
           <Popover>
             <PopoverTrigger className="w-full">
@@ -135,7 +129,11 @@ export function SideBar() {
             </PopoverContent>
           </Popover>
         )}
-        {user?.ksCbRequestStatus === 3 && <DownloadAppDialog />}
+        {user?.ksCbRequestStatus === 3 && (
+          <span className="hidden lg:block">
+            <DownloadAppDialog />
+          </span>
+        )}
         {status === 'unauthenticated' && embed && (
           <div className="p-4">
             <Button
@@ -152,7 +150,7 @@ export function SideBar() {
           <>
             <hr className="border-1 mt-1 border-monochrome-black/10" />
             <div
-              className="max-w-64 relative my-4 hidden max-h-16 w-11/12 rounded-lg border border-[#E9CAF4] bg-primary-200 text-title-3-demi text-monochrome-black hover:cursor-pointer lg:block lg:flex"
+              className="max-w-64 relative my-4 hidden max-h-16 w-11/12 rounded-lg border border-[#E9CAF4] bg-primary-200 text-title-3-demi text-monochrome-black hover:cursor-pointer lg:flex"
               style={{
                 background: 'linear-gradient(30deg, var(--primary-400) -80%, #FFFFFF 50%, var(--primary-400) 120%)',
               }}
@@ -167,16 +165,12 @@ export function SideBar() {
                 <p className="w-64 overflow-hidden p-3 text-body-1-bold">
                   Become a{' '}
                   <span className="font-semibold italic">
-                    community <br /> builder{' '}
+                    community <br /> builder&nbsp;
                   </span>
-                  {embed ? 'for' : 'on'}{' '}
-                  <span
-                    className="inline-block  overflow-clip text-primary"
-                    style={{ maxWidth: '12ch', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-                    {' '}
-                    {brandName}
-                  </span>{' '}
-                  🚀
+                  {embed ? 'for' : 'on'}&nbsp;
+                  <span className="inline-block  max-w-[12ch] place-self-end overflow-clip text-ellipsis whitespace-nowrap text-center align-bottom text-primary">
+                    {` ${brandName} 🚀`}
+                  </span>
                 </p>
               </div>
               <div className="z-10 flex w-2/5 items-end justify-center">
