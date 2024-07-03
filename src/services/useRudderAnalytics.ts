@@ -1,5 +1,4 @@
 'use client'
-import { useLocalStorage } from '@/lib/stores/local-storage'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import type { RudderAnalytics } from '@rudderstack/analytics-js'
 
