@@ -19,17 +19,18 @@ import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { BurgerIcon } from '@icons/burger-icon'
 import { LogoutIcon } from '@icons/logout'
-import CommunityIcon from '@icons/ks-cb-flow/icCommunity.svg'
 import { removeAllAuthToken } from '@lib/api/instance'
 import { MOBILE_DOWNLOAD_APP_LINK } from '@lib/constants'
 import { SearchBar } from '@components/common/search-bar'
-import { miniProfile } from '@lib/api/auth'
 import { SettingsLayout } from '../settings/mobile/layout'
 import { NotificationIcon } from '@icons/settings-side-bar-icons'
 import { SearchIcon } from '@icons/search-icon'
 import Analytics from '@services/analytics'
 import { CategoryView } from '@components/common/category-view'
 import dynamic from 'next/dynamic'
+import BecomeCbCard from '@/components/common/become-cb-card'
+import { LoginIcon } from '@icons/login-icon'
+import { VerifiedIcon } from '@icons/verified-icon'
 
 const DownloadAppDialog = dynamic(
   async () => await import('../download-app-dialog').then((comp) => comp.DownloadAppDialog)
@@ -56,11 +57,12 @@ type Props = {
 } & VariantProps<typeof navVariant>
 
 export function TopBar({ variant = 'light', className, showClose = false, onClose }: Props) {
-  const { embed, user, brandName, notificationsCount } = useGenuinOptions((state) => ({
+  const { embed, user, brandName, notificationsCount, isClaimed } = useGenuinOptions((state) => ({
     embed: state.embed,
     user: state.user,
     brandName: state.config?.name ? state.config?.name : 'Genuin',
     notificationsCount: state.notificationCount,
+    isClaimed: state.config?.is_claimed,
   })) // If variant is transparent than we have removed show download button.
   const showDownloadButton = variant !== 'transparent'
   const pathName = usePathname()
@@ -73,6 +75,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
           embed={embed}
           user={user}
           brandName={brandName}
+          isClaimed={isClaimed}
         />
         {embed && (
           <Link href={{ pathname: PATH_NAME.home() }}>
@@ -156,37 +159,16 @@ function Menu({
   brandName,
   user,
   embed,
+  isClaimed,
 }: {
   hamBurgerVariant: 'dark' | 'light'
   brandName: string
   user?: User
   embed: boolean
+  isClaimed?: boolean
 }) {
   const pathName = usePathname()
-  const { data: sessionData, update: updateSession } = useSession()
-
-  function handleCommunityBuilderClick() {
-    void miniProfile(true)
-      .then((res) => {
-        if (res.code === 200) {
-          void updateSession({
-            ...sessionData,
-            user: { ...sessionData?.user, ksCbRequestStatus: res.data.ks_cb_request_status } as User,
-          })
-          const messageType = res?.data?.ks_cb_request_status === 3 ? 'MINI_PROFILE_SUCCESS' : 'KS_CB_SUBDOMAIN'
-          AuthenticationModal.open(undefined, messageType)
-          void Analytics.track({
-            eventName: 'become_cb_clicked',
-            properties: {},
-          })
-        } else {
-          AuthenticationModal.open(undefined, 'KS_CB_SUBDOMAIN')
-        }
-      })
-      .catch(() => {
-        AuthenticationModal.open(undefined, 'KS_CB_SUBDOMAIN')
-      })
-  }
+  const { status } = useSession()
 
   return (
     <Sheet>
@@ -224,38 +206,32 @@ function Menu({
             </Link>
           </>
         )}
+        {(!isClaimed ?? user?.ksCbRequestStatus !== 3) && embed && (
+          <hr className="border-1 my-2 border-monochrome-black/10" />
+        )}
         <DownloadAppDialog />
-        <hr className="border-1 mt-1 border-tertiary-200" />
-        {user?.ksCbRequestStatus !== 3 && (
+        {status === 'unauthenticated' && embed && (
           <div
-            className="max-w-72 relative my-4 max-h-16 rounded-lg border border-[#E9CAF4] bg-primary-200 text-title-3-demi text-monochrome-black hover:cursor-pointer"
-            style={{
-              background: 'linear-gradient(30deg, var(--primary-400) -80%, #FFFFFF 50%, var(--primary-400) 120%)',
-            }}
+            className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10"
             onClick={() => {
-              if (user?.isEmailVerified) {
-                handleCommunityBuilderClick()
-              } else {
-                AuthenticationModal.open(undefined, embed ? 'KS_CB_SUBDOMAIN' : 'KS_CB_WEB')
-              }
+              AuthenticationModal.open()
             }}>
-            <p className="z-10 p-3 text-body-1-bold">
-              Become a{' '}
-              <span className="font-semibold italic">
-                community <br /> builder{' '}
-              </span>
-              {embed ? 'for' : 'on'}{' '}
-              <span
-                className="inline-block  overflow-clip text-primary"
-                style={{ maxWidth: '12ch', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-                {' '}
-                {brandName}
-              </span>{' '}
-              🚀
-            </p>
-            <img src={CommunityIcon.src} alt="community" className="absolute bottom-0 right-4 h-12" />
+            <LoginIcon className="stroke-primary" />
+            <p className={cn('whitespace-nowrap !text-title-3-demi text-primary')}>Log in</p>
           </div>
         )}
+        {!isClaimed && user && (
+          <div
+            className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10"
+            onClick={() => {
+              AuthenticationModal.open(undefined, 'CLAIM_BRAND_PROFILE')
+            }}>
+            <VerifiedIcon className="stroke-primary" />
+            <p className={cn('whitespace-nowrap !text-title-3-demi text-primary')}>Claim Brand Profile</p>
+          </div>
+        )}
+        {(!isClaimed ?? user?.ksCbRequestStatus !== 3) && <hr className="border-1 my-2 border-monochrome-black/10" />}
+        {user?.ksCbRequestStatus !== 3 && <BecomeCbCard className="my-4 lg:hidden" />}
         <CategoryView className="lg:hidden" />
         <RecentCommunities />
         <div className="text-tertiary">

@@ -11,6 +11,8 @@ import { useState } from 'react'
 import { Loader } from '../ui/loader'
 import Link from 'next/link'
 import { URL_TO_APP_STORE, URL_TO_PLAY_STORE } from '@/lib/constants'
+import { AddIcon } from '@icons/add-icon'
+import { cn } from '@/lib/utils'
 
 export function DownloadAppDialog() {
   const ksCbRequestStatus = useGenuinOptions().user?.ksCbRequestStatus
@@ -30,9 +32,10 @@ export function DownloadAppDialog() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline" className="my-2 border-primary px-6 py-2 font-semibold text-primary">
-          Create a community
-        </Button>
+        <div className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10">
+          <AddIcon className="stroke-primary" />
+          <p className={cn('whitespace-nowrap !text-title-3-demi text-primary')}>Create Community</p>
+        </div>
       </DialogTrigger>
       <DialogContent className="z-50 flex flex-col items-center gap-4 rounded-t-lg lg:min-w-max lg:max-w-lg lg:!px-14 lg:!py-10">
         <CustomAvatar

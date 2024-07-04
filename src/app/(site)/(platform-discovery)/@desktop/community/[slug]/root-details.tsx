@@ -210,7 +210,7 @@ function CommunityDetailsTabs({ communityDetails }: { communityDetails: Communit
 }
 
 function Categories({ communityDetails }: { communityDetails: CommunityDetailsType }) {
-  if (communityDetails.categories?.length !== 0)
+  if (communityDetails.categories && communityDetails.categories?.length !== 0)
     return (
       <div className="mb-4">
         <p className="my-2 text-title-3-bold">Categories</p>

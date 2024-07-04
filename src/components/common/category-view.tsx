@@ -63,7 +63,7 @@ export function CategoryView({ className, ...props }: ComponentProps<'div'>) {
                 {category.communities.map((item: Community, index: number) => (
                   <AccordionContent key={index} className="p-0">
                     <Link href={PATH_NAME.community(item.slug) + '?feed=1'}>
-                      <div className="flex items-center gap-3 px-3 py-1.5 hover:bg-monochrome-6/10">
+                      <div className="flex items-center gap-3 rounded-md px-3 py-1.5 hover:bg-monochrome-6/10">
                         <CustomAvatar
                           className="h-8 w-8 bg-red-40"
                           imageUrl={item.dp ?? ''}
