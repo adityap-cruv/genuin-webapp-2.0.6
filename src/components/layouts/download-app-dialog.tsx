@@ -42,7 +42,7 @@ export function DownloadAppDialog() {
           className="h-16 w-16"
         />
         {!isMobile && (
-          <p className="whitespace-pre-wrap break-all text-center" style={{ fontSize: 40 }}>
+          <p className="whitespace-pre-wrap break-all text-center font-bold" style={{ fontSize: 40 }}>
             Get the {brandName} app
           </p>
         )}
