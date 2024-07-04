@@ -30,7 +30,7 @@ export function DownloadAppDialog() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline" className="my-2 px-6 py-2 text-title-3-demi">
+        <Button variant="outline" className="my-2 border-primary px-6 py-2 font-semibold text-primary">
           Create a community
         </Button>
       </DialogTrigger>
