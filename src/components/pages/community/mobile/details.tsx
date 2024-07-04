@@ -294,7 +294,7 @@ function Guidelines() {
 }
 
 function Categories() {
-  if (communityDetailsModule.categories?.length !== 0)
+  if (communityDetailsModule.categories && communityDetailsModule.categories?.length !== 0)
     return (
       <div>
         <p className="my-2 text-title-3-bold">Categories</p>

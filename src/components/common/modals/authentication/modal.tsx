@@ -22,6 +22,7 @@ import {
   ResetPassword,
   CategoryInput,
   GetStarted,
+  ClaimBrandProfile,
 } from './screens'
 import { useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
@@ -207,5 +208,7 @@ export function Content() {
       return <CategoryInput />
     case 'GET_STARTED':
       return <GetStarted />
+    case 'CLAIM_BRAND_PROFILE':
+      return <ClaimBrandProfile />
   }
 }

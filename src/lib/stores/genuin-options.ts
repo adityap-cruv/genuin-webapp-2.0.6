@@ -56,6 +56,8 @@ export type ConfigType = {
   brand_colors: any
   favicon: any
   brand_web_logo: string
+  is_claimed: boolean
+  website: string
 } | null
 
 export type User = {

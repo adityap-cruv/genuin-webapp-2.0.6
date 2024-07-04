@@ -36,6 +36,7 @@ export type StepsType =
   | 'RESET_PASSWORD_SUCCESS_NOTE'
   | 'CATEGORY_INPUT'
   | 'GET_STARTED'
+  | 'CLAIM_BRAND_PROFILE'
 
 type FormDataType = {
   displayName: string
