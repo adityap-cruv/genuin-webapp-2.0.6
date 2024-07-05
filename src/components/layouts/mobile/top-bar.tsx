@@ -57,12 +57,13 @@ type Props = {
 } & VariantProps<typeof navVariant>
 
 export function TopBar({ variant = 'light', className, showClose = false, onClose }: Props) {
-  const { embed, user, brandName, notificationsCount, isClaimed } = useGenuinOptions((state) => ({
+  const { embed, user, brandName, notificationsCount, isClaimed, brandLogo } = useGenuinOptions((state) => ({
     embed: state.embed,
     user: state.user,
     brandName: state.config?.name ? state.config?.name : 'Genuin',
     notificationsCount: state.notificationCount,
     isClaimed: state.config?.is_claimed,
+    brandLogo: state.config?.logo,
   })) // If variant is transparent than we have removed show download button.
   const showDownloadButton = variant !== 'transparent'
   const pathName = usePathname()
@@ -79,10 +80,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
         />
         {embed && (
           <Link href={{ pathname: PATH_NAME.home() }}>
-            <AppLogo.icon
-              imageHeight={32}
-              className={cn(variant === 'transparent' ? 'fill-new-off-white' : 'fill-new-off-black', 'max-w-[100px]')}
-            />
+            <img src={brandLogo} className="h-8 object-cover" alt="brand logo" />
           </Link>
         )}
       </span>
@@ -176,9 +174,12 @@ function Menu({
         <HamBurgerMenuIcon toggleToClose={false} variant={hamBurgerVariant} />
       </SheetTrigger>
       <SheetContent showDefaultClose={false} side="left" className="z-40 w-full border-none shadow-none outline-none">
-        <SheetClose className="shadow-none outline-none">
-          <X strokeWidth="3px" className="h-6 w-6 stroke-new-off-black" />
-        </SheetClose>
+        <div className="mb-4 flex justify-between">
+          <AppLogo.icon imageHeight={32} className={cn('fill-new-off-white')} />
+          <SheetClose className="shadow-none outline-none">
+            <X strokeWidth="3px" className="h-6 w-6 stroke-new-off-black" />
+          </SheetClose>
+        </div>
         <Link href={{ pathname: PATH_NAME.home() }}>
           <MenuItem brandName={brandName} title="Home" isActive={pathName === PATH_NAME.home()}>
             <HomeIcon isActive={pathName === PATH_NAME.home()} />
