@@ -3,22 +3,15 @@ import { useSizeStore } from '@components/embed/size-provider'
 import { FeedShimmer } from '@components/common/shimmers/feed-shimmer'
 import dynamic from 'next/dynamic'
 import { SideBar } from '@components/layouts/desktop/side-bar'
-import { useGenuinOptions, type VideoSizeBoxType } from '@lib/stores/genuin-options'
+import { type VideoSizeBoxType } from '@lib/stores/genuin-options'
 import { TopBar } from '@components/layouts/mobile/top-bar'
-import { useEffect } from 'react'
 import { getFeedForEmbed } from '@/components/embed/api'
 
 const DesktopFeed = dynamic(async () => await import('@components/common/feed').then((comp) => comp.Feed.desktop))
 const MobileFeed = dynamic(async () => await import('@components/common/feed').then((comp) => comp.Feed.mobile))
 
-export function StandardView({ embedId, embedStyle }: { embedId: string; embedStyle: string }) {
+export function StandardView() {
   const { showMobileView, sizeBox } = useSizeStore()
-  const { setInitialData } = useGenuinOptions((state) => ({
-    setInitialData: state.setData,
-  }))
-  useEffect(() => {
-    setInitialData({ embedId, embedStyle, embedType: 'standard_wall' })
-  }, [])
 
   if (showMobileView) {
     return <Mobile sizeBox={sizeBox} />

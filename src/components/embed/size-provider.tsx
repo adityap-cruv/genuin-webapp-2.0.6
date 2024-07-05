@@ -3,7 +3,7 @@ import { rudderStackIdentify } from '@/services/useRudderAnalytics'
 import { setBrandIdInAxiosInstance } from '@lib/api/instance'
 import { type ConfigType, type VideoSizeBoxType } from '@lib/stores/genuin-options'
 import Analytics from '@services/analytics'
-import { usePathname } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import { useEffect, type ReactNode } from 'react'
 import { create } from 'zustand'
 
@@ -36,14 +36,14 @@ export const useSizeStore = create<State & Actions>((set) => {
 })
 
 export function SizeProvider({ children, config }: { children: ReactNode; config?: ConfigType }) {
-  const pathName = usePathname()
+  const params = useParams()
   const { setSize, isLoading } = useSizeStore((state) => ({ setSize: state.setSizes, isLoading: state.isLoading }))
 
   useEffect(() => {
     setSize(window.innerWidth, window.innerHeight, config)
     setBrandIdInAxiosInstance(Number(config?.brand_id))
     void rudderStackIdentify()
-    void Analytics.track({ eventName: 'embed_viewed', properties: { embed_id: pathName.split('/')[2] } })
+    void Analytics.track({ eventName: 'embed_viewed', properties: { embed_id: params.id as string } })
   }, [])
 
   if (!isLoading) return children

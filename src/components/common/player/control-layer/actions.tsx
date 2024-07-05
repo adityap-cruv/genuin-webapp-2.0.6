@@ -245,12 +245,9 @@ function Desktop({
     isSparked,
     sparkCount,
   })
-  const { brandId, user, embedId, embedType, embedStyle } = useGenuinOptions((state) => ({
+  const { brandId, user } = useGenuinOptions((state) => ({
     brandId: state.brandId,
     user: state.user,
-    embedId: state.embedId,
-    embedType: state.embedType,
-    embedStyle: state.embedStyle,
   }))
   const pathname = usePathname()
 
@@ -302,9 +299,6 @@ function Desktop({
             }
             if (pathname.includes('embed')) {
               Object.assign(properties, {
-                embed_id: embedId,
-                embed_type: embedType,
-                embed_style: embedStyle,
                 brand_id: brandId,
               })
             }
@@ -327,9 +321,6 @@ function Desktop({
             }
             if (pathname.includes('embed')) {
               Object.assign(properties, {
-                embed_id: embedId,
-                embed_type: embedType,
-                embed_style: embedStyle,
                 brand_id: brandId,
               })
             }
@@ -377,9 +368,6 @@ function Desktop({
             }
             if (pathname.includes('embed')) {
               Object.assign(properties, {
-                embed_id: embedId,
-                embed_type: embedType,
-                embed_style: embedStyle,
                 brand_id: brandId,
               })
             }
