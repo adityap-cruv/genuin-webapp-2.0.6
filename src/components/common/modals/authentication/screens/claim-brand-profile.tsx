@@ -5,7 +5,10 @@ import { ClaimBrandProfileIcon } from '@icons/claim-brand-profile-icon'
 import Link from 'next/link'
 
 export function ClaimBrandProfile() {
-  const brandUrl = useGenuinOptions().config?.website
+  const { brandUrl, brandId } = useGenuinOptions((state) => ({
+    brandUrl: state.config?.website,
+    brandId: state.brandId,
+  }))
 
   function cleanURL(url: any) {
     return url.replace(/^(https?:\/\/)?(www\.)?/, '')
@@ -19,7 +22,7 @@ export function ClaimBrandProfile() {
         with your audience.
       </p>
       <Link
-        href={`${process.env.NEXT_PUBLIC_BCC_URL}/claim-brand?domain=${cleanURL(brandUrl)}`}
+        href={`${process.env.NEXT_PUBLIC_BCC_URL}/claim-brand?domain=${cleanURL(brandUrl)}&brand_id=${brandId}`}
         target="_blank"
         className="w-full">
         <Button variant="default" className="w-full text-title-3-med !text-new-off-white">
