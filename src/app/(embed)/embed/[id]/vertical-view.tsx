@@ -7,24 +7,13 @@ import { EmbedPlayer } from '@components/embed/embed-player'
 import { useEmbedPlayerState } from '@components/embed/embed-player-state'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { Button } from '@components/ui/button'
-import { useGenuinOptions } from '@lib/stores/genuin-options'
-import { useEffect } from 'react'
-import Analytics from '@services/analytics'
 import { getFeedForEmbed } from '@/components/embed/api'
 
-export function VerticalView({ embedId, embedStyle }: { embedId: string; embedStyle: string }) {
+export function VerticalView() {
   const { height, width } = useSizeStore()
   const { setActiveVideoId } = useEmbedPlayerState()
   const { data: videoPages } = getFeedForEmbed(1)
   const videos = videoPages?.pages.flatMap((item) => item.reels)
-  const { setInitialData, brandId, user } = useGenuinOptions((state) => ({
-    setInitialData: state.setData,
-    brandId: state.brandId,
-    user: state.user,
-  }))
-  useEffect(() => {
-    setInitialData({ embedId, embedStyle, embedType: 'feed' })
-  }, [])
 
   function postMessage(link: string) {
     window.parent.postMessage({ action: 'open_link', link }, '*')
@@ -58,20 +47,20 @@ export function VerticalView({ embedId, embedStyle }: { embedId: string; embedSt
           <Button
             className="px-4"
             onClick={() => {
-              const properties = {
-                content_category: 'loop',
-                event_record_screen: 'feed',
-                event_target_screen: 'none',
-                user_id: user?.id,
-                embed_id: embedId,
-                embed_type: 'feed',
-                embed_style: embedStyle,
-                brand_id: brandId,
-              }
-              void Analytics.track({
-                eventName: 'Join Community',
-                properties,
-              })
+              // const properties = {
+              //   content_category: 'loop',
+              //   event_record_screen: 'feed',
+              //   event_target_screen: 'none',
+              //   user_id: user?.id,
+              //   embed_id: embedId,
+              //   embed_type: 'feed',
+              //   embed_style: embedStyle,
+              //   brand_id: brandId,
+              // }
+              // void Analytics.track({
+              //   eventName: 'Join Community',
+              //   properties,
+              // })
               postMessage(videos[0].community.shareUrl)
             }}>
             <p className="text-cap-1-demi">Join Community</p>

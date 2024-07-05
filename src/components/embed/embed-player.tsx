@@ -8,6 +8,7 @@ import { CustomAvatar } from '@components/custom/custom-avatar'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import Link from 'next/link'
 import Analytics from '@services/analytics'
+import { useParams } from 'next/navigation'
 
 type Props = DetailedHTMLProps<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement> & {
   videoData: VideoPlayerModalType
@@ -19,6 +20,7 @@ type Props = DetailedHTMLProps<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoE
 }
 
 export function EmbedPlayer({ videoData, isFirstElement, isActive, onCanPlay, ...props }: Props) {
+  const params = useParams()
   const videoRef = useRef<HTMLVideoElement>(null)
   const localRef = useRef<{
     player: OpenPlayerJS | null
@@ -118,6 +120,7 @@ export function EmbedPlayer({ videoData, isFirstElement, isActive, onCanPlay, ..
               content_category: 'loop',
               event_record_screen: 'embed',
               content_url: videoData.video.source,
+              embed_id: params.id as string,
             },
           })
         }}

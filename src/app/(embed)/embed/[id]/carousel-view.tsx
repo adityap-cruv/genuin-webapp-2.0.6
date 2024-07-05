@@ -3,23 +3,16 @@ import { Mousewheel } from 'swiper/modules'
 import { Swiper, SwiperSlide, useSwiper } from 'swiper/react'
 import { useSizeStore } from '@components/embed/size-provider'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { EmbedPlayer } from '@components/embed/embed-player'
 import { useEmbedPlayerState } from '@components/embed/embed-player-state'
-import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { getFeedForEmbed } from '@/components/embed/api'
 
-export function CarouselView({ embedId, embedStyle }: { embedId: string; embedStyle: string }) {
+export function CarouselView() {
   const { width, height } = useSizeStore()
   const { setActiveVideoId } = useEmbedPlayerState()
   const { data: videoPages } = getFeedForEmbed(3)
   const videos = videoPages?.pages.flatMap((item) => item.reels)
-  const { setInitialData } = useGenuinOptions((state) => ({
-    setInitialData: state.setData,
-  }))
-  useEffect(() => {
-    setInitialData({ embedId, embedStyle, embedType: 'carousel' })
-  }, [])
 
   const videoWidth = (height * 9) / 16
   const ratio = width / videoWidth

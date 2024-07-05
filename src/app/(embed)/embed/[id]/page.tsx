@@ -26,14 +26,14 @@ export default async function Page(props: Props) {
   let viewComponent
 
   if (embedPage === 'carousel') {
-    viewComponent = <CarouselView embedId={props.params.id} embedStyle={embedDetails.data.style} />
+    viewComponent = <CarouselView />
   } else if (embedPage === 'standard_wall') {
-    viewComponent = <StandardView embedId={props.params.id} embedStyle={embedDetails.data.style} />
+    viewComponent = <StandardView />
   } else if (embedPage === 'feed') {
-    viewComponent = <VerticalView embedId={props.params.id} embedStyle={embedDetails.data.style} />
+    viewComponent = <VerticalView />
   } else {
     // Default view if embed_page doesn't match any condition
-    viewComponent = <StandardView embedId={props.params.id} embedStyle={embedDetails.data.style} />
+    viewComponent = <StandardView />
   }
 
   return viewComponent
