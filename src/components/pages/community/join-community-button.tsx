@@ -2,9 +2,10 @@ import { requestCommunity, joinCommunity, leaveCommunity } from '@lib/api/video'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { useState } from 'react'
 import { Button } from '@components/ui/button'
-import { generateDeepLink, openModal } from '@lib/utils'
+import { openModal } from '@lib/utils'
 import { useQueryClient } from '@tanstack/react-query'
 import { useSearchParams } from 'next/navigation'
+import { joinCommunityDeepLink } from '@/lib/get-deeplink'
 
 type Props = {
   userRole?: 'LEADER' | 'MEMBER' | 'REQUESTED'
@@ -85,26 +86,12 @@ export function JoinCommunityButton({
           ? async () => {
               await toggleCommunityJoinState()
             }
-          : () => {
-              generateDeepLink({
-                action: 'join',
-                contentType: 'community',
-                description: `Find your people. Find what you love. | Join ${communityName} to talk about it`,
-                title: `join ${communityName}`,
-                previewImage: null,
-                fromUserName: null,
-                pathName: window.location.pathname,
-                utmCampaign: 'share',
-                utmMedium: 'web',
-                utmSource: window.location.hostname,
-                searchParams,
-              })
-                .then((generatedLink) => {
-                  openModal({
-                    deepLink: generatedLink,
-                  })
-                })
-                .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
+          : async () => {
+              await joinCommunityDeepLink({ communityName: communityName ?? '', searchParams }).then(
+                (generatedLink) => {
+                  openModal({ deepLink: generatedLink })
+                }
+              )
             }
       }>
       <p

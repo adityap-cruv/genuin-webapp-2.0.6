@@ -10,7 +10,7 @@ import { useMotionValueEvent, useScroll } from 'framer-motion'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
-import { generateDeepLink, getCurrentShareUrl, getTimeAgo, openModal } from '@lib/utils'
+import { getCurrentShareUrl, getTimeAgo, openModal } from '@lib/utils'
 import { FeedShimmer } from '../shimmers/feed-shimmer'
 import { Input } from '@components/ui/input'
 import { createComment } from '@lib/api/video'
@@ -24,6 +24,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@compo
 import { JoinCommunityButton } from '@components/pages/community/join-community-button'
 import { ReadMore } from '../read-more'
 import { useSearchParams } from 'next/navigation'
+import { commentDeepLink } from '@/lib/get-deeplink'
 
 export function DesktopDetails({ loop, community, owner, video }: VideoPlayerModalType) {
   const { shareFn } = useAdaptiveShare()
@@ -333,22 +334,8 @@ function CommentInput({
           </>
         ) : (
           <div
-            onClick={() => {
-              void generateDeepLink({
-                action: 'comment',
-                contentType: 'video',
-                description: ``,
-                title: ``,
-                previewImage: null,
-                fromUserName: null,
-                pathName: PATH_NAME.video(videoSlug),
-                utmCampaign: 'share',
-                utmMedium: 'web',
-                utmSource: window.location.hostname,
-                community: communityId,
-                loop: loopId,
-                searchParams,
-              }).then((generatedLink) => {
+            onClick={async () => {
+              await commentDeepLink({ videoSlug, communityId, loopId, searchParams }).then((generatedLink) => {
                 openModal({ deepLink: generatedLink })
               })
             }}

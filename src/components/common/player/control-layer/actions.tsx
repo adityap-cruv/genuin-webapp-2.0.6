@@ -1,11 +1,4 @@
-import {
-  abbreviateNumber,
-  checkAndAppendHttps,
-  generateDeepLink,
-  getLoopAndCommunityShareString,
-  openGeneratedLink,
-  openModal,
-} from '@lib/utils'
+import { abbreviateNumber, checkAndAppendHttps, openGeneratedLink, openModal } from '@lib/utils'
 import icShare from '@icons/player-controls/icShare.svg'
 import icComment from '@icons/player-controls/icComment.svg'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
@@ -17,7 +10,6 @@ import icRepost from '@icons/player-controls/icRepost.svg'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useCommentSheetStore } from '../comment-sheet/store'
-import { PATH_NAME } from '@lib/utils/constants/path'
 import Analytics from '@services/analytics'
 import { videoSpark } from '@lib/api/video'
 import { useState } from 'react'
@@ -25,6 +17,7 @@ import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { RepostModal } from '@components/common/modals/repost'
 import { AuthenticationModal } from '@components/common/modals/authentication'
+import { repostDeepLink, sparkDeepLink } from '@/lib/get-deeplink'
 
 export const Actions = {
   mobile: Mobile,
@@ -93,30 +86,13 @@ function Mobile({
       <span className="flex flex-col">
         <ActionItem
           title="Repost the video!"
-          onClick={() => {
-            const { communityShareString, loopShareString } = getLoopAndCommunityShareString(shareUrl)
+          onClick={async () => {
             if (embed) {
               user ? RepostModal.open(videoId) : AuthenticationModal.open()
             } else {
-              generateDeepLink({
-                action: 'repost',
-                contentType: 'video',
-                description: ``,
-                title: ``,
-                previewImage: null,
-                fromUserName: null,
-                pathName: PATH_NAME.video(videoSlug),
-                utmCampaign: 'share',
-                utmMedium: 'web',
-                utmSource: window.location.hostname,
-                community: communityShareString,
-                loop: loopShareString,
-                searchParams,
+              await repostDeepLink({ videoSlug, shareUrl, searchParams }).then((generatedLink) => {
+                openGeneratedLink(generatedLink)
               })
-                .then((generatedLink) => {
-                  openGeneratedLink(generatedLink)
-                })
-                .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
             }
             // DownloadDialogModal.open({ title: 'Get the Genuin app', subtitle: 'Get the app to spark the video.' })
           }}>
@@ -125,30 +101,13 @@ function Mobile({
         <ActionItem
           title="Give spark!"
           onClick={async () => {
-            const { communityShareString, loopShareString } = getLoopAndCommunityShareString(shareUrl)
             embed
               ? user
                 ? await toggleVideoSpark()
                 : AuthenticationModal.open()
-              : generateDeepLink({
-                  action: 'spark',
-                  contentType: 'video',
-                  description: ``,
-                  title: ``,
-                  previewImage: null,
-                  fromUserName: null,
-                  pathName: PATH_NAME.video(videoSlug),
-                  utmCampaign: 'share',
-                  utmMedium: 'web',
-                  utmSource: window.location.hostname,
-                  community: communityShareString,
-                  loop: loopShareString,
-                  searchParams,
+              : await sparkDeepLink({ videoSlug, shareUrl, searchParams }).then((generatedLink) => {
+                  openGeneratedLink(generatedLink)
                 })
-                  .then((generatedLink) => {
-                    openGeneratedLink(generatedLink)
-                  })
-                  .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
           }}>
           <Image src={sparkData.isSparked ? icSparkTrue : icSpark} height={32} width={32} alt="spark" />
           <p className="flex justify-center text-body-1-demi text-monochrome-white">
@@ -282,33 +241,16 @@ function Desktop({
         )}
         <ActionItem
           title="Repost the video!"
-          onClick={() => {
+          onClick={async () => {
             if (pathname.includes('embed')) {
               window.open(shareUrl, '_blank', 'noopener,noreferrer')
             } else {
               if (user) {
                 RepostModal.open(videoId)
               } else {
-                const { communityShareString, loopShareString } = getLoopAndCommunityShareString(shareUrl)
-                generateDeepLink({
-                  action: 'repost',
-                  contentType: 'video',
-                  description: ``,
-                  title: ``,
-                  previewImage: null,
-                  fromUserName: null,
-                  pathName: PATH_NAME.video(videoSlug),
-                  utmCampaign: 'share',
-                  utmMedium: 'web',
-                  utmSource: window.location.hostname,
-                  community: communityShareString,
-                  loop: loopShareString,
-                  searchParams,
+                await repostDeepLink({ videoSlug: videoSlug ?? '', shareUrl, searchParams }).then((generatedLink) => {
+                  openModal({ deepLink: generatedLink })
                 })
-                  .then((generatedLink) => {
-                    openModal({ deepLink: generatedLink })
-                  })
-                  .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
               }
             }
 
@@ -354,28 +296,11 @@ function Desktop({
             if (pathname.includes('embed')) {
               window.open(shareUrl, '_blank', 'noopener,noreferrer')
             } else {
-              const { communityShareString, loopShareString } = getLoopAndCommunityShareString(shareUrl)
               user
                 ? await toggleVideoSpark()
-                : generateDeepLink({
-                    action: 'spark',
-                    contentType: 'video',
-                    description: ``,
-                    title: ``,
-                    previewImage: null,
-                    fromUserName: null,
-                    pathName: PATH_NAME.video(videoSlug),
-                    utmCampaign: 'share',
-                    utmMedium: 'web',
-                    utmSource: window.location.hostname,
-                    community: communityShareString,
-                    loop: loopShareString,
-                    searchParams,
+                : await sparkDeepLink({ videoSlug: videoSlug ?? '', shareUrl, searchParams }).then((generatedLink) => {
+                    openModal({ deepLink: generatedLink })
                   })
-                    .then((generatedLink) => {
-                      openModal({ deepLink: generatedLink })
-                    })
-                    .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
             }
           }}>
           <Image src={sparkData.isSparked ? icSparkTrue : icSpark} height={32} width={32} alt="spark" />

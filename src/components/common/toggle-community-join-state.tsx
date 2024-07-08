@@ -1,7 +1,8 @@
+import { joinCommunityDeepLink } from '@/lib/get-deeplink'
 import { Button } from '@components/ui/button'
 import { joinCommunity, leaveCommunity, requestCommunity } from '@lib/api/video'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
-import { generateDeepLink, openModal } from '@lib/utils'
+import { openGeneratedLink, openModal } from '@lib/utils'
 import { useSearchParams } from 'next/navigation'
 
 export function ToggleCommunityJoinState({
@@ -22,7 +23,10 @@ export function ToggleCommunityJoinState({
   communityName: string
 }) {
   const newState = !communityJoinStates[id]
-  const user = useGenuinOptions().user
+  const { user, isMobile } = useGenuinOptions((state) => ({
+    user: state.user,
+    isMobile: state.isMobile,
+  }))
   const searchParams = Object.fromEntries(useSearchParams())
 
   async function toggleCommunityJoinState() {
@@ -78,26 +82,10 @@ export function ToggleCommunityJoinState({
           ? async () => {
               await toggleCommunityJoinState()
             }
-          : () => {
-              generateDeepLink({
-                action: 'join',
-                contentType: 'community',
-                description: `Find your people. Find what you love. | Join ${communityName} to talk about it`,
-                title: `join ${communityName}`,
-                previewImage: null,
-                fromUserName: null,
-                pathName: window.location.pathname,
-                utmCampaign: 'share',
-                utmMedium: 'web',
-                utmSource: window.location.hostname,
-                searchParams,
+          : async () => {
+              await joinCommunityDeepLink({ communityName, searchParams }).then((generatedLink) => {
+                isMobile ? openGeneratedLink(generatedLink) : openModal({ deepLink: generatedLink })
               })
-                .then((generatedLink) => {
-                  openModal({
-                    deepLink: generatedLink,
-                  })
-                })
-                .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
             }
       }>
       <p

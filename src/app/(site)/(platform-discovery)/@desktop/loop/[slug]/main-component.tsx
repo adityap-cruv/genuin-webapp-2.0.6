@@ -15,7 +15,7 @@ import { LoopVideos } from './loop-videos'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
-import { generateDeepLink, getLoopAndCommunityShareString, openModal } from '@lib/utils'
+import { openModal } from '@lib/utils'
 import { ShareIcon } from '@icons/share-icon'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import Loading from './loading'
@@ -24,10 +24,10 @@ import { Shimmer } from '@components/ui/shimmer'
 import { LockIcon } from '@icons/LockIcon'
 import { LoopPrivacyInfo } from '@components/common/loop-privacy-info'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@components/ui/tooltip'
-import { DownloadDialogModal } from '@components/common/modals/download-app'
 import { TickIcon } from '@icons/tick-icon'
 import Analytics from '@services/analytics'
 import { useSearchParams } from 'next/navigation'
+import { joinAsCollaboratorDeepLink, subscribeDeepLink } from '@/lib/get-deeplink'
 
 interface Props {
   loopDetails: LoopDetailsType
@@ -67,7 +67,7 @@ export function MainComponent({ loopDetails }: Props) {
     })
   }
 
-  const handleSubscribeClick = () => {
+  const handleSubscribeClick = async () => {
     void Analytics.track({
       eventName: 'subscription_clicked',
       properties: {
@@ -80,27 +80,9 @@ export function MainComponent({ loopDetails }: Props) {
     if (user) {
       toggleLoopSubscription()
     } else {
-      generateDeepLink({
-        action: 'subscribe',
-        contentType: 'loop',
-        description: ldDescription,
-        title: loopDetails.group.group_name,
-        previewImage: null,
-        fromUserName: null,
-        pathName: window.location.pathname,
-        // sourceId: loopDetails.share_string,
-        utmCampaign: 'share',
-        utmMedium: 'web',
-        utmSource: window.location.hostname,
-        community: getLoopAndCommunityShareString(loopDetails.share_url).communityShareString,
-        searchParams,
+      await subscribeDeepLink({ ldDescription, loopDetails, searchParams }).then((generatedLink) => {
+        openModal({ deepLink: generatedLink })
       })
-        .then((generatedLink) => {
-          openModal({
-            deepLink: generatedLink,
-          })
-        })
-        .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
     }
   }
 
@@ -137,27 +119,12 @@ export function MainComponent({ loopDetails }: Props) {
                 size="custom"
                 variant="outline"
                 className="border border-primary"
-                onClick={() => {
-                  generateDeepLink({
-                    contentType: 'loop',
-                    description: ldDescription,
-                    title: loopDetails.group.group_name,
-                    previewImage: null,
-                    fromUserName: null,
-                    pathName: window.location.pathname,
-                    // sourceId: loopDetails.share_string,
-                    utmCampaign: 'share',
-                    utmMedium: 'web',
-                    utmSource: window.location.hostname,
-                    community: getLoopAndCommunityShareString(loopDetails.share_url).communityShareString,
-                    searchParams,
-                  })
-                    .then((generatedLink) => {
-                      DownloadDialogModal.open({
-                        deepLink: generatedLink,
-                      })
-                    })
-                    .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
+                onClick={async () => {
+                  await joinAsCollaboratorDeepLink({ ldDescription, loopDetails, searchParams }).then(
+                    (generatedLink) => {
+                      openModal({ deepLink: generatedLink })
+                    }
+                  )
                 }}>
                 <p className="px-4 py-1 text-title-3-bold text-primary" style={{ fontSize: '15px' }}>
                   Join as collaborator

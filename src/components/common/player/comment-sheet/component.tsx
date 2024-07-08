@@ -2,8 +2,7 @@ import { CommentSheet, CommentSheetContent } from '@components/custom/comment-sh
 import { X } from 'lucide-react'
 import { useCommentSheetStore } from './store'
 import { Comments } from '@components/common/comments'
-import { generateDeepLink, openGeneratedLink, openModal } from '@lib/utils'
-import { PATH_NAME } from '@lib/utils/constants/path'
+import { openGeneratedLink, openModal } from '@lib/utils'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { useState } from 'react'
 import { Input } from '@components/ui/input'
@@ -11,6 +10,7 @@ import { createComment } from '@lib/api/video'
 import { useSearchParams } from 'next/navigation'
 import { type CommentListType } from '@lib/schemas/loop/comment'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
+import { commentDeepLink } from '@/lib/get-deeplink'
 
 type Props = {
   videoId: string
@@ -155,20 +155,11 @@ function CommentInput({ setComments, currentComment, setCurrentComment, videoDet
               </>
             ) : (
               <div
-                onClick={() => {
-                  void generateDeepLink({
-                    action: 'comment',
-                    contentType: 'video',
-                    description: ``,
-                    title: ``,
-                    previewImage: null,
-                    fromUserName: null,
-                    pathName: PATH_NAME.video(videoDetails.video?.slug),
-                    utmCampaign: 'share',
-                    utmMedium: 'web',
-                    utmSource: window.location.hostname,
-                    community: videoDetails.community.share_string,
-                    loop: videoDetails.loop.share_string,
+                onClick={async () => {
+                  await commentDeepLink({
+                    videoSlug: videoDetails.video?.slug,
+                    communityId: videoDetails.community.share_string,
+                    loopId: videoDetails.loop.share_string,
                     searchParams,
                   }).then((generatedLink) => {
                     openModal({ deepLink: generatedLink })
@@ -183,20 +174,11 @@ function CommentInput({ setComments, currentComment, setCurrentComment, videoDet
         </div>
       ) : (
         <div
-          onClick={() => {
-            void generateDeepLink({
-              action: 'comment',
-              contentType: 'video',
-              description: ``,
-              title: ``,
-              previewImage: null,
-              fromUserName: null,
-              pathName: PATH_NAME.video(videoDetails.video?.slug),
-              utmCampaign: 'share',
-              utmMedium: 'web',
-              utmSource: window.location.hostname,
-              community: videoDetails.community.share_string,
-              loop: videoDetails.loop.share_string,
+          onClick={async () => {
+            await commentDeepLink({
+              videoSlug: videoDetails.video?.slug,
+              communityId: videoDetails.community.share_string,
+              loopId: videoDetails.loop.share_string,
               searchParams,
             }).then((generatedLink) => {
               openGeneratedLink(generatedLink)
