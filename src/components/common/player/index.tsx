@@ -176,6 +176,7 @@ type DesktopProps = {
     id: string
     description?: string | null
     sparkCount: number
+    slug?: string
   }
   /**
    * This field is very mandatory if you want play to stop after rendering
@@ -286,6 +287,7 @@ function Desktop({
           attachedLink={videoData.attachedLink}
           description={videoData.description}
           isSparked={videoData.isSparked}
+          videoSlug={videoData.slug}
         />
       </div>
     </div>

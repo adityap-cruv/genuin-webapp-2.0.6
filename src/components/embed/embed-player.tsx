@@ -170,6 +170,7 @@ export function EmbedPlayer({ videoData, isFirstElement, isActive, onCanPlay, ..
                 videoId={videoData.video.id}
                 attachedLink={videoData.video.attachedLink}
                 description={videoData.video.descriptionText}
+                videoSlug={videoData.video.slug}
                 isSparked={false}
               />
             </div>

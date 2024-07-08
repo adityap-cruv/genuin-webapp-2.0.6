@@ -22,12 +22,13 @@ type DesktopProps = {
   sparkCount: number
   videoId: string
   shareUrl: string
+  videoSlug?: string
   attachedLink?: string | null
   description?: string | null
   isSparked?: boolean | null | undefined
 }
 
-function Desktop({ shareUrl, sparkCount, videoId, attachedLink, description, isSparked }: DesktopProps) {
+function Desktop({ shareUrl, sparkCount, videoId, attachedLink, description, isSparked, videoSlug }: DesktopProps) {
   const { toggleMuted, muted, shouldPlay } = usePlayerControlStore((state) => ({
     toggleMuted: state.toggleMuted,
     muted: state.muted,
@@ -70,6 +71,7 @@ function Desktop({ shareUrl, sparkCount, videoId, attachedLink, description, isS
           shareUrl={shareUrl}
           sparkCount={sparkCount}
           videoId={videoId}
+          videoSlug={videoSlug}
           attachedLink={attachedLink}
           description={description}
           isSparked={isSparked}

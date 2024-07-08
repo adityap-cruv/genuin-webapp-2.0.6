@@ -156,9 +156,22 @@ function CommentInput({ setComments, currentComment, setCurrentComment, videoDet
             ) : (
               <div
                 onClick={() => {
-                  openModal({
-                    title: 'Get the Genuin app',
-                    subtitle: <>Get the app to comment on this video.</>,
+                  void generateDeepLink({
+                    action: 'comment',
+                    contentType: 'video',
+                    description: ``,
+                    title: ``,
+                    previewImage: null,
+                    fromUserName: null,
+                    pathName: PATH_NAME.video(videoDetails.video?.slug),
+                    utmCampaign: 'share',
+                    utmMedium: 'web',
+                    utmSource: window.location.hostname,
+                    community: videoDetails.community.share_string,
+                    loop: videoDetails.loop.share_string,
+                    searchParams,
+                  }).then((generatedLink) => {
+                    openModal({ deepLink: generatedLink })
                   })
                 }}
                 placeholder="Add a comment"

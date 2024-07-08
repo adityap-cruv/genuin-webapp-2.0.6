@@ -15,7 +15,7 @@ import { LoopVideos } from './loop-videos'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
-import { openModal } from '@lib/utils'
+import { generateDeepLink, getLoopAndCommunityShareString, openModal } from '@lib/utils'
 import { ShareIcon } from '@icons/share-icon'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import Loading from './loading'
@@ -27,6 +27,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@compo
 import { DownloadDialogModal } from '@components/common/modals/download-app'
 import { TickIcon } from '@icons/tick-icon'
 import Analytics from '@services/analytics'
+import { useSearchParams } from 'next/navigation'
 
 interface Props {
   loopDetails: LoopDetailsType
@@ -47,6 +48,15 @@ export function MainComponent({ loopDetails }: Props) {
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
   const [isLoopSubscribed, setIsLoopSubscribed] = useState(!!loopDetails.is_subscriber)
   const user = useGenuinOptions().user
+  const searchParams = Object.fromEntries(useSearchParams())
+
+  const ldDescription = `${
+    loopDetails.group?.group_description !== null &&
+    loopDetails.group.group_description !== undefined &&
+    loopDetails.group.group_description.replace(/\s+/g, '') !== ''
+      ? loopDetails.group.group_description + ' | '
+      : ''
+  } • Join ${loopDetails.group.group_name} to talk about it`
 
   function toggleLoopSubscription() {
     const newValue = !isLoopSubscribed
@@ -70,15 +80,27 @@ export function MainComponent({ loopDetails }: Props) {
     if (user) {
       toggleLoopSubscription()
     } else {
-      openModal({
-        title: 'Get the Genuin app',
-        subtitle: (
-          <>
-            Get the app to subscribe to
-            <span className="font-bold"> {loopDetails.group.group_name}</span> Loop.
-          </>
-        ),
+      generateDeepLink({
+        action: 'subscribe',
+        contentType: 'loop',
+        description: ldDescription,
+        title: loopDetails.group.group_name,
+        previewImage: null,
+        fromUserName: null,
+        pathName: window.location.pathname,
+        // sourceId: loopDetails.share_string,
+        utmCampaign: 'share',
+        utmMedium: 'web',
+        utmSource: window.location.hostname,
+        community: getLoopAndCommunityShareString(loopDetails.share_url).communityShareString,
+        searchParams,
       })
+        .then((generatedLink) => {
+          openModal({
+            deepLink: generatedLink,
+          })
+        })
+        .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
     }
   }
 
@@ -116,15 +138,26 @@ export function MainComponent({ loopDetails }: Props) {
                 variant="outline"
                 className="border border-primary"
                 onClick={() => {
-                  DownloadDialogModal.open({
-                    title: 'Get the Genuin app',
-                    subtitle: (
-                      <>
-                        Get the app to Join as collaborator to
-                        <span className="font-bold"> {loopDetails.group.group_name}</span> Loop.
-                      </>
-                    ),
+                  generateDeepLink({
+                    contentType: 'loop',
+                    description: ldDescription,
+                    title: loopDetails.group.group_name,
+                    previewImage: null,
+                    fromUserName: null,
+                    pathName: window.location.pathname,
+                    // sourceId: loopDetails.share_string,
+                    utmCampaign: 'share',
+                    utmMedium: 'web',
+                    utmSource: window.location.hostname,
+                    community: getLoopAndCommunityShareString(loopDetails.share_url).communityShareString,
+                    searchParams,
                   })
+                    .then((generatedLink) => {
+                      DownloadDialogModal.open({
+                        deepLink: generatedLink,
+                      })
+                    })
+                    .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
                 }}>
                 <p className="px-4 py-1 text-title-3-bold text-primary" style={{ fontSize: '15px' }}>
                   Join as collaborator

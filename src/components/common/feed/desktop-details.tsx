@@ -10,7 +10,7 @@ import { useMotionValueEvent, useScroll } from 'framer-motion'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
-import { getCurrentShareUrl, getTimeAgo, openModal } from '@lib/utils'
+import { generateDeepLink, getCurrentShareUrl, getTimeAgo, openModal } from '@lib/utils'
 import { FeedShimmer } from '../shimmers/feed-shimmer'
 import { Input } from '@components/ui/input'
 import { createComment } from '@lib/api/video'
@@ -23,6 +23,7 @@ import { TickIcon } from '@icons/tick-icon'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@components/ui/tooltip'
 import { JoinCommunityButton } from '@components/pages/community/join-community-button'
 import { ReadMore } from '../read-more'
+import { useSearchParams } from 'next/navigation'
 
 export function DesktopDetails({ loop, community, owner, video }: VideoPlayerModalType) {
   const { shareFn } = useAdaptiveShare()
@@ -168,6 +169,8 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
         setCurrentComment={setCurrentComment}
         videoId={video.id}
         loopId={loop.id}
+        videoSlug={video.slug}
+        communityId={community.id}
       />
       <Toaster />
     </div>
@@ -235,14 +238,20 @@ function CommentInput({
   setCurrentComment,
   videoId,
   loopId,
+  videoSlug,
+  communityId,
 }: {
   setComments: any
   currentComment: any
   setCurrentComment: any
   videoId: string
   loopId: string
+  videoSlug: string
+  communityId: string
 }) {
   const user = useGenuinOptions().user
+  const searchParams = Object.fromEntries(useSearchParams())
+
   async function handleClick() {
     if (currentComment.length !== 0) {
       const newComment = {
@@ -325,9 +334,22 @@ function CommentInput({
         ) : (
           <div
             onClick={() => {
-              openModal({
-                title: 'Get the Genuin app',
-                subtitle: <>Get the app to comment on this video.</>,
+              void generateDeepLink({
+                action: 'comment',
+                contentType: 'video',
+                description: ``,
+                title: ``,
+                previewImage: null,
+                fromUserName: null,
+                pathName: PATH_NAME.video(videoSlug),
+                utmCampaign: 'share',
+                utmMedium: 'web',
+                utmSource: window.location.hostname,
+                community: communityId,
+                loop: loopId,
+                searchParams,
+              }).then((generatedLink) => {
+                openModal({ deepLink: generatedLink })
               })
             }}
             placeholder="Add a comment"

@@ -103,6 +103,7 @@ export function Details({ communityDetails }: Props) {
                 <JoinButton
                   handle={communityDetails.handle}
                   id={communityDetails.community_id}
+                  communityName={communityDetails.name ?? ''}
                   userRole={communityDetails.logged_in_user_role}
                   isCommunityPrivate={communityDetails.type === 2}
                 />
@@ -485,14 +486,18 @@ export function JoinButton({
   handle,
   id,
   isCommunityPrivate,
+  communityName,
 }: {
   userRole?: 'LEADER' | 'MEMBER' | 'REQUESTED' | null
   handle: string
   id: string
   isCommunityPrivate: boolean
+  communityName: string
 }) {
   const [role, setRole] = useState(userRole)
   const user = useGenuinOptions().user
+  const searchParams = Object.fromEntries(useSearchParams())
+
   async function toggleCommunityJoinState() {
     if (role !== 'MEMBER') {
       if (isCommunityPrivate) {
@@ -538,15 +543,25 @@ export function JoinButton({
               await toggleCommunityJoinState()
             }
           : () => {
-              openModal({
-                title: 'Get the Genuin app',
-                subtitle: (
-                  <>
-                    Get the app to join the <br />
-                    <span className="font-bold">@{handle}</span> community.
-                  </>
-                ),
+              generateDeepLink({
+                action: 'join',
+                contentType: 'community',
+                description: `Find your people. Find what you love. | Join ${communityName} to talk about it`,
+                title: `join ${communityName}`,
+                previewImage: null,
+                fromUserName: null,
+                pathName: window.location.pathname,
+                utmCampaign: 'share',
+                utmMedium: 'web',
+                utmSource: window.location.hostname,
+                searchParams,
               })
+                .then((generatedLink) => {
+                  openModal({
+                    deepLink: generatedLink,
+                  })
+                })
+                .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
             }
       }>
       <p

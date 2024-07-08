@@ -2,8 +2,9 @@ import { requestCommunity, joinCommunity, leaveCommunity } from '@lib/api/video'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { useState } from 'react'
 import { Button } from '@components/ui/button'
-import { openModal } from '@lib/utils'
+import { generateDeepLink, openModal } from '@lib/utils'
 import { useQueryClient } from '@tanstack/react-query'
+import { useSearchParams } from 'next/navigation'
 
 type Props = {
   userRole?: 'LEADER' | 'MEMBER' | 'REQUESTED'
@@ -12,12 +13,22 @@ type Props = {
   isCommunityPrivate: boolean
   isJoinRequested: boolean
   buttonText: string
+  communityName?: string
 }
 
-export function JoinCommunityButton({ userRole, handle, id, isCommunityPrivate, isJoinRequested, buttonText }: Props) {
+export function JoinCommunityButton({
+  userRole,
+  handle,
+  id,
+  isCommunityPrivate,
+  isJoinRequested,
+  buttonText,
+  communityName,
+}: Props) {
   const queryClient = useQueryClient()
   const [role, setRole] = useState(userRole)
   const user = useGenuinOptions().user
+  const searchParams = Object.fromEntries(useSearchParams())
 
   async function toggleCommunityJoinState() {
     try {
@@ -75,15 +86,25 @@ export function JoinCommunityButton({ userRole, handle, id, isCommunityPrivate, 
               await toggleCommunityJoinState()
             }
           : () => {
-              openModal({
-                title: 'Get the Genuin app',
-                subtitle: (
-                  <>
-                    Get the app to join the <br />
-                    <span className="font-bold">@{handle}</span> community.
-                  </>
-                ),
+              generateDeepLink({
+                action: 'join',
+                contentType: 'community',
+                description: `Find your people. Find what you love. | Join ${communityName} to talk about it`,
+                title: `join ${communityName}`,
+                previewImage: null,
+                fromUserName: null,
+                pathName: window.location.pathname,
+                utmCampaign: 'share',
+                utmMedium: 'web',
+                utmSource: window.location.hostname,
+                searchParams,
               })
+                .then((generatedLink) => {
+                  openModal({
+                    deepLink: generatedLink,
+                  })
+                })
+                .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
             }
       }>
       <p

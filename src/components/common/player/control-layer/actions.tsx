@@ -224,6 +224,7 @@ type DesktopActionsProps = {
   shareUrl: string
   attachedLink?: string | null
   description?: string | null
+  videoSlug?: string
   isSparked?: boolean | null | undefined
   // /**
   //  * Determines whether repost is allowed or not.
@@ -237,6 +238,7 @@ function Desktop({
   videoId,
   attachedLink,
   description,
+  videoSlug,
   isSparked, // isPostAllowed,
 }: DesktopActionsProps) {
   const { shareFn } = useAdaptiveShare()
@@ -250,6 +252,7 @@ function Desktop({
     user: state.user,
   }))
   const pathname = usePathname()
+  const searchParams = Object.fromEntries(useSearchParams())
 
   async function toggleVideoSpark() {
     await videoSpark(videoId, 2, !sparkData.isSparked).then((res) => {
@@ -286,7 +289,26 @@ function Desktop({
               if (user) {
                 RepostModal.open(videoId)
               } else {
-                openModal({ title: 'Get the Genuin app', subtitle: 'Get the app to repost the video.' })
+                const { communityShareString, loopShareString } = getLoopAndCommunityShareString(shareUrl)
+                generateDeepLink({
+                  action: 'repost',
+                  contentType: 'video',
+                  description: ``,
+                  title: ``,
+                  previewImage: null,
+                  fromUserName: null,
+                  pathName: PATH_NAME.video(videoSlug),
+                  utmCampaign: 'share',
+                  utmMedium: 'web',
+                  utmSource: window.location.hostname,
+                  community: communityShareString,
+                  loop: loopShareString,
+                  searchParams,
+                })
+                  .then((generatedLink) => {
+                    openModal({ deepLink: generatedLink })
+                  })
+                  .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
               }
             }
 
@@ -332,12 +354,28 @@ function Desktop({
             if (pathname.includes('embed')) {
               window.open(shareUrl, '_blank', 'noopener,noreferrer')
             } else {
+              const { communityShareString, loopShareString } = getLoopAndCommunityShareString(shareUrl)
               user
                 ? await toggleVideoSpark()
-                : openModal({
-                    title: 'Get the Genuin app',
-                    subtitle: 'Get the app to spark the video.',
+                : generateDeepLink({
+                    action: 'spark',
+                    contentType: 'video',
+                    description: ``,
+                    title: ``,
+                    previewImage: null,
+                    fromUserName: null,
+                    pathName: PATH_NAME.video(videoSlug),
+                    utmCampaign: 'share',
+                    utmMedium: 'web',
+                    utmSource: window.location.hostname,
+                    community: communityShareString,
+                    loop: loopShareString,
+                    searchParams,
                   })
+                    .then((generatedLink) => {
+                      openModal({ deepLink: generatedLink })
+                    })
+                    .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
             }
           }}>
           <Image src={sparkData.isSparked ? icSparkTrue : icSpark} height={32} width={32} alt="spark" />
