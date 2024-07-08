@@ -8,9 +8,11 @@ import { X } from 'lucide-react'
 type Props = DialogProps
 
 export function Modal({ ...props }: Props) {
-  const { isModalOpen, closeModal, deepLink } = useDownloadDialogModalStore((state) => ({
+  const { isModalOpen, closeModal, title, subtitle, deepLink } = useDownloadDialogModalStore((state) => ({
     isModalOpen: state.isOpen,
     closeModal: state.close,
+    title: state.title,
+    subtitle: state.subtitle,
     deepLink: state.deepLink,
   }))
 
@@ -29,7 +31,7 @@ export function Modal({ ...props }: Props) {
             }}
           />
         </DialogClose>
-        <Body deepLink={deepLink} />
+        <Body title={title} subtitle={subtitle} deepLink={deepLink} />
       </DialogContent>
     </Dialog>
   )
