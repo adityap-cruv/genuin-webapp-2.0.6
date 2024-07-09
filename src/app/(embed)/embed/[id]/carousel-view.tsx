@@ -25,7 +25,6 @@ export function CarouselView() {
     <div className="relative h-full w-full">
       <Swiper
         direction="horizontal"
-        centeredSlides
         spaceBetween={16}
         mousewheel={{ forceToAxis: true }}
         slidesPerView={ratio}
