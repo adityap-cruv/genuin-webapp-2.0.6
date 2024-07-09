@@ -135,7 +135,7 @@ export function SideBar() {
             </div>
           )} */}
         </span>{' '}
-        {(!isClaimed ?? user?.ksCbRequestStatus !== 3) && <hr className="border-1 my-2 border-monochrome-black/10" />}
+        {/* {(!isClaimed ?? user?.ksCbRequestStatus !== 3) && <hr className="border-1 my-2 border-monochrome-black/10" />} */}
         {user?.ksCbRequestStatus !== 3 && <BecomeCbCard className="my-4 hidden lg:block" />}
         <CategoryView className="hidden lg:block" />
         <RecentCommunities />
