@@ -46,7 +46,7 @@ type ItemProps = {
 
 function CommunityItem({ children, title, isActive }: ItemProps) {
   return (
-    <div className="flex w-full max-w-full items-center gap-x-2 rounded-md p-3 text-title-2-demi hover:bg-monochrome-6/10">
+    <div className="flex w-full max-w-full items-center gap-x-2 rounded-md p-2 text-title-2-demi hover:bg-monochrome-6/10">
       {children}
       <p className={cn('hidden break-all !text-title-2-demi lg:line-clamp-1', isActive && 'text-primary')}>{title}</p>
     </div>

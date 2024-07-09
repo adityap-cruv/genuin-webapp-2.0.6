@@ -19,16 +19,22 @@ import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { BurgerIcon } from '@icons/burger-icon'
 import { LogoutIcon } from '@icons/logout'
-import CommunityIcon from '@icons/ks-cb-flow/icCommunity.svg'
 import { removeAllAuthToken } from '@lib/api/instance'
 import { MOBILE_DOWNLOAD_APP_LINK } from '@lib/constants'
 import { SearchBar } from '@components/common/search-bar'
-import { miniProfile } from '@lib/api/auth'
 import { SettingsLayout } from '../settings/mobile/layout'
 import { NotificationIcon } from '@icons/settings-side-bar-icons'
 import { SearchIcon } from '@icons/search-icon'
-import { analyticsService } from '@services/analytics_service'
+import Analytics from '@services/analytics'
 import { CategoryView } from '@components/common/category-view'
+import dynamic from 'next/dynamic'
+import BecomeCbCard from '@/components/common/become-cb-card'
+import { LoginIcon } from '@icons/login-icon'
+import { VerifiedIcon } from '@icons/verified-icon'
+
+const DownloadAppDialog = dynamic(
+  async () => await import('../download-app-dialog').then((comp) => comp.DownloadAppDialog)
+)
 
 const navVariant = cva('sticky top-0 flex z-40 h-[76px] w-full items-center justify-between  px-2', {
   variants: {
@@ -51,11 +57,13 @@ type Props = {
 } & VariantProps<typeof navVariant>
 
 export function TopBar({ variant = 'light', className, showClose = false, onClose }: Props) {
-  const { embed, user, brandName, notificationsCount } = useGenuinOptions((state) => ({
+  const { embed, user, brandName, notificationsCount, isClaimed, brandLogo } = useGenuinOptions((state) => ({
     embed: state.embed,
     user: state.user,
     brandName: state.config?.name ? state.config?.name : 'Genuin',
     notificationsCount: state.notificationCount,
+    isClaimed: state.config?.is_claimed,
+    brandLogo: state.config?.logo,
   })) // If variant is transparent than we have removed show download button.
   const showDownloadButton = variant !== 'transparent'
   const pathName = usePathname()
@@ -68,13 +76,11 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
           embed={embed}
           user={user}
           brandName={brandName}
+          isClaimed={isClaimed}
         />
         {embed && (
           <Link href={{ pathname: PATH_NAME.home() }}>
-            <AppLogo.icon
-              imageHeight={32}
-              className={cn(variant === 'transparent' ? 'fill-new-off-white' : 'fill-new-off-black', 'max-w-[100px]')}
-            />
+            <img src={brandLogo} className="h-8 object-cover" alt="brand logo" />
           </Link>
         )}
       </span>
@@ -121,9 +127,11 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
         <SearchBar.mobile>
           <SearchIcon
             className={`${
-              pathName === '/home' || pathName === '/popular' || pathName === '/latest' || pathName.includes('/video')
-                ? 'stroke-monochrome-white'
-                : ''
+              (pathName.includes('/home') ||
+                pathName.includes('/popular') ||
+                pathName.includes('/latest') ||
+                pathName.includes('/video')) &&
+              'stroke-monochrome-white'
             }`}
           />
         </SearchBar.mobile>
@@ -149,127 +157,94 @@ function Menu({
   brandName,
   user,
   embed,
+  isClaimed,
 }: {
   hamBurgerVariant: 'dark' | 'light'
   brandName: string
   user?: User
   embed: boolean
+  isClaimed?: boolean
 }) {
   const pathName = usePathname()
-  const { data: sessionData, update: updateSession } = useSession()
+  const { status } = useSession()
 
-  function handleCommunityBuilderClick() {
-    void miniProfile(true)
-      .then((res) => {
-        if (res.code === 200) {
-          void updateSession({
-            ...sessionData,
-            user: { ...sessionData?.user, ksCbRequestStatus: res.data.ks_cb_request_status } as User,
-          })
-          const messageType = res?.data?.ks_cb_request_status === 3 ? 'MINI_PROFILE_SUCCESS' : 'KS_CB_SUBDOMAIN'
-          AuthenticationModal.open(undefined, messageType)
-          void analyticsService({
-            eventName: 'become_cb_clicked',
-            properties: {},
-          })
-        } else {
-          AuthenticationModal.open(undefined, 'KS_CB_SUBDOMAIN')
-        }
-      })
-      .catch(() => {
-        AuthenticationModal.open(undefined, 'KS_CB_SUBDOMAIN')
-      })
-  }
   return (
     <Sheet>
       <SheetTrigger>
         <HamBurgerMenuIcon toggleToClose={false} variant={hamBurgerVariant} />
       </SheetTrigger>
-      <SheetContent showDefaultClose={false} side="left" className="w-full border-none shadow-none outline-none">
-        <SheetClose className="shadow-none outline-none">
-          <X strokeWidth="3px" className="h-6 w-6 stroke-new-off-black" />
-        </SheetClose>
-        <div className="flex h-full flex-col justify-between pb-5">
-          <div>
-            <Link href={{ pathname: PATH_NAME.home() }}>
-              <MenuItem title="Home" isActive={pathName === PATH_NAME.home()}>
-                <HomeIcon isActive={pathName === PATH_NAME.home()} />
+      <SheetContent showDefaultClose={false} side="left" className="z-40 w-full border-none shadow-none outline-none">
+        <div className="mb-4 flex justify-between">
+          <AppLogo.icon imageHeight={32} className={cn('fill-new-off-white')} />
+          <SheetClose className="shadow-none outline-none">
+            <X strokeWidth="3px" className="h-6 w-6 stroke-new-off-black" />
+          </SheetClose>
+        </div>
+        <Link href={{ pathname: PATH_NAME.home() }}>
+          <MenuItem brandName={brandName} title="Home" isActive={pathName === PATH_NAME.home()}>
+            <HomeIcon isActive={pathName === PATH_NAME.home()} />
+          </MenuItem>
+        </Link>
+        <Link href={{ pathname: PATH_NAME.popular() }}>
+          <MenuItem brandName={brandName} title="Popular" isActive={pathName === PATH_NAME.popular()}>
+            <PopularIcon isActive={pathName === PATH_NAME.popular()} />
+          </MenuItem>
+        </Link>
+        <Link href={{ pathname: PATH_NAME.latest() }}>
+          <MenuItem brandName={brandName} title="Latest" isActive={pathName === PATH_NAME.latest()}>
+            <LatestIcon isActive={pathName === PATH_NAME.latest()} />
+          </MenuItem>
+        </Link>
+        {user && (
+          <>
+            <Link
+              href={{
+                pathname: user.isBrandSystemUser ? PATH_NAME.brand(user.brandSlug) : PATH_NAME.profile(user.nickname),
+              }}>
+              <MenuItem brandName={brandName} title="Profile" isActive={pathName === PATH_NAME.profile(user.nickname)}>
+                <ProfileIcon isActive={pathName === PATH_NAME.profile(user.nickname)} />
               </MenuItem>
             </Link>
-            <Link href={{ pathname: PATH_NAME.popular() }}>
-              <MenuItem title="Popular" isActive={pathName === PATH_NAME.popular()}>
-                <PopularIcon isActive={pathName === PATH_NAME.popular()} />
-              </MenuItem>
-            </Link>
-            <Link href={{ pathname: PATH_NAME.latest() }}>
-              <MenuItem title="Latest" isActive={pathName === PATH_NAME.latest()}>
-                <LatestIcon isActive={pathName === PATH_NAME.latest()} />
-              </MenuItem>
-            </Link>
-            {user && (
-              <>
-                <Link
-                  href={{
-                    pathname: user.isBrandSystemUser
-                      ? PATH_NAME.brand(user.brandSlug)
-                      : PATH_NAME.profile(user.nickname),
-                  }}>
-                  <MenuItem title="Profile" isActive={pathName === PATH_NAME.profile(user.nickname)}>
-                    <ProfileIcon isActive={pathName === PATH_NAME.profile(user.nickname)} />
-                  </MenuItem>
-                </Link>
-              </>
-            )}
-            {/* <Link href={{ pathname: PATH_NAME.search() }}>
-              <MenuItem title="Search" isActive={pathName.includes('search')}>
-                <SearchIcon isActive={pathName === PATH_NAME.search()} />
-              </MenuItem>
-            </Link> */}
-            <hr className="border-1 mt-1 border-monochrome-black/10" />
-            {user?.ksCbRequestStatus !== 3 && (
-              <div
-                className="max-w-72 relative my-4 max-h-16 rounded-lg border border-[#E9CAF4] bg-primary-200 text-title-3-demi text-monochrome-black hover:cursor-pointer"
-                style={{
-                  background: 'linear-gradient(30deg, var(--primary-400) -80%, #FFFFFF 50%, var(--primary-400) 120%)',
-                }}
-                onClick={() => {
-                  if (user?.isEmailVerified) {
-                    handleCommunityBuilderClick()
-                  } else {
-                    AuthenticationModal.open(undefined, embed ? 'KS_CB_SUBDOMAIN' : 'KS_CB_WEB')
-                  }
-                }}>
-                <p className="z-10 p-3 text-body-1-bold">
-                  Become a{' '}
-                  <span className="font-semibold italic">
-                    community <br /> builder{' '}
-                  </span>
-                  {embed ? 'for' : 'on'}{' '}
-                  <span
-                    className="inline-block  overflow-clip text-primary"
-                    style={{ maxWidth: '12ch', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-                    {' '}
-                    {brandName}
-                  </span>{' '}
-                  🚀
-                </p>
-                <img src={CommunityIcon.src} alt="community" className="absolute bottom-0 right-4 h-12" />
-              </div>
-            )}
-            <CategoryView classname="lg:hidden" />
-            <RecentCommunities />
+          </>
+        )}
+        {(!isClaimed ?? user?.ksCbRequestStatus !== 3) && embed && (
+          <hr className="border-1 my-2 border-monochrome-black/10" />
+        )}
+        <DownloadAppDialog />
+        {status === 'unauthenticated' && embed && (
+          <div
+            className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10"
+            onClick={() => {
+              AuthenticationModal.open()
+            }}>
+            <LoginIcon className="stroke-primary" />
+            <p className={cn('whitespace-nowrap !text-title-3-demi text-primary')}>Log in</p>
           </div>
-          <div className="text-monochrome">
-            <span className="flex gap-x-2 pb-2">
-              <Link href={PATH_NAME.terms}>
-                <p className="text-body-1-demi">Terms and Conditions</p>
-              </Link>
-              <Link href={PATH_NAME.privacy}>
-                <p className="text-body-1-demi">Privacy Policy</p>
-              </Link>
-            </span>
-            <p className="text-body-1-demi"> &#169; 2023 Genuin Inc.</p>
+        )}
+        {!isClaimed && user && (
+          <div
+            className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10"
+            onClick={() => {
+              AuthenticationModal.open(undefined, 'CLAIM_BRAND_PROFILE')
+            }}>
+            <VerifiedIcon className="stroke-primary" />
+            <p className={cn('whitespace-nowrap !text-title-3-demi text-primary')}>Claim Brand Profile</p>
           </div>
+        )}
+        {(!isClaimed ?? user?.ksCbRequestStatus !== 3) && <hr className="border-1 my-2 border-monochrome-black/10" />}
+        {user?.ksCbRequestStatus !== 3 && <BecomeCbCard className="my-4 lg:hidden" />}
+        <CategoryView className="lg:hidden" />
+        <RecentCommunities />
+        <div className="text-tertiary">
+          <span className="flex gap-x-2 pb-2">
+            <Link href={PATH_NAME.terms}>
+              <p className="text-body-1-demi">Terms and Conditions</p>
+            </Link>
+            <Link href={PATH_NAME.privacy}>
+              <p className="text-body-1-demi">Privacy Policy</p>
+            </Link>
+          </span>
+          <p className="text-body-1-demi"> &#169; 2023 Genuin Inc.</p>
         </div>
       </SheetContent>
     </Sheet>
@@ -280,11 +255,23 @@ type ItemProps = {
   title: string
   isActive?: boolean
   children: ReactNode
+  brandName?: string
 }
 
-function MenuItem({ title, isActive, children }: ItemProps) {
+function MenuItem({ title, isActive, children, brandName }: ItemProps) {
   return (
-    <div className="flex w-full items-center gap-x-3 rounded-md p-2 hover:bg-monochrome-6/10">
+    <div
+      onClick={() => {
+        if (title === 'Popular' || title === 'Latest') {
+          void Analytics.track({
+            eventName: `${title.toLocaleLowerCase()}_clicked`,
+            properties: {
+              brandName,
+            },
+          })
+        }
+      }}
+      className="flex w-full items-center gap-x-3 rounded-md p-2 hover:bg-monochrome-6/10">
       {children}
       <p className={`text-title-2-bold font-semibold ${isActive && 'text-primary'}`}>{title}</p>
     </div>

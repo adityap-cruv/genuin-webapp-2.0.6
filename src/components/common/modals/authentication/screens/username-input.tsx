@@ -11,7 +11,7 @@ import { Button } from '@components/ui/button'
 import { Loader } from '@components/ui/loader'
 import { ModalShell } from '../modal-shell'
 import { useSession } from 'next-auth/react'
-import { analyticsService } from '@services/analytics_service'
+import Analytics from '@services/analytics'
 
 const usernameSchema = z.object({
   username: z
@@ -74,7 +74,7 @@ export function UsernameInput() {
             user: { ...sessionData?.user, nickname: username },
           })
           setStep('COMPLETE_PROFILE')
-          void analyticsService({
+          void Analytics.track({
             eventName: 'ks_username_set ',
             properties: { username },
           })

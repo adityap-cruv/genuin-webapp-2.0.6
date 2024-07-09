@@ -18,6 +18,7 @@ import { InstagramIcon } from '@icons/instagram-icon'
 import { TikTokIcon } from '@icons/tiktok-icon'
 import { LinkedInIcon } from '@icons/linkedin-icon'
 import { TwitterIcon } from '@icons/twitter-icon'
+import Analytics from '@services/analytics'
 
 interface CompProps {
   profileData: ProfileDetailsType
@@ -32,8 +33,19 @@ export function MainComponent({ profileData }: CompProps) {
   const scrollDivRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ container: scrollDivRef, layoutEffect: false })
   const resetData = useCommunityListStore((state) => state.reset)
+  const hasMounted = useRef(false)
 
   useEffect(() => {
+    if (!hasMounted.current) {
+      void Analytics.track({
+        eventName: 'brand_profile_opened',
+        properties: {
+          brand_id: profileData.brand?.brand_id,
+          brand_slug: profileData.brand?.brand_slug,
+        },
+      })
+      hasMounted.current = true
+    }
     return () => {
       resetData()
     }

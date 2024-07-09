@@ -19,6 +19,14 @@ type IntegrationSettingsType = {
       enable: boolean
       hide_navbar: boolean
     }
+    android: {
+      enable: boolean
+      playstore_link: string
+    }
+    ios: {
+      enable: boolean
+      appstore_link: string
+    }
   }
   white_label: {
     enable: boolean
@@ -48,6 +56,8 @@ export type ConfigType = {
   brand_colors: any
   favicon: any
   brand_web_logo: string
+  is_claimed: boolean
+  website: string
 } | null
 
 export type User = {
@@ -63,7 +73,9 @@ export type User = {
   id?: string
   /**
    * 1 → 'no request or all request are rejected'
+   *
    * 2 → 'all request is in progress'
+   *
    * 3 → 'any request is approved or user is already CB'
    */
   ksCbRequestStatus?: number
@@ -112,9 +124,6 @@ type StateType = {
   config: ConfigType
   user?: User
   notificationCount?: number | null
-  embedId?: string
-  embedStyle?: string
-  embedType?: string
 }
 
 type ActionsType = {
@@ -141,9 +150,6 @@ const initialState: StateType = {
   parentUrl: '',
   config: null,
   notificationCount: -1,
-  embedId: '',
-  embedStyle: '',
-  embedType: '',
 }
 
 export const useGenuinOptions = create(

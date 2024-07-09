@@ -1,9 +1,8 @@
-import { SizeProvider } from './size-provider'
 import { StandardView } from './standard-view'
+import { getEmbedDetails } from '@/components/embed/api'
 import { VerticalView } from './vertical-view'
 import { CarouselView } from './carousel-view'
 import 'swiper/css'
-import { getEmbedDetails } from '@lib/api/embed'
 
 type Props = {
   params: {
@@ -21,22 +20,21 @@ type Props = {
 
 export default async function Page(props: Props) {
   const embedDetails = await getEmbedDetails(props.params.id)
-  // console.log(embedDetails)
-  // const embedPage = props.searchParams.embed_page
+
   const embedPage = embedDetails.data.style
 
   let viewComponent
 
   if (embedPage === 'carousel') {
-    viewComponent = <CarouselView embedId={props.params.id} embedStyle={embedDetails.data.style} />
+    viewComponent = <CarouselView />
   } else if (embedPage === 'standard_wall') {
-    viewComponent = <StandardView embedId={props.params.id} embedStyle={embedDetails.data.style} />
+    viewComponent = <StandardView />
   } else if (embedPage === 'feed') {
-    viewComponent = <VerticalView embedId={props.params.id} embedStyle={embedDetails.data.style} />
+    viewComponent = <VerticalView />
   } else {
     // Default view if embed_page doesn't match any condition
-    viewComponent = <StandardView embedId={props.params.id} embedStyle={embedDetails.data.style} />
+    viewComponent = <StandardView />
   }
 
-  return <SizeProvider>{viewComponent}</SizeProvider>
+  return viewComponent
 }

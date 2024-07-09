@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import { ClientComponentEmail } from './client-component'
 import { ksCbRequest, verifyEmail } from '@lib/api/auth'
-import { analyticsService } from '@services/analytics_service'
+import Analytics from '@services/analytics'
 import { type Metadata } from 'next'
 
 export function generateMetadata(): Metadata {
@@ -21,14 +21,14 @@ export default async function Page({ searchParams }: { searchParams: { token: st
   }
 
   if (code === 200) {
-    void analyticsService({
+    void Analytics.track({
       eventName: 'ks_email_verify',
       properties: { email },
     })
     return (
       <ClientComponentEmail
         user={user}
-        redirectTo={getRedirectTo({ emailType, error: false, path: actionMetadata?.path, success: true })}
+        redirectTo={getRedirectTo({ emailType, error: false, path: actionMetadata?.path, success: true, email })}
       />
     )
   }
@@ -38,7 +38,7 @@ export default async function Page({ searchParams }: { searchParams: { token: st
     redirect(getRedirectTo({ email, emailType, error: false, path: actionMetadata?.path, success: false }))
   }
 
-  redirect(getRedirectTo({ emailType, error: true, path: actionMetadata?.path }))
+  redirect(getRedirectTo({ emailType, error: true, path: actionMetadata?.path, email }))
 }
 
 function getRedirectTo({
@@ -66,6 +66,7 @@ function getRedirectTo({
 
   if (emailType === 12 || emailType === 2 || emailType === 19 || emailType === 20) {
     urlObj.set('email_verification_status', success ? '1' : '0')
+    if (email) urlObj.set('email', email)
   }
 
   if (!success) {

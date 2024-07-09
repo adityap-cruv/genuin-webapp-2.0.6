@@ -18,7 +18,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useCommentSheetStore } from '../comment-sheet/store'
 import { PATH_NAME } from '@lib/utils/constants/path'
-import { analyticsService } from '../../../../services/analytics_service'
+import Analytics from '@services/analytics'
 import { videoSpark } from '@lib/api/video'
 import { useState } from 'react'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
@@ -161,7 +161,7 @@ function Mobile({
         onClick={() => {
           // TODO: USE OTHER VARIABLE FOR COMMENT OPENING
           commentsIsOpen ? closeComments() : openComments(videoId)
-          void analyticsService({
+          void Analytics.track({
             eventName: 'RT Comment Clicked',
             properties: {
               content_category: 'loop',
@@ -178,7 +178,7 @@ function Mobile({
       <ActionItem
         title="Share Video!"
         onClick={async (e) => {
-          await analyticsService({
+          await Analytics.track({
             eventName: 'Video Shared',
             properties: {
               content_category: 'loop',
@@ -245,12 +245,9 @@ function Desktop({
     isSparked,
     sparkCount,
   })
-  const { brandId, user, embedId, embedType, embedStyle } = useGenuinOptions((state) => ({
+  const { brandId, user } = useGenuinOptions((state) => ({
     brandId: state.brandId,
     user: state.user,
-    embedId: state.embedId,
-    embedType: state.embedType,
-    embedStyle: state.embedStyle,
   }))
   const pathname = usePathname()
 
@@ -302,13 +299,10 @@ function Desktop({
             }
             if (pathname.includes('embed')) {
               Object.assign(properties, {
-                embed_id: embedId,
-                embed_type: embedType,
-                embed_style: embedStyle,
                 brand_id: brandId,
               })
             }
-            void analyticsService({
+            void Analytics.track({
               eventName: 'repost',
               properties,
             })
@@ -318,6 +312,23 @@ function Desktop({
         <ActionItem
           title="Give spark!"
           onClick={async () => {
+            const properties = {
+              content_category: 'loop',
+              content_id: videoId,
+              event_record_screen: 'feed',
+              event_target_screen: 'none',
+              user_id: user?.id,
+            }
+            if (pathname.includes('embed')) {
+              Object.assign(properties, {
+                brand_id: brandId,
+              })
+            }
+            void Analytics.track({
+              eventName: 'spark',
+              properties,
+            })
+
             if (pathname.includes('embed')) {
               window.open(shareUrl, '_blank', 'noopener,noreferrer')
             } else {
@@ -328,26 +339,6 @@ function Desktop({
                     subtitle: 'Get the app to spark the video.',
                   })
             }
-
-            const properties = {
-              content_category: 'loop',
-              content_id: videoId,
-              event_record_screen: 'feed',
-              event_target_screen: 'none',
-              user_id: user?.id,
-            }
-            if (pathname.includes('embed')) {
-              Object.assign(properties, {
-                embed_id: embedId,
-                embed_type: embedType,
-                embed_style: embedStyle,
-                brand_id: brandId,
-              })
-            }
-            void analyticsService({
-              eventName: 'spark',
-              properties,
-            })
           }}>
           <Image src={sparkData.isSparked ? icSparkTrue : icSpark} height={32} width={32} alt="spark" />
           <p className="flex justify-center text-body-1-demi text-monochrome-white">
@@ -377,13 +368,10 @@ function Desktop({
             }
             if (pathname.includes('embed')) {
               Object.assign(properties, {
-                embed_id: embedId,
-                embed_type: embedType,
-                embed_style: embedStyle,
                 brand_id: brandId,
               })
             }
-            void analyticsService({
+            void Analytics.track({
               eventName: 'Video Shared',
               properties,
             })

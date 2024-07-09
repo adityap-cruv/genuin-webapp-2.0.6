@@ -15,7 +15,7 @@ import { useLocalStorage } from '@lib/stores/local-storage'
 import { usePathname } from 'next/navigation'
 import { Loader } from '@components/ui/loader'
 import { signIn } from 'next-auth/react'
-import { analyticsService } from '@services/analytics_service'
+import Analytics from '@services/analytics'
 import { rudderStackIdentify } from '@services/useRudderAnalytics'
 
 const passwordSchema = z.object({ password: z.string().min(8) })
@@ -65,7 +65,7 @@ export function PasswordInputLogin() {
               if (res?.ok) {
                 close()
                 void rudderStackIdentify()
-                void analyticsService({
+                void Analytics.track({
                   eventName: 'ks_logged_in',
                   properties: { email: formData.email },
                 })

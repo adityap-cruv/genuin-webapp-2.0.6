@@ -13,7 +13,7 @@ import { PATH_NAME } from '@lib/utils/constants/path'
 import { ksSignup } from '@lib/api/auth'
 import { usePathname } from 'next/navigation'
 import { Loader } from '@components/ui/loader'
-import { analyticsService } from '@services/analytics_service'
+import Analytics from '@services/analytics'
 
 export function EmailInput() {
   const { setStep, setFormData, formData, action } = useAuthenticationModalStore()
@@ -54,7 +54,7 @@ export function EmailInput() {
         } else {
           setStep('PASSWORD_INPUT_LOGIN')
         }
-        void analyticsService({
+        void Analytics.track({
           eventName: 'ks_login_initiated',
           properties: {},
         })

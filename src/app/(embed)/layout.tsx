@@ -8,6 +8,8 @@ import { type ConfigType } from '@lib/stores/genuin-options'
 import { getEmbedConfig } from '@lib/api/config'
 import { parseColors } from '@lib/utils'
 import { BrandNotFound } from '@components/common/brand-not-found'
+import { ThirdPartyScriptProvider } from '@components/providers/third-party-script-provider'
+import { SizeProvider } from '@/components/embed/size-provider'
 
 export default async function Layout({ children }: { children: ReactNode }) {
   const configParamsStr = cookies().get('config_params')?.value ?? ''
@@ -29,9 +31,13 @@ export default async function Layout({ children }: { children: ReactNode }) {
   if (error) return <BrandNotFound />
   return (
     <RootHTML brandColors={brandColors} noIndex>
-      <SessionProvider>
-        <ReactQueryProvider>{children}</ReactQueryProvider>
-      </SessionProvider>
+      <ThirdPartyScriptProvider isEmbed>
+        <SessionProvider>
+          <ReactQueryProvider>
+            <SizeProvider config={config}>{children}</SizeProvider>
+          </ReactQueryProvider>
+        </SessionProvider>
+      </ThirdPartyScriptProvider>
     </RootHTML>
   )
 }

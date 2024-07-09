@@ -22,6 +22,7 @@ import {
   ResetPassword,
   CategoryInput,
   GetStarted,
+  ClaimBrandProfile,
 } from './screens'
 import { useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
@@ -120,7 +121,7 @@ export function Modal({ children, ...props }: Props) {
           />
         )}
         {showClose && (
-          <DialogClose className="absolute right-4 top-4">
+          <DialogClose className="absolute right-4 top-4 outline-none">
             <img
               src={icClose.src}
               alt="close"
@@ -207,5 +208,7 @@ export function Content() {
       return <CategoryInput />
     case 'GET_STARTED':
       return <GetStarted />
+    case 'CLAIM_BRAND_PROFILE':
+      return <ClaimBrandProfile />
   }
 }

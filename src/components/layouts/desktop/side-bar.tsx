@@ -7,17 +7,22 @@ import { cn } from '@lib/utils'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
 import dynamic from 'next/dynamic'
-import { Button } from '@components/ui/button'
-import { AuthenticationModal } from '@components/common/modals/authentication'
 import { GenuinIcon } from '@icons/genuin-icon'
-import CommunityIcon from '@icons/ks-cb-flow/icCommunity.svg'
-import { useSession } from 'next-auth/react'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
-import { miniProfile } from '@lib/api/auth'
 import { NotificationIcon } from '@icons/settings-side-bar-icons'
-import { analyticsService } from '@services/analytics_service'
-import { type User } from 'next-auth'
+import Analytics from '@services/analytics'
 import { CategoryView } from '@components/common/category-view'
+import { useShallow } from 'zustand/react/shallow'
+import { LoginIcon } from '@icons/login-icon'
+import { VerifiedIcon } from '@icons/verified-icon'
+import BecomeCbCard from '@/components/common/become-cb-card'
+import { useSession } from 'next-auth/react'
+import { AuthenticationModal } from '@/components/common/modals/authentication'
+
+const DownloadAppDialog = dynamic(
+  async () => await import('../download-app-dialog').then((comp) => comp.DownloadAppDialog)
+)
+
 const RecentCommunities = dynamic(
   async () => await import('./recent-communities').then((comp) => comp.RecentCommunities),
   { ssr: false }
@@ -25,66 +30,46 @@ const RecentCommunities = dynamic(
 
 // TODO: Improve active states on all items.
 export function SideBar() {
-  const { embed, user, brandName, notificationCount } = useGenuinOptions((state) => ({
-    embed: state.embed,
-    user: state.user,
-    brandName: state.config?.name ? state.config?.name : 'Genuin',
-    notificationCount: state.notificationCount,
-  }))
-  const { data: sessionData, update: updateSession, status } = useSession()
+  const { embed, user, brandName, notificationCount, isClaimed } = useGenuinOptions(
+    useShallow((state) => ({
+      embed: state.embed,
+      user: state.user,
+      brandName: state.config?.name ? state.config?.name : 'Genuin',
+      notificationCount: state.notificationCount,
+      isClaimed: state.config?.is_claimed,
+    }))
+  )
   const pathName = usePathname()
-
-  function handleCommunityBuilderClick() {
-    void miniProfile(true)
-      .then((res) => {
-        if (res.code === 200) {
-          void updateSession({
-            ...sessionData,
-            user: { ...sessionData?.user, ksCbRequestStatus: res.data.ks_cb_request_status } as User,
-          })
-          const messageType = res?.data?.ks_cb_request_status === 3 ? 'MINI_PROFILE_SUCCESS' : 'KS_CB_SUBDOMAIN'
-          AuthenticationModal.open(undefined, messageType)
-          void analyticsService({
-            eventName: 'become_cb_clicked',
-            properties: {},
-          })
-        } else {
-          AuthenticationModal.open(undefined, 'KS_CB_SUBDOMAIN')
-        }
-      })
-      .catch(() => {
-        AuthenticationModal.open(undefined, 'KS_CB_SUBDOMAIN')
-      })
-  }
+  const { status } = useSession()
 
   return (
     <nav className="flex h-full w-fit flex-col justify-between overflow-auto border border-monochrome-9 px-1 py-4 transition-[width] lg:w-full lg:max-w-[280px] lg:border-none">
       <div>
         <Link href={{ pathname: PATH_NAME.home() }}>
-          <Item title="Home" isActive={pathName === PATH_NAME.home()}>
+          <Item brandName={brandName} title="Home" isActive={pathName === PATH_NAME.home()}>
             <HomeIcon isActive={pathName === PATH_NAME.home()} />
           </Item>
         </Link>
         <Link href={{ pathname: PATH_NAME.popular() }}>
-          <Item title="Popular" isActive={pathName === PATH_NAME.popular()}>
+          <Item brandName={brandName} title="Popular" isActive={pathName === PATH_NAME.popular()}>
             <PopularIcon isActive={pathName === PATH_NAME.popular()} />
           </Item>
         </Link>
         <Link href={{ pathname: PATH_NAME.latest() }}>
-          <Item title="Latest" isActive={pathName === PATH_NAME.latest()}>
+          <Item brandName={brandName} title="Latest" isActive={pathName === PATH_NAME.latest()}>
             <LatestIcon isActive={pathName === PATH_NAME.latest()} />
           </Item>
         </Link>
         <Link href={{ pathname: PATH_NAME.explore() }}>
-          <Item title="Explore" isActive={pathName === PATH_NAME.explore()}>
+          <Item brandName={brandName} title="Explore" isActive={pathName === PATH_NAME.explore()}>
             <ExploreIcon isActive={pathName === PATH_NAME.explore()} />
           </Item>
         </Link>
-
         {user && (
           <>
             <Link href={{ pathname: PATH_NAME.notification() }}>
               <Item
+                brandName={brandName}
                 title="Notification"
                 isActive={pathName === PATH_NAME.notification()}
                 notificationCount={notificationCount}>
@@ -95,17 +80,12 @@ export function SideBar() {
               href={{
                 pathname: user.isBrandSystemUser ? PATH_NAME.brand(user.brandSlug) : PATH_NAME.profile(user.nickname),
               }}>
-              <Item title="Profile" isActive={pathName === PATH_NAME.profile(user.nickname)}>
+              <Item brandName={brandName} title="Profile" isActive={pathName === PATH_NAME.profile(user.nickname)}>
                 <ProfileIcon isActive={pathName === PATH_NAME.profile(user.nickname)} />
               </Item>
             </Link>
           </>
         )}
-        {/* <Link href={PATH_NAME.search()}>
-          <Item title="Search" isActive={pathName === PATH_NAME.search()}>
-            <SearchIcon isActive={pathName.includes('search')} />
-          </Item>
-        </Link> */}
         {!embed && (
           <Popover>
             <PopoverTrigger className="w-full">
@@ -127,56 +107,37 @@ export function SideBar() {
             </PopoverContent>
           </Popover>
         )}
-        {status === 'unauthenticated' && embed && (
-          <div className="p-4">
-            <Button
+        <span className="hidden lg:block">
+          {(!isClaimed ?? user?.ksCbRequestStatus !== 3) && embed && (
+            <hr className="border-1 my-2 border-monochrome-black/10" />
+          )}
+          <DownloadAppDialog />
+          {status === 'unauthenticated' && embed && (
+            <div
+              className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10"
               onClick={() => {
                 AuthenticationModal.open()
-              }}
-              variant={'outline'}
-              className="hidden w-3/4 border-primary lg:block">
-              <p className="text-title-3-bold text-primary">Log in</p>
-            </Button>
-          </div>
-        )}
-        {user?.ksCbRequestStatus !== 3 && (
-          <>
-            <hr className="border-1 mt-1 border-monochrome-black/10" />
-            <div
-              className="max-w-64 relative my-4 hidden max-h-16 w-11/12 rounded-lg border border-[#E9CAF4] bg-primary-200 text-title-3-demi text-monochrome-black hover:cursor-pointer lg:block lg:flex"
-              style={{
-                background: 'linear-gradient(30deg, var(--primary-400) -80%, #FFFFFF 50%, var(--primary-400) 120%)',
-              }}
-              onClick={() => {
-                if (user?.isEmailVerified) {
-                  handleCommunityBuilderClick()
-                } else {
-                  AuthenticationModal.open('KS_CB_REQUEST', embed ? 'KS_CB_SUBDOMAIN' : 'KS_CB_WEB')
-                }
               }}>
-              <div className="z-20 w-3/5">
-                <p className="w-64 overflow-hidden p-3 text-body-1-bold">
-                  Become a{' '}
-                  <span className="font-semibold italic">
-                    community <br /> builder{' '}
-                  </span>
-                  {embed ? 'for' : 'on'}{' '}
-                  <span
-                    className="inline-block  overflow-clip text-primary"
-                    style={{ maxWidth: '12ch', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-                    {' '}
-                    {brandName}
-                  </span>{' '}
-                  🚀
-                </p>
-              </div>
-              <div className="z-10 flex w-2/5 items-end justify-center">
-                <img src={CommunityIcon.src} alt="community" className="h-12" />
-              </div>
+              <LoginIcon className="stroke-primary" />
+              <p className={cn('hidden whitespace-nowrap !text-title-3-demi text-primary lg:block')}>Log in</p>
             </div>
-          </>
-        )}
-        <CategoryView classname="hidden lg:block" />
+          )}
+          {!isClaimed && user && (
+            <div
+              className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10"
+              onClick={() => {
+                AuthenticationModal.open(undefined, 'CLAIM_BRAND_PROFILE')
+              }}>
+              <VerifiedIcon className="stroke-primary" />
+              <p className={cn('hidden whitespace-nowrap !text-title-3-demi text-primary lg:block')}>
+                Claim Brand Profile
+              </p>
+            </div>
+          )}
+        </span>{' '}
+        {(!isClaimed ?? user?.ksCbRequestStatus !== 3) && <hr className="border-1 my-2 border-monochrome-black/10" />}
+        {user?.ksCbRequestStatus !== 3 && <BecomeCbCard className="my-4 hidden lg:block" />}
+        <CategoryView className="hidden lg:block" />
         <RecentCommunities />
       </div>
       {embed && (
@@ -199,11 +160,23 @@ type ItemProps = {
   isActive?: boolean
   children: ReactNode
   notificationCount?: number | null
+  brandName?: string
 }
 
-function Item({ title, isActive, children, notificationCount }: ItemProps) {
+function Item({ title, isActive, children, notificationCount, brandName }: ItemProps) {
   return (
-    <div className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-3 hover:bg-monochrome-6/10">
+    <div
+      onClick={() => {
+        if (title === 'Popular' || title === 'Latest') {
+          void Analytics.track({
+            eventName: `${title.toLocaleLowerCase()}_clicked`,
+            properties: {
+              brandName,
+            },
+          })
+        }
+      }}
+      className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 hover:bg-monochrome-6/10">
       <div className="relative">
         {children}
         {!notificationCount ||

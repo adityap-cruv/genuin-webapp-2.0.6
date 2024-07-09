@@ -8,11 +8,6 @@ export default NextAuth(authConfig).auth
 export async function middleware(request: NextRequest) {
   const host = request.headers.get('host')
 
-  // if (request.nextUrl.protocol === 'http:' && host) {
-  //   request.nextUrl.protocol = 'https:'
-  //   request.nextUrl.host = host
-  //   return NextResponse.redirect(request.nextUrl)
-  // }
   const STATIC_PATHNAMES = ['/', '/manage', '/market', '/pricing', '/privacy', '/terms', '/discover']
   const parsedUA = userAgent(request)
   const deviceType = parsedUA.device.type
@@ -23,7 +18,6 @@ export async function middleware(request: NextRequest) {
 
   request.headers.set('x-search-params', request.nextUrl.search)
   request.headers.set('x-path-params', request.nextUrl.pathname)
-  // console.log('config params::', getConfig('ankpal.com'))
 
   const browserType = parsedUA.browser.name
   if (browserType) request.cookies.set('browser_type', browserType)

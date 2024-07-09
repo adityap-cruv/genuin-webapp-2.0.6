@@ -26,6 +26,7 @@ import { LoopPrivacyInfo } from '@components/common/loop-privacy-info'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@components/ui/tooltip'
 import { DownloadDialogModal } from '@components/common/modals/download-app'
 import { TickIcon } from '@icons/tick-icon'
+import Analytics from '@services/analytics'
 
 interface Props {
   loopDetails: LoopDetailsType
@@ -56,6 +57,31 @@ export function MainComponent({ loopDetails }: Props) {
     })
   }
 
+  const handleSubscribeClick = () => {
+    void Analytics.track({
+      eventName: 'subscription_clicked',
+      properties: {
+        loop_id: loopDetails.chat_id,
+        loop_slug: loopDetails.slug,
+        loop_name: loopDetails.group.group_name ?? '',
+      },
+    })
+
+    if (user) {
+      toggleLoopSubscription()
+    } else {
+      openModal({
+        title: 'Get the Genuin app',
+        subtitle: (
+          <>
+            Get the app to subscribe to
+            <span className="font-bold"> {loopDetails.group.group_name}</span> Loop.
+          </>
+        ),
+      })
+    }
+  }
+
   return (
     <>
       <TopStickyBar.desktop
@@ -66,7 +92,7 @@ export function MainComponent({ loopDetails }: Props) {
         communitySlug={loopDetails.community.slug}
         chatId={loopDetails.chat_id}
         isLoopSubscribed={isLoopSubscribed}
-        toggleSuscription={toggleLoopSubscription}
+        handleSubscribeClick={handleSubscribeClick}
       />
       <main className="hide-scrollbar absolute inset-0 h-full w-full overflow-auto pl-6">
         <div className="mt-6 flex justify-between">
@@ -77,23 +103,7 @@ export function MainComponent({ loopDetails }: Props) {
                 size="custom"
                 className={`${isLoopSubscribed && 'border border-primary '}`}
                 variant={isLoopSubscribed ? 'outline' : 'default'}
-                onClick={
-                  user
-                    ? () => {
-                        toggleLoopSubscription()
-                      }
-                    : () => {
-                        openModal({
-                          title: 'Get the Genuin app',
-                          subtitle: (
-                            <>
-                              Get the app to subscribe to
-                              <span className="font-bold"> {loopDetails.group.group_name}</span> Loop.
-                            </>
-                          ),
-                        })
-                      }
-                }>
+                onClick={handleSubscribeClick}>
                 <p className={`px-4 py-1 text-title-3-demi ${isLoopSubscribed && 'text-primary'}`}>
                   {isLoopSubscribed ? 'Subscribed' : 'Subscribe'}
                 </p>
