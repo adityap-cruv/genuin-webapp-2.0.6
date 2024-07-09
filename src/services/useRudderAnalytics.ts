@@ -1,6 +1,5 @@
 'use client'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
-import {useLocalStorage } from '@lib/stores/local-storage'
 import type { RudderAnalytics } from '@rudderstack/analytics-js'
 
 export async function rudderStackTrack(...args: Parameters<RudderAnalytics['track']>) {
