@@ -30,7 +30,7 @@ import { CategoryView } from '@components/common/category-view'
 import dynamic from 'next/dynamic'
 import BecomeCbCard from '@/components/common/become-cb-card'
 import { LoginIcon } from '@icons/login-icon'
-import { VerifiedIcon } from '@icons/verified-icon'
+// import { VerifiedIcon } from '@icons/verified-icon'
 
 const DownloadAppDialog = dynamic(
   async () => await import('../download-app-dialog').then((comp) => comp.DownloadAppDialog)
