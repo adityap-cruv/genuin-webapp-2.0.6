@@ -249,7 +249,7 @@ function Desktop({
                 RepostModal.open(videoId)
               } else {
                 await repostDeepLink({ videoSlug: videoSlug ?? '', shareUrl, searchParams }).then((generatedLink) => {
-                  openModal({ deepLink: generatedLink })
+                  openModal({ deepLink: generatedLink, subtitle: 'Get the app to repost the video.' })
                 })
               }
             }
@@ -299,7 +299,7 @@ function Desktop({
               user
                 ? await toggleVideoSpark()
                 : await sparkDeepLink({ videoSlug: videoSlug ?? '', shareUrl, searchParams }).then((generatedLink) => {
-                    openModal({ deepLink: generatedLink })
+                    openModal({ deepLink: generatedLink, subtitle: 'Get the app to spark the video.' })
                   })
             }
           }}>

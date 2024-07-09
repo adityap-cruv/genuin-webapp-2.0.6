@@ -336,7 +336,7 @@ function CommentInput({
           <div
             onClick={async () => {
               await commentDeepLink({ videoSlug, communityId, loopId, searchParams }).then((generatedLink) => {
-                openModal({ deepLink: generatedLink })
+                openModal({ deepLink: generatedLink, subtitle: <>Get the app to comment on this video.</> })
               })
             }}
             placeholder="Add a comment"

@@ -89,7 +89,15 @@ export function JoinCommunityButton({
           : async () => {
               await joinCommunityDeepLink({ communityName: communityName ?? '', searchParams }).then(
                 (generatedLink) => {
-                  openModal({ deepLink: generatedLink })
+                  openModal({
+                    deepLink: generatedLink,
+                    subtitle: (
+                      <>
+                        Get the app to join the <br />
+                        <span className="font-bold">@{handle}</span> community.
+                      </>
+                    ),
+                  })
                 }
               )
             }

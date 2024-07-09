@@ -84,7 +84,17 @@ export function ToggleCommunityJoinState({
             }
           : async () => {
               await joinCommunityDeepLink({ communityName, searchParams }).then((generatedLink) => {
-                isMobile ? openGeneratedLink(generatedLink) : openModal({ deepLink: generatedLink })
+                isMobile
+                  ? openGeneratedLink(generatedLink)
+                  : openModal({
+                      deepLink: generatedLink,
+                      subtitle: (
+                        <>
+                          Get the app to join the <br />
+                          <span className="font-bold">@{handle}</span> community.
+                        </>
+                      ),
+                    })
               })
             }
       }>

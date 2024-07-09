@@ -105,6 +105,7 @@ export async function commentDeepLink({
     pathName: PATH_NAME.video(videoSlug),
     community: communityId,
     loop: loopId,
+    title: `comment on ${videoSlug} video`,
     searchParams,
   })
 }
@@ -124,6 +125,7 @@ export async function repostDeepLink({
     pathName: PATH_NAME.video(videoSlug),
     community: getLoopAndCommunityShareString(shareUrl).communityShareString ?? '',
     loop: getLoopAndCommunityShareString(shareUrl).loopShareString ?? '',
+    title: `repost ${videoSlug} video`,
     searchParams,
   })
 }
@@ -143,6 +145,7 @@ export async function sparkDeepLink({
     pathName: PATH_NAME.video(videoSlug),
     community: getLoopAndCommunityShareString(shareUrl).communityShareString ?? '',
     loop: getLoopAndCommunityShareString(shareUrl).loopShareString ?? '',
+    title: `spark ${videoSlug} video`,
     searchParams,
   })
 }

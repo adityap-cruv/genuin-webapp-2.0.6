@@ -81,7 +81,15 @@ export function MainComponent({ loopDetails }: Props) {
       toggleLoopSubscription()
     } else {
       await subscribeDeepLink({ ldDescription, loopDetails, searchParams }).then((generatedLink) => {
-        openModal({ deepLink: generatedLink })
+        openModal({
+          deepLink: generatedLink,
+          subtitle: (
+            <>
+              Get the app to subscribe to
+              <span className="font-bold"> {loopDetails.group.group_name}</span> Loop.
+            </>
+          ),
+        })
       })
     }
   }
@@ -122,7 +130,15 @@ export function MainComponent({ loopDetails }: Props) {
                 onClick={async () => {
                   await joinAsCollaboratorDeepLink({ ldDescription, loopDetails, searchParams }).then(
                     (generatedLink) => {
-                      openModal({ deepLink: generatedLink })
+                      openModal({
+                        deepLink: generatedLink,
+                        subtitle: (
+                          <>
+                            Get the app to Join as collaborator to
+                            <span className="font-bold"> {loopDetails.group.group_name}</span> Loop.
+                          </>
+                        ),
+                      })
                     }
                   )
                 }}>

@@ -24,6 +24,8 @@ export function Body({ title, subtitle, deepLink }: DownloadDialogType) {
               <br /> Genuin app
             </p>
 
+            {subtitle && <p className="mt-4 line-clamp-2 max-w-none text-center text-title-2-demi">{subtitle}</p>}
+
             <div className="my-4 mb-8">
               <QRCode value={deepLink} size={150} qrStyle="squares" logoPaddingStyle="square" />
               <p className="text-center font-bold" style={{ fontSize: '14px' }}>
@@ -32,13 +34,13 @@ export function Body({ title, subtitle, deepLink }: DownloadDialogType) {
             </div>
           </>
         ) : (
-          <>
+          <div className="mb-4">
             <GenuinIcon.icon className="h-12 fill-blue" />
             <p style={{ fontSize: '40px' }} className="hidden whitespace-nowrap text-center font-bold sm:block">
               {title}
             </p>
             <p className="line-clamp-2 max-w-none text-center text-title-2-demi">{subtitle}</p>
-          </>
+          </div>
         )}
         <div className="flex gap-x-2">
           <a href={URL_TO_APP_STORE} target="_blank" rel="noopener noreferrer">
