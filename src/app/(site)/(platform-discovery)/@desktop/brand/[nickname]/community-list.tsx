@@ -1,4 +1,3 @@
-import icSpark from '@icons/player-controls/icBulb.svg'
 import icLock from '@icons/icLock.svg'
 import { DecorativeList } from '@components/custom/decorative-list'
 import { fetchProfileCommunityLoops, fetchProfileVideos, getCommunities, getProfileFeed } from '@lib/api/brand-profile'
@@ -26,6 +25,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@compo
 import { IcLoop } from '@icons/ic-loop'
 import { BrandCommunityTag } from '@components/common/brand-community-tag'
 import { ToggleCommunityJoinState } from '@components/common/toggle-community-join-state'
+import { Play } from 'lucide-react'
 
 export function CommunityList({ brandId }: { brandId: number }) {
   const { data, isLoading, fetchNextPage, isFetchingNextPage } = getCommunities(brandId, 8)
@@ -352,11 +352,11 @@ function LoopVideos({ brandId, loop, communityId, pathName, user }: LoopVideosPr
                 key={video.id}
                 className="group/vidcard relative flex aspect-reel min-w-full flex-col items-center hover:cursor-pointer">
                 <img src={video.thumbnail ?? ''} className="aspect-reel rounded" />
-                <div className="absolute bottom-0 left-0 m-1 flex items-center justify-center">
-                  <Image src={icSpark} alt="share" height={15} width={15} />
-                  <p className="text-new-para-2-mobile text-monochrome-white">
-                    {abbreviateNumber(video.sparkCount) ?? 0}
-                  </p>
+                <div className="absolute bottom-1 left-1 m-1 flex items-center justify-center gap-1">
+                  <Play className="h-3 w-3 stroke-monochrome-white " />
+                  <div className="text-new-para-2-mobile text-monochrome-white">
+                    {abbreviateNumber(video.viewCount) ?? 0}
+                  </div>
                 </div>
                 <div className="absolute inset-0 hidden h-full w-full items-center justify-center rounded bg-monochrome-black/40 group-hover/vidcard:flex">
                   <Image src={icPlay} alt="" />
