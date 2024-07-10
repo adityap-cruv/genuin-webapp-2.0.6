@@ -60,7 +60,7 @@ async function fetchFeed(
  */
 export function getFeedForEmbed(feedType: 1 | 2 | 3) {
   return useInfiniteQuery({
-    queryKey: ['home', feedType],
+    queryKey: ['home', 'embed', feedType],
     queryFn: async ({ pageParam }) => {
       return await fetchFeed(feedType, pageParam)
     },
