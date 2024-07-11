@@ -8,6 +8,7 @@ import { Mousewheel, Keyboard } from 'swiper/modules'
 import { type VideoSizeBoxType, useGenuinOptions } from '@lib/stores/genuin-options'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import { showInterruption } from '@components/providers/interruption-provider'
+import { useShallow } from 'zustand/react/shallow'
 
 const DesktopPlayer = dynamic(async () => await import('@components/common/player').then((comp) => comp.Player.desktop))
 
@@ -27,13 +28,16 @@ type DesktopProps = {
 }
 
 export function Desktop({ fetchNextPage, isFetchingNextPage, videos, className, customSizeBox }: DesktopProps) {
-  const sizeBox = customSizeBox ?? useGenuinOptions((state) => ({ sizeBox: state.sizeBoxes.default })).sizeBox
-  const { setNewVideos, videoList, setCurrentIndex, currentIndex } = useFeedListStore((state) => ({
-    setNewVideos: state.setVideoList,
-    videoList: state.videoList,
-    setCurrentIndex: state.setCurrentIndex,
-    currentIndex: state.currentIndex,
-  }))
+  const sizeBox =
+    customSizeBox ?? useGenuinOptions(useShallow((state) => ({ sizeBox: state.sizeBoxes.default }))).sizeBox
+  const { setNewVideos, videoList, setCurrentIndex, currentIndex } = useFeedListStore(
+    useShallow((state) => ({
+      setNewVideos: state.setVideoList,
+      videoList: state.videoList,
+      setCurrentIndex: state.setCurrentIndex,
+      currentIndex: state.currentIndex,
+    }))
+  )
 
   useEffect(() => {
     if (videoList.length !== 0 && currentIndex > videoList.length - 3 && !isFetchingNextPage) {
