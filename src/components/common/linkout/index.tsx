@@ -1,4 +1,4 @@
 import { Desktop } from './desktop'
 import { Mobile } from './mobile'
 
-export const ControlLayer = { desktop: Desktop, mobile: Mobile }
+export const Linkout = { desktop: Desktop, mobile: Mobile }

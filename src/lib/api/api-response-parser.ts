@@ -112,6 +112,7 @@ export function parseFeedResponse(videos: FeedResponseType) {
           ? tryJsonParse(video.messages[0].description_data)
           : undefined,
         descriptionText: video.messages[0].description_text,
+        linkoutId: video.messages[0].linkouts_id,
       },
     }
   })
