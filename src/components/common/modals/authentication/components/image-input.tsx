@@ -2,13 +2,15 @@ import { useAuthenticationModalStore } from '../store'
 import { getAvatarUrl } from '@lib/utils'
 import { Label } from '@components/ui/label'
 import { AuthenticationModal } from '..'
+import { usePathname } from 'next/navigation'
 
 export function ImageInput() {
-  const { formData, setFormData } = useAuthenticationModalStore((state) => ({
+  const { formData, setStep, setFormData } = useAuthenticationModalStore((state) => ({
     formData: state.formData,
     setStep: state.setStep,
     setFormData: state.setFormData,
   }))
+  const pathname = usePathname()
 
   return (
     <div className="flex w-full flex-col items-center justify-center gap-y-2">
@@ -31,7 +33,9 @@ export function ImageInput() {
         accept="image/png, image/jpeg, image/jpg"
         onChange={(e) => {
           setFormData({ image: URL.createObjectURL(e.target.files?.[0] as any) })
-          AuthenticationModal.open(undefined, 'IMAGE_CROPPER')
+          pathname.includes('settings')
+            ? AuthenticationModal.open(undefined, 'IMAGE_CROPPER')
+            : setStep('IMAGE_CROPPER')
         }}
       />
       <Label htmlFor="pic" className="cursor-pointer !text-body-1-demi text-primary">
