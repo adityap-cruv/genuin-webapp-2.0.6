@@ -7,7 +7,7 @@ import { getLinkouts } from './api'
 import { Loader } from './loader'
 
 type ComponentProps = {
-  linkoutId?: number
+  linkoutId: number
 }
 
 export function Desktop({ linkoutId }: ComponentProps) {
