@@ -24,6 +24,7 @@ const videoSchema = z.object({
   descriptionArr: descriptionArrSchema.nullish(),
   descriptionText: z.string().nullish(),
   slug: z.string(),
+  linkoutId: z.number().nullish(),
 })
 
 // Define the loop schema

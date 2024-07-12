@@ -53,10 +53,11 @@ function WithoutMentions({ text, maxChars = 150, ...props }: Props) {
 }
 
 type WithMentionsProps = {
-  textArr: Array<string | { member_id: string; text: string } | { community_id: string; text: string }>
+  textArr: Array<string | { member_id: string; text: string } | { community_id: string; text: string }> | string
 } & Omit<Props, 'text'>
 
 export function WithMentions({ textArr, maxChars = 50, className, ...props }: WithMentionsProps) {
+  if (typeof textArr === 'string') return <WithoutMentions text={textArr} {...props} />
   const [showMore, setShowMore] = useState(true)
   const [processedComponent, setProcessedComponent] = useState<Array<string | JSX.Element>>([])
 

@@ -7,7 +7,7 @@ export default function Layout(props: any) {
   return (
     <>
       {isMobile ? props.mobile : props.desktop}
-      <InterruptionProvider />
+      {process.env.NEXT_PUBLIC_CURRENT_ENV !== 'local' && <InterruptionProvider />}
     </>
   )
 }

@@ -1,13 +1,15 @@
 import { AnimatedInfinityView } from '@components/common/animated-infinity-view'
 import dynamic from 'next/dynamic'
 import { useFeedListStore } from './store'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useCommentSheetStore } from '../player/comment-sheet/store'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Mousewheel } from 'swiper/modules'
 import { useGenuinOptions, type VideoSizeBoxType } from '@lib/stores/genuin-options'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import { showInterruption } from '@components/providers/interruption-provider'
+import { useShallow } from 'zustand/react/shallow'
+import { AnimatePresence, motion } from 'framer-motion'
 const Player = dynamic(async () => await import('@components/common/player').then((comp) => comp.Player.mobile))
 
 type MobileProps = {
@@ -77,14 +79,19 @@ export function Mobile({ videos, fetchNextPage, isFetchingNextPage, startIndex =
           style={videoSizeBox}>
           {videos.map((item, index) => (
             <SwiperSlide key={index}>
-              <Player
-                playIfInViewPort
-                isFirstPlayerInList={index === 0}
-                shouldPlay
-                loop
-                videoDetails={item}
-                customSizeBox={videoSizeBox}
-              />
+              {({ isActive }) => {
+                return (
+                  <Player
+                    isActive={isActive}
+                    playIfInViewPort
+                    isFirstPlayerInList={index === 0}
+                    shouldPlay
+                    loop
+                    videoDetails={item}
+                    customSizeBox={videoSizeBox}
+                  />
+                )
+              }}
             </SwiperSlide>
           ))}
         </Swiper>
@@ -94,34 +101,58 @@ export function Mobile({ videos, fetchNextPage, isFetchingNextPage, startIndex =
 }
 
 function InfinityViewBox() {
-  const { videoList, currentIndex } = useFeedListStore((state) => ({
-    currentIndex: state.currentIndex,
-    videoList: state.videoList,
-  }))
+  const [isVisible, setIsVisible] = useState(true)
+  const { videoList, currentIndex } = useFeedListStore(
+    useShallow((state) => ({
+      currentIndex: state.currentIndex,
+      videoList: state.videoList,
+    }))
+  )
   const videoDetails = videoList[currentIndex]
+
+  useEffect(() => {
+    if (!videoList[currentIndex].video.linkoutId) return
+    let timeoutId: any
+    timeoutId = setTimeout(() => {
+      setIsVisible(false)
+    }, 3000)
+
+    return () => {
+      if (timeoutId) timeoutId = null
+      setIsVisible(true)
+    }
+  }, [currentIndex])
+
   if (videoDetails)
     return (
-      <div className="absolute bottom-0 z-10 w-full">
-        <AnimatedInfinityView
-          community={{
-            name: videoDetails.community.name ?? '',
-            handle: videoDetails.community.handle,
-            profileImage: videoDetails.community.profileImage ?? '',
-            slug: videoDetails.community.slug,
-            type: videoDetails.community.type ?? null,
-            brand: videoDetails.community.brand
-              ? {
-                  name: videoDetails.community.brand?.name ?? '',
-                  brand_system_user_id: videoDetails.community.brand?.brand_system_user_id ?? '',
-                  brand_slug: videoDetails.community.brand?.brand_slug ?? '',
-                }
-              : null,
-          }}
-          loop={{
-            name: videoDetails.loop.name ?? '',
-            slug: videoDetails.loop.slug,
-          }}
-        />
-      </div>
+      <AnimatePresence>
+        {isVisible && (
+          <motion.div
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0, transition: { duration: 0.3 } }}
+            className="absolute bottom-0 z-10 w-full">
+            <AnimatedInfinityView
+              community={{
+                name: videoDetails.community.name ?? '',
+                handle: videoDetails.community.handle,
+                profileImage: videoDetails.community.profileImage ?? '',
+                slug: videoDetails.community.slug,
+                type: videoDetails.community.type ?? null,
+                brand: videoDetails.community.brand
+                  ? {
+                      name: videoDetails.community.brand?.name ?? '',
+                      brand_system_user_id: videoDetails.community.brand?.brand_system_user_id ?? '',
+                      brand_slug: videoDetails.community.brand?.brand_slug ?? '',
+                    }
+                  : null,
+              }}
+              loop={{
+                name: videoDetails.loop.name ?? '',
+                slug: videoDetails.loop.slug,
+              }}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     )
 }

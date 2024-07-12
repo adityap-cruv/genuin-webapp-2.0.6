@@ -43,11 +43,11 @@ export const usePlayerControlStore = create<PlayerControlStoreType>((set) => {
     },
     duration: 0,
     setDuration(duration) {
-      set((state) => ({ duration }))
+      set({ duration })
     },
     currentTime: 0,
     setCurrentTime(currentTime) {
-      set((state) => ({ currentTime }))
+      set({ currentTime })
     },
     setTimeState(currentTime, duration) {
       const feedStore = useFeedListStore.getState()
