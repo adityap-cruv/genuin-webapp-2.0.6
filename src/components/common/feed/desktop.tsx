@@ -116,6 +116,7 @@ export function SinglePlayer({ sizeBox, className, videoData }: SinglePlayerProp
             source: videoData.video.source,
             sparkCount: videoData.video.sparkCount,
             thumbnail: videoData.video.thumbnail,
+            slug: videoData.video.slug,
             description: videoData.video.descriptionText,
           }}
           loop
