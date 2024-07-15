@@ -2,7 +2,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { Button } from '@components/ui/button'
 import type { CommunityDetailsType, MembersSchemaType } from '@lib/schemas/community'
-import { checkAndAppendHttps, generateDeepLink, getCurrentShareUrl, openGeneratedLink, openModal } from '@lib/utils'
+import { checkAndAppendHttps, getCurrentShareUrl, openGeneratedLink, openModal } from '@lib/utils'
 import Image from 'next/image'
 import icLock from '@icons/icLock.svg'
 import Link from 'next/link'
@@ -29,6 +29,7 @@ import { BrandCommunityTag } from '@components/common/brand-community-tag'
 import { InstagramIcon } from '@icons/instagram-icon'
 import { LinkedInIcon } from '@icons/linkedin-icon'
 import { TwitterIcon } from '@icons/twitter-icon'
+import { joinCommunityDeepLink } from '@/lib/get-deeplink'
 
 let communityDetailsModule: CommunityDetailsType
 
@@ -103,6 +104,7 @@ export function Details({ communityDetails }: Props) {
                 <JoinButton
                   handle={communityDetails.handle}
                   id={communityDetails.community_id}
+                  communityName={communityDetails.name ?? ''}
                   userRole={communityDetails.logged_in_user_role}
                   isCommunityPrivate={communityDetails.type === 2}
                 />
@@ -112,24 +114,12 @@ export function Details({ communityDetails }: Props) {
                 <Button
                   variant="default"
                   size="sm"
-                  onClick={() => {
-                    generateDeepLink({
-                      action: 'join',
-                      contentType: 'community',
-                      description: `Find your people. Find what you love. | Join ${communityDetailsModule?.name} to talk about it`,
-                      title: `join ${communityDetailsModule?.name}`,
-                      previewImage: null,
-                      fromUserName: null,
-                      pathName: window.location.pathname,
-                      utmCampaign: 'share',
-                      utmMedium: 'web',
-                      utmSource: window.location.hostname,
-                      searchParams,
-                    })
-                      .then((generatedLink) => {
+                  onClick={async () => {
+                    await joinCommunityDeepLink({ communityName: communityDetails.name ?? '', searchParams }).then(
+                      (generatedLink) => {
                         openGeneratedLink(generatedLink)
-                      })
-                      .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
+                      }
+                    )
                   }}>
                   <p className="mx-2 text-body-1-bold text-monochrome-white">Join Community</p>
                 </Button>
@@ -485,14 +475,18 @@ export function JoinButton({
   handle,
   id,
   isCommunityPrivate,
+  communityName,
 }: {
   userRole?: 'LEADER' | 'MEMBER' | 'REQUESTED' | null
   handle: string
   id: string
   isCommunityPrivate: boolean
+  communityName: string
 }) {
   const [role, setRole] = useState(userRole)
   const user = useGenuinOptions().user
+  const searchParams = Object.fromEntries(useSearchParams())
+
   async function toggleCommunityJoinState() {
     if (role !== 'MEMBER') {
       if (isCommunityPrivate) {
@@ -537,15 +531,17 @@ export function JoinButton({
           ? async () => {
               await toggleCommunityJoinState()
             }
-          : () => {
-              openModal({
-                title: 'Get the Genuin app',
-                subtitle: (
-                  <>
-                    Get the app to join the <br />
-                    <span className="font-bold">@{handle}</span> community.
-                  </>
-                ),
+          : async () => {
+              await joinCommunityDeepLink({ communityName, searchParams }).then((generatedLink) => {
+                openModal({
+                  deepLink: generatedLink,
+                  subtitle: (
+                    <>
+                      Get the app to join the <br />
+                      <span className="font-bold">@{handle}</span> community.
+                    </>
+                  ),
+                })
               })
             }
       }>

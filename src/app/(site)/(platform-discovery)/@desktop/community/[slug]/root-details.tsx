@@ -87,6 +87,7 @@ function RootDetails({ communityDetails }: { communityDetails: CommunityDetailsT
               buttonText="Join Community"
               isJoinRequested={communityDetails.is_community_join_requested}
               handle={communityDetails.handle}
+              communityName={communityDetails.name ?? ''}
               id={communityDetails.community_id}
               userRole={communityDetails.logged_in_user_role}
               isCommunityPrivate={communityDetails.type === 2}

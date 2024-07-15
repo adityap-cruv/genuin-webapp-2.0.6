@@ -22,10 +22,12 @@ export function openModal({
   title,
   subtitle,
   action,
+  deepLink,
 }: {
-  title: string | ReactNode
-  subtitle: string | ReactNode
+  title?: string | ReactNode
+  subtitle?: string | ReactNode
   action?: any
+  deepLink?: string
 }) {
   const embed = useGenuinOptions.getState().embed
 
@@ -35,6 +37,7 @@ export function openModal({
     DownloadDialogModal.open({
       title,
       subtitle,
+      deepLink: deepLink ?? '',
     })
   }
 }

@@ -24,9 +24,10 @@ import { Shimmer } from '@components/ui/shimmer'
 import { LockIcon } from '@icons/LockIcon'
 import { LoopPrivacyInfo } from '@components/common/loop-privacy-info'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@components/ui/tooltip'
-import { DownloadDialogModal } from '@components/common/modals/download-app'
 import { TickIcon } from '@icons/tick-icon'
 import Analytics from '@services/analytics'
+import { useSearchParams } from 'next/navigation'
+import { joinAsCollaboratorDeepLink, subscribeDeepLink } from '@/lib/get-deeplink'
 
 interface Props {
   loopDetails: LoopDetailsType
@@ -47,6 +48,15 @@ export function MainComponent({ loopDetails }: Props) {
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
   const [isLoopSubscribed, setIsLoopSubscribed] = useState(!!loopDetails.is_subscriber)
   const user = useGenuinOptions().user
+  const searchParams = Object.fromEntries(useSearchParams())
+
+  const ldDescription = `${
+    loopDetails.group?.group_description !== null &&
+    loopDetails.group.group_description !== undefined &&
+    loopDetails.group.group_description.replace(/\s+/g, '') !== ''
+      ? loopDetails.group.group_description + ' | '
+      : ''
+  } • Join ${loopDetails.group.group_name} to talk about it`
 
   function toggleLoopSubscription() {
     const newValue = !isLoopSubscribed
@@ -57,7 +67,7 @@ export function MainComponent({ loopDetails }: Props) {
     })
   }
 
-  const handleSubscribeClick = () => {
+  const handleSubscribeClick = async () => {
     void Analytics.track({
       eventName: 'subscription_clicked',
       properties: {
@@ -70,14 +80,16 @@ export function MainComponent({ loopDetails }: Props) {
     if (user) {
       toggleLoopSubscription()
     } else {
-      openModal({
-        title: 'Get the Genuin app',
-        subtitle: (
-          <>
-            Get the app to subscribe to
-            <span className="font-bold"> {loopDetails.group.group_name}</span> Loop.
-          </>
-        ),
+      await subscribeDeepLink({ ldDescription, loopDetails, searchParams }).then((generatedLink) => {
+        openModal({
+          deepLink: generatedLink,
+          subtitle: (
+            <>
+              Get the app to subscribe to
+              <span className="font-bold"> {loopDetails.group.group_name}</span> Loop.
+            </>
+          ),
+        })
       })
     }
   }
@@ -115,16 +127,20 @@ export function MainComponent({ loopDetails }: Props) {
                 size="custom"
                 variant="outline"
                 className="border border-primary"
-                onClick={() => {
-                  DownloadDialogModal.open({
-                    title: 'Get the Genuin app',
-                    subtitle: (
-                      <>
-                        Get the app to Join as collaborator to
-                        <span className="font-bold"> {loopDetails.group.group_name}</span> Loop.
-                      </>
-                    ),
-                  })
+                onClick={async () => {
+                  await joinAsCollaboratorDeepLink({ ldDescription, loopDetails, searchParams }).then(
+                    (generatedLink) => {
+                      openModal({
+                        deepLink: generatedLink,
+                        subtitle: (
+                          <>
+                            Get the app to Join as collaborator to
+                            <span className="font-bold"> {loopDetails.group.group_name}</span> Loop.
+                          </>
+                        ),
+                      })
+                    }
+                  )
                 }}>
                 <p className="px-4 py-1 text-title-3-bold text-primary" style={{ fontSize: '15px' }}>
                   Join as collaborator

@@ -23,6 +23,8 @@ import { TickIcon } from '@icons/tick-icon'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@components/ui/tooltip'
 import { JoinCommunityButton } from '@components/pages/community/join-community-button'
 import { ReadMore } from '../read-more'
+import { useSearchParams } from 'next/navigation'
+import { commentDeepLink } from '@/lib/get-deeplink'
 import { Linkout } from '../linkout'
 
 // TODO: improve this component.
@@ -169,6 +171,8 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
         setCurrentComment={setCurrentComment}
         videoId={video.id}
         loopId={loop.id}
+        videoSlug={video.slug}
+        communityId={community.id}
       />
       <Toaster />
     </div>
@@ -236,14 +240,20 @@ function CommentInput({
   setCurrentComment,
   videoId,
   loopId,
+  videoSlug,
+  communityId,
 }: {
   setComments: any
   currentComment: any
   setCurrentComment: any
   videoId: string
   loopId: string
+  videoSlug: string
+  communityId: string
 }) {
   const user = useGenuinOptions().user
+  const searchParams = Object.fromEntries(useSearchParams())
+
   async function handleClick() {
     if (currentComment.length !== 0) {
       const newComment = {
@@ -325,10 +335,9 @@ function CommentInput({
           </>
         ) : (
           <div
-            onClick={() => {
-              openModal({
-                title: 'Get the Genuin app',
-                subtitle: <>Get the app to comment on this video.</>,
+            onClick={async () => {
+              await commentDeepLink({ videoSlug, communityId, loopId, searchParams }).then((generatedLink) => {
+                openModal({ deepLink: generatedLink, subtitle: <>Get the app to comment on this video.</> })
               })
             }}
             placeholder="Add a comment"

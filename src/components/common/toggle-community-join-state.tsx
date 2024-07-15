@@ -1,7 +1,9 @@
+import { joinCommunityDeepLink } from '@/lib/get-deeplink'
 import { Button } from '@components/ui/button'
 import { joinCommunity, leaveCommunity, requestCommunity } from '@lib/api/video'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
-import { openModal } from '@lib/utils'
+import { openGeneratedLink, openModal } from '@lib/utils'
+import { useSearchParams } from 'next/navigation'
 
 export function ToggleCommunityJoinState({
   userRole,
@@ -10,6 +12,7 @@ export function ToggleCommunityJoinState({
   communityJoinStates,
   setCommunityJoinStates,
   isCommunityPrivate,
+  communityName,
 }: {
   userRole?: 'LEADER' | 'MEMBER' | null
   handle: string
@@ -17,9 +20,15 @@ export function ToggleCommunityJoinState({
   communityJoinStates: any
   setCommunityJoinStates: any
   isCommunityPrivate: boolean | null
+  communityName: string
 }) {
   const newState = !communityJoinStates[id]
-  const user = useGenuinOptions().user
+  const { user, isMobile } = useGenuinOptions((state) => ({
+    user: state.user,
+    isMobile: state.isMobile,
+  }))
+  const searchParams = Object.fromEntries(useSearchParams())
+
   async function toggleCommunityJoinState() {
     if (newState) {
       if (isCommunityPrivate) {
@@ -73,15 +82,19 @@ export function ToggleCommunityJoinState({
           ? async () => {
               await toggleCommunityJoinState()
             }
-          : () => {
-              openModal({
-                title: 'Get the Genuin app',
-                subtitle: (
-                  <>
-                    Get the app to join the <br />
-                    <span className="font-bold">@{handle}</span> community.
-                  </>
-                ),
+          : async () => {
+              await joinCommunityDeepLink({ communityName, searchParams }).then((generatedLink) => {
+                isMobile
+                  ? openGeneratedLink(generatedLink)
+                  : openModal({
+                      deepLink: generatedLink,
+                      subtitle: (
+                        <>
+                          Get the app to join the <br />
+                          <span className="font-bold">@{handle}</span> community.
+                        </>
+                      ),
+                    })
               })
             }
       }>
