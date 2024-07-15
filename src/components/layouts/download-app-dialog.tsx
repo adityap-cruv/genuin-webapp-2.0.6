@@ -77,7 +77,7 @@ export function DownloadAppDialog() {
               <div className="my-2">
                 <TabsContent value="app_store" className="flex justify-center">
                   <div>
-                    <QRCode value={links.appStoreLink} size={130} qrStyle="squares" logoPaddingStyle="square" />
+                    <QRCode value={links.appStoreLink} size={100} qrStyle="squares" logoPaddingStyle="square" />
                     <p className="text-center font-bold" style={{ fontSize: '14px' }}>
                       Scan to download
                     </p>
@@ -85,7 +85,7 @@ export function DownloadAppDialog() {
                 </TabsContent>
                 <TabsContent value="play_store" className="flex justify-center">
                   <div>
-                    <QRCode value={links.playStoreLink} size={130} qrStyle="squares" logoPaddingStyle="square" />
+                    <QRCode value={links.playStoreLink} size={100} qrStyle="squares" logoPaddingStyle="square" />
                     <p className="text-center font-bold" style={{ fontSize: '14px' }}>
                       Scan to download
                     </p>
