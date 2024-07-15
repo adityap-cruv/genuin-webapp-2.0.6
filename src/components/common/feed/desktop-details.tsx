@@ -25,7 +25,9 @@ import { JoinCommunityButton } from '@components/pages/community/join-community-
 import { ReadMore } from '../read-more'
 import { useSearchParams } from 'next/navigation'
 import { commentDeepLink } from '@/lib/get-deeplink'
+import { Linkout } from '../linkout'
 
+// TODO: improve this component.
 export function DesktopDetails({ loop, community, owner, video }: VideoPlayerModalType) {
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
@@ -35,7 +37,7 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
   const [comments, setComments] = useState<CommentListType>([])
 
   return (
-    <div className="relative flex h-full flex-1 flex-col overflow-x-clip bg-monochrome-white pb-16 pl-2">
+    <div className="relative h-full w-1 flex-1 bg-monochrome-white pb-16 pl-2">
       <div className="border-b border-tertiary-200 p-4">
         <span className="flex items-center gap-x-2">
           <CustomAvatar
@@ -70,7 +72,7 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
         )}
       </div>
       <div ref={scrollDivRef} className="flex h-full flex-col overflow-auto overflow-x-clip">
-        <div className="p-4">
+        <div className="border-b border-tertiary-200 p-4">
           <p className="text-title-3-bold">Posted in</p>
           <div className="pt-3">
             <span className="flex items-center justify-between">
@@ -83,7 +85,7 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
                     className="h-11 w-11"
                   />
                   {/* TODO: What if there is no community name. */}
-                  <div>
+                  <span>
                     <Link href={{ pathname: PATH_NAME.community(community.slug) }}>
                       <p className="line-clamp-1 break-all pr-2 text-title-3-bold">{community.name}</p>
                     </Link>
@@ -96,7 +98,7 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
                         on {community.brand?.name}
                       </p>
                     )}
-                  </div>
+                  </span>
                 </span>
                 {community?.type === 2 && (
                   <TooltipProvider>
@@ -117,12 +119,6 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
                 )}
               </div>
               <span className="flex h-min flex-1 items-center justify-end gap-x-3">
-                {/* <JoinButton
-                  handle={community.handle}
-                  id={community.id}
-                  userRole={community.userRole}
-                  isCommunityPrivate={community.type === 2}
-                /> */}
                 <JoinCommunityButton
                   handle={community.handle}
                   buttonText="Join Community"
@@ -155,8 +151,13 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
             </DecorativeList>
           </div>
         </div>
+        {video.linkoutId && (
+          <div className="w-auto px-4">
+            <Linkout.desktop linkoutId={video.linkoutId} />
+          </div>
+        )}
         <div className="sticky top-0 z-10">
-          <p className="border-b border-t border-tertiary-200 bg-monochrome-white px-4 py-3 text-title-3-demi text-tertiary">
+          <p className="border-b border-t border-tertiary-200 bg-monochrome-white px-4 py-3 text-title-3-demi">
             Comments {video.commentCount !== 0 ? `(${video.commentCount})` : ''}
           </p>
         </div>

@@ -7,7 +7,6 @@ import { CustomAvatar } from '@components/custom/custom-avatar'
 import { DecorativeList } from '@components/custom/decorative-list'
 import { Loader } from '@components/ui/loader'
 import React, { useEffect, useState } from 'react'
-import icSpark from '@icons/player-controls/icBulb.svg'
 import { Shimmer } from '@components/ui/shimmer'
 import Link from 'next/link'
 import { getNextPage } from './hook'
@@ -27,6 +26,7 @@ import { PrivateModal } from '@components/common/modals/private'
 import { IcLoop } from '@icons/ic-loop'
 import { BrandCommunityTag } from '@components/common/brand-community-tag'
 import { ToggleCommunityJoinState } from '@components/common/toggle-community-join-state'
+import { Play } from 'lucide-react'
 
 export function CommunityList({ userId, scrollYProgress }: { userId: string; scrollYProgress: MotionValue<number> }) {
   const { data, isLoading, fetchNextPage, isFetchingNextPage } = getCommunities(userId, 8)
@@ -329,10 +329,10 @@ function LoopVideos({ userId, loop, communityId, pathName, user }: LoopVideosPro
                 key={video.id}
                 className="group/vidcard relative flex aspect-reel min-w-full flex-col items-center hover:cursor-pointer">
                 <img src={video.thumbnail ?? ''} className="aspect-reel rounded" />
-                <div className="absolute bottom-0 left-0 m-1 flex items-center justify-center">
-                  <Image src={icSpark} alt="share" height={15} width={15} />
+                <div className="absolute bottom-1 left-1 m-1 flex items-center justify-center gap-0.5">
+                  <Play className="h-3 w-3 stroke-monochrome-white" />
                   <p className="text-new-para-2-mobile text-monochrome-white">
-                    {abbreviateNumber(video.sparkCount) ?? 0}
+                    {abbreviateNumber(video.viewCount) ?? 0}
                   </p>
                 </div>
                 <div className="absolute inset-0 hidden h-full w-full items-center justify-center rounded bg-monochrome-black/40 group-hover/vidcard:flex">

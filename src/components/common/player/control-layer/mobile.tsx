@@ -2,7 +2,6 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { usePlayerControlStore } from '../player-control-store'
-import { Progress } from '@components/ui/progress'
 import icPlay from '@icons/player-controls/icPlay.svg'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { Actions } from './actions'
@@ -12,82 +11,47 @@ import { AnimatedMuteIcon } from './animated-mute-icon'
 import { TickIcon } from '@icons/tick-icon'
 import { type DescriptionArrType } from '@lib/schemas/player/video'
 import Analytics from '@services/analytics'
+import { PlayerProgressBar } from './player-progress-bar'
+import { memo, useEffect, useState } from 'react'
+import { Linkout as LinkoutComponent } from '../../linkout'
+import { motion, useAnimationControls } from 'framer-motion'
+import { useShallow } from 'zustand/react/shallow'
+import { fetchLinkouts } from '../../linkout/api'
+import { type LinkoutsType } from '../../linkout/schema'
 
-export const ControlLayer = {
-  desktop: Desktop,
-  mobile: Mobile,
-}
-
-type DesktopProps = {
+type MobileProps = {
+  isActive: boolean
   sparkCount: number
   videoId: string
   shareUrl: string
   videoSlug?: string
+  linkoutId?: number | null
   attachedLink?: string | null
-  description?: string | null
+  descriptionArr?: DescriptionArrType | null
+  descriptionText?: string | null
+  commentCount: number
+  slug: string
   isSparked?: boolean | null | undefined
+  owner: {
+    userName: string
+    profileImage: string
+    isAvatar: boolean
+    name?: string | null
+    brand?: {
+      brand_id: number
+      brand_slug: string
+    } | null
+  }
 }
 
-function Desktop({ shareUrl, sparkCount, videoId, attachedLink, description, isSparked, videoSlug }: DesktopProps) {
-  const { toggleMuted, muted, shouldPlay } = usePlayerControlStore((state) => ({
-    toggleMuted: state.toggleMuted,
-    muted: state.muted,
-    shouldPlay: state.shouldPlay,
-  }))
-
-  return (
-    <div className="relative h-full w-full">
-      <div className="absolute inset-0 flex h-full w-full items-center justify-center">
-        <div
-          className={cn(
-            'rounded-full bg-monochrome-black/40 p-2 transition-all duration-300 ',
-            !shouldPlay ? 'scale-125 opacity-100 ease-in' : 'scale-100 opacity-0 ease-out'
-          )}>
-          <Image
-            src={icPlay}
-            alt="volume-control"
-            className={cn('pointer-events-none z-10 cursor-pointer rounded-full')}
-          />
-        </div>
-      </div>
-      {muted && (
-        <div
-          onClick={(e) => {
-            e.stopPropagation()
-            toggleMuted()
-            void Analytics.track({
-              eventName: 'Unmute',
-              properties: { video_id: videoId },
-            })
-          }}
-          className="absolute inset-0 h-full w-full">
-          <span className="absolute inset-0 left-6 top-6 h-fit w-fit cursor-pointer">
-            <AnimatedMuteIcon />
-          </span>
-        </div>
-      )}
-      <div className="absolute bottom-0 right-0 pr-2">
-        <Actions.desktop
-          shareUrl={shareUrl}
-          sparkCount={sparkCount}
-          videoId={videoId}
-          videoSlug={videoSlug}
-          attachedLink={attachedLink}
-          description={description}
-          isSparked={isSparked}
-        />
-      </div>
-      <PlayerProgressBar />
-    </div>
+export const Mobile = memo(function Mobile({ ...props }: MobileProps) {
+  const { toggleMuted, muted, shouldPlay } = usePlayerControlStore(
+    useShallow((state) => ({
+      toggleMuted: state.toggleMuted,
+      muted: state.muted,
+      shouldPlay: state.shouldPlay,
+    }))
   )
-}
-
-function Mobile({ ...props }: MobileProps) {
-  const { toggleMuted, muted, shouldPlay } = usePlayerControlStore((state) => ({
-    toggleMuted: state.toggleMuted,
-    muted: state.muted,
-    shouldPlay: state.shouldPlay,
-  }))
 
   return (
     <div className="relative h-full w-full">
@@ -120,39 +84,14 @@ function Mobile({ ...props }: MobileProps) {
           />
         </div>
       </div>
-      <div className="absolute bottom-16 left-0 w-full ">
-        <Loop {...props} />
-      </div>
+      <Details {...props} />
       <PlayerProgressBar />
     </div>
   )
-}
-type MobileProps = {
-  sparkCount: number
-  videoId: string
-  shareUrl: string
-  attachedLink?: string | null
-  descriptionArr?: DescriptionArrType | null
-  descriptionText?: string | null
-  commentCount: number
-  slug: string
-  isSparked?: boolean | null | undefined
-  owner: {
-    userName: string
-    profileImage: string
-    isAvatar: boolean
-    name?: string | null
-    brand?:
-      | {
-          brand_id: number
-          brand_slug: string
-        }
-      | undefined
-      | null
-  }
-}
+})
 
-function Loop({
+// TODO: move Linkouts component to infinity view box component.
+function Details({
   shareUrl,
   sparkCount,
   commentCount,
@@ -162,12 +101,44 @@ function Loop({
   descriptionArr,
   descriptionText,
   owner,
+  isActive,
+  linkoutId,
   isSparked,
 }: MobileProps) {
+  const [linkouts, setLinkouts] = useState<LinkoutsType | null>(null)
+  const [isVisible, setIsVisible] = useState(false)
+  const animationControls = useAnimationControls()
+
+  useEffect(() => {
+    let timeoutId: any
+    if (isActive && linkoutId) {
+      void fetchLinkouts(linkoutId)
+        .then((data) => {
+          setLinkouts(data)
+        })
+        .catch((e) => {
+          // console.log('something went wrong!')
+        })
+      timeoutId = setTimeout(() => {
+        setIsVisible(isActive)
+        animationControls.set({ y: 50 })
+      }, 2900)
+    }
+    return () => {
+      if (timeoutId) {
+        timeoutId = null
+      }
+      setIsVisible((x) => {
+        if (x) animationControls.set({ y: 0 })
+        return false
+      })
+    }
+  }, [isActive])
+
   return (
-    <div className="flex justify-between px-2">
-      <div className="flex w-4/5 flex-col justify-end">
-        <div className="z-10 flex items-center">
+    <div className={cn('absolute bottom-16 left-0 flex w-full justify-between px-2 transition-all')}>
+      <motion.div animate={animationControls} className="relative flex w-4/5 flex-col justify-end">
+        <div className="z-10 mb-2 flex items-center">
           {owner.brand ? (
             <div className="flex items-center">
               <Link
@@ -181,10 +152,10 @@ function Loop({
                 />
                 <p className="line-clamp-1 px-2 text-title-3-bold text-monochrome-white">@{owner.userName}</p>
               </Link>
-              <div className="flex items-center gap-0.5">
+              <span className="flex items-center gap-0.5">
                 <TickIcon className="h-3 w-3 fill-primary" />
                 <p className="text-cap-2-demi text-primary">Brand</p>
-              </div>
+              </span>
             </div>
           ) : (
             <Link
@@ -200,22 +171,16 @@ function Loop({
             </Link>
           )}
         </div>
-        {Array.isArray(descriptionArr) ? (
+        {descriptionArr && (
           <span className="z-10 py-2">
             <ReadMore.withMention
               textArr={descriptionArr}
               className="w-full break-all text-body-1-demi text-monochrome-white"
             />
           </span>
-        ) : (
-          <span className="z-10 py-2">
-            <ReadMore.default
-              text={descriptionText}
-              className="w-full break-all text-body-1-demi text-monochrome-white"
-            />
-          </span>
         )}
-      </div>
+        {isVisible && linkouts && <LinkoutComponent.mobile linkouts={linkouts} />}
+      </motion.div>
       <div className="z-10">
         <Actions.mobile
           commentCount={commentCount}
@@ -230,13 +195,4 @@ function Loop({
       </div>
     </div>
   )
-}
-
-function PlayerProgressBar() {
-  const currentTime = usePlayerControlStore((state) => state.currentTime)
-  const duration = usePlayerControlStore((state) => state.duration)
-  let progressValue = 0
-  if (duration !== 0) progressValue = Math.round((currentTime / duration) * 100)
-
-  return <Progress value={progressValue} className="absolute bottom-0 left-0 h-[2px] transition-[width]" />
 }

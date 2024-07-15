@@ -28,6 +28,7 @@ const metaDataSchema = z.object({
 
 // Define the message schema
 const messageSchema = z.object({
+  linkouts_id: z.number().nullish(),
   media_url: z.string(),
   media_url_m3u8: z.string().nullish(),
   attached_link: z.string().nullish(),

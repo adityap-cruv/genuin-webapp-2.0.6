@@ -3,7 +3,7 @@ import { Mousewheel } from 'swiper/modules'
 import { Swiper, SwiperSlide, useSwiper } from 'swiper/react'
 import { useSizeStore } from '@components/embed/size-provider'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { EmbedPlayer } from '@components/embed/embed-player'
 import { useEmbedPlayerState } from '@components/embed/embed-player-state'
 import { getFeedForEmbed } from '@/components/embed/api'
@@ -11,8 +11,8 @@ import { getFeedForEmbed } from '@/components/embed/api'
 export function CarouselView() {
   const { width, height } = useSizeStore()
   const { setActiveVideoId } = useEmbedPlayerState()
-  const { data: videoPages } = getFeedForEmbed(3)
-  const videos = videoPages?.pages.flatMap((item) => item.reels)
+  const { data: videoPages, fetchNextPage, isFetchingNextPage } = getFeedForEmbed(3)
+  const videos = useMemo(() => videoPages?.pages.flatMap((item) => item.reels), [videoPages])
 
   const videoWidth = (height * 9) / 16
   const ratio = width / videoWidth
@@ -25,13 +25,16 @@ export function CarouselView() {
     <div className="relative h-full w-full">
       <Swiper
         direction="horizontal"
-        centeredSlides
         spaceBetween={16}
         mousewheel={{ forceToAxis: true }}
         slidesPerView={ratio}
         modules={[Mousewheel]}
         onActiveIndexChange={(swiper) => {
-          setActiveVideoId(videos[swiper.activeIndex].video.id)
+          const activeIndex = swiper.activeIndex
+          setActiveVideoId(videos[activeIndex].video.id)
+          if (videos.length !== 0 && activeIndex > videos.length - 3 && !isFetchingNextPage) {
+            void fetchNextPage()
+          }
         }}
         onInit={(swiper) => {
           setActiveVideoId(videos[swiper.activeIndex].video.id)

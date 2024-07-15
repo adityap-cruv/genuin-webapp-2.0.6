@@ -10,9 +10,9 @@ import { Button } from '@components/ui/button'
 import { getFeedForEmbed } from '@/components/embed/api'
 
 export function VerticalView() {
-  const { height, width } = useSizeStore()
+  const { height, width, sizeBox } = useSizeStore()
   const { setActiveVideoId } = useEmbedPlayerState()
-  const { data: videoPages } = getFeedForEmbed(1)
+  const { data: videoPages, fetchNextPage, isFetchingNextPage } = getFeedForEmbed(1)
   const videos = videoPages?.pages.flatMap((item) => item.reels)
 
   function postMessage(link: string) {
@@ -34,7 +34,7 @@ export function VerticalView() {
   if (videos)
     return (
       <div className="flex h-full w-full flex-col items-center justify-center bg-tertiary-200 px-2">
-        <div className="flex w-full justify-between p-2">
+        <div className="flex w-full justify-between p-2" style={{ width: sizeBox.width * 0.8 }}>
           <span className="flex items-center gap-2">
             <CustomAvatar
               fallbackString={videos[0].community.name ?? ''}
@@ -67,15 +67,20 @@ export function VerticalView() {
           </Button>
         </div>
         <Swiper
-          className="aspect-reel h-full w-full max-w-sm"
+          className="aspect-reel h-full w-full"
+          style={{ width: sizeBox.width * 0.8 }}
           mousewheel
           modules={[Mousewheel]}
           direction="vertical"
-          centeredSlides={false}
+          centeredSlides
           slidesPerView={ratio}
-          spaceBetween={16}
+          spaceBetween={8}
           onActiveIndexChange={(swiper) => {
-            setActiveVideoId(videos[swiper.activeIndex].video.id)
+            const activeIndex = swiper.activeIndex
+            setActiveVideoId(videos[activeIndex].video.id)
+            if (videos.length !== 0 && activeIndex > videos.length - 3 && !isFetchingNextPage) {
+              void fetchNextPage()
+            }
           }}
           onInit={(swiper) => {
             setActiveVideoId(videos[swiper.activeIndex].video.id)

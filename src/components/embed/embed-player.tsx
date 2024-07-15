@@ -9,6 +9,7 @@ import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import Link from 'next/link'
 import Analytics from '@services/analytics'
 import { useParams } from 'next/navigation'
+import { useShallow } from 'zustand/react/shallow'
 
 type Props = DetailedHTMLProps<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement> & {
   videoData: VideoPlayerModalType
@@ -27,10 +28,26 @@ export function EmbedPlayer({ videoData, isFirstElement, isActive, onCanPlay, ..
   }>({
     player: null,
   })
-  const { activeVideoId, muted, toggleMuted } = useEmbedPlayerState()
-  // const onTimeUpdateEventHandler: ReactEventHandler<HTMLVideoElement> = (event) => {
-  //   setTimeState(event.currentTarget.currentTime, event.currentTarget.duration)
-  // }
+  const { activeVideoId, muted, toggleMuted } = useEmbedPlayerState(
+    useShallow((state) => ({
+      activeVideoId: state.activeVideoId,
+      muted: state.muted,
+      toggleMuted: state.toggleMuted,
+    }))
+  )
+
+  function triggerEvent(eventName: string) {
+    void Analytics.track({
+      eventName,
+      properties: {
+        content_id: videoData.video.id,
+        content_category: 'loop',
+        event_record_screen: 'embed',
+        content_url: videoData.video.source,
+        embed_id: params.id as string,
+      },
+    })
+  }
 
   useEffect(() => {
     if (!videoRef.current) return
@@ -62,18 +79,8 @@ export function EmbedPlayer({ videoData, isFirstElement, isActive, onCanPlay, ..
     void player.init().then((value) => {
       void player.load().then(() => {
         if (isFirstElement) {
-          player
-            .getMedia()
-            .play()
-            .then((_) => {
-              // console.log('start playing')
-            })
-            .catch((e) => {
-              // console.log('something went wrong..', e)
-            })
+          void player.getMedia().play()
         }
-        // console.log('loadded::', activeVideoId === videoId)
-
         localRef.current.player = player
       })
     })
@@ -82,19 +89,8 @@ export function EmbedPlayer({ videoData, isFirstElement, isActive, onCanPlay, ..
   useEffect(() => {
     const player = localRef.current.player
     if (!player) return
-    // const startTime = performance.now()
     if (videoData.video.id === activeVideoId) {
-      player
-        .play()
-        .then(() => {
-          // const endTime = performance.now()
-          // const loadingTimeMillis = endTime - startTime
-          // setLatency(Math.floor(loadingTimeMillis))
-          // console.log('starts playing from use effect.')
-        })
-        .catch((e) => {
-          // console.error('error from use effect', e)
-        })
+      void player.play()
     } else {
       player.pause()
     }
@@ -112,17 +108,15 @@ export function EmbedPlayer({ videoData, isFirstElement, isActive, onCanPlay, ..
         onCanPlay={(ev) => {
           onCanPlay?.(ev)
         }}
+        onPause={(e) => {
+          triggerEvent('Video Paused')
+        }}
         onEnded={(e) => {
-          void Analytics.track({
-            eventName: 'Video Watched',
-            properties: {
-              content_id: videoData.video.id,
-              content_category: 'loop',
-              event_record_screen: 'embed',
-              content_url: videoData.video.source,
-              embed_id: params.id as string,
-            },
-          })
+          triggerEvent('Video Watched')
+          void localRef.current.player?.play()
+        }}
+        onTimeUpdate={(e) => {
+          console.log('event::', (e.target as HTMLVideoElement).currentTime, (e.target as HTMLVideoElement).duration)
         }}
         {...props}
       />
