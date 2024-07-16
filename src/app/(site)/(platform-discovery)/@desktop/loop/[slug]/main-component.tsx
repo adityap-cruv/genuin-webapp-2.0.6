@@ -314,7 +314,7 @@ function LoopCohosts({ slug }: { slug: string }) {
               return (
                 <ListItem
                   title={item.name ?? ''}
-                  subtitle={item.phone ?? ''}
+                  subtitle={'+' + item.phone ?? ''}
                   description={item.bio ?? ''}
                   image={item.profile_image}
                   isAvatar={item.is_avatar}
