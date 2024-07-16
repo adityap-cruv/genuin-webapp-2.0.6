@@ -3,16 +3,32 @@ import { checkAndAppendHttps } from '@/lib/utils'
 import Image from 'next/image'
 import { CtaButton } from './cta-button'
 import Link from 'next/link'
-import React from 'react'
+import React, { memo } from 'react'
 import { LinkIcon } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { type LinkoutsType } from './schema'
+import { triggerLinkoutEvent } from './analytics'
 
-export function Mobile({ linkouts }: { linkouts: LinkoutsType }) {
+export const Mobile = memo(function Mobile({
+  linkouts,
+  linkoutId,
+  videoId,
+}: {
+  linkouts: LinkoutsType
+  linkoutId: number
+  videoId: string
+}) {
   return (
     <motion.div initial={{ y: 75 }} animate={{ y: 0, transition: { duration: 0.3 } }}>
       {linkouts.map((linkoutItem, index) => {
         if (linkoutItem.links.length === 1) {
+          triggerLinkoutEvent({
+            linkoutId,
+            videoId,
+            link: { hasText: !!linkoutItem.links[0].title, hasThumbnail: !!linkoutItem.links[0].image },
+            cta: linkoutItem.cta_link ? { name: linkoutItem.cta_text, link: linkoutItem.cta_link } : undefined,
+            single: true,
+          })
           return (
             <div className="rounded-lg bg-monochrome-black/50 p-2" key={index}>
               {linkoutItem.links.map((item, index) => {
@@ -30,10 +46,37 @@ export function Mobile({ linkouts }: { linkouts: LinkoutsType }) {
                           />
                         </div>
                       )}
-                      <LinkItem hasImage={!!item.image} link={item.link} title={item.title} forMobile />
+                      <LinkItem
+                        hasImage={!!item.image}
+                        link={item.link}
+                        title={item.title}
+                        forMobile
+                        onClick={(e) => {
+                          triggerLinkoutEvent({
+                            linkoutId,
+                            videoId,
+                            link: { hasText: !!item.title, hasThumbnail: !!item.image },
+                            single: true,
+                            clicked: 'link',
+                          })
+                        }}
+                      />
                     </div>
                     {linkoutItem.cta_link && (
-                      <CtaButton link={linkoutItem.cta_link} text={linkoutItem.cta_text} forMobile className="mt-1" />
+                      <CtaButton
+                        link={linkoutItem.cta_link}
+                        text={linkoutItem.cta_text}
+                        forMobile
+                        className="mt-1"
+                        onClick={(e) => {
+                          triggerLinkoutEvent({
+                            clicked: 'cta',
+                            linkoutId,
+                            videoId,
+                            cta: { name: linkoutItem.cta_text, link: linkoutItem.cta_link },
+                          })
+                        }}
+                      />
                     )}
                   </React.Fragment>
                 )
@@ -43,14 +86,31 @@ export function Mobile({ linkouts }: { linkouts: LinkoutsType }) {
         }
 
         const everyoneHasImage = linkoutItem.links.every((item) => item.image)
-
+        triggerLinkoutEvent({
+          linkoutId,
+          videoId,
+          single: false,
+          cta: linkoutItem.cta_link ? { name: linkoutItem.cta_text, link: linkoutItem.cta_link } : undefined,
+        })
         if (everyoneHasImage) {
           return (
             <div key={index} className="rounded-lg bg-monochrome-black/50 p-2">
               <div className="flex w-full gap-2">
                 {linkoutItem.links.map((item, index) => {
                   return (
-                    <Link href={checkAndAppendHttps(item.link)} key={index}>
+                    <Link
+                      href={checkAndAppendHttps(item.link)}
+                      key={index}
+                      onClick={(e) => {
+                        triggerLinkoutEvent({
+                          linkoutId,
+                          videoId,
+                          clicked: 'link',
+                          link: { hasText: !!item.title, hasThumbnail: !!item.image },
+                          single: false,
+                          position: index + 1,
+                        })
+                      }}>
                       <div
                         title={item.title ?? undefined}
                         className="flex items-center justify-center rounded-lg border border-tertiary-200 bg-tertiary-100 p-2">
@@ -70,7 +130,20 @@ export function Mobile({ linkouts }: { linkouts: LinkoutsType }) {
                 })}
               </div>
               {linkoutItem.cta_link && (
-                <CtaButton link={linkoutItem.cta_link} text={linkoutItem.cta_text} forMobile className="mt-2" />
+                <CtaButton
+                  link={linkoutItem.cta_link}
+                  text={linkoutItem.cta_text}
+                  forMobile
+                  className="mt-2"
+                  onClick={(e) => {
+                    triggerLinkoutEvent({
+                      clicked: 'cta',
+                      linkoutId,
+                      videoId,
+                      cta: { name: linkoutItem.cta_text, link: linkoutItem.cta_link },
+                    })
+                  }}
+                />
               )}
             </div>
           )
@@ -81,6 +154,15 @@ export function Mobile({ linkouts }: { linkouts: LinkoutsType }) {
                 {linkoutItem.links.map((item, index) => {
                   return (
                     <Link
+                      onClick={(e) => {
+                        triggerLinkoutEvent({
+                          linkoutId,
+                          videoId,
+                          clicked: 'link',
+                          link: { hasText: !!item.title, hasThumbnail: !!item.image },
+                          single: false,
+                        })
+                      }}
                       href={checkAndAppendHttps(item.link)}
                       key={index}
                       className="flex aspect-square w-full items-center justify-center rounded-lg bg-tertiary-200 p-2">
@@ -90,7 +172,20 @@ export function Mobile({ linkouts }: { linkouts: LinkoutsType }) {
                 })}
               </div>
               {linkoutItem.cta_link && (
-                <CtaButton link={linkoutItem.cta_link} text={linkoutItem.cta_text} forMobile className="mt-2" />
+                <CtaButton
+                  link={linkoutItem.cta_link}
+                  text={linkoutItem.cta_text}
+                  forMobile
+                  className="mt-2"
+                  onClick={(e) => {
+                    triggerLinkoutEvent({
+                      clicked: 'cta',
+                      linkoutId,
+                      videoId,
+                      cta: { name: linkoutItem.cta_text, link: linkoutItem.cta_link },
+                    })
+                  }}
+                />
               )}
             </div>
           )
@@ -98,4 +193,4 @@ export function Mobile({ linkouts }: { linkouts: LinkoutsType }) {
       })}
     </motion.div>
   )
-}
+})

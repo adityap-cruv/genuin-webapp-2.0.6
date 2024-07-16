@@ -5,28 +5,40 @@ import { CtaButton } from './cta-button'
 import Link from 'next/link'
 import { getLinkouts } from './api'
 import { Loader } from './loader'
+import { memo } from 'react'
+import { triggerLinkoutEvent } from './analytics'
 
 type ComponentProps = {
   linkoutId: number
+  videoId: string
 }
 
-export function Desktop({ linkoutId }: ComponentProps) {
+export const Desktop = memo(function Desktop({ linkoutId, videoId }: ComponentProps) {
   if (linkoutId)
     return (
       <div className="py-4">
         <p className="pb-4 text-title-3-bold">Links</p>
-        <LinkoutForDesktop linkoutId={linkoutId} />
+        <LinkoutForDesktop linkoutId={linkoutId} videoId={videoId} />
       </div>
     )
-}
+})
 
-function LinkoutForDesktop({ linkoutId }: { linkoutId: number }) {
+function LinkoutForDesktop({ linkoutId, videoId }: { linkoutId: number; videoId: string }) {
   const { data: linkouts, isLoading } = getLinkouts(linkoutId)
+
   if (isLoading || !linkouts) {
     return <Loader />
   }
+
   return linkouts.map((linkoutItem, index) => {
     if (linkoutItem.links.length === 1) {
+      triggerLinkoutEvent({
+        linkoutId,
+        videoId,
+        link: { hasText: !!linkoutItem.links[0].title, hasThumbnail: !!linkoutItem.links[0].image },
+        cta: linkoutItem.cta_link ? { name: linkoutItem.cta_text, link: linkoutItem.cta_link } : undefined,
+        single: true,
+      })
       return (
         <div
           className={cn(
@@ -48,8 +60,34 @@ function LinkoutForDesktop({ linkoutId }: { linkoutId: number }) {
                   </div>
                 )}
                 <span className="flex w-full flex-col justify-center">
-                  <LinkItem hasImage={!!item.image} link={item.link} title={item.title} />
-                  {linkoutItem.cta_link && <CtaButton link={linkoutItem.cta_link} text={linkoutItem.cta_text} />}
+                  <LinkItem
+                    hasImage={!!item.image}
+                    link={item.link}
+                    title={item.title}
+                    onClick={(e) => {
+                      triggerLinkoutEvent({
+                        linkoutId,
+                        videoId,
+                        clicked: 'link',
+                        link: { hasText: !!item.title, hasThumbnail: !!item.image },
+                        single: true,
+                      })
+                    }}
+                  />
+                  {linkoutItem.cta_link && (
+                    <CtaButton
+                      link={linkoutItem.cta_link}
+                      text={linkoutItem.cta_text}
+                      onClick={(e) => {
+                        triggerLinkoutEvent({
+                          clicked: 'cta',
+                          linkoutId,
+                          videoId,
+                          cta: { name: linkoutItem.cta_text, link: linkoutItem.cta_link },
+                        })
+                      }}
+                    />
+                  )}
                 </span>
               </div>
             )
@@ -60,13 +98,31 @@ function LinkoutForDesktop({ linkoutId }: { linkoutId: number }) {
 
     const everyoneHasImage = linkoutItem.links.every((item) => item.image)
 
+    triggerLinkoutEvent({
+      linkoutId,
+      videoId,
+      single: false,
+      cta: linkoutItem.cta_link ? { name: linkoutItem.cta_text, link: linkoutItem.cta_link } : undefined,
+    })
     if (everyoneHasImage) {
       return (
         <div key={index}>
           <div className="hide-scrollbar mb-2 flex w-full gap-2">
             {linkoutItem.links.map((item, index) => {
               return (
-                <Link href={checkAndAppendHttps(item.link)} key={index}>
+                <Link
+                  href={checkAndAppendHttps(item.link)}
+                  key={index}
+                  onClick={(e) => {
+                    triggerLinkoutEvent({
+                      linkoutId,
+                      videoId,
+                      clicked: 'link',
+                      link: { hasText: !!item.title, hasThumbnail: !!item.image },
+                      position: index + 1,
+                      single: false,
+                    })
+                  }}>
                   <div
                     style={{ height: 108, width: 108 }}
                     title={item.title ?? undefined}
@@ -86,7 +142,20 @@ function LinkoutForDesktop({ linkoutId }: { linkoutId: number }) {
               )
             })}
           </div>
-          {linkoutItem.cta_link && <CtaButton link={linkoutItem.cta_link} text={linkoutItem.cta_text} />}
+          {linkoutItem.cta_link && (
+            <CtaButton
+              link={linkoutItem.cta_link}
+              text={linkoutItem.cta_text}
+              onClick={(e) => {
+                triggerLinkoutEvent({
+                  clicked: 'cta',
+                  linkoutId,
+                  videoId,
+                  cta: { name: linkoutItem.cta_text, link: linkoutItem.cta_link },
+                })
+              }}
+            />
+          )}
         </div>
       )
     } else {
@@ -96,12 +165,39 @@ function LinkoutForDesktop({ linkoutId }: { linkoutId: number }) {
             {linkoutItem.links.map((item, index) => {
               return (
                 <div key={index} className="mx-2 inline-block align-middle">
-                  <LinkItem key={index} link={item.link} title={item.title} />
+                  <LinkItem
+                    key={index}
+                    link={item.link}
+                    title={item.title}
+                    onClick={(e) => {
+                      triggerLinkoutEvent({
+                        linkoutId,
+                        videoId,
+                        clicked: 'link',
+                        link: { hasText: !!item.title, hasThumbnail: !!item.image },
+                        position: index + 1,
+                        single: false,
+                      })
+                    }}
+                  />
                 </div>
               )
             })}
           </div>
-          {linkoutItem.cta_link && <CtaButton link={linkoutItem.cta_link} text={linkoutItem.cta_text} />}
+          {linkoutItem.cta_link && (
+            <CtaButton
+              link={linkoutItem.cta_link}
+              text={linkoutItem.cta_text}
+              onClick={(e) => {
+                triggerLinkoutEvent({
+                  clicked: 'cta',
+                  linkoutId,
+                  videoId,
+                  cta: { name: linkoutItem.cta_text, link: linkoutItem.cta_link },
+                })
+              }}
+            />
+          )}
         </div>
       )
     }

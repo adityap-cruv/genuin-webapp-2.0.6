@@ -13,7 +13,7 @@ import { type DescriptionArrType } from '@lib/schemas/player/video'
 import Analytics from '@services/analytics'
 import { PlayerProgressBar } from './player-progress-bar'
 import { memo, useEffect, useState } from 'react'
-import { Linkout as LinkoutComponent } from '../../linkout'
+import { Linkout } from '../../linkout'
 import { motion, useAnimationControls } from 'framer-motion'
 import { useShallow } from 'zustand/react/shallow'
 import { fetchLinkouts } from '../../linkout/api'
@@ -179,7 +179,9 @@ function Details({
             />
           </span>
         )}
-        {isVisible && linkouts && <LinkoutComponent.mobile linkouts={linkouts} />}
+        {isVisible && linkouts && linkoutId && (
+          <Linkout.mobile linkouts={linkouts} linkoutId={linkoutId} videoId={videoId} />
+        )}
       </motion.div>
       <div className="z-10">
         <Actions.mobile
