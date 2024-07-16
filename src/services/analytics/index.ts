@@ -1,12 +1,19 @@
 import { axiosInstance } from '@lib/api/instance'
 import { rudderStackTrack } from './useRudderAnalytics'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
+import { useLocalStorage } from '@/lib/stores/local-storage'
 
 export type PropertiesType = Record<string, string | number | undefined>
 
 export const Analytics = {
   track: async ({ eventName, properties }: { eventName: string; properties: PropertiesType }): Promise<void> => {
-    const defaultProperties = { user_id: useGenuinOptions.getState().user?.id, channel: 'genuin web' }
+    const { user, brandId, config } = useGenuinOptions.getState()
+    let channel = !config ? 'genuin web' : 'white label'
+    if (window.parent) {
+      channel = 'web sdk'
+    }
+    const userId = user?.id ? user.id : useLocalStorage.getState().userId
+    const defaultProperties = { user_id: userId, brand_id: brandId, channel }
 
     const updatedProperties = { ...properties, ...defaultProperties }
 

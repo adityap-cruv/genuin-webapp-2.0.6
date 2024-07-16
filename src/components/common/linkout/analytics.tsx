@@ -26,6 +26,7 @@ const Positions: Record<number, string> = {
   4: 'Fourth',
 }
 
+// TODO: Create a JSON object and simplify the function
 export function triggerLinkoutEvent({
   clicked,
   cta,
