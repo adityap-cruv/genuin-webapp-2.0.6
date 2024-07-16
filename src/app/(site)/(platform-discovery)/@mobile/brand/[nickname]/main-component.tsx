@@ -126,10 +126,9 @@ export function MainComponent({ profileData }: CompProps) {
           <Stats brandData={profileData.brand} />
           <Links profileData={profileData} />
         </div>
-        <hr className="my-1 border-t border-tertiary-200" />
+        <hr className="border-t border-tertiary-200" />
         <CommunityList brandId={profileData?.brand?.brand_id ?? 0} scrollYProgress={scrollYProgress} />
       </div>
-      {/* <PlayerModalWrapper /> */}
     </>
   )
 }
