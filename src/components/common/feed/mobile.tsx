@@ -10,6 +10,7 @@ import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import { showInterruption } from '@components/providers/interruption-provider'
 import { useShallow } from 'zustand/react/shallow'
 import { AnimatePresence, motion } from 'framer-motion'
+import { triggerAnalyticsForVideoComplete } from './analytics-func'
 const Player = dynamic(async () => await import('@components/common/player').then((comp) => comp.Player.mobile))
 
 type MobileProps = {
@@ -83,12 +84,12 @@ export function Mobile({ videos, fetchNextPage, isFetchingNextPage, startIndex =
                 return (
                   <Player
                     isActive={isActive}
-                    playIfInViewPort
-                    isFirstPlayerInList={index === 0}
-                    shouldPlay
                     loop
                     videoDetails={item}
                     customSizeBox={videoSizeBox}
+                    onEnded={(event) => {
+                      triggerAnalyticsForVideoComplete(item.video.id)
+                    }}
                   />
                 )
               }}

@@ -264,7 +264,7 @@ function MenuItem({ title, isActive, children, brandName }: ItemProps) {
       onClick={() => {
         if (title === 'Popular' || title === 'Latest') {
           void Analytics.track({
-            eventName: `${title.toLocaleLowerCase()}_clicked`,
+            eventName: `${title} Clicked`,
             properties: {
               brandName,
             },

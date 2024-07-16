@@ -11,7 +11,7 @@ import { setAuthTokenInAxiosInstance, setBrandIdInAxiosInstance } from '@lib/api
 import dynamic from 'next/dynamic'
 import { saveVisitor } from '@lib/api/auth'
 import { notificationsCount } from '@lib/api/notification'
-import { rudderStackIdentify } from '@services/useRudderAnalytics'
+import { rudderStackIdentify } from '@/services/analytics/useRudderAnalytics'
 const RepostModal = dynamic(
   async () => await import('@components/common/modals/repost').then((comp) => comp.RepostModal.ui)
 )

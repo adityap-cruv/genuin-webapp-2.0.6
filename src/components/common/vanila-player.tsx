@@ -1,0 +1,61 @@
+import OpenPlayerJS from 'openplayerjs'
+import { type DetailedHTMLProps, type VideoHTMLAttributes, memo, useEffect, useRef } from 'react'
+
+type Props = DetailedHTMLProps<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement> & {
+  videoSource: string
+  id: string
+}
+
+/**
+ * This player does not have any controls and is used for auto-playing videos.
+ */
+export const VanillaPlayer = memo(function InnerPlayer({ videoSource, ...props }: Props) {
+  const videoRef = useRef<HTMLVideoElement>(null)
+
+  useEffect(() => {
+    if (!videoRef.current) return
+    const player = new OpenPlayerJS(videoRef.current, {
+      controls: {
+        alwaysVisible: false,
+      },
+      mode: 'responsive',
+      forceNative: true,
+      showLoaderOnInit: true,
+      onError: (e) => {},
+      hls: {
+        /**
+         * "startLevel" option typically relates to the initial
+         * quality or bitrate level at which a video stream should
+         * begin playing when adaptive streaming is employed.
+         */
+        startLevel: -1,
+        /**
+         * This will make sure that player will play on other thread rather than main thread.
+         */
+        enableWorker: true,
+        /**
+         * eme -> Encrypted Media Extensions (EME)
+         */
+        emeEnabled: true,
+      },
+    })
+
+    void player.init().then((value) => {
+      void player.load().then(() => {
+        player
+          .getMedia()
+          .play()
+          .then((_) => {
+            // console.log('start playing')
+          })
+          .catch((e) => {
+            // console.log('something went wrong..', e)
+          })
+      })
+    })
+  }, [videoSource])
+
+  return (
+    <video className="absolute h-full w-full object-cover" ref={videoRef} src={videoSource} playsInline {...props} />
+  )
+})

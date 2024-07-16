@@ -9,6 +9,7 @@ import { type VideoSizeBoxType, useGenuinOptions } from '@lib/stores/genuin-opti
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import { showInterruption } from '@components/providers/interruption-provider'
 import { useShallow } from 'zustand/react/shallow'
+import { triggerAnalyticsForVideoComplete } from './analytics-func'
 
 const DesktopPlayer = dynamic(async () => await import('@components/common/player').then((comp) => comp.Player.desktop))
 
@@ -46,7 +47,7 @@ export function Desktop({ fetchNextPage, isFetchingNextPage, videos, className, 
     if ((currentIndex + 1) % 5 === 0) showInterruption()
   }, [currentIndex, videoList.length])
 
-  // TODO improvement pending
+  // TODO: improvement pending
   useEffect(() => {
     setCurrentIndex(0)
   }, [])
@@ -79,14 +80,19 @@ export function Desktop({ fetchNextPage, isFetchingNextPage, videos, className, 
           {videoList.map((item, index) => {
             return (
               <SwiperSlide key={index}>
-                <DesktopPlayer
-                  playIfInViewPort
-                  isFirstPlayerInList={index === 0}
-                  shouldPlay
-                  videoData={{ ...item.video }}
-                  loop
-                  key={index}
-                />
+                {({ isActive }) => {
+                  return (
+                    <DesktopPlayer
+                      isActive={isActive}
+                      videoData={{ ...item.video }}
+                      loop
+                      key={index}
+                      onEnded={(event) => {
+                        triggerAnalyticsForVideoComplete(item.video.id)
+                      }}
+                    />
+                  )
+                }}
               </SwiperSlide>
             )
           })}
@@ -108,7 +114,7 @@ export function SinglePlayer({ sizeBox, className, videoData }: SinglePlayerProp
     <div className={cn('flex h-full w-full', className)}>
       <div style={{ ...sizeBox }} className="hide-scrollbar overflow-x-clip">
         <DesktopPlayer
-          shouldPlay
+          isActive
           videoData={{
             id: videoData.video.id,
             shareUrl: videoData.video.shareUrl,
@@ -120,6 +126,9 @@ export function SinglePlayer({ sizeBox, className, videoData }: SinglePlayerProp
             description: videoData.video.descriptionText,
           }}
           loop
+          onEnded={(event) => {
+            triggerAnalyticsForVideoComplete(videoData.video.id)
+          }}
         />
       </div>
       <DesktopDetails {...videoData} />

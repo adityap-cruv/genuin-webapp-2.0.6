@@ -7,6 +7,7 @@ import { TopBar } from '@components/layouts/mobile/top-bar'
 import { FeedShimmer } from '@components/common/shimmers/feed-shimmer'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import { UnseenMessageRibbon } from '@components/common/unseen-message-ribbon'
+import { useShallow } from 'zustand/react/shallow'
 
 type Props = {
   children?: React.ReactNode
@@ -37,15 +38,16 @@ export function Mobile({
   close,
   isLoading,
   isFetchingNextPage,
-  isError,
   fetchNextVideos,
   unreadMessageCount,
 }: Props) {
-  const { currentIndex, setCurrentIndex, setStateVideos } = useFeedModalStore((state) => ({
-    currentIndex: state.currentIndex,
-    setCurrentIndex: state.setCurrentIndex,
-    setStateVideos: state.setVideos,
-  }))
+  const { currentIndex, setCurrentIndex, setStateVideos } = useFeedModalStore(
+    useShallow((state) => ({
+      currentIndex: state.currentIndex,
+      setCurrentIndex: state.setCurrentIndex,
+      setStateVideos: state.setVideos,
+    }))
+  )
 
   useEffect(() => {
     if (videos) setStateVideos(videos)
@@ -60,7 +62,7 @@ export function Mobile({
   }, [currentIndex])
 
   function InnerContent() {
-    if (isLoading) {
+    if (isLoading || !videos) {
       return (
         <div className="absolute inset-0">
           <FeedShimmer.mobile />
@@ -68,16 +70,15 @@ export function Mobile({
       )
     }
 
-    if (videos)
-      return (
-        <Feed.mobile
-          isError={false}
-          videos={videos}
-          isFetchingNextPage={false}
-          isLoading={false}
-          startIndex={startIndex}
-        />
-      )
+    return (
+      <Feed.mobile
+        isError={false}
+        videos={videos}
+        isFetchingNextPage={false}
+        isLoading={false}
+        startIndex={startIndex}
+      />
+    )
   }
 
   return (

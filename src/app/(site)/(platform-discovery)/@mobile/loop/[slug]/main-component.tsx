@@ -68,7 +68,7 @@ export function MainComponent({ loopDetails }: Props) {
     })
 
     void Analytics.track({
-      eventName: `subscription_clicked`,
+      eventName: 'Subscription Clicked',
       properties: {
         loop_id: loopDetails.chat_id,
         loop_slug: loopDetails.slug,

@@ -28,6 +28,7 @@ export async function Settings(): Promise<{ status: boolean; data: any }> {
     })
 }
 
+// TODO: update naming convention here.
 type NotificationType = {
   conversation_alarm_notification?: boolean | null
   message_notification?: boolean | null

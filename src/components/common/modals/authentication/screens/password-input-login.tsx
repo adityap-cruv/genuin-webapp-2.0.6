@@ -16,7 +16,7 @@ import { usePathname } from 'next/navigation'
 import { Loader } from '@components/ui/loader'
 import { signIn } from 'next-auth/react'
 import Analytics from '@services/analytics'
-import { rudderStackIdentify } from '@services/useRudderAnalytics'
+import { rudderStackIdentify } from '@/services/analytics/useRudderAnalytics'
 
 const passwordSchema = z.object({ password: z.string().min(8) })
 
@@ -66,7 +66,7 @@ export function PasswordInputLogin() {
                 close()
                 void rudderStackIdentify()
                 void Analytics.track({
-                  eventName: 'ks_logged_in',
+                  eventName: 'Ks Logged In',
                   properties: { email: formData.email },
                 })
               } else {

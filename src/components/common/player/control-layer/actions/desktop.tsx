@@ -107,7 +107,7 @@ export function Desktop({
               })
             }
             void Analytics.track({
-              eventName: 'repost',
+              eventName: 'Repost',
               properties,
             })
           }}>
@@ -129,7 +129,7 @@ export function Desktop({
               })
             }
             void Analytics.track({
-              eventName: 'spark',
+              eventName: 'Spark',
               properties,
             })
 
