@@ -85,11 +85,12 @@ export function CommunityList({ brandId, scrollYProgress }: { brandId: number; s
           </div>
         </div>
       )
+
     return (
       <div className="h-full w-full overflow-y-visible">
         {communities.map((item, index) => {
           return (
-            <div key={index} className="my-6">
+            <div key={index} className="mb-6">
               <div className="flex items-center">
                 <CustomAvatar
                   className="bg-slate-500 h-11 w-11 bg-red-40"

@@ -50,7 +50,7 @@ export async function getVideoDetails(slug: string): Promise<VideoPlayerModalTyp
       commentCount: videoDetails.no_of_comments ?? 0,
       shareUrl: videoDetails.share_url,
       slug: videoDetails.slug,
-      source: videoDetails.media_url_m3u8 ?? videoDetails.media_url,
+      source: videoDetails.media_url_m3u8 ? videoDetails.media_url_m3u8 : videoDetails.media_url,
       sparkCount: videoDetails.no_of_sparks ?? 0,
       thumbnail: videoDetails.thumbnail_url ?? '',
       attachedLink: videoDetails.attached_link,
