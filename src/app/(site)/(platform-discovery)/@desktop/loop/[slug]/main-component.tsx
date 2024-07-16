@@ -325,22 +325,35 @@ function LoopCohosts({ slug }: { slug: string }) {
       <div>
         <p className="my-2 text-title-3-bold">Collaborators</p>
         <div className="h-full w-full overflow-auto">
-          {cohosts.map((item, index) => (
-            <Link
-              key={index}
-              href={{
-                pathname: item.brand ? PATH_NAME.brand(item.brand.brand_slug) : PATH_NAME.profile(item.nickname),
-              }}>
-              <ListItem
-                title={item.name ?? ''}
-                subtitle={'@' + item.nickname}
-                description={item.bio ?? ''}
-                image={item.profile_image}
-                isAvatar={item.is_avatar}
-                brand={item.brand ?? null}
-              />
-            </Link>
-          ))}
+          {cohosts.map((item, index) => {
+            if (!item.nickname)
+              return (
+                <ListItem
+                  title={item.name ?? ''}
+                  subtitle={item.phone ?? ''}
+                  description={item.bio ?? ''}
+                  image={item.profile_image}
+                  isAvatar={item.is_avatar}
+                  brand={item.brand ?? null}
+                />
+              )
+            return (
+              <Link
+                key={index}
+                href={{
+                  pathname: item.brand ? PATH_NAME.brand(item.brand.brand_slug) : PATH_NAME.profile(item.nickname),
+                }}>
+                <ListItem
+                  title={item.name ?? ''}
+                  subtitle={'@' + item.nickname}
+                  description={item.bio ?? ''}
+                  image={item.profile_image}
+                  isAvatar={item.is_avatar}
+                  brand={item.brand ?? null}
+                />
+              </Link>
+            )
+          })}
         </div>
       </div>
     )

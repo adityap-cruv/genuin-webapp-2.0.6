@@ -337,17 +337,29 @@ function LoopCollaborators({ slug }: { slug: string }) {
   return (
     <div className="h-full pt-3">
       <div className="h-full w-full overflow-auto">
-        {cohosts.map((item, index) => (
-          <Link key={index} href={{ pathname: PATH_NAME.profile(item.nickname) }}>
-            <CohostTile
-              image={item.profile_image}
-              subtitle={item.bio ?? ''}
-              title={'@' + item.nickname}
-              userName={item.name ?? ''}
-              isAvatar={item.is_avatar}
-            />
-          </Link>
-        ))}
+        {cohosts.map((item, index) => {
+          if (!item.nickname)
+            return (
+              <CohostTile
+                image={item.profile_image}
+                subtitle={item.bio ?? ''}
+                title={item.phone ?? ''}
+                userName={item.name ?? ''}
+                isAvatar={item.is_avatar}
+              />
+            )
+          return (
+            <Link key={index} href={{ pathname: PATH_NAME.profile(item.nickname) }}>
+              <CohostTile
+                image={item.profile_image}
+                subtitle={item.bio ?? ''}
+                title={'@' + item.nickname}
+                userName={item.name ?? ''}
+                isAvatar={item.is_avatar}
+              />
+            </Link>
+          )
+        })}
       </div>
     </div>
   )
