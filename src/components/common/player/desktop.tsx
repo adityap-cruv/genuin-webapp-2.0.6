@@ -17,6 +17,7 @@ type DesktopProps = {
     id: string
     description?: string | null
     sparkCount: number
+    slug: string
   }
   isActive: boolean
   /**
@@ -71,6 +72,7 @@ export function Desktop({ videoData, loop = false, isActive, ...restProps }: Des
           shareUrl={videoData.shareUrl}
           sparkCount={videoData.sparkCount}
           videoId={videoData.id}
+          videoSlug={videoData.slug}
           attachedLink={videoData.attachedLink}
           description={videoData.description}
           isSparked={videoData.isSparked}

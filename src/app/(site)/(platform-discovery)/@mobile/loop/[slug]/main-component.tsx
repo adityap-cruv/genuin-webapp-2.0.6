@@ -1,7 +1,7 @@
 'use client'
 import { Button } from '@components/ui/button'
 import type { LoopDetailsType } from '@lib/schemas/loop/details'
-import { generateDeepLink, getLoopAndCommunityShareString, openGeneratedLink, openModal } from '@lib/utils'
+import { openGeneratedLink, openModal } from '@lib/utils'
 import Image from 'next/image'
 import icLock from '@icons/icLock.svg'
 import { useToast } from '@components/ui/use-toast'
@@ -26,6 +26,7 @@ import { LockIcon } from '@icons/LockIcon'
 import { LoopPrivacyInfo } from '@components/common/loop-privacy-info'
 import { PrivateModal } from '@components/common/modals/private'
 import Analytics from '@services/analytics'
+import { joinAsCollaboratorDeepLink, subscribeDeepLink } from '@/lib/get-deeplink'
 
 let loopDetailsModule: LoopDetailsType
 
@@ -61,26 +62,10 @@ export function MainComponent({ loopDetails }: Props) {
     })
   }
 
-  const handleSubscribeClick = () => {
-    generateDeepLink({
-      action: 'subscribe',
-      contentType: 'loop',
-      description: ldDescription,
-      title: loopDetails.group.group_name,
-      previewImage: null,
-      fromUserName: null,
-      pathName: window.location.pathname,
-      // sourceId: loopDetails.share_string,
-      utmCampaign: 'share',
-      utmMedium: 'web',
-      utmSource: window.location.hostname,
-      community: getLoopAndCommunityShareString(loopDetails.share_url).communityShareString,
-      searchParams,
+  const handleSubscribeClick = async () => {
+    await subscribeDeepLink({ ldDescription, loopDetails, searchParams }).then((generatedLink) => {
+      openGeneratedLink(generatedLink)
     })
-      .then((generatedLink) => {
-        openGeneratedLink(generatedLink)
-      })
-      .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
 
     void Analytics.track({
       eventName: 'Subscription Clicked',
@@ -220,25 +205,12 @@ export function MainComponent({ loopDetails }: Props) {
                 size="custom"
                 variant="outline"
                 className="border border-primary"
-                onClick={() => {
-                  generateDeepLink({
-                    contentType: 'loop',
-                    description: ldDescription,
-                    title: loopDetails.group.group_name,
-                    previewImage: null,
-                    fromUserName: null,
-                    pathName: window.location.pathname,
-                    // sourceId: loopDetails.share_string,
-                    utmCampaign: 'share',
-                    utmMedium: 'web',
-                    utmSource: window.location.hostname,
-                    community: getLoopAndCommunityShareString(loopDetails.share_url).communityShareString,
-                    searchParams,
-                  })
-                    .then((generatedLink) => {
+                onClick={async () => {
+                  await joinAsCollaboratorDeepLink({ ldDescription, loopDetails, searchParams }).then(
+                    (generatedLink) => {
                       openGeneratedLink(generatedLink)
-                    })
-                    .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
+                    }
+                  )
                 }}>
                 <p className="px-4 py-1 text-title-3-bold text-primary" style={{ fontSize: '15px' }}>
                   Join as collaborator

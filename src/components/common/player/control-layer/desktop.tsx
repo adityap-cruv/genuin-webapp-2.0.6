@@ -13,6 +13,7 @@ type DesktopProps = {
   sparkCount: number
   videoId: string
   shareUrl: string
+  videoSlug: string
   attachedLink?: string | null
   description?: string | null
   isSparked?: boolean | null | undefined
@@ -22,6 +23,7 @@ export const Desktop = memo(function Desktop({
   shareUrl,
   sparkCount,
   videoId,
+  videoSlug,
   attachedLink,
   description,
   isSparked,
@@ -70,6 +72,7 @@ export const Desktop = memo(function Desktop({
           shareUrl={shareUrl}
           sparkCount={sparkCount}
           videoId={videoId}
+          videoSlug={videoSlug}
           attachedLink={attachedLink}
           description={description}
           isSparked={isSparked}

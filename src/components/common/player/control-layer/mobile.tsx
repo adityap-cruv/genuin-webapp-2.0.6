@@ -24,6 +24,7 @@ type MobileProps = {
   sparkCount: number
   videoId: string
   shareUrl: string
+  videoSlug?: string
   linkoutId?: number | null
   attachedLink?: string | null
   descriptionArr?: DescriptionArrType | null

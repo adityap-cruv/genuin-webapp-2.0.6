@@ -12,14 +12,16 @@ import Analytics from '@services/analytics'
 import { videoSpark } from '@lib/api/video'
 import { useState } from 'react'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
-import { usePathname } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { ActionItem } from './action-item'
 import { RepostModal } from '@components/common/modals/repost'
+import { repostDeepLink, sparkDeepLink } from '@/lib/get-deeplink'
 
 type DesktopActionsProps = {
   sparkCount: number
   videoId: string
   shareUrl: string
+  videoSlug: string
   attachedLink?: string | null
   description?: string | null
   isSparked?: boolean | null | undefined
@@ -33,6 +35,7 @@ export function Desktop({
   shareUrl,
   sparkCount,
   videoId,
+  videoSlug,
   attachedLink,
   description,
   isSparked, // isPostAllowed,
@@ -48,6 +51,7 @@ export function Desktop({
     user: state.user,
   }))
   const pathname = usePathname()
+  const searchParams = Object.fromEntries(useSearchParams())
 
   async function toggleVideoSpark() {
     await videoSpark(videoId, 2, !sparkData.isSparked).then((res) => {
@@ -77,14 +81,16 @@ export function Desktop({
         )}
         <ActionItem
           title="Repost the video!"
-          onClick={() => {
+          onClick={async () => {
             if (pathname.includes('embed')) {
               window.open(shareUrl, '_blank', 'noopener,noreferrer')
             } else {
               if (user) {
                 RepostModal.open(videoId)
               } else {
-                openModal({ title: 'Get the Genuin app', subtitle: 'Get the app to repost the video.' })
+                await repostDeepLink({ videoSlug, shareUrl, searchParams }).then((generatedLink) => {
+                  openModal({ deepLink: generatedLink, subtitle: 'Get the app to repost the video.' })
+                })
               }
             }
 
@@ -132,9 +138,8 @@ export function Desktop({
             } else {
               user
                 ? await toggleVideoSpark()
-                : openModal({
-                    title: 'Get the Genuin app',
-                    subtitle: 'Get the app to spark the video.',
+                : await sparkDeepLink({ videoSlug, shareUrl, searchParams }).then((generatedLink) => {
+                    openModal({ deepLink: generatedLink, subtitle: 'Get the app to spark the video.' })
                   })
             }
           }}>
