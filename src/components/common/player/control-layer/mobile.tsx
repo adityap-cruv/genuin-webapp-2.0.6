@@ -73,7 +73,7 @@ export const Mobile = memo(function Mobile({ ...props }: MobileProps) {
       <div className="absolute flex h-full w-full items-center justify-center">
         <div
           className={cn(
-            ' rounded-full bg-monochrome-black/40 p-2 transition-all duration-300 ',
+            'rounded-full bg-monochrome-black/40 p-2 transition-all duration-300 ',
             !shouldPlay ? 'scale-125 opacity-100 ease-in' : 'scale-100 opacity-0 ease-out'
           )}>
           <Image

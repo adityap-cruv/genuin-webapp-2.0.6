@@ -1,23 +1,19 @@
 import { create } from 'zustand'
-import { Analytics } from '../../../services/analytics'
-import { useFeedListStore } from '../feed/store'
-import { useFeedModalStore } from '../modals/player-modal/store'
+import { Analytics } from '@services/analytics'
 
 type PlayerControlStoreType = {
+  isPlaying: boolean
   shouldPlay: boolean
   muted: boolean
   toggleMuted: () => void
   play: () => void
   pause: () => void
+  setIsPlaying: (isPlaying: boolean) => void
   toggleShouldPlay: () => void
   setShouldPlay: (shouldPlay: boolean) => void
   duration: number
-  setDuration: (duration: number) => void
-  setCurrentTime: (currentTime: number) => void
   currentTime: number
-  setTimeState: (currentTime: number, duration: number) => void
-  latency: number
-  setLatency: (latency: number) => void
+  setTimeState: (currentTime: number, duration: number, videoId: string) => void
 }
 
 export const usePlayerControlStore = create<PlayerControlStoreType>((set) => {
@@ -42,30 +38,21 @@ export const usePlayerControlStore = create<PlayerControlStoreType>((set) => {
       set({ shouldPlay })
     },
     duration: 0,
-    setDuration(duration) {
-      set({ duration })
-    },
     currentTime: 0,
-    setCurrentTime(currentTime) {
-      set({ currentTime })
+    isPlaying: false,
+    setIsPlaying(isPlaying) {
+      set({ isPlaying })
     },
-    setTimeState(currentTime, duration) {
-      const feedStore = useFeedListStore.getState()
-      const modalStore = useFeedModalStore.getState()
-
-      const videoList = feedStore.videoList.length === 0 ? modalStore.videos : feedStore.videoList
-      const currentIndex = feedStore.videoList.length === 0 ? modalStore.currentIndex : feedStore.currentIndex
-
+    setTimeState(currentTime, duration, videoId) {
       const progressValue = Math.round((currentTime / duration) * 100)
 
       let eventName, progressEvent
 
       if (progressValue >= 25 && progressValue < 26) {
-        eventName = 'video_first_quartile'
-      } else if (progressValue >= 75 && progressValue < 76) {
-        eventName = 'video_third_quartile'
-      } else if (currentTime >= duration) {
-        eventName = 'video_complete'
+        eventName = 'Video First Quartile'
+      }
+      if (progressValue >= 75 && progressValue < 76) {
+        eventName = 'Video Third Quartile'
       }
 
       if (eventName) {
@@ -73,7 +60,7 @@ export const usePlayerControlStore = create<PlayerControlStoreType>((set) => {
           eventName,
           properties: {
             content_category: 'loop',
-            content_id: videoList[currentIndex].video?.id,
+            content_id: videoId,
             event_record_screen: 'feed',
             event_target_screen: 'none',
             video_length: duration,
@@ -85,29 +72,6 @@ export const usePlayerControlStore = create<PlayerControlStoreType>((set) => {
       }
 
       set({ currentTime, duration })
-    },
-    latency: 0,
-    setLatency(latency) {
-      set((state) => {
-        if (latency !== 0) {
-          const { videoList: feedVideoList, currentIndex: feedCurrentIndex } = useFeedListStore.getState()
-          const { videos: modalVideoList, currentIndex: modalCurrentIndex } = useFeedModalStore.getState()
-
-          const finalVideoList = feedVideoList.length === 0 ? modalVideoList : feedVideoList
-          const finalIndex = feedVideoList.length === 0 ? modalCurrentIndex : feedCurrentIndex
-
-          void Analytics.track({
-            eventName: 'Video Started',
-            properties: {
-              latency,
-              video_id: finalVideoList[finalIndex].video.id,
-              video_length: state.duration,
-              video_url: finalVideoList[finalIndex].video.source,
-            },
-          })
-        }
-        return { latency }
-      })
     },
   }
 })

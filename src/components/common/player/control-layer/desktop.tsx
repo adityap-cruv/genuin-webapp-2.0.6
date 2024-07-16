@@ -7,6 +7,7 @@ import { AnimatedMuteIcon } from './animated-mute-icon'
 import Analytics from '@services/analytics'
 import { PlayerProgressBar } from './player-progress-bar'
 import { memo } from 'react'
+import { useShallow } from 'zustand/react/shallow'
 
 type DesktopProps = {
   sparkCount: number
@@ -25,11 +26,13 @@ export const Desktop = memo(function Desktop({
   description,
   isSparked,
 }: DesktopProps) {
-  const { toggleMuted, muted, shouldPlay } = usePlayerControlStore((state) => ({
-    toggleMuted: state.toggleMuted,
-    muted: state.muted,
-    shouldPlay: state.shouldPlay,
-  }))
+  const { toggleMuted, muted, shouldPlay } = usePlayerControlStore(
+    useShallow((state) => ({
+      toggleMuted: state.toggleMuted,
+      muted: state.muted,
+      shouldPlay: state.shouldPlay,
+    }))
+  )
 
   return (
     <div className="relative h-full w-full">

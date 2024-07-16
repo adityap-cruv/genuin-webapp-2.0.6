@@ -51,7 +51,7 @@ export function KsToCbSubdomain() {
             user: { ...sessionData?.user, ksCbRequestStatus: res.data.ks_cb_request_status } as User,
           })
           void Analytics.track({
-            eventName: 'become_cb_request_clicked',
+            eventName: 'Become Cb Request Clicked',
             properties: {},
           })
           setLoading(false)

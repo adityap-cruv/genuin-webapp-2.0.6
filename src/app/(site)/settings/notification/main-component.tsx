@@ -35,6 +35,7 @@ export default function MainComponent() {
     return <Notifications settingsData={settingsData} setSettingsData={setSettingsData} isMobile={isMobile} />
 }
 
+// TODO: create settings data type and separate this component.
 function Notifications({
   settingsData,
   setSettingsData,

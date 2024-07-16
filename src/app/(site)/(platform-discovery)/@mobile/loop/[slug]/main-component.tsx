@@ -83,7 +83,7 @@ export function MainComponent({ loopDetails }: Props) {
       .catch((e) => window.open(process.env.NEXT_PUBLIC_HOST_URL))
 
     void Analytics.track({
-      eventName: `subscription_clicked`,
+      eventName: 'Subscription Clicked',
       properties: {
         loop_id: loopDetails.chat_id,
         loop_slug: loopDetails.slug,

@@ -167,14 +167,12 @@ function Item({ title, isActive, children, notificationCount, brandName }: ItemP
   return (
     <div
       onClick={() => {
-        if (title === 'Popular' || title === 'Latest') {
-          void Analytics.track({
-            eventName: `${title.toLocaleLowerCase()}_clicked`,
-            properties: {
-              brandName,
-            },
-          })
-        }
+        void Analytics.track({
+          eventName: `${title} Clicked`,
+          properties: {
+            brandName,
+          },
+        })
       }}
       className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 hover:bg-monochrome-6/10">
       <div className="relative">

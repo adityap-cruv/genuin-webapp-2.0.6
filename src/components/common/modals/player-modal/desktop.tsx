@@ -18,6 +18,7 @@ import { FeedShimmer } from '@components/common/shimmers/feed-shimmer'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import { UnseenMessageRibbon } from '../../unseen-message-ribbon'
+import { Button } from '@/components/ui/button'
 
 type Props = {
   children?: React.ReactNode
@@ -102,7 +103,7 @@ export function Desktop({
             )}
           </div>
           <span className="flex flex-col gap-y-4">
-            <button
+            <Button
               disabled={currentIndex === 0}
               onClick={() => {
                 setCurrentIndex(currentIndex - 1)
@@ -112,8 +113,8 @@ export function Desktop({
                 currentIndex === 0 ? 'opacity-40' : undefined
               )}>
               <Image src={icUpArrow} alt="" />
-            </button>
-            <button
+            </Button>
+            <Button
               disabled={currentIndex === videos.length - 1}
               onClick={() => {
                 setCurrentIndex(currentIndex + 1)
@@ -123,7 +124,7 @@ export function Desktop({
                 currentIndex === videos?.length - 1 ? 'opacity-40' : undefined
               )}>
               <Image src={icDownArrow} alt="" />
-            </button>
+            </Button>
           </span>
         </span>
       </CustomDialogContent>

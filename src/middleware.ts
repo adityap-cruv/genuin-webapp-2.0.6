@@ -23,9 +23,9 @@ export async function middleware(request: NextRequest) {
   if (browserType) request.cookies.set('browser_type', browserType)
 
   if (host) {
-    const config = getConfig(host)
-    // const config = getConfig('croma45.qa.begenuin.com')
-    request.cookies.set('config_params', JSON.stringify(config))
+    // const config = getConfig(host)
+    const config = getConfig('bpatel117.qa.begenuin.com')
+    // request.cookies.set('config_params', JSON.stringify(config))
     const urlObj = new URL(request.url)
     // eslint-disable-next-line no-prototype-builtins
     if (config && STATIC_PATHNAMES.includes(urlObj.pathname)) {

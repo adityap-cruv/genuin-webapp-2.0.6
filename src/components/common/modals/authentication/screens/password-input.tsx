@@ -45,7 +45,7 @@ export function PasswordInput() {
           paramsToDelete: ['email', 'email_verification_status'],
         })
         void Analytics.track({
-          eventName: 'ks_password_set',
+          eventName: 'Ks Password Set',
           properties: {},
         })
       } else {

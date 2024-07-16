@@ -22,7 +22,7 @@ export default async function Page({ searchParams }: { searchParams: { token: st
 
   if (code === 200) {
     void Analytics.track({
-      eventName: 'ks_email_verify',
+      eventName: 'Ks Email Verify',
       properties: { email },
     })
     return (
