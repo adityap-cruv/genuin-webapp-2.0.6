@@ -107,7 +107,7 @@ function LinkoutForDesktop({ linkoutId, videoId }: { linkoutId: number; videoId:
     if (everyoneHasImage) {
       return (
         <div key={index}>
-          <div className="mb-2 flex w-full gap-2 overflow-auto">
+          <div className="mb-2 flex w-full max-w-full gap-2">
             {linkoutItem.links.map((item, index) => {
               return (
                 <Link
@@ -124,17 +124,16 @@ function LinkoutForDesktop({ linkoutId, videoId }: { linkoutId: number; videoId:
                     })
                   }}>
                   <div
-                    style={{ height: 108, width: 108 }}
                     title={item.title ?? undefined}
-                    className="flex w-16 items-center justify-center rounded-lg border border-tertiary-200 bg-tertiary-100 p-2">
+                    className="flex h-full items-center justify-center rounded-lg border border-tertiary-200 bg-tertiary-100 p-2">
                     {item.image && (
                       <Image
                         src={item.image}
                         alt={item.title ?? 'linkout'}
                         title={item.title ?? undefined}
-                        height={100}
+                        objectFit="fill"
                         width={100}
-                        className="object-fill"
+                        height={100}
                       />
                     )}
                   </div>
