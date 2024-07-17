@@ -60,12 +60,12 @@ export function triggerLinkoutEvent({
     if (single) {
       if (link?.hasText) {
         if (link.hasThumbnail) {
-          eventName = 'Link with Text and Thumbnail'
+          eventName = 'Link With Text And Thumbnail'
         } else {
           eventName = 'Link With Text'
         }
         if (cta) {
-          eventName += ' and CTA'
+          eventName += ' And CTA'
           Object.assign(properties, { cta_name: cta.name, cta_url: cta.link })
         }
       } else if (link?.hasThumbnail) {
