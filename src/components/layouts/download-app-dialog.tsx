@@ -19,11 +19,9 @@ import { AppleIcon } from '@icons/apple-icon'
 import { PlayStoreIcon } from '@icons/playstore-icon'
 
 export function DownloadAppDialog() {
-  const ksCbRequestStatus = useGenuinOptions().user?.ksCbRequestStatus
-  if (!ksCbRequestStatus || ksCbRequestStatus !== 3) return
-
-  const { brandLogo, brandName, isMobile, links } = useGenuinOptions(
+  const genuinOptions = useGenuinOptions(
     useShallow((state) => ({
+      ksCbRequestStatus: state.user?.ksCbRequestStatus,
       brandName: state.config?.name,
       brandLogo: state.config?.logo,
       isMobile: state.isMobile,
@@ -31,8 +29,14 @@ export function DownloadAppDialog() {
         appStoreLink: state.config?.integrations.sdk.ios.appstore_link,
         playStoreLink: state.config?.integrations.sdk.android.playstore_link,
       },
+      email: state.user?.email,
     }))
   )
+
+  const { ksCbRequestStatus, brandLogo, brandName, isMobile, links, email } = genuinOptions
+
+  if (!ksCbRequestStatus || ksCbRequestStatus !== 3) return null
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -107,15 +111,14 @@ export function DownloadAppDialog() {
             </Link>
           </div>
         ) : (
-          <SubmitButton />
+          <SubmitButton email={email} />
         )}
       </DialogContent>
     </Dialog>
   )
 }
 
-function SubmitButton() {
-  const { email } = useGenuinOptions(useShallow((state) => ({ email: state.user?.email })))
+function SubmitButton({ email }: { email: string | null | undefined }) {
   const [status, setStatus] = useState<{ status: boolean; isLoading: boolean }>({
     status: false,
     isLoading: false,
