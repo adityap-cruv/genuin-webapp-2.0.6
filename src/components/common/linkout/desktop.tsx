@@ -107,7 +107,7 @@ function LinkoutForDesktop({ linkoutId, videoId }: { linkoutId: number; videoId:
     if (everyoneHasImage) {
       return (
         <div key={index}>
-          <div className="hide-scrollbar mb-2 flex w-full gap-2">
+          <div className="mb-2 flex w-full gap-2 overflow-auto">
             {linkoutItem.links.map((item, index) => {
               return (
                 <Link

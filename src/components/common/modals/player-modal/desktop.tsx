@@ -93,7 +93,7 @@ export function Desktop({
               onClick={() => {
                 close?.()
               }}
-              className="absolute right-4 top-4 z-10 focus:outline-none">
+              className="absolute right-4 top-4 z-10 outline-none">
               <X className="h-6 w-6" />
             </CustomDialogClose>
             {isLoading ? (
