@@ -8,7 +8,7 @@ import { useSearchParams } from 'next/navigation'
 import { joinCommunityDeepLink } from '@/lib/get-deeplink'
 
 type Props = {
-  userRole?: 'LEADER' | 'MEMBER' | 'REQUESTED'
+  userRole?: 'LEADER' | 'MEMBER' | 'REQUESTED' | null
   handle: string
   id: string
   isCommunityPrivate: boolean

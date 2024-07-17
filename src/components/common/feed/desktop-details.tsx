@@ -104,9 +104,7 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <div>
-                          <LockIcon className="h-4 w-4 stroke-tertiary" />
-                        </div>
+                        <LockIcon className="h-4 w-4 stroke-tertiary" />
                       </TooltipTrigger>
                       <TooltipContent className="w-64 bg-monochrome-black">
                         <p className="text-center text-cap-1-med text-monochrome-white">
@@ -125,6 +123,7 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
                   id={community.id}
                   isCommunityPrivate={community.type === 2}
                   isJoinRequested={false}
+                  userRole={community.userRole}
                 />
                 <Button
                   size="custom"
