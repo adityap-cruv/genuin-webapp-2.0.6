@@ -9,11 +9,13 @@ export const Analytics = {
   track: async ({ eventName, properties }: { eventName: string; properties: PropertiesType }): Promise<void> => {
     const { user, brandId, config } = useGenuinOptions.getState()
     let channel = !config ? 'genuin web' : 'white label'
+    let embedId
     if (window.parent) {
       channel = 'web sdk'
+      embedId = new URLSearchParams(window.location.search).get('id')
     }
     const userId = user?.id ? user.id : useLocalStorage.getState().userId
-    const defaultProperties = { user_id: userId, brand_id: brandId, channel }
+    const defaultProperties = { user_id: userId, brand_id: brandId, channel, embed_id: embedId }
 
     const updatedProperties = { ...properties, ...defaultProperties }
 
