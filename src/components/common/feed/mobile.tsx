@@ -33,38 +33,30 @@ type MobileProps = {
 
 export function Mobile({ videos, fetchNextPage, isFetchingNextPage, startIndex = 0, customSizeBox }: MobileProps) {
   const videoSizeBox = customSizeBox ?? useGenuinOptions().sizeBoxes.default
-  const { setCurrentIndex, setVideoList, currentIndex, videoList } = useFeedListStore((state) => ({
-    setCurrentIndex: state.setCurrentIndex,
-    setVideoList: state.setVideoList,
-    currentIndex: state.currentIndex,
-    videoList: state.videoList,
-  }))
+  const { setCurrentIndex, currentIndex } = useFeedListStore(
+    useShallow((state) => ({
+      setCurrentIndex: state.setCurrentIndex,
+      currentIndex: state.currentIndex,
+    }))
+  )
   // # If comment sheet is open than element should not be scrolled..
   const commentIsOpen = useCommentSheetStore((state) => state.modalIsOpen)
 
   useEffect(() => {
-    if (!isFetchingNextPage && videoList.length - 3 <= currentIndex) {
+    if (!isFetchingNextPage && videos.length - 3 <= currentIndex) {
       fetchNextPage?.()
     }
     if ((currentIndex + 1) % 5 === 0) showInterruption()
   }, [currentIndex])
 
-  useEffect(() => {
-    setCurrentIndex(startIndex)
-  }, [])
-
-  useEffect(() => {
-    setVideoList(videos)
-  }, [videos])
-
-  if (videoList.length === 0)
+  if (videos.length === 0)
     return (
       <div className="flex h-full w-full items-center justify-center bg-tertiary-200">
         <p className="text-title-3-demi text-tertiary">No activity yet</p>
       </div>
     )
 
-  if (videoList.length > 0)
+  if (videos.length > 0)
     return (
       <div style={{ ...videoSizeBox }} className="overflow-clip">
         <Swiper
@@ -73,7 +65,7 @@ export function Mobile({ videos, fetchNextPage, isFetchingNextPage, startIndex =
           direction="vertical"
           initialSlide={startIndex}
           onActiveIndexChange={(swiper) => {
-            setCurrentIndex(swiper.activeIndex)
+            setCurrentIndex(swiper.activeIndex, videos[currentIndex].video.id)
           }}
           allowSlideNext={!commentIsOpen}
           allowSlidePrev={!commentIsOpen}
@@ -96,23 +88,17 @@ export function Mobile({ videos, fetchNextPage, isFetchingNextPage, startIndex =
             </SwiperSlide>
           ))}
         </Swiper>
-        <InfinityViewBox />
+        <InfinityViewBox videoDetails={videos[currentIndex]} />
       </div>
     )
 }
 
-function InfinityViewBox() {
+function InfinityViewBox({ videoDetails }: { videoDetails: VideoPlayerModalType }) {
   const [isVisible, setIsVisible] = useState(true)
-  const { videoList, currentIndex } = useFeedListStore(
-    useShallow((state) => ({
-      currentIndex: state.currentIndex,
-      videoList: state.videoList,
-    }))
-  )
-  const videoDetails = videoList[currentIndex]
+  const { currentIndex } = useFeedListStore()
 
   useEffect(() => {
-    if (!videoList[currentIndex].video.linkoutId) return
+    if (!videoDetails.video.linkoutId) return
     let timeoutId: any
     timeoutId = setTimeout(() => {
       setIsVisible(false)
