@@ -10,6 +10,7 @@ export const Analytics = {
     const { user, brandId, config } = useGenuinOptions.getState()
     let channel = !config ? 'genuin web' : 'white label'
     let embedId
+    const environment = config ? config.environment : undefined
     if (window !== window.parent) {
       channel = 'web sdk'
       const pathName = window.location.pathname
@@ -18,7 +19,13 @@ export const Analytics = {
       embedId = pathArr[embedIndex + 1]
     }
     const userId = user?.id ? user.id : useLocalStorage.getState().userId
-    const defaultProperties = { user_id: userId, brand_id: brandId || undefined, channel, embed_id: embedId }
+    const defaultProperties = {
+      user_id: userId,
+      brand_id: brandId || undefined,
+      channel,
+      embed_id: embedId,
+      environment,
+    }
 
     const updatedProperties = { ...properties, ...defaultProperties }
 
