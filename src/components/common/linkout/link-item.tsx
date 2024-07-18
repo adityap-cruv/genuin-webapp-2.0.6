@@ -27,7 +27,7 @@ export function LinkItem({ link, hasImage = false, title, forMobile = false, onC
       <span className="flex items-center gap-2">
         {!title && <LinkIcon className={cn('h-4 w-4 shrink-0', forMobile && 'stroke-monochrome-white')} />}
         <p className={cn('line-clamp-1 break-all text-body-1-demi', forMobile && 'text-monochrome-white')}>
-          {title ?? link}
+          {title || link}
         </p>
       </span>
       {!hasImage && !forMobile && <ChevronRight className="h-4 w-4 shrink-0" />}
