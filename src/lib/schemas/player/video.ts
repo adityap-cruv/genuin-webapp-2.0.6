@@ -57,7 +57,7 @@ const communitySchema = z.object({
   id: z.string(),
   type: z.number().nullish(),
   shareUrl: z.string(),
-  userRole: z.enum(['LEADER', 'MEMBER']).nullish(),
+  userRole: z.enum(['LEADER', 'MEMBER', 'REQUESTED']).nullish(),
   brand: BrandSchema.optional(),
   isJoinRequested: z.boolean().optional(),
 })
