@@ -1,7 +1,7 @@
 import dynamic from 'next/dynamic'
 import { DesktopDetails } from './desktop-details'
 import { useFeedListStore } from './store'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { cn } from '@lib/utils'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Mousewheel, Keyboard } from 'swiper/modules'
@@ -14,13 +14,9 @@ import { triggerAnalyticsForVideoComplete } from './analytics-func'
 const DesktopPlayer = dynamic(async () => await import('@components/common/player').then((comp) => comp.Player.desktop))
 
 type DesktopProps = {
-  // queryFuncResult: UseInfiniteQueryResult
-  videos?: VideoPlayerModalType[]
-  isLoading: boolean
-  isError: boolean
-  hasNextPage?: boolean
   isFetchingNextPage: boolean
   fetchNextPage?: () => void
+  videosRef: React.MutableRefObject<VideoPlayerModalType[]>
   className?: string
   /**
    * Pass this parameter if you want to configure custom size box.
@@ -28,78 +24,73 @@ type DesktopProps = {
   customSizeBox?: VideoSizeBoxType
 }
 
-export function Desktop({ fetchNextPage, isFetchingNextPage, videos, className, customSizeBox }: DesktopProps) {
+const SHELLS = Array.from({ length: 100 })
+
+export function Desktop({ fetchNextPage, className, customSizeBox, videosRef, isFetchingNextPage }: DesktopProps) {
+  const [allowSlideNext, setAllowSlideNext] = useState(videosRef.current.length > 0)
   const sizeBox =
     customSizeBox ?? useGenuinOptions(useShallow((state) => ({ sizeBox: state.sizeBoxes.default }))).sizeBox
-  const { setNewVideos, videoList, setCurrentIndex, currentIndex } = useFeedListStore(
-    useShallow((state) => ({
-      setNewVideos: state.setVideoList,
-      videoList: state.videoList,
-      setCurrentIndex: state.setCurrentIndex,
-      currentIndex: state.currentIndex,
-    }))
+  const { currentIndex, setCurrentIndex } = useFeedListStore(
+    useShallow((state) => ({ currentIndex: state.currentIndex, setCurrentIndex: state.setCurrentIndex }))
   )
 
   useEffect(() => {
-    if (videoList.length !== 0 && currentIndex > videoList.length - 3 && !isFetchingNextPage) {
+    const videos = videosRef.current
+    if (videos && !isFetchingNextPage && currentIndex === videos.length - 3) {
       fetchNextPage?.()
     }
     if ((currentIndex + 1) % 5 === 0) showInterruption()
-  }, [currentIndex, videoList.length])
+    if (videosRef.current.length - 1 === currentIndex) {
+      setAllowSlideNext(false)
+    } else {
+      if (!allowSlideNext) setAllowSlideNext(true)
+    }
+  }, [currentIndex])
 
-  // TODO: improvement pending
-  useEffect(() => {
-    setCurrentIndex(0)
-  }, [])
-
-  useEffect(() => {
-    setNewVideos(videos ?? [])
-  }, [videos])
-
-  if (videoList.length === 0)
+  if (!videosRef.current || videosRef.current.length === 0)
     return (
       <div className={cn('flex aspect-reel h-full items-center justify-center bg-tertiary-200', className)}>
         <p className="text-title-3-demi text-tertiary">No activity yet</p>
       </div>
     )
-
-  if (videoList.length > 0)
-    return (
-      <div className={cn('flex h-full w-full', className)}>
-        <Swiper
-          onActiveIndexChange={(swiper) => {
-            setCurrentIndex(swiper.activeIndex)
-          }}
-          keyboard={true}
-          initialSlide={0}
-          speed={500}
-          modules={[Mousewheel, Keyboard]}
-          mousewheel
-          style={{ width: sizeBox.width, height: sizeBox.height }}
-          direction="vertical">
-          {videoList.map((item, index) => {
-            return (
-              <SwiperSlide key={index}>
-                {({ isActive }) => {
+  return (
+    <div className={cn('flex h-full w-full', className)}>
+      <Swiper
+        onActiveIndexChange={(swiper) => {
+          setCurrentIndex(swiper.activeIndex, videosRef.current[currentIndex].video.id)
+        }}
+        allowSlideNext={allowSlideNext}
+        keyboard={true}
+        initialSlide={0}
+        speed={500}
+        modules={[Mousewheel, Keyboard]}
+        mousewheel
+        style={{ width: sizeBox.width, height: sizeBox.height }}
+        direction="vertical">
+        {SHELLS.map((item, index) => {
+          return (
+            <SwiperSlide key={index}>
+              {({ isActive, isPrev, isNext }) => {
+                if (videosRef.current && (isActive || isPrev || isNext))
                   return (
                     <DesktopPlayer
                       isActive={isActive}
-                      videoData={{ ...item.video }}
+                      videoData={{ ...videosRef.current[index].video }}
                       loop
                       key={index}
                       onEnded={(event) => {
-                        triggerAnalyticsForVideoComplete(item.video.id)
+                        triggerAnalyticsForVideoComplete(videosRef.current[index].video.id)
                       }}
                     />
                   )
-                }}
-              </SwiperSlide>
-            )
-          })}
-        </Swiper>
-        {videoList[currentIndex]?.video && <DesktopDetails {...videoList[currentIndex]} />}
-      </div>
-    )
+              }}
+            </SwiperSlide>
+          )
+        })}
+      </Swiper>
+      {videosRef.current?.[currentIndex]?.video && <DesktopDetails {...videosRef.current[currentIndex]} />}
+    </div>
+  )
 }
 
 type SinglePlayerProps = {

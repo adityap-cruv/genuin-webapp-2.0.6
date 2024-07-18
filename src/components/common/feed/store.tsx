@@ -1,23 +1,16 @@
 import { create } from 'zustand'
 import { usePlayerControlStore } from '../player/player-control-store'
 import Analytics from '@services/analytics'
-import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 
 type FeedListStoreType = {
-  videoList: VideoPlayerModalType[]
-  setVideoList: (list: VideoPlayerModalType[]) => void
   currentIndex: number
-  setCurrentIndex: (index: number) => void
+  setCurrentIndex: (index: number, oldVideoId: string) => void
 }
 
 export const useFeedListStore = create<FeedListStoreType>((set) => {
   return {
-    videoList: [],
-    setVideoList(list) {
-      set({ videoList: list })
-    },
     currentIndex: 0,
-    setCurrentIndex(index) {
+    setCurrentIndex(index, videoId) {
       set((state) => {
         // TODO: This code is being repeated in multiple places (player-modal). Refactor it.
         const { duration, currentTime } = usePlayerControlStore.getState()
@@ -28,7 +21,7 @@ export const useFeedListStore = create<FeedListStoreType>((set) => {
 
         const properties = {
           content_category: 'loop',
-          content_id: state.videoList[state.currentIndex]?.video?.id,
+          content_id: videoId,
           event_record_screen: 'feed',
           event_target_screen: 'none',
           video_length: duration,
