@@ -11,7 +11,7 @@ export function ClaimBrandProfile() {
   }))
 
   function cleanURL(url: any) {
-    return url.replace(/^(https?:\/\/)?(www\.)?/, '')
+    return url.replace(/^(https?:\/\/)?(www\.)?/, '').replace(/\/$/, '')
   }
   return (
     <ModalShell>
