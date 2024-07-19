@@ -1,94 +1,112 @@
 import dynamic from 'next/dynamic'
 import { DesktopDetails } from './desktop-details'
-import { useFeedListStore } from './store'
-import { useEffect, useState } from 'react'
+import { type ComponentProps, useContext } from 'react'
 import { cn } from '@lib/utils'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Mousewheel, Keyboard } from 'swiper/modules'
 import { type VideoSizeBoxType, useGenuinOptions } from '@lib/stores/genuin-options'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
-import { showInterruption } from '@components/providers/interruption-provider'
 import { useShallow } from 'zustand/react/shallow'
 import { triggerAnalyticsForVideoComplete } from './analytics-func'
+import { FeedContext, FeedContextProvider } from './feed-provider'
+import { FeedShimmer } from '../shimmers/feed-shimmer'
 
 const DesktopPlayer = dynamic(async () => await import('@components/common/player').then((comp) => comp.Player.desktop))
 
 type DesktopProps = {
+  isLoading: boolean
   isFetchingNextPage: boolean
   fetchNextPage?: () => void
-  videosRef: React.MutableRefObject<VideoPlayerModalType[]>
+  videos: VideoPlayerModalType[]
+  hasNextPage: boolean
+  startIndex: number
   className?: string
   /**
    * Pass this parameter if you want to configure custom size box.
    */
   customSizeBox?: VideoSizeBoxType
+} & ComponentProps<'div'>
+
+export function Desktop({
+  fetchNextPage,
+  className,
+  customSizeBox,
+  videos,
+  isFetchingNextPage,
+  hasNextPage,
+  isLoading,
+  startIndex,
+  ...restProps
+}: DesktopProps) {
+  if (isLoading) {
+    return <FeedShimmer.desktop />
+  }
+
+  return (
+    <FeedContextProvider
+      startIndex={startIndex}
+      videos={videos}
+      fetchNextPage={fetchNextPage}
+      hasNextPage={hasNextPage}
+      isFetchingNextPage={isFetchingNextPage}>
+      <SwiperRenderer customSizeBox={customSizeBox} startIndex={startIndex} {...restProps} />
+    </FeedContextProvider>
+  )
 }
 
-const SHELLS = Array.from({ length: 100 })
+type SwiperRendererProps = { customSizeBox?: VideoSizeBoxType; startIndex: number } & ComponentProps<'div'>
 
-export function Desktop({ fetchNextPage, className, customSizeBox, videosRef, isFetchingNextPage }: DesktopProps) {
-  const [allowSlideNext, setAllowSlideNext] = useState(videosRef.current.length > 0)
+const SHELLS = Array.from({ length: 100 })
+function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: SwiperRendererProps) {
   const sizeBox =
     customSizeBox ?? useGenuinOptions(useShallow((state) => ({ sizeBox: state.sizeBoxes.default }))).sizeBox
-  const { currentIndex, setCurrentIndex } = useFeedListStore(
-    useShallow((state) => ({ currentIndex: state.currentIndex, setCurrentIndex: state.setCurrentIndex }))
-  )
+  const { allowSlideNext, currentIndex, updateCurrentIndex, videos } = useContext(FeedContext)
 
-  useEffect(() => {
-    const videos = videosRef.current
-    if (videos && !isFetchingNextPage && currentIndex === videos.length - 3) {
-      fetchNextPage?.()
-    }
-    if ((currentIndex + 1) % 5 === 0) showInterruption()
-    if (videosRef.current.length - 1 === currentIndex) {
-      setAllowSlideNext(false)
-    } else {
-      if (!allowSlideNext) setAllowSlideNext(true)
-    }
-  }, [currentIndex])
-
-  if (!videosRef.current || videosRef.current.length === 0)
+  if (!videos || videos.length === 0)
     return (
       <div className={cn('flex aspect-reel h-full items-center justify-center bg-tertiary-200', className)}>
         <p className="text-title-3-demi text-tertiary">No activity yet</p>
       </div>
     )
+
   return (
-    <div className={cn('flex h-full w-full', className)}>
+    <div className={cn('flex h-full w-full', className)} {...restProps}>
       <Swiper
         onActiveIndexChange={(swiper) => {
-          setCurrentIndex(swiper.activeIndex, videosRef.current[currentIndex].video.id)
+          updateCurrentIndex(swiper.activeIndex, videos[currentIndex].video.id)
         }}
         allowSlideNext={allowSlideNext}
         keyboard={true}
-        initialSlide={0}
+        initialSlide={startIndex}
         speed={500}
+        shortSwipes={false}
         modules={[Mousewheel, Keyboard]}
         mousewheel
         style={{ width: sizeBox.width, height: sizeBox.height }}
         direction="vertical">
-        {SHELLS.map((item, index) => {
+        {SHELLS.map((_, index) => {
           return (
             <SwiperSlide key={index}>
               {({ isActive, isPrev, isNext }) => {
-                if (videosRef.current && (isActive || isPrev || isNext))
-                  return (
-                    <DesktopPlayer
-                      isActive={isActive}
-                      videoData={{ ...videosRef.current[index].video }}
-                      loop
-                      key={index}
-                      onEnded={(event) => {
-                        triggerAnalyticsForVideoComplete(videosRef.current[index].video.id)
-                      }}
-                    />
-                  )
+                if (isActive || isPrev || isNext)
+                  if (videos[index])
+                    return (
+                      <DesktopPlayer
+                        isActive={isActive}
+                        videoData={{ ...videos[index].video }}
+                        loop
+                        key={index}
+                        onEnded={(event) => {
+                          triggerAnalyticsForVideoComplete(videos[index].video.id)
+                        }}
+                      />
+                    )
               }}
             </SwiperSlide>
           )
         })}
       </Swiper>
-      {videosRef.current?.[currentIndex]?.video && <DesktopDetails {...videosRef.current[currentIndex]} />}
+      <DesktopDetails {...videos[currentIndex]} />
     </div>
   )
 }
