@@ -82,7 +82,7 @@ export function Desktop({
           <div
             style={{ height: sizeBox.modal.height, width: sizeBox.modal.width }}
             className="relative min-w-[800px] overflow-clip rounded-2xl bg-monochrome-white">
-            {unreadMessageCount && unreadMessageCount !== 0 && (
+            {unreadMessageCount !== 0 && (
               <div
                 style={{ width: sizeBox.modal.player.width }}
                 className="absolute inset-0 z-10 flex h-fit w-full items-center justify-center">
@@ -93,7 +93,7 @@ export function Desktop({
               onClick={() => {
                 close?.()
               }}
-              className="absolute right-4 top-4 z-10 outline-none">
+              className="absolute right-4 top-4 z-10 border-none outline-none">
               <X className="h-6 w-6" />
             </CustomDialogClose>
             {isLoading ? (
@@ -187,7 +187,7 @@ export function Profile({
               onClick={() => {
                 close?.()
               }}
-              className="absolute right-4 top-4 z-10">
+              className="absolute right-4 top-4 z-10 border-none outline-none">
               <X className="h-6 w-6" />
             </CustomDialogClose>
             {isLoading ? (

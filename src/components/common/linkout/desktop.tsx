@@ -125,7 +125,7 @@ function LinkoutForDesktop({ linkoutId, videoId }: { linkoutId: number; videoId:
                   }}>
                   <div
                     title={item.title ?? undefined}
-                    className="flex h-full items-center justify-center rounded-lg border border-tertiary-200 bg-tertiary-100 p-2">
+                    className="flex h-full items-center justify-center rounded-lg border border-tertiary-200 bg-tertiary-100 p-2 hover:shadow-lg">
                     {item.image && (
                       <Image
                         src={item.image}
