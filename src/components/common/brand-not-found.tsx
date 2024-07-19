@@ -7,7 +7,7 @@ import { ContactUs } from './modals/contact-us'
 export function BrandNotFound() {
   return (
     <>
-      <TopBar />
+      <TopBar showUserTick={false} showSearchBar={false} />
       <div className="-mt-20 hidden justify-center xl:container lg:flex xl:px-0">
         <div className="relative flex h-screen flex-col justify-center">
           <p className="mb-6 text-new-h2">This URL doesn't exist...yet</p>
