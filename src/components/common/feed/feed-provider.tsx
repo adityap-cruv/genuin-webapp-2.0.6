@@ -90,7 +90,7 @@ export function FeedContextProvider({
     if (!videos || videos.length === 0) return
 
     if (!isFetchingNextPage && currentIndex === videos.length - 3 && hasNextPage) {
-      // fetchNextPage?.()
+      fetchNextPage?.()
     }
     if ((currentIndex + 1) % 5 === 0) {
       showInterruption()

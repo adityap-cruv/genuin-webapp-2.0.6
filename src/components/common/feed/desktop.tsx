@@ -79,7 +79,6 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
         keyboard={true}
         initialSlide={startIndex}
         speed={500}
-        shortSwipes={false}
         modules={[Mousewheel, Keyboard]}
         mousewheel
         style={{ width: sizeBox.width, height: sizeBox.height }}
