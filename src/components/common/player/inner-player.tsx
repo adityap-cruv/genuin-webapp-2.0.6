@@ -5,9 +5,13 @@ import {
   type VideoHTMLAttributes,
   memo,
   useEffect,
+  useState,
   useRef,
 } from 'react'
 import { usePlayerControlStore } from './player-control-store'
+import { cn } from '@/lib/utils'
+import icPlay from '@icons/player-controls/icPlay.svg'
+import Image from 'next/image'
 import { useShallow } from 'zustand/react/shallow'
 import Analytics from '@/services/analytics'
 
@@ -45,12 +49,12 @@ export const InnerPlayer = memo(function InnerPlayer({
 }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<OpenPlayerJS | null>(null)
-  const { shouldPlay, muted, setTimeState, setIsPlaying } = usePlayerControlStore(
+  const [isPlaying, setIsPlaying] = useState(false)
+  const { shouldPlay, muted, setTimeState } = usePlayerControlStore(
     useShallow((state) => ({
       shouldPlay: state.shouldPlay,
       muted: state.muted,
       setTimeState: state.setTimeState,
-      setIsPlaying: state.setIsPlaying,
     }))
   )
 
@@ -125,31 +129,45 @@ export const InnerPlayer = memo(function InnerPlayer({
   }
 
   return (
-    <video
-      className="absolute h-full w-full object-cover"
-      poster={poster}
-      ref={videoRef}
-      muted={muted}
-      src={videoSource}
-      playsInline
-      onPlay={onPlay}
-      onPlaying={(ev) => {
-        setIsPlaying(true)
-        onPlaying?.(ev)
-      }}
-      onError={onError}
-      onTimeUpdate={onTimeUpdateEventHandler}
-      onPause={(ev) => {
-        setIsPlaying(false)
-        onPause?.(ev)
-      }}
-      onEnded={(e) => {
-        onEnded?.(e)
-        if (loop && playerRef.current) {
-          void playerRef.current.play()
-        }
-      }}
-      {...props}
-    />
+    <div className="relative h-full w-full">
+      <video
+        className="absolute h-full w-full bg-cover bg-center bg-no-repeat object-cover"
+        style={{ backgroundImage: `url(${poster})` }}
+        poster={poster}
+        ref={videoRef}
+        muted={muted}
+        src={videoSource}
+        playsInline
+        onPlay={onPlay}
+        onPlaying={(ev) => {
+          setIsPlaying(true)
+          onPlaying?.(ev)
+        }}
+        onError={onError}
+        onTimeUpdate={onTimeUpdateEventHandler}
+        onPause={(ev) => {
+          setIsPlaying(false)
+          onPause?.(ev)
+        }}
+        onEnded={(e) => {
+          onEnded?.(e)
+          if (loop && playerRef.current) {
+            void playerRef.current.play()
+          }
+        }}
+        {...props}
+      />
+      <div
+        className={cn(
+          'absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-monochrome-black/40 p-2 transition-all duration-100',
+          !isPlaying ? 'scale-125 opacity-100 ease-in' : 'scale-100 opacity-0 ease-out'
+        )}>
+        <Image
+          src={icPlay}
+          alt="volume-control"
+          className={cn('pointer-events-none z-10 cursor-pointer rounded-full')}
+        />
+      </div>
+    </div>
   )
 })

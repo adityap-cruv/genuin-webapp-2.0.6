@@ -3,7 +3,6 @@ import { z } from 'zod'
 const VideoSchema = z.object({
   id: z.string(),
   thumbnail: z.string().nullish(),
-  sparkCount: z.number().default(0),
   viewCount: z.number().default(0),
 })
 
