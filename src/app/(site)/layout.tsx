@@ -25,7 +25,9 @@ export default async function RootLayout(props: any) {
 
   if (configParams) {
     try {
+      console.log('config params::', configParams)
       config = await getEmbedConfig(configParams)
+      // console.log('config', config)
     } catch (e) {
       // eslint-disable-next-line no-console
       console.log('error::', e)

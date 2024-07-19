@@ -16,7 +16,13 @@ import { SearchBar } from '@components/common/search-bar'
 import { AccountIcon, NotificationIcon } from '@icons/settings-side-bar-icons'
 import { usePathname, useRouter } from 'next/navigation'
 
-export function TopBar() {
+export function TopBar({
+  showUserTick = true,
+  showSearchBar = true,
+}: {
+  showUserTick?: boolean
+  showSearchBar?: boolean
+}) {
   const { config, embed: isEmbed } = useGenuinOptions()
 
   return (
@@ -31,17 +37,9 @@ export function TopBar() {
             <img src={config.slogan.image} className="h-10 object-cover" alt="brand_web_logo" />
           )}
           <div className="flex gap-x-3">
-            <SearchBar.desktop />
+            {showSearchBar && <SearchBar.desktop />}
             {!isEmbed ? (
               <>
-                {/* <Link href={{ pathname: PATH_NAME.careers() }}>
-                  <Button
-                    variant="outline"
-                    size="custom"
-                    className="px-4 py-3 hover:bg-new-off-black hover:text-new-off-white">
-                    <p className="text-new-para-2 font-semibold">We're hiring!</p>
-                  </Button>
-                </Link> */}
                 <DownloadAppDialog>
                   <Button
                     variant="default"
@@ -52,7 +50,7 @@ export function TopBar() {
                 </DownloadAppDialog>
               </>
             ) : (
-              <UserTick />
+              showUserTick && <UserTick />
             )}
           </div>
         </nav>
