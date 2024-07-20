@@ -36,7 +36,7 @@ export function parseVideosFromLoop(
         shareUrl: item.share_url,
         source: item.media_url_m3u8 ?? item.media_url,
         sparkCount: item.no_of_sparks ?? 0,
-        thumbnail: item.thumbnail_url_s ?? '',
+        thumbnail: item.thumbnail_url ?? '',
         attachedLink: item.attached_link,
         slug: item.slug,
         descriptionArr: tryJsonParse(item.description_data),
@@ -105,7 +105,7 @@ export function parseFeedResponse(videos: FeedResponseType) {
         slug: video.messages[0].slug,
         source: video.messages[0].media_url_m3u8 ?? video.messages[0].media_url,
         sparkCount: video.messages[0].no_of_sparks,
-        thumbnail: video.messages[0].thumbnail_url_s ?? '',
+        thumbnail: video.messages[0].thumbnail_url ?? '',
         attachedLink: video.messages[0].attached_link,
         isSparked: video.messages[0].is_sparked,
         descriptionArr: video.messages[0].description_data
@@ -160,7 +160,7 @@ export function parseProfileCommunityResponse(communities: ProfileCommunityRespo
           videos: item.messages.map((item) => {
             return {
               id: item.message_id,
-              thumbnail: item.thumbnail_url_s,
+              thumbnail: item.thumbnail_url,
               viewCount: item.no_of_views,
             }
           }),
@@ -184,7 +184,7 @@ export function parseProfileLoopResponse(loops: ProfileLoopResponseType[]) {
           })
         : null,
       videos: item.messages.map((item) => {
-        return { id: item.message_id, viewCount: item.no_of_views, thumbnail: item.thumbnail_url_s }
+        return { id: item.message_id, viewCount: item.no_of_views, thumbnail: item.thumbnail_url }
       }),
     }
   })
