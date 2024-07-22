@@ -1,6 +1,6 @@
 import dynamic from 'next/dynamic'
 import { DesktopDetails } from './desktop-details'
-import { type ComponentProps, useContext } from 'react'
+import { type ComponentProps, memo, useContext } from 'react'
 import { cn } from '@lib/utils'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Mousewheel, Keyboard } from 'swiper/modules'
@@ -17,7 +17,7 @@ type DesktopProps = {
   isLoading: boolean
   isFetchingNextPage: boolean
   fetchNextPage?: () => void
-  videos: VideoPlayerModalType[]
+  videosRef: React.MutableRefObject<VideoPlayerModalType[]>
   hasNextPage: boolean
   startIndex: number
   className?: string
@@ -27,32 +27,32 @@ type DesktopProps = {
   customSizeBox?: VideoSizeBoxType
 } & ComponentProps<'div'>
 
-export function Desktop({
+export const Desktop = memo(function Desktop({
   fetchNextPage,
   className,
   customSizeBox,
-  videos,
+  videosRef,
   isFetchingNextPage,
   hasNextPage,
   isLoading,
   startIndex,
   ...restProps
 }: DesktopProps) {
-  if (isLoading) {
+  if (isLoading || videosRef.current.length === 0) {
     return <FeedShimmer.desktop />
   }
 
   return (
     <FeedContextProvider
       startIndex={startIndex}
-      videos={videos}
+      videosRef={videosRef}
       fetchNextPage={fetchNextPage}
       hasNextPage={hasNextPage}
       isFetchingNextPage={isFetchingNextPage}>
       <SwiperRenderer customSizeBox={customSizeBox} startIndex={startIndex} {...restProps} />
     </FeedContextProvider>
   )
-}
+})
 
 type SwiperRendererProps = { customSizeBox?: VideoSizeBoxType; startIndex: number } & ComponentProps<'div'>
 
@@ -60,9 +60,9 @@ const SHELLS = Array.from({ length: 100 })
 function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: SwiperRendererProps) {
   const sizeBox =
     customSizeBox ?? useGenuinOptions(useShallow((state) => ({ sizeBox: state.sizeBoxes.default }))).sizeBox
-  const { allowSlideNext, currentIndex, updateCurrentIndex, videos } = useContext(FeedContext)
+  const { allowSlideNext, currentIndex, updateCurrentIndex, videosRef } = useContext(FeedContext)
 
-  if (!videos || videos.length === 0)
+  if (!videosRef.current || videosRef.current.length === 0)
     return (
       <div className={cn('flex aspect-reel h-full items-center justify-center bg-tertiary-200', className)}>
         <p className="text-title-3-demi text-tertiary">No activity yet</p>
@@ -73,7 +73,7 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
     <div className={cn('flex h-full w-full', className)} {...restProps}>
       <Swiper
         onActiveIndexChange={(swiper) => {
-          updateCurrentIndex(swiper.activeIndex, videos[currentIndex].video.id)
+          updateCurrentIndex(swiper.activeIndex, videosRef.current[currentIndex].video.id)
         }}
         allowSlideNext={allowSlideNext}
         keyboard={true}
@@ -88,15 +88,15 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
             <SwiperSlide key={index}>
               {({ isActive, isPrev, isNext }) => {
                 if (isActive || isPrev || isNext)
-                  if (videos[index])
+                  if (videosRef.current[index])
                     return (
                       <DesktopPlayer
                         isActive={isActive}
-                        videoData={{ ...videos[index].video }}
+                        videoData={{ ...videosRef.current[index].video }}
                         loop
                         key={index}
                         onEnded={(event) => {
-                          triggerAnalyticsForVideoComplete(videos[index].video.id)
+                          triggerAnalyticsForVideoComplete(videosRef.current[index].video.id)
                         }}
                       />
                     )
@@ -105,7 +105,7 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
           )
         })}
       </Swiper>
-      <DesktopDetails {...videos[currentIndex]} />
+      <DesktopDetails {...videosRef.current[currentIndex]} />
     </div>
   )
 }

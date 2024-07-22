@@ -8,20 +8,20 @@ type FeedContextType = {
   currentIndex: number
   updateCurrentIndex: (index: number, videoId: string) => void
   allowSlideNext: boolean
-  videos: VideoPlayerModalType[]
+  videosRef: React.MutableRefObject<VideoPlayerModalType[]>
 }
 
 export const FeedContext = createContext<FeedContextType>({
   currentIndex: 0,
   updateCurrentIndex: () => {},
   allowSlideNext: true,
-  videos: [],
+  videosRef: { current: [] },
 })
 
 type FeedContextProviderType = {
   children: React.ReactNode
   startIndex: number
-  videos: VideoPlayerModalType[]
+  videosRef: React.MutableRefObject<VideoPlayerModalType[]>
   fetchNextPage?: () => void
   isFetchingNextPage?: boolean
   hasNextPage: boolean
@@ -30,7 +30,7 @@ type FeedContextProviderType = {
 export function FeedContextProvider({
   children,
   startIndex,
-  videos,
+  videosRef,
   isFetchingNextPage,
   fetchNextPage,
   hasNextPage,
@@ -46,7 +46,7 @@ export function FeedContextProvider({
 
     const properties = {
       content_category: 'loop',
-      content_id: videos[currentIndex].video.id,
+      content_id: videosRef.current[currentIndex].video.id,
       event_record_screen: 'feed',
       event_target_screen: 'none',
       video_length: duration,
@@ -87,24 +87,24 @@ export function FeedContextProvider({
   }, [])
 
   useEffect(() => {
-    if (!videos || videos.length === 0) return
+    if (!videosRef.current || videosRef.current.length === 0) return
 
-    if (!isFetchingNextPage && currentIndex === videos.length - 3 && hasNextPage) {
+    if (!isFetchingNextPage && currentIndex === videosRef.current.length - 3 && hasNextPage) {
       fetchNextPage?.()
     }
     if ((currentIndex + 1) % 5 === 0) {
       showInterruption()
     }
 
-    if (videos.length - 1 === currentIndex) {
+    if (videosRef.current.length - 1 === currentIndex) {
       setAllowSlideNext(false)
     } else if (!allowSlideNext) {
       setAllowSlideNext(true)
     }
-  }, [currentIndex, videos.length, hasNextPage])
+  }, [currentIndex, videosRef.current.length, hasNextPage])
 
   return (
-    <FeedContext.Provider value={{ currentIndex, allowSlideNext, updateCurrentIndex, videos }}>
+    <FeedContext.Provider value={{ currentIndex, allowSlideNext, updateCurrentIndex, videosRef }}>
       {children}
     </FeedContext.Provider>
   )
