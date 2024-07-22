@@ -8,12 +8,20 @@ import { useEmbedPlayerState } from '@components/embed/embed-player-state'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { Button } from '@components/ui/button'
 import { getFeedForEmbed } from '@/components/embed/api'
+import { useShallow } from 'zustand/react/shallow'
+import { useEffect } from 'react'
 
 export function VerticalView() {
   const { height, width, sizeBox } = useSizeStore()
-  const { setActiveVideoId } = useEmbedPlayerState()
+  const { setActiveVideoId, setEmbedType } = useEmbedPlayerState(
+    useShallow((state) => ({ setActiveVideoId: state.setActiveVideoId, setEmbedType: state.setEmbedType }))
+  )
   const { data: videoPages, fetchNextPage, isFetchingNextPage } = getFeedForEmbed(1)
   const videos = videoPages?.pages.flatMap((item) => item.reels)
+
+  useEffect(() => {
+    setEmbedType('feed')
+  }, [])
 
   function postMessage(link: string) {
     window.parent.postMessage({ action: 'open_link', link }, '*')
