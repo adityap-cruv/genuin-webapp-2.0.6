@@ -95,7 +95,11 @@ export const Mobile = memo(function Mobile({
         if (everyoneHasImage) {
           return (
             <div key={index} className="rounded-lg bg-monochrome-black/50 p-2">
-              <div className="flex w-full gap-2">
+              <div
+                className={'flex gap-2'}
+                style={{
+                  width: `${linkoutItem.links.length * 25 > 100 ? 100 : linkoutItem.links.length * 25}%`,
+                }}>
                 {linkoutItem.links.map((item, index) => {
                   return (
                     <Link
@@ -150,7 +154,12 @@ export const Mobile = memo(function Mobile({
         } else {
           return (
             <div key={index} className="rounded-lg bg-monochrome-black/50 p-2">
-              <div key={index} className="flex gap-2">
+              <div
+                key={index}
+                className={'flex gap-2'}
+                style={{
+                  width: `${linkoutItem.links.length * 25 > 100 ? 100 : linkoutItem.links.length * 25}%`,
+                }}>
                 {linkoutItem.links.map((item, index) => {
                   return (
                     <Link
