@@ -6,7 +6,8 @@ import { SideBar } from '@components/layouts/desktop/side-bar'
 import { type VideoSizeBoxType } from '@lib/stores/genuin-options'
 import { TopBar } from '@components/layouts/mobile/top-bar'
 import { getFeedForEmbed } from '@/components/embed/api'
-import { useMemo } from 'react'
+import { useMemo, useRef } from 'react'
+import { type VideoPlayerModalType } from '@/lib/schemas/player/video'
 
 const DesktopFeed = dynamic(async () => await import('@components/common/feed').then((comp) => comp.Feed.desktop))
 const MobileFeed = dynamic(async () => await import('@components/common/feed').then((comp) => comp.Feed.mobile))
@@ -47,7 +48,8 @@ function Mobile({ sizeBox }: { sizeBox: VideoSizeBoxType }) {
 
 function Desktop({ sizeBox }: { sizeBox: VideoSizeBoxType }) {
   const { data: videoPages, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = getFeedForEmbed(1)
-  const videos = useMemo(() => videoPages?.pages.flatMap((item) => item.reels) ?? [], [videoPages])
+  const videosRef = useRef<VideoPlayerModalType[]>([])
+  videosRef.current = useMemo(() => videoPages?.pages.flatMap((item) => item.reels) ?? [], [videoPages])
 
   return (
     <main className="flex h-full w-full">
@@ -55,7 +57,7 @@ function Desktop({ sizeBox }: { sizeBox: VideoSizeBoxType }) {
       <DesktopFeed
         isFetchingNextPage={isFetchingNextPage}
         fetchNextPage={fetchNextPage}
-        videos={videos}
+        videosRef={videosRef}
         customSizeBox={sizeBox}
         hasNextPage={hasNextPage ?? true}
         isLoading={isLoading}
