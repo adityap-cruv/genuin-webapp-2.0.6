@@ -57,6 +57,7 @@ export async function getVideoDetails(slug: string): Promise<VideoPlayerModalTyp
       createdAt: videoDetails.message_at,
       descriptionArr: tryJsonParse(videoDetails.description_data),
       descriptionText: videoDetails.description_text,
+      linkoutId: videoDetails.linkouts_id
     },
   }
 }

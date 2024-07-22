@@ -1,0 +1,94 @@
+'use client'
+import { useEffect, type VideoHTMLAttributes, type DetailedHTMLProps } from 'react'
+import { usePlayerControlStore } from './player-control-store'
+import { useGenuinOptions, type VideoSizeBoxType } from '@lib/stores/genuin-options'
+import { ControlLayer } from './control-layer'
+import { type VideoPlayerModalType } from '@lib/schemas/player/video'
+import { useShallow } from 'zustand/react/shallow'
+import { InnerPlayer } from './inner-player'
+import { CommentSheet } from './comment-sheet'
+
+type MobileProps = {
+  videoDetails: VideoPlayerModalType
+  /**
+   * Swiper's active param.
+   */
+  isActive: boolean
+  /**
+   * Controls whether video should repeat or not.
+   * default: false
+   */
+  loop?: boolean
+  /**
+   * default: true
+   */
+  // showControls?: boolean
+  /**
+   * Pass this parameter if you want to configure custom size box.
+   */
+  customSizeBox?: VideoSizeBoxType
+} & DetailedHTMLProps<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement>
+
+export function Mobile({
+  videoDetails,
+  isActive,
+  loop = false,
+  customSizeBox,
+  ...restProps
+}: Omit<MobileProps, 'sizeBox'>) {
+  const sizeBox =
+    customSizeBox ?? useGenuinOptions(useShallow((state) => ({ sizeBoxes: state.sizeBoxes }))).sizeBoxes.default
+  const hasFocus = useGenuinOptions(useShallow((state) => ({ userHasFocus: state.userHasFocus }))).userHasFocus
+  const { setShouldPlay, toggleShouldPlay } = usePlayerControlStore(
+    useShallow((state) => ({
+      setShouldPlay: state.setShouldPlay,
+      toggleShouldPlay: state.toggleShouldPlay,
+    }))
+  )
+
+  useEffect(() => {
+    hasFocus ? setShouldPlay(true) : setShouldPlay(false)
+  }, [hasFocus])
+
+  return (
+    <div
+      onClick={(e) => {
+        toggleShouldPlay()
+      }}
+      style={{ backgroundImage: `url(${videoDetails.video.thumbnail})` }}
+      className="relative flex h-full w-full snap-start items-center justify-center overflow-clip bg-cover bg-center bg-no-repeat">
+      <div className="absolute top-0 z-10 h-24 w-full bg-gradient-to-b from-[#111111b3] to-[#11111100]" />
+      <div className="relative overflow-hidden" style={{ width: sizeBox.width, height: sizeBox.height }}>
+        <InnerPlayer
+          isActive={isActive}
+          id={videoDetails.video.id}
+          loop={loop}
+          videoSource={videoDetails.video.source}
+          poster={videoDetails.video.thumbnail}
+          {...restProps}
+        />
+        <div className="absolute left-0 top-0 h-full w-full">
+          <ControlLayer.mobile
+            isActive={isActive}
+            linkoutId={videoDetails.video.linkoutId}
+            commentCount={videoDetails.video.commentCount}
+            owner={videoDetails.owner}
+            shareUrl={videoDetails.video.shareUrl}
+            slug={videoDetails.video.slug}
+            sparkCount={videoDetails.video.sparkCount}
+            videoId={videoDetails.video.id}
+            attachedLink={videoDetails.video.attachedLink}
+            descriptionArr={videoDetails.video.descriptionArr}
+            descriptionText={videoDetails.video.descriptionText}
+            isSparked={videoDetails.video.isSparked}
+          />
+        </div>
+        <CommentSheet
+          videoDetails={videoDetails}
+          videoId={videoDetails.video.id}
+          commentCount={videoDetails.video.commentCount}
+        />
+      </div>
+    </div>
+  )
+}

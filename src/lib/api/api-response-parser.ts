@@ -112,6 +112,7 @@ export function parseFeedResponse(videos: FeedResponseType) {
           ? tryJsonParse(video.messages[0].description_data)
           : undefined,
         descriptionText: video.messages[0].description_text,
+        linkoutId: video.messages[0].linkouts_id,
       },
     }
   })
@@ -160,8 +161,6 @@ export function parseProfileCommunityResponse(communities: ProfileCommunityRespo
             return {
               id: item.message_id,
               thumbnail: item.thumbnail_url,
-              // TODO: Addition from backend.
-              sparkCount: 0,
               viewCount: item.no_of_views,
             }
           }),
@@ -185,8 +184,7 @@ export function parseProfileLoopResponse(loops: ProfileLoopResponseType[]) {
           })
         : null,
       videos: item.messages.map((item) => {
-        // TODO: Add spark count if needed after discussion with design and backend.
-        return { id: item.message_id, sparkCount: 0, viewCount: item.no_of_views, thumbnail: item.thumbnail_url }
+        return { id: item.message_id, viewCount: item.no_of_views, thumbnail: item.thumbnail_url }
       }),
     }
   })
@@ -196,8 +194,6 @@ export function parseProfileVideoResponse(videos: ProfileVideoResponseType[]) {
   return videos.map<ProfileVideoType>((item) => {
     return {
       id: item.message_id,
-      // TODO: Add spark count if needed after discussion with design and backend.
-      sparkCount: 0,
       viewCount: item.no_of_views,
       thumbnail: item.thumbnail_url,
     }

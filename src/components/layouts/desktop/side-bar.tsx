@@ -14,7 +14,7 @@ import Analytics from '@services/analytics'
 import { CategoryView } from '@components/common/category-view'
 import { useShallow } from 'zustand/react/shallow'
 import { LoginIcon } from '@icons/login-icon'
-// import { VerifiedIcon } from '@icons/verified-icon'
+import { VerifiedIcon } from '@icons/verified-icon'
 import BecomeCbCard from '@/components/common/become-cb-card'
 import { useSession } from 'next-auth/react'
 import { AuthenticationModal } from '@/components/common/modals/authentication'
@@ -122,7 +122,7 @@ export function SideBar() {
               <p className={cn('hidden whitespace-nowrap !text-title-3-demi text-primary lg:block')}>Log in</p>
             </div>
           )}
-          {/* {!isClaimed && user && (
+          {!isClaimed && user && (
             <div
               className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10"
               onClick={() => {
@@ -133,9 +133,9 @@ export function SideBar() {
                 Claim Brand Profile
               </p>
             </div>
-          )} */}
+          )}
         </span>{' '}
-        {/* {(!isClaimed ?? user?.ksCbRequestStatus !== 3) && <hr className="border-1 my-2 border-monochrome-black/10" />} */}
+        {(!isClaimed ?? user?.ksCbRequestStatus !== 3) && <hr className="border-1 my-2 border-monochrome-black/10" />}
         {user?.ksCbRequestStatus !== 3 && <BecomeCbCard className="my-4 hidden lg:block" />}
         <CategoryView className="hidden lg:block" />
         <RecentCommunities />
@@ -167,14 +167,12 @@ function Item({ title, isActive, children, notificationCount, brandName }: ItemP
   return (
     <div
       onClick={() => {
-        if (title === 'Popular' || title === 'Latest') {
-          void Analytics.track({
-            eventName: `${title.toLocaleLowerCase()}_clicked`,
-            properties: {
-              brandName,
-            },
-          })
-        }
+        void Analytics.track({
+          eventName: `${title} Clicked`,
+          properties: {
+            brandName,
+          },
+        })
       }}
       className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 hover:bg-monochrome-6/10">
       <div className="relative">

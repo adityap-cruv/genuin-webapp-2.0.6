@@ -1,7 +1,8 @@
+import { VanillaPlayer } from '@/components/common/vanila-player'
 import { ContactUs } from '@components/common/modals/contact-us'
 import { InnerPlayer } from '@components/common/player/inner-player'
 import { Button } from '@components/ui/button'
-import bg_genuin_logo from '@images/home/index_genuin_logo.png'
+import bgGenuinLogo from '@images/home/index_genuin_logo.png'
 
 export function CommunityReimagined() {
   // TODO handle autoplay in video
@@ -9,7 +10,7 @@ export function CommunityReimagined() {
     <>
       <div
         className="hidden h-full w-full items-center justify-between bg-top bg-no-repeat md:flex"
-        style={{ backgroundImage: `url(${bg_genuin_logo.src})` }}>
+        style={{ backgroundImage: `url(${bgGenuinLogo.src})` }}>
         <div className="flex w-3/5 flex-col gap-9">
           <p className="text-title-1-bold-home">
             Community{' '}
@@ -34,6 +35,7 @@ export function CommunityReimagined() {
         <div className="relative flex h-full w-2/5 items-center justify-center">
           <InnerPlayer
             className="aspect-[32/67] h-4/5 rounded-[30px]"
+            isActive
             id={'1'}
             loop={true}
             videoSource="https://media.begenuin.com/backend_assets/hero-video/comp-1_2.m3u8"
@@ -46,7 +48,7 @@ export function CommunityReimagined() {
       <div
         className="flex h-full w-full flex-col items-center justify-center gap-6 bg-no-repeat px-11 py-9 md:hidden"
         style={{
-          backgroundImage: `url(${bg_genuin_logo.src})`,
+          backgroundImage: `url(${bgGenuinLogo.src})`,
           backgroundPosition: 'center',
           backgroundSize: '100%',
         }}>
@@ -60,10 +62,11 @@ export function CommunityReimagined() {
           Create video-based communities within your retail media network to drive engagement and new revenue.
         </p>
         <div className="relative flex w-44 items-center justify-center">
-          <InnerPlayer
+          <VanillaPlayer
             className="aspect-[32/67] w-full rounded-3xl"
             id={'1'}
-            loop={true}
+            muted
+            loop
             videoSource="https://media.begenuin.com/backend_assets/hero-video/comp-1_2.m3u8"
             poster={'https://media.begenuin.com/backend_assets/hero-video/hero-video.png'}
           />

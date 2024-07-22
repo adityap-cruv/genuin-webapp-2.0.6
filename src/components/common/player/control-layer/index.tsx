@@ -1,3 +1,4 @@
-import { ControlLayer } from './component'
+import { Desktop } from './desktop'
+import { Mobile } from './mobile'
 
-export { ControlLayer }
+export const ControlLayer = { desktop: Desktop, mobile: Mobile }

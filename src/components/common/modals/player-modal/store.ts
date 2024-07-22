@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import Analytics from '@services/analytics'
+import Analytics from '@/services/analytics'
 import { usePlayerControlStore } from '@components/common/player/player-control-store'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 
@@ -19,40 +19,49 @@ export const useFeedModalStore = create<FeedModalStore>((set, get) => {
     currentIndex: 0,
     setCurrentIndex(index) {
       set((state) => {
-        if (index !== state.currentIndex) {
-          const { duration, currentTime } = usePlayerControlStore.getState()
-          const numberOfVideos = state.videos.length
-          const progressValue = duration === 0 ? 0 : Math.round((currentTime / duration) * 100)
-          const hasCrossed50 = progressValue > 50
-
-          if (index !== -1 && numberOfVideos > index) {
-            const eventName = index < state.currentIndex ? 'Swipe Down' : 'Swipe Up'
-            const properties = {
-              content_category: 'loop',
-              content_id: state.videos[state.currentIndex]?.video.id,
-              event_record_screen: 'feed',
-              event_target_screen: 'none',
-              video_length: duration,
-              video_view_length: currentTime,
-            }
-
-            if (hasCrossed50) {
-              void Analytics.track({
-                eventName,
-                properties,
-              })
-
-              void Analytics.track({
-                eventName: 'Video Watched',
-                properties,
-              })
-              Analytics.pushVideoWatch(state.videos[state.currentIndex]?.video.id)
-            }
-          }
+        const { duration, currentTime } = usePlayerControlStore.getState()
+        const playerProgress = Math.round((currentTime / duration) * 100)
+        if (isNaN(playerProgress)) {
           return { currentIndex: index }
         }
 
-        return state
+        const properties = {
+          content_category: 'loop',
+          content_id: state.videos[state.currentIndex]?.video?.id,
+          event_record_screen: 'feed',
+          event_target_screen: 'none',
+          video_length: duration,
+          video_view_length: currentTime,
+        }
+
+        if (playerProgress >= 25) {
+          void Analytics.track({
+            eventName: 'Video First Quartile',
+            properties,
+          })
+        }
+
+        if (playerProgress >= 50) {
+          void Analytics.track({
+            eventName: 'Video Watched',
+            properties,
+          })
+        }
+
+        if (playerProgress >= 75) {
+          void Analytics.track({
+            eventName: 'Video Third Quartile',
+            properties,
+          })
+        }
+
+        const eventName = index < state.currentIndex ? 'Swipe Down' : 'Swipe Up'
+
+        void Analytics.track({
+          eventName,
+          properties,
+        })
+        return { currentIndex: index }
       })
     },
   }

@@ -115,9 +115,6 @@ export function EmbedPlayer({ videoData, isFirstElement, isActive, onCanPlay, ..
           triggerEvent('Video Watched')
           void localRef.current.player?.play()
         }}
-        onTimeUpdate={(e) => {
-          console.log('event::', (e.target as HTMLVideoElement).currentTime, (e.target as HTMLVideoElement).duration)
-        }}
         {...props}
       />
       {muted && isActive && (
@@ -164,6 +161,7 @@ export function EmbedPlayer({ videoData, isFirstElement, isActive, onCanPlay, ..
                 videoId={videoData.video.id}
                 attachedLink={videoData.video.attachedLink}
                 description={videoData.video.descriptionText}
+                videoSlug={videoData.video.slug}
                 isSparked={false}
               />
             </div>

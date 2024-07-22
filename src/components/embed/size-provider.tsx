@@ -1,5 +1,5 @@
 'use client'
-import { rudderStackIdentify } from '@/services/useRudderAnalytics'
+import { rudderStackIdentify } from '@/services/analytics/useRudderAnalytics'
 import { setBrandIdInAxiosInstance } from '@lib/api/instance'
 import { type ConfigType, type VideoSizeBoxType } from '@lib/stores/genuin-options'
 import Analytics from '@services/analytics'
@@ -43,7 +43,7 @@ export function SizeProvider({ children, config }: { children: ReactNode; config
     setSize(window.innerWidth, window.innerHeight, config)
     setBrandIdInAxiosInstance(Number(config?.brand_id))
     void rudderStackIdentify()
-    void Analytics.track({ eventName: 'embed_viewed', properties: { embed_id: params.id as string } })
+    void Analytics.track({ eventName: 'Embed Viewed', properties: { embed_id: params.id as string } })
   }, [])
 
   if (!isLoading) return children

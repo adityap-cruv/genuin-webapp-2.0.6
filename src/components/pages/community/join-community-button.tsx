@@ -4,20 +4,32 @@ import { useState } from 'react'
 import { Button } from '@components/ui/button'
 import { openModal } from '@lib/utils'
 import { useQueryClient } from '@tanstack/react-query'
+import { useSearchParams } from 'next/navigation'
+import { joinCommunityDeepLink } from '@/lib/get-deeplink'
 
 type Props = {
-  userRole?: 'LEADER' | 'MEMBER' | 'REQUESTED'
+  userRole?: 'LEADER' | 'MEMBER' | 'REQUESTED' | null
   handle: string
   id: string
   isCommunityPrivate: boolean
   isJoinRequested: boolean
   buttonText: string
+  communityName?: string
 }
 
-export function JoinCommunityButton({ userRole, handle, id, isCommunityPrivate, isJoinRequested, buttonText }: Props) {
+export function JoinCommunityButton({
+  userRole,
+  handle,
+  id,
+  isCommunityPrivate,
+  isJoinRequested,
+  buttonText,
+  communityName,
+}: Props) {
   const queryClient = useQueryClient()
   const [role, setRole] = useState(userRole)
   const user = useGenuinOptions().user
+  const searchParams = Object.fromEntries(useSearchParams())
 
   async function toggleCommunityJoinState() {
     try {
@@ -74,16 +86,20 @@ export function JoinCommunityButton({ userRole, handle, id, isCommunityPrivate, 
           ? async () => {
               await toggleCommunityJoinState()
             }
-          : () => {
-              openModal({
-                title: 'Get the Genuin app',
-                subtitle: (
-                  <>
-                    Get the app to join the <br />
-                    <span className="font-bold">@{handle}</span> community.
-                  </>
-                ),
-              })
+          : async () => {
+              await joinCommunityDeepLink({ communityName: communityName ?? '', searchParams }).then(
+                (generatedLink) => {
+                  openModal({
+                    deepLink: generatedLink,
+                    subtitle: (
+                      <>
+                        Get the app to join the <br />
+                        <span className="font-bold">@{handle}</span> community.
+                      </>
+                    ),
+                  })
+                }
+              )
             }
       }>
       <p

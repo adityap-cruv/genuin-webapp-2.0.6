@@ -6,12 +6,21 @@ import { SideBar } from '@components/layouts/desktop/side-bar'
 import { type VideoSizeBoxType } from '@lib/stores/genuin-options'
 import { TopBar } from '@components/layouts/mobile/top-bar'
 import { getFeedForEmbed } from '@/components/embed/api'
+import { useEffect, useMemo, useRef } from 'react'
+import { type VideoPlayerModalType } from '@/lib/schemas/player/video'
+import { useEmbedPlayerState } from '@/components/embed/embed-player-state'
+import { useShallow } from 'zustand/react/shallow'
 
 const DesktopFeed = dynamic(async () => await import('@components/common/feed').then((comp) => comp.Feed.desktop))
 const MobileFeed = dynamic(async () => await import('@components/common/feed').then((comp) => comp.Feed.mobile))
 
 export function StandardView() {
   const { showMobileView, sizeBox } = useSizeStore()
+  const { setEmbedType } = useEmbedPlayerState(useShallow((state) => ({ setEmbedType: state.setEmbedType })))
+
+  useEffect(() => {
+    setEmbedType('standard_wall')
+  }, [])
 
   if (showMobileView) {
     return <Mobile sizeBox={sizeBox} />
@@ -45,20 +54,21 @@ function Mobile({ sizeBox }: { sizeBox: VideoSizeBoxType }) {
 }
 
 function Desktop({ sizeBox }: { sizeBox: VideoSizeBoxType }) {
-  const { data, isError, fetchNextPage, isFetchingNextPage, isLoading } = getFeedForEmbed(1)
-  const videos = data?.pages.flatMap((item) => item.reels)
+  const { data: videoPages, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = getFeedForEmbed(1)
+  const videosRef = useRef<VideoPlayerModalType[]>([])
+  videosRef.current = useMemo(() => videoPages?.pages.flatMap((item) => item.reels) ?? [], [videoPages])
 
-  if (isLoading) return <FeedShimmer.desktop />
   return (
     <main className="flex h-full w-full">
       <SideBar />
       <DesktopFeed
-        isError={isError}
         isFetchingNextPage={isFetchingNextPage}
         fetchNextPage={fetchNextPage}
-        isLoading={isLoading}
-        videos={videos}
+        videosRef={videosRef}
         customSizeBox={sizeBox}
+        hasNextPage={hasNextPage ?? true}
+        isLoading={isLoading}
+        startIndex={0}
       />
     </main>
   )

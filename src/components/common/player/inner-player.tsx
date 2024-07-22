@@ -1,49 +1,62 @@
 import OpenPlayerJS from 'openplayerjs'
-import { useInView } from 'framer-motion'
-import { type DetailedHTMLProps, type ReactEventHandler, type VideoHTMLAttributes, useEffect, useRef } from 'react'
+import {
+  type DetailedHTMLProps,
+  type ReactEventHandler,
+  type VideoHTMLAttributes,
+  memo,
+  useEffect,
+  useState,
+  useRef,
+} from 'react'
 import { usePlayerControlStore } from './player-control-store'
-import Analytics from '@services/analytics'
-import { usePathname } from 'next/navigation'
+import { cn } from '@/lib/utils'
+import icPlay from '@icons/player-controls/icPlay.svg'
+import Image from 'next/image'
+import { useShallow } from 'zustand/react/shallow'
+import Analytics from '@/services/analytics'
 
-// TODO: work on why player is sending multiple request.
-interface Props extends DetailedHTMLProps<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement> {
-  // videoSizeBox: { width: number; height: number }
+type Props = DetailedHTMLProps<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement> & {
   videoSource: string
-  isFirstElement?: boolean
   id: string
+  isActive: boolean
 }
 
-export function InnerPlayer({
-  // videoSizeBox,
+function triggerAnalyticsForVideoStart(videoId: string, latency: number) {
+  void Analytics.track({
+    eventName: 'Video Start',
+    properties: {
+      content_category: 'loop',
+      content_id: videoId,
+      event_record_screen: 'feed',
+      event_target_screen: 'none',
+      latency,
+    },
+  })
+}
+
+export const InnerPlayer = memo(function InnerPlayer({
   videoSource,
   id,
   poster,
   loop,
+  isActive,
   onEnded,
   onPlay,
   onPlaying,
-  onCanPlay,
   onPause,
   onError,
   ...props
 }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null)
-  const localRef = useRef<{
-    loaded: boolean
-    playing: boolean
-    player: OpenPlayerJS | null
-  }>({
-    loaded: false,
-    playing: false,
-    player: null,
-  })
-  const { shouldPlay, muted, setTimeState, setLatency } = usePlayerControlStore((state) => ({
-    shouldPlay: state.shouldPlay,
-    muted: state.muted,
-    setTimeState: state.setTimeState,
-    setLatency: state.setLatency,
-  }))
-  const pathname = usePathname()
+  const playerRef = useRef<OpenPlayerJS | null>(null)
+  const [isPlaying, setIsPlaying] = useState(false)
+  const { shouldPlay, muted, setTimeState } = usePlayerControlStore(
+    useShallow((state) => ({
+      shouldPlay: state.shouldPlay,
+      muted: state.muted,
+      setTimeState: state.setTimeState,
+    }))
+  )
 
   useEffect(() => {
     if (!videoRef.current) return
@@ -51,7 +64,7 @@ export function InnerPlayer({
       controls: {
         alwaysVisible: false,
       },
-      mode: 'fill',
+      mode: 'responsive',
       forceNative: true,
       showLoaderOnInit: true,
       onError: (e) => {},
@@ -72,208 +85,89 @@ export function InnerPlayer({
         emeEnabled: true,
       },
     })
+
     void player.init().then((value) => {
       void player.load().then(() => {
-        if (shouldPlay) {
+        if (isActive) {
+          const startTime = performance.now()
           player
             .getMedia()
             .play()
             .then((_) => {
+              const endTime = performance.now()
+              triggerAnalyticsForVideoStart(id, endTime - startTime)
               // console.log('start playing')
             })
             .catch((e) => {
               // console.log('something went wrong..', e)
             })
         }
-        localRef.current.player = player
+        playerRef.current = player
       })
     })
   }, [videoSource])
 
   useEffect(() => {
-    const player = localRef.current.player
+    const player = playerRef.current
     if (!player) return
-    const startTime = performance.now()
-    if (shouldPlay && localRef.current.loaded) {
+    if (isActive && shouldPlay) {
+      const startTime = performance.now()
       player
         .play()
         .then(() => {
           const endTime = performance.now()
-          const loadingTimeMillis = endTime - startTime
-          setLatency(Math.floor(loadingTimeMillis))
-          // console.log('starts playing from use effect.')
+          triggerAnalyticsForVideoStart(id, endTime - startTime)
         })
-        .catch((e) => {
-          // console.error('error from use effect', e)
-        })
+        .catch((e) => {})
     } else {
       player.pause()
     }
-  }, [shouldPlay])
-
-  // const onDurationChangeEventHandler: ReactEventHandler<HTMLVideoElement> = (event) => {
-  //   setDuration(event.currentTarget.duration)
-  // }
+  }, [isActive, shouldPlay])
 
   const onTimeUpdateEventHandler: ReactEventHandler<HTMLVideoElement> = (event) => {
-    setTimeState(event.currentTarget.currentTime, event.currentTarget.duration)
+    setTimeState(event.currentTarget.currentTime, event.currentTarget.duration, id)
   }
 
   return (
-    <video
-      className="absolute h-full w-full object-cover"
-      poster={poster}
-      ref={videoRef}
-      muted={muted}
-      loop={loop}
-      src={videoSource}
-      playsInline
-      onPlay={onPlay}
-      onPlaying={onPlaying}
-      onError={onError}
-      onCanPlay={(ev) => {
-        localRef.current.loaded = true
-        if (onCanPlay) onCanPlay(ev)
-      }}
-      // onDurationChange={onDurationChangeEventHandler}
-      onTimeUpdate={onTimeUpdateEventHandler}
-      onPause={onPause}
-      onEnded={(e) => {
-        onEnded?.(e)
-        handleEnded(localRef.current.player, loop ?? false, id, pathname)
-      }}
-      {...props}
-    />
+    <div className="relative h-full w-full">
+      <video
+        className="absolute h-full w-full bg-cover bg-center bg-no-repeat object-cover"
+        style={{ backgroundImage: `url(${poster})` }}
+        poster={poster}
+        ref={videoRef}
+        muted={muted}
+        src={videoSource}
+        playsInline
+        onPlay={onPlay}
+        onPlaying={(ev) => {
+          setIsPlaying(true)
+          onPlaying?.(ev)
+        }}
+        onError={onError}
+        onTimeUpdate={onTimeUpdateEventHandler}
+        onPause={(ev) => {
+          setIsPlaying(false)
+          onPause?.(ev)
+        }}
+        onEnded={(e) => {
+          onEnded?.(e)
+          if (loop && playerRef.current) {
+            void playerRef.current.play()
+          }
+        }}
+        {...props}
+      />
+      <div
+        className={cn(
+          'absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-monochrome-black/40 p-2 transition-all duration-100',
+          !isPlaying ? 'scale-125 opacity-100 ease-in' : 'scale-100 opacity-0 ease-out'
+        )}>
+        <Image
+          src={icPlay}
+          alt="volume-control"
+          className={cn('pointer-events-none z-10 cursor-pointer rounded-full')}
+        />
+      </div>
+    </div>
   )
-}
-
-export function ViewportPlayer({
-  videoSource,
-  poster,
-  id,
-  loop,
-  isFirstElement = false,
-  onEnded,
-  onPlay,
-  onPlaying,
-  onCanPlay,
-  onPause,
-  onError,
-  ...props
-}: Props) {
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const localRef = useRef<{
-    loaded: boolean
-    playing: boolean
-    player: OpenPlayerJS | null
-  }>({
-    loaded: false,
-    playing: false,
-    player: null,
-  })
-  const { shouldPlay, muted, setTimeState, setLatency } = usePlayerControlStore((state) => ({
-    shouldPlay: state.shouldPlay,
-    muted: state.muted,
-    setTimeState: state.setTimeState,
-    setLatency: state.setLatency,
-  }))
-  const inView = useInView(videoRef, { amount: 0.95 })
-
-  // const onDurationChangeEventHandler: ReactEventHandler<HTMLVideoElement> = (event) => {
-  //   setDuration(event.currentTarget.duration)
-  // }
-
-  const onTimeUpdateEventHandler: ReactEventHandler<HTMLVideoElement> = (event) => {
-    setTimeState(event.currentTarget.currentTime, event.currentTarget.duration)
-  }
-
-  useEffect(() => {
-    if (!videoRef.current) return
-    const player = new OpenPlayerJS(videoRef.current, {
-      controls: {
-        alwaysVisible: false,
-      },
-      mode: 'fill',
-      forceNative: true,
-      showLoaderOnInit: true,
-      onError: (e) => {},
-      hls: {
-        /**
-         * "startLevel" option typically relates to the initial
-         * quality or bitrate level at which a video stream should
-         * begin playing when adaptive streaming is employed.
-         */
-        startLevel: -1,
-        /**
-         * This will make sure that player will play on other thread rather than main thread.
-         */
-        enableWorker: true,
-        /**
-         * eme -> Encrypted Media Extensions (EME)
-         */
-        emeEnabled: true,
-      },
-    })
-    void player.init().then((value) => {
-      void player.load().then(() => {
-        if (isFirstElement) {
-          void player.play()
-        }
-        localRef.current.player = player
-      })
-    })
-  }, [])
-
-  useEffect(() => {
-    const player = localRef.current.player
-    const startTime = performance.now()
-    // console.log('inView::', player, inView)
-    if (inView && shouldPlay) {
-      void player?.play().then(() => {
-        const endTime = performance.now()
-        const loadingTimeMillis = endTime - startTime
-        setLatency(Math.floor(loadingTimeMillis))
-        // console.log('being played..')
-      })
-    } else {
-      player?.pause()
-    }
-    // console.log('invew;:', inView, shouldPlay)
-  }, [inView, shouldPlay])
-
-  return (
-    <video
-      className="absolute h-full w-full object-cover"
-      poster={poster}
-      ref={videoRef}
-      muted={muted}
-      loop={false}
-      src={videoSource}
-      playsInline
-      onPlay={onPlay}
-      onPlaying={onPlaying}
-      onError={onError}
-      onCanPlay={(ev) => {
-        localRef.current.loaded = true
-        if (onCanPlay) onCanPlay(ev)
-      }}
-      onPause={onPause}
-      onEnded={(e) => {
-        onEnded?.(e)
-        handleEnded(localRef.current.player, loop ?? false, id)
-      }}
-      onTimeUpdate={onTimeUpdateEventHandler}
-      // onDurationChange={onDurationChangeEventHandler}
-      {...props}
-    />
-  )
-}
-
-function handleEnded(player: OpenPlayerJS | null, loop: boolean, id: string, pathname?: string) {
-  if (loop && player) {
-    void player.play()
-  }
-  if (pathname !== '/') {
-    Analytics.pushVideoWatch(id)
-  }
-}
+})

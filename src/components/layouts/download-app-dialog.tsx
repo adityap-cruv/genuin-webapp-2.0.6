@@ -1,4 +1,5 @@
 import { Dialog, DialogContent, DialogTrigger } from '@components/ui/dialog'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
 import { useShallow } from 'zustand/react/shallow'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { Button } from '@components/ui/button'
@@ -13,13 +14,14 @@ import Link from 'next/link'
 import { URL_TO_APP_STORE, URL_TO_PLAY_STORE } from '@/lib/constants'
 import { AddIcon } from '@icons/add-icon'
 import { cn } from '@/lib/utils'
+import { QRCode } from 'react-qrcode-logo'
+import { AppleIcon } from '@icons/apple-icon'
+import { PlayStoreIcon } from '@icons/playstore-icon'
 
 export function DownloadAppDialog() {
-  const ksCbRequestStatus = useGenuinOptions().user?.ksCbRequestStatus
-  if (!ksCbRequestStatus || ksCbRequestStatus !== 3) return
-
-  const { brandLogo, brandName, isMobile, links } = useGenuinOptions(
+  const genuinOptions = useGenuinOptions(
     useShallow((state) => ({
+      ksCbRequestStatus: state.user?.ksCbRequestStatus,
       brandName: state.config?.name,
       brandLogo: state.config?.logo,
       isMobile: state.isMobile,
@@ -27,8 +29,14 @@ export function DownloadAppDialog() {
         appStoreLink: state.config?.integrations.sdk.ios.appstore_link,
         playStoreLink: state.config?.integrations.sdk.android.playstore_link,
       },
+      email: state.user?.email,
     }))
   )
+
+  const { ksCbRequestStatus, brandLogo, brandName, isMobile, links, email } = genuinOptions
+
+  if (!ksCbRequestStatus || ksCbRequestStatus !== 3) return null
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -53,6 +61,58 @@ export function DownloadAppDialog() {
           Download the app to create a new <br />
           Community.
         </p>
+        {links.playStoreLink && links.appStoreLink && (
+          <div>
+            <Tabs defaultValue="app_store">
+              <TabsList>
+                <TabsTrigger
+                  value="app_store"
+                  className="border-1 rounded-s-lg border border-tertiary data-[state=active]:border-b data-[state=active]:border-secondary data-[state=active]:opacity-100">
+                  <AppleIcon className={`mr-2`} />
+                  <p className="text-body-1-demi">From App Store</p>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="play_store"
+                  className="border-1 rounded-e-lg border border-tertiary opacity-50 data-[state=active]:border-b data-[state=active]:border-secondary data-[state=active]:opacity-100">
+                  <PlayStoreIcon className={`mr-2`} />
+                  <p className="text-body-1-demi">From Google Play</p>
+                </TabsTrigger>
+              </TabsList>
+              <div className="my-2">
+                <TabsContent value="app_store" className="flex justify-center">
+                  <div>
+                    <QRCode
+                      ecLevel="L"
+                      value={links.appStoreLink}
+                      size={130}
+                      qrStyle="squares"
+                      logoPaddingStyle="square"
+                    />
+                    <p className="text-center font-bold" style={{ fontSize: '14px' }}>
+                      Scan to download
+                    </p>
+                  </div>
+                </TabsContent>
+                <TabsContent value="play_store" className="flex justify-center">
+                  <div>
+                    <QRCode
+                      value={links.playStoreLink}
+                      ecLevel="L"
+                      size={130}
+                      qrStyle="squares"
+                      logoPaddingStyle="square"
+                    />
+                    <p className="text-center font-bold" style={{ fontSize: '14px' }}>
+                      Scan to download
+                    </p>
+                  </div>
+                </TabsContent>
+              </div>
+            </Tabs>
+
+            <p className="text-center text-body-1-demi text-secondary-300">OR</p>
+          </div>
+        )}
         {isMobile ? (
           <div className="flex gap-4">
             <Link href={links.playStoreLink ?? URL_TO_PLAY_STORE}>
@@ -63,15 +123,14 @@ export function DownloadAppDialog() {
             </Link>
           </div>
         ) : (
-          <SubmitButton />
+          <SubmitButton email={email} />
         )}
       </DialogContent>
     </Dialog>
   )
 }
 
-function SubmitButton() {
-  const { email } = useGenuinOptions(useShallow((state) => ({ email: state.user?.email })))
+function SubmitButton({ email }: { email: string | null | undefined }) {
   const [status, setStatus] = useState<{ status: boolean; isLoading: boolean }>({
     status: false,
     isLoading: false,

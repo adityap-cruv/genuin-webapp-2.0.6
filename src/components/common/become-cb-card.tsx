@@ -29,7 +29,7 @@ export default function BecomeCbCard({ className }: { className: string }) {
           const messageType = res?.data?.ks_cb_request_status === 3 ? 'MINI_PROFILE_SUCCESS' : 'KS_CB_SUBDOMAIN'
           AuthenticationModal.open(undefined, messageType)
           void Analytics.track({
-            eventName: 'become_cb_clicked',
+            eventName: 'Become Cb Clicked',
             properties: {},
           })
         } else {
