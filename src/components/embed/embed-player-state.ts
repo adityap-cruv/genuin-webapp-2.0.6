@@ -3,14 +3,14 @@ import { create } from 'zustand'
 type EmbedType = 'carousel' | 'standard_wall' | 'feed' | 'default'
 
 type State = {
-  activeVideoId: string
+  activeVideoIndex: number
   muted: boolean
   embedType: EmbedType
   timeState: { duration: number; currentTime: number }
 }
 
 type Actions = {
-  setActiveVideoId: (id: string) => void
+  changeActiveIndex: (index: number) => void
   toggleMuted: () => void
   setEmbedType: (type: EmbedType) => void
   setTimeState: (currentTime: number, duration: number) => void
@@ -18,7 +18,7 @@ type Actions = {
 
 export const useEmbedPlayerState = create<State & Actions>((set) => {
   return {
-    activeVideoId: '',
+    activeVideoIndex: 0,
     muted: true,
     embedType: 'default',
     timeState: {
@@ -31,8 +31,10 @@ export const useEmbedPlayerState = create<State & Actions>((set) => {
     setEmbedType(type) {
       set({ embedType: type })
     },
-    setActiveVideoId(id) {
-      set({ activeVideoId: id })
+    changeActiveIndex(index) {
+      set((state) => {
+        return { activeVideoIndex: index }
+      })
     },
     toggleMuted() {
       set({ muted: false })

@@ -1,7 +1,7 @@
-import { StandardView } from './standard-view'
+import { StandardView } from '@/components/embed/views/standard-view'
 import { getEmbedDetails } from '@/components/embed/api'
-import { VerticalView } from './vertical-view'
-import { CarouselView } from './carousel-view'
+import { VerticalView } from '@/components/embed/views/vertical-view'
+import { CarouselView } from '@/components/embed/views/carousel-view'
 import 'swiper/css'
 
 type Props = {

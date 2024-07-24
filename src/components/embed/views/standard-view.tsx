@@ -1,5 +1,4 @@
 'use client'
-import { useSizeStore } from '@components/embed/size-provider'
 import { FeedShimmer } from '@components/common/shimmers/feed-shimmer'
 import dynamic from 'next/dynamic'
 import { SideBar } from '@components/layouts/desktop/side-bar'
@@ -10,12 +9,15 @@ import { useEffect, useMemo, useRef } from 'react'
 import { type VideoPlayerModalType } from '@/lib/schemas/player/video'
 import { useEmbedPlayerState } from '@/components/embed/embed-player-state'
 import { useShallow } from 'zustand/react/shallow'
+import { useEmbedConfig } from '@/components/embed/embed-config-provider'
 
 const DesktopFeed = dynamic(async () => await import('@components/common/feed').then((comp) => comp.Feed.desktop))
 const MobileFeed = dynamic(async () => await import('@components/common/feed').then((comp) => comp.Feed.mobile))
 
 export function StandardView() {
-  const { showMobileView, sizeBox } = useSizeStore()
+  const { showMobileView, sizeBox } = useEmbedConfig(
+    useShallow((state) => ({ showMobileView: state.showMobileView, sizeBox: state.sizeBox }))
+  )
   const { setEmbedType } = useEmbedPlayerState(useShallow((state) => ({ setEmbedType: state.setEmbedType })))
 
   useEffect(() => {

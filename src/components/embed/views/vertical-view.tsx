@@ -2,19 +2,19 @@
 import { Mousewheel } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Loader } from '@components/ui/loader'
-import { useSizeStore } from '@components/embed/size-provider'
 import { EmbedPlayer } from '@components/embed/embed-player'
 import { useEmbedPlayerState } from '@components/embed/embed-player-state'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { Button } from '@components/ui/button'
 import { getFeedForEmbed } from '@/components/embed/api'
 import { useShallow } from 'zustand/react/shallow'
+import { useEmbedConfig } from '@/components/embed/embed-config-provider'
 import { useEffect, useMemo } from 'react'
 
 export function VerticalView() {
-  const { height, width } = useSizeStore()
-  const { setActiveVideoId, setEmbedType } = useEmbedPlayerState(
-    useShallow((state) => ({ setActiveVideoId: state.setActiveVideoId, setEmbedType: state.setEmbedType }))
+  const { height, width } = useEmbedConfig(useShallow((state) => ({ height: state.height, width: state.width })))
+  const { changeActiveVideoIndex, setEmbedType } = useEmbedPlayerState(
+    useShallow((state) => ({ changeActiveVideoIndex: state.changeActiveIndex, setEmbedType: state.setEmbedType }))
   )
   const { data: videoPages, fetchNextPage, isFetchingNextPage } = getFeedForEmbed(1)
   const videos = videoPages?.pages.flatMap((item) => item.reels)
@@ -81,13 +81,13 @@ export function VerticalView() {
         spaceBetween={8}
         onActiveIndexChange={(swiper) => {
           const activeIndex = swiper.activeIndex
-          setActiveVideoId(videos[activeIndex].video.id)
+          changeActiveVideoIndex(activeIndex)
           if (videos.length !== 0 && activeIndex >= videos.length - 3 && !isFetchingNextPage) {
             void fetchNextPage()
           }
         }}
         onInit={(swiper) => {
-          setActiveVideoId(videos[swiper.activeIndex].video.id)
+          changeActiveVideoIndex(swiper.activeIndex)
         }}>
         {videos.map((item, index) => {
           return (
@@ -96,7 +96,15 @@ export function VerticalView() {
               style={{ height: videoHeight, width: videoWidth }}
               className="overflow-clip rounded-lg">
               {({ isActive }) => {
-                return <EmbedPlayer isFirstElement={index === 0} videoData={item} loop={false} isActive={isActive} />
+                return (
+                  <EmbedPlayer
+                    index={index}
+                    isFirstElement={index === 0}
+                    videoData={item}
+                    loop={false}
+                    isActive={isActive}
+                  />
+                )
               }}
             </SwiperSlide>
           )

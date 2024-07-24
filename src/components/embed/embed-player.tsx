@@ -1,4 +1,4 @@
-import { type DetailedHTMLProps, type VideoHTMLAttributes, useRef } from 'react'
+import { type DetailedHTMLProps, type VideoHTMLAttributes, useRef, useState } from 'react'
 import OpenPlayerJS from 'openplayerjs'
 import { useEffect, useMemo } from 'react'
 import { useEmbedPlayerState } from './embed-player-state'
@@ -8,14 +8,16 @@ import { CustomAvatar } from '@components/custom/custom-avatar'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import Link from 'next/link'
 import Analytics from '@services/analytics'
-import { useParams } from 'next/navigation'
 import { useShallow } from 'zustand/react/shallow'
 import { Progress } from '@/components/ui/progress'
+import { useEmbedConfig } from './embed-config-provider'
+import { Play } from 'lucide-react'
 
 type Props = DetailedHTMLProps<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement> & {
   videoData: VideoPlayerModalType
   isActive: boolean
   isFirstElement: boolean
+  index: number
 }
 
 export function EmbedPlayer({
@@ -23,43 +25,42 @@ export function EmbedPlayer({
   isActive,
   isFirstElement,
   loop,
+  index,
   onEnded,
-  onCanPlay,
   onTimeUpdate,
+  onClick,
   ...props
 }: Props) {
-  const params = useParams()
   const videoRef = useRef<HTMLVideoElement>(null)
-  const localRef = useRef<{
-    player: OpenPlayerJS | null
-  }>({
-    player: null,
-  })
-  const { activeVideoId, muted, toggleMuted, setTimeState } = useEmbedPlayerState(
+  const playerRef = useRef<OpenPlayerJS | null>(null)
+  const { activeVideoIndex, muted, toggleMuted, setTimeState } = useEmbedPlayerState(
     useShallow((state) => ({
-      activeVideoId: state.activeVideoId,
+      activeVideoIndex: state.activeVideoIndex,
       muted: state.muted,
       toggleMuted: state.toggleMuted,
       setTimeState: state.setTimeState,
     }))
   )
-  const isActiveVideo = activeVideoId === videoData.video.id
+  const { videoCanPlay } = useEmbedConfig(useShallow((state) => ({ videoCanPlay: state.videoCanPlay })))
+  const [isPlaying, setIsPlaying] = useState(false)
+  const isActiveVideo = activeVideoIndex === index
 
+  const eventProperties = {
+    content_id: videoData.video.id,
+    content_type: 'video',
+    event_record_screen: 'embed',
+    content_url: videoData.video.source,
+  }
   function triggerEvent(eventName: string) {
     void Analytics.track({
       eventName,
-      properties: {
-        content_id: videoData.video.id,
-        content_category: 'loop',
-        event_record_screen: 'embed',
-        content_url: videoData.video.source,
-        embed_id: params.id as string,
-      },
+      properties: eventProperties,
     })
   }
 
   useEffect(() => {
     if (!videoRef.current) return
+    if (playerRef.current) return
     const player = new OpenPlayerJS(videoRef.current, {
       controls: {
         alwaysVisible: false,
@@ -87,23 +88,23 @@ export function EmbedPlayer({
     })
     void player.init().then((value) => {
       void player.load().then(() => {
-        if (isActive || isFirstElement) {
+        if ((isActive || isFirstElement) && videoCanPlay) {
           void player.play()
         }
-        localRef.current.player = player
+        playerRef.current = player
       })
     })
-  }, [])
+  }, [videoCanPlay])
 
   useEffect(() => {
-    const player = localRef.current.player
+    const player = playerRef.current
     if (!player) return
-    if (videoData.video.id === activeVideoId) {
+    if (index === activeVideoIndex && videoCanPlay) {
       void player.play()
     } else {
       player.pause()
     }
-  }, [activeVideoId, isActive])
+  }, [activeVideoIndex, isActive, videoCanPlay])
 
   return (
     <>
@@ -115,16 +116,17 @@ export function EmbedPlayer({
         poster={videoData.video.thumbnail}
         muted={muted}
         playsInline
-        onCanPlay={(ev) => {
-          onCanPlay?.(ev)
-        }}
         onPause={(e) => {
+          setIsPlaying(false)
           triggerEvent('Video Paused')
+        }}
+        onPlay={(e) => {
+          setIsPlaying(true)
+          triggerEvent('Video Started')
         }}
         onEnded={(e) => {
           onEnded?.(e)
-          triggerEvent('Video Watched')
-          if (loop) void localRef.current.player?.play()
+          if (loop) void playerRef.current?.play()
         }}
         onTimeUpdate={(e) => {
           const element = e.target as HTMLVideoElement
@@ -183,6 +185,11 @@ export function EmbedPlayer({
             </div>
           </div>
           <PlayerProgressBar />
+        </div>
+      )}
+      {!isPlaying && (
+        <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-monochrome-black/20 p-2">
+          <Play className="h-5 w-5 border-none fill-monochrome-white stroke-monochrome-white" />
         </div>
       )}
     </>

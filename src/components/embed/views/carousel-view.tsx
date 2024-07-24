@@ -1,7 +1,7 @@
 'use client'
 import { Mousewheel, Keyboard } from 'swiper/modules'
 import { type SwiperClass, Swiper, SwiperSlide, useSwiper } from 'swiper/react'
-import { useSizeStore } from '@components/embed/size-provider'
+import { useEmbedConfig } from '@/components/embed/embed-config-provider'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { EmbedPlayer } from '@components/embed/embed-player'
@@ -12,20 +12,20 @@ import { useDebouncedCallback } from 'use-debounce'
 
 export function CarouselView() {
   const swiperRef = useRef<SwiperClass | null>(null)
-  const { width, height } = useSizeStore()
-  const { setActiveVideoId, setEmbedType, activeVideoId } = useEmbedPlayerState(
+  const { width, height } = useEmbedConfig(useShallow((state) => ({ width: state.width, height: state.height })))
+  const { changeActiveIndex, setEmbedType, activeVideoId } = useEmbedPlayerState(
     useShallow((state) => ({
-      setActiveVideoId: state.setActiveVideoId,
+      changeActiveIndex: state.changeActiveIndex,
       setEmbedType: state.setEmbedType,
-      activeVideoId: state.activeVideoId,
+      activeVideoId: state.activeVideoIndex,
     }))
   )
   const { data: videoPages, fetchNextPage, isFetchingNextPage } = getFeedForEmbed(3)
   const videos = useMemo(() => videoPages?.pages.flatMap((item) => item.reels), [videoPages])
-  const [activeThroughHover, setActiveThroughHover] = useState('')
-  const debounce = useDebouncedCallback((videoId) => {
-    setActiveVideoId(videoId)
-    setActiveThroughHover(videoId)
+  const [activeThroughHover, setActiveThroughHover] = useState(-1)
+  const debounce = useDebouncedCallback((index) => {
+    changeActiveIndex(index)
+    setActiveThroughHover(index)
   }, 500)
 
   useEffect(() => {
@@ -62,28 +62,28 @@ export function CarouselView() {
         slidesPerView={ratio}
         modules={[Mousewheel, Keyboard]}
         onActiveIndexChange={(swiper) => {
-          const activeIndex = swiper.activeIndex
-          setActiveVideoId(videos[activeIndex].video.id)
+          changeActiveIndex(swiper.activeIndex)
         }}
         onInit={(swiper) => {
-          setActiveVideoId(videos[swiper.activeIndex].video.id)
+          changeActiveIndex(swiper.activeIndex)
         }}>
         {videos.map((item, index) => {
           return (
-            <SwiperSlide key={index}>
+            <SwiperSlide key={item.video.id}>
               {({ isActive }) => {
                 return (
                   <div
                     onMouseOver={(e) => {
-                      debounce(item.video.id)
+                      debounce(index)
                     }}
                     onMouseLeave={(e) => {
                       debounce.cancel()
-                      if (activeThroughHover) setActiveThroughHover('')
+                      if (activeThroughHover !== -1) setActiveThroughHover(-1)
                     }}
                     style={{ width: height * (9 / 16), height }}
                     className="relative inset-0 aspect-reel overflow-clip rounded-lg bg-contain bg-center bg-no-repeat object-contain">
                     <EmbedPlayer
+                      index={index}
                       isFirstElement={index === 0}
                       videoData={item}
                       isActive={isActive}
