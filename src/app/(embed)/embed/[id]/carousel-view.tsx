@@ -1,28 +1,38 @@
 'use client'
-import { Mousewheel } from 'swiper/modules'
-import { Swiper, SwiperSlide, useSwiper } from 'swiper/react'
+import { Mousewheel, Keyboard } from 'swiper/modules'
+import { type SwiperClass, Swiper, SwiperSlide, useSwiper } from 'swiper/react'
 import { useSizeStore } from '@components/embed/size-provider'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { EmbedPlayer } from '@components/embed/embed-player'
 import { useEmbedPlayerState } from '@components/embed/embed-player-state'
 import { getFeedForEmbed } from '@/components/embed/api'
 import { useShallow } from 'zustand/react/shallow'
+import { useDebouncedCallback } from 'use-debounce'
 
 export function CarouselView() {
+  const swiperRef = useRef<SwiperClass | null>(null)
   const { width, height } = useSizeStore()
-  const { setActiveVideoId, setEmbedType } = useEmbedPlayerState(
-    useShallow((state) => ({ setActiveVideoId: state.setActiveVideoId, setEmbedType: state.setEmbedType }))
+  const { setActiveVideoId, setEmbedType, activeVideoId } = useEmbedPlayerState(
+    useShallow((state) => ({
+      setActiveVideoId: state.setActiveVideoId,
+      setEmbedType: state.setEmbedType,
+      activeVideoId: state.activeVideoId,
+    }))
   )
   const { data: videoPages, fetchNextPage, isFetchingNextPage } = getFeedForEmbed(3)
   const videos = useMemo(() => videoPages?.pages.flatMap((item) => item.reels), [videoPages])
+  const [activeThroughHover, setActiveThroughHover] = useState('')
+  const debounce = useDebouncedCallback((videoId) => {
+    setActiveVideoId(videoId)
+    setActiveThroughHover(videoId)
+  }, 500)
 
   useEffect(() => {
     setEmbedType('carousel')
   }, [])
 
-  const videoWidth = (height * 9) / 16
-  const ratio = width / videoWidth
+  const ratio = useMemo(() => width / ((height * 9) / 16), [height])
 
   if (!videos) {
     return <div className="flex h-full w-full items-center justify-center">Loading...</div>
@@ -31,17 +41,29 @@ export function CarouselView() {
   return (
     <div className="relative h-full w-full">
       <Swiper
+        onSwiper={(swiper) => {
+          swiperRef.current = swiper
+        }}
         direction="horizontal"
         spaceBetween={16}
-        mousewheel={{ forceToAxis: true }}
+        speed={500}
+        mousewheel={{
+          forceToAxis: true,
+          releaseOnEdges: true,
+          sensitivity: 0.1,
+          thresholdDelta: 5,
+          thresholdTime: 500,
+        }}
+        onReachEnd={() => {
+          if (videos.length !== 0 && !isFetchingNextPage) {
+            void fetchNextPage()
+          }
+        }}
         slidesPerView={ratio}
-        modules={[Mousewheel]}
+        modules={[Mousewheel, Keyboard]}
         onActiveIndexChange={(swiper) => {
           const activeIndex = swiper.activeIndex
           setActiveVideoId(videos[activeIndex].video.id)
-          if (videos.length !== 0 && activeIndex > videos.length - 3 && !isFetchingNextPage) {
-            void fetchNextPage()
-          }
         }}
         onInit={(swiper) => {
           setActiveVideoId(videos[swiper.activeIndex].video.id)
@@ -52,32 +74,50 @@ export function CarouselView() {
               {({ isActive }) => {
                 return (
                   <div
+                    onMouseOver={(e) => {
+                      debounce(item.video.id)
+                    }}
+                    onMouseLeave={(e) => {
+                      debounce.cancel()
+                      if (activeThroughHover) setActiveThroughHover('')
+                    }}
                     style={{ width: height * (9 / 16), height }}
                     className="relative inset-0 aspect-reel overflow-clip rounded-lg bg-contain bg-center bg-no-repeat object-contain">
-                    <EmbedPlayer videoData={item} isFirstElement={index === 0} loop={false} isActive={isActive} />
+                    <EmbedPlayer
+                      isFirstElement={index === 0}
+                      videoData={item}
+                      isActive={isActive}
+                      loop={activeThroughHover === activeVideoId}
+                      onEnded={(e) => {
+                        if (!activeThroughHover && swiperRef.current) swiperRef.current.slideNext()
+                      }}
+                    />
                   </div>
                 )
               }}
             </SwiperSlide>
           )
         })}
-        <SwiperButtons />
+        <SwiperButtons slidesPerView={ratio} />
       </Swiper>
     </div>
   )
 }
 
-function SwiperButtons() {
+function SwiperButtons({ slidesPerView }: { slidesPerView: number }) {
   const [states, setStates] = useState({ isStart: true, isEnd: false })
   const slider = useSwiper()
+
+  slider.on('slideChange', () => {
+    setStates({ isStart: slider.isBeginning, isEnd: slider.isEnd })
+  })
 
   return (
     <>
       {!states.isStart && (
         <button
           onClick={() => {
-            slider.slidePrev()
-            setStates({ isStart: slider.isBeginning, isEnd: slider.isEnd })
+            slider.slideTo(slider.activeIndex - slidesPerView)
           }}
           className="absolute left-2 top-1/2 z-10 -translate-y-1/2 rounded-lg bg-monochrome-9 p-1">
           <ChevronLeft />
@@ -86,8 +126,7 @@ function SwiperButtons() {
       {!states.isEnd && (
         <button
           onClick={() => {
-            slider.slideNext()
-            setStates({ isStart: slider.isBeginning, isEnd: slider.isEnd })
+            slider.slideTo(slider.activeIndex + slidesPerView)
           }}
           className="absolute right-2 top-1/2 z-10 -translate-y-1/2 rounded-lg bg-monochrome-9 p-1">
           <ChevronRight />

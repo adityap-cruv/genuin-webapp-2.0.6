@@ -1,6 +1,6 @@
 import { type DetailedHTMLProps, type VideoHTMLAttributes, useRef } from 'react'
 import OpenPlayerJS from 'openplayerjs'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useEmbedPlayerState } from './embed-player-state'
 import { AnimatedMuteIcon } from '@components/common/player/control-layer/animated-mute-icon'
 import { Actions } from '@components/common/player/control-layer/actions'
@@ -10,17 +10,24 @@ import Link from 'next/link'
 import Analytics from '@services/analytics'
 import { useParams } from 'next/navigation'
 import { useShallow } from 'zustand/react/shallow'
+import { Progress } from '@/components/ui/progress'
 
 type Props = DetailedHTMLProps<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement> & {
   videoData: VideoPlayerModalType
-  /**
-   * Pass if player is first element of list to get it playing.
-   */
-  isFirstElement: boolean
   isActive: boolean
+  isFirstElement: boolean
 }
 
-export function EmbedPlayer({ videoData, isFirstElement, isActive, onCanPlay, ...props }: Props) {
+export function EmbedPlayer({
+  videoData,
+  isActive,
+  isFirstElement,
+  loop,
+  onEnded,
+  onCanPlay,
+  onTimeUpdate,
+  ...props
+}: Props) {
   const params = useParams()
   const videoRef = useRef<HTMLVideoElement>(null)
   const localRef = useRef<{
@@ -28,13 +35,15 @@ export function EmbedPlayer({ videoData, isFirstElement, isActive, onCanPlay, ..
   }>({
     player: null,
   })
-  const { activeVideoId, muted, toggleMuted } = useEmbedPlayerState(
+  const { activeVideoId, muted, toggleMuted, setTimeState } = useEmbedPlayerState(
     useShallow((state) => ({
       activeVideoId: state.activeVideoId,
       muted: state.muted,
       toggleMuted: state.toggleMuted,
+      setTimeState: state.setTimeState,
     }))
   )
+  const isActiveVideo = activeVideoId === videoData.video.id
 
   function triggerEvent(eventName: string) {
     void Analytics.track({
@@ -78,8 +87,8 @@ export function EmbedPlayer({ videoData, isFirstElement, isActive, onCanPlay, ..
     })
     void player.init().then((value) => {
       void player.load().then(() => {
-        if (isFirstElement) {
-          void player.getMedia().play()
+        if (isActive || isFirstElement) {
+          void player.play()
         }
         localRef.current.player = player
       })
@@ -94,12 +103,13 @@ export function EmbedPlayer({ videoData, isFirstElement, isActive, onCanPlay, ..
     } else {
       player.pause()
     }
-  }, [activeVideoId])
+  }, [activeVideoId, isActive])
 
   return (
     <>
       <video
-        className="absolute h-full w-full object-cover"
+        style={{ backgroundImage: `url(${videoData.video.thumbnail})` }}
+        className="absolute h-full w-full bg-cover bg-center bg-no-repeat object-cover"
         ref={videoRef}
         src={videoData.video.source}
         poster={videoData.video.thumbnail}
@@ -112,12 +122,18 @@ export function EmbedPlayer({ videoData, isFirstElement, isActive, onCanPlay, ..
           triggerEvent('Video Paused')
         }}
         onEnded={(e) => {
+          onEnded?.(e)
           triggerEvent('Video Watched')
-          void localRef.current.player?.play()
+          if (loop) void localRef.current.player?.play()
+        }}
+        onTimeUpdate={(e) => {
+          const element = e.target as HTMLVideoElement
+          setTimeState(element.currentTime, element.duration)
+          onTimeUpdate?.(e)
         }}
         {...props}
       />
-      {muted && isActive && (
+      {muted && isActiveVideo && (
         <div
           className="absolute inset-0 left-2 top-2 w-auto cursor-pointer"
           onClick={(e) => {
@@ -131,7 +147,7 @@ export function EmbedPlayer({ videoData, isFirstElement, isActive, onCanPlay, ..
           <AnimatedMuteIcon />
         </div>
       )}
-      {isActive && (
+      {isActiveVideo && (
         <div className="absolute bottom-0 w-full">
           <div className="flex justify-between p-2">
             <div className="flex w-4/5 flex-col justify-end">
@@ -166,8 +182,22 @@ export function EmbedPlayer({ videoData, isFirstElement, isActive, onCanPlay, ..
               />
             </div>
           </div>
+          <PlayerProgressBar />
         </div>
       )}
     </>
   )
+}
+
+function PlayerProgressBar() {
+  const { currentTime, duration } = useEmbedPlayerState(
+    useShallow((state) => ({ timeState: state.timeState }))
+  ).timeState
+
+  const progressValue = useMemo(() => {
+    if (duration === 0) return 0
+    return Math.round((currentTime / duration) * 100)
+  }, [currentTime, duration])
+
+  return <Progress value={progressValue} className="absolute bottom-0 left-0 h-[2px] transition-all duration-300" />
 }

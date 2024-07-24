@@ -40,10 +40,13 @@ export function SizeProvider({ children, config }: { children: ReactNode; config
   const { setSize, isLoading } = useSizeStore((state) => ({ setSize: state.setSizes, isLoading: state.isLoading }))
 
   useEffect(() => {
+    void Analytics.track({ eventName: 'Embed Viewed', properties: { embed_id: params.id as string } })
+  }, [])
+
+  useEffect(() => {
     setSize(window.innerWidth, window.innerHeight, config)
     setBrandIdInAxiosInstance(Number(config?.brand_id))
     void rudderStackIdentify()
-    void Analytics.track({ eventName: 'Embed Viewed', properties: { embed_id: params.id as string } })
   }, [])
 
   if (!isLoading) return children

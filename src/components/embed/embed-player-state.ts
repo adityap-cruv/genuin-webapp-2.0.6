@@ -6,12 +6,14 @@ type State = {
   activeVideoId: string
   muted: boolean
   embedType: EmbedType
+  timeState: { duration: number; currentTime: number }
 }
 
 type Actions = {
   setActiveVideoId: (id: string) => void
   toggleMuted: () => void
   setEmbedType: (type: EmbedType) => void
+  setTimeState: (currentTime: number, duration: number) => void
 }
 
 export const useEmbedPlayerState = create<State & Actions>((set) => {
@@ -19,6 +21,13 @@ export const useEmbedPlayerState = create<State & Actions>((set) => {
     activeVideoId: '',
     muted: true,
     embedType: 'default',
+    timeState: {
+      duration: 0,
+      currentTime: 0,
+    },
+    setTimeState(currentTime, duration) {
+      set({ timeState: { currentTime, duration } })
+    },
     setEmbedType(type) {
       set({ embedType: type })
     },
