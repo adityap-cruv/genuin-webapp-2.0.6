@@ -1,14 +1,14 @@
 import { VanillaPlayer } from '@/components/common/vanilla-player'
 import { ContactUs } from '@components/common/modals/contact-us'
 import { Button } from '@components/ui/button'
-import bg_genuin_logo from '@images/home/index_genuin_logo.png'
+import bgGenuinLogo from '@images/home/index_genuin_logo.png'
 
 export function CommunityReimagined() {
   return (
     <>
       <div
         className="hidden h-full w-full items-center justify-between bg-top bg-no-repeat md:flex"
-        style={{ backgroundImage: `url(${bg_genuin_logo.src})` }}>
+        style={{ backgroundImage: `url(${bgGenuinLogo.src})` }}>
         <div className="flex w-3/5 flex-col gap-9">
           <p className="text-title-1-bold-home">
             Community{' '}
@@ -45,7 +45,7 @@ export function CommunityReimagined() {
       <div
         className="flex h-full w-full flex-col items-center justify-center gap-6 bg-no-repeat px-11 py-9 md:hidden"
         style={{
-          backgroundImage: `url(${bg_genuin_logo.src})`,
+          backgroundImage: `url(${bgGenuinLogo.src})`,
           backgroundPosition: 'center',
           backgroundSize: '100%',
         }}>
@@ -62,7 +62,8 @@ export function CommunityReimagined() {
           <VanillaPlayer
             className="aspect-[32/67] w-full rounded-3xl"
             id={'1'}
-            loop={true}
+            muted
+            loop
             videoSource="https://media.begenuin.com/backend_assets/hero-video/comp-1_2.m3u8"
             poster={'https://media.begenuin.com/backend_assets/hero-video/hero-video.png'}
           />

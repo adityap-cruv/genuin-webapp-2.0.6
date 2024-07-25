@@ -24,6 +24,7 @@ const videoSchema = z.object({
   descriptionArr: descriptionArrSchema.nullish(),
   descriptionText: z.string().nullish(),
   slug: z.string(),
+  linkoutId: z.number().nullish(),
 })
 
 // Define the loop schema
@@ -56,7 +57,7 @@ const communitySchema = z.object({
   id: z.string(),
   type: z.number().nullish(),
   shareUrl: z.string(),
-  userRole: z.enum(['LEADER', 'MEMBER']).nullish(),
+  userRole: z.enum(['LEADER', 'MEMBER', 'REQUESTED']).nullish(),
   brand: BrandSchema.optional(),
   isJoinRequested: z.boolean().optional(),
 })

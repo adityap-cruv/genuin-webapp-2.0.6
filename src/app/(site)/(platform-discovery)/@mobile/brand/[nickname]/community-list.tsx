@@ -143,6 +143,7 @@ export function CommunityList({ brandId, scrollYProgress }: { brandId: number; s
                         id={item.id}
                         userRole={item.userRole}
                         isCommunityPrivate={item.type === 2}
+                        communityName={item.name ?? ''}
                       />
                     )}
                   </div>

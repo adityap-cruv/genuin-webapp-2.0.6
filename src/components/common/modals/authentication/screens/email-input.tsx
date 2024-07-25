@@ -55,7 +55,7 @@ export function EmailInput() {
           setStep('PASSWORD_INPUT_LOGIN')
         }
         void Analytics.track({
-          eventName: 'ks_login_initiated',
+          eventName: 'Ks Login Initiated',
           properties: {},
         })
       } else if (ksResponse.code === 5237) {

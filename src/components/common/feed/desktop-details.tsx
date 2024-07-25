@@ -23,7 +23,11 @@ import { TickIcon } from '@icons/tick-icon'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@components/ui/tooltip'
 import { JoinCommunityButton } from '@components/pages/community/join-community-button'
 import { ReadMore } from '../read-more'
+import { useSearchParams } from 'next/navigation'
+import { commentDeepLink } from '@/lib/get-deeplink'
+import { Linkout } from '../linkout'
 
+// TODO: improve this component.
 export function DesktopDetails({ loop, community, owner, video }: VideoPlayerModalType) {
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
@@ -33,7 +37,7 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
   const [comments, setComments] = useState<CommentListType>([])
 
   return (
-    <div className="relative flex h-full flex-1 flex-col overflow-x-clip bg-monochrome-white pb-16 pl-2">
+    <div className="relative h-full w-1 flex-1 bg-monochrome-white pb-16 pl-2">
       <div className="border-b border-tertiary-200 p-4">
         <span className="flex items-center gap-x-2">
           <CustomAvatar
@@ -68,7 +72,7 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
         )}
       </div>
       <div ref={scrollDivRef} className="flex h-full flex-col overflow-auto overflow-x-clip">
-        <div className="p-4">
+        <div className="border-b border-tertiary-200 p-4">
           <p className="text-title-3-bold">Posted in</p>
           <div className="pt-3">
             <span className="flex items-center justify-between">
@@ -81,7 +85,7 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
                     className="h-11 w-11"
                   />
                   {/* TODO: What if there is no community name. */}
-                  <div>
+                  <span>
                     <Link href={{ pathname: PATH_NAME.community(community.slug) }}>
                       <p className="line-clamp-1 break-all pr-2 text-title-3-bold">{community.name}</p>
                     </Link>
@@ -94,15 +98,13 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
                         on {community.brand?.name}
                       </p>
                     )}
-                  </div>
+                  </span>
                 </span>
                 {community?.type === 2 && (
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <div>
-                          <LockIcon className="h-4 w-4 stroke-tertiary" />
-                        </div>
+                        <LockIcon className="h-4 w-4 stroke-tertiary" />
                       </TooltipTrigger>
                       <TooltipContent className="w-64 bg-monochrome-black">
                         <p className="text-center text-cap-1-med text-monochrome-white">
@@ -115,18 +117,13 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
                 )}
               </div>
               <span className="flex h-min flex-1 items-center justify-end gap-x-3">
-                {/* <JoinButton
-                  handle={community.handle}
-                  id={community.id}
-                  userRole={community.userRole}
-                  isCommunityPrivate={community.type === 2}
-                /> */}
                 <JoinCommunityButton
                   handle={community.handle}
                   buttonText="Join Community"
                   id={community.id}
                   isCommunityPrivate={community.type === 2}
                   isJoinRequested={false}
+                  userRole={community.userRole}
                 />
                 <Button
                   size="custom"
@@ -153,8 +150,13 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
             </DecorativeList>
           </div>
         </div>
+        {video.linkoutId && (
+          <div className="w-auto px-4">
+            <Linkout.desktop linkoutId={video.linkoutId} videoId={video.id} />
+          </div>
+        )}
         <div className="sticky top-0 z-10">
-          <p className="border-b border-t border-tertiary-200 bg-monochrome-white px-4 py-3 text-title-3-demi text-tertiary">
+          <p className="border-b border-t border-tertiary-200 bg-monochrome-white px-4 py-3 text-title-3-demi">
             Comments {video.commentCount !== 0 ? `(${video.commentCount})` : ''}
           </p>
         </div>
@@ -168,6 +170,8 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
         setCurrentComment={setCurrentComment}
         videoId={video.id}
         loopId={loop.id}
+        videoSlug={video.slug}
+        communityId={community.id}
       />
       <Toaster />
     </div>
@@ -235,14 +239,20 @@ function CommentInput({
   setCurrentComment,
   videoId,
   loopId,
+  videoSlug,
+  communityId,
 }: {
   setComments: any
   currentComment: any
   setCurrentComment: any
   videoId: string
   loopId: string
+  videoSlug: string
+  communityId: string
 }) {
   const user = useGenuinOptions().user
+  const searchParams = Object.fromEntries(useSearchParams())
+
   async function handleClick() {
     if (currentComment.length !== 0) {
       const newComment = {
@@ -324,10 +334,9 @@ function CommentInput({
           </>
         ) : (
           <div
-            onClick={() => {
-              openModal({
-                title: 'Get the Genuin app',
-                subtitle: <>Get the app to comment on this video.</>,
+            onClick={async () => {
+              await commentDeepLink({ videoSlug, communityId, loopId, searchParams }).then((generatedLink) => {
+                openModal({ deepLink: generatedLink, subtitle: <>Get the app to comment on this video.</> })
               })
             }}
             placeholder="Add a comment"

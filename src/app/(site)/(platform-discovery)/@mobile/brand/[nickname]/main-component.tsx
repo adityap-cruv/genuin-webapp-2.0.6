@@ -33,19 +33,15 @@ export function MainComponent({ profileData }: CompProps) {
   const scrollDivRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ container: scrollDivRef, layoutEffect: false })
   const resetData = useCommunityListStore((state) => state.reset)
-  const hasMounted = useRef(false)
 
   useEffect(() => {
-    if (!hasMounted.current) {
-      void Analytics.track({
-        eventName: 'brand_profile_opened',
-        properties: {
-          brand_id: profileData.brand?.brand_id,
-          brand_slug: profileData.brand?.brand_slug,
-        },
-      })
-      hasMounted.current = true
-    }
+    void Analytics.track({
+      eventName: 'Brand Profile Opened',
+      properties: {
+        brand_id: profileData.brand?.brand_id,
+        brand_slug: profileData.brand?.brand_slug,
+      },
+    })
     return () => {
       resetData()
     }

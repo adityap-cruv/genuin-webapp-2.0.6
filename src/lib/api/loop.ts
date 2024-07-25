@@ -45,7 +45,7 @@ async function fetchLoopVideos(
       return { videos, end: resData.end_of_messages }
     })
     .catch((e) => {
-      throw new Error('Somethig went wrong with loop videos fetching api.')
+      throw new Error('Something went wrong with loop videos fetching api.')
     })
 }
 

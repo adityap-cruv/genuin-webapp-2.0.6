@@ -35,7 +35,7 @@ export function Recents() {
 
   async function deleteClickHandler(id?: string, all?: boolean) {
     const response = await deleteRecent(id, all)
-    // TODO: What should we do in case of failuere in deletion api.
+    // TODO: What should we do in case of failure in deletion api.
     if (response) void refetch()
     void Analytics.track({
       eventName: 'Clear Recent Search',

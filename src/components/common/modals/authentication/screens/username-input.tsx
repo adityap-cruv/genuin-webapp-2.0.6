@@ -75,7 +75,7 @@ export function UsernameInput() {
           })
           setStep('COMPLETE_PROFILE')
           void Analytics.track({
-            eventName: 'ks_username_set ',
+            eventName: 'Ks Username Set ',
             properties: { username },
           })
         }

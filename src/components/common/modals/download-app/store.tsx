@@ -10,7 +10,8 @@ type States = {
   action?: AuthActionType
   title?: React.ReactNode
   subtitle?: React.ReactNode
-  open: (props: { title: ReactNode | string; subtitle: ReactNode | string }) => void
+  deepLink?: string
+  open: (props: { title?: ReactNode | string; subtitle?: ReactNode | string; deepLink?: string }) => void
   close: () => void
 }
 
@@ -19,8 +20,9 @@ export const useDownloadDialogModalStore = create<States>((set) => {
     isOpen: false,
     title: '',
     subtitle: '',
-    open({ title, subtitle }) {
-      set({ isOpen: true, title, subtitle })
+    deepLink: '',
+    open({ title, subtitle, deepLink }) {
+      set({ isOpen: true, title, subtitle, deepLink })
     },
     close() {
       set({ isOpen: false })

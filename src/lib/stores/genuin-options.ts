@@ -50,6 +50,7 @@ export type ConfigType = {
   id: string
   logo: string
   integrations: IntegrationSettingsType
+  environment: string
   name: string
   subdomain: string
   slogan: SloganType

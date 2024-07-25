@@ -160,6 +160,7 @@ export function CommunityList({ userId }: { userId: string }) {
                       id={item.id}
                       userRole={item.userRole}
                       isCommunityPrivate={item.type === 2}
+                      communityName={item.name ?? ''}
                     />
                   )}
                 </div>
