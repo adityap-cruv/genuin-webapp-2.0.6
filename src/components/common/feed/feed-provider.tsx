@@ -42,48 +42,50 @@ export function FeedContextProvider({
     const { duration, currentTime } = usePlayerControlStore.getState()
     const playerProgress = Math.round((currentTime / duration) * 100)
 
-    const eventName = newIndex < currentIndex ? 'Swipe Down' : 'Swipe Up'
+    setCurrentIndex((currentIndex) => {
+      const eventName = newIndex < currentIndex ? 'Swipe Down' : 'Swipe Up'
+      const properties = {
+        content_category: 'loop',
+        content_id: videosRef.current[currentIndex].video.id,
+        event_record_screen: 'feed',
+        event_target_screen: 'none',
+        video_length: duration,
+        video_view_length: currentTime,
+      }
 
-    const properties = {
-      content_category: 'loop',
-      content_id: videosRef.current[currentIndex].video.id,
-      event_record_screen: 'feed',
-      event_target_screen: 'none',
-      video_length: duration,
-      video_view_length: currentTime,
-    }
+      void Analytics.track({
+        eventName,
+        properties,
+      })
 
-    void Analytics.track({
-      eventName,
-      properties,
+      void Analytics.track({ eventName: 'Video Impression', properties })
+
+      if (isNaN(playerProgress)) {
+        return newIndex
+      }
+
+      if (playerProgress >= 25) {
+        void Analytics.track({
+          eventName: 'Video First Quartile',
+          properties,
+        })
+      }
+
+      if (playerProgress >= 50) {
+        void Analytics.track({
+          eventName: 'Video Watched',
+          properties,
+        })
+      }
+
+      if (playerProgress >= 75) {
+        void Analytics.track({
+          eventName: 'Video Third Quartile',
+          properties,
+        })
+      }
+      return newIndex
     })
-
-    if (isNaN(playerProgress)) {
-      setCurrentIndex(newIndex)
-      return
-    }
-
-    if (playerProgress >= 25) {
-      void Analytics.track({
-        eventName: 'Video First Quartile',
-        properties,
-      })
-    }
-
-    if (playerProgress >= 50) {
-      void Analytics.track({
-        eventName: 'Video Watched',
-        properties,
-      })
-    }
-
-    if (playerProgress >= 75) {
-      void Analytics.track({
-        eventName: 'Video Third Quartile',
-        properties,
-      })
-    }
-    setCurrentIndex(newIndex)
   }, [])
 
   useEffect(() => {

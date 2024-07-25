@@ -21,7 +21,7 @@ type Props = DetailedHTMLProps<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoE
 }
 function triggerAnalyticsForVideoStart(videoId: string, latency: number, position: number) {
   void Analytics.track({
-    eventName: 'Video Start',
+    eventName: 'Video Started',
     properties: {
       content_id: videoId,
       event_record_screen: 'embed',
@@ -139,7 +139,6 @@ export function EmbedPlayer({
         }}
         onPlay={(e) => {
           setIsPlaying(true)
-          triggerEvent('Video Started')
         }}
         onEnded={(e) => {
           onEnded?.(e)

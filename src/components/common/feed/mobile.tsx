@@ -97,7 +97,6 @@ export function Mobile({ videos, fetchNextPage, isFetchingNextPage, startIndex =
 
 function InfinityViewBox({ videoDetails }: { videoDetails: VideoPlayerModalType }) {
   const [isVisible, setIsVisible] = useState(true)
-  const { currentIndex } = useFeedListStore()
 
   useEffect(() => {
     if (!videoDetails.video.linkoutId) return
@@ -110,7 +109,7 @@ function InfinityViewBox({ videoDetails }: { videoDetails: VideoPlayerModalType 
       if (timeoutId) timeoutId = null
       setIsVisible(true)
     }
-  }, [currentIndex])
+  }, [videoDetails])
 
   if (videoDetails)
     return (

@@ -7,6 +7,7 @@ type FeedListStoreType = {
   setCurrentIndex: (index: number, oldVideoId: string) => void
 }
 
+// TODO: Make this store deprecated instead use feed-provider.
 export const useFeedListStore = create<FeedListStoreType>((set) => {
   return {
     currentIndex: 0,
@@ -23,14 +24,13 @@ export const useFeedListStore = create<FeedListStoreType>((set) => {
           video_view_length: currentTime,
         }
         const eventName = index < state.currentIndex ? 'Swipe Down' : 'Swipe Up'
-
         void Analytics.track({
           eventName,
           properties,
         })
 
+        void Analytics.track({ eventName: 'Video Impression', properties })
         if (isNaN(playerProgress)) {
-          void Analytics.track({ eventName: 'Video Impression', properties })
           return { currentIndex: index }
         }
 

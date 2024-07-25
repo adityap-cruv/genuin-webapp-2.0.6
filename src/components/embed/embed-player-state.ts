@@ -39,6 +39,7 @@ export const useEmbedPlayerState = create<State & Actions>((set) => {
     },
     changeActiveIndex(index, properties) {
       set((state) => {
+        if (state.activeVideoIndex === index) return state
         const { duration, currentTime } = state.timeState
         const playerProgress = Math.round((currentTime / duration) * 100)
 
