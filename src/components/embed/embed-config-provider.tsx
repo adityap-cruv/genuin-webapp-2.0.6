@@ -52,10 +52,6 @@ export function EmbedConfigProvider({ children, config }: { children: ReactNode;
     }))
   )
 
-  useEffect(() => {
-    void Analytics.track({ eventName: 'Embed Viewed', properties: { embed_id: params.id as string } })
-  }, [])
-
   function handleBlur() {
     setVideoCanPlay(false)
   }
@@ -65,7 +61,7 @@ export function EmbedConfigProvider({ children, config }: { children: ReactNode;
   }
 
   useEffect(() => {
-    const element = document.parentElement
+    const element = document.getElementsByTagName('body')[0]
     console.log('element::', element)
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
@@ -80,7 +76,9 @@ export function EmbedConfigProvider({ children, config }: { children: ReactNode;
 
     setSize(window.innerWidth, window.innerHeight, config)
     setBrandIdInAxiosInstance(Number(config?.brand_id))
-    void rudderStackIdentify()
+    void rudderStackIdentify().then((_) => {
+      void Analytics.track({ eventName: 'Embed Viewed', properties: { embed_id: params.id as string } })
+    })
 
     window.addEventListener('focus', handleFocus)
     window.addEventListener('blur', handleBlur)
