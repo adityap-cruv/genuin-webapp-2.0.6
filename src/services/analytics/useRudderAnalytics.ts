@@ -6,6 +6,7 @@ export async function rudderStackTrack(...args: Parameters<RudderAnalytics['trac
   const x = window.rudderanalytics as RudderAnalytics | undefined | null
   const brandId = useGenuinOptions.getState().brandId
   if (args[1] && brandId) (args[1] as any).brand_id = brandId
+  console.log("useRudderAnalytics:", x)
   x?.track(...args)
 }
 

@@ -36,7 +36,7 @@ export const Analytics = {
     }
 
     const updatedProperties = { ...properties, ...defaultProperties }
-
+    console.log('Inside Rudderstak:', eventName, updatedProperties)
     await rudderStackTrack(eventName, updatedProperties)
   },
   pushVideoWatch(videoId: string) {
