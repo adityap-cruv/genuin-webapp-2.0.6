@@ -15,7 +15,7 @@ export const Analytics = {
   track: async ({ eventName, properties }: AnalyticsTrackType): Promise<void> => {
     const { user, brandId, config } = useGenuinOptions.getState()
     let channel = !config ? 'genuin web' : 'white label'
-    let embedId, page
+    let embedId
     const environment = config ? config.environment : undefined
     if (window !== window.parent) {
       channel = 'web sdk'
@@ -23,10 +23,10 @@ export const Analytics = {
       const pathArr = pathName.split('/')
       const embedIndex = pathArr.findIndex((item) => item === 'embed')
       embedId = pathArr[embedIndex + 1]
-      page = {
-        url: window.parent.location.href,
-        path: window.parent.location.pathname,
-      }
+      // page = {
+      //   url: window.parent.location.href,
+      //   path: window.parent.location.pathname,
+      // }
     }
     const userId = user?.id ? user.id : useLocalStorage.getState().userId
     const embedType = embedId ? useEmbedPlayerState.getState().embedType : undefined
@@ -37,7 +37,7 @@ export const Analytics = {
       channel,
       embed_id: embedId,
       environment,
-      page,
+      // page,
     }
 
     Object.assign(properties, defaultProperties)
