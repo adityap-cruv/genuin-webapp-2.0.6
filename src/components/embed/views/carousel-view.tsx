@@ -3,7 +3,7 @@ import { Mousewheel, Keyboard } from 'swiper/modules'
 import { type SwiperClass, Swiper, SwiperSlide, useSwiper } from 'swiper/react'
 import { useEmbedConfig } from '@/components/embed/embed-config-provider'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { EmbedPlayer } from '@components/embed/embed-player'
 import { useEmbedPlayerState } from '@components/embed/embed-player-state'
 import { getFeedForEmbed } from '@/components/embed/api'
@@ -33,6 +33,17 @@ export function CarouselView() {
   }, [])
 
   const ratio = useMemo(() => width / ((height * 9) / 16), [height])
+
+  const slideNext = useCallback(() => {
+    if (!swiperRef.current) return
+    const activeIndex = activeVideoId
+    const swiperActiveIndex = swiperRef.current.activeIndex
+    if (Math.floor(swiperActiveIndex + ratio) > activeIndex + 1) {
+      changeActiveIndex(activeIndex + 1)
+    } else {
+      swiperRef.current.slideTo(swiperActiveIndex + ratio)
+    }
+  }, [activeVideoId, ratio])
 
   if (!videos) {
     return <div className="flex h-full w-full items-center justify-center">Loading...</div>
@@ -88,9 +99,7 @@ export function CarouselView() {
                       videoData={item}
                       isActive={isActive}
                       loop={activeThroughHover === activeVideoId}
-                      onEnded={(e) => {
-                        if (!activeThroughHover && swiperRef.current) swiperRef.current.slideNext()
-                      }}
+                      onEnded={activeThroughHover === -1 ? slideNext : undefined}
                     />
                   </div>
                 )
