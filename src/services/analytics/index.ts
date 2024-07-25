@@ -40,9 +40,9 @@ export const Analytics = {
       page,
     }
 
-    const updatedProperties = Object.assign(properties, defaultProperties)
+    Object.assign(properties, defaultProperties)
 
-    await rudderStackTrack(eventName, updatedProperties)
+    await rudderStackTrack(eventName, properties)
   },
   pushVideoWatch(videoId: string) {
     void axiosInstance.put('/api/v3/video_view', {
