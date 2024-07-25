@@ -1,3 +1,4 @@
+import { cn } from '@/lib/utils'
 import OpenPlayerJS from 'openplayerjs'
 import { type DetailedHTMLProps, type VideoHTMLAttributes, memo, useEffect, useRef } from 'react'
 
@@ -9,7 +10,7 @@ type Props = DetailedHTMLProps<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoE
 /**
  * This player does not have any controls and is used for auto-playing videos.
  */
-export const VanillaPlayer = memo(function InnerPlayer({ videoSource, ...props }: Props) {
+export const VanillaPlayer = memo(function InnerPlayer({ videoSource, className, ...props }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null)
 
   useEffect(() => {
@@ -43,7 +44,6 @@ export const VanillaPlayer = memo(function InnerPlayer({ videoSource, ...props }
     void player.init().then((value) => {
       void player.load().then(() => {
         player
-          .getMedia()
           .play()
           .then((_) => {
             // console.log('start playing')
@@ -56,6 +56,6 @@ export const VanillaPlayer = memo(function InnerPlayer({ videoSource, ...props }
   }, [videoSource])
 
   return (
-    <video className="absolute h-full w-full object-cover" ref={videoRef} src={videoSource} playsInline {...props} />
+    <video className={cn(className, 'object-cover')} muted ref={videoRef} src={videoSource} playsInline {...props} />
   )
 })
