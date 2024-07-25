@@ -4,7 +4,6 @@ import { Button } from '@components/ui/button'
 import bgGenuinLogo from '@images/home/index_genuin_logo.png'
 
 export function CommunityReimagined() {
-  // TODO handle autoplay in video
   return (
     <>
       <div
