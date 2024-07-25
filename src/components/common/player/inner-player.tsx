@@ -96,7 +96,6 @@ export const InnerPlayer = memo(function InnerPlayer({
             .then((_) => {
               const endTime = performance.now()
               triggerAnalyticsForVideoStart(id, endTime - startTime)
-              // console.log('start playing')
             })
             .catch((e) => {
               // console.log('something went wrong..', e)

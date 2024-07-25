@@ -21,38 +21,15 @@ export const useFeedModalStore = create<FeedModalStore>((set, get) => {
       set((state) => {
         const { duration, currentTime } = usePlayerControlStore.getState()
         const playerProgress = Math.round((currentTime / duration) * 100)
-        if (isNaN(playerProgress)) {
-          return { currentIndex: index }
-        }
-
+        const contentId = state.videos[state.currentIndex]?.video?.id
         const properties = {
           content_category: 'loop',
-          content_id: state.videos[state.currentIndex]?.video?.id,
+          content_id: contentId,
+          content_type: 'video',
           event_record_screen: 'feed',
           event_target_screen: 'none',
           video_length: duration,
           video_view_length: currentTime,
-        }
-
-        if (playerProgress >= 25) {
-          void Analytics.track({
-            eventName: 'Video First Quartile',
-            properties,
-          })
-        }
-
-        if (playerProgress >= 50) {
-          void Analytics.track({
-            eventName: 'Video Watched',
-            properties,
-          })
-        }
-
-        if (playerProgress >= 75) {
-          void Analytics.track({
-            eventName: 'Video Third Quartile',
-            properties,
-          })
         }
 
         const eventName = index < state.currentIndex ? 'Swipe Down' : 'Swipe Up'
@@ -61,6 +38,12 @@ export const useFeedModalStore = create<FeedModalStore>((set, get) => {
           eventName,
           properties,
         })
+
+        if (isNaN(playerProgress)) return { currentIndex: index }
+
+        // TODO: figure out record screen and check with nayan/ankit about the record screen.
+        Analytics.triggerAnalyticsForVideoProgress(contentId, duration, currentTime, playerProgress, 'profile')
+
         return { currentIndex: index }
       })
     },

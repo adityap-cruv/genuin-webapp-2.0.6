@@ -15,7 +15,7 @@ export const Analytics = {
   track: async ({ eventName, properties }: AnalyticsTrackType): Promise<void> => {
     const { user, brandId, config } = useGenuinOptions.getState()
     let channel = !config ? 'genuin web' : 'white label'
-    let embedId
+    let embedId, page
     const environment = config ? config.environment : undefined
     if (window !== window.parent) {
       channel = 'web sdk'
@@ -23,6 +23,10 @@ export const Analytics = {
       const pathArr = pathName.split('/')
       const embedIndex = pathArr.findIndex((item) => item === 'embed')
       embedId = pathArr[embedIndex + 1]
+      page = {
+        url: window.parent.location.href,
+        path: window.parent.location.pathname,
+      }
     }
     const userId = user?.id ? user.id : useLocalStorage.getState().userId
     const embedType = embedId ? useEmbedPlayerState.getState().embedType : undefined
@@ -33,11 +37,12 @@ export const Analytics = {
       channel,
       embed_id: embedId,
       environment,
+      page,
     }
 
-    const updatedProperties = { ...properties, ...defaultProperties }
-    console.log('Inside Rudderstak:', eventName, updatedProperties)
-    await rudderStackTrack(eventName, updatedProperties)
+    Object.assign(properties, defaultProperties)
+
+    await rudderStackTrack(eventName, properties)
   },
   pushVideoWatch(videoId: string) {
     void axiosInstance.put('/api/v3/video_view', {
@@ -45,13 +50,82 @@ export const Analytics = {
       type: 2,
     })
   },
-  // triggerEventForEmbed({ eventName, properties }: { eventName: string; properties: any }) {
-  //   Object.assign(properties, { embed_type: useEmbedPlayerState.getState().embedType })
+  triggerAnalyticsForVideoComplete(
+    videoId: string,
+    duration: number,
+    currentTime: number,
+    recordScreen?: string,
+    position?: number
+  ) {
+    const properties = {
+      content_category: 'loop',
+      content_id: videoId,
+      event_record_screen: recordScreen ?? 'feed',
+      event_target_screen: 'none',
+      video_length: duration,
+      video_view_length: currentTime,
+      video_position: position,
+    }
+    void Analytics.track({ eventName: 'Video Impression', properties })
 
-  //   void Analytics.track({
-  //     eventName,
-  //     properties,
-  //   })
-  // },
+    void Analytics.track({
+      eventName: 'Video First Quartile',
+      properties,
+    })
+
+    void Analytics.track({
+      eventName: 'Video Watched',
+      properties,
+    })
+
+    void Analytics.track({
+      eventName: 'Video Third Quartile',
+      properties,
+    })
+
+    void Analytics.track({
+      eventName: 'Video Complete',
+      properties,
+    })
+  },
+  triggerAnalyticsForVideoProgress(
+    videoId: string,
+    duration: number,
+    currentTime: number,
+    playerProgress: number,
+    recordScreen?: string,
+    position?: number
+  ) {
+    const properties = {
+      content_category: 'loop',
+      content_id: videoId,
+      event_record_screen: recordScreen ?? 'feed',
+      event_target_screen: 'none',
+      video_length: duration,
+      video_view_length: currentTime,
+      video_position: position,
+    }
+    void Analytics.track({ eventName: 'Video Impression', properties })
+    if (playerProgress >= 25) {
+      void Analytics.track({
+        eventName: 'Video First Quartile',
+        properties,
+      })
+    }
+
+    if (playerProgress >= 50) {
+      void Analytics.track({
+        eventName: 'Video Watched',
+        properties,
+      })
+    }
+
+    if (playerProgress >= 75) {
+      void Analytics.track({
+        eventName: 'Video Third Quartile',
+        properties,
+      })
+    }
+  },
 }
 export default Analytics
