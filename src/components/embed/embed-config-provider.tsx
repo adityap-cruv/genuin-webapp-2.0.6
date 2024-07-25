@@ -53,6 +53,7 @@ export function EmbedConfigProvider({ children, config }: { children: ReactNode;
   )
 
   useEffect(() => {
+    console.log('Embed Viewed')
     void Analytics.track({ eventName: 'Embed Viewed', properties: { embed_id: params.id as string } })
   }, [])
 
