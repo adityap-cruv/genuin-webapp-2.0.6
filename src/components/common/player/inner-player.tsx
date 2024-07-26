@@ -23,13 +23,25 @@ type Props = DetailedHTMLProps<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoE
 
 function triggerAnalyticsForVideoStart(videoId: string, latency: number) {
   void Analytics.track({
-    eventName: 'Video Start',
+    eventName: 'Video Started',
     properties: {
       content_category: 'loop',
       content_id: videoId,
       event_record_screen: 'feed',
       event_target_screen: 'none',
       latency,
+    },
+  })
+}
+
+function triggerAnalyticsForVideoPause(videoId: string) {
+  void Analytics.track({
+    eventName: 'Video Started',
+    properties: {
+      content_category: 'loop',
+      content_id: videoId,
+      event_record_screen: 'feed',
+      event_target_screen: 'none',
     },
   })
 }
@@ -96,7 +108,6 @@ export const InnerPlayer = memo(function InnerPlayer({
             .then((_) => {
               const endTime = performance.now()
               triggerAnalyticsForVideoStart(id, endTime - startTime)
-              // console.log('start playing')
             })
             .catch((e) => {
               // console.log('something went wrong..', e)
@@ -148,6 +159,7 @@ export const InnerPlayer = memo(function InnerPlayer({
         onPause={(ev) => {
           setIsPlaying(false)
           onPause?.(ev)
+          triggerAnalyticsForVideoPause(id)
         }}
         onEnded={(e) => {
           onEnded?.(e)

@@ -1,6 +1,6 @@
-import { type DetailedHTMLProps, type VideoHTMLAttributes, useRef } from 'react'
+import { type DetailedHTMLProps, type VideoHTMLAttributes, useRef, useState } from 'react'
 import OpenPlayerJS from 'openplayerjs'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useEmbedPlayerState } from './embed-player-state'
 import { AnimatedMuteIcon } from '@components/common/player/control-layer/animated-mute-icon'
 import { Actions } from '@components/common/player/control-layer/actions'
@@ -8,49 +8,68 @@ import { CustomAvatar } from '@components/custom/custom-avatar'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import Link from 'next/link'
 import Analytics from '@services/analytics'
-import { useParams } from 'next/navigation'
 import { useShallow } from 'zustand/react/shallow'
+import { Progress } from '@/components/ui/progress'
+import { useEmbedConfig } from './embed-config-provider'
+import { Play } from 'lucide-react'
 
 type Props = DetailedHTMLProps<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement> & {
   videoData: VideoPlayerModalType
-  /**
-   * Pass if player is first element of list to get it playing.
-   */
-  isFirstElement: boolean
   isActive: boolean
+  isFirstElement: boolean
+  index: number
 }
-
-export function EmbedPlayer({ videoData, isFirstElement, isActive, onCanPlay, ...props }: Props) {
-  const params = useParams()
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const localRef = useRef<{
-    player: OpenPlayerJS | null
-  }>({
-    player: null,
+function triggerAnalyticsForVideoStart(videoId: string, latency: number, position: number) {
+  void Analytics.track({
+    eventName: 'Video Started',
+    properties: {
+      content_id: videoId,
+      event_record_screen: 'embed',
+      latency,
+    },
   })
-  const { activeVideoId, muted, toggleMuted } = useEmbedPlayerState(
+}
+export function EmbedPlayer({
+  videoData,
+  isActive,
+  isFirstElement,
+  loop,
+  index,
+  onEnded,
+  onTimeUpdate,
+  onClick,
+  ...props
+}: Props) {
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const playerRef = useRef<OpenPlayerJS | null>(null)
+  const { activeVideoIndex, muted, toggleMuted, setTimeState } = useEmbedPlayerState(
     useShallow((state) => ({
-      activeVideoId: state.activeVideoId,
+      activeVideoIndex: state.activeVideoIndex,
       muted: state.muted,
       toggleMuted: state.toggleMuted,
+      setTimeState: state.setTimeState,
     }))
   )
+  const { videoCanPlay } = useEmbedConfig(useShallow((state) => ({ videoCanPlay: state.videoCanPlay })))
+  const [isPlaying, setIsPlaying] = useState(false)
+  const isActiveVideo = activeVideoIndex === index
 
+  const eventProperties = {
+    content_id: videoData.video.id,
+    content_type: 'video',
+    event_record_screen: 'embed',
+    content_url: videoData.video.source,
+  }
   function triggerEvent(eventName: string) {
     void Analytics.track({
       eventName,
-      properties: {
-        content_id: videoData.video.id,
-        content_category: 'loop',
-        event_record_screen: 'embed',
-        content_url: videoData.video.source,
-        embed_id: params.id as string,
-      },
+      properties: eventProperties,
     })
   }
 
   useEffect(() => {
     if (!videoRef.current) return
+    if (playerRef.current) return
     const player = new OpenPlayerJS(videoRef.current, {
       controls: {
         alwaysVisible: false,
@@ -76,48 +95,71 @@ export function EmbedPlayer({ videoData, isFirstElement, isActive, onCanPlay, ..
         // emeEnabled: true,
       },
     })
+    const startTime = performance.now()
     void player.init().then((value) => {
       void player.load().then(() => {
-        if (isFirstElement) {
-          void player.getMedia().play()
+        if ((isActive || isFirstElement) && videoCanPlay) {
+          const endTime = performance.now()
+          void player.play().then((_) => {
+            triggerAnalyticsForVideoStart(videoData.video.id, endTime - startTime, index)
+          })
         }
-        localRef.current.player = player
+        playerRef.current = player
       })
     })
-  }, [])
+  }, [videoCanPlay])
 
   useEffect(() => {
-    const player = localRef.current.player
+    const player = playerRef.current
     if (!player) return
-    if (videoData.video.id === activeVideoId) {
-      void player.play()
+    if (index === activeVideoIndex && videoCanPlay) {
+      const startTime = performance.now()
+      void player.play().then(() => {
+        const endTime = performance.now()
+        triggerAnalyticsForVideoStart(videoData.video.id, endTime - startTime, index)
+      })
     } else {
       player.pause()
     }
-  }, [activeVideoId])
+  }, [activeVideoIndex, isActive, videoCanPlay])
 
   return (
     <>
       <video
-        className="absolute h-full w-full object-cover"
+        style={{ backgroundImage: `url(${videoData.video.thumbnail})` }}
+        className="absolute h-full w-full bg-cover bg-center bg-no-repeat object-cover"
         ref={videoRef}
         src={videoData.video.source}
         poster={videoData.video.thumbnail}
         muted={muted}
         playsInline
-        onCanPlay={(ev) => {
-          onCanPlay?.(ev)
-        }}
         onPause={(e) => {
+          setIsPlaying(false)
           triggerEvent('Video Paused')
         }}
+        onPlay={(e) => {
+          setIsPlaying(true)
+        }}
         onEnded={(e) => {
-          triggerEvent('Video Watched')
-          void localRef.current.player?.play()
+          onEnded?.(e)
+          const element = e.target as HTMLVideoElement
+          Analytics.triggerAnalyticsForVideoComplete(
+            videoData.video.id,
+            element.duration,
+            element.currentTime,
+            'embed',
+            index
+          )
+          if (loop) void playerRef.current?.play()
+        }}
+        onTimeUpdate={(e) => {
+          const element = e.target as HTMLVideoElement
+          setTimeState(element.currentTime, element.duration)
+          onTimeUpdate?.(e)
         }}
         {...props}
       />
-      {muted && isActive && (
+      {muted && isActiveVideo && (
         <div
           className="absolute inset-0 left-2 top-2 w-auto cursor-pointer"
           onClick={(e) => {
@@ -131,7 +173,7 @@ export function EmbedPlayer({ videoData, isFirstElement, isActive, onCanPlay, ..
           <AnimatedMuteIcon />
         </div>
       )}
-      {isActive && (
+      {isActiveVideo && (
         <div className="absolute bottom-0 w-full">
           <div className="flex justify-between p-2">
             <div className="flex w-4/5 flex-col justify-end">
@@ -166,8 +208,27 @@ export function EmbedPlayer({ videoData, isFirstElement, isActive, onCanPlay, ..
               />
             </div>
           </div>
+          <PlayerProgressBar />
+        </div>
+      )}
+      {!isPlaying && (
+        <div className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-monochrome-black/20 p-2">
+          <Play className="h-5 w-5 border-none fill-monochrome-white stroke-monochrome-white" />
         </div>
       )}
     </>
   )
+}
+
+function PlayerProgressBar() {
+  const { currentTime, duration } = useEmbedPlayerState(
+    useShallow((state) => ({ timeState: state.timeState }))
+  ).timeState
+
+  const progressValue = useMemo(() => {
+    if (duration === 0) return 0
+    return Math.round((currentTime / duration) * 100)
+  }, [currentTime, duration])
+
+  return <Progress value={progressValue} className="absolute bottom-0 left-0 h-[2px] transition-all duration-300" />
 }

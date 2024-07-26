@@ -10,7 +10,8 @@ import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import { showInterruption } from '@components/providers/interruption-provider'
 import { useShallow } from 'zustand/react/shallow'
 import { AnimatePresence, motion } from 'framer-motion'
-import { triggerAnalyticsForVideoComplete } from './analytics-func'
+import Analytics from '@/services/analytics'
+import { usePlayerControlStore } from '../player/player-control-store'
 const Player = dynamic(async () => await import('@components/common/player').then((comp) => comp.Player.mobile))
 
 type MobileProps = {
@@ -80,7 +81,8 @@ export function Mobile({ videos, fetchNextPage, isFetchingNextPage, startIndex =
                     videoDetails={item}
                     customSizeBox={videoSizeBox}
                     onEnded={(event) => {
-                      triggerAnalyticsForVideoComplete(item.video.id)
+                      const { duration, currentTime } = usePlayerControlStore.getState()
+                      Analytics.triggerAnalyticsForVideoComplete(item.video.id, duration, currentTime)
                     }}
                   />
                 )
@@ -95,7 +97,6 @@ export function Mobile({ videos, fetchNextPage, isFetchingNextPage, startIndex =
 
 function InfinityViewBox({ videoDetails }: { videoDetails: VideoPlayerModalType }) {
   const [isVisible, setIsVisible] = useState(true)
-  const { currentIndex } = useFeedListStore()
 
   useEffect(() => {
     if (!videoDetails.video.linkoutId) return
@@ -108,7 +109,7 @@ function InfinityViewBox({ videoDetails }: { videoDetails: VideoPlayerModalType 
       if (timeoutId) timeoutId = null
       setIsVisible(true)
     }
-  }, [currentIndex])
+  }, [videoDetails])
 
   if (videoDetails)
     return (

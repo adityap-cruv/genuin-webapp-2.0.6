@@ -7,9 +7,10 @@ import { Mousewheel, Keyboard } from 'swiper/modules'
 import { type VideoSizeBoxType, useGenuinOptions } from '@lib/stores/genuin-options'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import { useShallow } from 'zustand/react/shallow'
-import { triggerAnalyticsForVideoComplete } from './analytics-func'
 import { FeedContext, FeedContextProvider } from './feed-provider'
 import { FeedShimmer } from '../shimmers/feed-shimmer'
+import Analytics from '@/services/analytics'
+import { usePlayerControlStore } from '../player/player-control-store'
 
 const DesktopPlayer = dynamic(async () => await import('@components/common/player').then((comp) => comp.Player.desktop))
 
@@ -96,7 +97,12 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
                         loop
                         key={index}
                         onEnded={(event) => {
-                          triggerAnalyticsForVideoComplete(videosRef.current[index].video.id)
+                          const { currentTime, duration } = usePlayerControlStore.getState()
+                          Analytics.triggerAnalyticsForVideoComplete(
+                            videosRef.current[index].video.id,
+                            duration,
+                            currentTime
+                          )
                         }}
                       />
                     )
@@ -135,7 +141,8 @@ export function SinglePlayer({ sizeBox, className, videoData }: SinglePlayerProp
           }}
           loop
           onEnded={(event) => {
-            triggerAnalyticsForVideoComplete(videoData.video.id)
+            const { currentTime, duration } = usePlayerControlStore.getState()
+            Analytics.triggerAnalyticsForVideoComplete(videoData.video.id, duration, currentTime)
           }}
         />
       </div>

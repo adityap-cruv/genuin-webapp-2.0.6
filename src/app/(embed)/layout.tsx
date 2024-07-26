@@ -9,7 +9,7 @@ import { getEmbedConfig } from '@lib/api/config'
 import { parseColors } from '@lib/utils'
 import { BrandNotFound } from '@components/common/brand-not-found'
 import { ThirdPartyScriptProvider } from '@components/providers/third-party-script-provider'
-import { SizeProvider } from '@/components/embed/size-provider'
+import { EmbedConfigProvider } from '@/components/embed/embed-config-provider'
 
 export default async function Layout({ children }: { children: ReactNode }) {
   const configParamsStr = cookies().get('config_params')?.value ?? ''
@@ -34,7 +34,7 @@ export default async function Layout({ children }: { children: ReactNode }) {
       <ThirdPartyScriptProvider isEmbed>
         <SessionProvider>
           <ReactQueryProvider>
-            <SizeProvider config={config}>{children}</SizeProvider>
+            <EmbedConfigProvider config={config}>{children}</EmbedConfigProvider>
           </ReactQueryProvider>
         </SessionProvider>
       </ThirdPartyScriptProvider>

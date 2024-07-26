@@ -1,5 +1,5 @@
 'use client'
-import { VerticalView } from '../[id]/vertical-view'
+import { VerticalView } from '@/components/embed/views/vertical-view'
 import { useEffect } from 'react'
 import { useEmbedPlayerState } from '@/components/embed/embed-player-state'
 

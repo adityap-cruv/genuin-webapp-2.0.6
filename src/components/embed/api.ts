@@ -3,7 +3,7 @@ import { useLocalStorage } from '@lib/stores/local-storage'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { parseFeedResponse } from '../../lib/api/api-response-parser'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
-import { useSizeStore } from './size-provider'
+import { useEmbedConfig } from './embed-config-provider'
 
 export async function getEmbedDetails(id: string): Promise<{ status: boolean; data: any }> {
   return await axiosInstance
@@ -16,8 +16,7 @@ export async function getEmbedDetails(id: string): Promise<{ status: boolean; da
       return { status: res.status === 200, data: res.data.data }
     })
     .catch((e) => {
-      throw new Error()
-      // console.log('error')
+      throw new Error('Something went wrong!')
     })
 }
 
@@ -34,7 +33,7 @@ async function fetchFeed(
   return await axiosInstance
     .get('/api/v3/v1/feeds', {
       params: {
-        brand_id: useSizeStore.getState().config?.brand_id ?? undefined,
+        brand_id: useEmbedConfig.getState().config?.brand_id ?? undefined,
         type: feedType,
         last_video_id: pageParam?.lastVideoId ?? undefined,
         page_session: pageParam?.pageSession ?? undefined,
