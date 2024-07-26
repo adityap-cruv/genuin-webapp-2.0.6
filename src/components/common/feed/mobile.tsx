@@ -45,6 +45,7 @@ export function Mobile({ videos, fetchNextPage, isFetchingNextPage, startIndex =
 
   useEffect(() => {
     if (!isFetchingNextPage && videos.length - 3 <= currentIndex) {
+      // console.log('isFetchingNextPage NEXT PGE.')
       fetchNextPage?.()
     }
     if ((currentIndex + 1) % 5 === 0) showInterruption()
@@ -73,19 +74,20 @@ export function Mobile({ videos, fetchNextPage, isFetchingNextPage, startIndex =
           style={videoSizeBox}>
           {videos.map((item, index) => (
             <SwiperSlide key={index}>
-              {({ isActive }) => {
-                return (
-                  <Player
-                    isActive={isActive}
-                    loop
-                    videoDetails={item}
-                    customSizeBox={videoSizeBox}
-                    onEnded={(event) => {
-                      const { duration, currentTime } = usePlayerControlStore.getState()
-                      Analytics.triggerAnalyticsForVideoComplete(item.video.id, duration, currentTime)
-                    }}
-                  />
-                )
+              {({ isActive, isPrev, isNext, isVisible }) => {
+                if (isActive || isPrev || isNext || isVisible)
+                  return (
+                    <Player
+                      isActive={isActive}
+                      loop
+                      videoDetails={item}
+                      customSizeBox={videoSizeBox}
+                      onEnded={(event) => {
+                        const { duration, currentTime } = usePlayerControlStore.getState()
+                        Analytics.triggerAnalyticsForVideoComplete(item.video.id, duration, currentTime)
+                      }}
+                    />
+                  )
               }}
             </SwiperSlide>
           ))}
@@ -95,6 +97,7 @@ export function Mobile({ videos, fetchNextPage, isFetchingNextPage, startIndex =
     )
 }
 
+// TODO: Some bugs are happening in this component related to isVisible state. fix it.
 const InfinityViewBox = memo(function InfinityViewBox({ videoDetails }: { videoDetails: VideoPlayerModalType }) {
   const [isVisible, setIsVisible] = useState(true)
 
