@@ -1,7 +1,7 @@
 import { AnimatedInfinityView } from '@components/common/animated-infinity-view'
 import dynamic from 'next/dynamic'
 import { useFeedListStore } from './store'
-import { useEffect, useState } from 'react'
+import { memo, useEffect, useState } from 'react'
 import { useCommentSheetStore } from '../player/comment-sheet/store'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Mousewheel } from 'swiper/modules'
@@ -45,6 +45,7 @@ export function Mobile({ videos, fetchNextPage, isFetchingNextPage, startIndex =
 
   useEffect(() => {
     if (!isFetchingNextPage && videos.length - 3 <= currentIndex) {
+      // console.log('isFetchingNextPage NEXT PGE.')
       fetchNextPage?.()
     }
     if ((currentIndex + 1) % 5 === 0) showInterruption()
@@ -73,19 +74,20 @@ export function Mobile({ videos, fetchNextPage, isFetchingNextPage, startIndex =
           style={videoSizeBox}>
           {videos.map((item, index) => (
             <SwiperSlide key={index}>
-              {({ isActive }) => {
-                return (
-                  <Player
-                    isActive={isActive}
-                    loop
-                    videoDetails={item}
-                    customSizeBox={videoSizeBox}
-                    onEnded={(event) => {
-                      const { duration, currentTime } = usePlayerControlStore.getState()
-                      Analytics.triggerAnalyticsForVideoComplete(item.video.id, duration, currentTime)
-                    }}
-                  />
-                )
+              {({ isActive, isPrev, isNext, isVisible }) => {
+                if (isActive || isPrev || isNext || isVisible)
+                  return (
+                    <Player
+                      isActive={isActive}
+                      loop
+                      videoDetails={item}
+                      customSizeBox={videoSizeBox}
+                      onEnded={(event) => {
+                        const { duration, currentTime } = usePlayerControlStore.getState()
+                        Analytics.triggerAnalyticsForVideoComplete(item.video.id, duration, currentTime)
+                      }}
+                    />
+                  )
               }}
             </SwiperSlide>
           ))}
@@ -95,11 +97,15 @@ export function Mobile({ videos, fetchNextPage, isFetchingNextPage, startIndex =
     )
 }
 
-function InfinityViewBox({ videoDetails }: { videoDetails: VideoPlayerModalType }) {
+// TODO: Some bugs are happening in this component related to isVisible state. fix it.
+const InfinityViewBox = memo(function InfinityViewBox({ videoDetails }: { videoDetails: VideoPlayerModalType }) {
   const [isVisible, setIsVisible] = useState(true)
 
   useEffect(() => {
-    if (!videoDetails.video.linkoutId) return
+    if (!videoDetails.video.linkoutId) {
+      if (!isVisible) setIsVisible(true)
+      return
+    }
     let timeoutId: any
     timeoutId = setTimeout(() => {
       setIsVisible(false)
@@ -107,40 +113,39 @@ function InfinityViewBox({ videoDetails }: { videoDetails: VideoPlayerModalType 
 
     return () => {
       if (timeoutId) timeoutId = null
-      setIsVisible(true)
+      if (!isVisible) setIsVisible(true)
     }
   }, [videoDetails])
 
-  if (videoDetails)
-    return (
-      <AnimatePresence>
-        {isVisible && (
-          <motion.div
-            initial={{ opacity: 1 }}
-            exit={{ opacity: 0, transition: { duration: 0.3 } }}
-            className="absolute bottom-0 z-10 w-full">
-            <AnimatedInfinityView
-              community={{
-                name: videoDetails.community.name ?? '',
-                handle: videoDetails.community.handle,
-                profileImage: videoDetails.community.profileImage ?? '',
-                slug: videoDetails.community.slug,
-                type: videoDetails.community.type ?? null,
-                brand: videoDetails.community.brand
-                  ? {
-                      name: videoDetails.community.brand?.name ?? '',
-                      brand_system_user_id: videoDetails.community.brand?.brand_system_user_id ?? '',
-                      brand_slug: videoDetails.community.brand?.brand_slug ?? '',
-                    }
-                  : null,
-              }}
-              loop={{
-                name: videoDetails.loop.name ?? '',
-                slug: videoDetails.loop.slug,
-              }}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
-    )
-}
+  return (
+    <AnimatePresence>
+      {isVisible && (
+        <motion.div
+          initial={{ opacity: 1 }}
+          exit={{ opacity: 0, transition: { duration: 0.3 } }}
+          className="absolute bottom-0 z-10 w-full">
+          <AnimatedInfinityView
+            community={{
+              name: videoDetails.community.name ?? '',
+              handle: videoDetails.community.handle,
+              profileImage: videoDetails.community.profileImage ?? '',
+              slug: videoDetails.community.slug,
+              type: videoDetails.community.type ?? null,
+              brand: videoDetails.community.brand
+                ? {
+                    name: videoDetails.community.brand?.name ?? '',
+                    brand_system_user_id: videoDetails.community.brand?.brand_system_user_id ?? '',
+                    brand_slug: videoDetails.community.brand?.brand_slug ?? '',
+                  }
+                : null,
+            }}
+            loop={{
+              name: videoDetails.loop.name ?? '',
+              slug: videoDetails.loop.slug,
+            }}
+          />
+        </motion.div>
+      )}
+    </AnimatePresence>
+  )
+})
