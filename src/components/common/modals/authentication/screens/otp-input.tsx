@@ -7,10 +7,9 @@ import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { cn } from '@lib/utils'
-import { loginViaPhone, verifyOtp } from '@lib/api/auth'
+import { loginViaPhone } from '@lib/api/auth'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import { LOGIN_SOURCE, VERIFICATION_TYPE } from '@lib/constants'
-import { signIn } from 'next-auth/react'
 import { Loader } from '@components/ui/loader'
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@components/ui/input-otp'
 
@@ -62,33 +61,7 @@ export function OtpInput() {
 
   async function onSubmit(data: any) {
     setIsLoading(true)
-
-    await verifyOtp({
-      userId: formData.userId ?? '',
-      otp: parseInt(data.otp),
-      token: deviceId,
-      loginSource: LOGIN_SOURCE.web,
-    })
-      .then(async (res) => {
-        if (res?.code === 200) {
-          const user = res.data
-          void signIn('credentials', { ...user, redirect: false })
-            .then((res) => {
-              if (res?.ok) closeModal()
-            })
-            .catch((e) => {
-              form.control.setError('root', { message: 'Something went wrong.' })
-            })
-          // setStep('OTP_INPUT')
-        } else if (res?.code === 1008) {
-          form.control.setError('root', { message: 'That doesn`t look right. Please check your code and try again' })
-        } else {
-          form.control.setError('root', { message: 'Something went wrong please try again.' })
-        }
-      })
-      .finally(() => {
-        setIsLoading(false)
-      })
+    alert('handle on submit.')
   }
 
   async function resendOtp() {
@@ -132,12 +105,16 @@ export function OtpInput() {
                     <FormItem className="flex flex-col items-center sm:w-full">
                       <FormControl>
                         <InputOTP
+                          onComplete={(value) => {
+                            console.log('on complete::', value)
+                          }}
                           maxLength={6}
+                          placeholder="•"
                           render={({ slots }) => (
-                            <InputOTPGroup>
+                            <InputOTPGroup placeholder="dk">
                               {slots.map((slot, index) => (
-                                <InputOTPSlot key={index} {...slot} />
-                              ))}{' '}
+                                <InputOTPSlot key={index} {...slot} placeholder="•" />
+                              ))}
                             </InputOTPGroup>
                           )}
                           {...field}

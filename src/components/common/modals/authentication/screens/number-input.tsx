@@ -121,7 +121,7 @@ export function NumberInput() {
         variant="outline"
         className="w-full border border-tertiary-200"
         onClick={() => {
-          setStep('EMAIL_INPUT')
+          setStep('STARTER')
         }}>
         <div className="relative flex w-full items-center justify-center">
           <img src={at_icon.src} className="absolute left-0 h-5 w-5" alt="at" />

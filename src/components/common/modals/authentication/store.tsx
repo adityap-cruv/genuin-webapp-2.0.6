@@ -3,8 +3,8 @@ import { getRandomAvatar } from '@lib/utils'
 import { create } from 'zustand'
 
 export type StepsType =
+  | 'STARTER'
   | 'SIGN_UP'
-  | 'EMAIL_INPUT'
   | 'NUMBER_INPUT'
   | 'PASSWORD_INPUT'
   | 'OTP_INPUT'
@@ -74,7 +74,7 @@ type Actions = {
 }
 
 const initialStates: States = {
-  step: 'EMAIL_INPUT',
+  step: 'STARTER',
   formData: {
     image: getRandomAvatar(),
     isAvatar: true,
@@ -88,7 +88,7 @@ export const useAuthenticationModalStore = create<Actions & States>((set) => {
     open() {
       set({ isOpen: true })
     },
-    openWithStep(action, step = 'EMAIL_INPUT') {
+    openWithStep(action, step = 'OTP_INPUT') {
       set({ isOpen: true, step, action })
     },
     close() {
@@ -104,7 +104,7 @@ export const useAuthenticationModalStore = create<Actions & States>((set) => {
     },
     goToPrevious() {
       set((state) => {
-        state.step = state.previousStep ?? 'EMAIL_INPUT'
+        state.step = state.previousStep ?? 'STARTER'
         return state
       })
     },

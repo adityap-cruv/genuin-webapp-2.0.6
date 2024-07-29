@@ -13,7 +13,7 @@ import { useGenuinOptions } from '@lib/stores/genuin-options'
 export const EmailVerification = {
   success: Success,
   failure: Failure,
-  verifymail: VerifyMail,
+  verifyMail: VerifyMail,
 }
 
 function Success() {

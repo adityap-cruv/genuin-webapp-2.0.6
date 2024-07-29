@@ -149,7 +149,7 @@ export function Signup() {
           <span
             className="cursor-pointer text-primary"
             onClick={() => {
-              setStep('EMAIL_INPUT')
+              setStep('STARTER')
             }}>
             &nbsp;Log in
           </span>

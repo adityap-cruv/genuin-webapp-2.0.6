@@ -24,14 +24,14 @@ import { removeAllAuthToken } from '@lib/api/instance'
 export const Note = {
   email: Email,
   magicLink: MagicLink,
-  miniprofilesuccess: MiniProfileSuccess,
-  changepasswordsuccess: ChangePasswordSuccess,
-  setpasswordsuccess: SetPasswordSuccess,
-  passwordresetlink: PasswordResetLink,
-  resetpasswordsuccess: ResetPasswordSuccess,
+  miniProfileSuccess: MiniProfileSuccess,
+  changePasswordSuccess: ChangePasswordSuccess,
+  setPasswordSuccess: SetPasswordSuccess,
+  passwordResetLink: PasswordResetLink,
+  resetPasswordSuccess: ResetPasswordSuccess,
 }
 
-function Email({ acountExists = false }: { acountExists?: boolean }) {
+function Email({ accountExists = false }: { accountExists?: boolean }) {
   const { formData, setStep } = useAuthenticationModalStore()
   const [error, setError] = useState({ message: '', code: 0 })
   const [emailSentText, setEmailSentText] = useState('')
@@ -53,7 +53,7 @@ function Email({ acountExists = false }: { acountExists?: boolean }) {
       await resendVerificationMail(formData.email, 12)
         .then((res) => {
           if (res.code === 200) {
-            setEmailSentText('Email has been sent sucessfully')
+            setEmailSentText('Email has been sent successfully')
             setTimer(res?.retryTime)
           } else if (res.code === 5239) {
             setError((x) => {
@@ -62,7 +62,7 @@ function Email({ acountExists = false }: { acountExists?: boolean }) {
             if (res.data.is_email_verified && res.data.is_password_set) {
               void signOut({ callbackUrl: `${window.location.pathname}${window.location.search}`, redirect: true })
               removeAllAuthToken()
-              setStep('EMAIL_INPUT')
+              setStep('STARTER')
             } else {
               setStep('PASSWORD_INPUT')
             }
@@ -88,12 +88,12 @@ function Email({ acountExists = false }: { acountExists?: boolean }) {
   return (
     <ModalShell>
       <p className="text-center text-title-1-med">
-        {acountExists && 'An account with this email already exists. '}We have sent a confirmation link to{' '}
+        {accountExists && 'An account with this email already exists. '}We have sent a confirmation link to{' '}
         <span className="text-title-1-bold">{shortenedEmail(formData.email)}</span>. Verify your email{' '}
-        {!acountExists && 'to save your profile'}
-        {acountExists && 'to continue'}.
+        {!accountExists && 'to save your profile'}
+        {accountExists && 'to continue'}.
       </p>
-      {error.code !== 5239 && acountExists && (
+      {error.code !== 5239 && accountExists && (
         <p className="text-title-3-demi">
           {timer <= 0 ? (
             <span onClick={resendMail} className="cursor-pointer text-primary">
@@ -345,7 +345,7 @@ function PasswordResetLink() {
         variant="default"
         className="w-full"
         onClick={() => {
-          setStep('EMAIL_INPUT')
+          setStep('STARTER')
         }}>
         <p className="text-title-3-demi">Back to login</p>
       </Button>
@@ -371,7 +371,7 @@ function ResetPasswordSuccess() {
         variant="default"
         className="w-full"
         onClick={() => {
-          setStep('EMAIL_INPUT')
+          setStep('STARTER')
         }}>
         <p className="text-title-3-demi">Continue to login</p>
       </Button>

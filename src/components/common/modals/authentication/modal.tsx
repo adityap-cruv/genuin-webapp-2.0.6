@@ -3,7 +3,6 @@ import { Dialog, DialogTrigger, DialogContent, DialogClose } from '@components/u
 import { type DialogProps } from '@radix-ui/react-dialog'
 import { type StepsType, useAuthenticationModalStore } from './store'
 import {
-  EmailInput,
   EmailVerification,
   ImageCropper,
   MagicLinkVerification,
@@ -23,6 +22,8 @@ import {
   CategoryInput,
   GetStarted,
   ClaimBrandProfile,
+  Starter,
+  OtpInput,
 } from './screens'
 import { useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
@@ -142,18 +143,14 @@ export function Content() {
   const step = useAuthenticationModalStore().step
 
   switch (step) {
-    case 'EMAIL_INPUT':
-      return <EmailInput />
-    // case 'SIGN_UP':
-    //   return <Signup />
-    // case 'NUMBER_INPUT':
-    //   return <NumberInput />
+    case 'STARTER':
+      return <Starter />
+    case 'OTP_INPUT':
+      return <OtpInput />
     case 'IMAGE_CROPPER':
       return <ImageCropper />
     case 'PASSWORD_INPUT':
       return <PasswordInput />
-    // case 'OTP_INPUT':
-    //   return <OtpInput />
     case 'EMAIL_VERIFICATION_FAILURE':
       return <EmailVerification.failure />
     case 'EMAIL_VERIFICATION_SUCCESS':
@@ -165,7 +162,7 @@ export function Content() {
     case 'EMAIL_SENT_NOTE':
       return <Note.email />
     case 'EMAIL_SENT_NOTE_ACCOUNT_EXISTS':
-      return <Note.email acountExists />
+      return <Note.email accountExists />
     case 'ERROR':
       return <Error />
     case 'USERNAME_INPUT':
@@ -183,9 +180,9 @@ export function Content() {
     case 'KS_CB_SUBDOMAIN':
       return <KsToCbSubdomain />
     case 'VERIFY_MAIL':
-      return <EmailVerification.verifymail />
+      return <EmailVerification.verifyMail />
     case 'MINI_PROFILE_SUCCESS':
-      return <Note.miniprofilesuccess />
+      return <Note.miniProfileSuccess />
     case 'EDIT_USERNAME':
       return <EditUsername />
     case 'CHANGE_PASSWORD':
@@ -193,17 +190,17 @@ export function Content() {
     case 'LOGOUT':
       return <Logout />
     case 'CHANGE_PASSWORD_SUCCESS_NOTE':
-      return <Note.changepasswordsuccess />
+      return <Note.changePasswordSuccess />
     case 'SET_PASSWORD_SUCCESS_NOTE':
-      return <Note.setpasswordsuccess />
+      return <Note.setPasswordSuccess />
     case 'FORGOT_PASSWORD':
       return <ForgotPassword />
     case 'PASSWORD_RESET_LINK_SENT_NOTE':
-      return <Note.passwordresetlink />
+      return <Note.passwordResetLink />
     case 'RESET_PASSWORD':
       return <ResetPassword />
     case 'RESET_PASSWORD_SUCCESS_NOTE':
-      return <Note.resetpasswordsuccess />
+      return <Note.resetPasswordSuccess />
     case 'CATEGORY_INPUT':
       return <CategoryInput />
     case 'GET_STARTED':

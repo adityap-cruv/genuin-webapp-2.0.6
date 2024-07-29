@@ -20,7 +20,7 @@ export function showInterruption() {
   )
     return
   if (!user) {
-    AuthenticationModal.open(undefined, 'EMAIL_INPUT')
+    AuthenticationModal.open(undefined, 'STARTER')
   } else if (!user.hasTopics) {
     AuthenticationModal.open(undefined, 'CATEGORY_INPUT')
   } else if (!user.isPasswordSet) {
@@ -41,7 +41,7 @@ export function InterruptionProvider() {
     )
       return
     if (!user) {
-      AuthenticationModal.open(undefined, 'EMAIL_INPUT')
+      AuthenticationModal.open(undefined)
     } else if (!user.hasTopics) {
       AuthenticationModal.open(undefined, 'CATEGORY_INPUT')
     } else if (!user.isPasswordSet) {

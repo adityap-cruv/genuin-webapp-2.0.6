@@ -19,7 +19,7 @@ export function Error() {
           variant="default"
           className="w-full text-title-3-med !text-new-off-white"
           onClick={() => {
-            setStep('EMAIL_INPUT')
+            setStep('STARTER')
           }}>
           Login
         </Button>
