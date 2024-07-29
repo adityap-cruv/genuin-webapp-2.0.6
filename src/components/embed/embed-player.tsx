@@ -19,7 +19,16 @@ type Props = DetailedHTMLProps<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoE
   isFirstElement: boolean
   index: number
 }
-
+function triggerAnalyticsForVideoStart(videoId: string, latency: number, position: number) {
+  void Analytics.track({
+    eventName: 'Video Started',
+    properties: {
+      content_id: videoId,
+      event_record_screen: 'embed',
+      latency,
+    },
+  })
+}
 export function EmbedPlayer({
   videoData,
   isActive,
@@ -86,10 +95,14 @@ export function EmbedPlayer({
         // emeEnabled: true,
       },
     })
+    const startTime = performance.now()
     void player.init().then((value) => {
       void player.load().then(() => {
         if ((isActive || isFirstElement) && videoCanPlay) {
-          void player.play()
+          const endTime = performance.now()
+          void player.play().then((_) => {
+            triggerAnalyticsForVideoStart(videoData.video.id, endTime - startTime, index)
+          })
         }
         playerRef.current = player
       })
@@ -100,7 +113,11 @@ export function EmbedPlayer({
     const player = playerRef.current
     if (!player) return
     if (index === activeVideoIndex && videoCanPlay) {
-      void player.play()
+      const startTime = performance.now()
+      void player.play().then(() => {
+        const endTime = performance.now()
+        triggerAnalyticsForVideoStart(videoData.video.id, endTime - startTime, index)
+      })
     } else {
       player.pause()
     }
@@ -122,10 +139,17 @@ export function EmbedPlayer({
         }}
         onPlay={(e) => {
           setIsPlaying(true)
-          triggerEvent('Video Started')
         }}
         onEnded={(e) => {
           onEnded?.(e)
+          const element = e.target as HTMLVideoElement
+          Analytics.triggerAnalyticsForVideoComplete(
+            videoData.video.id,
+            element.duration,
+            element.currentTime,
+            'embed',
+            index
+          )
           if (loop) void playerRef.current?.play()
         }}
         onTimeUpdate={(e) => {

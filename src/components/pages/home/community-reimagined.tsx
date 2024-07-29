@@ -1,11 +1,9 @@
-import { VanillaPlayer } from '@/components/common/vanila-player'
+import { VanillaPlayer } from '@/components/common/vanilla-player'
 import { ContactUs } from '@components/common/modals/contact-us'
-import { InnerPlayer } from '@components/common/player/inner-player'
 import { Button } from '@components/ui/button'
 import bgGenuinLogo from '@images/home/index_genuin_logo.png'
 
 export function CommunityReimagined() {
-  // TODO handle autoplay in video
   return (
     <>
       <div
@@ -32,19 +30,14 @@ export function CommunityReimagined() {
             </ContactUs>
           </div>
         </div>
-        <div className="relative flex h-full w-2/5 items-center justify-center">
-          <InnerPlayer
-            className="aspect-[32/67] h-4/5 rounded-[30px]"
-            isActive
-            id={'1'}
-            loop={true}
-            videoSource="https://media.begenuin.com/backend_assets/hero-video/comp-1_2.m3u8"
-            poster={'https://media.begenuin.com/backend_assets/hero-video/hero-video.png'}
-          />
-          <div className="absolute aspect-[32/67] h-[81.3%] rounded-[32px] border-[7px] border-monochrome-white"></div>
-        </div>
+        <VanillaPlayer
+          className="h-4/5 overflow-clip rounded-[37px] border-[12px] border-monochrome-white"
+          id="home-player"
+          videoSource="https://media.begenuin.com/backend_assets/hero-video/comp-1_2.m3u8"
+          loop={true}
+          poster="https://media.begenuin.com/backend_assets/hero-video/hero-video.png"
+        />
       </div>
-
       <div
         className="flex h-full w-full flex-col items-center justify-center gap-6 bg-no-repeat px-11 py-9 md:hidden"
         style={{
@@ -63,14 +56,13 @@ export function CommunityReimagined() {
         </p>
         <div className="relative flex w-44 items-center justify-center">
           <VanillaPlayer
-            className="aspect-[32/67] w-full rounded-3xl"
+            className="overflow-clip rounded-3xl border-[8px] border-monochrome-white"
             id={'1'}
             muted
             loop
             videoSource="https://media.begenuin.com/backend_assets/hero-video/comp-1_2.m3u8"
-            poster={'https://media.begenuin.com/backend_assets/hero-video/hero-video.png'}
+            poster="https://media.begenuin.com/backend_assets/hero-video/hero-video.png"
           />
-          <div className="absolute aspect-[31/67] w-full rounded-[25px] border-[6px] border-monochrome-white"></div>
         </div>
       </div>
     </>

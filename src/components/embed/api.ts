@@ -16,8 +16,7 @@ export async function getEmbedDetails(id: string): Promise<{ status: boolean; da
       return { status: res.status === 200, data: res.data.data }
     })
     .catch((e) => {
-      throw new Error()
-      // console.log('error')
+      throw new Error('Something went wrong!')
     })
 }
 

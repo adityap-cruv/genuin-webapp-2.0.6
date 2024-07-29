@@ -40,7 +40,7 @@ export function triggerLinkoutEvent({
   const properties = {
     content_id: videoId,
     linkout_id: linkoutId,
-    content_category: 'loop video',
+    content_category: 'loop',
     content_type: 'video',
   }
 
