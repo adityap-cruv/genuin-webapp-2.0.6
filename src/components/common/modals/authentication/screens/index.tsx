@@ -14,6 +14,8 @@ export { BirthInput } from './birth-input'
 export { EditEmail } from './edit-email'
 export { EditNumber } from './edit-number'
 export { Note } from './note'
+export { DeleteConfirmation } from './delete-confirmation'
+export { DeleteConfirmed } from './delete-confirmed'
 
 export type ScreenProps = {
   onBack?: () => void

@@ -7,11 +7,10 @@ import { z } from 'zod'
 import { Button } from '@components/ui/button'
 import { Checkbox } from '@components/ui/checkbox'
 import { Form, FormControl, FormField, FormItem, FormLabel } from '@components/ui/form'
-import { getBrandGuidelines } from '@lib/api/auth'
+import { getBrandGuidelines, acceptBrandGuidelines } from '../api/auth'
 import { useEffect, useState } from 'react'
 import { Loader } from '@components/ui/loader'
 import { type ScreenProps } from '.'
-import { acceptBrandGuidelines } from '../api/auth'
 import { useShallow } from 'zustand/react/shallow'
 
 const FormSchema = z.object({
