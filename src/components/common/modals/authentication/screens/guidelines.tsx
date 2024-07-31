@@ -7,16 +7,12 @@ import { z } from 'zod'
 import { Button } from '@components/ui/button'
 import { Checkbox } from '@components/ui/checkbox'
 import { Form, FormControl, FormField, FormItem, FormLabel } from '@components/ui/form'
-import { addEmailForKs, getBrandGuidelines, signup } from '@lib/api/auth'
-import { SIGNUP_SOURCE } from '@lib/constants'
-import { signIn } from 'next-auth/react'
-import { useAuthenticationModalStore } from '../store'
+import { getBrandGuidelines } from '@lib/api/auth'
 import { useEffect, useState } from 'react'
 import { Loader } from '@components/ui/loader'
-import Analytics from '@services/analytics'
-import { usePathname, useSearchParams } from 'next/navigation'
-import { deleteSearchParam } from '@lib/utils'
-import { rudderStackIdentify } from '@/services/analytics/useRudderAnalytics'
+import { type ScreenProps } from '.'
+import { acceptBrandGuidelines } from '../api/auth'
+import { useShallow } from 'zustand/react/shallow'
 
 const FormSchema = z.object({
   mobile: z.boolean().default(false).optional(),
@@ -27,13 +23,17 @@ interface Guideline {
   description: string
 }
 
-export function Guidelines() {
-  const { setStep, formData, action } = useAuthenticationModalStore()
+type GuidelineProps = ScreenProps
+
+export function Guidelines({ onNext }: GuidelineProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [guidelines, setGuidelines] = useState<Guideline[] | null>(null)
-  const brandId = useGenuinOptions().brandId
-  const pathName = usePathname()
-  const searchParams = useSearchParams()
+  const { brandLogo, brandId } = useGenuinOptions(
+    useShallow((state) => ({
+      brandLogo: state.brandWebLogo,
+      brandId: state.brandId,
+    }))
+  )
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -55,91 +55,16 @@ export function Guidelines() {
     void fetchGuidelines()
   }, [])
 
-  async function submitViaSms() {
-    const token = searchParams.get('token') ?? ''
-
-    setIsLoading(true)
-    try {
-      await addEmailForKs({ email: formData.email, token })
-        .then((res) => {
-          if (res?.code === 200) {
-            deleteSearchParam({
-              pathName,
-              searchParams: searchParams.toString(),
-              paramsToDelete: ['utm_medium', 'token', 'sms_verification_status'],
-            })
-            void signIn('credentials', {
-              ...res.data.user,
-              accessToken: res.accessToken,
-              redirect: false,
-            })
-            setStep('EMAIL_SENT_NOTE')
-          } else {
-            form.control.setError('root', { message: 'Something went wrong. Please try again!' })
-            throw new Error()
-          }
-        })
-        .catch((e) => {
-          form.control.setError('root', { message: 'Something went wrong. Please try again!' })
-          throw new Error()
-        })
-    } catch (e) {
-      form.control.setError('root', { message: 'Something went wrong. Please try again!' })
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  async function submitViaMail() {
-    setIsLoading(true)
-    try {
-      const signupResponse = await signup({
-        email: formData.email ?? '',
-        signupSource: SIGNUP_SOURCE.web,
-        actionMetadata: { path: window.location.pathname, action },
-      })
-      await signIn('credentials', {
-        ...signupResponse.data.user,
-        accessToken: signupResponse.accessToken,
-        redirect: false,
-      })
-        .then((res) => {
-          if (res?.ok) {
-            setStep('EMAIL_SENT_NOTE')
-            void rudderStackIdentify()
-            void Analytics.track({
-              eventName: 'Ks Signed Up',
-              properties: { email: formData.email },
-            })
-          } else {
-            form.control.setError('root', { message: 'Something went wrong. Please try again!' })
-            throw new Error()
-          }
-        })
-        .catch((e) => {
-          form.control.setError('root', { message: 'Something went wrong. Please try again!' })
-          throw new Error()
-        })
-    } catch (e) {
-      form.control.setError('root', { message: 'Something went wrong. Please try again!' })
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
   async function onSubmit() {
-    const fromSms = searchParams.get('utm_medium') ?? ''
-
-    if (fromSms === 'sms') {
-      await submitViaSms()
+    setIsLoading(true)
+    const answer = await acceptBrandGuidelines()
+    if (answer) {
+      onNext()
     } else {
-      await submitViaMail()
+      form.setError('root', { message: 'Please try again.' })
     }
+    setIsLoading(false)
   }
-
-  const { brandLogo } = useGenuinOptions((state) => ({
-    brandLogo: state.brandWebLogo,
-  }))
 
   if (!guidelines) {
     return (
@@ -194,6 +119,11 @@ export function Guidelines() {
                 <p className="text-title-3-demi">Continue</p>
               )}
             </Button>
+            {form.formState.errors.root && (
+              <p className="flex items-center justify-center pt-2 text-center text-body-1-demi text-supplementary-red">
+                {form.formState.errors.root.message}
+              </p>
+            )}
           </form>
         </Form>
       </div>

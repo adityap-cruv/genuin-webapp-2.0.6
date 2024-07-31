@@ -14,7 +14,9 @@ const InputOTP = React.forwardRef<React.ElementRef<typeof OTPInput>, React.Compo
 InputOTP.displayName = 'InputOTP'
 
 const InputOTPGroup = React.forwardRef<React.ElementRef<'div'>, React.ComponentPropsWithoutRef<'div'>>(
-  ({ className, ...props }, ref) => <div ref={ref} className={cn('flex items-center', className)} {...props} />
+  ({ className, ...props }, ref) => (
+    <div ref={ref} className={cn('flex w-full items-center justify-around', className)} {...props} />
+  )
 )
 InputOTPGroup.displayName = 'InputOTPGroup'
 
@@ -24,11 +26,11 @@ const InputOTPSlot = React.forwardRef<React.ElementRef<'div'>, SlotProps & React
       <div
         ref={ref}
         className={cn(
-          'relative mx-1 flex h-12 w-12 items-center justify-center rounded-md outline-none transition-all',
+          'relative mx-1 flex h-14 w-14 items-center justify-center rounded-md outline-none transition-all',
           className
         )}
         {...props}>
-        {char}
+        <p className={cn('text-title-1-demi text-secondary', !char && 'text-tertiary')}>{char ?? '•'}</p>
         {hasFakeCaret && (
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
             <div className="animate-caret-blink h-4 w-px bg-foreground duration-1000" />

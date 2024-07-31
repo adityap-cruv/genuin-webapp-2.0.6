@@ -12,13 +12,19 @@ import { PhoneInput } from '@components/ui/phone-input'
 import { isValidPhoneNumber } from 'react-phone-number-input'
 import { Loader } from '@/components/ui/loader'
 import { useState, useEffect } from 'react'
-import { useAuthenticationModalStore } from '../store'
+import { type FlowType, useAuthenticationModalStore } from '../store'
 import { useShallow } from 'zustand/react/shallow'
+import { type ScreenProps } from '.'
+import { sendOtp } from '../api/auth'
 
 const TABS_TRIGGER_CLASS =
   'rounded-lg border-none py-2 !text-title-3-med data-[state=active]:!text-title-3-demi text-secondary-300 data-[state=active]:bg-monochrome-white data-[state=active]:text-primary'
 
-export function Starter() {
+export function Starter({ onBack, onNext }: ScreenProps) {
+  const { flowType, setFormData } = useAuthenticationModalStore(
+    useShallow((state) => ({ flowType: state.formData.flowType, setFormData: state.setFormData }))
+  )
+
   return (
     <ModalShell>
       <span className="text-center">
@@ -29,20 +35,25 @@ export function Starter() {
           We'll send you a code to log in or create an account.
         </p>
       </span>
-      <Tabs className="w-full" defaultValue="email">
+      <Tabs
+        className="w-full"
+        defaultValue={flowType}
+        onValueChange={(value) => {
+          setFormData({ flowType: value as FlowType })
+        }}>
         <TabsList className="h-14 rounded-lg bg-tertiary-200 p-2">
           <TabsTrigger className={TABS_TRIGGER_CLASS} value="email">
             Email
           </TabsTrigger>
-          <TabsTrigger className={TABS_TRIGGER_CLASS} value="number">
+          <TabsTrigger className={TABS_TRIGGER_CLASS} value="phone">
             Number
           </TabsTrigger>
         </TabsList>
         <TabsContent value="email">
-          <EmailForm />
+          <EmailForm onNext={onNext} />
         </TabsContent>
-        <TabsContent value="number">
-          <NumberForm />
+        <TabsContent value="phone">
+          <NumberForm onNext={onNext} />
         </TabsContent>
       </Tabs>
       <FooterInfo />
@@ -52,51 +63,81 @@ export function Starter() {
 
 const emailFormSchema = z.object({ email: z.string().email({ message: 'Please enter valid email.' }) })
 
-function EmailForm() {
+function EmailForm({ onNext }: { onNext: () => void }) {
+  const { setFormData } = useAuthenticationModalStore(
+    useShallow((state) => ({
+      setFormData: state.setFormData,
+    }))
+  )
   const form = useForm<z.infer<typeof emailFormSchema>>({ resolver: zodResolver(emailFormSchema), mode: 'onBlur' })
+  const [isLoading, setIsLoading] = useState(false)
   const { isValid } = form.formState
+
+  useEffect(() => {
+    const watching = form.watch((value) => {
+      setFormData({ email: value.email })
+    })
+    return () => {
+      watching.unsubscribe()
+    }
+  }, [form.watch])
+
+  async function handleSubmit({ email }: { email: string }) {
+    setIsLoading(true)
+    const response = await sendOtp({ email })
+    if (response.codeSent) {
+      onNext()
+    } else {
+      form.setError('email', { message: 'Something went wrong. Please try again!' })
+    }
+    setIsLoading(false)
+  }
+
   return (
     <Form {...form}>
-      <FormField
-        control={form.control}
-        name="email"
-        render={({ field }) => {
-          const errors = useFormField().error
-          return (
-            <FormItem className="sm:w-full">
-              <FormControl>
-                <Input
-                  placeholder="Enter Email"
-                  className={cn(
-                    'border border-tertiary-200 bg-tertiary-100 !text-title-3-med placeholder:!text-tertiary-300',
-                    errors && '!border-red'
-                  )}
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage className={cn('!text-cap-1-demi')} />
-            </FormItem>
-          )
-        }}
-      />
-      <Button className="w-full" disabled={!isValid}>
-        <p className="text-body-1-demi">Continue</p>
-      </Button>
+      <form onSubmit={form.handleSubmit(handleSubmit)}>
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => {
+            const errors = useFormField().error
+            return (
+              <FormItem className="sm:w-full">
+                <FormControl>
+                  <Input
+                    placeholder="Enter Email"
+                    className={cn(
+                      'border border-tertiary-200 bg-tertiary-100 !text-title-3-med placeholder:!text-tertiary-300',
+                      errors && '!border-red'
+                    )}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage className={cn('!text-cap-1-demi')} />
+              </FormItem>
+            )
+          }}
+        />
+        <Button type="submit" className="w-full" disabled={!isValid || isLoading}>
+          {isLoading ? (
+            <Loader size="md" className="fill-monochrome-white" />
+          ) : (
+            <p className="text-body-1-demi">Continue</p>
+          )}
+        </Button>
+      </form>
     </Form>
   )
 }
 
 const phoneNumberSchema = z.object({ phone: z.string() })
 
-function NumberForm() {
-  const { formData, setFormData } = useAuthenticationModalStore(
-    useShallow((state) => {
-      return {
-        setStep: state.setStep,
-        setFormData: state.setFormData,
-        formData: state.formData,
-      }
-    })
+function NumberForm({ onNext }: { onNext: () => void }) {
+  const { setFormData, formData } = useAuthenticationModalStore(
+    useShallow((state) => ({
+      setFormData: state.setFormData,
+      formData: state.formData,
+    }))
   )
   const [isLoading, setIsLoading] = useState(false)
   const form = useForm<z.infer<typeof phoneNumberSchema>>({
@@ -108,13 +149,15 @@ function NumberForm() {
     },
   })
 
-  useEffect(() => {
-    if (!isValidPhoneNumber(formData.phone ?? '')) form.clearErrors()
-  }, [formData.phone])
-
-  function onSubmit() {
+  async function onSubmit() {
     setIsLoading(true)
-    alert('handle submit')
+    const response = await sendOtp({ phoneNumber: formData.phoneNumber })
+    if (response.codeSent) {
+      onNext()
+    } else {
+      form.setError('root', { message: 'Something went wrong. Please try again!' })
+    }
+    setIsLoading(false)
   }
 
   return (
@@ -131,8 +174,8 @@ function NumberForm() {
                     value="+1"
                     international
                     className="w-full"
-                    onChange={(phone) => {
-                      setFormData({ phone })
+                    onChange={(value) => {
+                      setFormData({ phoneNumber: value })
                     }}
                   />
                 </FormControl>
@@ -141,7 +184,11 @@ function NumberForm() {
             )
           }}
         />
-        <Button type="submit" variant="default" className="w-full" disabled={!isValidPhoneNumber(formData.phone ?? '')}>
+        <Button
+          type="submit"
+          variant="default"
+          className="w-full"
+          disabled={!isValidPhoneNumber(formData.phoneNumber ?? '') || isLoading}>
           {isLoading ? (
             <Loader size="sm" className="fill-new-off-white" />
           ) : (

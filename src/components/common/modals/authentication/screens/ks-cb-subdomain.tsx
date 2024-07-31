@@ -37,11 +37,11 @@ export function KsToCbSubdomain() {
       return
     }
 
-    if (!user.isEmailVerified) {
-      setStep('VERIFY_MAIL')
-      setLoading(false)
-      return
-    }
+    // if (!user.isEmailVerified) {
+    //   setStep('VERIFY_MAIL')
+    //   setLoading(false)
+    //   return
+    // }
 
     ksCbRequest()
       .then(async (res) => {

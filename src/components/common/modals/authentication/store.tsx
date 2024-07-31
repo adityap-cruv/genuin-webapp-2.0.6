@@ -2,56 +2,62 @@ import { type AuthActionType } from '@lib/api/auth'
 import { getRandomAvatar } from '@lib/utils'
 import { create } from 'zustand'
 
+export type FlowType = 'email' | 'phone'
+
 export type StepsType =
   | 'STARTER'
-  | 'SIGN_UP'
-  | 'NUMBER_INPUT'
-  | 'PASSWORD_INPUT'
-  | 'OTP_INPUT'
+  | 'LOGIN_OTP_INPUT'
+  | 'EDIT_BIRTHDATE'
+  | 'EDIT_PHONE_NUMBER'
+  | 'EDIT_EMAIL_SUCCESS'
+  | 'EDIT_PHONE_NUMBER_SUCCESS'
+  | 'EDIT_USERNAME'
+  | 'EDIT_EMAIL'
+  | 'VERIFY_MAIL_OTP'
+  | 'VERIFY_PHONE_OTP'
+  | 'CATEGORY_INPUT'
+  | 'CLAIM_BRAND_PROFILE'
   | 'IMAGE_CROPPER'
-  | 'EMAIL_VERIFICATION_SUCCESS'
-  | 'EMAIL_VERIFICATION_FAILURE'
-  | 'MAGIC_LINK_VERIFICATION_SUCCESS'
-  | 'MAGIC_LINK_VERIFICATION_FAILURE'
   | 'COMPLETE_PROFILE'
-  | 'EMAIL_SENT_NOTE'
-  | 'MAGIC_LINK_SENT_NOTE'
-  | 'ERROR'
   | 'USERNAME_INPUT'
-  | 'PASSWORD_INPUT_LOGIN'
-  | 'EMAIL_SENT_NOTE_ACCOUNT_EXISTS'
   | 'GUIDELINES'
   | 'KS_CB_WEB'
   | 'KS_CB_SUBDOMAIN'
-  | 'VERIFY_MAIL'
-  | 'MINI_PROFILE_SUCCESS'
-  | 'EDIT_USERNAME'
-  | 'CHANGE_PASSWORD'
   | 'LOGOUT'
-  | 'CHANGE_PASSWORD_SUCCESS_NOTE'
-  | 'SET_PASSWORD_SUCCESS_NOTE'
-  | 'FORGOT_PASSWORD'
-  | 'PASSWORD_RESET_LINK_SENT_NOTE'
-  | 'RESET_PASSWORD'
-  | 'RESET_PASSWORD_SUCCESS_NOTE'
-  | 'CATEGORY_INPUT'
-  | 'GET_STARTED'
-  | 'CLAIM_BRAND_PROFILE'
+// | 'SIGN_UP'
+// | 'EMAIL_VERIFICATION_SUCCESS'
+// | 'EMAIL_VERIFICATION_FAILURE'
+// | 'MAGIC_LINK_VERIFICATION_SUCCESS'
+// | 'MAGIC_LINK_VERIFICATION_FAILURE'
+// | 'EMAIL_SENT_NOTE'
+// | 'MAGIC_LINK_SENT_NOTE'
+// | 'ERROR'
+// | 'PASSWORD_INPUT_LOGIN'
+// | 'EMAIL_SENT_NOTE_ACCOUNT_EXISTS'
+// | 'VERIFY_MAIL'
+// | 'MINI_PROFILE_SUCCESS'
+// | 'CHANGE_PASSWORD'
+// | 'CHANGE_PASSWORD_SUCCESS_NOTE'
+// | 'SET_PASSWORD_SUCCESS_NOTE'
+// | 'FORGOT_PASSWORD'
+// | 'PASSWORD_RESET_LINK_SENT_NOTE'
+// | 'RESET_PASSWORD'
+// | 'RESET_PASSWORD_SUCCESS_NOTE'
 
 type FormDataType = {
   displayName: string
   email: string
   password: string
-  mobileNumber: string
+  phoneNumber: string
   image: string | File
   isAvatar: boolean
   bio: string
   username: string
-  phone: string
   otp: number
   userId: string
   imageName: string
-  retryTime?: number
+  retryTime: number
+  flowType: FlowType
 }
 
 type States = {
@@ -78,6 +84,7 @@ const initialStates: States = {
   formData: {
     image: getRandomAvatar(),
     isAvatar: true,
+    flowType: 'email',
   },
   isOpen: false,
 }
@@ -88,7 +95,7 @@ export const useAuthenticationModalStore = create<Actions & States>((set) => {
     open() {
       set({ isOpen: true })
     },
-    openWithStep(action, step = 'OTP_INPUT') {
+    openWithStep(action, step = 'STARTER') {
       set({ isOpen: true, step, action })
     },
     close() {
