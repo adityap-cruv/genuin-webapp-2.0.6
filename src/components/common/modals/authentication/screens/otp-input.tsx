@@ -7,23 +7,37 @@ import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { cn } from '@lib/utils'
-import { loginViaPhone, verifyOtp } from '@lib/api/auth'
-import { useLocalStorage } from '@lib/stores/local-storage'
-import { LOGIN_SOURCE, VERIFICATION_TYPE } from '@lib/constants'
-import { signIn } from 'next-auth/react'
 import { Loader } from '@components/ui/loader'
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@components/ui/input-otp'
+import { type ScreenProps } from '.'
+import { useShallow } from 'zustand/react/shallow'
+import { formatPhoneNumber } from 'react-phone-number-input'
+import { consumeOtp, updateEmailOrPhone } from '../api/auth'
+import { signIn, useSession } from 'next-auth/react'
 
 const formSchema = z.object({
   otp: z.string(),
 })
 
-export function OtpInput() {
-  const { setStep, formData, setFormData, close: closeModal } = useAuthenticationModalStore()
-  const [isValidOtp, setIsValidOtp] = useState(false)
+const OTP_LENGTH = 6
+
+type PropertiesType = { email?: string; phoneNumber?: string }
+
+type OtpInputProps = { verificationType: 'email' | 'number' | 'login' } & ScreenProps
+
+export function OtpInput({ verificationType, onNext, onBack }: OtpInputProps) {
+  const { flowType, email, closeModal, phone } = useAuthenticationModalStore(
+    useShallow((state) => ({
+      flowType: state.formData.flowType,
+      phone: state.formData.phoneNumber,
+      email: state.formData.email,
+      closeModal: state.close,
+    }))
+  )
   const [isLoading, setIsLoading] = useState(false)
-  const deviceId = useLocalStorage().deviceId
-  const [timer, setTimer] = useState(30)
+  const [isValid, setIsValid] = useState(false)
+  const { data: sessionData, update: updateSession } = useSession()
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     mode: 'onSubmit',
@@ -37,8 +51,11 @@ export function OtpInput() {
     const w = form.watch((value) => {
       const otp = parseInt(value.otp ?? '')
       const isValidLength = otp.toString().length === 6
-      setIsValidOtp(isValidLength)
-      setFormData({ otp })
+      if (isValidLength) {
+        setIsValid(true)
+      } else {
+        setIsValid(false)
+      }
 
       if (!isValidLength) {
         form.control.setError('root', { message: '' })
@@ -49,78 +66,48 @@ export function OtpInput() {
     }
   }, [form.watch])
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (timer > 0) {
-        setTimer(timer - 1)
-      }
-    }, 1000)
-    return () => {
-      clearInterval(interval)
-    }
-  }, [timer])
-
-  async function onSubmit(data: any) {
+  async function onSubmit({ otp }: { otp: string }) {
     setIsLoading(true)
-
-    await verifyOtp({
-      userId: formData.userId ?? '',
-      otp: parseInt(data.otp),
-      token: deviceId,
-      loginSource: LOGIN_SOURCE.web,
-    })
-      .then(async (res) => {
-        if (res?.code === 200) {
-          const user = res.data
-          void signIn('credentials', { ...user, redirect: false })
-            .then((res) => {
-              if (res?.ok) closeModal()
-            })
-            .catch((e) => {
-              form.control.setError('root', { message: 'Something went wrong.' })
-            })
-          // setStep('OTP_INPUT')
-        } else if (res?.code === 1008) {
-          form.control.setError('root', { message: 'That doesn`t look right. Please check your code and try again' })
-        } else {
-          form.control.setError('root', { message: 'Something went wrong please try again.' })
-        }
-      })
-      .finally(() => {
-        setIsLoading(false)
-      })
-  }
-
-  async function resendOtp() {
-    if (timer <= 0) {
-      setTimer(30)
-
-      setIsLoading(true)
-      await loginViaPhone({
-        phone: formData.phone,
-        token: deviceId,
-        verificationType: VERIFICATION_TYPE.sms,
-        loginSource: LOGIN_SOURCE.web,
-      })
-        .then(async (res) => {
-          if (res?.code === 200) {
-            setFormData({ userId: res.data.user_id })
-          }
-        })
-        .finally(() => {
-          setIsLoading(false)
-        })
+    const properties: PropertiesType = {
+      email: undefined,
+      phoneNumber: undefined,
     }
+    if (verificationType === 'login') {
+      flowType === 'email' ? (properties.email = email) : (properties.phoneNumber = phone)
+      const data = await consumeOtp({ code: otp, ...properties })
+      if (data.otpVerified) {
+        await signIn('credentials', { ...data.user, redirect: false })
+        if (!data.user?.brandGuidelines) {
+          onNext()
+        } else {
+          closeModal()
+        }
+      } else {
+        form.setError('otp', { message: 'Invalid OTP' })
+      }
+    } else {
+      const response = await updateEmailOrPhone(otp)
+      if (response.verified) {
+        void updateSession({ ...sessionData, user: { ...sessionData?.user, email, phoneNumber: phone } }).then((_) => {
+          onNext()
+        })
+      } else {
+        form.setError('root', { message: 'Invalid OTP' })
+      }
+    }
+    setIsLoading(false)
   }
 
+  const isFlowEmail = flowType === 'email' || verificationType === 'email'
   return (
-    <ModalShell>
+    <ModalShell onBack={onBack}>
       <div className="flex flex-col items-center">
         <p className="mb-6 text-center text-title-1-demi sm:text-heading-3">Enter code</p>
         <p className="w-full text-center text-title-3-med text-tertiary">
-          Enter the 6-digit code sent to: {formData.phone}
+          {`Please Enter the 6-digit code sent to your ${isFlowEmail ? 'email address' : 'mobile number'}: ${
+            isFlowEmail ? email : formatPhoneNumber(phone ?? '')
+          }`}
         </p>
-
         <div className="w-full">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -132,12 +119,18 @@ export function OtpInput() {
                     <FormItem className="flex flex-col items-center sm:w-full">
                       <FormControl>
                         <InputOTP
-                          maxLength={6}
+                          autoFocus
+                          maxLength={OTP_LENGTH}
+                          className="w-full"
                           render={({ slots }) => (
                             <InputOTPGroup>
                               {slots.map((slot, index) => (
-                                <InputOTPSlot key={index} {...slot} />
-                              ))}{' '}
+                                <InputOTPSlot
+                                  key={index}
+                                  {...slot}
+                                  className="rounded-lg border border-tertiary-200 bg-tertiary-100 focus:border-tertiary-300"
+                                />
+                              ))}
                             </InputOTPGroup>
                           )}
                           {...field}
@@ -148,7 +141,13 @@ export function OtpInput() {
                   )
                 }}
               />
-              <Button type="submit" variant="default" className="w-full" disabled={!isValidOtp || isLoading}>
+              <TimerMessage
+                time={30}
+                onResendOtp={() => {
+                  alert('handle resend otp.')
+                }}
+              />
+              <Button type="submit" variant="default" className="mt-2 w-full" disabled={isLoading || !isValid}>
                 {isLoading ? (
                   <Loader size="sm" className="fill-new-off-white" />
                 ) : (
@@ -159,32 +158,39 @@ export function OtpInput() {
           </Form>
         </div>
       </div>
-
       {form.formState.errors.root && (
         <p className="text-text-new-para-2-mobile flex items-center justify-center text-center text-supplementary-red">
           {form.formState.errors.root.message}
         </p>
       )}
-      {timer <= 0 ? (
-        <p className="cursor-pointer text-body-1-med text-primary" onClick={resendOtp}>
-          Resend otp
-        </p>
-      ) : (
-        <p className="text-center text-body-1-med text-monochrome">
-          Resend code in <span className="text-monochrome-black">{`00:${timer.toString().padStart(2, '0')}`}</span>
-        </p>
-      )}
-
-      <p className="flex w-full items-center justify-center text-body-1-demi">
-        Don't have an account?
-        <span
-          className="cursor-pointer text-primary"
-          onClick={() => {
-            setStep('SIGN_UP')
-          }}>
-          &nbsp;Sign up
-        </span>
-      </p>
     </ModalShell>
+  )
+}
+
+function TimerMessage({ time, onResendOtp }: { onResendOtp: () => void; time: number }) {
+  const [timer, setTimer] = useState(time)
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (timer > 0) {
+        setTimer(timer - 1)
+      }
+    }, 1000)
+    return () => {
+      clearInterval(interval)
+    }
+  }, [timer])
+  return timer <= 0 ? (
+    <p
+      className="cursor-pointer text-center text-body-1-med text-primary"
+      onClick={() => {
+        onResendOtp()
+      }}>
+      Resend otp
+    </p>
+  ) : (
+    <p className="text-center text-body-1-med text-monochrome">
+      Resend code in <span className="text-monochrome-black">{`00:${timer.toString().padStart(2, '0')}`}</span>
+    </p>
   )
 }

@@ -1,23 +1,21 @@
-export { Error } from './error'
-export { NumberInput } from './number-input'
-export { EmailInput } from './email-input'
-export { Signup } from './signup'
 export { ImageCropper } from './image-cropper'
-export { PasswordInput } from './password-input'
-export { MagicLinkVerification } from './magic-link-verification'
-export { EmailVerification } from './email-verification'
 export { OtpInput } from './otp-input'
-export { Note } from './note'
 export { UsernameInput } from './username-input'
 export { CompleteProfile } from './complete-profile'
 export { Guidelines } from './guidelines'
 export { KsToCbWeb } from './ks-cb-web'
 export { KsToCbSubdomain } from './ks-cb-subdomain'
 export { EditUsername } from './edit-username'
-export { ChangePassword } from './change-password'
 export { Logout } from './logout'
-export { ForgotPassword } from './forgot-password'
-export { ResetPassword } from './reset-password'
 export { CategoryInput } from './category-input'
-export { GetStarted } from './get-started'
 export { ClaimBrandProfile } from './claim-brand-profile'
+export { Starter } from './starter'
+export { BirthInput } from './birth-input'
+export { EditEmail } from './edit-email'
+export { EditNumber } from './edit-number'
+export { Note } from './note'
+
+export type ScreenProps = {
+  onBack?: () => void
+  onNext: () => void
+}

@@ -10,7 +10,7 @@ import { Textarea } from '@components/ui/textarea'
 import Image from 'next/image'
 import { ImageInput } from '@components/common/modals/authentication/components/image-input'
 import { useAuthenticationModalStore } from '@components/common/modals/authentication/store'
-import { updateUser } from '@lib/api/auth'
+import { updateUser } from '@/components/common/modals/authentication/api/auth'
 import { useSession } from 'next-auth/react'
 import { type ProfileDetailsType } from '@lib/schemas/profile/profile'
 import { useToast } from '@components/ui/use-toast'
@@ -28,6 +28,7 @@ import { TwitterIcon } from '@icons/twitter-icon'
 import { type User } from 'next-auth'
 import Analytics from '@services/analytics'
 
+// TODO: Divide this component
 export default function MainComponent() {
   const { isMobile, user } = useGenuinOptions((state) => ({ isMobile: state.isMobile, user: state.user }))
   const [profileData, setProfileData] = useState<ProfileDetailsType | null>(null)
@@ -184,7 +185,6 @@ function EditProfile({ profileData, isMobile }: { profileData: ProfileDetailsTyp
 
           <div className="px-8 py-4">
             <ImageInput />
-
             <FormField
               name="displayName"
               control={form.control}
@@ -243,7 +243,6 @@ function EditProfile({ profileData, isMobile }: { profileData: ProfileDetailsTyp
                 )
               }}
             />
-
             <p className="text-title-2-bold">Links</p>
             <FormField
               name="instagram"

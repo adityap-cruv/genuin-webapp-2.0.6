@@ -2,8 +2,6 @@ import { type AuthActionType } from '@lib/api/auth'
 import { type ReactNode } from 'react'
 import { create } from 'zustand'
 
-export type StepsType = 'EMAIL_INPUT'
-
 type States = {
   isOpen: boolean
   note?: React.ReactNode

@@ -3,19 +3,12 @@ import axios from 'axios'
 export const axiosInstance = axios.create({ baseURL: process.env.NEXT_PUBLIC_API_URL })
 
 /**
- * This request will send x-auth-token headers in future request.
+ * This request will send Authorization headers in future request.
  * @param token
  */
 export function setAuthTokenInAxiosInstance(token?: string) {
   axiosInstance.interceptors.request.use((config) => {
-    if (token) config.headers['x-auth-token'] = token
-    return config
-  })
-}
-
-export function setTempAuthTokenInAxiosInstance(token?: string) {
-  axiosInstance.interceptors.request.use((config) => {
-    if (token) config.headers['x-temp-auth-token'] = token
+    if (token) config.headers.Authorization = 'Bearer ' + token
     return config
   })
 }
@@ -29,10 +22,7 @@ export function setBrandIdInAxiosInstance(brandId?: number) {
 
 export function removeAllAuthToken() {
   axiosInstance.interceptors.request.use((config) => {
-    config.headers['x-auth-token'] = undefined
-    config.headers['x-temp-auth-token'] = undefined
+    config.headers.Authorization = undefined
     return config
   })
 }
-
-// axiosInstance.interceptors.request.use(() => {})

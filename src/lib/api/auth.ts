@@ -1,5 +1,5 @@
 import { encryptText } from '@lib/utils'
-import { axiosInstance, setAuthTokenInAxiosInstance, setTempAuthTokenInAxiosInstance } from './instance'
+import { axiosInstance, setAuthTokenInAxiosInstance } from './instance'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import axios from 'axios'
@@ -171,69 +171,6 @@ export async function verifySMS(token: string): Promise<{
     })
 }
 
-export async function uploadProfileImage(file: File) {
-  try {
-    const getUrlResponse = await axiosInstance.post('/api/v3/users/video/upload/create_upload_url', {
-      contentType: file.type,
-      path: `uploads/profile_images/${file.name}`,
-    })
-    const uploadUrl = getUrlResponse.data.data.uploadURL
-    const uploadResponse = await axiosInstance.put(uploadUrl, file, {
-      headers: {
-        'Content-Type': file.type,
-      },
-    })
-    return uploadResponse.status === 200
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log('::ERROR IN UPLOAD API::', e)
-    return false
-  }
-}
-
-type UserType = {
-  name?: string | null
-  bio?: string | null
-  nickname: string
-  is_avatar: boolean
-  profile_image: string
-  birthday: string
-  linkedin_id?: string | null
-  insta_id?: string | null
-  twitter_id?: string | null
-  tiktok_id?: string | null
-  platform_guidelines: boolean
-  community_walkthrough: boolean
-  password: string
-}
-
-export async function updateUser(user: Partial<UserType>): Promise<{ status: boolean; user: any }> {
-  return await axiosInstance
-    .patch('/api/v3/users/update_user_profile', { user })
-    .then((res) => {
-      return { status: res.status === 200, user: res.data.data }
-    })
-    .catch((e) => {
-      // eslint-disable-next-line no-console
-      console.log('::ERROR in updata user profile::', e)
-      throw new Error('Something went wrong')
-    })
-}
-
-export async function validateUsername(nickname: string) {
-  return await axiosInstance
-    .post('/api/v3/users/validate_nickname', { nickname })
-    .then((res) => {
-      if (res.data.code === 200) return true
-      else if (res.data.code === '5073') return false
-    })
-    .catch((e) => {
-      // eslint-disable-next-line no-console
-      console.log('::ERROR in validata username::', e)
-      return false
-    })
-}
-
 /**
  *
  * @param email
@@ -266,50 +203,50 @@ export async function resendVerificationMail(
     })
 }
 
-type LoginViaPhoneType = {
-  phone: string | undefined
-  platform?: string
-  token: string
-  verificationType: number
-  brandId?: number
-  loginSource: any
-}
+// type LoginViaPhoneType = {
+//   phone: string | undefined
+//   platform?: string
+//   token: string
+//   verificationType: number
+//   brandId?: number
+//   loginSource: any
+// }
 
-export async function loginViaPhone({
-  phone,
-  platform,
-  token,
-  verificationType,
-  brandId,
-  loginSource,
-}: LoginViaPhoneType): Promise<{ code: number; data: any }> {
-  return await axiosInstance
-    .post(
-      '/api/v3/send_otp',
-      {
-        phone: encryptText(phone ?? '', false),
-        platform: 3,
-        token: encryptText(token, true),
-        verification_type: verificationType,
-        brand_id: useGenuinOptions.getState().brandId,
-        login_source: loginSource,
-      },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    )
-    .then((res) => {
-      setTempAuthTokenInAxiosInstance(res.headers['x-temp-auth-token'])
-      return { code: 200, data: res.data.data }
-    })
-    .catch((e) => {
-      // eslint-disable-next-line no-console
-      console.log('::error in send otp api::', e.response.data.code)
-      return { code: Number(e.response.data.code), data: undefined }
-    })
-}
+// export async function loginViaPhone({
+//   phone,
+//   platform,
+//   token,
+//   verificationType,
+//   brandId,
+//   loginSource,
+// }: LoginViaPhoneType): Promise<{ code: number; data: any }> {
+//   return await axiosInstance
+//     .post(
+//       '/api/v3/send_otp',
+//       {
+//         phone: encryptText(phone ?? '', false),
+//         platform: 3,
+//         token: encryptText(token, true),
+//         verification_type: verificationType,
+//         brand_id: useGenuinOptions.getState().brandId,
+//         login_source: loginSource,
+//       },
+//       {
+//         headers: {
+//           'Content-Type': 'application/json',
+//         },
+//       }
+//     )
+//     .then((res) => {
+//       setTempAuthTokenInAxiosInstance(res.headers['x-temp-auth-token'])
+//       return { code: 200, data: res.data.data }
+//     })
+//     .catch((e) => {
+//       // eslint-disable-next-line no-console
+//       console.log('::error in send otp api::', e.response.data.code)
+//       return { code: Number(e.response.data.code), data: undefined }
+//     })
+// }
 
 type OtpProps = {
   userId: string
