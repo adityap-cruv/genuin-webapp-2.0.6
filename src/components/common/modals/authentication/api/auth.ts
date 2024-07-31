@@ -8,6 +8,7 @@ type SendOtpProps = {
   phoneNumber: string
   email: string
 }
+export type AuthActionType = 'JOIN_COMMUNITY' | 'SUBSCRIBE' | 'KS_CB_REQUEST' | 'DELETE_ACCOUNT'
 
 let preAuthSessionId: string | null = null
 let resDeviceId: string | null = null
@@ -182,5 +183,40 @@ export async function updateUser(user: Partial<UserType>): Promise<{ status: boo
       // eslint-disable-next-line no-console
       console.log('::ERROR in updata user profile::', e)
       throw new Error('Something went wrong')
+    })
+}
+
+export async function deleteUserAccount(): Promise<{ code: number; data: any }> {
+  return await axiosInstance
+    .delete('/api/v3/users/delete')
+    .then((res) => {
+      return { code: res.data.code, data: res.data.data }
+    })
+    .catch((e) => {
+      return { code: Number(e?.response?.data.code), data: e?.response?.data.data }
+    })
+}
+
+export async function getBrandGuidelines({
+  brandId,
+  idDefault,
+}: {
+  brandId: string | undefined
+  idDefault: boolean
+}): Promise<{ code: number; data: any }> {
+  return await axiosInstance
+    .get('/api/v3/brand/guidelines', {
+      params: {
+        brand_id: brandId,
+        is_default: idDefault,
+      },
+    })
+    .then((res) => {
+      return { code: res.data.code, data: res.data.data }
+    })
+    .catch((e) => {
+      // eslint-disable-next-line no-console
+      console.log('::error in guidelines api::', e.response.data.code)
+      return { code: Number(e.response.data.code), data: e.response.data.data }
     })
 }

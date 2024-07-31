@@ -19,21 +19,24 @@ import {
   EditEmail,
   EditNumber,
   Note,
+  DeleteConfirmation,
+  DeleteConfirmed,
 } from './screens'
 import { useEffect } from 'react'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { useShallow } from 'zustand/react/shallow'
 import { X } from 'lucide-react'
 
-type Props = DialogProps
+type Props = DialogProps & { showClose?: boolean }
 
-export function Modal({ children, ...props }: Props) {
+export function Modal({ children, showClose, ...props }: Props) {
   const user = useGenuinOptions().user
-  const { isModalOpen, closeModal, step, setFormData } = useAuthenticationModalStore((state) => ({
+  const { action, isModalOpen, closeModal, step, setFormData } = useAuthenticationModalStore((state) => ({
     isModalOpen: state.isOpen,
     closeModal: state.close,
     step: state.step,
     setFormData: state.setFormData,
+    action: state.action,
   }))
 
   useEffect(() => {
@@ -48,11 +51,18 @@ export function Modal({ children, ...props }: Props) {
       })
   }, [user])
 
-  const stepSet: Set<StepsType> = new Set<StepsType>([])
-  const showClose = !stepSet.has(step)
+  const stepSet: Set<StepsType> = new Set<StepsType>([
+    'LOGIN_OTP_INPUT',
+    'VERIFY_MAIL_OTP',
+    'VERIFY_PHONE_OTP',
+    'GUIDELINES',
+    'DELETE_CONFIRMATION',
+    'DELETE_CONFIRMED',
+  ])
+  const shouldShowClose = !stepSet.has(step) && !(action === 'DELETE_ACCOUNT' && step === 'STARTER')
 
   return (
-    <Dialog modal open={isModalOpen} {...props}>
+    <Dialog modal={action !== 'DELETE_ACCOUNT'} open={isModalOpen} {...props}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent
         showClose={false}
@@ -60,7 +70,7 @@ export function Modal({ children, ...props }: Props) {
           e.preventDefault()
         }}
         className="rounded-t-lg !py-10">
-        {showClose && (
+        {shouldShowClose && (
           <DialogClose className="absolute right-4 top-4 outline-none">
             <X
               className="stroke-secondary"
@@ -161,5 +171,15 @@ export function Content() {
       return <KsToCbWeb />
     case 'KS_CB_SUBDOMAIN':
       return <KsToCbSubdomain />
+    case 'DELETE_CONFIRMATION':
+      return (
+        <DeleteConfirmation
+          onNext={() => {
+            setStep('DELETE_CONFIRMED')
+          }}
+        />
+      )
+    case 'DELETE_CONFIRMED':
+      return <DeleteConfirmed />
   }
 }

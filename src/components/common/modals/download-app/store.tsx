@@ -1,4 +1,4 @@
-import { type AuthActionType } from '@lib/api/auth'
+import { type AuthActionType } from '@components/common/modals/authentication/api/auth'
 import { type ReactNode } from 'react'
 import { create } from 'zustand'
 

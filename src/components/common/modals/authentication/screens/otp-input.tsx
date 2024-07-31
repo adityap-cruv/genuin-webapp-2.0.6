@@ -26,12 +26,14 @@ type PropertiesType = { email?: string; phoneNumber?: string }
 type OtpInputProps = { verificationType: 'email' | 'number' | 'login' } & ScreenProps
 
 export function OtpInput({ verificationType, onNext, onBack }: OtpInputProps) {
-  const { flowType, email, closeModal, phone } = useAuthenticationModalStore(
+  const { flowType, email, closeModal, phone, action, setStep } = useAuthenticationModalStore(
     useShallow((state) => ({
       flowType: state.formData.flowType,
       phone: state.formData.phoneNumber,
       email: state.formData.email,
       closeModal: state.close,
+      action: state.action,
+      setStep: state.setStep,
     }))
   )
   const [isLoading, setIsLoading] = useState(false)
@@ -77,10 +79,15 @@ export function OtpInput({ verificationType, onNext, onBack }: OtpInputProps) {
       const data = await consumeOtp({ code: otp, ...properties })
       if (data.otpVerified) {
         await signIn('credentials', { ...data.user, redirect: false })
-        if (!data.user?.brandGuidelines) {
-          onNext()
+        // If user comes from action delete account
+        if (action === 'DELETE_ACCOUNT') {
+          setStep('DELETE_CONFIRMATION')
         } else {
-          closeModal()
+          if (!data.user?.brandGuidelines) {
+            onNext()
+          } else {
+            closeModal()
+          }
         }
       } else {
         form.setError('otp', { message: 'Invalid OTP' })
