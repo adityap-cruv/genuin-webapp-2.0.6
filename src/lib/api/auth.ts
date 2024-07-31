@@ -1,5 +1,5 @@
 import { encryptText } from '@lib/utils'
-import { axiosInstance, setAuthTokenInAxiosInstance, setTempAuthTokenInAxiosInstance } from './instance'
+import { axiosInstance, setAuthTokenInAxiosInstance } from './instance'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import axios from 'axios'

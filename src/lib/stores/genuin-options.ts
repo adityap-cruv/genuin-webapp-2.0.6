@@ -70,7 +70,7 @@ export type User = {
   nickname: string
   image?: string | null
   accessToken: string
-  refreshToken: string
+  refreshToken?: string | null
   birth?: string | null
   id?: string
   /**

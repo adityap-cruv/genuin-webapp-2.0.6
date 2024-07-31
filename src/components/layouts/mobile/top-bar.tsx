@@ -320,11 +320,7 @@ function UserTick() {
             />
             <div>
               <p className="line-clamp-1 break-words break-all text-title-3-bold">{data.user.email}</p>
-              {!data.user.isBrandSystemUser && (
-                <p className="text-body-1-demi text-monochrome-6">
-                  {!data.user.isEmailVerified ? 'Send verification email' : 'Complete profile'}
-                </p>
-              )}
+              {!data.user.isBrandSystemUser && <p className="text-body-1-demi text-monochrome-6">Complete profile</p>}
             </div>
           </div>
           <hr className="border-b border-monochrome-9" />
@@ -340,7 +336,7 @@ function UserTick() {
                 Log out
               </p>
             </div>
-            {!data.user.isBrandSystemUser && data.user?.isEmailVerified && <SettingsLayout />}
+            {!data.user.isBrandSystemUser && <SettingsLayout />}
           </div>
         </PopoverContent>
       </Popover>
