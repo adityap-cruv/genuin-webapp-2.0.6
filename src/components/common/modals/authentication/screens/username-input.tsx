@@ -72,7 +72,7 @@ export function UsernameInput({ onNext }: ScreenProps) {
         if (status) {
           await updateSession({
             ...sessionData,
-            user: { ...sessionData?.user, nickname: username },
+            user: { ...sessionData?.user, nickname: username, usernameSet: true },
           })
           onNext()
           void Analytics.track({

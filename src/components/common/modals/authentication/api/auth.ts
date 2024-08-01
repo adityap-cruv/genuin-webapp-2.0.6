@@ -63,6 +63,7 @@ export async function consumeOtp({ email, phoneNumber, code }: Partial<SendOtpPr
       const accessToken = res.headers['gn-access-token']
       const refreshToken = res.headers['gn-refresh-token']
       const data = res.data.data
+      console.log('data::', data)
       const user = {
         isAvatar: data.is_avatar,
         userId: data.user_id,
@@ -81,6 +82,7 @@ export async function consumeOtp({ email, phoneNumber, code }: Partial<SendOtpPr
         brandGuidelines: data.brand_guidelines,
         refreshToken,
         birth: data.birthday,
+        usernameSet: !data.is_username_generated,
       }
 
       return { otpVerified: true, user }
