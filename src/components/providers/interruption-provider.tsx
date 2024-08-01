@@ -16,7 +16,7 @@ export function showInterruption() {
   if (!user) {
     AuthenticationModal.open(undefined, 'STARTER')
   } else if (!user.hasTopics) {
-    AuthenticationModal.open(undefined, 'CATEGORY_INPUT')
+    AuthenticationModal.open(undefined, 'CATEGORY_SELECTION')
   }
 }
 
@@ -29,7 +29,7 @@ export function InterruptionProvider() {
     if (!user) {
       AuthenticationModal.open(undefined)
     } else if (!user.hasTopics) {
-      AuthenticationModal.open(undefined, 'CATEGORY_INPUT')
+      AuthenticationModal.open(undefined, 'CATEGORY_SELECTION')
     }
   }
 

@@ -12,7 +12,7 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from '@components/ui/input-otp'
 import { type ScreenProps } from '.'
 import { useShallow } from 'zustand/react/shallow'
 import { formatPhoneNumber } from 'react-phone-number-input'
-import { consumeOtp, updateEmailOrPhone } from '../api/auth'
+import { consumeOtp, sendOtp, updateEmailOrPhone } from '../api/auth'
 import { signIn, useSession } from 'next-auth/react'
 
 const formSchema = z.object({
@@ -22,8 +22,8 @@ const formSchema = z.object({
 const OTP_LENGTH = 6
 
 type PropertiesType = { email?: string; phoneNumber?: string }
-
-type OtpInputProps = { verificationType: 'email' | 'number' | 'login' } & ScreenProps
+type VerificationType = 'email' | 'number' | 'login'
+type OtpInputProps = { verificationType: VerificationType } & ScreenProps
 
 export function OtpInput({ verificationType, onNext, onBack }: OtpInputProps) {
   const { flowType, email, closeModal, phone, action, setStep } = useAuthenticationModalStore(
@@ -148,12 +148,7 @@ export function OtpInput({ verificationType, onNext, onBack }: OtpInputProps) {
                   )
                 }}
               />
-              <TimerMessage
-                time={30}
-                onResendOtp={() => {
-                  alert('handle resend otp.')
-                }}
-              />
+              <TimerMessage time={30} verificationType={verificationType} />
               <Button type="submit" variant="default" className="mt-2 w-full" disabled={isLoading || !isValid}>
                 {isLoading ? (
                   <Loader size="sm" className="fill-new-off-white" />
@@ -174,8 +169,36 @@ export function OtpInput({ verificationType, onNext, onBack }: OtpInputProps) {
   )
 }
 
-function TimerMessage({ time, onResendOtp }: { onResendOtp: () => void; time: number }) {
+function TimerMessage({ time, verificationType }: { verificationType: VerificationType; time: number }) {
+  const { phone, email, flowType } = useAuthenticationModalStore(
+    useShallow((state) => ({
+      phone: state.formData.phoneNumber,
+      email: state.formData.email,
+      flowType: state.formData.flowType,
+    }))
+  )
+  const [isSendingOtp, setIsSendingOtp] = useState(false)
   const [timer, setTimer] = useState(time)
+
+  async function handleResendOtp() {
+    setIsSendingOtp(true)
+    if (verificationType === 'login') {
+      const properties: PropertiesType = {
+        email: undefined,
+        phoneNumber: undefined,
+      }
+      flowType === 'email' ? (properties.email = email) : (properties.phoneNumber = phone)
+      const response = await sendOtp({ ...properties })
+      setTimer(response.retryTime)
+    } else {
+      const response =
+        verificationType === 'email'
+          ? await sendOtp({ email, isUpdate: true })
+          : await sendOtp({ phoneNumber: phone, isUpdate: true })
+      setTimer(response.retryTime)
+    }
+    setIsSendingOtp(false)
+  }
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -187,14 +210,15 @@ function TimerMessage({ time, onResendOtp }: { onResendOtp: () => void; time: nu
       clearInterval(interval)
     }
   }, [timer])
+
   return timer <= 0 ? (
-    <p
-      className="cursor-pointer text-center text-body-1-med text-primary"
-      onClick={() => {
-        onResendOtp()
-      }}>
+    <Button
+      variant="custom"
+      disabled={isSendingOtp}
+      className="w-full cursor-pointer text-center text-body-1-med text-primary"
+      onClick={handleResendOtp}>
       Resend otp
-    </p>
+    </Button>
   ) : (
     <p className="text-center text-body-1-med text-monochrome">
       Resend code in <span className="text-monochrome-black">{`00:${timer.toString().padStart(2, '0')}`}</span>

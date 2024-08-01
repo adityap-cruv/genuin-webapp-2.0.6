@@ -56,6 +56,7 @@ export function Modal({ children, showClose, ...props }: Props) {
     'VERIFY_MAIL_OTP',
     'VERIFY_PHONE_OTP',
     'GUIDELINES',
+    'CATEGORY_SELECTION',
     'DELETE_CONFIRMATION',
     'DELETE_CONFIRMED',
   ])
@@ -147,8 +148,14 @@ export function Content() {
       return <Note title="Your phone has been changed" />
     case 'IMAGE_CROPPER':
       return <ImageCropper />
-    case 'CATEGORY_INPUT':
-      return <CategoryInput />
+    case 'CATEGORY_SELECTION':
+      return (
+        <CategoryInput
+          onNext={() => {
+            setStep('COMPLETE_PROFILE')
+          }}
+        />
+      )
     case 'USERNAME_INPUT':
       return <UsernameInput />
     case 'COMPLETE_PROFILE':
@@ -157,7 +164,7 @@ export function Content() {
       return (
         <Guidelines
           onNext={() => {
-            setStep('USERNAME_INPUT')
+            setStep('CATEGORY_SELECTION')
           }}
         />
       )
