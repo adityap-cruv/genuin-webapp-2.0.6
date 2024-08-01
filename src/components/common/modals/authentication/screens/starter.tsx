@@ -46,7 +46,7 @@ export function Starter({ onBack, onNext }: ScreenProps) {
             Email
           </TabsTrigger>
           <TabsTrigger className={TABS_TRIGGER_CLASS} value="phone">
-            Number
+            Phone
           </TabsTrigger>
         </TabsList>
         <TabsContent value="email">
@@ -154,10 +154,10 @@ function EmailForm({ onNext }: { onNext: () => void }) {
 const phoneNumberSchema = z.object({ phone: z.string() })
 
 function NumberForm({ onNext }: { onNext: () => void }) {
-  const { setFormData, formData } = useAuthenticationModalStore(
+  const { setFormData, phoneNumber } = useAuthenticationModalStore(
     useShallow((state) => ({
       setFormData: state.setFormData,
-      formData: state.formData,
+      phoneNumber: state.formData.phoneNumber,
     }))
   )
   const [isLoading, setIsLoading] = useState(false)
@@ -166,17 +166,31 @@ function NumberForm({ onNext }: { onNext: () => void }) {
     mode: 'onSubmit',
     criteriaMode: 'firstError',
     defaultValues: {
-      phone: formData.phoneNumber,
+      phone: phoneNumber ?? '+1',
     },
   })
 
   async function onSubmit() {
     setIsLoading(true)
-    const response = await sendOtp({ phoneNumber: formData.phoneNumber })
+    const response = await sendOtp({ phoneNumber })
     if (response.codeSent) {
       onNext()
     } else {
-      form.setError('root', { message: 'Something went wrong. Please try again!' })
+      const minutes = Math.floor(response.retryTime / 60)
+      if (minutes >= 1) {
+        const leftSeconds = response.retryTime % 60
+        form.setError('phone', {
+          message: `Please try again after ${minutes < 10 ? `0${minutes}` : minutes}:${
+            leftSeconds < 10 ? `0${leftSeconds}` : leftSeconds
+          } minutes!`,
+        })
+      } else {
+        form.setError('phone', {
+          message: `Please try again after 00:${
+            response.retryTime < 10 ? `0${response.retryTime}` : response.retryTime
+          }!`,
+        })
+      }
     }
     setIsLoading(false)
   }
@@ -192,7 +206,7 @@ function NumberForm({ onNext }: { onNext: () => void }) {
               <FormItem className="sm:w-full">
                 <FormControl>
                   <PhoneInput
-                    value="+1"
+                    value={field.value}
                     international
                     className="w-full"
                     onChange={(value) => {
@@ -209,7 +223,7 @@ function NumberForm({ onNext }: { onNext: () => void }) {
           type="submit"
           variant="default"
           className="w-full"
-          disabled={!isValidPhoneNumber(formData.phoneNumber ?? '') || isLoading}>
+          disabled={!isValidPhoneNumber(phoneNumber ?? '') || isLoading}>
           {isLoading ? (
             <Loader size="sm" className="fill-new-off-white" />
           ) : (
