@@ -12,6 +12,7 @@ import { Loader } from '@components/ui/loader'
 import { ModalShell } from '../modal-shell'
 import { useSession } from 'next-auth/react'
 import Analytics from '@services/analytics'
+import { type ScreenProps } from '.'
 
 const usernameSchema = z.object({
   username: z
@@ -19,10 +20,10 @@ const usernameSchema = z.object({
     .regex(/^[a-zA-Z0-9._-]+$/, { message: 'Usernames can only use letters, numbers, underscores, and periods.' }),
 })
 
-export function UsernameInput() {
+export function UsernameInput({ onNext }: ScreenProps) {
   const { data: sessionData, update: updateSession } = useSession()
   const [isLoading, setIsLoading] = useState(false)
-  const { setStep, setFormData, formData } = useAuthenticationModalStore()
+  const { setFormData, formData } = useAuthenticationModalStore()
   // prefield username is always valid.
   const [isUsernameValid, setIsUsernameValid] = useState(true)
   const form = useForm<z.infer<typeof usernameSchema>>({
@@ -73,7 +74,7 @@ export function UsernameInput() {
             ...sessionData,
             user: { ...sessionData?.user, nickname: username },
           })
-          setStep('COMPLETE_PROFILE')
+          onNext()
           void Analytics.track({
             eventName: 'Ks Username Set ',
             properties: { username },

@@ -26,18 +26,29 @@ import { useEffect } from 'react'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { useShallow } from 'zustand/react/shallow'
 import { X } from 'lucide-react'
+import { useSearchParams } from 'next/navigation'
 
 type Props = DialogProps & { showClose?: boolean }
 
 export function Modal({ children, showClose, ...props }: Props) {
+  const searchParams = useSearchParams()
   const user = useGenuinOptions().user
-  const { action, isModalOpen, closeModal, step, setFormData } = useAuthenticationModalStore((state) => ({
-    isModalOpen: state.isOpen,
-    closeModal: state.close,
-    step: state.step,
-    setFormData: state.setFormData,
-    action: state.action,
-  }))
+  const { action, isModalOpen, closeModal, step, setFormData, open } = useAuthenticationModalStore(
+    useShallow((state) => ({
+      isModalOpen: state.isOpen,
+      closeModal: state.close,
+      step: state.step,
+      setFormData: state.setFormData,
+      action: state.action,
+      open: state.open,
+    }))
+  )
+
+  useEffect(() => {
+    if (searchParams.get('show_login') === '1') {
+      open()
+    }
+  }, [searchParams])
 
   useEffect(() => {
     if (user)
@@ -152,12 +163,18 @@ export function Content() {
       return (
         <CategoryInput
           onNext={() => {
-            setStep('COMPLETE_PROFILE')
+            setStep('USERNAME_INPUT')
           }}
         />
       )
     case 'USERNAME_INPUT':
-      return <UsernameInput />
+      return (
+        <UsernameInput
+          onNext={() => {
+            setStep('COMPLETE_PROFILE')
+          }}
+        />
+      )
     case 'COMPLETE_PROFILE':
       return <CompleteProfile />
     case 'GUIDELINES':

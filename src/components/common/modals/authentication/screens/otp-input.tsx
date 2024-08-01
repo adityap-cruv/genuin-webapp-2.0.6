@@ -110,10 +110,11 @@ export function OtpInput({ verificationType, onNext, onBack }: OtpInputProps) {
     <ModalShell onBack={onBack}>
       <div className="flex flex-col items-center">
         <p className="mb-6 text-center text-title-1-demi sm:text-heading-3">Enter code</p>
-        <p className="w-full text-center text-title-3-med text-tertiary">
-          {`Please Enter the 6-digit code sent to your ${isFlowEmail ? 'email address' : 'mobile number'}: ${
+        <p className="w-full text-center text-title-3-med text-secondary-300">
+          Please Enter the 6-digit code sent to your{`${isFlowEmail ? 'email address' : 'mobile number'}`}
+          <span className="text-title-3-demi text-secondary">{`: ${
             isFlowEmail ? email : formatPhoneNumber(phone ?? '')
-          }`}
+          }`}</span>
         </p>
         <div className="w-full">
           <Form {...form}>

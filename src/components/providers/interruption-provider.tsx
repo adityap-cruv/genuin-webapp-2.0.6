@@ -3,6 +3,7 @@
 import { AuthenticationModal } from '@components/common/modals/authentication'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { useEffect } from 'react'
+import { useAuthenticationModalStore } from '../common/modals/authentication/store'
 
 const DELAY_FOR_INTERRUPTION = 60000
 
@@ -12,7 +13,8 @@ const DELAY_FOR_INTERRUPTION = 60000
  */
 export function showInterruption() {
   const { embed, user } = useGenuinOptions.getState()
-  if (!embed || (user && user.hasTopics) || AuthenticationModal.isOpen) return
+  const isOpen = useAuthenticationModalStore.getState().isOpen
+  if (!embed || (user && user.hasTopics) || isOpen) return
   if (!user) {
     AuthenticationModal.open(undefined, 'STARTER')
   } else if (!user.hasTopics) {
@@ -22,10 +24,11 @@ export function showInterruption() {
 
 export function InterruptionProvider() {
   const { user, embed } = useGenuinOptions((state) => ({ user: state.user, embed: state.embed }))
+  const isOpen = useAuthenticationModalStore.getState().isOpen
 
   function showInterruption() {
     const { user, embed } = useGenuinOptions.getState()
-    if (!embed || user?.hasTopics || AuthenticationModal.isOpen) return
+    if (!embed || user?.hasTopics || isOpen) return
     if (!user) {
       AuthenticationModal.open(undefined)
     } else if (!user.hasTopics) {
@@ -49,7 +52,7 @@ export function InterruptionProvider() {
     return () => {
       document.removeEventListener('click', handleInterruption)
     }
-  }, [user])
+  }, [user, AuthenticationModal.isOpen])
 
   return <></>
 }
