@@ -64,12 +64,19 @@ export function Starter({ onBack, onNext }: ScreenProps) {
 const emailFormSchema = z.object({ email: z.string().email({ message: 'Please enter valid email.' }) })
 
 function EmailForm({ onNext }: { onNext: () => void }) {
-  const { setFormData } = useAuthenticationModalStore(
+  const { setFormData, email } = useAuthenticationModalStore(
     useShallow((state) => ({
       setFormData: state.setFormData,
+      email: state.formData.email,
     }))
   )
-  const form = useForm<z.infer<typeof emailFormSchema>>({ resolver: zodResolver(emailFormSchema), mode: 'onBlur' })
+  const form = useForm<z.infer<typeof emailFormSchema>>({
+    resolver: zodResolver(emailFormSchema),
+    mode: 'onBlur',
+    defaultValues: {
+      email,
+    },
+  })
   const [isLoading, setIsLoading] = useState(false)
   const { isValid } = form.formState
 
@@ -88,7 +95,21 @@ function EmailForm({ onNext }: { onNext: () => void }) {
     if (response.codeSent) {
       onNext()
     } else {
-      form.setError('email', { message: 'Something went wrong. Please try again!' })
+      const minutes = Math.floor(response.retryTime / 60)
+      if (minutes >= 1) {
+        const leftSeconds = response.retryTime % 60
+        form.setError('email', {
+          message: `Please try again after ${minutes < 10 ? `0${minutes}` : minutes}:${
+            leftSeconds < 10 ? `0${leftSeconds}` : leftSeconds
+          } minutes!`,
+        })
+      } else {
+        form.setError('email', {
+          message: `Please try again after 00:${
+            response.retryTime < 10 ? `0${response.retryTime}` : response.retryTime
+          }!`,
+        })
+      }
     }
     setIsLoading(false)
   }
@@ -120,7 +141,7 @@ function EmailForm({ onNext }: { onNext: () => void }) {
         />
         <Button type="submit" className="w-full" disabled={!isValid || isLoading}>
           {isLoading ? (
-            <Loader size="md" className="fill-monochrome-white" />
+            <Loader size="sm" className="fill-monochrome-white" />
           ) : (
             <p className="text-body-1-demi">Continue</p>
           )}
@@ -145,7 +166,7 @@ function NumberForm({ onNext }: { onNext: () => void }) {
     mode: 'onSubmit',
     criteriaMode: 'firstError',
     defaultValues: {
-      phone: '',
+      phone: formData.phoneNumber,
     },
   })
 
@@ -192,7 +213,7 @@ function NumberForm({ onNext }: { onNext: () => void }) {
           {isLoading ? (
             <Loader size="sm" className="fill-new-off-white" />
           ) : (
-            <p className="text-title-3-demi">Continue</p>
+            <p className="text-body-1-demi">Continue</p>
           )}
         </Button>
       </form>
