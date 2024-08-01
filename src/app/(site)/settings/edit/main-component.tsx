@@ -129,14 +129,14 @@ function EditProfile({ profileData, isMobile }: { profileData: ProfileDetailsTyp
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const { status, user } = await updateUser({
-      name: values.displayName ? values.displayName : null,
-      bio: values.bio ? values.bio : null,
+      name: values.displayName ? values.displayName : undefined,
+      bio: values.bio ? values.bio : undefined,
       is_avatar: formData.imageName ? formData.isAvatar : undefined,
       profile_image: formData.imageName,
-      insta_id: values.instagram ? values.instagram : null,
-      linkedin_id: values.linkedIn ? values.linkedIn : null,
-      twitter_id: values.twitter ? values.twitter : null,
-      tiktok_id: values.tiktok ? values.tiktok : null,
+      insta_id: values.instagram ? values.instagram : undefined,
+      linkedin_id: values.linkedIn ? values.linkedIn : undefined,
+      twitter_id: values.twitter ? values.twitter : undefined,
+      tiktok_id: values.tiktok ? values.tiktok : undefined,
     })
     if (status) {
       await updateSession({
@@ -145,10 +145,10 @@ function EditProfile({ profileData, isMobile }: { profileData: ProfileDetailsTyp
           ...sessionData?.user,
           isAvatar: user?.is_avatar,
           image: user?.profile_image,
-          insta_id: user?.insta_id ?? null,
-          linkedin_id: user?.linkedin_id ?? null,
-          twitter_id: user?.twitter_id ?? null,
-          tiktok_id: user?.tiktok_id ?? null,
+          // insta_id: user?.insta_id ?? null,
+          // linkedin_id: user?.linkedin_id ?? null,
+          // twitter_id: user?.twitter_id ?? null,
+          // tiktok_id: user?.tiktok_id ?? null,
         } as User,
       })
       toast({
