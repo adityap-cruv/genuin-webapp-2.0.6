@@ -30,6 +30,7 @@ export const {
         onboardingTopics: { type: 'text' },
         refreshToken: { type: 'text' },
         birth: { type: 'text' },
+        usernameSet: { type: 'text' },
       },
       authorize(credentials, request) {
         const name =
@@ -77,6 +78,7 @@ export const {
           hasTopics: credentials.onboardingTopics === 'true',
           refreshToken,
           birth,
+          usernameSet: credentials.usernameSet === 'true',
         }
       },
     }),

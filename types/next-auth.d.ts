@@ -37,6 +37,7 @@ declare module 'next-auth' {
      */
     hasTopics?: boolean
     birth?: string
+    usernameSet: boolean
   }
 
   interface AdapterUser {
@@ -64,6 +65,7 @@ declare module 'next-auth' {
      */
     hasTopics?: boolean
     birth?: string
+    usernameSet: boolean
   }
 }
 
@@ -94,6 +96,7 @@ declare module 'next-auth/jwt' {
        */
       hasTopics?: boolean
       birth?: string
+      usernameSet: boolean
     }
   }
 }
