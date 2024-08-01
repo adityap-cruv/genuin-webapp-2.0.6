@@ -19,6 +19,12 @@ const formSchema = z.object({
   }, z.date()),
 })
 
+const minDate = new Date()
+minDate.setFullYear(new Date().getFullYear() - 100)
+
+const maxDate = new Date()
+maxDate.setFullYear(new Date().getFullYear() - 18)
+
 export function BirthInput({ onNext }: ScreenProps) {
   const [isLoading, setIsLoading] = useState(false)
   const { data: sessionData, update: updateSession } = useSession()
@@ -71,7 +77,8 @@ export function BirthInput({ onNext }: ScreenProps) {
                 <FormItem className="sm:w-full">
                   <FormControl>
                     <Input
-                      max={new Date().toISOString().split('T')[0]}
+                      max={maxDate.toISOString().split('T')[0]}
+                      min={minDate.toISOString().split('T')[0]}
                       type="date"
                       className={cn(
                         'w-full border border-tertiary-200 bg-tertiary-100 text-title-3-med',
@@ -86,7 +93,7 @@ export function BirthInput({ onNext }: ScreenProps) {
           />
           <Button type="submit" variant="default" className="w-full" disabled={!isValid || isLoading || !isDirty}>
             {isLoading ? (
-              <Loader className="stroke-new-off-white" size="sm" />
+              <Loader className="fill-monochrome-white" size="sm" />
             ) : (
               <p className="text-title-3-demi">Save</p>
             )}

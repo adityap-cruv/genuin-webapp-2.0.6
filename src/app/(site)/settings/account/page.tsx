@@ -35,7 +35,7 @@ export default function Component() {
       <div className="m-4 my-6 md:mx-4 md:my-4">
         <AccountDetailItem
           title="Username"
-          value={user?.nickname ?? ''}
+          value={'@' + user?.nickname ?? ''}
           onClick={() => {
             AuthenticationModal.open(undefined, 'EDIT_USERNAME')
           }}
