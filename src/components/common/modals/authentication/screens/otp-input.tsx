@@ -1,5 +1,5 @@
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@components/ui/form'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { ModalShell } from '../modal-shell'
 import { Button } from '@components/ui/button'
 import { useAuthenticationModalStore } from '../store'
@@ -105,7 +105,13 @@ export function OtpInput({ verificationType, onNext, onBack }: OtpInputProps) {
     setIsLoading(false)
   }
 
-  const isFlowEmail = flowType === 'email' || verificationType === 'email'
+  const isFlowEmail = useMemo(() => {
+    if (verificationType === 'login') {
+      return flowType === 'email'
+    }
+    return verificationType === 'email'
+  }, [verificationType, flowType])
+
   return (
     <ModalShell onBack={onBack}>
       <div className="flex flex-col items-center">

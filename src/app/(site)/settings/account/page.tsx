@@ -13,6 +13,9 @@ import { formatPhoneNumberIntl } from 'react-phone-number-input'
 export default function Component() {
   const { user } = useGenuinOptions(useShallow((state) => ({ user: state.user })))
   const router = useRouter()
+  const phoneNumber = user?.phoneNumber
+    ? formatPhoneNumberIntl(!user.phoneNumber.startsWith('+') ? '+' + user.phoneNumber : user.phoneNumber)
+    : 'Not set'
   return (
     <>
       <div className="m-4 flex items-center md:mx-8 md:my-4">
@@ -32,7 +35,7 @@ export default function Component() {
       <div className="m-4 my-6 md:mx-4 md:my-4">
         <AccountDetailItem
           title="Username"
-          value={user?.nickname ?? ''}
+          value={'@' + user?.nickname ?? ''}
           onClick={() => {
             AuthenticationModal.open(undefined, 'EDIT_USERNAME')
           }}
@@ -46,7 +49,7 @@ export default function Component() {
         />
         <AccountDetailItem
           title="Phone Number"
-          value={user?.phoneNumber ? formatPhoneNumberIntl('+' + user.phoneNumber) : 'Not set'}
+          value={phoneNumber}
           onClick={() => {
             AuthenticationModal.open(undefined, 'EDIT_PHONE_NUMBER')
           }}
