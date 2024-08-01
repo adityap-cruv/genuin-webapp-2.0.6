@@ -15,6 +15,7 @@ import { removeAllAuthToken } from '@lib/api/instance'
 import { SearchBar } from '@components/common/search-bar'
 import { AccountIcon, NotificationIcon } from '@icons/settings-side-bar-icons'
 import { usePathname, useRouter } from 'next/navigation'
+import { formatPhoneNumberIntl } from 'react-phone-number-input'
 
 export function TopBar({
   showUserTick = true,
@@ -102,7 +103,15 @@ function UserTick() {
               isAvatar={data.user.isAvatar}
             />
             <div>
-              <p className="line-clamp-1 break-words break-all text-title-3-bold">{data.user.email}</p>
+              <p className="line-clamp-1 break-words break-all text-title-3-bold">
+                {data.user.usernameSet
+                  ? '@' + data.user.nickname
+                  : data.user.email
+                  ? data.user.email
+                  : formatPhoneNumberIntl(
+                      data.user.phoneNumber?.startsWith('+') ? data.user.phoneNumber : `+${data.user.phoneNumber}`
+                    )}
+              </p>
               {!data.user?.isBrandSystemUser && (
                 <p
                   className="text-body-1-demi text-monochrome-6 hover:cursor-pointer"
