@@ -45,21 +45,21 @@ export function Modal({ children, showClose, ...props }: Props) {
   )
 
   useEffect(() => {
-    if (searchParams.get('show_login') === '1') {
-      open()
+    if (!user) {
+      if (searchParams.get('show_login') === '1') {
+        open()
+      }
+      return
     }
-  }, [searchParams])
 
-  useEffect(() => {
-    if (user)
-      setFormData({
-        ...user,
-        username: user.nickname,
-        displayName: user.name ?? '',
-        email: user?.email ?? '',
-        image: user?.image ?? '',
-        phoneNumber: user?.phoneNumber ?? '',
-      })
+    setFormData({
+      ...user,
+      username: user.nickname,
+      displayName: user.name ?? '',
+      email: user?.email ?? '',
+      image: user?.image ?? '',
+      phoneNumber: user?.phoneNumber ?? '',
+    })
   }, [user])
 
   const stepSet: Set<StepsType> = new Set<StepsType>([
