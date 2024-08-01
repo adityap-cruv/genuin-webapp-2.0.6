@@ -23,11 +23,11 @@ export function showInterruption() {
 }
 
 export function InterruptionProvider() {
-  const { user, embed } = useGenuinOptions((state) => ({ user: state.user, embed: state.embed }))
-  const isOpen = useAuthenticationModalStore.getState().isOpen
+  const { user, embed } = useGenuinOptions()
 
   function showInterruption() {
     const { user, embed } = useGenuinOptions.getState()
+    const isOpen = useAuthenticationModalStore.getState().isOpen
     if (!embed || user?.hasTopics || isOpen) return
     if (!user) {
       AuthenticationModal.open(undefined)
