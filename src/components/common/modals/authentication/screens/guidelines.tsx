@@ -97,11 +97,11 @@ export function Guidelines({ onNext }: GuidelineProps) {
               control={form.control}
               name="mobile"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-start gap-2 space-x-3 space-y-0 rounded-lg border border-monochrome-9 p-3 shadow sm:w-full">
+                <FormItem className="flex flex-row items-start gap-2 space-x-3 space-y-0 rounded-lg border border-tertiary-300 p-3 sm:w-full">
                   <FormControl>
                     <Checkbox
                       checked={field.value}
-                      className={`rounded-full border border-tertiary-200 ${isDirty && 'bg-supplementary-red'}`}
+                      className={`rounded-full border border-tertiary-300 ${isDirty && 'bg-supplementary-red'}`}
                       onCheckedChange={field.onChange}
                     />
                   </FormControl>

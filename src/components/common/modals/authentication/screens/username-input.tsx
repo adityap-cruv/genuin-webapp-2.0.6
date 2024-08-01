@@ -28,7 +28,7 @@ export function UsernameInput() {
   const form = useForm<z.infer<typeof usernameSchema>>({
     resolver: zodResolver(usernameSchema),
     mode: 'onBlur',
-    defaultValues: { username: formData.username },
+    defaultValues: { username: '' },
   })
   const { isValid, isDirty } = form.formState
 
