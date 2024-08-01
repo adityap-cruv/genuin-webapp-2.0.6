@@ -46,7 +46,7 @@ export function Starter({ onBack, onNext }: ScreenProps) {
             Email
           </TabsTrigger>
           <TabsTrigger className={TABS_TRIGGER_CLASS} value="phone">
-            Number
+            Phone
           </TabsTrigger>
         </TabsList>
         <TabsContent value="email">
