@@ -6,7 +6,7 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useState } from 'react'
 import { useAuthenticationModalStore } from '../store'
-import { updateUser, validateUsername } from '@lib/api/auth'
+import { updateUser, validateUsername } from '../api/auth'
 import { Button } from '@components/ui/button'
 import { Loader } from '@components/ui/loader'
 import { ModalShell } from '../modal-shell'
@@ -126,7 +126,7 @@ export function EditUsername() {
             )}
           </Button>
           {form.formState.errors.root && (
-            <p className="flex items-center justify-center text-title-3-med text-supplementary-red">
+            <p className="flex items-center justify-center pt-2 text-title-3-med text-supplementary-red">
               {form.formState.errors.root.message}
             </p>
           )}

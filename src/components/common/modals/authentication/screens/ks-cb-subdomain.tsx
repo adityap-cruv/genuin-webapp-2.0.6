@@ -32,16 +32,16 @@ export function KsToCbSubdomain() {
     setError(null)
 
     if (!user) {
-      setStep('EMAIL_INPUT', 'KS_CB_REQUEST')
+      setStep('STARTER', 'KS_CB_REQUEST')
       setLoading(false)
       return
     }
 
-    if (!user.isEmailVerified) {
-      setStep('VERIFY_MAIL')
-      setLoading(false)
-      return
-    }
+    // if (!user.isEmailVerified) {
+    //   setStep('VERIFY_MAIL')
+    //   setLoading(false)
+    //   return
+    // }
 
     ksCbRequest()
       .then(async (res) => {

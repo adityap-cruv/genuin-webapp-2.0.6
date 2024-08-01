@@ -4,7 +4,6 @@ import { addTopics, getCategoryList } from './api'
 import { useState } from 'react'
 import { cn } from '@lib/utils'
 import { Loader } from '@components/ui/loader'
-import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { useAuthenticationModalStore } from '../../store'
 import { useSession } from 'next-auth/react'
 
@@ -13,8 +12,7 @@ export function CategoryInput() {
   const [postingTopics, setPostingTopics] = useState(false)
   const { data, isLoading } = getCategoryList()
   const { update: updateSession, data: sessionData } = useSession()
-  const { user } = useGenuinOptions((state) => ({ user: state.user }))
-  const { close, setStep } = useAuthenticationModalStore((state) => ({ close: state.close, setStep: state.setStep }))
+  const { close } = useAuthenticationModalStore((state) => ({ close: state.close }))
 
   // useEffect(() => {
   //   if (!data) return
@@ -84,11 +82,7 @@ export function CategoryInput() {
           setPostingTopics(false)
           if (res) {
             await updateSession({ ...sessionData, user: { ...sessionData?.user, hasTopics: true } })
-            if (!user?.isPasswordSet) {
-              setStep('PASSWORD_INPUT')
-            } else {
-              close()
-            }
+            close()
           }
         }}
         className="w-full"

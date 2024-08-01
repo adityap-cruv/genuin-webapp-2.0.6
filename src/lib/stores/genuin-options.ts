@@ -64,13 +64,14 @@ export type ConfigType = {
 export type User = {
   bio?: string
   email?: string | null
+  phoneNumber?: string | null
   isAvatar: boolean
   name?: string | null
   nickname: string
-  isEmailVerified: boolean
-  isPasswordSet: boolean
   image?: string | null
   accessToken: string
+  refreshToken?: string | null
+  birth?: string | null
   id?: string
   /**
    * 1 → 'no request or all request are rejected'

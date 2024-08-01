@@ -1,8 +1,12 @@
 import { cn } from '@lib/utils'
+import { ChevronLeft } from 'lucide-react'
 
-type ModalShellProps = React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>
+type ModalShellProps = { onBack?: () => void } & React.DetailedHTMLProps<
+  React.HTMLAttributes<HTMLDivElement>,
+  HTMLDivElement
+>
 
-export function ModalShell({ children, className, ...props }: ModalShellProps) {
+export function ModalShell({ onBack, children, className, ...props }: ModalShellProps) {
   return (
     <div
       className={cn(
@@ -10,6 +14,7 @@ export function ModalShell({ children, className, ...props }: ModalShellProps) {
         className
       )}
       {...props}>
+      {onBack && <ChevronLeft className="absolute inset-5 h-6 w-6 stroke-secondary" onClick={onBack} />}
       {children}
     </div>
   )

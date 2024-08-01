@@ -1,5 +1,5 @@
 'use client'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, useFormField } from '@components/ui/form'
+import { Form, FormControl, FormField, FormItem, FormMessage, useFormField } from '@components/ui/form'
 import { Input } from '@components/ui/input'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
@@ -10,14 +10,12 @@ import { useEffect, useState } from 'react'
 import { ModalShell } from '../modal-shell'
 import { Button } from '@components/ui/button'
 import { Loader } from '@components/ui/loader'
-import { useLocalStorage } from '@lib/stores/local-storage'
-import { forgotPassword } from '@lib/api/auth-passwords'
+import { type ScreenProps } from '.'
+import { sendOtp } from '../api/auth'
 
-export function ForgotPassword() {
-  const { setStep, setFormData, formData } = useAuthenticationModalStore()
+export function EditEmail({ onNext }: ScreenProps) {
+  const { setFormData, formData } = useAuthenticationModalStore()
   const [isLoading, setIsLoading] = useState(false)
-  const deviceId = useLocalStorage().deviceId
-
   const formSchema = z.object({
     email: z.string().email({ message: 'Please enter valid email.' }),
   })
@@ -27,11 +25,10 @@ export function ForgotPassword() {
     mode: 'onBlur',
     defaultValues: { email: formData.email },
   })
-  const { isValid } = form.formState
+  const { isValid, isDirty } = form.formState
 
   useEffect(() => {
     const w = form.watch((value) => {
-      form.clearErrors()
       setFormData({ email: value.email })
     })
     return () => {
@@ -39,22 +36,14 @@ export function ForgotPassword() {
     }
   }, [form.watch])
 
-  async function onSubmit() {
+  async function onSubmit({ email }: { email: string }) {
     setIsLoading(true)
-
     try {
-      const { code, retryTime } = await forgotPassword({
-        email: formData.email ?? '',
-        deviceId,
-      })
-      if (code === 200 || code === 5174) {
-        setFormData({ retryTime })
-        setStep('PASSWORD_RESET_LINK_SENT_NOTE')
-      } else if (code === 5025) {
-        setFormData({ retryTime })
-        form.control.setError('root', { message: 'The entered email is not registered' })
+      const response = await sendOtp({ email, isUpdate: true })
+      if (response.codeSent) {
+        onNext()
       } else {
-        form.control.setError('root', { message: 'Something went wrong. Please try again!' })
+        form.control.setError('root', { message: response.message })
       }
     } catch (e) {
       form.control.setError('root', { message: 'Something went wrong. Please try again!' })
@@ -65,10 +54,7 @@ export function ForgotPassword() {
 
   return (
     <ModalShell>
-      <p className="text-center text-title-1-demi sm:text-heading-3">Forgot Password</p>
-      <p className="text-center text-title-3-med">
-        Enter your email and we will send you a link to reset your password.
-      </p>
+      <p className="text-center text-title-1-demi sm:text-heading-3">Email</p>
       <div className="w-full">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -79,11 +65,6 @@ export function ForgotPassword() {
                 const errors = useFormField().error
                 return (
                   <FormItem className="sm:w-full">
-                    <FormLabel className="w-full text-body-1-med">
-                      <div className="flex w-full justify-between">
-                        <p className="">Email</p>
-                      </div>
-                    </FormLabel>
                     <FormControl>
                       <Input
                         className={cn(
@@ -93,16 +74,18 @@ export function ForgotPassword() {
                         {...field}
                       />
                     </FormControl>
-                    <FormMessage className={cn('!text-cap-1-demi')} />
+                    <FormMessage className={cn('!text-cap-1-med text-tertiary')}>
+                      Verifying your email helps secure your account.
+                    </FormMessage>
                   </FormItem>
                 )
               }}
             />
-            <Button type="submit" variant="default" className="w-full" disabled={!isValid || isLoading}>
+            <Button type="submit" variant="default" className="w-full" disabled={!isValid || isLoading || !isDirty}>
               {isLoading ? (
                 <Loader className="stroke-new-off-white" size="sm" />
               ) : (
-                <p className="text-title-3-demi">Send email</p>
+                <p className="text-title-3-demi">Save</p>
               )}
             </Button>
           </form>
