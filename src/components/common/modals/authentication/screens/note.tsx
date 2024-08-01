@@ -6,7 +6,7 @@ export function Note({ title, success = true }: { title: string; success?: boole
   return (
     <ModalShell>
       {success && <Image height={150} width={150} src={successGif} alt="success" />}
-      <p className="whitespace-nowrap text-center text-title-1-demi" style={{ fontSize: '32px' }}>
+      <p className="text-center text-title-1-demi" style={{ fontSize: '32px' }}>
         {title}
       </p>
     </ModalShell>
