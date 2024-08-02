@@ -51,7 +51,6 @@ export function Modal({ children, showClose, ...props }: Props) {
       }
       return
     }
-
     setFormData({
       ...user,
       username: user.nickname,
@@ -59,6 +58,7 @@ export function Modal({ children, showClose, ...props }: Props) {
       email: user?.email ?? '',
       image: user?.image ?? '',
       phoneNumber: user?.phoneNumber ?? '',
+      birth: user.birth ?? undefined,
     })
   }, [user])
 
@@ -127,14 +127,29 @@ export function Content() {
     case 'VERIFY_PHONE_OTP':
       return (
         <OtpInput
+          title="Verify your phone"
           verificationType="number"
           onNext={() => {
             setStep('EDIT_PHONE_NUMBER_SUCCESS')
           }}
+          onBack={() => {
+            setStep('EDIT_PHONE_NUMBER')
+          }}
         />
       )
     case 'VERIFY_MAIL_OTP':
-      return <OtpInput verificationType="email" onNext={closeModal} />
+      return (
+        <OtpInput
+          title="Verify your email"
+          verificationType="email"
+          onNext={() => {
+            setStep('EDIT_EMAIL_SUCCESS')
+          }}
+          onBack={() => {
+            setStep('EDIT_EMAIL')
+          }}
+        />
+      )
     case 'EDIT_BIRTHDATE':
       return <BirthInput onNext={closeModal} />
     case 'EDIT_EMAIL':

@@ -113,7 +113,7 @@ export function Guidelines({ onNext }: GuidelineProps) {
             />
             <Button type="submit" variant="default" className="mt-5 w-full" disabled={!isDirty || isLoading}>
               {isLoading ? (
-                <Loader className="stroke-new-off-white" size="sm" />
+                <Loader className="fill-new-off-white" size="sm" />
               ) : (
                 <p className="text-title-3-demi">Continue</p>
               )}

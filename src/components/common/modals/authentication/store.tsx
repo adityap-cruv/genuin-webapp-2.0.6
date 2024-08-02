@@ -41,6 +41,7 @@ type FormDataType = {
   imageName: string
   retryTime: number
   flowType: FlowType
+  birth?: string
 }
 
 type States = {

@@ -83,7 +83,7 @@ export function EditEmail({ onNext }: ScreenProps) {
             />
             <Button type="submit" variant="default" className="w-full" disabled={!isValid || isLoading || !isDirty}>
               {isLoading ? (
-                <Loader className="stroke-new-off-white" size="sm" />
+                <Loader className="fill-monochrome-white" size="sm" />
               ) : (
                 <p className="text-title-3-demi">Save</p>
               )}

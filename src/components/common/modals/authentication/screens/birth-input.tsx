@@ -12,6 +12,8 @@ import { useState } from 'react'
 import '../css/date-picker.css'
 import { updateUser } from '../api/auth'
 import { useSession } from 'next-auth/react'
+import { useAuthenticationModalStore } from '../store'
+import { useShallow } from 'zustand/react/shallow'
 
 const formSchema = z.object({
   birth: z.preprocess((arg) => {
@@ -25,12 +27,28 @@ minDate.setFullYear(new Date().getFullYear() - 100)
 const maxDate = new Date()
 maxDate.setFullYear(new Date().getFullYear() - 18)
 
+const suggestionDate = new Date()
+suggestionDate.setFullYear(new Date().getFullYear() - 23)
+suggestionDate.setMonth(0)
+suggestionDate.setDate(1)
+
+function getCurrentDate(str: string) {
+  const [day, month, year] = str.split('/').map((value) => Number(value))
+  let date
+  if (year && month && day) date = new Date(Date.UTC(year, month - 1, day))
+  if (date) return date.toISOString().split('T')[0]
+}
+
 export function BirthInput({ onNext }: ScreenProps) {
+  const { formData } = useAuthenticationModalStore(useShallow((state) => ({ formData: state.formData })))
+
   const [isLoading, setIsLoading] = useState(false)
   const { data: sessionData, update: updateSession } = useSession()
   const form = useForm({
     resolver: zodResolver(formSchema),
-    defaultValues: { birth: '' },
+    defaultValues: {
+      birth: formData.birth ? getCurrentDate(formData.birth) ?? '' : suggestionDate.toISOString().split('T')[0],
+    },
     criteriaMode: 'firstError',
     mode: 'onBlur',
   })
