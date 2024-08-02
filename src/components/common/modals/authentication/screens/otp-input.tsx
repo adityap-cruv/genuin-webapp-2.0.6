@@ -23,9 +23,9 @@ const OTP_LENGTH = 6
 
 type PropertiesType = { email?: string; phoneNumber?: string }
 type VerificationType = 'email' | 'number' | 'login'
-type OtpInputProps = { verificationType: VerificationType } & ScreenProps
+type OtpInputProps = { verificationType: VerificationType; title?: string } & ScreenProps
 
-export function OtpInput({ verificationType, onNext, onBack }: OtpInputProps) {
+export function OtpInput({ title, verificationType, onNext, onBack }: OtpInputProps) {
   const { flowType, email, closeModal, phone, action, setStep } = useAuthenticationModalStore(
     useShallow((state) => ({
       flowType: state.formData.flowType,
@@ -51,8 +51,7 @@ export function OtpInput({ verificationType, onNext, onBack }: OtpInputProps) {
 
   useEffect(() => {
     const w = form.watch((value) => {
-      const otp = parseInt(value.otp ?? '')
-      const isValidLength = otp.toString().length === 6
+      const isValidLength = value.otp?.length === 6
       if (isValidLength) {
         setIsValid(true)
       } else {
@@ -115,7 +114,7 @@ export function OtpInput({ verificationType, onNext, onBack }: OtpInputProps) {
   return (
     <ModalShell onBack={onBack}>
       <div className="flex flex-col items-center">
-        <p className="mb-6 text-center text-title-1-demi sm:text-heading-3">Enter code</p>
+        <p className="mb-6 text-center text-title-1-demi sm:text-heading-3">{title ?? 'Enter code'}</p>
         <p className="w-full text-center text-title-3-med text-secondary-300">
           Please Enter the 6-digit code sent to your{`${isFlowEmail ? ' email address' : ' mobile number'}`}
           <span className="text-title-3-demi text-secondary">{`: ${
