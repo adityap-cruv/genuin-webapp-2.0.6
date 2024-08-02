@@ -11,7 +11,7 @@ import { Loader } from '@components/ui/loader'
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@components/ui/input-otp'
 import { type ScreenProps } from '.'
 import { useShallow } from 'zustand/react/shallow'
-import { formatPhoneNumber } from 'react-phone-number-input'
+import { formatPhoneNumberIntl } from 'react-phone-number-input'
 import { consumeOtp, sendOtp, updateEmailOrPhone } from '../api/auth'
 import { signIn, useSession } from 'next-auth/react'
 
@@ -118,7 +118,7 @@ export function OtpInput({ title, verificationType, onNext, onBack }: OtpInputPr
         <p className="w-full text-center text-title-3-med text-secondary-300">
           Please Enter the 6-digit code sent to your{`${isFlowEmail ? ' email address' : ' mobile number'}`}
           <span className="text-title-3-demi text-secondary">{`: ${
-            isFlowEmail ? email : formatPhoneNumber(phone ?? '')
+            isFlowEmail ? email : formatPhoneNumberIntl(phone ?? '')
           }`}</span>
         </p>
         <div className="w-full">
@@ -223,7 +223,7 @@ function TimerMessage({ time, verificationType }: { verificationType: Verificati
       disabled={isSendingOtp}
       className="w-full cursor-pointer text-center text-body-1-med text-primary"
       onClick={handleResendOtp}>
-      Resend otp
+      Resend code
     </Button>
   ) : (
     <p className="text-center text-body-1-med text-monochrome">
