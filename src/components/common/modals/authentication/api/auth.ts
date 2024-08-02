@@ -28,15 +28,36 @@ export async function sendOtp({ email, phoneNumber, isUpdate }: Partial<SendOtpP
       // To send in consume otp
       resDeviceId = res.data.data.deviceId
       console.log('res.data.data::', res.data)
-      return { codeSent: true, retryTime: res.data.data.retryTime, message: null }
+      return { codeSent: true, retryTime: res.data.data.retryTime, message: undefined }
       // return true
     })
     .catch((e) => {
-      console.log('e::', e)
+      console.log('e::', e.response.data.code)
+      let message = 'Something went wrong. Please try again!'
+      const retryTime = Number(e.response.data.data?.retryTime)
+      console.log('retryTime::', retryTime)
+      if (e.response.data.code === '5263') {
+        message = isUpdate
+          ? 'Unable to send the code. Please use another phone number.'
+          : 'Unable to send the code. Please use another phone number or email to log in.'
+      } else if (!isNaN(retryTime)) {
+        if (retryTime < 1) {
+          const minutes = Math.floor(retryTime / 60)
+          if (minutes >= 1) {
+            const leftSeconds = retryTime % 60
+            message = `Please try again after ${minutes < 10 ? `0${minutes}` : minutes}:${
+              leftSeconds < 10 ? `0${leftSeconds}` : leftSeconds
+            } minutes!`
+          } else {
+            message = `Please try again after 00:${retryTime < 10 ? `0${retryTime}` : retryTime}!`
+          }
+        }
+      }
+
       return {
         codeSent: false,
-        retryTime: e.response.data.data.retryTime,
-        message: e.response.data.message,
+        retryTime,
+        message,
       }
     })
 }

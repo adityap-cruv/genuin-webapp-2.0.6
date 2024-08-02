@@ -43,7 +43,7 @@ export function EditEmail({ onNext }: ScreenProps) {
       if (response.codeSent) {
         onNext()
       } else {
-        form.control.setError('root', { message: response.message })
+        form.control.setError('email', { message: response.message })
       }
     } catch (e) {
       form.control.setError('root', { message: 'Something went wrong. Please try again!' })
@@ -92,7 +92,7 @@ export function EditEmail({ onNext }: ScreenProps) {
         </Form>
       </div>
       {form.formState.errors.root && (
-        <p className="text-text-new-para-2-mobile flex items-center justify-center text-center text-supplementary-red">
+        <p className="flex items-center justify-center text-center text-title-3-med text-supplementary-red">
           {form.formState.errors.root.message}
         </p>
       )}
