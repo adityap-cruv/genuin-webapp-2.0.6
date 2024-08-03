@@ -5,10 +5,10 @@ import { Button } from '@components/ui/button'
 import { useAuthenticationModalStore } from '../store'
 import { ModalShell } from '../modal-shell'
 import { v4 } from 'uuid'
-import { uploadProfileImage } from '@lib/api/auth'
 import { usePathname } from 'next/navigation'
 import { X } from 'lucide-react'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
+import { uploadProfileImage } from '../api/auth'
 
 export function ImageCropper() {
   const cropperRef = createRef<any>()
@@ -18,12 +18,11 @@ export function ImageCropper() {
     in case of signup we don't upload image we directly sent it by API.
     while in other cases we have to upload image to aws and then send response to api.
    because update_user_profile api is private. */
-  const { image, setImage, goBack, step, close } = useAuthenticationModalStore((state) => ({
+  const { image, setImage, goBack, close } = useAuthenticationModalStore((state) => ({
     image: state.formData.image,
     setImage: state.setFormData,
     setStep: state.setStep,
     goBack: state.goToPrevious,
-    step: state.previousStep,
     close: state.close,
   }))
   const pathname = usePathname()
@@ -55,27 +54,22 @@ export function ImageCropper() {
         canvas.toBlob((blob: any) => {
           if (blob) {
             const file = new File([blob], `${v4()}.png`, { type: 'image/png' })
-            if (step === 'SIGN_UP') {
-              setImage({ image: file, isAvatar: false })
-              goBack()
-            } else {
-              setUploadingImage(true)
-              void uploadProfileImage(file)
-                .then((res) => {
-                  if (res) {
-                    setImage({ imageName: file.name, image: file, isAvatar: false })
-                    pathname.includes('settings') ? close() : goBack()
-                  } else {
-                    setError('Something went wrong. Please try again.')
-                  }
-                })
-                .catch((e) => {
-                  setError('Something went wrong please try again.')
-                })
-                .finally(() => {
-                  setUploadingImage(false)
-                })
-            }
+            setUploadingImage(true)
+            void uploadProfileImage(file)
+              .then((res) => {
+                if (res) {
+                  setImage({ imageName: file.name, image: file, isAvatar: false })
+                  pathname.includes('settings') ? close() : goBack()
+                } else {
+                  setError('Something went wrong. Please try again.')
+                }
+              })
+              .catch((e) => {
+                setError('Something went wrong please try again.')
+              })
+              .finally(() => {
+                setUploadingImage(false)
+              })
           }
         }, 'image/png')
       }
@@ -95,7 +89,7 @@ export function ImageCropper() {
           />
         </div>
       )}
-      <h3 className="mb-4 flex w-full  items-center justify-center text-title-1-demi sm:text-heading-3">
+      <h3 className="mb-4 flex w-full items-center justify-center text-title-1-demi sm:text-heading-3">
         Edit Profile picture
       </h3>
       <div className="pb-2">

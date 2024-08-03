@@ -14,39 +14,71 @@ export const {
       name: 'credentials',
       type: 'credentials',
       credentials: {
-        is_avatar: { type: 'text' },
-        user_id: { type: 'text' },
+        isAvatar: { type: 'text' },
+        userId: { type: 'text' },
+        phoneNumber: { type: 'text' },
         nickname: { type: 'text' },
-        profile_image: { type: 'text' },
+        profileImage: { type: 'text' },
         email: { type: 'text' },
         bio: { type: 'text' },
         name: { type: 'text' },
-        is_email_verified: { type: 'text' },
-        is_password_set: { type: 'text' },
         accessToken: { type: 'text' },
-        ks_cb_request_status: { type: 'text' },
-        is_brand_system_user: { type: 'text' },
-        brand_id: { type: 'text' },
-        brand_slug: { type: 'text' },
-        onboarding_topics: { type: 'text' },
+        ksCbRequestStatus: { type: 'text' },
+        isBrandSystemUser: { type: 'text' },
+        brandId: { type: 'text' },
+        brandSlug: { type: 'text' },
+        onboardingTopics: { type: 'text' },
+        refreshToken: { type: 'text' },
+        birth: { type: 'text' },
+        usernameSet: { type: 'text' },
       },
       authorize(credentials, request) {
+        const name =
+          credentials.name === 'undefined' || credentials.name === 'null' ? undefined : String(credentials.name)
+        const email =
+          credentials.email === 'undefined' || credentials.email === 'null' ? undefined : String(credentials.email)
+
+        const phoneNumber =
+          credentials.phoneNumber === 'undefined' || credentials.phoneNumber === 'null'
+            ? undefined
+            : String(credentials.phoneNumber)
+        const image =
+          credentials.profileImage === 'undefined' || credentials.profileImage === 'null'
+            ? undefined
+            : String(credentials.profileImage)
+        const bio = credentials.bio === 'undefined' || credentials.bio === 'null' ? undefined : String(credentials.bio)
+        const brandId =
+          credentials.brandId === 'undefined' || credentials.brandId === 'null'
+            ? undefined
+            : Number(credentials.brandId)
+        const brandSlug =
+          credentials.brandSlug === 'undefined' || credentials.brandSlug === 'null'
+            ? undefined
+            : String(credentials.brandSlug)
+        const refreshToken =
+          credentials.refreshToken === 'undefined' || credentials.refreshToken === 'null'
+            ? undefined
+            : String(credentials.refreshToken)
+        const birth =
+          credentials.birth === 'undefined' || credentials.birth === 'null' ? undefined : String(credentials.birth)
         return {
-          isAvatar: credentials.is_avatar === 'true',
-          id: String(credentials.user_id),
+          isAvatar: credentials.isAvatar === 'true',
+          id: String(credentials.userId),
+          phoneNumber,
           nickname: String(credentials.nickname),
-          image: credentials.profile_image ? String(credentials.profile_image) : undefined,
-          email: credentials.email ? String(credentials.email) : undefined,
-          bio: credentials.bio && credentials.bio !== 'null' ? String(credentials.bio) : undefined,
-          name: credentials.name ? String(credentials.name) : undefined,
-          isEmailVerified: credentials.is_email_verified === 'true',
-          isPasswordSet: credentials.is_password_set === 'true',
+          image,
+          email,
+          bio,
+          name,
           accessToken: String(credentials.accessToken),
-          ksCbRequestStatus: credentials.ks_cb_request_status ? Number(credentials.ks_cb_request_status) : undefined,
-          isBrandSystemUser: credentials.is_brand_system_user === 'true',
-          brandId: credentials.brand_id ? Number(credentials.brand_id) : undefined,
-          brandSlug: credentials.brand_slug ? String(credentials.brand_slug) : undefined,
-          hasTopics: credentials.onboarding_topics === 'true',
+          ksCbRequestStatus: credentials.ksCbRequestStatus ? Number(credentials.ksCbRequestStatus) : undefined,
+          isBrandSystemUser: credentials.isBrandSystemUser === 'true',
+          brandId,
+          brandSlug,
+          hasTopics: credentials.onboardingTopics === 'true',
+          refreshToken,
+          birth,
+          usernameSet: credentials.usernameSet === 'true',
         }
       },
     }),

@@ -1,57 +1,47 @@
-import { type AuthActionType } from '@lib/api/auth'
+import { type AuthActionType } from './api/auth'
 import { getRandomAvatar } from '@lib/utils'
 import { create } from 'zustand'
 
+export type FlowType = 'email' | 'phone'
+
 export type StepsType =
-  | 'SIGN_UP'
-  | 'EMAIL_INPUT'
-  | 'NUMBER_INPUT'
-  | 'PASSWORD_INPUT'
-  | 'OTP_INPUT'
+  | 'STARTER'
+  | 'LOGIN_OTP_INPUT'
+  | 'EDIT_BIRTHDATE'
+  | 'EDIT_PHONE_NUMBER'
+  | 'EDIT_EMAIL_SUCCESS'
+  | 'EDIT_PHONE_NUMBER_SUCCESS'
+  | 'EDIT_USERNAME'
+  | 'EDIT_EMAIL'
+  | 'VERIFY_MAIL_OTP'
+  | 'VERIFY_PHONE_OTP'
+  | 'CATEGORY_SELECTION'
+  | 'CLAIM_BRAND_PROFILE'
   | 'IMAGE_CROPPER'
-  | 'EMAIL_VERIFICATION_SUCCESS'
-  | 'EMAIL_VERIFICATION_FAILURE'
-  | 'MAGIC_LINK_VERIFICATION_SUCCESS'
-  | 'MAGIC_LINK_VERIFICATION_FAILURE'
   | 'COMPLETE_PROFILE'
-  | 'EMAIL_SENT_NOTE'
-  | 'MAGIC_LINK_SENT_NOTE'
-  | 'ERROR'
   | 'USERNAME_INPUT'
-  | 'PASSWORD_INPUT_LOGIN'
-  | 'EMAIL_SENT_NOTE_ACCOUNT_EXISTS'
   | 'GUIDELINES'
   | 'KS_CB_WEB'
   | 'KS_CB_SUBDOMAIN'
-  | 'VERIFY_MAIL'
-  | 'MINI_PROFILE_SUCCESS'
-  | 'EDIT_USERNAME'
-  | 'CHANGE_PASSWORD'
   | 'LOGOUT'
-  | 'CHANGE_PASSWORD_SUCCESS_NOTE'
-  | 'SET_PASSWORD_SUCCESS_NOTE'
-  | 'FORGOT_PASSWORD'
-  | 'PASSWORD_RESET_LINK_SENT_NOTE'
-  | 'RESET_PASSWORD'
-  | 'RESET_PASSWORD_SUCCESS_NOTE'
-  | 'CATEGORY_INPUT'
-  | 'GET_STARTED'
-  | 'CLAIM_BRAND_PROFILE'
+  | 'DELETE_CONFIRMATION'
+  | 'DELETE_CONFIRMED'
 
 type FormDataType = {
   displayName: string
   email: string
   password: string
-  mobileNumber: string
+  phoneNumber: string
   image: string | File
   isAvatar: boolean
   bio: string
   username: string
-  phone: string
   otp: number
   userId: string
   imageName: string
-  retryTime?: number
+  retryTime: number
+  flowType: FlowType
+  birth?: string
 }
 
 type States = {
@@ -74,10 +64,11 @@ type Actions = {
 }
 
 const initialStates: States = {
-  step: 'EMAIL_INPUT',
+  step: 'STARTER',
   formData: {
     image: getRandomAvatar(),
     isAvatar: true,
+    flowType: 'email',
   },
   isOpen: false,
 }
@@ -88,7 +79,7 @@ export const useAuthenticationModalStore = create<Actions & States>((set) => {
     open() {
       set({ isOpen: true })
     },
-    openWithStep(action, step = 'EMAIL_INPUT') {
+    openWithStep(action, step = 'STARTER') {
       set({ isOpen: true, step, action })
     },
     close() {
@@ -104,7 +95,7 @@ export const useAuthenticationModalStore = create<Actions & States>((set) => {
     },
     goToPrevious() {
       set((state) => {
-        state.step = state.previousStep ?? 'EMAIL_INPUT'
+        state.step = state.previousStep ?? 'STARTER'
         return state
       })
     },

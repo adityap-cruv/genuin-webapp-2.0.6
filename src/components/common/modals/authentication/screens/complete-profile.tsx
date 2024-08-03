@@ -8,7 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Textarea } from '@components/ui/textarea'
 import { useEffect, useState } from 'react'
 import { useAuthenticationModalStore } from '../store'
-import { updateUser } from '@lib/api/auth'
+import { updateUser } from '../api/auth'
 import { Button } from '@components/ui/button'
 import { Loader } from '@components/ui/loader'
 import { ModalShell } from '../modal-shell'
@@ -136,11 +136,12 @@ export function CompleteProfile() {
             }}
           />
           <span className="flex flex-col gap-y-3 text-title-3-demi">
-            <Button
-              type="submit"
-              className="flex w-full cursor-pointer items-center justify-center rounded-lg"
-              disabled={isLoading}>
-              {isLoading ? <Loader size="sm" className="fill-new-off-white" /> : <p>Save</p>}
+            <Button type="submit" className="flex w-full items-center justify-center rounded-lg" disabled={isLoading}>
+              {isLoading ? (
+                <Loader size="sm" className="fill-new-off-white" />
+              ) : (
+                <p className="text-title-3-demi text-monochrome-white">Save</p>
+              )}
             </Button>
             {form.formState.errors.root && (
               <p className="flex items-center justify-center text-title-3-med text-supplementary-red">

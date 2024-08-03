@@ -1,12 +1,15 @@
 'use client'
 import Link from 'next/link'
-import { PhoneNumberInput } from './number-input'
-import { ConformationMessage, OtpInput, SuccessMessage } from './otp-input'
-import { useDeleteAccountStore } from './store'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { GenuinIcon } from '@icons/genuin-icon'
+import { AuthenticationModal } from '@/components/common/modals/authentication'
+import { useEffect } from 'react'
 
 export default function MainComponent() {
+  useEffect(() => {
+    AuthenticationModal.open('DELETE_ACCOUNT', 'STARTER')
+  }, [])
+
   return (
     <div className="relative flex h-screen w-screen items-center justify-center bg-tertiary-200">
       <nav className="absolute top-0 h-[76px] w-full bg-monochrome-white">
@@ -16,24 +19,6 @@ export default function MainComponent() {
           </Link>
         </div>
       </nav>
-      <div className="m-4 w-full rounded-xl bg-monochrome-white p-6 sm:w-[32rem] sm:p-10">
-        <RenderingContent />
-      </div>
     </div>
   )
-}
-
-function RenderingContent() {
-  const step = useDeleteAccountStore().step
-
-  switch (step) {
-    case 'NUMBER_INPUT':
-      return <PhoneNumberInput />
-    case 'OTP_INPUT':
-      return <OtpInput />
-    case 'DELETE_CONFORMATION':
-      return <ConformationMessage />
-    case 'DELETE_SUCCESS':
-      return <SuccessMessage />
-  }
 }

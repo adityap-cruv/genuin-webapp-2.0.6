@@ -1,79 +1,87 @@
 'use client'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
-import icBack from '@icons/icBack.svg'
-import Image from 'next/image'
 import { AuthenticationModal } from '@components/common/modals/authentication'
 import { Toaster } from '@components/ui/toaster'
 import { useRouter } from 'next/navigation'
 import Analytics from '@services/analytics'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { useShallow } from 'zustand/react/shallow'
+import { type ComponentProps } from 'react'
+import { cn } from '@/lib/utils'
+import { formatPhoneNumberIntl } from 'react-phone-number-input'
+
 export default function Component() {
-  const { isMobile, user } = useGenuinOptions((state) => ({ isMobile: state.isMobile, user: state.user }))
+  const { user } = useGenuinOptions(useShallow((state) => ({ user: state.user })))
   const router = useRouter()
+  const phoneNumber = user?.phoneNumber
+    ? formatPhoneNumberIntl(!user.phoneNumber.startsWith('+') ? '+' + user.phoneNumber : user.phoneNumber)
+    : 'Not set'
   return (
     <>
-      <div className={`${isMobile ? 'm-4' : 'mx-8 my-4'} flex items-center justify-between`}>
-        {isMobile && (
-          <Image
-            src={icBack}
-            alt="back"
-            onClick={() => {
-              router.back()
-              void Analytics.track({
-                eventName: 'Settings Closed',
-                properties: {},
-              })
-            }}
-          />
-        )}
-        <p className="text-title-2-bold">Account Settings</p>
-        {/* <button type="submit" className="text-title-3-demi text-primary">
-          Save
-        </button> */}
-        <div></div>
+      <div className="m-4 flex items-center md:mx-8 md:my-4">
+        <ChevronLeft
+          className="block md:hidden"
+          onClick={() => {
+            router.back()
+            void Analytics.track({
+              eventName: 'Settings Closed',
+              properties: {},
+            })
+          }}
+        />
+        <p className="w-full text-center text-title-2-bold md:text-start">Account Settings</p>
       </div>
-      {isMobile && <hr className="bg-monochrome-black/10" />}
-      <div className={`${isMobile ? 'm-4 my-6' : 'mx-8 my-4'}`}>
-        <div
-          className="flex justify-between border-b border-tertiary py-4 hover:cursor-pointer"
+      <hr className="block bg-monochrome-black/10 md:hidden" />
+      <div className="m-4 my-6 md:mx-4 md:my-4">
+        <AccountDetailItem
+          title="Username"
+          value={'@' + user?.nickname ?? ''}
           onClick={() => {
             AuthenticationModal.open(undefined, 'EDIT_USERNAME')
-          }}>
-          <p className="text-body-1-demi">Username</p>
-          <div className="flex items-center">
-            <p className="text-body-1-demi text-tertiary">{user?.nickname}</p>
-            <Image src={icBack} alt="back" className="h-5 rotate-180" />
-          </div>
-        </div>
-
-        <div className="flex justify-between border-b border-tertiary py-4">
-          <p className="text-body-1-demi">Email</p>
-          <div className="flex items-center">
-            <p className="text-body-1-demi text-tertiary">{user?.email}</p>
-            {/* <Image src={icBack} alt="back" className="h-5 rotate-180" /> */}
-          </div>
-        </div>
-
-        {user?.isPasswordSet ? (
-          <div
-            className="flex justify-between border-b border-monochrome-6 py-4 hover:cursor-pointer"
-            onClick={() => {
-              AuthenticationModal.open(undefined, 'CHANGE_PASSWORD')
-            }}>
-            <p className="text-body-1-demi">Change Password</p>
-            <Image src={icBack} alt="back" className="h-5 rotate-180" />
-          </div>
-        ) : (
-          <div
-            className="flex justify-between border-b border-monochrome-6 py-4 hover:cursor-pointer"
-            onClick={() => {
-              AuthenticationModal.open(undefined, 'PASSWORD_INPUT')
-            }}>
-            <p className="text-body-1-demi text-red">Set Password</p>
-            <Image src={icBack} alt="back" className="h-5 rotate-180" />
-          </div>
-        )}
+          }}
+        />
+        <AccountDetailItem
+          title="Email"
+          value={user?.email ?? ''}
+          onClick={() => {
+            AuthenticationModal.open(undefined, 'EDIT_EMAIL')
+          }}
+        />
+        <AccountDetailItem
+          title="Phone Number"
+          value={phoneNumber}
+          onClick={() => {
+            AuthenticationModal.open(undefined, 'EDIT_PHONE_NUMBER')
+          }}
+        />
+        <AccountDetailItem
+          title="Birthdate"
+          value={user?.birth ? user.birth : 'Not set'}
+          onClick={() => {
+            AuthenticationModal.open(undefined, 'EDIT_BIRTHDATE')
+          }}
+        />
       </div>
       <Toaster />
     </>
+  )
+}
+
+type AccountDetailItemProps = { title: string; value: string } & ComponentProps<'div'>
+
+function AccountDetailItem({ title, value, className, ...rest }: AccountDetailItemProps) {
+  return (
+    <div
+      className={cn(
+        'flex cursor-pointer justify-between rounded-t-lg border-b border-tertiary-300 px-2 py-4 hover:bg-tertiary-100',
+        className
+      )}
+      {...rest}>
+      <p className="text-body-1-demi">{title}</p>
+      <div className="flex items-center">
+        <p className="text-body-1-demi text-tertiary">{value}</p>
+        <ChevronRight className="h-6 w-6 stroke-tertiary" />
+      </div>
+    </div>
   )
 }

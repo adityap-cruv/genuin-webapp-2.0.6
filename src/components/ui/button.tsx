@@ -10,6 +10,7 @@ const buttonVariants = cva(
       variant: {
         default: 'bg-primary text-primary-foreground hover:bg-primary-600 after::bg-primary-600',
         outline: 'border',
+        custom: '',
       },
       outlineColor: {
         white: 'border-monochrome-white hover:bg-monochrome-white',

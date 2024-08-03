@@ -3,6 +3,7 @@
 import { AuthenticationModal } from '@components/common/modals/authentication'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { useEffect } from 'react'
+import { useAuthenticationModalStore } from '../common/modals/authentication/store'
 
 const DELAY_FOR_INTERRUPTION = 60000
 
@@ -12,61 +13,46 @@ const DELAY_FOR_INTERRUPTION = 60000
  */
 export function showInterruption() {
   const { embed, user } = useGenuinOptions.getState()
-  if (
-    !embed ||
-    (user && user.isPasswordSet && user.hasTopics) ||
-    AuthenticationModal.isOpen ||
-    (user && !user?.isEmailVerified)
-  )
-    return
+  const isOpen = useAuthenticationModalStore.getState().isOpen
+  if (!embed || (user && user.hasTopics) || isOpen) return
   if (!user) {
-    AuthenticationModal.open(undefined, 'EMAIL_INPUT')
+    AuthenticationModal.open(undefined, 'STARTER')
   } else if (!user.hasTopics) {
-    AuthenticationModal.open(undefined, 'CATEGORY_INPUT')
-  } else if (!user.isPasswordSet) {
-    AuthenticationModal.open(undefined, 'PASSWORD_INPUT')
+    AuthenticationModal.open(undefined, 'CATEGORY_SELECTION')
   }
 }
 
 export function InterruptionProvider() {
-  const { user, embed } = useGenuinOptions((state) => ({ user: state.user, embed: state.embed }))
+  const { user, embed } = useGenuinOptions()
 
   function showInterruption() {
     const { user, embed } = useGenuinOptions.getState()
-    if (
-      !embed ||
-      (user && user.isPasswordSet && user.hasTopics) ||
-      AuthenticationModal.isOpen ||
-      (user && !user.isEmailVerified)
-    )
-      return
+    const isOpen = useAuthenticationModalStore.getState().isOpen
+    if (!embed || user?.hasTopics || isOpen) return
     if (!user) {
-      AuthenticationModal.open(undefined, 'EMAIL_INPUT')
+      AuthenticationModal.open(undefined)
     } else if (!user.hasTopics) {
-      AuthenticationModal.open(undefined, 'CATEGORY_INPUT')
-    } else if (!user.isPasswordSet) {
-      AuthenticationModal.open(undefined, 'PASSWORD_INPUT')
+      AuthenticationModal.open(undefined, 'CATEGORY_SELECTION')
     }
   }
 
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-    if (!embed || (user && user.isPasswordSet && user.hasTopics) || AuthenticationModal.isOpen) return
+    if (!embed || user?.hasTopics || AuthenticationModal.isOpen) return
 
     let timeout: NodeJS.Timeout
     timeout = setTimeout(showInterruption, DELAY_FOR_INTERRUPTION)
 
     function handleInterruption() {
       if (timeout) clearTimeout(timeout)
-      if (!user?.isPasswordSet || !user?.hasTopics || !user)
-        timeout = setTimeout(showInterruption, DELAY_FOR_INTERRUPTION)
+      if (!user?.hasTopics || !user) timeout = setTimeout(showInterruption, DELAY_FOR_INTERRUPTION)
     }
 
     document.addEventListener('click', handleInterruption)
     return () => {
       document.removeEventListener('click', handleInterruption)
     }
-  }, [user])
+  }, [user, AuthenticationModal.isOpen])
 
   return <></>
 }

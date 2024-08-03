@@ -10,7 +10,7 @@ import { CommunityDiscussion02 } from '@icons/ks-cb-flow/community-02'
 import { Button } from '@components/ui/button'
 import { useAuthenticationModalStore } from '../store'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
-import { ksCbRequest } from '@lib/api/auth'
+import { ksCbRequest } from '../api/auth'
 import { useSession } from 'next-auth/react'
 import { Loader } from '@components/ui/loader'
 import Analytics from '@services/analytics'
@@ -32,13 +32,7 @@ export function KsToCbSubdomain() {
     setError(null)
 
     if (!user) {
-      setStep('EMAIL_INPUT', 'KS_CB_REQUEST')
-      setLoading(false)
-      return
-    }
-
-    if (!user.isEmailVerified) {
-      setStep('VERIFY_MAIL')
+      setStep('STARTER', 'KS_CB_REQUEST')
       setLoading(false)
       return
     }

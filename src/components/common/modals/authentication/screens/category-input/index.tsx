@@ -4,30 +4,27 @@ import { addTopics, getCategoryList } from './api'
 import { useState } from 'react'
 import { cn } from '@lib/utils'
 import { Loader } from '@components/ui/loader'
-import { useGenuinOptions } from '@lib/stores/genuin-options'
-import { useAuthenticationModalStore } from '../../store'
 import { useSession } from 'next-auth/react'
+import { type ScreenProps } from '..'
 
-export function CategoryInput() {
+export function CategoryInput({ onNext }: ScreenProps) {
   const [selectedItems, setSelectedItem] = useState<Set<string>>(new Set())
   const [postingTopics, setPostingTopics] = useState(false)
+  const [error, setError] = useState('')
   const { data, isLoading } = getCategoryList()
   const { update: updateSession, data: sessionData } = useSession()
-  const { user } = useGenuinOptions((state) => ({ user: state.user }))
-  const { close, setStep } = useAuthenticationModalStore((state) => ({ close: state.close, setStep: state.setStep }))
 
-  // useEffect(() => {
-  //   if (!data) return
-  //   const newSet = new Set<string>()
-  //   data.forEach((item) => {
-  //     item.topics.forEach((item) => {
-  //       if (item.is_selected) newSet.add(item.topic_id)
-  //     })
-  //   })
-  //   if (newSet.size > 0) {
-  //     setSelectedItem(newSet)
-  //   }
-  // }, [data])
+  async function handleSubmit() {
+    setPostingTopics(true)
+    const res = await addTopics([...selectedItems.values()])
+    if (res) {
+      await updateSession({ ...sessionData, user: { ...sessionData?.user, hasTopics: true } })
+      onNext()
+    } else {
+      setError('Please try again.')
+    }
+    setPostingTopics(false)
+  }
 
   return (
     <ModalShell className="max-h-[60vh] pb-0">
@@ -77,28 +74,18 @@ export function CategoryInput() {
           })}
         </div>
       )}
-      <Button
-        onClick={async () => {
-          setPostingTopics(true)
-          const res = await addTopics([...selectedItems.values()])
-          setPostingTopics(false)
-          if (res) {
-            await updateSession({ ...sessionData, user: { ...sessionData?.user, hasTopics: true } })
-            if (!user?.isPasswordSet) {
-              setStep('PASSWORD_INPUT')
-            } else {
-              close()
-            }
-          }
-        }}
-        className="w-full"
-        disabled={selectedItems.size < 3}>
+      <Button onClick={handleSubmit} className="w-full" disabled={selectedItems.size < 3}>
         {postingTopics ? (
           <Loader size="md" className="fill-monochrome-white" />
         ) : (
           <p className="text-title-3-demi">{selectedItems.size < 3 ? 'Choose 3+' : 'Continue'}</p>
         )}
       </Button>
+      {error && (
+        <p className="text-text-new-para-2-mobile flex items-center justify-center text-center text-supplementary-red">
+          {error}
+        </p>
+      )}
     </ModalShell>
   )
 }

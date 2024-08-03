@@ -9,7 +9,7 @@ import FingerprintJS from '@fingerprintjs/fingerprintjs'
 import { useSession } from 'next-auth/react'
 import { setAuthTokenInAxiosInstance, setBrandIdInAxiosInstance } from '@lib/api/instance'
 import dynamic from 'next/dynamic'
-import { saveVisitor } from '@lib/api/auth'
+import { saveVisitor } from '@components/common/modals/authentication/api/auth'
 import { notificationsCount } from '@lib/api/notification'
 import { rudderStackIdentify } from '@/services/analytics/useRudderAnalytics'
 const RepostModal = dynamic(
@@ -183,7 +183,7 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
   return (
     <>
       {children}
-      <AuthenticationModal />
+      <AuthenticationModal showClose />
       <DownloadDialogModal />
       <RepostModal />
     </>

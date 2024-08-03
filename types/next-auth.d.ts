@@ -14,13 +14,16 @@ declare module 'next-auth' {
 
   interface User {
     bio?: string
-    email: string
+    email?: string
+    phoneNumber?: string
     isAvatar: boolean
     name: string
     nickname: string
-    isEmailVerified: boolean
-    isPasswordSet: boolean
     image: string
+    /**
+     * Token to refresh accessToken.
+     */
+    refreshToken?: string
     accessToken: string
     ksCbRequestStatus?: number
     /**
@@ -33,37 +36,67 @@ declare module 'next-auth' {
      * Checks if use has already topics.
      */
     hasTopics?: boolean
+    birth?: string
+    usernameSet: boolean
   }
 
-  // interface AdapterUser {
-  //   bio?: string
-  //   email: string
-  //   isAvatar: boolean
-  //   memberId: string
-  //   name: string
-  //   nickname: string
-  //   isEmailVerified: boolean
-  //   isPasswordSet: boolean
-  //   image: string
-  // }
+  interface AdapterUser {
+    bio?: string
+    email: string
+    phoneNumber: string
+    isAvatar: boolean
+    name: string
+    nickname: string
+    image: string
+    /**
+     * Token to refresh accessToken.
+     */
+    refreshToken?: string
+    accessToken: string
+    ksCbRequestStatus?: number
+    /**
+     * if user is brand user.
+     */
+    isBrandSystemUser?: boolean
+    brandId?: number
+    brandSlug?: string
+    /**
+     * Checks if use has already topics.
+     */
+    hasTopics?: boolean
+    birth?: string
+    usernameSet: boolean
+  }
 }
 
 declare module 'next-auth/jwt' {
   interface JWT {
     user: {
       bio?: string
-      email?: string | null
+      email: string
+      phoneNumber: string
       isAvatar: boolean
-      name?: string | null
+      name: string
       nickname: string
-      isEmailVerified: boolean
-      isPasswordSet: boolean
-      image?: string | null
+      image: string
+      /**
+       * Token to refresh accessToken.
+       */
+      refreshToken?: string
       accessToken: string
-      ks_cb_request_status?: number
-      is_brand_system_user?: boolean
-      brand_id?: number
-      brand_slug?: string
+      ksCbRequestStatus?: number
+      /**
+       * if user is brand user.
+       */
+      isBrandSystemUser?: boolean
+      brandId?: number
+      brandSlug?: string
+      /**
+       * Checks if use has already topics.
+       */
+      hasTopics?: boolean
+      birth?: string
+      usernameSet: boolean
     }
   }
 }

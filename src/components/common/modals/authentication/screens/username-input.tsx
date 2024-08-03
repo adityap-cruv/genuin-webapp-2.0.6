@@ -6,12 +6,13 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useState } from 'react'
 import { useAuthenticationModalStore } from '../store'
-import { updateUser, validateUsername } from '@lib/api/auth'
+import { updateUser, validateUsername } from '../api/auth'
 import { Button } from '@components/ui/button'
 import { Loader } from '@components/ui/loader'
 import { ModalShell } from '../modal-shell'
 import { useSession } from 'next-auth/react'
 import Analytics from '@services/analytics'
+import { type ScreenProps } from '.'
 
 const usernameSchema = z.object({
   username: z
@@ -19,16 +20,16 @@ const usernameSchema = z.object({
     .regex(/^[a-zA-Z0-9._-]+$/, { message: 'Usernames can only use letters, numbers, underscores, and periods.' }),
 })
 
-export function UsernameInput() {
+export function UsernameInput({ onNext }: ScreenProps) {
   const { data: sessionData, update: updateSession } = useSession()
   const [isLoading, setIsLoading] = useState(false)
-  const { setStep, setFormData, formData } = useAuthenticationModalStore()
+  const { setFormData, formData } = useAuthenticationModalStore()
   // prefield username is always valid.
   const [isUsernameValid, setIsUsernameValid] = useState(true)
   const form = useForm<z.infer<typeof usernameSchema>>({
     resolver: zodResolver(usernameSchema),
     mode: 'onBlur',
-    defaultValues: { username: formData.username },
+    defaultValues: { username: '' },
   })
   const { isValid, isDirty } = form.formState
 
@@ -71,9 +72,9 @@ export function UsernameInput() {
         if (status) {
           await updateSession({
             ...sessionData,
-            user: { ...sessionData?.user, nickname: username },
+            user: { ...sessionData?.user, nickname: username, usernameSet: true },
           })
-          setStep('COMPLETE_PROFILE')
+          onNext()
           void Analytics.track({
             eventName: 'Ks Username Set ',
             properties: { username },

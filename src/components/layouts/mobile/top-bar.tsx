@@ -31,6 +31,7 @@ import dynamic from 'next/dynamic'
 import BecomeCbCard from '@/components/common/become-cb-card'
 import { LoginIcon } from '@icons/login-icon'
 import { VerifiedIcon } from '@icons/verified-icon'
+import { formatPhoneNumberIntl } from 'react-phone-number-input'
 
 const DownloadAppDialog = dynamic(
   async () => await import('../download-app-dialog').then((comp) => comp.DownloadAppDialog)
@@ -319,16 +320,21 @@ function UserTick() {
               isAvatar={data.user.isAvatar}
             />
             <div>
-              <p className="line-clamp-1 break-words break-all text-title-3-bold">{data.user.email}</p>
-              {!data.user.isBrandSystemUser && (
-                <p className="text-body-1-demi text-monochrome-6">
-                  {!data.user.isEmailVerified ? 'Send verification email' : 'Complete profile'}
-                </p>
-              )}
+              <p className="line-clamp-1 break-words break-all text-title-3-bold">
+                {data.user.usernameSet
+                  ? '@' + data.user.nickname
+                  : data.user.email
+                  ? data.user.email
+                  : formatPhoneNumberIntl(
+                      data.user.phoneNumber?.startsWith('+') ? data.user.phoneNumber : `+${data.user.phoneNumber}`
+                    )}
+              </p>
+              {!data.user.isBrandSystemUser && <p className="text-body-1-demi text-monochrome-6">Complete profile</p>}
             </div>
           </div>
           <hr className="border-b border-monochrome-9" />
           <div className="flex flex-col gap-4 p-4">
+            {!data.user.isBrandSystemUser && <SettingsLayout />}
             <div className="flex items-center gap-x-2">
               <LogoutIcon className="stroke-secondary" />
               <p
@@ -340,7 +346,6 @@ function UserTick() {
                 Log out
               </p>
             </div>
-            {!data.user.isBrandSystemUser && data.user?.isEmailVerified && <SettingsLayout />}
           </div>
         </PopoverContent>
       </Popover>

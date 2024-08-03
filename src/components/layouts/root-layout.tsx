@@ -2,6 +2,7 @@ import { cn } from '@lib/utils'
 import { type Viewport } from 'next'
 import { type ComponentProps, type ReactNode } from 'react'
 import { RedirectToHTTPS } from './redirect-to-https'
+import { LogRockerInitializer } from './logrocket-initializer'
 
 type Props = ComponentProps<'body'> & {
   brandColors?: any
@@ -25,6 +26,7 @@ export function RootHTML({ brandColors, favicon, subdomain, children, className,
         {...props}>
         {children}
         <RedirectToHTTPS />
+        <LogRockerInitializer />
       </body>
     </html>
   )
