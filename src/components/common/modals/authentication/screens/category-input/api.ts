@@ -45,10 +45,7 @@ export async function addTopics(topics: string[]) {
   return await axiosInstance
     .post('/api/v3/users/topics', { topicIds: topics })
     .then((res) => {
-      if (res.status === 200) {
-        return true
-      }
-      return false
+      return true
     })
     .catch((e) => {
       // eslint-disable-next-line no-console

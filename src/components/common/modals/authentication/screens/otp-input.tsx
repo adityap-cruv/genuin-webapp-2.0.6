@@ -84,6 +84,10 @@ export function OtpInput({ title, verificationType, onNext, onBack }: OtpInputPr
         } else {
           if (!data.user?.brandGuidelines) {
             onNext()
+          } else if (!data.user.hasTopics) {
+            onNext('CATEGORY_SELECTION')
+          } else if (!data.user.usernameSet) {
+            onNext('USERNAME_INPUT')
           } else {
             closeModal()
           }

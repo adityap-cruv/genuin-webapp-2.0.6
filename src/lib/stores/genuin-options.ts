@@ -91,6 +91,7 @@ export type User = {
    * Checks if use has already topics.
    */
   hasTopics?: boolean
+  usernameSet: boolean
 }
 
 type StateType = {
