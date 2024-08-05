@@ -22,14 +22,14 @@ export async function generateMetadata(): Promise<Metadata> {
     const metadataParams = { type: 5, ...config }
     const metadata: HomeMetadata = await fetchMetadata(metadataParams)
     return {
-      title: metadata.title,
+      title: metadata?.title,
       // applicationName: 'Genuin',
-      description: metadata.description,
+      description: metadata?.description,
       openGraph: {
-        title: metadata.title,
-        description: metadata.description,
+        title: metadata?.title,
+        description: metadata?.description,
         url: `${process.env.NEXT_PUBLIC_HOST_URL}` + PATH_NAME.home(),
-        images: [{ url: metadata.preview_image ?? '' }],
+        images: [{ url: metadata?.preview_image ?? '' }],
       },
     }
   } else {
