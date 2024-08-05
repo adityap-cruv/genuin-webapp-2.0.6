@@ -120,7 +120,7 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
     }
     // Added Identify User to pass userId in all the
     void rudderStackIdentify()
-  }, [sessionStatus])
+  }, [sessionStatus, sessionData?.user])
 
   function init() {
     if (config?.brand_id) setBrandIdInAxiosInstance(Number(config?.brand_id))

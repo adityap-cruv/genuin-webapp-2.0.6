@@ -27,15 +27,12 @@ export async function sendOtp({ email, phoneNumber, isUpdate }: Partial<SendOtpP
       preAuthSessionId = res.data.data.preAuthSessionId
       // To send in consume otp
       resDeviceId = res.data.data.deviceId
-      console.log('res.data.data::', res.data)
       return { codeSent: true, retryTime: res.data.data.retryTime, message: undefined }
       // return true
     })
     .catch((e) => {
-      console.log('e::', e.response.data.code)
       let message = 'Something went wrong. Please try again!'
       const retryTime = Number(e.response.data.data?.retryTime)
-      console.log('retryTime::', retryTime)
       if (e.response.data.code === '5263') {
         message = isUpdate
           ? 'Unable to send the code. Please use another phone number.'
@@ -84,7 +81,6 @@ export async function consumeOtp({ email, phoneNumber, code }: Partial<SendOtpPr
       const accessToken = res.headers['gn-access-token']
       const refreshToken = res.headers['gn-refresh-token']
       const data = res.data.data
-      console.log('data::', data)
       const user = {
         isAvatar: data.is_avatar,
         userId: data.user_id,
@@ -109,7 +105,7 @@ export async function consumeOtp({ email, phoneNumber, code }: Partial<SendOtpPr
       return { otpVerified: true, user }
     })
     .catch((e) => {
-      console.log('e::', e)
+      // console.log('e::', e)
       return { otpVerified: false, user: null }
     })
 }
@@ -127,7 +123,6 @@ export async function updateEmailOrPhone(code: string) {
       preAuthSessionId,
     })
     .then((res) => {
-      console.log('res::', res)
       return { verified: true }
     })
     .catch((_) => {
