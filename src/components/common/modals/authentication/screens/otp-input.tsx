@@ -39,7 +39,6 @@ export function OtpInput({ title, verificationType, onNext, onBack }: OtpInputPr
   const [isLoading, setIsLoading] = useState(false)
   const [isValid, setIsValid] = useState(false)
   const { data: sessionData, update: updateSession } = useSession()
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     mode: 'onSubmit',
