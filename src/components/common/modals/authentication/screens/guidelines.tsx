@@ -27,10 +27,11 @@ type GuidelineProps = ScreenProps
 export function Guidelines({ onNext }: GuidelineProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [guidelines, setGuidelines] = useState<Guideline[] | null>(null)
-  const { brandLogo, brandId } = useGenuinOptions(
+  const { brandLogo, brandId, user } = useGenuinOptions(
     useShallow((state) => ({
       brandLogo: state.brandWebLogo,
       brandId: state.brandId,
+      user: state.user,
     }))
   )
 
@@ -58,7 +59,13 @@ export function Guidelines({ onNext }: GuidelineProps) {
     setIsLoading(true)
     const answer = await acceptBrandGuidelines()
     if (answer) {
-      onNext()
+      if (!user?.hasTopics) {
+        onNext('CATEGORY_SELECTION')
+      } else if (!user?.usernameSet) {
+        onNext('USERNAME_INPUT')
+      } else {
+        onNext()
+      }
     } else {
       form.setError('root', { message: 'Please try again.' })
     }

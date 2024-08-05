@@ -19,7 +19,11 @@ export function CategoryInput({ onNext }: ScreenProps) {
     const res = await addTopics([...selectedItems.values()])
     if (res) {
       await updateSession({ ...sessionData, user: { ...sessionData?.user, hasTopics: true } })
-      onNext()
+      if (sessionData?.user.usernameSet) {
+        onNext()
+      } else {
+        onNext('USERNAME_INPUT')
+      }
     } else {
       setError('Please try again.')
     }

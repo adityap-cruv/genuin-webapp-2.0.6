@@ -116,8 +116,8 @@ export function Content() {
       return (
         <OtpInput
           verificationType="login"
-          onNext={() => {
-            setStep('GUIDELINES')
+          onNext={(step) => {
+            setStep(step ?? 'GUIDELINES')
           }}
           onBack={() => {
             setStep('STARTER')
@@ -175,13 +175,7 @@ export function Content() {
     case 'IMAGE_CROPPER':
       return <ImageCropper />
     case 'CATEGORY_SELECTION':
-      return (
-        <CategoryInput
-          onNext={() => {
-            setStep('USERNAME_INPUT')
-          }}
-        />
-      )
+      return <CategoryInput onNext={closeModal} />
     case 'USERNAME_INPUT':
       return (
         <UsernameInput
@@ -195,8 +189,12 @@ export function Content() {
     case 'GUIDELINES':
       return (
         <Guidelines
-          onNext={() => {
-            setStep('CATEGORY_SELECTION')
+          onNext={(step) => {
+            if (step) {
+              setStep(step)
+            } else {
+              closeModal()
+            }
           }}
         />
       )

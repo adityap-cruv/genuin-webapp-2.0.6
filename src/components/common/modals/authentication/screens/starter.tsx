@@ -176,21 +176,9 @@ function NumberForm({ onNext }: { onNext: () => void }) {
     if (response.codeSent) {
       onNext()
     } else {
-      const minutes = Math.floor(response.retryTime / 60)
-      if (minutes >= 1) {
-        const leftSeconds = response.retryTime % 60
-        form.setError('phone', {
-          message: `Please try again after ${minutes < 10 ? `0${minutes}` : minutes}:${
-            leftSeconds < 10 ? `0${leftSeconds}` : leftSeconds
-          } minutes!`,
-        })
-      } else {
-        form.setError('phone', {
-          message: `Please try again after 00:${
-            response.retryTime < 10 ? `0${response.retryTime}` : response.retryTime
-          }!`,
-        })
-      }
+      form.setError('phone', {
+        message: response.message,
+      })
     }
     setIsLoading(false)
   }
