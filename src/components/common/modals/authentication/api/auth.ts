@@ -99,7 +99,7 @@ export async function consumeOtp({ email, phoneNumber, code }: Partial<SendOtpPr
         isBrandSystemUser: data.is_brand_system_user,
         brandId: data.brand_id,
         brandSlug: data.brand_slug ? data.brand_slug : null,
-        onboardingTopics: data.onboarding_topics,
+        hasTopics: data.onboarding_topics,
         brandGuidelines: data.brand_guidelines,
         refreshToken,
         birth: data.birthday,

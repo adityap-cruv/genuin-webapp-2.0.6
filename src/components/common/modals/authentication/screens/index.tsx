@@ -1,3 +1,5 @@
+import { type StepsType } from '../store'
+
 export { ImageCropper } from './image-cropper'
 export { OtpInput } from './otp-input'
 export { UsernameInput } from './username-input'
@@ -19,5 +21,5 @@ export { DeleteConfirmed } from './delete-confirmed'
 
 export type ScreenProps = {
   onBack?: () => void
-  onNext: () => void
+  onNext: (step?: StepsType) => void
 }
