@@ -175,7 +175,17 @@ export function Content() {
     case 'IMAGE_CROPPER':
       return <ImageCropper />
     case 'CATEGORY_SELECTION':
-      return <CategoryInput onNext={closeModal} />
+      return (
+        <CategoryInput
+          onNext={(step) => {
+            if (step) {
+              setStep(step)
+            } else {
+              closeModal()
+            }
+          }}
+        />
+      )
     case 'USERNAME_INPUT':
       return (
         <UsernameInput
