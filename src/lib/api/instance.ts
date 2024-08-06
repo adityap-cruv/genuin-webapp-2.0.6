@@ -7,10 +7,14 @@ export const axiosInstance = axios.create({ baseURL: process.env.NEXT_PUBLIC_API
  * @param token
  */
 export function setAuthTokenInAxiosInstance(token?: string) {
-  axiosInstance.interceptors.request.use((config) => {
+  return axiosInstance.interceptors.request.use((config) => {
     if (token) config.headers.Authorization = 'Bearer ' + token
     return config
   })
+}
+
+export function ejectAuthTokenInterceptor(id: number) {
+  axiosInstance.interceptors.request.eject(id)
 }
 
 export function setBrandIdInAxiosInstance(brandId?: number) {
