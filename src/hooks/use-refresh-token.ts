@@ -1,6 +1,6 @@
 import { axiosInstance } from '@/lib/api/instance'
 import { useGenuinOptions } from '@/lib/stores/genuin-options'
-import { useSession } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 import { useEffect } from 'react'
 
 export function useRefreshToken() {
@@ -10,21 +10,25 @@ export function useRefreshToken() {
     const interceptorId = axiosInstance.interceptors.response.use(
       (res) => res,
       async (error) => {
-        const prevReq = error.config
-        if (error.response.status === 401 && !prevReq.sent) {
-          prevReq.sent = true
-          const response = await refreshToken()
-          if (response) {
-            const { newAccessToken, newRefreshToken } = response
-            await updateSession({
-              ...sessionData,
-              user: { ...sessionData?.user, accessToken: newAccessToken, refreshToken: newRefreshToken },
-            })
-            // setAuthTokenInAxiosInstance(newAccessToken)
-            prevReq.headers.Authorization = `Bearer ${newAccessToken}`
-            return await axiosInstance(prevReq)
+        try {
+          const prevReq = error.config
+          if (error.response.status === 401 && !prevReq.sent) {
+            prevReq.sent = true
+            const response = await refreshToken()
+            if (response) {
+              const { newAccessToken, newRefreshToken } = response
+              await updateSession({
+                ...sessionData,
+                user: { ...sessionData?.user, accessToken: newAccessToken, refreshToken: newRefreshToken },
+              })
+              prevReq.headers.Authorization = `Bearer ${newAccessToken}`
+              return await axiosInstance(prevReq)
+            }
           }
+        } catch (e) {
+          void signOut()
         }
+        return await Promise.reject(error)
       }
     )
     return () => {
@@ -51,6 +55,6 @@ export async function refreshToken(): Promise<{ newAccessToken: string; newRefre
       return { newAccessToken: accessToken, newRefreshToken }
     })
     .catch((e) => {
-      return null
+      throw new Error('Something went wrong!')
     })
 }
