@@ -1,5 +1,6 @@
 import { axiosInstance } from '@/lib/api/instance'
 import { useGenuinOptions } from '@/lib/stores/genuin-options'
+import axios from 'axios'
 import { signOut, useSession } from 'next-auth/react'
 import { useEffect } from 'react'
 
@@ -26,6 +27,7 @@ export function useRefreshToken() {
             }
           }
         } catch (e) {
+          // console.log('error::', e)
           void signOut()
         }
         return await Promise.reject(error)
@@ -34,12 +36,13 @@ export function useRefreshToken() {
     return () => {
       axiosInstance.interceptors.response.eject(interceptorId)
     }
-  }, [updateSession, sessionData])
+  }, [])
 }
 
 export async function refreshToken(): Promise<{ newAccessToken: string; newRefreshToken: string } | null> {
   const oldRefreshToken = useGenuinOptions.getState().user?.refreshToken
-  return await axiosInstance
+  return await axios
+    .create({ baseURL: process.env.NEXT_PUBLIC_API_URL })
     .post(
       '/api/v4/auth/session/refresh',
       {},

@@ -31,7 +31,6 @@ type Props = {
   browserType: string
   config?: ConfigType
 }
-
 // it won't log any consoles in production.
 // eslint-disable-next-line no-console
 if (process.env.NEXT_PUBLIC_CURRENT_ENV === 'prod') console.log = () => {}
