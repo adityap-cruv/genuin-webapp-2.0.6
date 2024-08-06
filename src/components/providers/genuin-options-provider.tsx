@@ -7,11 +7,12 @@ import { useEffect, useState } from 'react'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import FingerprintJS from '@fingerprintjs/fingerprintjs'
 import { useSession } from 'next-auth/react'
-import { setAuthTokenInAxiosInstance, setBrandIdInAxiosInstance } from '@lib/api/instance'
+import { ejectAuthTokenInterceptor, setAuthTokenInAxiosInstance, setBrandIdInAxiosInstance } from '@lib/api/instance'
 import dynamic from 'next/dynamic'
 import { saveVisitor } from '@components/common/modals/authentication/api/auth'
 import { notificationsCount } from '@lib/api/notification'
 import { rudderStackIdentify } from '@/services/analytics/useRudderAnalytics'
+import { useRefreshToken } from '@/hooks/use-refresh-token'
 const RepostModal = dynamic(
   async () => await import('@components/common/modals/repost').then((comp) => comp.RepostModal.ui)
 )
@@ -47,45 +48,7 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
     visitorAdded: state.visitorAdded,
     setVisitor: state.setVisitor,
   }))
-
-  // useEffect(() => {
-  //   if (!user?.accessToken) return
-  //   const intervalTime = 60 * 60 * 1000
-  //   const intervalId: NodeJS.Timeout | null = null
-
-  //   const loadData = () => {
-  //     void miniProfile(true).then((res) => {
-  //       if (res.code === 200) {
-  //         const userData = res.data
-  //         console.log('res::', res)
-  //         void updateSession({
-  //           ...sessionData,
-  //           user: {
-  //             ksCbRequestStatus: userData.ks_cb_request_status,
-  //             brandId: userData.brand.brand_id,
-  //             brandSlug: userData.brand.brand_slug,
-  //             isEmailVerified: userData.is_email_verified,
-  //             isAvatar: userData.is_avatar,
-  //             isPasswordSet: userData.is_password_set,
-  //             image: userData.profile_image,
-  //             isBrandSystemUser: userData.is_brand_system_user,
-  //             hasTopics: userData.onboarding_topics,
-  //             ...sessionData?.user,
-  //           } as User,
-  //         })
-  //         if (res.data.ks_cb_request_status === 3) {
-  //           if (intervalId) clearInterval(intervalId)
-  //         }
-  //       }
-  //     })
-  //   }
-
-  //   if (user?.accessToken) loadData()
-
-  //   return () => {
-  //     if (intervalId) clearInterval(intervalId)
-  //   }
-  // }, [user])
+  useRefreshToken()
 
   const searchParams = useSearchParams()
 
@@ -106,9 +69,10 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
   }
 
   useEffect(() => {
+    let interceptorId: number
     if (sessionStatus === 'loading') return
     if (sessionStatus === 'authenticated') {
-      setAuthTokenInAxiosInstance(sessionData.user.accessToken)
+      interceptorId = setAuthTokenInAxiosInstance(sessionData.user.accessToken)
       setInitialData({ user: sessionData.user })
       void fetchNotificationCount()
       if (isLoading) setIsLoading(false)
@@ -120,6 +84,10 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
     }
     // Added Identify User to pass userId in all the
     void rudderStackIdentify()
+
+    return () => {
+      ejectAuthTokenInterceptor(interceptorId)
+    }
   }, [sessionStatus, sessionData?.user])
 
   function init() {
