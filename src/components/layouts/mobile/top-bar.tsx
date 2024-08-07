@@ -5,7 +5,7 @@ import { Sheet, SheetClose, SheetContent, SheetTrigger } from '@components/ui/sh
 import { type ReactNode } from 'react'
 import { cn } from '@lib/utils'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { PopularIcon, HomeIcon, LatestIcon, ProfileIcon } from '@icons/side-bar-icons'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { PATH_NAME } from '@lib/utils/constants/path'
@@ -68,6 +68,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
   })) // If variant is transparent than we have removed show download button.
   const showDownloadButton = variant !== 'transparent'
   const pathName = usePathname()
+  const searchParams = useSearchParams()
 
   return (
     <nav className={cn(navVariant({ variant }), className)}>
@@ -87,7 +88,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
       </span>
       <span className="flex items-center gap-x-2">
         {!embed && showDownloadButton && (
-          <Link href={MOBILE_DOWNLOAD_APP_LINK} target="_blank">
+          <Link href={MOBILE_DOWNLOAD_APP_LINK + searchParams.toString()} target="_blank">
             <Button
               className={
                 variant === 'light'
