@@ -88,7 +88,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
       </span>
       <span className="flex items-center gap-x-2">
         {!embed && showDownloadButton && (
-          <Link href={MOBILE_DOWNLOAD_APP_LINK + searchParams.toString()} target="_blank">
+          <Link href={MOBILE_DOWNLOAD_APP_LINK + '?' + searchParams.toString()} target="_blank">
             <Button
               className={
                 variant === 'light'
