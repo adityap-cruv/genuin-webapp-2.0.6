@@ -4,7 +4,7 @@ import { Button } from '@components/ui/button'
 export function BookDemo() {
   return (
     <div className="flex w-screen justify-center bg-[#F5F7FA]">
-      <div className="containerHome hidden py-16 md:block">
+      <div className="container hidden py-16 md:block">
         <div className="flex flex-col items-center gap-9 rounded-[36px] bg-gradient-to-r from-[#9395FF] to-[#1685FD] p-14">
           <p className="text-title-2-bold-home text-monochrome-white">Book a demo with Genuin!</p>
           <p className="text-center text-body-2-home text-monochrome-white">
@@ -24,7 +24,7 @@ export function BookDemo() {
         </div>
       </div>
 
-      <div className="containerHome py-9 md:hidden">
+      <div className="container py-9 md:hidden">
         <div className="flex flex-col items-center gap-6 rounded-3xl bg-gradient-to-r from-[#9395FF] to-[#1685FD] p-6">
           <p className="text-center text-body-2-bold-home text-monochrome-white">
             Book a demo with

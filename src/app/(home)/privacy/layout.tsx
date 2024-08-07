@@ -1,5 +1,5 @@
-import { HomeFooter } from '@components/pages/home/home-footer'
-import { HomeNavBar } from '@components/pages/home/home-nav'
+import { HomeFooter } from '@/components/pages/home/home-footer'
+import { HomeNavBar } from '@/components/pages/home/home-nav'
 // import { cookies } from 'next/headers'
 
 interface Props {

@@ -1,5 +1,5 @@
 import { type Metadata } from 'next'
-import { HomeComponent } from '@components/pages/home/home-component'
+import { HomeComponent } from '@/components/pages/home/home-component'
 
 // TODO: optimize uses of dynamic function.
 export default async function Page() {

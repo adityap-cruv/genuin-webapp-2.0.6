@@ -85,6 +85,12 @@ module.exports = {
         black: '#101010',
         black_70: '#101010B3',
       },
+      purple: {
+        DEFAULT: '#797CFF',
+      },
+      'light-blue': {
+        DEFAULT: '#1685FD',
+      },
       // border: 'hsl(var(--border))',
       // input: 'hsl(var(--input))',
       // ring: 'hsl(var(--ring))',
@@ -189,13 +195,15 @@ module.exports = {
       backgroundColor: {
         'white-alpha': 'rgba(255, 255, 255, 0.50)',
       },
+      backgroundImage: {
+        'home-page-title-gradient': 'linear-gradient(to right, #9395FF, #1685FD)',
+      },
       backdropBlur: {
         '20px': '20px',
       },
       height: {
         body: 'calc(100% - 74px)',
         navbar: '74px',
-        customscreen: 'calc(100vh - 74px)',
       },
       flexGrow: {
         3: '3',

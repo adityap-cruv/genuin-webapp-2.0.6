@@ -10,7 +10,7 @@ import { HomeFooter } from './home-footer'
 import { TickerCarousel } from './ticker-carousel'
 import { BookDemo } from './book-demo'
 import { CustomAnimatedLogos, CustomAnimatedSection } from './animations'
-import { BuildEnagageBoost } from './build-engage-boost'
+import { Tile } from './tile'
 import { CommunityReimagined } from './community-reimagined'
 import Graph from '@images/home/boost-graph.svg'
 import Mobile from '@images/home/boost-mobile.svg'
@@ -26,7 +26,7 @@ const infoData = [
   {
     title: (
       <p className="text-center text-title-2-bold-home-m md:text-left md:text-title-2-bold-home">
-        <span className="bg-gradient-to-r from-[#9395FF] to-[#1685FD] bg-clip-text text-transparent">Build </span>
+        <span className="text-purple text-transparent">Build </span>
         your Community Media Network
       </p>
     ),
@@ -36,12 +36,12 @@ const infoData = [
       <div className="relative flex aspect-square w-full items-center md:w-5/12">
         <img src={buildArt.src} className="absolute w-full rounded-[36px]" alt="Information Section" />
         <CustomAnimatedLogos
-          classname="absolute bottom-[35%] right-[8%] transform-none z-0"
+          className="absolute bottom-[35%] right-[8%] z-0 transform-none"
           animationClass="animate-rotateLeft">
           <img src={BAJoinCommunity.src} alt="joincommunity" className="h-10 lg:h-12 " />
         </CustomAnimatedLogos>
         <CustomAnimatedLogos
-          classname="absolute bottom-[12%] right-[24%] transform-none z-0"
+          className="absolute bottom-[12%] right-[24%] z-0 transform-none"
           animationClass="animate-rotateRight">
           <img src={BAcommunityTab.src} alt="communitytab" className="h-20 md:h-24 xl:h-28" />
         </CustomAnimatedLogos>
@@ -51,7 +51,7 @@ const infoData = [
   {
     title: (
       <p className="text-center text-title-2-bold-home-m md:text-left md:text-title-2-bold-home">
-        <span className="bg-gradient-to-r from-[#9395FF] to-[#1685FD] bg-clip-text text-transparent">Engage </span>
+        <span className="text-purple text-transparent">Engage </span>
         your consumers with partner content
       </p>
     ),
@@ -61,17 +61,17 @@ const infoData = [
       <div className="relative aspect-animatedDiv w-full rounded-[36px] bg-[#F7F9FC] md:w-5/12">
         <img src={EngageArtBg.src} alt="community" className="absolute w-full" />
         <CustomAnimatedLogos
-          classname="absolute top-[30%] left-[5%] transform-none z-0"
+          className="absolute left-[5%] top-[30%] z-0 transform-none"
           animationClass="animate-zoomInOut">
           <img src={EAComment.src} alt="comment" className="h-14 md:h-16" />
         </CustomAnimatedLogos>
         <CustomAnimatedLogos
-          classname="absolute bottom-[25%] left-[3%] transform-none z-0"
+          className="absolute bottom-[25%] left-[3%] z-0 transform-none"
           animationClass="animate-zoomInOut">
           <img src={EAShare.src} alt="share" className="h-14 md:h-16" />
         </CustomAnimatedLogos>
         <CustomAnimatedLogos
-          classname="absolute bottom-[34%] right-[10%] transform-none z-0"
+          className="absolute bottom-[34%] right-[10%] z-0 transform-none"
           animationClass="animate-zoomInOut">
           <img src={EAJoin.src} alt="join" className="h-10 md:h-12" />
         </CustomAnimatedLogos>
@@ -81,7 +81,28 @@ const infoData = [
   {
     title: (
       <p className="text-center text-title-2-bold-home-m md:text-left md:text-title-2-bold-home">
-        <span className="bg-gradient-to-r from-[#9395FF] to-[#1685FD] bg-clip-text text-transparent">Boost </span>
+        <span className="text-purple text-transparent">Activate</span> your marketing flywheel
+      </p>
+    ),
+    subtitle:
+      'Launch, grow, manage, and market across all touchpoints. Recruit & retain community builders, integrate content, and optimize the entire experience.',
+    imageSrc: (
+      <div className="relative aspect-animatedDiv w-full rounded-[36px] bg-[#F7F9FC] md:w-5/12">
+        <CustomAnimatedLogos className="absolute right-[12%] z-0 flex h-full -translate-x-20 items-end duration-1800">
+          <img src={Mobile.src} alt="community" className="h-[90%]" />
+        </CustomAnimatedLogos>
+        <CustomAnimatedLogos
+          className="absolute right-[15%] z-0 flex h-full transform-none items-end"
+          animationClass="animate-zoomIn duration-2600">
+          <img src={Graph.src} alt="community" className="h-[90%]" />
+        </CustomAnimatedLogos>
+      </div>
+    ),
+  },
+  {
+    title: (
+      <p className="text-center text-title-2-bold-home-m md:text-left md:text-title-2-bold-home">
+        <span className="text-purple text-transparent">Boost </span>
         your incremental revenue
       </p>
     ),
@@ -89,11 +110,11 @@ const infoData = [
       'Monetize new vertical video inventory to increase time spent on your owned and operated channels, conversion, and LTV.',
     imageSrc: (
       <div className="relative aspect-animatedDiv w-full rounded-[36px] bg-[#F7F9FC] md:w-5/12">
-        <CustomAnimatedLogos classname="absolute duration-1800 h-full flex items-end -translate-x-20 right-[12%] z-0">
+        <CustomAnimatedLogos className="absolute right-[12%] z-0 flex h-full -translate-x-20 items-end duration-1800">
           <img src={Mobile.src} alt="community" className="h-[90%]" />
         </CustomAnimatedLogos>
         <CustomAnimatedLogos
-          classname="absolute h-full flex items-end transform-none right-[15%] z-0"
+          className="absolute right-[15%] z-0 flex h-full transform-none items-end"
           animationClass="animate-zoomIn duration-2600">
           <img src={Graph.src} alt="community" className="h-[90%]" />
         </CustomAnimatedLogos>
@@ -104,26 +125,26 @@ const infoData = [
 
 export function HomeComponent() {
   return (
-    <div className="font-manrope bg-monochrome-white text-[#101010]">
+    <div className="font-manrope bg-monochrome-white text-[#101010] md:h-body">
       <HomeNavBar />
       <div
-        className="relative h-full w-full bg-cover bg-center md:h-customscreen"
+        className="relative h-full w-full bg-cover bg-center"
         style={{
           backgroundImage: `url(${bg.src})`,
         }}>
-        <CustomAnimatedLogos classname="absolute duration-3000 md:block hidden translate-x-10 -translate-y-20 left-[32vw] top-[6vh] z-0">
+        <CustomAnimatedLogos className="absolute left-[32vw] top-[6vh] z-0 hidden -translate-y-20 translate-x-10 duration-3000 md:block">
           <img src={icCommunity.src} alt="community" className="h-14" />
         </CustomAnimatedLogos>
 
-        <CustomAnimatedLogos classname="absolute duration-3000 md:block -translate-x-28 translate-y-16  hidden left-[7vw] top-[44vh] z-0">
+        <CustomAnimatedLogos className="absolute left-[7vw] top-[44vh] z-0 hidden  -translate-x-28 translate-y-16 duration-3000 md:block">
           <img src={icGraph.src} alt="graph" className="h-9" />
         </CustomAnimatedLogos>
 
-        <CustomAnimatedLogos classname="absolute duration-3000 md:block hidden translate-y-20 translate-x-32 left-[26vw] bottom-[8vh] z-0">
+        <CustomAnimatedLogos className="absolute bottom-[8vh] left-[26vw] z-0 hidden translate-x-32 translate-y-20 duration-3000 md:block">
           <img src={icVideo.src} alt="video" className="h-12" />
         </CustomAnimatedLogos>
 
-        <CustomAnimatedSection classname="containerHome z-10">
+        <CustomAnimatedSection className="container z-10">
           <CommunityReimagined />
         </CustomAnimatedSection>
       </div>
@@ -133,21 +154,15 @@ export function HomeComponent() {
       </CustomAnimatedSection>
 
       {infoData.map((data, index) => (
-        <CustomAnimatedSection key={index} classname="duration-2200">
-          <BuildEnagageBoost title={data.title} subtitle={data.subtitle} imageSrc={data.imageSrc} />
+        <CustomAnimatedSection key={index} className="duration-2200">
+          <Tile title={data.title} subtitle={data.subtitle} imageSrc={data.imageSrc} />
         </CustomAnimatedSection>
       ))}
 
-      {/* <CustomAnimatedSection>
-        <PartnershipEcosystem />
-      </CustomAnimatedSection> */}
-
-      <CustomAnimatedSection classname="transform-none">
+      <CustomAnimatedSection className="transform-none">
         <BookDemo />
       </CustomAnimatedSection>
-
       <HomeFooter />
-
       <ContactUs>
         <div className="pointer-events-none fixed inset-x-0 bottom-8 z-20 flex justify-center md:hidden">
           <Button

@@ -4,7 +4,6 @@ import { type DetailedHTMLProps, type VideoHTMLAttributes, memo, useEffect, useR
 
 type Props = DetailedHTMLProps<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement> & {
   videoSource: string
-  id: string
 }
 
 /**
@@ -55,7 +54,5 @@ export const VanillaPlayer = memo(function InnerPlayer({ videoSource, className,
     })
   }, [videoSource])
 
-  return (
-    <video className={cn(className, 'object-cover')} muted ref={videoRef} src={videoSource} playsInline {...props} />
-  )
+  return <video className={cn(className)} muted ref={videoRef} src={videoSource} playsInline {...props} />
 })

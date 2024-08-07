@@ -1,7 +1,7 @@
 'use client'
 import { ContactUs } from '@components/common/modals/contact-us'
-import { HomeFooter } from '@components/pages/home/home-footer'
-import { HomeNavBar } from '@components/pages/home/home-nav'
+import { HomeFooter } from '@/components/pages/home/home-footer'
+import { HomeNavBar } from '@/components/pages/home/home-nav'
 import { Button } from '@components/ui/button'
 import GenuinLogo from '@images/home/GenuinLogo.svg'
 import bhargav from '@images/home/team/bhargav.svg'
@@ -41,7 +41,7 @@ export default function Component() {
 function AboutUs() {
   return (
     <>
-      <div className="containerHome hidden sm:block">
+      <div className="container hidden sm:block">
         <div className="flex w-full items-center py-24">
           <div className="flex w-1/2 flex-col gap-9">
             <p className="text-title-1-bold-home-m">About us</p>
@@ -67,7 +67,7 @@ function AboutUs() {
         </div>
       </div>
 
-      <div className="containerHome sm:hidden">
+      <div className="container sm:hidden">
         <div className="flex w-full flex-col-reverse gap-6 py-9">
           <div className="grid gap-6">
             <p className="text-title-2-bold-home-m">About us</p>
@@ -96,7 +96,7 @@ function HowWeDo() {
   return (
     <>
       <div className="hidden bg-monochrome-black sm:block">
-        <div className="containerHome grid grid-cols-2 py-24 text-monochrome-white">
+        <div className="container grid grid-cols-2 py-24 text-monochrome-white">
           <p className="text-title-3-bold-home">How we do it</p>
           <div className="grid gap-4 text-[#959AA9]">
             <p className="pb-4 text-body-2-demi-home text-monochrome-white">
@@ -131,7 +131,7 @@ function HowWeDo() {
       </div>
 
       <div className="bg-monochrome-black sm:hidden">
-        <div className="containerHome grid py-9 text-monochrome-white">
+        <div className="container grid py-9 text-monochrome-white">
           <p className="pb-9 text-body-2-bold-home">How we do it</p>
           <div className="grid gap-4 text-[#959AA9]">
             <p className="pb-4 text-cap-1-home-m text-monochrome-white">
@@ -235,7 +235,7 @@ function Team() {
   }
   return (
     <div>
-      <div className="containerHome hidden gap-14 py-24 sm:grid">
+      <div className="container hidden gap-14 py-24 sm:grid">
         <p className="text-title-3-bold-home">Meet our team</p>
         <div className="flex flex-wrap gap-6">
           {Team.map((item, index) => (
@@ -260,7 +260,7 @@ function Team() {
         </div>
       </div>
 
-      <div className="containerHome grid gap-14 py-9 sm:hidden">
+      <div className="container grid gap-14 py-9 sm:hidden">
         <p className="text-body-2-bold-home">Meet our team</p>
         <div className="grid gap-6">
           {Team.map((item, index) => (
