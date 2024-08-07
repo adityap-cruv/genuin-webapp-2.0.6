@@ -1,10 +1,10 @@
 import { type Metadata } from 'next'
-import { HomeComponent } from '@/components/pages/home/home-component'
+import { HomeComponent } from '@/components/pages/index-pages/home'
 
 // TODO: optimize uses of dynamic function.
 export default async function Page() {
   return (
-    <main id="indexPage" className="absolute inset-0 text-new-off-black">
+    <main className="font-manrope absolute inset-0 text-new-off-black">
       <HomeComponent />
     </main>
   )

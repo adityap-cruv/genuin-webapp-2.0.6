@@ -22,19 +22,3 @@ export function CustomAnimatedSection({ children, className }: CustomAnimatedSec
     </section>
   )
 }
-
-export function CustomAnimatedLogos({ children, className, animationClass }: CustomAnimatedSectionProps) {
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, amount: 0.2 })
-
-  return (
-    <section ref={ref}>
-      <span
-        className={`${className} block transition-all ${
-          isInView ? `${animationClass} transform-none opacity-100` : 'transform opacity-0'
-        }`}>
-        {children}
-      </span>
-    </section>
-  )
-}
