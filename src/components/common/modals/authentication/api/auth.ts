@@ -94,7 +94,7 @@ export async function consumeOtp({ email, phoneNumber, code }: Partial<SendOtpPr
         ksCbRequestStatus: data.ks_cb_request_status,
         isBrandSystemUser: data.is_brand_system_user,
         brandId: data.brand_id,
-        brandSlug: data.brand.brand_slug ? data.brand.brand_slug : null,
+        brandSlug: data.brand?.brand_slug ? data.brand?.brand_slug : null,
         hasTopics: data.onboarding_topics,
         brandGuidelines: data.brand_guidelines,
         refreshToken,

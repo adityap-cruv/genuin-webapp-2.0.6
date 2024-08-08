@@ -23,7 +23,7 @@ export function TickerCarousel() {
     adobe.src,
   ]
   return (
-    <div className="flex w-screen flex-col items-center bg-monochrome-white py-9 md:py-16">
+    <div className="flex flex-col items-center bg-monochrome-white py-9 md:py-16">
       <div className="pb-9">
         <div className="border-1 rounded-lg border border-monochrome-9 px-4 py-2">
           <p className="text-cap-1-demi-home">Built by a world-class team</p>

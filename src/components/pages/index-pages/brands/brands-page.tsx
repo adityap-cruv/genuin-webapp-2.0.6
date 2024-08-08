@@ -3,7 +3,6 @@
 import { GeneralShell, GeneralShellForInitialComponent, getAnimationUrl } from '../animated-tile'
 import { RootShell } from '../root-shell'
 import bgGenuinLogo from '@images/home/backgrounds/logos/brandsBgLogo.svg'
-import { Button } from '@/components/ui/button'
 import { Footer } from '../footer'
 import { TickerCarousel } from '../ticker-carousel'
 import { ArrowRight } from 'lucide-react'
@@ -99,7 +98,7 @@ function BottomComponent() {
   return (
     <div className="container px-5 py-10 sm:px-10">
       <div
-        className="flex flex-col gap-6 px-6 py-12 sm:gap-9 sm:px-20 md:py-16"
+        className="flex flex-col items-center gap-6 px-6 py-12 sm:gap-9 sm:px-20 md:py-16"
         style={{ background: 'linear-gradient(90deg, #9395FF, #1685FD)', borderRadius: 36 }}>
         <p className="text-center text-heading-3 font-bold text-monochrome-white md:text-title-1-bold-home-m">
           Start Your Community with Genuin!
@@ -108,7 +107,14 @@ function BottomComponent() {
           Launch your brand community in minutes thanks to GenuAI and begin creating deeper connections that result in
           life-long consumers.
         </p>
-        <Button className="hidden md:block">Get started</Button>
+        <span className="hidden md:block">
+          <Link href={BCC_LOGIN_LINK}>
+            <AnimatedButton className="bg-primary" shadowColor="#1685FD">
+              <p className="whitespace-nowrap pr-2 text-monochrome-white">Get started</p>
+              <ArrowRight className="stroke-monochrome-white" />
+            </AnimatedButton>
+          </Link>
+        </span>
       </div>
     </div>
   )

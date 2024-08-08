@@ -24,7 +24,7 @@ import { RootShell } from '../root-shell'
 import genuinLogo from '@images/home/backgrounds/logos/homeBgLogo.svg'
 import { GeneralShell, getAnimationUrl, GeneralShellForInitialComponent } from '../animated-tile'
 import { ContactUs } from '@/components/common/modals/contact-us'
-import { Button } from '@/components/ui/button'
+// import { Button } from '@/components/ui/button'
 import { AnimatedButton } from '../animated-component'
 import { ArrowRight } from 'lucide-react'
 
@@ -133,7 +133,7 @@ export function BookDemo() {
   return (
     <div className="container px-5 py-10 sm:px-10">
       <div
-        className="flex flex-col gap-6 px-6 py-12 sm:gap-9 sm:px-20 md:py-16"
+        className="flex flex-col items-center gap-6 px-6 py-12 sm:gap-9 sm:px-20 md:py-16"
         style={{ background: 'linear-gradient(90deg, #9395FF, #1685FD)', borderRadius: 36 }}>
         <p className="text-center text-heading-3 font-bold text-monochrome-white md:text-title-1-bold-home-m">
           Book a demo with Genuin!
@@ -142,7 +142,14 @@ export function BookDemo() {
           Request our quick-start demo and learn about increasing customer engagement with your new Community Media
           Network to boost your media revenue.
         </p>
-        <Button className="hidden md:block">Book a demo</Button>
+        <span className="hidden md:block">
+          <ContactUs>
+            <AnimatedButton className="bg-monochrome-white" shadowColor="#0645FF">
+              <p className="whitespace-nowrap pr-2">Book a demo</p>
+              <ArrowRight />
+            </AnimatedButton>
+          </ContactUs>
+        </span>
       </div>
     </div>
   )
