@@ -8,9 +8,11 @@ import Image from 'next/image'
 import Link from 'next/link'
 import playStoreImage from '@images/playStore.svg'
 import appStoreImage from '@images/appStore.svg'
-import { URL_TO_APP_STORE, URL_TO_PLAY_STORE } from '@/lib/constants'
+import { MOBILE_DOWNLOAD_APP_LINK, URL_TO_APP_STORE, URL_TO_PLAY_STORE } from '@/lib/constants'
 import { Footer } from '../footer'
 import { TickerCarousel } from '../ticker-carousel'
+import { AnimatedButton } from '../animated-component'
+import { ArrowRight } from 'lucide-react'
 
 const listOfComps = [
   {
@@ -54,7 +56,15 @@ export function CreatorsPage() {
     <RootShell
       bgGrad="linear-gradient(180deg, rgba(147, 149, 255, 0.00)0%, rgba(147, 149, 255, 0.20)100%)"
       genuinLogo={genuinLogo}
-      initialComponent={<InitialComponent />}>
+      initialComponent={<InitialComponent />}
+      ctaForMobile={
+        <Link href={MOBILE_DOWNLOAD_APP_LINK}>
+          <AnimatedButton className="border bg-monochrome-white" shadowColor="#0645FF">
+            <p className="whitespace-nowrap">Get Genuin</p>
+            <ArrowRight />
+          </AnimatedButton>
+        </Link>
+      }>
       <TickerCarousel />
       {listOfComps.map((comp, index) => {
         return (

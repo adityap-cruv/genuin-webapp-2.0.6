@@ -7,6 +7,9 @@ import { Button } from '@/components/ui/button'
 import { Footer } from '../footer'
 import { TickerCarousel } from '../ticker-carousel'
 import { ArrowRight } from 'lucide-react'
+import { AnimatedButton } from '../animated-component'
+import Link from 'next/link'
+import { BCC_LOGIN_LINK } from '@/lib/constants'
 
 const listOfComps = [
   {
@@ -48,7 +51,15 @@ export function BrandsPage() {
     <RootShell
       bgGrad="linear-gradient(180deg, rgba(22, 133, 253, 0.00)0%, rgba(22, 133, 253, 0.15)100%)"
       genuinLogo={bgGenuinLogo}
-      initialComponent={<InitialComponent />}>
+      initialComponent={<InitialComponent />}
+      ctaForMobile={
+        <Link href={BCC_LOGIN_LINK}>
+          <AnimatedButton className="border bg-monochrome-white" shadowColor="#0645FF">
+            <p className="whitespace-nowrap">Get Started</p>
+            <ArrowRight />
+          </AnimatedButton>
+        </Link>
+      }>
       <TickerCarousel />
       {listOfComps.map((comp, index) => {
         return (
@@ -73,12 +84,12 @@ function InitialComponent() {
       subtitle="Connect with your audience to drive more conversion with video-based communities across owned & partners’
           media channels."
       cta={
-        <Button
-          variant="custom"
-          className="flex w-min gap-2 rounded-full bg-blue px-6 py-3 text-cap-1-bold-home font-extrabold shadow-[8px_8px_0px_0px_#9395FF] transition duration-200 hover:border hover:border-home-black hover:shadow-none">
-          <p className="whitespace-nowrap">Book a demo</p>
-          <ArrowRight />
-        </Button>
+        <Link href={BCC_LOGIN_LINK}>
+          <AnimatedButton className="bg-primary" shadowColor="#1685FD">
+            <p className="whitespace-nowrap pr-2 text-monochrome-white">Get started</p>
+            <ArrowRight className="stroke-monochrome-white" />
+          </AnimatedButton>
+        </Link>
       }
     />
   )

@@ -25,6 +25,8 @@ import genuinLogo from '@images/home/backgrounds/logos/homeBgLogo.svg'
 import { GeneralShell, getAnimationUrl, GeneralShellForInitialComponent } from '../animated-tile'
 import { ContactUs } from '@/components/common/modals/contact-us'
 import { Button } from '@/components/ui/button'
+import { AnimatedButton } from '../animated-component'
+import { ArrowRight } from 'lucide-react'
 
 const listOfComps = [
   {
@@ -85,7 +87,15 @@ export function HomeComponent() {
     <RootShell
       bgGrad="linear-gradient(180deg, rgba(208, 220, 255, 0.00)0%, rgba(208, 220, 255, 0.60)100%)"
       genuinLogo={genuinLogo}
-      initialComponent={<InitialComponent />}>
+      initialComponent={<InitialComponent />}
+      ctaForMobile={
+        <ContactUs>
+          <AnimatedButton className="border bg-monochrome-white" shadowColor="#0645FF">
+            <p className="whitespace-nowrap">Book a demo</p>
+            <ArrowRight />
+          </AnimatedButton>
+        </ContactUs>
+      }>
       <TickerCarousel />
       {listOfComps.map((comp, index) => {
         return (
@@ -109,12 +119,10 @@ export function InitialComponent() {
       subtitle="Create video-based communities within your retail media network to drive engagement and new revenue."
       cta={
         <ContactUs>
-          <Button
-            variant={'outline'}
-            size={'custom'}
-            className="rounded-[35px] px-9 py-5 text-body-2-bold-home hover:bg-home-black hover:text-monochrome-white">
-            Book a demo
-          </Button>
+          <AnimatedButton className="bg-primary" shadowColor="#9395FF">
+            <p className="whitespace-nowrap pr-2 text-monochrome-white">Book a demo</p>
+            <ArrowRight className="stroke-monochrome-white" />
+          </AnimatedButton>
         </ContactUs>
       }
     />

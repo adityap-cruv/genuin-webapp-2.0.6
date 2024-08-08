@@ -5,6 +5,7 @@ import { GenuinIcon } from '@icons/genuin-icon'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import Link from 'next/link'
 import { type ComponentProps } from 'react'
+import { Fragment } from 'react'
 
 const footerLinks = [
   {
@@ -44,7 +45,7 @@ export function Footer({ className, ...restProps }: ComponentProps<'div'>) {
                   <p className="text-cap-1-home text-monochrome-white transition-all hover:font-bold">{item.title}</p>
                 </Link>
               )
-            return item.comp
+            return <Fragment key={index}>{item.comp}</Fragment>
           })}
         </div>
         <Link href={PATH_NAME.index()} className="block md:hidden">

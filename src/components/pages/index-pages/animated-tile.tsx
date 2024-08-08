@@ -64,13 +64,7 @@ export function GeneralShellForInitialComponent({
           {titleNode}
         </p>
         <p className="text-center text-title-2-demi md:w-3/4 md:text-start md:text-body-2-home">{subtitle}</p>
-        {cta}
-        {/* <Button
-          variant="custom"
-          className="flex w-min gap-2 rounded-full bg-blue px-6 py-3 text-cap-1-bold-home font-extrabold shadow-[8px_8px_0px_0px_#9395FF] transition duration-200 hover:border hover:border-home-black hover:shadow-none">
-          <p className="whitespace-nowrap">Book a demo</p>
-          <ArrowRight />
-        </Button> */}
+        <span className="hidden md:block">{cta}</span>
       </div>
       <div className="aspect-reel w-44 overflow-clip transition-all md:flex md:flex-1 md:items-center md:justify-end lg:h-full">
         <VanillaPlayer

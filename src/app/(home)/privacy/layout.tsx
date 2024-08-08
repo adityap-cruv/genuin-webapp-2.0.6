@@ -1,7 +1,5 @@
-import { HomeFooter } from '@/components/pages/home/home-footer'
-import { HomeNavBar } from '@/components/pages/home/home-nav'
-// import { cookies } from 'next/headers'
-
+import { Footer } from '@/components/pages/index-pages/footer'
+import { NavBar } from '@/components/pages/index-pages/nav-bar'
 interface Props {
   children: React.ReactNode
 }
@@ -10,9 +8,9 @@ export default function Layout({ children }: Props) {
   // const isMobile = cookies().get('mobile')?.value === 'true'
   return (
     <main>
-      <HomeNavBar />
+      <NavBar />
       <section className="container">{children}</section>
-      <HomeFooter />
+      <Footer />
     </main>
   )
 }

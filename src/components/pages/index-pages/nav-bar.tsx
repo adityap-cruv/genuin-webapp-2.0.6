@@ -46,16 +46,18 @@ export function NavBar() {
           </div>
         </div>
         <SideModal />
-        <div className="hidden items-center md:flex ">
-          <Link href="/about" className="whitespace-nowrap px-6 text-cap-1-demi-home">
-            About us
-          </Link>
-          <Link
-            href="/explore"
-            className="rounded-full border px-6 py-4 text-cap-1-bold-home hover:border-primary hover:bg-primary hover:text-monochrome-white">
-            <p className="whitespace-nowrap">Discover Communities</p>
-          </Link>
-        </div>
+        {pathName !== PATH_NAME.privacy && pathName !== PATH_NAME.terms && (
+          <div className="hidden items-center md:flex ">
+            <Link href="/about" className="whitespace-nowrap px-6 text-cap-1-demi-home">
+              About us
+            </Link>
+            <Link
+              href="/explore"
+              className="rounded-full border px-6 py-4 text-cap-1-bold-home hover:border-primary hover:bg-primary hover:text-monochrome-white">
+              <p className="whitespace-nowrap">Discover Communities</p>
+            </Link>
+          </div>
+        )}
       </div>
     </nav>
   )
@@ -65,10 +67,10 @@ function SideModal() {
   const pathName = usePathname()
   return (
     <Sheet>
-      <SheetTrigger>
+      <SheetTrigger className="block md:hidden">
         <HamBurgerMenuIcon toggleToClose={false} />
       </SheetTrigger>
-      <SheetContent className="font-manrope relative flex w-full flex-col gap-0 border-none p-0 pt-10 text-cap-1-demi-home">
+      <SheetContent className="font-manrope flex w-full min-w-full flex-col gap-0 border-none p-0 pt-10 text-cap-1-demi-home">
         <Link
           href={PATH_NAME.index()}
           className={cn(

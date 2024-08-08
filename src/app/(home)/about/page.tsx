@@ -1,7 +1,7 @@
 'use client'
 import { ContactUs } from '@components/common/modals/contact-us'
-import { HomeFooter } from '@/components/pages/home/home-footer'
-import { HomeNavBar } from '@/components/pages/home/home-nav'
+import { NavBar } from '@/components/pages/index-pages/nav-bar'
+import { Footer } from '@/components/pages/index-pages/footer'
 import { Button } from '@components/ui/button'
 import GenuinLogo from '@images/home/GenuinLogo.svg'
 import bhargav from '@images/home/team/bhargav.svg'
@@ -19,11 +19,11 @@ export default function Component() {
       style={{
         background: 'linear-gradient(180deg, rgba(208, 220, 255, 0.00) 0%, rgba(208, 220, 255, 0.40) 100%)',
       }}>
-      <HomeNavBar />
+      <NavBar />
       <AboutUs />
       <HowWeDo />
       <Team />
-      <HomeFooter />
+      <Footer />
       <ContactUs>
         <div className="pointer-events-none fixed inset-x-0 bottom-8 flex justify-center md:hidden">
           <Button

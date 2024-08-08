@@ -12,10 +12,11 @@ type RootShellProps = {
   bgGrad: string
   genuinLogo: StaticImageData
   initialComponent: React.ReactNode
+  ctaForMobile: React.ReactNode
 }
 
 // TODO: Improve this components.
-export function RootShell({ children, bgGrad, genuinLogo, initialComponent }: RootShellProps) {
+export function RootShell({ children, bgGrad, genuinLogo, initialComponent, ctaForMobile }: RootShellProps) {
   return (
     <>
       <NavBar />
@@ -50,6 +51,7 @@ export function RootShell({ children, bgGrad, genuinLogo, initialComponent }: Ro
         {initialComponent}
       </div>
       {children}
+      <span className="fixed bottom-10 left-1/2 -translate-x-1/2 md:hidden">{ctaForMobile}</span>
     </>
   )
 }

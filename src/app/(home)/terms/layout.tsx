@@ -1,12 +1,12 @@
-import { HomeFooter } from '@/components/pages/home/home-footer'
-import { HomeNavBar } from '@/components/pages/home/home-nav'
+import { Footer } from '@/components/pages/index-pages/footer'
+import { NavBar } from '@/components/pages/index-pages/nav-bar'
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <main>
-      <HomeNavBar />
+      <NavBar />
       <section className="container">{children}</section>
-      <HomeFooter />
+      <Footer />
     </main>
   )
 }
