@@ -10,20 +10,33 @@ export default function Component() {
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: 'Explore communities on Genuin.',
-    applicationName: 'genuin',
-    description:
-      'Whether you’re interested in home improvement, beauty, or sports, there’s a Genuin community for you.',
-    openGraph: {
-      title: 'Explore communities on Genuin.',
-      description:
-        'Whether you’re interested in home improvement, beauty, or sports, there’s a Genuin community for you.',
-      url: 'https://begenuin.com',
-      images: [
-        {
-          url: 'https://media.begenuin.com/backend_assets/new_genuin_preview.png',
-        },
-      ],
+    robots: {
+      index: false,
+      follow: false,
+      googleBot: {
+        index: false,
+        follow: false,
+      },
     },
   }
 }
+
+// export async function generateMetadata(): Promise<Metadata> {
+//   return {
+//     title: 'Explore communities on Genuin.',
+//     applicationName: 'genuin',
+//     description:
+//       'Whether you’re interested in home improvement, beauty, or sports, there’s a Genuin community for you.',
+//     openGraph: {
+//       title: 'Explore communities on Genuin.',
+//       description:
+//         'Whether you’re interested in home improvement, beauty, or sports, there’s a Genuin community for you.',
+//       url: 'https://begenuin.com',
+//       images: [
+//         {
+//           url: 'https://media.begenuin.com/backend_assets/new_genuin_preview.png',
+//         },
+//       ],
+//     },
+//   }
+// }

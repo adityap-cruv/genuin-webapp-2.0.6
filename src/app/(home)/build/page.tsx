@@ -16,20 +16,34 @@ export default async function Page() {
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: 'Build your Community Media Network.',
-    applicationName: 'genuin',
-    description:
-      'Establish no-code, social communities with short videos that seamlessly integrate into  your owned digital properties and beyond.',
-    openGraph: {
-      title: 'Build your Community Media Network.',
-      description:
-        'Establish no-code, social communities with short videos that seamlessly integrate into  your owned digital properties and beyond.',
-      url: 'https://begenuin.com',
-      images: [
-        {
-          url: 'https://media.begenuin.com/backend_assets/new_genuin_preview.png',
-        },
-      ],
+    robots: {
+      index: false,
+      follow: false,
+      googleBot: {
+        index: false,
+        follow: false,
+      },
     },
   }
 }
+
+// export async function generateMetadata(): Promise<Metadata> {
+
+// return {
+//   title: 'Build your Community Media Network.',
+//   applicationName: 'genuin',
+//   description:
+//     'Establish no-code, social communities with short videos that seamlessly integrate into  your owned digital properties and beyond.',
+//   openGraph: {
+//     title: 'Build your Community Media Network.',
+//     description:
+//       'Establish no-code, social communities with short videos that seamlessly integrate into  your owned digital properties and beyond.',
+//     url: 'https://begenuin.com',
+//     images: [
+//       {
+//         url: 'https://media.begenuin.com/backend_assets/new_genuin_preview.png',
+//       },
+//     ],
+//   },
+// }
+// }

@@ -81,25 +81,28 @@ export async function consumeOtp({ email, phoneNumber, code }: Partial<SendOtpPr
       const accessToken = res.headers['gn-access-token']
       const refreshToken = res.headers['gn-refresh-token']
       const data = res.data.data
-      const user = {
-        isAvatar: data.is_avatar,
-        userId: data.user_id,
-        phoneNumber: data.phone,
-        nickname: data.nickname,
-        profileImage: data.profile_image,
-        email: data.email,
-        bio: data.bio,
-        name: data.name,
-        accessToken,
-        ksCbRequestStatus: data.ks_cb_request_status,
-        isBrandSystemUser: data.is_brand_system_user,
-        brandId: data.brand_id,
-        brandSlug: data?.brand?.brand_slug ? data?.brand?.brand_slug : null,
-        hasTopics: data.onboarding_topics,
-        brandGuidelines: data.brand_guidelines,
-        refreshToken,
-        birth: data.birthday,
-        usernameSet: !data.is_username_generated,
+      let user
+      if (data) {
+        user = {
+          isAvatar: data.is_avatar,
+          userId: data.user_id,
+          phoneNumber: data.phone,
+          nickname: data.nickname,
+          profileImage: data.profile_image,
+          email: data.email,
+          bio: data.bio,
+          name: data.name,
+          accessToken,
+          ksCbRequestStatus: data.ks_cb_request_status,
+          isBrandSystemUser: data.is_brand_system_user,
+          brandId: data.brand_id,
+          brandSlug: data?.brand?.brand_slug ? data?.brand?.brand_slug : null,
+          hasTopics: data.onboarding_topics,
+          brandGuidelines: data.brand_guidelines,
+          refreshToken,
+          birth: data.birthday,
+          usernameSet: !data.is_username_generated,
+        }
       }
 
       return { otpVerified: true, user }

@@ -1,10 +1,10 @@
 import { cn } from '@/lib/utils'
+import { useInView } from 'framer-motion'
 import OpenPlayerJS from 'openplayerjs'
 import { type DetailedHTMLProps, type VideoHTMLAttributes, memo, useEffect, useRef } from 'react'
 
 type Props = DetailedHTMLProps<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement> & {
   videoSource: string
-  id: string
 }
 
 /**
@@ -12,6 +12,16 @@ type Props = DetailedHTMLProps<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoE
  */
 export const VanillaPlayer = memo(function InnerPlayer({ videoSource, className, ...props }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null)
+  const inView = useInView(videoRef, { amount: 0.9, once: true })
+
+  useEffect(() => {
+    if (!videoRef.current) return
+    if (inView) {
+      if (videoRef.current) {
+        void videoRef.current.play()
+      }
+    }
+  }, [inView, videoRef.current])
 
   useEffect(() => {
     if (!videoRef.current) return
@@ -43,19 +53,17 @@ export const VanillaPlayer = memo(function InnerPlayer({ videoSource, className,
 
     void player.init().then((value) => {
       void player.load().then(() => {
-        player
-          .play()
-          .then((_) => {
-            // console.log('start playing')
-          })
-          .catch((e) => {
-            // console.log('something went wrong..', e)
-          })
+        // player
+        //   .play()
+        //   .then((_) => {
+        //     // console.log('start playing')
+        //   })
+        //   .catch((e) => {
+        //     // console.log('something went wrong..', e)
+        //   })
       })
     })
   }, [videoSource])
 
-  return (
-    <video className={cn(className, 'object-cover')} muted ref={videoRef} src={videoSource} playsInline {...props} />
-  )
+  return <video className={cn(className)} muted ref={videoRef} src={videoSource} playsInline {...props} />
 })
