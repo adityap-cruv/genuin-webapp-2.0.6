@@ -33,7 +33,9 @@ const footerLinks = [
 export function Footer({ className, ...restProps }: ComponentProps<'div'>) {
   return (
     <div className={cn('bg-home-black', className)} {...restProps}>
-      <div className="container flex h-full w-full flex-col items-center justify-between py-24 md:flex-row">
+      <div
+        className="container flex h-full w-full flex-col items-center justify-between py-24 md:flex-row"
+        style={{ maxWidth: 1200 }}>
         <Link href={PATH_NAME.index()} className="hidden md:block">
           <GenuinIcon.logo className="fill-monochrome-white" />
         </Link>

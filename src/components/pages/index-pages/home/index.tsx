@@ -40,7 +40,7 @@ const listOfComps = [
     ),
     subtitle:
       'Establish no-code, social communities with short videos that seamlessly integrate into your owned digital properties and beyond.',
-    videoLink: getAnimationUrl('buildArt'),
+    videoLink: getAnimationUrl('flyWheelArt'),
   },
   {
     title: (
@@ -53,7 +53,7 @@ const listOfComps = [
     ),
     subtitle:
       'Populate with both brand and performance content from partners, advertisers, and creators to ignite your community. ',
-    videoLink: getAnimationUrl('engageArt'),
+    videoLink: getAnimationUrl('flyWheelArt'),
   },
   {
     title: (
@@ -78,7 +78,7 @@ const listOfComps = [
     ),
     subtitle:
       'Monetize new vertical video inventory to increase time spent on your owned and operated channels, conversion, and LTV.',
-    videoLink: getAnimationUrl('boostArt'),
+    videoLink: getAnimationUrl('flyWheelArt'),
   },
 ]
 
@@ -131,7 +131,7 @@ export function InitialComponent() {
 
 export function BookDemo() {
   return (
-    <div className="container px-5 py-10 sm:px-10">
+    <div className="container px-5 py-10 sm:px-10" style={{ maxWidth: 1200 }}>
       <div
         className="flex flex-col items-center gap-6 px-6 py-12 sm:gap-9 sm:px-20 md:py-16"
         style={{ background: 'linear-gradient(90deg, #9395FF, #1685FD)', borderRadius: 36 }}>

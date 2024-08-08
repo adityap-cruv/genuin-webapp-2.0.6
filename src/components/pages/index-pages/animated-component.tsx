@@ -22,7 +22,7 @@ export function AnimatedButton({ className, shadowColor, children }: AnimatedBut
         boxShadow: `8px 8px ${shadowColor}`,
       }}
       className={cn(
-        `flex h-12 w-min items-center rounded-full px-6 py-3 text-cap-1-bold-home font-extrabold transition duration-200 hover:!shadow-none`,
+        `flex h-12 w-min items-center rounded-full px-6 py-3 text-cap-1-bold-home font-extrabold transition duration-500 hover:!shadow-none`,
         className
       )}>
       {children}
