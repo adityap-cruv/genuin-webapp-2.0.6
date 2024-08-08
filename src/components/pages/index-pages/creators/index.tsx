@@ -40,7 +40,8 @@ const listOfComps = [
   {
     title: (
       <>
-        <span className="text-blue">Grow</span>your <br />
+        <span className="text-blue">Grow </span>your
+        <br />
         community to <br />
         get rewards
       </>
