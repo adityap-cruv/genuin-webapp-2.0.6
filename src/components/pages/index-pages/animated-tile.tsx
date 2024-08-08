@@ -66,9 +66,9 @@ export function GeneralShellForInitialComponent({
         <p className="text-center text-title-2-demi md:w-3/4 md:text-start md:text-body-2-home">{subtitle}</p>
         <span className="hidden md:block">{cta}</span>
       </div>
-      <div className="aspect-reel w-44 overflow-clip transition-all md:flex md:flex-1 md:items-center md:justify-end lg:h-full">
+      <div className="aspect-reel w-44 overflow-clip transition-all sm:flex sm:w-96 sm:justify-center md:flex-1 md:justify-end lg:h-full">
         <VanillaPlayer
-          className="h-full shrink-0 overflow-clip rounded-3xl border-[8px] border-monochrome-white md:rounded-[42px] md:border-[12px] lg:h-5/6"
+          className="h-full shrink-0 overflow-clip rounded-3xl border-[8px] border-monochrome-white sm:rounded-[38px] md:rounded-[42px] md:border-[12px] lg:h-5/6"
           id="home-player"
           videoSource="https://media.begenuin.com/backend_assets/hero-video/comp-1_2.m3u8"
           loop={true}
