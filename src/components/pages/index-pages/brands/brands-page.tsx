@@ -4,7 +4,6 @@ import { GeneralShell, GeneralShellForInitialComponent, getAnimationUrl } from '
 import { RootShell } from '../root-shell'
 import bgGenuinLogo from '@images/home/backgrounds/logos/brandsBgLogo.svg'
 import { Footer } from '../footer'
-import { TickerCarousel } from '../ticker-carousel'
 import { ArrowRight } from 'lucide-react'
 import { AnimatedButton } from '../animated-component'
 import Link from 'next/link'
@@ -59,7 +58,6 @@ export function BrandsPage() {
           </AnimatedButton>
         </Link>
       }>
-      <TickerCarousel />
       {listOfComps.map((comp, index) => {
         return (
           <GeneralShell key={index} animationUrl={comp.videoLink} subtitle={comp.subtitle} titleNode={comp.title} />
@@ -96,7 +94,7 @@ function InitialComponent() {
 
 function BottomComponent() {
   return (
-    <div className="container px-5 py-10 sm:px-10">
+    <div className="container px-5 py-10 sm:px-10" style={{ maxWidth: 1200 }}>
       <div
         className="flex flex-col items-center gap-6 px-6 py-12 sm:gap-9 sm:px-20 md:py-16"
         style={{ background: 'linear-gradient(90deg, #9395FF, #1685FD)', borderRadius: 36 }}>
@@ -109,9 +107,9 @@ function BottomComponent() {
         </p>
         <span className="hidden md:block">
           <Link href={BCC_LOGIN_LINK}>
-            <AnimatedButton className="bg-primary" shadowColor="#1685FD">
-              <p className="whitespace-nowrap pr-2 text-monochrome-white">Get started</p>
-              <ArrowRight className="stroke-monochrome-white" />
+            <AnimatedButton className="border bg-monochrome-white" shadowColor="#0645FF">
+              <p className="whitespace-nowrap pr-2">Get started</p>
+              <ArrowRight />
             </AnimatedButton>
           </Link>
         </span>

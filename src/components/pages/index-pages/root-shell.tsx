@@ -33,7 +33,7 @@ export function RootShell({ children, bgGrad, genuinLogo, initialComponent, ctaF
         />
         <motion.div
           initial={{ rotate: 270, opacity: 0 }}
-          animate={{ rotate: 360, opacity: 1, transition: { duration: 0.5 } }}
+          animate={{ rotate: 360, opacity: 1, transition: { duration: 1 } }}
           className="absolute bottom-0 right-0 aspect-square bg-cover bg-right bg-no-repeat">
           <Image src={genuinLogo} height={800} width={800} alt="genuin-logo" />
         </motion.div>
