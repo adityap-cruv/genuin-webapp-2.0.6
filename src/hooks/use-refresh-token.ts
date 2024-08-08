@@ -40,12 +40,15 @@ export function useRefreshToken() {
 }
 
 export async function refreshToken(): Promise<{ newAccessToken: string; newRefreshToken: string } | null> {
+  const oldAccessToken = useGenuinOptions.getState().user?.accessToken
   const oldRefreshToken = useGenuinOptions.getState().user?.refreshToken
   return await axios
     .create({ baseURL: process.env.NEXT_PUBLIC_API_URL })
     .post(
       '/api/v4/auth/session/refresh',
-      {},
+      {
+        'gn-access-token': oldAccessToken,
+      },
       {
         headers: {
           Authorization: `Bearer ${oldRefreshToken}`,
