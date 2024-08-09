@@ -29,7 +29,7 @@ export function TickerCarousel() {
           <p className="text-cap-1-demi-home">Built by a world-class team</p>
         </div>
       </div>
-      <div className="container relative px-0">
+      <div className="container relative px-0" style={{ maxWidth: 1200 }}>
         <div
           className="absolute left-0 z-20 h-full w-1 bg-monochrome-white"
           style={{

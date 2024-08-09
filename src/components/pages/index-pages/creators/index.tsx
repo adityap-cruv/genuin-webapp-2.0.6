@@ -24,7 +24,7 @@ const listOfComps = [
     ),
     subtitle:
       'Integrate your content into communities run by brands and retailers that align with people who care about the same things you care about.',
-    videoLink: getAnimationUrl('growArt'),
+    videoLink: getAnimationUrl('partnerArt'),
   },
   {
     title: (
@@ -35,12 +35,13 @@ const listOfComps = [
       </>
     ),
     subtitle: 'Incentivize consumers who share a passion for your brand to become advocates via engaging experiences.',
-    videoLink: getAnimationUrl('growArt'),
+    videoLink: getAnimationUrl('createArt'),
   },
   {
     title: (
       <>
-        <span className="text-blue">Grow</span>your <br />
+        <span className="text-blue">Grow </span>your
+        <br />
         community to <br />
         get rewards
       </>

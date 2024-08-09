@@ -32,7 +32,7 @@ type GeneralShellProps = { titleNode: ReactNode; subtitle: string; animationUrl:
 export function GeneralShell({ titleNode, subtitle, animationUrl }: GeneralShellProps) {
   return (
     <AnimatedTile className="py-9 md:py-20">
-      <div className="flex flex-col gap-4 md:gap-6">
+      <div className="flex flex-col gap-4 md:flex-1 md:gap-6">
         <p className="text-[36px] font-bold leading-none md:w-3/4 md:text-[56px]">{titleNode}</p>
         <p className="w-full text-cap-1-bold-home font-medium leading-normal sm:w-3/4 md:w-2/3 md:text-title-1-med">
           {subtitle}
