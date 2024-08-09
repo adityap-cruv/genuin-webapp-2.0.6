@@ -35,7 +35,7 @@ const listOfComps = [
     title: (
       <>
         <span className="text-light-blue">Discover</span> <br />
-        new channels for distribution{' '}
+        new channels for distribution
       </>
     ),
     subtitle:

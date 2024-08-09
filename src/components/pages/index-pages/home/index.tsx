@@ -40,7 +40,7 @@ const listOfComps = [
     ),
     subtitle:
       'Establish no-code, social communities with short videos that seamlessly integrate into your owned digital properties and beyond.',
-    videoLink: getAnimationUrl('flyWheelArt'),
+    videoLink: getAnimationUrl('buildArt'),
   },
   {
     title: (
@@ -53,7 +53,7 @@ const listOfComps = [
     ),
     subtitle:
       'Populate with both brand and performance content from partners, advertisers, and creators to ignite your community. ',
-    videoLink: getAnimationUrl('flyWheelArt'),
+    videoLink: getAnimationUrl('engageArt'),
   },
   {
     title: (
@@ -78,7 +78,7 @@ const listOfComps = [
     ),
     subtitle:
       'Monetize new vertical video inventory to increase time spent on your owned and operated channels, conversion, and LTV.',
-    videoLink: getAnimationUrl('flyWheelArt'),
+    videoLink: getAnimationUrl('boostArt'),
   },
 ]
 
