@@ -28,6 +28,7 @@ export const Mobile = memo(function Mobile({
             link: { hasText: !!linkoutItem.links[0].title, hasThumbnail: !!linkoutItem.links[0].image },
             cta: linkoutItem.cta_link ? { name: linkoutItem.cta_text, link: linkoutItem.cta_link } : undefined,
             single: true,
+            no_of_links: linkoutItem.links.length,
           })
           return (
             <div className="rounded-lg bg-monochrome-black/50 p-2" key={index}>
@@ -58,6 +59,7 @@ export const Mobile = memo(function Mobile({
                             link: { hasText: !!item.title, hasThumbnail: !!item.image },
                             single: true,
                             clicked: 'link',
+                            no_of_links: linkoutItem.links.length,
                           })
                         }}
                       />
@@ -73,7 +75,9 @@ export const Mobile = memo(function Mobile({
                             clicked: 'cta',
                             linkoutId,
                             videoId,
+                            link: { hasText: !!linkoutItem.links[0].title, hasThumbnail: !!linkoutItem.links[0].image },
                             cta: { name: linkoutItem.cta_text, link: linkoutItem.cta_link },
+                            no_of_links: linkoutItem.links.length,
                           })
                         }}
                       />
@@ -90,7 +94,9 @@ export const Mobile = memo(function Mobile({
           linkoutId,
           videoId,
           single: false,
+          link: { hasText: !!linkoutItem.links[0].title, hasThumbnail: !!linkoutItem.links[0].image },
           cta: linkoutItem.cta_link ? { name: linkoutItem.cta_text, link: linkoutItem.cta_link } : undefined,
+          no_of_links: linkoutItem.links.length,
         })
         if (everyoneHasImage) {
           return (
@@ -113,6 +119,7 @@ export const Mobile = memo(function Mobile({
                           link: { hasText: !!item.title, hasThumbnail: !!item.image },
                           single: false,
                           position: index + 1,
+                          no_of_links: linkoutItem.links.length,
                         })
                       }}>
                       <div
@@ -144,7 +151,9 @@ export const Mobile = memo(function Mobile({
                       clicked: 'cta',
                       linkoutId,
                       videoId,
+                      link: { hasText: !!linkoutItem.links[0].title, hasThumbnail: !!linkoutItem.links[0].image },
                       cta: { name: linkoutItem.cta_text, link: linkoutItem.cta_link },
+                      no_of_links: linkoutItem.links.length,
                     })
                   }}
                 />
@@ -170,6 +179,7 @@ export const Mobile = memo(function Mobile({
                           clicked: 'link',
                           link: { hasText: !!item.title, hasThumbnail: !!item.image },
                           single: false,
+                          no_of_links: linkoutItem.links.length,
                         })
                       }}
                       href={checkAndAppendHttps(item.link)}
@@ -191,7 +201,9 @@ export const Mobile = memo(function Mobile({
                       clicked: 'cta',
                       linkoutId,
                       videoId,
+                      link: { hasText: !!linkoutItem.links[0].title, hasThumbnail: !!linkoutItem.links[0].image },
                       cta: { name: linkoutItem.cta_text, link: linkoutItem.cta_link },
+                      no_of_links: linkoutItem.links.length,
                     })
                   }}
                 />

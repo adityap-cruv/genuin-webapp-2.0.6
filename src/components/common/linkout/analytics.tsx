@@ -17,16 +17,9 @@ type TriggerLinkoutEventProps = {
     link?: string | null
     name?: string | null
   }
+  no_of_links?: number
 }
 
-const Positions: Record<number, string> = {
-  1: 'First',
-  2: 'Second',
-  3: 'Third',
-  4: 'Fourth',
-}
-
-// TODO: Create a JSON object and simplify the function
 export function triggerLinkoutEvent({
   clicked,
   cta,
@@ -35,51 +28,31 @@ export function triggerLinkoutEvent({
   single,
   videoId,
   link,
+  no_of_links,
 }: TriggerLinkoutEventProps) {
   let eventName = ''
-  const properties = {
+  const LINK_CLICKED = 'Link Clicked'
+  const CTA_BUTTON_CLICKED = 'Link CTA Button Clicked'
+
+  const properties: any = {
     content_id: videoId,
     linkout_id: linkoutId,
     content_category: 'loop',
     content_type: 'video',
+    position,
+    no_of_links: no_of_links ? no_of_links : 0,
+    cta_button: cta ? 'Yes' : 'No',
+    thumbnail: link?.hasThumbnail ? 'Yes' : 'No',
+    text: link?.hasText ? 'Yes' : 'No',
+    cta_url: cta?.link,
+    cta_name: cta?.name,
   }
 
   if (clicked) {
-    if (clicked === 'link') {
-      if (single) {
-        eventName += 'Link Redirection'
-      } else {
-        eventName += Positions[position ?? 1]
-        eventName += ' Link Clicked'
-      }
-    } else {
-      eventName += 'Link Button Clicked'
-      Object.assign(properties, { cta_name: cta?.name, cta_url: cta?.link })
-    }
+    eventName = clicked === 'cta' ? CTA_BUTTON_CLICKED : LINK_CLICKED
   } else {
-    if (single) {
-      if (link?.hasText) {
-        if (link.hasThumbnail) {
-          eventName = 'Link With Text And Thumbnail'
-        } else {
-          eventName = 'Link With Text'
-        }
-        if (cta) {
-          eventName += ' And CTA'
-          Object.assign(properties, { cta_name: cta.name, cta_url: cta.link })
-        }
-      } else if (link?.hasThumbnail) {
-        eventName = 'Link With Thumbnail'
-      } else if (cta) {
-        eventName = 'Link With CTA'
-        Object.assign(properties, { cta_name: cta.name, cta_url: cta.link })
-      } else {
-        eventName = 'Single Link'
-      }
-    } else {
-      eventName += 'Multiple Links'
-    }
-    eventName += ' Viewed'
+    eventName = single ? LINK_CLICKED : LINK_CLICKED // Adjust as needed
+    // Add any additional conditions if necessary
   }
 
   void Analytics.track({
