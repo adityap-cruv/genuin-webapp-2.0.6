@@ -7,7 +7,7 @@ import React, { memo } from 'react'
 import { LinkIcon } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { type LinkoutsType } from './schema'
-import { triggerLinkoutEvent } from './analytics'
+import { triggerLinkoutEvent, triggerLinkoutViewEvent } from './analytics'
 
 export const Mobile = memo(function Mobile({
   linkouts,
@@ -22,7 +22,7 @@ export const Mobile = memo(function Mobile({
     <motion.div initial={{ y: 75 }} animate={{ y: 0, transition: { duration: 0.3 } }}>
       {linkouts.map((linkoutItem, index) => {
         if (linkoutItem.links.length === 1) {
-          triggerLinkoutEvent({
+          triggerLinkoutViewEvent({
             linkoutId,
             videoId,
             link: { hasText: !!linkoutItem.links[0].title, hasThumbnail: !!linkoutItem.links[0].image },

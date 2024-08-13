@@ -60,3 +60,23 @@ export function triggerLinkoutEvent({
     properties,
   })
 }
+
+export function triggerLinkoutViewEvent({ cta, linkoutId, videoId, link, noOfLinks }: TriggerLinkoutEventProps) {
+  const eventName = 'Link Viewed'
+
+  const properties: any = {
+    content_id: videoId,
+    linkout_id: linkoutId,
+    content_category: 'loop',
+    content_type: 'video',
+    no_of_links: noOfLinks ?? 0,
+    cta_button: cta ? 'Yes' : 'No',
+    thumbnail: noOfLinks ?? 0 > 1 ? null : link?.hasThumbnail ? 'Yes' : 'No',
+    text: noOfLinks ?? 0 > 1 ? null : link?.hasText ? 'Yes' : 'No',
+  }
+
+  void Analytics.track({
+    eventName,
+    properties,
+  })
+}
