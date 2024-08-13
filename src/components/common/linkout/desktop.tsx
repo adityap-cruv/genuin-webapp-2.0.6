@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { getLinkouts } from './api'
 import { Loader } from './loader'
 import { memo } from 'react'
-import { triggerLinkoutEvent } from './analytics'
+import { triggerLinkoutEvent, triggerLinkoutViewEvent } from './analytics'
 
 type ComponentProps = {
   linkoutId: number
@@ -30,6 +30,15 @@ function LinkoutForDesktop({ linkoutId, videoId }: { linkoutId: number; videoId:
     return <Loader />
   }
 
+  triggerLinkoutViewEvent({
+    linkoutId,
+    videoId,
+    link: { hasText: !!linkouts[0].links[0].title, hasThumbnail: !!linkouts[0].links[0].image },
+    cta: linkouts[0].cta_link ? { name: linkouts[0].cta_text, link: linkouts[0].cta_link } : undefined,
+    single: true,
+    noOfLinks: linkouts[0].links.length,
+  })
+  
   return linkouts.map((linkoutItem, index) => {
     if (linkoutItem.links.length === 1) {
       triggerLinkoutEvent({
