@@ -30,18 +30,9 @@ function LinkoutForDesktop({ linkoutId, videoId }: { linkoutId: number; videoId:
     return <Loader />
   }
 
-  triggerLinkoutViewEvent({
-    linkoutId,
-    videoId,
-    link: { hasText: !!linkouts[0].links[0].title, hasThumbnail: !!linkouts[0].links[0].image },
-    cta: linkouts[0].cta_link ? { name: linkouts[0].cta_text, link: linkouts[0].cta_link } : undefined,
-    single: true,
-    noOfLinks: linkouts[0].links.length,
-  })
-  
   return linkouts.map((linkoutItem, index) => {
     if (linkoutItem.links.length === 1) {
-      triggerLinkoutEvent({
+      triggerLinkoutViewEvent({
         linkoutId,
         videoId,
         link: { hasText: !!linkoutItem.links[0].title, hasThumbnail: !!linkoutItem.links[0].image },
