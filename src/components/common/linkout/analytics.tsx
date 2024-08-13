@@ -62,7 +62,7 @@ export function triggerLinkoutEvent({
 }
 
 export function triggerLinkoutViewEvent({ cta, linkoutId, videoId, link, noOfLinks }: TriggerLinkoutEventProps) {
-  let eventName = 'Link Viewed'
+  const eventName = 'Link Viewed'
 
   const properties: any = {
     content_id: videoId,
