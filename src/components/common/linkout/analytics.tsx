@@ -17,7 +17,7 @@ type TriggerLinkoutEventProps = {
     link?: string | null
     name?: string | null
   }
-  no_of_links?: number
+  noOfLinks?: number
 }
 
 export function triggerLinkoutEvent({
@@ -28,7 +28,7 @@ export function triggerLinkoutEvent({
   single,
   videoId,
   link,
-  no_of_links,
+  noOfLinks,
 }: TriggerLinkoutEventProps) {
   let eventName = ''
   const LINK_CLICKED = 'Link Clicked'
@@ -40,7 +40,7 @@ export function triggerLinkoutEvent({
     content_category: 'loop',
     content_type: 'video',
     position,
-    no_of_links: no_of_links ? no_of_links : 0,
+    no_of_links: noOfLinks ?? 0,
     cta_button: cta ? 'Yes' : 'No',
     thumbnail: link?.hasThumbnail ? 'Yes' : 'No',
     text: link?.hasText ? 'Yes' : 'No',
