@@ -38,7 +38,7 @@ function LinkoutForDesktop({ linkoutId, videoId }: { linkoutId: number; videoId:
         link: { hasText: !!linkoutItem.links[0].title, hasThumbnail: !!linkoutItem.links[0].image },
         cta: linkoutItem.cta_link ? { name: linkoutItem.cta_text, link: linkoutItem.cta_link } : undefined,
         single: true,
-        no_of_links: linkoutItem.links.length,
+        noOfLinks: linkoutItem.links.length,
       })
       return (
         <div
@@ -72,7 +72,7 @@ function LinkoutForDesktop({ linkoutId, videoId }: { linkoutId: number; videoId:
                         clicked: 'link',
                         link: { hasText: !!item.title, hasThumbnail: !!item.image },
                         single: true,
-                        no_of_links: linkoutItem.links.length,
+                        noOfLinks: linkoutItem.links.length,
                       })
                     }}
                   />
@@ -87,7 +87,7 @@ function LinkoutForDesktop({ linkoutId, videoId }: { linkoutId: number; videoId:
                           videoId,
                           link: { hasText: !!linkoutItem.links[0].title, hasThumbnail: !!linkoutItem.links[0].image },
                           cta: { name: linkoutItem.cta_text, link: linkoutItem.cta_link },
-                          no_of_links: linkoutItem.links.length,
+                          noOfLinks: linkoutItem.links.length,
                         })
                       }}
                     />
@@ -108,7 +108,7 @@ function LinkoutForDesktop({ linkoutId, videoId }: { linkoutId: number; videoId:
       single: false,
       link: { hasText: !!linkoutItem.links[0].title, hasThumbnail: !!linkoutItem.links[0].image },
       cta: linkoutItem.cta_link ? { name: linkoutItem.cta_text, link: linkoutItem.cta_link } : undefined,
-      no_of_links: linkoutItem.links.length,
+      noOfLinks: linkoutItem.links.length,
     })
     if (everyoneHasImage) {
       return (
@@ -127,7 +127,7 @@ function LinkoutForDesktop({ linkoutId, videoId }: { linkoutId: number; videoId:
                       link: { hasText: !!item.title, hasThumbnail: !!item.image },
                       position: index + 1,
                       single: false,
-                      no_of_links: linkoutItem.links.length,
+                      noOfLinks: linkoutItem.links.length,
                     })
                   }}>
                   <div
@@ -159,7 +159,7 @@ function LinkoutForDesktop({ linkoutId, videoId }: { linkoutId: number; videoId:
                   videoId,
                   link: { hasText: !!linkoutItem.links[0].title, hasThumbnail: !!linkoutItem.links[0].image },
                   cta: { name: linkoutItem.cta_text, link: linkoutItem.cta_link },
-                  no_of_links: linkoutItem.links.length,
+                  noOfLinks: linkoutItem.links.length,
                 })
               }}
             />
@@ -185,7 +185,7 @@ function LinkoutForDesktop({ linkoutId, videoId }: { linkoutId: number; videoId:
                         link: { hasText: !!item.title, hasThumbnail: !!item.image },
                         position: index + 1,
                         single: false,
-                        no_of_links: linkoutItem.links.length,
+                        noOfLinks: linkoutItem.links.length,
                       })
                     }}
                   />
@@ -203,7 +203,7 @@ function LinkoutForDesktop({ linkoutId, videoId }: { linkoutId: number; videoId:
                   linkoutId,
                   videoId,
                   cta: { name: linkoutItem.cta_text, link: linkoutItem.cta_link },
-                  no_of_links: linkoutItem.links.length,
+                  noOfLinks: linkoutItem.links.length,
                 })
               }}
             />
