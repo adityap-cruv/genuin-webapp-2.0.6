@@ -89,7 +89,7 @@ export function Mobile({
           <TopBar showClose className="fixed left-0 top-0" variant="transparent" onClose={close} />
           {/* Please done modify below condition to  unreadMessageCount && unreadMessageCount !== 0,
              it is creating the problem on showing the 0 on the UI */}
-          {unreadMessageCount !== 0 && (
+          {unreadMessageCount !== undefined && unreadMessageCount !== 0 && (
             <div className="absolute inset-0 z-10 flex h-fit w-full items-center justify-center ">
               <UnseenMessageRibbon messageCount={unreadMessageCount ?? 0} />
             </div>
