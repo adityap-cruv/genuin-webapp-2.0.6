@@ -55,6 +55,7 @@ export default function BecomeCbCard({ className }: { className: string }) {
           // } else {
           AuthenticationModal.open('KS_CB_REQUEST', embed ? 'KS_CB_SUBDOMAIN' : 'KS_CB_WEB')
           // }
+          // AuthenticationModal.open(undefined, 'WALLET_HOW_IT_WORKS')
         }}>
         <div className="z-20 w-3/5">
           <p className="w-64 overflow-hidden p-3 text-body-1-bold">

@@ -26,6 +26,7 @@ export type StepsType =
   | 'LOGOUT'
   | 'DELETE_CONFIRMATION'
   | 'DELETE_CONFIRMED'
+  | 'WALLET_HOW_IT_WORKS'
 
 type FormDataType = {
   displayName: string

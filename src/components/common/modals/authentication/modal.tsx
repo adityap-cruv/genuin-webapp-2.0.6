@@ -27,6 +27,7 @@ import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { useShallow } from 'zustand/react/shallow'
 import { X } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
+import { HowItWorks } from '../wallet/how-it-works'
 
 type Props = DialogProps & { showClose?: boolean }
 
@@ -228,5 +229,7 @@ export function Content() {
       )
     case 'DELETE_CONFIRMED':
       return <DeleteConfirmed />
+    case 'WALLET_HOW_IT_WORKS':
+      return <HowItWorks />
   }
 }
