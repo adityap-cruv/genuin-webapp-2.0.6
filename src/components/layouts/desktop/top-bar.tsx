@@ -16,6 +16,7 @@ import { SearchBar } from '@components/common/search-bar'
 import { AccountIcon, NotificationIcon } from '@icons/settings-side-bar-icons'
 import { usePathname, useRouter } from 'next/navigation'
 import { formatPhoneNumberIntl } from 'react-phone-number-input'
+import { WalletAmountBadge } from '@/components/common/wallet/wallet-amount-badge'
 
 export function TopBar({
   showUserTick = true,
@@ -39,6 +40,7 @@ export function TopBar({
           )}
           <div className="flex gap-x-3">
             {showSearchBar && <SearchBar.desktop />}
+            <WalletAmountBadge />
             {!isEmbed ? (
               <>
                 <DownloadAppDialog>

@@ -5,6 +5,7 @@ import Analytics from '@services/analytics'
 import { PlayerProgressBar } from './player-progress-bar'
 import { memo } from 'react'
 import { useShallow } from 'zustand/react/shallow'
+import { WalletAmountBadge } from '../../wallet/wallet-amount-badge'
 
 type DesktopProps = {
   sparkCount: number
@@ -50,6 +51,9 @@ export const Desktop = memo(function Desktop({
           </span>
         </div>
       )}
+      <span className="absolute right-6 top-6 h-fit w-fit cursor-pointer">
+        <WalletAmountBadge />
+      </span>
       <div className="absolute bottom-0 right-0 pr-2">
         <Actions.desktop
           shareUrl={shareUrl}
