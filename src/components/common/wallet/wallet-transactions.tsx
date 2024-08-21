@@ -1,6 +1,7 @@
 'use client'
+import { Button } from '@/components/ui/button'
 import { useWalletStore } from './store'
-import { WithdrawDialog } from './withdraw-modal'
+import { AuthenticationModal } from '../modals/authentication'
 
 export const WalletTransactionsCard = () => {
   const { currentCardView } = useWalletStore()
@@ -16,7 +17,17 @@ export const WalletTransactionsCard = () => {
           <p className="mb-1 text-title-2-bold-home-m text-secondary">$50</p>
           <p className="text-body-1-demi text-monochrome-black">Current balance</p>
         </div>
-        <WithdrawDialog />
+        <Button
+          size="custom"
+          className="rounded border border-primary"
+          variant="outline"
+          onClick={() => {
+            AuthenticationModal.open(undefined, 'WITHDRAW_CASH')
+          }}>
+          <p className="px-4 py-1.5 text-body-1-demi text-primary">
+            {currentCardView === 'Cash' ? 'Withdraw' : 'Redeem'}
+          </p>
+        </Button>
       </div>
 
       <p className="p-2 text-body-1-bold">Transactions</p>

@@ -1,8 +1,7 @@
 'use client'
-import DiscountCoupon from '@icons/icDiscountCoupon.svg'
-import icBack from '@icons/icBack.svg'
-import Image from 'next/image'
 import { useWalletStore } from './store'
+import { DiscountCouponIcon } from '@icons/wallet/discount-coupon-icon'
+import { BackIcon } from '@icons/back-icon'
 
 export const WalletRewardCreditsCard = () => {
   const { setCurrentCardView, currentCardView } = useWalletStore()
@@ -15,10 +14,11 @@ export const WalletRewardCreditsCard = () => {
         setCurrentCardView('Reward')
       }}>
       <div className="mb-2 flex justify-between">
-        <Image src={DiscountCoupon} alt="DiscountCoupon" />
+        {/* <Image src={DiscountCoupon} alt="DiscountCoupon" /> */}
+        <DiscountCouponIcon className="h-8 stroke-[#507CFF]" />
         <div className="flex items-center gap-2 text-title-2-bold text-secondary sm:text-title-1-bold">
           $50
-          <Image src={icBack} alt="RightArrow" className="h-5 rotate-180" />
+          <BackIcon className="h-3.5 rotate-180 fill-secondary-300" />
         </div>
       </div>
 

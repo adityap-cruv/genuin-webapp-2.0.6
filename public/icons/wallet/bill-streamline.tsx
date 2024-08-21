@@ -3,14 +3,7 @@ import { type ComponentProps } from 'react'
 type Props = ComponentProps<'svg'>
 export function BillStreamlineIcon({ ...props }: Props) {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      {...props}
-      stroke="black">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" {...props} stroke="black">
       <path
         d="M7.86719 10.1636C7.86719 11.9317 9.78128 13.0368 11.3125 12.1527C12.0231 11.7425 12.4609 10.9842 12.4609 10.1636C12.4609 8.3954 10.5468 7.29037 9.01563 8.17443C8.305 8.58468 7.86719 9.34303 7.86719 10.1636Z"
         // stroke="#B4B4B4"

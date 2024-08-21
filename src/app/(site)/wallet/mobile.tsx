@@ -10,8 +10,9 @@ import { Sheet, SheetClose, SheetContent, SheetTrigger } from '@components/ui/sh
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
 import { type ReactNode } from 'react'
 import { useWalletStore } from '@/components/common/wallet/store'
-import { DiscountCouponIcon } from '@icons/discount-coupon-icon'
-import { BillStreamlineIcon } from '@icons/bill-streamline'
+import { DiscountCouponIcon } from '@icons/wallet/discount-coupon-icon'
+import { BillStreamlineIcon } from '@icons/wallet/bill-streamline'
+import { AuthenticationModal } from '@/components/common/modals/authentication'
 
 export default function Mobile() {
   return (
@@ -22,7 +23,12 @@ export default function Mobile() {
         </div>
         <div className="absolute top-0 flex h-14 w-full items-center justify-between px-6 py-2">
           <BackIcon className="fill-monochrome-white" />
-          <QuestionMarkIcon className="stroke-monochrome-white" />
+          <QuestionMarkIcon
+            className="cursor-pointer stroke-monochrome-white"
+            onClick={() => {
+              AuthenticationModal.open(undefined, 'WALLET_HOW_IT_WORKS')
+            }}
+          />{' '}
         </div>
         <div className="flex w-full justify-center gap-10 px-6 text-center">
           <div className="flex items-center gap-2">
@@ -77,7 +83,12 @@ const Transactions = ({ children }: { children: ReactNode }) => {
               <SheetClose className="shadow-none outline-none">
                 <BackIcon className="fill-monochrome-black" />
               </SheetClose>
-              <QuestionMarkIcon className="stroke-monochrome-black" />
+              <QuestionMarkIcon
+                className="cursor-pointer stroke-monochrome-black"
+                onClick={() => {
+                  AuthenticationModal.open(undefined, 'WALLET_HOW_IT_WORKS')
+                }}
+              />
             </div>
           </div>
           <div className="flex h-14 w-full items-center justify-center py-2 text-center text-title-2-bold text-monochrome-black">

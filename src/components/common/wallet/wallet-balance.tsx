@@ -1,11 +1,18 @@
+'use client'
 import { QuestionMarkIcon } from '@icons/question-mark-icon'
+import { AuthenticationModal } from '../modals/authentication'
 
 export const WalletBalanceCard = () => {
   return (
     <div className="flex h-full w-full flex-col justify-between py-4 text-monochrome-white">
       <div className="flex items-center gap-4">
         <p className="text-title-1-bold">Wallet</p>
-        <QuestionMarkIcon className="stroke-monochrome-white/60" />
+        <QuestionMarkIcon
+          className="cursor-pointer stroke-monochrome-white/60"
+          onClick={() => {
+            AuthenticationModal.open(undefined, 'WALLET_HOW_IT_WORKS')
+          }}
+        />
       </div>
       <div className="flex gap-10">
         <div className="flex items-center gap-2">

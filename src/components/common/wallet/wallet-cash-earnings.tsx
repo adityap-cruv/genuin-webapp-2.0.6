@@ -1,8 +1,7 @@
 'use client'
-import BillStreamline from '@icons/icBillStreamline.svg'
-import icBack from '@icons/icBack.svg'
-import Image from 'next/image'
 import { useWalletStore } from './store'
+import { BackIcon } from '@icons/back-icon'
+import { BillStreamlineIcon } from '@icons/wallet/bill-streamline'
 
 export const WalletCashEarningsCard = () => {
   const { setCurrentCardView, currentCardView } = useWalletStore()
@@ -16,10 +15,10 @@ export const WalletCashEarningsCard = () => {
         setCurrentCardView('Cash')
       }}>
       <div className="mb-2 flex justify-between">
-        <Image src={BillStreamline} alt="DiscountCoupon" />
+        <BillStreamlineIcon className="h-8 stroke-[#77CE1A]" />
         <div className="flex items-center gap-2 text-title-2-bold text-secondary sm:text-title-1-bold">
           $50
-          <Image src={icBack} alt="RightArrow" className="h-5 rotate-180" />
+          <BackIcon className="h-3.5 rotate-180 fill-secondary-300" />
         </div>
       </div>
 

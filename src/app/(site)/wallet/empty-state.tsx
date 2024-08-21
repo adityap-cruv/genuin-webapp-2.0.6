@@ -1,9 +1,11 @@
+'use client'
 import BillStreamline from '@icons/icBillStreamline.svg'
 import DiscountCoupon from '@icons/icDiscountCoupon.svg'
 import icBack from '@icons/icBack.svg'
 import Image from 'next/image'
 import { QuestionMarkIcon } from '@icons/question-mark-icon'
 import { BackIcon } from '@icons/back-icon'
+import { AuthenticationModal } from '@/components/common/modals/authentication'
 
 export const EmptyState = {
   mobile: Mobile,
@@ -16,7 +18,12 @@ function Desktop() {
       <div className="mt-6 flex h-48 min-h-fit w-full flex-col items-center justify-between rounded-2xl bg-primary p-10 text-center text-monochrome-white">
         <div className="flex items-center gap-4">
           <p className="text-title-1-bold">Wallet</p>
-          <QuestionMarkIcon className="stroke-monochrome-white/60" />
+          <QuestionMarkIcon
+            className="cursor-pointer stroke-monochrome-white/60"
+            onClick={() => {
+              AuthenticationModal.open(undefined, 'WALLET_HOW_IT_WORKS')
+            }}
+          />
         </div>
         <div className="flex flex-col gap-2">
           <span className="text-new-h2-mobile">$0</span>
@@ -85,7 +92,12 @@ function Mobile() {
           </div>
           <div className="absolute top-0 flex h-14 w-full items-center justify-between px-6 py-2">
             <BackIcon className="fill-monochrome-white" />
-            <QuestionMarkIcon className="stroke-monochrome-white" />
+            <QuestionMarkIcon
+              className="cursor-pointer stroke-monochrome-white"
+              onClick={() => {
+                AuthenticationModal.open(undefined, 'WALLET_HOW_IT_WORKS')
+              }}
+            />
           </div>
           <div className="flex w-full justify-center gap-10 px-6 text-center">
             <div className="flex items-center gap-2">
