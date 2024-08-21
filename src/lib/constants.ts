@@ -32,3 +32,35 @@ export const RECENT_SEARCH_CONTENT_TYPE: Record<'text' | 'community' | 'loop' | 
   user: 2,
   video: 5,
 }
+
+export const HOW_IT_WORKS = {
+  rewards: [
+    {
+      icon: '',
+      title: 'Engage with Videos & Earn Rewards',
+      description: 'Watch videos, comment, spark, share or repost to earn reward credits.',
+    },
+    {
+      icon: '',
+      title: 'Join Challenges for More Rewards',
+      description: 'Participate in challenges to boost your reward credits even further.',
+    },
+    {
+      icon: '',
+      title: 'Redeem Your Reward Credits',
+      description: 'Redeem your reward credits as coupons, or complete challenges to convert them into cash earrings.',
+    },
+  ],
+  cash: [
+    {
+      icon: '',
+      title: 'Complete Challenges to Earn Cash',
+      description: 'Join challenges and complete all the steps to convert your rewards into cash earnings.',
+    },
+    {
+      icon: '',
+      title: 'Deposit Your Cash Earnings',
+      description: 'Easily deposit your cash earnings directly into your bank account anytime.',
+    },
+  ],
+}
