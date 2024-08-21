@@ -13,6 +13,8 @@ import { useWalletStore } from '@/components/common/wallet/store'
 import { DiscountCouponIcon } from '@icons/wallet/discount-coupon-icon'
 import { BillStreamlineIcon } from '@icons/wallet/bill-streamline'
 import { AuthenticationModal } from '@/components/common/modals/authentication'
+import Link from 'next/link'
+import { PATH_NAME } from '@/lib/utils/constants/path'
 
 export default function Mobile() {
   return (
@@ -22,7 +24,9 @@ export default function Mobile() {
           Wallet
         </div>
         <div className="absolute top-0 flex h-14 w-full items-center justify-between px-6 py-2">
-          <BackIcon className="fill-monochrome-white" />
+          <Link href={{ pathname: PATH_NAME.home() }}>
+            <BackIcon className="fill-monochrome-white" />
+          </Link>
           <QuestionMarkIcon
             className="cursor-pointer stroke-monochrome-white"
             onClick={() => {

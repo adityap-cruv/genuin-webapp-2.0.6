@@ -52,7 +52,7 @@ export const Desktop = memo(function Desktop({
         </div>
       )}
       <span className="absolute right-6 top-6 h-fit w-fit cursor-pointer">
-        <WalletAmountBadge />
+        <WalletAmountBadge type="light" />
       </span>
       <div className="absolute bottom-0 right-0 pr-2">
         <Actions.desktop
