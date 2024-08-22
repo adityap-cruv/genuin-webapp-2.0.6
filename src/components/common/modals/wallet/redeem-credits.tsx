@@ -16,6 +16,7 @@ export function RedeemCredits() {
     const res = await redeemCouponAPI()
     if (res.data.code === 200) {
       closeModal()
+      window.open(res.data.data.redeem_link, '_blank')
     }
     setIsLoading(false)
   }

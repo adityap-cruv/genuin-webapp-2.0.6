@@ -20,7 +20,7 @@ export const WalletAmountBadge: React.FC<WalletAmountBadgeProps> = ({ type }) =>
           type === 'light'
             ? 'bg-monochrome-black/20 text-monochrome-white'
             : 'border border-tertiary-300 text-monochrome-black'
-        } ${(!isWalletEnabled || !user) && 'hidden'}`}
+        } ${(!isWalletEnabled || !user || user.isBrandSystemUser) && 'hidden'}`}
         style={type === 'dark' ? { borderWidth: 1 } : {}}>
         ${walletBalance ? walletBalance / 100 : 0}
       </div>
