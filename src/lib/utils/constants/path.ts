@@ -21,6 +21,7 @@ export const PATH_NAME = {
   explore: () => '/explore',
   creators: () => '/creators',
   brands: () => '/brands',
+  wallet: () => '/wallet',
   careers: () => 'https://careers.begenuin.com',
   adreels: () => 'https://creatives.begenuin.com/',
   yahoo: () => 'https://finance.yahoo.com/news/genuin-unveils-social-paradigm-empowering-140027873.html',

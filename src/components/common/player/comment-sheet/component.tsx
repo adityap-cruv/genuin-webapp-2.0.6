@@ -11,6 +11,7 @@ import { useSearchParams } from 'next/navigation'
 import { type CommentListType } from '@lib/schemas/loop/comment'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import { commentDeepLink } from '@/lib/get-deeplink'
+import { useWalletBalanceHandler } from '@/services/wallet-handler'
 
 type Props = {
   videoId: string
@@ -64,11 +65,13 @@ export function Sheet({ commentCount, videoId, videoDetails }: Props) {
 }
 
 function CommentInput({ setComments, currentComment, setCurrentComment, videoDetails }: any) {
+  const { handleWalletBalance } = useWalletBalanceHandler()
   const user = useGenuinOptions().user
   const embed = useGenuinOptions().embed
   const searchParams = Object.fromEntries(useSearchParams())
 
   async function handleClick() {
+    await handleWalletBalance('comments')
     if (currentComment.length !== 0) {
       const newComment = {
         owner: {

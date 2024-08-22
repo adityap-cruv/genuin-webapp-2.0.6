@@ -17,6 +17,7 @@ import { AuthenticationModal } from '@components/common/modals/authentication'
 import { ActionItem } from './action-item'
 import { useCommentSheetStore } from '../../comment-sheet/store'
 import { repostDeepLink, sparkDeepLink } from '@/lib/get-deeplink'
+import { useWalletBalanceHandler } from '@/services/wallet-handler'
 
 type MobileActionsProps = {
   attachedLink?: string | null
@@ -40,6 +41,7 @@ export function Mobile({
   isSparked,
 }: MobileActionsProps) {
   // const { shareFn } = useAdaptiveShare()
+  const { handleWalletBalance } = useWalletBalanceHandler()
   const { openComments, closeComments, commentsIsOpen } = useCommentSheetStore((state) => ({
     openComments: state.openModal,
     closeComments: state.closeModal,
@@ -81,6 +83,7 @@ export function Mobile({
         <ActionItem
           title="Repost the video!"
           onClick={async () => {
+            await handleWalletBalance('repost')
             if (embed) {
               user ? RepostModal.open(videoId) : AuthenticationModal.open()
             } else {
@@ -95,6 +98,8 @@ export function Mobile({
         <ActionItem
           title="Give spark!"
           onClick={async () => {
+            await handleWalletBalance('spark')
+
             embed
               ? user
                 ? await toggleVideoSpark()
