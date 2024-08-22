@@ -4,7 +4,8 @@ import { BackIcon } from '@icons/back-icon'
 import { BillStreamlineIcon } from '@icons/wallet/bill-streamline'
 
 export const WalletCashEarningsCard = () => {
-  const { setCurrentCardView, currentCardView } = useWalletStore()
+  const { setCurrentCardView, currentCardView, walletDetails } = useWalletStore()
+  const cashAmount = walletDetails?.cash_balance
 
   return (
     <div
@@ -17,7 +18,7 @@ export const WalletCashEarningsCard = () => {
       <div className="mb-2 flex justify-between">
         <BillStreamlineIcon className="h-8 stroke-[#77CE1A]" />
         <div className="flex items-center gap-2 text-title-2-bold text-secondary sm:text-title-1-bold">
-          $50
+          ${cashAmount / 100}
           <BackIcon className="h-3.5 rotate-180 fill-secondary-300" />
         </div>
       </div>

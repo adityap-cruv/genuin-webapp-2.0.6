@@ -1,11 +1,11 @@
 'use client'
-import BillStreamline from '@icons/icBillStreamline.svg'
-import DiscountCoupon from '@icons/icDiscountCoupon.svg'
 import icBack from '@icons/icBack.svg'
 import Image from 'next/image'
 import { QuestionMarkIcon } from '@icons/question-mark-icon'
 import { BackIcon } from '@icons/back-icon'
 import { AuthenticationModal } from '@/components/common/modals/authentication'
+import { DiscountCouponIcon } from '@icons/wallet/discount-coupon-icon'
+import { BillStreamlineIcon } from '@icons/wallet/bill-streamline'
 
 export const EmptyState = {
   mobile: Mobile,
@@ -35,7 +35,7 @@ function Desktop() {
         <div className="flex w-2/5 flex-col gap-4">
           <div className="rounded-2xl bg-monochrome-white p-6 opacity-50">
             <div className="mb-2 flex justify-between">
-              <Image src={DiscountCoupon} alt="DiscountCoupon" />
+              <DiscountCouponIcon className="h-8 stroke-[#507CFF]" />
               <div className="flex items-center gap-2 text-title-1-bold text-monochrome-black">
                 $0
                 <Image src={icBack} alt="RightArrow" className="h-5 rotate-180" />
@@ -48,7 +48,7 @@ function Desktop() {
 
           <div className="rounded-2xl bg-monochrome-white p-6 opacity-50">
             <div className="mb-2 flex justify-between">
-              <Image src={BillStreamline} alt="DiscountCoupon" />
+              <BillStreamlineIcon className="h-8 stroke-[#77CE1A]" />
               <div className="flex items-center gap-2 text-title-1-bold text-monochrome-black">
                 $0
                 <Image src={icBack} alt="RightArrow" className="h-5 rotate-180" />
@@ -131,7 +131,7 @@ function Mobile() {
           <div className="grid grid-cols-2 gap-4">
             <div className={`rounded-2xl border border-[#F5F5F5] bg-monochrome-white p-4 text-left sm:p-6 `}>
               <div className="mb-2 flex justify-between">
-                <Image src={DiscountCoupon} alt="DiscountCoupon" />
+                <DiscountCouponIcon className="h-8 stroke-[#507CFF]" />
                 <div className="flex items-center gap-2 text-title-2-bold text-monochrome-black sm:text-title-1-bold">
                   $0
                   <Image src={icBack} alt="RightArrow" className="h-5 rotate-180" />
@@ -146,7 +146,7 @@ function Mobile() {
 
             <div className={`rounded-2xl border border-[#F4F4F4] bg-monochrome-white p-4 text-left sm:p-6 `}>
               <div className="mb-2 flex justify-between">
-                <Image src={BillStreamline} alt="DiscountCoupon" />
+                <BillStreamlineIcon className="h-8 stroke-[#77CE1A]" />
                 <div className="flex items-center gap-2 text-title-2-bold text-monochrome-black sm:text-title-1-bold">
                   $0
                   <Image src={icBack} alt="RightArrow" className="h-5 rotate-180" />

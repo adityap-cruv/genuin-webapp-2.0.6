@@ -4,7 +4,8 @@ import { DiscountCouponIcon } from '@icons/wallet/discount-coupon-icon'
 import { BackIcon } from '@icons/back-icon'
 
 export const WalletRewardCreditsCard = () => {
-  const { setCurrentCardView, currentCardView } = useWalletStore()
+  const { setCurrentCardView, currentCardView, walletDetails } = useWalletStore()
+  const rewardAmount = walletDetails?.point_balance
   return (
     <div
       className={`rounded-2xl border border-[#F5F5F5] bg-monochrome-white p-4 text-left sm:p-6 ${
@@ -17,7 +18,7 @@ export const WalletRewardCreditsCard = () => {
         {/* <Image src={DiscountCoupon} alt="DiscountCoupon" /> */}
         <DiscountCouponIcon className="h-8 stroke-[#507CFF]" />
         <div className="flex items-center gap-2 text-title-2-bold text-secondary sm:text-title-1-bold">
-          $50
+          ${rewardAmount / 100}
           <BackIcon className="h-3.5 rotate-180 fill-secondary-300" />
         </div>
       </div>

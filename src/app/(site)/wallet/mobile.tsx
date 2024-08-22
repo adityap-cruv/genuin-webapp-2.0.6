@@ -3,7 +3,6 @@ import { WalletCashEarningsCard } from '@/components/common/wallet/wallet-cash-e
 import { WalletEarnMoreCard } from '@/components/common/wallet/wallet-earn-more'
 import { WalletProgressBarCard } from '@/components/common/wallet/wallet-progress-bar'
 import { WalletRewardCreditsCard } from '@/components/common/wallet/wallet-reward-credits'
-import { WalletTransactionsCard } from '@/components/common/wallet/wallet-transactions'
 import { BackIcon } from '@icons/back-icon'
 import { QuestionMarkIcon } from '@icons/question-mark-icon'
 import { Sheet, SheetClose, SheetContent, SheetTrigger } from '@components/ui/sheet'
@@ -15,8 +14,17 @@ import { BillStreamlineIcon } from '@icons/wallet/bill-streamline'
 import { AuthenticationModal } from '@/components/common/modals/authentication'
 import Link from 'next/link'
 import { PATH_NAME } from '@/lib/utils/constants/path'
+import { WalletRewardTransactionsCard } from '@/components/common/wallet/wallet-reward-transactions'
+import { WalletCashTransactionsCard } from '@/components/common/wallet/wallet-cash-transactions'
 
 export default function Mobile() {
+  const { walletDetails } = useWalletStore()
+  const currentBalance = walletDetails.cash_balance + walletDetails.point_balance
+  const lifetimeEarnings = Math.max(
+    walletDetails.lifetime_cash_balance + walletDetails.lifetime_point_balance - currentBalance,
+    0
+  )
+
   return (
     <div className="h-[100vh] w-full bg-monochrome-11">
       <div className="relative flex h-64 w-full items-center rounded-b-2xl bg-primary">
@@ -37,17 +45,19 @@ export default function Mobile() {
         <div className="flex w-full justify-center gap-10 px-6 text-center">
           <div className="flex items-center gap-2">
             <div className="flex flex-col text-monochrome-white">
-              <span className="text-new-h2-mobile">$100.25</span>
+              <span className="text-new-h2-mobile">${currentBalance / 100}</span>
               <span className="text-body-1-demi">Current balance</span>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <div className="flex flex-col text-monochrome-white/60">
-              <span className="text-title-1-demi">$200.25</span>
-              <span className="text-body-1-demi">Lifetime earnings</span>
+          {lifetimeEarnings !== 0 && (
+            <div className="flex items-center gap-2">
+              <div className="flex flex-col text-monochrome-white/60">
+                <span className="text-title-1-demi">${lifetimeEarnings / 100}</span>
+                <span className="text-body-1-demi">Lifetime earnings</span>
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         <div className="absolute -bottom-16 w-full px-6">
@@ -120,10 +130,10 @@ const Transactions = ({ children }: { children: ReactNode }) => {
             </TabsList>
             <hr className="border-t border-tertiary-200" />
             <TabsContent value="Reward">
-              <WalletTransactionsCard />
+              <WalletRewardTransactionsCard />
             </TabsContent>
             <TabsContent value="Cash">
-              <WalletTransactionsCard />
+              <WalletCashTransactionsCard />
             </TabsContent>
           </Tabs>
         </SheetContent>

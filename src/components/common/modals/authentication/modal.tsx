@@ -29,6 +29,7 @@ import { X } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
 import { HowItWorks } from '../wallet/how-it-works'
 import { WithdrawDialog } from '../wallet/withdraw-cash'
+import { RedeemCredits } from '../wallet/redeem-credits'
 
 type Props = DialogProps & { showClose?: boolean }
 
@@ -234,5 +235,7 @@ export function Content() {
       return <HowItWorks />
     case 'WITHDRAW_CASH':
       return <WithdrawDialog />
+    case 'REDEEM_CREDITS':
+      return <RedeemCredits />
   }
 }

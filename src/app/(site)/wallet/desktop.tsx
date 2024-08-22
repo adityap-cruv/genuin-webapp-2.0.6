@@ -1,11 +1,15 @@
+'use client'
+import { useWalletStore } from '@/components/common/wallet/store'
 import { WalletBalanceCard } from '@/components/common/wallet/wallet-balance'
 import { WalletCashEarningsCard } from '@/components/common/wallet/wallet-cash-earnings'
+import { WalletCashTransactionsCard } from '@/components/common/wallet/wallet-cash-transactions'
 import { WalletEarnMoreCard } from '@/components/common/wallet/wallet-earn-more'
 import { WalletProgressBarCard } from '@/components/common/wallet/wallet-progress-bar'
 import { WalletRewardCreditsCard } from '@/components/common/wallet/wallet-reward-credits'
-import { WalletTransactionsCard } from '@/components/common/wallet/wallet-transactions'
+import { WalletRewardTransactionsCard } from '@/components/common/wallet/wallet-reward-transactions'
 
 export default function Desktop() {
+  const { currentCardView } = useWalletStore()
   return (
     <div className="hide-scrollbar flex h-full w-full flex-col gap-6 overflow-auto">
       {/* Top section with WalletBalanceCard and WalletProgressBarCard */}
@@ -26,7 +30,7 @@ export default function Desktop() {
           <WalletEarnMoreCard />
         </div>
         <div className="max-h-[calc(100vh-6rem)] w-3/5 overflow-y-auto">
-          <WalletTransactionsCard />
+          {currentCardView === 'Reward' ? <WalletRewardTransactionsCard /> : <WalletCashTransactionsCard />}
         </div>
       </div>
     </div>
