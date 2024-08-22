@@ -108,6 +108,7 @@ export function LoopVideos({ loop, community }: Props) {
         open={modalControl.open}
         isFetchingNextPage={isFetchingNextPage}
         startIndex={modalControl.startIndex}
+        isInModal={true}
       />
     </div>
   )

@@ -140,6 +140,7 @@ function PlayerModalWrapper({ open = false, close, community, loop, unreadMessag
         videos={videos}
         close={close}
         unreadMessageCount={unreadMessageCount}
+        isInModal={true}
       />
     )
 }
