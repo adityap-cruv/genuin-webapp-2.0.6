@@ -32,6 +32,8 @@ export const handleWalletBalance = async ({
     return
   }
 
+  interactedVideos[videoId][action] = true
+
   const updatedValue = (walletBalance ?? 0) + globalRewardPointConfigs[action]
   const metadata = {
     content_id: videoId ?? '',
@@ -41,7 +43,6 @@ export const handleWalletBalance = async ({
   setData({
     walletBalance: updatedValue,
   })
-
   // Call the API to log the event
   try {
     await updateBalanceAPI({
@@ -49,9 +50,6 @@ export const handleWalletBalance = async ({
       amount: globalRewardPointConfigs[action],
       metadata,
     })
-
-    // Mark this action as completed for the video
-    interactedVideos[videoId][action] = true
   } catch (error) {
     console.error('Failed to update balance:', error)
   }
