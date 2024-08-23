@@ -59,7 +59,7 @@ export function Recents() {
           </p>
         </span>
         {list.map((item) => {
-          if (item.type === 'text' && item.text && item.text.trim() !== '')
+          if (item.type === 'text' && item.text)
             return (
               <TextItem
                 key={item.id}
