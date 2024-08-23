@@ -119,7 +119,9 @@ export function Desktop({
         <ActionItem
           title="Give spark!"
           onClick={async () => {
-            await handleWalletBalance({ action: 'spark', videoId, type: 'POST' })
+            if (!sparkData.isSparked) {
+              await handleWalletBalance({ action: 'spark', videoId, type: 'POST' })
+            }
             const properties = {
               content_category: 'loop',
               content_id: videoId,
