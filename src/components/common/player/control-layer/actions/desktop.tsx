@@ -84,7 +84,7 @@ export function Desktop({
         <ActionItem
           title="Repost the video!"
           onClick={async () => {
-            await handleWalletBalance('repost')
+            await handleWalletBalance({ action: 'repost', videoId, type: 'POST' })
             if (pathname.includes('embed')) {
               window.open(shareUrl, '_blank', 'noopener,noreferrer')
             } else {
@@ -119,7 +119,7 @@ export function Desktop({
         <ActionItem
           title="Give spark!"
           onClick={async () => {
-            await handleWalletBalance('spark')
+            await handleWalletBalance({ action: 'spark', videoId, type: 'POST' })
             const properties = {
               content_category: 'loop',
               content_id: videoId,

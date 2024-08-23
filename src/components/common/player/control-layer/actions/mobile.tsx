@@ -83,7 +83,7 @@ export function Mobile({
         <ActionItem
           title="Repost the video!"
           onClick={async () => {
-            await handleWalletBalance('repost')
+            await handleWalletBalance({ action: 'repost', videoId, type: 'POST' })
             if (embed) {
               user ? RepostModal.open(videoId) : AuthenticationModal.open()
             } else {
@@ -98,8 +98,7 @@ export function Mobile({
         <ActionItem
           title="Give spark!"
           onClick={async () => {
-            await handleWalletBalance('spark')
-
+            await handleWalletBalance({ action: 'spark', videoId, type: 'POST' })
             embed
               ? user
                 ? await toggleVideoSpark()

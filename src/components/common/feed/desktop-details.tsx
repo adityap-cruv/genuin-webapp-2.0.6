@@ -256,7 +256,7 @@ function CommentInput({
   const searchParams = Object.fromEntries(useSearchParams())
 
   async function handleClick() {
-    await handleWalletBalance('comments')
+    await handleWalletBalance({ action: 'comments', videoId, type: 'POST' })
     if (currentComment.length !== 0) {
       const newComment = {
         owner: {
