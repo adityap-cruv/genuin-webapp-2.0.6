@@ -13,7 +13,6 @@ const loopSchema = z.object({
     dp_s: z.string().nullish(),
     dp_m: z.string().nullish(),
     dp_l: z.string().nullish(),
-    slug: z.string().nullish(),
   }),
   settings: z
     .object({
@@ -21,6 +20,7 @@ const loopSchema = z.object({
     })
     .nullish(),
   share_url: z.string(),
+  slug: z.string(),
 })
 
 const BrandUserSchema = z

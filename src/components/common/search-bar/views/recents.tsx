@@ -59,7 +59,7 @@ export function Recents() {
           </p>
         </span>
         {list.map((item) => {
-          if (item.type === 'text' && item.text)
+          if (item.type === 'text' && item.text && item.text.trim() !== '')
             return (
               <TextItem
                 key={item.id}
@@ -106,7 +106,7 @@ export function Recents() {
                 }
                 subtitle={`Loop • ${item.loop.group.group_description}`}
                 title={item.loop.group.group_name ?? ''}
-                urlToGo={PATH_NAME.loop(item.loop.group.group_id)}
+                urlToGo={PATH_NAME.loop(item.loop.slug)}
                 deletionHandler={() => {
                   void deleteClickHandler(item.id)
                 }}
