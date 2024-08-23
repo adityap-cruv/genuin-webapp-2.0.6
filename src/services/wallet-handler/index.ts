@@ -1,6 +1,8 @@
 import { updateBalanceAPI } from '@/lib/api/wallet'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 
+const interactedVideos: Record<string, { spark?: boolean; comments?: boolean }> = {}
+
 export const handleWalletBalance = async ({
   action,
   videoId,
@@ -20,28 +22,42 @@ export const handleWalletBalance = async ({
     repost: 0,
   }
 
-  if (isWalletEnabled) {
-    const updatedValue = (walletBalance ?? 0) + globalRewardPointConfigs[action]
-    const metadata = {
-      content_id: videoId ?? '',
-      content_type: type ?? '',
+  if (!isWalletEnabled || !videoId) return
+
+  if (action === 'spark' || action === 'comments') {
+    if (!interactedVideos[videoId]) {
+      interactedVideos[videoId] = {}
     }
 
-    // Update state with new wallet balance
-    setData({
-      walletBalance: updatedValue,
+    if (interactedVideos[videoId][action]) {
+      return
+    }
+  }
+
+  const updatedValue = (walletBalance ?? 0) + globalRewardPointConfigs[action]
+  const metadata = {
+    content_id: videoId ?? '',
+    content_type: type ?? '',
+  }
+
+  // Update state with new wallet balance
+  setData({
+    walletBalance: updatedValue,
+  })
+
+  // Call API to log event
+  try {
+    await updateBalanceAPI({
+      action: action.toUpperCase(),
+      amount: globalRewardPointConfigs[action],
+      metadata,
     })
 
-    // Call API to log event
-    try {
-      await updateBalanceAPI({
-        action: action.toUpperCase(),
-        amount: globalRewardPointConfigs[action],
-        metadata,
-      })
-    } catch (error) {
-      console.error('Failed to update balance:', error)
+    if (action === 'spark' || action === 'comments') {
+      interactedVideos[videoId][action] = true
     }
+  } catch (error) {
+    console.error('Failed to update balance:', error)
   }
 }
 
