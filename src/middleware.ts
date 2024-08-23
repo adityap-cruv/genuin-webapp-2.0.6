@@ -23,9 +23,8 @@ export async function middleware(request: NextRequest) {
   if (browserType) request.cookies.set('browser_type', browserType)
 
   if (host) {
-    // TODO CHANGE
-    // const config = getConfig(host)
-    const config = getConfig('ankpal.qa.begenuin.com')
+    const config = getConfig(host)
+    // const config = getConfig('ankpal.qa.begenuin.com')
     request.cookies.set('config_params', JSON.stringify(config))
     const urlObj = new URL(request.url)
     // eslint-disable-next-line no-prototype-builtins
