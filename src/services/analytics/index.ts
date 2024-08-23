@@ -90,7 +90,7 @@ export const Analytics = {
     })
 
     const { handleWalletBalance } = useWalletBalanceHandler()
-    void handleWalletBalance('view')
+    void handleWalletBalance({ action: 'view', videoId, type: 'POST' })
   },
   triggerAnalyticsForVideoProgress(
     videoId: string,

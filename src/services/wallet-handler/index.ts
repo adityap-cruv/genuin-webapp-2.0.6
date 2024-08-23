@@ -1,7 +1,15 @@
 import { updateBalanceAPI } from '@/lib/api/wallet'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 
-export const handleWalletBalance = async (action: 'view' | 'spark' | 'comments' | 'repost') => {
+export const handleWalletBalance = async ({
+  action,
+  videoId,
+  type,
+}: {
+  action: 'view' | 'spark' | 'comments' | 'repost'
+  videoId?: string
+  type?: 'POST'
+}) => {
   const { config, walletBalance, setData } = useGenuinOptions.getState()
 
   const isWalletEnabled = config?.is_wallet_enabled ?? false
@@ -14,6 +22,10 @@ export const handleWalletBalance = async (action: 'view' | 'spark' | 'comments' 
 
   if (isWalletEnabled) {
     const updatedValue = (walletBalance ?? 0) + globalRewardPointConfigs[action]
+    const metadata = {
+      content_id: videoId ?? '',
+      content_type: type ?? '',
+    }
 
     // Update state with new wallet balance
     setData({
@@ -22,7 +34,11 @@ export const handleWalletBalance = async (action: 'view' | 'spark' | 'comments' 
 
     // Call API to log event
     try {
-      await updateBalanceAPI({ action: action.toUpperCase(), amount: globalRewardPointConfigs[action], metadata: {} })
+      await updateBalanceAPI({
+        action: action.toUpperCase(),
+        amount: globalRewardPointConfigs[action],
+        metadata,
+      })
     } catch (error) {
       console.error('Failed to update balance:', error)
     }
