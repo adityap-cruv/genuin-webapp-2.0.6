@@ -156,7 +156,8 @@ export type MembersSchemaType = z.infer<typeof MembersSchema>
 
 export function validateCommunityDetails(communityDetails: CommunityDetailsType) {
   try {
-    return CommunityDetailsSchema.parse(communityDetails)
+    return communityDetails
+    // return CommunityDetailsSchema.parse(communityDetails)
   } catch (e) {
     // eslint-disable-next-line no-console
     console.log('error in parsing community details:', e)

@@ -50,14 +50,14 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   }
 
   return {
-    title: videoDetails.title,
-    description: videoDetails.description,
+    title: videoDetails?.title,
+    description: videoDetails?.description,
     openGraph: {
-      title: videoDetails.title,
-      description: videoDetails.description,
+      title: videoDetails?.title,
+      description: videoDetails?.description,
       url: shareLink,
       type: 'video.other',
-      images: [{ url: `${videoDetails.preview_image}` }],
+      images: [{ url: `${videoDetails?.preview_image}` }],
     },
   }
 }

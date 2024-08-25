@@ -43,12 +43,12 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   }
 
   return {
-    title: videoDetails.title,
+    title: videoDetails?.title,
     // applicationName: 'genuin',
-    description: videoDetails.description,
+    description: videoDetails?.description,
     openGraph: {
-      title: videoDetails.title,
-      description: videoDetails.description,
+      title: videoDetails?.title,
+      description: videoDetails?.description,
       url: shareLink,
       images: [{ url: videoDetails?.preview_image }],
     },
