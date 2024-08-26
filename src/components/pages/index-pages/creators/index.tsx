@@ -33,7 +33,7 @@ const listOfComps = [
         <br /> connections
       </>
     ),
-    subtitle: 'Incentivize consumers who share a passion for your brand to become advocates via engaging experiences.',
+    subtitle: 'Interact with new people and curate a relevant, connected community that you own and manage.',
     videoLink: getAnimationUrl('createArt'),
   },
   {
@@ -46,7 +46,7 @@ const listOfComps = [
       </>
     ),
     subtitle:
-      'Connect your community to a network of retail media partners that can increase your brand’s reach and lead to new revenue.',
+      'To get started, invite 100 new members across your network and brand partner communities. Then, earn a $100 payout when they sign up.',
     videoLink: getAnimationUrl('growArt'),
   },
 ]

@@ -47,12 +47,12 @@ const listOfComps = [
       <>
         <span className="text-purple">Engage </span>
         your
-        <br /> consumers with
+        <br /> community with
         <br /> partner content
       </>
     ),
     subtitle:
-      'Populate with both brand and performance content from partners, advertisers, and creators to ignite your community. ',
+      'Leverage GenuAI to ignite, manage, and grow your community with content from partners, advertisers, and creators.',
     videoLink: getAnimationUrl('engageArt'),
   },
   {
@@ -77,7 +77,7 @@ const listOfComps = [
       </>
     ),
     subtitle:
-      'Monetize new vertical video inventory to increase time spent on your owned and operated channels, conversion, and LTV.',
+      'Whether your goal is to keep visitors within your ecosystem or support  partners, monetize vertical video inventory to increase time spent across your digital properties and LTV.',
     videoLink: getAnimationUrl('boostArt'),
   },
 ]
@@ -116,7 +116,7 @@ export function InitialComponent() {
           <span className="text-purple">Community</span> Reimagined.
         </>
       }
-      subtitle="Create video-based communities within your retail media network to drive engagement and new revenue."
+      subtitle="Create video-based communities for Retail Media and Commerce Media to drive engagement and new revenue."
       cta={
         <ContactUs>
           <AnimatedButton className="bg-primary" shadowColor="#9395FF">
