@@ -10,7 +10,6 @@ import playStoreImage from '@images/playStore.svg'
 import appStoreImage from '@images/appStore.svg'
 import { MOBILE_DOWNLOAD_APP_LINK, URL_TO_APP_STORE, URL_TO_PLAY_STORE } from '@/lib/constants'
 import { Footer } from '../footer'
-import { TickerCarousel } from '../ticker-carousel'
 import { AnimatedButton } from '../animated-component'
 import { ArrowRight } from 'lucide-react'
 
@@ -66,7 +65,6 @@ export function CreatorsPage() {
           </AnimatedButton>
         </Link>
       }>
-      <TickerCarousel />
       {listOfComps.map((comp, index) => {
         return (
           <GeneralShell key={index} animationUrl={comp.videoLink} subtitle={comp.subtitle} titleNode={comp.title} />

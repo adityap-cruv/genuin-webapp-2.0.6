@@ -40,7 +40,7 @@ export function GeneralShell({ titleNode, subtitle, animationUrl }: GeneralShell
       </div>
       <VanillaPlayer
         style={{ borderRadius: 36 }}
-        className="mx-5 aspect-square w-full max-w-sm overflow-clip object-fill md:mx-0 md:w-1/2 lg:max-w-none"
+        className="mx-5 aspect-[1.09] w-full max-w-sm overflow-clip object-fill md:mx-0 md:w-1/2 lg:max-w-none"
         videoSource={animationUrl}
       />
     </AnimatedTile>
