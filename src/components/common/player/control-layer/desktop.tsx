@@ -5,6 +5,7 @@ import Analytics from '@services/analytics'
 import { PlayerProgressBar } from './player-progress-bar'
 import { memo } from 'react'
 import { useShallow } from 'zustand/react/shallow'
+import { WalletAmountBadge } from '../../wallet/wallet-amount-badge'
 
 type DesktopProps = {
   sparkCount: number
@@ -14,6 +15,7 @@ type DesktopProps = {
   attachedLink?: string | null
   description?: string | null
   isSparked?: boolean | null | undefined
+  isInModal?: boolean
 }
 
 export const Desktop = memo(function Desktop({
@@ -24,6 +26,7 @@ export const Desktop = memo(function Desktop({
   attachedLink,
   description,
   isSparked,
+  isInModal,
 }: DesktopProps) {
   const { toggleMuted, muted } = usePlayerControlStore(
     useShallow((state) => ({
@@ -49,6 +52,11 @@ export const Desktop = memo(function Desktop({
             <AnimatedMuteIcon />
           </span>
         </div>
+      )}
+      {isInModal && (
+        <span className="absolute right-6 top-6 h-fit w-fit cursor-pointer">
+          <WalletAmountBadge type="light" />
+        </span>
       )}
       <div className="absolute bottom-0 right-0 pr-2">
         <Actions.desktop

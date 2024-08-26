@@ -16,6 +16,7 @@ import { usePathname, useSearchParams } from 'next/navigation'
 import { ActionItem } from './action-item'
 import { RepostModal } from '@components/common/modals/repost'
 import { repostDeepLink, sparkDeepLink } from '@/lib/get-deeplink'
+import { useWalletBalanceHandler } from '@/services/wallet-handler'
 
 type DesktopActionsProps = {
   sparkCount: number
@@ -40,6 +41,7 @@ export function Desktop({
   description,
   isSparked, // isPostAllowed,
 }: DesktopActionsProps) {
+  const { handleWalletBalance } = useWalletBalanceHandler()
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
   const [sparkData, setSparkData] = useState({
@@ -82,6 +84,7 @@ export function Desktop({
         <ActionItem
           title="Repost the video!"
           onClick={async () => {
+            await handleWalletBalance({ action: 'repost', videoId, type: 'POST' })
             if (pathname.includes('embed')) {
               window.open(shareUrl, '_blank', 'noopener,noreferrer')
             } else {
@@ -116,6 +119,9 @@ export function Desktop({
         <ActionItem
           title="Give spark!"
           onClick={async () => {
+            if (!sparkData.isSparked) {
+              await handleWalletBalance({ action: 'spark', videoId, type: 'POST' })
+            }
             const properties = {
               content_category: 'loop',
               content_id: videoId,

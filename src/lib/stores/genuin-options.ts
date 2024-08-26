@@ -44,6 +44,13 @@ type SloganType = {
   text: string
 }
 
+type RewardPointConfig = {
+  view: number
+  spark: number
+  comments: number
+  repost: number
+}
+
 export type ConfigType = {
   brand_id: string
   created_at: string
@@ -59,6 +66,8 @@ export type ConfigType = {
   brand_web_logo: string
   is_claimed: boolean
   website: string
+  is_wallet_enabled: boolean
+  global_reward_point_configs: RewardPointConfig
 } | null
 
 export type User = {
@@ -127,6 +136,7 @@ type StateType = {
   config: ConfigType
   user?: User
   notificationCount?: number | null
+  walletBalance?: number | null
 }
 
 type ActionsType = {
@@ -153,6 +163,7 @@ const initialState: StateType = {
   parentUrl: '',
   config: null,
   notificationCount: -1,
+  walletBalance: 0,
 }
 
 export const useGenuinOptions = create(

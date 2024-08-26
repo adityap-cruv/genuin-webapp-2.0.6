@@ -40,6 +40,7 @@ type Props = {
   close: () => void
   isLoading: boolean
   unreadMessageCount?: number
+  isInModal?: boolean
 }
 
 export function Desktop({
@@ -53,6 +54,7 @@ export function Desktop({
   fetchNextVideos,
   fetchPreviousVideos,
   unreadMessageCount,
+  isInModal,
 }: Props) {
   const sizeBox = useGenuinOptions().sizeBoxes
   const { currentIndex, setCurrentIndex, setStateVideos } = useFeedModalStore((state) => ({
@@ -84,7 +86,7 @@ export function Desktop({
             className="relative min-w-[800px] overflow-clip rounded-2xl bg-monochrome-white">
             {/* Please done modify below condition to  unreadMessageCount && unreadMessageCount !== 0,
              it is creating the problem on showing the 0 on the UI */}
-            {unreadMessageCount !== 0 && (
+            {unreadMessageCount !== undefined && unreadMessageCount !== 0 && (
               <div
                 style={{ width: sizeBox.modal.player.width }}
                 className="absolute inset-0 z-10 flex h-fit w-full items-center justify-center">
@@ -101,7 +103,11 @@ export function Desktop({
             {isLoading ? (
               <Loader size="md" />
             ) : (
-              <SinglePlayer videoData={{ ...videos[currentIndex] }} sizeBox={sizeBox.modal.player} />
+              <SinglePlayer
+                videoData={{ ...videos[currentIndex] }}
+                sizeBox={sizeBox.modal.player}
+                isInModal={isInModal}
+              />
             )}
           </div>
           <span className="flex flex-col gap-y-4">
@@ -157,6 +163,7 @@ type ProfileProps = {
   getNextVideo: () => void
   getPreviousVideo: () => void
   isLoading: boolean
+  isInModal?: boolean
 }
 
 /**
@@ -174,6 +181,7 @@ export function Profile({
   getNextVideo,
   isLoading = false,
   getPreviousVideo,
+  isInModal,
 }: ProfileProps) {
   const sizeBox = useGenuinOptions().sizeBoxes
 
@@ -195,7 +203,9 @@ export function Profile({
             {isLoading ? (
               <FeedShimmer.desktop />
             ) : (
-              video && <SinglePlayer videoData={{ ...video }} sizeBox={{ ...sizeBox.modal.player }} />
+              video && (
+                <SinglePlayer videoData={{ ...video }} sizeBox={{ ...sizeBox.modal.player }} isInModal={isInModal} />
+              )
             )}
           </div>
           <span className="flex flex-col gap-y-4">

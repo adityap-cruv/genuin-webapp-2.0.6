@@ -7,7 +7,7 @@ import React, { memo } from 'react'
 import { LinkIcon } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { type LinkoutsType } from './schema'
-import { triggerLinkoutEvent } from './analytics'
+import { triggerLinkoutEvent, triggerLinkoutViewEvent } from './analytics'
 
 export const Mobile = memo(function Mobile({
   linkouts,
@@ -22,12 +22,13 @@ export const Mobile = memo(function Mobile({
     <motion.div initial={{ y: 75 }} animate={{ y: 0, transition: { duration: 0.3 } }}>
       {linkouts.map((linkoutItem, index) => {
         if (linkoutItem.links.length === 1) {
-          triggerLinkoutEvent({
+          triggerLinkoutViewEvent({
             linkoutId,
             videoId,
             link: { hasText: !!linkoutItem.links[0].title, hasThumbnail: !!linkoutItem.links[0].image },
             cta: linkoutItem.cta_link ? { name: linkoutItem.cta_text, link: linkoutItem.cta_link } : undefined,
             single: true,
+            noOfLinks: linkoutItem.links.length,
           })
           return (
             <div className="rounded-lg bg-monochrome-black/50 p-2" key={index}>
@@ -58,6 +59,7 @@ export const Mobile = memo(function Mobile({
                             link: { hasText: !!item.title, hasThumbnail: !!item.image },
                             single: true,
                             clicked: 'link',
+                            noOfLinks: linkoutItem.links.length,
                           })
                         }}
                       />
@@ -73,7 +75,9 @@ export const Mobile = memo(function Mobile({
                             clicked: 'cta',
                             linkoutId,
                             videoId,
+                            link: { hasText: !!linkoutItem.links[0].title, hasThumbnail: !!linkoutItem.links[0].image },
                             cta: { name: linkoutItem.cta_text, link: linkoutItem.cta_link },
+                            noOfLinks: linkoutItem.links.length,
                           })
                         }}
                       />
@@ -90,7 +94,9 @@ export const Mobile = memo(function Mobile({
           linkoutId,
           videoId,
           single: false,
+          link: { hasText: !!linkoutItem.links[0].title, hasThumbnail: !!linkoutItem.links[0].image },
           cta: linkoutItem.cta_link ? { name: linkoutItem.cta_text, link: linkoutItem.cta_link } : undefined,
+          noOfLinks: linkoutItem.links.length,
         })
         if (everyoneHasImage) {
           return (
@@ -113,6 +119,7 @@ export const Mobile = memo(function Mobile({
                           link: { hasText: !!item.title, hasThumbnail: !!item.image },
                           single: false,
                           position: index + 1,
+                          noOfLinks: linkoutItem.links.length,
                         })
                       }}>
                       <div
@@ -144,7 +151,9 @@ export const Mobile = memo(function Mobile({
                       clicked: 'cta',
                       linkoutId,
                       videoId,
+                      link: { hasText: !!linkoutItem.links[0].title, hasThumbnail: !!linkoutItem.links[0].image },
                       cta: { name: linkoutItem.cta_text, link: linkoutItem.cta_link },
+                      noOfLinks: linkoutItem.links.length,
                     })
                   }}
                 />
@@ -170,6 +179,7 @@ export const Mobile = memo(function Mobile({
                           clicked: 'link',
                           link: { hasText: !!item.title, hasThumbnail: !!item.image },
                           single: false,
+                          noOfLinks: linkoutItem.links.length,
                         })
                       }}
                       href={checkAndAppendHttps(item.link)}
@@ -191,7 +201,9 @@ export const Mobile = memo(function Mobile({
                       clicked: 'cta',
                       linkoutId,
                       videoId,
+                      link: { hasText: !!linkoutItem.links[0].title, hasThumbnail: !!linkoutItem.links[0].image },
                       cta: { name: linkoutItem.cta_text, link: linkoutItem.cta_link },
+                      noOfLinks: linkoutItem.links.length,
                     })
                   }}
                 />
