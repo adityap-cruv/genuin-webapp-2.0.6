@@ -50,7 +50,7 @@ export const WalletCashTransactionsCard = () => {
           backgroundColor: currentCardView === 'Cash' ? 'rgba(119, 206, 26, 0.10)' : 'rgba(80, 124, 255, 0.10)',
         }}>
         <div>
-          <p className="mb-1 text-title-2-bold-home-m text-secondary">${walletDetails?.cash_balance / 100}</p>
+          <p className="mb-1 text-title-2-bold-home-m text-secondary">${(walletDetails?.cash_balance / 100).toFixed(2)}</p>
           <p className="text-body-1-demi text-monochrome-black">Current balance</p>
         </div>
         <Button
