@@ -45,7 +45,7 @@ export default function Mobile() {
         <div className="flex w-full justify-center gap-10 px-6 text-center">
           <div className="flex items-center gap-2">
             <div className="flex flex-col text-monochrome-white">
-              <span className="text-new-h2-mobile">${currentBalance / 100}</span>
+              <span className="text-new-h2-mobile">${(currentBalance / 100).toFixed(2)}</span>
               <span className="text-body-1-demi">Current balance</span>
             </div>
           </div>
