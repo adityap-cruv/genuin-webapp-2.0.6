@@ -17,7 +17,9 @@ export function NavBar() {
     <nav className="sticky top-0 z-50 h-[60px] w-full bg-monochrome-white md:h-[90px] md:bg-white-alpha md:backdrop-blur-20px">
       <div className="container flex h-full items-center " style={{ maxWidth: 1200 }}>
         <div className="flex w-full justify-center md:justify-normal">
-          <GenuinIcon.logo className="fill-primary" />
+          <Link href={"/"}>
+            <GenuinIcon.logo className="fill-primary" />
+          </Link>
           <div className="hidden w-full items-center justify-evenly px-10 text-cap-1-demi-home md:flex">
             <Link
               href={PATH_NAME.index()}
