@@ -53,7 +53,7 @@ export default function Mobile() {
           {lifetimeEarnings !== 0 && (
             <div className="flex items-center gap-2">
               <div className="flex flex-col text-monochrome-white/60">
-                <span className="text-title-1-demi">${lifetimeEarnings / 100}</span>
+                <span className="text-title-1-demi">${(lifetimeEarnings / 100).toFixed(2)}</span>
                 <span className="text-body-1-demi">Lifetime earnings</span>
               </div>
             </div>
