@@ -86,7 +86,7 @@ export function GeneralShellForInitialComponent({
       )}
 
       {posterSrc && (
-        <div className="flex aspect-reel w-60 items-center transition-all sm:w-2/3 sm:justify-center md:w-1/3 md:justify-center lg:w-[40%]">
+        <div className="flex w-4/5	 items-center transition-all sm:w-2/3 sm:justify-center md:w-1/3 md:justify-center lg:w-[40%]">
           <img src={posterSrc} className="w-full" alt="poster" />
         </div>
       )}

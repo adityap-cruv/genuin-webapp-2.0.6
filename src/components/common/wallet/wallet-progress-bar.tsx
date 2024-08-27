@@ -32,7 +32,9 @@ export const WalletProgressBarCard = () => {
         <div className="flex items-center gap-2">
           <div className="h-2 w-2 rounded-full bg-[#83A2FF] sm:h-3 sm:w-3" />
           <div className="flex flex-col text-monochrome-black">
-            <span className="text-body-1-demi sm:text-title-2-demi">${walletDetails?.point_balance / 100}</span>
+            <span className="text-body-1-demi sm:text-title-2-demi">
+              ${(walletDetails?.point_balance / 100).toFixed(2)}
+            </span>
             <span className="text-cap-1-med sm:text-cap-1-med">Reward credits</span>
           </div>
         </div>
@@ -40,7 +42,9 @@ export const WalletProgressBarCard = () => {
         <div className="flex items-center gap-2">
           <div className="h-2 w-2 rounded-full bg-[#77CE1A] sm:h-3 sm:w-3" />
           <div className="flex flex-col text-monochrome-black">
-            <span className="text-body-1-demi sm:text-title-2-demi">${walletDetails?.cash_balance / 100}</span>
+            <span className="text-body-1-demi sm:text-title-2-demi">
+              ${(walletDetails?.cash_balance / 100).toFixed(2)}
+            </span>
             <span className="text-cap-1-med sm:text-cap-1-med">Cash Earnings</span>
           </div>
         </div>
