@@ -8,6 +8,7 @@ import { ArrowRight } from 'lucide-react'
 import { AnimatedButton } from '../animated-component'
 import Link from 'next/link'
 import { BCC_LOGIN_LINK } from '@/lib/constants'
+import BrandPoster from '@images/home/brands_poster.webp'
 
 const listOfComps = [
   {
@@ -88,6 +89,7 @@ function InitialComponent() {
           </AnimatedButton>
         </Link>
       }
+      posterSrc={BrandPoster.src}
     />
   )
 }

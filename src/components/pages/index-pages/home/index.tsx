@@ -125,6 +125,7 @@ export function InitialComponent() {
           </AnimatedButton>
         </ContactUs>
       }
+      videoSrc="https://media.begenuin.com/backend_assets/hero-video/comp-1_2.m3u8y"
     />
   )
 }

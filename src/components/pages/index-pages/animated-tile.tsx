@@ -52,6 +52,8 @@ type GeneralShellForInitialComponentProps = {
   subtitle: string
   animationUrl?: string
   cta: ReactNode
+  videoSrc?: string
+  posterSrc?: string
 } & AnimatedTileProps
 
 export function GeneralShellForInitialComponent({
@@ -59,6 +61,8 @@ export function GeneralShellForInitialComponent({
   subtitle,
   animationUrl,
   cta,
+  videoSrc,
+  posterSrc,
 }: GeneralShellForInitialComponentProps) {
   return (
     <AnimatedTile className="h-body">
@@ -70,13 +74,16 @@ export function GeneralShellForInitialComponent({
         <span className="hidden md:block">{cta}</span>
       </div>
       <div className="aspect-reel w-44 items-center transition-all sm:flex sm:w-2/3 sm:justify-center md:w-1/3 md:justify-end lg:w-[40%]">
-        <VanillaPlayer
-          className="shrink-0 overflow-clip rounded-3xl border-[8px] border-monochrome-white sm:rounded-[38px] md:rounded-[42px] md:border-[12px] lg:h-5/6"
-          id="home-player"
-          videoSource="https://media.begenuin.com/backend_assets/hero-video/comp-1_2.m3u8"
-          loop={true}
-          poster="https://media.begenuin.com/backend_assets/hero-video/hero-video.png"
-        />
+        {videoSrc && (
+          <VanillaPlayer
+            className="shrink-0 overflow-clip rounded-3xl border-[8px] border-monochrome-white sm:rounded-[38px] md:rounded-[42px] md:border-[12px] lg:h-5/6"
+            id="home-player"
+            videoSource={videoSrc}
+            loop={true}
+            poster="https://media.begenuin.com/backend_assets/hero-video/hero-video.png"
+          />
+        )}
+        {posterSrc && <img src={posterSrc} alt="poster" />}
       </div>
     </AnimatedTile>
   )
