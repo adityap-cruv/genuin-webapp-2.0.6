@@ -9,8 +9,12 @@ import { EmptyState } from './empty-state'
 import { useSession } from 'next-auth/react'
 import { PATH_NAME } from '@/lib/utils/constants/path'
 import { useRouter } from 'next/navigation'
+import { useGenuinOptions } from '@/lib/stores/genuin-options'
 
 const MainWalletComponent = () => {
+  const { setInitialData } = useGenuinOptions((state) => ({
+    setInitialData: state.setData,
+  }))
   const { setWalletDetails, walletDetails } = useWalletStore()
   const router = useRouter()
   const { data } = useSession({
@@ -23,6 +27,7 @@ const MainWalletComponent = () => {
   async function handleBalance() {
     const { wallet } = await getBalanceAPI({ isCurrentBalance: false })
     setWalletDetails(wallet)
+    setInitialData({ walletBalance: Number(wallet.point_balance + wallet.cash_balance) })
   }
 
   useEffect(() => {
