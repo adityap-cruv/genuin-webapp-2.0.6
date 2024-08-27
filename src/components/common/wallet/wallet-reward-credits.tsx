@@ -18,7 +18,7 @@ export const WalletRewardCreditsCard = () => {
         {/* <Image src={DiscountCoupon} alt="DiscountCoupon" /> */}
         <DiscountCouponIcon className="h-8 stroke-[#507CFF]" />
         <div className="flex items-center gap-2 text-title-2-bold text-secondary sm:text-title-1-bold">
-          ${rewardAmount / 100}
+          ${(rewardAmount / 100).toFixed(2)}
           <BackIcon className="h-3.5 rotate-180 fill-secondary-300" />
         </div>
       </div>
