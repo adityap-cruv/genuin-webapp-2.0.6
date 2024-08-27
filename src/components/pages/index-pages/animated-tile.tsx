@@ -74,7 +74,7 @@ export function GeneralShellForInitialComponent({
         <span className="hidden md:block">{cta}</span>
       </div>
       {videoSrc && (
-        <div className="aspect-reel w-44 items-center transition-all sm:flex sm:w-2/3 sm:justify-center md:w-1/4 md:justify-end lg:w-[30%]">
+        <div className="aspect-reel w-44 items-center transition-all sm:flex sm:w-2/3 sm:justify-center md:w-1/4 md:justify-center lg:w-[30%]">
           <VanillaPlayer
             className="shrink-0 overflow-clip rounded-3xl border-[8px] border-monochrome-white sm:rounded-[38px] md:rounded-[42px] md:border-[12px] lg:h-5/6"
             id="home-player"
@@ -86,7 +86,7 @@ export function GeneralShellForInitialComponent({
       )}
 
       {posterSrc && (
-        <div className="aspect-reel w-60 items-center transition-all flex sm:w-2/3 sm:justify-center md:w-1/3 md:justify-end lg:w-[40%]">
+        <div className="flex aspect-reel w-60 items-center transition-all sm:w-2/3 sm:justify-center md:w-1/3 md:justify-center lg:w-[40%]">
           <img src={posterSrc} className="w-full" alt="poster" />
         </div>
       )}

@@ -14,7 +14,7 @@ export function NavBar() {
   const pathName = usePathname()
 
   return (
-    <nav className="sticky top-0 z-50 h-[60px] w-full bg-monochrome-white md:h-[90px] md:bg-white-alpha md:backdrop-blur-20px">
+    <nav className="sticky top-0 z-50 h-[60px] w-full bg-monochrome-white md:h-[90px]">
       <div className="container flex h-full items-center " style={{ maxWidth: 1200 }}>
         <div className="flex w-full justify-center md:justify-normal">
           <Link href={"/"}>
