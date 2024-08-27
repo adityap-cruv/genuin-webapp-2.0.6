@@ -70,7 +70,7 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
 
   async function fetchWalletBalance() {
     const { wallet } = await getBalanceAPI({ isCurrentBalance: true })
-    setInitialData({ walletBalance: Number(wallet.cash_balance) })
+    setInitialData({ walletBalance: Number(wallet.balance) })
   }
 
   useEffect(() => {
