@@ -18,10 +18,10 @@ type RootShellProps = {
 // TODO: Improve this components.
 export function RootShell({ children, bgGrad, genuinLogo, initialComponent, ctaForMobile }: RootShellProps) {
   return (
-    <>
+    <div className="relative">
       <NavBar />
       <div
-        className="relative w-full bg-none bg-cover bg-center bg-no-repeat py-4 md:h-body"
+        className="relative w-full bg-none bg-cover bg-center bg-no-repeat py-4 md:h-[100vh]"
         style={{
           backgroundImage: `url(${bg.src})`,
         }}>
@@ -52,7 +52,7 @@ export function RootShell({ children, bgGrad, genuinLogo, initialComponent, ctaF
       </div>
       {children}
       <span className="fixed bottom-10 left-1/2 -translate-x-1/2 md:hidden">{ctaForMobile}</span>
-    </>
+    </div>
   )
 }
 

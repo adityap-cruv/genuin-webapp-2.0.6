@@ -12,6 +12,7 @@ import { MOBILE_DOWNLOAD_APP_LINK, URL_TO_APP_STORE, URL_TO_PLAY_STORE } from '@
 import { Footer } from '../footer'
 import { AnimatedButton } from '../animated-component'
 import { ArrowRight } from 'lucide-react'
+import CreatorsPoster from '@images/home/creators_poster.webp'
 
 const listOfComps = [
   {
@@ -105,6 +106,7 @@ function InitialComponent() {
           </div>
         </div>
       }
+      posterSrc={CreatorsPoster.src}
     />
   )
 }
