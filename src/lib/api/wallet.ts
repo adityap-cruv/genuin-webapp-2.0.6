@@ -95,6 +95,7 @@ export async function redeemCouponAPI() {
     .catch((e) => {
       // eslint-disable-next-line no-console
       console.log('error:;', e)
-      throw new Error('Something went wrong::')
+      return { data: { code: Number(e.response.data.code), message: e.response.data.message } }
+      // throw new Error('Something went wrong::')
     })
 }

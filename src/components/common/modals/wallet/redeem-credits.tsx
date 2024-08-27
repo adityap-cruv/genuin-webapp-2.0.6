@@ -10,6 +10,7 @@ import { Loader } from '@/components/ui/loader'
 export function RedeemCredits() {
   const { closeModal } = useAuthenticationModalStore(useShallow((state) => ({ closeModal: state.close })))
   const [isLoading, setIsLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
 
   async function handleRedeem() {
     setIsLoading(true)
@@ -17,6 +18,8 @@ export function RedeemCredits() {
     if (res.data.code === 200) {
       closeModal()
       window.open(res.data.data.redeem_link, '_blank')
+    } else {
+      setErrorMessage(res.data.message)
     }
     setIsLoading(false)
   }
@@ -45,6 +48,11 @@ export function RedeemCredits() {
           {isLoading ? <Loader size="sm" /> : 'Confirm'}
         </Button>
       </div>
+      {errorMessage !== '' && (
+        <div>
+          <p className="text-supplementary-red">You can't redeem coupon due to low balance</p>
+        </div>
+      )}
     </ModalShell>
   )
 }
