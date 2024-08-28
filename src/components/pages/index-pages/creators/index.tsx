@@ -47,7 +47,7 @@ const listOfComps = [
       </>
     ),
     subtitle:
-      'To get started, invite 100 new members across your network and brand partner communities. Then, earn a $100 payout when they sign up.',
+      'Invite 100 new members across your network and brand partner communities. Then, earn a $100 payout when they sign up.',
     videoLink: getAnimationUrl('growArt'),
   },
 ]
