@@ -117,10 +117,10 @@ function BottomComponent() {
       <div
         className="relative flex flex-col gap-6 px-6 py-12 sm:gap-9 sm:px-20 md:w-4/5 md:py-16"
         style={{ background: 'linear-gradient(90deg, #9395FF, #1685FD)', borderRadius: 36 }}>
-        <p className="w-full text-center text-heading-3 font-bold text-monochrome-white md:w-1/2 md:text-start md:text-title-1-bold-home-m">
+        <p className="w-full text-center text-heading-3 font-bold text-monochrome-white md:w-3/4 md:text-start md:text-title-1-bold-home-m">
           Start Your Community with Genuin!
         </p>
-        <p className="w-full text-center text-cap-1-home leading-normal text-monochrome-white md:w-1/2 md:text-start md:text-body-2-demi-home">
+        <p className="w-full text-center text-cap-1-home leading-normal text-monochrome-white md:w-3/4 md:text-start md:text-body-2-demi-home">
           Launch your community in minutes and begin growing your distribution to reach highly-relevant consumers at
           scale.
         </p>
