@@ -17,7 +17,7 @@ export function NavBar() {
     <nav className="sticky top-0 z-50 h-[60px] w-full bg-monochrome-white md:h-[90px]">
       <div className="container flex h-full items-center " style={{ maxWidth: 1200 }}>
         <div className="flex w-full justify-center md:justify-normal">
-          <Link href={"/"}>
+          <Link href={'/'}>
             <GenuinIcon.logo className="fill-primary" />
           </Link>
           <div className="hidden w-full items-center justify-evenly px-10 text-cap-1-demi-home md:flex">
@@ -54,7 +54,8 @@ export function NavBar() {
               About us
             </Link>
             <Link
-              href="/explore"
+              href={PATH_NAME.explore()}
+              target="_blank"
               className="rounded-full border px-6 py-4 text-cap-1-bold-home hover:border-primary hover:bg-primary hover:text-monochrome-white">
               <p className="whitespace-nowrap">Discover Communities</p>
             </Link>
@@ -99,6 +100,7 @@ function SideModal() {
         </Link>
         <Link
           href={PATH_NAME.discover()}
+          target="_blank"
           className={cn(
             'whitespace-nowrap px-6 py-4 hover:font-extrabold hover:text-primary',
             pathName === PATH_NAME.discover() && 'bg-[#F7F9FC] font-extrabold text-primary'
