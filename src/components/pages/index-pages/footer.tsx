@@ -16,7 +16,7 @@ const footerLinks = [
     title: 'Contact',
     comp: (
       <ContactUs>
-        <p className="text-cap-1-home text-monochrome-white transition-all hover:font-bold">Contact</p>
+        <p className="text-cap-1-home text-monochrome-white transition-all hover:scale-105">Contact</p>
       </ContactUs>
     ),
   },
@@ -44,7 +44,7 @@ export function Footer({ className, ...restProps }: ComponentProps<'div'>) {
             if (item.pathname)
               return (
                 <Link key={index} href={item.pathname}>
-                  <p className="text-cap-1-home text-monochrome-white transition-all hover:font-bold">{item.title}</p>
+                  <p className="text-cap-1-home text-monochrome-white transition-all hover:scale-105">{item.title}</p>
                 </Link>
               )
             return <Fragment key={index}>{item.comp}</Fragment>
