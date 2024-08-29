@@ -1,5 +1,4 @@
 'use client'
-import { useRef } from 'react'
 import { GeneralShell, GeneralShellForInitialComponent, getAnimationUrl } from '../animated-tile'
 import { RootShell } from '../root-shell'
 import genuinLogo from '@images/home/backgrounds/logos/creatorsBgLogo.svg'
@@ -13,7 +12,7 @@ import { Footer } from '../footer'
 import { AnimatedButton } from '../animated-component'
 import { ArrowRight } from 'lucide-react'
 import CreatorsPoster from '@images/home/creators_poster.webp'
-import { motion, useInView } from 'framer-motion'
+import { motion } from 'framer-motion'
 
 const listOfComps = [
   {
@@ -113,15 +112,12 @@ function InitialComponent() {
 }
 
 function BottomComponent() {
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, amount: 0.3 })
-
   return (
     <div className="container relative py-10 sm:px-10" style={{ maxWidth: 1200 }}>
       <motion.div
-        ref={ref}
         initial={{ x: '2%', opacity: 0 }}
-        animate={{ x: isInView ? '0%' : '2%', opacity: isInView ? 1 : 0 }}
+        whileInView={{ x: '0%', opacity: 1 }}
+        viewport={{ once: true, amount: 0.3 }}
         transition={{ duration: 1, ease: 'easeOut' }}
         className="relative flex flex-col gap-6 px-6 py-12 sm:gap-9 sm:px-20 md:w-4/5 md:py-16"
         style={{ background: 'linear-gradient(90deg, #9395FF, #1685FD)', borderRadius: 36 }}>
@@ -135,11 +131,12 @@ function BottomComponent() {
 
         <div className="absolute right-0 top-1/2 hidden -translate-y-1/2 translate-x-1/2 md:block">
           <motion.div
-            style={{ borderRadius: 36 }}
             initial={{ x: '-15%', opacity: 0 }}
-            animate={{ x: isInView ? '0%' : '-15%', opacity: isInView ? 1 : 0 }}
+            whileInView={{ x: '0%', opacity: 1 }}
+            viewport={{ once: true, amount: 0.3 }}
             transition={{ duration: 1, ease: 'easeOut' }}
-            className="flex-col items-center justify-center gap-4 bg-monochrome-white px-16 py-9 shadow-lg md:flex">
+            className="flex-col items-center justify-center gap-4 bg-monochrome-white px-16 py-9 shadow-lg md:flex"
+            style={{ borderRadius: 36 }}>
             <Image src={downloadQr} height={140} width={140} alt="Download" />
             <p className="text-center text-cap-1-bold-home font-extrabold leading-normal">
               Get the Genuin app to become a<br /> Community Builder
