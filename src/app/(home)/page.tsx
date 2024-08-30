@@ -1,10 +1,10 @@
 import { type Metadata } from 'next'
-import { HomeComponent } from '@components/pages/home/home-component'
+import { HomeComponent } from '@/components/pages/index-pages/home'
 
 // TODO: optimize uses of dynamic function.
 export default async function Page() {
   return (
-    <main id="indexPage" className="absolute inset-0 text-new-off-black">
+    <main className="font-manrope absolute inset-0 text-new-off-black">
       <HomeComponent />
     </main>
   )
@@ -12,14 +12,14 @@ export default async function Page() {
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: 'Launch a Community Media Network for your Retail Media Network.',
+    title: 'Genuin - Create & Monetize Video Communities |  Retail Media & Commerce Media Solutions',
     applicationName: 'genuin',
     description:
-      'Video-based communities that connect consumers with their favorite brands and creators, while boosting consumer engagement and revenue for retailers.',
+      "Unlock the power of Genuin's no-code platform to create and monetize video communities tailored for Retail and Commerce Media. Engage your audience, integrate partner content, and boost media revenue with our innovative solutions. Book a demo to elevate your digital ecosystem today",
     openGraph: {
-      title: 'Learn, connect and engage—all under one roof.',
+      title: 'Genuin - Create & Monetize Video Communities |  Retail Media & Commerce Media Solutions',
       description:
-        'Video-based communities that connect consumers with their favorite brands and creators, while boosting consumer engagement and revenue for retailers.',
+        "Unlock the power of Genuin's no-code platform to create and monetize video communities tailored for Retail and Commerce Media. Engage your audience, integrate partner content, and boost media revenue with our innovative solutions. Book a demo to elevate your digital ecosystem today",
       url: 'https://begenuin.com',
       images: [
         {

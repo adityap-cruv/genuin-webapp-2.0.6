@@ -52,7 +52,6 @@
     "framer-motion": "^10.16.4",
     "gsap": "^3.12.5",
     "input-otp": "^1.2.0",
-    "logrocker": "^1.0.4",
     "logrocket": "^8.1.2",
     "lucide-react": "^0.279.0",
     "mobile-detect": "^1.4.5",

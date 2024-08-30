@@ -45,7 +45,10 @@
       ],
       "@services/*": [
         "./src/services/*"
-      ]
+      ],
+      "@lotties/*": [
+        "./public/lotties/*"
+      ],
     },
   },
   "include": [

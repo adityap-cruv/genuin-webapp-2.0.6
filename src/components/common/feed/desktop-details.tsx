@@ -26,6 +26,7 @@ import { ReadMore } from '../read-more'
 import { useSearchParams } from 'next/navigation'
 import { commentDeepLink } from '@/lib/get-deeplink'
 import { Linkout } from '../linkout'
+import { useWalletBalanceHandler } from '@/services/wallet-handler'
 
 // TODO: improve this component.
 export function DesktopDetails({ loop, community, owner, video }: VideoPlayerModalType) {
@@ -250,10 +251,12 @@ function CommentInput({
   videoSlug: string
   communityId: string
 }) {
+  const { handleWalletBalance } = useWalletBalanceHandler()
   const user = useGenuinOptions().user
   const searchParams = Object.fromEntries(useSearchParams())
 
   async function handleClick() {
+    await handleWalletBalance({ action: 'comments', videoId, type: 'POST' })
     if (currentComment.length !== 0) {
       const newComment = {
         owner: {

@@ -2,6 +2,7 @@
  * This is mobile app download which will redirect to app store if it is iphone or else android.
  */
 export const MOBILE_DOWNLOAD_APP_LINK = 'https://install.begenuin.com/86sn/cgs'
+export const BCC_LOGIN_LINK = 'https://brands.begenuin.com/login'
 /**
  * This is hiring link hiring page is hosted on {@link https://careers.begenuin.com | Careers}
  */

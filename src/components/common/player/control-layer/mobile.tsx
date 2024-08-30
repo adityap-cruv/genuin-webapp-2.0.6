@@ -18,6 +18,7 @@ import { motion, useAnimationControls } from 'framer-motion'
 import { useShallow } from 'zustand/react/shallow'
 import { fetchLinkouts } from '../../linkout/api'
 import { type LinkoutsType } from '../../linkout/schema'
+import { WalletAmountBadge } from '../../wallet/wallet-amount-badge'
 
 type MobileProps = {
   isActive: boolean
@@ -71,6 +72,9 @@ export const Mobile = memo(function Mobile({ ...props }: MobileProps) {
           </span>
         </div>
       )}
+      <span className="absolute right-2 top-20 z-20 h-fit w-fit cursor-pointer">
+        <WalletAmountBadge type="light" />
+      </span>
       <div className="absolute flex h-full w-full items-center justify-center">
         <div
           className={cn(

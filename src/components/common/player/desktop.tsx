@@ -25,9 +25,10 @@ type DesktopProps = {
    * default: false
    */
   loop?: boolean
+  isInModal?: boolean
 } & DetailedHTMLProps<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement>
 
-export function Desktop({ videoData, loop = false, isActive, ...restProps }: DesktopProps) {
+export function Desktop({ videoData, loop = false, isActive, isInModal, ...restProps }: DesktopProps) {
   const hasFocus = useGenuinOptions(useShallow((state) => ({ userHasFocus: state.userHasFocus }))).userHasFocus
   const { setShouldPlay, stateShouldPlay } = usePlayerControlStore(
     useShallow((state) => ({
@@ -76,6 +77,7 @@ export function Desktop({ videoData, loop = false, isActive, ...restProps }: Des
           attachedLink={videoData.attachedLink}
           description={videoData.description}
           isSparked={videoData.isSparked}
+          isInModal={isInModal}
         />
       </div>
     </div>

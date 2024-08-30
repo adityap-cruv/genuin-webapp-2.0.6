@@ -3,6 +3,7 @@ import { rudderStackTrack } from './useRudderAnalytics'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { useLocalStorage } from '@/lib/stores/local-storage'
 import { useEmbedPlayerState } from '@/components/embed/embed-player-state'
+import { useWalletBalanceHandler } from '../wallet-handler'
 
 export type PropertiesType = Record<string, string | number | undefined>
 
@@ -87,6 +88,9 @@ export const Analytics = {
       eventName: 'Video Complete',
       properties,
     })
+
+    const { handleWalletBalance } = useWalletBalanceHandler()
+    void handleWalletBalance({ action: 'view', videoId, type: 'POST' })
   },
   triggerAnalyticsForVideoProgress(
     videoId: string,

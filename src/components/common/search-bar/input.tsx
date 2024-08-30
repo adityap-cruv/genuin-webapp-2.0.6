@@ -17,12 +17,14 @@ function Desktop() {
   const { updateFocus, setKeyword } = useSearchBarStore()
 
   const debounced = useDebouncedCallback((value) => {
-    setKeyword(value)
-    if (value) postRecents(RECENT_SEARCH_CONTENT_TYPE.text, undefined, value)
-    void Analytics.track({
-      eventName: 'Keyword Searched',
-      properties: { keyword_searched: value, search_source: 'web' },
-    })
+    if (value.trim() !== '') {
+      setKeyword(value.trim())
+      if (value.trim()) postRecents(RECENT_SEARCH_CONTENT_TYPE.text, undefined, value)
+      void Analytics.track({
+        eventName: 'Keyword Searched',
+        properties: { keyword_searched: value.trim(), search_source: 'web' },
+      })
+    }
   }, 500)
 
   return (

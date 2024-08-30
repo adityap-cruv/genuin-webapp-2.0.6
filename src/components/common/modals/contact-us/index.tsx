@@ -5,12 +5,13 @@ import icSuccess from '@icons/icSuccess.svg'
 
 type Props = {
   children: React.ReactNode
+  asChild?: boolean
 }
 
-export function ContactUs({ children }: Props) {
+export function ContactUs({ children, asChild }: Props) {
   return (
     <Dialog>
-      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogTrigger asChild={asChild}>{children}</DialogTrigger>
       <DialogContent className="overflow-hidden rounded-t-2xl" style={{ maxHeight: '90vh' }}>
         <DownloadAppForm />
       </DialogContent>

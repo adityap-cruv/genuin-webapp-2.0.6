@@ -10,20 +10,33 @@ export default function Component() {
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: 'Engage your consumers with partner content.',
-    applicationName: 'genuin',
-    description:
-      'Populate with both brand and performance content from partners, advertisers, and creators to ignite your community.',
-    openGraph: {
-      title: 'Engage your consumers with partner content.',
-      description:
-        'Populate with both brand and performance content from partners, advertisers, and creators to ignite your community.',
-      url: 'https://begenuin.com',
-      images: [
-        {
-          url: 'https://media.begenuin.com/backend_assets/new_genuin_preview.png',
-        },
-      ],
+    robots: {
+      index: false,
+      follow: false,
+      googleBot: {
+        index: false,
+        follow: false,
+      },
     },
   }
 }
+
+// export async function generateMetadata(): Promise<Metadata> {
+//   return {
+//     title: 'Engage your consumers with partner content.',
+//     applicationName: 'genuin',
+//     description:
+//       'Populate with both brand and performance content from partners, advertisers, and creators to ignite your community.',
+//     openGraph: {
+//       title: 'Engage your consumers with partner content.',
+//       description:
+//         'Populate with both brand and performance content from partners, advertisers, and creators to ignite your community.',
+//       url: 'https://begenuin.com',
+//       images: [
+//         {
+//           url: 'https://media.begenuin.com/backend_assets/new_genuin_preview.png',
+//         },
+//       ],
+//     },
+//   }
+// }

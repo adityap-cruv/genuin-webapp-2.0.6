@@ -23,13 +23,13 @@ export function TickerCarousel() {
     adobe.src,
   ]
   return (
-    <div className="flex w-screen flex-col items-center bg-monochrome-white py-9 md:py-16">
+    <div className="flex flex-col items-center bg-monochrome-white py-9 md:py-16">
       <div className="pb-9">
         <div className="border-1 rounded-lg border border-monochrome-9 px-4 py-2">
           <p className="text-cap-1-demi-home">Built by a world-class team</p>
         </div>
       </div>
-      <div className="container relative px-0">
+      <div className="container relative px-0" style={{ maxWidth: 1200 }}>
         <div
           className="absolute left-0 z-20 h-full w-1 bg-monochrome-white"
           style={{

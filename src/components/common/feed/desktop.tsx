@@ -120,10 +120,11 @@ type SinglePlayerProps = {
   videoData: VideoPlayerModalType
   sizeBox: VideoSizeBoxType
   className?: string
+  isInModal?: boolean
 }
 
 // TODO: Remove this component and use swiper instead.
-export function SinglePlayer({ sizeBox, className, videoData }: SinglePlayerProps) {
+export function SinglePlayer({ sizeBox, className, videoData, isInModal }: SinglePlayerProps) {
   return (
     <div className={cn('flex h-full w-full', className)}>
       <div style={{ ...sizeBox }} className="hide-scrollbar overflow-x-clip">
@@ -144,6 +145,7 @@ export function SinglePlayer({ sizeBox, className, videoData }: SinglePlayerProp
             const { currentTime, duration } = usePlayerControlStore.getState()
             Analytics.triggerAnalyticsForVideoComplete(videoData.video.id, duration, currentTime)
           }}
+          isInModal={isInModal}
         />
       </div>
       <DesktopDetails {...videoData} />

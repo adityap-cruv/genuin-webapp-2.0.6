@@ -13,6 +13,7 @@ import { saveVisitor } from '@components/common/modals/authentication/api/auth'
 import { notificationsCount } from '@lib/api/notification'
 import { rudderStackIdentify } from '@/services/analytics/useRudderAnalytics'
 import { useRefreshToken } from '@/hooks/use-refresh-token'
+import { getBalanceAPI } from '@/lib/api/wallet'
 const RepostModal = dynamic(
   async () => await import('@components/common/modals/repost').then((comp) => comp.RepostModal.ui)
 )
@@ -67,6 +68,11 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
     }
   }
 
+  async function fetchWalletBalance() {
+    const { wallet } = await getBalanceAPI({ isCurrentBalance: true })
+    setInitialData({ walletBalance: Number(wallet.balance) })
+  }
+
   useEffect(() => {
     let interceptorId: number
     if (sessionStatus === 'loading') return
@@ -74,6 +80,7 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
       interceptorId = setAuthTokenInAxiosInstance(sessionData.user.accessToken)
       setInitialData({ user: sessionData.user })
       void fetchNotificationCount()
+      void fetchWalletBalance()
       if (isLoading) setIsLoading(false)
     }
     if (sessionStatus === 'unauthenticated') {

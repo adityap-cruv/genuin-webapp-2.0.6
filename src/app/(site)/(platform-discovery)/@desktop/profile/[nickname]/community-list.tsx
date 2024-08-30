@@ -215,6 +215,7 @@ function PlayerModalWrapper({ userId, currentVideoId }: { userId: string; curren
       close={close}
       open={Boolean(currentVideoId)}
       isLoading={isLoading}
+      isInModal={true}
     />
   )
 }
