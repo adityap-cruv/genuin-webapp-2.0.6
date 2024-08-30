@@ -15,7 +15,7 @@ export function NavBar() {
 
   return (
     <nav className="sticky top-0 z-50 h-[60px] w-full bg-monochrome-white md:h-[90px]">
-      <div className="container flex h-full items-center " style={{ maxWidth: 1200 }}>
+      <div className="container relative flex h-full items-center " style={{ maxWidth: 1200 }}>
         <div className="flex w-full justify-center md:justify-normal">
           <Link href={'/'}>
             <GenuinIcon.logo className="fill-primary" />
@@ -24,39 +24,43 @@ export function NavBar() {
             <Link
               href={PATH_NAME.index()}
               className={cn(
-                'whitespace-nowrap hover:font-extrabold hover:text-primary',
-                pathName === PATH_NAME.index() && 'font-extrabold text-primary'
+                ' whitespace-nowrap transition-all hover:scale-105 hover:text-primary',
+                pathName === PATH_NAME.index() && 'scale-105 text-primary'
               )}>
               For Media Networks
             </Link>
             <Link
               href={PATH_NAME.brands()}
               className={cn(
-                'whitespace-nowrap hover:font-extrabold hover:text-primary',
-                pathName === PATH_NAME.brands() && 'font-extrabold text-primary'
+                ' whitespace-nowrap transition-all hover:scale-105 hover:text-primary',
+                pathName === PATH_NAME.brands() && 'scale-105 text-primary'
               )}>
               For Brands
             </Link>
             <Link
               href={PATH_NAME.creators()}
               className={cn(
-                'whitespace-nowrap hover:font-extrabold hover:text-primary',
-                pathName === PATH_NAME.creators() && 'font-extrabold text-primary'
+                ' whitespace-nowrap transition-all hover:scale-105 hover:text-primary',
+                pathName === PATH_NAME.creators() && 'scale-105 text-primary'
               )}>
               For Creators
             </Link>
           </div>
         </div>
-        <SideModal />
+        <div className="absolute right-0">
+          <SideModal />
+        </div>
         {pathName !== PATH_NAME.privacy && pathName !== PATH_NAME.terms && (
           <div className="hidden items-center md:flex ">
-            <Link href="/about" className="whitespace-nowrap px-6 text-cap-1-demi-home">
+            <Link
+              href="/about"
+              className="whitespace-nowrap px-6 text-cap-1-demi-home transition-all hover:scale-105 hover:text-primary">
               About us
             </Link>
             <Link
               href={PATH_NAME.explore()}
               target="_blank"
-              className="rounded-full border px-6 py-4 text-cap-1-bold-home hover:border-primary hover:bg-primary hover:text-monochrome-white">
+              className="rounded-full border px-6 py-4 text-cap-1-bold-home transition-all hover:border-primary hover:bg-primary hover:text-monochrome-white">
               <p className="whitespace-nowrap">Discover Communities</p>
             </Link>
           </div>
