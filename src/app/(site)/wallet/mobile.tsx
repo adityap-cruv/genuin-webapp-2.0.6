@@ -20,10 +20,7 @@ import { WalletCashTransactionsCard } from '@/components/common/wallet/wallet-ca
 export default function Mobile() {
   const { walletDetails } = useWalletStore()
   const currentBalance = walletDetails.cash_balance + walletDetails.point_balance
-  const lifetimeEarnings = Math.max(
-    walletDetails.lifetime_cash_balance + walletDetails.lifetime_point_balance - currentBalance,
-    0
-  )
+  const lifetimeEarnings = Math.max(walletDetails.lifetime_cash_balance + walletDetails.lifetime_point_balance, 0)
 
   return (
     <div className="h-[100vh] w-full bg-monochrome-11">

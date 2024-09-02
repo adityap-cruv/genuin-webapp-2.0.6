@@ -99,3 +99,20 @@ export async function redeemCouponAPI() {
       // throw new Error('Something went wrong::')
     })
 }
+
+export async function cashWithdrawAPI({ amount, redirectUrl }: { amount: number; redirectUrl: string }) {
+  return await axiosInstance
+    .post('/goservices/wallets/cash/withdraw', {
+      amount,
+      return_link : redirectUrl,
+    })
+    .then((res) => {
+      return res
+    })
+    .catch((e) => {
+      // eslint-disable-next-line no-console
+      console.log('error:;', e)
+      return { data: { code: Number(e.response.data.code), message: e.response.data.message } }
+      // throw new Error('Something went wrong::')
+    })
+}

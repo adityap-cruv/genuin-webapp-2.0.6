@@ -6,10 +6,7 @@ import { useWalletStore } from './store'
 export const WalletBalanceCard = () => {
   const { walletDetails } = useWalletStore()
   const currentBalance = walletDetails.cash_balance + walletDetails.point_balance
-  const lifetimeEarnings = Math.max(
-    walletDetails.lifetime_cash_balance + walletDetails.lifetime_point_balance - currentBalance,
-    0
-  )
+  const lifetimeEarnings = Math.max(walletDetails.lifetime_cash_balance + walletDetails.lifetime_point_balance, 0)
 
   return (
     <div className="flex h-full w-full flex-col justify-between py-4 text-monochrome-white">

@@ -44,7 +44,7 @@ export function getCommunityVideos(slug: string) {
       // Used axios because this API used in embed and we don't have to pass auth-token in case of embed
       if (!promise) {
         promise = axios
-          .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/home/community_videos', {
+          .get(process.env.NEXT_PUBLIC_API_URL + '/api/v4/home/community_videos', {
             params: {
               slug,
               last_video_id: pageParam,
