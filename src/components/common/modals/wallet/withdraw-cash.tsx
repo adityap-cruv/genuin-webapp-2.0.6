@@ -49,7 +49,6 @@ export function WithdrawDialog() {
       closeModal()
       if (resp.data.data.url) {
         window.open(resp.data.data.url, '_self')
-      } else {
       }
     } else {
       setErrorMessage(resp.data.message)
