@@ -2,6 +2,7 @@ import { cn } from '@/lib/utils'
 import { useInView } from 'framer-motion'
 import OpenPlayerJS from 'openplayerjs'
 import { type DetailedHTMLProps, type VideoHTMLAttributes, memo, useEffect, useRef } from 'react'
+import { useState } from 'react'
 
 type Props = DetailedHTMLProps<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement> & {
   videoSource: string
@@ -12,16 +13,17 @@ type Props = DetailedHTMLProps<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoE
  */
 export const VanillaPlayer = memo(function InnerPlayer({ videoSource, className, ...props }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null)
+  const [loaded, setLoaded] = useState(false)
   const inView = useInView(videoRef, { amount: 0.9, once: true })
 
   useEffect(() => {
     if (!videoRef.current) return
     if (inView) {
-      if (videoRef.current) {
+      if (videoRef.current && loaded) {
         void videoRef.current.play()
       }
     }
-  }, [inView, videoRef.current])
+  }, [inView, videoRef.current, loaded])
 
   useEffect(() => {
     if (!videoRef.current) return
@@ -53,8 +55,8 @@ export const VanillaPlayer = memo(function InnerPlayer({ videoSource, className,
 
     void player.init().then((value) => {
       void player.load().then(() => {
-        // player
-        //   .play()
+        setLoaded(true)
+        // if (inView) void player.play()
         //   .then((_) => {
         //     // console.log('start playing')
         //   })
