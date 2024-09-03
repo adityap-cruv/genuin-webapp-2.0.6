@@ -50,7 +50,7 @@ export function RedeemCredits() {
       </div>
       {errorMessage !== '' && (
         <div>
-          <p className="text-supplementary-red">You can't redeem coupon due to low balance</p>
+          <p className="text-supplementary-red">{errorMessage}</p>
         </div>
       )}
     </ModalShell>

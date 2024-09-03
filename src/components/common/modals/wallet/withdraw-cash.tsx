@@ -9,33 +9,50 @@ import { cn } from '@/lib/utils'
 import { Loader } from '@/components/ui/loader'
 import { ModalShell } from '../authentication/modal-shell'
 import { useWalletStore } from '../../wallet/store'
+import { cashWithdrawAPI } from '@/lib/api/wallet'
+import { useShallow } from 'zustand/react/shallow'
+import { useAuthenticationModalStore } from '../authentication/store'
 
 // Define the schema with an optional `cash_balance` parameter
 const createSchema = (cashBalance: number) =>
   z.object({
     amount: z
       .number()
-      .nonnegative()
+      .gt(0, { message: 'Value must be greater than 0' }) // Ensures amount is greater than 0
       .max(cashBalance, { message: `Value cannot be greater than $${cashBalance / 100}` }),
   })
 
 export function WithdrawDialog() {
   const { walletDetails } = useWalletStore()
   const [isLoading] = useState(false)
+  const { closeModal } = useAuthenticationModalStore(useShallow((state) => ({ closeModal: state.close })))
+  const [errorMessage, setErrorMessage] = useState('')
 
   // Initialize form with dynamic schema based on walletDetails.cash_balance
   const schema = createSchema(walletDetails.cash_balance)
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     mode: 'onBlur',
-    defaultValues: { amount: 0 },
+    // defaultValues: { amount: 0 },
   })
 
   const { isValid } = form.formState
 
   async function onSubmit(data: { amount: number }) {
     // Process the submitted data
-    console.log(data)
+    const redirectUrl = window.location.href
+    console.log(redirectUrl)
+    const resp = await cashWithdrawAPI({ amount: data.amount * 100, redirectUrl })
+    console.log(resp)
+
+    if (resp?.data?.code === 200) {
+      closeModal()
+      if (resp.data.data.url) {
+        window.open(resp.data.data.url, '_self')
+      }
+    } else {
+      setErrorMessage(resp.data.message)
+    }
   }
 
   return (
@@ -86,6 +103,11 @@ export function WithdrawDialog() {
           </Button>
         </form>
       </Form>
+      {errorMessage !== '' && (
+        <div>
+          <p className="text-body-1-med text-supplementary-red">{errorMessage}</p>
+        </div>
+      )}
     </ModalShell>
   )
 }

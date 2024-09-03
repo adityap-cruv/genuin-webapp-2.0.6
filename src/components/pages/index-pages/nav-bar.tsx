@@ -74,7 +74,7 @@ function SideModal() {
   const pathName = usePathname()
   return (
     <Sheet>
-      <SheetTrigger className="absolute right-2 block md:hidden">
+      <SheetTrigger className="absolute right-2 contents md:hidden">
         <HamBurgerMenuIcon toggleToClose={false} />
       </SheetTrigger>
       <SheetContent className="font-manrope flex w-full min-w-full flex-col gap-0 border-none p-0 pt-10 text-cap-1-demi-home">
