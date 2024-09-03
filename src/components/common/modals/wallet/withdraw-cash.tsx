@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils'
 import { Loader } from '@/components/ui/loader'
 import { ModalShell } from '../authentication/modal-shell'
 import { useWalletStore } from '../../wallet/store'
-import { cashWithdrawAPI } from '@/lib/api/wallet'
+import { cashWithdrawAPI, getBalanceAPI } from '@/lib/api/wallet'
 import { useShallow } from 'zustand/react/shallow'
 import { useAuthenticationModalStore } from '../authentication/store'
 
@@ -23,7 +23,7 @@ const createSchema = (cashBalance: number) =>
   })
 
 export function WithdrawDialog() {
-  const { walletDetails } = useWalletStore()
+  const { walletDetails, setWalletDetails } = useWalletStore()
   const [isLoading] = useState(false)
   const { closeModal } = useAuthenticationModalStore(useShallow((state) => ({ closeModal: state.close })))
   const [errorMessage, setErrorMessage] = useState('')
@@ -50,6 +50,8 @@ export function WithdrawDialog() {
       if (resp.data.data.url) {
         window.open(resp.data.data.url, '_self')
       }
+      const { wallet } = await getBalanceAPI({ isCurrentBalance: false })
+      setWalletDetails(wallet)
     } else {
       setErrorMessage(resp.data.message)
     }

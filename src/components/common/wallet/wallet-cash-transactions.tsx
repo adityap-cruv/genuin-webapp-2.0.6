@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/button'
 import { useWalletStore } from './store'
 import { AuthenticationModal } from '../modals/authentication'
-import { getTransactionsList } from '@/lib/api/wallet'
+import { fetchTransactionsList, getTransactionsList } from '@/lib/api/wallet'
 import { useEffect, useRef } from 'react'
 import { Loader } from '@/components/ui/loader'
 
@@ -11,11 +11,22 @@ export const WalletCashTransactionsCard = () => {
     pageSize: 10,
     type: 'CASH',
   })
-  const transactions = data?.pages.flatMap((item) => item.transactions)
+  let transactions = data?.pages.flatMap((item) => item.transactions)
   const { currentCardView, walletDetails } = useWalletStore()
   const scrollDivRef = useRef<HTMLDivElement>(null)
   const loadMoreRef = useRef<HTMLDivElement>(null)
 
+  async function getDetails() {
+    console.log('Details')
+    const { transactions: updatedTransaction, end_of_transactions, nextPage } = await fetchTransactionsList({
+      page: 0,
+      pagesize: 10,
+      type: 'CASH',
+    })
+    console.log('Data:', transactions, end_of_transactions, nextPage)
+    transactions = updatedTransaction
+    // transactions = data?.pages.flatMap((item) => item.transactions)
+  }
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
@@ -50,7 +61,9 @@ export const WalletCashTransactionsCard = () => {
           backgroundColor: currentCardView === 'Cash' ? 'rgba(119, 206, 26, 0.10)' : 'rgba(80, 124, 255, 0.10)',
         }}>
         <div>
-          <p className="mb-1 text-title-2-bold-home-m text-secondary">${(walletDetails?.cash_balance / 100).toFixed(2)}</p>
+          <p className="mb-1 text-title-2-bold-home-m text-secondary">
+            ${(walletDetails?.cash_balance / 100).toFixed(2)}
+          </p>
           <p className="text-body-1-demi text-monochrome-black">Current balance</p>
         </div>
         <Button
@@ -58,7 +71,7 @@ export const WalletCashTransactionsCard = () => {
           className="rounded border border-primary"
           variant="outline"
           onClick={() => {
-            AuthenticationModal.open(undefined, 'WITHDRAW_CASH')
+            AuthenticationModal.open(undefined, 'WITHDRAW_CASH', getDetails)
           }}
           disabled={walletDetails?.cash_balance === 0}>
           <p className="px-4 py-1.5 text-body-1-demi text-primary">
