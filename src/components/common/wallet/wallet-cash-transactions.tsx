@@ -2,31 +2,24 @@
 import { Button } from '@/components/ui/button'
 import { useWalletStore } from './store'
 import { AuthenticationModal } from '../modals/authentication'
-import { fetchTransactionsList, getTransactionsList } from '@/lib/api/wallet'
+import { getTransactionsList } from '@/lib/api/wallet'
 import { useEffect, useRef } from 'react'
 import { Loader } from '@/components/ui/loader'
 
 export const WalletCashTransactionsCard = () => {
-  const { data, isLoading, fetchNextPage, isFetchingNextPage, hasNextPage } = getTransactionsList({
+  const { data, isLoading, fetchNextPage, isFetchingNextPage, hasNextPage, refetch } = getTransactionsList({
     pageSize: 10,
     type: 'CASH',
   })
-  let transactions = data?.pages.flatMap((item) => item.transactions)
+  const transactions = data?.pages.flatMap((item) => item.transactions)
   const { currentCardView, walletDetails } = useWalletStore()
   const scrollDivRef = useRef<HTMLDivElement>(null)
   const loadMoreRef = useRef<HTMLDivElement>(null)
 
   async function getDetails() {
-    console.log('Details')
-    const { transactions: updatedTransaction, end_of_transactions, nextPage } = await fetchTransactionsList({
-      page: 0,
-      pagesize: 10,
-      type: 'CASH',
-    })
-    console.log('Data:', transactions, end_of_transactions, nextPage)
-    transactions = updatedTransaction
-    // transactions = data?.pages.flatMap((item) => item.transactions)
+    await refetch()
   }
+
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {

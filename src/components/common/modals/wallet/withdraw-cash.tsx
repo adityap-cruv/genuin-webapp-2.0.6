@@ -24,7 +24,7 @@ const createSchema = (cashBalance: number) =>
 
 export function WithdrawDialog() {
   const { walletDetails, setWalletDetails } = useWalletStore()
-  const [isLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const { closeModal } = useAuthenticationModalStore(useShallow((state) => ({ closeModal: state.close })))
   const [errorMessage, setErrorMessage] = useState('')
 
@@ -39,21 +39,27 @@ export function WithdrawDialog() {
   const { isValid } = form.formState
 
   async function onSubmit(data: { amount: number }) {
-    // Process the submitted data
-    const redirectUrl = window.location.href
-    console.log(redirectUrl)
-    const resp = await cashWithdrawAPI({ amount: data.amount * 100, redirectUrl })
-    console.log(resp)
+    setIsLoading(true)
 
-    if (resp?.data?.code === 200) {
-      closeModal()
-      if (resp.data.data.url) {
-        window.open(resp.data.data.url, '_self')
+    const redirectUrl = window.location.href
+
+    try {
+      const resp = await cashWithdrawAPI({ amount: data.amount * 100, redirectUrl })
+
+      if (resp?.data?.code === 200) {
+        closeModal()
+        if (resp.data.data.url) {
+          window.open(resp.data.data.url, '_self')
+        }
+        const { wallet } = await getBalanceAPI({ isCurrentBalance: false })
+        setWalletDetails(wallet)
+      } else {
+        setErrorMessage(resp.data.message)
       }
-      const { wallet } = await getBalanceAPI({ isCurrentBalance: false })
-      setWalletDetails(wallet)
-    } else {
-      setErrorMessage(resp.data.message)
+    } catch (error) {
+      setErrorMessage('An unexpected error occurred.')
+    } finally {
+      setIsLoading(false)
     }
   }
 
