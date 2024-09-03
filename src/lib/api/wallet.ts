@@ -56,10 +56,7 @@ export async function fetchTransactionsList({
         type,
       },
     })
-    .then((res) => {
-      console.log("API:",res.data.data)
-      return res.data.data
-    })
+    .then((res) => res.data.data)
     .catch(() => {
       throw new Error('Something went wrong with transactions api.')
     })
