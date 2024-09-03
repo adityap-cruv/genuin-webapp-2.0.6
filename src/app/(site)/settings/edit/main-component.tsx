@@ -285,7 +285,7 @@ function EditProfile({ profileData }: { profileData: ProfileDetailsType }) {
                       <LinkedInIcon className="absolute ml-4 h-5 w-5 fill-primary" />
                       <Input
                         type="text"
-                        placeholder="https://linkedin.com"
+                        placeholder="https://www.linkedin.com/profile/username"
                         className={cn(
                           'border border-tertiary-200 bg-tertiary-100 pl-12 text-title-3-med',
                           errors && '!border-red'
