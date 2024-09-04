@@ -13,6 +13,8 @@ const loopSchema = z.object({
     dp_s: z.string().nullish(),
     dp_m: z.string().nullish(),
     dp_l: z.string().nullish(),
+    // Added this slug as we are getting slug two different places based on the api ( recent / search suggestions)
+    slug: z.string().nullish(),
   }),
   settings: z
     .object({
@@ -20,7 +22,7 @@ const loopSchema = z.object({
     })
     .nullish(),
   share_url: z.string(),
-  slug: z.string(),
+  slug: z.string().nullish(),
 })
 
 const BrandUserSchema = z
