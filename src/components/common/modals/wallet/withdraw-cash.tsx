@@ -105,7 +105,12 @@ export function WithdrawDialog() {
                         )}
                         {...field}
                         onChange={(e) => {
-                          const value = e.target.value.replace(/[^0-9.]/g, '')
+                          let value = e.target.value.replace(/[^0-9.]/g, '')
+                          // Ensure only two digits after the decimal
+                          if (value.includes('.')) {
+                            const [integerPart, decimalPart] = value.split('.')
+                            value = decimalPart.length > 2 ? `${integerPart}.${decimalPart.slice(0, 2)}` : value
+                          }
                           field.onChange(value)
                         }}
                       />
