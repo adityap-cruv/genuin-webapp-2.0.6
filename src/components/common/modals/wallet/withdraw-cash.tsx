@@ -16,13 +16,16 @@ import { useAuthenticationModalStore } from '../authentication/store'
 // Define the schema with an optional `cash_balance` parameter
 const createSchema = (cashBalance: number) =>
   z.object({
-    amount: z.string().refine(
-      (value) => {
-        const numberValue = Number(value)
-        return !isNaN(numberValue) && numberValue > 0 && numberValue <= cashBalance / 100
-      },
-      { message: `Value cannot be greater than $${cashBalance / 100}` }
-    ),
+    amount: z
+      .string()
+      .min(1, { message: 'Required' })
+      .refine(
+        (value) => {
+          const numberValue = Number(value)
+          return !isNaN(numberValue) && numberValue > 0 && numberValue <= cashBalance / 100
+        },
+        { message: `Value cannot be greater than $${cashBalance / 100}` }
+      ),
   })
 
 export function WithdrawDialog() {
@@ -41,8 +44,11 @@ export function WithdrawDialog() {
 
   useEffect(() => {
     const watch = form.watch((value) => {
-      if (value.amount === '') {
+      if (Number(value.amount) <= walletDetails.cash_balance / 100) {
+        form.clearErrors()
         setErrorMessage('')
+      } else {
+        form.setError('amount', { message: `Value cannot be greater than $${walletDetails.cash_balance / 100}` })
       }
     })
     return () => {
