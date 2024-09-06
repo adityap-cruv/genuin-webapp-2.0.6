@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -16,10 +16,13 @@ import { useAuthenticationModalStore } from '../authentication/store'
 // Define the schema with an optional `cash_balance` parameter
 const createSchema = (cashBalance: number) =>
   z.object({
-    amount: z
-      .number()
-      .gt(0, { message: 'Value must be greater than 0' }) // Ensures amount is greater than 0
-      .max(cashBalance, { message: `Value cannot be greater than $${cashBalance / 100}` }),
+    amount: z.string().refine(
+      (value) => {
+        const numberValue = Number(value)
+        return !isNaN(numberValue) && numberValue > 0 && numberValue <= cashBalance / 100
+      },
+      { message: `Value cannot be greater than $${cashBalance / 100}` }
+    ),
   })
 
 export function WithdrawDialog() {
@@ -36,15 +39,26 @@ export function WithdrawDialog() {
     // defaultValues: { amount: 0 },
   })
 
+  useEffect(() => {
+    const watch = form.watch((value) => {
+      if (value.amount === '') {
+        setErrorMessage('')
+      }
+    })
+    return () => {
+      watch.unsubscribe()
+    }
+  }, [form.watch])
+
   const { isValid } = form.formState
 
-  async function onSubmit(data: { amount: number }) {
+  async function onSubmit(data: { amount: string }) {
     setIsLoading(true)
 
     const redirectUrl = window.location.href
 
     try {
-      const resp = await cashWithdrawAPI({ amount: data.amount * 100, redirectUrl })
+      const resp = await cashWithdrawAPI({ amount: Number(data.amount) * 100, redirectUrl })
 
       if (resp?.data?.code === 200) {
         closeModal()
@@ -81,15 +95,15 @@ export function WithdrawDialog() {
                       <p className="absolute left-3">$</p>
                       <Input
                         placeholder="Enter Amount"
-                        type="number"
+                        type="text"
                         className={cn(
                           'border border-tertiary-200 bg-tertiary-100 pl-7 text-title-3-med',
                           form.formState.errors.amount ? '!border-red' : ''
                         )}
                         {...field}
                         onChange={(e) => {
-                          // Convert to number before setting value
-                          field.onChange(Number(e.target.value))
+                          const value = e.target.value.replace(/[^0-9.]/g, '')
+                          field.onChange(value)
                         }}
                       />
                     </div>
