@@ -74,6 +74,9 @@ export function WithdrawDialog() {
       setErrorMessage('An unexpected error occurred.')
     } finally {
       setIsLoading(false)
+      setTimeout(() => {
+        setErrorMessage('')
+      }, 3000)
     }
   }
 
