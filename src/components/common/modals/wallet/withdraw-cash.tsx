@@ -64,7 +64,8 @@ export function WithdrawDialog() {
     const redirectUrl = window.location.href
 
     try {
-      const resp = await cashWithdrawAPI({ amount: Number(data.amount) * 100, redirectUrl })
+      const withdrawAmount: number = Math.round(Number(data.amount) * 100)
+      const resp = await cashWithdrawAPI({ amount: withdrawAmount, redirectUrl })
 
       if (resp?.data?.code === 200) {
         closeModal()
