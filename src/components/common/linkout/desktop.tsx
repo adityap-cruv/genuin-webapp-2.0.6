@@ -102,7 +102,7 @@ function LinkoutForDesktop({ linkoutId, videoId }: { linkoutId: number; videoId:
 
     const everyoneHasImage = linkoutItem.links.every((item) => item.image)
 
-    triggerLinkoutEvent({
+    triggerLinkoutViewEvent({
       linkoutId,
       videoId,
       single: false,
@@ -119,6 +119,7 @@ function LinkoutForDesktop({ linkoutId, videoId }: { linkoutId: number; videoId:
                 <Link
                   href={checkAndAppendHttps(item.link)}
                   key={index}
+                  target="_blank"
                   onClick={(e) => {
                     triggerLinkoutEvent({
                       linkoutId,
