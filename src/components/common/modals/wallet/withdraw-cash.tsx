@@ -22,6 +22,7 @@ const createSchema = (cashBalance: number) =>
       .refine(
         (value) => {
           const numberValue = Number(value)
+          if (numberValue === 0) return true
           return !isNaN(numberValue) && numberValue > 0 && numberValue <= cashBalance / 100
         },
         { message: `Value cannot be greater than $${cashBalance / 100}` }
@@ -118,6 +119,12 @@ export function WithdrawDialog() {
                             const [integerPart, decimalPart] = value.split('.')
                             value = decimalPart.length > 2 ? `${integerPart}.${decimalPart.slice(0, 2)}` : value
                           }
+
+                          if (Number(value) === 0) {
+                            form.clearErrors('amount')
+                            setErrorMessage('')
+                          }
+
                           field.onChange(value)
                         }}
                       />
@@ -130,7 +137,7 @@ export function WithdrawDialog() {
           />
           <Button
             type="submit"
-            disabled={isLoading || !isValid}
+            disabled={isLoading || !isValid || Number(form.watch('amount')) === 0}
             className="mt-4 flex w-full items-center justify-center border-0">
             {isLoading ? (
               <Loader size="sm" className="fill-new-off-white" />
