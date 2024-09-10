@@ -1,10 +1,17 @@
 import { type Metadata } from 'next'
 import '../globals.css'
 import { RootHTML, getViewport } from '@components/layouts/root-layout'
+import { HubSpotProvider } from '@/components/providers/hubspot-provider'
 
 // TODO: add platform discovery to the route and create different route for all.
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  return <RootHTML>{children}</RootHTML>
+  return (
+    <RootHTML>
+      {/* Added hubspot Provider for Tracking */}
+      <HubSpotProvider />
+      {children}
+    </RootHTML>
+  )
 }
 
 export function generateMetadata(): Metadata {

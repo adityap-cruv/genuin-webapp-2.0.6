@@ -28,7 +28,8 @@ import { useQueryClient } from '@tanstack/react-query'
 import { type ProfileDetailsType } from '@/lib/schemas/profile/profile'
 import { useSession } from 'next-auth/react'
 
-const linkedInUsernamePattern = /^[a-zA-Z0-9À-ž-]+$/
+const linkedInUrlPattern =
+  /^(?:https?:\/\/)?(?:www\.)?(in\.)?linkedin\.com\/(pub|in|profile|company)\/([a-zA-Z0-9À-ž-]+)/
 const instaUsernamePattern = /^[a-zA-Z0-9À-ž._]+$/
 const twitterUsernamePattern = /^[a-zA-Z0-9À-ž_]+$/
 const tikTokUsernamePattern = /^[a-zA-Z0-9À-ž._]+$/
@@ -41,11 +42,7 @@ const formSchema = z.object({
     .regex(instaUsernamePattern, { message: 'Invalid Instagram username.' })
     .optional()
     .or(z.literal('')),
-  linkedIn: z
-    .string()
-    .regex(linkedInUsernamePattern, { message: 'Invalid LinkedIn username.' })
-    .optional()
-    .or(z.literal('')),
+  linkedIn: z.string().regex(linkedInUrlPattern, { message: 'Invalid LinkedIn url.' }).optional().or(z.literal('')),
   twitter: z
     .string()
     .regex(twitterUsernamePattern, { message: 'Invalid Twitter username.' })
@@ -288,7 +285,7 @@ function EditProfile({ profileData }: { profileData: ProfileDetailsType }) {
                       <LinkedInIcon className="absolute ml-4 h-5 w-5 fill-primary" />
                       <Input
                         type="text"
-                        placeholder="@username"
+                        placeholder="https://www.linkedin.com/profile/username"
                         className={cn(
                           'border border-tertiary-200 bg-tertiary-100 pl-12 text-title-3-med',
                           errors && '!border-red'
@@ -310,7 +307,7 @@ function EditProfile({ profileData }: { profileData: ProfileDetailsType }) {
               const errors = useFormField().error
               return (
                 <FormItem className="sm:w-full">
-                  <FormLabel className="text-body-1-med">Twitter profile</FormLabel>
+                  <FormLabel className="text-body-1-med">X profile</FormLabel>
                   <FormControl>
                     <div className="relative flex items-center">
                       <TwitterIcon className="absolute ml-4 h-5 w-5 fill-primary " />

@@ -54,11 +54,12 @@ type States = {
   isOpen: boolean
   note?: React.ReactNode
   action?: AuthActionType
+  onCloseCallback?: () => void // Store the callback in the state
 }
 
 type Actions = {
-  open: () => void
-  openWithStep: (action?: AuthActionType, step?: StepsType) => void
+  open: (onCloseCallback?: () => void) => void
+  openWithStep: (action?: AuthActionType, step?: StepsType, onCloseCallback?: () => void) => void
   goToPrevious: () => void
   close: () => void
   setStep: (step: StepsType, action?: AuthActionType) => void
@@ -76,17 +77,21 @@ const initialStates: States = {
   isOpen: false,
 }
 
-export const useAuthenticationModalStore = create<Actions & States>((set) => {
+export const useAuthenticationModalStore = create<Actions & States>((set, get) => {
   return {
     ...initialStates,
-    open() {
-      set({ isOpen: true })
+    open(onCloseCallback) {
+      set({ isOpen: true, onCloseCallback })
     },
-    openWithStep(action, step = 'STARTER') {
-      set({ isOpen: true, step, action })
+    openWithStep(action, step = 'STARTER', onCloseCallback) {
+      set({ isOpen: true, step, action, onCloseCallback })
     },
     close() {
+      const { onCloseCallback } = get()
       set({ isOpen: false })
+      if (onCloseCallback) {
+        onCloseCallback() // Invoke the stored callback after closing the modal
+      }
     },
     setStep(step, action) {
       set((state) => {

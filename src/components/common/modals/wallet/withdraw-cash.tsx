@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils'
 import { Loader } from '@/components/ui/loader'
 import { ModalShell } from '../authentication/modal-shell'
 import { useWalletStore } from '../../wallet/store'
-import { cashWithdrawAPI } from '@/lib/api/wallet'
+import { cashWithdrawAPI, getBalanceAPI } from '@/lib/api/wallet'
 import { useShallow } from 'zustand/react/shallow'
 import { useAuthenticationModalStore } from '../authentication/store'
 
@@ -17,14 +17,21 @@ import { useAuthenticationModalStore } from '../authentication/store'
 const createSchema = (cashBalance: number) =>
   z.object({
     amount: z
-      .number()
-      .gt(0, { message: 'Value must be greater than 0' }) // Ensures amount is greater than 0
-      .max(cashBalance, { message: `Value cannot be greater than $${cashBalance / 100}` }),
+      .string()
+      .min(1, { message: 'Required' })
+      .refine(
+        (value) => {
+          const numberValue = Number(value)
+          if (numberValue === 0) return true
+          return !isNaN(numberValue) && numberValue > 0 && numberValue <= cashBalance / 100
+        },
+        { message: `Value cannot be greater than $${cashBalance / 100}` }
+      ),
   })
 
 export function WithdrawDialog() {
-  const { walletDetails } = useWalletStore()
-  const [isLoading] = useState(false)
+  const { walletDetails, setWalletDetails } = useWalletStore()
+  const [isLoading, setIsLoading] = useState(false)
   const { closeModal } = useAuthenticationModalStore(useShallow((state) => ({ closeModal: state.close })))
   const [errorMessage, setErrorMessage] = useState('')
 
@@ -36,22 +43,48 @@ export function WithdrawDialog() {
     // defaultValues: { amount: 0 },
   })
 
+  useEffect(() => {
+    const watch = form.watch((value) => {
+      if (Number(value.amount) <= walletDetails.cash_balance / 100) {
+        form.clearErrors()
+        setErrorMessage('')
+      } else {
+        form.setError('amount', { message: `Value cannot be greater than $${walletDetails.cash_balance / 100}` })
+      }
+    })
+    return () => {
+      watch.unsubscribe()
+    }
+  }, [form.watch])
+
   const { isValid } = form.formState
 
-  async function onSubmit(data: { amount: number }) {
-    // Process the submitted data
-    const redirectUrl = window.location.href
-    console.log(redirectUrl)
-    const resp = await cashWithdrawAPI({ amount: data.amount * 100, redirectUrl })
-    console.log(resp)
+  async function onSubmit(data: { amount: string }) {
+    setIsLoading(true)
 
-    if (resp?.data?.code === 200) {
-      closeModal()
-      if (resp.data.data.url) {
-        window.open(resp.data.data.url, '_self')
+    const redirectUrl = window.location.href
+
+    try {
+      const withdrawAmount: number = Math.round(Number(data.amount) * 100)
+      const resp = await cashWithdrawAPI({ amount: withdrawAmount, redirectUrl })
+
+      if (resp?.data?.code === 200) {
+        closeModal()
+        if (resp.data.data.url) {
+          window.open(resp.data.data.url, '_self')
+        }
+        const { wallet } = await getBalanceAPI({ isCurrentBalance: false })
+        setWalletDetails(wallet)
+      } else {
+        setErrorMessage(resp.data.message)
       }
-    } else {
-      setErrorMessage(resp.data.message)
+    } catch (error) {
+      setErrorMessage('An unexpected error occurred.')
+    } finally {
+      setIsLoading(false)
+      setTimeout(() => {
+        setErrorMessage('')
+      }, 3000)
     }
   }
 
@@ -73,15 +106,26 @@ export function WithdrawDialog() {
                       <p className="absolute left-3">$</p>
                       <Input
                         placeholder="Enter Amount"
-                        type="number"
+                        type="text"
                         className={cn(
                           'border border-tertiary-200 bg-tertiary-100 pl-7 text-title-3-med',
                           form.formState.errors.amount ? '!border-red' : ''
                         )}
                         {...field}
                         onChange={(e) => {
-                          // Convert to number before setting value
-                          field.onChange(Number(e.target.value))
+                          let value = e.target.value.replace(/[^0-9.]/g, '')
+                          // Ensure only two digits after the decimal
+                          if (value.includes('.')) {
+                            const [integerPart, decimalPart] = value.split('.')
+                            value = decimalPart.length > 2 ? `${integerPart}.${decimalPart.slice(0, 2)}` : value
+                          }
+
+                          if (Number(value) === 0) {
+                            form.clearErrors('amount')
+                            setErrorMessage('')
+                          }
+
+                          field.onChange(value)
                         }}
                       />
                     </div>
@@ -93,7 +137,7 @@ export function WithdrawDialog() {
           />
           <Button
             type="submit"
-            disabled={isLoading || !isValid}
+            disabled={isLoading || !isValid || Number(form.watch('amount')) === 0}
             className="mt-4 flex w-full items-center justify-center border-0">
             {isLoading ? (
               <Loader size="sm" className="fill-new-off-white" />

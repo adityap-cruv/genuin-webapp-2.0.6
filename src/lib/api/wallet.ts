@@ -39,7 +39,7 @@ export async function updateBalanceAPI({
     })
 }
 
-async function fetchTransactionsList({
+export async function fetchTransactionsList({
   page,
   pagesize,
   type,
@@ -104,7 +104,7 @@ export async function cashWithdrawAPI({ amount, redirectUrl }: { amount: number;
   return await axiosInstance
     .post('/goservices/wallets/cash/withdraw', {
       amount,
-      return_link : redirectUrl,
+      return_link: redirectUrl,
     })
     .then((res) => {
       return res
