@@ -2,11 +2,34 @@ import NextAuth from 'next-auth'
 import type { NextRequest } from 'next/server'
 import { NextResponse, userAgent } from 'next/server'
 import { authConfig } from '../auth.config'
+import { getEmbedConfig } from './lib/api/config'
 
 export default NextAuth(authConfig).auth
 
 export async function middleware(request: NextRequest) {
   const host = request.headers.get('host')
+
+  if (request.nextUrl.pathname.startsWith('/sitemap') && host) {
+    let config = null
+    try {
+      config = await getEmbedConfig(getConfig('ankpal.qa.begenuin.com'))
+      let pathParams: null | string | undefined = request.nextUrl.pathname
+      pathParams = pathParams?.split('/').slice(2).join('/')
+      console.log(
+        'url::',
+        `${process.env.NEXT_PUBLIC_GO_API_URL}/${config?.brand_id}/${request.headers.get('host')}/${pathParams}${
+          request.nextUrl.search
+        }`
+      )
+      return NextResponse.rewrite(
+        `${process.env.NEXT_PUBLIC_GO_API_URL}/${config?.brand_id}/${request.headers.get('host')}/${pathParams}${
+          request.nextUrl.search
+        }`
+      )
+    } catch (e) {
+      return NextResponse.error()
+    }
+  }
 
   const STATIC_PATHNAMES = ['/', '/manage', '/market', '/pricing', '/privacy', '/terms', '/discover']
   const parsedUA = userAgent(request)
@@ -50,8 +73,8 @@ export const config = {
   ],
 }
 
-export function getConfig(host: string) {
-  if (['app', 'begenuin', 'localhost:4005', 'www', '192'].includes(host.split('.')[0])) return ''
+export function getConfig(host: string): { domain?: string; subdomain?: string } {
+  if (['app', 'begenuin', 'localhost:4005', 'www', '192'].includes(host.split('.')[0])) return {}
 
   if (!host.includes('begenuin')) return { domain: host }
   const subdomain =
