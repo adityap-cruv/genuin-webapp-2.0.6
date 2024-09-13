@@ -41,6 +41,21 @@ export function FooterInfo({ className, ...restProps }: ComponentProps<'p'>) {
     }
   }
 
+  async function signInWithApple() {
+    try {
+      setIsLoading('apple')
+      const responseUrl = await getUrlToRedirectForSSO('apple')
+      const url = new URL(responseUrl)
+      url.searchParams.set('prompt', 'consent')
+      url.searchParams.set('state', getUrlToRedirect('apple'))
+      router.replace(url.href)
+    } catch (e: any) {
+      toast({ title: e.message, variant: 'destructive' })
+    } finally {
+      setIsLoading(null)
+    }
+  }
+
   return (
     <>
       <div className="flex w-full items-center gap-4">
@@ -66,9 +81,19 @@ export function FooterInfo({ className, ...restProps }: ComponentProps<'p'>) {
         </Button>
       )}
       {config?.social_login.apple && (
-        <Button className="w-full bg-monochrome-black hover:bg-[#212529]">
-          <Image src={appleIcon} alt="Apple" height={24} width={24} />
-          <p style={buttonStyle}>Continue with Apple</p>
+        <Button
+          className="w-full bg-monochrome-black hover:bg-[#212529]"
+          onClick={(e) => {
+            void signInWithApple()
+          }}>
+          {loading === 'apple' ? (
+            <Loader size="sm" />
+          ) : (
+            <>
+              <Image src={appleIcon} alt="Apple" height={24} width={24} />
+              <p style={buttonStyle}>Continue with Apple</p>
+            </>
+          )}
         </Button>
       )}
       {config?.social_login.brand && <Button className="w-full">{`Continue with ${config.name}`}</Button>}
