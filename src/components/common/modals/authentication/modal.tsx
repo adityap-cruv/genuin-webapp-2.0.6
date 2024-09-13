@@ -30,13 +30,23 @@ import { useSearchParams } from 'next/navigation'
 import { HowItWorks } from '../wallet/how-it-works'
 import { WithdrawDialog } from '../wallet/withdraw-cash'
 import { RedeemCredits } from '../wallet/redeem-credits'
+import { getUserDataForSSO } from './api/auth'
+import { signIn } from 'next-auth/react'
+import { setAuthTokenInAxiosInstance } from '@/lib/api/instance'
 
 type Props = DialogProps & { showClose?: boolean }
+
+function removeQueryParams() {
+  const url = new URL(window.location.href)
+  url.searchParams.delete('code')
+  url.searchParams.delete('provider')
+  window.history.replaceState({}, '', url.href)
+}
 
 export function Modal({ children, showClose, ...props }: Props) {
   const searchParams = useSearchParams()
   const user = useGenuinOptions().user
-  const { action, isModalOpen, closeModal, step, setFormData, open } = useAuthenticationModalStore(
+  const { action, isModalOpen, closeModal, step, setFormData, open, openWithStep } = useAuthenticationModalStore(
     useShallow((state) => ({
       isModalOpen: state.isOpen,
       closeModal: state.close,
@@ -44,8 +54,30 @@ export function Modal({ children, showClose, ...props }: Props) {
       setFormData: state.setFormData,
       action: state.action,
       open: state.open,
+      openWithStep: state.openWithStep,
     }))
   )
+
+  useEffect(() => {
+    const code = searchParams.get('code')
+    const provider = searchParams.get('provider')
+    if (!code || !provider) return
+    void getUserDataForSSO(code, provider).then(async (res) => {
+      setAuthTokenInAxiosInstance(res.user?.accessToken)
+      await signIn('credentials', { ...res.user, redirect: false }).then((value) => {
+        removeQueryParams()
+        if (value?.ok) {
+          if (!res.user?.brandGuidelines) {
+            openWithStep(undefined, 'GUIDELINES')
+          } else if (!res.user.hasTopics) {
+            openWithStep(undefined, 'CATEGORY_SELECTION')
+          } else if (!res.user.usernameSet) {
+            openWithStep(undefined, 'USERNAME_INPUT')
+          }
+        }
+      })
+    })
+  }, [searchParams])
 
   useEffect(() => {
     if (!user) {
@@ -74,6 +106,7 @@ export function Modal({ children, showClose, ...props }: Props) {
     'DELETE_CONFIRMATION',
     'DELETE_CONFIRMED',
   ])
+
   const shouldShowClose = !stepSet.has(step) && !(action === 'DELETE_ACCOUNT' && step === 'STARTER')
 
   return (
