@@ -12,7 +12,7 @@ export async function middleware(request: NextRequest) {
   if (request.nextUrl.pathname.startsWith('/sitemap') && host) {
     let config = null
     try {
-      config = await getEmbedConfig(getConfig('ankpal.qa.begenuin.com'))
+      config = await getEmbedConfig(getConfig(host))
       let pathParams: null | string | undefined = request.nextUrl.pathname
       pathParams = pathParams?.split('/').slice(2).join('/')
       console.log(
