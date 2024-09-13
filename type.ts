@@ -16,6 +16,7 @@ declare namespace NodeJS {
     NEXT_PUBLIC_SECRET_STRING: string
     NEXT_PUBLIC_CURRENT_ENV: 'qa' | 'prod' | 'local'
     NEXT_PUBLIC_BCC_URL: string
+    NEXT_PUBLIC_GO_API_URL: string
     ANALYZE: string
   }
 }
