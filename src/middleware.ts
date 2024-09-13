@@ -12,15 +12,9 @@ export async function middleware(request: NextRequest) {
   if (request.nextUrl.pathname.startsWith('/sitemap') && host) {
     let config = null
     try {
-      config = await getEmbedConfig(getConfig(host))
+      config = await getEmbedConfig(getConfig(host) ?? {})
       let pathParams: null | string | undefined = request.nextUrl.pathname
       pathParams = pathParams?.split('/').slice(2).join('/')
-      console.log(
-        'url::',
-        `${process.env.NEXT_PUBLIC_GO_API_URL}/${config?.brand_id}/${request.headers.get('host')}/${pathParams}${
-          request.nextUrl.search
-        }`
-      )
       return NextResponse.rewrite(
         `${process.env.NEXT_PUBLIC_GO_API_URL}/${config?.brand_id}/${request.headers.get('host')}/${pathParams}${
           request.nextUrl.search
@@ -48,7 +42,7 @@ export async function middleware(request: NextRequest) {
   if (host) {
     const config = getConfig(host)
     // const config = getConfig('ankpal.qa.begenuin.com')
-    request.cookies.set('config_params', JSON.stringify(config))
+    if (config) request.cookies.set('config_params', JSON.stringify(config))
     const urlObj = new URL(request.url)
     // eslint-disable-next-line no-prototype-builtins
     if (config && STATIC_PATHNAMES.includes(urlObj.pathname)) {
@@ -73,8 +67,8 @@ export const config = {
   ],
 }
 
-export function getConfig(host: string): { domain?: string; subdomain?: string } {
-  if (['app', 'begenuin', 'localhost:4005', 'www', '192'].includes(host.split('.')[0])) return {}
+export function getConfig(host: string): { domain?: string; subdomain?: string } | null {
+  if (['app', 'begenuin', 'localhost:4005', 'www', '192'].includes(host.split('.')[0])) return null
 
   if (!host.includes('begenuin')) return { domain: host }
   const subdomain =
