@@ -14,6 +14,7 @@ import icPlay from '@icons/player-controls/icPlay.svg'
 import Image from 'next/image'
 import { useShallow } from 'zustand/react/shallow'
 import Analytics from '@/services/analytics'
+import { Loader } from '@/components/ui/loader'
 
 type Props = DetailedHTMLProps<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement> & {
   videoSource: string
@@ -57,11 +58,13 @@ export const InnerPlayer = memo(function InnerPlayer({
   onPlaying,
   onPause,
   onError,
+  onLoadStart,
+  onCanPlay,
   ...props
 }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<OpenPlayerJS | null>(null)
-  const [isPlaying, setIsPlaying] = useState(false)
+  const [playingState, setPlayingState] = useState<'paused' | 'playing' | 'loading'>('loading')
   const { shouldPlay, muted, setTimeState } = usePlayerControlStore(
     useShallow((state) => ({
       shouldPlay: state.shouldPlay,
@@ -151,13 +154,13 @@ export const InnerPlayer = memo(function InnerPlayer({
         playsInline
         onPlay={onPlay}
         onPlaying={(ev) => {
-          setIsPlaying(true)
+          setPlayingState('playing')
           onPlaying?.(ev)
         }}
         onError={onError}
         onTimeUpdate={onTimeUpdateEventHandler}
         onPause={(ev) => {
-          setIsPlaying(false)
+          setPlayingState('paused')
           onPause?.(ev)
           triggerAnalyticsForVideoPause(id)
         }}
@@ -167,19 +170,32 @@ export const InnerPlayer = memo(function InnerPlayer({
             void playerRef.current.play()
           }
         }}
+        onCanPlay={(e) => {
+          setPlayingState('paused')
+          onCanPlay?.(e)
+        }}
+        onLoadStart={(e) => {
+          setPlayingState('loading')
+          onLoadStart?.(e)
+        }}
         {...props}
       />
-      <div
-        className={cn(
-          'absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-monochrome-black/40 p-2 transition-all duration-100',
-          !isPlaying ? 'scale-125 opacity-100 ease-in' : 'scale-100 opacity-0 ease-out'
-        )}>
-        <Image
-          src={icPlay}
-          alt="volume-control"
-          className={cn('pointer-events-none z-10 cursor-pointer rounded-full')}
-        />
-      </div>
+      {playingState !== 'playing' && (
+        <div
+          className={cn(
+            'absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-monochrome-black/40 p-2 transition-all duration-100',
+            playingState !== 'paused' ? 'scale-125 opacity-100 ease-in ' : 'scale-100 opacity-0 ease-out'
+          )}>
+          {playingState === 'paused' && (
+            <Image
+              src={icPlay}
+              alt="volume-control"
+              className={cn('pointer-events-none z-10 cursor-pointer rounded-full')}
+            />
+          )}
+          {playingState === 'loading' && <Loader size="md" />}
+        </div>
+      )}
     </div>
   )
 })

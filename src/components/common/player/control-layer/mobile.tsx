@@ -12,9 +12,8 @@ import { TickIcon } from '@icons/tick-icon'
 import { type DescriptionArrType } from '@lib/schemas/player/video'
 import Analytics from '@services/analytics'
 import { PlayerProgressBar } from './player-progress-bar'
-import { memo, useEffect, useState } from 'react'
+import { memo, useEffect, useId, useState } from 'react'
 import { Linkout } from '../../linkout'
-import { motion, useAnimationControls } from 'framer-motion'
 import { useShallow } from 'zustand/react/shallow'
 import { fetchLinkouts } from '../../linkout/api'
 import { type LinkoutsType } from '../../linkout/schema'
@@ -111,37 +110,46 @@ function Details({
 }: MobileProps) {
   const [linkouts, setLinkouts] = useState<LinkoutsType | null>(null)
   const [isVisible, setIsVisible] = useState(false)
-  const animationControls = useAnimationControls()
+  const detailsId = useId()
 
   useEffect(() => {
     let timeoutId: any
+    const detailsElement = document.getElementById(detailsId)
     if (isActive && linkoutId) {
       void fetchLinkouts(linkoutId)
         .then((data) => {
           setLinkouts(data)
         })
         .catch((e) => {
-          // console.log('something went wrong!')
+          if (detailsElement) {
+            detailsElement.style.setProperty('transform', 'translate(0px, 0px)')
+          }
         })
       timeoutId = setTimeout(() => {
-        setIsVisible(isActive)
-        animationControls.set({ y: 50 })
+        setIsVisible(true)
+        if (detailsElement) {
+          detailsElement.style.setProperty('transform', 'translate(0px, 50px)')
+        }
       }, 2900)
     }
     return () => {
       if (timeoutId) {
-        timeoutId = null
+        const element = document.getElementById(detailsId)
+        if (element) {
+          element.style.setProperty('transform', 'translate(0px, 0px)')
+        }
+        if (timeoutId) {
+          clearTimeout(timeoutId)
+          timeoutId = null
+        }
       }
-      setIsVisible((x) => {
-        if (x) animationControls.set({ y: 0 })
-        return false
-      })
+      setIsVisible(false)
     }
   }, [isActive])
 
   return (
     <div className={cn('absolute bottom-16 left-0 flex w-full justify-between px-2 transition-all')}>
-      <motion.div animate={animationControls} className="relative flex w-4/5 flex-col justify-end">
+      <div id={detailsId} className="relative flex w-4/5 flex-col justify-end">
         <div className="z-10 mb-2 flex items-center">
           {owner.brand ? (
             <div className="flex items-center">
@@ -175,7 +183,7 @@ function Details({
             </Link>
           )}
         </div>
-        {descriptionArr && (
+        {descriptionArr?.[0] && (
           <span className="z-10 py-2">
             <ReadMore.withMention
               textArr={descriptionArr}
@@ -183,10 +191,8 @@ function Details({
             />
           </span>
         )}
-        {isVisible && linkouts && linkoutId && (
-          <Linkout.mobile linkouts={linkouts} linkoutId={linkoutId} videoId={videoId} />
-        )}
-      </motion.div>
+        {isVisible && linkoutId && <Linkout.mobile linkouts={linkouts ?? []} linkoutId={linkoutId} videoId={videoId} />}
+      </div>
       <div className="z-10">
         <Actions.mobile
           commentCount={commentCount}

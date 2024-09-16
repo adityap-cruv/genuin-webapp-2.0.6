@@ -65,7 +65,8 @@ export function WithMentions({ textArr, maxChars = 50, className, ...props }: Wi
     const SHOW_MORE_BUTTON = (
       <span
         key="show-more"
-        onClick={() => {
+        onClick={(e) => {
+          e.stopPropagation()
           if (showMore) setShowMore(false)
         }}
         className="cursor-pointer pl-1 text-tertiary">
