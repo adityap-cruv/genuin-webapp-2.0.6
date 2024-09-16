@@ -113,7 +113,7 @@ const InfinityViewBox = memo(function InfinityViewBox({ videoDetails }: { videoD
 
     return () => {
       if (timeoutId) timeoutId = null
-      if (!isVisible) setIsVisible(true)
+      setIsVisible(true)
     }
   }, [videoDetails])
 
