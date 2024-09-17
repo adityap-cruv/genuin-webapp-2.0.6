@@ -125,7 +125,8 @@ export function InitialComponent() {
           </AnimatedButton>
         </ContactUs>
       }
-      videoSrc="https://media.begenuin.com/backend_assets/hero-video/comp-1_2.m3u8"
+      // videoSrc="https://media.begenuin.com/backend_assets/hero-video/comp-1_2.m3u8"
+      videoSrc="https://genuin-qa-media.s3.us-west-2.amazonaws.com/genuin-demo-video.mp4"
     />
   )
 }
