@@ -14,9 +14,11 @@ import { BurgerIcon } from '@icons/burger-icon'
 import { removeAllAuthToken } from '@lib/api/instance'
 import { SearchBar } from '@components/common/search-bar'
 import { AccountIcon, NotificationIcon } from '@icons/settings-side-bar-icons'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { formatPhoneNumberIntl } from 'react-phone-number-input'
 import { WalletAmountBadge } from '@/components/common/wallet/wallet-amount-badge'
+import { Loader } from '@/components/ui/loader'
+import { useEffect, useState } from 'react'
 
 export function TopBar({
   showUserTick = true,
@@ -66,15 +68,29 @@ function UserTick() {
   const { data, status } = useSession()
   const router = useRouter()
   const pathName = usePathname()
+  const searchParams = useSearchParams()
+  const [loadingAuthData, setLoadingAuthData] = useState(false)
 
-  if (status === 'unauthenticated')
+  useEffect(() => {
+    const code = searchParams.get('code')
+    const provider = searchParams.get('provider')
+    if (code && provider) {
+      setLoadingAuthData(true)
+    } else {
+      setLoadingAuthData(false)
+    }
+  }, [searchParams])
+
+  if (status === 'unauthenticated' || status === 'loading')
     return (
       <Button
-        className="px-4"
+        disabled={status === 'loading' || loadingAuthData}
+        className="gap-2 px-4"
         onClick={() => {
           AuthenticationModal.open()
         }}>
-        <p className="min-w-max text-title-3-demi">Log in</p>
+        {(status === 'loading' || loadingAuthData) && <Loader size="sm" className="fill-monochrome-white" />}
+        <p className="min-w-max text-title-3-demi text-monochrome-white">Log in</p>
       </Button>
     )
 

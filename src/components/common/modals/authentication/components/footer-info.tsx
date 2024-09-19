@@ -83,8 +83,7 @@ export function FooterInfo({ className, ...restProps }: ComponentProps<'p'>) {
       </div>
       {config?.social_login.google && (
         <Button
-          style={{ boxShadow: '0px 0px 1px 0px rgba(0, 0, 0, 0.08), 0px 1px 1px 0px rgba(0, 0, 0, 0.17)' }}
-          className="flex w-full bg-monochrome-white font-medium text-monochrome-black hover:bg-tertiary-100"
+          className="flex w-full border border-[#747775] bg-monochrome-white font-medium text-monochrome-black hover:bg-tertiary-100"
           onClick={async (e) => {
             await signInWithGoogle()
           }}>
@@ -100,7 +99,7 @@ export function FooterInfo({ className, ...restProps }: ComponentProps<'p'>) {
       )}
       {config?.social_login.apple && (
         <Button
-          className="w-full bg-monochrome-black hover:bg-[#212529]"
+          className="w-full bg-monochrome-black text-monochrome-white hover:bg-[#212529]"
           onClick={(e) => {
             void signInWithApple()
           }}>
@@ -123,7 +122,7 @@ export function FooterInfo({ className, ...restProps }: ComponentProps<'p'>) {
           {loading === 'brand' ? (
             <Loader size="sm" />
           ) : (
-            <p className="text-body-1-demi">{`Continue with ${config.name}`}</p>
+            <p className="text-body-1-demi text-monochrome-white">{`Continue with ${config.name}`}</p>
           )}
         </Button>
       )}
