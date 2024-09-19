@@ -78,7 +78,7 @@ export function FooterInfo({ className, ...restProps }: ComponentProps<'p'>) {
     <>
       <div className="flex w-full items-center gap-4">
         <div style={{ height: 1 }} className="w-full bg-tertiary-200" />
-        <p className="whitespace-nowrap text-body-1-med text-tertiary">Or with</p>
+        <p className="whitespace-nowrap text-body-1-med text-tertiary">Or login with</p>
         <div style={{ height: 1 }} className="w-full bg-tertiary-200" />
       </div>
       {config?.social_login.google && (
