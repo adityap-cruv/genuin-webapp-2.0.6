@@ -93,7 +93,10 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
                     return (
                       <DesktopPlayer
                         isActive={isActive}
-                        videoData={{ ...videosRef.current[index].video }}
+                        videoData={{
+                          ...videosRef.current[index].video,
+                          clickableUrl: videosRef.current[index].video.clickableUrl,
+                        }}
                         loop
                         key={index}
                         onEnded={(event) => {
@@ -139,6 +142,7 @@ export function SinglePlayer({ sizeBox, className, videoData, isInModal }: Singl
             thumbnail: videoData.video.thumbnail,
             slug: videoData.video.slug,
             description: videoData.video.descriptionText,
+            clickableUrl: videoData.video.clickableUrl,
           }}
           loop
           onEnded={(event) => {
