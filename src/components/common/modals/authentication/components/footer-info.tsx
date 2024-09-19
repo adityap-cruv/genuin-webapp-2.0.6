@@ -33,7 +33,7 @@ export function FooterInfo({ className, ...restProps }: ComponentProps<'p'>) {
       const url = new URL(responseUrl)
       url.searchParams.set('prompt', 'consent')
       url.searchParams.set('state', getUrlToRedirect('google'))
-      router.replace(url.href)
+      router.push(url.href)
     } catch (e: any) {
       toast({ title: e.message, variant: 'destructive' })
     } finally {
@@ -48,7 +48,7 @@ export function FooterInfo({ className, ...restProps }: ComponentProps<'p'>) {
       const url = new URL(responseUrl)
       url.searchParams.set('prompt', 'consent')
       url.searchParams.set('state', getUrlToRedirect('apple'))
-      router.replace(url.href)
+      router.push(url.href)
     } catch (e: any) {
       toast({ title: e.message, variant: 'destructive' })
     } finally {
@@ -66,7 +66,7 @@ export function FooterInfo({ className, ...restProps }: ComponentProps<'p'>) {
       const url = new URL(responseUrl)
       url.searchParams.set('prompt', 'consent')
       url.searchParams.set('state', getUrlToRedirect(config.social_login.brand_sso_id))
-      router.replace(url.href)
+      router.push(url.href)
     } catch (e: any) {
       toast({ title: e.message, variant: 'destructive' })
     } finally {
@@ -78,7 +78,7 @@ export function FooterInfo({ className, ...restProps }: ComponentProps<'p'>) {
     <>
       <div className="flex w-full items-center gap-4">
         <div style={{ height: 1 }} className="w-full bg-tertiary-200" />
-        <p className="whitespace-nowrap text-body-1-med text-tertiary">Or login with</p>
+        <p className="whitespace-nowrap text-body-1-med text-tertiary">OR</p>
         <div style={{ height: 1 }} className="w-full bg-tertiary-200" />
       </div>
       {config?.social_login.google && (
