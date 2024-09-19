@@ -12,12 +12,14 @@ import { TickIcon } from '@icons/tick-icon'
 import { type DescriptionArrType } from '@lib/schemas/player/video'
 import Analytics from '@services/analytics'
 import { PlayerProgressBar } from './player-progress-bar'
-import { memo, useEffect, useId, useState } from 'react'
+import { memo, useEffect, useId, useState, useCallback } from 'react'
 import { Linkout } from '../../linkout'
 import { useShallow } from 'zustand/react/shallow'
 import { fetchLinkouts } from '../../linkout/api'
 import { type LinkoutsType } from '../../linkout/schema'
 import { WalletAmountBadge } from '../../wallet/wallet-amount-badge'
+import { PlayIcon } from '@icons/player-controls/play-icon'
+import { PauseIcon } from '@icons/player-controls/pause-icon'
 
 type MobileProps = {
   isActive: boolean
@@ -42,52 +44,77 @@ type MobileProps = {
       brand_slug: string
     } | null
   }
+  clickableUrl: string | null
 }
 
-export const Mobile = memo(function Mobile({ ...props }: MobileProps) {
-  const { toggleMuted, muted, shouldPlay } = usePlayerControlStore(
+export const Mobile = memo(function Mobile({ clickableUrl, ...props }: MobileProps) {
+  const { toggleMuted, muted, shouldPlay, setShouldPlay } = usePlayerControlStore(
     useShallow((state) => ({
       toggleMuted: state.toggleMuted,
       muted: state.muted,
       shouldPlay: state.shouldPlay,
+      setShouldPlay: state.setShouldPlay,
     }))
+  )
+
+  function handleToggleMuted(e: any) {
+    e.stopPropagation()
+    toggleMuted()
+    void Analytics.track({
+      eventName: 'Unmute',
+      properties: { video_id: props.videoId },
+    })
+  }
+
+  function openClickableUrl(e: any) {
+    e.stopPropagation()
+    if (clickableUrl) window.open(clickableUrl, '_blank')
+  }
+
+  const handlePlayPause = useCallback(
+    (e: any) => {
+      e.stopPropagation()
+      setShouldPlay(!shouldPlay)
+    },
+    [shouldPlay]
   )
 
   return (
     <div className="relative h-full w-full">
-      {muted && (
+      <div
+        className={cn(
+          'absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-monochrome-black/40 p-2 transition-all duration-300 ',
+          !shouldPlay ? 'scale-125 opacity-100 ease-in' : 'scale-100 opacity-0 ease-out'
+        )}>
+        <Image
+          src={icPlay}
+          alt="volume-control"
+          className={cn('pointer-events-none z-10 cursor-pointer rounded-full')}
+        />
+      </div>
+      {(muted || !!clickableUrl) && (
         <div
-          onClick={(e) => {
-            e.stopPropagation()
-            toggleMuted()
-            void Analytics.track({
-              eventName: 'Unmute',
-              properties: { video_id: props.videoId },
-            })
-          }}
-          className="absolute z-[3] h-full w-full ">
-          <span className="absolute left-4 top-20">
-            <AnimatedMuteIcon />
-          </span>
+          onClick={clickableUrl ? openClickableUrl : handleToggleMuted}
+          className={cn('absolute inset-0', clickableUrl && 'cursor-pointer')}>
+          <div className="relative left-6 top-20 flex w-fit gap-2">
+            {clickableUrl && (
+              <span onClick={handlePlayPause} className="rounded-lg bg-monochrome-white p-2">
+                {!shouldPlay ? <PlayIcon className="stroke-secondary" /> : <PauseIcon className="stroke-secondary" />}
+              </span>
+            )}
+            {muted && (
+              <span onClick={clickableUrl ? handleToggleMuted : undefined} className="h-fit w-fit cursor-pointer">
+                <AnimatedMuteIcon />
+              </span>
+            )}
+          </div>
         </div>
       )}
       <span className="absolute right-2 top-20 z-20 h-fit w-fit cursor-pointer">
         <WalletAmountBadge type="light" />
       </span>
-      <div className="absolute flex h-full w-full items-center justify-center">
-        <div
-          className={cn(
-            'rounded-full bg-monochrome-black/40 p-2 transition-all duration-300 ',
-            !shouldPlay ? 'scale-125 opacity-100 ease-in' : 'scale-100 opacity-0 ease-out'
-          )}>
-          <Image
-            src={icPlay}
-            alt="volume-control"
-            className={cn('pointer-events-none z-10 cursor-pointer rounded-full')}
-          />
-        </div>
-      </div>
-      <Details {...props} />
+
+      <Details {...props} clickableUrl={clickableUrl} />
       <PlayerProgressBar />
     </div>
   )
