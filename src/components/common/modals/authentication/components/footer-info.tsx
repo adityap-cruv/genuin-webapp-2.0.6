@@ -14,7 +14,7 @@ import { useToast } from '@/components/ui/use-toast'
 
 const buttonStyle: CSSProperties = { fontSize: 14, lineHeight: '20px', paddingLeft: 10 }
 
-function getUrlToRedirect(provider: 'google' | 'apple') {
+function getUrlToRedirect(provider: string) {
   const windowLocation = new URL(window.location.href)
   windowLocation.searchParams.set('provider', provider)
   return windowLocation.href
@@ -48,6 +48,24 @@ export function FooterInfo({ className, ...restProps }: ComponentProps<'p'>) {
       const url = new URL(responseUrl)
       url.searchParams.set('prompt', 'consent')
       url.searchParams.set('state', getUrlToRedirect('apple'))
+      router.replace(url.href)
+    } catch (e: any) {
+      toast({ title: e.message, variant: 'destructive' })
+    } finally {
+      setIsLoading(null)
+    }
+  }
+
+  async function signInWithBrand() {
+    try {
+      setIsLoading('brand')
+      if (typeof config?.social_login.brand_sso_id !== 'string') {
+        throw new Error('Brand SSO ID is not available')
+      }
+      const responseUrl = await getUrlToRedirectForSSO(config?.social_login.brand_sso_id)
+      const url = new URL(responseUrl)
+      url.searchParams.set('prompt', 'consent')
+      url.searchParams.set('state', getUrlToRedirect(config.social_login.brand_sso_id))
       router.replace(url.href)
     } catch (e: any) {
       toast({ title: e.message, variant: 'destructive' })
@@ -96,7 +114,19 @@ export function FooterInfo({ className, ...restProps }: ComponentProps<'p'>) {
           )}
         </Button>
       )}
-      {config?.social_login.brand && <Button className="w-full">{`Continue with ${config.name}`}</Button>}
+      {config?.social_login.brand && (
+        <Button
+          className="w-full"
+          onClick={(e) => {
+            void signInWithBrand()
+          }}>
+          {loading === 'brand' ? (
+            <Loader size="sm" />
+          ) : (
+            <p className="text-body-1-demi">{`Continue with ${config.name}`}</p>
+          )}
+        </Button>
+      )}
       <p className={cn('text-center text-new-para-2-mobile', className)} {...restProps}>
         By continuing, you're agree to
         <Link href={PATH_NAME.terms} target="_blank" rel="noopener noreferrer">

@@ -335,7 +335,7 @@ export async function getUserDataForSSO(
     })
 }
 
-export async function getUrlToRedirectForSSO(thirdPartyId: 'google' | 'apple') {
+export async function getUrlToRedirectForSSO(thirdPartyId: string) {
   return await axiosInstance
     .get('/api/v4/auth/authorisationurl', {
       params: {
