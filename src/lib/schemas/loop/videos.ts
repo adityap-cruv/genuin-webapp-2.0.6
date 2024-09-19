@@ -53,6 +53,7 @@ const LoopVideoSchema = z.object({
   meta_data: MetaDataSchema,
   owner: OwnerSchema,
   linkouts_id: z.number().nullish(),
+  clickable_url: z.string().nullish(),
 })
 
 const LoopVideoList = z.array(LoopVideoSchema)

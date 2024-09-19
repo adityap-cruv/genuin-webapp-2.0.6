@@ -81,6 +81,7 @@ export function Mobile({
             descriptionArr={videoDetails.video.descriptionArr}
             descriptionText={videoDetails.video.descriptionText}
             isSparked={videoDetails.video.isSparked}
+            clickableUrl={videoDetails.video.clickableUrl}
           />
         </div>
         <CommentSheet
