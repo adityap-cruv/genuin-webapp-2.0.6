@@ -143,7 +143,7 @@ function EmailForm({ onNext }: { onNext: () => void }) {
           {isLoading ? (
             <Loader size="sm" className="fill-monochrome-white" />
           ) : (
-            <p className="text-body-1-demi">Continue</p>
+            <p className="text-body-1-demi text-monochrome-white">Continue</p>
           )}
         </Button>
       </form>
@@ -215,7 +215,7 @@ function NumberForm({ onNext }: { onNext: () => void }) {
           {isLoading ? (
             <Loader size="sm" className="fill-new-off-white" />
           ) : (
-            <p className="text-body-1-demi">Continue</p>
+            <p className="text-body-1-demi text-monochrome-white">Continue</p>
           )}
         </Button>
       </form>
