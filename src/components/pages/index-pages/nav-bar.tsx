@@ -103,11 +103,11 @@ function SideModal() {
           For Creators
         </Link>
         <Link
-          href={PATH_NAME.discover()}
+          href={PATH_NAME.explore()}
           target="_blank"
           className={cn(
             'whitespace-nowrap px-6 py-4 hover:font-extrabold hover:text-primary',
-            pathName === PATH_NAME.discover() && 'bg-[#F7F9FC] font-extrabold text-primary'
+            pathName === PATH_NAME.explore() && 'bg-[#F7F9FC] font-extrabold text-primary'
           )}>
           Discover Communities
         </Link>
