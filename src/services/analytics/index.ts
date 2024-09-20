@@ -38,7 +38,7 @@ export const Analytics = {
       channel,
       embed_id: embedId,
       environment,
-      // page,
+      ip: config?.ip,
     }
 
     Object.assign(properties, defaultProperties)

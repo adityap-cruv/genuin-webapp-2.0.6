@@ -68,6 +68,8 @@ export type ConfigType = {
   website: string
   is_wallet_enabled: boolean
   global_reward_point_configs: RewardPointConfig
+  social_login: { google: boolean; apple: boolean; brand: boolean; brand_sso_id?: string | null }
+  ip: string
 } | null
 
 export type User = {

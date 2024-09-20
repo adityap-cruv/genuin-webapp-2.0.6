@@ -5,11 +5,16 @@ export async function getEmbedConfig(params: Record<string, string>) {
   Object.keys(params).forEach((key) => {
     url.searchParams.append(key, params[key])
   })
-  // console.log('params::', params)
+  const ip = await fetch('https://api.ipify.org?format=json')
+    .then(async (res) => await res.json())
+    .then((res) => res.ip)
+    .catch((e) => {
+      console.log('Error in getting ip address.')
+    })
   return await fetch(url.href, {})
     .then(async (res) => {
       const resData = await res.json()
-      return resData.data as ConfigType
+      return { ...resData.data, ip } as ConfigType
     })
     .catch((e) => {
       // eslint-disable-next-line no-console
