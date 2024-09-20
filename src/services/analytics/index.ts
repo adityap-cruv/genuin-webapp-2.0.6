@@ -14,7 +14,7 @@ type AnalyticsTrackType = {
 
 export const Analytics = {
   track: async ({ eventName, properties }: AnalyticsTrackType): Promise<void> => {
-    const { user, brandId, config } = useGenuinOptions.getState()
+    const { user, brandId, config, ip } = useGenuinOptions.getState()
     let channel = !config ? 'genuin web' : 'white label'
     let embedId
     const environment = config ? config.environment : undefined
@@ -38,7 +38,7 @@ export const Analytics = {
       channel,
       embed_id: embedId,
       environment,
-      ip: config?.ip,
+      ip,
     }
 
     Object.assign(properties, defaultProperties)

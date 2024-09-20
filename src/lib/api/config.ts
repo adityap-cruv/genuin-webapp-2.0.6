@@ -5,20 +5,25 @@ export async function getEmbedConfig(params: Record<string, string>) {
   Object.keys(params).forEach((key) => {
     url.searchParams.append(key, params[key])
   })
-  const ip = await fetch('https://api.ipify.org?format=json')
-    .then(async (res) => await res.json())
-    .then((res) => res.ip)
-    .catch((e) => {
-      console.log('Error in getting ip address.')
-    })
   return await fetch(url.href, {})
     .then(async (res) => {
       const resData = await res.json()
-      return { ...resData.data, ip } as ConfigType
+      return { ...resData.data } as ConfigType
     })
     .catch((e) => {
       // eslint-disable-next-line no-console
       console.log('error:;', e)
       throw new Error('Something went wrong::')
+    })
+}
+
+export async function getIpAddress() {
+  return await fetch('https://api.ipify.org?format=json')
+    .then(async (res) => await res.json())
+    .then((res) => {
+      return res.ip
+    })
+    .catch((e) => {
+      console.log('Error in getting ip address.')
     })
 }
