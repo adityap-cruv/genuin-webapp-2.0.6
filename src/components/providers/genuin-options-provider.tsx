@@ -14,7 +14,6 @@ import { notificationsCount } from '@lib/api/notification'
 import { rudderStackIdentify } from '@/services/analytics/useRudderAnalytics'
 import { useRefreshToken } from '@/hooks/use-refresh-token'
 import { getBalanceAPI } from '@/lib/api/wallet'
-import { getIpAddress } from '@/lib/api/config'
 const RepostModal = dynamic(
   async () => await import('@components/common/modals/repost').then((comp) => comp.RepostModal.ui)
 )
@@ -73,14 +72,6 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
     const { wallet } = await getBalanceAPI({ isCurrentBalance: true })
     setInitialData({ walletBalance: Number(wallet.balance) })
   }
-
-  useEffect(() => {
-    void (async () => {
-      const ip = await getIpAddress()
-      console.log('set::')
-      setInitialData({ ip })
-    })()
-  }, [])
 
   useEffect(() => {
     let interceptorId: number

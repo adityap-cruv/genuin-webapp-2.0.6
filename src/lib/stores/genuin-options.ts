@@ -138,7 +138,6 @@ type StateType = {
   user?: User
   notificationCount?: number | null
   walletBalance?: number | null
-  ip?: string
 }
 
 type ActionsType = {
