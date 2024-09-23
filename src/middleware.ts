@@ -16,7 +16,7 @@ export async function middleware(request: NextRequest) {
       let pathParams: null | string | undefined = request.nextUrl.pathname
       pathParams = pathParams?.split('/').slice(2).join('/')
       return NextResponse.rewrite(
-        `${process.env.NEXT_PUBLIC_GO_API_URL}/${config?.brand_id || 'genuin'}/${request.headers.get(
+        `${process.env.NEXT_PUBLIC_GO_API_URL}/${config?.brand_id ?? 'genuin'}/${request.headers.get(
           'host'
         )}/${pathParams}${request.nextUrl.search}`
       )
@@ -33,7 +33,7 @@ export async function middleware(request: NextRequest) {
       pathParams = pathParams?.split('/').slice(1).join('/')
 
       return NextResponse.rewrite(
-        `${process.env.NEXT_PUBLIC_GO_API_URL}/${config?.brand_id || 'genuin'}/${request.headers.get(
+        `${process.env.NEXT_PUBLIC_GO_API_URL}/${config?.brand_id ?? 'genuin'}/${request.headers.get(
           'host'
         )}/${pathParams}${request.nextUrl.search}`
       )
