@@ -9,7 +9,7 @@ export default NextAuth(authConfig).auth
 export async function middleware(request: NextRequest) {
   const host = request.headers.get('host')
 
-  if (request.nextUrl.pathname.startsWith('/sitemap') && host) {
+  if ((request.nextUrl.pathname.startsWith('/sitemap') || request.nextUrl.pathname.startsWith('/robots.txt')) && host) {
     let config = null
     try {
       config = await getEmbedConfig(getConfig(host) ?? {})
