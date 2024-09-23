@@ -317,7 +317,7 @@ export async function getUserDataForSSO(
       device_type: 3,
       thirdPartyId: provider,
       redirectURIInfo: {
-        redirectURIOnProviderDashboard: 'https://nodejs.qa.begenuin.com/api/v4/thirdparty/callback',
+        redirectURIOnProviderDashboard: `${process.env.NEXT_PUBLIC_REDIRECT_URI}`,
         redirectURIQueryParams: {
           code,
         },
@@ -340,7 +340,7 @@ export async function getUrlToRedirectForSSO(thirdPartyId: string) {
     .get('/api/v4/auth/authorisationurl', {
       params: {
         thirdPartyId,
-        redirectURIOnProviderDashboard: 'https://nodejs.qa.begenuin.com/api/v4/thirdparty/callback',
+        redirectURIOnProviderDashboard: `${process.env.NEXT_PUBLIC_REDIRECT_URI}`,
       },
     })
     .then((res) => {
