@@ -9,16 +9,33 @@ export default NextAuth(authConfig).auth
 export async function middleware(request: NextRequest) {
   const host = request.headers.get('host')
 
-  if ((request.nextUrl.pathname.startsWith('/sitemap') || request.nextUrl.pathname.startsWith('/robots.txt')) && host) {
+  if (request.nextUrl.pathname.startsWith('/sitemap') && host) {
     let config = null
     try {
       config = await getEmbedConfig(getConfig(host) ?? {})
       let pathParams: null | string | undefined = request.nextUrl.pathname
       pathParams = pathParams?.split('/').slice(2).join('/')
       return NextResponse.rewrite(
-        `${process.env.NEXT_PUBLIC_GO_API_URL}/${config?.brand_id}/${request.headers.get('host')}/${pathParams}${
-          request.nextUrl.search
-        }`
+        `${process.env.NEXT_PUBLIC_GO_API_URL}/${config?.brand_id ?? 'genuin'}/${request.headers.get(
+          'host'
+        )}/${pathParams}${request.nextUrl.search}`
+      )
+    } catch (e) {
+      return NextResponse.error()
+    }
+  }
+
+  if (request.nextUrl.pathname.startsWith('/robots.txt') && host) {
+    let config = null
+    try {
+      config = await getEmbedConfig(getConfig(host) ?? {})
+      let pathParams: null | string | undefined = request.nextUrl.pathname
+      pathParams = pathParams?.split('/').slice(1).join('/')
+
+      return NextResponse.rewrite(
+        `${process.env.NEXT_PUBLIC_GO_API_URL}/${config?.brand_id ?? 'genuin'}/${request.headers.get(
+          'host'
+        )}/${pathParams}${request.nextUrl.search}`
       )
     } catch (e) {
       return NextResponse.error()
