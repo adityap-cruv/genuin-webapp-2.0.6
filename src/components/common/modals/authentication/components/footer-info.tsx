@@ -14,7 +14,7 @@ import { useToast } from '@/components/ui/use-toast'
 
 const buttonStyle: CSSProperties = { fontSize: 14, lineHeight: '20px', paddingLeft: 10 }
 
-function getUrlToRedirect(provider: 'google' | 'apple') {
+function getUrlToRedirect(provider: string) {
   const windowLocation = new URL(window.location.href)
   windowLocation.searchParams.set('provider', provider)
   return windowLocation.href
@@ -33,7 +33,7 @@ export function FooterInfo({ className, ...restProps }: ComponentProps<'p'>) {
       const url = new URL(responseUrl)
       url.searchParams.set('prompt', 'consent')
       url.searchParams.set('state', getUrlToRedirect('google'))
-      router.replace(url.href)
+      router.push(url.href)
     } catch (e: any) {
       toast({ title: e.message, variant: 'destructive' })
     } finally {
@@ -48,7 +48,25 @@ export function FooterInfo({ className, ...restProps }: ComponentProps<'p'>) {
       const url = new URL(responseUrl)
       url.searchParams.set('prompt', 'consent')
       url.searchParams.set('state', getUrlToRedirect('apple'))
-      router.replace(url.href)
+      router.push(url.href)
+    } catch (e: any) {
+      toast({ title: e.message, variant: 'destructive' })
+    } finally {
+      setIsLoading(null)
+    }
+  }
+
+  async function signInWithBrand() {
+    try {
+      setIsLoading('brand')
+      if (typeof config?.social_login.brand_sso_id !== 'string') {
+        throw new Error('Brand SSO ID is not available')
+      }
+      const responseUrl = await getUrlToRedirectForSSO(config?.social_login.brand_sso_id)
+      const url = new URL(responseUrl)
+      url.searchParams.set('prompt', 'consent')
+      url.searchParams.set('state', getUrlToRedirect(config.social_login.brand_sso_id))
+      router.push(url.href)
     } catch (e: any) {
       toast({ title: e.message, variant: 'destructive' })
     } finally {
@@ -60,13 +78,12 @@ export function FooterInfo({ className, ...restProps }: ComponentProps<'p'>) {
     <>
       <div className="flex w-full items-center gap-4">
         <div style={{ height: 1 }} className="w-full bg-tertiary-200" />
-        <p className="whitespace-nowrap text-body-1-med text-tertiary">Or with</p>
+        <p className="whitespace-nowrap text-body-1-med text-tertiary">OR</p>
         <div style={{ height: 1 }} className="w-full bg-tertiary-200" />
       </div>
       {config?.social_login.google && (
         <Button
-          style={{ boxShadow: '0px 0px 1px 0px rgba(0, 0, 0, 0.08), 0px 1px 1px 0px rgba(0, 0, 0, 0.17)' }}
-          className="flex w-full bg-monochrome-white font-medium text-monochrome-black hover:bg-tertiary-100"
+          className="flex w-full border border-[#747775] bg-monochrome-white font-medium text-monochrome-black hover:bg-tertiary-100"
           onClick={async (e) => {
             await signInWithGoogle()
           }}>
@@ -82,7 +99,7 @@ export function FooterInfo({ className, ...restProps }: ComponentProps<'p'>) {
       )}
       {config?.social_login.apple && (
         <Button
-          className="w-full bg-monochrome-black hover:bg-[#212529]"
+          className="w-full bg-monochrome-black text-monochrome-white hover:bg-[#212529]"
           onClick={(e) => {
             void signInWithApple()
           }}>
@@ -96,7 +113,19 @@ export function FooterInfo({ className, ...restProps }: ComponentProps<'p'>) {
           )}
         </Button>
       )}
-      {config?.social_login.brand && <Button className="w-full">{`Continue with ${config.name}`}</Button>}
+      {config?.social_login.brand && (
+        <Button
+          className="w-full"
+          onClick={(e) => {
+            void signInWithBrand()
+          }}>
+          {loading === 'brand' ? (
+            <Loader size="sm" />
+          ) : (
+            <p className="text-body-1-demi text-monochrome-white">{`Continue with ${config.name}`}</p>
+          )}
+        </Button>
+      )}
       <p className={cn('text-center text-new-para-2-mobile', className)} {...restProps}>
         By continuing, you're agree to
         <Link href={PATH_NAME.terms} target="_blank" rel="noopener noreferrer">
