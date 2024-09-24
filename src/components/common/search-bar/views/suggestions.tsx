@@ -69,7 +69,7 @@ function Inner() {
                           <IcLoop className="h-5 w-5 stroke-tertiary" />
                         </div>
                       }
-                      subtitle={`Loop • ${item.loop.group.group_description ?? ''}`}
+                      subtitle={`Group • ${item.loop.group.group_description ?? ''}`}
                       title={item.loop.group.group_name ?? ''}
                       urlToGo={PATH_NAME.loop(item.loop.slug ? item.loop.slug : item.loop?.group?.slug ?? '')}
                     />

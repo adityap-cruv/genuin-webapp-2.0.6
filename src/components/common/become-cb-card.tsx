@@ -59,11 +59,8 @@ export default function BecomeCbCard({ className }: { className: string }) {
         }}>
         <div className="z-20 w-3/5">
           <p className="w-64 overflow-hidden p-3 text-body-1-bold">
-            Become a{' '}
-            <span className="font-semibold italic">
-              community <br /> builder&nbsp;
-            </span>
-            {embed ? 'for' : 'on'}&nbsp;
+            Become a <span className="font-semibold italic">Creator &nbsp;</span>
+            {embed ? 'for' : 'on'} <br />
             <span className="inline-block  max-w-[12ch] place-self-end overflow-clip text-ellipsis whitespace-nowrap text-center align-bottom text-primary">
               {` ${brandName} 🚀`}
             </span>

@@ -65,6 +65,7 @@ export function CommunityLoopTab({ community }: { community: VideoPlayerModalCom
                 })
               }}
               viewCount={item.group.no_of_views}
+              noOfVideos={item.group.no_of_videos}
             />
           )
         })}
@@ -91,9 +92,9 @@ function NoLoops() {
     <div className="flex h-full">
       <div className="mt-4 flex flex-col items-center justify-center bg-tertiary-100">
         <Image src={noLoopsImage} alt="share" />
-        <p className="text-title-2-bold">No Loops... yet!</p>
+        <p className="text-title-2-bold">No Groups... yet!</p>
         <p className="w-[80%] text-center text-body-1-demi text-monochrome">
-          Loops are dynamic discussion spaces centered around specific themes. Members can share videos, get reactions,
+          Groups are dynamic discussion spaces centered around specific themes. Members can share videos, get reactions,
           and enjoy engaging comments from the community.
         </p>
       </div>

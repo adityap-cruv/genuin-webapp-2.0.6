@@ -38,7 +38,8 @@ type Props = ComponentProps<'div'> & {
   latestMessages: MessageType[]
   memberCount: number
   members: MemberType[]
-  viewCount: number
+  viewCount: number,
+  noOfVideos: number,
   /**
    * This function will get executed when images gets clicked.
    * @param id Here in this function you will get id of loop in parameter
@@ -69,6 +70,7 @@ export function Component({
   members,
   memberCount,
   viewCount,
+  noOfVideos,
   className,
   linkOnImage,
   ...props
@@ -86,7 +88,7 @@ export function Component({
             )}>
             <div className="h-[30%] w-[70%] items-center p-4">
               <p className="line-clamp-1 break-all text-body-1-bold">{name}</p>
-              {!isViewAllowed && <p className="text-cap-1-med text-tertiary">Visible to Collaborators only</p>}
+              {!isViewAllowed && <p className="text-cap-1-med text-tertiary">Visible to members only</p>}
               {hasUnreadMessages ? (
                 <p className="line-clamp-1 break-all text-body-1-bold text-primary">{`${unreadMessageCount} new videos ∙ ${getTimeAgo(
                   latestMessages[0].createdAt
@@ -127,8 +129,8 @@ export function Component({
                       {`${members[0].userName} ${
                         members.length - 1 !== 0
                           ? members.length - 1 === 1
-                            ? '+1 Collaborator'
-                            : `+${abbreviateNumber(members.length - 1)}Collaborators`
+                            ? '+1 Other'
+                            : `+${abbreviateNumber(members.length - 1)} Others`
                           : ''
                       }`}
                     </p>
@@ -136,7 +138,7 @@ export function Component({
                 </div>
                 <p className="my-2 line-clamp-2 h-10 text-body-1-demi text-secondary-300">{description}</p>
                 <p className="text-body-1-med text-secondary-300">
-                  {abbreviateNumber(memberCount)} subscribers ∙{abbreviateNumber(viewCount)} views
+                  {abbreviateNumber(noOfVideos)} posts ∙{abbreviateNumber(viewCount)} views
                 </p>
               </div>
             </div>

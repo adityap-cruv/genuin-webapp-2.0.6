@@ -24,7 +24,7 @@ export function LoopPrivacyInfo({ actionId, accessTypeId }: { actionId: number; 
   return (
     <div className="flex gap-1">
       <IcLoop className="h-4 w-4 fill-tertiary stroke-tertiary" />
-      <p className="line-clamp-1 break-all text-cap-1-med text-tertiary">Visible to Collaborators only</p>
+      <p className="line-clamp-1 break-all text-cap-1-med text-tertiary">Visible to members only</p>
     </div>
   )
 }
