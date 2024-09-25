@@ -2,6 +2,7 @@ import { cn } from '@/lib/utils'
 import { AnimatePresence, motion, type MotionProps } from 'framer-motion'
 import { type ReactNode, type ComponentPropsWithRef } from 'react'
 import { VanillaPlayer } from '@/components/common/vanilla-player'
+import { Dialog, DialogTrigger, DialogContent } from '@/components/ui/dialog'
 
 type AnimatedTileProps = ComponentPropsWithRef<'div'> & MotionProps
 
@@ -54,6 +55,7 @@ type GeneralShellForInitialComponentProps = {
   cta: ReactNode
   videoSrc?: string
   posterSrc?: string
+  openVideoOnClick?: boolean
 } & AnimatedTileProps
 
 export function GeneralShellForInitialComponent({
@@ -74,19 +76,29 @@ export function GeneralShellForInitialComponent({
         <span className="hidden md:block">{cta}</span>
       </div>
       {videoSrc && (
-        <div className="aspect-reel w-44 items-center transition-all sm:flex sm:w-2/3 sm:justify-center md:w-1/4 md:justify-center lg:w-[30%]">
-          <VanillaPlayer
-            className="shrink-0 overflow-clip rounded-3xl border-[8px] border-monochrome-white sm:rounded-[38px] md:rounded-[42px] md:border-[12px] lg:h-5/6"
-            id="home-player"
-            videoSource={videoSrc}
-            loop={true}
-            poster="https://media.begenuin.com/backend_assets/hero-video/hero-video.png"
-          />
-        </div>
+        <Dialog>
+          <DialogTrigger className="aspect-reel w-44 cursor-pointer items-center outline-none transition-all sm:flex sm:w-2/3 sm:justify-center md:w-1/4 md:justify-center lg:w-[30%]">
+            <VanillaPlayer
+              className="shrink-0 overflow-clip rounded-3xl sm:rounded-[38px] md:rounded-[42px] lg:h-5/6"
+              id="home-player"
+              videoSource={videoSrc}
+              loop={true}
+              poster="https://media.begenuin.com/backend_assets/hero-video/hero-video.png"
+            />
+          </DialogTrigger>
+          <DialogContent className="max-h-[90%] max-w-xs 2xl:max-w-lg">
+            <VanillaPlayer
+              className="aspect-reel"
+              videoSource={videoSrc}
+              muted={false}
+              poster="https://media.begenuin.com/backend_assets/hero-video/hero-video.png"
+            />
+          </DialogContent>
+        </Dialog>
       )}
 
       {posterSrc && (
-        <div className="flex w-4/5	 items-center transition-all sm:w-2/3 sm:justify-center md:w-1/3 md:justify-center lg:w-[40%]">
+        <div className="flex w-4/5 items-center transition-all sm:w-2/3 sm:justify-center md:w-1/3 md:justify-center lg:w-[40%]">
           <img src={posterSrc} className="w-full" alt="poster" />
         </div>
       )}
