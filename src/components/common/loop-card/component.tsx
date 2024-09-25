@@ -91,7 +91,7 @@ export function Component({
             <div className="h-[30%] w-[70%] items-center p-4">
               <p className="line-clamp-1 break-all text-body-1-bold">{name}</p>
               {!isViewAllowed && <p className="text-cap-1-med text-tertiary">Visible to members only</p>}
-              {latestMessages.length == 0 ? (
+              {latestMessages.length === 0 ? (
                 <p className="line-clamp-1 break-all text-body-1-demi text-secondary-300">
                   @{members[0].userName} created ∙ {getTimeAgo(latestMessageAt)}
                 </p>
