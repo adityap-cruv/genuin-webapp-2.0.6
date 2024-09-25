@@ -138,6 +138,7 @@ export function Loops() {
                 profileImage: item.profile_image,
                 userName: item.username,
               }))}
+              latestMessageAt={item.latest_message_at ?? ''}
               name={item.group.group_name ?? ''}
               onClickOnImage={() => {}}
               linkOnImage={{ pathname: PATH_NAME.video(item.latest_messages[0].slug) }}
