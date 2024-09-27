@@ -1,8 +1,12 @@
 import { cn } from '@/lib/utils'
 import { AnimatePresence, motion, type MotionProps } from 'framer-motion'
-import { type ReactNode, type ComponentPropsWithRef } from 'react'
+import { type ReactNode, type ComponentPropsWithRef, useState } from 'react'
 import { VanillaPlayer } from '@/components/common/vanilla-player'
 import { Dialog, DialogTrigger, DialogContent } from '@/components/ui/dialog'
+import { CustomDialog, CustomDialogContent, CustomDialogTrigger } from '@/components/custom/custom-dialog'
+import { CustomMuteIcon } from '@icons/home-page/mute'
+import { CustomUnmuteIcon } from '@icons/home-page/unmute'
+import { CustomFullscreenIcon } from '@icons/home-page/fullscreenIcon'
 
 type AnimatedTileProps = ComponentPropsWithRef<'div'> & MotionProps
 
@@ -58,6 +62,12 @@ type GeneralShellForInitialComponentProps = {
   openVideoOnClick?: boolean
 } & AnimatedTileProps
 
+interface VideoPlayerControlsProps {
+  muted: boolean
+  setMuted: (muted: boolean) => void
+  videoSrc: string
+}
+
 export function GeneralShellForInitialComponent({
   titleNode,
   subtitle,
@@ -66,6 +76,7 @@ export function GeneralShellForInitialComponent({
   videoSrc,
   posterSrc,
 }: GeneralShellForInitialComponentProps) {
+  const [muted, setMuted] = useState(true)
   return (
     <AnimatedTile className="h-body">
       <div className="flex flex-col gap-4 transition-all md:flex-1 md:gap-9">
@@ -76,33 +87,92 @@ export function GeneralShellForInitialComponent({
         <span className="hidden md:block">{cta}</span>
       </div>
       {videoSrc && (
-        <Dialog>
-          <DialogTrigger className="aspect-reel w-44 cursor-pointer items-center outline-none transition-all sm:flex sm:w-2/3 sm:justify-center md:w-1/4 md:justify-center lg:w-[30%]">
-            <VanillaPlayer
-              className="shrink-0 overflow-clip rounded-3xl sm:rounded-[38px] md:rounded-[42px] lg:h-5/6"
-              id="home-player"
-              videoSource={videoSrc}
-              loop={true}
-              poster="https://media.begenuin.com/backend_assets/hero-video/hero-video.png"
-            />
-          </DialogTrigger>
-          <DialogContent className="max-h-[90%] max-w-xs 2xl:max-w-lg">
-            <VanillaPlayer
-              className="aspect-reel"
-              videoSource={videoSrc}
-              muted={false}
-              poster="https://media.begenuin.com/backend_assets/hero-video/hero-video.png"
-            />
-          </DialogContent>
-        </Dialog>
-      )}
+        <>
+          {/* Video Player Dialogs */}
+          <VideoPlayerDialog videoSrc={videoSrc} muted={muted} setMuted={setMuted} />
 
-      {posterSrc && (
-        <div className="flex w-4/5 items-center transition-all sm:w-2/3 sm:justify-center md:w-1/3 md:justify-center lg:w-[40%]">
-          <img src={posterSrc} className="w-full" alt="poster" />
-        </div>
+          {posterSrc && (
+            <div className="flex w-4/5 items-center transition-all sm:w-2/3 md:w-1/3 lg:w-[40%]">
+              <img src={posterSrc} className="w-full" alt="poster" />
+            </div>
+          )}
+        </>
       )}
     </AnimatedTile>
+  )
+}
+
+function VideoPlayerDialog({ videoSrc, muted, setMuted }: VideoPlayerControlsProps) {
+  return (
+    <>
+      {/* For Desktop */}
+      <Dialog>
+        <DialogTrigger
+          className="hidden aspect-reel w-44 cursor-pointer items-center outline-none transition-all sm:flex sm:w-2/3 sm:justify-center md:w-1/4 lg:w-[30%]"
+          onClick={() => {
+            setMuted(true)
+          }}>
+          <VideoPlayerControls muted={muted} setMuted={setMuted} videoSrc={videoSrc} />
+        </DialogTrigger>
+        <DialogContent className="w-auto">
+          <VanillaPlayer
+            className="aspect-reel h-[80vh]"
+            videoSource={videoSrc}
+            muted={false}
+            poster="https://media.begenuin.com/backend_assets/hero-video/hero-video.png"
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* For Mobile */}
+      <CustomDialog>
+        <CustomDialogTrigger
+          className="aspect-reel w-44 cursor-pointer items-center outline-none transition-all sm:hidden sm:w-2/3 md:w-1/4 lg:w-[30%]"
+          onClick={() => {
+            setMuted(true)
+          }}>
+          <VideoPlayerControls muted={muted} setMuted={setMuted} videoSrc={videoSrc} />
+        </CustomDialogTrigger>
+        <CustomDialogContent showDefaultClose className="w-auto sm:h-full sm:w-full sm:p-0 md:w-[60%] lg:w-[50%]">
+          <VanillaPlayer
+            className="aspect-reel h-full w-full"
+            videoSource={videoSrc}
+            muted={false}
+            poster="https://media.begenuin.com/backend_assets/hero-video/hero-video.png"
+          />
+        </CustomDialogContent>
+      </CustomDialog>
+    </>
+  )
+}
+
+function VideoPlayerControls({ muted, setMuted, videoSrc }: VideoPlayerControlsProps) {
+  return (
+    <div className="relative lg:h-5/6">
+      <div className="absolute right-2 top-3 z-10 rounded-full bg-[hsla(0,0%,30%,.6)] p-1 sm:right-4 sm:top-5">
+        <CustomFullscreenIcon className="fill-monochrome-white" />
+      </div>
+      <div
+        className="absolute right-10 top-3 z-10 cursor-pointer rounded-full bg-[hsla(0,0%,30%,.6)] p-1 sm:right-12 sm:top-5"
+        onClick={(e) => {
+          e.stopPropagation()
+          setMuted(!muted)
+        }}>
+        {muted ? (
+          <CustomMuteIcon className="fill-monochrome-white" />
+        ) : (
+          <CustomUnmuteIcon className="fill-monochrome-white" />
+        )}
+      </div>
+      <VanillaPlayer
+        className="shrink-0 overflow-clip rounded-3xl sm:h-full"
+        id="home-player"
+        videoSource={videoSrc}
+        loop
+        muted={muted}
+        poster="https://media.begenuin.com/backend_assets/hero-video/hero-video.png"
+      />
+    </div>
   )
 }
 
