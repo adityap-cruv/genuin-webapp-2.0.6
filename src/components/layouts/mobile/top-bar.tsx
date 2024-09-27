@@ -136,6 +136,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
                 pathName.includes('/latest') ||
                 pathName.includes('/video') ||
                 (pathName.includes('/community') && searchParams.toString().includes('feed=1')) ||
+                (pathName.includes('/community') && showClose) ||
                 (pathName.includes('/loop') && showClose)) &&
               'stroke-monochrome-white'
             }`}

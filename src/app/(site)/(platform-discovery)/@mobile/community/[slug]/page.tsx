@@ -32,12 +32,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const communityData: CommunityDataType = await fetchMetadata({ type: 2, slug: params.slug })
 
   return {
-    title: communityData.title,
+    title: communityData?.title,
     // applicationName: 'Genuin',
-    description: communityData.description,
+    description: communityData?.description,
     openGraph: {
-      title: communityData.title,
-      description: communityData.description,
+      title: communityData?.title,
+      description: communityData?.description,
       url: `${process.env.NEXT_PUBLIC_HOST_URL}` + PATH_NAME.community(params.slug),
       images: [{ url: communityData?.preview_image ?? '' }],
     },

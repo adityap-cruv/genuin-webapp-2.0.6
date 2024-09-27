@@ -17,3 +17,14 @@ export async function getEmbedConfig(params: Record<string, string>) {
       throw new Error('Something went wrong::')
     })
 }
+
+export async function getIpAddress() {
+  return await fetch('https://api.ipify.org?format=json')
+    .then(async (res) => await res.json())
+    .then((res) => {
+      return res.ip
+    })
+    .catch((e) => {
+      console.log('Error in getting ip address.')
+    })
+}

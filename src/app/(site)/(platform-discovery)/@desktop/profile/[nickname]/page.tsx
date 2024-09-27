@@ -41,17 +41,17 @@ export async function generateMetadata({ params }: CompProps): Promise<Metadata>
   const profileMetadata: ProfileMetaDataType = await fetchMetadata(metadataParams)
 
   return {
-    title: profileMetadata.title,
+    title: profileMetadata?.title,
     // appleWebApp: { capable: true },
     // applicationName: 'Genuin',
-    description: profileMetadata.description,
+    description: profileMetadata?.description,
     openGraph: {
-      title: profileMetadata.title,
-      description: profileMetadata.description,
+      title: profileMetadata?.title,
+      description: profileMetadata?.description,
       url: `${process.env.NEXT_PUBLIC_HOST_URL}${PATH_NAME.profile(params.nickname)}`,
       images: [
         {
-          url: profileMetadata.preview_image,
+          url: profileMetadata?.preview_image,
         },
       ],
     },

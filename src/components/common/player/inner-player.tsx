@@ -37,7 +37,7 @@ function triggerAnalyticsForVideoStart(videoId: string, latency: number) {
 
 function triggerAnalyticsForVideoPause(videoId: string) {
   void Analytics.track({
-    eventName: 'Video Started',
+    eventName: 'Video Paused',
     properties: {
       content_category: 'loop',
       content_id: videoId,
