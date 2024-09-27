@@ -9,7 +9,7 @@ type PageProps = {
   }
   searchParams: {
     community: string
-    loop: string
+    group: string
     utm_source: string
   }
 }
@@ -32,8 +32,8 @@ export async function generateMetadata({ params, searchParams }: PageProps): Pro
   if (searchParams?.community) {
     queryParams.push(`community=${searchParams.community}`)
   }
-  if (searchParams?.loop) {
-    queryParams.push(`loop=${searchParams.loop}`)
+  if (searchParams?.group) {
+    queryParams.push(`group=${searchParams.group}`)
   }
   if (searchParams?.utm_source) {
     queryParams.push(`utm_source=${searchParams.utm_source}`)
