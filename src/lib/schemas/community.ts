@@ -55,6 +55,7 @@ const moderatorSchema = z.object({
   profile_image_m: z.string().nullish(),
   profile_image_l: z.string().nullish(),
   role: z.number().nullish(),
+  brand: BrandUserSchema.optional(),
 })
 
 const leaderSchema = z.object({

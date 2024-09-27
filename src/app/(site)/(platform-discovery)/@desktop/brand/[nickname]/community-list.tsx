@@ -271,7 +271,7 @@ function Loops({
               </a>
               <div className="my-1 flex items-center gap-1">
                 <IcLoop className="h-6 w-6 fill-tertiary" />
-                <p className="text-body-1-med text-tertiary">Visible to collaborators only</p>
+                <p className="text-body-1-med text-tertiary">Visible to members only</p>
               </div>
             </div>
           ) : (
@@ -286,7 +286,7 @@ function Loops({
             className="profile-loop-li relative w-full rounded-lg border border-tertiary-200 p-2"
             style={{ backgroundColor: '#F9F9F9' }}>
             <p className="text-blue-500 flex w-full cursor-pointer justify-center text-cap-1-demi text-tertiary">
-              View more loops
+              View more groups
             </p>
           </li>
         </div>

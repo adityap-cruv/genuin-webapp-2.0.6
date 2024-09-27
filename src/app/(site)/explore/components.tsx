@@ -111,7 +111,7 @@ export function Loops() {
   if (isLoading) return
   return (
     <>
-      <p className="pb-2 pt-6 text-title-1-bold">Featured Loops</p>
+      <p className="pb-2 pt-6 text-title-1-bold">Featured Groups</p>
       <div
         className={cn(
           'grid h-auto w-fit min-w-fit grid-cols-1 gap-4 md:grid-cols-2 md:grid-rows-2',
@@ -142,6 +142,7 @@ export function Loops() {
               onClickOnImage={() => {}}
               linkOnImage={{ pathname: PATH_NAME.video(item.latest_messages[0].slug) }}
               viewCount={item.group.no_of_views}
+              noOfVideos={item.group.no_of_videos}
             />
           )
         })}

@@ -8,12 +8,14 @@ export function ListItem({
   image,
   isAvatar,
   brand,
+  isOwner,
 }: {
   title: string
   subtitle?: string
   description?: string
   image?: string
   isAvatar: boolean
+  isOwner: boolean
   brand?: {
     brand_id: number
     brand_slug: string
@@ -35,6 +37,11 @@ export function ListItem({
               <TickIcon className="h-3 w-3 fill-primary" />
               <p className="text-cap-2-demi text-primary">Brand</p>
             </div>
+          )}
+          {isOwner && (
+            <p className="flex items-center gap-1 rounded-full bg-primary-200 p-1 pr-1.5 text-cap-1-demi text-primary">
+              Owner
+            </p>
           )}
         </div>
         {title && <p className="line-clamp-1 text-body-1-med">{title}</p>}

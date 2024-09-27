@@ -109,7 +109,7 @@ export default function Component() {
           onClick={() => {
             setView('TABS', 'LOOPS')
           }}>
-          <p className="text-body-1-bold">Loops</p>
+          <p className="text-body-1-bold">Groups</p>
         </TabsTrigger>
         <TabsTrigger
           value="PEOPLE"

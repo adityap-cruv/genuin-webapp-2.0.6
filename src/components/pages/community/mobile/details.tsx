@@ -201,7 +201,7 @@ function Stats() {
       <span className="pr-4">
         <span className="text-title-3-bold ">{communityDetailsModule?.no_of_loops}</span>
         <span className="text-cap-1-demi text-tertiary">
-          &nbsp;{communityDetailsModule?.no_of_loops === 1 ? 'Loop' : 'Loops'}
+          &nbsp;{communityDetailsModule?.no_of_loops === 1 ? 'Group' : 'Groups'}
         </span>
       </span>
       <span className="pr-4">
@@ -219,7 +219,7 @@ function ProfileTabs() {
     <Tabs defaultValue="Loops" className="h-full">
       <TabsList className="sticky flex max-w-min">
         <TabsTrigger value="Loops">
-          <p className="text-title-3-bold">Loops</p>
+          <p className="text-title-3-bold">Groups</p>
         </TabsTrigger>
         <TabsTrigger value="Members">
           <p className="text-title-3-bold">Members</p>
@@ -352,6 +352,7 @@ function Links() {
 
 function Leaders() {
   const leader = communityDetailsModule?.leader
+  const moderators = communityDetailsModule?.moderators
 
   if (!leader || leader.nickname.length === 0) {
     return null
@@ -359,7 +360,7 @@ function Leaders() {
 
   return (
     <div className="mb-4">
-      <p className="my-2 text-title-3-bold">Leader</p>
+      <p className="my-2 text-title-3-bold">Admins</p>
       <Link
         href={{
           pathname: leader.brand ? PATH_NAME.brand(leader.brand.brand_slug) : PATH_NAME.profile(leader.nickname),
@@ -371,8 +372,28 @@ function Leaders() {
           image={leader.profile_image}
           isAvatar={leader.is_avatar}
           brand={leader.brand}
+          isOwner={true}
         />
       </Link>
+      {moderators.length > 0 &&
+        moderators.map((item, index) => {
+          return (
+            <Link key={index}
+              href={{
+                pathname: item.brand ? PATH_NAME.brand(item.brand.brand_slug) : PATH_NAME.profile(item.nickname),
+              }}>
+              <ListItem
+                title={item.name ?? ''}
+                subtitle={'@' + item.nickname}
+                description={item.bio ?? ''}
+                image={item.profile_image}
+                isAvatar={item.is_avatar}
+                brand={item.brand}
+                isOwner={false}
+              />
+            </Link>
+          )
+        })}
     </div>
   )
 }
@@ -384,12 +405,14 @@ function ListItem({
   image,
   isAvatar,
   brand,
+  isOwner,
 }: {
   title: string
   subtitle?: string
   description?: string
   image?: string
   isAvatar: boolean
+  isOwner: boolean
   brand?: {
     brand_id: number
     brand_slug: string
@@ -411,6 +434,9 @@ function ListItem({
               <TickIcon className="h-3 w-3 fill-primary" />
               <p className="text-cap-2-demi text-primary">Brand</p>
             </div>
+          )}
+          {isOwner && (
+            <p className="flex items-center gap-1 rounded-full bg-primary-200 p-1 pr-1.5 text-primary ">Owner</p>
           )}
         </div>
         {subtitle && <p className="line-clamp-1 text-body-1-demi ">{title}</p>}
@@ -461,6 +487,7 @@ function Members() {
                   image={member.profile_image}
                   isAvatar={member.is_avatar}
                   brand={member.brand ?? null}
+                  isOwner={false}
                 />
               </Link>
             )

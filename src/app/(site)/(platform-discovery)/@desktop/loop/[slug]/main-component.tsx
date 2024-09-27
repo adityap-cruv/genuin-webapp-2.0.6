@@ -86,7 +86,7 @@ export function MainComponent({ loopDetails }: Props) {
           subtitle: (
             <>
               Get the app to subscribe to
-              <span className="font-bold"> {loopDetails.group.group_name}</span> Loop.
+              <span className="font-bold"> {loopDetails.group.group_name}</span> Group.
             </>
           ),
         })
@@ -134,8 +134,8 @@ export function MainComponent({ loopDetails }: Props) {
                         deepLink: generatedLink,
                         subtitle: (
                           <>
-                            Get the app to Join as collaborator to
-                            <span className="font-bold"> {loopDetails.group.group_name}</span> Loop.
+                            Get the app to Join as member to
+                            <span className="font-bold"> {loopDetails.group.group_name}</span> Group.
                           </>
                         ),
                       })
@@ -143,7 +143,7 @@ export function MainComponent({ loopDetails }: Props) {
                   )
                 }}>
                 <p className="px-4 py-1 text-title-3-bold text-primary" style={{ fontSize: '15px' }}>
-                  Join as collaborator
+                  Join as member
                 </p>
               </Button>
             )}
@@ -248,8 +248,8 @@ export function MainComponent({ loopDetails }: Props) {
             <Stats
               statsData={[
                 { key: 'Posts', value: loopDetails.group.no_of_videos ?? 0 },
-                { key: 'Collaborators', value: loopDetails.group.no_of_members ?? 0 },
-                { key: 'Subscribers', value: loopDetails.group.no_of_subscribers ?? 0 },
+                { key: 'Members', value: loopDetails.group.no_of_members ?? 0 },
+                // { key: 'Subscribers', value: loopDetails.group.no_of_subscribers ?? 0 },
               ]}
             />
           </div>
@@ -262,8 +262,8 @@ export function MainComponent({ loopDetails }: Props) {
             <div className="flex flex-col items-center justify-center">
               <Image src={icLock} alt="share" className="h-16 w-16" />
               <p className="text-center text-title-2-demi">
-                This Loop is visible to its
-                <br /> Collaborators only
+                This Group is visible to its
+                <br /> Members only
               </p>
             </div>
           </div>
@@ -323,7 +323,7 @@ function LoopCohosts({ slug }: { slug: string }) {
   if (cohosts && cohosts.length !== 0)
     return (
       <div>
-        <p className="my-2 text-title-3-bold">Collaborators</p>
+        <p className="my-2 text-title-3-bold">Members</p>
         <div className="h-full w-full overflow-auto">
           {cohosts.map((item, index) => {
             if (!item.nickname)
@@ -335,6 +335,7 @@ function LoopCohosts({ slug }: { slug: string }) {
                   image={item.profile_image}
                   isAvatar={item.is_avatar}
                   brand={item.brand ?? null}
+                  isOwner={false}
                 />
               )
             return (
@@ -350,6 +351,7 @@ function LoopCohosts({ slug }: { slug: string }) {
                   image={item.profile_image}
                   isAvatar={item.is_avatar}
                   brand={item.brand ?? null}
+                  isOwner={false}
                 />
               </Link>
             )
@@ -398,6 +400,7 @@ function LoopSubscribers({ slug }: { slug: string }) {
                 image={item.profile_image}
                 isAvatar={item.is_avatar}
                 brand={item.brand ?? null}
+                isOwner={false}
               />
             </Link>
           ))}

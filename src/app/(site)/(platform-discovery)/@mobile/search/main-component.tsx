@@ -28,7 +28,7 @@ function SearchTabs() {
           <p className="text-title-3-bold">Communities</p>
         </TabsTrigger>
         <TabsTrigger value="Loops">
-          <p className="text-title-3-bold">Loops</p>
+          <p className="text-title-3-bold">Groups</p>
         </TabsTrigger>
         <TabsTrigger value="People">
           <p className="text-title-3-bold">People</p>
@@ -39,7 +39,7 @@ function SearchTabs() {
         <VideosTab />
       </TabsContent>
       <TabsContent value="Communities">Communities</TabsContent>
-      <TabsContent value="Loops">Loops</TabsContent>
+      <TabsContent value="Loops">Groups</TabsContent>
       <TabsContent value="People">People</TabsContent>
     </Tabs>
   )

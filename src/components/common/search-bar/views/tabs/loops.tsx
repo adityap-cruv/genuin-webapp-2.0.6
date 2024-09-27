@@ -89,13 +89,13 @@ export function LoopItem({ loop }: { loop: LoopResType }) {
                   className={`ml-1 line-clamp-1 text-body-1-med text-secondary-300 ${
                     loop.group.members.length !== 1 && 'ml-7'
                   } ${loop.group.members.length === 3 && 'ml-6'}`}>
-                  {loop.group.members[0].username}
+                  {loop.group.members[0]?.username}
                   {getCollaboratorsCountString(loop.group.members.length - 1)}
                 </p>
               </div>
               <p className="my-[2%] line-clamp-2 text-body-1-demi text-secondary-300">{loop.group.group_description}</p>
               <p className="line-clamp-1 break-all text-body-1-med text-secondary-300">
-                {abbreviateNumber(loop.group.members.length)} subscribers ∙ {abbreviateNumber(loop.group.no_of_views)}{' '}
+                {abbreviateNumber(loop.group.no_of_videos)} posts ∙ {abbreviateNumber(loop.group.no_of_views)}{' '}
                 views
               </p>
             </div>

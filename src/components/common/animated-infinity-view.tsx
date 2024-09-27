@@ -145,7 +145,7 @@ export function AnimatedInfinityView({ community, loop }: Props) {
             <span className="flex h-full items-center justify-end">
               <div className="w-[85%]">
                 <p className="line-clamp-1 break-all text-body-1-med text-monochrome-white">{localState.loopName}</p>
-                <p className="line-clamp-1 text-cap-1-med text-monochrome-white/60">View Loop</p>
+                <p className="line-clamp-1 text-cap-1-med text-monochrome-white/60">View Group</p>
               </div>
             </span>
           </span>
