@@ -72,7 +72,7 @@ export function KsToCbSubdomain() {
         <SwiperSlide>
           <div className="flex flex-col items-center gap-2">
             <CommunityDiscussion01 className="h-40 fill-primary" />
-            <p className="text-center text-title-1-bold">Become a community builder for {brandName}</p>
+            <p className="text-center text-title-1-bold">Become a creator for {brandName}</p>
             <p className="text-center text-body-1-med ">
               Join us in shaping the future of {brandName} by making your own {brandName} community and expanding it by
               sharing thought-provoking content.
@@ -115,7 +115,7 @@ export function KsToCbSubdomain() {
           ) : user?.ksCbRequestStatus === 2 ? (
             'Requested'
           ) : (
-            `Become a community builder for ${brandName}`
+            `Become a creator for ${brandName}`
           )}
         </Button>
       )}

@@ -14,6 +14,7 @@ const nextConfig = {
       // These redirects are for new design implementation and slug.
       { source: '/c/:handle', destination: '/community/:handle', permanent: true },
       { source: '/l/:loop_id', destination: '/loop/:loop_id', permanent: true },
+      { source: '/loop/:loop_id', destination: '/group/:loop_id', permanent: true },
       { source: '/p/:handle', destination: '/profile/:handle', permanent: true },
       { source: '/v/:video_id', destination: '/video/:video_id', permanent: true },
       { source: '/q/:id', destination: '/question/:id', permanent: true },

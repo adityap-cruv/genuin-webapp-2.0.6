@@ -39,6 +39,8 @@ type Props = ComponentProps<'div'> & {
   memberCount: number
   members: MemberType[]
   viewCount: number
+  noOfVideos: number
+  latestMessageAt: string | null
   /**
    * This function will get executed when images gets clicked.
    * @param id Here in this function you will get id of loop in parameter
@@ -69,8 +71,10 @@ export function Component({
   members,
   memberCount,
   viewCount,
+  noOfVideos,
   className,
   linkOnImage,
+  latestMessageAt,
   ...props
 }: Props) {
   const hasUnreadMessages = unreadMessageCount > 0
@@ -86,8 +90,12 @@ export function Component({
             )}>
             <div className="h-[30%] w-[70%] items-center p-4">
               <p className="line-clamp-1 break-all text-body-1-bold">{name}</p>
-              {!isViewAllowed && <p className="text-cap-1-med text-tertiary">Visible to Collaborators only</p>}
-              {hasUnreadMessages ? (
+              {!isViewAllowed && <p className="text-cap-1-med text-tertiary">Visible to members only</p>}
+              {latestMessages.length === 0 ? (
+                <p className="line-clamp-1 break-all text-body-1-demi text-secondary-300">
+                  @{members[0].userName} created ∙ {getTimeAgo(latestMessageAt)}
+                </p>
+              ) : hasUnreadMessages ? (
                 <p className="line-clamp-1 break-all text-body-1-bold text-primary">{`${unreadMessageCount} new videos ∙ ${getTimeAgo(
                   latestMessages[0].createdAt
                 )}`}</p>
@@ -127,8 +135,8 @@ export function Component({
                       {`${members[0].userName} ${
                         members.length - 1 !== 0
                           ? members.length - 1 === 1
-                            ? '+1 Collaborator'
-                            : `+${abbreviateNumber(members.length - 1)}Collaborators`
+                            ? '+1 Other'
+                            : `+${abbreviateNumber(members.length - 1)} Others`
                           : ''
                       }`}
                     </p>
@@ -136,7 +144,7 @@ export function Component({
                 </div>
                 <p className="my-2 line-clamp-2 h-10 text-body-1-demi text-secondary-300">{description}</p>
                 <p className="text-body-1-med text-secondary-300">
-                  {abbreviateNumber(memberCount)} subscribers ∙{abbreviateNumber(viewCount)} views
+                  {abbreviateNumber(noOfVideos)} posts ∙{abbreviateNumber(viewCount)} views
                 </p>
               </div>
             </div>
@@ -175,6 +183,13 @@ export function Component({
               </Link>
             )
           })}
+        {isViewAllowed && latestMessages.length === 0 && (
+          <div className="group/video absolute right-7 top-[50%] flex aspect-reel h-[85%] -translate-y-1/2 items-center justify-center rounded border border-secondary-300 bg-monochrome-white hover:cursor-pointer">
+            <div className="bg-secondary-200 rounded-full p-2 ">
+              <p className="ml-1 line-clamp-1  text-cap-2-demi text-tertiary-400 "> No posts yet</p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )
