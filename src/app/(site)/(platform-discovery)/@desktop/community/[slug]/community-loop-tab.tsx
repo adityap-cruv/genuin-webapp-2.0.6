@@ -72,6 +72,7 @@ function Component({
             profileImage: item.profile_image,
             userName: item.username,
           }))}
+          latestMessageAt={item.latest_message_at ?? ''}
           onClickOnImage={(id) => {
             setModalController((x) => {
               const newLoop = data.loops.find((item) => item.chat_id === id)

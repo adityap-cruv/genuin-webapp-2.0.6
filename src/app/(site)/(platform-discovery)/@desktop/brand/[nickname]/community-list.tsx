@@ -271,7 +271,7 @@ function Loops({
               </a>
               <div className="my-1 flex items-center gap-1">
                 <IcLoop className="h-6 w-6 fill-tertiary" />
-                <p className="text-body-1-med text-tertiary">Visible to members only</p>
+                <p className="text-body-1-med text-tertiary">Visible to groups members only</p>
               </div>
             </div>
           ) : (
@@ -339,7 +339,8 @@ function LoopVideos({ brandId, loop, communityId, pathName, user }: LoopVideosPr
   function InnerComponent() {
     if (!loop.videos || loop.videos.length === 0)
       return (
-        <div className="flex items-center justify-center pt-32 text-title-3-bold text-tertiary">No posts available</div>
+        // <div className="flex items-center justify-center pt-32 text-title-3-bold text-tertiary">No posts available 5</div>
+        <p className="text-body-1-med text-tertiary">No posts yet</p>
       )
 
     if (loop.videos)

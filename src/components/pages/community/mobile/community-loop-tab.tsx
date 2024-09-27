@@ -55,6 +55,7 @@ export function CommunityLoopTab({ community }: { community: VideoPlayerModalCom
                 profileImage: item.profile_image,
                 userName: item.username,
               }))}
+              latestMessageAt={item.latest_message_at ?? ''}
               name={item.group.group_name ?? ''}
               onClickOnImage={(id) => {
                 setModalController((x) => {
