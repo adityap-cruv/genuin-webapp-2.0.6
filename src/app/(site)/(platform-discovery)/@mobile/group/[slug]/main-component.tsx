@@ -27,6 +27,8 @@ import { LoopPrivacyInfo } from '@components/common/loop-privacy-info'
 import { PrivateModal } from '@components/common/modals/private'
 import Analytics from '@services/analytics'
 import { joinAsCollaboratorDeepLink, subscribeDeepLink } from '@/lib/get-deeplink'
+import { SubscribedBellIcon } from '@icons/subscribed-bell-icon'
+import { BellIcon } from 'lucide-react'
 
 let loopDetailsModule: LoopDetailsType
 
@@ -58,6 +60,13 @@ export function MainComponent({ loopDetails }: Props) {
     void subscribeLoop(loopDetails.chat_id, newValue).then((res) => {
       if (res.code === 200) {
         setIsLoopSubscribed(newValue)
+        if (newValue) {
+          // Notifications turned on for this Group
+          toast({ title: 'Notifications turned on for this Group', duration: 1000 })
+        } else {
+          // Notifications turned off for this Group
+          toast({ title: 'Notifications turned off for this Group', duration: 1000 })
+        }
       }
     })
   }
@@ -175,7 +184,10 @@ export function MainComponent({ loopDetails }: Props) {
             {loopDetails.is_view_allowed && embed && (
               <Button
                 size="custom"
-                className={`${isLoopSubscribed && 'border border-primary '}`}
+                // className={`${isLoopSubscribed && 'border border-primary '}`}
+                className={`${
+                  isLoopSubscribed ? 'border border-primary p-0.5' : 'border border-primary bg-primary p-0.5'
+                }`}
                 variant={isLoopSubscribed ? 'outline' : 'default'}
                 onClick={
                   user
@@ -194,9 +206,13 @@ export function MainComponent({ loopDetails }: Props) {
                         })
                       }
                 }>
-                <p className={`px-4 py-1 text-title-3-demi ${isLoopSubscribed && 'text-primary'}`}>
+                {/* <p className={`px-4 py-1 text-title-3-demi ${isLoopSubscribed && 'text-primary'}`}>
                   {isLoopSubscribed ? 'Subscribed' : 'Subscribe'}
-                </p>
+                </p> */}
+                {isLoopSubscribed && (
+                  <SubscribedBellIcon className="h-6 w-6 fill-primary stroke-primary"></SubscribedBellIcon>
+                )}
+                {!isLoopSubscribed && <BellIcon className="h-6 w-6  stroke-new-off-white"></BellIcon>}
               </Button>
             )}
 
