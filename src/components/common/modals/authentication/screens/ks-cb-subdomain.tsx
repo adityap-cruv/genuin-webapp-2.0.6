@@ -115,7 +115,7 @@ export function KsToCbSubdomain() {
           ) : user?.ksCbRequestStatus === 2 ? (
             'Requested'
           ) : (
-            `Become a creator for ${brandName}`
+            `Become a Creator for ${brandName}`
           )}
         </Button>
       )}
