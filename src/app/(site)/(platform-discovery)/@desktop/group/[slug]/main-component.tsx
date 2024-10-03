@@ -150,7 +150,7 @@ export function MainComponent({ loopDetails }: Props) {
                         deepLink: generatedLink,
                         subtitle: (
                           <>
-                            Get the app to Join as member to
+                            Get the app to Join as Member to
                             <span className="font-bold"> {loopDetails.group.group_name}</span> Group.
                           </>
                         ),
@@ -159,7 +159,7 @@ export function MainComponent({ loopDetails }: Props) {
                   )
                 }}>
                 <p className="px-4 py-1 text-title-3-bold text-primary" style={{ fontSize: '15px' }}>
-                  Join as member
+                  Join as Member
                 </p>
               </Button>
             )}

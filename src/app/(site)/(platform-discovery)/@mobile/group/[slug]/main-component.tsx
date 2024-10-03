@@ -229,7 +229,7 @@ export function MainComponent({ loopDetails }: Props) {
                   )
                 }}>
                 <p className="px-4 py-1 text-title-3-bold text-primary" style={{ fontSize: '15px' }}>
-                  Join as member
+                  Join as Member
                 </p>
               </Button>
             )}
