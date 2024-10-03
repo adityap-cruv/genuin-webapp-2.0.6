@@ -184,7 +184,7 @@ export function Component({
             )
           })}
         {isViewAllowed && latestMessages.length === 0 && (
-          <div className="group/video absolute right-7 top-[50%] flex aspect-reel h-[85%] -translate-y-1/2 items-center justify-center rounded border border-secondary-300 bg-monochrome-white hover:cursor-pointer">
+          <div className="group/video absolute right-5 top-[50%] flex aspect-reel h-[80%] -translate-y-1/2 items-center justify-center rounded border border-monochrome-black/20 bg-monochrome-white hover:cursor-pointer">
             <div className="bg-secondary-200 rounded-full p-2 ">
               <p className="ml-1 line-clamp-1  text-cap-2-demi text-tertiary-400 "> No posts yet</p>
             </div>
