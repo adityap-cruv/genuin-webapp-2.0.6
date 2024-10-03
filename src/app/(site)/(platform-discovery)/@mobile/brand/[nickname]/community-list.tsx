@@ -315,12 +315,15 @@ function LoopVideos({ brandId, loop, communityId, pathName, user }: LoopVideosPr
   function InnerComponent() {
     if (!loop.videos || loop.videos.length === 0)
       return (
-        <div className="flex items-center justify-center pt-32 text-title-3-bold text-tertiary">No posts available</div>
+        // <div className="flex items-center justify-center pt-32 text-title-3-bold text-tertiary">No posts available</div>
+        <div className="my-2 grid w-full gap-2">
+          <p className="text-body-1-med text-tertiary">No posts yet</p>
+        </div>
       )
 
     if (loop.videos)
       return (
-        <>
+        <div className="my-2 grid w-full grid-cols-4 gap-2 md:grid-cols-8">
           {loop.videos.map((video, index) => (
             <React.Fragment key={index}>
               <div
@@ -342,7 +345,7 @@ function LoopVideos({ brandId, loop, communityId, pathName, user }: LoopVideosPr
               </div>
             </React.Fragment>
           ))}
-        </>
+        </div>
       )
   }
 
@@ -357,7 +360,7 @@ function LoopVideos({ brandId, loop, communityId, pathName, user }: LoopVideosPr
           accessTypeId={loop?.actions?.[0]?.access_type_id ?? 0}
         />
       )}
-      <div className="my-2 grid w-full grid-cols-4 gap-2 md:grid-cols-8">
+      <div>
         <InnerComponent />
         {isFetchingNextPage &&
           [...Array(loop.videoCount < 16 ? loop.videoCount : 16)].map((_, index) => (
