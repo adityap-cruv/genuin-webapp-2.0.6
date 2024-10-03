@@ -339,7 +339,7 @@ function LoopVideos({ brandId, loop, communityId, pathName, user }: LoopVideosPr
   function InnerComponent() {
     if (!loop.videos || loop.videos.length === 0)
       return (
-        // <div className="flex items-center justify-center pt-32 text-title-3-bold text-tertiary">No posts available 5</div>
+        // <div className="flex items-center justify-center pt-32 text-title-3-bold text-tertiary">No posts available</div>
         <p className="text-body-1-med text-tertiary">No posts yet</p>
       )
 
