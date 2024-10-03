@@ -7,11 +7,12 @@ import { X } from 'lucide-react'
 import { IcLoop } from '@icons/ic-loop'
 
 export function Modal() {
-  const { isOpen, close, isLoading, data } = useRepostModalStore((state) => ({
+  const { isOpen, close, isLoading, data, searchStr } = useRepostModalStore((state) => ({
     isOpen: state.isOpen,
     close: state.close,
     data: state.repostCommunityData,
     isLoading: state.isLoading,
+    searchStr : state.searchStr
   }))
 
   return (
@@ -37,7 +38,7 @@ export function Modal() {
           <div className="flex h-full items-center justify-center">
             <Loader size="md" />
           </div>
-        ) : data ? (
+        ) : (data || searchStr !== "") ? (
           <>
             <SearchInput />
             <Body />
@@ -56,9 +57,9 @@ function NoData() {
       <div className="w-fit rounded-full bg-tertiary-200 p-2">
         <IcLoop className="h-20 fill-monochrome-black" />
       </div>
-      <p className="pt-4 text-title-2-bold">No available Loops</p>
+      <p className="pt-4 text-title-2-bold">No available Groups</p>
       <p className="text-center text-body-1-demi">
-        You must be a collaborator in a Loop to
+        You must be a member in a Group to
         <br /> repost videos.
       </p>
     </div>
