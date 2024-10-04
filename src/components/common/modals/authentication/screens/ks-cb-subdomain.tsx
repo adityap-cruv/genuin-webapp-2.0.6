@@ -97,7 +97,7 @@ export function KsToCbSubdomain() {
             <p className="text-center text-title-1-bold">Moderate your Community</p>
             <p className="text-center text-body-1-med">
               Create a safe space where your members can thrive. Customize your community with guidelines, add
-              moderators, and more.
+              admins, and more.
             </p>
             <br />
           </div>

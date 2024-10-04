@@ -47,7 +47,7 @@ function SearchTabs() {
         <Communities />
       </TabsContent>
       <TabsContent value="Loops" className="mx-4">
-        Loops
+        Groups
       </TabsContent>
       <TabsContent value="People" className="mx-4">
         People

@@ -119,7 +119,7 @@ function LoopView({ loops }: { loops: LoopResType[] }) {
   return (
     <span>
       <span className="flex justify-between px-4 pb-2">
-        <p className="text-title-3-bold">Loops</p>
+        <p className="text-title-3-bold">Groups</p>
         <p
           className="cursor-pointer text-body-1-demi text-tertiary"
           onClick={() => {

@@ -73,15 +73,17 @@ export function LoopItem({ loop }: { loop: LoopResType }) {
         <div className="relative w-full rounded-lg border border-tertiary-300 bg-monochrome-white">
           <div className="w-[60%] items-center p-[3%]">
             <p className="line-clamp-1 break-all text-body-1-bold">{loop.group.group_name}</p>
-            {
-            loop.latest_messages.length === 0 ? (
+            {loop.latest_messages.length === 0 ? (
               <p className="line-clamp-1 break-all text-body-1-demi text-secondary-300">
                 @{loop.group?.members[0]?.username} created ∙ {getTimeAgo(loop.latest_message_at)}
               </p>
-            ) : loop.latest_messages.length !== 0 && loop.is_view_allowed && (
-              <p className="line-clamp-1 w-full break-all text-body-1-demi text-secondary-300">
-                @{loop.latest_messages[0].owner.username} posted ∙ {getTimeAgo(loop.latest_messages[0].message_at)}
-              </p>
+            ) : (
+              loop.latest_messages.length !== 0 &&
+              loop.is_view_allowed && (
+                <p className="line-clamp-1 w-full break-all text-body-1-demi text-secondary-300">
+                  @{loop.latest_messages[0].owner.username} posted ∙ {getTimeAgo(loop.latest_messages[0].message_at)}
+                </p>
+              )
             )}
           </div>
           <div className="h-[60%] rounded-b-lg border border-tertiary-200 bg-tertiary-100 p-4">
@@ -113,7 +115,7 @@ export function LoopItem({ loop }: { loop: LoopResType }) {
           </div>
         </div>
       ) : loop.latest_messages.length === 0 ? (
-        <div className="group/video absolute right-7 top-[50%] flex aspect-reel h-[80%] -translate-y-1/2 items-center justify-center rounded border border-secondary-300 bg-monochrome-white hover:cursor-pointer">
+        <div className="group/video absolute right-7 top-[50%] flex aspect-reel h-[80%] -translate-y-1/2 items-center justify-center rounded border border-monochrome-black/20 bg-monochrome-white hover:cursor-pointer">
           <div className="bg-secondary-200 rounded-full p-2">
             <p className="ml-1 line-clamp-1  text-cap-2-demi text-tertiary-400"> No posts yet</p>
           </div>
