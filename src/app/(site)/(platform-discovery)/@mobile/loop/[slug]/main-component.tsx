@@ -343,7 +343,7 @@ function LoopCollaborators({ slug }: { slug: string }) {
               <CohostTile
                 image={item.profile_image}
                 subtitle={item.bio ?? ''}
-                title={'+' + item.phone ?? ''}
+                title={'+' + (item.phone ?? '')}
                 userName={item.name ?? ''}
                 isAvatar={item.is_avatar}
               />

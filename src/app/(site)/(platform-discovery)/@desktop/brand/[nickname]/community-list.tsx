@@ -271,7 +271,7 @@ function Loops({
               </a>
               <div className="my-1 flex items-center gap-1">
                 <IcLoop className="h-6 w-6 fill-tertiary" />
-                <p className="text-body-1-med text-tertiary">Visible to groups members only</p>
+                <p className="text-body-1-med text-tertiary">Visible to Groups members only</p>
               </div>
             </div>
           ) : (
