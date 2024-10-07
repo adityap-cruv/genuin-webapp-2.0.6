@@ -50,6 +50,7 @@ const messageSchema = z.object({
   owner: ownerSchema,
   meta_data: metaDataSchema,
   brand: BrandUserSchema.optional(),
+  clickable_url: z.string().nullish(),
 })
 
 const BrandSchema = z

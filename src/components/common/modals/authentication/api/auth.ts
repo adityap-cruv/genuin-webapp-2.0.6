@@ -13,6 +13,29 @@ export type AuthActionType = 'JOIN_COMMUNITY' | 'SUBSCRIBE' | 'KS_CB_REQUEST' | 
 let preAuthSessionId: string | null = null
 let resDeviceId: string | null = null
 
+function parseUserData(data: any, accessToken: string, refreshToken: string) {
+  return {
+    isAvatar: data.is_avatar,
+    userId: data.user_id,
+    phoneNumber: data.phone,
+    nickname: data.nickname,
+    profileImage: data.profile_image,
+    email: data.email,
+    bio: data.bio,
+    name: data.name,
+    accessToken,
+    ksCbRequestStatus: data.ks_cb_request_status,
+    isBrandSystemUser: data.is_brand_system_user,
+    brandId: data.brand_id,
+    brandSlug: data?.brand?.brand_slug ? data?.brand?.brand_slug : null,
+    hasTopics: data.onboarding_topics,
+    brandGuidelines: data.brand_guidelines,
+    refreshToken,
+    birth: data.birthday,
+    usernameSet: !data.is_username_generated,
+  }
+}
+
 export async function sendOtp({ email, phoneNumber, isUpdate }: Partial<SendOtpProps> & { isUpdate?: boolean }) {
   const deviceId = useLocalStorage.getState().deviceId
   return await axiosInstance
@@ -83,28 +106,8 @@ export async function consumeOtp({ email, phoneNumber, code }: Partial<SendOtpPr
       const data = res.data.data
       let user
       if (data) {
-        user = {
-          isAvatar: data.is_avatar,
-          userId: data.user_id,
-          phoneNumber: data.phone,
-          nickname: data.nickname,
-          profileImage: data.profile_image,
-          email: data.email,
-          bio: data.bio,
-          name: data.name,
-          accessToken,
-          ksCbRequestStatus: data.ks_cb_request_status,
-          isBrandSystemUser: data.is_brand_system_user,
-          brandId: data.brand_id,
-          brandSlug: data?.brand?.brand_slug ? data?.brand?.brand_slug : null,
-          hasTopics: data.onboarding_topics,
-          brandGuidelines: data.brand_guidelines,
-          refreshToken,
-          birth: data.birthday,
-          usernameSet: !data.is_username_generated,
-        }
+        user = parseUserData(data, accessToken, refreshToken)
       }
-
       return { otpVerified: true, user }
     })
     .catch((e) => {
@@ -298,5 +301,52 @@ export async function saveVisitor(
     })
     .catch((e) => {
       return false
+    })
+}
+
+export async function getUserDataForSSO(
+  code: string,
+  provider: string
+): Promise<{ user: ReturnType<typeof parseUserData> | undefined }> {
+  const deviceId = useLocalStorage.getState().deviceId
+  return await axiosInstance
+    .post('/api/v4/auth/signinup', {
+      encrypted_device_id: encryptText(deviceId, true),
+      login_source: LOGIN_SOURCE.web,
+      // login source is web according to backend.
+      device_type: 3,
+      thirdPartyId: provider,
+      redirectURIInfo: {
+        redirectURIOnProviderDashboard: `${process.env.NEXT_PUBLIC_REDIRECT_URI}`,
+        redirectURIQueryParams: {
+          code,
+        },
+      },
+    })
+    .then((res) => {
+      const accessToken = res.headers['gn-access-token']
+      const refreshToken = res.headers['gn-refresh-token']
+      const data = res.data.data
+      const user = data ? parseUserData(data, accessToken, refreshToken) : undefined
+      return { user }
+    })
+    .catch((e) => {
+      throw new Error('Something went wrong, please try again later')
+    })
+}
+
+export async function getUrlToRedirectForSSO(thirdPartyId: string) {
+  return await axiosInstance
+    .get('/api/v4/auth/authorisationurl', {
+      params: {
+        thirdPartyId,
+        redirectURIOnProviderDashboard: `${process.env.NEXT_PUBLIC_REDIRECT_URI}`,
+      },
+    })
+    .then((res) => {
+      return res.data.data.url
+    })
+    .catch((e) => {
+      throw new Error('Something went wrong, please try again later')
     })
 }

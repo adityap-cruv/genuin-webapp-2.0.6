@@ -32,6 +32,8 @@ import BecomeCbCard from '@/components/common/become-cb-card'
 import { LoginIcon } from '@icons/login-icon'
 import { VerifiedIcon } from '@icons/verified-icon'
 import { formatPhoneNumberIntl } from 'react-phone-number-input'
+import { useState, useEffect } from 'react'
+import { Loader } from '@/components/ui/loader'
 
 const DownloadAppDialog = dynamic(
   async () => await import('../download-app-dialog').then((comp) => comp.DownloadAppDialog)
@@ -285,15 +287,29 @@ function MenuItem({ title, isActive, children, brandName }: ItemProps) {
 
 function UserTick() {
   const { data, status } = useSession()
+  const searchParams = useSearchParams()
+  const [loadingAuthData, setLoadingAuthData] = useState(false)
 
-  if (status === 'unauthenticated')
+  useEffect(() => {
+    const code = searchParams.get('code')
+    const provider = searchParams.get('provider')
+    if (code && provider) {
+      setLoadingAuthData(true)
+    } else {
+      setLoadingAuthData(false)
+    }
+  }, [searchParams])
+
+  if (status === 'unauthenticated' || status === 'loading')
     return (
       <Button
-        className="px-4 "
+        disabled={status === 'loading' || loadingAuthData}
+        className="gap-2 px-4"
         onClick={() => {
           AuthenticationModal.open()
         }}>
-        <p className="text-title-3-demi">Log in</p>
+        {(status === 'loading' || loadingAuthData) && <Loader size="sm" className="fill-monochrome-white" />}
+        <p className="min-w-max text-title-3-demi text-monochrome-white">Log in</p>
       </Button>
     )
 
