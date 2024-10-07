@@ -1,0 +1,16 @@
+/* Remove shadow from Swiper slides */
+.swiper-slide {
+  box-shadow: none !important; /* Ensure no shadow is applied */
+  /* opacity: 0; Ensure the slide is fully visible */
+  /* transition: opacity 0.5s ease-in-out; */
+}
+
+.swiper-slide-active {
+  /* opacity: 1; */
+}
+
+/* If you have other elements with shadows, you can target them as well */
+.swiper-slide-shadow-left,
+.swiper-slide-shadow-right {
+  display: none; /* Hide any specific shadow elements if they exist */
+}

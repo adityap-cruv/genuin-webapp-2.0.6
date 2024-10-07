@@ -41,7 +41,7 @@ export function parseVideosFromLoop(
         slug: item.slug,
         descriptionArr: tryJsonParse(item.description_data),
         descriptionText: item.description_text,
-        linkoutId : item.linkouts_id,
+        linkoutId: item.linkouts_id,
         clickableUrl: item.clickable_url ? item.clickable_url : null,
       },
     }

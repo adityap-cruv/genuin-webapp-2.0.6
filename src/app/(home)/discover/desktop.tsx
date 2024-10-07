@@ -1,5 +1,6 @@
 'use client'
-import { NavBar } from '@components/pages/build/nav-bar'
+// import { NavBar } from '@components/pages/build/nav-bar'
+import { NavBar } from '@/components/new/nav-bar'
 import bg from '@images/business/discover/bg_discover.webp'
 import c1 from '@images/home-page/community/community-share-1.webp'
 import c2 from '@images/home-page/community/community-share-2.webp'

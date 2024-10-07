@@ -101,7 +101,7 @@ export function MainComponent({ loopDetails }: Props) {
         style={{ height: 'calc(100% - 74px)' }}>
         <div className="w-full">
           <div ref={detailsDivRef}>
-            <p className="line-clamp-1 text-title-1-bold text-secondary">{loopDetails.group.group_name}</p>
+            <p className="text-title-1-bold line-clamp-1 text-secondary">{loopDetails.group.group_name}</p>
             <LoopPrivacyInfo
               actionId={loopDetails?.actions?.[0]?.action_id ?? 0}
               accessTypeId={loopDetails?.actions?.[0]?.access_type_id ?? 0}
@@ -110,7 +110,7 @@ export function MainComponent({ loopDetails }: Props) {
               {loopDetails.group.group_description}
             </p>
           </div>
-          <div className=" my-3 overflow-hidden rounded-lg border border-solid border-tertiary-200 p-4">
+          <div className=" border-tertiary-200 my-3 overflow-hidden rounded-lg border border-solid p-4">
             <div className="flex gap-x-2">
               <div className="flex flex-1 flex-col items-start">
                 <p className="text-body-1-demi text-tertiary">Created by</p>
@@ -124,7 +124,7 @@ export function MainComponent({ loopDetails }: Props) {
                         isAvatar={loopDetails.owner.is_avatar}
                       />
                     </div>
-                    <p className="ml-1 line-clamp-1 break-all text-body-1-bold text-secondary">
+                    <p className="text-body-1-bold ml-1 line-clamp-1 break-all text-secondary">
                       @{loopDetails.owner.username}
                     </p>
                   </div>
@@ -143,13 +143,13 @@ export function MainComponent({ loopDetails }: Props) {
                         isAvatar={false}
                       />
                     </div>
-                    <p className="ml-1 line-clamp-1 break-all text-body-1-bold text-secondary">
+                    <p className="text-body-1-bold ml-1 line-clamp-1 break-all text-secondary">
                       {loopDetails.community.name}
                     </p>
                     {loopDetails.community.type === 2 && (
                       <>
                         <PrivateModal>
-                          <LockIcon className="ml-1 h-4 w-4 stroke-tertiary" />
+                          <LockIcon className="stroke-tertiary ml-1 h-4 w-4" />
                         </PrivateModal>
                       </>
                     )}
@@ -242,13 +242,13 @@ export function MainComponent({ loopDetails }: Props) {
             </Button>
           </div>
         </div>
-        <hr className="border-t border-tertiary-200" />
+        <hr className="border-tertiary-200 border-t" />
         {!loopDetails.is_view_allowed ? (
           <div
             className="mt-4 flex w-full items-center justify-center overflow-hidden"
             style={{ height: 'calc(100% - 220px)' }}>
             <div className="flex flex-col items-center justify-center">
-              <div className="mb-2 rounded-full bg-tertiary-200 p-6">
+              <div className="bg-tertiary-200 mb-2 rounded-full p-6">
                 <Image src={icLock} alt="share" className="h-16 w-16" />
               </div>
               <p className="text-center text-title-2-demi">
@@ -279,7 +279,7 @@ function LoopTabs() {
           <p className="text-title-3-bold">Subscribers</p>
         </TabsTrigger>
       </TabsList>
-      <hr className="border-t border-tertiary-200" />
+      <hr className="border-tertiary-200 border-t" />
       <TabsContent value="Loops">
         <LoopVideos
           community={{
@@ -329,7 +329,7 @@ function LoopCollaborators({ slug }: { slug: string }) {
 
   if (!cohosts || cohosts.length === 0)
     return (
-      <div className="flex h-full w-full items-center justify-center pt-32 text-title-3-bold text-tertiary">
+      <div className="text-tertiary flex h-full w-full items-center justify-center pt-32 text-title-3-bold">
         No collaborators yet
       </div>
     )
@@ -341,9 +341,10 @@ function LoopCollaborators({ slug }: { slug: string }) {
           if (!item.nickname)
             return (
               <CohostTile
+                key={index}
                 image={item.profile_image}
                 subtitle={item.bio ?? ''}
-                title={'+' + item.phone ?? ''}
+                title={'+' + item.phone}
                 userName={item.name ?? ''}
                 isAvatar={item.is_avatar}
               />
@@ -388,7 +389,7 @@ function LoopSubscribers({ slug }: any) {
 
   if (!subscribers || subscribers.length === 0)
     return (
-      <div className="flex h-full w-full items-center justify-center pt-32 text-title-3-bold text-tertiary">
+      <div className="text-tertiary flex h-full w-full items-center justify-center pt-32 text-title-3-bold">
         No subscribers yet
       </div>
     )
@@ -427,7 +428,7 @@ function Stats({
         return (
           <div key={index} className="flex items-center">
             <p className="mr-1 text-title-2-bold">{obj.value}</p>
-            <p className="mr-4 text-body-1-demi">{obj.key}</p>
+            <p className="text-body-1-demi mr-4">{obj.key}</p>
           </div>
         )
       })}
@@ -448,9 +449,9 @@ function CohostTile({ image, title, subtitle, userName, isAvatar }: CohostTilePr
     <div className="flex items-center gap-x-1 rounded-lg p-2">
       <CustomAvatar className="h-12 w-12 bg-red-40" fallbackString={title} imageUrl={image} isAvatar={isAvatar} />
       <div className="mx-2">
-        <p className="line-clamp-1 text-body-1-bold">{title}</p>
-        {userName && <p className="line-clamp-1 text-body-1-demi">{userName}</p>}
-        {subtitle && <p className="line-clamp-1 text-cap-1-demi text-tertiary">{subtitle}</p>}
+        <p className="text-body-1-bold line-clamp-1">{title}</p>
+        {userName && <p className="text-body-1-demi line-clamp-1">{userName}</p>}
+        {subtitle && <p className="text-tertiary line-clamp-1 text-cap-1-demi">{subtitle}</p>}
       </div>
     </div>
   )

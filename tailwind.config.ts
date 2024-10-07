@@ -32,8 +32,17 @@ module.exports = {
         300: 'var(--tertiary-300)',
         400: 'var(--tertiary-400)',
       },
-      transparent: {
-        DEFAULT: 'transparent',
+      new: {
+        'off-black': '#16171A',
+        'off-white': '#F8F8F8',
+        'dark-grey': '#3F3F3F',
+        'light-grey': '#BBB',
+      },
+      white: {
+        DEFAULT: '#FFFFFF',
+      },
+      black: {
+        DEFAULT: '#000000',
       },
       blue: {
         DEFAULT: '#0645FF',
@@ -46,9 +55,9 @@ module.exports = {
         70: '#A2D3FF',
         80: '#D1E5FA',
         90: '#CDDAFF',
+        600: '#0430B3',
       },
       monochrome: {
-        white: '#FFFFFF',
         11: '#F9F9F9',
         10: '#F3F3F3',
         9: '#E7E7E7',
@@ -59,7 +68,7 @@ module.exports = {
         4: '#707070',
         3: '#4D4D4D',
         2: '#353535',
-        black: '#111111',
+        white: '#FFFFFF',
       },
       red: {
         DEFAULT: '#F2545B',
@@ -69,17 +78,22 @@ module.exports = {
         40: '#FFA0A0',
         50: '#F87878',
       },
+      gray: {
+        100: '#F8F9FA',
+        200: '#E9ECEF',
+        300: '#DEE2E6',
+        400: '#CED4DA',
+        500: '#ADB5BD',
+        600: '#6C757D',
+        700: '#495057',
+        800: '#343A40',
+        900: '#212529',
+      },
       supplementary: {
         blue: '#0645FF',
         green: '#77CE1A',
         yellow: '#FFBF00',
         red: '#F94740',
-      },
-      new: {
-        'off-black': '#16171A',
-        'off-white': '#F8F8F8',
-        'dark-grey': '#3F3F3F',
-        'light-grey': '#BBB',
       },
       home: {
         black: '#101010',
@@ -116,7 +130,6 @@ module.exports = {
       // },
     },
     fontSize: {
-      // Updated Typography for new index page
       'title-1-bold-home': ['100px', { fontWeight: 700, lineHeight: '100%' }],
       'title-2-bold-home': ['52px', { fontWeight: 700, lineHeight: '100%' }],
       'title-3-bold-home': ['36px', { fontWeight: 700, lineHeight: '140%' }],
@@ -135,24 +148,30 @@ module.exports = {
       'cap-1-home-m': ['16px', { fontWeight: 500, lineHeight: '140%' }],
       'cap-2-home-m': ['16px', { fontWeight: 400, lineHeight: '140%' }],
       'para-1-home-m': ['10px', { fontWeight: 400, lineHeight: '140%' }],
+      // Index page Typography
+      'index-h2': ['64px', { fontWeight: 500, lineHeight: '110%' }],
+      'index-h3': ['48px', { fontWeight: 500, lineHeight: '110%' }],
+      'index-h4': ['30px', { fontWeight: 500, lineHeight: '110%' }],
+      'index-para-1': ['20px', { fontWeight: 500, lineHeight: '140%' }],
+      'index-h1-extra-bolder': ['80px', { fontWeight: 900, lineHeight: '100%' }],
+      'index-h5-extra-bolder': ['50px', { fontWeight: 900, lineHeight: '100%' }],
+      'index-h4-extra-bolder': ['32px', { fontWeight: 900, lineHeight: '100%' }],
+      'index-h1-extra-bold': ['96px', { fontWeight: 800, lineHeight: '86%' }],
+      'index-h2-extra-bold': ['72px', { fontWeight: 800, lineHeight: '86%' }],
+      'index-h3-extra-bold': ['64px', { fontWeight: 800, lineHeight: '86%' }],
+      'index-h4-extra-bold': ['36px', { fontWeight: 800, lineHeight: '86%' }],
+      'index-h5-extra-bold': ['24px', { fontWeight: 800, lineHeight: '100%' }],
+      // Updated Typography for new index page
       // New Typography developed by design team for new web.
       'heading-3': ['32px', { fontWeight: 600, lineHeight: '120%', letterSpacing: '-0.96px' }],
-      'title-1-bold': ['24px', { fontWeight: 700, lineHeight: '32px' }],
-      'title-1-demi': ['24px', { fontWeight: 600, lineHeight: '32px' }],
       'title-1-med': ['24px', { fontWeight: 500, lineHeight: '32px' }],
       'title-2-bold': ['20px', { fontWeight: 700, lineHeight: '32px' }],
       'title-2-demi': ['20px', { fontWeight: 600, lineHeight: '32px' }],
       'title-3-bold': ['17px', { fontWeight: 700, lineHeight: '24px' }],
       'title-3-demi': ['17px', { fontWeight: 600, lineHeight: '24px' }],
       'title-3-med': ['17px', { fontWeight: 500, lineHeight: '24px' }],
-      'body-1-bold': ['15px', { fontWeight: 700, lineHeight: '20px' }],
-      'body-1-demi': ['15px', { fontWeight: 600, lineHeight: '20px' }],
-      'body-1-med': ['15px', { fontWeight: 500, lineHeight: '20px' }],
       'cap-1-bold': ['12px', { fontWeight: 700, lineHeight: '16px' }],
       'cap-1-demi': ['12px', { fontWeight: 600, lineHeight: '16px' }],
-      'cap-1-med': ['12px', { fontWeight: 500, lineHeight: '16px' }],
-      'cap-2-demi': ['10px', { fontWeight: 600, lineHeight: '16px' }],
-      // This typography is only used for index page.
       'new-h1': ['60px', { fontWeight: 700, lineHeight: '110%', letterSpacing: '-1.8px' }],
       'new-h2': ['48px', { fontWeight: 700, lineHeight: '110%', letterSpacing: '-1.44px' }],
       'new-h3': ['40px', { fontWeight: 700, lineHeight: '110%', letterSpacing: '-1.2px' }],
@@ -170,51 +189,27 @@ module.exports = {
       'new-sm': ['16px', { fontWeight: 500, lineHeight: '120%', letterSpacing: '-0.48px' }],
       'new-md': ['20px', { fontWeight: 500, lineHeight: '120%', letterSpacing: '-0.6px' }],
       'new-lg': ['24px', { fontWeight: 500, lineHeight: '120%', letterSpacing: '-0.72px' }],
+      // New Typography developed by design team for new web.
+      'title-1-bold': ['24px', { fontWeight: 700, lineHeight: '32px' }],
+      'title-1-demi': ['24px', { fontWeight: 600, lineHeight: '32px' }],
+      'body-1-bold': ['15px', { fontWeight: 700, lineHeight: '20px' }],
+      'body-1-demi': ['15px', { fontWeight: 600, lineHeight: '20px' }],
+      'body-1-med': ['15px', { fontWeight: 500, lineHeight: '20px' }],
+      'cap-1-med': ['12px', { fontWeight: 500, lineHeight: '16px' }],
+      'cap-2-demi': ['10px', { fontWeight: 600, lineHeight: '16px' }],
+      // This typography is only used for index page.
     },
     fontFamily: {
       sans: ['"Avenir Next"', ...defaultTheme.fontFamily.sans], // Here sans is default font in tailwindcss so updated it to avenir next
       // manrope: ['"Manrope"', ...defaultTheme.fontFamily.sans],
     },
-    aspectRatio: {
-      reel: '9 / 16',
-      animatedDiv: '11 / 10',
-      square: '1 / 1',
-    },
     extend: {
-      transitionDuration: {
-        '8000': '8000ms',
-        '4000': '4000ms',
-        '3000': '3000ms',
-        '2600': '2600ms',
-        '2200': '2200ms',
-        '1800': '1800ms',
-        '1600': '1600ms',
-        '1400': '1400ms',
-        '1200': '1200ms',
-      },
       backgroundColor: {
         'white-alpha': 'rgba(255, 255, 255, 0.50)',
-      },
-      backgroundImage: {
-        'home-page-title-gradient': 'linear-gradient(to right, #9395FF, #1685FD)',
-      },
-      backdropBlur: {
-        '20px': '20px',
       },
       height: {
         body: 'calc(100% - 74px)',
         navbar: '74px',
-      },
-      flexGrow: {
-        3: '3',
-        4: '4',
-        5: '5',
-        6: '6',
-        9: '9',
-      },
-      dropShadow: {
-        // given by design team.
-        'circle-shadow': '0px 8px 16px rgba(17, 17, 17, 0.1)',
       },
       container: {
         center: true,
@@ -253,6 +248,10 @@ module.exports = {
           '0%': { transform: 'translateX(0%)' },
           '100%': { transform: 'translateX(-100%)' },
         },
+        marqueeReverse: {
+          '0%': { transform: 'translateX(-100%)' },
+          '100%': { transform: 'translateX(0%)' },
+        },
         zoomIn: {
           '0%': { transform: 'scale(0.7)' },
           '100%': { transform: 'scale(1)' },
@@ -283,6 +282,7 @@ module.exports = {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         marquee: 'marquee 25s linear infinite',
+        marqueeReverse: 'marqueeReverse 25s linear infinite',
         zoomIn: 'zoomIn 0.2s ease-in-out forwards',
         zoomInOut: 'zoomInOut 2s ease-in-out forwards',
         rotateRight: 'rotateRight 1s ease-in-out forwards',

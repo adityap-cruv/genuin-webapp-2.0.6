@@ -108,8 +108,8 @@ export function SideBar() {
           </Popover>
         )}
         <span className="hidden lg:block">
-          {(!isClaimed ?? user?.ksCbRequestStatus !== 3) && embed && (
-            <hr className="border-1 my-2 border-monochrome-black/10" />
+          {(!isClaimed || user?.ksCbRequestStatus !== 3) && embed && (
+            <hr className="border-1 border-monochrome-black/10 my-2" />
           )}
           <DownloadAppDialog />
           {status === 'unauthenticated' && embed && (
@@ -135,18 +135,18 @@ export function SideBar() {
             </div>
           )}
         </span>{' '}
-        {(!isClaimed ?? user?.ksCbRequestStatus !== 3) && <hr className="border-1 my-2 border-monochrome-black/10" />}
+        {(!isClaimed || user?.ksCbRequestStatus !== 3) && <hr className="border-1 border-monochrome-black/10 my-2" />}
         {user?.ksCbRequestStatus !== 3 && <BecomeCbCard className="my-4 hidden lg:block" />}
         <CategoryView className="hidden lg:block" />
         <RecentCommunities />
       </div>
       {embed && (
         <div className="hidden lg:block">
-          <hr className="border-1 mb-4 mt-1 border-monochrome-black/10" />
+          <hr className="border-1 border-monochrome-black/10 mb-4 mt-1" />
           <div className="flex items-center">
             <p className="text-cap-1-demi text-monochrome">Powered by</p>
             <Link href={{ pathname: PATH_NAME.home() }}>
-              <GenuinIcon.logo className="ml-1 h-5 w-full fill-new-off-black" />
+              <GenuinIcon.logo className="fill-new-off-black ml-1 h-5 w-full" />
             </Link>
           </div>
         </div>
@@ -180,7 +180,7 @@ function Item({ title, isActive, children, notificationCount, brandName }: ItemP
         {!notificationCount ||
           (notificationCount > 0 && (
             <>
-              <div className="absolute right-0 top-0 flex h-4 w-4 items-center justify-center rounded-full bg-primary  text-cap-1-med text-monochrome-white">
+              <div className="text-cap-1-med absolute right-0 top-0 flex h-4 w-4 items-center justify-center rounded-full  bg-primary text-monochrome-white">
                 {notificationCount}
               </div>
             </>
