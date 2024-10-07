@@ -177,10 +177,10 @@ export function MainComponent({ loopDetails }: Props) {
           accessTypeId={loopDetails?.actions?.[0]?.access_type_id ?? 0}
         />
         <span className="w-1/2">
-          <p className="my-1 line-clamp-2 w-1/2 break-words text-body-1-med text-secondary">
+          <p className="text-body-1-med my-1 line-clamp-2 w-1/2 break-words text-secondary">
             {loopDetails.group.group_description}
           </p>
-          <div className="my-3 w-1/2 rounded-xl border border-tertiary-200 p-4">
+          <div className="border-tertiary-200 my-3 w-1/2 rounded-xl border p-4">
             <span className="flex gap-x-2" ref={detailsDivRef}>
               <span className="flex-1">
                 <p className="text-body-1-demi text-tertiary">Created by</p>
@@ -197,7 +197,7 @@ export function MainComponent({ loopDetails }: Props) {
                       isAvatar={loopDetails.owner.is_avatar}
                       className="h-8 w-8"
                     />
-                    <p className="line-clamp-1 break-all text-body-1-bold text-secondary">
+                    <p className="text-body-1-bold line-clamp-1 break-all text-secondary">
                       @{loopDetails.owner.username}
                     </p>
                     {loopDetails.owner.brand && (
@@ -220,7 +220,7 @@ export function MainComponent({ loopDetails }: Props) {
                         isAvatar={false}
                         className="h-8 w-8"
                       />
-                      <p className="ml-1 line-clamp-1 break-all text-body-1-bold text-secondary">
+                      <p className="text-body-1-bold ml-1 line-clamp-1 break-all text-secondary">
                         {loopDetails.community.name}
                       </p>
                     </div>
@@ -230,11 +230,11 @@ export function MainComponent({ loopDetails }: Props) {
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <div>
-                            <LockIcon className="z-10 ml-1 h-4 w-4 stroke-tertiary" />
+                            <LockIcon className="stroke-tertiary z-10 ml-1 h-4 w-4" />
                           </div>
                         </TooltipTrigger>
-                        <TooltipContent className="w-64 bg-monochrome-black">
-                          <p className="text-center text-cap-1-med text-monochrome-white">
+                        <TooltipContent className="bg-monochrome-black w-64">
+                          <p className="text-cap-1-med text-center text-monochrome-white">
                             This community is private. Only people approved by it's moderators can see and participate
                             in this community.
                           </p>
@@ -329,8 +329,9 @@ function LoopCohosts({ slug }: { slug: string }) {
             if (!item.nickname)
               return (
                 <ListItem
+                  key={index}
                   title={item.name ?? ''}
-                  subtitle={'+' + item.phone ?? ''}
+                  subtitle={'+' + item.phone}
                   description={item.bio ?? ''}
                   image={item.profile_image}
                   isAvatar={item.is_avatar}

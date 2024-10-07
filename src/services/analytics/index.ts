@@ -42,7 +42,7 @@ export const Analytics = {
 
     Object.assign(properties, defaultProperties)
 
-    await rudderStackTrack(eventName, properties)
+    await rudderStackTrack(eventName, properties as any)
   },
   pushVideoWatch(videoId: string) {
     void axiosInstance.put('/api/v3/video_view', {
