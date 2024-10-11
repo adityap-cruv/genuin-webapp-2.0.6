@@ -13,9 +13,7 @@ import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { TopBar } from '../../../layouts/mobile/top-bar'
 import { CommunityLoopTab } from './community-loop-tab'
-import { useEffect, useRef, useState } from 'react'
-import { useInView } from 'framer-motion'
-import { TopStickyBar } from '../../../../app/(site)/(platform-discovery)/@desktop/community/[slug]/top-bar'
+import { useState } from 'react'
 import { joinCommunity, leaveCommunity, requestCommunity } from '@lib/api/video'
 import { ShareIcon } from '@icons/share-icon'
 import { useSearchParams } from 'next/navigation'
@@ -30,6 +28,7 @@ import { InstagramIcon } from '@icons/instagram-icon'
 import { LinkedInIcon } from '@icons/linkedin-icon'
 import { TwitterIcon } from '@icons/twitter-icon'
 import { joinCommunityDeepLink } from '@/lib/get-deeplink'
+import { TopStickyBar } from './top-sticky-bar'
 
 let communityDetailsModule: CommunityDetailsType
 
@@ -37,58 +36,36 @@ interface Props {
   communityDetails: CommunityDetailsType
 }
 
+const DETAIL_ELEMENT_ID = 'community-details'
+
 export function Details({ communityDetails }: Props) {
   communityDetailsModule = communityDetails
-  const detailsDivRef = useRef<HTMLDivElement>(null)
-  const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
   const { isEmbed } = useGenuinOptions((state) => ({ isEmbed: state.embed, parentUrl: state.parentUrl }))
   const searchParams = Object.fromEntries(useSearchParams())
-  const [dimensions, setDimensions] = useState({
-    width: 0,
-    height: 0,
-  })
-
-  useEffect(() => {
-    if (detailsDivRef.current) {
-      setDimensions({
-        width: detailsDivRef.current.offsetWidth,
-        height: detailsDivRef.current.offsetHeight,
-      })
-    }
-  }, [detailsDivRef.current])
 
   return (
     <>
       <TopBar />
-      <TopStickyBar.mobile
-        defaultOpen={false}
-        isOpen={!detailsInView}
+      <TopStickyBar
         communityName={communityDetails.name ?? ''}
         communityProfileImage={communityDetails.dp ?? ''}
-        communityHandle={communityDetails.handle}
-        shareUrl={communityDetails.share_url}
-        role={communityDetails.logged_in_user_role}
-        communityId={communityDetails.community_id}
-        isCommunityPrivate={communityDetails.type === 2}
+        elementIdToTrack={DETAIL_ELEMENT_ID}
       />
       <div
         className="hide-scrollbar absolute inset-0 mt-navbar w-full overflow-auto"
         style={{ height: 'calc(100% - 74px)' }}>
-        <div
-          className="aspect-w-5 aspect-h-1 relative bg-tertiary-200"
-          style={{
-            height: `calc(${dimensions.width}px / 5)`,
-          }}>
+        <div className="relative w-full bg-tertiary-200" style={{ height: 'calc(min(30vw, 400px))' }}>
+          {' '}
           {communityDetails?.banner && (
-            <img src={communityDetails?.banner} alt="banner" className="h-full w-full object-cover" />
+            <Image src={communityDetails?.banner} alt="banner" fill className="object-cover" />
           )}
           <CustomAvatar
-            imageUrl={communityDetailsModule?.dp ?? ''}
-            fallbackString={communityDetailsModule?.name ?? ''}
+            imageUrl={communityDetails?.dp ?? ''}
+            fallbackString={communityDetails?.name ?? ''}
             isAvatar={false}
-            className="absolute -bottom-14 left-4 h-20 w-20 border-2 border-monochrome-white bg-red-50"
+            className="absolute bottom-0 left-4 h-20 w-20 translate-y-1/2 border-2 border-monochrome-white"
           />
         </div>
         <div className="px-4 py-2 pt-4">
@@ -99,7 +76,6 @@ export function Details({ communityDetails }: Props) {
                   <p className={`px-4 py-1.5 text-body-1-demi text-monochrome-white text-primary`}>Requested</p>
                 </Button>
               )}
-
               {isEmbed && !communityDetails.is_community_join_requested && (
                 <JoinButton
                   handle={communityDetails.handle}
@@ -142,7 +118,7 @@ export function Details({ communityDetails }: Props) {
               </Button> */}
             </div>
           </div>
-          <div ref={detailsDivRef} className="flex items-center justify-between gap-2 pt-2">
+          <div id={DETAIL_ELEMENT_ID} className="flex items-center justify-between gap-2 pt-2">
             <div className="flex items-center">
               <p className="my-1 mt-2 line-clamp-1 break-all text-title-3-bold ">{communityDetailsModule?.name}</p>
               {/* <p className="text-body-1-med text-tertiary">@{communityDetails.handle}</p> */}
@@ -378,7 +354,8 @@ function Leaders() {
       {moderators.length > 0 &&
         moderators.map((item, index) => {
           return (
-            <Link key={index}
+            <Link
+              key={index}
               href={{
                 pathname: item.brand ? PATH_NAME.brand(item.brand.brand_slug) : PATH_NAME.profile(item.nickname),
               }}>

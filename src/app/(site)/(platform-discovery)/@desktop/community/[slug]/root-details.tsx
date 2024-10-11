@@ -3,7 +3,7 @@ import type { CommunityDetailsType, MembersSchemaType } from '@lib/schemas/commu
 import { useEffect, useRef } from 'react'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import { CustomAvatar } from '@components/custom/custom-avatar'
-import { TopStickyBar } from './top-bar'
+import { TopStickyBar } from './top-sticky-bar'
 import { Button } from '@components/ui/button'
 import Image from 'next/image'
 import icLock from '@icons/icLock.svg'
@@ -57,7 +57,7 @@ function RootDetails({ communityDetails }: { communityDetails: CommunityDetailsT
 
   return (
     <>
-      <TopStickyBar.desktop
+      <TopStickyBar
         defaultOpen={false}
         isOpen={!detailsInView}
         communityName={communityDetails.name ?? ''}
@@ -328,7 +328,8 @@ function Leaders({ communityDetails }: { communityDetails: CommunityDetailsType 
       {moderators.length > 0 &&
         moderators.map((item, index) => {
           return (
-            <Link key={index}
+            <Link
+              key={index}
               href={{
                 pathname: item.brand ? PATH_NAME.brand(item.brand.brand_slug) : PATH_NAME.profile(item.nickname),
               }}>

@@ -1,44 +1,22 @@
 'use client'
-import type { CommunityDetailsType } from '@lib/schemas/community'
-import dynamic from 'next/dynamic'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import { useEffect } from 'react'
 import { getCommunityDetails } from '@lib/api/community'
-import Loading from './loading'
-
-const Details = dynamic(
-  async () => await import('@components/pages/community/mobile/details').then((comp) => comp.Details)
-)
-
-type Props = {
-  communityDetails: CommunityDetailsType
-}
+import { Details } from '@/components/pages/community/mobile/details'
 
 export function CommunityDetails({ slug }: { slug: string }) {
-  const { data, isLoading } = getCommunityDetails(slug)
-
-  if (isLoading) return <Loading />
-
-  if (data) return <RootDetails communityDetails={data} />
-}
-
-export function RootDetails({ communityDetails }: Props) {
+  const { data: communityDetails } = getCommunityDetails(slug)
   const addCommunity = useLocalStorage((state) => state.addCommunity)
 
   useEffect(() => {
-    addCommunity({
-      handle: communityDetails.handle,
-      name: communityDetails.name ?? '',
-      profileImage: communityDetails.dp ?? '',
-      slug: communityDetails.slug,
-    })
-  }, [])
+    if (communityDetails)
+      addCommunity({
+        handle: communityDetails.handle,
+        name: communityDetails.name ?? '',
+        profileImage: communityDetails.dp ?? '',
+        slug: communityDetails.slug,
+      })
+  }, [communityDetails])
 
-  return (
-    <>
-      <div className="absolute left-0 top-0 h-full w-full">
-        <Details communityDetails={communityDetails} />
-      </div>
-    </>
-  )
+  if (communityDetails) return <Details communityDetails={communityDetails} />
 }
