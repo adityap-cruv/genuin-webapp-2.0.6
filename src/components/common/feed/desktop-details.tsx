@@ -216,7 +216,7 @@ function CommentBox({
 
   if (comments && comments?.length !== 0)
     return (
-      <div className="h-full overflow-visible pb-40">
+      <div className="h-full overflow-visible">
         <Comments.withoutApi
           comments={comments}
           fetchNextPage={() => {}}
@@ -228,7 +228,7 @@ function CommentBox({
       </div>
     )
   return (
-    <div className="h-full w-full">
+    <div className="h-full w-full pb-16">
       <NoComments />
     </div>
   )
