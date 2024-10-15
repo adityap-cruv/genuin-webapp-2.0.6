@@ -11,6 +11,7 @@ import { FeedContext, FeedContextProvider } from './feed-provider'
 import { FeedShimmer } from '../shimmers/feed-shimmer'
 import Analytics from '@/services/analytics'
 import { usePlayerControlStore } from '../player/player-control-store'
+import { KsGestures } from '../ks-gestures'
 
 const DesktopPlayer = dynamic(async () => await import('@components/common/player').then((comp) => comp.Player.desktop))
 
@@ -113,6 +114,7 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
             </SwiperSlide>
           )
         })}
+        <KsGestures />
       </Swiper>
       <DesktopDetails {...videosRef.current[currentIndex]} />
     </div>

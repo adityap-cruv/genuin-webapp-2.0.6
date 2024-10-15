@@ -13,6 +13,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import Analytics from '@/services/analytics'
 import { usePlayerControlStore } from '../player/player-control-store'
 import { FeedShimmer } from '../shimmers/feed-shimmer'
+import { KsGestures } from '../ks-gestures'
 const Player = dynamic(async () => await import('@components/common/player').then((comp) => comp.Player.mobile))
 
 type MobileProps = {
@@ -104,6 +105,7 @@ export function Mobile({
         ))}
       </Swiper>
       <InfinityViewBox videoDetails={videos[currentIndex]} />
+      <KsGestures />
     </div>
   )
 }
