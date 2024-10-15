@@ -94,7 +94,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
             <Button
               className={
                 variant === 'light'
-                  ? 'bg-new-off-black text-monochrome-white hover:bg-new-dark-grey'
+                  ? 'bg-new-off-black hover:bg-new-dark-grey text-monochrome-white'
                   : 'bg-new-off-white text-new-off-black hover:bg-new-off-black hover:text-new-off-white'
               }>
               <p className="text-body-1-demi">Download Genuin</p>
@@ -184,7 +184,7 @@ function Menu({
         <div className="mb-4 flex justify-between">
           <AppLogo.icon imageHeight={32} className={cn('fill-new-off-white')} />
           <SheetClose className="shadow-none outline-none">
-            <X strokeWidth="3px" className="h-6 w-6 stroke-new-off-black" />
+            <X strokeWidth="3px" className="stroke-new-off-black h-6 w-6" />
           </SheetClose>
         </div>
         <Link href={{ pathname: PATH_NAME.home() }}>
@@ -214,8 +214,8 @@ function Menu({
             </Link>
           </>
         )}
-        {(!isClaimed ?? user?.ksCbRequestStatus !== 3) && embed && (
-          <hr className="border-1 my-2 border-monochrome-black/10" />
+        {(!isClaimed || user?.ksCbRequestStatus !== 3) && embed && (
+          <hr className="border-1 border-monochrome-black/10 my-2" />
         )}
         <DownloadAppDialog />
         {status === 'unauthenticated' && embed && (
@@ -238,7 +238,7 @@ function Menu({
             <p className={cn('whitespace-nowrap !text-title-3-demi text-primary')}>Claim Brand Profile</p>
           </div>
         )}
-        {(!isClaimed ?? user?.ksCbRequestStatus !== 3) && <hr className="border-1 my-2 border-monochrome-black/10" />}
+        {(!isClaimed || user?.ksCbRequestStatus !== 3) && <hr className="border-1 border-monochrome-black/10 my-2" />}
         {user?.ksCbRequestStatus !== 3 && <BecomeCbCard className="my-4 lg:hidden" />}
         <CategoryView className="lg:hidden" />
         <RecentCommunities />
@@ -344,10 +344,10 @@ function UserTick() {
                 {data.user.usernameSet
                   ? '@' + data.user.nickname
                   : data.user.email
-                  ? data.user.email
-                  : formatPhoneNumberIntl(
-                      data.user.phoneNumber?.startsWith('+') ? data.user.phoneNumber : `+${data.user.phoneNumber}`
-                    )}
+                    ? data.user.email
+                    : formatPhoneNumberIntl(
+                        data.user.phoneNumber?.startsWith('+') ? data.user.phoneNumber : `+${data.user.phoneNumber}`
+                      )}
               </p>
               {!data.user.isBrandSystemUser && <p className="text-body-1-demi text-monochrome-6">Complete profile</p>}
             </div>

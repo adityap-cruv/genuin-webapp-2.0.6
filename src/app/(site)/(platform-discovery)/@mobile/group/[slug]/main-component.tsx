@@ -346,7 +346,7 @@ function LoopCollaborators({ slug }: { slug: string }) {
   if (!cohosts || cohosts.length === 0)
     return (
       <div className="flex h-full w-full items-center justify-center pt-32 text-title-3-bold text-tertiary">
-        No members yet
+        No collaborators yet
       </div>
     )
 
@@ -357,9 +357,10 @@ function LoopCollaborators({ slug }: { slug: string }) {
           if (!item.nickname)
             return (
               <CohostTile
+                key={index}
                 image={item.profile_image}
                 subtitle={item.bio ?? ''}
-                title={'+' + (item.phone ?? '')}
+                title={'+' + item.phone}
                 userName={item.name ?? ''}
                 isAvatar={item.is_avatar}
               />
@@ -402,12 +403,12 @@ function LoopCollaborators({ slug }: { slug: string }) {
 //       </>
 //     )
 
-//   if (!subscribers || subscribers.length === 0)
-//     return (
-//       <div className="flex h-full w-full items-center justify-center pt-32 text-title-3-bold text-tertiary">
-//         No subscribers yet
-//       </div>
-//     )
+// if (!subscribers || subscribers.length === 0)
+//   return (
+//     <div className="flex h-full w-full items-center justify-center pt-32 text-title-3-bold text-tertiary">
+//       No subscribers yet
+//     </div>
+//   )
 
 //   return (
 //     <div className="h-full pt-3">

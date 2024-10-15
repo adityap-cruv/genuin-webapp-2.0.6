@@ -31,11 +31,11 @@ export default function Component() {
         />
         <p className="w-full text-center text-title-2-bold md:text-start">Account Settings</p>
       </div>
-      <hr className="block bg-monochrome-black/10 md:hidden" />
+      <hr className="bg-monochrome-black/10 block md:hidden" />
       <div className="m-4 my-6 md:mx-4 md:my-4">
         <AccountDetailItem
           title="Username"
-          value={'@' + user?.nickname ?? ''}
+          value={'@' + user?.nickname}
           onClick={() => {
             AuthenticationModal.open(undefined, 'EDIT_USERNAME')
           }}
@@ -73,14 +73,14 @@ function AccountDetailItem({ title, value, className, ...rest }: AccountDetailIt
   return (
     <div
       className={cn(
-        'flex cursor-pointer justify-between rounded-t-lg border-b border-tertiary-300 px-2 py-4 hover:bg-tertiary-100',
+        'border-tertiary-300 hover:bg-tertiary-100 flex cursor-pointer justify-between rounded-t-lg border-b px-2 py-4',
         className
       )}
       {...rest}>
       <p className="text-body-1-demi">{title}</p>
       <div className="flex items-center">
         <p className="text-body-1-demi text-tertiary">{value}</p>
-        <ChevronRight className="h-6 w-6 stroke-tertiary" />
+        <ChevronRight className="stroke-tertiary h-6 w-6" />
       </div>
     </div>
   )
