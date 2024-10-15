@@ -41,7 +41,7 @@ export function Starter({ onBack, onNext }: ScreenProps) {
         onValueChange={(value) => {
           setFormData({ flowType: value as FlowType })
         }}>
-        <TabsList className="bg-tertiary-200 h-14 rounded-lg p-2">
+        <TabsList className="h-14 rounded-lg bg-tertiary-200 p-2">
           <TabsTrigger className={TABS_TRIGGER_CLASS} value="email">
             Email
           </TabsTrigger>
@@ -128,7 +128,7 @@ function EmailForm({ onNext }: { onNext: () => void }) {
                   <Input
                     placeholder="Enter Email"
                     className={cn(
-                      'border-tertiary-200 bg-tertiary-100 placeholder:!text-tertiary-300 border !text-title-3-med',
+                      'border border-tertiary-200 bg-tertiary-100 !text-title-3-med placeholder:!text-tertiary-300',
                       errors && '!border-red'
                     )}
                     {...field}
@@ -194,7 +194,7 @@ function NumberForm({ onNext }: { onNext: () => void }) {
               <FormItem className="sm:w-full">
                 <FormControl>
                   <PhoneInput
-                    value={field.value as any}
+                    value={field.value as string & { __tag: 'E164Number' }}
                     international
                     className="w-full"
                     onChange={(value) => {

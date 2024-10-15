@@ -43,7 +43,7 @@ export function SideBar() {
   const { status } = useSession()
 
   return (
-    <nav className="flex h-full w-fit flex-col justify-between overflow-auto border border-monochrome-9 px-1 py-4 transition-[width] lg:w-full lg:max-w-[280px] lg:border-none">
+    <nav className="flex h-full w-fit flex-col justify-between overflow-auto border border-monochrome-9 px-2 py-4 transition-[width] xl:mr-16 xl:w-full xl:max-w-[280px] xl:border-none xl:px-0">
       <div>
         <Link href={{ pathname: PATH_NAME.home() }}>
           <Item brandName={brandName} title="Home" isActive={pathName === PATH_NAME.home()}>
@@ -107,7 +107,7 @@ export function SideBar() {
             </PopoverContent>
           </Popover>
         )}
-        <span className="hidden lg:block">
+        <span className="hidden xl:block">
           {(!isClaimed || user?.ksCbRequestStatus !== 3) && embed && (
             <hr className="border-1 border-monochrome-black/10 my-2" />
           )}
@@ -119,7 +119,7 @@ export function SideBar() {
                 AuthenticationModal.open()
               }}>
               <LoginIcon className="stroke-primary" />
-              <p className={cn('hidden whitespace-nowrap !text-title-3-demi text-primary lg:block')}>Log in</p>
+              <p className={cn('hidden whitespace-nowrap !text-title-3-demi text-primary xl:block')}>Log in</p>
             </div>
           )}
           {!isClaimed && user && (
@@ -129,24 +129,24 @@ export function SideBar() {
                 AuthenticationModal.open(undefined, 'CLAIM_BRAND_PROFILE')
               }}>
               <VerifiedIcon className="stroke-primary" />
-              <p className={cn('hidden whitespace-nowrap !text-title-3-demi text-primary lg:block')}>
+              <p className={cn('hidden whitespace-nowrap !text-title-3-demi text-primary xl:block')}>
                 Claim Brand Profile
               </p>
             </div>
           )}
         </span>{' '}
         {(!isClaimed || user?.ksCbRequestStatus !== 3) && <hr className="border-1 border-monochrome-black/10 my-2" />}
-        {user?.ksCbRequestStatus !== 3 && <BecomeCbCard className="my-4 hidden lg:block" />}
-        <CategoryView className="hidden lg:block" />
+        {user?.ksCbRequestStatus !== 3 && <BecomeCbCard className="my-4 hidden xl:block" />}
+        <CategoryView className="hidden xl:block" />
         <RecentCommunities />
       </div>
       {embed && (
-        <div className="hidden lg:block">
+        <div className="hidden xl:block">
           <hr className="border-1 border-monochrome-black/10 mb-4 mt-1" />
           <div className="flex items-center">
             <p className="text-cap-1-demi text-monochrome">Powered by</p>
             <Link href={{ pathname: PATH_NAME.home() }}>
-              <GenuinIcon.logo className="fill-new-off-black ml-1 h-5 w-full" />
+              <GenuinIcon.logo className="ml-1 h-5 w-full fill-new-off-black" />
             </Link>
           </div>
         </div>
@@ -180,13 +180,13 @@ function Item({ title, isActive, children, notificationCount, brandName }: ItemP
         {!notificationCount ||
           (notificationCount > 0 && (
             <>
-              <div className="text-cap-1-med absolute right-0 top-0 flex h-4 w-4 items-center justify-center rounded-full  bg-primary text-monochrome-white">
+              <div className="absolute right-0 top-0 flex h-4 w-4 items-center justify-center rounded-full bg-primary  text-cap-1-med text-monochrome-white">
                 {notificationCount}
               </div>
             </>
           ))}
       </div>
-      <p className={cn('hidden whitespace-nowrap !text-title-2-demi lg:block', isActive && 'text-primary')}>{title}</p>
+      <p className={cn('hidden whitespace-nowrap !text-title-2-demi xl:block', isActive && 'text-primary')}>{title}</p>
     </div>
   )
 }

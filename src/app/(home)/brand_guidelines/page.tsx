@@ -1,10 +1,5 @@
-import { Main } from './main'
-import { Suspense } from 'react'
+import { Root } from './root'
 
 export default function Component() {
-  return (
-    <Suspense>
-      <Main />
-    </Suspense>
-  )
+  return <Root />
 }

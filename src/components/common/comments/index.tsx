@@ -97,7 +97,7 @@ function WithoutApi({ comments }: WithoutApiProps) {
 export function NoComments() {
   return (
     <div className="flex h-full w-full flex-col items-center justify-center">
-      <CommentIcon className="stroke-terfill-tertiary fill-tertiary" />
+      <CommentIcon className="fill-tertiary" />
       <p className="mt-2 text-title-2-bold">No comments yet</p>
       <p className="text-body-1-demi">Be the first one to comment</p>
     </div>
