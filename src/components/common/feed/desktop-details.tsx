@@ -50,7 +50,7 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
           <span className="flex items-center gap-x-1">
             {owner.brand ? (
               <div className="flex items-center gap-1">
-                <Link href={PATH_NAME.brand(owner.brand.brand_slug)}>
+                <Link href={PATH_NAME.brand(owner.brand.brand_slug)} title={'@' + owner.userName}>
                   <p className="line-clamp-1 break-all text-title-3-demi">@{owner.userName}</p>
                 </Link>
                 <div className="flex items-center">
@@ -86,20 +86,23 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
                     className="h-11 w-11"
                   />
                   {/* TODO: What if there is no community name. */}
-                  <span>
-                    <Link href={{ pathname: PATH_NAME.community(community.slug) }}>
-                      <p className="line-clamp-1 break-all pr-2 text-title-3-bold">{community.name}</p>
+                  <div className="pr-2">
+                    <Link
+                      href={{ pathname: PATH_NAME.community(community.slug) }}
+                      title={community.name ?? 'Genuin community'}>
+                      <p className="line-clamp-1 break-all text-title-3-bold">{community.name}</p>
                     </Link>
                     {community.brand && (
                       <p
-                        className="truncate text-body-1-med text-tertiary"
+                        className="line-clamp-1 break-all text-body-1-med text-tertiary"
                         style={{
                           maxWidth: '10ch',
-                        }}>
+                        }}
+                        title={community.brand.name}>
                         on {community.brand?.name}
                       </p>
                     )}
-                  </span>
+                  </div>
                 </span>
                 {community?.type === 2 && (
                   <TooltipProvider>
@@ -107,7 +110,7 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
                       <TooltipTrigger asChild>
                         <LockIcon className="h-4 w-4 stroke-tertiary" />
                       </TooltipTrigger>
-                      <TooltipContent className="w-64 bg-monochrome-black">
+                      <TooltipContent className="bg-monochrome-black w-64">
                         <p className="text-center text-cap-1-med text-monochrome-white">
                           This community is private. Only people approved by it's moderators can see and participate in
                           this community.
@@ -127,6 +130,7 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
                   userRole={community.userRole}
                 />
                 <Button
+                  title="Copy Link"
                   size="custom"
                   variant="outline"
                   className="min-w-max border border-primary p-1 hover:border-primary-600 "
@@ -142,7 +146,7 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
             </span>
             <DecorativeList>
               <div className="h-2 w-full" />
-              <Link href={PATH_NAME.loop(loop.slug)}>
+              <Link href={PATH_NAME.loop(loop.slug)} title={loop.name ?? 'Genuin Loop'}>
                 <li className="relative flex h-full w-full items-center justify-between rounded-md border border-tertiary-200 bg-monochrome-white p-4 ">
                   <p className="line-clamp-1 w-full break-all pr-2 text-body-1-demi">{loop?.name}</p>
                   <p className="whitespace-nowrap text-cap-1-med text-primary hover:text-primary-600">View Loop</p>

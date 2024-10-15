@@ -59,7 +59,7 @@ export function EditNumber({ onNext }: ScreenProps) {
                   <FormItem className="sm:w-full">
                     <FormControl>
                       <PhoneInput
-                        value="+1"
+                        value={'+1' as any}
                         international
                         className="w-full"
                         onChange={(value) => {
