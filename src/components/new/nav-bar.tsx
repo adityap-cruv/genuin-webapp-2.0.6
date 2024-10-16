@@ -30,41 +30,41 @@ export function NavBar() {
             </Link>
             <Link
               href={PATH_NAME.mediaNetwork}
-              className="pl-4 text-cap-1-demi-home text-white transition-all hover:scale-105 hover:text-blue">
+              className="text-white pl-4 text-cap-1-demi-home transition-all hover:scale-105 hover:text-blue">
               For Media Networks
             </Link>
             <Link
               href={PATH_NAME.brands()}
-              className="text-cap-1-demi-home text-white transition-all hover:scale-105 hover:text-blue">
+              className="text-white text-cap-1-demi-home transition-all hover:scale-105 hover:text-blue">
               For Brands
             </Link>
             <Link
               href={PATH_NAME.creators()}
-              className="text-cap-1-demi-home text-white transition-all hover:scale-105 hover:text-blue">
+              className="text-white text-cap-1-demi-home transition-all hover:scale-105 hover:text-blue">
               For Creators
             </Link>
             <Link
               href={PATH_NAME.about()}
-              className="text-cap-1-demi-home text-white transition-all hover:scale-105 hover:text-blue">
+              className="text-white text-cap-1-demi-home transition-all hover:scale-105 hover:text-blue">
               About us
             </Link>
             <Link
               href={PATH_NAME.explore()}
-              className="text-cap-1-demi-home text-white transition-all hover:scale-105 hover:text-blue">
+              className="text-white text-cap-1-demi-home transition-all hover:scale-105 hover:text-blue">
               Discover
             </Link>
           </div>
           <div className="flex items-center gap-4">
             <ContactUs>
-              <p className="text-cap-1-demi-home font-extrabold text-white transition-all hover:scale-105 hover:text-blue">
+              <p className="text-white text-cap-1-demi-home font-extrabold transition-all hover:scale-105 hover:text-blue">
                 Contact Us
               </p>
             </ContactUs>
-            <div style={{ width: '1px' }} className="h-full bg-white">
+            <div style={{ width: '1px' }} className="bg-white h-full">
               &nbsp;
             </div>
             <Link href={BCC_LOGIN_LINK} target="_blank" rel="noopener noreferrer">
-              <p className="text-cap-1-demi-home font-extrabold text-white transition-all hover:scale-105 hover:text-blue">
+              <p className="text-white text-cap-1-demi-home font-extrabold transition-all hover:scale-105 hover:text-blue">
                 Login
               </p>
             </Link>
@@ -180,12 +180,12 @@ export function BottomBar() {
         className="flex w-full items-center justify-center gap-2 py-3 lg:hidden"
         style={{ backgroundColor: 'rgba(9, 10, 27, 0.20)', borderTop: '1px solid #DEE2E6' }}>
         <Button className="items-center rounded-full bg-blue py-3 pl-4 pr-3">
-          <p className="text-[14px] font-extrabold text-white">Get Started</p>
+          <p className="text-white text-[14px] font-extrabold">Get Started</p>
           <ChevronRight className="stroke-white" />
         </Button>
         <ContactUs>
           <div className="flex items-center gap-2 pl-6 pr-2">
-            <p className="text-cap-1-demi-home text-white">Contact Us</p>
+            <p className="text-white text-cap-1-demi-home">Contact Us</p>
             <ChevronRight className="stroke-white" />
           </div>
         </ContactUs>

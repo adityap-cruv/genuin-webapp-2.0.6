@@ -50,7 +50,7 @@ export function Recents() {
         <span className="flex justify-between px-3">
           <p className="text-title-3-bold">Recent</p>
           <p
-            className="text-body-1-bold text-tertiary cursor-pointer"
+            className="cursor-pointer text-body-1-bold text-tertiary"
             onClick={(e) => {
               // TODO: This api is not working ask sanket.
               void deleteClickHandler(undefined, true)
@@ -58,14 +58,14 @@ export function Recents() {
             Clear all
           </p>
         </span>
-        {list.map((item, index) => {
+        {list.map((item) => {
           if (item.type === 'text' && item.text)
             return (
               <TextItem
                 key={item.id}
                 avatar={
-                  <div className="border-tertiary-300 flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border">
-                    <SearchIcon className="stroke-tertiary h-5 w-5" />
+                  <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border border-tertiary-300">
+                    <SearchIcon className="h-5 w-5 stroke-tertiary" />
                   </div>
                 }
                 title={item.text}
@@ -100,13 +100,13 @@ export function Recents() {
               <ListItem
                 key={item.id}
                 avatar={
-                  <div className="border-tertiary-300 flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border">
-                    <IcLoop className="stroke-tertiary h-5 w-5" />
+                  <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border border-tertiary-300">
+                    <IcLoop className="h-5 w-5 stroke-tertiary" />
                   </div>
                 }
                 subtitle={`Group • ${item.loop.group.group_description}`}
                 title={item.loop.group.group_name ?? ''}
-                urlToGo={PATH_NAME.loop(item.loop.slug ? item.loop.slug : (item.loop?.group?.slug ?? ''))}
+                urlToGo={PATH_NAME.loop(item.loop.slug ? item.loop.slug : item.loop?.group?.slug ?? '')}
                 deletionHandler={() => {
                   void deleteClickHandler(item.id)
                 }}
@@ -115,7 +115,6 @@ export function Recents() {
           if (item.type === 'user' && item.user)
             return (
               <ListItem
-                key={index}
                 avatar={
                   <CustomAvatar
                     isAvatar={item.user.is_avatar}
@@ -137,7 +136,7 @@ export function Recents() {
       </div>
     )
 
-  return <div className="text-body-1-demi text-tertiary p-6">Try searching for communities, topics, or keywords</div>
+  return <div className="p-6 text-body-1-demi text-tertiary">Try searching for communities, topics, or keywords</div>
 }
 
 type ItemProps = {
@@ -155,10 +154,10 @@ function ListItem({
   deletionHandler,
 }: ItemProps & { urlToGo: string }) {
   return (
-    <Link href={urlToGo} className="hover:bg-tertiary-200 flex items-center gap-x-3 rounded-md px-3 py-2">
+    <Link href={urlToGo} className="flex items-center gap-x-3 rounded-md px-3 py-2 hover:bg-tertiary-200">
       {Avatar}
       <span className="relative h-full w-full">
-        {title && <p className="text-body-1-bold line-clamp-1 break-all">{title}</p>}
+        {title && <p className="line-clamp-1 break-all text-body-1-bold">{title}</p>}
         {subtitle && <p className="line-clamp-1 break-all text-cap-1-demi">{subtitle}</p>}
         <X
           className="absolute right-0 top-1/2 z-10 -translate-y-1/2"
@@ -189,10 +188,10 @@ function TextItem({ subtitle = '', title = '', avatar: Avatar, deletionHandler }
           setKeyword(title)
         }
       }}
-      className="hover:bg-tertiary-200 flex items-center gap-x-3 rounded-md px-3 py-2">
+      className="flex items-center gap-x-3 rounded-md px-3 py-2 hover:bg-tertiary-200">
       {Avatar}
       <span className="relative h-full w-full">
-        {title && <p className="text-body-1-bold line-clamp-1 break-all">{title}</p>}
+        {title && <p className="line-clamp-1 break-all text-body-1-bold">{title}</p>}
         {subtitle && <p className="line-clamp-1 break-all text-cap-1-demi">{subtitle}</p>}
         <X
           className="absolute right-0 top-1/2 z-10 -translate-y-1/2 cursor-pointer"

@@ -41,7 +41,7 @@ export function parseVideosFromLoop(
         slug: item.slug,
         descriptionArr: tryJsonParse(item.description_data),
         descriptionText: item.description_text,
-        linkoutId: item.linkouts_id,
+        linkoutId : item.linkouts_id,
         clickableUrl: item.clickable_url ? item.clickable_url : null,
       },
     }
@@ -60,7 +60,7 @@ export function parseFeedResponse(videos: FeedResponseType) {
         id: video.community?.community_id ?? '',
         slug: video.community?.slug ?? '',
         name: video.community?.name ?? '',
-        profileImage: video.community?.dp_s ?? video.community?.dp,
+        profileImage: video.community?.dp ?? '',
         type: video.community?.type ?? null,
         shareUrl: video.community?.share_url ?? '',
         userRole: video.community?.logged_in_user_role
@@ -89,7 +89,7 @@ export function parseFeedResponse(videos: FeedResponseType) {
       },
       owner: {
         isAvatar: video.messages[0].owner.is_avatar,
-        profileImage: video.messages[0].owner.profile_image_s ?? video.messages[0].owner.profile_image,
+        profileImage: video.messages[0].owner.profile_image,
         userName: video.messages[0].owner.username,
         name: video.messages[0].owner.name,
         brand: video.messages[0]?.owner.brand

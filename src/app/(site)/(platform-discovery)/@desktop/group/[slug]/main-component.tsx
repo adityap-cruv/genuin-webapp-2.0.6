@@ -249,7 +249,7 @@ export function MainComponent({ loopDetails }: Props) {
                             <LockIcon className="z-10 ml-1 h-4 w-4 stroke-tertiary" />
                           </div>
                         </TooltipTrigger>
-                        <TooltipContent className="bg-monochrome-black w-64">
+                        <TooltipContent className="w-64 bg-monochrome-black">
                           <p className="text-center text-cap-1-med text-monochrome-white">
                             This community is private. Only people approved by it's moderators can see and participate
                             in this community.
@@ -345,9 +345,8 @@ function LoopCohosts({ slug }: { slug: string }) {
             if (!item.nickname)
               return (
                 <ListItem
-                  key={index}
                   title={item.name ?? ''}
-                  subtitle={'+' + item.phone}
+                  subtitle={'+' + item.phone ?? ''}
                   description={item.bio ?? ''}
                   image={item.profile_image}
                   isAvatar={item.is_avatar}

@@ -65,7 +65,7 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
 
   if (!videosRef.current || videosRef.current.length === 0)
     return (
-      <div className={cn('aspect-reel flex h-full items-center justify-center bg-tertiary-200', className)}>
+      <div className={cn('flex aspect-reel h-full items-center justify-center bg-tertiary-200', className)}>
         <p className="text-title-3-demi text-tertiary">No activity yet</p>
       </div>
     )

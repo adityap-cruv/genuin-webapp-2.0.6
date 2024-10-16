@@ -9,13 +9,11 @@ export function Layout(props: any) {
   return (
     <main className="absolute inset-0 flex h-full w-full flex-col items-center overflow-clip">
       {showNavbar && <TopBar />}
-      <section
-        className={cn(
-          'flex w-full overflow-clip px-0 2xl:container xl:px-10 2xl:px-0',
-          showNavbar ? 'h-body' : 'h-full'
-        )}>
-        <SideBar />
-        <section className="relative w-full">{props.children}</section>
+      <section className={cn('flex w-full overflow-clip xl:container', showNavbar ? 'h-body' : 'h-full')}>
+        <section className="flex-[1] lg:flex-[3]">
+          <SideBar />
+        </section>
+        <section className="relative flex-[11] lg:flex-[9]">{props.children}</section>
       </section>
     </main>
   )
