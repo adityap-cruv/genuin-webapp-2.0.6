@@ -12,7 +12,7 @@ export function RecentCommunities() {
   if (communities.length > 0)
     return (
       <>
-        <p className="hidden w-full break-all pb-1 pl-1 text-title-2-demi text-tertiary lg:line-clamp-1">
+        <p className="hidden w-full break-all pb-1 pl-1 text-title-2-demi text-tertiary xl:line-clamp-1">
           Recent Communities
         </p>
         {communities.map((item, index) => {
@@ -48,7 +48,7 @@ function CommunityItem({ children, title, isActive }: ItemProps) {
   return (
     <div className="flex w-full max-w-full items-center gap-x-2 rounded-md p-2 text-title-2-demi hover:bg-monochrome-6/10">
       {children}
-      <p className={cn('hidden break-all !text-title-2-demi lg:line-clamp-1', isActive && 'text-primary')}>{title}</p>
+      <p className={cn('hidden break-all !text-title-2-demi xl:line-clamp-1', isActive && 'text-primary')}>{title}</p>
     </div>
   )
 }
