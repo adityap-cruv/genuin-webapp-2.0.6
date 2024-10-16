@@ -194,7 +194,7 @@ function NumberForm({ onNext }: { onNext: () => void }) {
               <FormItem className="sm:w-full">
                 <FormControl>
                   <PhoneInput
-                    value={field.value as string & { __tag: 'E164Number' }}
+                    value={field.value as any}
                     international
                     className="w-full"
                     onChange={(value) => {

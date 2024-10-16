@@ -328,15 +328,3 @@ export function tryJsonParse(data: string) {
     return data
   }
 }
-
-export function getAnimationUrl(animationName: string) {
-  return `https://media.begenuin.com/webapp_assets/animation_videos/${animationName}.mp4`
-}
-
-export function getAnimationUrlM3u8(page: 'revenue' | 'power-ai' | 'network' | 'embed', name: string) {
-  return `https://media.begenuin.com/webapp_assets/v3/videos/${page}/${name}/${name}.m3u8`
-}
-
-export function getThumbnailUrl(page: 'revenue' | 'power-ai' | 'network' | 'embed', name: string) {
-  return `https://media.begenuin.com/webapp_assets/v3/videos/${page}/${name}/thumbnail.png`
-}

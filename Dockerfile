@@ -7,13 +7,13 @@ WORKDIR /genuin-webapp-qa
 COPY  . ./.
 
 # Install project dependencies
-RUN yarn
-RUN yarn add sharp
+RUN npm install
+RUN npm i sharp
 
-RUN yarn build
+RUN npm run build
 
 EXPOSE 4000
 
 ENV PORT=4000
 
-CMD [ "yarn", "start" ]
+CMD [ "npm", "start" ]

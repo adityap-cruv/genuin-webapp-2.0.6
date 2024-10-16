@@ -47,7 +47,7 @@ export function EditNumber({ onNext }: ScreenProps) {
 
   return (
     <ModalShell>
-      <p className="text-title-1-demi text-center sm:text-heading-3">Phone</p>
+      <p className="text-center text-title-1-demi sm:text-heading-3">Phone</p>
       <div className="w-full">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -59,7 +59,7 @@ export function EditNumber({ onNext }: ScreenProps) {
                   <FormItem className="sm:w-full">
                     <FormControl>
                       <PhoneInput
-                        value={'+1' as any}
+                        value={'+1' as string & { __tag: 'E164Number' }}
                         international
                         className="w-full"
                         onChange={(value) => {

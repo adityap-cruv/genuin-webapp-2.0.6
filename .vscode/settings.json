@@ -10,7 +10,6 @@
   ],
   "svg.preview.background": "dark-transparent",
   "cmake.configureOnOpen": false,
-  "typescript.tsserver.experimental.enableProjectDiagnostics": true,
   "cSpell.words": [
     "appstore",
     "begenuin",

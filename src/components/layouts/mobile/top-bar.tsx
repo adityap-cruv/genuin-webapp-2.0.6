@@ -94,7 +94,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
             <Button
               className={
                 variant === 'light'
-                  ? 'bg-new-off-black hover:bg-new-dark-grey text-monochrome-white'
+                  ? 'bg-new-off-black text-monochrome-white hover:bg-new-dark-grey'
                   : 'bg-new-off-white text-new-off-black hover:bg-new-off-black hover:text-new-off-white'
               }>
               <p className="text-body-1-demi">Download Genuin</p>
@@ -184,7 +184,7 @@ function Menu({
         <div className="mb-4 flex justify-between">
           <AppLogo.icon imageHeight={32} className={cn('fill-new-off-white')} />
           <SheetClose className="shadow-none outline-none">
-            <X strokeWidth="3px" className="stroke-new-off-black h-6 w-6" />
+            <X strokeWidth="3px" className="h-6 w-6 stroke-new-off-black" />
           </SheetClose>
         </div>
         <Link href={{ pathname: PATH_NAME.home() }}>
