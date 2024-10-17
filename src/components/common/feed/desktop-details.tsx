@@ -110,7 +110,7 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
                       <TooltipTrigger asChild>
                         <LockIcon className="h-4 w-4 stroke-tertiary" />
                       </TooltipTrigger>
-                      <TooltipContent className="bg-monochrome-black w-64">
+                      <TooltipContent className="w-64 bg-monochrome-black">
                         <p className="text-center text-cap-1-med text-monochrome-white">
                           This community is private. Only people approved by it's moderators can see and participate in
                           this community.
@@ -220,7 +220,7 @@ function CommentBox({
 
   if (comments && comments?.length !== 0)
     return (
-      <div className="h-full overflow-visible pb-40">
+      <div className="h-full overflow-visible">
         <Comments.withoutApi
           comments={comments}
           fetchNextPage={() => {}}
@@ -231,8 +231,9 @@ function CommentBox({
         />
       </div>
     )
+
   return (
-    <div className="h-full w-full">
+    <div className="pb-20">
       <NoComments />
     </div>
   )
