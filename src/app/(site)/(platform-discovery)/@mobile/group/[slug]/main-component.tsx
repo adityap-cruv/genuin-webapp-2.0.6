@@ -357,6 +357,7 @@ function LoopCollaborators({ slug }: { slug: string }) {
           if (!item.nickname)
             return (
               <CohostTile
+                key={index}
                 image={item.profile_image}
                 subtitle={item.bio ?? ''}
                 title={'+' + (item.phone ?? '')}
