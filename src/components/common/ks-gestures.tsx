@@ -5,6 +5,9 @@ import Image from 'next/image'
 import { useGenuinOptions } from '@/lib/stores/genuin-options'
 import { useLocalStorage } from '@/lib/stores/local-storage'
 import gifChevronUp from '@images/gifs/chevronUp.gif'
+import gifClickGesture from '@images/gifs/clickGesture.png'
+import gifTapGesture from '@images/gifs/tapGesture.png'
+import gifSwipeGesture from '@images/gifs/swipeGesture.png'
 
 export function KsGestures() {
   const { isMobile } = useGenuinOptions()
@@ -38,7 +41,7 @@ export function KsGestures() {
         {step === 'first' &&
           (isMobile ? (
             <GestureContent
-              image={gifChevronUp}
+              image={gifSwipeGesture}
               text={
                 <>
                   Swipe up
@@ -61,7 +64,7 @@ export function KsGestures() {
         {step === 'second' &&
           (isMobile ? (
             <GestureContent
-              image={gifChevronUp}
+              image={gifTapGesture}
               text={
                 <>
                   Tap to play or pause
@@ -71,7 +74,7 @@ export function KsGestures() {
             />
           ) : (
             <GestureContent
-              image={gifChevronUp}
+              image={gifClickGesture}
               text={
                 <>
                   Click to play or pause <br />
@@ -92,7 +95,7 @@ type GestureContentPropsType = {
 function GestureContent({ image, text, className }: GestureContentPropsType) {
   return (
     <div className={cn('flex h-full w-full flex-col items-center justify-center gap-2', className)}>
-      <Image src={image} alt="gif" height={40} width={40} />
+      <Image src={image} alt="gif" height={80} width={80} />
       <p className="text-center text-body-1-bold text-monochrome-white">{text}</p>
     </div>
   )
