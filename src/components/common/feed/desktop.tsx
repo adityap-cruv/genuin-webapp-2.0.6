@@ -60,8 +60,13 @@ type SwiperRendererProps = { customSizeBox?: VideoSizeBoxType; startIndex: numbe
 
 const SHELLS = Array.from({ length: 100 })
 function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: SwiperRendererProps) {
-  const sizeBox =
-    customSizeBox ?? useGenuinOptions(useShallow((state) => ({ sizeBox: state.sizeBoxes.default }))).sizeBox
+  const { defaultSizeBox, embed } = useGenuinOptions(
+    useShallow((state) => ({ defaultSizeBox: state.sizeBoxes.default, embed: state.embed }))
+  )
+
+  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+  const sizeBox = customSizeBox || defaultSizeBox
+
   const { allowSlideNext, currentIndex, updateCurrentIndex, videosRef } = useContext(FeedContext)
 
   if (!videosRef.current || videosRef.current.length === 0)
@@ -114,7 +119,7 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
             </SwiperSlide>
           )
         })}
-        <KsGestures />
+        {!embed && <KsGestures />}
       </Swiper>
       <DesktopDetails {...videosRef.current[currentIndex]} />
     </div>

@@ -42,7 +42,12 @@ export function Mobile({
   customSizeBox,
   isLoading,
 }: MobileProps) {
-  const videoSizeBox = customSizeBox ?? useGenuinOptions().sizeBoxes.default
+  const { defaultSizeBox, embed } = useGenuinOptions((state) => ({
+    defaultSizeBox: state.sizeBoxes.default,
+    embed: state.embed,
+  }))
+  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+  const videoSizeBox = customSizeBox || defaultSizeBox
   const { setCurrentIndex, currentIndex } = useFeedListStore(
     useShallow((state) => ({
       setCurrentIndex: state.setCurrentIndex,
@@ -105,7 +110,7 @@ export function Mobile({
         ))}
       </Swiper>
       <InfinityViewBox videoDetails={videos[currentIndex]} />
-      <KsGestures />
+      {!embed && <KsGestures />}
     </div>
   )
 }
