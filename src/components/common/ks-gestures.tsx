@@ -26,7 +26,7 @@ export function KsGestures() {
     if (!showKsGestures) return
     let timeOutId: NodeJS.Timeout | null = setTimeout(() => {
       updateStep()
-    }, 3000)
+    }, 5000)
 
     return () => {
       if (timeOutId) timeOutId = null
