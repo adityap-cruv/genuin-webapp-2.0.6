@@ -17,12 +17,12 @@ import gifSwipeGesture from '@images/gifs/swipeGesture.png'
 export function KsGestures() {
   const { isMobile } = useGenuinOptions()
   const { showKsGestures, setShowKsGestures } = useLocalStorage()
-  const [step, setStep] = useState<'first' | 'second'>('first')
+  const [step, setStep] = useState<'swipe' | 'play_pause'>('swipe')
   const updateStep = useCallback(() => {
-    if (step === 'first') {
-      setStep('second')
+    if (step === 'swipe') {
+      setStep('play_pause')
     }
-    if (step === 'second') {
+    if (step === 'play_pause') {
       setShowKsGestures(false)
     }
   }, [step])
@@ -43,7 +43,7 @@ export function KsGestures() {
       <div
         onClick={updateStep}
         className="fixed inset-0 z-[1000] h-full w-full bg-monochrome-black/40 backdrop-blur-sm sm:absolute">
-        {step === 'first' &&
+        {step === 'swipe' &&
           (isMobile ? (
             <GestureContent
               image={gifSwipeGesture}
@@ -66,7 +66,7 @@ export function KsGestures() {
               }
             />
           ))}
-        {step === 'second' &&
+        {step === 'play_pause' &&
           (isMobile ? (
             <GestureContent
               image={gifTapGesture}
