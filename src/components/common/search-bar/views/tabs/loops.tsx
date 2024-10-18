@@ -28,9 +28,9 @@ export function LoopItem({ loop }: { loop: LoopResType }) {
     let str = ' + '
     if (!count) return
     if (count === 1) {
-      str += abbreviateNumber(count) + ' Collaborator'
+      str += abbreviateNumber(count) + ' Other'
     } else {
-      str += abbreviateNumber(count) + ' Collaborators'
+      str += abbreviateNumber(count) + ' Others'
     }
     return str
   }
@@ -73,10 +73,17 @@ export function LoopItem({ loop }: { loop: LoopResType }) {
         <div className="relative w-full rounded-lg border border-tertiary-300 bg-monochrome-white">
           <div className="w-[60%] items-center p-[3%]">
             <p className="line-clamp-1 break-all text-body-1-bold">{loop.group.group_name}</p>
-            {loop.latest_messages.length !== 0 && loop.is_view_allowed && (
-              <p className="line-clamp-1 w-full break-all text-body-1-demi text-secondary-300">
-                @{loop.latest_messages[0].owner.username} posted ∙ {getTimeAgo(loop.latest_messages[0].message_at)}
+            {loop.latest_messages.length === 0 ? (
+              <p className="line-clamp-1 break-all text-body-1-demi text-secondary-300">
+                @{loop.group?.members[0]?.username} created ∙ {getTimeAgo(loop.latest_message_at)}
               </p>
+            ) : (
+              loop.latest_messages.length !== 0 &&
+              loop.is_view_allowed && (
+                <p className="line-clamp-1 w-full break-all text-body-1-demi text-secondary-300">
+                  @{loop.latest_messages[0].owner.username} posted ∙ {getTimeAgo(loop.latest_messages[0].message_at)}
+                </p>
+              )
             )}
           </div>
           <div className="h-[60%] rounded-b-lg border border-tertiary-200 bg-tertiary-100 p-4">
@@ -89,23 +96,28 @@ export function LoopItem({ loop }: { loop: LoopResType }) {
                   className={`ml-1 line-clamp-1 text-body-1-med text-secondary-300 ${
                     loop.group.members.length !== 1 && 'ml-7'
                   } ${loop.group.members.length === 3 && 'ml-6'}`}>
-                  {loop.group.members[0].username}
+                  {loop.group.members[0]?.username}
                   {getCollaboratorsCountString(loop.group.members.length - 1)}
                 </p>
               </div>
               <p className="my-[2%] line-clamp-2 text-body-1-demi text-secondary-300">{loop.group.group_description}</p>
               <p className="line-clamp-1 break-all text-body-1-med text-secondary-300">
-                {abbreviateNumber(loop.group.members.length)} subscribers ∙ {abbreviateNumber(loop.group.no_of_views)}{' '}
-                views
+                {abbreviateNumber(loop.group.no_of_videos)} posts ∙ {abbreviateNumber(loop.group.no_of_views)} views
               </p>
             </div>
           </div>
         </div>
       </Link>
       {!loop.is_view_allowed ? (
-        <div className="group/video absolute right-7 top-[50%] flex aspect-reel h-[80%] -translate-y-1/2 items-center justify-center rounded border border-secondary-300 bg-monochrome-white hover:cursor-pointer">
+        <div className="group/video absolute right-7 top-[50%] flex aspect-reel h-[85%] -translate-y-1/2 items-center justify-center rounded border border-secondary-300 bg-monochrome-white hover:cursor-pointer">
           <div className="bg-secondary-200 rounded-full p-2">
             <Image src={icLock} alt="share" className="h-4 w-4" />
+          </div>
+        </div>
+      ) : loop.latest_messages.length === 0 ? (
+        <div className="group/video absolute right-7 top-[50%] flex aspect-reel h-[80%] -translate-y-1/2 items-center justify-center rounded border border-monochrome-black/20 bg-monochrome-white hover:cursor-pointer">
+          <div className="bg-secondary-200 rounded-full p-2">
+            <p className="ml-1 line-clamp-1  text-cap-2-demi text-tertiary-400"> No posts yet</p>
           </div>
         </div>
       ) : (

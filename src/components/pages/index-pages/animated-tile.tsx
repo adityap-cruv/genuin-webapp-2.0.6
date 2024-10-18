@@ -59,6 +59,7 @@ type GeneralShellForInitialComponentProps = {
   cta: ReactNode
   videoSrc?: string
   posterSrc?: string
+  openVideoOnClick?: boolean
 } & AnimatedTileProps
 
 interface VideoPlayerControlsProps {

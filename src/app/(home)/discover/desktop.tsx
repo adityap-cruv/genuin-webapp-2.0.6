@@ -1,5 +1,6 @@
 'use client'
-import { NavBar } from '@components/pages/build/nav-bar'
+// import { NavBar } from '@components/pages/build/nav-bar'
+import { NavBar } from '@/components/new/nav-bar'
 import bg from '@images/business/discover/bg_discover.webp'
 import c1 from '@images/home-page/community/community-share-1.webp'
 import c2 from '@images/home-page/community/community-share-2.webp'
@@ -124,7 +125,7 @@ function LoopSection() {
   ]
   return (
     <div className="container mt-8 px-40 py-4">
-      <p className=" text-new-para-1">Featured Loops</p>
+      <p className=" text-new-para-1">Featured Groups</p>
       <div className="my-6 grid grid-cols-2 gap-6">
         {loopList.map((item, index) => {
           return (

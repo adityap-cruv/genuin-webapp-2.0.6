@@ -1,6 +1,6 @@
 // TODO: change optional ot non-optional params.
 export const PATH_NAME = {
-  loop: (id?: string) => `/loop/${id}`,
+  loop: (id?: string) => `/group/${id}`,
   video: (id?: string) => `/video/${id}`,
   profile: (id?: string) => `/profile/${id}`,
   community: (id?: string) => `/community/${id}`,
@@ -29,4 +29,5 @@ export const PATH_NAME = {
     'https://markets.businessinsider.com/news/stocks/genuin-is-reinventing-social-connections-with-a-communityfirst-approach-1032839987',
   terms: `${process.env.NEXT_PUBLIC_HOST_URL}/terms`,
   privacy: `${process.env.NEXT_PUBLIC_HOST_URL}/privacy`,
+  mediaNetwork: '/media-network',
 }

@@ -7,14 +7,14 @@ import icLock from '@icons/icLock.svg'
 import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
-import { getLoopCohosts, subscribeLoop, getLoopSubscribers, getLoopDetails } from '@lib/api/loop'
+import { getLoopCohosts, subscribeLoop, getLoopDetails } from '@lib/api/loop'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { TopBar } from '@components/layouts/mobile/top-bar'
 import { useRef, useState } from 'react'
 import { useInView } from 'framer-motion'
-import { TopStickyBar } from '../../../@desktop/loop/[slug]/top-bar'
+import { TopStickyBar } from '../../../@desktop/group/[slug]/top-bar'
 import { LoopVideos } from './loop-videos'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { ShareIcon } from '@icons/share-icon'
@@ -27,6 +27,8 @@ import { LoopPrivacyInfo } from '@components/common/loop-privacy-info'
 import { PrivateModal } from '@components/common/modals/private'
 import Analytics from '@services/analytics'
 import { joinAsCollaboratorDeepLink, subscribeDeepLink } from '@/lib/get-deeplink'
+import { SubscribedBellIcon } from '@icons/subscribed-bell-icon'
+import { BellIcon } from 'lucide-react'
 
 let loopDetailsModule: LoopDetailsType
 
@@ -58,6 +60,13 @@ export function MainComponent({ loopDetails }: Props) {
     void subscribeLoop(loopDetails.chat_id, newValue).then((res) => {
       if (res.code === 200) {
         setIsLoopSubscribed(newValue)
+        if (newValue) {
+          // Notifications turned on for this Group
+          toast({ title: 'Notifications turned on for this Group', duration: 1000 })
+        } else {
+          // Notifications turned off for this Group
+          toast({ title: 'Notifications turned off for this Group', duration: 1000 })
+        }
       }
     })
   }
@@ -160,8 +169,8 @@ export function MainComponent({ loopDetails }: Props) {
             <Stats
               statsData={[
                 { key: 'Post', value: loopDetails.group.no_of_videos ?? 0 },
-                { key: 'Collaborator', value: loopDetails.group.no_of_members ?? 0 },
-                { key: 'Subscribers', value: loopDetails.group.no_of_subscribers ?? 0 },
+                { key: 'Members', value: loopDetails.group.no_of_members ?? 0 },
+                // { key: 'Subscribers', value: loopDetails.group.no_of_subscribers ?? 0 },
               ]}
             />
           </div>
@@ -175,7 +184,10 @@ export function MainComponent({ loopDetails }: Props) {
             {loopDetails.is_view_allowed && embed && (
               <Button
                 size="custom"
-                className={`${isLoopSubscribed && 'border border-primary '}`}
+                // className={`${isLoopSubscribed && 'border border-primary '}`}
+                className={`${
+                  isLoopSubscribed ? 'border border-primary p-0.5' : 'border border-primary bg-primary p-0.5'
+                }`}
                 variant={isLoopSubscribed ? 'outline' : 'default'}
                 onClick={
                   user
@@ -188,15 +200,19 @@ export function MainComponent({ loopDetails }: Props) {
                           subtitle: (
                             <>
                               Get the app to subscribe to
-                              <span className="font-bold"> {loopDetails.group.group_name}</span> Loop.
+                              <span className="font-bold"> {loopDetails.group.group_name}</span> Group.
                             </>
                           ),
                         })
                       }
                 }>
-                <p className={`px-4 py-1 text-title-3-demi ${isLoopSubscribed && 'text-primary'}`}>
+                {/* <p className={`px-4 py-1 text-title-3-demi ${isLoopSubscribed && 'text-primary'}`}>
                   {isLoopSubscribed ? 'Subscribed' : 'Subscribe'}
-                </p>
+                </p> */}
+                {isLoopSubscribed && (
+                  <SubscribedBellIcon className="h-6 w-6 fill-primary stroke-primary"></SubscribedBellIcon>
+                )}
+                {!isLoopSubscribed && <BellIcon className="h-6 w-6  stroke-new-off-white"></BellIcon>}
               </Button>
             )}
 
@@ -213,7 +229,7 @@ export function MainComponent({ loopDetails }: Props) {
                   )
                 }}>
                 <p className="px-4 py-1 text-title-3-bold text-primary" style={{ fontSize: '15px' }}>
-                  Join as collaborator
+                  Join as Member
                 </p>
               </Button>
             )}
@@ -252,8 +268,8 @@ export function MainComponent({ loopDetails }: Props) {
                 <Image src={icLock} alt="share" className="h-16 w-16" />
               </div>
               <p className="text-center text-title-2-demi">
-                This Loop is visible to its
-                <br /> Collaborators only
+                This Group is visible to its
+                <br /> Members only
               </p>
             </div>
           </div>
@@ -273,11 +289,11 @@ function LoopTabs() {
           <p className="text-title-3-bold">Posts</p>
         </TabsTrigger>
         <TabsTrigger value="About">
-          <p className="text-title-3-bold">Collaborators</p>
+          <p className="text-title-3-bold">Members</p>
         </TabsTrigger>
-        <TabsTrigger value="Members">
+        {/* <TabsTrigger value="Members">
           <p className="text-title-3-bold">Subscribers</p>
-        </TabsTrigger>
+        </TabsTrigger> */}
       </TabsList>
       <hr className="border-t border-tertiary-200" />
       <TabsContent value="Loops">
@@ -299,9 +315,9 @@ function LoopTabs() {
       <TabsContent value="About">
         <LoopCollaborators slug={loopDetailsModule.slug} />
       </TabsContent>
-      <TabsContent value="Members">
+      {/* <TabsContent value="Members">
         <LoopSubscribers slug={loopDetailsModule.slug} />
-      </TabsContent>
+      </TabsContent> */}
     </Tabs>
   )
 }
@@ -330,7 +346,7 @@ function LoopCollaborators({ slug }: { slug: string }) {
   if (!cohosts || cohosts.length === 0)
     return (
       <div className="flex h-full w-full items-center justify-center pt-32 text-title-3-bold text-tertiary">
-        No collaborators yet
+        No members yet
       </div>
     )
 
@@ -341,9 +357,10 @@ function LoopCollaborators({ slug }: { slug: string }) {
           if (!item.nickname)
             return (
               <CohostTile
+                key={index}
                 image={item.profile_image}
                 subtitle={item.bio ?? ''}
-                title={'+' + item.phone ?? ''}
+                title={'+' + (item.phone ?? '')}
                 userName={item.name ?? ''}
                 isAvatar={item.is_avatar}
               />
@@ -366,51 +383,51 @@ function LoopCollaborators({ slug }: { slug: string }) {
 }
 
 // TODO: Add pagination in this component
-function LoopSubscribers({ slug }: any) {
-  const { data, isLoading } = getLoopSubscribers(slug)
-  const subscribers = data?.pages.flatMap((item) => item.subscribers)
+// function LoopSubscribers({ slug }: any) {
+//   const { data, isLoading } = getLoopSubscribers(slug)
+//   const subscribers = data?.pages.flatMap((item) => item.subscribers)
 
-  if (isLoading)
-    return (
-      <>
-        {Array.from({ length: 2 }).map((_, index) => (
-          <div key={index} className="m-2 flex items-center justify-center">
-            <Shimmer className="h-12 w-12 shrink-0 rounded-full" />
-            <div className="ml-2 w-full">
-              <Shimmer className="my-1 h-4 w-1/4 rounded-full" />
-              <Shimmer className="my-1 h-4 w-1/5 rounded-full" />
-              <Shimmer className="my-1 h-4 w-full rounded-full" />
-            </div>
-          </div>
-        ))}
-      </>
-    )
+//   if (isLoading)
+//     return (
+//       <>
+//         {Array.from({ length: 2 }).map((_, index) => (
+//           <div key={index} className="m-2 flex items-center justify-center">
+//             <Shimmer className="h-12 w-12 shrink-0 rounded-full" />
+//             <div className="ml-2 w-full">
+//               <Shimmer className="my-1 h-4 w-1/4 rounded-full" />
+//               <Shimmer className="my-1 h-4 w-1/5 rounded-full" />
+//               <Shimmer className="my-1 h-4 w-full rounded-full" />
+//             </div>
+//           </div>
+//         ))}
+//       </>
+//     )
 
-  if (!subscribers || subscribers.length === 0)
-    return (
-      <div className="flex h-full w-full items-center justify-center pt-32 text-title-3-bold text-tertiary">
-        No subscribers yet
-      </div>
-    )
+//   if (!subscribers || subscribers.length === 0)
+//     return (
+//       <div className="flex h-full w-full items-center justify-center pt-32 text-title-3-bold text-tertiary">
+//         No subscribers yet
+//       </div>
+//     )
 
-  return (
-    <div className="h-full pt-3">
-      <div className="h-full w-full overflow-auto">
-        {subscribers.map((item, index) => (
-          <Link key={index} href={{ pathname: PATH_NAME.profile(item.nickname) }}>
-            <CohostTile
-              image={item.profile_image}
-              subtitle={item.bio ?? ''}
-              title={'@' + item.nickname}
-              userName={item.name ?? ''}
-              isAvatar={item.is_avatar}
-            />
-          </Link>
-        ))}
-      </div>
-    </div>
-  )
-}
+//   return (
+//     <div className="h-full pt-3">
+//       <div className="h-full w-full overflow-auto">
+//         {subscribers.map((item, index) => (
+//           <Link key={index} href={{ pathname: PATH_NAME.profile(item.nickname) }}>
+//             <CohostTile
+//               image={item.profile_image}
+//               subtitle={item.bio ?? ''}
+//               title={'@' + item.nickname}
+//               userName={item.name ?? ''}
+//               isAvatar={item.is_avatar}
+//             />
+//           </Link>
+//         ))}
+//       </div>
+//     </div>
+//   )
+// }
 
 function Stats({
   statsData,

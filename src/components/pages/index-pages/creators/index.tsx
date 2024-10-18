@@ -93,7 +93,7 @@ function InitialComponent() {
           <Image src={downloadQr} height={120} width={120} alt="Download Genuin" />
           <div className="flex flex-col justify-center gap-4">
             <p className="text-cap-1-demi-home" style={{ fontWeight: 800 }}>
-              Get the Genuin app to become a Community Builder
+              Get the Genuin app to become a Creator
             </p>
             <div className="flex w-full gap-4">
               <Link href={URL_TO_PLAY_STORE}>
@@ -139,7 +139,7 @@ function BottomComponent() {
             style={{ borderRadius: 36 }}>
             <Image src={downloadQr} height={140} width={140} alt="Download" />
             <p className="text-center text-cap-1-bold-home font-extrabold leading-normal">
-              Get the Genuin app to become a<br /> Community Builder
+              Get the Genuin app to become a<br /> Creator
             </p>
             <div className="flex w-full items-center justify-center gap-4">
               <Link href={URL_TO_PLAY_STORE}>

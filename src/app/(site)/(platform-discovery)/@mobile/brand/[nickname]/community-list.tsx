@@ -27,14 +27,32 @@ import { IcLoop } from '@icons/ic-loop'
 import { BrandCommunityTag } from '@components/common/brand-community-tag'
 import { ToggleCommunityJoinState } from '@components/common/toggle-community-join-state'
 import { Play } from 'lucide-react'
+import { useShallow } from 'zustand/react/shallow'
 
 export function CommunityList({ brandId, scrollYProgress }: { brandId: number; scrollYProgress: MotionValue<number> }) {
   const { data, isLoading, fetchNextPage, isFetchingNextPage } = getCommunities(brandId, 8)
   const communities = data?.pages.flatMap((item) => item.communities)
   const [communityJoinStates, setCommunityJoinStates] = useState<Record<string, string>>({})
   const user = useGenuinOptions().user
-  const { addCommunities, currentVideoId } = useCommunityListStore()
+  const { addCommunities, currentVideoId, reset, stateCommunities, replaceCommunities } = useCommunityListStore(
+    useShallow((state) => ({
+      reset: state.reset,
+      currentVideoId: state.currentVideoId,
+      addCommunities: state.addCommunities,
+      stateCommunities: state.communities,
+      replaceCommunities: state.replaceCommunities,
+    }))
+  )
   const pathName = usePathname()
+
+  useEffect(() => {
+    if (communities) {
+      replaceCommunities(communities)
+    }
+    return () => {
+      reset()
+    }
+  }, [pathName])
 
   useEffect(() => {
     if (communities) {
@@ -55,14 +73,12 @@ export function CommunityList({ brandId, scrollYProgress }: { brandId: number; s
         setCommunityJoinStates(initialStates)
       }
     }
-  }, [communities?.length])
+  }, [data?.pages])
 
   useEffect(() => {
-    const newCommunites = data?.pages[data.pages.length - 1].communities
-    // if (localCommunities && newCommunites && localCommunities?.length !== communities.length) {
-    if (newCommunites) addCommunities(newCommunites)
-    // }
-  }, [communities?.length])
+    const newCommunities = data?.pages[data.pages.length - 1].communities
+    if (newCommunities && newCommunities.length > 0) addCommunities(newCommunities)
+  }, [data?.pages])
 
   useMotionValueEvent(scrollYProgress, 'change', (latest) => {
     if (Number(latest.toFixed(1)) > 0.8 && !isFetchingNextPage) {
@@ -88,7 +104,7 @@ export function CommunityList({ brandId, scrollYProgress }: { brandId: number; s
 
     return (
       <div className="h-full w-full overflow-y-visible">
-        {communities.map((item, index) => {
+        {stateCommunities.map((item, index) => {
           return (
             <div key={index} className="mb-6">
               <div className="flex items-center">
@@ -247,7 +263,7 @@ function Loops({
               </a>
               <div className="my-1 flex items-center gap-1">
                 <IcLoop className="h-4 w-4 fill-tertiary" />
-                <p className="text-body-1-med text-tertiary">Visible to collaborators only</p>
+                <p className="text-body-1-med text-tertiary">Visible to Group members only</p>
               </div>
             </div>
           ) : (
@@ -262,7 +278,7 @@ function Loops({
             className="profile-loop-li relative w-full rounded-lg border border-tertiary-200 p-2"
             style={{ backgroundColor: '#F9F9F9' }}>
             <p className="text-blue-500 flex w-full cursor-pointer justify-center text-cap-1-demi text-tertiary">
-              View more loops
+              View more groups
             </p>
           </li>
         </div>
@@ -315,12 +331,15 @@ function LoopVideos({ brandId, loop, communityId, pathName, user }: LoopVideosPr
   function InnerComponent() {
     if (!loop.videos || loop.videos.length === 0)
       return (
-        <div className="flex items-center justify-center pt-32 text-title-3-bold text-tertiary">No posts available</div>
+        // <div className="flex items-center justify-center pt-32 text-title-3-bold text-tertiary">No posts available</div>
+        <div className="my-2 grid w-full gap-2">
+          <p className="text-body-1-med text-tertiary">No posts yet</p>
+        </div>
       )
 
     if (loop.videos)
       return (
-        <>
+        <div className="my-2 grid w-full grid-cols-4 gap-2 md:grid-cols-8">
           {loop.videos.map((video, index) => (
             <React.Fragment key={index}>
               <div
@@ -342,7 +361,7 @@ function LoopVideos({ brandId, loop, communityId, pathName, user }: LoopVideosPr
               </div>
             </React.Fragment>
           ))}
-        </>
+        </div>
       )
   }
 
@@ -357,7 +376,7 @@ function LoopVideos({ brandId, loop, communityId, pathName, user }: LoopVideosPr
           accessTypeId={loop?.actions?.[0]?.access_type_id ?? 0}
         />
       )}
-      <div className="my-2 grid w-full grid-cols-4 gap-2 md:grid-cols-8">
+      <div>
         <InnerComponent />
         {isFetchingNextPage &&
           [...Array(loop.videoCount < 16 ? loop.videoCount : 16)].map((_, index) => (

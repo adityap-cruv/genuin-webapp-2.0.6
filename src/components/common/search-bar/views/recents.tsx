@@ -58,7 +58,7 @@ export function Recents() {
             Clear all
           </p>
         </span>
-        {list.map((item) => {
+        {list.map((item, index) => {
           if (item.type === 'text' && item.text)
             return (
               <TextItem
@@ -104,9 +104,9 @@ export function Recents() {
                     <IcLoop className="h-5 w-5 stroke-tertiary" />
                   </div>
                 }
-                subtitle={`Loop • ${item.loop.group.group_description}`}
+                subtitle={`Group • ${item.loop.group.group_description}`}
                 title={item.loop.group.group_name ?? ''}
-                urlToGo={PATH_NAME.loop(item.loop.slug ? item.loop.slug : item.loop?.group?.slug ?? '')}
+                urlToGo={PATH_NAME.loop(item.loop.slug ? item.loop.slug : (item.loop?.group?.slug ?? ''))}
                 deletionHandler={() => {
                   void deleteClickHandler(item.id)
                 }}
@@ -115,6 +115,7 @@ export function Recents() {
           if (item.type === 'user' && item.user)
             return (
               <ListItem
+                key={index}
                 avatar={
                   <CustomAvatar
                     isAvatar={item.user.is_avatar}

@@ -13,6 +13,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import Analytics from '@/services/analytics'
 import { usePlayerControlStore } from '../player/player-control-store'
 import { FeedShimmer } from '../shimmers/feed-shimmer'
+import { KsGestures } from '../ks-gestures'
 const Player = dynamic(async () => await import('@components/common/player').then((comp) => comp.Player.mobile))
 
 type MobileProps = {
@@ -41,7 +42,12 @@ export function Mobile({
   customSizeBox,
   isLoading,
 }: MobileProps) {
-  const videoSizeBox = customSizeBox ?? useGenuinOptions().sizeBoxes.default
+  const { defaultSizeBox, embed } = useGenuinOptions((state) => ({
+    defaultSizeBox: state.sizeBoxes.default,
+    embed: state.embed,
+  }))
+  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+  const videoSizeBox = customSizeBox || defaultSizeBox
   const { setCurrentIndex, currentIndex } = useFeedListStore(
     useShallow((state) => ({
       setCurrentIndex: state.setCurrentIndex,
@@ -104,6 +110,7 @@ export function Mobile({
         ))}
       </Swiper>
       <InfinityViewBox videoDetails={videos[currentIndex]} />
+      {!embed && <KsGestures />}
     </div>
   )
 }

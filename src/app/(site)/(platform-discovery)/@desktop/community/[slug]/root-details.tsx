@@ -3,7 +3,7 @@ import type { CommunityDetailsType, MembersSchemaType } from '@lib/schemas/commu
 import { useEffect, useRef } from 'react'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import { CustomAvatar } from '@components/custom/custom-avatar'
-import { TopStickyBar } from './top-bar'
+import { TopStickyBar } from './top-sticky-bar'
 import { Button } from '@components/ui/button'
 import Image from 'next/image'
 import icLock from '@icons/icLock.svg'
@@ -57,7 +57,7 @@ function RootDetails({ communityDetails }: { communityDetails: CommunityDetailsT
 
   return (
     <>
-      <TopStickyBar.desktop
+      <TopStickyBar
         defaultOpen={false}
         isOpen={!detailsInView}
         communityName={communityDetails.name ?? ''}
@@ -185,7 +185,7 @@ function CommunityDetailsTabs({ communityDetails }: { communityDetails: Communit
     <Tabs defaultValue="Loops" style={{ height: 'calc(100% - 114px)' }}>
       <TabsList className="flex max-w-min">
         <TabsTrigger value="Loops">
-          <p className="text-title-3-bold">Loops</p>
+          <p className="text-title-3-bold">Groups</p>
         </TabsTrigger>
         <TabsTrigger value="Members">
           <p className="text-title-3-bold">Members</p>
@@ -302,6 +302,7 @@ function Guidelines({ communityDetails }: { communityDetails: CommunityDetailsTy
 
 function Leaders({ communityDetails }: { communityDetails: CommunityDetailsType }) {
   const leader = communityDetails?.leader
+  const moderators = communityDetails?.moderators
 
   if (!leader || leader.nickname.length === 0) {
     return null
@@ -309,7 +310,7 @@ function Leaders({ communityDetails }: { communityDetails: CommunityDetailsType 
 
   return (
     <div className="mb-4">
-      <p className="my-2 text-title-3-bold">Leader</p>
+      <p className="my-2 text-title-3-bold">Admins</p>
       <Link
         href={{
           pathname: leader.brand ? PATH_NAME.brand(leader.brand.brand_slug) : PATH_NAME.profile(leader.nickname),
@@ -321,8 +322,29 @@ function Leaders({ communityDetails }: { communityDetails: CommunityDetailsType 
           image={leader.profile_image}
           isAvatar={leader.is_avatar}
           brand={leader.brand}
+          isOwner={true}
         />
       </Link>
+      {moderators.length > 0 &&
+        moderators.map((item, index) => {
+          return (
+            <Link
+              key={index}
+              href={{
+                pathname: item.brand ? PATH_NAME.brand(item.brand.brand_slug) : PATH_NAME.profile(item.nickname),
+              }}>
+              <ListItem
+                title={item.name ?? ''}
+                subtitle={'@' + item.nickname}
+                description={item.bio ?? ''}
+                image={item.profile_image}
+                isAvatar={item.is_avatar}
+                brand={item.brand}
+                isOwner={false}
+              />
+            </Link>
+          )
+        })}
     </div>
   )
 }
@@ -367,6 +389,7 @@ function Members({ communityDetails }: { communityDetails: CommunityDetailsType 
                   image={member.profile_image}
                   isAvatar={member.is_avatar}
                   brand={member.brand ?? null}
+                  isOwner={false}
                 />
               </Link>
             )
@@ -387,7 +410,9 @@ function Stats({ communityDetails }: { communityDetails: CommunityDetailsType })
       </span>
       <span className="flex items-center pr-4">
         <p className="text-title-3-bold">{communityDetails?.no_of_loops}</p>
-        <p className="text-body-1-med text-tertiary">&nbsp;{communityDetails?.no_of_loops === 1 ? 'Loop' : 'Loops'}</p>
+        <p className="text-body-1-med text-tertiary">
+          &nbsp;{communityDetails?.no_of_loops === 1 ? 'Group' : 'Groups'}
+        </p>
       </span>
       <span className="flex items-center pr-4">
         <p className="text-title-3-bold">{communityDetails?.no_of_videos}</p>

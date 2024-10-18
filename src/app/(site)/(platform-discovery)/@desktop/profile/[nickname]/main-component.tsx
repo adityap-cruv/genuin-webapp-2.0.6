@@ -5,11 +5,10 @@ import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
 import { CustomAvatar } from '@components/custom/custom-avatar'
-import React, { useEffect, useRef } from 'react'
+import React, { useRef } from 'react'
 import Link from 'next/link'
 import { useInView } from 'framer-motion'
 import { TopStickyBar } from './top-bar'
-import { useCommunityListStore } from './store'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { ShareIcon } from '@icons/share-icon'
 import { type ProfileDetailsType } from '@lib/schemas/profile/profile'
@@ -29,14 +28,7 @@ interface CompProps {
 export function MainComponent({ profileData }: CompProps) {
   const detailsDivRef = useRef<HTMLDivElement>(null)
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
-  const { reset: resetData } = useCommunityListStore()
   const divRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    return () => {
-      resetData()
-    }
-  }, [])
 
   return (
     <>
