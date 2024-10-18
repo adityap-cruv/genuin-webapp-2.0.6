@@ -26,20 +26,32 @@ import { IcLoop } from '@icons/ic-loop'
 import { BrandCommunityTag } from '@components/common/brand-community-tag'
 import { ToggleCommunityJoinState } from '@components/common/toggle-community-join-state'
 import { Play } from 'lucide-react'
+import { useShallow } from 'zustand/react/shallow'
 
 export function CommunityList({ userId }: { userId: string }) {
   const { data, isLoading, fetchNextPage, isFetchingNextPage } = getCommunities(userId, 8)
   const communities = data?.pages.flatMap((item) => item.communities)
   const [communityJoinStates, setCommunityJoinStates] = useState<Record<string, string>>({})
   const user = useGenuinOptions().user
-  const { addCommunities, currentVideoId, reset } = useCommunityListStore()
+  const { addCommunities, currentVideoId, reset, stateCommunities, replaceCommunities } = useCommunityListStore(
+    useShallow((state) => ({
+      reset: state.reset,
+      currentVideoId: state.currentVideoId,
+      addCommunities: state.addCommunities,
+      stateCommunities: state.communities,
+      replaceCommunities: state.replaceCommunities,
+    }))
+  )
   const pathName = usePathname()
 
   useEffect(() => {
+    if (communities) {
+      replaceCommunities(communities)
+    }
     return () => {
       reset()
     }
-  }, [])
+  }, [pathName])
 
   useEffect(() => {
     if (communities) {
@@ -60,14 +72,12 @@ export function CommunityList({ userId }: { userId: string }) {
         setCommunityJoinStates(initialStates)
       }
     }
-  }, [communities?.length])
+  }, [data?.pages])
 
   useEffect(() => {
     const newCommunities = data?.pages[data.pages.length - 1].communities
-    // if (localCommunities && newCommunities && localCommunities?.length !== communities.length) {
-    if (newCommunities) addCommunities(newCommunities)
-    // }
-  }, [communities?.length])
+    if (newCommunities && newCommunities.length > 0) addCommunities(newCommunities)
+  }, [data?.pages])
 
   const scrollDivRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ container: scrollDivRef, layoutEffect: false })
@@ -94,7 +104,7 @@ export function CommunityList({ userId }: { userId: string }) {
       )
     return (
       <div className="h-full w-full overflow-y-visible">
-        {communities.map((item, index) => {
+        {stateCommunities.map((item, index) => {
           return (
             <div key={index} className="my-6">
               <div className="flex items-center">
