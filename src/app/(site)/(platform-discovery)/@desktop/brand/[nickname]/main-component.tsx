@@ -9,7 +9,6 @@ import { CustomAvatar } from '@components/custom/custom-avatar'
 import Link from 'next/link'
 import { useInView } from 'framer-motion'
 import { TopStickyBar } from './top-bar'
-import { useCommunityListStore } from './store'
 import { ShareIcon } from '@icons/share-icon'
 import { type BrandSchemaType, type ProfileDetailsType } from '@lib/schemas/profile/profile'
 import { CommunityList } from './community-list'
@@ -28,7 +27,6 @@ interface CompProps {
 export function MainComponent({ profileData }: CompProps) {
   const detailsDivRef = useRef<HTMLDivElement>(null)
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
-  const { reset: resetData } = useCommunityListStore()
   const divRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -39,9 +37,6 @@ export function MainComponent({ profileData }: CompProps) {
         brand_slug: profileData.brand?.brand_slug,
       },
     })
-    return () => {
-      resetData()
-    }
   }, [])
 
   return (

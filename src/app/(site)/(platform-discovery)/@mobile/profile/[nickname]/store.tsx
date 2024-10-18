@@ -11,9 +11,10 @@ type Actions = {
   close: () => void
   // setCurrentVideoId: (newVideoId: string) => void
   reset: () => void
-  addLoops: (communyId: string, loops: ProfileLoopType[]) => void
+  addLoops: (communityId: string, loops: ProfileLoopType[]) => void
   addCommunities: (communities: ProfileCommunityType[]) => void
   addVideos: (communityId: string, loopId: string, videos: ProfileVideoType[]) => void
+  replaceCommunities: (communities: ProfileCommunityType[]) => void
 }
 
 // TODO: Here communities value is changing find why is that happening.
@@ -27,7 +28,7 @@ export const useCommunityListStore = create<State & Actions>((set) => {
     ...initialState,
     reset() {
       set((state) => {
-        return { activeIndex: 0, videoList: [], currentVideoShareString: '', communities: [] }
+        return { ...initialState }
       })
     },
     open(videoId) {
@@ -40,6 +41,12 @@ export const useCommunityListStore = create<State & Actions>((set) => {
       set((state) => {
         const communities = state.communities
         state.communities = [...communities, ...newCommunities]
+        return { ...state }
+      })
+    },
+    replaceCommunities(newCommunities) {
+      set((state) => {
+        state.communities = newCommunities
         return { ...state }
       })
     },

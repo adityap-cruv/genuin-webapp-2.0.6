@@ -3,14 +3,13 @@ import { abbreviateNumber, checkAndAppendHttps, getCurrentShareUrl } from '@lib/
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { Button } from '@components/ui/button'
 import { CustomAvatar } from '@components/custom/custom-avatar'
-import { useEffect, useRef } from 'react'
+import { useRef } from 'react'
 import { TopBar } from '@components/layouts/mobile/top-bar'
 import Link from 'next/link'
 import { useInView, useScroll } from 'framer-motion'
 import { TopStickyBar } from '../../../@desktop/profile/[nickname]/top-bar'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
-import { useCommunityListStore } from './store'
 import { ShareIcon } from '@icons/share-icon'
 import { type ProfileDetailsType } from '@lib/schemas/profile/profile'
 import { CommunityList } from './community-list'
@@ -33,17 +32,10 @@ export function MainComponent({ profileData }: CompProps) {
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
   const scrollDivRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ container: scrollDivRef, layoutEffect: false })
-  const resetData = useCommunityListStore((state) => state.reset)
   const pathName = usePathname()
   const { user } = useGenuinOptions((state) => ({
     user: state.user,
   }))
-
-  useEffect(() => {
-    return () => {
-      resetData()
-    }
-  }, [])
 
   return (
     <>
