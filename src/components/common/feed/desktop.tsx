@@ -11,6 +11,7 @@ import { FeedContext, FeedContextProvider } from './feed-provider'
 import { FeedShimmer } from '../shimmers/feed-shimmer'
 import Analytics from '@/services/analytics'
 import { usePlayerControlStore } from '../player/player-control-store'
+import { KsGestures } from '../ks-gestures'
 
 const DesktopPlayer = dynamic(async () => await import('@components/common/player').then((comp) => comp.Player.desktop))
 
@@ -59,8 +60,13 @@ type SwiperRendererProps = { customSizeBox?: VideoSizeBoxType; startIndex: numbe
 
 const SHELLS = Array.from({ length: 100 })
 function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: SwiperRendererProps) {
-  const sizeBox =
-    customSizeBox ?? useGenuinOptions(useShallow((state) => ({ sizeBox: state.sizeBoxes.default }))).sizeBox
+  const { defaultSizeBox, embed } = useGenuinOptions(
+    useShallow((state) => ({ defaultSizeBox: state.sizeBoxes.default, embed: state.embed }))
+  )
+
+  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+  const sizeBox = customSizeBox || defaultSizeBox
+
   const { allowSlideNext, currentIndex, updateCurrentIndex, videosRef } = useContext(FeedContext)
 
   if (!videosRef.current || videosRef.current.length === 0)
@@ -113,6 +119,7 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
             </SwiperSlide>
           )
         })}
+        {!embed && <KsGestures />}
       </Swiper>
       <DesktopDetails {...videosRef.current[currentIndex]} />
     </div>
