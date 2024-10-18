@@ -180,7 +180,10 @@ function Menu({
       <SheetTrigger>
         <HamBurgerMenuIcon toggleToClose={false} variant={hamBurgerVariant} />
       </SheetTrigger>
-      <SheetContent showDefaultClose={false} side="left" className="z-40 w-full border-none shadow-none outline-none">
+      <SheetContent
+        showDefaultClose={false}
+        side="left"
+        className="z-40 w-full overflow-auto border-none shadow-none outline-none">
         <div className="mb-4 flex justify-between">
           <AppLogo.icon imageHeight={32} className={cn('fill-new-off-white')} />
           <SheetClose className="shadow-none outline-none">
@@ -215,7 +218,7 @@ function Menu({
           </>
         )}
         {(!isClaimed || user?.ksCbRequestStatus !== 3) && embed && (
-          <hr className="border-1 border-monochrome-black/10 my-2" />
+          <hr className="border-1 my-2 border-monochrome-black/10" />
         )}
         <DownloadAppDialog />
         {status === 'unauthenticated' && embed && (
@@ -238,7 +241,7 @@ function Menu({
             <p className={cn('whitespace-nowrap !text-title-3-demi text-primary')}>Claim Brand Profile</p>
           </div>
         )}
-        {(!isClaimed || user?.ksCbRequestStatus !== 3) && <hr className="border-1 border-monochrome-black/10 my-2" />}
+        {(!isClaimed || user?.ksCbRequestStatus !== 3) && <hr className="border-1 my-2 border-monochrome-black/10" />}
         {user?.ksCbRequestStatus !== 3 && <BecomeCbCard className="my-4 lg:hidden" />}
         <CategoryView className="lg:hidden" />
         <RecentCommunities />
