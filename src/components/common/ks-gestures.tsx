@@ -9,6 +9,11 @@ import gifClickGesture from '@images/gifs/clickGesture.png'
 import gifTapGesture from '@images/gifs/tapGesture.png'
 import gifSwipeGesture from '@images/gifs/swipeGesture.png'
 
+/**
+ * When user comes on website for the first time ksGestures will be shown.
+ * To educate user about the gestures to use the <Feed />.
+ * It will be shown only once. And local-storage will be used to store the state.
+ */
 export function KsGestures() {
   const { isMobile } = useGenuinOptions()
   const { showKsGestures, setShowKsGestures } = useLocalStorage()

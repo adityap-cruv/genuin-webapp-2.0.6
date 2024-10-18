@@ -14,6 +14,12 @@ type LocalStorageType = {
   setDeviceId: (id: string) => void
   visitorAdded: boolean
   setVisitor: (added: boolean) => void
+  /**
+   * Used to store if the user has seen the KS gestures.
+   * If true, then the gestures will not be shown.
+   * If false, then the gestures will be shown.
+   * @default true
+   */
   showKsGestures: boolean
   setShowKsGestures: (show: boolean) => void
   addCommunity: (community: CommunityType) => void
