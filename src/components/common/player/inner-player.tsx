@@ -184,7 +184,9 @@ export const InnerPlayer = memo(function InnerPlayer({
         <div
           className={cn(
             'absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-monochrome-black/40 p-2 transition-all duration-100',
-            playingState !== 'paused' ? 'scale-125 opacity-100 ease-in ' : 'scale-100 opacity-0 ease-out'
+            playingState === 'paused' || playingState === 'loading'
+              ? 'scale-125 opacity-100 ease-in '
+              : 'scale-100 opacity-0 ease-out'
           )}>
           {playingState === 'paused' && (
             <Image

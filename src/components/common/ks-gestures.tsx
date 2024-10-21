@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils'
 import { type StaticImageData } from 'next/image'
-import { type ComponentProps, type ReactNode, useState, useCallback, useEffect } from 'react'
+import { type ComponentProps, type ReactNode, useEffect } from 'react'
 import Image from 'next/image'
 import { useGenuinOptions } from '@/lib/stores/genuin-options'
 import { useLocalStorage } from '@/lib/stores/local-storage'
@@ -16,80 +16,75 @@ import gifSwipeGesture from '@images/gifs/swipeGesture.png'
  */
 export function KsGestures() {
   const { isMobile } = useGenuinOptions()
-  const { showKsGestures, setShowKsGestures } = useLocalStorage()
-  const [step, setStep] = useState<'swipe' | 'play_pause'>('swipe')
-  const updateStep = useCallback(() => {
-    if (step === 'swipe') {
-      setStep('play_pause')
-    }
-    if (step === 'play_pause') {
-      setShowKsGestures(false)
-    }
-  }, [step])
+  const { updateGestureStep, gestureStep } = useLocalStorage()
 
   useEffect(() => {
-    if (!showKsGestures) return
     let timeOutId: NodeJS.Timeout | null = setTimeout(() => {
-      updateStep()
+      updateGestureStep()
     }, 5000)
 
     return () => {
-      if (timeOutId) timeOutId = null
+      if (timeOutId) {
+        clearTimeout(timeOutId)
+        timeOutId = null
+      }
     }
-  }, [step, updateStep, showKsGestures])
+  }, [gestureStep])
 
-  if (showKsGestures)
-    return (
-      <div
-        onClick={updateStep}
-        className="fixed inset-0 z-[1000] h-full w-full bg-monochrome-black/40 backdrop-blur-sm sm:absolute">
-        {step === 'swipe' &&
-          (isMobile ? (
-            <GestureContent
-              image={gifSwipeGesture}
-              text={
-                <>
-                  Swipe up
-                  <br /> to view videos
-                </>
-              }
-            />
-          ) : (
-            <GestureContent
-              className="justify-end pb-20"
-              image={gifChevronUp}
-              text={
-                <>
-                  Swipe up
-                  <br /> to view videos
-                </>
-              }
-            />
-          ))}
-        {step === 'play_pause' &&
-          (isMobile ? (
-            <GestureContent
-              image={gifTapGesture}
-              text={
-                <>
-                  Tap to play or pause
-                  <br /> the video
-                </>
-              }
-            />
-          ) : (
-            <GestureContent
-              image={gifClickGesture}
-              text={
-                <>
-                  Click to play or pause <br />
-                  the video
-                </>
-              }
-            />
-          ))}
-      </div>
-    )
+  return (
+    <div
+      onClick={updateGestureStep}
+      className={cn(
+        'fixed inset-0 z-[1000] h-full w-full bg-monochrome-black/40 backdrop-blur-sm sm:absolute',
+        gestureStep !== 'play_pause' && 'pointer-events-none'
+      )}>
+      {gestureStep === 'swipe' &&
+        (isMobile ? (
+          <GestureContent
+            image={gifSwipeGesture}
+            text={
+              <>
+                Swipe up
+                <br /> to view videos
+              </>
+            }
+          />
+        ) : (
+          <GestureContent
+            className="justify-end pb-20"
+            image={gifChevronUp}
+            text={
+              <>
+                Swipe up
+                <br /> to view videos
+              </>
+            }
+          />
+        ))}
+      {gestureStep === 'play_pause' &&
+        (isMobile ? (
+          <GestureContent
+            image={gifTapGesture}
+            text={
+              <>
+                Tap to play or pause
+                <br /> the video
+              </>
+            }
+          />
+        ) : (
+          <GestureContent
+            image={gifClickGesture}
+            text={
+              <>
+                Click to play or pause <br />
+                the video
+              </>
+            }
+          />
+        ))}
+    </div>
+  )
 }
 
 type GestureContentPropsType = {
