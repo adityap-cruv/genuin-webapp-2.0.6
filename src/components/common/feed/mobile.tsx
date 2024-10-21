@@ -42,7 +42,7 @@ export function Mobile({
   customSizeBox,
   isLoading,
 }: MobileProps) {
-  const { defaultSizeBox, embed } = useGenuinOptions((state) => ({
+  const { defaultSizeBox } = useGenuinOptions((state) => ({
     defaultSizeBox: state.sizeBoxes.default,
     embed: state.embed,
   }))
@@ -110,7 +110,7 @@ export function Mobile({
         ))}
       </Swiper>
       <InfinityViewBox videoDetails={videos[currentIndex]} />
-      {!embed && <KsGestures />}
+      <KsGestures />
     </div>
   )
 }
