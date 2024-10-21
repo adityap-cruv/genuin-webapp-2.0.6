@@ -1,19 +1,19 @@
 'use client'
+import { SplashScreen } from '@components/common/splash-screen'
 import { type ConfigType, useGenuinOptions } from '@lib/stores/genuin-options'
 import { getSizeBoxes } from '@lib/utils/common/size-box'
 import { useSearchParams } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import FingerprintJS from '@fingerprintjs/fingerprintjs'
-import { setBrandIdInAxiosInstance, ejectAuthTokenInterceptor, setAuthTokenInAxiosInstance } from '@lib/api/instance'
+import { useSession } from 'next-auth/react'
+import { ejectAuthTokenInterceptor, setAuthTokenInAxiosInstance, setBrandIdInAxiosInstance } from '@lib/api/instance'
 import dynamic from 'next/dynamic'
 import { saveVisitor } from '@components/common/modals/authentication/api/auth'
 import { notificationsCount } from '@lib/api/notification'
-import { useRefreshToken } from '@/hooks/use-refresh-token'
 import { rudderStackIdentify } from '@/services/analytics/useRudderAnalytics'
+import { useRefreshToken } from '@/hooks/use-refresh-token'
 import { getBalanceAPI } from '@/lib/api/wallet'
-import { type User } from 'next-auth'
-
 const RepostModal = dynamic(
   async () => await import('@components/common/modals/repost').then((comp) => comp.RepostModal.ui)
 )
@@ -31,14 +31,15 @@ type Props = {
   os: string
   browserType: string
   config?: ConfigType
-  user: User | null
 }
 // it won't log any consoles in production.
 // eslint-disable-next-line no-console
 if (process.env.NEXT_PUBLIC_CURRENT_ENV === 'prod') console.log = () => {}
 
 // TODO: separate this component into 2 comps with once has auth and second doesn't have auth.
-export function GenuinOptionsProvider({ children, deviceType, os, browserType, config, user }: Props) {
+export function GenuinOptionsProvider({ children, deviceType, os, browserType, config }: Props) {
+  const [isLoading, setIsLoading] = useState(true)
+  const { data: sessionData, status: sessionStatus } = useSession()
   const { setInitialData } = useGenuinOptions((state) => ({
     setInitialData: state.setData,
   }))
@@ -74,21 +75,26 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
 
   useEffect(() => {
     let interceptorId: number
-    if (user) {
-      interceptorId = setAuthTokenInAxiosInstance(user.accessToken)
-      setInitialData({ user })
+    if (sessionStatus === 'loading') return
+    if (sessionStatus === 'authenticated') {
+      interceptorId = setAuthTokenInAxiosInstance(sessionData.user.accessToken)
+      setInitialData({ user: sessionData.user })
       void fetchNotificationCount()
       void fetchWalletBalance()
-    } else {
+      if (isLoading) setIsLoading(false)
+    }
+    if (sessionStatus === 'unauthenticated') {
       setInitialData({ user: undefined })
       setAuthTokenInAxiosInstance(undefined)
+      if (isLoading) setIsLoading(false)
     }
+    // Added Identify User to pass userId in all the
     void rudderStackIdentify()
 
     return () => {
       ejectAuthTokenInterceptor(interceptorId)
     }
-  }, [])
+  }, [sessionStatus, sessionData?.user])
 
   function init() {
     if (config?.brand_id) setBrandIdInAxiosInstance(Number(config?.brand_id))
@@ -147,6 +153,7 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
     }
   }, [])
 
+  if (isLoading) return <SplashScreen />
   return (
     <>
       {children}
