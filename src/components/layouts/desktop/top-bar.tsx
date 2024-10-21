@@ -32,7 +32,7 @@ export function TopBar({
   return (
     <>
       <div className="z-20 flex w-full justify-center border-b border-monochrome-9  bg-monochrome-white sm:flex">
-        <nav className="sticky top-0 flex h-[76px] w-full items-center justify-between px-0 2xl:container xl:px-10 2xl:px-0">
+        <nav className="sticky top-0 flex h-[76px] w-full items-center justify-between px-2 2xl:container xl:px-10 2xl:px-0">
           <Link draggable={false} href={{ pathname: PATH_NAME.home() }}>
             <AppLogo.logo className="shrink-0 fill-new-off-black" imageHeight={44} />
             {/* <GenuinIcon.logo className="fill-new-off-black" /> */}
