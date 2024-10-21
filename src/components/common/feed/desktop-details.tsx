@@ -149,7 +149,7 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
               <Link href={PATH_NAME.loop(loop.slug)} title={loop.name ?? 'Genuin Loop'}>
                 <li className="relative flex h-full w-full items-center justify-between rounded-md border border-tertiary-200 bg-monochrome-white p-4 ">
                   <p className="line-clamp-1 w-full break-all pr-2 text-body-1-demi">{loop?.name}</p>
-                  <p className="whitespace-nowrap text-cap-1-med text-primary hover:text-primary-600">View Loop</p>
+                  <p className="whitespace-nowrap text-cap-1-med text-primary hover:text-primary-600">View Group</p>
                 </li>
               </Link>
             </DecorativeList>
