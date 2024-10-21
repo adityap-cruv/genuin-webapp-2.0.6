@@ -11,12 +11,15 @@ import { SessionProvider } from 'next-auth/react'
 import { parseColors } from '@lib/utils'
 import { ReactQueryProvider } from '@components/providers/query-client-provider'
 import { RootHTML, getViewport } from '@components/layouts/root-layout'
+import { auth } from '../../../auth'
+import { type Session } from 'next-auth'
 
 export default async function RootLayout(props: any) {
   const deviceType = cookies().get('device_type')?.value ?? ''
   const os = cookies().get('os')?.value ?? ''
   const browserType = cookies().get('browser_type')?.value ?? ''
   const configParamsStr = cookies().get('config_params')?.value ?? ''
+  const userSession: Session | null = await auth()
   let configParams = null
   if (configParamsStr) configParams = JSON.parse(configParamsStr)
 
@@ -49,7 +52,12 @@ export default async function RootLayout(props: any) {
         <ThirdPartyScriptProvider isEmbed={!!config}>
           <SessionProvider refetchOnWindowFocus={false} refetchInterval={3600}>
             <ReactQueryProvider>
-              <GenuinOptionsProvider browserType={browserType} deviceType={deviceType} os={os} config={config}>
+              <GenuinOptionsProvider
+                browserType={browserType}
+                deviceType={deviceType}
+                os={os}
+                config={config}
+                user={userSession?.user ?? null}>
                 {props.children}
               </GenuinOptionsProvider>
             </ReactQueryProvider>
