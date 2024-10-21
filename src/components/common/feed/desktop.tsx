@@ -60,7 +60,7 @@ type SwiperRendererProps = { customSizeBox?: VideoSizeBoxType; startIndex: numbe
 
 const SHELLS = Array.from({ length: 100 })
 function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: SwiperRendererProps) {
-  const { defaultSizeBox, embed } = useGenuinOptions(
+  const { defaultSizeBox } = useGenuinOptions(
     useShallow((state) => ({ defaultSizeBox: state.sizeBoxes.default, embed: state.embed }))
   )
 
@@ -119,7 +119,7 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
             </SwiperSlide>
           )
         })}
-        {!embed && <KsGestures />}
+        <KsGestures />
       </Swiper>
       <DesktopDetails {...videosRef.current[currentIndex]} />
     </div>
