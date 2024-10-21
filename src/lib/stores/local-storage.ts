@@ -4,7 +4,7 @@ import { persist } from 'zustand/middleware'
 
 type CommunityType = { name: string; handle: string; profileImage: string; slug: string }
 
-type KsGestureStepsType = 'swipe' | 'play_pause'
+// type KsGestureStepsType = 'swipe' | 'play_pause'
 
 type LocalStorageType = {
   userId: string
@@ -22,10 +22,10 @@ type LocalStorageType = {
    * If false, then the gestures will be shown.
    * @default true
    */
-  showKsGestures: boolean
-  setShowKsGestures: (show: boolean) => void
-  gestureStep: KsGestureStepsType
-  updateGestureStep: () => void
+  // showKsGestures: boolean
+  // setShowKsGestures: (show: boolean) => void
+  // gestureStep: KsGestureStepsType
+  // updateGestureStep: () => void
   addCommunity: (community: CommunityType) => void
 }
 
@@ -43,20 +43,20 @@ export const useLocalStorage = create(
         setVisitor(added: boolean) {
           set({ visitorAdded: added })
         },
-        showKsGestures: true,
-        setShowKsGestures(show) {
-          set({ showKsGestures: show })
-        },
-        gestureStep: 'swipe',
-        updateGestureStep() {
-          set((state) => {
-            if (state.gestureStep === 'swipe') {
-              return { ...state, gestureStep: 'play_pause' }
-            } else {
-              return { ...state, showKsGestures: false }
-            }
-          })
-        },
+        // showKsGestures: true,
+        // setShowKsGestures(show) {
+        //   set({ showKsGestures: show })
+        // },
+        // gestureStep: 'swipe',
+        // updateGestureStep() {
+        //   set((state) => {
+        //     if (state.gestureStep === 'swipe') {
+        //       return { ...state, gestureStep: 'play_pause' }
+        //     } else {
+        //       return { ...state, showKsGestures: false }
+        //     }
+        //   })
+        // },
         addCommunity(community: CommunityType) {
           set((state) => {
             const communities = state.communities
