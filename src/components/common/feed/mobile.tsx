@@ -1,7 +1,7 @@
 import { AnimatedInfinityView } from '@components/common/animated-infinity-view'
 import dynamic from 'next/dynamic'
 import { useFeedListStore } from './store'
-import { memo, useEffect, useState } from 'react'
+import { memo, useCallback, useEffect, useState } from 'react'
 import { useCommentSheetStore } from '../player/comment-sheet/store'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Mousewheel } from 'swiper/modules'
@@ -14,6 +14,8 @@ import Analytics from '@/services/analytics'
 import { usePlayerControlStore } from '../player/player-control-store'
 import { FeedShimmer } from '../shimmers/feed-shimmer'
 import { KsGestures } from '../ks-gestures'
+import { useLocalStorage } from '@/lib/stores/local-storage'
+import { type Swiper as SwiperType } from 'swiper/types'
 const Player = dynamic(async () => await import('@components/common/player').then((comp) => comp.Player.mobile))
 
 type MobileProps = {
@@ -42,6 +44,7 @@ export function Mobile({
   customSizeBox,
   isLoading,
 }: MobileProps) {
+  const { showKsGestures, gestureStep, updateGestureStep } = useLocalStorage()
   const { defaultSizeBox } = useGenuinOptions((state) => ({
     defaultSizeBox: state.sizeBoxes.default,
     embed: state.embed,
@@ -65,6 +68,18 @@ export function Mobile({
     if ((currentIndex + 1) % 5 === 0) showInterruption()
   }, [currentIndex])
 
+  const handleActiveIndexChange = useCallback(
+    (swiper: SwiperType) => {
+      // Update the step if KS gestures are enabled.
+      if (showKsGestures) {
+        // If the gesture step is swipe, then update the step.
+        if (gestureStep === 'swipe') updateGestureStep()
+      }
+      setCurrentIndex(swiper.activeIndex, videos[currentIndex].video.id)
+    },
+    [gestureStep, showKsGestures]
+  )
+
   if (isLoading) {
     return <FeedShimmer.mobile />
   }
@@ -83,9 +98,7 @@ export function Mobile({
         mousewheel={true}
         direction="vertical"
         initialSlide={startIndex}
-        onActiveIndexChange={(swiper) => {
-          setCurrentIndex(swiper.activeIndex, videos[currentIndex].video.id)
-        }}
+        onActiveIndexChange={handleActiveIndexChange}
         allowSlideNext={!commentIsOpen}
         allowSlidePrev={!commentIsOpen}
         style={videoSizeBox}>
@@ -110,7 +123,7 @@ export function Mobile({
         ))}
       </Swiper>
       <InfinityViewBox videoDetails={videos[currentIndex]} />
-      <KsGestures />
+      {showKsGestures && <KsGestures />}
     </div>
   )
 }

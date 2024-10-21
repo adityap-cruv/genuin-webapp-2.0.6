@@ -1,6 +1,7 @@
 import dynamic from 'next/dynamic'
 import { DesktopDetails } from './desktop-details'
-import { type ComponentProps, memo, useContext } from 'react'
+import { type ComponentProps, memo, useContext, useCallback } from 'react'
+import { type Swiper as SwiperType } from 'swiper/types'
 import { cn } from '@lib/utils'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Mousewheel, Keyboard } from 'swiper/modules'
@@ -12,6 +13,7 @@ import { FeedShimmer } from '../shimmers/feed-shimmer'
 import Analytics from '@/services/analytics'
 import { usePlayerControlStore } from '../player/player-control-store'
 import { KsGestures } from '../ks-gestures'
+import { useLocalStorage } from '@/lib/stores/local-storage'
 
 const DesktopPlayer = dynamic(async () => await import('@components/common/player').then((comp) => comp.Player.desktop))
 
@@ -60,6 +62,7 @@ type SwiperRendererProps = { customSizeBox?: VideoSizeBoxType; startIndex: numbe
 
 const SHELLS = Array.from({ length: 100 })
 function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: SwiperRendererProps) {
+  const { showKsGestures, gestureStep, updateGestureStep } = useLocalStorage()
   const { defaultSizeBox } = useGenuinOptions(
     useShallow((state) => ({ defaultSizeBox: state.sizeBoxes.default, embed: state.embed }))
   )
@@ -68,6 +71,18 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
   const sizeBox = customSizeBox || defaultSizeBox
 
   const { allowSlideNext, currentIndex, updateCurrentIndex, videosRef } = useContext(FeedContext)
+
+  const handleActiveIndexChange = useCallback(
+    (swiper: SwiperType) => {
+      // Update the step if KS gestures are enabled.
+      if (showKsGestures) {
+        // If the gesture step is swipe, then update the step.
+        if (gestureStep === 'swipe') updateGestureStep()
+      }
+      updateCurrentIndex(swiper.activeIndex, videosRef.current[currentIndex].video.id)
+    },
+    [gestureStep, showKsGestures]
+  )
 
   if (!videosRef.current || videosRef.current.length === 0)
     return (
@@ -79,9 +94,7 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
   return (
     <div className={cn('flex h-full w-full', className)} {...restProps}>
       <Swiper
-        onActiveIndexChange={(swiper) => {
-          updateCurrentIndex(swiper.activeIndex, videosRef.current[currentIndex].video.id)
-        }}
+        onActiveIndexChange={handleActiveIndexChange}
         allowSlideNext={allowSlideNext}
         keyboard={true}
         initialSlide={startIndex}
@@ -119,7 +132,7 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
             </SwiperSlide>
           )
         })}
-        <KsGestures />
+        {showKsGestures && <KsGestures />}
       </Swiper>
       <DesktopDetails {...videosRef.current[currentIndex]} />
     </div>
