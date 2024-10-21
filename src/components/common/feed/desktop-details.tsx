@@ -233,7 +233,7 @@ function CommentBox({
     )
 
   return (
-    <div className="pb-20">
+    <div className="h-full pb-20">
       <NoComments />
     </div>
   )
