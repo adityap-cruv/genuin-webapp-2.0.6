@@ -1,14 +1,8 @@
 'use client'
-import { FeedShimmer } from '@components/common/shimmers/feed-shimmer'
 import { getFeed } from '@lib/api/feed'
-import dynamic from 'next/dynamic'
 import { useMemo, useRef } from 'react'
 import { type VideoPlayerModalType } from '@/lib/schemas/player/video'
-const Feed = dynamic(async () => await import('@components/common/feed').then((comp) => comp.Feed.desktop), {
-  loading(_) {
-    return <FeedShimmer.desktop />
-  },
-})
+import { Feed } from '@/components/common/feed'
 
 export function Root() {
   const { data, fetchNextPage, isLoading, isFetchingNextPage, hasNextPage } = getFeed(1)
@@ -16,7 +10,7 @@ export function Root() {
   videosRef.current = useMemo(() => data?.pages.flatMap((item) => item.reels) ?? [], [data])
 
   return (
-    <Feed
+    <Feed.desktop
       hasNextPage={hasNextPage ?? true}
       isLoading={isLoading}
       startIndex={0}

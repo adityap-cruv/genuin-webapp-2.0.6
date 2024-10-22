@@ -1,7 +1,7 @@
 import { GenuinIcon } from '@icons/genuin-icon'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { cn } from '@lib/utils'
-// import Image from 'next/image'
+import Image from 'next/image'
 import { type ComponentProps } from 'react'
 
 type Props = ComponentProps<'svg'> & {
@@ -9,6 +9,7 @@ type Props = ComponentProps<'svg'> & {
    * Image Height in case of brand logo changes
    */
   imageHeight: number
+  logo?: string
 }
 
 export const AppLogo = {
@@ -31,26 +32,22 @@ function Logo({ ...props }: Props) {
 
 type ProcessorProps = { type: 'icon' | 'text' | 'logo' } & Props
 
-function LogoProcessor({ className, imageHeight, type, ...props }: ProcessorProps) {
-  const { brandWebLogo } = useGenuinOptions((state) => ({ embed: state.embed, brandWebLogo: state.brandWebLogo }))
+function LogoProcessor({ className, imageHeight, type, logo, ...props }: ProcessorProps) {
+  const { brandWebLogo } = useGenuinOptions((state) => ({ brandWebLogo: state.brandWebLogo }))
 
-  // TODO: Find a way to use next/image here.
   if (brandWebLogo)
     return (
-      <img
-        src={brandWebLogo}
-        style={{ height: imageHeight }}
-        className={cn('object-cover', className)}
-        alt="brand logo"
-      />
+      <div className="relative" style={{ height: imageHeight, width: 150 }}>
+        <Image src={brandWebLogo} fill objectFit="contain" className={cn(className)} alt="icon" />
+      </div>
     )
 
   switch (type) {
     case 'text':
-      return <GenuinIcon.text style={{ maxHeight: imageHeight, height: imageHeight }} {...props} />
+      return <GenuinIcon.text {...props} />
     case 'icon':
-      return <GenuinIcon.icon style={{ maxHeight: imageHeight, height: imageHeight }} {...props} />
+      return <GenuinIcon.icon {...props} />
     case 'logo':
-      return <GenuinIcon.logo style={{ maxHeight: imageHeight, height: imageHeight }} {...props} />
+      return <GenuinIcon.logo {...props} />
   }
 }

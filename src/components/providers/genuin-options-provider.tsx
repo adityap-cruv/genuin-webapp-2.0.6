@@ -1,19 +1,19 @@
 'use client'
-import { SplashScreen } from '@components/common/splash-screen'
 import { type ConfigType, useGenuinOptions } from '@lib/stores/genuin-options'
 import { getSizeBoxes } from '@lib/utils/common/size-box'
 import { useSearchParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import FingerprintJS from '@fingerprintjs/fingerprintjs'
-import { useSession } from 'next-auth/react'
-import { ejectAuthTokenInterceptor, setAuthTokenInAxiosInstance, setBrandIdInAxiosInstance } from '@lib/api/instance'
+import { setBrandIdInAxiosInstance, ejectAuthTokenInterceptor, setAuthTokenInAxiosInstance } from '@lib/api/instance'
 import dynamic from 'next/dynamic'
 import { saveVisitor } from '@components/common/modals/authentication/api/auth'
 import { notificationsCount } from '@lib/api/notification'
-import { rudderStackIdentify } from '@/services/analytics/useRudderAnalytics'
 import { useRefreshToken } from '@/hooks/use-refresh-token'
+import { rudderStackIdentify } from '@/services/analytics/useRudderAnalytics'
 import { getBalanceAPI } from '@/lib/api/wallet'
+import { type User } from 'next-auth'
+
 const RepostModal = dynamic(
   async () => await import('@components/common/modals/repost').then((comp) => comp.RepostModal.ui)
 )
@@ -31,15 +31,14 @@ type Props = {
   os: string
   browserType: string
   config?: ConfigType
+  user: User | null
 }
 // it won't log any consoles in production.
 // eslint-disable-next-line no-console
 if (process.env.NEXT_PUBLIC_CURRENT_ENV === 'prod') console.log = () => {}
 
 // TODO: separate this component into 2 comps with once has auth and second doesn't have auth.
-export function GenuinOptionsProvider({ children, deviceType, os, browserType, config }: Props) {
-  const [isLoading, setIsLoading] = useState(true)
-  const { data: sessionData, status: sessionStatus } = useSession()
+export function GenuinOptionsProvider({ children, deviceType, os, browserType, config, user }: Props) {
   const { setInitialData } = useGenuinOptions((state) => ({
     setInitialData: state.setData,
   }))
@@ -57,10 +56,6 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
   const isMobile = deviceType === 'mobile'
   const isSafari = browserType.toLowerCase().includes('safari')
 
-  function getBox() {
-    return getSizeBoxes(isMobile, !hideNavbar)
-  }
-
   async function fetchNotificationCount() {
     const { status, count } = await notificationsCount()
     if (status) {
@@ -75,26 +70,21 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
 
   useEffect(() => {
     let interceptorId: number
-    if (sessionStatus === 'loading') return
-    if (sessionStatus === 'authenticated') {
-      interceptorId = setAuthTokenInAxiosInstance(sessionData.user.accessToken)
-      setInitialData({ user: sessionData.user })
+    if (user) {
+      interceptorId = setAuthTokenInAxiosInstance(user.accessToken)
+      setInitialData({ user })
       void fetchNotificationCount()
       void fetchWalletBalance()
-      if (isLoading) setIsLoading(false)
-    }
-    if (sessionStatus === 'unauthenticated') {
+    } else {
       setInitialData({ user: undefined })
       setAuthTokenInAxiosInstance(undefined)
-      if (isLoading) setIsLoading(false)
     }
-    // Added Identify User to pass userId in all the
     void rudderStackIdentify()
 
     return () => {
       ejectAuthTokenInterceptor(interceptorId)
     }
-  }, [sessionStatus, sessionData?.user])
+  }, [])
 
   function init() {
     if (config?.brand_id) setBrandIdInAxiosInstance(Number(config?.brand_id))
@@ -106,7 +96,7 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
       brandId: config?.brand_id,
       showNavbar: !hideNavbar,
       isMobile,
-      sizeBoxes: getBox(),
+      sizeBoxes: getSizeBoxes(isMobile, !hideNavbar),
       isIframe,
       deviceType,
       os,
@@ -114,11 +104,12 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
       isSafari,
       parentUrl: from,
       config,
+      isLoading: false,
     })
   }
 
   function handleResize() {
-    setInitialData({ sizeBoxes: getBox() })
+    setInitialData({ sizeBoxes: getSizeBoxes(isMobile, !hideNavbar) })
   }
 
   function handleBlur() {
@@ -153,13 +144,12 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
     }
   }, [])
 
-  if (isLoading) return <SplashScreen />
   return (
     <>
       {children}
       <AuthenticationModal showClose />
       <DownloadDialogModal />
-      <RepostModal />
+      {!!user && <RepostModal />}
     </>
   )
 }

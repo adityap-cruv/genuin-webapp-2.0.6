@@ -6,9 +6,6 @@ import Mobile from './mobile'
 import { useWalletStore } from '@/components/common/wallet/store'
 import { getBalanceAPI } from '@/lib/api/wallet'
 import { EmptyState } from './empty-state'
-import { useSession } from 'next-auth/react'
-import { PATH_NAME } from '@/lib/utils/constants/path'
-import { useRouter } from 'next/navigation'
 import { useGenuinOptions } from '@/lib/stores/genuin-options'
 
 const MainWalletComponent = () => {
@@ -16,13 +13,6 @@ const MainWalletComponent = () => {
     setInitialData: state.setData,
   }))
   const { setWalletDetails, walletDetails } = useWalletStore()
-  const router = useRouter()
-  const { data } = useSession({
-    required: true,
-    onUnauthenticated: () => {
-      router.push(PATH_NAME.home())
-    },
-  })
 
   async function handleBalance() {
     const { wallet } = await getBalanceAPI({ isCurrentBalance: false })
@@ -34,15 +24,14 @@ const MainWalletComponent = () => {
     void handleBalance()
   }, [])
 
-  if (data)
-    return (
-      <div>
-        <div className="hidden sm:block">
-          <WalletLayout>{walletDetails.point_balance === 0 ? <EmptyState.desktop /> : <Desktop />}</WalletLayout>
-        </div>
-        <div className="sm:hidden">{walletDetails.point_balance === 0 ? <EmptyState.mobile /> : <Mobile />}</div>
+  return (
+    <>
+      <div className="hidden sm:block">
+        <WalletLayout>{walletDetails.point_balance === 0 ? <EmptyState.desktop /> : <Desktop />}</WalletLayout>
       </div>
-    )
+      <div className="sm:hidden">{walletDetails.point_balance === 0 ? <EmptyState.mobile /> : <Mobile />}</div>
+    </>
+  )
 }
 
 export default MainWalletComponent
