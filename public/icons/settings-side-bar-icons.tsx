@@ -112,6 +112,70 @@ export function NotificationIcon({ variant, isActive, className, ...props }: Pro
   )
 }
 
+export function PersonalizationIcon({ variant, isActive, className, ...props }: Props) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="32"
+      height="32"
+      viewBox="0 0 32 32"
+      fill="none"
+      {...props}
+      className={cn(isActive ? 'stroke-primary' : 'stroke-secondary', className)}>
+      <path
+        d="M7.4092 9.84375H2.66602"
+        style={{
+          stroke: `${isActive ? 'var(--primary)' : 'var(--secondary)'}`,
+        }}
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M29.3344 9.84375H13.5254"
+        style={{
+          stroke: `${isActive ? 'var(--primary)' : 'var(--secondary)'}`,
+        }}
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M18.4762 22.3242H2.66602"
+        style={{
+          stroke: `${isActive ? 'var(--primary)' : 'var(--secondary)'}`,
+        }}
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M29.3345 22.3242H24.5938"
+        style={{
+          stroke: `${isActive ? 'var(--primary)' : 'var(--secondary)'}`,
+        }}
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M7.40625 9.66761C7.40625 10.4787 7.72846 11.2566 8.30199 11.8301C8.87552 12.4036 9.65339 12.7259 10.4645 12.7259C11.2756 12.7259 12.0535 12.4036 12.627 11.8301C13.2005 11.2566 13.5227 10.4787 13.5227 9.66761C13.5227 8.85652 13.2005 8.07864 12.627 7.50511C12.0535 6.93158 11.2756 6.60938 10.4645 6.60938C9.65339 6.60938 8.87552 6.93158 8.30199 7.50511C7.72846 8.07864 7.40625 8.85652 7.40625 9.66761Z"
+        style={{
+          stroke: `${isActive ? 'var(--primary)' : 'var(--secondary)'}`,
+        }}
+        strokeWidth="2"
+      />
+      <path
+        d="M18.4746 22.3278C18.4746 23.1389 18.7968 23.9167 19.3703 24.4903C19.9439 25.0638 20.7218 25.386 21.5328 25.386C22.3439 25.386 23.1218 25.0638 23.6953 24.4903C24.2689 23.9167 24.5911 23.1389 24.5911 22.3278C24.5911 21.5167 24.2689 20.7388 23.6953 20.1653C23.1218 19.5917 22.3439 19.2695 21.5328 19.2695C20.7218 19.2695 19.9439 19.5917 19.3703 20.1653C18.7968 20.7388 18.4746 21.5167 18.4746 22.3278Z"
+        style={{
+          stroke: `${isActive ? 'var(--primary)' : 'var(--secondary)'}`,
+        }}
+        strokeWidth="2"
+      />
+    </svg>
+  )
+}
+
 export function ContactUsIcon({ isActive, className, ...props }: Props) {
   return (
     <svg

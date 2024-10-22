@@ -13,7 +13,7 @@ import { LogoutIcon } from '@icons/logout'
 import { BurgerIcon } from '@icons/burger-icon'
 import { removeAllAuthToken } from '@lib/api/instance'
 import { SearchBar } from '@components/common/search-bar'
-import { AccountIcon, NotificationIcon } from '@icons/settings-side-bar-icons'
+import { AccountIcon } from '@icons/settings-side-bar-icons'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { formatPhoneNumberIntl } from 'react-phone-number-input'
 import { WalletAmountBadge } from '@/components/common/wallet/wallet-amount-badge'
@@ -125,10 +125,10 @@ function UserTick() {
                 {data.user.usernameSet
                   ? '@' + data.user.nickname
                   : data.user.email
-                    ? data.user.email
-                    : formatPhoneNumberIntl(
-                        data.user.phoneNumber?.startsWith('+') ? data.user.phoneNumber : `+${data.user.phoneNumber}`
-                      )}
+                  ? data.user.email
+                  : formatPhoneNumberIntl(
+                      data.user.phoneNumber?.startsWith('+') ? data.user.phoneNumber : `+${data.user.phoneNumber}`
+                    )}
               </p>
               {!data.user?.isBrandSystemUser && (
                 <p
@@ -149,7 +149,7 @@ function UserTick() {
           <div className="flex flex-col gap-3 p-4">
             {!data.user?.isBrandSystemUser && (
               <>
-                <Link href={PATH_NAME.settings('account')}>
+                <Link href={PATH_NAME.settings('edit')}>
                   <div
                     className="flex items-center gap-2"
                     onClick={() => {
@@ -158,20 +158,7 @@ function UserTick() {
                       }
                     }}>
                     <AccountIcon isActive={false} className="h-6 w-6" />
-                    <p className="text-body-1-demi">Account Settings</p>
-                  </div>
-                </Link>
-
-                <Link href={PATH_NAME.settings('notification')}>
-                  <div
-                    className="flex items-center gap-2"
-                    onClick={() => {
-                      if (!pathName.includes('settings')) {
-                        localStorage.setItem('previous_path', pathName)
-                      }
-                    }}>
-                    <NotificationIcon isActive={false} className="h-6 w-6" />
-                    <p className="text-body-1-demi">Notification Settings</p>
+                    <p className="text-body-1-demi">Settings</p>
                   </div>
                 </Link>
               </>
