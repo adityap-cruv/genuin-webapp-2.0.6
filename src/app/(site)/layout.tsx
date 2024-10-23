@@ -19,7 +19,6 @@ export default async function RootLayout(props: any) {
   const os = cookies().get('os')?.value ?? ''
   const browserType = cookies().get('browser_type')?.value ?? ''
   const configParamsStr = cookies().get('config_params')?.value ?? ''
-
   let configParams = null
   if (configParamsStr) configParams = JSON.parse(configParamsStr)
   let userSession: Session | null = null
