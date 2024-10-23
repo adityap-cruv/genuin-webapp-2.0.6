@@ -12,12 +12,10 @@ import { updateUser } from '@/components/common/modals/authentication/api/auth'
 import { useToast } from '@components/ui/use-toast'
 import { useRouter } from 'next/navigation'
 import { Toaster } from '@components/ui/toaster'
-import { PATH_NAME } from '@lib/utils/constants/path'
 import { InstagramIcon } from '@icons/instagram-icon'
 import { TikTokIcon } from '@icons/tiktok-icon'
 import { LinkedInIcon } from '@icons/linkedin-icon'
 import { TwitterIcon } from '@icons/twitter-icon'
-import Analytics from '@services/analytics'
 import { ChevronLeft } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { getUserData } from '@/lib/api/settings'
@@ -169,16 +167,11 @@ function EditProfile({ profileData }: { profileData: ProfileDetailsType }) {
           <ChevronLeft
             className="block md:hidden"
             onClick={() => {
-              const path = localStorage.getItem('previous_path')
-              router.push(path ?? PATH_NAME.home())
-              void Analytics.track({
-                eventName: 'Settings Closed',
-                properties: {},
-              })
+              router.back()
             }}
           />
           <p className="text-title-2-bold">Edit Profile</p>
-          <Button variant="custom" type="submit" className="text-title-3-demi text-primary">
+          <Button variant="custom" type="submit" className="py-0 text-title-3-demi text-primary">
             Save
           </Button>
         </div>

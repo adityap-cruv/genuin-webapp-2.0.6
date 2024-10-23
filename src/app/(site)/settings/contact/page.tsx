@@ -1,5 +1,4 @@
 'use client'
-import icBack from '@icons/icBack.svg'
 import { cn } from '@lib/utils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
@@ -8,11 +7,11 @@ import { Button } from '@components/ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, useFormField } from '@components/ui/form'
 import { Input } from '@components/ui/input'
 import { Textarea } from '@components/ui/textarea'
-import Image from 'next/image'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { Feedback } from '@lib/api/settings'
 import { useRouter } from 'next/navigation'
 import Analytics from '@services/analytics'
+import { ChevronLeft } from 'lucide-react'
 
 const formSchema = z.object({
   email: z.string().email({ message: 'Please enter valid email.' }),
@@ -50,20 +49,13 @@ export default function Component() {
     <div className="h-body">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="relative h-full w-full">
-          <div className={`${isMobile ? 'm-4' : 'mx-8 my-4'} flex items-center justify-between`}>
-            {isMobile && (
-              <Image
-                src={icBack}
-                alt="back"
-                onClick={() => {
-                  router.back()
-                  void Analytics.track({
-                    eventName: 'Settings Closed',
-                    properties: {},
-                  })
-                }}
-              />
-            )}
+          <div className={`m-4 flex items-center justify-between md:mx-8 md:my-4`}>
+            <ChevronLeft
+              className="block md:hidden"
+              onClick={() => {
+                router.back()
+              }}
+            />
             <p className="text-title-2-bold">Contact Us</p>
             {isMobile && (
               <button
