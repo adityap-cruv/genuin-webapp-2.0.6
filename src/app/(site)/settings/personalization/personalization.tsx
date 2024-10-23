@@ -47,9 +47,16 @@ export function Personalization({
       roundtable_notification: value,
     })
     if (status) {
-      toast({
-        description: 'Group Notifications have been turned on.',
-      })
+      if (value) {
+        toast({
+          description: 'Group Notifications have been turned on.',
+        })
+      } else {
+        toast({
+          description: 'Group Notifications have been turned off.',
+        })
+      }
+
       setSettingsData((prevSettingsData: any) => ({
         ...prevSettingsData,
         roundtable_notification: value,
