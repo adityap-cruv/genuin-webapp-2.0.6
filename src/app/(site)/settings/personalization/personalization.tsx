@@ -9,6 +9,7 @@ import { Dialog, DialogClose, DialogContent, DialogTrigger } from '@/components/
 import { CategoryInputSettings } from './category-input-settings'
 import { useEffect, useRef, useState } from 'react'
 import { getCategoryList } from '@/components/common/modals/authentication/screens/category-input/api'
+import { useToast } from '@/components/ui/use-toast'
 
 export function Personalization({
   settingsData,
@@ -21,6 +22,7 @@ export function Personalization({
 }) {
   const router = useRouter()
   const { data: CategoryData, isLoading } = getCategoryList()
+  const { toast } = useToast()
   const [selectedItems, setSelectedItem] = useState<Set<string>>(new Set())
   const initialSelectedItemsRef = useRef<Set<string>>(new Set())
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -45,6 +47,9 @@ export function Personalization({
       roundtable_notification: value,
     })
     if (status) {
+      toast({
+        description: 'Group Notifications have been turned on.',
+      })
       setSettingsData((prevSettingsData: any) => ({
         ...prevSettingsData,
         roundtable_notification: value,
@@ -52,6 +57,10 @@ export function Personalization({
       void Analytics.track({
         eventName: 'Notification Settings Modified',
         properties: {},
+      })
+    } else {
+      toast({
+        description: 'Something went wrong. Please try again after some time.',
       })
     }
   }
@@ -130,6 +139,7 @@ export function Personalization({
                     setDialogOpen(false)
                     initialSelectedItemsRef.current = new Set(selectedItems)
                   }}
+                  toast={toast}
                 />
               </DialogContent>
             </Dialog>

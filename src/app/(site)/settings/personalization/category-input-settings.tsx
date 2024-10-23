@@ -11,12 +11,14 @@ export function CategoryInputSettings({
   selectedItems,
   setSelectedItem,
   onClose,
+  toast,
 }: {
   CategoryData: any
   isLoading: boolean
   selectedItems: Set<string>
   setSelectedItem: (items: any) => void
   onClose: () => void
+  toast: (value: object) => void
 }) {
   const [postingTopics, setPostingTopics] = useState(false)
   const [error, setError] = useState('')
@@ -38,8 +40,14 @@ export function CategoryInputSettings({
     const res = await addTopics([...selectedItems])
     if (res) {
       onClose()
+      toast({
+        description: `Your interests are saved! You'll now get posts based on your preferences.`,
+      })
     } else {
       setError('Please try again.')
+      toast({
+        description: 'Something went wrong. Please try again after some time.',
+      })
     }
     setPostingTopics(false)
   }
@@ -80,9 +88,9 @@ export function CategoryInputSettings({
           ))}
         </div>
       )}
-      <Button onClick={handleSubmit} className="w-full" disabled={selectedItems.size < 3}>
+      <Button onClick={handleSubmit} className="h-9 w-full" disabled={selectedItems.size < 3}>
         {postingTopics ? (
-          <Loader size="md" className="fill-monochrome-white" />
+          <Loader size="sm" className="fill-monochrome-white" />
         ) : (
           <p className="text-title-3-demi">{selectedItems.size < 3 ? 'Choose 3+' : 'Save'}</p>
         )}

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { Settings } from '@lib/api/settings'
 import { Loader } from '@components/ui/loader'
 import { Personalization } from './personalization'
+import { Toaster } from '@/components/ui/toaster'
 
 export default function MainComponent() {
   const isMobile = useGenuinOptions().isMobile
@@ -28,5 +29,10 @@ export default function MainComponent() {
       </div>
     )
   if (settingsData)
-    return <Personalization settingsData={settingsData} setSettingsData={setSettingsData} isMobile={isMobile} />
+    return (
+      <>
+        <Personalization settingsData={settingsData} setSettingsData={setSettingsData} isMobile={isMobile} />
+        <Toaster />
+      </>
+    )
 }
