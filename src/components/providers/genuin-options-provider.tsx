@@ -13,6 +13,7 @@ import { useRefreshToken } from '@/hooks/use-refresh-token'
 import { rudderStackIdentify } from '@/services/analytics/useRudderAnalytics'
 import { getBalanceAPI } from '@/lib/api/wallet'
 import { type User } from 'next-auth'
+import { useSession } from 'next-auth/react'
 
 const RepostModal = dynamic(
   async () => await import('@components/common/modals/repost').then((comp) => comp.RepostModal.ui)
@@ -39,6 +40,7 @@ if (process.env.NEXT_PUBLIC_CURRENT_ENV === 'prod') console.log = () => {}
 
 // TODO: separate this component into 2 comps with once has auth and second doesn't have auth.
 export function GenuinOptionsProvider({ children, deviceType, os, browserType, config, user }: Props) {
+  const { data, status } = useSession()
   const { setInitialData } = useGenuinOptions((state) => ({
     setInitialData: state.setData,
   }))
@@ -72,12 +74,9 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
     let interceptorId: number
     if (user) {
       interceptorId = setAuthTokenInAxiosInstance(user.accessToken)
-      setInitialData({ user })
+      setInitialData({ user, isLoading: false })
       void fetchNotificationCount()
       void fetchWalletBalance()
-    } else {
-      setInitialData({ user: undefined })
-      setAuthTokenInAxiosInstance(undefined)
     }
     void rudderStackIdentify()
 
@@ -85,6 +84,21 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
       ejectAuthTokenInterceptor(interceptorId)
     }
   }, [])
+
+  useEffect(() => {
+    if (!!user || status === 'loading') return
+    if (status === 'unauthenticated') {
+      setInitialData({ user: undefined, isLoading: false })
+      setAuthTokenInAxiosInstance(undefined)
+    } else {
+      setInitialData({ user: data?.user, isLoading: false })
+      setAuthTokenInAxiosInstance(data?.user?.accessToken)
+      if (data?.user) {
+        void fetchNotificationCount()
+        void fetchWalletBalance()
+      }
+    }
+  }, [user, status])
 
   function init() {
     if (config?.brand_id) setBrandIdInAxiosInstance(Number(config?.brand_id))
@@ -104,7 +118,6 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
       isSafari,
       parentUrl: from,
       config,
-      isLoading: false,
     })
   }
 
