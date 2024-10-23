@@ -74,26 +74,20 @@ export function Personalization({
 
   return (
     <div>
-      <div className={`${isMobile ? 'm-4' : 'mx-8 my-4'} flex items-center justify-between`}>
-        {isMobile && (
-          <ChevronLeft
-            className="block md:hidden"
-            onClick={() => {
-              router.back()
-              void Analytics.track({
-                eventName: 'Settings Closed',
-                properties: {},
-              })
-            }}
-          />
-        )}
+      <div className={`m-4 flex items-center justify-between md:mx-8 md:my-4`}>
+        <ChevronLeft
+          className="block md:hidden"
+          onClick={() => {
+            router.back()
+          }}
+        />
         <p className="text-title-2-bold">Personalization</p>
         <div></div>
       </div>
       {isMobile && <hr className="bg-monochrome-black/10" />}
       {settingsData && (
         <div>
-          <div className={`${isMobile ? 'm-4' : 'mx-8 my-4'}`}>
+          <div className={`m-4 md:mx-8 md:my-4`}>
             <div
               className={cn('flex cursor-pointer justify-between rounded-t-lg border-b border-tertiary-300 px-2 py-4')}>
               <p className="text-body-1-demi">Group Notifications</p>
