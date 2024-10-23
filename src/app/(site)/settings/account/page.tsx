@@ -31,7 +31,7 @@ export default function Component() {
         />
         <p className="w-full text-center text-title-2-bold md:text-start">Account Settings</p>
       </div>
-      <hr className="bg-monochrome-black/10 block md:hidden" />
+      <hr className="block bg-monochrome-black/10 md:hidden" />
       <div className="m-4 my-6 md:mx-4 md:my-4">
         <AccountDetailItem
           title="Username"

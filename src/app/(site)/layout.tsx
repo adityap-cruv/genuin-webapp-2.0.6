@@ -19,29 +19,29 @@ export default async function RootLayout(props: any) {
   const configParamsStr = cookies().get('config_params')?.value ?? ''
   let configParams = null
   if (configParamsStr) configParams = JSON.parse(configParamsStr)
+  // let userSession: Session | null = null
+  // if (configParams) {
+  //   userSession = await auth()
+  // }
 
   let config: ConfigType | undefined
-  let error = false
 
   if (configParams) {
-    try {
-      config = await getEmbedConfig(configParams)
-      // console.log('config', config)
-    } catch (e) {
-      // eslint-disable-next-line no-console
-      console.log('error::', e)
-      error = true
-    }
+    await getEmbedConfig(configParams)
+      .then((res) => {
+        config = res
+      })
+      .catch((e) => {
+        return (
+          <RootHTML>
+            <BrandNotFound />
+          </RootHTML>
+        )
+      })
   }
+
   const brandColors = parseColors(config?.brand_colors)
   const favicon = config?.favicon
-
-  if (error)
-    return (
-      <RootHTML>
-        <BrandNotFound />
-      </RootHTML>
-    )
 
   return (
     <RootHTML brandColors={brandColors} favicon={favicon} subdomain={config?.subdomain}>

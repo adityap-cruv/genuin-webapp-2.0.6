@@ -1,6 +1,6 @@
 import { AnimatedInfinityView } from '@components/common/animated-infinity-view'
-import dynamic from 'next/dynamic'
 import { useFeedListStore } from './store'
+import { Player } from '../player'
 import { memo, useEffect, useState } from 'react'
 import { useCommentSheetStore } from '../player/comment-sheet/store'
 import { Swiper, SwiperSlide } from 'swiper/react'
@@ -16,7 +16,6 @@ import { FeedShimmer } from '../shimmers/feed-shimmer'
 // import { KsGestures } from '../ks-gestures'
 // import { useLocalStorage } from '@/lib/stores/local-storage'
 // import { type Swiper as SwiperType } from 'swiper/types'
-const Player = dynamic(async () => await import('@components/common/player').then((comp) => comp.Player.mobile))
 
 type MobileProps = {
   videos: VideoPlayerModalType[]
@@ -109,7 +108,7 @@ export function Mobile({
             {({ isActive, isPrev, isNext, isVisible }) => {
               if (isActive || isPrev || isNext || isVisible)
                 return (
-                  <Player
+                  <Player.mobile
                     isActive={isActive}
                     loop
                     videoDetails={item}

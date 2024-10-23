@@ -57,10 +57,6 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
   const isMobile = deviceType === 'mobile'
   const isSafari = browserType.toLowerCase().includes('safari')
 
-  function getBox() {
-    return getSizeBoxes(isMobile, !hideNavbar)
-  }
-
   async function fetchNotificationCount() {
     const { status, count } = await notificationsCount()
     if (status) {
@@ -106,7 +102,7 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
       brandId: config?.brand_id,
       showNavbar: !hideNavbar,
       isMobile,
-      sizeBoxes: getBox(),
+      sizeBoxes: getSizeBoxes(isMobile, !hideNavbar),
       isIframe,
       deviceType,
       os,
@@ -114,11 +110,12 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
       isSafari,
       parentUrl: from,
       config,
+      isLoading: false,
     })
   }
 
   function handleResize() {
-    setInitialData({ sizeBoxes: getBox() })
+    setInitialData({ sizeBoxes: getSizeBoxes(isMobile, !hideNavbar) })
   }
 
   function handleBlur() {
@@ -159,7 +156,7 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
       {children}
       <AuthenticationModal showClose />
       <DownloadDialogModal />
-      <RepostModal />
+      {!!sessionData?.user && <RepostModal />}
     </>
   )
 }

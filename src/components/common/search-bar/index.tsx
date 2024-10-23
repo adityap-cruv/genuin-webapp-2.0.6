@@ -1,3 +1,4 @@
+'use client'
 import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
 import { SearchInput } from './input'
 import { SearchBody } from './body'
@@ -9,7 +10,6 @@ import { Sheet, SheetContent, SheetTrigger } from '@components/ui/sheet'
 
 export const SearchBar = {
   mobile: Mobile,
-
   desktop: Desktop,
 }
 

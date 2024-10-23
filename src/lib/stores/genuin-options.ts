@@ -138,6 +138,7 @@ type StateType = {
   user?: User
   notificationCount?: number | null
   walletBalance?: number | null
+  isLoading: boolean
 }
 
 type ActionsType = {
@@ -165,11 +166,12 @@ const initialState: StateType = {
   config: null,
   notificationCount: -1,
   walletBalance: 0,
+  isLoading: true,
 }
 
 export const useGenuinOptions = create(
   persist<StateType & ActionsType>(
-    (set, get) => {
+    (set) => {
       return {
         ...initialState,
         setData(data) {

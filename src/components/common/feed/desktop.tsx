@@ -1,4 +1,3 @@
-import dynamic from 'next/dynamic'
 import { DesktopDetails } from './desktop-details'
 import { type ComponentProps, memo, useContext } from 'react'
 import { cn } from '@lib/utils'
@@ -11,8 +10,9 @@ import { FeedContext, FeedContextProvider } from './feed-provider'
 import { FeedShimmer } from '../shimmers/feed-shimmer'
 import Analytics from '@/services/analytics'
 import { usePlayerControlStore } from '../player/player-control-store'
-
-const DesktopPlayer = dynamic(async () => await import('@components/common/player').then((comp) => comp.Player.desktop))
+// import { KsGestures } from '../ks-gestures'
+// import { useLocalStorage } from '@/lib/stores/local-storage'
+import { Player } from '../player'
 
 type DesktopProps = {
   isLoading: boolean
@@ -109,7 +109,7 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
                 if (isActive || isPrev || isNext)
                   if (videosRef.current[index])
                     return (
-                      <DesktopPlayer
+                      <Player.desktop
                         isActive={isActive}
                         videoData={{
                           ...videosRef.current[index].video,
@@ -150,7 +150,7 @@ export function SinglePlayer({ sizeBox, className, videoData, isInModal }: Singl
   return (
     <div className={cn('flex h-full w-full', className)}>
       <div style={{ ...sizeBox }} className="hide-scrollbar overflow-x-clip">
-        <DesktopPlayer
+        <Player.desktop
           isActive
           videoData={{
             id: videoData.video.id,
