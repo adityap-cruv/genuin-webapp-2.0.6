@@ -115,20 +115,16 @@ export function Component({
               )}>
               <div className="w-[70%]">
                 <div className="flex items-center">
-                  <div className={`w-${members.length * 5} relative flex`}>
-                    {members.map((item, index) => {
-                      return (
-                        <CustomAvatar
-                          key={index}
-                          className={`${index !== 0 && 'absolute'} left-${index * 3} z-20 h-6 w-6 z-[${
-                            index * 5
-                          }] border-2 border-tertiary-100 bg-red-50`}
-                          imageUrl={item.profileImage}
-                          isAvatar={item.isAvatar}
-                          fallbackString={item.name}
-                        />
-                      )
-                    })}
+                  <div className={`relative flex ${members.length > 1 ? 'space-x-[-10px]' : ''}`}>
+                    {members.map((item, index) => (
+                      <CustomAvatar
+                        key={index}
+                        className={`z-[${index * 5}] h-6 w-6 border-2 border-tertiary-100 bg-red-50`}
+                        imageUrl={item.profileImage}
+                        isAvatar={item.isAvatar}
+                        fallbackString={item.name}
+                      />
+                    ))}
                   </div>
                   {members.length > 0 && (
                     <p className={`ml-1 line-clamp-1 text-body-1-med text-secondary-300`}>
