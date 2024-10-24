@@ -23,7 +23,7 @@ export function Logout() {
             redirectUrl = '/home'
           }
           redirectUrl += window.location.search
-          void signOut({ redirectTo: redirectUrl, redirect: true })
+          void signOut({ callbackUrl: redirectUrl, redirect: true })
           removeAllAuthToken()
         }}>
         Logout
