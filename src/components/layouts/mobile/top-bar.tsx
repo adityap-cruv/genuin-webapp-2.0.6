@@ -34,6 +34,7 @@ import { formatPhoneNumberIntl } from 'react-phone-number-input'
 import { useState, useEffect } from 'react'
 import { Loader } from '@/components/ui/loader'
 import { SettingIcon } from '@icons/settings'
+import { CustomImage } from '@/components/custom/custom-image'
 
 const DownloadAppDialog = dynamic(
   async () => await import('../download-app-dialog').then((comp) => comp.DownloadAppDialog)
@@ -82,9 +83,9 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
           brandName={brandName}
           isClaimed={isClaimed}
         />
-        {embed && (
+        {embed && brandLogo && (
           <Link href={{ pathname: PATH_NAME.home() }}>
-            <img src={brandLogo} className="h-8 object-cover" alt="brand logo" />
+            <CustomImage src={brandLogo} height={40} width={40} className="object-cover" alt="logo" />
           </Link>
         )}
       </span>
@@ -348,10 +349,10 @@ function UserTick() {
                 {data.user.usernameSet
                   ? '@' + data.user.nickname
                   : data.user.email
-                  ? data.user.email
-                  : formatPhoneNumberIntl(
-                      data.user.phoneNumber?.startsWith('+') ? data.user.phoneNumber : `+${data.user.phoneNumber}`
-                    )}
+                    ? data.user.email
+                    : formatPhoneNumberIntl(
+                        data.user.phoneNumber?.startsWith('+') ? data.user.phoneNumber : `+${data.user.phoneNumber}`
+                      )}
               </p>
               {!data.user.isBrandSystemUser && <p className="text-body-1-demi text-monochrome-6">Complete profile</p>}
             </div>

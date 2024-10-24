@@ -20,6 +20,7 @@ import { WalletAmountBadge } from '@/components/common/wallet/wallet-amount-badg
 import { Loader } from '@/components/ui/loader'
 import { useEffect, useState } from 'react'
 import { Shimmer } from '@/components/ui/shimmer'
+import { CustomImage } from '@/components/custom/custom-image'
 
 export function TopBar({
   showUserTick = true,
@@ -47,7 +48,9 @@ export function TopBar({
               <AppLogo.logo className="shrink-0 fill-new-off-black" imageHeight={44} />
             </Link>
             {config?.slogan?.image && (
-              <img src={config.slogan.image} className="h-10 object-cover" alt="brand_web_logo" />
+              <div className="relative h-10 w-1/3">
+                <CustomImage src={config.slogan.image} fill className="object-cover" alt="slogan image" />
+              </div>
             )}
             <div className="flex gap-x-3">
               {showSearchBar && <SearchBar.desktop />}

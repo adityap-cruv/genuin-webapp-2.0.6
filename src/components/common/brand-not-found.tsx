@@ -3,6 +3,7 @@ import { TopBar } from '@components/layouts/desktop/top-bar'
 import { Button } from '@components/ui/button'
 import imgPuppet from '@images/not-found/puppet.svg'
 import { ContactUs } from './modals/contact-us'
+import { CustomImage } from '../custom/custom-image'
 
 export function BrandNotFound() {
   return (
@@ -21,7 +22,7 @@ export function BrandNotFound() {
               </Button>
             </ContactUs>
           </div>
-          <img src={imgPuppet.src} alt="genuin" className="absolute bottom-0 right-0" />
+          <CustomImage src={imgPuppet} height={200} width={200} alt="genuin" className="absolute bottom-0 right-0" />
         </div>
       </div>
       <div className="container -mt-20 flex justify-center lg:hidden">
@@ -30,7 +31,7 @@ export function BrandNotFound() {
           <p className=" text-center text-new-para-2 font-medium">
             The URL you are attempting to access is not found. But, you can claim it and make it yours!
           </p>
-          <img src={imgPuppet.src} alt="genuin" className="my-10 h-48" />
+          <CustomImage src={imgPuppet} height={200} width={100} alt="genuin" className="my-10" />
           <div>
             <ContactUs>
               <Button variant="default" size={'custom'} className="bg-new-off-black px-4 py-3 hover:bg-new-dark-grey">

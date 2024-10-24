@@ -8,6 +8,7 @@ import icPlay from '@icons/player-controls/icPlay.svg'
 import Image from 'next/image'
 import { NoResults } from './no-results'
 import { useSearchBarStore } from '../../store'
+import { CustomImage } from '@/components/custom/custom-image'
 
 export function Loops({ loops }: { loops?: LoopResType[] }) {
   if (loops)
@@ -159,7 +160,7 @@ function RenderedImages({ videos, slug }: { videos: any[]; slug: string }) {
           zIndex: videosLength - index + 1,
           opacity: `${opacitValues[videosLength][index]}`,
         }}>
-        <img className="h-5/6 rounded" src={item.thumbnail_url} />
+        <CustomImage fill className="h-5/6 rounded" src={item.thumbnail_url} alt="" />
         <div className="absolute inset-0 hidden h-full w-full items-center justify-center bg-monochrome-black/30 group-hover/video:flex">
           <Image src={icPlay} alt="play" className="absolute" />
         </div>

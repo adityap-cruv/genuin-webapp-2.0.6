@@ -11,6 +11,7 @@ import { PlayerModal } from '@components/common/modals/player-modal'
 import { type VideoPlayerModalCommunityType, type VideoPlayerModalLoopType } from '@lib/schemas/player/video'
 import { useSearchParams } from 'next/navigation'
 import { Shimmer } from '@components/ui/shimmer'
+import { CustomImage } from '@/components/custom/custom-image'
 
 type Props = {
   loop: VideoPlayerModalLoopType
@@ -64,17 +65,7 @@ export function LoopVideos({ loop, community }: Props) {
               })
             }}
             className="group/video relative flex aspect-reel w-full items-center justify-center duration-300 hover:cursor-pointer">
-            {/* <Image
-              src={item.video.thumbnail ?? ''}
-              alt={item.video.description ?? ''}
-              className="h-full w-full rounded-xl object-fill"
-              fill
-            /> */}
-            <img
-              src={item.video.thumbnail}
-              alt={item.video.descriptionText ?? ''}
-              className="h-full w-full rounded-xl object-fill"
-            />
+            <CustomImage src={item.video.thumbnail ?? ''} alt={item.video.slug} className="rounded-xl" fill />
             <div className="absolute bottom-2 left-2">
               <Link href={{ pathname: PATH_NAME.profile(item.owner.userName) }}>
                 <div className="flex h-6 w-6 items-center">

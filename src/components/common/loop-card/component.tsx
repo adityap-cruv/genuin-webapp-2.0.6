@@ -6,6 +6,7 @@ import { CustomAvatar } from '@components/custom/custom-avatar'
 import Image from 'next/image'
 import icLock from '@icons/icLock.svg'
 import icPlay from '@icons/player-controls/icPlay.svg'
+import { CustomImage } from '@/components/custom/custom-image'
 
 type MessageType = {
   owner: {
@@ -172,7 +173,7 @@ export function Component({
                   zIndex: latestMessages.length - index + 1,
                   opacity: `${OPACITY_VALUES[latestMessages.length - 1][index]}`,
                 }}>
-                <img className="aspect-reel rounded" src={item.thumbnail} />
+                <CustomImage fill className="aspect-reel rounded" src={item.thumbnail} alt="video image" />
                 <div className="absolute inset-0 hidden h-full w-full items-center justify-center bg-monochrome-black/30 group-hover/video:flex">
                   <Image src={icPlay} alt="play" className="absolute" />
                 </div>

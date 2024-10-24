@@ -30,6 +30,7 @@ import { TwitterIcon } from '@icons/twitter-icon'
 import { JoinCommunityButton } from '@components/pages/community/join-community-button'
 import { CommunityLoopTab } from './community-loop-tab'
 import Loader from './loading'
+import { CustomImage } from '@/components/custom/custom-image'
 
 export function CommunityDetails({ slug }: { slug: string }) {
   const { data, isLoading } = getCommunityDetails(slug)
@@ -73,7 +74,7 @@ function RootDetails({ communityDetails }: { communityDetails: CommunityDetailsT
         <div>
           <div className="-px-6 aspect-w-5 aspect-h-1 relative h-40  rounded-b-lg bg-tertiary-200">
             {communityDetails?.banner && (
-              <img src={communityDetails?.banner} alt="banner" className="h-full w-full object-cover" />
+              <CustomImage src={communityDetails?.banner} alt="banner" fill className="object-cover" />
             )}
             <CustomAvatar
               isAvatar={false}

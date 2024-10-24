@@ -27,6 +27,7 @@ import { BrandCommunityTag } from '@components/common/brand-community-tag'
 import { ToggleCommunityJoinState } from '@components/common/toggle-community-join-state'
 import { Play } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
+import { CustomImage } from '@/components/custom/custom-image'
 
 export function CommunityList({ brandId }: { brandId: number }) {
   const { data, isLoading, fetchNextPage, isFetchingNextPage } = getCommunities(brandId, 8)
@@ -368,8 +369,8 @@ function LoopVideos({ brandId, loop, communityId, pathName, user }: LoopVideosPr
                   open(video.id)
                 }}
                 key={video.id}
-                className="group/vidcard relative flex aspect-reel min-w-full flex-col items-center hover:cursor-pointer">
-                <img src={video.thumbnail ?? ''} className="aspect-reel rounded" />
+                className="group/vidcard relative flex aspect-reel min-w-full flex-col items-center overflow-clip rounded bg-tertiary hover:cursor-pointer">
+                <CustomImage src={video.thumbnail ?? ''} fill alt="videos" className="object-contain" />
                 <div className="absolute bottom-1 left-1 m-1 flex items-center justify-center gap-1">
                   <Play className="h-3 w-3 stroke-monochrome-white " />
                   <div className="text-new-para-2-mobile text-monochrome-white">
