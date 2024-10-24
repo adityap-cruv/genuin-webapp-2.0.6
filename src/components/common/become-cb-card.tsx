@@ -7,6 +7,7 @@ import CommunityIcon from '@icons/ks-cb-flow/icCommunity.svg'
 // import Analytics from '@/services/analytics'
 // import { useSession } from 'next-auth/react'
 import { cn } from '@/lib/utils'
+import { CustomImage } from '../custom/custom-image'
 
 export default function BecomeCbCard({ className }: { className: string }) {
   const { embed, brandName } = useGenuinOptions(
@@ -45,7 +46,7 @@ export default function BecomeCbCard({ className }: { className: string }) {
   return (
     <div className={cn(className)}>
       <div
-        className="max-w-64 relative flex max-h-16 rounded-lg border border-primary-200 bg-primary-200 text-title-3-demi text-monochrome-black hover:cursor-pointer"
+        className="relative flex max-h-16 max-w-64 rounded-lg border border-primary-200 bg-primary-200 text-title-3-demi text-monochrome-black hover:cursor-pointer"
         style={{
           background: 'linear-gradient(30deg, var(--primary-400) -80%, #FFFFFF 50%, var(--primary-400) 120%)',
         }}
@@ -67,7 +68,7 @@ export default function BecomeCbCard({ className }: { className: string }) {
           </p>
         </div>
         <div className="z-10 flex w-2/5 items-end justify-center">
-          <img src={CommunityIcon.src} alt="community" className="h-12" />
+          <CustomImage height={60} width={60} src={CommunityIcon} alt="community" />
         </div>
       </div>
     </div>

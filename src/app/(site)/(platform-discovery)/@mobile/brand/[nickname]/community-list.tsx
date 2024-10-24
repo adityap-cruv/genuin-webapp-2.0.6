@@ -26,6 +26,7 @@ import { PrivateModal } from '@components/common/modals/private'
 import { IcLoop } from '@icons/ic-loop'
 import { BrandCommunityTag } from '@components/common/brand-community-tag'
 import { ToggleCommunityJoinState } from '@components/common/toggle-community-join-state'
+import { CustomImage } from '@/components/custom/custom-image'
 import { Play } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
 
@@ -347,8 +348,8 @@ function LoopVideos({ brandId, loop, communityId, pathName, user }: LoopVideosPr
                   open(video.id)
                 }}
                 key={video.id}
-                className="group/vidcard relative flex aspect-reel min-w-full flex-col items-center hover:cursor-pointer">
-                <img src={video.thumbnail ?? ''} className="aspect-reel rounded" />
+                className="group/vidcard relative flex aspect-reel min-w-full flex-col items-center rounded bg-tertiary  hover:cursor-pointer">
+                <CustomImage fill src={video.thumbnail ?? ''} alt={''} />
                 <div className="absolute bottom-0 left-0 m-1 flex items-center justify-center gap-0.5">
                   <Play className="h-3 w-3 stroke-monochrome-white" />
                   <p className="text-new-para-2-mobile text-monochrome-white">

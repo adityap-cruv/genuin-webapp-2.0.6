@@ -6,6 +6,7 @@ import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { ControlLayer } from './control-layer'
 import { InnerPlayer } from './inner-player'
 import { useShallow } from 'zustand/react/shallow'
+import { getWebpUrlForImage } from '@/lib/utils'
 
 type DesktopProps = {
   videoData: {
@@ -66,7 +67,7 @@ export function Desktop({ videoData, loop = false, isActive, isInModal, ...restP
         id={videoData.id}
         loop={loop}
         videoSource={videoData.source}
-        poster={videoData.thumbnail}
+        poster={getWebpUrlForImage(videoData.thumbnail)}
         {...restProps}
       />
       <div className="absolute left-0 top-0 h-full w-full">

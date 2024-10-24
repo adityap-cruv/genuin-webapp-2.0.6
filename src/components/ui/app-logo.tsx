@@ -1,8 +1,8 @@
 import { GenuinIcon } from '@icons/genuin-icon'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { cn } from '@lib/utils'
-import Image from 'next/image'
 import { type ComponentProps } from 'react'
+import { CustomImage } from '../custom/custom-image'
 
 type Props = ComponentProps<'svg'> & {
   /**
@@ -38,7 +38,7 @@ function LogoProcessor({ className, imageHeight, type, logo, ...props }: Process
   if (brandWebLogo)
     return (
       <div className="relative" style={{ height: imageHeight, width: 150 }}>
-        <Image src={brandWebLogo} fill objectFit="contain" className={cn(className)} alt="icon" />
+        <CustomImage src={brandWebLogo} fill objectFit="contain" className={cn(className)} alt="icon" />
       </div>
     )
 

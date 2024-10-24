@@ -2,10 +2,10 @@ import { type VideoType } from '.'
 import Link from 'next/link'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { PATH_NAME } from '@lib/utils/constants/path'
-import Image from 'next/image'
 import icPlay from '@icons/player-controls/icPlay.svg'
 import { NoResults } from './no-results'
 import { useSearchBarStore } from '../../store'
+import { CustomImage } from '@/components/custom/custom-image'
 
 export function Posts({ videos }: { videos?: VideoType[] }) {
   const { close } = useSearchBarStore()
@@ -18,7 +18,12 @@ export function Posts({ videos }: { videos?: VideoType[] }) {
             key={index}
             onClick={close}
             className="group/video relative flex aspect-reel w-full items-center justify-center duration-300 hover:cursor-pointer">
-            <img src={item.thumbnail ?? ''} className="h-full w-full rounded-xl object-fill" />
+            <CustomImage
+              alt={item.description ?? 'video thumbnail'}
+              src={item.thumbnail ?? ''}
+              fill
+              className="rounded-xl object-fill"
+            />
             <div className="absolute bottom-2 left-2">
               <Link href={{ pathname: PATH_NAME.profile(item.owner.userName) }}>
                 <div className="flex h-6 w-6 items-center">
@@ -35,7 +40,7 @@ export function Posts({ videos }: { videos?: VideoType[] }) {
               {/* <p className="ml-1 line-clamp-2 text-body-1-demi text-monochrome-white">{item.video.description}</p> */}
             </div>
             <div className="absolute inset-0  hidden h-full w-full items-center justify-center rounded-lg bg-monochrome-black/40 group-hover/video:flex">
-              <Image src={icPlay} alt="" />
+              <CustomImage src={icPlay} alt="" />
             </div>
           </Link>
         ))}

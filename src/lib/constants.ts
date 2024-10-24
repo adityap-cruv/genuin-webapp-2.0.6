@@ -34,3 +34,5 @@ export const RECENT_SEARCH_CONTENT_TYPE: Record<'text' | 'community' | 'loop' | 
   user: 2,
   video: 5,
 }
+
+export const PROTECTED_ROUTES = ['settings', 'wallet']
