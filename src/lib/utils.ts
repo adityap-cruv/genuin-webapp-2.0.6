@@ -6,6 +6,7 @@ import { twMerge } from 'tailwind-merge'
 import { useGenuinOptions } from './stores/genuin-options'
 import { AuthenticationModal } from '@components/common/modals/authentication'
 import { type ReactNode } from 'react'
+import { PROTECTED_ROUTES } from './constants'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -327,4 +328,8 @@ export function tryJsonParse(data: string) {
   } catch (e) {
     return data
   }
+}
+
+export function checkIfUrlIncludesProtectedRoute(url: string) {
+  return PROTECTED_ROUTES.some((route) => url.includes(route))
 }

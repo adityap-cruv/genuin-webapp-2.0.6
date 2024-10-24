@@ -3,6 +3,7 @@ import { Button } from '@components/ui/button'
 import { removeAllAuthToken } from '@lib/api/instance'
 import { signOut } from 'next-auth/react'
 import { useAuthenticationModalStore } from '../store'
+import { checkIfUrlIncludesProtectedRoute } from '@/lib/utils'
 
 export function Logout() {
   const { close } = useAuthenticationModalStore()
@@ -17,7 +18,12 @@ export function Logout() {
         variant="default"
         className="w-full text-title-3-med !text-new-off-white"
         onClick={() => {
-          void signOut({ callbackUrl: `${window.location.pathname}${window.location.search}`, redirect: true })
+          let redirectUrl = window.location.pathname
+          if (checkIfUrlIncludesProtectedRoute(redirectUrl)) {
+            redirectUrl = '/home'
+          }
+          redirectUrl += window.location.search
+          void signOut({ redirectTo: redirectUrl, redirect: true })
           removeAllAuthToken()
         }}>
         Logout
