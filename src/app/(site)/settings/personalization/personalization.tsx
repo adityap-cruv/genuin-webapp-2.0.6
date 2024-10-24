@@ -136,6 +136,7 @@ export function Personalization({
                   isLoading={isLoading}
                   selectedItems={selectedItems}
                   setSelectedItem={setSelectedItem}
+                  initialSelectedItemsRef={initialSelectedItemsRef}
                   onClose={() => {
                     setDialogOpen(false)
                     initialSelectedItemsRef.current = new Set(selectedItems)
