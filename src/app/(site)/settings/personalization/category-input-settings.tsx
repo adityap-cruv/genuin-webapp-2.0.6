@@ -1,7 +1,7 @@
 import { Button } from '@components/ui/button'
 import { ModalShell } from '../../../../components/common/modals/authentication/modal-shell'
 import { addTopics } from '../../../../components/common/modals/authentication/screens/category-input/api'
-import { useState } from 'react'
+import { useState, type MutableRefObject } from 'react'
 import { cn } from '@lib/utils'
 import { Loader } from '@components/ui/loader'
 
@@ -10,6 +10,7 @@ export function CategoryInputSettings({
   isLoading,
   selectedItems,
   setSelectedItem,
+  initialSelectedItemsRef,
   onClose,
   toast,
 }: {
@@ -17,6 +18,7 @@ export function CategoryInputSettings({
   isLoading: boolean
   selectedItems: Set<string>
   setSelectedItem: (items: any) => void
+  initialSelectedItemsRef: MutableRefObject<Set<string>>
   onClose: () => void
   toast: (value: object) => void
 }) {
@@ -33,6 +35,18 @@ export function CategoryInputSettings({
       }
       return newState
     })
+  }
+
+  const hasSelectionChanged = () => {
+    if (selectedItems.size !== initialSelectedItemsRef.current.size) return true
+
+    // Check if the items in both sets are the same
+    for (const item of selectedItems) {
+      if (!initialSelectedItemsRef.current.has(item)) {
+        return true
+      }
+    }
+    return false
   }
 
   async function handleSubmit() {
@@ -88,7 +102,7 @@ export function CategoryInputSettings({
           ))}
         </div>
       )}
-      <Button onClick={handleSubmit} className="h-9 w-full" disabled={selectedItems.size < 3}>
+      <Button onClick={handleSubmit} className="h-9 w-full" disabled={!hasSelectionChanged() || selectedItems.size < 3}>
         {postingTopics ? (
           <Loader size="sm" className="fill-monochrome-white" />
         ) : (
