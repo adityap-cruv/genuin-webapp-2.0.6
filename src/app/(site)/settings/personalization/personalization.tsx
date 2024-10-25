@@ -10,14 +10,13 @@ import { CategoryInputSettings } from './category-input-settings'
 import { useEffect, useRef, useState } from 'react'
 import { getCategoryList } from '@/components/common/modals/authentication/screens/category-input/api'
 import { useToast } from '@/components/ui/use-toast'
+import { useQueryClient } from '@tanstack/react-query'
 
 export function Personalization({
   settingsData,
-  setSettingsData,
   isMobile,
 }: {
   settingsData: { roundtable_notification: boolean }
-  setSettingsData: any
   isMobile: boolean
 }) {
   const router = useRouter()
@@ -26,6 +25,7 @@ export function Personalization({
   const [selectedItems, setSelectedItem] = useState<Set<string>>(new Set())
   const initialSelectedItemsRef = useRef<Set<string>>(new Set())
   const [dialogOpen, setDialogOpen] = useState(false)
+  const queryClient = useQueryClient()
 
   useEffect(() => {
     if (CategoryData) {
@@ -56,11 +56,8 @@ export function Personalization({
           description: 'Group Notifications have been turned off.',
         })
       }
+      void queryClient.invalidateQueries(['user', 'settings'], { exact: true })
 
-      setSettingsData((prevSettingsData: any) => ({
-        ...prevSettingsData,
-        roundtable_notification: value,
-      }))
       void Analytics.track({
         eventName: 'Notification Settings Modified',
         properties: {},
