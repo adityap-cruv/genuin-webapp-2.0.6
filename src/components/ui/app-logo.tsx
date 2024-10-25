@@ -38,16 +38,16 @@ function LogoProcessor({ className, imageHeight, type, logo, ...props }: Process
   if (brandWebLogo)
     return (
       <div className="relative" style={{ height: imageHeight, width: 150 }}>
-        <CustomImage src={brandWebLogo} fill objectFit="contain" className={cn(className)} alt="icon" />
+        <CustomImage src={brandWebLogo} fill className={cn('object-contain', className)} alt="icon" />
       </div>
     )
 
   switch (type) {
     case 'text':
-      return <GenuinIcon.text {...props} />
+      return <GenuinIcon.text height={imageHeight} {...props} />
     case 'icon':
-      return <GenuinIcon.icon {...props} />
+      return <GenuinIcon.icon height={imageHeight} {...props} />
     case 'logo':
-      return <GenuinIcon.logo {...props} />
+      return <GenuinIcon.logo height={imageHeight} {...props} />
   }
 }

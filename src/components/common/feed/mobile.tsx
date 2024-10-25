@@ -18,7 +18,7 @@ import { useLocalStorage } from '@/lib/stores/local-storage'
 import { type Swiper as SwiperType } from 'swiper/types'
 
 type MobileProps = {
-  videos: VideoPlayerModalType[]
+  videos?: VideoPlayerModalType[] | null
   isLoading: boolean
   isError: boolean
   hasNextPage?: boolean
@@ -60,6 +60,7 @@ export function Mobile({
   const commentIsOpen = useCommentSheetStore((state) => state.modalIsOpen)
 
   useEffect(() => {
+    if (!videos) return
     if (!isFetchingNextPage && videos.length - 3 <= currentIndex) {
       // console.log('isFetchingNextPage NEXT PGE.')
       fetchNextPage?.()
@@ -69,6 +70,7 @@ export function Mobile({
 
   const handleActiveIndexChange = useCallback(
     (swiper: SwiperType) => {
+      if (!videos) return
       // Update the step if KS gestures are enabled.
       if (showKsGestures) {
         // If the gesture step is swipe, then update the step.
@@ -76,10 +78,10 @@ export function Mobile({
       }
       setCurrentIndex(swiper.activeIndex, videos[currentIndex].video.id)
     },
-    [gestureStep, showKsGestures]
+    [gestureStep, showKsGestures, videos]
   )
 
-  if (isLoading) {
+  if (isLoading || !videos) {
     return <FeedShimmer.mobile />
   }
 

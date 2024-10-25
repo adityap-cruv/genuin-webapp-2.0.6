@@ -1,31 +1,23 @@
 'use client'
 import dynamic from 'next/dynamic'
-import { TopBar } from '@components/layouts/mobile/top-bar'
-import { FeedShimmer } from '@components/common/shimmers/feed-shimmer'
+import { Feed } from '@components/common/feed'
 import { getCommunityFeed } from '@/lib/api/community'
-const Feed = dynamic(async () => await import('@components/common/feed').then((comp) => comp.Feed.mobile), {
-  loading(loadingProps) {
-    return <FeedShimmer.mobile />
-  },
-})
+const TopBar = dynamic(async () => await import('@components/layouts/mobile/top-bar').then((comp) => comp.TopBar))
 
 export function RootFeed({ slug }: { slug: string }) {
   const { data, isError, isLoading, fetchNextPage, isFetchingNextPage } = getCommunityFeed(slug)
   const videos = data?.pages.flatMap((item) => item.videos)
-  if (videos)
-    return (
-      <main className="relative h-full w-full">
-        <span className="absolute inset-0">
-          <TopBar variant="transparent" />
-        </span>
-        <Feed
-          videos={videos}
-          isError={isError}
-          isLoading={isLoading}
-          isFetchingNextPage={isFetchingNextPage}
-          fetchNextPage={fetchNextPage}
-          startIndex={0}
-        />
-      </main>
-    )
+  return (
+    <main className="relative h-full w-full">
+      <TopBar variant="transparent" />
+      <Feed.mobile
+        videos={videos}
+        isError={isError}
+        isLoading={isLoading}
+        isFetchingNextPage={isFetchingNextPage}
+        fetchNextPage={fetchNextPage}
+        startIndex={0}
+      />
+    </main>
+  )
 }

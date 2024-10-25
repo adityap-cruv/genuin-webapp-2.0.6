@@ -7,6 +7,7 @@ import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import { useShallow } from 'zustand/react/shallow'
 import { InnerPlayer } from './inner-player'
 import { CommentSheet } from './comment-sheet'
+import { getWebpUrlForImage } from '@/lib/utils'
 
 type MobileProps = {
   videoDetails: VideoPlayerModalType
@@ -64,7 +65,7 @@ export function Mobile({
           id={videoDetails.video.id}
           loop={loop}
           videoSource={videoDetails.video.source}
-          poster={videoDetails.video.thumbnail}
+          poster={getWebpUrlForImage(videoDetails.video.thumbnail)}
           {...restProps}
         />
         <div className="absolute left-0 top-0 h-full w-full">
