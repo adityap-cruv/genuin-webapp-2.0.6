@@ -91,8 +91,7 @@ function Component({
         <PlayerModalWrapper
           unreadMessageCount={getUnreadMessageCount(modalController.loop.id)}
           open={modalController.open}
-          loop={modalController.loop}
-          community={{ handle, id, shareUrl, slug, brand, isJoinRequested, name, profileImage, type, userRole }}
+          slug={modalController.loop.slug}
           close={() => {
             setModalController((x) => {
               x.open = false
@@ -120,14 +119,13 @@ function NoLoops() {
 
 type PlayerModalWrapperProps = {
   open: boolean
-  community: VideoPlayerModalCommunityType
-  loop: VideoPlayerModalLoopType
+  slug: string
   close: () => void
   unreadMessageCount: number
 }
 
-function PlayerModalWrapper({ open = false, close, community, loop, unreadMessageCount }: PlayerModalWrapperProps) {
-  const { data, fetchNextPage, isError, isFetchingNextPage, isFetching } = getLoopVideos({ community, loop })
+function PlayerModalWrapper({ open = false, close, slug, unreadMessageCount }: PlayerModalWrapperProps) {
+  const { data, fetchNextPage, isError, isFetchingNextPage, isFetching } = getLoopVideos(slug)
   const videos = data?.pages.flatMap((item) => item.videos)
 
   if (videos)

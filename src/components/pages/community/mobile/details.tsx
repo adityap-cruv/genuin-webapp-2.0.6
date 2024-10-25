@@ -50,7 +50,7 @@ export function Details({ communityDetails }: Props) {
       <TopBar />
       <TopStickyBar
         communityName={communityDetails.name ?? ''}
-        communityProfileImage={communityDetails.dp ?? ''}
+        communityProfileImage={communityDetails.dp_m ?? communityDetails.dp ?? ''}
         elementIdToTrack={DETAIL_ELEMENT_ID}
       />
       <div
@@ -363,7 +363,7 @@ function Leaders() {
                 title={item.name ?? ''}
                 subtitle={'@' + item.nickname}
                 description={item.bio ?? ''}
-                image={item.profile_image}
+                image={item.profile_image_m ?? item.profile_image}
                 isAvatar={item.is_avatar}
                 brand={item.brand}
                 isOwner={false}

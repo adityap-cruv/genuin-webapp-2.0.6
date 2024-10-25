@@ -66,7 +66,7 @@ export function CategoryView({ className, ...props }: ComponentProps<'div'>) {
                       <div className="flex items-center gap-3 rounded-md px-3 py-1.5 hover:bg-monochrome-6/10">
                         <CustomAvatar
                           className="h-8 w-8 bg-red-40"
-                          imageUrl={item.dp ?? ''}
+                          imageUrl={item.dp_s ?? item.dp}
                           fallbackString={item.name ?? ''}
                           isAvatar={false}
                         />

@@ -43,7 +43,7 @@ export function LoopItem({ loop }: { loop: LoopResType }) {
         {members[0] && (
           <CustomAvatar
             className="z-[3] h-6 w-6 border-2 border-tertiary-100 bg-red-50"
-            imageUrl={members[0].profile_image ?? ''}
+            imageUrl={members[0].profile_image_s ?? members[0].profile_image ?? ''}
             isAvatar={members[0].is_avatar}
             fallbackString={members[0].name ?? ''}
           />
@@ -51,7 +51,7 @@ export function LoopItem({ loop }: { loop: LoopResType }) {
         {members.length !== 0 && members[1] && (
           <CustomAvatar
             className="absolute left-3 z-[2] h-6 w-6 border-2 border-tertiary-100 bg-red-50"
-            imageUrl={members[1].profile_image ?? ''}
+            imageUrl={members[1].profile_image_s ?? members[1].profile_image ?? ''}
             isAvatar={members[1].is_avatar}
             fallbackString={members[1].name ?? ''}
           />
@@ -59,7 +59,7 @@ export function LoopItem({ loop }: { loop: LoopResType }) {
         {members.length !== 0 && members[2] && (
           <CustomAvatar
             className="absolute left-6 h-6 w-6 border-2 border-tertiary-100 bg-red-50"
-            imageUrl={members[2].profile_image ?? ''}
+            imageUrl={members[2].profile_image_s ?? members[2].profile_image ?? ''}
             isAvatar={members[2].is_avatar}
             fallbackString={members[2].name ?? ''}
           />
@@ -160,7 +160,7 @@ function RenderedImages({ videos, slug }: { videos: any[]; slug: string }) {
           zIndex: videosLength - index + 1,
           opacity: `${opacitValues[videosLength][index]}`,
         }}>
-        <CustomImage fill className="h-5/6 rounded" src={item.thumbnail_url} alt="" />
+        <CustomImage fill className="h-5/6 rounded" src={item.thumbnail_url_l || item.thumbnail} alt="" />
         <div className="absolute inset-0 hidden h-full w-full items-center justify-center bg-monochrome-black/30 group-hover/video:flex">
           <Image src={icPlay} alt="play" className="absolute" />
         </div>

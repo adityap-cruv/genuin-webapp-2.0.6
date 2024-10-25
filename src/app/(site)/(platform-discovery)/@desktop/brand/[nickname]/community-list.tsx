@@ -1,6 +1,6 @@
 import icLock from '@icons/icLock.svg'
 import { DecorativeList } from '@components/custom/decorative-list'
-import { fetchProfileCommunityLoops, fetchProfileVideos, getCommunities, getProfileFeed } from '@lib/api/brand-profile'
+import { fetchProfileCommunityLoops, fetchProfileVideos, getBrandFeed, getCommunities } from '@lib/api/brand-profile'
 import { Loader } from '@components/ui/loader'
 import { Shimmer } from '@components/ui/shimmer'
 import { PlayerModal } from '@components/common/modals/player-modal'
@@ -200,7 +200,7 @@ export function CommunityList({ brandId }: { brandId: number }) {
 }
 
 function PlayerModalWrapper({ brandId, currentVideoId }: { brandId: number; currentVideoId: string }) {
-  const { data, isLoading, fetchNextPage } = getProfileFeed(brandId, currentVideoId)
+  const { data, isLoading, fetchNextPage } = getBrandFeed(brandId, currentVideoId)
   const { close } = useCommunityListStore()
   const videos = data?.pages.flatMap((item) => item.feed)
   const [activeIndex, setActiveIndex] = useState(0)

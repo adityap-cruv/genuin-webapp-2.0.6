@@ -85,7 +85,7 @@ export function Guidelines({ onNext }: GuidelineProps) {
     <ModalShell>
       <div className="w-full">
         {brandLogo ? (
-          <CustomImage alt="" src={brandLogo} height={40} width={120} />
+          <CustomImage alt="Logo" src={brandLogo} height={40} width={120} />
         ) : (
           <GenuinIcon.logo className="h-10" />
         )}

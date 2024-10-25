@@ -1,8 +1,8 @@
 'use client'
 import dynamic from 'next/dynamic'
 import { TopBar } from '@components/layouts/mobile/top-bar'
-import { getCommunityVideos } from '@lib/api/community'
 import { FeedShimmer } from '@components/common/shimmers/feed-shimmer'
+import { getCommunityFeed } from '@/lib/api/community'
 const Feed = dynamic(async () => await import('@components/common/feed').then((comp) => comp.Feed.mobile), {
   loading(loadingProps) {
     return <FeedShimmer.mobile />
@@ -10,7 +10,7 @@ const Feed = dynamic(async () => await import('@components/common/feed').then((c
 })
 
 export function RootFeed({ slug }: { slug: string }) {
-  const { data, isError, isLoading, fetchNextPage, isFetchingNextPage } = getCommunityVideos(slug)
+  const { data, isError, isLoading, fetchNextPage, isFetchingNextPage } = getCommunityFeed(slug)
   const videos = data?.pages.flatMap((item) => item.videos)
   if (videos)
     return (

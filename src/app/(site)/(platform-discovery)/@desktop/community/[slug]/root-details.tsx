@@ -62,7 +62,7 @@ function RootDetails({ communityDetails }: { communityDetails: CommunityDetailsT
         defaultOpen={false}
         isOpen={!detailsInView}
         communityName={communityDetails.name ?? ''}
-        communityProfileImage={communityDetails.dp ?? ''}
+        communityProfileImage={communityDetails.dp_m ?? communityDetails.dp ?? ''}
         communityHandle={communityDetails.handle}
         role={communityDetails.logged_in_user_role}
         communityId={communityDetails.community_id}
@@ -338,7 +338,7 @@ function Leaders({ communityDetails }: { communityDetails: CommunityDetailsType 
                 title={item.name ?? ''}
                 subtitle={'@' + item.nickname}
                 description={item.bio ?? ''}
-                image={item.profile_image}
+                image={item.profile_image_m ?? item.profile_image}
                 isAvatar={item.is_avatar}
                 brand={item.brand}
                 isOwner={false}

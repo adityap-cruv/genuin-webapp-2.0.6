@@ -14,6 +14,7 @@ export async function fetchLinkouts(id: number) {
     })
 }
 
+// TODO: If not used anywhere then scrap it.
 export function getLinkouts(id: number) {
   return useQuery({
     queryFn: async () => await fetchLinkouts(id),

@@ -15,6 +15,9 @@ const ownerSchema = z.object({
   phone: z.string().nullish(),
   is_avatar: z.boolean(),
   profile_image: z.string(),
+  profile_image_s: z.string().nullish(),
+  profile_image_m: z.string().nullish(),
+  profile_image_l: z.string().nullish(),
   brand: BrandUserSchema.optional(),
 })
 

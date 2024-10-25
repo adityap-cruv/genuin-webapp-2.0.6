@@ -249,7 +249,7 @@ export function MainComponent({ loopDetails }: Props) {
                             <LockIcon className="z-10 ml-1 h-4 w-4 stroke-tertiary" />
                           </div>
                         </TooltipTrigger>
-                        <TooltipContent className="bg-monochrome-black w-64">
+                        <TooltipContent className="w-64 bg-monochrome-black">
                           <p className="text-center text-cap-1-med text-monochrome-white">
                             This community is private. Only people approved by it's moderators can see and participate
                             in this community.
@@ -286,21 +286,7 @@ export function MainComponent({ loopDetails }: Props) {
         ) : (
           <div className="grid w-full grid-cols-2 gap-4 overflow-hidden" style={{ height: 'calc(100% - 56px)' }}>
             <div className="h-full snap-y snap-proximity overflow-auto scroll-smooth">
-              <LoopVideos
-                community={{
-                  shareUrl: loopDetails.community.share_url ?? '',
-                  handle: loopDetails.community.handle,
-                  slug: loopDetails.community.slug,
-                  id: loopDetails.community.community_id,
-                  name: loopDetails.community.name,
-                  profileImage: loopDetails.community.dp,
-                }}
-                loop={{
-                  id: loopDetails.chat_id,
-                  slug: loopDetails.slug,
-                  name: loopDetails.group.group_name,
-                }}
-              />
+              <LoopVideos slug={loopDetails.slug} />
             </div>
             <div className="snap-y snap-proximity overflow-auto scroll-smooth py-2">
               <LoopCohosts slug={loopDetails.slug} />
@@ -349,7 +335,7 @@ function LoopCohosts({ slug }: { slug: string }) {
                   title={item.name ?? ''}
                   subtitle={'+' + item.phone}
                   description={item.bio ?? ''}
-                  image={item.profile_image}
+                  image={item.profile_image_m ?? item.profile_image}
                   isAvatar={item.is_avatar}
                   brand={item.brand ?? null}
                   isOwner={false}
@@ -365,7 +351,7 @@ function LoopCohosts({ slug }: { slug: string }) {
                   title={item.name ?? ''}
                   subtitle={'@' + item.nickname}
                   description={item.bio ?? ''}
-                  image={item.profile_image}
+                  image={item.profile_image_m ?? item.profile_image}
                   isAvatar={item.is_avatar}
                   brand={item.brand ?? null}
                   isOwner={false}
@@ -414,7 +400,7 @@ function LoopSubscribers({ slug }: { slug: string }) {
                 title={item.name ?? ''}
                 subtitle={'@' + item.nickname}
                 description={item.bio ?? ''}
-                image={item.profile_image}
+                image={item.profile_image_m ?? item.profile_image}
                 isAvatar={item.is_avatar}
                 brand={item.brand ?? null}
                 isOwner={false}

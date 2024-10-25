@@ -4,8 +4,7 @@ import axios from 'axios'
 import { axiosInstance } from './instance'
 import { validateLoopCohosts } from '@lib/schemas/loop/cohosts'
 import { validateLoopSubscribers } from '@lib/schemas/loop/subscribers'
-import { parseVideosFromLoop } from './api-response-parser'
-import { type VideoPlayerModalCommunityType, type VideoPlayerModalLoopType } from '@lib/schemas/player/video'
+import { parseFeedResponseFromGoApi } from './api-response-parser'
 
 export async function fetchLoopDetails(slug: string) {
   return await axiosInstance
@@ -27,43 +26,33 @@ export function getLoopDetails(slug: string) {
   })
 }
 
-async function fetchLoopVideos(
-  pageParams: string,
-  loop: VideoPlayerModalLoopType,
-  community: VideoPlayerModalCommunityType
-) {
+async function fetchLoopVideos(pageParams: any, slug: string) {
   return await axiosInstance
-    .get('/api/v3/conversation/messages', {
+    .get('goservices/feed/loop', {
       params: {
-        slug: loop.slug,
-        last_message_id: pageParams,
+        slug,
+        last_video_id: pageParams?.lastVideoId,
       },
     })
     .then((res) => {
       const resData = res.data.data
-      const videos = parseVideosFromLoop(resData.messages, loop, community)
-      return { videos, end: resData.end_of_messages }
+      const videos = parseFeedResponseFromGoApi(resData.feeds)
+      return { videos, end: resData.end_of_feed }
     })
     .catch((e) => {
       throw new Error('Something went wrong with loop videos fetching api.')
     })
 }
 
-export function getLoopVideos({
-  loop,
-  community,
-}: {
-  loop: VideoPlayerModalLoopType
-  community: VideoPlayerModalCommunityType
-}) {
+export function getLoopVideos(slug: string) {
   return useInfiniteQuery({
-    queryFn: async ({ pageParam }) => await fetchLoopVideos(pageParam, loop, community),
-    queryKey: ['loop', 'videos', 'paginated', loop.slug],
-    getNextPageParam: (lastPage, pages) => {
+    queryFn: async ({ pageParam }) => await fetchLoopVideos(pageParam, slug),
+    queryKey: ['loop', 'videos', 'paginated', slug],
+    getNextPageParam: (lastPage) => {
       if (lastPage.end) {
         return
       }
-      return lastPage.videos[lastPage.videos.length - 1].video?.id
+      return { lastVideoId: lastPage.videos[lastPage.videos.length - 1].video.id }
     },
   })
 }

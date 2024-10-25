@@ -1,7 +1,6 @@
-import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import { useInfiniteQuery } from '@tanstack/react-query'
-import { parseFeedResponse } from './api-response-parser'
+import { parseFeedResponseFromGoApi } from './api-response-parser'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import { axiosInstance } from './instance'
 
@@ -16,20 +15,15 @@ async function fetchFeed(
   pageParam: { pageSession?: string; lastVideoId?: string; lastVideoParentId?: string }
 ): Promise<{ reels: VideoPlayerModalType[]; pageSession: string; end: boolean }> {
   return await axiosInstance
-    .get('/api/v3/v1/feeds', {
-      params: {
-        brand_id: useGenuinOptions.getState().brandId ?? undefined,
-        type: feedType,
-        last_video_id: pageParam?.lastVideoId ?? undefined,
-        page_session: pageParam?.pageSession ?? undefined,
-        device_id: encodeURI(useLocalStorage.getState().deviceId),
-        last_video_type: pageParam?.lastVideoId ? 'loop' : undefined,
-        last_video_parent_id: pageParam?.lastVideoId ? pageParam.lastVideoParentId : undefined,
-      },
+    .post('/goservices/feed/home', {
+      type: feedType,
+      last_video_id: pageParam?.lastVideoId ?? undefined,
+      page_session: pageParam?.pageSession ?? undefined,
+      device_id: encodeURI(useLocalStorage.getState().deviceId),
     })
     .then((res) => {
       const resData = res.data.data
-      const reels = parseFeedResponse(resData.feeds)
+      const reels = parseFeedResponseFromGoApi(resData.feeds)
       return { reels, pageSession: resData.page_session, end: resData.feeds.length === 0 }
     })
     .catch((e) => {

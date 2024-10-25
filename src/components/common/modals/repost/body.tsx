@@ -49,7 +49,7 @@ function CommunityCard({ communityInfo }: { communityInfo: RepostCommunityType }
         <span className="flex gap-x-3">
           <CustomAvatar
             fallbackString={communityInfo.name ?? ''}
-            imageUrl={communityInfo.dp ?? ''}
+            imageUrl={communityInfo.dp_m ?? communityInfo.dp ?? ''}
             isAvatar={false}
             className="h-10 w-10"
           />

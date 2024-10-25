@@ -14,7 +14,7 @@ import { PATH_NAME } from '@lib/utils/constants/path'
 import { type MotionValue, useMotionValueEvent } from 'framer-motion'
 import { useCommunityListStore } from './store'
 import { type ProfileCommunityType, type ProfileLoopType, type ProfileVideoType } from '@lib/schemas/profile/community'
-import { fetchProfileCommunityLoops, getCommunities, fetchProfileVideos, getProfileFeed } from '@lib/api/brand-profile'
+import { fetchProfileCommunityLoops, getCommunities, fetchProfileVideos, getBrandFeed } from '@lib/api/brand-profile'
 import icLock from '@icons/icLock.svg'
 import { PlayerModal } from '@components/common/modals/player-modal'
 import icPlay from '@icons/player-controls/icPlay.svg'
@@ -191,7 +191,7 @@ export function CommunityList({ brandId, scrollYProgress }: { brandId: number; s
 }
 
 function PlayerModalWrapper({ brandId, currentVideoId }: { brandId: number; currentVideoId: string }) {
-  const { data, isLoading, fetchNextPage } = getProfileFeed(brandId, currentVideoId)
+  const { data, isLoading, fetchNextPage } = getBrandFeed(brandId, currentVideoId)
   const { close } = useCommunityListStore()
   const videos = data?.pages.flatMap((item) => item.feed)
 

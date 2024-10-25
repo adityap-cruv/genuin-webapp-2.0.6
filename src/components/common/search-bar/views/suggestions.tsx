@@ -45,7 +45,7 @@ function Inner() {
                         <CustomAvatar
                           className="h-12 w-12"
                           fallbackString={item.community.name ?? ''}
-                          imageUrl={item.community.dp ?? ''}
+                          imageUrl={item.community.dp_m ?? item.community.dp ?? ''}
                           isAvatar={false}
                         />
                       }
@@ -87,7 +87,7 @@ function Inner() {
                       avatar={
                         <CustomAvatar
                           fallbackString={item.user.name ?? ''}
-                          imageUrl={item.user.profile_image ?? ''}
+                          imageUrl={item.user.profile_image_m ?? item.user.profile_image ?? ''}
                           isAvatar={item.user.is_avatar}
                           className="h-12 w-12"
                         />

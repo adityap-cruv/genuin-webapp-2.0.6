@@ -2,7 +2,7 @@ import { validateProfileDetails } from '@lib/schemas/profile/profile'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import {
-  parseFeedResponse,
+  parseFeedResponseFromGoApi,
   parseProfileCommunityResponse,
   parseProfileLoopResponse,
   parseProfileVideoResponse,
@@ -32,7 +32,6 @@ export async function fetchBrandData(slug: string, headers?: Headers) {
     })
 }
 
-let pageSession: string | undefined
 async function fetchCommunities(
   brandId: number,
   pageParam: { pageSession: string; lastCommunityId: string },
@@ -49,7 +48,6 @@ async function fetchCommunities(
     })
     .then((res) => {
       const resData = res.data.data
-      pageSession = resData.page_session
       const communities = parseProfileCommunityResponse(resData?.communities)
       return {
         communities,
@@ -124,7 +122,6 @@ export async function fetchProfileVideos(
     })
     .then((res) => {
       const resData = res.data.data
-      pageSession = resData.page_session
       return parseProfileVideoResponse(resData.messages)
     })
     .catch((e) => {
@@ -134,20 +131,18 @@ export async function fetchProfileVideos(
     })
 }
 
-export async function fetchProfileFeed(brandId: number, pageParam?: { lastMessageId: string }, fromVideoId?: string) {
+export async function fetchBrandFeed(brandId: number, pageParam?: { lastMessageId: string }, fromVideoId?: string) {
   return await axiosInstance
-    .get('/api/v3/brand/feed', {
+    .get('/goservices/feed/brand', {
       params: {
         brand_id: brandId,
-        page_session: pageSession,
-        from_message_id: pageParam?.lastMessageId ? undefined : fromVideoId,
-        last_message_id: pageParam?.lastMessageId,
+        from_video_id: pageParam?.lastMessageId ? undefined : fromVideoId,
+        last_video_id: pageParam?.lastMessageId,
       },
     })
     .then((res) => {
       const resData = res.data.data
-      pageSession = resData.page_session
-      return { feed: parseFeedResponse(resData.feeds), end: resData.end_of_messages }
+      return { feed: parseFeedResponseFromGoApi(resData.feeds), end: resData.end_of_feed }
     })
     .catch((e) => {
       // eslint-disable-next-line no-console
@@ -156,9 +151,9 @@ export async function fetchProfileFeed(brandId: number, pageParam?: { lastMessag
     })
 }
 
-export function getProfileFeed(brandId: number, fromVideoId: string) {
+export function getBrandFeed(brandId: number, fromVideoId: string) {
   return useInfiniteQuery({
-    queryFn: async ({ pageParam }) => await fetchProfileFeed(brandId, pageParam, fromVideoId),
+    queryFn: async ({ pageParam }) => await fetchBrandFeed(brandId, pageParam, fromVideoId),
     queryKey: ['feed', brandId, fromVideoId],
     getNextPageParam(lastPage) {
       if (lastPage.end) return
