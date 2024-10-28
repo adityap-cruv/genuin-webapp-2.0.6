@@ -69,7 +69,7 @@ export function WithMentions({ textArr, maxChars = 50, className, ...props }: Wi
           e.stopPropagation()
           if (showMore) setShowMore(false)
         }}
-        className="cursor-pointer pl-1 text-tertiary">
+        className="hidden cursor-pointer pl-1 text-tertiary sm:block">
         (View more)
       </span>
     )
@@ -135,7 +135,13 @@ export function WithMentions({ textArr, maxChars = 50, className, ...props }: Wi
   }, [textArr, showMore, maxChars])
 
   return (
-    <p className={cn('', className)} {...props}>
+    <p
+      className={cn('', className)}
+      {...props}
+      onClick={(e) => {
+        e.stopPropagation()
+        setShowMore(!showMore)
+      }}>
       {processedComponent}
     </p>
   )

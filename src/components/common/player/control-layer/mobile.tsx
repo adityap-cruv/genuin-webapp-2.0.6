@@ -214,7 +214,7 @@ function Details({
           <Linkout.mobile linkouts={linkouts} linkoutId={linkoutId} videoId={videoId} />
         )}
       </div>
-      <div className="z-10">
+      <div className="z-10 flex items-end">
         <Actions.mobile
           commentCount={commentCount}
           shareUrl={shareUrl}
