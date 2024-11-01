@@ -125,7 +125,7 @@ function LoopSection() {
   ]
   return (
     <div className="container mt-8 px-40 py-4">
-      <p className=" text-new-para-1">Featured Loops</p>
+      <p className=" text-new-para-1">Featured Groups</p>
       <div className="my-6 grid grid-cols-2 gap-6">
         {loopList.map((item, index) => {
           return (

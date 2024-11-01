@@ -15,13 +15,8 @@ type Props = {
 
 export default async function Component({ params, searchParams }: Props) {
   if (searchParams.feed === '1') return <RootFeed slug={params.slug} />
-  return <Details slug={params.slug} />
+  return <CommunityDetails slug={params.slug} />
 }
-
-async function Details({ slug }: { slug: string }) {
-  return <CommunityDetails slug={slug} />
-}
-
 interface CommunityDataType {
   title: string
   description: string

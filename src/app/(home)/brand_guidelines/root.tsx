@@ -3,10 +3,9 @@ import { GenuinIcon } from '@icons/genuin-icon'
 import { useSearchParams } from 'next/navigation'
 
 export function Root() {
-  const searchParams = useSearchParams()
-  const brandName = searchParams.get('brand_name') ? searchParams.get('brand_name') : 'Genuin'
-  const brandLogo = searchParams.get('brand_logo') ? searchParams.get('brand_logo') : ''
-
+  const searchParams = Object.fromEntries(useSearchParams())
+  const brandName = searchParams?.brand_name ? searchParams?.brand_name : 'Genuin'
+  const brandLogo = searchParams?.brand_logo
   return (
     <>
       <div className="w-full p-6">

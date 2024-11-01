@@ -59,13 +59,31 @@ type SwiperRendererProps = { customSizeBox?: VideoSizeBoxType; startIndex: numbe
 
 const SHELLS = Array.from({ length: 100 })
 function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: SwiperRendererProps) {
-  const sizeBox =
-    customSizeBox ?? useGenuinOptions(useShallow((state) => ({ sizeBox: state.sizeBoxes.default }))).sizeBox
+  // const { showKsGestures, gestureStep, updateGestureStep } = useLocalStorage()
+  const { defaultSizeBox } = useGenuinOptions(
+    useShallow((state) => ({ defaultSizeBox: state.sizeBoxes.default, embed: state.embed }))
+  )
+
+  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+  const sizeBox = customSizeBox || defaultSizeBox
+
   const { allowSlideNext, currentIndex, updateCurrentIndex, videosRef } = useContext(FeedContext)
+
+  // const handleActiveIndexChange = useCallback(
+  //   (swiper: SwiperType) => {
+  //     // Update the step if KS gestures are enabled.
+  //     if (showKsGestures) {
+  //       // If the gesture step is swipe, then update the step.
+  //       if (gestureStep === 'swipe') updateGestureStep()
+  //     }
+  //     updateCurrentIndex(swiper.activeIndex, videosRef.current[currentIndex].video.id)
+  //   },
+  //   [gestureStep, showKsGestures]
+  // )
 
   if (!videosRef.current || videosRef.current.length === 0)
     return (
-      <div className={cn('aspect-reel flex h-full items-center justify-center bg-tertiary-200', className)}>
+      <div className={cn('flex aspect-reel h-full items-center justify-center bg-tertiary-200', className)}>
         <p className="text-title-3-demi text-tertiary">No activity yet</p>
       </div>
     )
@@ -113,6 +131,7 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
             </SwiperSlide>
           )
         })}
+        {/* {showKsGestures && <KsGestures />} */}
       </Swiper>
       <DesktopDetails {...videosRef.current[currentIndex]} />
     </div>

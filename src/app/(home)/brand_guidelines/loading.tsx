@@ -1,5 +1,5 @@
 import { Loader } from '@/components/ui/loader'
 
 export default function Loading() {
-  return <Loader size="md" />
+  return <Loader size="lg" />
 }

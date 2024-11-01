@@ -43,7 +43,7 @@ export function SideBar() {
   const { status } = useSession()
 
   return (
-    <nav className="flex h-full w-fit flex-col justify-between overflow-auto border border-monochrome-9 px-2 py-4 transition-[width] xl:mr-16 xl:w-full xl:max-w-[280px] xl:border-none xl:px-0">
+    <nav className="flex h-full w-fit flex-col justify-between overflow-auto border border-monochrome-9 px-4 py-4 transition-[width] xl:mr-16 xl:w-full xl:max-w-[280px] xl:border-none xl:px-0">
       <div>
         <Link href={{ pathname: PATH_NAME.home() }}>
           <Item brandName={brandName} title="Home" isActive={pathName === PATH_NAME.home()}>

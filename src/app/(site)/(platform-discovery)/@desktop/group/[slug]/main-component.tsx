@@ -28,6 +28,8 @@ import { TickIcon } from '@icons/tick-icon'
 import Analytics from '@services/analytics'
 import { useSearchParams } from 'next/navigation'
 import { joinAsCollaboratorDeepLink, subscribeDeepLink } from '@/lib/get-deeplink'
+import { SubscribedBellIcon } from '@icons/subscribed-bell-icon'
+import { BellIcon } from 'lucide-react'
 
 interface Props {
   loopDetails: LoopDetailsType
@@ -63,6 +65,13 @@ export function MainComponent({ loopDetails }: Props) {
     void subscribeLoop(loopDetails.chat_id, newValue).then((res) => {
       if (res.code === 200) {
         setIsLoopSubscribed(newValue)
+        if (newValue) {
+          // Notifications turned on for this Group
+          toast({ title: 'Notifications turned on for this Group', duration: 1000 })
+        } else {
+          // Notifications turned off for this Group
+          toast({ title: 'Notifications turned off for this Group', duration: 1000 })
+        }
       }
     })
   }
@@ -86,7 +95,7 @@ export function MainComponent({ loopDetails }: Props) {
           subtitle: (
             <>
               Get the app to subscribe to
-              <span className="font-bold"> {loopDetails.group.group_name}</span> Loop.
+              <span className="font-bold"> {loopDetails.group.group_name}</span> Group.
             </>
           ),
         })
@@ -113,12 +122,19 @@ export function MainComponent({ loopDetails }: Props) {
             {loopDetails.is_view_allowed && (
               <Button
                 size="custom"
-                className={`${isLoopSubscribed && 'border border-primary '}`}
+                // className={`${isLoopSubscribed && 'border border-primary '}`}
+                className={`${
+                  isLoopSubscribed ? 'border border-primary p-0.5' : 'border border-primary bg-primary p-0.5'
+                }`}
                 variant={isLoopSubscribed ? 'outline' : 'default'}
                 onClick={handleSubscribeClick}>
-                <p className={`px-4 py-1 text-title-3-demi ${isLoopSubscribed && 'text-primary'}`}>
+                {/* <p className={`px-4 py-1 text-title-3-demi ${isLoopSubscribed && 'text-primary'}`}>
                   {isLoopSubscribed ? 'Subscribed' : 'Subscribe'}
-                </p>
+                </p> */}
+                {isLoopSubscribed && (
+                  <SubscribedBellIcon className="h-6 w-6 fill-primary stroke-primary"></SubscribedBellIcon>
+                )}
+                {!isLoopSubscribed && <BellIcon className="h-6 w-6  stroke-new-off-white"></BellIcon>}
               </Button>
             )}
 
@@ -134,8 +150,8 @@ export function MainComponent({ loopDetails }: Props) {
                         deepLink: generatedLink,
                         subtitle: (
                           <>
-                            Get the app to Join as collaborator to
-                            <span className="font-bold"> {loopDetails.group.group_name}</span> Loop.
+                            Get the app to Join as Member to
+                            <span className="font-bold"> {loopDetails.group.group_name}</span> Group.
                           </>
                         ),
                       })
@@ -143,7 +159,7 @@ export function MainComponent({ loopDetails }: Props) {
                   )
                 }}>
                 <p className="px-4 py-1 text-title-3-bold text-primary" style={{ fontSize: '15px' }}>
-                  Join as collaborator
+                  Join as Member
                 </p>
               </Button>
             )}
@@ -248,8 +264,8 @@ export function MainComponent({ loopDetails }: Props) {
             <Stats
               statsData={[
                 { key: 'Posts', value: loopDetails.group.no_of_videos ?? 0 },
-                { key: 'Collaborators', value: loopDetails.group.no_of_members ?? 0 },
-                { key: 'Subscribers', value: loopDetails.group.no_of_subscribers ?? 0 },
+                { key: 'Members', value: loopDetails.group.no_of_members ?? 0 },
+                // { key: 'Subscribers', value: loopDetails.group.no_of_subscribers ?? 0 },
               ]}
             />
           </div>
@@ -262,8 +278,8 @@ export function MainComponent({ loopDetails }: Props) {
             <div className="flex flex-col items-center justify-center">
               <Image src={icLock} alt="share" className="h-16 w-16" />
               <p className="text-center text-title-2-demi">
-                This Loop is visible to its
-                <br /> Collaborators only
+                This Group is visible to its
+                <br /> Members only
               </p>
             </div>
           </div>
@@ -323,7 +339,7 @@ function LoopCohosts({ slug }: { slug: string }) {
   if (cohosts && cohosts.length !== 0)
     return (
       <div>
-        <p className="my-2 text-title-3-bold">Collaborators</p>
+        <p className="my-2 text-title-3-bold">Members</p>
         <div className="h-full w-full overflow-auto">
           {cohosts.map((item, index) => {
             if (!item.nickname)
@@ -336,6 +352,7 @@ function LoopCohosts({ slug }: { slug: string }) {
                   image={item.profile_image}
                   isAvatar={item.is_avatar}
                   brand={item.brand ?? null}
+                  isOwner={false}
                 />
               )
             return (
@@ -351,6 +368,7 @@ function LoopCohosts({ slug }: { slug: string }) {
                   image={item.profile_image}
                   isAvatar={item.is_avatar}
                   brand={item.brand ?? null}
+                  isOwner={false}
                 />
               </Link>
             )
@@ -399,6 +417,7 @@ function LoopSubscribers({ slug }: { slug: string }) {
                 image={item.profile_image}
                 isAvatar={item.is_avatar}
                 brand={item.brand ?? null}
+                isOwner={false}
               />
             </Link>
           ))}

@@ -21,6 +21,7 @@ const groupSchema = z.object({
   no_of_members: z.number().default(0),
   no_of_subscribers: z.number().default(0),
   no_of_views: z.number().default(0),
+  no_of_videos: z.number().default(0),
   dp: z.string().nullish(),
   dp_s: z.string().nullish(),
   dp_m: z.string().nullish(),

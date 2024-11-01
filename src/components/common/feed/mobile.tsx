@@ -13,6 +13,9 @@ import { AnimatePresence, motion } from 'framer-motion'
 import Analytics from '@/services/analytics'
 import { usePlayerControlStore } from '../player/player-control-store'
 import { FeedShimmer } from '../shimmers/feed-shimmer'
+// import { KsGestures } from '../ks-gestures'
+// import { useLocalStorage } from '@/lib/stores/local-storage'
+// import { type Swiper as SwiperType } from 'swiper/types'
 const Player = dynamic(async () => await import('@components/common/player').then((comp) => comp.Player.mobile))
 
 type MobileProps = {
@@ -41,7 +44,13 @@ export function Mobile({
   customSizeBox,
   isLoading,
 }: MobileProps) {
-  const videoSizeBox = customSizeBox ?? useGenuinOptions().sizeBoxes.default
+  // const { showKsGestures, gestureStep, updateGestureStep } = useLocalStorage()
+  const { defaultSizeBox } = useGenuinOptions((state) => ({
+    defaultSizeBox: state.sizeBoxes.default,
+    embed: state.embed,
+  }))
+  // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+  const videoSizeBox = customSizeBox || defaultSizeBox
   const { setCurrentIndex, currentIndex } = useFeedListStore(
     useShallow((state) => ({
       setCurrentIndex: state.setCurrentIndex,
@@ -58,6 +67,18 @@ export function Mobile({
     }
     if ((currentIndex + 1) % 5 === 0) showInterruption()
   }, [currentIndex])
+
+  // const handleActiveIndexChange = useCallback(
+  //   (swiper: SwiperType) => {
+  //     // Update the step if KS gestures are enabled.
+  //     if (showKsGestures) {
+  //       // If the gesture step is swipe, then update the step.
+  //       if (gestureStep === 'swipe') updateGestureStep()
+  //     }
+  //     setCurrentIndex(swiper.activeIndex, videos[currentIndex].video.id)
+  //   },
+  //   [gestureStep, showKsGestures]
+  // )
 
   if (isLoading) {
     return <FeedShimmer.mobile />
@@ -104,6 +125,7 @@ export function Mobile({
         ))}
       </Swiper>
       <InfinityViewBox videoDetails={videos[currentIndex]} />
+      {/* {showKsGestures && <KsGestures />} */}
     </div>
   )
 }

@@ -9,7 +9,6 @@ import { useInView, useScroll } from 'framer-motion'
 import { TopStickyBar } from '../../../@desktop/profile/[nickname]/top-bar'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
-import { useCommunityListStore } from './store'
 import { ShareIcon } from '@icons/share-icon'
 import { type BrandSchemaType, type ProfileDetailsType } from '@lib/schemas/profile/profile'
 import { CommunityList } from './community-list'
@@ -32,7 +31,6 @@ export function MainComponent({ profileData }: CompProps) {
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
   const scrollDivRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ container: scrollDivRef, layoutEffect: false })
-  const resetData = useCommunityListStore((state) => state.reset)
 
   useEffect(() => {
     void Analytics.track({
@@ -42,9 +40,6 @@ export function MainComponent({ profileData }: CompProps) {
         brand_slug: profileData.brand?.brand_slug,
       },
     })
-    return () => {
-      resetData()
-    }
   }, [])
 
   return (

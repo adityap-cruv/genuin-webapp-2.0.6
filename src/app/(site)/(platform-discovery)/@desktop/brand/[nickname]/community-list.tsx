@@ -26,13 +26,32 @@ import { IcLoop } from '@icons/ic-loop'
 import { BrandCommunityTag } from '@components/common/brand-community-tag'
 import { ToggleCommunityJoinState } from '@components/common/toggle-community-join-state'
 import { Play } from 'lucide-react'
+import { useShallow } from 'zustand/react/shallow'
 
 export function CommunityList({ brandId }: { brandId: number }) {
   const { data, isLoading, fetchNextPage, isFetchingNextPage } = getCommunities(brandId, 8)
   const communities = data?.pages.flatMap((item) => item.communities)
   const [communityJoinStates, setCommunityJoinStates] = useState<Record<string, string>>({})
   const user = useGenuinOptions().user
+  const { addCommunities, currentVideoId, reset, stateCommunities, replaceCommunities } = useCommunityListStore(
+    useShallow((state) => ({
+      reset: state.reset,
+      currentVideoId: state.currentVideoId,
+      addCommunities: state.addCommunities,
+      stateCommunities: state.communities,
+      replaceCommunities: state.replaceCommunities,
+    }))
+  )
   const pathName = usePathname()
+
+  useEffect(() => {
+    if (communities) {
+      replaceCommunities(communities)
+    }
+    return () => {
+      reset()
+    }
+  }, [pathName])
 
   useEffect(() => {
     if (communities) {
@@ -53,16 +72,12 @@ export function CommunityList({ brandId }: { brandId: number }) {
         setCommunityJoinStates(initialStates)
       }
     }
-  }, [communities?.length])
-
-  const { addCommunities, currentVideoId } = useCommunityListStore()
+  }, [data?.pages])
 
   useEffect(() => {
-    const newCommunites = data?.pages[data.pages.length - 1].communities
-    // if (localCommunities && newCommunites && localCommunities?.length !== communities.length) {
-    if (newCommunites) addCommunities(newCommunites)
-    // }
-  }, [communities?.length])
+    const newCommunities = data?.pages[data.pages.length - 1].communities
+    if (newCommunities && newCommunities.length > 0) addCommunities(newCommunities)
+  }, [data?.pages])
 
   const scrollDivRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ container: scrollDivRef, layoutEffect: false })
@@ -89,7 +104,7 @@ export function CommunityList({ brandId }: { brandId: number }) {
       )
     return (
       <div className="h-full w-full overflow-y-visible">
-        {communities.map((item, index) => {
+        {stateCommunities.map((item, index) => {
           return (
             <div key={index} className="my-6">
               <div className="flex items-center">
@@ -271,7 +286,7 @@ function Loops({
               </a>
               <div className="my-1 flex items-center gap-1">
                 <IcLoop className="h-6 w-6 fill-tertiary" />
-                <p className="text-body-1-med text-tertiary">Visible to collaborators only</p>
+                <p className="text-body-1-med text-tertiary">Visible to Group members only</p>
               </div>
             </div>
           ) : (
@@ -286,7 +301,7 @@ function Loops({
             className="profile-loop-li relative w-full rounded-lg border border-tertiary-200 p-2"
             style={{ backgroundColor: '#F9F9F9' }}>
             <p className="text-blue-500 flex w-full cursor-pointer justify-center text-cap-1-demi text-tertiary">
-              View more loops
+              View more groups
             </p>
           </li>
         </div>
@@ -339,7 +354,8 @@ function LoopVideos({ brandId, loop, communityId, pathName, user }: LoopVideosPr
   function InnerComponent() {
     if (!loop.videos || loop.videos.length === 0)
       return (
-        <div className="flex items-center justify-center pt-32 text-title-3-bold text-tertiary">No posts available</div>
+        // <div className="flex items-center justify-center pt-32 text-title-3-bold text-tertiary">No posts available</div>
+        <p className="text-body-1-med text-tertiary">No posts yet</p>
       )
 
     if (loop.videos)
