@@ -81,7 +81,7 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
     }
     void rudderStackIdentify()
     // Init added
-    Analytics.track({ eventName: 'Initialized', properties: {} })
+    void Analytics.track({ eventName: 'Initialized', properties: {} })
 
     return () => {
       ejectAuthTokenInterceptor(interceptorId)
