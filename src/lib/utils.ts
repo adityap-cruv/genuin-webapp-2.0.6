@@ -356,3 +356,24 @@ export function getWebpUrlForImage(url?: string | null): string {
 export function checkIfUrlIncludesProtectedRoute(url: string) {
   return PROTECTED_ROUTES.some((route) => url.includes(route))
 }
+
+export function encodeVideoSourceUrl(videoSource: string) {
+  try {
+    // Create a URL object to easily access query parameters
+    const url = new URL(videoSource)
+
+    // Get query parameters from the URL
+    const params = new URLSearchParams(url.search)
+
+    // Encode each parameter value
+    for (const [key, value] of params.entries()) {
+      params.set(key, encodeURIComponent(value))
+    }
+
+    // Return the complete encoded URL
+    return `${url.origin}${url.pathname}?${params.toString()}`
+  } catch (error) {
+    console.error('Invalid URL:', error)
+    return videoSource
+  }
+}

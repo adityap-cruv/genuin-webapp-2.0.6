@@ -9,7 +9,7 @@ import {
   useRef,
 } from 'react'
 import { usePlayerControlStore } from './player-control-store'
-import { cn } from '@/lib/utils'
+import { cn, encodeVideoSourceUrl } from '@/lib/utils'
 import icPlay from '@icons/player-controls/icPlay.svg'
 import Image from 'next/image'
 import { useShallow } from 'zustand/react/shallow'
@@ -62,6 +62,7 @@ export const InnerPlayer = memo(function InnerPlayer({
   onCanPlay,
   ...props
 }: Props) {
+  const encodedVideoSourceUrl = encodeVideoSourceUrl(videoSource)
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<OpenPlayerJS | null>(null)
   const [playingState, setPlayingState] = useState<'paused' | 'playing' | 'loading'>('loading')
@@ -150,7 +151,7 @@ export const InnerPlayer = memo(function InnerPlayer({
         poster={poster}
         ref={videoRef}
         muted={muted}
-        src={videoSource}
+        src={encodedVideoSourceUrl}
         playsInline
         onPlay={onPlay}
         onPlaying={(ev) => {
