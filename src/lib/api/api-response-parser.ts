@@ -62,9 +62,9 @@ export function parseFeedResponse(videos: FeedResponseType) {
           : null,
       },
       video: {
+        id: video.messages[0].message_id,
         commentCount: video.messages[0].no_of_comments,
         createdAt: video.messages[0].message_at,
-        id: video.messages[0].message_id,
         shareUrl: video.messages[0].share_url,
         slug: video.messages[0].slug,
         source: video.messages[0].media_url_m3u8 ?? video.messages[0].media_url,
@@ -90,35 +90,12 @@ export function parseFeedResponse(videos: FeedResponseType) {
  */
 export function parseFeedResponseFromGoApi(feeds: FeedResponseFromGoApi[]) {
   return feeds.map<VideoPlayerModalType>(({ video, community, loop, uuid, owner }) => ({
-    video: {
-      id: uuid, // Using video.uuid as the ID
-      createdAt: video.conversation_at, // Mapping message_at to createdAt
-      commentCount: video.no_of_comments || 0, // Mapping no_of_comments
-      shareUrl: video.share_url || '', // Mapping share_url
-      attachedLink: video.attached_link, // Mapping attached_link
-      source: video.media_url || '', // Mapping media_url
-      isSparked: video.is_sparked || null, // Mapping is_sparked
-      sparkCount: video.no_of_sparks || 0, // Mapping no_of_sparks
-      thumbnail: video.thumbnail_url, // Mapping thumbnail_url
-      descriptionArr: video.description_data && tryJsonParse(video.description_data), // Parsing descriptionArr
-      descriptionText: video.description_text || null, // Mapping description_text
-      slug: video.slug || '', // Mapping slug
-      linkoutId: video.linkouts_id || null, // Mapping linkouts_id
-      clickableUrl: video.clickable_url || null, // Mapping clickable_url
-      linkouts: video.linkouts,
-      thumbnailM: video.thumbnail_url_l || video.thumbnail_url, // Mapping thumbnail_url_l
-    },
-    loop: {
-      slug: loop?.slug || '', // Mapping loop.slug
-      name: loop?.group_name || null, // Mapping loop.group_name
-      id: loop?.uuid || '', // Mapping loop.uuid
-    },
     community: {
-      profileImage: community.dp_s, // Mapping community.dp
-      name: community?.name || null, // Mapping community.name
-      slug: community?.slug || '', // Mapping community.slug
       handle: community?.handle || '', // Mapping community.handle
       id: community?.uuid || '', // Mapping community.uuid
+      slug: community?.slug || '', // Mapping community.slug
+      name: community?.name || null, // Mapping community.name
+      profileImage: community.dp_s, // Mapping community.dp
       type: community?.type || null, // Mapping community.type
       shareUrl: community?.share_url || '', // Mapping community.share_url
       userRole: mapUserRole(community?.logged_in_user_role), // Mapping logged_in_user_role to userRole
@@ -132,12 +109,35 @@ export function parseFeedResponseFromGoApi(feeds: FeedResponseFromGoApi[]) {
         },
       }),
     },
+    loop: {
+      id: loop?.uuid || '', // Mapping loop.uuid
+      slug: loop?.slug || '', // Mapping loop.slug
+      name: loop?.group_name || null, // Mapping loop.group_name
+    },
     owner: {
       isAvatar: owner.is_avatar, // Mapping owner.is_avatar
       profileImage: owner.profile_image_s ?? owner.profile_image_m ?? owner.profile_image,
       userName: owner.username, // Mapping owner.username
       name: owner.name, // Mapping owner.name
       ...(owner.brand && { brand: { brand_id: Number(owner.brand.brand_id), brand_slug: owner.brand.brand_slug } }),
+    },
+    video: {
+      id: uuid, // Using video.uuid as the ID
+      commentCount: video.no_of_comments || 0, // Mapping no_of_comments
+      createdAt: video.conversation_at, // Mapping message_at to createdAt
+      shareUrl: video.share_url || '', // Mapping share_url
+      slug: video.slug || '', // Mapping slug
+      source: video.media_url_m3u8 ?? video.media_url, // Mapping media_url
+      sparkCount: video.no_of_sparks || 0, // Mapping no_of_sparks
+      thumbnail: video.thumbnail_url, // Mapping thumbnail_url
+      attachedLink: video.attached_link, // Mapping attached_link
+      isSparked: video.is_sparked || null, // Mapping is_sparked
+      descriptionArr: video.description_data ? tryJsonParse(video.description_data) : undefined, // Parsing descriptionArr
+      descriptionText: video.description_text || null, // Mapping description_text
+      linkoutId: video.linkouts_id || null, // Mapping linkouts_id
+      clickableUrl: video.clickable_url || null, // Mapping clickable_url
+      thumbnailM: video.thumbnail_url_l || video.thumbnail_url, // Mapping thumbnail_url_l
+      linkouts: video.linkouts,
     },
   }))
 }
