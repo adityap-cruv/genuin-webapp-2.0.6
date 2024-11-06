@@ -177,7 +177,8 @@ export function MainComponent({ loopDetails }: Props) {
           <div className="flex items-center gap-x-2">
             {loopDetails.is_view_allowed && !embed && (
               <Button size="custom" onClick={handleSubscribeClick}>
-                <p className="px-4 py-1 text-title-3-demi text-monochrome-white">Subscribe</p>
+                {/* <p className="px-4 py-1 text-title-3-demi text-monochrome-white">Subscribe</p> */}
+                <SubscribedBellIcon className="h-6 w-6 stroke-new-off-white"></SubscribedBellIcon>
               </Button>
             )}
             {loopDetails.is_view_allowed && embed && (
