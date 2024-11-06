@@ -38,7 +38,6 @@ interface Props {
 
 export function LoopDetails({ slug }: { slug: string }) {
   const { data, isLoading } = getLoopDetails(slug)
-
   if (isLoading) return <Loading />
   if (data) return <MainComponent loopDetails={data} />
   if (!isLoading && !data) return <Error />
@@ -129,7 +128,7 @@ export function MainComponent({ loopDetails }: Props) {
                       <CustomAvatar
                         className="h-full w-full"
                         fallbackString={loopDetails.owner.name ?? ''}
-                        imageUrl={loopDetails.owner.profile_image ?? ''}
+                        imageUrl={loopDetails.owner.profile_image_s ?? loopDetails.owner.profile_image}
                         isAvatar={loopDetails.owner.is_avatar}
                       />
                     </div>
@@ -147,7 +146,7 @@ export function MainComponent({ loopDetails }: Props) {
                     <div className="bg-red-400 h-6 w-6 shrink-0">
                       <CustomAvatar
                         className="h-full w-full"
-                        imageUrl={loopDetails.community.dp ?? ''}
+                        imageUrl={loopDetails.community.dp_s ?? loopDetails.community.dp ?? ''}
                         fallbackString={loopDetails.community.name ?? ''}
                         isAvatar={false}
                       />
@@ -297,20 +296,7 @@ function LoopTabs() {
       </TabsList>
       <hr className="border-t border-tertiary-200" />
       <TabsContent value="Loops">
-        <LoopVideos
-          community={{
-            handle: loopDetailsModule.community.handle,
-            shareUrl: loopDetailsModule.community.share_url ?? '',
-            id: loopDetailsModule.community.community_id,
-            slug: loopDetailsModule.community.slug,
-            name: loopDetailsModule.community.name,
-          }}
-          loop={{
-            id: loopDetailsModule.chat_id,
-            slug: loopDetailsModule.slug,
-            name: loopDetailsModule.group.group_name,
-          }}
-        />
+        <LoopVideos slug={loopDetailsModule.slug} />
       </TabsContent>
       <TabsContent value="About">
         <LoopCollaborators slug={loopDetailsModule.slug} />
@@ -358,7 +344,7 @@ function LoopCollaborators({ slug }: { slug: string }) {
             return (
               <CohostTile
                 key={index}
-                image={item.profile_image}
+                image={item.profile_image_m ?? item.profile_image}
                 subtitle={item.bio ?? ''}
                 title={'+' + (item.phone ?? '')}
                 userName={item.name ?? ''}
@@ -368,7 +354,7 @@ function LoopCollaborators({ slug }: { slug: string }) {
           return (
             <Link key={index} href={{ pathname: PATH_NAME.profile(item.nickname) }}>
               <CohostTile
-                image={item.profile_image}
+                image={item.profile_image_m ?? item.profile_image}
                 subtitle={item.bio ?? ''}
                 title={'@' + item.nickname}
                 userName={item.name ?? ''}

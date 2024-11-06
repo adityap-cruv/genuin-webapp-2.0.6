@@ -15,7 +15,7 @@ export function parseCommunities(communities: CommunitiesResType) {
     slug: item.slug,
     description: item.description,
     name: item.name,
-    profileImage: item.dp,
+    profileImage: item.dp_m ?? item.dp,
     type: item.type,
     brand: item.brand
       ? {
@@ -44,7 +44,7 @@ export function parsePeople(people: PeopleResType) {
       id: item.user_id,
       bio: item.bio,
       name: item.name,
-      profileImage: item.profile_image,
+      profileImage: item.profile_image_m ?? item.profile_image,
       isAvatar: item.is_avatar,
       brand: item.brand
         ? {
@@ -62,7 +62,8 @@ export function parseVideos(videos: VideosResType) {
       id: item.message_id,
       slug: item.slug,
       owner: { isAvatar: item.owner.is_avatar, profileImage: item.owner.profile_image, userName: item.owner.username },
-      thumbnail: item.thumbnail_url ?? '',
+      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+      thumbnail: (item.thumbnail_url_l ? item.thumbnail_url_l : item.thumbnail_url) || '',
       // TODO: What should be description
       description: '',
     }

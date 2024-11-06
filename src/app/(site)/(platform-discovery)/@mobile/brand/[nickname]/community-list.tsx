@@ -14,7 +14,7 @@ import { PATH_NAME } from '@lib/utils/constants/path'
 import { type MotionValue, useMotionValueEvent } from 'framer-motion'
 import { useCommunityListStore } from './store'
 import { type ProfileCommunityType, type ProfileLoopType, type ProfileVideoType } from '@lib/schemas/profile/community'
-import { fetchProfileCommunityLoops, getCommunities, fetchProfileVideos, getProfileFeed } from '@lib/api/brand-profile'
+import { fetchProfileCommunityLoops, getCommunities, fetchProfileVideos, getBrandFeed } from '@lib/api/brand-profile'
 import icLock from '@icons/icLock.svg'
 import { PlayerModal } from '@components/common/modals/player-modal'
 import icPlay from '@icons/player-controls/icPlay.svg'
@@ -26,6 +26,7 @@ import { PrivateModal } from '@components/common/modals/private'
 import { IcLoop } from '@icons/ic-loop'
 import { BrandCommunityTag } from '@components/common/brand-community-tag'
 import { ToggleCommunityJoinState } from '@components/common/toggle-community-join-state'
+import { CustomImage } from '@/components/custom/custom-image'
 import { Play } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
 
@@ -190,7 +191,7 @@ export function CommunityList({ brandId, scrollYProgress }: { brandId: number; s
 }
 
 function PlayerModalWrapper({ brandId, currentVideoId }: { brandId: number; currentVideoId: string }) {
-  const { data, isLoading, fetchNextPage } = getProfileFeed(brandId, currentVideoId)
+  const { data, isLoading, fetchNextPage } = getBrandFeed(brandId, currentVideoId)
   const { close } = useCommunityListStore()
   const videos = data?.pages.flatMap((item) => item.feed)
 
@@ -347,8 +348,8 @@ function LoopVideos({ brandId, loop, communityId, pathName, user }: LoopVideosPr
                   open(video.id)
                 }}
                 key={video.id}
-                className="group/vidcard relative flex aspect-reel min-w-full flex-col items-center hover:cursor-pointer">
-                <img src={video.thumbnail ?? ''} className="aspect-reel rounded" />
+                className="group/vidcard relative flex aspect-reel min-w-full flex-col items-center rounded bg-tertiary  hover:cursor-pointer">
+                <CustomImage fill src={video.thumbnail ?? ''} alt={''} />
                 <div className="absolute bottom-0 left-0 m-1 flex items-center justify-center gap-0.5">
                   <Play className="h-3 w-3 stroke-monochrome-white" />
                   <p className="text-new-para-2-mobile text-monochrome-white">

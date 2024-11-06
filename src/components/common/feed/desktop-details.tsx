@@ -157,7 +157,7 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
         </div>
         {video.linkoutId && (
           <div className="w-auto px-4">
-            <Linkout.desktop linkoutId={video.linkoutId} videoId={video.id} />
+            <Linkout.desktop linkouts={video.linkouts} linkoutId={video.linkoutId} videoId={video.id} />
           </div>
         )}
         <div className="sticky top-0 z-10">

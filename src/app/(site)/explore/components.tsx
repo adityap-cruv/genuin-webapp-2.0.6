@@ -29,7 +29,7 @@ function CommunitiesForDesktop() {
                 key={item.community_id}
                 id={item.community_id}
                 memberCount={item.no_of_members}
-                profileImage={item.dp ?? ''}
+                profileImage={item.dp_m ?? item.dp ?? ''}
                 description={item.description ?? ''}
                 name={item.name}
                 slug={item.slug}

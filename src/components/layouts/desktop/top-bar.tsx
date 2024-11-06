@@ -13,12 +13,14 @@ import { LogoutIcon } from '@icons/logout'
 import { BurgerIcon } from '@icons/burger-icon'
 import { removeAllAuthToken } from '@lib/api/instance'
 import { SearchBar } from '@components/common/search-bar'
-import { AccountIcon, NotificationIcon } from '@icons/settings-side-bar-icons'
+import { AccountIcon } from '@icons/settings-side-bar-icons'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { formatPhoneNumberIntl } from 'react-phone-number-input'
 import { WalletAmountBadge } from '@/components/common/wallet/wallet-amount-badge'
 import { Loader } from '@/components/ui/loader'
 import { useEffect, useState } from 'react'
+import { Shimmer } from '@/components/ui/shimmer'
+import { CustomImage } from '@/components/custom/custom-image'
 
 export function TopBar({
   showUserTick = true,
@@ -27,38 +29,49 @@ export function TopBar({
   showUserTick?: boolean
   showSearchBar?: boolean
 }) {
-  const { config, embed: isEmbed } = useGenuinOptions()
+  const { config, embed: isEmbed, isLoading } = useGenuinOptions()
 
   return (
     <>
-      <div className="z-20 flex w-full justify-center border-b border-monochrome-9  bg-monochrome-white sm:flex">
-        <nav className="sticky top-0 flex h-[76px] w-full items-center justify-between px-2 2xl:container xl:px-10 2xl:px-0">
-          <Link draggable={false} href={{ pathname: PATH_NAME.home() }}>
-            <AppLogo.logo className="shrink-0 fill-new-off-black" imageHeight={44} />
-            {/* <GenuinIcon.logo className="fill-new-off-black" /> */}
-          </Link>
-          {config?.slogan?.image && (
-            <img src={config.slogan.image} className="h-10 object-cover" alt="brand_web_logo" />
-          )}
-          <div className="flex gap-x-3">
-            {showSearchBar && <SearchBar.desktop />}
-            <WalletAmountBadge type="dark" />
-            {!isEmbed ? (
-              <>
-                <DownloadAppDialog>
-                  <Button
-                    variant="default"
-                    size={'custom'}
-                    className="bg-new-off-black px-4 py-3 hover:bg-new-dark-grey">
-                    <p className="text-new-para-2 font-semibold text-tertiary-100">Download Genuin</p>
-                  </Button>
-                </DownloadAppDialog>
-              </>
-            ) : (
-              showUserTick && <UserTick />
-            )}
+      <div className="z-20 flex h-[76px] w-full justify-center border-b border-monochrome-9  bg-monochrome-white sm:flex">
+        {isLoading ? (
+          <div className="sticky top-0 flex  w-full items-center justify-between px-2 2xl:container xl:px-10 2xl:px-0 ">
+            <Shimmer className="h-10 w-20" />
+            <div className="flex gap-2">
+              <Shimmer className="h-10 w-10" />
+              <Shimmer className="h-10 w-40" />
+            </div>
           </div>
-        </nav>
+        ) : (
+          <nav className="sticky top-0 flex  w-full items-center justify-between px-2 2xl:container xl:px-10 2xl:px-0">
+            <Link draggable={false} href={{ pathname: PATH_NAME.home() }}>
+              <AppLogo.logo className="shrink-0 fill-new-off-black" imageHeight={44} />
+            </Link>
+            {config?.slogan?.image && (
+              <div className="relative h-10 w-1/3">
+                <CustomImage src={config.slogan.image} fill className="object-cover" alt="slogan image" />
+              </div>
+            )}
+            <div className="flex gap-x-3">
+              {showSearchBar && <SearchBar.desktop />}
+              <WalletAmountBadge type="dark" />
+              {!isEmbed ? (
+                <>
+                  <DownloadAppDialog>
+                    <Button
+                      variant="default"
+                      size={'custom'}
+                      className="bg-new-off-black px-4 py-3 hover:bg-new-dark-grey">
+                      <p className="text-new-para-2 font-semibold text-tertiary-100">Download Genuin</p>
+                    </Button>
+                  </DownloadAppDialog>
+                </>
+              ) : (
+                showUserTick && <UserTick />
+              )}
+            </div>
+          </nav>
+        )}
       </div>
     </>
   )
@@ -149,7 +162,7 @@ function UserTick() {
           <div className="flex flex-col gap-3 p-4">
             {!data.user?.isBrandSystemUser && (
               <>
-                <Link href={PATH_NAME.settings('account')}>
+                <Link href={PATH_NAME.settings('edit')}>
                   <div
                     className="flex items-center gap-2"
                     onClick={() => {
@@ -158,20 +171,7 @@ function UserTick() {
                       }
                     }}>
                     <AccountIcon isActive={false} className="h-6 w-6" />
-                    <p className="text-body-1-demi">Account Settings</p>
-                  </div>
-                </Link>
-
-                <Link href={PATH_NAME.settings('notification')}>
-                  <div
-                    className="flex items-center gap-2"
-                    onClick={() => {
-                      if (!pathName.includes('settings')) {
-                        localStorage.setItem('previous_path', pathName)
-                      }
-                    }}>
-                    <NotificationIcon isActive={false} className="h-6 w-6" />
-                    <p className="text-body-1-demi">Notification Settings</p>
+                    <p className="text-body-1-demi">Settings</p>
                   </div>
                 </Link>
               </>

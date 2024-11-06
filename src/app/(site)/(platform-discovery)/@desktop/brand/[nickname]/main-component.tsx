@@ -44,7 +44,7 @@ export function MainComponent({ profileData }: CompProps) {
       <TopStickyBar.desktop
         defaultOpen={false}
         isOpen={!detailsInView}
-        profileImage={profileData.profile_image}
+        profileImage={profileData.profile_image_m ?? profileData.profile_image}
         profileName={profileData.name ?? ''}
         profileNickname={profileData?.nickname}
         isAvatar={profileData?.is_avatar}
@@ -55,7 +55,7 @@ export function MainComponent({ profileData }: CompProps) {
           <CustomAvatar
             className="bg-slate-500 h-20 w-20 bg-red-40"
             fallbackString={profileData.name ?? ''}
-            imageUrl={profileData?.profile_image}
+            imageUrl={profileData?.profile_image_m ?? profileData?.profile_image}
             isAvatar={profileData?.is_avatar}
           />
           <div>

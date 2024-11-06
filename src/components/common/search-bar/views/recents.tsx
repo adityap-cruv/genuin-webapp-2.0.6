@@ -83,7 +83,7 @@ export function Recents() {
                   <CustomAvatar
                     className="h-12 w-12"
                     fallbackString={item.community.name ?? ''}
-                    imageUrl={item.community.dp ?? ''}
+                    imageUrl={item.community.dp_m ?? item.community.dp ?? ''}
                     isAvatar={false}
                   />
                 }
@@ -106,7 +106,7 @@ export function Recents() {
                 }
                 subtitle={`Group • ${item.loop.group.group_description}`}
                 title={item.loop.group.group_name ?? ''}
-                urlToGo={PATH_NAME.loop(item.loop.slug ? item.loop.slug : (item.loop?.group?.slug ?? ''))}
+                urlToGo={PATH_NAME.loop(item.loop.slug ? item.loop.slug : item.loop?.group?.slug ?? '')}
                 deletionHandler={() => {
                   void deleteClickHandler(item.id)
                 }}
@@ -120,7 +120,7 @@ export function Recents() {
                   <CustomAvatar
                     isAvatar={item.user.is_avatar}
                     fallbackString={item.user.name ?? ''}
-                    imageUrl={item.user.profile_image ?? ''}
+                    imageUrl={item.user.profile_image_m ?? item.user.profile_image ?? ''}
                     className="h-12 w-12"
                   />
                 }

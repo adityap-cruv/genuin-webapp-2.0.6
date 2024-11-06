@@ -109,7 +109,7 @@ export function SideBar() {
         )}
         <span className="hidden xl:block">
           {(!isClaimed || user?.ksCbRequestStatus !== 3) && embed && (
-            <hr className="border-1 border-monochrome-black/10 my-2" />
+            <hr className="border-1 my-2 border-monochrome-black/10" />
           )}
           <DownloadAppDialog />
           {status === 'unauthenticated' && embed && (
@@ -135,14 +135,14 @@ export function SideBar() {
             </div>
           )}
         </span>{' '}
-        {(!isClaimed || user?.ksCbRequestStatus !== 3) && <hr className="border-1 border-monochrome-black/10 my-2" />}
+        {(!isClaimed || user?.ksCbRequestStatus !== 3) && <hr className="border-1 my-2 border-monochrome-black/10" />}
         {user?.ksCbRequestStatus !== 3 && <BecomeCbCard className="my-4 hidden xl:block" />}
         <CategoryView className="hidden xl:block" />
         <RecentCommunities />
       </div>
       {embed && (
         <div className="hidden xl:block">
-          <hr className="border-1 border-monochrome-black/10 mb-4 mt-1" />
+          <hr className="border-1 mb-4 mt-1 border-monochrome-black/10" />
           <div className="flex items-center">
             <p className="text-cap-1-demi text-monochrome">Powered by</p>
             <Link href={{ pathname: PATH_NAME.home() }}>

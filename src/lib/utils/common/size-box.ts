@@ -1,3 +1,4 @@
+import { HEIGHT_OF_HEADER } from '@/lib/constants'
 import { type VideoSizeBoxType, type SizeBoxesType, type ModalSizeBoxType } from '@lib/stores/genuin-options'
 
 export function getSizeBoxes(isMobile: boolean, showNavbar: boolean): SizeBoxesType {
@@ -32,7 +33,7 @@ export function getSizeBoxes(isMobile: boolean, showNavbar: boolean): SizeBoxesT
 }
 
 function getSizeDesktop(considerNavbar: boolean): VideoSizeBoxType {
-  const windowHeight = considerNavbar ? window.innerHeight - 77 : window.innerHeight
+  const windowHeight = considerNavbar ? window.innerHeight - HEIGHT_OF_HEADER : window.innerHeight
   const windowWidth = window.innerWidth
   let videoWidth = (windowHeight * 9) / 16
 

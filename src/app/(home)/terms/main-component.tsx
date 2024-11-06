@@ -2,7 +2,7 @@
 export const MainComponent = () => {
   return (
     <>
-      <p className="flex w-full items-center justify-center py-8 text-center text-new-h2 font-bold">
+      <p className="flex w-full items-center justify-center py-8 text-center text-new-h2 font-bold lg:pt-40">
         Genuin Inc. <br />
         General Terms of Service
       </p>

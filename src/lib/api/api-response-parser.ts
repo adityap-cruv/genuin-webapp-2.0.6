@@ -1,10 +1,6 @@
-import { type FeedResponseType } from '@lib/schemas/feed/response'
-import { type LoopVideoListType } from '@lib/schemas/loop/videos'
-import {
-  type VideoPlayerModalCommunityType,
-  type VideoPlayerModalType,
-  type VideoPlayerModalLoopType,
-} from '@lib/schemas/player/video'
+/* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
+import { type FeedResponseFromGoApi, type FeedResponseType } from '@lib/schemas/feed/response'
+import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import { type ProfileLoopType, type ProfileCommunityType, type ProfileVideoType } from '@lib/schemas/profile/community'
 import {
   type ProfileLoopResponseType,
@@ -13,41 +9,7 @@ import {
 } from '@lib/schemas/profile/community-response'
 import { tryJsonParse } from '@lib/utils'
 
-// TODO: add this file at better location.
-export function parseVideosFromLoop(
-  data: LoopVideoListType,
-  loop: VideoPlayerModalLoopType,
-  community: VideoPlayerModalCommunityType
-) {
-  return data.map<VideoPlayerModalType>((item) => {
-    return {
-      community,
-      loop,
-      owner: {
-        isAvatar: item.owner.is_avatar,
-        profileImage: item.owner.profile_image,
-        userName: item.owner.username,
-        name: item.owner.name,
-      },
-      video: {
-        commentCount: item.no_of_comments ?? 0,
-        createdAt: item.message_at ?? -1,
-        id: item.message_id,
-        shareUrl: item.share_url,
-        source: item.media_url_m3u8 ?? item.media_url,
-        sparkCount: item.no_of_sparks ?? 0,
-        thumbnail: item.thumbnail_url ?? '',
-        attachedLink: item.attached_link,
-        slug: item.slug,
-        descriptionArr: tryJsonParse(item.description_data),
-        descriptionText: item.description_text,
-        linkoutId : item.linkouts_id,
-        clickableUrl: item.clickable_url ? item.clickable_url : null,
-      },
-    }
-  })
-}
-
+// TODO: this function is used by some apis like community-videos, brand-videos removed if we adopt the changes from go-api.
 export function parseFeedResponse(videos: FeedResponseType) {
   //! Sometime old video which doesn't have community comes into response.
   videos = videos.filter((item, index, arr) => item.feed.community)
@@ -100,9 +62,9 @@ export function parseFeedResponse(videos: FeedResponseType) {
           : null,
       },
       video: {
+        id: video.messages[0].message_id,
         commentCount: video.messages[0].no_of_comments,
         createdAt: video.messages[0].message_at,
-        id: video.messages[0].message_id,
         shareUrl: video.messages[0].share_url,
         slug: video.messages[0].slug,
         source: video.messages[0].media_url_m3u8 ?? video.messages[0].media_url,
@@ -116,9 +78,82 @@ export function parseFeedResponse(videos: FeedResponseType) {
         descriptionText: video.messages[0].description_text,
         linkoutId: video.messages[0].linkouts_id,
         clickableUrl: video.messages[0].clickable_url ? video.messages[0].clickable_url : null,
+        thumbnailM: video.messages[0].thumbnail_url_l ? video.messages[0].thumbnail_url || '' : '',
       },
     }
   })
+}
+
+/**
+ * This api parses only feed response from go-api.
+ * And returns the parsed response in the form of VideoPlayerModalType
+ */
+export function parseFeedResponseFromGoApi(feeds: FeedResponseFromGoApi[]) {
+  return feeds.map<VideoPlayerModalType>(({ video, community, loop, uuid, owner }) => ({
+    community: {
+      handle: community?.handle || '', // Mapping community.handle
+      id: community?.uuid || '', // Mapping community.uuid
+      slug: community?.slug || '', // Mapping community.slug
+      name: community?.name || null, // Mapping community.name
+      profileImage: community.dp_s, // Mapping community.dp
+      type: community?.type || null, // Mapping community.type
+      shareUrl: community?.share_url || '', // Mapping community.share_url
+      userRole: mapUserRole(community?.logged_in_user_role), // Mapping logged_in_user_role to userRole
+      isJoinRequested: false, // Set default for isJoinRequested, modify if needed
+      ...(community.brand && {
+        brand: {
+          brand_id: community.brand.brand_id, // Mapping brand.brand_id
+          name: community.brand.name, // Mapping brand.name
+          brand_slug: community.brand.brand_slug, // Mapping brand.brand_slug
+          brand_web_logo: community.brand.brand_web_logo,
+        },
+      }),
+    },
+    loop: {
+      id: loop?.uuid || '', // Mapping loop.uuid
+      slug: loop?.slug || '', // Mapping loop.slug
+      name: loop?.group_name || null, // Mapping loop.group_name
+    },
+    owner: {
+      isAvatar: owner.is_avatar, // Mapping owner.is_avatar
+      profileImage: owner.profile_image_s ?? owner.profile_image_m ?? owner.profile_image,
+      userName: owner.username, // Mapping owner.username
+      name: owner.name, // Mapping owner.name
+      ...(owner.brand && { brand: { brand_id: Number(owner.brand.brand_id), brand_slug: owner.brand.brand_slug } }),
+    },
+    video: {
+      id: uuid, // Using video.uuid as the ID
+      commentCount: video.no_of_comments || 0, // Mapping no_of_comments
+      createdAt: video.conversation_at, // Mapping message_at to createdAt
+      shareUrl: video.share_url || '', // Mapping share_url
+      slug: video.slug || '', // Mapping slug
+      source: video.media_url_m3u8 ?? video.media_url, // Mapping media_url
+      sparkCount: video.no_of_sparks || 0, // Mapping no_of_sparks
+      thumbnail: video.thumbnail_url, // Mapping thumbnail_url
+      attachedLink: video.attached_link, // Mapping attached_link
+      isSparked: video.is_sparked || null, // Mapping is_sparked
+      descriptionArr: video.description_data ? tryJsonParse(video.description_data) : undefined, // Parsing descriptionArr
+      descriptionText: video.description_text || null, // Mapping description_text
+      linkoutId: video.linkouts_id || null, // Mapping linkouts_id
+      clickableUrl: video.clickable_url || null, // Mapping clickable_url
+      thumbnailM: video.thumbnail_url_l || video.thumbnail_url, // Mapping thumbnail_url_l
+      linkouts: video.linkouts,
+    },
+  }))
+}
+
+// Helper function to map logged_in_user_role to enum values
+function mapUserRole(role?: number): 'LEADER' | 'MEMBER' | 'REQUESTED' | null {
+  switch (role) {
+    case 1:
+      return 'LEADER'
+    case 2:
+      return 'MEMBER'
+    case 3:
+      return 'REQUESTED'
+    default:
+      return null
+  }
 }
 
 export function parseProfileCommunityResponse(communities: ProfileCommunityResponseType[]) {
@@ -145,7 +180,7 @@ export function parseProfileCommunityResponse(communities: ProfileCommunityRespo
       isCommunityJoinRequested: item.is_community_join_requested,
       slug: item.slug,
       name: item.name,
-      profileImage: item.dp,
+      profileImage: item.dp_m ?? item.dp,
       loopCount: item.no_of_loops,
       type: item.type ?? null,
       loops: item.loops.map((item) => {
@@ -187,7 +222,11 @@ export function parseProfileLoopResponse(loops: ProfileLoopResponseType[]) {
           })
         : null,
       videos: item.messages.map((item) => {
-        return { id: item.message_id, viewCount: item.no_of_views, thumbnail: item.thumbnail_url }
+        return {
+          id: item.message_id,
+          viewCount: item.no_of_views,
+          thumbnail: item.thumbnail_url_s ?? item.thumbnail_url,
+        }
       }),
     }
   })
@@ -198,7 +237,7 @@ export function parseProfileVideoResponse(videos: ProfileVideoResponseType[]) {
     return {
       id: item.message_id,
       viewCount: item.no_of_views,
-      thumbnail: item.thumbnail_url,
+      thumbnail: item.thumbnail_url_l ?? item.thumbnail_url,
     }
   })
 }

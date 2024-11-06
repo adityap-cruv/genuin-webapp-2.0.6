@@ -1,10 +1,10 @@
 import { validateCommunityDetails } from '@lib/schemas/community'
 import { validateCommunityLoopList, type CommunityLoopListType } from '@lib/schemas/community/loops'
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
-import axios from 'axios'
-import { parseFeedResponse } from './api-response-parser'
+import { parseFeedResponseFromGoApi } from './api-response-parser'
 import { axiosInstance } from './instance'
 import { parseFeaturedCommunityList } from '@lib/schemas/community/featured-community'
+import { type VideoPlayerModalType } from '../schemas/player/video'
 
 export async function fetchCommunityDetails(slug: string) {
   return await axiosInstance
@@ -37,14 +37,14 @@ export function getCommunityDetails(slug: string) {
   })
 }
 
-export function getCommunityVideos(slug: string) {
-  let promise: null | Promise<{ videos: any; end?: boolean }> = null
+export function getCommunityFeed(slug: string) {
+  let promise: null | Promise<{ videos: VideoPlayerModalType[]; end?: boolean }> = null
   return useInfiniteQuery({
     queryFn: async ({ pageParam }) => {
       // Used axios because this API used in embed and we don't have to pass auth-token in case of embed
       if (!promise) {
-        promise = axios
-          .get(process.env.NEXT_PUBLIC_API_URL + '/api/v4/home/community_videos', {
+        promise = axiosInstance
+          .get('/goservices/feed/community', {
             params: {
               slug,
               last_video_id: pageParam,
@@ -52,8 +52,8 @@ export function getCommunityVideos(slug: string) {
           })
           .then((res) => {
             const resData = res.data.data
-            const videos = parseFeedResponse(resData.feeds)
-            return { videos, end: resData.end_of_videos }
+            const videos = parseFeedResponseFromGoApi(resData.feeds)
+            return { videos, end: resData.end_of_feed }
           })
           .catch((e) => {
             throw new Error('Something went wrong with community videos!')
@@ -67,7 +67,7 @@ export function getCommunityVideos(slug: string) {
     queryKey: ['community', 'videos', slug],
     getNextPageParam: (lastPage) => {
       if (lastPage.end) return
-      return lastPage.videos
+      return lastPage.videos[lastPage.videos.length - 1].video.id
     },
   })
 }

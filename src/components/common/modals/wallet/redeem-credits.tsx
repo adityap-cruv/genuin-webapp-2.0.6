@@ -6,6 +6,7 @@ import { useShallow } from 'zustand/react/shallow'
 import { redeemCouponAPI } from '@/lib/api/wallet'
 import { useState } from 'react'
 import { Loader } from '@/components/ui/loader'
+import { CustomImage } from '@/components/custom/custom-image'
 
 export function RedeemCredits() {
   const { closeModal } = useAuthenticationModalStore(useShallow((state) => ({ closeModal: state.close })))
@@ -25,7 +26,7 @@ export function RedeemCredits() {
   }
   return (
     <ModalShell>
-      <img src={WarningIcon.src} alt="WarningIcon" />
+      <CustomImage src={WarningIcon} height={100} width={100} alt="WarningIcon" />
       <p className="text-center text-heading-3 text-secondary">Redeem all credits?</p>
       <p className="text-center text-title-3-med text-secondary">
         This action will transfer all your reward credits to 'Tillo' for redeeming coupons. It cannot be undone.

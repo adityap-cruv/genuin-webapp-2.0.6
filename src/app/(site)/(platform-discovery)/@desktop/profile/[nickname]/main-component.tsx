@@ -35,7 +35,7 @@ export function MainComponent({ profileData }: CompProps) {
       <TopStickyBar.desktop
         defaultOpen={false}
         isOpen={!detailsInView}
-        profileImage={profileData.profile_image}
+        profileImage={profileData.profile_image_m ?? profileData.profile_image}
         profileName={profileData.name ?? ''}
         profileNickname={profileData?.nickname}
         isAvatar={profileData?.is_avatar}

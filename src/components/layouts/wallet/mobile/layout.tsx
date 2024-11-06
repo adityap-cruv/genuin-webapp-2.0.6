@@ -3,7 +3,7 @@ import { Sheet, SheetClose, SheetContent, SheetTrigger } from '@components/ui/sh
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { PATH_NAME } from '@lib/utils/constants/path'
-import { AccountIcon, ContactUsIcon, EditIcon, LogOutIcon, NotificationIcon } from '@icons/settings-side-bar-icons'
+import { AccountIcon, ContactUsIcon, EditIcon, LogOutIcon, PersonalizationIcon } from '@icons/settings-side-bar-icons'
 import { cn } from '@lib/utils'
 import icBack from '@icons/icBack.svg'
 import { type ReactNode } from 'react'
@@ -50,9 +50,9 @@ export function SettingsLayout() {
                 <AccountIcon isActive={pathName === PATH_NAME.settings('account')} />
               </Item>
             </Link>
-            <Link href={{ pathname: PATH_NAME.settings('notification') }}>
-              <Item title="Notifications" isActive={pathName === PATH_NAME.settings('notification')}>
-                <NotificationIcon isActive={pathName === PATH_NAME.settings('notification')} />
+            <Link href={{ pathname: PATH_NAME.settings('personalization') }}>
+              <Item title="Personalization" isActive={pathName === PATH_NAME.settings('personalization')}>
+                <PersonalizationIcon isActive={pathName === PATH_NAME.settings('personalization')} />
               </Item>
             </Link>
             <Link href={{ pathname: PATH_NAME.settings('contact') }}>

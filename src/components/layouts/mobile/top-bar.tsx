@@ -22,7 +22,6 @@ import { LogoutIcon } from '@icons/logout'
 import { removeAllAuthToken } from '@lib/api/instance'
 import { MOBILE_DOWNLOAD_APP_LINK } from '@lib/constants'
 import { SearchBar } from '@components/common/search-bar'
-import { SettingsLayout } from '../settings/mobile/layout'
 import { NotificationIcon } from '@icons/settings-side-bar-icons'
 import { SearchIcon } from '@icons/search-icon'
 import Analytics from '@services/analytics'
@@ -34,6 +33,8 @@ import { VerifiedIcon } from '@icons/verified-icon'
 import { formatPhoneNumberIntl } from 'react-phone-number-input'
 import { useState, useEffect } from 'react'
 import { Loader } from '@/components/ui/loader'
+import { SettingIcon } from '@icons/settings'
+import { CustomImage } from '@/components/custom/custom-image'
 
 const DownloadAppDialog = dynamic(
   async () => await import('../download-app-dialog').then((comp) => comp.DownloadAppDialog)
@@ -82,9 +83,9 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
           brandName={brandName}
           isClaimed={isClaimed}
         />
-        {embed && (
+        {embed && brandLogo && (
           <Link href={{ pathname: PATH_NAME.home() }}>
-            <img src={brandLogo} className="h-8 object-cover" alt="brand logo" />
+            <CustomImage src={brandLogo} height={40} width={40} className="object-cover" alt="logo" />
           </Link>
         )}
       </span>
@@ -291,6 +292,7 @@ function MenuItem({ title, isActive, children, brandName }: ItemProps) {
 function UserTick() {
   const { data, status } = useSession()
   const searchParams = useSearchParams()
+  const pathName = usePathname()
   const [loadingAuthData, setLoadingAuthData] = useState(false)
 
   useEffect(() => {
@@ -347,17 +349,29 @@ function UserTick() {
                 {data.user.usernameSet
                   ? '@' + data.user.nickname
                   : data.user.email
-                    ? data.user.email
-                    : formatPhoneNumberIntl(
-                        data.user.phoneNumber?.startsWith('+') ? data.user.phoneNumber : `+${data.user.phoneNumber}`
-                      )}
+                  ? data.user.email
+                  : formatPhoneNumberIntl(
+                      data.user.phoneNumber?.startsWith('+') ? data.user.phoneNumber : `+${data.user.phoneNumber}`
+                    )}
               </p>
               {!data.user.isBrandSystemUser && <p className="text-body-1-demi text-monochrome-6">Complete profile</p>}
             </div>
           </div>
           <hr className="border-b border-monochrome-9" />
           <div className="flex flex-col gap-4 p-4">
-            {!data.user.isBrandSystemUser && <SettingsLayout />}
+            {!data.user.isBrandSystemUser && (
+              <Link
+                href={PATH_NAME.settings('')}
+                className="flex items-center gap-x-2"
+                onClick={() => {
+                  if (!pathName.includes('settings')) {
+                    localStorage.setItem('previous_path', pathName)
+                  }
+                }}>
+                <SettingIcon className="fill-secondary" />
+                <p className="text-body-1-demi">Settings</p>
+              </Link>
+            )}
             <div className="flex items-center gap-x-2">
               <LogoutIcon className="stroke-secondary" />
               <p

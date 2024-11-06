@@ -12,9 +12,18 @@ type Props = ComponentProps<'body'> & {
   noIndex?: boolean
 }
 
-export function RootHTML({ brandColors, favicon, subdomain, children, className, noIndex = false, ...props }: Props) {
+export function RootHTML({
+  brandColors,
+  favicon,
+  subdomain,
+  children,
+  className,
+  noIndex = false,
+  style,
+  ...props
+}: Props) {
   return (
-    <html lang="en" style={{ ...brandColors }}>
+    <html lang="en">
       <head>
         <link rel="icon" type="image/x-icon" href={favicon ?? '/favicon.svg'} />
         <link rel="mask-icon" href={favicon ?? '/favicon.svg'} />
@@ -22,7 +31,8 @@ export function RootHTML({ brandColors, favicon, subdomain, children, className,
         {noIndex && <meta name="robots" content="noindex" />}
       </head>
       <body
-        className={cn('index-page-background !absolute inset-0 min-h-full min-w-full text-secondary', className)}
+        style={{ ...brandColors, ...style }}
+        className={cn('h-screen w-full overflow-clip text-secondary', className)}
         {...props}>
         {children}
         <RedirectToHTTPS />

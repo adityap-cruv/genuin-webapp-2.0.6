@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { type ReactNode } from 'react'
 import { cn } from '@lib/utils'
 import { PATH_NAME } from '@lib/utils/constants/path'
-import { AccountIcon, ContactUsIcon, EditIcon, LogOutIcon, NotificationIcon } from '@icons/settings-side-bar-icons'
+import { AccountIcon, ContactUsIcon, EditIcon, LogOutIcon, PersonalizationIcon } from '@icons/settings-side-bar-icons'
 import { AuthenticationModal } from '@components/common/modals/authentication'
 import Analytics from '@services/analytics'
 
@@ -25,9 +25,9 @@ export function SideBar() {
             <AccountIcon isActive={pathName === PATH_NAME.settings('account')} />
           </Item>
         </Link>
-        <Link href={{ pathname: PATH_NAME.settings('notification') }}>
-          <Item title="Notifications" isActive={pathName === PATH_NAME.settings('notification')}>
-            <NotificationIcon isActive={pathName === PATH_NAME.settings('notification')} />
+        <Link href={{ pathname: PATH_NAME.settings('personalization') }}>
+          <Item title="Personalization" isActive={pathName === PATH_NAME.settings('personalization')}>
+            <PersonalizationIcon isActive={pathName === PATH_NAME.settings('personalization')} />
           </Item>
         </Link>
         <Link href={{ pathname: PATH_NAME.settings('contact') }}>

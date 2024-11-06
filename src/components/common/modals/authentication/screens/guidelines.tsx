@@ -12,6 +12,7 @@ import { useEffect, useState } from 'react'
 import { Loader } from '@components/ui/loader'
 import { type ScreenProps } from '.'
 import { useShallow } from 'zustand/react/shallow'
+import { CustomImage } from '@/components/custom/custom-image'
 
 const FormSchema = z.object({
   mobile: z.boolean().default(false).optional(),
@@ -83,7 +84,13 @@ export function Guidelines({ onNext }: GuidelineProps) {
   return (
     <ModalShell>
       <div className="w-full">
-        {brandLogo ? <img src={brandLogo} className="h-10" /> : <GenuinIcon.logo className="h-10" />}
+        {brandLogo ? (
+          <div className="relative h-12 w-1/2">
+            <CustomImage alt="Logo" src={brandLogo} fill className="object-contain" />
+          </div>
+        ) : (
+          <GenuinIcon.logo className="h-10" />
+        )}
       </div>
       <div className="h-[50vh] w-full overflow-auto">
         <h2 className="text-title-1-bold">Brand Guidelines</h2>

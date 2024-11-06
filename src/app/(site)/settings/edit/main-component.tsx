@@ -12,12 +12,10 @@ import { updateUser } from '@/components/common/modals/authentication/api/auth'
 import { useToast } from '@components/ui/use-toast'
 import { useRouter } from 'next/navigation'
 import { Toaster } from '@components/ui/toaster'
-import { PATH_NAME } from '@lib/utils/constants/path'
 import { InstagramIcon } from '@icons/instagram-icon'
 import { TikTokIcon } from '@icons/tiktok-icon'
 import { LinkedInIcon } from '@icons/linkedin-icon'
 import { TwitterIcon } from '@icons/twitter-icon'
-import Analytics from '@services/analytics'
 import { ChevronLeft } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { getUserData } from '@/lib/api/settings'
@@ -63,10 +61,10 @@ export default function MainComponent() {
     )
   if (profileData !== undefined)
     return (
-      <>
+      <div className="h-full">
         <EditProfile profileData={profileData} />
         <Toaster />
-      </>
+      </div>
     )
 }
 
@@ -164,26 +162,23 @@ function EditProfile({ profileData }: { profileData: ProfileDetailsType }) {
   }
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
-        <div className={`m-4 flex items-center justify-between md:mx-8 md:my-4`}>
-          <ChevronLeft
-            className="block md:hidden"
-            onClick={() => {
-              const path = localStorage.getItem('previous_path')
-              router.push(path ?? PATH_NAME.home())
-              void Analytics.track({
-                eventName: 'Settings Closed',
-                properties: {},
-              })
-            }}
-          />
-          <p className="text-title-2-bold">Edit Profile</p>
-          <Button variant="custom" type="submit" className="text-title-3-demi text-primary">
-            Save
-          </Button>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="h-full w-full overflow-auto">
+        <div className="sticky top-0">
+          <div className={`flex items-center justify-between bg-monochrome-white p-4 md:px-8 md:py-4`}>
+            <ChevronLeft
+              className="block md:hidden"
+              onClick={() => {
+                router.back()
+              }}
+            />
+            <p className="text-title-2-bold">Edit Profile</p>
+            <Button variant="custom" type="submit" className="py-0 text-title-3-demi text-primary">
+              Save
+            </Button>
+          </div>
+          <hr className="block bg-monochrome-black/10 md:hidden" />
         </div>
-        <hr className="block bg-monochrome-black/10 md:hidden" />
-        <div className="px-8 py-4">
+        <div className="px-8 py-4 pb-20">
           <ImageInput />
           <FormField
             name="displayName"

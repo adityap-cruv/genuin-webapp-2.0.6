@@ -10,6 +10,8 @@ export const HIRING_LINK = 'https://careers.begenuin.com'
 export const URL_TO_APP_STORE = 'https://apps.apple.com/US/app/id1511177838?mt=8'
 export const URL_TO_PLAY_STORE = 'https://play.google.com/store/apps/details?id=com.begenuin.begenuin'
 
+export const HEIGHT_OF_HEADER = 76
+
 export const LOGIN_SOURCE = {
   web_sdk: 1,
   white_label: 2,
@@ -32,3 +34,5 @@ export const RECENT_SEARCH_CONTENT_TYPE: Record<'text' | 'community' | 'loop' | 
   user: 2,
   video: 5,
 }
+
+export const PROTECTED_ROUTES = ['settings', 'wallet']

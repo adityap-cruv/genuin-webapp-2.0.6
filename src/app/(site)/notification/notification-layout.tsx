@@ -80,6 +80,7 @@ export function NotificationLayout() {
     )
 }
 
+// TODO: FIX type issues and CustomAvatar of community doesn't get set.
 function Notifications({
   notificationDetails,
   fetchNextPage,
@@ -153,7 +154,7 @@ function Notifications({
                       }}>
                       <CustomAvatar
                         className="h-14 w-14 bg-red-40"
-                        imageUrl={item?.user?.profile_image ?? ''}
+                        imageUrl={item?.user?.profile_image_m ?? item.user.profile_image}
                         fallbackString={item?.user?.name ?? ''}
                         isAvatar={item?.user?.is_avatar}
                       />

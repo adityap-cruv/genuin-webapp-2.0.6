@@ -15,7 +15,6 @@ import { PlayerProgressBar } from './player-progress-bar'
 import { memo, useEffect, useId, useState, useCallback } from 'react'
 import { Linkout } from '../../linkout'
 import { useShallow } from 'zustand/react/shallow'
-import { fetchLinkouts } from '../../linkout/api'
 import { type LinkoutsType } from '../../linkout/schema'
 import { WalletAmountBadge } from '../../wallet/wallet-amount-badge'
 import { PlayIcon } from '@icons/player-controls/play-icon'
@@ -45,6 +44,7 @@ type MobileProps = {
     } | null
   }
   clickableUrl: string | null
+  linkouts?: LinkoutsType | null
 }
 
 export const Mobile = memo(function Mobile({ clickableUrl, ...props }: MobileProps) {
@@ -134,24 +134,16 @@ function Details({
   isActive,
   linkoutId,
   isSparked,
+  linkouts,
 }: MobileProps) {
-  const [linkouts, setLinkouts] = useState<LinkoutsType | null>(null)
   const [isVisible, setIsVisible] = useState(false)
   const detailsId = useId()
 
   useEffect(() => {
+    if (!linkouts) return
     let timeoutId: any
     const detailsElement = document.getElementById(detailsId)
-    if (isActive && linkoutId) {
-      void fetchLinkouts(linkoutId)
-        .then((data) => {
-          setLinkouts(data)
-        })
-        .catch((e) => {
-          if (detailsElement) {
-            detailsElement.style.setProperty('transform', 'translate(0px, 0px)')
-          }
-        })
+    if (isActive) {
       timeoutId = setTimeout(() => {
         setIsVisible(true)
         if (detailsElement) {
@@ -172,7 +164,7 @@ function Details({
       }
       setIsVisible(false)
     }
-  }, [isActive])
+  }, [isActive, linkouts])
 
   return (
     <div className={cn('absolute bottom-16 left-0 flex w-full justify-between px-2 transition-all')}>
@@ -218,9 +210,11 @@ function Details({
             />
           </span>
         )}
-        {isVisible && linkoutId && <Linkout.mobile linkouts={linkouts ?? []} linkoutId={linkoutId} videoId={videoId} />}
+        {isVisible && linkoutId && linkouts && (
+          <Linkout.mobile linkouts={linkouts} linkoutId={linkoutId} videoId={videoId} />
+        )}
       </div>
-      <div className="z-10">
+      <div className="z-10 flex items-end">
         <Actions.mobile
           commentCount={commentCount}
           shareUrl={shareUrl}

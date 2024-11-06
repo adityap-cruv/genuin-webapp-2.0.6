@@ -3,33 +3,26 @@ import { cn, checkAndAppendHttps } from '@/lib/utils'
 import { LinkItem } from './link-item'
 import { CtaButton } from './cta-button'
 import Link from 'next/link'
-import { getLinkouts } from './api'
-import { Loader } from './loader'
 import { memo } from 'react'
 import { triggerLinkoutEvent, triggerLinkoutViewEvent } from './analytics'
+import { type LinkoutsType } from './schema'
 
 type ComponentProps = {
-  linkoutId: number
+  linkouts: LinkoutsType
   videoId: string
+  linkoutId: number
 }
 
-export const Desktop = memo(function Desktop({ linkoutId, videoId }: ComponentProps) {
-  if (linkoutId)
-    return (
-      <div className="py-4">
-        <p className="pb-4 text-title-3-bold">Links</p>
-        <LinkoutForDesktop linkoutId={linkoutId} videoId={videoId} />
-      </div>
-    )
+export const Desktop = memo(function Desktop({ linkouts, videoId, linkoutId }: ComponentProps) {
+  return (
+    <div className="py-4">
+      <p className="pb-4 text-title-3-bold">Links</p>
+      <LinkoutForDesktop linkoutId={linkoutId} linkouts={linkouts} videoId={videoId} />
+    </div>
+  )
 })
 
-function LinkoutForDesktop({ linkoutId, videoId }: { linkoutId: number; videoId: string }) {
-  const { data: linkouts, isLoading } = getLinkouts(linkoutId)
-
-  if (isLoading || !linkouts) {
-    return <Loader />
-  }
-
+function LinkoutForDesktop({ videoId, linkoutId, linkouts }: ComponentProps) {
   return linkouts.map((linkoutItem, index) => {
     if (linkoutItem.links.length === 1) {
       triggerLinkoutViewEvent({

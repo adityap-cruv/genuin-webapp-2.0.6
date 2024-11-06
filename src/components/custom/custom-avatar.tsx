@@ -1,5 +1,5 @@
 import { Avatar, AvatarImage, AvatarFallback } from '@components/ui/avatar'
-import { cn, getAvatarUrl } from '@lib/utils'
+import { cn, getAvatarUrl, getWebpUrlForImage } from '@lib/utils'
 
 type Props = {
   isAvatar: boolean
@@ -11,7 +11,7 @@ type Props = {
 export function CustomAvatar({ isAvatar = false, imageUrl, className, fallbackString }: Props) {
   return (
     <Avatar className={cn(className, 'flex items-center justify-center bg-red-40')}>
-      <AvatarImage src={isAvatar ? getAvatarUrl(imageUrl) : imageUrl} />
+      <AvatarImage title={fallbackString} src={isAvatar ? getAvatarUrl(imageUrl) : getWebpUrlForImage(imageUrl)} />
       <AvatarFallback className="text-title-2-bold text-monochrome-white">
         {getAvatarFallback(fallbackString)}
       </AvatarFallback>

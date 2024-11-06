@@ -1,5 +1,5 @@
-import { InterruptionProvider } from '@components/providers/interruption-provider'
 import { cookies } from 'next/headers'
+import { InterruptionProvider } from '@components/providers/interruption-provider'
 
 export default function Layout(props: any) {
   const isMobile = cookies().get('device_type')?.value === 'mobile'

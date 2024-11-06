@@ -6,6 +6,7 @@ import { twMerge } from 'tailwind-merge'
 import { useGenuinOptions } from './stores/genuin-options'
 import { AuthenticationModal } from '@components/common/modals/authentication'
 import { type ReactNode } from 'react'
+import { PROTECTED_ROUTES } from './constants'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -327,6 +328,33 @@ export function tryJsonParse(data: string) {
   } catch (e) {
     return data
   }
+}
+
+/**
+ * Returns the WebP URL for the given image URL, but only if it is an upload from the genuin-ecosystem.
+ *
+ * If the URL is null, undefined, or does not match the expected pattern, it returns an empty string.
+ *
+ * Example:
+ * Input: "https://media.qa.begenuin.com/uploads/thumbnails/ee1edb6f-953f-4c9c-8907-0e3db0159872_1729682640952.png"
+ * Output: "https://media.qa.begenuin.com/uploads/thumbnails/webp/ee1edb6f-953f-4c9c-8907-0e3db0159872_1729682640952.webp"
+ *
+ * @param {string | null | undefined} url - The image URL to be converted.
+ * @returns {string} The corresponding WebP URL, or an empty string if the input URL is null or undefined or empty string.
+ */
+
+export function getWebpUrlForImage(url?: string | null): string {
+  if (!url) return ''
+  return url.includes('/uploads/') ? url.replace(/(\/)([^/]+)\.([^/.]+)$/, '$1webp/$2.webp') : url
+}
+
+/**
+ * This function will check if the url includes any of the protected routes.
+ * @param url
+ * @returns
+ */
+export function checkIfUrlIncludesProtectedRoute(url: string) {
+  return PROTECTED_ROUTES.some((route) => url.includes(route))
 }
 
 export function encodeVideoSourceUrl(videoSource: string) {

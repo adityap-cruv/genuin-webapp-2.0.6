@@ -1,7 +1,7 @@
 import { AnimatedInfinityView } from '@components/common/animated-infinity-view'
-import dynamic from 'next/dynamic'
 import { useFeedListStore } from './store'
-import { memo, useEffect, useState } from 'react'
+import { Player } from '../player'
+import { memo, useCallback, useEffect, useState } from 'react'
 import { useCommentSheetStore } from '../player/comment-sheet/store'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Mousewheel } from 'swiper/modules'
@@ -13,13 +13,12 @@ import { AnimatePresence, motion } from 'framer-motion'
 import Analytics from '@/services/analytics'
 import { usePlayerControlStore } from '../player/player-control-store'
 import { FeedShimmer } from '../shimmers/feed-shimmer'
-// import { KsGestures } from '../ks-gestures'
-// import { useLocalStorage } from '@/lib/stores/local-storage'
-// import { type Swiper as SwiperType } from 'swiper/types'
-const Player = dynamic(async () => await import('@components/common/player').then((comp) => comp.Player.mobile))
+import { KsGestures } from '../ks-gestures'
+import { useLocalStorage } from '@/lib/stores/local-storage'
+import { type Swiper as SwiperType } from 'swiper/types'
 
 type MobileProps = {
-  videos: VideoPlayerModalType[]
+  videos?: VideoPlayerModalType[] | null
   isLoading: boolean
   isError: boolean
   hasNextPage?: boolean
@@ -44,7 +43,7 @@ export function Mobile({
   customSizeBox,
   isLoading,
 }: MobileProps) {
-  // const { showKsGestures, gestureStep, updateGestureStep } = useLocalStorage()
+  const { showKsGestures, gestureStep, updateGestureStep } = useLocalStorage()
   const { defaultSizeBox } = useGenuinOptions((state) => ({
     defaultSizeBox: state.sizeBoxes.default,
     embed: state.embed,
@@ -61,6 +60,7 @@ export function Mobile({
   const commentIsOpen = useCommentSheetStore((state) => state.modalIsOpen)
 
   useEffect(() => {
+    if (!videos) return
     if (!isFetchingNextPage && videos.length - 3 <= currentIndex) {
       // console.log('isFetchingNextPage NEXT PGE.')
       fetchNextPage?.()
@@ -68,19 +68,20 @@ export function Mobile({
     if ((currentIndex + 1) % 5 === 0) showInterruption()
   }, [currentIndex])
 
-  // const handleActiveIndexChange = useCallback(
-  //   (swiper: SwiperType) => {
-  //     // Update the step if KS gestures are enabled.
-  //     if (showKsGestures) {
-  //       // If the gesture step is swipe, then update the step.
-  //       if (gestureStep === 'swipe') updateGestureStep()
-  //     }
-  //     setCurrentIndex(swiper.activeIndex, videos[currentIndex].video.id)
-  //   },
-  //   [gestureStep, showKsGestures]
-  // )
+  const handleActiveIndexChange = useCallback(
+    (swiper: SwiperType) => {
+      if (!videos) return
+      // Update the step if KS gestures are enabled.
+      if (showKsGestures) {
+        // If the gesture step is swipe, then update the step.
+        if (gestureStep === 'swipe') updateGestureStep()
+      }
+      setCurrentIndex(swiper.activeIndex, videos[currentIndex].video.id)
+    },
+    [gestureStep, showKsGestures, videos]
+  )
 
-  if (isLoading) {
+  if (isLoading || !videos) {
     return <FeedShimmer.mobile />
   }
 
@@ -98,9 +99,7 @@ export function Mobile({
         mousewheel={true}
         direction="vertical"
         initialSlide={startIndex}
-        onActiveIndexChange={(swiper) => {
-          setCurrentIndex(swiper.activeIndex, videos[currentIndex].video.id)
-        }}
+        onActiveIndexChange={handleActiveIndexChange}
         allowSlideNext={!commentIsOpen}
         allowSlidePrev={!commentIsOpen}
         style={videoSizeBox}>
@@ -109,7 +108,7 @@ export function Mobile({
             {({ isActive, isPrev, isNext, isVisible }) => {
               if (isActive || isPrev || isNext || isVisible)
                 return (
-                  <Player
+                  <Player.mobile
                     isActive={isActive}
                     loop
                     videoDetails={item}
@@ -125,7 +124,7 @@ export function Mobile({
         ))}
       </Swiper>
       <InfinityViewBox videoDetails={videos[currentIndex]} />
-      {/* {showKsGestures && <KsGestures />} */}
+      {showKsGestures && <KsGestures />}
     </div>
   )
 }

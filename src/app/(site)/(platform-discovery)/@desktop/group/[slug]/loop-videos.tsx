@@ -3,99 +3,114 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { CustomAvatar } from '@components/custom/custom-avatar'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
 import icPlay from '@icons/player-controls/icPlay.svg'
-import { useMotionValueEvent, useScroll } from 'framer-motion'
 import { PlayerModal } from '@components/common/modals/player-modal'
-import { type VideoPlayerModalCommunityType, type VideoPlayerModalLoopType } from '@lib/schemas/player/video'
 import { useSearchParams } from 'next/navigation'
 import { Shimmer } from '@components/ui/shimmer'
+import { CustomImage } from '@/components/custom/custom-image'
+import { Loader } from '@/components/ui/loader'
 
-type Props = { loop: VideoPlayerModalLoopType; community: VideoPlayerModalCommunityType }
-export function LoopVideos({ loop, community }: Props) {
+type Props = { slug: string }
+export function LoopVideos({ slug }: Props) {
   const searchParams = useSearchParams()
-  const { data, isLoading, fetchNextPage, isError, isFetchingNextPage } = getLoopVideos({ loop, community })
+  const loaderId = useId()
+  const { data, isLoading, fetchNextPage, isError, isFetchingNextPage, hasNextPage } = getLoopVideos(slug)
   const videos = data?.pages.flatMap((item) => item.videos)
 
   const [modalControl, setModalControl] = useState({ open: false, startIndex: -1 })
-  const scrollDivRef = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({ container: scrollDivRef, layoutEffect: false })
 
   useEffect(() => {
     if (searchParams.get('show_videos') === '1') setModalControl({ startIndex: 0, open: true })
   }, [searchParams])
 
-  useMotionValueEvent(scrollYProgress, 'change', (latest) => {
-    if (Number(latest.toFixed(1)) > 0.8 && !isFetchingNextPage) {
-      void fetchNextPage()
+  useEffect(() => {
+    if (!hasNextPage || isLoading) return
+    const lastElement = document.getElementById(loaderId)
+    if (!lastElement) return
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        void fetchNextPage()
+      }
+    })
+    observer.observe(lastElement)
+    return () => {
+      observer.disconnect()
     }
-  })
-
-  if (isLoading)
-    return (
-      <div className="my-4 grid grid-cols-2 gap-4">
-        {Array.from({ length: 2 }).map((_, index) => (
-          <Shimmer
-            key={index}
-            className="group/video relative flex aspect-reel w-full items-center justify-center duration-300 hover:cursor-pointer"
-          />
-        ))}
-      </div>
-    )
-
-  if (!videos || videos?.length === 0)
-    return <div className="flex items-center justify-center pt-32 text-title-3-bold">No posts available</div>
+  }, [loaderId, hasNextPage, isLoading])
 
   // TODO: Remove this component from here. and put it  in better location.
   return (
-    <div ref={scrollDivRef} className="h-full w-full overflow-y-auto">
+    <div className="h-full w-full overflow-y-auto">
       <p className="mb-1 mt-2 text-title-3-bold">Posts</p>
-      <div className="mb-2 grid grid-cols-2 gap-4">
-        {videos?.map((item, index) => (
-          <div
-            key={index}
-            onClick={() => {
-              setModalControl((x) => {
-                x.open = true
-                x.startIndex = index
-                return { ...x }
-              })
-            }}
-            className="group/video relative flex aspect-reel w-full items-center justify-center duration-300 hover:cursor-pointer">
-            {/* <Image
-              src={item.video.thumbnail ?? ''}
-              alt={item.video.description ?? ''}
-              className="h-full w-full rounded-xl object-fill"
-              fill
-            /> */}
-            <img src={item.video.thumbnail ?? ''} className="h-full w-full rounded-xl object-fill" />
-            <div className="absolute bottom-2 left-2">
-              <Link href={{ pathname: PATH_NAME.profile(item.owner.userName) }}>
-                <div className="flex h-6 w-6 items-center">
-                  <CustomAvatar
-                    className="h-full w-full bg-red-40"
-                    imageUrl={item.owner.profileImage}
-                    isAvatar={item.owner.isAvatar}
-                    fallbackString={item.owner.userName}
+      {isLoading ? (
+        <div className="my-4 grid grid-cols-2 gap-4">
+          {Array.from({ length: 2 }).map((_, index) => (
+            <Shimmer
+              key={index}
+              className="group/video relative flex aspect-reel w-full items-center justify-center duration-300 hover:cursor-pointer"
+            />
+          ))}
+        </div>
+      ) : (
+        <>
+          <div className="mb-2 grid grid-cols-2 gap-4">
+            {!videos || videos.length === 0 ? (
+              <div className="flex items-center justify-center pt-32 text-title-3-bold">No posts available</div>
+            ) : (
+              videos?.map((item, index) => (
+                <div
+                  key={index}
+                  onClick={() => {
+                    setModalControl((x) => {
+                      x.open = true
+                      x.startIndex = index
+                      return { ...x }
+                    })
+                  }}
+                  className="group/video relative flex aspect-reel w-full items-center justify-center duration-300 hover:cursor-pointer">
+                  <CustomImage
+                    src={item.video.thumbnailM ?? item.video.thumbnail}
+                    alt={item.video.slug}
+                    className="rounded-xl"
+                    fill
                   />
-                  <p className="ml-1 text-body-1-bold text-monochrome-white">@{item.owner.userName}</p>
+                  <div className="absolute bottom-2 left-2">
+                    <Link href={{ pathname: PATH_NAME.profile(item.owner.userName) }}>
+                      <div className="flex h-6 w-6 items-center">
+                        <CustomAvatar
+                          className="h-full w-full bg-red-40"
+                          imageUrl={item.owner.profileImage}
+                          isAvatar={item.owner.isAvatar}
+                          fallbackString={item.owner.userName}
+                        />
+                        <p className="ml-1 text-body-1-bold text-monochrome-white">@{item.owner.userName}</p>
+                      </div>
+                      {item.video.descriptionText && (
+                        <p className="line-clamp-2 w-5/6 overflow-hidden break-all pt-2 text-body-1-med text-monochrome-white">
+                          {item.video.descriptionText}
+                        </p>
+                      )}
+                    </Link>
+                    {/* <p className="ml-1 line-clamp-2 text-body-1-demi text-monochrome-white">{item.video.description}</p> */}
+                  </div>
+                  <div className="absolute inset-0  hidden h-full w-full items-center justify-center rounded-lg bg-monochrome-black/40 group-hover/video:flex">
+                    <Image src={icPlay} alt="" />
+                  </div>
                 </div>
-                {item.video.descriptionText && (
-                  <p className="line-clamp-2 w-5/6 overflow-hidden break-all pt-2 text-body-1-med text-monochrome-white">
-                    {item.video.descriptionText}
-                  </p>
-                )}
-              </Link>
-              {/* <p className="ml-1 line-clamp-2 text-body-1-demi text-monochrome-white">{item.video.description}</p> */}
-            </div>
-            <div className="absolute inset-0  hidden h-full w-full items-center justify-center rounded-lg bg-monochrome-black/40 group-hover/video:flex">
-              <Image src={icPlay} alt="" />
-            </div>
+              ))
+            )}
           </div>
-        ))}
-      </div>
+          {hasNextPage && (
+            <div id={loaderId} className="flex h-20 w-full items-center justify-center">
+              <Loader size="md" />
+            </div>
+          )}
+        </>
+      )}
+
       <PlayerModal.desktop
-        videos={videos}
+        videos={videos ?? []}
         isLoading={isLoading}
         close={() => {
           setModalControl((x) => {

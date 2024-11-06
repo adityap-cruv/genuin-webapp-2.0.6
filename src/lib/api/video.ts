@@ -59,6 +59,7 @@ export async function getVideoDetails(slug: string): Promise<VideoPlayerModalTyp
       descriptionText: videoDetails.description_text,
       linkoutId: videoDetails.linkouts_id,
       clickableUrl: videoDetails.clickable_url ? videoDetails.clickable_url : null,
+      thumbnailM: videoDetails.thumbnail_url_l,
     },
   }
 }

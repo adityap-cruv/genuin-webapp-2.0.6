@@ -21,11 +21,13 @@ const videoSchema = z.object({
   isSparked: z.boolean().nullable().optional(),
   sparkCount: z.number(),
   thumbnail: z.string(),
+  thumbnailM: z.string().nullish(),
   descriptionArr: descriptionArrSchema.nullish(),
   descriptionText: z.string().nullish(),
   slug: z.string(),
   linkoutId: z.number().nullish(),
   clickableUrl: z.string().nullable(),
+  linkouts: z.any(),
 })
 
 // Define the loop schema
@@ -39,12 +41,12 @@ const BrandSchema = z
   .object({
     brand_id: z.number(),
     name: z.string(),
-    subdomain: z.string(),
+    subdomain: z.string().nullish(),
     logo: z.string().nullish(),
-    created_at: z.number(),
+    created_at: z.number().nullish(),
     brand_web_logo: z.string().nullish(),
     favicon: z.string().nullish(),
-    brand_system_user_id: z.string(),
+    brand_system_user_id: z.string().nullish(),
     brand_slug: z.string(),
   })
   .nullish()
