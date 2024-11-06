@@ -32,7 +32,7 @@ export function RootHTML({
       </head>
       <body
         style={{ ...brandColors, ...style }}
-        className={cn('h-screen w-full overflow-clip text-secondary', className)}
+        className={cn('h-screen w-full text-secondary', className)}
         {...props}>
         {children}
         <RedirectToHTTPS />
