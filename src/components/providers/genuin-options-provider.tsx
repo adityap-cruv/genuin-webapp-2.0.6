@@ -80,8 +80,12 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
       void fetchWalletBalance()
     }
     void rudderStackIdentify()
-    // Init added
-    void Analytics.track({ eventName: 'Initialized', properties: {} })
+
+    // Have added timeout to track initialized event after 1 sec, because we have to wait for rudderstack to initialize,
+    // Also, We have to keep priorities low for rudderstack to track events.
+    setTimeout(() => {
+      void Analytics.track({ eventName: 'Initialized', properties: {} })
+    }, 1000)
 
     return () => {
       ejectAuthTokenInterceptor(interceptorId)
