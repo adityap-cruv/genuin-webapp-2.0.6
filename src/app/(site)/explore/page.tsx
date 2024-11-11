@@ -1,5 +1,7 @@
+import { cookies } from 'next/headers'
 import { Root } from './root'
 
 export default function Page() {
-  return <Root />
+  const isMobile = cookies().get('device_type')?.value === 'mobile'
+  return <Root isMobile={isMobile} />
 }
