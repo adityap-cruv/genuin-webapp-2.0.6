@@ -11,7 +11,6 @@ import { GenuinIcon } from '@icons/genuin-icon'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { NotificationIcon } from '@icons/settings-side-bar-icons'
 import Analytics from '@services/analytics'
-import { CategoryView } from '@components/common/category-view'
 import { useShallow } from 'zustand/react/shallow'
 import { LoginIcon } from '@icons/login-icon'
 import { VerifiedIcon } from '@icons/verified-icon'
@@ -23,6 +22,9 @@ const DownloadAppDialog = dynamic(
   async () => await import('../download-app-dialog').then((comp) => comp.DownloadAppDialog)
 )
 
+const CategoryViewDynamic = dynamic(
+  async () => await import('@components/common/category-view').then((comp) => comp.CategoryView)
+)
 const RecentCommunities = dynamic(
   async () => await import('./recent-communities').then((comp) => comp.RecentCommunities),
   { ssr: false }
@@ -137,7 +139,7 @@ export function SideBar() {
         </span>{' '}
         {(!isClaimed || user?.ksCbRequestStatus !== 3) && <hr className="border-1 my-2 border-monochrome-black/10" />}
         {user?.ksCbRequestStatus !== 3 && <BecomeCbCard className="my-4 hidden xl:block" />}
-        <CategoryView className="hidden xl:block" />
+        <CategoryViewDynamic className="hidden xl:block" />
         <RecentCommunities />
       </div>
       {embed && (
