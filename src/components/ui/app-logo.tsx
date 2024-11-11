@@ -37,14 +37,14 @@ function LogoProcessor({ className, imageHeight, type, logo, ...props }: Process
 
   if (brandWebLogo)
     return (
-      <div className="relative" style={{ height: imageHeight, width: 150 }}>
-        <img
-          src={brandWebLogo}
-          style={{ height: imageHeight }}
-          className={cn('object-cover', className)}
-          alt="brand logo"
-        />
-      </div>
+      // <div className="relative" style={{ height: imageHeight, width: 150 }}>
+      <img
+        src={brandWebLogo}
+        style={{ height: imageHeight }}
+        className={cn('object-cover', className)}
+        alt="brand logo"
+      />
+      // </div>
     )
 
   switch (type) {
