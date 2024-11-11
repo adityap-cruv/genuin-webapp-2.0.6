@@ -16,7 +16,7 @@ export function MainComponent() {
           <a className="text-primary underline hover:text-blue-10" href="http://www.begenuin.com">
             www.begenuin.com
           </a>{' '}
-          (our "<strong>Website</strong>") and the mobile application, 'Genuine' available for download on the iOS App
+          (our "<strong>Website</strong>") and the mobile application, 'Genuin' available for download on the iOS App
           Store and the Google Play App Store (the "<strong>App</strong>"), both of which offer an all-in-one internet
           technology service (the "<strong>Services</strong>"). The terms "<strong>you</strong>," "<strong>your</strong>
           ," and "<strong>yours</strong>" refer to the user, customer, or company using the Services.

@@ -14,7 +14,6 @@ import { rudderStackIdentify } from '@/services/analytics/useRudderAnalytics'
 import { getBalanceAPI } from '@/lib/api/wallet'
 import { type User } from 'next-auth'
 import { useSession } from 'next-auth/react'
-import Analytics from '@/services/analytics'
 
 const RepostModal = dynamic(
   async () => await import('@components/common/modals/repost').then((comp) => comp.RepostModal.ui)
@@ -80,8 +79,6 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
       void fetchWalletBalance()
     }
     void rudderStackIdentify()
-    // Init added
-    void Analytics.track({ eventName: 'Initialized', properties: {} })
 
     return () => {
       ejectAuthTokenInterceptor(interceptorId)
