@@ -74,12 +74,12 @@ export function CommunityList({ brandId, scrollYProgress }: { brandId: number; s
         setCommunityJoinStates(initialStates)
       }
     }
-  }, [data?.pages])
+  }, [data?.pages.length])
 
   useEffect(() => {
     const newCommunities = data?.pages[data.pages.length - 1].communities
     if (newCommunities && newCommunities.length > 0) addCommunities(newCommunities)
-  }, [data?.pages])
+  }, [data?.pages.length])
 
   useMotionValueEvent(scrollYProgress, 'change', (latest) => {
     if (Number(latest.toFixed(1)) > 0.8 && !isFetchingNextPage) {
