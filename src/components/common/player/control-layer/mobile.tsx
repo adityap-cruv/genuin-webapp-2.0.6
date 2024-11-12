@@ -44,7 +44,7 @@ type MobileProps = {
     } | null
   }
   clickableUrl: string | null
-  linkouts?: LinkoutsType | null
+  linkouts?: LinkoutsType
 }
 
 export const Mobile = memo(function Mobile({ clickableUrl, ...props }: MobileProps) {
@@ -140,7 +140,7 @@ function Details({
   const detailsId = useId()
 
   useEffect(() => {
-    if (!linkouts) return
+    if (!linkoutId) return
     let timeoutId: any
     const detailsElement = document.getElementById(detailsId)
     if (isActive) {
@@ -210,9 +210,7 @@ function Details({
             />
           </span>
         )}
-        {isVisible && linkoutId && linkouts && (
-          <Linkout.mobile linkouts={linkouts} linkoutId={linkoutId} videoId={videoId} />
-        )}
+        {isVisible && linkoutId && <Linkout.mobile linkouts={linkouts} linkoutId={linkoutId} videoId={videoId} />}
       </div>
       <div className="z-10 flex items-end">
         <Actions.mobile
