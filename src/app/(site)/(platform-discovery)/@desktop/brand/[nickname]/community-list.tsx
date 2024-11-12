@@ -73,12 +73,12 @@ export function CommunityList({ brandId }: { brandId: number }) {
         setCommunityJoinStates(initialStates)
       }
     }
-  }, [data?.pages])
+  }, [data?.pages.length])
 
   useEffect(() => {
     const newCommunities = data?.pages[data.pages.length - 1].communities
     if (newCommunities && newCommunities.length > 0) addCommunities(newCommunities)
-  }, [data?.pages])
+  }, [data?.pages.length])
 
   const scrollDivRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ container: scrollDivRef, layoutEffect: false })

@@ -134,7 +134,7 @@ const InfinityViewBox = memo(function InfinityViewBox({ videoDetails }: { videoD
 
   useEffect(() => {
     if (!videoDetails) return
-    if (!videoDetails.video.linkoutId || !videoDetails.video.linkouts) {
+    if (!videoDetails.video.linkoutId) {
       if (!isVisible) setIsVisible(true)
       return
     }
