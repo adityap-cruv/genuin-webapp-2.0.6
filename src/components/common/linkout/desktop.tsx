@@ -6,6 +6,8 @@ import Link from 'next/link'
 import { memo } from 'react'
 import { triggerLinkoutEvent, triggerLinkoutViewEvent } from './analytics'
 import { type LinkoutsType } from './schema'
+import { getLinkouts } from './api'
+import { Shimmer } from '@/components/ui/shimmer'
 
 type ComponentProps = {
   linkouts: LinkoutsType
@@ -14,7 +16,16 @@ type ComponentProps = {
 }
 
 export const Desktop = memo(function Desktop({ linkouts, videoId, linkoutId }: ComponentProps) {
-  if (!linkouts) return
+  let isLoading = false
+  if (!linkouts) {
+    const resData = getLinkouts(linkoutId)
+    isLoading = resData.isLoading
+    if (resData.data) linkouts = resData.data
+  }
+
+  if (isLoading) {
+    return <Shimmer className="my-2 h-20 w-full" />
+  }
   return (
     <div className="py-4">
       <p className="pb-4 text-title-3-bold">Links</p>
