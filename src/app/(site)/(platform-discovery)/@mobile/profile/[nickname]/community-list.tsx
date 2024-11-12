@@ -341,7 +341,7 @@ function LoopVideos({ userId, loop, communityId, pathName, user }: LoopVideosPro
 
     if (loop.videos)
       return (
-        <div className="my-2 grid w-full grid-cols-4 gap-2 md:grid-cols-8">
+        <>
           {loop.videos.map((video, index) => (
             <React.Fragment key={index}>
               <div
@@ -363,7 +363,7 @@ function LoopVideos({ userId, loop, communityId, pathName, user }: LoopVideosPro
               </div>
             </React.Fragment>
           ))}
-        </div>
+        </>
       )
   }
 
