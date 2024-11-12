@@ -14,6 +14,7 @@ type ComponentProps = {
 }
 
 export const Desktop = memo(function Desktop({ linkouts, videoId, linkoutId }: ComponentProps) {
+  if (!linkouts) return
   return (
     <div className="py-4">
       <p className="pb-4 text-title-3-bold">Links</p>
