@@ -225,7 +225,7 @@ export function parseProfileLoopResponse(loops: ProfileLoopResponseType[]) {
         return {
           id: item.message_id,
           viewCount: item.no_of_views,
-          thumbnail: item.thumbnail_url_s ?? item.thumbnail_url,
+          thumbnail: item.thumbnail_url_m ?? item.thumbnail_url_s ?? item.thumbnail_url,
         }
       }),
     }

@@ -101,6 +101,7 @@ const ConversationVideo = z.object({
   id: z.number(),
   thumbnail_url: z.string(),
   thumbnail_url_s: z.string(),
+  thumbnail_url_m: z.string(),
   thumbnail_url_l: z.string(),
   no_of_views: z.number(),
   no_of_comments: z.number(),

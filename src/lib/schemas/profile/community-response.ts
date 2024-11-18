@@ -7,6 +7,7 @@ const messageSchema = z.object({
   no_of_views: z.number(),
   thumbnail_url: z.string().nullish(),
   thumbnail_url_s: z.string().nullish(),
+  thumbnail_url_m: z.string().nullish(),
   thumbnail_url_l: z.string().nullish(),
   message_id: z.string(),
   message_at: z.number().nullish(),
