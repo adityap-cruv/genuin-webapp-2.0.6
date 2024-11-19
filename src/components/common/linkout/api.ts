@@ -9,8 +9,7 @@ export async function fetchLinkouts(id: number) {
       return validateLinkouts(res.data.data[0].linkouts)
     })
     .catch((e) => {
-      console.log('Error in fetch linkouts::', e)
-      throw new Error('Something went wrong while fetching linkouts.')
+      throw new Error('Something went wrong while fetching linkouts.', e)
     })
 }
 
@@ -19,5 +18,7 @@ export function getLinkouts(id: number) {
   return useQuery({
     queryFn: async () => await fetchLinkouts(id),
     queryKey: ['linkouts', id],
+    refetchOnWindowFocus: false,
+    retry: 0,
   })
 }
