@@ -40,6 +40,7 @@ const latestMessageSchema = z.object({
   }),
   thumbnail_url: z.string().nullish(),
   thumbnail_url_s: z.string().nullish(),
+  thumbnail_url_m: z.string().nullish(),
   thumbnail_url_l: z.string().nullish(),
 })
 

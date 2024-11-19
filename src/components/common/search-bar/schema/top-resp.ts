@@ -48,6 +48,7 @@ const latestMessageSchema = z.object({
   }),
   thumbnail_url: z.string().nullish(),
   thumbnail_url_s: z.string().nullish(),
+  thumbnail_url_m: z.string().nullish(),
   thumbnail_url_l: z.string().nullish(),
 })
 
@@ -159,6 +160,7 @@ const VideoSchema = z.object({
   message_id: z.string(),
   thumbnail_url: z.string().nullish(),
   thumbnail_url_s: z.string().nullish(),
+  thumbnail_url_m: z.string().nullish(),
   thumbnail_url_l: z.string().nullish(),
   attached_link: z.string().nullish(),
   media_url_m3u8: z.string().nullish(),

@@ -127,7 +127,9 @@ export function Loops() {
               isViewAllowed={item.is_view_allowed}
               latestMessages={item.latest_messages.map((item) => ({
                 owner: { userName: item.owner.username },
-                thumbnail: item.thumbnail_url ?? '',
+                thumbnail: item.thumbnail_url_m
+                  ? item.thumbnail_url_m
+                  : (item.thumbnail_url_l ?? item.thumbnail_url ?? ''),
                 createdAt: item.message_at,
               }))}
               loopSlug={item.slug}

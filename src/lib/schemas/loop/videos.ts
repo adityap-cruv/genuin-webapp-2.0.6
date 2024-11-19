@@ -43,6 +43,7 @@ const LoopVideoSchema = z.object({
   questions: z.array(z.string()).nullable(),
   thumbnail_url: z.string().nullish(),
   thumbnail_url_s: z.string().nullish(),
+  thumbnail_url_m: z.string().nullish(),
   thumbnail_url_l: z.string().nullish(),
   media_url: z.string(),
   media_url_m3u8: z.string().nullish(),

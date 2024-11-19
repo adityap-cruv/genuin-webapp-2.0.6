@@ -44,6 +44,7 @@ const messageSchema = z.object({
   questions: z.array(z.unknown()).nullish(),
   thumbnail_url: z.string().nullish(),
   thumbnail_url_s: z.string().nullish(),
+  thumbnail_url_m: z.string().nullish(),
   thumbnail_url_l: z.string().nullish(),
   message_id: z.string(),
   message_at: z.number().nullish(),
@@ -150,6 +151,7 @@ type VideoData = {
   thumbnail_url: string
   thumbnail_url_l: string
   thumbnail_url_s: string
+  thumbnail_url_m: string
   uuid: string
   attached_link?: string
   media_url_m3u8?: string
