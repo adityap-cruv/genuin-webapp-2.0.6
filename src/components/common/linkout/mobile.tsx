@@ -24,6 +24,7 @@ export const Mobile = memo(function Mobile({
   if (!linkouts) {
     const resData = getLinkouts(linkoutId)
     isLoading = resData.isLoading
+    if (resData.isError) return
     if (resData.data) linkouts = resData.data
   }
 
