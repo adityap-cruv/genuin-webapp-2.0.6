@@ -49,7 +49,13 @@ export function TopBar({
             </Link>
             {config?.slogan?.image && (
               <div className="relative h-10 w-1/3">
-                <CustomImage src={config.slogan.image} fill className="object-cover" alt="slogan image" />
+                <CustomImage
+                  src={config.slogan.image}
+                  fill
+                  className="object-cover"
+                  alt="slogan image"
+                  useWebp={false}
+                />
               </div>
             )}
             <div className="flex gap-x-3">
