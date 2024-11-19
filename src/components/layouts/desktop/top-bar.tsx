@@ -48,13 +48,15 @@ export function TopBar({
               <AppLogo.logo className="shrink-0 fill-new-off-black" imageHeight={44} />
             </Link>
             {config?.slogan?.image && (
-              <div className="relative h-10 w-1/3">
+              <div className="relative flex h-10 w-1/3 justify-center">
                 <CustomImage
                   src={config.slogan.image}
-                  fill
-                  className="object-cover"
+                  className="h-full w-auto object-cover"
                   alt="slogan image"
                   useWebp={false}
+                  width={0}
+                  height={0}
+                  sizes="100vw"
                 />
               </div>
             )}
