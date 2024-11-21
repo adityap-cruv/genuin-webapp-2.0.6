@@ -45,7 +45,9 @@ export async function middleware(request: NextRequest) {
     let config = null
     try {
       config = await getEmbedConfig(getConfig(host) ?? {})
-      if (Number(config?.brand_id) === 2023 || Number(config?.brand_id) === 1429) {
+      // TODO: this will be automated by go service just like sitemap
+      // hard coding for buzz skyscape brand
+      if (Number(config?.brand_id) === 2023) {
         return NextResponse.rewrite(new URL('/.well-known/skyscape/apple-app-site-association', request.url))
       } else {
         return NextResponse.next()
@@ -59,7 +61,9 @@ export async function middleware(request: NextRequest) {
     let config = null
     try {
       config = await getEmbedConfig(getConfig(host) ?? {})
-      if (Number(config?.brand_id) === 2023 || Number(config?.brand_id) === 1429) {
+      // TODO: this will be automated by go service just like sitemap
+      // hard coding for buzz skyscape brand
+      if (Number(config?.brand_id) === 2023) {
         return NextResponse.rewrite(new URL('/.well-known/skyscape/assetlinks.json', request.url))
       } else {
         return NextResponse.next()
