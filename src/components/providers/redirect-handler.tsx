@@ -12,6 +12,9 @@ export function RedirectHandler({
   config?: ConfigType
   shouldRedirect: boolean
 }) {
+  if (config && Object.keys(config).length === 0) {
+    permanentRedirect('/inactive')
+  }
   if (
     config &&
     config?.integrations.white_label.enable &&
