@@ -31,12 +31,39 @@ export async function middleware(request: NextRequest) {
       config = await getEmbedConfig(getConfig(host) ?? {})
       let pathParams: null | string | undefined = request.nextUrl.pathname
       pathParams = pathParams?.split('/').slice(1).join('/')
-
       return NextResponse.rewrite(
         `${process.env.NEXT_PUBLIC_GO_API_URL}/${config?.brand_id ?? 'genuin'}/${request.headers.get(
           'host'
         )}/${pathParams}${request.nextUrl.search}`
       )
+    } catch (e) {
+      return NextResponse.error()
+    }
+  }
+
+  if (request.nextUrl.pathname.endsWith('/apple-app-site-association') && host) {
+    let config = null
+    try {
+      config = await getEmbedConfig(getConfig(host) ?? {})
+      if (Number(config?.brand_id) === 2023 || Number(config?.brand_id) === 1429) {
+        return NextResponse.rewrite(new URL('/.well-known/skyscape/apple-app-site-association', request.url))
+      } else {
+        return NextResponse.next()
+      }
+    } catch (e) {
+      return NextResponse.error()
+    }
+  }
+
+  if (request.nextUrl.pathname.endsWith('/assetlinks.json') && host) {
+    let config = null
+    try {
+      config = await getEmbedConfig(getConfig(host) ?? {})
+      if (Number(config?.brand_id) === 2023 || Number(config?.brand_id) === 1429) {
+        return NextResponse.rewrite(new URL('/.well-known/skyscape/assetlinks.json', request.url))
+      } else {
+        return NextResponse.next()
+      }
     } catch (e) {
       return NextResponse.error()
     }
