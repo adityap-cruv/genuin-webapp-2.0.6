@@ -1,7 +1,7 @@
 'use client'
 import { type ConfigType, useGenuinOptions } from '@lib/stores/genuin-options'
 import { getSizeBoxes } from '@lib/utils/common/size-box'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import FingerprintJS from '@fingerprintjs/fingerprintjs'
@@ -38,6 +38,7 @@ if (process.env.NEXT_PUBLIC_CURRENT_ENV === 'prod') console.log = () => {}
 
 // TODO: separate this component into 2 comps with once has auth and second doesn't have auth.
 export function GenuinOptionsProvider({ children, deviceType, os, browserType, config, user }: Props) {
+  const router = useRouter()
   const { data, status } = useSession()
   const { setInitialData } = useGenuinOptions((state) => ({
     setInitialData: state.setData,
@@ -48,6 +49,12 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
     setVisitor: state.setVisitor,
   }))
   useRefreshToken()
+
+  useEffect(() => {
+    if (config?.status === 3) {
+      router.push('/inactive')
+    }
+  }, [config?.status, router])
 
   const searchParams = useSearchParams()
 
