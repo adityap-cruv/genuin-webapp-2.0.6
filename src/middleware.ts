@@ -41,25 +41,6 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  if (request.nextUrl.pathname.endsWith('/apple-app-site-association') && host) {
-    let config = null
-    try {
-      config = await getEmbedConfig(getConfig(host) ?? {})
-      // TODO: this will be automated by go service just like sitemap
-      // hard coding for buzz skyscape brand
-      if (Number(config?.brand_id) === 2023) {
-        const response = NextResponse.rewrite(new URL('/.well-known/skyscape/apple-app-site-association', request.url))
-        response.headers.set('Content-Type', 'application/json')
-        response.headers.set('X-Middleware-Rewrite', '')
-        return response
-      } else {
-        return NextResponse.next()
-      }
-    } catch (e) {
-      return NextResponse.error()
-    }
-  }
-
   if (request.nextUrl.pathname.endsWith('/assetlinks.json') && host) {
     let config = null
     try {
