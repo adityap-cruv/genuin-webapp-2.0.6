@@ -130,33 +130,36 @@ export const abbreviateNumber = (value: number) => {
   return newValue
 }
 
-type UrlObjType = {
-  pathname: string
-  query: Array<{ key: string; value: string | undefined }>
-}
+// Not used anywhere rn.
+// type UrlObjType = {
+//   pathname: string
+//   query: Array<{ key: string; value: string | undefined }>
+// }
 
-function getUrlToChange(urlObj: UrlObjType) {
-  const replaceUrlObj = new URL(window.location.href)
-  const searchParams = new URLSearchParams(replaceUrlObj.search)
-  urlObj.query.forEach((entry, index) => {
-    if (entry.value) {
-      searchParams.set(entry.key, entry.value)
-    }
-  })
-  replaceUrlObj.pathname = urlObj.pathname ?? ''
-  replaceUrlObj.search = urlObj.query.length > 0 ? searchParams.toString() : ''
-  return replaceUrlObj.href
-}
+// Not used anywhere rn.
+// function getUrlToChange(urlObj: UrlObjType) {
+//   const replaceUrlObj = new URL(window.location.href)
+//   const searchParams = new URLSearchParams(replaceUrlObj.search)
+//   urlObj.query.forEach((entry, index) => {
+//     if (entry.value) {
+//       searchParams.set(entry.key, entry.value)
+//     }
+//   })
+//   replaceUrlObj.pathname = urlObj.pathname ?? ''
+//   replaceUrlObj.search = urlObj.query.length > 0 ? searchParams.toString() : ''
+//   return replaceUrlObj.href
+// }
 
-export function replaceUrlWithoutReload(urlObj: UrlObjType) {
+export function replaceUrlWithoutReload(url: URL) {
   if (!window) return
-  window.history.replaceState(null, '', getUrlToChange(urlObj))
+  window.history.replaceState(null, '', url.href)
 }
 
-export function pushUrlWithoutReload(urlObj: UrlObjType) {
-  if (!window) return
-  window.history.pushState(null, '', getUrlToChange(urlObj))
-}
+// Not used anywhere rn.
+// export function pushUrlWithoutReload(urlObj: UrlObjType) {
+//   if (!window) return
+//   window.history.pushState(null, '', getUrlToChange(urlObj))
+// }
 
 export const openGeneratedLink = (link = '') => {
   const element = document.createElement('a')

@@ -1,5 +1,6 @@
 import { axiosInstance } from '@/lib/api/instance'
 import { LOGIN_SOURCE } from '@/lib/constants'
+import { useGenuinOptions } from '@/lib/stores/genuin-options'
 import { useLocalStorage } from '@/lib/stores/local-storage'
 import { encryptText } from '@/lib/utils'
 import axios from 'axios'
@@ -332,6 +333,28 @@ export async function getUserDataForSSO(
     })
     .catch((e) => {
       throw new Error('Something went wrong, please try again later')
+    })
+}
+
+export async function ssoAutoLogin(token: string) {
+  const deviceId = useLocalStorage.getState().deviceId
+  const brandId = useGenuinOptions.getState().brandId
+  return await axiosInstance
+    .post('/api/v4/sso/autologin', {
+      encrypted_device_id: encryptText(deviceId, true),
+      token,
+      brand_id: brandId,
+      device_type: 3,
+      login_source: LOGIN_SOURCE.web_sdk,
+    })
+    .then((res) => {
+      if (res.data.code === 200) {
+        return parseUserData(res.data.data, res.headers['gn-access-token'], res.headers['gn-refresh-token'])
+      }
+      return null
+    })
+    .catch((e) => {
+      return null
     })
 }
 

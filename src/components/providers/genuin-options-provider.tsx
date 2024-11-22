@@ -7,17 +7,15 @@ import { useLocalStorage } from '@lib/stores/local-storage'
 import FingerprintJS from '@fingerprintjs/fingerprintjs'
 import { setBrandIdInAxiosInstance, ejectAuthTokenInterceptor, setAuthTokenInAxiosInstance } from '@lib/api/instance'
 import dynamic from 'next/dynamic'
-import { saveVisitor } from '@components/common/modals/authentication/api/auth'
+import { saveVisitor, ssoAutoLogin } from '@components/common/modals/authentication/api/auth'
 import { notificationsCount } from '@lib/api/notification'
 import { useRefreshToken } from '@/hooks/use-refresh-token'
 import { rudderStackIdentify } from '@/services/analytics/useRudderAnalytics'
 import { getBalanceAPI } from '@/lib/api/wallet'
 import { type User } from 'next-auth'
-import { useSession } from 'next-auth/react'
-
-const RepostModal = dynamic(
-  async () => await import('@components/common/modals/repost').then((comp) => comp.RepostModal.ui)
-)
+import { useSession, signIn } from 'next-auth/react'
+import { RepostModal } from '@components/common/modals/repost'
+import { replaceUrlWithoutReload } from '@/lib/utils'
 
 const AuthenticationModal = dynamic(
   async () => await import('@components/common/modals/authentication').then((comp) => comp.AuthenticationModal.ui)
@@ -76,6 +74,34 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
     const { wallet } = await getBalanceAPI({ isCurrentBalance: true })
     setInitialData({ walletBalance: Number(wallet.balance) })
   }
+
+  useEffect(() => {
+    const autoLoginToken = searchParams.get('auto_login_token')
+    const action = searchParams.get('action')
+    const videoId = searchParams.get('video_id')
+    if (!autoLoginToken) return
+    void ssoAutoLogin(autoLoginToken)
+      .then(async (user) => {
+        if (user) {
+          setAuthTokenInAxiosInstance(user.accessToken)
+          await signIn('credentials', { ...user, redirect: false }).then((value) => {
+            if (value?.ok) {
+              if (action && action === 'repost' && videoId) {
+                const url = new URL(window.location.href)
+                url.searchParams.delete('auto_login_token')
+                url.searchParams.delete('action')
+                url.searchParams.delete('video_id')
+                replaceUrlWithoutReload(url)
+                RepostModal.open(videoId)
+              }
+            }
+          })
+        }
+      })
+      .catch((e) => {
+        console.log('error', e)
+      })
+  }, [searchParams])
 
   useEffect(() => {
     let interceptorId: number
@@ -169,7 +195,7 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
       {children}
       <AuthenticationModal showClose />
       <DownloadDialogModal />
-      {!!user && <RepostModal />}
+      <RepostModal.ui />
     </>
   )
 }
