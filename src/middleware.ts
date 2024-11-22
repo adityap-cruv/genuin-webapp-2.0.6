@@ -48,7 +48,10 @@ export async function middleware(request: NextRequest) {
       // TODO: this will be automated by go service just like sitemap
       // hard coding for buzz skyscape brand
       if (Number(config?.brand_id) === 2023) {
-        return NextResponse.rewrite(new URL('/.well-known/skyscape/apple-app-site-association', request.url))
+        const response = NextResponse.rewrite(new URL('/.well-known/skyscape/apple-app-site-association', request.url))
+        response.headers.set('Content-Type', 'application/json')
+        response.headers.set('X-Middleware-Rewrite', '')
+        return response
       } else {
         return NextResponse.next()
       }
