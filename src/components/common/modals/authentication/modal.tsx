@@ -61,6 +61,7 @@ export function Modal({ children, showClose, ...props }: Props) {
   useEffect(() => {
     const code = searchParams.get('code')
     const provider = searchParams.get('provider')
+
     if (!code || !provider) return
     void getUserDataForSSO(code, provider).then(async (res) => {
       setAuthTokenInAxiosInstance(res.user?.accessToken)

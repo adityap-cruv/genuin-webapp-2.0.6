@@ -48,6 +48,7 @@ function WithoutMentions({ text, maxChars = 150, ...props }: Props) {
           (View more)
         </span>
       )}
+      {!showMore && <span className="cursor-pointer pl-1 text-body-1-med text-tertiary">(View less)</span>}
     </p>
   )
 }
@@ -71,6 +72,11 @@ export function WithMentions({ textArr, maxChars = 50, className, ...props }: Wi
         }}
         className="hidden cursor-pointer pl-1 text-tertiary sm:block">
         (View more)
+      </span>
+    )
+    const SHOW_LESS_BUTTON = (
+      <span key="show-less" className="hidden cursor-pointer pl-1 text-tertiary sm:block">
+        (View less)
       </span>
     )
     let limit = maxChars
@@ -129,6 +135,7 @@ export function WithMentions({ textArr, maxChars = 50, className, ...props }: Wi
           }
         }
       })
+      newArr.push(SHOW_LESS_BUTTON)
     }
 
     if (newArr) setProcessedComponent(newArr)

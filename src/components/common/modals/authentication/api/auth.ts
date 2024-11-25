@@ -335,6 +335,27 @@ export async function getUserDataForSSO(
     })
 }
 
+export async function ssoAutoLogin(token: string, brandId: string) {
+  const deviceId = useLocalStorage.getState().deviceId
+  return await axiosInstance
+    .post('/api/v4/sso/autologin', {
+      encrypted_device_id: encryptText(deviceId, true),
+      token,
+      brand_id: brandId,
+      device_type: 3,
+      login_source: LOGIN_SOURCE.web_sdk,
+    })
+    .then((res) => {
+      if (res.data.code === 200) {
+        return parseUserData(res.data.data, res.headers['gn-access-token'], res.headers['gn-refresh-token'])
+      }
+      return null
+    })
+    .catch((e) => {
+      return null
+    })
+}
+
 export async function getUrlToRedirectForSSO(thirdPartyId: string) {
   return await axiosInstance
     .get('/api/v4/auth/authorisationurl', {

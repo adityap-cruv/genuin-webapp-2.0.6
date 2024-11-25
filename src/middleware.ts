@@ -89,7 +89,7 @@ export async function middleware(request: NextRequest) {
 
   if (host) {
     const config = getConfig(host)
-    // const config = getConfig('tcs07.qa.begenuin.com')
+    // const config = getConfig('ankpal.qa.begenuin.com')
     if (config) request.cookies.set('config_params', JSON.stringify(config))
     const urlObj = new URL(request.url)
     // eslint-disable-next-line no-prototype-builtins

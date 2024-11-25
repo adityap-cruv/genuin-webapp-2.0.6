@@ -66,13 +66,13 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
             <p className="shrink-0 text-body-1-demi text-tertiary">{getTimeAgo(video.createdAt) + ' ago'}</p>
           </span>
         </span>
+      </div>
+      <div ref={scrollDivRef} className="flex h-full flex-col overflow-auto overflow-x-clip">
         {Array.isArray(video.descriptionArr) ? (
           <ReadMore.withMention textArr={video.descriptionArr} />
         ) : (
           <ReadMore.default text={video.descriptionText} />
         )}
-      </div>
-      <div ref={scrollDivRef} className="flex h-full flex-col overflow-auto overflow-x-clip">
         <div className="border-b border-tertiary-200 p-4">
           <p className="text-title-3-bold">Posted in</p>
           <div className="pt-3">
