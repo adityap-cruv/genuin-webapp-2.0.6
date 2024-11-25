@@ -1,32 +1,17 @@
 'use client'
-import dynamic from 'next/dynamic'
-import { ExploreShimmer } from '@/components/common/shimmers/explore-shimmer'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
+import { Loops } from './components'
+import dynamic from 'next/dynamic'
 
-// eslint-disable-next-line @typescript-eslint/promise-function-async
-const DesktopCommunities = dynamic(() => import('./components').then((comp) => comp.Communities.desktop))
-// eslint-disable-next-line @typescript-eslint/promise-function-async
-const MobileCommunities = dynamic(() => import('./components').then((comp) => comp.Communities.mobile))
-// eslint-disable-next-line @typescript-eslint/promise-function-async
-const DynamicLoops = dynamic(() => import('./components').then((comp) => comp.Loops))
+const DesktopCommunities = dynamic(async () => await import('./components').then((comp) => comp.Communities.desktop))
+const MobileCommunities = dynamic(async () => await import('./components').then((comp) => comp.Communities.mobile))
 
-export function Root({ isMobile }: { isMobile: boolean }) {
-  const { isLoading } = useGenuinOptions()
-
+export function Root() {
+  const isMobile = useGenuinOptions().isMobile
   return (
     <div className="h-full overflow-auto px-6 pb-6 md:px-4">
-      {isLoading ? (
-        isMobile ? (
-          <ExploreShimmer.mobile />
-        ) : (
-          <ExploreShimmer.desktop />
-        )
-      ) : (
-        <>
-          {isMobile ? <MobileCommunities /> : <DesktopCommunities />}
-          <DynamicLoops />
-        </>
-      )}
+      {isMobile ? <MobileCommunities /> : <DesktopCommunities />}
+      <Loops />
     </div>
   )
 }
