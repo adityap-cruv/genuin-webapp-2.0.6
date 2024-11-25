@@ -56,6 +56,9 @@ export async function sendOtp({ email, phoneNumber, isUpdate }: Partial<SendOtpP
     .catch((e) => {
       let message = 'Something went wrong. Please try again!'
       const retryTime = Number(e.response.data.data?.retryTime)
+      if (e.response.data.code === '5262') {
+        message = 'This number is linked to another account. Please use a different one.'
+      }
       if (e.response.data.code === '5263') {
         message = isUpdate
           ? 'Unable to send the code. Please use another phone number.'
