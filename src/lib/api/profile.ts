@@ -20,7 +20,7 @@ export async function fetchUserData(nickname: string, headers?: Headers) {
 
   return await axios
     .post(
-      process.env.NEXT_PUBLIC_API_URL + '/api/v3/users/get_profile',
+      process.env.NEXT_PUBLIC_API_URL + '/goservices/profile/info',
       {
         nickname,
       },
@@ -41,7 +41,7 @@ async function fetchCommunities(
   limit: number
 ) {
   return await axiosInstance
-    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/profile/communities', {
+    .get(process.env.NEXT_PUBLIC_API_URL + '/goservices/profile/communities', {
       params: {
         user_id: userId,
         page_session: pageParam?.pageSession ?? undefined,
@@ -87,7 +87,7 @@ export async function fetchProfileCommunityLoops(
   lastLoopId: string
 ) {
   return await axiosInstance
-    .get('/api/v3/profile/loops', {
+    .get('/goservices/profile/loops', {
       params: {
         user_id: userId,
         page_session: pageSession,
@@ -114,7 +114,7 @@ export async function fetchProfileVideos(
   lastVideoId: string
 ) {
   return await axiosInstance
-    .get('/api/v3/profile/loop_videos', {
+    .get('/goservices/profile/videos', {
       params: {
         user_id: userId,
         community_id: communityId,
@@ -138,7 +138,8 @@ export async function fetchProfileVideos(
 
 export async function fetchProfileFeed(userId: string, pageParam?: { lastMessageId: string }, fromVideoId?: string) {
   return await axiosInstance
-    .get('/api/v3/profile/feed', {
+    // .get('/api/v3/profile/feed', {
+    .get('/goservices/profile/feed', {
       params: {
         user_id: userId,
         page_session: pageSession,
@@ -148,6 +149,7 @@ export async function fetchProfileFeed(userId: string, pageParam?: { lastMessage
     })
     .then((res) => {
       const resData = res.data.data
+      console.log('ResData:', resData)
       pageSession = resData.page_session
       return { feed: parseFeedResponse(resData.feeds), end: resData.end_of_messages }
     })
@@ -163,6 +165,7 @@ export function getProfileFeed(userId: string, fromVideoId: string) {
     queryFn: async ({ pageParam }) => await fetchProfileFeed(userId, pageParam, fromVideoId),
     queryKey: ['feed', userId, fromVideoId],
     getNextPageParam(lastPage) {
+      // console.log("Last Page:", lastPage)
       if (lastPage.end) return
       return { lastMessageId: lastPage.feed[lastPage.feed.length - 1].video.id }
     },
