@@ -79,8 +79,8 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
     const autoLoginToken = searchParams.get('auto_login_token')
     const action = searchParams.get('action')
     const videoId = searchParams.get('video_id')
-    if (!autoLoginToken) return
-    void ssoAutoLogin(autoLoginToken)
+    if (!autoLoginToken || !config) return
+    void ssoAutoLogin(autoLoginToken, config.brand_id)
       .then(async (user) => {
         if (user) {
           setAuthTokenInAxiosInstance(user.accessToken)

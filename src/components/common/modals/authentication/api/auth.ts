@@ -1,6 +1,5 @@
 import { axiosInstance } from '@/lib/api/instance'
 import { LOGIN_SOURCE } from '@/lib/constants'
-import { useGenuinOptions } from '@/lib/stores/genuin-options'
 import { useLocalStorage } from '@/lib/stores/local-storage'
 import { encryptText } from '@/lib/utils'
 import axios from 'axios'
@@ -336,9 +335,8 @@ export async function getUserDataForSSO(
     })
 }
 
-export async function ssoAutoLogin(token: string) {
+export async function ssoAutoLogin(token: string, brandId: string) {
   const deviceId = useLocalStorage.getState().deviceId
-  const brandId = useGenuinOptions.getState().brandId
   return await axiosInstance
     .post('/api/v4/sso/autologin', {
       encrypted_device_id: encryptText(deviceId, true),
