@@ -183,6 +183,12 @@ function NumberForm({ onNext }: { onNext: () => void }) {
     setIsLoading(false)
   }
 
+  useEffect(() => {
+    return () => {
+      setFormData({ phoneNumber: '' })
+    }
+  }, [])
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
