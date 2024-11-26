@@ -71,63 +71,114 @@ const brandSchema = z
 // Define the community schema
 const communitySchema = z
   .object({
-    brand: brandSchema.optional(),
-    community_id: z.string(),
+    color_code: z.string(),
+    description: z.string(),
     handle: z.string(),
+    name: z.string(),
+    share_string: z.string(),
+    share_url: z.string(),
     slug: z.string(),
-    name: z.string().nullish(),
-    description: z.string().nullish(),
-    color_code: z.string().nullish(),
-    logged_in_user_role: z.number().nullish(),
     text_color_code: z.string().nullish(),
     dp: z.string().nullish(),
     dp_s: z.string().nullish(),
     dp_m: z.string().nullish(),
     dp_l: z.string().nullish(),
-    share_url: z.string().nullish(),
-    type: z.number().nullish(),
+    logged_in_user_role: z.number().nullish(),
+    type: z.number(),
+    uuid: z.string(),
+    brand: brandSchema,
   })
   .nullish()
 
 // Define the group schema
 const groupSchema = z.object({
+  color_code: z.string(),
+  dp: z.string(),
+  dp_l: z.string(),
+  dp_m: z.string(),
+  dp_s: z.string(),
+  group_description: z.string(),
   group_id: z.string(),
-  group_name: z.string().nullish(),
-  group_description: z.string().nullish(),
-  dp: z.string().nullish(),
-  dp_s: z.string().nullish(),
-  dp_m: z.string().nullish(),
-  dp_l: z.string().nullish(),
-  color_code: z.string().nullish(),
-  text_color_code: z.string().nullish(),
+  group_name: z.string(),
+  member_info: z.object({}).optional(),
+  settings: z.object({
+    discoverable: z.boolean(),
+  }),
+  share_string: z.string(),
+  share_url: z.string(),
+  slug: z.string(),
+  type: z.number(),
+  uuid: z.string(),
 })
 
+const videoMetaDataSchema = z.object({
+  aspect_ratio: z.string(),
+  contains_external_videos: z.boolean(),
+  duration: z.string(),
+  media_type: z.string(),
+  resolution: z.string(),
+  size: z.string(),
+})
+
+const ownerSchemaFeed = z.object({
+  bio: z.string(),
+  is_avatar: z.boolean(),
+  is_brand_system_user: z.boolean(),
+  name: z.string(),
+  profile_image: z.string(),
+  share_url: z.string(),
+  username: z.string(),
+  uuid: z.string(),
+})
+
+const videoSchema = z.object({
+  attached_link: z.string().nullable(),
+  clickable_url: z.string().nullable(),
+  conversation_at: z.number(),
+  description_data: z.string().nullable(),
+  description_text: z.string().nullable(),
+  is_pinned: z.boolean(),
+  is_read: z.boolean(),
+  is_sparked: z.boolean(),
+  linkouts: z.unknown().nullable(),
+  linkouts_id: z.unknown().nullable(),
+  linkouts_inappbrowser: z.boolean(),
+  media_url: z.string(),
+  media_url_m3u8: z.string(),
+  meta_data: videoMetaDataSchema,
+  no_of_comments: z.number(),
+  no_of_shares: z.number(),
+  no_of_sparks: z.number(),
+  no_of_views: z.number(),
+  owner: ownerSchemaFeed,
+  share_url: z.string(),
+  slug: z.string(),
+  sprite_image_url: z.string().nullable(),
+  thumbnail_url: z.string(),
+  thumbnail_url_l: z.string(),
+  thumbnail_url_s: z.string(),
+  uuid: z.string(),
+  video_summary: z.unknown().nullable(),
+})
 // Define the feed schema
 const feedSchema = z.object({
-  chat_id: z.string(),
-  settings: z.object({
-    discoverable: z.boolean().nullish(),
-  }),
-  slug: z.string(),
-  share_url: z.string(),
-  type: z.number().nullish(),
-  is_subscriber: z.boolean().nullish(),
-  member_info: z.unknown().nullish(),
-  is_post_allowed: z.boolean().default(false),
   community: communitySchema,
-  messages: z.array(messageSchema).max(1),
-  group: groupSchema,
+  loop: groupSchema,
+  owner: ownerSchema,
+  type: z.string(),
+  uuid: z.string(),
+  video: videoSchema,
 })
 
 // TODO: Please scrap this schema if not used anywhere.
-const FeedResponseSchema = z.array(
-  z.object({
-    feed_type: z.string().nullish(),
-    feed: feedSchema,
-  })
-)
+// const FeedResponseSchema = z.array(
+//   z.object({
+//     feed_type: z.string().nullish(),
+//     feed: feedSchema,
+//   })
+// )
 
-export type FeedResponseType = z.infer<typeof FeedResponseSchema>
+export type FeedResponseType = z.infer<typeof feedSchema>
 
 export type FeedResponseFromGoApi = {
   uuid: string
