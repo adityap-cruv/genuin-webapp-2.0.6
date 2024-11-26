@@ -19,40 +19,40 @@ const ownerSchema = z.object({
 })
 
 // Define the meta data schema
-const metaDataSchema = z.object({
-  duration: z.string().nullish(),
-  resolution: z.string().nullish(),
-  size: z.string().nullish(),
-  aspect_ratio: z.string().nullish(),
-})
+// const metaDataSchema = z.object({
+//   duration: z.string().nullish(),
+//   resolution: z.string().nullish(),
+//   size: z.string().nullish(),
+//   aspect_ratio: z.string().nullish(),
+// })
 
 // Define the message schema
-const messageSchema = z.object({
-  linkouts_id: z.number().nullish(),
-  media_url: z.string(),
-  media_url_m3u8: z.string().nullish(),
-  attached_link: z.string().nullish(),
-  slug: z.string(),
-  description_text: z.string().nullish(),
-  description_data: z.string().nullish(),
-  no_of_views: z.number().default(0),
-  no_of_comments: z.number().default(0),
-  no_of_sparks: z.number().default(0),
-  is_sparked: z.boolean().default(false),
-  message_summary: z.string().nullish(),
-  share_url: z.string(),
-  questions: z.array(z.unknown()).nullish(),
-  thumbnail_url: z.string().nullish(),
-  thumbnail_url_s: z.string().nullish(),
-  thumbnail_url_m: z.string().nullish(),
-  thumbnail_url_l: z.string().nullish(),
-  message_id: z.string(),
-  message_at: z.number().nullish(),
-  owner: ownerSchema,
-  meta_data: metaDataSchema,
-  brand: BrandUserSchema.optional(),
-  clickable_url: z.string().nullish(),
-})
+// const messageSchema = z.object({
+//   linkouts_id: z.number().nullish(),
+//   media_url: z.string(),
+//   media_url_m3u8: z.string().nullish(),
+//   attached_link: z.string().nullish(),
+//   slug: z.string(),
+//   description_text: z.string().nullish(),
+//   description_data: z.string().nullish(),
+//   no_of_views: z.number().default(0),
+//   no_of_comments: z.number().default(0),
+//   no_of_sparks: z.number().default(0),
+//   is_sparked: z.boolean().default(false),
+//   message_summary: z.string().nullish(),
+//   share_url: z.string(),
+//   questions: z.array(z.unknown()).nullish(),
+//   thumbnail_url: z.string().nullish(),
+//   thumbnail_url_s: z.string().nullish(),
+//   thumbnail_url_m: z.string().nullish(),
+//   thumbnail_url_l: z.string().nullish(),
+//   message_id: z.string(),
+//   message_at: z.number().nullish(),
+//   owner: ownerSchema,
+//   meta_data: metaDataSchema,
+//   brand: BrandUserSchema.optional(),
+//   clickable_url: z.string().nullish(),
+// })
 
 const brandSchema = z
   .object({
@@ -83,7 +83,7 @@ const communitySchema = z
     dp_s: z.string().nullish(),
     dp_m: z.string().nullish(),
     dp_l: z.string().nullish(),
-    logged_in_user_role: z.number().nullish(),
+    logged_in_user_role: z.number(),
     type: z.number(),
     uuid: z.string(),
     brand: brandSchema,
@@ -141,7 +141,7 @@ const videoSchema = z.object({
   is_read: z.boolean(),
   is_sparked: z.boolean(),
   linkouts: z.unknown().nullable(),
-  linkouts_id: z.unknown().nullable(),
+  linkouts_id: z.number().nullable(),
   linkouts_inappbrowser: z.boolean(),
   media_url: z.string(),
   media_url_m3u8: z.string(),

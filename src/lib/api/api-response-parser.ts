@@ -11,68 +11,65 @@ import { tryJsonParse } from '@lib/utils'
 
 // TODO: this function is used by some apis like community-videos, brand-videos removed if we adopt the changes from go-api.
 export function parseFeedResponse(videos: FeedResponseType[]) {
-  return videos.map<VideoPlayerModalType>((item) => {
+  return videos.map<VideoPlayerModalType>(({ video, community, loop, owner }) => {
     return {
       community: {
-        handle: item.community?.handle ?? '',
-        id: item.community?.uuid ?? '',
-        slug: item.community?.slug ?? '',
-        name: item.community?.name ?? '',
-        profileImage: item.community?.dp ?? '',
-        type: item.community?.type ?? null,
-        shareUrl: item.community?.share_url ?? '',
-        userRole: item.community?.logged_in_user_role
-          ? item.community?.logged_in_user_role === 1
-            ? 'LEADER'
-            : 'MEMBER'
-          : undefined,
-        brand: item.community?.brand
+        handle: community?.handle ?? '',
+        id: community?.uuid ?? '',
+        slug: community?.slug ?? '',
+        name: community?.name ?? '',
+        profileImage: community?.dp ?? '',
+        type: community?.type ?? null,
+        shareUrl: community?.share_url ?? '',
+        userRole: mapUserRole(community?.logged_in_user_role), // Mapping logged_in_user_role to userRole
+
+        brand: community?.brand
           ? {
-              brand_id: item.community.brand.brand_id,
-              name: item.community.brand.name,
-              subdomain: item.community.brand.subdomain,
-              logo: item.community.brand.logo,
-              created_at: item.community.brand.created_at,
-              brand_web_logo: item.community.brand.brand_web_logo,
-              favicon: item.community.brand.favicon,
-              brand_system_user_id: item.community.brand.brand_system_user_id,
-              brand_slug: item.community.brand.brand_slug,
+              brand_id: community.brand.brand_id,
+              name: community.brand.name,
+              subdomain: community.brand.subdomain,
+              logo: community.brand.logo,
+              created_at: community.brand.created_at,
+              brand_web_logo: community.brand.brand_web_logo,
+              favicon: community.brand.favicon,
+              brand_system_user_id: community.brand.brand_system_user_id,
+              brand_slug: community.brand.brand_slug,
             }
           : null,
       },
       loop: {
-        id: item.loop.group_id,
-        slug: item.loop.slug,
-        name: item.loop.group_name,
+        id: loop.group_id,
+        slug: loop.slug,
+        name: loop.group_name,
       },
       owner: {
-        isAvatar: item.owner.is_avatar,
-        profileImage: item.owner.profile_image,
-        userName: item.owner.username,
-        name: item.owner.name,
-        brand: item.owner.brand
+        isAvatar: owner.is_avatar,
+        profileImage: owner.profile_image,
+        userName: owner.username,
+        name: owner.name,
+        brand: owner.brand
           ? {
-              brand_id: item.owner.brand?.brand_id,
-              brand_slug: item.owner.brand?.brand_slug,
+              brand_id: owner.brand?.brand_id,
+              brand_slug: owner.brand?.brand_slug,
             }
           : null,
       },
       video: {
-        id: item.video.uuid,
-        commentCount: item.video.no_of_comments,
-        createdAt: item.video.conversation_at,
-        shareUrl: item.video.share_url,
-        slug: item.video.slug,
-        source: item.video.media_url_m3u8 ?? item.video.media_url,
-        sparkCount: item.video.no_of_sparks,
-        thumbnail: item.video.thumbnail_url ?? '',
-        attachedLink: item.video.attached_link,
-        isSparked: item.video.is_sparked,
-        descriptionArr: item.video.description_data ? tryJsonParse(item.video.description_data) : undefined,
-        descriptionText: item.video.description_text,
-        linkoutId: item.video.linkouts_id,
-        clickableUrl: item.video.clickable_url ? item.video.clickable_url : null,
-        thumbnailM: item.video.thumbnail_url_l ? item.video.thumbnail_url || '' : '',
+        id: video.uuid,
+        commentCount: video.no_of_comments,
+        createdAt: video.conversation_at,
+        shareUrl: video.share_url,
+        slug: video.slug,
+        source: video.media_url_m3u8 ?? video.media_url,
+        sparkCount: video.no_of_sparks,
+        thumbnail: video.thumbnail_url ?? '',
+        attachedLink: video.attached_link,
+        isSparked: video.is_sparked,
+        descriptionArr: video.description_data ? tryJsonParse(video.description_data) : undefined,
+        descriptionText: video.description_text,
+        linkoutId: video.linkouts_id || null,
+        clickableUrl: video.clickable_url ? video.clickable_url : null,
+        thumbnailM: video.thumbnail_url_l ? video.thumbnail_url || '' : '',
       },
     }
   })
