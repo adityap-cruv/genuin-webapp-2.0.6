@@ -148,9 +148,9 @@ function CommentInput({ setComments, currentComment, setCurrentComment, videoDet
 
                   <button
                     onClick={handleClick}
-                    disabled={currentComment.length === 0}
+                    disabled={currentComment.trim().length === 0}
                     className={`absolute right-4 text-body-1-bold ${
-                      currentComment.length === 0 ? 'text-primary-600' : 'text-primary'
+                      currentComment.trim().length === 0 ? 'text-primary-600' : 'text-primary'
                     }`}>
                     Post
                   </button>
