@@ -30,6 +30,9 @@ export async function fetchUserData(nickname: string, headers?: Headers) {
       return validateProfileDetails(res.data.data)
     })
     .catch((e) => {
+      if (e.response.data.code === '412') {
+        throw new Error(e.response.data.message)
+      }
       throw new Error('Something went wrong in profile details api.')
     })
 }
