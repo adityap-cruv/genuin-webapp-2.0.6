@@ -48,13 +48,22 @@ function WithoutMentions({ text, maxChars = 150, ...props }: Props) {
           (View more)
         </span>
       )}
-      {!showMore && <span className="cursor-pointer pl-1 text-body-1-med text-tertiary">(View less)</span>}
+      {!showMore && text.length > maxChars && (
+        <span className="cursor-pointer pl-1 text-body-1-med text-tertiary">(View less)</span>
+      )}
     </p>
   )
 }
 
 type WithMentionsProps = {
-  textArr: Array<string | { member_id: string; text: string } | { community_id: string; text: string }> | string
+  textArr:
+    | Array<
+        | string
+        | { member_id: string; text: string }
+        | { community_id: string; text: string }
+        | { url: string; text: string }
+      >
+    | string
 } & Omit<Props, 'text'>
 
 export function WithMentions({ textArr, maxChars = 50, className, ...props }: WithMentionsProps) {
@@ -75,11 +84,21 @@ export function WithMentions({ textArr, maxChars = 50, className, ...props }: Wi
       </span>
     )
     const SHOW_LESS_BUTTON = (
-      <span key="show-less" className="hidden cursor-pointer pl-1 text-tertiary sm:block">
+      <span
+        key="show-less"
+        className="hidden cursor-pointer pl-1 text-tertiary sm:block"
+        onClick={(e) => {
+          e.stopPropagation()
+          setShowMore(!showMore)
+        }}>
         (View less)
       </span>
     )
     let limit = maxChars
+    // Type guards for identifying the specific shape of the item
+    const isMemberItem = (item: any): item is { member_id: string; text: string } => 'member_id' in item
+    const isUrlItem = (item: any): item is { url: string; text: string } => 'url' in item
+
     const newArr: Array<string | JSX.Element> = []
     if (showMore) {
       for (let i = 0; i < textArr.length; i++) {
@@ -106,16 +125,19 @@ export function WithMentions({ textArr, maxChars = 50, className, ...props }: Wi
             limit = 0
             break
           }
-        } else {
-          if (Object.keys(item).includes('member_id')) {
-            newArr.push(
-              <Link key={i} href={PATH_NAME.profile(item.text.slice(1))} className="text-primary">
-                {item.text}
-              </Link>
-            )
-          } else {
-            newArr.push(item.text)
-          }
+        } else if (isMemberItem(item)) {
+          newArr.push(
+            <Link key={i} href={PATH_NAME.profile(item.text.slice(1))} className="text-primary">
+              {item.text}
+            </Link>
+          )
+          limit -= item.text.length
+        } else if (isUrlItem(item)) {
+          newArr.push(
+            <Link key={i} href={item.url} className="text-primary" target="_blank">
+              {item.text}
+            </Link>
+          )
           limit -= item.text.length
         }
       }
@@ -123,6 +145,7 @@ export function WithMentions({ textArr, maxChars = 50, className, ...props }: Wi
       textArr.forEach((item) => {
         if (typeof item === 'string') {
           newArr.push(item)
+          limit -= item.length
         } else {
           if (Object.keys(item).includes('member_id')) {
             newArr.push(
@@ -133,22 +156,20 @@ export function WithMentions({ textArr, maxChars = 50, className, ...props }: Wi
           } else {
             newArr.push(item.text)
           }
+          limit -= item.text.length
         }
       })
-      newArr.push(SHOW_LESS_BUTTON)
+      if (limit < 0) {
+        newArr.push(SHOW_LESS_BUTTON)
+      }
+      console.log(limit)
     }
 
     if (newArr) setProcessedComponent(newArr)
   }, [textArr, showMore, maxChars])
 
   return (
-    <p
-      className={cn('', className)}
-      {...props}
-      onClick={(e) => {
-        e.stopPropagation()
-        setShowMore(!showMore)
-      }}>
+    <p className={cn('', className)} {...props}>
       {processedComponent}
     </p>
   )

@@ -69,7 +69,7 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
       </div>
       <div ref={scrollDivRef} className="flex h-full flex-col overflow-auto overflow-x-clip">
         {Array.isArray(video.descriptionArr) ? (
-          <ReadMore.withMention textArr={video.descriptionArr} />
+          <ReadMore.withMention textArr={video.descriptionArr} maxChars={150} />
         ) : (
           <ReadMore.default text={video.descriptionText} />
         )}
