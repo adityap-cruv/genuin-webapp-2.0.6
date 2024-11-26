@@ -364,7 +364,10 @@ export function encodeVideoSourceUrl(videoSource: string) {
   try {
     // Create a URL object to easily access query parameters
     const url = new URL(videoSource)
-
+    // If there are no query parameters, return the original URL
+    if (!url.search) {
+      return videoSource
+    }
     // Get query parameters from the URL
     const params = new URLSearchParams(url.search)
 
@@ -374,7 +377,8 @@ export function encodeVideoSourceUrl(videoSource: string) {
     }
 
     // Return the complete encoded URL
-    return `${url.origin}${url.pathname}?${params.toString()}`
+    const paramString = params.toString()
+    return `${url.origin}${url.pathname}${paramString ? '?' + paramString : ''}`
   } catch (error) {
     console.error('Invalid URL:', error)
     return videoSource

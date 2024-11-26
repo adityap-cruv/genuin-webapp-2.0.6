@@ -3,6 +3,7 @@ import '../globals.css'
 import { cookies } from 'next/headers'
 import { ThirdPartyScriptProvider } from '@components/providers/third-party-script-provider'
 import { GenuinOptionsProvider } from '@components/providers/genuin-options-provider'
+import { UrlParamProvider } from '@/lib/utils/ssai/urlParamResolver'
 import { getEmbedConfig } from '@lib/api/config'
 import { type ConfigType } from '@lib/stores/genuin-options'
 import { RedirectHandler } from '@components/providers/redirect-handler'
@@ -57,7 +58,7 @@ export default async function RootLayout(props: any) {
                 os={os}
                 config={config}
                 user={userSession?.user ?? null}>
-                {props.children}
+                <UrlParamProvider>{props.children}</UrlParamProvider>
               </GenuinOptionsProvider>
             </ReactQueryProvider>
           </SessionProvider>
