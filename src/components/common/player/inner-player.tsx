@@ -15,6 +15,7 @@ import Image from 'next/image'
 import { useShallow } from 'zustand/react/shallow'
 import Analytics from '@/services/analytics'
 import { Loader } from '@/components/ui/loader'
+import { useUrlParams } from '@/lib/utils/ssai/urlParamResolver'
 
 type Props = DetailedHTMLProps<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement> & {
   videoSource: string
@@ -62,7 +63,6 @@ export const InnerPlayer = memo(function InnerPlayer({
   onCanPlay,
   ...props
 }: Props) {
-  const encodedVideoSourceUrl = encodeVideoSourceUrl(videoSource)
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<OpenPlayerJS | null>(null)
   const [playingState, setPlayingState] = useState<'paused' | 'playing' | 'loading'>('loading')
@@ -73,6 +73,15 @@ export const InnerPlayer = memo(function InnerPlayer({
       setTimeState: state.setTimeState,
     }))
   )
+  let encodedVideoSourceUrl = videoSource
+  // Create a URL object to easily access query parameters
+  const videoUrl = new URL(videoSource)
+  // If there are no query parameters meaning either it's m3u8 without query params or mp4 file
+  if (videoUrl.search) {
+    const { appendParamsToUrl } = useUrlParams()
+    const macrosUpdatedVideoSource = appendParamsToUrl(videoSource)
+    encodedVideoSourceUrl = encodeVideoSourceUrl(macrosUpdatedVideoSource)
+  }
 
   useEffect(() => {
     if (!videoRef.current) return

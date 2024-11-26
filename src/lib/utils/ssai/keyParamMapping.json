@@ -1,0 +1,507 @@
+{
+  "device": {
+    "devicetype": {
+      "value": null,
+      "param": "device_type",
+      "macros": "[DEVICE_TYPE]"
+    },
+    "ipv6": {
+      "value": null,
+      "param": "device_ipv6",
+      "macros": "[DEVICE_IPV6]"
+    },
+    "make": {
+      "value": null,
+      "param": "device_make",
+      "macros": "[DEVICE_MAKE]"
+    },
+    "ip": {
+      "value": null,
+      "param": "ip",
+      "macros": "[IP]"
+    },
+    "ua": {
+      "value": null,
+      "param": "ua",
+      "macros": "[UA]"
+    },
+    "model": {
+      "value": null,
+      "param": "device_model",
+      "macros": "[DEVICE_MODEL]"
+    },
+    "os": {
+      "value": null,
+      "param": "os",
+      "macros": "[DEVICE_OS]"
+    },
+    "osv": {
+      "value": null,
+      "param": "osv",
+      "macros": "[DEVICE_OS_VERSION]"
+    },
+    "h": {
+      "value": null,
+      "param": "height",
+      "macros": "[DEVICE_HEIGHT]"
+    },
+    "w": {
+      "value": null,
+      "param": "width",
+      "macros": "[DEVICE_WIDTH]"
+    },
+    "js": {
+      "value": null,
+      "param": "device_js",
+      "macros": "[DEVICE_JS]"
+    },
+    "geo": {
+      "lat": {
+        "value": null,
+        "param": "location_lat",
+        "macros": "[LOCATION_LAT]"
+      },
+      "lon": {
+        "value": null,
+        "param": "location_lon",
+        "macros": "[LOCATION_LON]"
+      },
+      "region": {
+        "value": null,
+        "param": "region",
+        "macros": "[REGION]"
+      },
+      "city": {
+        "value": null,
+        "param": "city",
+        "macros": "[CITY]"
+      },
+      "zip": {
+        "value": null,
+        "param": "zip",
+        "macros": "[ZIP_CODE]"
+      },
+      "country": {
+        "value": null,
+        "param": "country_code",
+        "macros": "[COUNTRY_ID]"
+      },
+      "type": {
+        "value": null,
+        "param": "type_dg",
+        "macros": "[DEVICE_GEO_TYPE]"
+      },
+      "accuracy": {
+        "value": null,
+        "param": "accuracy_dg",
+        "macros": "[DEVICE_ACCURACY]"
+      },
+      "lastfix": {
+        "value": null,
+        "param": "lastfix_dg",
+        "macros": "[DEVICE_GEO_LASTFIX]"
+      },
+      "ipservice": {
+        "value": null,
+        "param": "ipservice_dg",
+        "macros": "[DEVICE_GEO_IPSERVICE]"
+      },
+      "regionfips104": {
+        "value": null,
+        "param": "regionfips104_dg",
+        "macros": "[DEVICE_GEO_REGIONFIPS104]"
+      },
+      "metro": {
+        "value": null,
+        "param": "metro_dg",
+        "macros": "[DEVICE_GEO_METRO]"
+      },
+      "utcoffset": {
+        "value": null,
+        "param": "utcoffset_dg",
+        "macros": "[DEVICE_GEO_UTCOFFSET]"
+      }
+    },
+    "pxratio": {
+      "value": null,
+      "param": "pxratio_d",
+      "macros": "[DEVICE_PXRATIO]"
+    },
+    "geofetch": {
+      "value": null,
+      "param": "geofetch_d",
+      "macros": "[DEVICE_GEOFETCH]"
+    },
+    "flashver": {
+      "value": null,
+      "param": "flashver_d",
+      "macros": "[DEVICE_FLASHVER]"
+    },
+    "langb": {
+      "value": null,
+      "param": "langb_d",
+      "macros": "[DEVICE_LANGB]"
+    },
+    "carrier": {
+      "value": null,
+      "param": "carrier_d",
+      "macros": "[DEVICE_CARRIER]"
+    },
+    "mccmnc": {
+      "value": null,
+      "param": "mccmnc_d",
+      "macros": "[DEVICE_MCCMNC]"
+    },
+    "connectiontype": {
+      "value": null,
+      "param": "connectiontype_d",
+      "macros": "[DEVICE_CONNECTIONTYPE]"
+    },
+    "sua": {
+      "mobile": {
+        "value": null,
+        "param": "mobile_ds",
+        "macros": "[DEVICE_SUA_MOBILE]"
+      },
+      "architecture": {
+        "value": null,
+        "param": "architecture_ds",
+        "macros": "[DEVICE_SUA_ARCHITECTURE]"
+      },
+      "browsers": [
+        {
+          "brand": {
+            "value": null,
+            "param": "browsers_brand_ds",
+            "macros": "[DEVICE_SUA_BROWSERS_BRAND]"
+          },
+          "version": [
+            {
+              "value": null,
+              "param": "browsers_version_ds",
+              "macros": "[DEVICE_SUA_BROWSERS_VERSION]"
+            }
+          ]
+        }
+      ],
+      "bitness": {
+        "value": null,
+        "param": "bitness_ds",
+        "macros": "[DEVICE_SUA_BITNESS]"
+      },
+      "model": {
+        "value": null,
+        "param": "model_ds",
+        "macros": "[DEVICE_SUA_MODEL]"
+      },
+      "source": {
+        "value": null,
+        "param": "source_ds",
+        "macros": "[DEVICE_SUA_SOURCE]"
+      },
+      "platform": {
+        "brand": {
+          "value": null,
+          "param": "platform_brand_ds",
+          "macros": "[DEVICE_SUA_PLATFORM_BRAND]"
+        },
+        "version": [
+          {
+            "value": null,
+            "param": "platform_version_ds",
+            "macros": "[DEVICE_SUA_PLATFORM_VERSION]"
+          }
+        ]
+      }
+    },
+    "language": {
+      "value": null,
+      "param": "device_language",
+      "macros": "[DEVICE_LANGUAGE]"
+    },
+    "ifa": {
+      "value": null,
+      "param": "did",
+      "macros": "[DID]"
+    },
+    "lmt": {
+      "value": null,
+      "param": "is_lat",
+      "macros": "[LIMITED_AD_TRACKING]"
+    },
+    "dnt": {
+      "value": null,
+      "param": "dnt",
+      "macros": "[DNT]"
+    },
+    "ppi": {
+      "value": null,
+      "param": "ppi_d",
+      "macros": "[DEVICE_PPI]"
+    }
+  },
+  "site": {
+    "mobile": {
+      "value": null,
+      "param": "mobile_s",
+      "macros": "[SITE_MOBILE]"
+    },
+    "privacypolicy": {
+      "value": null,
+      "param": "privacypolicy_s",
+      "macros": "[SITE_PRIVACYPOLICY]"
+    },
+    "keywords": {
+      "value": null,
+      "param": "keywords_s",
+      "macros": "[SITE_KEYWORDS]"
+    },
+    "ref": {
+      "value": null,
+      "param": "site_ref",
+      "macros": "[SITE_REF]"
+    },
+    "search": {
+      "value": null,
+      "param": "site_search",
+      "macros": "[SITE_SEARCH]"
+    },
+    "cattax": {
+      "value": null,
+      "param": "cattax_s",
+      "macros": "[SITE_CATTAX]"
+    },
+    "domain": {
+      "value": null,
+      "param": "domain_s",
+      "macros": "[DOMAIN]"
+    },
+    "cat": [
+      {
+        "value": null,
+        "param": "cat_s",
+        "macros": "[SITE_CAT]"
+      }
+    ],
+    "sectioncat": [
+      {
+        "value": null,
+        "param": "sectioncat_s",
+        "macros": "[SITE_SECTIONCAT]"
+      }
+    ],
+    "pagecat": [
+      {
+        "value": null,
+        "param": "pagecat_s",
+        "macros": "[SITE_PAGECAT]"
+      }
+    ],
+    "page": {
+      "value": null,
+      "param": "site_page",
+      "macros": "[PAGE_URL]"
+    },
+    "name": {
+      "value": null,
+      "param": "name_s",
+      "macros": "[CHANNEL_NAME]"
+    },
+    "kwarray": [
+      {
+        "value": null,
+        "param": "kwarray_s",
+        "macros": "[SITE_KWARRAY]"
+      }
+    ],
+    "id": {
+      "value": null,
+      "param": "site_id",
+      "macros": "[SITE_ID]"
+    },
+    "publisher": {
+      "name": {
+        "value": null,
+        "param": "name_sp",
+        "macros": "[SITE_PUBLISHER_NAME]"
+      },
+      "cat": [
+        {
+          "value": null,
+          "param": "cat_sp",
+          "macros": "[SITE_PUBLISHER_CAT]"
+        }
+      ],
+      "domain": {
+        "value": null,
+        "param": "domain_sp",
+        "macros": "[SITE_PUBLISHER_DOMAIN]"
+      },
+      "cattax": {
+        "value": null,
+        "param": "cattax_sp",
+        "macros": "[SITE_PUBLISHER_CATTAX]"
+      }
+    }
+  },
+  "user": {
+    "geo": {
+      "regionfips104": {
+        "value": null,
+        "param": "regionfips104_ug",
+        "macros": "[USER_GEO_REGIONFIPS104]"
+      },
+      "utcoffset": {
+        "value": null,
+        "param": "utcoffset_ug",
+        "macros": "[USER_GEO_UTCOFFSET]"
+      },
+      "zip": {
+        "value": null,
+        "param": "zip_ug",
+        "macros": "[USER_GEO_ZIP]"
+      },
+      "city": {
+        "value": null,
+        "param": "city_ug",
+        "macros": "[USER_GEO_CITY]"
+      },
+      "metro": {
+        "value": null,
+        "param": "metro_ug",
+        "macros": "[USER_GEO_METRO]"
+      },
+      "lastfix": {
+        "value": null,
+        "param": "lastfix_ug",
+        "macros": "[USER_GEO_LASTFIX]"
+      },
+      "accuracy": {
+        "value": null,
+        "param": "accuracy_ug",
+        "macros": "[USER_GEO_ACCURACY]"
+      },
+      "type": {
+        "value": null,
+        "param": "type_ug",
+        "macros": "[USER_GEO_TYPE]"
+      },
+      "lon": {
+        "value": null,
+        "param": "lon_ug",
+        "macros": "[USER_GEO_LON]"
+      },
+      "lat": {
+        "value": null,
+        "param": "lat_ug",
+        "macros": "[USER_GEO_LAT]"
+      },
+      "country": {
+        "value": null,
+        "param": "country_ug",
+        "macros": "[USER_GEO_COUNTRY]"
+      },
+      "ipservice": {
+        "value": null,
+        "param": "ipservice_ug",
+        "macros": "[USER_GEO_IPSERVICE]"
+      },
+      "region": {
+        "value": null,
+        "param": "region_ug",
+        "macros": "[USER_GEO_REGION]"
+      }
+    },
+    "ext": {
+      "gdpr_pd": {
+        "value": null,
+        "param": "gdpr_pd",
+        "macros": "[GDPR_PD]"
+      },
+      "consent": {
+        "value": null,
+        "param": "consent",
+        "macros": "[CONSENT]"
+      }
+    },
+    "data": [
+      {
+        "segment": [
+          {
+            "name": {
+              "value": null,
+              "param": "segment_name_ud",
+              "macros": "[DATA_SEGMENT_NAME]"
+            },
+            "value": null
+          }
+        ],
+        "name": {
+          "value": null,
+          "param": "name_ud",
+          "macros": "[DATA_NAME]"
+        }
+      }
+    ],
+    "id": {
+      "value": null,
+      "param": "user_id",
+      "macros": "[USER_ID]"
+    },
+    "gender": {
+      "value": null,
+      "param": "gender",
+      "macros": "[GENDER]"
+    },
+    "yob": {
+      "value": null,
+      "param": "yob",
+      "macros": "[YOB]"
+    },
+    "eids": [
+      {
+        "uids": [
+          {
+            "atype": {
+              "value": null,
+              "param": "uids_atype_ue",
+              "macros": "[EIDS_UIDS_ATYPE]"
+            }
+          }
+        ],
+        "source": {
+          "value": null,
+          "param": "source_ue",
+          "macros": "[EIDS_SOURCE]"
+        }
+      }
+    ],
+    "consent": {
+      "value": null,
+      "param": "gdpr_consent",
+      "macros": "[GDPR_CONSENT]"
+    },
+    "customdata": {
+      "value": null,
+      "param": "customdata_u",
+      "macros": "[USER_CUSTOMDATA]"
+    },
+    "keywords": {
+      "value": null,
+      "param": "keywords_u",
+      "macros": "[USER_KEYWORDS]"
+    },
+    "kwarray": [
+      {
+        "value": null,
+        "param": "kwarray_u",
+        "macros": "[USER_KWARRAY]"
+      }
+    ],
+    "buyeruid": {
+      "value": null,
+      "param": "buyeruid_u",
+      "macros": "[BUYERUID]"
+    }
+  }
+}
