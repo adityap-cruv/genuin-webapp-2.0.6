@@ -49,7 +49,13 @@ function WithoutMentions({ text, maxChars = 150, ...props }: Props) {
         </span>
       )}
       {!showMore && text.length > maxChars && (
-        <span className="cursor-pointer pl-1 text-body-1-med text-tertiary">(View less)</span>
+        <span
+          className="cursor-pointer pl-1 text-body-1-med text-tertiary"
+          onClick={() => {
+            setShowMore((old) => !old)
+          }}>
+          (View less)
+        </span>
       )}
     </p>
   )
