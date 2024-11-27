@@ -29,6 +29,7 @@ import { LinkedInIcon } from '@icons/linkedin-icon'
 import { TwitterIcon } from '@icons/twitter-icon'
 import { joinCommunityDeepLink } from '@/lib/get-deeplink'
 import { TopStickyBar } from './top-sticky-bar'
+import { ReadMore } from '@/components/common/read-more'
 
 let communityDetailsModule: CommunityDetailsType
 
@@ -139,7 +140,11 @@ export function Details({ communityDetails }: Props) {
               />
             )}
           </div>
-          <p className="my-1 line-clamp-2 break-all text-body-1-demi ">{communityDetailsModule?.description}</p>
+          <ReadMore.default
+            text={communityDetailsModule?.description}
+            maxChars={150}
+            className="my-1  break-all text-body-1-demi"
+          />
           <Stats />
         </div>
         {communityDetailsModule.type === 2 && !communityDetailsModule.logged_in_user_role ? (
