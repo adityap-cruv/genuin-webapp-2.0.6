@@ -122,7 +122,7 @@ export async function fetchProfileVideos(
         user_id: userId,
         community_id: communityId,
         chat_id: loopId,
-        last_message_id: lastVideoId,
+        last_video_id: lastVideoId,
         page_limit_profile_videos: limit,
         page_session: pageSession,
       },
@@ -146,8 +146,8 @@ export async function fetchProfileFeed(userId: string, pageParam?: { lastMessage
       params: {
         user_id: userId,
         page_session: pageSession,
-        from_message_id: pageParam?.lastMessageId ? undefined : fromVideoId,
-        last_message_id: pageParam?.lastMessageId,
+        from_video_id: pageParam?.lastMessageId ? undefined : fromVideoId,
+        last_video_id: pageParam?.lastMessageId,
       },
     })
     .then((res) => {
