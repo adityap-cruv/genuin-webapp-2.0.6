@@ -206,6 +206,7 @@ function Details({
           <span className="z-10 py-2">
             <ReadMore.withMention
               textArr={descriptionArr}
+              maxChars={150}
               className="w-full break-all text-body-1-demi text-monochrome-white"
             />
           </span>

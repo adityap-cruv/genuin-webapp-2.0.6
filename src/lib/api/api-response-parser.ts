@@ -10,75 +10,66 @@ import {
 import { tryJsonParse } from '@lib/utils'
 
 // TODO: this function is used by some apis like community-videos, brand-videos removed if we adopt the changes from go-api.
-export function parseFeedResponse(videos: FeedResponseType) {
-  //! Sometime old video which doesn't have community comes into response.
-  videos = videos.filter((item, index, arr) => item.feed.community)
-
-  return videos.map<VideoPlayerModalType>((item) => {
-    const video = item.feed
+export function parseFeedResponse(videos: FeedResponseType[]) {
+  return videos.map<VideoPlayerModalType>(({ video, community, loop, owner }) => {
     return {
       community: {
-        handle: video.community?.handle ?? '',
-        id: video.community?.community_id ?? '',
-        slug: video.community?.slug ?? '',
-        name: video.community?.name ?? '',
-        profileImage: video.community?.dp ?? '',
-        type: video.community?.type ?? null,
-        shareUrl: video.community?.share_url ?? '',
-        userRole: video.community?.logged_in_user_role
-          ? video.community?.logged_in_user_role === 1
-            ? 'LEADER'
-            : 'MEMBER'
-          : undefined,
-        brand: video.community?.brand
+        handle: community?.handle ?? '',
+        id: community?.uuid ?? '',
+        slug: community?.slug ?? '',
+        name: community?.name ?? '',
+        profileImage: community?.dp ?? '',
+        type: community?.type ?? null,
+        shareUrl: community?.share_url ?? '',
+        userRole: mapUserRole(community?.logged_in_user_role), // Mapping logged_in_user_role to userRole
+
+        brand: community?.brand
           ? {
-              brand_id: video.community.brand.brand_id,
-              name: video.community.brand.name,
-              subdomain: video.community.brand.subdomain,
-              logo: video.community.brand.logo,
-              created_at: video.community.brand.created_at,
-              brand_web_logo: video.community.brand.brand_web_logo,
-              favicon: video.community.brand.favicon,
-              brand_system_user_id: video.community.brand.brand_system_user_id,
-              brand_slug: video.community.brand.brand_slug,
+              brand_id: community.brand.brand_id,
+              name: community.brand.name,
+              subdomain: community.brand.subdomain,
+              logo: community.brand.logo,
+              created_at: community.brand.created_at,
+              brand_web_logo: community.brand.brand_web_logo,
+              favicon: community.brand.favicon,
+              brand_system_user_id: community.brand.brand_system_user_id,
+              brand_slug: community.brand.brand_slug,
             }
           : null,
       },
       loop: {
-        id: video.chat_id,
-        slug: video.slug,
-        name: video.group.group_name,
+        id: loop.group_id,
+        slug: loop.slug,
+        name: loop.group_name,
       },
       owner: {
-        isAvatar: video.messages[0].owner.is_avatar,
-        profileImage: video.messages[0].owner.profile_image,
-        userName: video.messages[0].owner.username,
-        name: video.messages[0].owner.name,
-        brand: video.messages[0]?.owner.brand
+        isAvatar: owner.is_avatar,
+        profileImage: owner.profile_image,
+        userName: owner.username,
+        name: owner.name,
+        brand: owner.brand
           ? {
-              brand_id: video.messages[0].owner.brand?.brand_id,
-              brand_slug: video.messages[0].owner.brand?.brand_slug,
+              brand_id: owner.brand?.brand_id,
+              brand_slug: owner.brand?.brand_slug,
             }
           : null,
       },
       video: {
-        id: video.messages[0].message_id,
-        commentCount: video.messages[0].no_of_comments,
-        createdAt: video.messages[0].message_at,
-        shareUrl: video.messages[0].share_url,
-        slug: video.messages[0].slug,
-        source: video.messages[0].media_url_m3u8 ?? video.messages[0].media_url,
-        sparkCount: video.messages[0].no_of_sparks,
-        thumbnail: video.messages[0].thumbnail_url ?? '',
-        attachedLink: video.messages[0].attached_link,
-        isSparked: video.messages[0].is_sparked,
-        descriptionArr: video.messages[0].description_data
-          ? tryJsonParse(video.messages[0].description_data)
-          : undefined,
-        descriptionText: video.messages[0].description_text,
-        linkoutId: video.messages[0].linkouts_id,
-        clickableUrl: video.messages[0].clickable_url ? video.messages[0].clickable_url : null,
-        thumbnailM: video.messages[0].thumbnail_url_l ? video.messages[0].thumbnail_url || '' : '',
+        id: video.uuid,
+        commentCount: video.no_of_comments,
+        createdAt: video.conversation_at,
+        shareUrl: video.share_url,
+        slug: video.slug,
+        source: video.media_url_m3u8 ?? video.media_url,
+        sparkCount: video.no_of_sparks,
+        thumbnail: video.thumbnail_url ?? '',
+        attachedLink: video.attached_link,
+        isSparked: video.is_sparked,
+        descriptionArr: video.description_data ? tryJsonParse(video.description_data) : undefined,
+        descriptionText: video.description_text,
+        linkoutId: video.linkouts_id || null,
+        clickableUrl: video.clickable_url ? video.clickable_url : null,
+        thumbnailM: video.thumbnail_url_l ? video.thumbnail_url || '' : '',
       },
     }
   })
@@ -198,7 +189,7 @@ export function parseProfileCommunityResponse(communities: ProfileCommunityRespo
           videos: item.messages.map((item) => {
             return {
               id: item.message_id,
-              thumbnail: item.thumbnail_url_m ? item.thumbnail_url_m : (item.thumbnail_url_l ?? item.thumbnail_url),
+              thumbnail: item.thumbnail_url_m ? item.thumbnail_url_m : item.thumbnail_url_l ?? item.thumbnail_url,
               viewCount: item.no_of_views,
             }
           }),
@@ -225,7 +216,7 @@ export function parseProfileLoopResponse(loops: ProfileLoopResponseType[]) {
         return {
           id: item.message_id,
           viewCount: item.no_of_views,
-          thumbnail: item.thumbnail_url_m ? item.thumbnail_url_m : (item.thumbnail_url_l ?? item.thumbnail_url),
+          thumbnail: item.thumbnail_url_m ? item.thumbnail_url_m : item.thumbnail_url_l ?? item.thumbnail_url,
         }
       }),
     }

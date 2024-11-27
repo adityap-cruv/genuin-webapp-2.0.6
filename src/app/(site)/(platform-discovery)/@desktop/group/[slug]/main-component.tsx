@@ -30,6 +30,7 @@ import { useSearchParams } from 'next/navigation'
 import { joinAsCollaboratorDeepLink, subscribeDeepLink } from '@/lib/get-deeplink'
 import { SubscribedBellIcon } from '@icons/subscribed-bell-icon'
 import { BellIcon } from 'lucide-react'
+import { ReadMore } from '@/components/common/read-more'
 
 interface Props {
   loopDetails: LoopDetailsType
@@ -193,9 +194,11 @@ export function MainComponent({ loopDetails }: Props) {
           accessTypeId={loopDetails?.actions?.[0]?.access_type_id ?? 0}
         />
         <span className="w-1/2">
-          <p className="my-1 line-clamp-2 w-1/2 break-words text-body-1-med text-secondary">
-            {loopDetails.group.group_description}
-          </p>
+          <ReadMore.default
+            text={loopDetails.group.group_description}
+            maxChars={150}
+            className="my-1 w-1/2 break-words text-body-1-med text-secondary"
+          />
           <div className="my-3 w-1/2 rounded-xl border border-tertiary-200 p-4">
             <span className="flex gap-x-2" ref={detailsDivRef}>
               <span className="flex-1">

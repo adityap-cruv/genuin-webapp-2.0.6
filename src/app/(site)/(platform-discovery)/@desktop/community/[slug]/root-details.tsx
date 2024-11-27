@@ -31,6 +31,7 @@ import { JoinCommunityButton } from '@components/pages/community/join-community-
 import { CommunityLoopTab } from './community-loop-tab'
 import Loader from './loading'
 import { CustomImage } from '@/components/custom/custom-image'
+import { ReadMore } from '@/components/common/read-more'
 
 export function CommunityDetails({ slug }: { slug: string }) {
   const { data, isLoading } = getCommunityDetails(slug)
@@ -161,7 +162,7 @@ function RootDetails({ communityDetails }: { communityDetails: CommunityDetailsT
           <div className="grid w-full grid-cols-2 gap-4 overflow-hidden px-6" style={{ height: 'calc(100% - 56px)' }}>
             <div className="snap-y snap-proximity overflow-auto overflow-x-hidden scroll-smooth">
               {communityDetails.description && (
-                <p className="mb-2 line-clamp-2 break-all text-body-1-med">{communityDetails.description}</p>
+                <ReadMore.default text={communityDetails.description} maxChars={150} className="mb-2" />
               )}
               <Stats communityDetails={communityDetails} />
               <CommunityDetailsTabs communityDetails={communityDetails} />

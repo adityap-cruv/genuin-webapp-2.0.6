@@ -29,6 +29,7 @@ import Analytics from '@services/analytics'
 import { joinAsCollaboratorDeepLink, subscribeDeepLink } from '@/lib/get-deeplink'
 import { SubscribedBellIcon } from '@icons/subscribed-bell-icon'
 import { BellIcon } from 'lucide-react'
+import { ReadMore } from '@/components/common/read-more'
 
 let loopDetailsModule: LoopDetailsType
 
@@ -114,9 +115,11 @@ export function MainComponent({ loopDetails }: Props) {
               actionId={loopDetails?.actions?.[0]?.action_id ?? 0}
               accessTypeId={loopDetails?.actions?.[0]?.access_type_id ?? 0}
             />
-            <p className="my-2 line-clamp-2 break-words text-title-3-demi text-secondary">
-              {loopDetails.group.group_description}
-            </p>
+            <ReadMore.default
+              text={loopDetails.group.group_description}
+              maxChars={150}
+              className="my-2 break-words text-title-3-demi text-secondary"
+            />
           </div>
           <div className=" my-3 overflow-hidden rounded-lg border border-solid border-tertiary-200 p-4">
             <div className="flex gap-x-2">

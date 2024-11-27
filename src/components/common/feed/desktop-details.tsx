@@ -39,7 +39,7 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
 
   return (
     <div className="relative h-full w-1 flex-1 bg-monochrome-white pb-16 pl-2">
-      <div className="border-b border-tertiary-200 p-4">
+      <div className="p-4">
         <span className="flex items-center gap-x-2">
           <CustomAvatar
             isAvatar={owner.isAvatar}
@@ -69,9 +69,17 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
       </div>
       <div ref={scrollDivRef} className="flex h-full flex-col overflow-auto overflow-x-clip">
         {Array.isArray(video.descriptionArr) ? (
-          <ReadMore.withMention textArr={video.descriptionArr} />
+          <ReadMore.withMention
+            textArr={video.descriptionArr}
+            maxChars={150}
+            className="border-b border-tertiary-200 p-4 pt-0"
+          />
         ) : (
-          <ReadMore.default text={video.descriptionText} />
+          <ReadMore.default
+            text={video.descriptionText}
+            maxChars={150}
+            className="border-b border-tertiary-200 p-4 pt-0"
+          />
         )}
         <div className="border-b border-tertiary-200 p-4">
           <p className="text-title-3-bold">Posted in</p>
@@ -332,9 +340,9 @@ function CommentInput({
 
               <button
                 onClick={handleClick}
-                disabled={currentComment.length === 0}
+                disabled={currentComment.trim().length === 0}
                 className={`absolute right-4 text-body-1-bold ${
-                  currentComment.length === 0 ? 'text-primary-600' : 'text-primary'
+                  currentComment.trim().length === 0 ? 'text-primary-600' : 'text-primary'
                 }`}>
                 Post
               </button>
