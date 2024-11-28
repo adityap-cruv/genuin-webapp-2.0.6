@@ -45,6 +45,8 @@ type MobileProps = {
   }
   clickableUrl: string | null
   linkouts?: LinkoutsType
+  showMore?: boolean
+  setShowMore?: (showMore: boolean) => void
 }
 
 export const Mobile = memo(function Mobile({ clickableUrl, ...props }: MobileProps) {
@@ -135,6 +137,8 @@ function Details({
   linkoutId,
   isSparked,
   linkouts,
+  showMore,
+  setShowMore,
 }: MobileProps) {
   const [isVisible, setIsVisible] = useState(false)
   const detailsId = useId()
@@ -168,8 +172,12 @@ function Details({
 
   return (
     <div className={cn('absolute bottom-16 left-0 flex w-full justify-between px-2 transition-all')}>
-      <div id={detailsId} className="relative flex w-4/5 flex-col justify-end">
-        <div className="z-10 mb-2 flex items-center">
+      <div id={detailsId} className="relative flex w-[85%] flex-col justify-end">
+        <div
+          className="z-10 mb-2 flex items-center"
+          onClick={(e) => {
+            e.stopPropagation()
+          }}>
           {owner.brand ? (
             <div className="flex items-center">
               <Link
@@ -207,7 +215,9 @@ function Details({
             <ReadMore.withMention
               textArr={descriptionArr}
               maxChars={150}
-              className="w-full break-all text-body-1-demi text-monochrome-white"
+              className="w-full !break-words text-body-1-demi text-monochrome-white"
+              showMore={showMore}
+              setShowMore={setShowMore}
             />
           </span>
         )}
