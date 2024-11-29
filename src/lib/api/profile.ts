@@ -154,7 +154,7 @@ export async function fetchProfileFeed(userId: string, pageParam?: { lastMessage
       const resData = res.data.data
       console.log('ResData:', resData)
       pageSession = resData.page_session
-      return { feed: parseFeedResponse(resData.feeds), end: resData.end_of_messages }
+      return { feed: parseFeedResponse(resData.feeds), end: resData.end_of_feed }
     })
     .catch((e) => {
       // eslint-disable-next-line no-console
