@@ -1,4 +1,4 @@
-import { useEffect, useState, type ComponentProps } from 'react'
+import React, { useEffect, useState, type ComponentProps } from 'react'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import Link from 'next/link'
 import { cn } from '@lib/utils'
@@ -70,11 +70,24 @@ type WithMentionsProps = {
         | { url: string; text: string }
       >
     | string
+  showMore?: boolean
+  setShowMore?: (showMore: boolean) => void
 } & Omit<Props, 'text'>
 
-export function WithMentions({ textArr, maxChars = 50, className, ...props }: WithMentionsProps) {
+export function WithMentions({
+  textArr,
+  maxChars = 50,
+  className,
+  showMore: externalShowMore,
+  setShowMore: externalSetShowMore,
+  ...props
+}: WithMentionsProps) {
   if (typeof textArr === 'string') return <WithoutMentions text={textArr} {...props} />
-  const [showMore, setShowMore] = useState(true)
+  const [internalShowMore, setInternalShowMore] = useState(true)
+  // Use the external state if provided, otherwise fallback to internal state
+  const showMore = externalShowMore ?? internalShowMore
+  const setShowMore = externalSetShowMore ?? setInternalShowMore
+
   const [processedComponent, setProcessedComponent] = useState<Array<string | JSX.Element>>([])
 
   useEffect(() => {
@@ -83,20 +96,20 @@ export function WithMentions({ textArr, maxChars = 50, className, ...props }: Wi
         key="show-more"
         onClick={(e) => {
           e.stopPropagation()
-          if (showMore) setShowMore(false)
+          setShowMore(false)
         }}
-        className="hidden cursor-pointer pl-1 text-tertiary sm:block">
+        className="cursor-pointer pl-1 text-tertiary">
         (View more)
       </span>
     )
     const SHOW_LESS_BUTTON = (
       <span
         key="show-less"
-        className="hidden cursor-pointer pl-1 text-tertiary sm:block"
         onClick={(e) => {
           e.stopPropagation()
-          setShowMore(!showMore)
-        }}>
+          setShowMore(true)
+        }}
+        className="cursor-pointer pl-1 text-tertiary">
         (View less)
       </span>
     )
@@ -113,34 +126,37 @@ export function WithMentions({ textArr, maxChars = 50, className, ...props }: Wi
           break
         }
         if (typeof item === 'string') {
-          if (limit > item.length) {
+          if (item.length <= limit) {
             newArr.push(item)
             limit -= item.length
           } else {
-            if (i === textArr.length - 1) {
-              if (item.length - limit === 0) {
-                newArr.push(item)
-              } else {
-                newArr.push(item.slice(0, limit) + '...')
-                newArr.push(SHOW_MORE_BUTTON)
-              }
-            } else {
-              newArr.push(item.slice(0, limit) + '...')
-              newArr.push(SHOW_MORE_BUTTON)
-            }
-            limit = 0
+            newArr.push(item.slice(0, limit) + '...')
+            newArr.push(SHOW_MORE_BUTTON)
             break
           }
         } else if (isMemberItem(item)) {
           newArr.push(
-            <Link key={i} href={PATH_NAME.profile(item.text.slice(1))} className="text-primary">
+            <Link
+              onClick={(e) => {
+                e.stopPropagation()
+              }}
+              key={i}
+              href={PATH_NAME.profile(item.text.slice(1))}
+              className="text-primary">
               {item.text}
             </Link>
           )
           limit -= item.text.length
         } else if (isUrlItem(item)) {
           newArr.push(
-            <Link key={i} href={item.url} className="text-primary" target="_blank">
+            <Link
+              onClick={(e) => {
+                e.stopPropagation()
+              }}
+              key={i}
+              href={item.url}
+              className="text-primary"
+              target="_blank">
               {item.text}
             </Link>
           )
@@ -148,34 +164,64 @@ export function WithMentions({ textArr, maxChars = 50, className, ...props }: Wi
         }
       }
     } else {
-      textArr.forEach((item) => {
+      textArr.forEach((item, index) => {
         if (typeof item === 'string') {
           newArr.push(item)
           limit -= item.length
-        } else {
-          if (Object.keys(item).includes('member_id')) {
-            newArr.push(
-              <Link href={PATH_NAME.profile(item.text.slice(1))} className="text-primary">
-                {item.text}
-              </Link>
-            )
-          } else {
-            newArr.push(item.text)
-          }
+        } else if (isMemberItem(item)) {
+          newArr.push(
+            <Link
+              onClick={(e) => {
+                e.stopPropagation()
+              }}
+              key={`member-${index}`}
+              href={PATH_NAME.profile(item.text.slice(1))}
+              className="text-primary">
+              {item.text}
+            </Link>
+          )
+          limit -= item.text.length
+        } else if (isUrlItem(item)) {
+          newArr.push(
+            <Link
+              onClick={(e) => {
+                e.stopPropagation()
+              }}
+              key={`url-${index}`}
+              href={item.url}
+              className="text-primary"
+              target="_blank">
+              {item.text}
+            </Link>
+          )
           limit -= item.text.length
         }
       })
       if (limit < 0) {
         newArr.push(SHOW_LESS_BUTTON)
       }
-      console.log(limit)
     }
 
     if (newArr) setProcessedComponent(newArr)
   }, [textArr, showMore, maxChars])
 
   return (
-    <p className={cn('', className)} {...props}>
+    <p
+      className={cn(
+        `hide-scrollbar max-h-60 overflow-auto sm:max-h-full sm:overflow-clip ${!showMore && 'swiper-no-swiping'}`,
+        className
+      )}
+      onClick={(e) => {
+        e.stopPropagation()
+        // Only toggle if the "View More" or "View Less" button is present
+        const hasToggleButton = processedComponent.some(
+          (item) => React.isValidElement(item) && (item.key === 'show-more' || item.key === 'show-less')
+        )
+        if (hasToggleButton) {
+          setShowMore(!showMore)
+        }
+      }}
+      {...props}>
       {processedComponent}
     </p>
   )
