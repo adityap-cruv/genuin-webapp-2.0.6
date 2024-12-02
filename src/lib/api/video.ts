@@ -6,10 +6,20 @@ import { tryJsonParse } from '@lib/utils'
 
 export async function getVideoDetails(slug: string): Promise<VideoPlayerModalType> {
   const metadata = await fetchVideoMetadata(slug)
+
+  if (!metadata?.chat_id) {
+    throw new Error(`Invalid metadata for slug: ${slug}`)
+  }
+
   const [loopDetails, videoDetails] = await Promise.all([
-    await fetchLoopDetails(metadata.chat_id),
-    await fetchLoopVideo(metadata.chat_id, metadata.message_id),
+    fetchLoopDetails(metadata.chat_id),
+    fetchLoopVideo(metadata.chat_id, metadata.message_id),
   ])
+
+  if (!loopDetails || !videoDetails) {
+    throw new Error('Failed to fetch loop details or video details.')
+  }
+
   return {
     community: {
       handle: loopDetails.community.handle,
