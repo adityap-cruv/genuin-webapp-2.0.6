@@ -2,7 +2,6 @@ import { cn } from '@lib/utils'
 import { type Viewport } from 'next'
 import { type ComponentProps, type ReactNode } from 'react'
 import { RedirectToHTTPS } from './redirect-to-https'
-import { LogRockerInitializer } from './logrocket-initializer'
 
 type Props = ComponentProps<'body'> & {
   brandColors?: any
@@ -30,13 +29,9 @@ export function RootHTML({
         <meta rel="x-brand-id" content={subdomain} />
         {noIndex && <meta name="robots" content="noindex" />}
       </head>
-      <body
-        style={{ ...brandColors, ...style }}
-        className={cn('h-screen w-full text-secondary', className)}
-        {...props}>
+      <body style={{ ...brandColors, ...style }} className={cn('h-screen w-full text-secondary', className)} {...props}>
         {children}
         <RedirectToHTTPS />
-        <LogRockerInitializer />
       </body>
     </html>
   )
