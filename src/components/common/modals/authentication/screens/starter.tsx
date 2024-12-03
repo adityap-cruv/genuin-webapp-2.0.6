@@ -185,9 +185,11 @@ function NumberForm({ onNext }: { onNext: () => void }) {
 
   useEffect(() => {
     return () => {
-      setFormData({ phoneNumber: '' })
+      if (!isValidPhoneNumber(form.getValues().phone)) {
+        setFormData({ phoneNumber: '' })
+      }
     }
-  }, [])
+  }, [form])
 
   return (
     <Form {...form}>
@@ -204,6 +206,7 @@ function NumberForm({ onNext }: { onNext: () => void }) {
                     international
                     className="w-full"
                     onChange={(value) => {
+                      form.setValue('phone', value)
                       setFormData({ phoneNumber: value })
                     }}
                   />
