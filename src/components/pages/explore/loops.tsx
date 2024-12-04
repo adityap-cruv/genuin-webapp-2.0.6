@@ -44,7 +44,7 @@ export function Loops() {
                 latestMessageAt={item.latest_message_at ?? ''}
                 name={item.group.group_name ?? ''}
                 onClickOnImage={() => {}}
-                linkOnImage={{ pathname: PATH_NAME.video(item.latest_messages[0].slug) }}
+                linkOnImage={{ pathname: PATH_NAME.video(item.latest_messages[0]?.slug) }}
                 viewCount={item.group.no_of_views}
                 noOfVideos={item.group.no_of_videos}
               />
