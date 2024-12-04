@@ -61,7 +61,7 @@ function Component({
           isViewAllowed={item.is_view_allowed}
           latestMessages={item.latest_messages.map((item) => ({
             owner: { userName: item.owner.username },
-            thumbnail: item.thumbnail_url_m ? item.thumbnail_url_m : (item.thumbnail_url_l ?? item.thumbnail_url ?? ''),
+            thumbnail: item.thumbnail_url_m ? item.thumbnail_url_m : item.thumbnail_url_l ?? item.thumbnail_url ?? '',
             createdAt: item.message_at ?? '',
           }))}
           loopSlug={item.slug}
@@ -87,19 +87,17 @@ function Component({
           noOfVideos={item.group.no_of_videos}
         />
       ))}
-      {modalController.loop && (
-        <PlayerModalWrapper
-          unreadMessageCount={getUnreadMessageCount(modalController.loop.id)}
-          open={modalController.open}
-          slug={modalController.loop.slug}
-          close={() => {
-            setModalController((x) => {
-              x.open = false
-              return { ...x }
-            })
-          }}
-        />
-      )}
+      <PlayerModalWrapper
+        unreadMessageCount={2}
+        open={modalController.open}
+        slug={modalController.loop ? modalController.loop.slug : ''}
+        close={() => {
+          setModalController((x) => {
+            x.open = false
+            return { ...x }
+          })
+        }}
+      />
     </>
   )
 }
