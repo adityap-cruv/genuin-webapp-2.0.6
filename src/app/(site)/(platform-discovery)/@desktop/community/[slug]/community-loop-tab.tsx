@@ -87,17 +87,19 @@ function Component({
           noOfVideos={item.group.no_of_videos}
         />
       ))}
-      <PlayerModalWrapper
-        unreadMessageCount={2}
-        open={modalController.open}
-        slug={modalController.loop ? modalController.loop.slug : ''}
-        close={() => {
-          setModalController((x) => {
-            x.open = false
-            return { ...x }
-          })
-        }}
-      />
+      {modalController.loop && (
+        <PlayerModalWrapper
+          unreadMessageCount={getUnreadMessageCount(modalController.loop.id)}
+          open={modalController.open}
+          slug={modalController.loop.slug}
+          close={() => {
+            setModalController((x) => {
+              x.open = false
+              return { ...x }
+            })
+          }}
+        />
+      )}
     </>
   )
 }
