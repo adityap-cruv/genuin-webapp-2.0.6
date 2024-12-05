@@ -222,7 +222,7 @@ function Menu({
           <hr className="border-1 my-2 border-monochrome-black/10" />
         )}
         <DownloadAppDialog />
-        {status === 'unauthenticated' && embed && (
+        {isClaimed && status === 'unauthenticated' && embed && (
           <div
             className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10"
             onClick={() => {
@@ -232,7 +232,7 @@ function Menu({
             <p className={cn('whitespace-nowrap !text-title-3-demi text-primary')}>Log in</p>
           </div>
         )}
-        {!isClaimed && user && (
+        {!isClaimed && (
           <div
             className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10"
             onClick={() => {

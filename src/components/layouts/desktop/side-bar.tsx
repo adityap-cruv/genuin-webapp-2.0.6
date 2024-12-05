@@ -114,30 +114,36 @@ export function SideBar() {
             <hr className="border-1 my-2 border-monochrome-black/10" />
           )}
           <DownloadAppDialog />
-          {status === 'unauthenticated' && embed && (
-            <div
-              className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10"
-              onClick={() => {
-                AuthenticationModal.open()
-              }}>
-              <LoginIcon className="stroke-primary" />
-              <p className={cn('hidden whitespace-nowrap !text-title-3-demi text-primary xl:block')}>Log in</p>
-            </div>
+          {isClaimed && status === 'unauthenticated' && embed && (
+            <>
+              <div
+                className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10"
+                onClick={() => {
+                  AuthenticationModal.open()
+                }}>
+                <LoginIcon className="stroke-primary" />
+                <p className={cn('hidden whitespace-nowrap !text-title-3-demi text-primary xl:block')}>Log in</p>
+              </div>
+              <hr className="border-1 my-2 border-monochrome-black/10" />
+            </>
           )}
-          {!isClaimed && user && (
-            <div
-              className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10"
-              onClick={() => {
-                AuthenticationModal.open(undefined, 'CLAIM_BRAND_PROFILE')
-              }}>
-              <VerifiedIcon className="stroke-primary" />
-              <p className={cn('hidden whitespace-nowrap !text-title-3-demi text-primary xl:block')}>
-                Claim Brand Profile
-              </p>
-            </div>
+          {!isClaimed && (
+            <>
+              <div
+                className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10"
+                onClick={() => {
+                  AuthenticationModal.open(undefined, 'CLAIM_BRAND_PROFILE')
+                }}>
+                <VerifiedIcon className="stroke-primary" />
+                <p className={cn('hidden whitespace-nowrap !text-title-3-demi text-primary xl:block')}>
+                  Claim Brand Profile
+                </p>
+              </div>
+              <hr className="border-1 my-2 border-monochrome-black/10" />
+            </>
           )}
         </span>{' '}
-        {(!isClaimed || user?.ksCbRequestStatus !== 3) && <hr className="border-1 my-2 border-monochrome-black/10" />}
+        {/* {(!isClaimed || user?.ksCbRequestStatus !== 3) && <hr className="border-1 my-2 border-monochrome-black/10" />} */}
         {user?.ksCbRequestStatus !== 3 && <BecomeCbCard className="my-4 hidden xl:block" />}
         <CategoryViewDynamic className="hidden xl:block" />
         <RecentCommunities />

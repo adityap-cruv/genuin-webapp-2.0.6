@@ -79,7 +79,11 @@ export function Desktop({
   return (
     <CustomDialog open={open}>
       <CustomDialogTrigger>{children}</CustomDialogTrigger>
-      <CustomDialogContent showDefaultClose={false}>
+      <CustomDialogContent
+        onCloseAutoFocus={(e) => {
+          e.preventDefault()
+        }}
+        showDefaultClose={false}>
         <span className="relative flex items-center gap-x-6">
           <div
             style={{ height: sizeBox.modal.height, width: sizeBox.modal.width }}

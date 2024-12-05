@@ -49,6 +49,8 @@ export async function middleware(request: NextRequest) {
       // hard coding for buzz skyscape brand
       if (Number(config?.brand_id) === 2023) {
         return NextResponse.rewrite(new URL('/.well-known/skyscape/apple-app-site-association', request.url))
+      } else if (Number(config?.brand_id) === 2075) {
+        return NextResponse.rewrite(new URL('/.well-known/carsome/apple-app-site-association', request.url))
       } else {
         return NextResponse.next()
       }

@@ -84,7 +84,11 @@ export function Mobile({
   return (
     <CustomDialog open={open}>
       <CustomDialogTrigger>{children}</CustomDialogTrigger>
-      <CustomDialogContent showDefaultClose={false}>
+      <CustomDialogContent
+        onCloseAutoFocus={(e) => {
+          e.preventDefault()
+        }}
+        showDefaultClose={false}>
         <div className="relative h-full w-full overflow-clip bg-monochrome-white">
           <TopBar showClose className="fixed left-0 top-0" variant="transparent" onClose={close} />
           {/* Please done modify below condition to  unreadMessageCount && unreadMessageCount !== 0,
