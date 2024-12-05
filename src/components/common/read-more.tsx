@@ -116,6 +116,7 @@ export function WithMentions({
     let limit = maxChars
     // Type guards for identifying the specific shape of the item
     const isMemberItem = (item: any): item is { member_id: string; text: string } => 'member_id' in item
+    const isCommunityItem = (item: any): item is { community_id: string; text: string } => 'community_id' in item
     const isUrlItem = (item: any): item is { url: string; text: string } => 'url' in item
 
     const newArr: Array<string | JSX.Element> = []
@@ -141,7 +142,20 @@ export function WithMentions({
                 e.stopPropagation()
               }}
               key={i}
-              href={PATH_NAME.profile(item.text.slice(1))}
+              href={PATH_NAME.profile(item.text.slice(1)) ?? ''}
+              className="text-primary">
+              {item.text}
+            </Link>
+          )
+          limit -= item?.text.length ?? 0
+        } else if (isCommunityItem(item)) {
+          newArr.push(
+            <Link
+              onClick={(e) => {
+                e.stopPropagation()
+              }}
+              key={i}
+              href={PATH_NAME.community(item.text) ?? ''}
               className="text-primary">
               {item.text}
             </Link>
@@ -176,6 +190,19 @@ export function WithMentions({
               }}
               key={`member-${index}`}
               href={PATH_NAME.profile(item.text.slice(1))}
+              className="text-primary">
+              {item.text}
+            </Link>
+          )
+          limit -= item?.text.length ?? 0
+        } else if (isCommunityItem(item)) {
+          newArr.push(
+            <Link
+              onClick={(e) => {
+                e.stopPropagation()
+              }}
+              key={index}
+              href={PATH_NAME.community(item.text) ?? ''}
               className="text-primary">
               {item.text}
             </Link>
