@@ -24,13 +24,6 @@ export function NotificationLayout() {
     user: state.user,
     setInitialData: state.setData,
   }))
-  const router = useRouter()
-
-  useEffect(() => {
-    if (!user) {
-      router.push(PATH_NAME.home())
-    }
-  }, [user, router])
 
   async function fetchNotificationCount() {
     const { status, count } = await notificationsCount()
