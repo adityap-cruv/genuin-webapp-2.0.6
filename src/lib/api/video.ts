@@ -192,7 +192,13 @@ export async function leaveCommunity(communityId: string | undefined) {
     })
 }
 
-export async function createComment(videoId: string, loopId: string, type: number, commentText: string) {
+export async function createComment(
+  videoId: string,
+  loopId: string,
+  type: number,
+  commentText: string,
+  commentData: any
+) {
   return await axiosInstance
     .post(
       '/api/v3/comment/create',
@@ -201,7 +207,7 @@ export async function createComment(videoId: string, loopId: string, type: numbe
         chat_id: loopId,
         type,
         comment_text: commentText,
-        comment_data: JSON.stringify([commentText]),
+        comment_data: JSON.stringify(commentData),
       },
       {
         headers: {
@@ -213,6 +219,22 @@ export async function createComment(videoId: string, loopId: string, type: numbe
       return { code: res.status, data: res.data.data }
     })
     .catch((e) => {
-      return { code: Number(e.response.data.code) }
+      return { code: Number(e.response.data.code), data: null }
+    })
+}
+
+export async function mentionUser(chatId: string, queryString: string) {
+  return await axiosInstance
+    .get('/api/v3/mentions', {
+      params: {
+        query_string: queryString,
+        chat_id: chatId,
+      },
+    })
+    .then((res) => {
+      return { code: res.status, data: res.data.data }
+    })
+    .catch((e) => {
+      return { code: Number(e.response.data.code), data: [] }
     })
 }
