@@ -16,7 +16,7 @@ export default function EmptyView({ type }: Props) {
     <main className="h-full w-full p-4">
       <div
         className="flex h-full w-full flex-col items-center justify-evenly rounded-2xl bg-cover bg-center bg-no-repeat xl:py-10"
-        style={{ backgroundImage: `url(${errorBg.src})` }}>
+        style={{ background: '#FAFAFA' }}>
         <span>
           <p
             className="text-center"
