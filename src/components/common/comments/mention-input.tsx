@@ -151,7 +151,7 @@ const MentionInput: React.FC<{
     debounce(async () => {
       try {
         const response = await mentionUser(videoId, query)
-        if (response?.code === 200 && response.data.length !== 0) {
+        if (response?.code === 200 && response.data.length !== 0 && !isMentioning) {
           setFilteredMentions(response.data)
           setIsMentioning(true)
         }
