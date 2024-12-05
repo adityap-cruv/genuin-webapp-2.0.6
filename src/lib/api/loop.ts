@@ -24,7 +24,7 @@ export async function fetchLoopDetails(slug: string) {
 export function getLoopDetails(slug: string) {
   return useQuery({
     queryKey: ['loop', 'details', slug],
-    queryFn: () => fetchLoopDetails(slug),
+    queryFn: async () => await fetchLoopDetails(slug),
   })
 }
 

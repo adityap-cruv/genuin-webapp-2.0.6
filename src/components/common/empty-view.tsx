@@ -1,5 +1,4 @@
 'use client'
-import errorBg from '@images/error/errorDesktop.svg'
 import imgPuppet from '@images/not-found/puppet.svg'
 import Image from 'next/image'
 import Link from 'next/link'

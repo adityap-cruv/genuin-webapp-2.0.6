@@ -1,5 +1,4 @@
 'use client'
-import errorBg from '@images/error/errorDesktop.svg'
 import imgPuppet from '@images/not-found/puppet.svg'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -11,14 +10,14 @@ export default function Error() {
     <main className="h-full w-full p-4">
       <div
         className="flex h-full w-full flex-col items-center justify-evenly rounded-2xl bg-cover bg-center bg-no-repeat xl:py-10"
-        style={{ backgroundImage: `url(${errorBg.src})` }}>
+        style={{ background: '#FAFAFA' }}>
         <span>
           <p
             className="text-center"
             style={{ fontSize: '48px', lineHeight: '110%', fontWeight: 700, letterSpacing: '-0.96px' }}>
-            Oops! Something <br /> went wrong.
+            There seems to be an issue on our end.
           </p>
-          <p className="pt-4 text-center text-title-3-med">Our team is trying to resolve the issue.</p>
+          <p className="pt-4 text-center text-title-3-med">Our team is working to resolve it as quickly as possible.</p>
         </span>
         <Image src={imgPuppet} alt="" className="h-auto w-32" />
         <Link href={PATH_NAME.home()}>
