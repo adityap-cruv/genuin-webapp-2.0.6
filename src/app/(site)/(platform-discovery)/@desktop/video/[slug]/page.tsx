@@ -16,13 +16,16 @@ type PageProps = {
 }
 
 export default async function Component({ params, searchParams }: PageProps) {
-  const videoDetails = await getVideoDetails(params.slug)
-
-  return (
-    <main className="h-full w-full">
-      <Root videoDetails={videoDetails} />
-    </main>
-  )
+  try {
+    const videoDetails = await getVideoDetails(params.slug)
+    return (
+      <main className="h-full w-full">
+        <Root videoDetails={videoDetails} />
+      </main>
+    )
+  } catch (error) {
+    console.log('JIMIT:', error)
+  }
 }
 
 type VideoDataType = {

@@ -3,10 +3,11 @@ import { axiosInstance } from './instance'
 import { type LoopVideoType } from '@lib/schemas/loop/videos'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import { tryJsonParse } from '@lib/utils'
+import { NOT_FOUND_ERROR_CODES } from '../constants'
 
 export async function getVideoDetails(slug: string): Promise<VideoPlayerModalType> {
   const metadata = await fetchVideoMetadata(slug)
-
+  console.log('Meta:', metadata)
   if (!metadata?.chat_id) {
     throw new Error(`Invalid metadata for slug: ${slug}`)
   }
@@ -118,7 +119,10 @@ export async function fetchVideoMetadata(videoSlug: string) {
     })
     .catch((e) => {
       // eslint-disable-next-line no-console
-      console.log('error in deep_link/meta_data::', e)
+      console.log('error in deep_link/meta_data::', e.response.data)
+      if (e.response.data.code === NOT_FOUND_ERROR_CODES.video) {
+        throw new Error(e.response.data.code)
+      }
     })
 }
 

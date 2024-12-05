@@ -5,6 +5,7 @@ import { axiosInstance } from './instance'
 import { validateLoopCohosts } from '@lib/schemas/loop/cohosts'
 import { validateLoopSubscribers } from '@lib/schemas/loop/subscribers'
 import { parseFeedResponseFromGoApi } from './api-response-parser'
+import { NOT_FOUND_ERROR_CODES } from '../constants'
 
 export async function fetchLoopDetails(slug: string) {
   return await axiosInstance
@@ -15,6 +16,9 @@ export async function fetchLoopDetails(slug: string) {
       return res?.data?.data
     })
     .catch((e) => {
+      if (e.response.data.code === NOT_FOUND_ERROR_CODES.group) {
+        throw new Error(e.response.data.code)
+      }
       throw new Error('Something went wrong!!')
     })
 }

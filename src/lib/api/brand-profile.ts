@@ -8,6 +8,7 @@ import {
   parseProfileVideoResponse,
 } from './api-response-parser'
 import { axiosInstance } from './instance'
+import { NOT_FOUND_ERROR_CODES } from '../constants'
 
 type Headers = Record<string, string>
 export async function fetchBrandData(slug: string, headers?: Headers) {
@@ -28,6 +29,9 @@ export async function fetchBrandData(slug: string, headers?: Headers) {
       return validateProfileDetails(res.data.data)
     })
     .catch((e) => {
+      if (e.response.data.code === NOT_FOUND_ERROR_CODES.brand) {
+        throw new Error(e.response.data.code)
+      }
       throw new Error('Something went wrong in profile details api.')
     })
 }
