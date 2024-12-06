@@ -1,0 +1,9 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.begenuin.tubitv",
+    "sha256_cert_fingerprints":
+    ["36:10:4F:67:BA:3A:BB:72:8E:D8:83:03:C1:D4:EC:A8:01:93:C9:0F:19:8E:CF:B4:73:F4:A8:18:90:0F:86:58","D6:41:40:CC:F4:76:D0:8E:CA:42:73:39:8B:B7:E5:BE:7D:96:9E:CD:3E:77:42:88:17:4F:D0:4E:11:A8:92:34"]
+  }
+}]
