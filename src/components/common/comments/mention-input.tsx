@@ -154,9 +154,14 @@ const MentionInput: React.FC<{
     debounce(async () => {
       try {
         const response = await mentionUser(videoId, query)
-        if (response?.code === 200 && response.data.length !== 0 && shouldOpenRef.current) {
-          setFilteredMentions(response.data)
-          setIsMentioning(true)
+        if (response?.code === 200 && shouldOpenRef.current) {
+          if (response.data.length !== 0) {
+            setFilteredMentions(response.data)
+            setIsMentioning(true)
+          } else {
+            setFilteredMentions([])
+            setIsMentioning(false)
+          }
         }
       } catch (error) {
         console.error('Error fetching mentions', error)
@@ -205,7 +210,7 @@ const MentionInput: React.FC<{
       {isMentioning && (
         <div
           ref={mentionListRef}
-          className="absolute bottom-16 left-0 flex max-h-60 w-full flex-col gap-1 overflow-hidden overflow-y-scroll rounded-t-2xl bg-monochrome-white p-3"
+          className="absolute bottom-16 left-0 z-50 flex max-h-60 w-full flex-col gap-1 overflow-hidden overflow-y-scroll rounded-t-2xl bg-monochrome-white p-3"
           style={{ boxShadow: '0px -4px 11.7px 0px rgba(0, 0, 0, 0.08)' }}>
           {filteredMentions.length > 0 &&
             filteredMentions.map((mention: any) => {
