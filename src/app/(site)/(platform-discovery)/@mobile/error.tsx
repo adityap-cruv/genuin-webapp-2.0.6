@@ -22,7 +22,9 @@ export default function Error() {
               style={{ fontSize: '32px', fontWeight: 700, letterSpacing: '-0.96px', lineHeight: '110%' }}>
               There seems to be an issue on our end.
             </p>
-            <p className="pt-3 text-body-1-med">Our team is working to resolve it as quickly as possible.</p>
+            <p className="pt-3 text-center text-body-1-med">
+              Our team is working to resolve it as quickly as possible.
+            </p>
           </span>
           <Image src={imgPuppet} className="h-auto w-32" alt="" />
           <Link href={PATH_NAME.home()}>
