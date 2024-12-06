@@ -50,7 +50,14 @@ export async function middleware(request: NextRequest) {
       if (Number(config?.brand_id) === 2023) {
         return NextResponse.rewrite(new URL('/.well-known/skyscape/apple-app-site-association', request.url))
       } else if (Number(config?.brand_id) === 2075) {
+        // hard coding for carsome
         return NextResponse.rewrite(new URL('/.well-known/carsome/apple-app-site-association', request.url))
+      } else if (Number(config?.brand_id) === 2208) {
+        // hard coding for tubitv
+        return NextResponse.rewrite(new URL('/.well-known/tubitv/apple-app-site-association', request.url))
+      } else if (Number(config?.brand_id) === 2210) {
+        // hard coding for amexbgt
+        return NextResponse.rewrite(new URL('/.well-known/amexbgt/apple-app-site-association', request.url))
       } else {
         return NextResponse.next()
       }
@@ -67,6 +74,9 @@ export async function middleware(request: NextRequest) {
       // hard coding for buzz skyscape brand
       if (Number(config?.brand_id) === 2023) {
         return NextResponse.rewrite(new URL('/.well-known/skyscape/assetlinks.json', request.url))
+      } else if (Number(config?.brand_id) === 2208) {
+        // hard coding for tubitv
+        return NextResponse.rewrite(new URL('/.well-known/tubitv/assetlinks.json', request.url))
       } else {
         return NextResponse.next()
       }
@@ -90,8 +100,8 @@ export async function middleware(request: NextRequest) {
   if (browserType) request.cookies.set('browser_type', browserType)
 
   if (host) {
-    // const config = getConfig(host)
-    const config = getConfig('ankpal.qa.begenuin.com')
+    const config = getConfig(host)
+    // const config = getConfig('ankpal.qa.begenuin.com')
     if (config) request.cookies.set('config_params', JSON.stringify(config))
     const urlObj = new URL(request.url)
     // eslint-disable-next-line no-prototype-builtins

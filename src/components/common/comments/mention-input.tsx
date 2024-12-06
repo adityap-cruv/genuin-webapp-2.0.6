@@ -31,6 +31,7 @@ const MentionInput: React.FC<{
   const mentionListRef = useRef<any>(null)
   const textareaRef = useRef<any>(null)
   const debounceTimer = useRef<NodeJS.Timeout | null>(null)
+  const shouldOpenRef = useRef(false)
   const REGEX_FOR_URLS = /(?:https?:\/\/)?(?:www\.)?[\w-]+(\.[\w-]+)+(\/[^\s]*)?/g
 
   const postComment = async () => {
@@ -89,9 +90,11 @@ const MentionInput: React.FC<{
     const urlMatches = value.match(REGEX_FOR_URLS)
 
     if (mentionMatch) {
+      shouldOpenRef.current = true
       setMentionQuery(mentionMatch[1])
       handleMentionSearch(mentionMatch[1])
     } else {
+      shouldOpenRef.current = false
       setIsMentioning(false)
       setMentionQuery('')
     }
@@ -151,7 +154,7 @@ const MentionInput: React.FC<{
     debounce(async () => {
       try {
         const response = await mentionUser(videoId, query)
-        if (response?.code === 200 && response.data.length !== 0) {
+        if (response?.code === 200 && response.data.length !== 0 && shouldOpenRef.current) {
           setFilteredMentions(response.data)
           setIsMentioning(true)
         }
