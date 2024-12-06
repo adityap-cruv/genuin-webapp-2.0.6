@@ -8,19 +8,17 @@ import { parseFeedResponseFromGoApi } from './api-response-parser'
 import { NOT_FOUND_ERROR_CODES } from '../constants'
 
 export async function fetchLoopDetails(slug: string) {
-  return await axiosInstance
-    .get('/api/v3/conversation/details', {
+  try {
+    const response = await axiosInstance.get('/api/v3/conversation/details', {
       params: { slug },
     })
-    .then((res) => {
-      return res?.data?.data
-    })
-    .catch((e) => {
-      if (e.response.data.code === NOT_FOUND_ERROR_CODES.group) {
-        throw new Error(e.response.data.code)
-      }
-      throw new Error('Something went wrong!!')
-    })
+    return response?.data?.data
+  } catch (error: any) {
+    if (error.response?.data?.code === NOT_FOUND_ERROR_CODES.group) {
+      throw new Error(NOT_FOUND_ERROR_CODES.group)
+    }
+    throw new Error('Something went wrong!!')
+  }
 }
 
 export function getLoopDetails(slug: string) {

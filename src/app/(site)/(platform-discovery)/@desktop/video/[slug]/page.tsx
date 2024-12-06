@@ -3,6 +3,8 @@ import { Root } from './root'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { fetchMetadata } from '@lib/api/meta-data'
 import { getVideoDetails } from '@lib/api/video'
+import EmptyView from '@/components/common/empty-view'
+import { NOT_FOUND_ERROR_CODES } from '@/lib/constants'
 
 type PageProps = {
   params: {
@@ -24,7 +26,11 @@ export default async function Component({ params, searchParams }: PageProps) {
       </main>
     )
   } catch (error) {
-    console.log('JIMIT:', error)
+    if ((error as Error).message === NOT_FOUND_ERROR_CODES.video) {
+      return <EmptyView type="video" />
+    } else {
+      throw new Error((error as Error).message)
+    }
   }
 }
 

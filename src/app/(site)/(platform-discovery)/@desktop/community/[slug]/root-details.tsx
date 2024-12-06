@@ -32,11 +32,18 @@ import { CommunityLoopTab } from './community-loop-tab'
 import Loader from './loading'
 import { CustomImage } from '@/components/custom/custom-image'
 import { ReadMore } from '@/components/common/read-more'
+import { NOT_FOUND_ERROR_CODES } from '@/lib/constants'
+import EmptyView from '@/components/common/empty-view'
 
 export function CommunityDetails({ slug }: { slug: string }) {
-  const { data, isLoading } = getCommunityDetails(slug)
+  const { data, isLoading, error } = getCommunityDetails(slug)
 
   if (isLoading) return <Loader />
+  if (error) {
+    if ((error as Error).message === NOT_FOUND_ERROR_CODES.community) {
+      return <EmptyView type="community" />
+    }
+  }
   if (data) return <RootDetails communityDetails={data} />
 }
 
