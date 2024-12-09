@@ -223,13 +223,14 @@ export async function createComment(
     })
 }
 
-export async function mentionUser(chatId: string, queryString: string) {
+export async function mentionUser(chatId: string, queryString: string, signal: AbortSignal) {
   return await axiosInstance
     .get('/api/v3/mentions', {
       params: {
         query_string: queryString,
         chat_id: chatId,
       },
+      signal,
     })
     .then((res) => {
       return { code: res.status, data: res.data.data }

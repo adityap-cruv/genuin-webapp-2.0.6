@@ -32,6 +32,7 @@ const MentionInput: React.FC<{
   const textareaRef = useRef<any>(null)
   const debounceTimer = useRef<NodeJS.Timeout | null>(null)
   const shouldOpenRef = useRef(false)
+  const abortControllerRef = useRef<AbortController | null>(null)
   const REGEX_FOR_URLS = /(?:https?:\/\/)?(?:www\.)?[\w-]+(\.[\w-]+)+(\/[^\s]*)?/g
 
   const postComment = async () => {
@@ -152,8 +153,17 @@ const MentionInput: React.FC<{
 
   const handleMentionSearch = (query: string) => {
     debounce(async () => {
+      // Cancel the previous request if it exists
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort()
+      }
+
+      // Create a new AbortController
+      const controller = new AbortController()
+      abortControllerRef.current = controller
+
       try {
-        const response = await mentionUser(videoId, query)
+        const response = await mentionUser(videoId, query, controller.signal)
         if (response?.code === 200 && shouldOpenRef.current) {
           if (response.data.length !== 0) {
             setFilteredMentions(response.data)

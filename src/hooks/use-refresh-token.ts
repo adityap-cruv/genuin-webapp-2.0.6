@@ -13,6 +13,11 @@ export function useRefreshToken() {
       async (error) => {
         try {
           const prevReq = error.config
+
+          if (error.name === 'CanceledError' || error.code === 'ERR_CANCELED') {
+            return await Promise.reject(error)
+          }
+
           if (error.response.status === 401 && !prevReq.sent) {
             prevReq.sent = true
             const response = await refreshToken()
@@ -28,7 +33,9 @@ export function useRefreshToken() {
           }
         } catch (e) {
           // console.log('error::', e)
-          void signOut()
+          if (error.name !== 'CanceledError' || error.code !== 'ERR_CANCELED') {
+            void signOut()
+          }
         }
         return await Promise.reject(error)
       }
