@@ -6,6 +6,7 @@ import { useGenuinOptions } from '@lib/stores/genuin-options'
 
 export function Layout(props: any) {
   const showNavbar = useGenuinOptions().showNavbar
+
   return (
     <main className="absolute inset-0 flex h-full w-full flex-col items-center overflow-clip">
       {showNavbar && <TopBar />}
@@ -15,7 +16,11 @@ export function Layout(props: any) {
           showNavbar ? 'h-body' : 'h-full'
         )}>
         <SideBar />
-        <section className="relative w-full">{props.children}</section>
+        <section className="relative flex w-full flex-col">{props.children}</section>
+      </section>
+      {/* Green Section */}
+      <section className="text-white absolute bottom-0 left-0 flex h-16 w-full" style={{ background: 'red', zIndex: 100000 }}>
+        Fixed Green Section
       </section>
     </main>
   )

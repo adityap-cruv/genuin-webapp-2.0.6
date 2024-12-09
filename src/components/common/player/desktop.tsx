@@ -56,6 +56,7 @@ export function Desktop({ videoData, loop = false, isActive, isInModal, ...restP
   return (
     <div
       className="relative h-full overflow-hidden"
+      style={{ height: 'calc(100% - 50px)' }}
       onClick={(e) => {
         if (!stateShouldPlay) {
           setActiveComment('')
