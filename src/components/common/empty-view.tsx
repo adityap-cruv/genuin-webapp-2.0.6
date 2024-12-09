@@ -7,14 +7,17 @@ import { PATH_NAME } from '@lib/utils/constants/path'
 import { NOT_FOUND_ERROR_MESSAGES } from '@/lib/constants'
 import { TopBar } from '../layouts/mobile/top-bar'
 import { NoContentIcon } from '@images/not-found/no-content-icon'
-import { useGenuinOptions } from '@/lib/stores/genuin-options'
+import { useSearchParams } from 'next/navigation'
 
 type Props = {
   type: 'user' | 'brand' | 'community' | 'group' | 'video' | 'feed'
 }
 
 export default function EmptyView({ type }: Props) {
-  const embed = useGenuinOptions().embed
+  const searchParams = useSearchParams()
+  // Check if the 'utm_source' query parameter equals 'bcc'
+  const showCreateCommunityButton = searchParams?.get('utm_source') === 'bcc'
+
   if (type === 'feed') {
     return (
       <main className="h-full w-full">
@@ -27,8 +30,8 @@ export default function EmptyView({ type }: Props) {
             style={{ background: '#FAFAFA' }}>
             <NoContentIcon className="fill-primary" />
             <p className="text-title-2-demi font-medium text-secondary-300">No Content Available</p>
-            {embed && (
-              <Link href={PATH_NAME.home()}>
+            {showCreateCommunityButton && (
+              <Link href={process.env.NEXT_PUBLIC_BCC_URL + '/manage/communities'}>
                 <Button size="custom" className="rounded-lg bg-new-off-black px-4 py-3 hover:bg-new-dark-grey">
                   <p className="text-new-para-2">Create Community</p>
                 </Button>
