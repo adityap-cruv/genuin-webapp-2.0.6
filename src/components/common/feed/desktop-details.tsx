@@ -89,7 +89,7 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
                     </Link>
                     {community.brand && (
                       <p
-                        className="line-clamp-1 max-w-[10ch] break-all text-body-1-med text-tertiary"
+                        className="line-clamp-1 max-w-[30ch] break-all text-body-1-med text-tertiary"
                         title={community.brand.name}>
                         on {community.brand?.name}
                       </p>
