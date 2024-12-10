@@ -33,7 +33,9 @@ export function getSizeBoxes(isMobile: boolean, showNavbar: boolean): SizeBoxesT
 }
 
 function getSizeDesktop(considerNavbar: boolean): VideoSizeBoxType {
-  const windowHeight = considerNavbar ? window.innerHeight - HEIGHT_OF_HEADER : window.innerHeight
+  const element = document.getElementById('root-element')
+  if (!element) return { height: window.innerHeight, width: window.innerWidth }
+  const windowHeight = element.clientHeight
   const windowWidth = window.innerWidth
   let videoWidth = (windowHeight * 9) / 16
 

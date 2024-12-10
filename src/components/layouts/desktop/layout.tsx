@@ -5,7 +5,7 @@ import { cn } from '@lib/utils'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 
 export function Layout(props: any) {
-  const showNavbar = useGenuinOptions().showNavbar
+  const { showNavbar } = useGenuinOptions()
 
   return (
     <main className="absolute inset-0 flex h-full w-full flex-col items-center overflow-clip">
@@ -16,11 +16,21 @@ export function Layout(props: any) {
           showNavbar ? 'h-body' : 'h-full'
         )}>
         <SideBar />
-        <section className="relative flex w-full flex-col">{props.children}</section>
+        <section id="root-element" className="relative flex w-full flex-col">
+          {props.children}
+        </section>
       </section>
-      {/* Green Section */}
-      <section className="text-white absolute bottom-0 left-0 flex h-16 w-full" style={{ background: 'red', zIndex: 100000 }}>
-        Fixed Green Section
+      {/* Iframe Section */}
+      <section
+        className="m-auto w-full overflow-clip px-0  2xl:container  xl:px-10 2xl:px-0"
+        style={{ zIndex: 100000, height: '80px' }}>
+        <iframe
+          allow="autoplay"
+          width="100%"
+          height="70px"
+          src="https://www.iheart.com/live/z100-1469/?embed=true&pname=WHTZ-FM&sc=inferno"
+          // frameborder="0"
+        ></iframe>
       </section>
     </main>
   )

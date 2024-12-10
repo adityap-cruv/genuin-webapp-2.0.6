@@ -32,7 +32,7 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
   const [comments, setComments] = useState<CommentListType>([])
 
   return (
-    <div className="relative h-full w-1 flex-1 bg-monochrome-white pb-16 pl-2" style={{ height: 'calc(100% - 50px)' }}>
+    <div className="relative h-full w-1 flex-1 bg-monochrome-white pb-16 pl-2">
       <div className="p-4">
         <span className="flex items-center gap-x-2">
           <CustomAvatar
