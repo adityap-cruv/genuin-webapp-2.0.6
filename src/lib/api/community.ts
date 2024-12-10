@@ -5,6 +5,7 @@ import { parseFeedResponseFromGoApi } from './api-response-parser'
 import { axiosInstance } from './instance'
 import { parseFeaturedCommunityList } from '@lib/schemas/community/featured-community'
 import { type VideoPlayerModalType } from '../schemas/player/video'
+import { NOT_FOUND_ERROR_CODES } from '../constants'
 
 export async function fetchCommunityDetails(slug: string) {
   return await axiosInstance
@@ -25,7 +26,9 @@ export async function fetchCommunityDetails(slug: string) {
        * @example Community handle: @kvkic
        */
       // eslint-disable-next-line no-console
-      console.log('error::', e)
+      if (e.response.data.code === NOT_FOUND_ERROR_CODES.community) {
+        throw new Error(e.response.data.code)
+      }
       throw new Error('Something went wrong with community detail!')
     })
 }

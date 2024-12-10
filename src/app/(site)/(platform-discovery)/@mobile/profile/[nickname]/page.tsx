@@ -6,6 +6,8 @@ import { fetchMetadata } from '@lib/api/meta-data'
 import { redirect } from 'next/navigation'
 import { headers, cookies } from 'next/headers'
 import { getConfig } from '../../../../../../middleware'
+import EmptyView from '@/components/common/empty-view'
+import { NOT_FOUND_ERROR_CODES } from '@/lib/constants'
 
 interface CompProps {
   params: {
@@ -16,12 +18,20 @@ interface CompProps {
 
 export default async function Component({ params }: CompProps) {
   const configs = cookies().get('config_params')?.value
-  const profileData = await fetchUserData(params.nickname, configs ? JSON.parse(configs) : undefined)
-
-  if (profileData.brand) {
-    redirect(PATH_NAME.brand(profileData.brand.brand_slug))
+  try {
+    const profileData = await fetchUserData(params.nickname, configs ? JSON.parse(configs) : undefined)
+    if (profileData.brand) {
+      redirect(PATH_NAME.brand(profileData.brand.brand_slug))
+    }
+    return <MainComponent profileData={profileData} />
+  } catch (error: any) {
+    // Check the type of error
+    if (error.message === NOT_FOUND_ERROR_CODES.user) {
+      return <EmptyView type="user" />
+    } else {
+      throw new Error(error.message)
+    }
   }
-  return <MainComponent profileData={profileData} />
 }
 
 interface ProfileDataType {

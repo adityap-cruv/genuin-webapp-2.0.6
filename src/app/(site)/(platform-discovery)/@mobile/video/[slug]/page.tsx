@@ -3,6 +3,8 @@ import { PATH_NAME } from '@lib/utils/constants/path'
 import { type Metadata } from 'next'
 import { fetchMetadata } from '@lib/api/meta-data'
 import { getVideoDetails } from '@lib/api/video'
+import { NOT_FOUND_ERROR_CODES } from '@/lib/constants'
+import EmptyView from '@/components/common/empty-view'
 type PageProps = {
   params: {
     slug: string
@@ -15,8 +17,16 @@ type PageProps = {
 }
 
 export default async function Component({ params, searchParams }: PageProps) {
-  const videoData = await getVideoDetails(params.slug)
-  return <Root videoData={videoData} />
+  try {
+    const videoData = await getVideoDetails(params.slug)
+    return <Root videoData={videoData} />
+  } catch (error) {
+    if ((error as Error).message === NOT_FOUND_ERROR_CODES.video) {
+      return <EmptyView type="video" />
+    } else {
+      throw new Error((error as Error).message)
+    }
+  }
 }
 
 type VideoDataType = {

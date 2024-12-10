@@ -8,6 +8,7 @@ import {
   parseProfileVideoResponse,
 } from './api-response-parser'
 import { axiosInstance } from './instance'
+import { NOT_FOUND_ERROR_CODES } from '../constants'
 
 type Headers = Record<string, string>
 
@@ -30,8 +31,8 @@ export async function fetchUserData(nickname: string, headers?: Headers) {
       return validateProfileDetails(res.data.data)
     })
     .catch((e) => {
-      if (e.response.data.code === '412') {
-        throw new Error(e.response.data.message)
+      if (e.response.data.code === NOT_FOUND_ERROR_CODES.user) {
+        throw new Error(e.response.data.code)
       }
       throw new Error('Something went wrong in profile details api.')
     })
@@ -154,7 +155,7 @@ export async function fetchProfileFeed(userId: string, pageParam?: { lastMessage
       const resData = res.data.data
       console.log('ResData:', resData)
       pageSession = resData.page_session
-      return { feed: parseFeedResponse(resData.feeds), end: resData.end_of_messages }
+      return { feed: parseFeedResponse(resData.feeds), end: resData.end_of_feed }
     })
     .catch((e) => {
       // eslint-disable-next-line no-console

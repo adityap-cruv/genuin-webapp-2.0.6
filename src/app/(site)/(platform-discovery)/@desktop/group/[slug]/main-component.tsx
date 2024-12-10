@@ -31,16 +31,27 @@ import { joinAsCollaboratorDeepLink, subscribeDeepLink } from '@/lib/get-deeplin
 import { SubscribedBellIcon } from '@icons/subscribed-bell-icon'
 import { BellIcon } from 'lucide-react'
 import { ReadMore } from '@/components/common/read-more'
+import { NOT_FOUND_ERROR_CODES } from '@/lib/constants'
+import EmptyView from '@/components/common/empty-view'
 
 interface Props {
   loopDetails: LoopDetailsType
 }
 
 export function LoopDetails({ slug }: { slug: string }) {
-  const { data, isLoading } = getLoopDetails(slug)
+  const { data, isLoading, error } = getLoopDetails(slug)
+
   if (isLoading) return <Loading />
+
+  if (error) {
+    if ((error as Error).message === NOT_FOUND_ERROR_CODES.group) {
+      return <EmptyView type="group" />
+    } else {
+      return <Error />
+    }
+  }
+
   if (data) return <MainComponent loopDetails={data} />
-  return <Error />
 }
 
 // TODO: Improve this component.

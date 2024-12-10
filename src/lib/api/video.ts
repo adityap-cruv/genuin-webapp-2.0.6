@@ -3,13 +3,24 @@ import { axiosInstance } from './instance'
 import { type LoopVideoType } from '@lib/schemas/loop/videos'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import { tryJsonParse } from '@lib/utils'
+import { NOT_FOUND_ERROR_CODES } from '../constants'
 
 export async function getVideoDetails(slug: string): Promise<VideoPlayerModalType> {
   const metadata = await fetchVideoMetadata(slug)
+  console.log('Meta:', metadata)
+  if (!metadata?.chat_id) {
+    throw new Error(`Invalid metadata for slug: ${slug}`)
+  }
+
   const [loopDetails, videoDetails] = await Promise.all([
-    await fetchLoopDetails(metadata.chat_id),
-    await fetchLoopVideo(metadata.chat_id, metadata.message_id),
+    fetchLoopDetails(metadata.chat_id),
+    fetchLoopVideo(metadata.chat_id, metadata.message_id),
   ])
+
+  if (!loopDetails || !videoDetails) {
+    throw new Error('Failed to fetch loop details or video details.')
+  }
+
   return {
     community: {
       handle: loopDetails.community.handle,
@@ -108,7 +119,10 @@ export async function fetchVideoMetadata(videoSlug: string) {
     })
     .catch((e) => {
       // eslint-disable-next-line no-console
-      console.log('error in deep_link/meta_data::', e)
+      console.log('error in deep_link/meta_data::', e.response.data)
+      if (e.response.data.code === NOT_FOUND_ERROR_CODES.video) {
+        throw new Error(e.response.data.code)
+      }
     })
 }
 
@@ -178,7 +192,13 @@ export async function leaveCommunity(communityId: string | undefined) {
     })
 }
 
-export async function createComment(videoId: string, loopId: string, type: number, commentText: string) {
+export async function createComment(
+  videoId: string,
+  loopId: string,
+  type: number,
+  commentText: string,
+  commentData: any
+) {
   return await axiosInstance
     .post(
       '/api/v3/comment/create',
@@ -187,7 +207,7 @@ export async function createComment(videoId: string, loopId: string, type: numbe
         chat_id: loopId,
         type,
         comment_text: commentText,
-        comment_data: JSON.stringify([commentText]),
+        comment_data: JSON.stringify(commentData),
       },
       {
         headers: {
@@ -199,6 +219,23 @@ export async function createComment(videoId: string, loopId: string, type: numbe
       return { code: res.status, data: res.data.data }
     })
     .catch((e) => {
-      return { code: Number(e.response.data.code) }
+      return { code: Number(e.response.data.code), data: null }
+    })
+}
+
+export async function mentionUser(chatId: string, queryString: string, signal: AbortSignal) {
+  return await axiosInstance
+    .get('/api/v3/mentions', {
+      params: {
+        query_string: queryString,
+        chat_id: chatId,
+      },
+      signal,
+    })
+    .then((res) => {
+      return { code: res.status, data: res.data.data }
+    })
+    .catch((e) => {
+      return { code: Number(e.response.data.code), data: [] }
     })
 }

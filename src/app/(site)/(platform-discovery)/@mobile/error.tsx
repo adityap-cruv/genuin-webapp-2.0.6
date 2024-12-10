@@ -1,6 +1,5 @@
 'use client'
 import { TopBar } from '@components/layouts/mobile/top-bar'
-import imgError from '@images/error/errorMobile.svg'
 import imgPuppet from '@images/not-found/puppet.svg'
 import Image from 'next/image'
 import { Button } from '@components/ui/button'
@@ -15,15 +14,17 @@ export default function Error() {
         <div
           className="flex h-full w-full flex-col items-center justify-evenly rounded-t-2xl bg-cover bg-center bg-no-repeat py-10"
           style={{
-            backgroundImage: `url(${imgError.src})`,
+            background: '#FAFAFA',
           }}>
           <span>
             <p
               className="text-center"
               style={{ fontSize: '32px', fontWeight: 700, letterSpacing: '-0.96px', lineHeight: '110%' }}>
-              Oops!Something <br /> went wrong.
+              There seems to be an issue on our end.
             </p>
-            <p className="pt-3 text-body-1-med">Our team is trying to resolve the issue.</p>
+            <p className="pt-3 text-center text-body-1-med">
+              Our team is working to resolve it as quickly as possible.
+            </p>
           </span>
           <Image src={imgPuppet} className="h-auto w-32" alt="" />
           <Link href={PATH_NAME.home()}>

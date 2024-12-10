@@ -10,11 +10,8 @@ import { useMotionValueEvent, useScroll } from 'framer-motion'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
-import { getCurrentShareUrl, getTimeAgo, openModal } from '@lib/utils'
+import { getCurrentShareUrl, getTimeAgo } from '@lib/utils'
 import { FeedShimmer } from '../shimmers/feed-shimmer'
-import { Input } from '@components/ui/input'
-import { createComment } from '@lib/api/video'
-import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { ShareIcon } from '@icons/share-icon'
 import { type CommentListType } from '@lib/schemas/loop/comment'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
@@ -23,10 +20,8 @@ import { TickIcon } from '@icons/tick-icon'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@components/ui/tooltip'
 import { JoinCommunityButton } from '@components/pages/community/join-community-button'
 import { ReadMore } from '../read-more'
-import { useSearchParams } from 'next/navigation'
-import { commentDeepLink } from '@/lib/get-deeplink'
 import { Linkout } from '../linkout'
-import { useWalletBalanceHandler } from '@/services/wallet-handler'
+import MentionInput from '../comments/mention-input'
 
 // TODO: improve this component.
 export function DesktopDetails({ loop, community, owner, video }: VideoPlayerModalType) {
@@ -34,7 +29,6 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
   const { toast } = useToast()
   const scrollDivRef = useRef<HTMLDivElement>(null)
   // TODO: Here state Comment and setComments are bad they are causing multiple rerenders.
-  const [currentComment, setCurrentComment] = useState('')
   const [comments, setComments] = useState<CommentListType>([])
 
   return (
@@ -177,10 +171,8 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
           <CommentBox videoId={video.id} parentRef={scrollDivRef} setComments={setComments} comments={comments} />
         </div>
       </div>
-      <CommentInput
+      <MentionInput
         setComments={setComments}
-        currentComment={currentComment}
-        setCurrentComment={setCurrentComment}
         videoId={video.id}
         loopId={loop.id}
         videoSlug={video.slug}
@@ -243,140 +235,6 @@ function CommentBox({
   return (
     <div className="h-full pb-20">
       <NoComments />
-    </div>
-  )
-}
-
-function CommentInput({
-  setComments,
-  currentComment,
-  setCurrentComment,
-  videoId,
-  loopId,
-  videoSlug,
-  communityId,
-}: {
-  setComments: any
-  currentComment: any
-  setCurrentComment: any
-  videoId: string
-  loopId: string
-  videoSlug: string
-  communityId: string
-}) {
-  const { handleWalletBalance } = useWalletBalanceHandler()
-  const user = useGenuinOptions().user
-  const searchParams = Object.fromEntries(useSearchParams())
-
-  async function handleClick() {
-    await handleWalletBalance({ action: 'comments', videoId, type: 'POST' })
-    if (currentComment.length !== 0) {
-      const newComment = {
-        owner: {
-          member_id: user?.id,
-          name: user?.name,
-          nickname: user?.nickname,
-          bio: user?.bio,
-          is_avatar: user?.isAvatar,
-          profile_image: user?.image,
-        },
-        chat_id: null,
-        conversation_id: null,
-        comment_id: null,
-        type: 'text',
-        url: null,
-        video_url_m3u8: null,
-        thumbnail: null,
-        link: null,
-        duration: null,
-        meta_data: null,
-        created_at: Date.now(),
-        no_of_views: 0,
-        is_read: false,
-        comment_text: currentComment,
-        comment_data: JSON.stringify([currentComment]),
-        no_of_sparks: 0,
-        is_sparked: false,
-      }
-      try {
-        const commentResponse = await createComment(videoId, loopId, 3, currentComment)
-        if (commentResponse.code === 200) {
-          setComments((prevComments: any) => [newComment, ...prevComments])
-          setCurrentComment('')
-        }
-      } catch (e) {
-        throw new Error()
-      }
-    }
-  }
-  return (
-    <div className="absolute bottom-0 left-0 max-h-16 w-full border-t-2 border-t-tertiary-200 bg-tertiary-200 py-3 shadow-md">
-      <div className="flex w-full flex-1 items-center gap-x-4 px-6">
-        {user ? (
-          <>
-            <div className="relative flex w-full items-center">
-              <Input
-                placeholder="Add a comment"
-                value={currentComment}
-                maxLength={500}
-                disabled={!user}
-                className="rounded-full border border-tertiary-200 bg-monochrome-white px-14 pl-4"
-                onChange={(event) => {
-                  const newComment = event.target.value
-                  setCurrentComment(newComment)
-                }}
-              />
-
-              {/* <Textarea
-                placeholder="Add a comment"
-                value={currentComment}
-                maxLength={500}
-                disabled={!user}
-                className="h-10 rounded-full border border-tertiary-200 bg-monochrome-white px-14 pl-4 pt-2"
-                onChange={(event) => {
-                  setCurrentComment(event.target.value)
-                }}
-              /> */}
-
-              <button
-                onClick={handleClick}
-                disabled={currentComment.trim().length === 0}
-                className={`absolute right-4 text-body-1-bold ${
-                  currentComment.trim().length === 0 ? 'text-primary-600' : 'text-primary'
-                }`}>
-                Post
-              </button>
-            </div>
-          </>
-        ) : (
-          <div
-            onClick={async () => {
-              await commentDeepLink({ videoSlug, communityId, loopId, searchParams }).then((generatedLink) => {
-                openModal({ deepLink: generatedLink, subtitle: <>Get the app to comment on this video.</> })
-              })
-            }}
-            placeholder="Add a comment"
-            className="h-full w-full rounded-full border-2 border-tertiary-200 bg-monochrome-white py-2 pl-6">
-            <p className="text-start text-title-3-demi text-tertiary">Add a Comment</p>
-          </div>
-        )}
-
-        {/* <AudioRecordIcon
-          className="fill-secondary"
-          onClick={() => {
-            DownloadDialogModal.open({ title: 'Get the Genuin app', subtitle: 'Get the app to comment on this video.' })
-          }}
-        />
-        <VideoRecordIcon
-          className="fill-secondary"
-          onClick={() => {
-            DownloadDialogModal.open({
-              title: 'Get the Genuin app',
-              subtitle: 'Get the app to comment on this video.',
-            })
-          }}
-        /> */}
-      </div>
     </div>
   )
 }

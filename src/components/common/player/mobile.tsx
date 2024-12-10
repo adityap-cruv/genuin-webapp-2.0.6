@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, type VideoHTMLAttributes, type DetailedHTMLProps } from 'react'
+import { useEffect, type VideoHTMLAttributes, type DetailedHTMLProps, useState } from 'react'
 import { usePlayerControlStore } from './player-control-store'
 import { useGenuinOptions, type VideoSizeBoxType } from '@lib/stores/genuin-options'
 import { ControlLayer } from './control-layer'
@@ -46,6 +46,7 @@ export function Mobile({
       toggleShouldPlay: state.toggleShouldPlay,
     }))
   )
+  const [showMore, setShowMore] = useState(true)
 
   useEffect(() => {
     hasFocus ? setShouldPlay(true) : setShouldPlay(false)
@@ -59,6 +60,16 @@ export function Mobile({
       style={{ backgroundImage: `url(${videoDetails.video.thumbnail})` }}
       className="relative flex h-full w-full snap-start items-center justify-center overflow-clip bg-cover bg-center bg-no-repeat">
       <div className="absolute top-0 z-10 h-24 w-full bg-gradient-to-b from-[#111111b3] to-[#11111100]" />
+      <div className="absolute bottom-0 z-10 h-24 w-full bg-gradient-to-b from-[#11111100] to-[#111111b3]" />
+      {!showMore && (
+        <div
+          className="absolute bottom-0 z-10 h-3/5 w-full bg-gradient-to-b from-[#11111100] to-[#111111] transition-all"
+          onClick={(e) => {
+            e.stopPropagation()
+            setShowMore(!showMore)
+          }}
+        />
+      )}
       <div className="relative overflow-hidden" style={{ width: sizeBox.width, height: sizeBox.height }}>
         <InnerPlayer
           isActive={isActive}
@@ -84,6 +95,8 @@ export function Mobile({
             isSparked={videoDetails.video.isSparked}
             clickableUrl={videoDetails.video.clickableUrl}
             linkouts={videoDetails.video.linkouts}
+            showMore={showMore}
+            setShowMore={setShowMore}
           />
         </div>
         <CommentSheet
