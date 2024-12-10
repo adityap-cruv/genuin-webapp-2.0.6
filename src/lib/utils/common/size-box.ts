@@ -1,4 +1,4 @@
-import { HEIGHT_OF_HEADER } from '@/lib/constants'
+// import { HEIGHT_OF_HEADER } from '@/lib/constants'
 import { type VideoSizeBoxType, type SizeBoxesType, type ModalSizeBoxType } from '@lib/stores/genuin-options'
 
 export function getSizeBoxes(isMobile: boolean, showNavbar: boolean): SizeBoxesType {
