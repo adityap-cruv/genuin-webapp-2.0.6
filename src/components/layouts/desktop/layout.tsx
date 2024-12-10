@@ -3,9 +3,12 @@ import { SideBar } from './side-bar'
 import { TopBar } from './top-bar'
 import { cn } from '@lib/utils'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
+import { IHeartDemo } from './iheart-demo'
+import { useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
 
 export function Layout(props: any) {
   const { showNavbar } = useGenuinOptions()
+  const { renderIn } = useIHeartDemoStates()
 
   return (
     <main className="absolute inset-0 flex h-full w-full flex-col items-center overflow-clip">
@@ -21,17 +24,7 @@ export function Layout(props: any) {
         </section>
       </section>
       {/* Iframe Section */}
-      <section
-        className="m-auto w-full overflow-clip px-0  2xl:container  xl:px-10 2xl:px-0"
-        style={{ zIndex: 100000, height: '80px' }}>
-        <iframe
-          allow="autoplay"
-          width="100%"
-          height="70px"
-          src="https://www.iheart.com/live/z100-1469/?embed=true&pname=WHTZ-FM&sc=inferno"
-          // frameborder="0"
-        ></iframe>
-      </section>
+      {renderIn === 'root' && <IHeartDemo />}
     </main>
   )
 }

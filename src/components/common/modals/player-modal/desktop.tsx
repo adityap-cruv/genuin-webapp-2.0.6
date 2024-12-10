@@ -19,6 +19,8 @@ import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import { UnseenMessageRibbon } from '../../unseen-message-ribbon'
 import { Button } from '@/components/ui/button'
+import { useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
+import { IHeartDemo } from '@/components/layouts/desktop/iheart-demo'
 
 type Props = {
   children?: React.ReactNode
@@ -57,6 +59,7 @@ export function Desktop({
   isInModal,
 }: Props) {
   const sizeBox = useGenuinOptions().sizeBoxes
+  const { shouldShowIHeartDemo, renderIn, setRenderIn: setIHeartDemoRenderIn } = useIHeartDemoStates()
   const { currentIndex, setCurrentIndex, setStateVideos } = useFeedModalStore((state) => ({
     currentIndex: state.currentIndex,
     setCurrentIndex: state.setCurrentIndex,
@@ -76,6 +79,11 @@ export function Desktop({
     if (videos && !isFetchingNextPage && currentIndex >= videos?.length - 2) fetchNextVideos()
   }, [currentIndex])
 
+  // This is to show the iheart demo in the modal.
+  useEffect(() => {
+    setIHeartDemoRenderIn(open ? 'modal' : 'root')
+  }, [open])
+
   return (
     <CustomDialog open={open}>
       <CustomDialogTrigger>{children}</CustomDialogTrigger>
@@ -84,9 +92,9 @@ export function Desktop({
           e.preventDefault()
         }}
         showDefaultClose={false}>
-        <span className="relative flex items-center gap-x-6">
+        <div className="flex items-center gap-x-6">
           <div
-            style={{ height: sizeBox.modal.height, width: sizeBox.modal.width }}
+            style={{ width: sizeBox.modal.width }}
             className="relative min-w-[800px] overflow-clip rounded-2xl bg-monochrome-white">
             {/* Please done modify below condition to  unreadMessageCount && unreadMessageCount !== 0,
              it is creating the problem on showing the 0 on the UI */}
@@ -113,8 +121,13 @@ export function Desktop({
                 isInModal={isInModal}
               />
             )}
+            {shouldShowIHeartDemo && renderIn === 'modal' && (
+              <div style={{ height: '70px' }}>
+                <IHeartDemo />
+              </div>
+            )}
           </div>
-          <span className="flex flex-col gap-y-4">
+          <div className="flex flex-col gap-y-4">
             <Button
               disabled={currentIndex === 0}
               onClick={() => {
@@ -137,8 +150,8 @@ export function Desktop({
               )}>
               <Image src={icDownArrow} alt="" />
             </Button>
-          </span>
-        </span>
+          </div>
+        </div>
       </CustomDialogContent>
     </CustomDialog>
   )
