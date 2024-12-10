@@ -169,7 +169,7 @@ function RootDetails({ communityDetails }: { communityDetails: CommunityDetailsT
           <div className="grid w-full grid-cols-2 gap-4 overflow-hidden px-6" style={{ height: 'calc(100% - 56px)' }}>
             <div className="snap-y snap-proximity overflow-auto overflow-x-hidden scroll-smooth">
               {communityDetails.description && (
-                <ReadMore.default text={communityDetails.description} maxChars={150} className="mb-2" />
+                <ReadMore.dynamic text={communityDetails.description} maxLines={2} className="mb-2" />
               )}
               <Stats communityDetails={communityDetails} />
               <CommunityDetailsTabs communityDetails={communityDetails} />
