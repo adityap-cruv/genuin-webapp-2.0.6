@@ -62,19 +62,12 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
         </span>
       </div>
       <div ref={scrollDivRef} className="flex h-full flex-col overflow-auto overflow-x-clip">
-        {Array.isArray(video.descriptionArr) ? (
-          <ReadMore.withMention
-            textArr={video.descriptionArr}
-            maxChars={150}
-            className="border-b border-tertiary-200 p-4 pt-0"
-          />
-        ) : (
-          <ReadMore.default
-            text={video.descriptionText}
-            maxChars={150}
-            className="border-b border-tertiary-200 p-4 pt-0"
-          />
-        )}
+        <ReadMore.dynamic
+          text={Array.isArray(video.descriptionArr) ? video.descriptionArr : video.descriptionText}
+          maxLines={2}
+          className="border-b border-tertiary-200 p-4 pt-0"
+        />
+
         <div className="border-b border-tertiary-200 p-4">
           <p className="text-title-3-bold">Posted in</p>
           <div className="pt-3">
@@ -96,10 +89,7 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
                     </Link>
                     {community.brand && (
                       <p
-                        className="line-clamp-1 break-all text-body-1-med text-tertiary"
-                        style={{
-                          maxWidth: '10ch',
-                        }}
+                        className="line-clamp-1 max-w-[30ch] break-all text-body-1-med text-tertiary"
                         title={community.brand.name}>
                         on {community.brand?.name}
                       </p>

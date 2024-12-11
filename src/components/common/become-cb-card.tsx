@@ -8,6 +8,7 @@ import CommunityIcon from '@icons/ks-cb-flow/icCommunity.svg'
 // import { useSession } from 'next-auth/react'
 import { cn } from '@/lib/utils'
 import { CustomImage } from '../custom/custom-image'
+import { ReadMore } from './read-more'
 
 export default function BecomeCbCard({ className }: { className: string }) {
   const { embed, brandName } = useGenuinOptions(
@@ -46,7 +47,7 @@ export default function BecomeCbCard({ className }: { className: string }) {
   return (
     <div className={cn(className)}>
       <div
-        className="relative flex max-h-16 max-w-64 rounded-lg border border-primary-200 bg-primary-200 text-title-3-demi text-monochrome-black hover:cursor-pointer"
+        className="max-w-64 relative flex max-h-16 rounded-lg border border-primary-200 bg-primary-200 text-title-3-demi text-monochrome-black hover:cursor-pointer"
         style={{
           background: 'linear-gradient(30deg, var(--primary-400) -80%, #FFFFFF 50%, var(--primary-400) 120%)',
         }}
@@ -62,8 +63,9 @@ export default function BecomeCbCard({ className }: { className: string }) {
           <p className="w-64 overflow-hidden p-3 text-body-1-bold">
             Become a <span className="font-semibold italic">Creator &nbsp;</span>
             {embed ? 'for' : 'on'} <br />
-            <span className="inline-block  max-w-[12ch] place-self-end overflow-clip text-ellipsis whitespace-nowrap text-center align-bottom text-primary">
-              {` ${brandName} 🚀`}
+            <span className="flex w-full gap-1 place-self-end align-bottom text-primary">
+              <ReadMore.dynamic text={brandName} showViewMoreLessBtn={false} />
+              🚀
             </span>
           </p>
         </div>

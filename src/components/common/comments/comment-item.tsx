@@ -88,6 +88,6 @@ const Comment = {
   },
   text({ comment }: { comment: CommentType }) {
     if (comment.comment_data)
-      return <ReadMore.withMention className="text-body-1-med" textArr={tryJsonParse(comment.comment_data)} />
+      return <ReadMore.dynamic className="text-body-1-med" text={tryJsonParse(comment.comment_data)} maxLines={2} />
   },
 }
