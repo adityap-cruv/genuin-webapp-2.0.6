@@ -8,7 +8,6 @@ import CommunityIcon from '@icons/ks-cb-flow/icCommunity.svg'
 // import { useSession } from 'next-auth/react'
 import { cn } from '@/lib/utils'
 import { CustomImage } from '../custom/custom-image'
-import { ReadMore } from './read-more'
 
 export default function BecomeCbCard({ className }: { className: string }) {
   const { embed, brandName } = useGenuinOptions(
@@ -63,9 +62,11 @@ export default function BecomeCbCard({ className }: { className: string }) {
           <p className="w-64 overflow-hidden p-3 text-body-1-bold">
             Become a <span className="font-semibold italic">Creator &nbsp;</span>
             {embed ? 'for' : 'on'} <br />
-            <span className="flex w-full gap-1 place-self-end align-bottom text-primary">
-              <ReadMore.dynamic text={brandName} showViewMoreLessBtn={false} />
-              🚀
+            <span className="flex items-center gap-1 text-primary">
+              <span className="line-clamp-1 inline-block overflow-hidden text-ellipsis whitespace-nowrap">
+                {brandName}
+              </span>
+              <span>🚀</span>
             </span>
           </p>
         </div>

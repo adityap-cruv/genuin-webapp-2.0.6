@@ -258,8 +258,6 @@ export function WithMentions({
 type DynamicProps = {
   text: any
   maxLines?: number
-  showViewMoreLessBtn?: boolean
-
   isExpanded?: boolean
   setIsExpanded?: (expanded: boolean) => void
 } & ComponentProps<'p'>
@@ -267,7 +265,6 @@ type DynamicProps = {
 export function Dynamic({
   text,
   maxLines = 1,
-  showViewMoreLessBtn = true,
   isExpanded: isExpandedExternal,
   setIsExpanded: setIsExpandedExternal,
   ...props
@@ -350,7 +347,7 @@ export function Dynamic({
         style={!isExpanded ? clampedStyle : { wordBreak: 'break-word' }}
         dangerouslySetInnerHTML={{ __html: Array.isArray(text) ? convertUrlsToAnchorTags(text) : text }}
       />
-      {showViewMoreLessBtn && (isExpanded || isOverflowing) && (
+      {(isExpanded || isOverflowing) && (
         <span
           className="cursor-pointer pl-1 text-body-1-med text-tertiary"
           onClick={() => {
