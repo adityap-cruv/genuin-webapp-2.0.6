@@ -62,11 +62,13 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
         </span>
       </div>
       <div ref={scrollDivRef} className="flex h-full flex-col overflow-auto overflow-x-clip">
-        <ReadMore.dynamic
-          text={Array.isArray(video.descriptionArr) ? video.descriptionArr : video.descriptionText}
-          maxLines={2}
-          className="border-b border-tertiary-200 p-4 pt-0"
-        />
+        {(video.descriptionArr ?? video.descriptionText) && (
+          <ReadMore.dynamic
+            text={Array.isArray(video.descriptionArr) ? video.descriptionArr : video.descriptionText}
+            maxLines={2}
+            className="border-b border-tertiary-200 p-4 pt-0"
+          />
+        )}
 
         <div className="border-b border-tertiary-200 p-4">
           <p className="text-title-3-bold">Posted in</p>
