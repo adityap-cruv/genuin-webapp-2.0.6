@@ -51,7 +51,9 @@ export default async function RootLayout(props: any) {
   return (
     <RootHTML brandColors={brandColors} favicon={favicon} subdomain={config?.subdomain}>
       <RedirectHandler config={config} shouldRedirect={Object.hasOwn(configParams ?? {}, 'subdomain')}>
-        <IHeartDemoProvider shouldShowDemo={Number(config?.brand_id) === IHEART_BRAND_URL}>
+        <IHeartDemoProvider
+          shouldShowDemo={Number(config?.brand_id) === IHEART_BRAND_URL}
+          brandId={config?.brand_id ?? ''}>
           <ThirdPartyScriptProvider isEmbed={!!config}>
             <SessionProvider refetchOnWindowFocus={false} refetchInterval={3600}>
               <ReactQueryProvider>

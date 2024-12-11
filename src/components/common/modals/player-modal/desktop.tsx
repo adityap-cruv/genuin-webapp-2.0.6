@@ -122,7 +122,7 @@ export function Desktop({
               />
             )}
             {shouldShowIHeartDemo && renderIn === 'modal' && (
-              <div style={{ height: '70px' }}>
+              <div id="iframe-modal" style={{ height: '70px' }}>
                 <IHeartDemo />
               </div>
             )}
@@ -200,7 +200,15 @@ export function Profile({
   getPreviousVideo,
   isInModal,
 }: ProfileProps) {
+  const { shouldShowIHeartDemo, renderIn, setRenderIn: setIHeartDemoRenderIn } = useIHeartDemoStates()
   const sizeBox = useGenuinOptions().sizeBoxes
+
+  useEffect(() => {
+    setIHeartDemoRenderIn('modal')
+    return () => {
+      setIHeartDemoRenderIn('root')
+    }
+  }, [open])
 
   return (
     <CustomDialog open={open}>
@@ -208,21 +216,28 @@ export function Profile({
       <CustomDialogContent showDefaultClose={false}>
         <span className="flex items-center gap-x-6">
           <div
-            style={{ width: sizeBox.modal.width, height: sizeBox.modal.height }}
+            style={{ width: sizeBox.modal.width }}
             className="relative min-w-[800px] overflow-clip rounded-2xl bg-monochrome-white">
-            <CustomDialogClose
-              onClick={() => {
-                close?.()
-              }}
-              className="absolute right-4 top-4 z-10 border-none outline-none">
-              <X className="h-6 w-6" />
-            </CustomDialogClose>
-            {isLoading ? (
-              <FeedShimmer.desktop />
-            ) : (
-              video && (
-                <SinglePlayer videoData={{ ...video }} sizeBox={{ ...sizeBox.modal.player }} isInModal={isInModal} />
-              )
+            <div style={{ height: sizeBox.modal.height }}>
+              <CustomDialogClose
+                onClick={() => {
+                  close?.()
+                }}
+                className="absolute right-4 top-4 z-10 border-none outline-none">
+                <X className="h-6 w-6" />
+              </CustomDialogClose>
+              {isLoading ? (
+                <FeedShimmer.desktop />
+              ) : (
+                video && (
+                  <SinglePlayer videoData={{ ...video }} sizeBox={{ ...sizeBox.modal.player }} isInModal={isInModal} />
+                )
+              )}
+            </div>
+            {shouldShowIHeartDemo && renderIn === 'modal' && (
+              <div id="iframe-modal" style={{ height: '70px' }}>
+                <IHeartDemo />
+              </div>
             )}
           </div>
           <span className="flex flex-col gap-y-4">
