@@ -3,79 +3,72 @@ import { useCommentStore } from '@/components/common/comments/store'
 import { usePlayerControlStore } from '@/components/common/player/player-control-store'
 import { useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
 import { Button } from '@/components/ui/button'
+import { useGenuinOptions } from '@/lib/stores/genuin-options'
 import { cn } from '@/lib/utils'
 import { usePathname } from 'next/navigation'
 import { type ComponentProps, useCallback, useEffect, useRef } from 'react'
 import { useState } from 'react'
 
-const DATA: Record<string, { title: string; subtitle: string; src: string; image: string }> = {
+const DATA: Record<string, { title: string; subtitle: string; src: string; image: string; id: string }> = {
   '1429': {
-    title: 'El Paso',
-    subtitle: 'Feat. Roger Miller, Patsy Cline, Jim Reeves and more',
+    title: 'Sauce on the side with Gandhi',
+    subtitle: "Who's the Worst Celebrity",
     src: 'https://media.begenuin.com/iheart_demo/iheart.mp3',
-    image:
-      'https://i.iheart.com/v3/url/aHR0cCUzQSUyRiUyRmltYWdlLmloZWFydC5jb20lMkZTQk1HMiUyRlRodW1iX0NvbnRlbnQlMkZGdWxsX1BDJTJGU0JNRyUyRk5vdjA5JTJGMTExNzA5JTJGMTkwNzMwMCUyRjAwMCUyRjAwMCUyRjAwMCUyRjAwMCUyRjAwMCUyRjY4MSUyRjg0JTJGY2I0YzVlMWI0NDc3NjYyOTcxMjMyNzNkMmNlNjdjMDQuanBn?ops=fit(250%2C250)',
-    // id: '1',
+    image: 'https://media.begenuin.com/iheart_demo/iheart.webp',
+    id: '7',
   },
   'ag-2cjy': {
-    title: 'El Paso',
-    subtitle: 'Feat. Roger Miller, Patsy Cline, Jim Reeves and more',
-    src: 'https://media.begenuin.com/iheart_demo/iheart.mp3',
-    image:
-      'https://i.iheart.com/v3/url/aHR0cCUzQSUyRiUyRmltYWdlLmloZWFydC5jb20lMkZTQk1HMiUyRlRodW1iX0NvbnRlbnQlMkZGdWxsX1BDJTJGU0JNRyUyRk5vdjA5JTJGMTExNzA5JTJGMTkwNzMwMCUyRjAwMCUyRjAwMCUyRjAwMCUyRjAwMCUyRjAwMCUyRjY4MSUyRjg0JTJGY2I0YzVlMWI0NDc3NjYyOTcxMjMyNzNkMmNlNjdjMDQuanBn?ops=fit(250%2C250)',
-    // id: '2',
+    title: 'Sauce on the side with Gandhi',
+    subtitle: "Who's the Worst Celebrity",
+    src: 'https://media.begenuin.com/iheart_demo/z100.mp3',
+    image: 'https://media.begenuin.com/iheart_demo/z100.webp',
+    id: '8',
   },
 
   '1729': {
-    title: 'El Paso',
-    subtitle: 'Feat. Roger Miller, Patsy Cline, Jim Reeves and more',
+    title: 'Math & Magic with Bob Pittman',
+    subtitle: 'Martha Stewart Live at iHeart Living is a Limitless Subject Matter',
     src: 'https://media.begenuin.com/iheart_demo/iheart.mp3',
-    image:
-      'https://i.iheart.com/v3/url/aHR0cCUzQSUyRiUyRmltYWdlLmloZWFydC5jb20lMkZTQk1HMiUyRlRodW1iX0NvbnRlbnQlMkZGdWxsX1BDJTJGU0JNRyUyRk5vdjA5JTJGMTExNzA5JTJGMTkwNzMwMCUyRjAwMCUyRjAwMCUyRjAwMCUyRjAwMCUyRjAwMCUyRjY4MSUyRjg0JTJGY2I0YzVlMWI0NDc3NjYyOTcxMjMyNzNkMmNlNjdjMDQuanBn?ops=fit(250%2C250)',
-    // id: '1',
+    image: 'https://media.begenuin.com/iheart_demo/iheart.webp',
+    id: '1',
   },
   iheartmedia: {
-    title: 'El Paso',
-    subtitle: 'Feat. Roger Miller, Patsy Cline, Jim Reeves and more',
+    title: 'Math & Magic with Bob Pittman',
+    subtitle: 'Martha Stewart Live at iHeart Living is a Limitless Subject Matter',
     src: 'https://media.begenuin.com/iheart_demo/iheart.mp3',
-    image:
-      'https://i.iheart.com/v3/url/aHR0cCUzQSUyRiUyRmltYWdlLmloZWFydC5jb20lMkZTQk1HMiUyRlRodW1iX0NvbnRlbnQlMkZGdWxsX1BDJTJGU0JNRyUyRk5vdjA5JTJGMTExNzA5JTJGMTkwNzMwMCUyRjAwMCUyRjAwMCUyRjAwMCUyRjAwMCUyRjAwMCUyRjY4MSUyRjg0JTJGY2I0YzVlMWI0NDc3NjYyOTcxMjMyNzNkMmNlNjdjMDQuanBn?ops=fit(250%2C250)',
-    // id: '2',
-  },
-  '1775': {
-    title: 'Stargazing',
-    subtitle: 'Feat. Benson Boone, Post Malone, Imagine Dragons and more',
-    src: 'https://media.begenuin.com/iheart_demo/z100.mp3',
-    image:
-      'https://i.iheart.com/v3/url/aHR0cCUzQSUyRiUyRmltYWdlLmloZWFydC5jb20lMkZpaHItaW5nZXN0aW9uLXBpcGVsaW5lLXByb2R1Y3Rpb24tc2JtZyUyRkExMDMwMUEwMDA1MjgwOTg2V18yMDI0MDQxOTIzNDkyMzY2NyUyRjQ5YTgyOWVmZjU0NWMxOGUyNmE0MzE0ZWZmOWMwNDE0LjIwMTI2LmpwZw==?ops=fit(250%2C250)',
-    // id: '3',
+    image: 'https://media.begenuin.com/iheart_demo/iheart.webp',
+    id: '2',
   },
 
-  'z-100': {
-    title: 'Stargazing',
-    subtitle: 'Feat. Benson Boone, Post Malone, Imagine Dragons and more',
+  '1775': {
+    title: 'Sauce on the side with Gandhi',
+    subtitle: "Who's the Worst Celebrity",
     src: 'https://media.begenuin.com/iheart_demo/z100.mp3',
-    image:
-      'https://i.iheart.com/v3/url/aHR0cCUzQSUyRiUyRmltYWdlLmloZWFydC5jb20lMkZpaHItaW5nZXN0aW9uLXBpcGVsaW5lLXByb2R1Y3Rpb24tc2JtZyUyRkExMDMwMUEwMDA1MjgwOTg2V18yMDI0MDQxOTIzNDkyMzY2NyUyRjQ5YTgyOWVmZjU0NWMxOGUyNmE0MzE0ZWZmOWMwNDE0LjIwMTI2LmpwZw==?ops=fit(250%2C250)',
-    // id: '4',
+    image: 'https://media.begenuin.com/iheart_demo/z100.webp',
+    id: '3',
+  },
+  'z-100': {
+    title: 'Sauce on the side with Gandhi',
+    subtitle: "Who's the Worst Celebrity",
+    src: 'https://media.begenuin.com/iheart_demo/z100.mp3',
+    image: 'https://media.begenuin.com/iheart_demo/z100.webp',
+    id: '4',
   },
 
   '2236': {
     title: 'Elvis Duran Presents: The 15 Minute Morning Show',
-    subtitle: 'Would We Turn In The NYC Assassin If We Saw Him?',
+    subtitle: 'Would We Turn In The NYC Assassin If We Saw Him',
     src: 'https://media.begenuin.com/iheart_demo/elvis.mp3',
-    image:
-      'https://is1-ssl.mzstatic.com/image/thumb/Podcasts211/v4/83/d5/cd/83d5cd84-b5ef-0916-4e45-3227f56354a6/mza_8632338813335929889.jpg/1200x1200bf.webp',
-    // id: '5',
+    image: 'https://media.begenuin.com/iheart_demo/elvis.webp',
+    id: '5',
   },
 
   'elvis-duran': {
     title: 'Elvis Duran Presents: The 15 Minute Morning Show',
-    subtitle: 'Would We Turn In The NYC Assassin If We Saw Him?',
+    subtitle: 'Would We Turn In The NYC Assassin If We Saw Him',
     src: 'https://media.begenuin.com/iheart_demo/elvis.mp3',
-    image:
-      'https://is1-ssl.mzstatic.com/image/thumb/Podcasts211/v4/83/d5/cd/83d5cd84-b5ef-0916-4e45-3227f56354a6/mza_8632338813335929889.jpg/1200x1200bf.webp',
-    // id: '6',
+    image: 'https://media.begenuin.com/iheart_demo/elvis.webp',
+    id: '6',
   },
 }
 export function IHeartDemo() {
@@ -121,6 +114,7 @@ function AudioPlayer({
   ...restProps
 }: AudioPlayerPropsType) {
   const { audioStateRef } = useIHeartDemoStates()
+  const { userHasFocus } = useGenuinOptions()
   const { muted, shouldPlay: playerShouldPlay } = usePlayerControlStore()
   const audioRef = useRef<HTMLAudioElement>(null)
   const [shouldPlay, setShouldPlay] = useState(audioStateRef.current.shouldPlay)
@@ -162,12 +156,15 @@ function AudioPlayer({
   }, [shouldPlay, muted])
 
   useEffect(() => {
-    if (!playerShouldPlay) {
-      setShouldPlay(true)
-    } else {
-      setShouldPlay(false)
+    if (userHasFocus && muted) return
+    if (userHasFocus) {
+      if (!playerShouldPlay) {
+        setShouldPlay(true)
+      } else {
+        setShouldPlay(false)
+      }
     }
-  }, [playerShouldPlay])
+  }, [playerShouldPlay, userHasFocus, muted])
 
   useEffect(() => {
     const audioElement = audioRef.current
