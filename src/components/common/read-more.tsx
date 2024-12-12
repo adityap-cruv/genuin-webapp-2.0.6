@@ -1,4 +1,4 @@
-import React, { useEffect, useState, type ComponentProps } from 'react'
+import React, { useEffect, useRef, useState, type ComponentProps } from 'react'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import Link from 'next/link'
 import { cn } from '@lib/utils'
@@ -6,6 +6,7 @@ import { cn } from '@lib/utils'
 export const ReadMore = {
   default: WithoutMentions,
   withMention: WithMentions,
+  dynamic: Dynamic,
 }
 
 type Props = {
@@ -250,6 +251,118 @@ export function WithMentions({
       }}
       {...props}>
       {processedComponent}
+    </p>
+  )
+}
+
+type DynamicProps = {
+  text: any
+  maxLines?: number
+  isExpanded?: boolean
+  setIsExpanded?: (expanded: boolean) => void
+} & ComponentProps<'p'>
+
+export function Dynamic({
+  text,
+  maxLines = 1,
+  isExpanded: isExpandedExternal,
+  setIsExpanded: setIsExpandedExternal,
+  ...props
+}: DynamicProps) {
+  const textRef = useRef(null)
+  const [isExpandedInternal, setIsExpandedInternal] = useState(false)
+  const [isOverflowing, setIsOverflowing] = useState(false)
+
+  const isExpanded = isExpandedExternal ?? isExpandedInternal
+  const setIsExpanded = setIsExpandedExternal ?? setIsExpandedInternal
+
+  const convertUrlsToAnchorTags = (strArr: any) => {
+    return strArr
+      .map((item: any, index: number) => {
+        if (typeof item === 'object' && item.url && item.text) {
+          return `<a
+              href="${item.url}"
+              target="_blank"
+              key="url-${index}"
+              class="text-primary">
+              ${item.text}
+            </a>`
+        }
+        if (typeof item === 'object' && item.member_id && item.text) {
+          return `<a 
+              href="${PATH_NAME.profile(item.text.slice(1))}"
+              key="member-${index}"
+              class="text-primary">
+              ${item.text}
+            </a>`
+        }
+        if (typeof item === 'object' && item.community_id && item.text) {
+          return `<a href="${PATH_NAME.community(item.text)}"
+              key="community-${index}"
+              class="text-primary">
+              ${item.text}
+            </a>`
+        }
+        return item
+      })
+      .join('')
+  }
+
+  useEffect(() => {
+    const checkOverflow = () => {
+      const element: any = textRef.current
+      if (element) {
+        setIsOverflowing(element.scrollHeight > element.clientHeight)
+      }
+    }
+
+    checkOverflow()
+    window.addEventListener('resize', checkOverflow)
+    return () => {
+      window.removeEventListener('resize', checkOverflow)
+    }
+  }, [text])
+
+  const clampedStyle: React.CSSProperties = {
+    display: '-webkit-box',
+    WebkitLineClamp: maxLines,
+    WebkitBoxOrient: 'vertical',
+    overflow: 'hidden',
+    wordBreak: 'break-all',
+  }
+
+  return (
+    <p
+      {...props}
+      className={cn(
+        `hide-scrollbar max-h-60 overflow-auto sm:max-h-full sm:overflow-clip ${isExpanded && 'swiper-no-swiping'}`,
+        props.className
+      )}
+      onClick={(e) => {
+        e.stopPropagation()
+      }}>
+      <span
+        ref={textRef}
+        className="w-full"
+        style={!isExpanded ? clampedStyle : { wordBreak: 'break-word' }}
+        dangerouslySetInnerHTML={{ __html: Array.isArray(text) ? convertUrlsToAnchorTags(text) : text }}
+      />
+      {(isExpanded || isOverflowing) && (
+        <span
+          className="cursor-pointer pl-1 text-body-1-med text-tertiary"
+          onClick={() => {
+            setIsExpanded(!isExpanded)
+          }}>
+          {isExpanded ? (
+            <>
+              <br />
+              (View less)
+            </>
+          ) : (
+            '(View more)'
+          )}
+        </span>
+      )}
     </p>
   )
 }

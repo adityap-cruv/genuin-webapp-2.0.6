@@ -115,7 +115,7 @@ export function MainComponent({ profileData }: CompProps) {
               </div>
             )}
           </div>
-          <p className="my-1 line-clamp-2 text-body-1-demi">{profileData?.bio}</p>
+          <p className="my-1 text-body-1-demi">{profileData?.bio}</p>
           <Stats brandData={profileData.brand} />
           <Links profileData={profileData} />
         </div>

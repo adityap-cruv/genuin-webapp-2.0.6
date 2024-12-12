@@ -46,7 +46,7 @@ export function Mobile({
       toggleShouldPlay: state.toggleShouldPlay,
     }))
   )
-  const [showMore, setShowMore] = useState(true)
+  const [isExpanded, setIsExpanded] = useState(false)
 
   useEffect(() => {
     hasFocus ? setShouldPlay(true) : setShouldPlay(false)
@@ -61,12 +61,12 @@ export function Mobile({
       className="relative flex h-full w-full snap-start items-center justify-center overflow-clip bg-cover bg-center bg-no-repeat">
       <div className="absolute top-0 z-10 h-24 w-full bg-gradient-to-b from-[#111111b3] to-[#11111100]" />
       <div className="absolute bottom-0 z-10 h-24 w-full bg-gradient-to-b from-[#11111100] to-[#111111b3]" />
-      {!showMore && (
+      {isExpanded && (
         <div
           className="absolute bottom-0 z-10 h-3/5 w-full bg-gradient-to-b from-[#11111100] to-[#111111] transition-all"
           onClick={(e) => {
             e.stopPropagation()
-            setShowMore(!showMore)
+            setIsExpanded(!isExpanded)
           }}
         />
       )}
@@ -95,8 +95,8 @@ export function Mobile({
             isSparked={videoDetails.video.isSparked}
             clickableUrl={videoDetails.video.clickableUrl}
             linkouts={videoDetails.video.linkouts}
-            showMore={showMore}
-            setShowMore={setShowMore}
+            isExpanded={isExpanded}
+            setIsExpanded={setIsExpanded}
           />
         </div>
         <CommentSheet
