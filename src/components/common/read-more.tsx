@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState, type ComponentProps } from 'react'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import Link from 'next/link'
 import { cn } from '@lib/utils'
+import { useGenuinOptions } from '@/lib/stores/genuin-options'
 
 export const ReadMore = {
   default: WithoutMentions,
@@ -269,6 +270,7 @@ export function Dynamic({
   setIsExpanded: setIsExpandedExternal,
   ...props
 }: DynamicProps) {
+  const isMobile = useGenuinOptions()?.isMobile
   const textRef = useRef(null)
   const [isExpandedInternal, setIsExpandedInternal] = useState(false)
   const [isOverflowing, setIsOverflowing] = useState(false)
@@ -341,7 +343,10 @@ export function Dynamic({
     <p
       {...props}
       className={cn(
-        `hide-scrollbar max-h-60 overflow-auto sm:max-h-full sm:overflow-clip ${isExpanded && 'swiper-no-swiping'}`,
+        {
+          'hide-scrollbar max-h-60 overflow-auto sm:max-h-full sm:overflow-clip': isMobile,
+          'swiper-no-swiping': isExpanded && isMobile,
+        },
         props.className
       )}
       onClick={(e) => {
