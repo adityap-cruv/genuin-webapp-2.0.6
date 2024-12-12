@@ -20,7 +20,7 @@ export default async function Component({ params }: CompProps) {
     return <MainComponent profileData={profileData} />
   } catch (error: any) {
     // Check the type of error
-    if (error.message !== '5235') {
+    if (error.message === '5235') {
       return <EmptyView type="brand" />
     } else {
       throw new Error(error.message)
