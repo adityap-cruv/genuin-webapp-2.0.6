@@ -361,7 +361,7 @@ function LoopVideos({ brandId, loop, communityId, pathName, user }: LoopVideosPr
 
     if (loop.videos)
       return (
-        <>
+        <div className="my-2 grid w-full grid-cols-4 gap-2 md:grid-cols-8">
           {loop.videos.map((video, index) => (
             <React.Fragment key={index}>
               <div
@@ -383,7 +383,7 @@ function LoopVideos({ brandId, loop, communityId, pathName, user }: LoopVideosPr
               </div>
             </React.Fragment>
           ))}
-        </>
+        </div>
       )
   }
 
@@ -398,13 +398,14 @@ function LoopVideos({ brandId, loop, communityId, pathName, user }: LoopVideosPr
           accessTypeId={loop?.actions?.[0]?.access_type_id ?? 0}
         />
       )}
-      <div className="my-2 grid w-full grid-cols-4 gap-2 md:grid-cols-8">
-        <InnerComponent />
-        {isFetchingNextPage &&
-          [...Array(loop.videoCount < 16 ? loop.videoCount : 16)].map((_, index) => (
+      <InnerComponent />
+      {isFetchingNextPage && (
+        <div className="my-2 grid w-full grid-cols-4 gap-2 md:grid-cols-8">
+          {[...Array(loop.videoCount < 16 ? loop.videoCount : 16)].map((_, index) => (
             <Shimmer key={index} className="aspect-reel w-full rounded" />
           ))}
-      </div>
+        </div>
+      )}
       {loop.videoCount > loop.videos.length && (
         <p
           className="text-blue-500 flex w-full cursor-pointer justify-center pt-2 text-cap-1-demi text-tertiary"

@@ -311,6 +311,12 @@ export function Dynamic({
   useEffect(() => {
     const checkOverflow = () => {
       const element: any = textRef.current
+
+      if (element?.scrollHeight <= element?.clientHeight || !text) {
+        setIsOverflowing(false)
+        setIsExpanded(false)
+      }
+
       if (element) {
         setIsOverflowing(element.scrollHeight > element.clientHeight)
       }
