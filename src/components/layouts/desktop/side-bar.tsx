@@ -32,20 +32,23 @@ const RecentCommunities = dynamic(
 
 // TODO: Improve active states on all items.
 export function SideBar() {
-  const { embed, user, brandName, notificationCount, isClaimed } = useGenuinOptions(
+  const { embed, user, brandName, notificationCount, isClaimed, sizeboxHeight } = useGenuinOptions(
     useShallow((state) => ({
       embed: state.embed,
       user: state.user,
       brandName: state.config?.name ? state.config?.name : 'Genuin',
       notificationCount: state.notificationCount,
       isClaimed: state.config?.is_claimed,
+      sizeboxHeight: state.sizeBoxes.default.height,
     }))
   )
   const pathName = usePathname()
   const { status } = useSession()
 
   return (
-    <nav className="flex h-full w-fit flex-col justify-between overflow-auto border border-monochrome-9 px-4 py-4 transition-[width] xl:mr-16 xl:w-full xl:max-w-[280px] xl:border-none xl:px-0">
+    <nav
+      style={{ height: sizeboxHeight }}
+      className="flex h-full w-fit flex-col justify-between overflow-auto border border-monochrome-9 px-4 py-4 transition-[width] xl:mr-16 xl:w-full xl:max-w-[280px] xl:border-none xl:px-0">
       <div>
         <Link href={{ pathname: PATH_NAME.home() }}>
           <Item brandName={brandName} title="Home" isActive={pathName === PATH_NAME.home()}>

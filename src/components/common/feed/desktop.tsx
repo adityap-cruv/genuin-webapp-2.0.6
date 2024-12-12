@@ -90,7 +90,7 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
     )
 
   return (
-    <div className={cn('flex h-full w-full', className)} {...restProps}>
+    <div style={{ height: sizeBox.height }} className={cn('flex h-full w-full', className)} {...restProps}>
       <Swiper
         onActiveIndexChange={handleActiveIndexChange}
         allowSlideNext={allowSlideNext}
@@ -147,7 +147,7 @@ type SinglePlayerProps = {
 // TODO: Remove this component and use swiper instead.
 export function SinglePlayer({ sizeBox, className, videoData, isInModal }: SinglePlayerProps) {
   return (
-    <div className={cn('flex h-full w-full', className)}>
+    <div style={{ height: sizeBox.height }} className={cn('flex h-full w-full', className)}>
       <div style={{ ...sizeBox }} className="hide-scrollbar overflow-x-clip">
         <Player.desktop
           isActive
