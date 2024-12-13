@@ -25,7 +25,7 @@ const IHeartDemoContext = createContext<IHeartDemoContextType>({
   audioStateRef: { current: { duration: 0, currentTime: 0, shouldPlay: false } },
 })
 
-const considerBrandIdsToShowIHeartDemo = ['1429']
+const considerBrandIdsToShowIHeartDemo = ['1429', '1729', '1775', '2236']
 
 export function IHeartDemoProvider({
   children,
