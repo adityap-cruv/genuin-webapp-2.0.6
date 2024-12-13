@@ -66,7 +66,7 @@ export function Desktop({ videoData, loop = false, isActive, isInModal, ...restP
   return (
     <div className="relative h-full overflow-hidden" onClick={handleOnClick}>
       <InnerPlayer
-        isActive={isActive && activeComment === ''}
+        isActive={isActive}
         id={videoData.id}
         loop={loop}
         videoSource={videoData.source}

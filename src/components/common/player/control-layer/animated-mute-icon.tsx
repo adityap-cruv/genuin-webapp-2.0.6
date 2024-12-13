@@ -1,6 +1,6 @@
-import { useEffect } from 'react'
-import { motion, useAnimationControls } from 'framer-motion'
 import { MuteIcon } from '@icons/player-controls/mute-icon'
+import { motion, useAnimationControls } from 'framer-motion'
+import { useEffect } from 'react'
 
 // TODO: Make this component more reusable
 export const AnimatedMuteIcon = () => {

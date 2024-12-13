@@ -1,9 +1,7 @@
 'use client'
-import { useCommentStore } from '@/components/common/comments/store'
 import { usePlayerControlStore } from '@/components/common/player/player-control-store'
 import { useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
 import { Button } from '@/components/ui/button'
-import { useGenuinOptions } from '@/lib/stores/genuin-options'
 import { cn } from '@/lib/utils'
 import { usePathname } from 'next/navigation'
 import { type ComponentProps, useCallback, useEffect, useRef } from 'react'
@@ -114,12 +112,10 @@ function AudioPlayer({
   ...restProps
 }: AudioPlayerPropsType) {
   const { audioStateRef } = useIHeartDemoStates()
-  const { userHasFocus } = useGenuinOptions()
-  const { muted, shouldPlay: playerShouldPlay } = usePlayerControlStore()
+  const { muted, toggleMuted } = usePlayerControlStore()
   const audioRef = useRef<HTMLAudioElement>(null)
   const [shouldPlay, setShouldPlay] = useState(audioStateRef.current.shouldPlay)
   const [isPlaying, setIsPlaying] = useState(false)
-  const { setActiveCommentIndex } = useCommentStore()
 
   useEffect(() => {
     const element = audioRef.current
@@ -127,50 +123,42 @@ function AudioPlayer({
     element.currentTime = startTime
   }, [startTime])
 
-  const play = useCallback(
-    (setActiveComment: boolean) => {
-      const audioElement = audioRef.current
-      if (!audioElement) return
-      setActiveComment && setActiveCommentIndex('audio-playing')
-      void audioElement.play()
-    },
-    [setActiveCommentIndex]
-  )
+  const play = useCallback(() => {
+    const audioElement = audioRef.current
+    if (!audioElement) return
+    if (!muted) toggleMuted()
+    void audioElement.play()
+  }, [muted])
 
-  const pause = useCallback(
-    (setActiveComment: boolean) => {
-      const audioElement = audioRef.current
-      if (!audioElement) return
-      setActiveComment && setActiveCommentIndex('')
-      audioElement.pause()
-    },
-    [setActiveCommentIndex]
-  )
+  const pause = useCallback(() => {
+    const audioElement = audioRef.current
+    if (!audioElement) return
+    audioElement.pause()
+  }, [])
 
   useEffect(() => {
-    if (shouldPlay) {
-      play(!muted)
+    if (shouldPlay && muted) {
+      play()
     } else {
-      pause(!muted)
+      pause()
     }
   }, [shouldPlay, muted])
 
-  useEffect(() => {
-    if (userHasFocus && muted) return
-    if (userHasFocus) {
-      if (!playerShouldPlay) {
-        setShouldPlay(true)
-      } else {
-        setShouldPlay(false)
-      }
-    }
-  }, [playerShouldPlay, userHasFocus, muted])
+  // useEffect(() => {
+  //   if (userHasFocus) {
+  //     if (muted) {
+  //       setShouldPlay(true)
+  //     } else {
+  //       setShouldPlay(false)
+  //     }
+  //   }
+  // }, [muted, userHasFocus])
 
   useEffect(() => {
     const audioElement = audioRef.current
     if (!audioElement) return
     if (shouldPlay || muted) {
-      play(!muted)
+      play()
     }
     audioElement.currentTime = audioStateRef.current.currentTime
 
@@ -207,11 +195,12 @@ function AudioPlayer({
   }, [src])
 
   const handleAudioClick = useCallback(() => {
+    if (!muted) toggleMuted()
     setShouldPlay((prev) => {
       audioStateRef.current.shouldPlay = !prev
       return !prev
     })
-  }, [])
+  }, [muted])
 
   return (
     <section

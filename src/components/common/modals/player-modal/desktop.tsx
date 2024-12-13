@@ -82,6 +82,9 @@ export function Desktop({
   // This is to show the iheart demo in the modal.
   useEffect(() => {
     setIHeartDemoRenderIn(open ? 'modal' : 'root')
+    return () => {
+      setIHeartDemoRenderIn('root')
+    }
   }, [open])
 
   return (
