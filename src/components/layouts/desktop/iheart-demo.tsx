@@ -147,7 +147,7 @@ function AudioPlayer({
   useEffect(() => {
     const audioElement = audioRef.current
     if (!audioElement) return
-    if (shouldPlay && muted) {
+    if (muted) {
       play()
     }
     audioElement.currentTime = audioStateRef.current.currentTime
