@@ -40,7 +40,7 @@ export function IHeartDemoProvider({
   const audioPlayerStateRef = useRef<{ duration: number; currentTime: number; shouldPlay: boolean }>({
     duration: 0,
     currentTime: 0,
-    shouldPlay: false,
+    shouldPlay: true,
   })
 
   return (

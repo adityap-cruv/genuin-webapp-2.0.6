@@ -14,12 +14,16 @@ type PlayerControlStoreType = {
   duration: number
   currentTime: number
   setTimeState: (currentTime: number, duration: number, videoId: string) => void
+  mute: () => void
 }
 
 export const usePlayerControlStore = create<PlayerControlStoreType>((set) => {
   return {
     shouldPlay: true,
     muted: true,
+    mute() {
+      set({ muted: true })
+    },
     toggleMuted() {
       set((state) => ({ muted: !state.muted }))
     },

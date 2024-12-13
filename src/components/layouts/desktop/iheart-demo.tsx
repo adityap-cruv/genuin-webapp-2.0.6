@@ -3,7 +3,7 @@ import { usePlayerControlStore } from '@/components/common/player/player-control
 import { useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { usePathname } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { type ComponentProps, useCallback, useEffect, useRef } from 'react'
 import { useState } from 'react'
 
@@ -112,10 +112,13 @@ function AudioPlayer({
   ...restProps
 }: AudioPlayerPropsType) {
   const { audioStateRef } = useIHeartDemoStates()
-  const { muted, toggleMuted } = usePlayerControlStore()
+  const { muted, mute, toggleMuted } = usePlayerControlStore()
   const audioRef = useRef<HTMLAudioElement>(null)
   const [shouldPlay, setShouldPlay] = useState(audioStateRef.current.shouldPlay)
   const [isPlaying, setIsPlaying] = useState(false)
+  const { shouldPlay: playerShouldPlay } = usePlayerControlStore()
+  const pathName = usePathname()
+  const searchParams = useSearchParams()
 
   useEffect(() => {
     const element = audioRef.current
@@ -137,6 +140,17 @@ function AudioPlayer({
   }, [])
 
   useEffect(() => {
+    const audioElement = audioRef.current
+    if (!audioElement) return
+    mute()
+    if (audioElement.paused) play()
+  }, [pathName, searchParams])
+
+  useEffect(() => {
+    if (!playerShouldPlay) play()
+  }, [playerShouldPlay])
+
+  useEffect(() => {
     if (shouldPlay && muted) {
       play()
     } else {
@@ -147,9 +161,7 @@ function AudioPlayer({
   useEffect(() => {
     const audioElement = audioRef.current
     if (!audioElement) return
-    if (muted) {
-      play()
-    }
+    if (shouldPlay || muted) play()
     audioElement.currentTime = audioStateRef.current.currentTime
 
     function handleTimeUpdate(e: Event) {

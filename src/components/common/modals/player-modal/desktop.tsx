@@ -21,6 +21,7 @@ import { UnseenMessageRibbon } from '../../unseen-message-ribbon'
 import { Button } from '@/components/ui/button'
 import { useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
 import { IHeartDemo } from '@/components/layouts/desktop/iheart-demo'
+import { usePlayerControlStore } from '../../player/player-control-store'
 
 type Props = {
   children?: React.ReactNode
@@ -65,6 +66,7 @@ export function Desktop({
     setCurrentIndex: state.setCurrentIndex,
     setStateVideos: state.setVideos,
   }))
+  const { mute } = usePlayerControlStore()
 
   useEffect(() => {
     if (videos) setStateVideos(videos)
@@ -84,6 +86,7 @@ export function Desktop({
     setIHeartDemoRenderIn(open ? 'modal' : 'root')
     return () => {
       setIHeartDemoRenderIn('root')
+      mute()
     }
   }, [open])
 
