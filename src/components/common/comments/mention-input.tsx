@@ -288,7 +288,7 @@ const MentionInput: React.FC<{
                     className={`absolute right-4 text-body-1-bold ${
                       text.trim().length === 0 || isPosting ? 'text-primary-600' : 'text-primary'
                     }`}>
-                    Post
+                    {isPosting ? 'Posting...' : 'Post'}
                   </button>
                 </div>
               </div>
