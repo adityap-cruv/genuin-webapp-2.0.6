@@ -143,7 +143,7 @@ function AudioPlayer({
     const audioElement = audioRef.current
     if (!audioElement) return
     mute()
-    if (audioElement.paused) play()
+    if (audioElement.paused) void audioElement.play()
   }, [pathName, searchParams])
 
   useEffect(() => {
