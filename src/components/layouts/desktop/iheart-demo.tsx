@@ -144,16 +144,6 @@ function AudioPlayer({
     }
   }, [shouldPlay, muted])
 
-  // useEffect(() => {
-  //   if (userHasFocus) {
-  //     if (muted) {
-  //       setShouldPlay(true)
-  //     } else {
-  //       setShouldPlay(false)
-  //     }
-  //   }
-  // }, [muted, userHasFocus])
-
   useEffect(() => {
     const audioElement = audioRef.current
     if (!audioElement) return
