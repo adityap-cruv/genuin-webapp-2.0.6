@@ -32,10 +32,14 @@ export const Desktop = memo(function Desktop({
   isInModal,
   clickableUrl,
 }: DesktopProps) {
-  const { setShouldPlay, shouldPlay } = usePlayerControlStore(
+  const { setShouldPlay, shouldPlay, showMutedLayer, muted, toggleMutedLayer, toggleMuted } = usePlayerControlStore(
     useShallow((state) => ({
       setShouldPlay: state.setShouldPlay,
       shouldPlay: state.shouldPlay,
+      muted: state.muted,
+      toggleMuted: state.toggleMuted,
+      showMutedLayer: state.showMutedLayer,
+      toggleMutedLayer: state.toggleMutedLayer,
     }))
   )
 
@@ -56,6 +60,16 @@ export const Desktop = memo(function Desktop({
       <div
         onClick={clickableUrl ? openClickableUrl : undefined}
         className={cn('absolute inset-0', clickableUrl && 'cursor-pointer')}>
+        {muted && showMutedLayer && (
+          <div
+            className="absolute h-full w-full"
+            onClick={(e) => {
+              e.stopPropagation()
+              toggleMutedLayer()
+              toggleMuted()
+            }}
+          />
+        )}
         <div className="relative left-6 top-6 flex w-fit gap-2">
           {clickableUrl && (
             <span onClick={handlePlayPause} className="rounded-lg bg-monochrome-white p-2">

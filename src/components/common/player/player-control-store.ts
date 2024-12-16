@@ -6,6 +6,9 @@ type PlayerControlStoreType = {
   shouldPlay: boolean
   muted: boolean
   toggleMuted: () => void
+  mute: () => void
+  showMutedLayer: boolean
+  toggleMutedLayer: () => void
   play: () => void
   pause: () => void
   setIsPlaying: (isPlaying: boolean) => void
@@ -14,13 +17,16 @@ type PlayerControlStoreType = {
   duration: number
   currentTime: number
   setTimeState: (currentTime: number, duration: number, videoId: string) => void
-  mute: () => void
 }
 
 export const usePlayerControlStore = create<PlayerControlStoreType>((set) => {
   return {
     shouldPlay: true,
     muted: true,
+    showMutedLayer: true,
+    toggleMutedLayer() {
+      set((state) => ({ showMutedLayer: !state.showMutedLayer }))
+    },
     mute() {
       set({ muted: true })
     },
