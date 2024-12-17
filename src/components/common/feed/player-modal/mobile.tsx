@@ -1,13 +1,13 @@
 'use client'
 import { CustomDialog, CustomDialogContent, CustomDialogTrigger } from '@components/custom/custom-dialog'
-import { useEffect } from 'react'
-import { useFeedModalStore } from './store'
+// import { useEffect } from 'react'
+// import { useFeedModalStore } from './store'
 import { Feed } from '@components/common/feed'
 import { TopBar } from '@components/layouts/mobile/top-bar'
 import { FeedShimmer } from '@components/common/shimmers/feed-shimmer'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import { UnseenMessageRibbon } from '@components/common/unseen-message-ribbon'
-import { useShallow } from 'zustand/react/shallow'
+// import { useShallow } from 'zustand/react/shallow'
 
 type Props = {
   children?: React.ReactNode
@@ -41,25 +41,25 @@ export function Mobile({
   fetchNextVideos,
   unreadMessageCount,
 }: Props) {
-  const { currentIndex, setCurrentIndex, setStateVideos } = useFeedModalStore(
-    useShallow((state) => ({
-      currentIndex: state.currentIndex,
-      setCurrentIndex: state.setCurrentIndex,
-      setStateVideos: state.setVideos,
-    }))
-  )
+  // const { currentIndex, setCurrentIndex, setStateVideos } = useFeedModalStore(
+  //   useShallow((state) => ({
+  //     currentIndex: state.currentIndex,
+  //     setCurrentIndex: state.setCurrentIndex,
+  //     setStateVideos: state.setVideos,
+  //   }))
+  // )
 
-  useEffect(() => {
-    if (videos) setStateVideos(videos)
-  }, [videos])
+  // useEffect(() => {
+  //   if (videos) setStateVideos(videos)
+  // }, [videos])
 
-  useEffect(() => {
-    setCurrentIndex(startIndex)
-  }, [startIndex])
+  // useEffect(() => {
+  //   setCurrentIndex(startIndex)
+  // }, [startIndex])
 
-  useEffect(() => {
-    if (videos && !isFetchingNextPage && currentIndex >= videos?.length - 2) fetchNextVideos()
-  }, [currentIndex])
+  // useEffect(() => {
+  //   if (videos && !isFetchingNextPage && currentIndex >= videos?.length - 2) fetchNextVideos()
+  // }, [currentIndex])
 
   function InnerContent() {
     if (isLoading || !videos) {

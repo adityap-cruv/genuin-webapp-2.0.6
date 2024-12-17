@@ -19,15 +19,17 @@ export function getLoopAndCommunityShareString(shareUrl: string) {
   return { loopShareString, communityShareString }
 }
 
+/**
+ * This function is used to open the modal for the user to download the app or if web is used in whitelabel or subdomain it will open authentication.
+ * @param param0
+ */
 export function openModal({
   title,
   subtitle,
-  action,
   deepLink,
 }: {
   title?: string | ReactNode
   subtitle?: string | ReactNode
-  action?: any
   deepLink?: string
 }) {
   const embed = useGenuinOptions.getState().embed

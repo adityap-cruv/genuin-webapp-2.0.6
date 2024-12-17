@@ -126,6 +126,7 @@ export async function fetchVideoMetadata(videoSlug: string) {
     })
 }
 
+// TODO: Figure out what is type here.
 export async function videoSpark(contentId: string, type: number, spark: boolean) {
   return await axiosInstance
     .post(
@@ -149,7 +150,11 @@ export async function videoSpark(contentId: string, type: number, spark: boolean
     })
 }
 
-export async function joinCommunity(onboardingCommunities: boolean, communities: any, users: any) {
+export async function joinCommunity(
+  onboardingCommunities: boolean,
+  communities: string[],
+  users: Array<{ user_id?: string }>
+) {
   return await axiosInstance
     .post('/api/v3/community/add_users', {
       onboarding_communities: onboardingCommunities,
@@ -164,6 +169,12 @@ export async function joinCommunity(onboardingCommunities: boolean, communities:
     })
 }
 
+/**
+ * This api call is used to request to join a community.
+ * It will return a code 200 if the request is successful.
+ * @param communityId
+ * @returns
+ */
 export async function requestCommunity(communityId: string | undefined) {
   return await axiosInstance
     .post('/api/v3/community/join_request', {

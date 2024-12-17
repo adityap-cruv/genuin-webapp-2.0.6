@@ -2,7 +2,7 @@ import { getCommunityLoops } from '@lib/api/community'
 import Image from 'next/image'
 import noLoopsImage from '@images/noLoopImage.svg'
 import { useState } from 'react'
-import { PlayerModal } from '@components/common/modals/player-modal'
+import { PlayerModal } from '@/components/common/feed/player-modal'
 import { getLoopVideos } from '@lib/api/loop'
 import { type VideoPlayerModalCommunityType, type VideoPlayerModalLoopType } from '@lib/schemas/player/video'
 import { LoopCard, LoopCardShimmer } from '@components/common/loop-card'
@@ -46,7 +46,7 @@ export function CommunityLoopTab({ community }: { community: VideoPlayerModalCom
                 owner: { userName: item.owner.username },
                 thumbnail: item.thumbnail_url_m
                   ? item.thumbnail_url_m
-                  : (item.thumbnail_url_l ?? item.thumbnail_url ?? ''),
+                  : item.thumbnail_url_l ?? item.thumbnail_url ?? '',
                 createdAt: item.message_at,
               }))}
               loopSlug={item.slug}

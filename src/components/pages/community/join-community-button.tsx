@@ -1,22 +1,26 @@
 import { requestCommunity, joinCommunity, leaveCommunity } from '@lib/api/video'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button } from '@components/ui/button'
 import { openModal } from '@lib/utils'
 import { useQueryClient } from '@tanstack/react-query'
 import { useSearchParams } from 'next/navigation'
 import { joinCommunityDeepLink } from '@/lib/get-deeplink'
 
+type UserRoleType = 'LEADER' | 'MEMBER' | 'REQUESTED' | null
+
 type Props = {
-  userRole?: 'LEADER' | 'MEMBER' | 'REQUESTED' | null
   handle: string
   id: string
   isCommunityPrivate: boolean
   isJoinRequested: boolean
   buttonText: string
+  userRole?: UserRoleType
+  onStatusChange?: (role?: UserRoleType) => void
   communityName?: string
 }
 
+// TODO: Remove this component after the migration(to UpdatedJoinCommunityButton) is done
 export function JoinCommunityButton({
   userRole,
   handle,
@@ -25,11 +29,16 @@ export function JoinCommunityButton({
   isJoinRequested,
   buttonText,
   communityName,
+  onStatusChange,
 }: Props) {
   const queryClient = useQueryClient()
   const [role, setRole] = useState(userRole)
   const user = useGenuinOptions().user
-  const searchParams = Object.fromEntries(useSearchParams())
+  const searchParams = useSearchParams()
+
+  useEffect(() => {
+    onStatusChange?.(userRole)
+  }, [userRole])
 
   async function toggleCommunityJoinState() {
     try {
@@ -83,23 +92,22 @@ export function JoinCommunityButton({
       variant={role ? 'outline' : 'default'}
       onClick={
         user
-          ? async () => {
-              await toggleCommunityJoinState()
-            }
+          ? toggleCommunityJoinState
           : async () => {
-              await joinCommunityDeepLink({ communityName: communityName ?? '', searchParams }).then(
-                (generatedLink) => {
-                  openModal({
-                    deepLink: generatedLink,
-                    subtitle: (
-                      <>
-                        Get the app to join the <br />
-                        <span className="font-bold">@{handle}</span> community.
-                      </>
-                    ),
-                  })
-                }
-              )
+              await joinCommunityDeepLink({
+                communityName: communityName ?? '',
+                searchParams: Object.fromEntries(searchParams),
+              }).then((generatedLink) => {
+                openModal({
+                  deepLink: generatedLink,
+                  subtitle: (
+                    <>
+                      Get the app to join the <br />
+                      <span className="font-bold">@{handle}</span> community.
+                    </>
+                  ),
+                })
+              })
             }
       }>
       <p

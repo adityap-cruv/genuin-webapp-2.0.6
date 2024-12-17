@@ -3,12 +3,12 @@ import { DecorativeList } from '@components/custom/decorative-list'
 import { fetchProfileCommunityLoops, fetchProfileVideos, getCommunities, getProfileFeed } from '@lib/api/profile'
 import { Loader } from '@components/ui/loader'
 import { Shimmer } from '@components/ui/shimmer'
-import { PlayerModal } from '@components/common/modals/player-modal'
+import { PlayerModal } from '@/components/common/feed/player-modal'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import icPlay from '@icons/player-controls/icPlay.svg'
 import { type User, useGenuinOptions } from '@lib/stores/genuin-options'
 import { useMotionValueEvent, useScroll } from 'framer-motion'
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { useCommunityListStore } from './store'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { Button } from '@components/ui/button'
@@ -202,33 +202,49 @@ export function CommunityList({ userId }: { userId: string }) {
 }
 
 function PlayerModalWrapper({ userId, currentVideoId }: { userId: string; currentVideoId: string }) {
-  const { data, isLoading, fetchNextPage } = getProfileFeed(userId, currentVideoId)
+  const { data, isLoading, fetchNextPage, isError, isFetchingNextPage, hasNextPage } = getProfileFeed(
+    userId,
+    currentVideoId
+  )
   const { close } = useCommunityListStore()
-  const videos = data?.pages.flatMap((item) => item.feed)
-  const [activeIndex, setActiveIndex] = useState(0)
+  const videos = useMemo(() => data?.pages.flatMap((item) => item.feed), [data])
+  // const [activeIndex] = useState(0)
 
-  useEffect(() => {
-    if (!videos) return
-    if (activeIndex === videos?.length - 2) {
-      void fetchNextPage()
-    }
-  }, [activeIndex])
+  // useEffect(() => {
+  //   if (!videos) return
+  //   if (activeIndex === videos?.length - 2) {
+  //     void fetchNextPage()
+  //   }
+  // }, [activeIndex])
 
   return (
-    <PlayerModal.profile
-      video={videos?.[activeIndex]}
-      hasNextVideo={(videos?.length ?? 0) - 1 !== activeIndex}
-      hasPreviousVideo={activeIndex !== 0}
-      getNextVideo={() => {
-        setActiveIndex(activeIndex + 1)
-      }}
-      getPreviousVideo={() => {
-        setActiveIndex(activeIndex - 1)
-      }}
+    <PlayerModal.desktop
+      videos={videos ?? []}
       close={close}
-      open={Boolean(currentVideoId)}
+      fetchNextVideos={fetchNextPage}
+      isError={isError}
+      isFetchingNextPage={isFetchingNextPage}
       isLoading={isLoading}
-      isInModal={true}
+      open={!!currentVideoId}
+      startIndex={0}
+      isInModal
+      hasNextPage={hasNextPage}
+      onCommunityJoin={(communityId, role) => {
+        console.log('communityId join in profile..', communityId, 'role', role)
+      }}
+      // video={videos?.[activeIndex]}
+      // hasNextVideo={(videos?.length ?? 0) - 1 !== activeIndex}
+      // hasPreviousVideo={activeIndex !== 0}
+      // getNextVideo={() => {
+      //   setActiveIndex(activeIndex + 1)
+      // }}
+      // getPreviousVideo={() => {
+      //   setActiveIndex(activeIndex - 1)
+      // }}
+      // close={close}
+      // open={Boolean(currentVideoId)}
+      // isLoading={isLoading}
+      // isInModal={true}
     />
   )
 }

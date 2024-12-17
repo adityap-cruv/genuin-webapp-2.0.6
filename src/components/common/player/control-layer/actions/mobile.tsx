@@ -2,22 +2,19 @@ import { abbreviateNumber, checkAndAppendHttps, openGeneratedLink } from '@lib/u
 import icShare from '@icons/player-controls/icShare.svg'
 import icComment from '@icons/player-controls/icComment.svg'
 import icLinkout from '@icons/player-controls/icLinkout.svg'
-import icSpark from '@icons/player-controls/icBulb.svg'
-import icSparkTrue from '@icons/player-controls/icSparkTrue.svg'
 import icRepost from '@icons/player-controls/icRepost.svg'
 import Link from 'next/link'
 import Image from 'next/image'
 import Analytics from '@services/analytics'
-import { videoSpark } from '@lib/api/video'
-import { useState } from 'react'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { useSearchParams } from 'next/navigation'
 import { RepostModal } from '@components/common/modals/repost'
 import { AuthenticationModal } from '@components/common/modals/authentication'
 import { ActionItem } from './action-item'
 import { useCommentSheetStore } from '../../comment-sheet/store'
-import { repostDeepLink, sparkDeepLink } from '@/lib/get-deeplink'
+import { repostDeepLink } from '@/lib/get-deeplink'
 import { useWalletBalanceHandler } from '@/services/wallet-handler'
+import { Spark } from './spark'
 
 type MobileActionsProps = {
   attachedLink?: string | null
@@ -40,32 +37,14 @@ export function Mobile({
   description,
   isSparked,
 }: MobileActionsProps) {
-  // const { shareFn } = useAdaptiveShare()
   const { handleWalletBalance } = useWalletBalanceHandler()
   const { openComments, closeComments, commentsIsOpen } = useCommentSheetStore((state) => ({
     openComments: state.openModal,
     closeComments: state.closeModal,
     commentsIsOpen: state.modalIsOpen,
   }))
-
-  const [sparkData, setSparkData] = useState({
-    isSparked,
-    sparkCount,
-  })
   const { embed, user } = useGenuinOptions((state) => ({ user: state.user, embed: state.embed }))
   const searchParams = Object.fromEntries(useSearchParams())
-
-  async function toggleVideoSpark() {
-    await videoSpark(videoId, 2, !sparkData.isSparked).then((res) => {
-      if (res.code === 200) {
-        setSparkData((prevData) => ({
-          ...prevData,
-          isSparked: !prevData.isSparked,
-          sparkCount: prevData.isSparked ? prevData.sparkCount - 1 : prevData.sparkCount + 1,
-        }))
-      }
-    })
-  }
 
   return (
     <div
@@ -95,25 +74,13 @@ export function Mobile({
           }}>
           <Image src={icRepost} height={32} width={32} alt="repost" />
         </ActionItem>
-        <ActionItem
-          title="Give spark!"
-          onClick={async () => {
-            if (!sparkData.isSparked) {
-              await handleWalletBalance({ action: 'spark', videoId, type: 'POST' })
-            }
-            embed
-              ? user
-                ? await toggleVideoSpark()
-                : AuthenticationModal.open()
-              : await sparkDeepLink({ videoSlug, shareUrl, searchParams }).then((generatedLink) => {
-                  openGeneratedLink(generatedLink)
-                })
-          }}>
-          <Image src={sparkData.isSparked ? icSparkTrue : icSpark} height={32} width={32} alt="spark" />
-          <p className="flex justify-center text-body-1-demi text-monochrome-white">
-            {abbreviateNumber(sparkData.sparkCount)}
-          </p>
-        </ActionItem>
+        <Spark
+          shareUrl={shareUrl}
+          sparkCount={sparkCount}
+          videoId={videoId}
+          videoSlug={videoSlug}
+          isSparked={isSparked}
+        />
       </span>
       <ActionItem
         title="See Comments!"

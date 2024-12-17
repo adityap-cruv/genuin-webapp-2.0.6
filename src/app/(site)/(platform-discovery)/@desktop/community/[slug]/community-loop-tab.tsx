@@ -2,7 +2,7 @@
 import { getCommunityLoops } from '@lib/api/community'
 import Image from 'next/image'
 import noLoopsImage from '@images/noLoopImage.svg'
-import { PlayerModal } from '@components/common/modals/player-modal'
+import { PlayerModal } from '@/components/common/feed/player-modal'
 import { getLoopVideos } from '@lib/api/loop'
 import { memo, useState } from 'react'
 import { type VideoPlayerModalCommunityType, type VideoPlayerModalLoopType } from '@lib/schemas/player/video'
