@@ -187,7 +187,7 @@ function Menu({
       <SheetContent
         showDefaultClose={false}
         side="left"
-        className="z-40 w-full overflow-auto border-none shadow-none outline-none">
+        className="z-[60] w-full overflow-auto border-none shadow-none outline-none">
         <div className="mb-4 flex justify-between">
           <AppLogo.icon imageHeight={32} className={cn('fill-new-off-white')} />
           <SheetClose className="shadow-none outline-none">
