@@ -9,45 +9,45 @@ import { useState } from 'react'
 
 const DATA: Record<string, { title: string; subtitle: string; src: string; image: string; id: string }> = {
   '1429': {
-    title: 'Sauce on the side with Gandhi',
-    subtitle: "Who's the Worst Celebrity",
+    title: 'Las Culturistas with Matt Rogers and Bowen Yang',
+    subtitle: "I've… Been Through (w/ Ariana Grande) | Las Culturistas with Matt Rogers and Bowen Yang",
     src: 'https://media.begenuin.com/iheart_demo/iheart.mp3',
     image: 'https://media.begenuin.com/iheart_demo/iheart.webp',
     id: '7',
   },
   'ag-2cjy': {
-    title: 'Sauce on the side with Gandhi',
-    subtitle: "Who's the Worst Celebrity",
+    title: 'Good Morning with Susan Leigh Taylor',
+    subtitle: '#1 Hit Music Station',
     src: 'https://media.begenuin.com/iheart_demo/z100.mp3',
     image: 'https://media.begenuin.com/iheart_demo/z100.webp',
     id: '8',
   },
 
   '1729': {
-    title: 'Math & Magic with Bob Pittman',
-    subtitle: 'Martha Stewart Live at iHeart Living is a Limitless Subject Matter',
+    title: 'Las Culturistas with Matt Rogers and Bowen Yang',
+    subtitle: "I've… Been Through (w/ Ariana Grande) | Las Culturistas with Matt Rogers and Bowen Yang",
     src: 'https://media.begenuin.com/iheart_demo/iheart.mp3',
     image: 'https://media.begenuin.com/iheart_demo/iheart.webp',
     id: '1',
   },
   iheartmedia: {
-    title: 'Math & Magic with Bob Pittman',
-    subtitle: 'Martha Stewart Live at iHeart Living is a Limitless Subject Matter',
+    title: 'Las Culturistas with Matt Rogers and Bowen Yang',
+    subtitle: "I've… Been Through (w/ Ariana Grande) | Las Culturistas with Matt Rogers and Bowen Yang",
     src: 'https://media.begenuin.com/iheart_demo/iheart.mp3',
     image: 'https://media.begenuin.com/iheart_demo/iheart.webp',
     id: '2',
   },
 
   '1775': {
-    title: 'Sauce on the side with Gandhi',
-    subtitle: "Who's the Worst Celebrity",
+    title: 'Good Morning with Susan Leigh Taylor',
+    subtitle: '#1 Hit Music Station',
     src: 'https://media.begenuin.com/iheart_demo/z100.mp3',
     image: 'https://media.begenuin.com/iheart_demo/z100.webp',
     id: '3',
   },
   'z-100': {
-    title: 'Sauce on the side with Gandhi',
-    subtitle: "Who's the Worst Celebrity",
+    title: 'Good Morning with Susan Leigh Taylor',
+    subtitle: '#1 Hit Music Station',
     src: 'https://media.begenuin.com/iheart_demo/z100.mp3',
     image: 'https://media.begenuin.com/iheart_demo/z100.webp',
     id: '4',
