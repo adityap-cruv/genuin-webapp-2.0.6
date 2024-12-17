@@ -135,7 +135,8 @@ export function MainComponent({ loopDetails }: Props) {
           <div className=" my-3 overflow-hidden rounded-lg border border-solid border-tertiary-200 p-4">
             <div className="flex gap-x-2">
               <div className="flex flex-1 flex-col items-start">
-                <p className="text-body-1-demi text-tertiary">Created by</p>
+                {/* make this fonts 12px */}
+                <p className="text-xs text-cap-1-demi text-tertiary">Created by</p>
                 <Link href={{ pathname: PATH_NAME.profile(loopDetails.owner.username) }}>
                   <div className="my-2 flex items-center">
                     <div className="bg-red-400 h-6 w-6 shrink-0">
@@ -146,14 +147,15 @@ export function MainComponent({ loopDetails }: Props) {
                         isAvatar={loopDetails.owner.is_avatar}
                       />
                     </div>
-                    <p className="ml-1 line-clamp-1 break-all text-body-1-bold text-secondary">
+                    <p className="ml-1 line-clamp-1 break-all text-cap-1-bold text-secondary">
                       @{loopDetails.owner.username}
                     </p>
                   </div>
                 </Link>
               </div>
               <div className="flex flex-1 flex-col items-start">
-                <p className="text-body-1-demi text-tertiary">Posted in</p>
+                {/* make this fonts 12px */}
+                <p className="text-xs text-cap-1-demi text-tertiary">Posted in</p>
                 {/* todo change to community data */}
                 <Link href={{ pathname: PATH_NAME.community(loopDetails.community.slug) }}>
                   <div className="my-2 flex items-center">
@@ -165,7 +167,7 @@ export function MainComponent({ loopDetails }: Props) {
                         isAvatar={false}
                       />
                     </div>
-                    <p className="ml-1 line-clamp-1 break-all text-body-1-bold text-secondary">
+                    <p className="ml-1 line-clamp-1 break-all text-cap-1-bold text-secondary">
                       {loopDetails.community.name}
                     </p>
                     {loopDetails.community.type === 2 && (
@@ -445,7 +447,8 @@ function Stats({
         return (
           <div key={index} className="flex items-center">
             <p className="mr-1 text-title-2-bold">{obj.value}</p>
-            <p className="mr-4 text-body-1-demi">{obj.key}</p>
+            {/* make this fonts 12px */}
+            <p className="text-xs mr-4 text-cap-1-demi text-tertiary">{obj.key}</p>
           </div>
         )
       })}
