@@ -80,6 +80,9 @@ export async function middleware(request: NextRequest) {
       } else if (Number(config?.brand_id) === 2208) {
         // hard coding for tubitv
         return NextResponse.rewrite(new URL('/.well-known/tubitv/assetlinks.json', request.url))
+      } else if (Number(config?.brand_id) === 2219) {
+        // hard coding for pharmeasy
+        return NextResponse.rewrite(new URL('/.well-known/pharmeasy/assetlinks.json', request.url))
       } else {
         return NextResponse.next()
       }
