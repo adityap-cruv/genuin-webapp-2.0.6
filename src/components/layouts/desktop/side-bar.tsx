@@ -127,7 +127,7 @@ export function SideBar() {
               <hr className="border-1 my-2 border-monochrome-black/10" />
             </>
           )}
-          {!isClaimed && (
+          {!isClaimed && embed && (
             <>
               <div
                 className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10"
