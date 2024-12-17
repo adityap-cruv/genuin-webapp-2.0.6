@@ -153,7 +153,7 @@ function Details({
         if (detailsElement) {
           detailsElement.style.setProperty('transform', 'translate(0px, 50px)')
         }
-      }, 2900)
+      }, 5100)
     }
     return () => {
       if (timeoutId) {

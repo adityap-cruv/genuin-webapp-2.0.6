@@ -120,7 +120,9 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
                   pathName === '/home' ||
                   pathName === '/popular' ||
                   pathName === '/latest' ||
-                  pathName.includes('/video')
+                  (pathName.includes('/group') && showClose) ||
+                  pathName.includes('/video') ||
+                  (pathName.includes('/community') && showClose)
                     ? 'white'
                     : ''
                 }
@@ -138,12 +140,13 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
                 pathName.includes('/video') ||
                 (pathName.includes('/community') && searchParams.toString().includes('feed=1')) ||
                 (pathName.includes('/community') && showClose) ||
+                (pathName.includes('/group') && showClose) ||
                 (pathName.includes('/loop') && showClose)) &&
               'stroke-monochrome-white'
             }`}
           />
         </SearchBar.mobile>
-        {embed && <UserTick />}
+        {embed && <UserTick variant={variant} />}
         {showClose && (
           <X
             onClick={() => {
@@ -289,7 +292,7 @@ function MenuItem({ title, isActive, children, brandName }: ItemProps) {
   )
 }
 
-function UserTick() {
+function UserTick({ variant = 'light' }: { variant: 'light' | 'transparent' | 'dark' | null }) {
   const { data, status } = useSession()
   const searchParams = useSearchParams()
   const pathName = usePathname()
@@ -329,7 +332,11 @@ function UserTick() {
               imageUrl={data.user.image ?? ''}
               isAvatar={data.user.isAvatar}
             />
-            <BurgerIcon />
+            <BurgerIcon
+              className={
+                variant === 'transparent' || variant === 'dark' ? 'stroke-monochrome-white' : 'stroke-monochrome-black'
+              }
+            />
           </div>
         </PopoverTrigger>
         <PopoverContent
@@ -349,10 +356,10 @@ function UserTick() {
                 {data.user.usernameSet
                   ? '@' + data.user.nickname
                   : data.user.email
-                  ? data.user.email
-                  : formatPhoneNumberIntl(
-                      data.user.phoneNumber?.startsWith('+') ? data.user.phoneNumber : `+${data.user.phoneNumber}`
-                    )}
+                    ? data.user.email
+                    : formatPhoneNumberIntl(
+                        data.user.phoneNumber?.startsWith('+') ? data.user.phoneNumber : `+${data.user.phoneNumber}`
+                      )}
               </p>
               {!data.user.isBrandSystemUser && <p className="text-body-1-demi text-monochrome-6">Complete profile</p>}
             </div>
