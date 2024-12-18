@@ -41,7 +41,7 @@ export function DownloadAppDialog({ children }: Props) {
         <div className="m-8 w-80 text-center">
           <h3 className="text-new-h3">
             Download <br />
-            Genuin
+            App
           </h3>
           <p className="m-4 text-new-para-1">
             Send the download link to <br /> your phone & email

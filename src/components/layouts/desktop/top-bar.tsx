@@ -70,7 +70,7 @@ export function TopBar({
                       variant="default"
                       size={'custom'}
                       className="h-8 bg-new-off-black px-4 py-3 hover:bg-new-dark-grey">
-                      <p className="text-[15px] text-new-para-2 font-semibold text-tertiary-100">Download Genuin</p>
+                      <p className="text-[15px] text-new-para-2 font-semibold text-tertiary-100">Download App</p>
                     </Button>
                   </DownloadAppDialog>
                 </>

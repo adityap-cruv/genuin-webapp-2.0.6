@@ -98,7 +98,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
                   ? 'h-8 bg-new-off-black text-monochrome-white hover:bg-new-dark-grey'
                   : 'h-8 bg-new-off-white text-new-off-black hover:bg-new-off-black hover:text-new-off-white'
               }>
-              <p className="text-[15px] text-body-1-demi">Download Genuin</p>
+              <p className="text-[15px] text-body-1-demi">Download App</p>
             </Button>
           </Link>
         )}
