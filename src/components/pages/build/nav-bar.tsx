@@ -80,7 +80,7 @@ export function NavBar() {
             </Link>
             <DownloadAppDialog>
               <Button size="index-page" className="bg-new-off-black after:bg-new-dark-grey hover:bg-new-dark-grey">
-                <p className="text-new-sm font-semibold text-new-off-white">Download Genuin</p>
+                <p className="text-new-sm font-semibold text-new-off-white">Download App</p>
               </Button>
             </DownloadAppDialog>
           </div>
@@ -105,7 +105,7 @@ export function NavBar() {
                   <div className="flex h-full min-w-full flex-col gap-y-4 py-7">
                     <DownloadAppDialog>
                       <Button size="index-page" className="my-2 w-full bg-new-off-black hover:bg-new-dark-grey">
-                        <p className="text-new-md text-new-off-white">Download Genuin</p>
+                        <p className="text-new-md text-new-off-white">Download App</p>
                       </Button>
                     </DownloadAppDialog>
                     <Link href={PATH_NAME.build()}>
