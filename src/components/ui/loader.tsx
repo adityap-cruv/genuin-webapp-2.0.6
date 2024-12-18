@@ -2,7 +2,7 @@ import { cn } from '@lib/utils'
 import { type ComponentProps } from 'react'
 import { cva, type VariantProps } from 'class-variance-authority'
 
-const loaderVariant = cva('animate-spin rounded-full fill-primary', {
+const loaderVariant = cva('animate-spin rounded-full stroke-primary', {
   variants: {
     size: {
       xs: 'h-4 w-4',

@@ -156,9 +156,9 @@ export function FeedContextProvider({
     )
   }, [])
 
-  useEffect(() => {
-    console.log('feedVideos', feedVideos)
-  }, [feedVideos])
+  // useEffect(() => {
+  //   console.log('feedVideos', feedVideos)
+  // }, [feedVideos])
 
   return (
     <FeedContext.Provider

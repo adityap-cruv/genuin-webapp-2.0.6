@@ -4,7 +4,9 @@ import { joinCommunity, leaveCommunity, requestCommunity } from '@lib/api/video'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { openGeneratedLink, openModal } from '@lib/utils'
 import { useSearchParams } from 'next/navigation'
+import { type CommunityUserRoleType } from '../pages/community/updated-join-community-button'
 
+// TODO: Replace this community with the new community join button.
 export function ToggleCommunityJoinState({
   userRole,
   handle,
@@ -14,7 +16,7 @@ export function ToggleCommunityJoinState({
   isCommunityPrivate,
   communityName,
 }: {
-  userRole?: 'LEADER' | 'MEMBER' | null
+  userRole?: CommunityUserRoleType
   handle: string
   id: string
   communityJoinStates: any

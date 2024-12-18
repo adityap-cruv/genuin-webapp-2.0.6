@@ -50,7 +50,7 @@ const CommunitySchema = z.object({
   isCommunityJoinRequested: z.boolean().nullish().optional(),
   profileImage: z.string().nullish(),
   loopCount: z.number().default(0),
-  userRole: z.enum(['LEADER', 'MEMBER']).nullish(),
+  userRole: z.enum(['LEADER', 'MEMBER', 'REQUESTED']).nullish(),
   loops: z.array(LoopSchema),
   type: z.number().nullish(),
 })

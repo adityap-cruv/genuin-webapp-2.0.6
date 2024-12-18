@@ -75,6 +75,7 @@ export function parseFeedResponse(videos: FeedResponseType[]) {
   })
 }
 
+// TODO: check for isCommunityJoinRequested.
 /**
  * This api parses only feed response from go-api.
  * And returns the parsed response in the form of VideoPlayerModalType
@@ -134,14 +135,16 @@ export function parseFeedResponseFromGoApi(feeds: FeedResponseFromGoApi[]) {
 }
 
 // Helper function to map logged_in_user_role to enum values
-function mapUserRole(role?: number): 'LEADER' | 'MEMBER' | 'REQUESTED' | null {
+// TODO: handle Moderator in here.
+function mapUserRole(role?: number | null, isRequested?: boolean | null): 'LEADER' | 'MEMBER' | 'REQUESTED' | null {
+  if (isRequested) return 'REQUESTED'
   switch (role) {
     case 1:
       return 'LEADER'
     case 2:
       return 'MEMBER'
-    case 3:
-      return 'REQUESTED'
+    // case 3:
+    //   return 'REQUESTED'
     default:
       return null
   }
@@ -167,7 +170,7 @@ export function parseProfileCommunityResponse(communities: ProfileCommunityRespo
       id: item.community_id,
       // TODO: Addition from backend required.
       isJoined: false,
-      userRole: item.logged_in_user_role ? (item.logged_in_user_role === 1 ? 'LEADER' : 'MEMBER') : undefined,
+      userRole: mapUserRole(item.logged_in_user_role, item.is_community_join_requested),
       isCommunityJoinRequested: item.is_community_join_requested,
       slug: item.slug,
       name: item.name,

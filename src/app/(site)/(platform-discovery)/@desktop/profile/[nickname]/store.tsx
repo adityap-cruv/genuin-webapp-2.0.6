@@ -1,5 +1,7 @@
 import { create } from 'zustand'
+import { produce } from 'immer'
 import { type ProfileLoopType, type ProfileCommunityType, type ProfileVideoType } from '@lib/schemas/profile/community'
+import { type CommunityUserRoleType } from '@/components/pages/community/updated-join-community-button'
 
 type State = {
   communities: ProfileCommunityType[]
@@ -15,6 +17,13 @@ type Actions = {
   addCommunities: (communities: ProfileCommunityType[]) => void
   addVideos: (communityId: string, loopId: string, videos: ProfileVideoType[]) => void
   replaceCommunities: (communities: ProfileCommunityType[]) => void
+  /**
+   * This func will replace join status in communities.
+   * @param communityId
+   * @param role
+   * @returns
+   */
+  handleCommunityJoin: (communityId: string, role: CommunityUserRoleType) => void
 }
 
 // TODO: Here communities value is changing find why is that happening.
@@ -74,6 +83,16 @@ export const useCommunityListStore = create<State & Actions>((set) => {
         state.communities[communityIndex].loops[loopIndex].videos = [...videos, ...newVideos]
         return { ...state }
       }, true)
+    },
+    handleCommunityJoin(communityId, role) {
+      set(
+        produce((state: State) => {
+          const communityIndex = state.communities.findIndex((currentItem) => currentItem.id === communityId)
+          if (communityIndex !== -1) {
+            state.communities[communityIndex].userRole = role
+          }
+        })
+      )
     },
   }
 })
