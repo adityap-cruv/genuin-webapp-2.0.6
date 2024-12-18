@@ -90,7 +90,7 @@ function InitialComponent() {
           into a distribution network of video-based communities."
       cta={
         <div className="hidden w-3/4 max-w-md gap-4 bg-monochrome-white p-4 md:flex" style={{ borderRadius: '36px' }}>
-          <Image src={downloadQr} height={120} width={120} alt="Download Genuin" />
+          <Image src={downloadQr} height={120} width={120} alt="Download App" />
           <div className="flex flex-col justify-center gap-4">
             <p className="text-cap-1-demi-home" style={{ fontWeight: 800 }}>
               Get the Genuin app to become a Creator

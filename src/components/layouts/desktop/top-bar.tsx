@@ -60,7 +60,7 @@ export function TopBar({
                 />
               </div>
             )}
-            <div className="flex gap-x-2 items-center">
+            <div className="flex items-center gap-x-2">
               {showSearchBar && <SearchBar.desktop />}
               <WalletAmountBadge type="dark" />
               {!isEmbed ? (
@@ -69,8 +69,8 @@ export function TopBar({
                     <Button
                       variant="default"
                       size={'custom'}
-                      className="bg-new-off-black px-4 py-3 hover:bg-new-dark-grey">
-                      <p className="text-new-para-2 font-semibold text-tertiary-100">Download Genuin</p>
+                      className="h-8 bg-new-off-black px-4 py-3 hover:bg-new-dark-grey">
+                      <p className="text-[15px] text-new-para-2 font-semibold text-tertiary-100">Download App</p>
                     </Button>
                   </DownloadAppDialog>
                 </>
@@ -106,12 +106,12 @@ function UserTick() {
     return (
       <Button
         disabled={status === 'loading' || loadingAuthData}
-        className="gap-2 px-4 h-8"
+        className="h-8 gap-2 px-4"
         onClick={() => {
           AuthenticationModal.open()
         }}>
         {(status === 'loading' || loadingAuthData) && <Loader size="sm" className="fill-monochrome-white" />}
-        <p className="min-w-max text-title-3-demi text-monochrome-white text-[15px]">Log in</p>
+        <p className="min-w-max text-[15px] text-title-3-demi text-monochrome-white">Log in</p>
       </Button>
     )
 
