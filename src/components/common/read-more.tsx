@@ -336,7 +336,7 @@ export function Dynamic({
     WebkitLineClamp: maxLines,
     WebkitBoxOrient: 'vertical',
     overflow: 'hidden',
-    wordBreak: 'break-all',
+    wordBreak: 'break-word',
   }
 
   return (
