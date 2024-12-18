@@ -126,7 +126,6 @@ function UserTick() {
               imageUrl={data.user.image ?? ''}
               isAvatar={data.user.isAvatar}
             />
-            <BurgerIcon />
           </div>
         </PopoverTrigger>
         <PopoverContent

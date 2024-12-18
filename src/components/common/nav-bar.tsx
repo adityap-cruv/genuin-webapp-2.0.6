@@ -4,7 +4,7 @@ import { DownloadAppDialog } from '../pages/build/download-app-dialog'
 import Link from 'next/link'
 import { cn } from '@lib/utils'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@components/ui/dropdown-menu'
-import { HamBurgerMenuIcon } from '@components/ui/ham-burger'
+import HamburgerIcon from '@icons/player-controls/icon-hamburger.svg'
 import { HIRING_LINK, MOBILE_DOWNLOAD_APP_LINK } from '@lib/constants'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { type VariantProps, cva } from 'class-variance-authority'
@@ -67,7 +67,8 @@ function BurgerMenu({ variant = 'dark' }: { variant?: 'light' | 'dark' }) {
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger>
-        <HamBurgerMenuIcon variant={variant} />
+        {/* <HamBurgerMenuIcon variant={variant} /> */}
+        <HamburgerIcon />
       </DropdownMenuTrigger>
       <DropdownMenuContent
         className="bg-monochrome-black/90 px-3"

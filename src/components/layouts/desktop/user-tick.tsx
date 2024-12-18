@@ -38,7 +38,6 @@ export function UserTick({ user }: { user: User | null }) {
             imageUrl={user.image ?? ''}
             isAvatar={user.isAvatar}
           />
-          <BurgerIcon />
         </div>
       </PopoverTrigger>
       <PopoverContent

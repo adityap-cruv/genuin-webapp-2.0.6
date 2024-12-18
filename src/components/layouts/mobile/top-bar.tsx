@@ -17,7 +17,6 @@ import { AuthenticationModal } from '@components/common/modals/authentication'
 import { useSession, signOut } from 'next-auth/react'
 import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
 import { CustomAvatar } from '@components/custom/custom-avatar'
-import { BurgerIcon } from '@icons/burger-icon'
 import { LogoutIcon } from '@icons/logout'
 import { removeAllAuthToken } from '@lib/api/instance'
 import { MOBILE_DOWNLOAD_APP_LINK } from '@lib/constants'
@@ -39,6 +38,7 @@ import { CustomImage } from '@/components/custom/custom-image'
 const DownloadAppDialog = dynamic(
   async () => await import('../download-app-dialog').then((comp) => comp.DownloadAppDialog)
 )
+
 
 const navVariant = cva('sticky top-0 flex z-40 h-[76px] w-full items-center justify-between  px-2', {
   variants: {
@@ -181,7 +181,7 @@ function Menu({
 
   return (
     <Sheet>
-      <SheetTrigger>
+      <SheetTrigger className="rounded-full bg-black/20 flex items-center justify-center h-[40px] w-[40px] mr-[12px]">
         <HamBurgerMenuIcon toggleToClose={false} variant={hamBurgerVariant} />
       </SheetTrigger>
       <SheetContent
@@ -331,11 +331,6 @@ function UserTick({ variant = 'light' }: { variant: 'light' | 'transparent' | 'd
               fallbackString={data.user.name ?? ''}
               imageUrl={data.user.image ?? ''}
               isAvatar={data.user.isAvatar}
-            />
-            <BurgerIcon
-              className={
-                variant === 'transparent' || variant === 'dark' ? 'stroke-monochrome-white' : 'stroke-monochrome-black'
-              }
             />
           </div>
         </PopoverTrigger>
