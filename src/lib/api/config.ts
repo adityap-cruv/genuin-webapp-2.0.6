@@ -5,7 +5,6 @@ export async function getEmbedConfig(params: Record<string, string>) {
   Object.keys(params).forEach((key) => {
     url.searchParams.append(key, params[key])
   })
-  // console.log('params::', params)
   return await fetch(url.href, {})
     .then(async (res) => {
       const resData = await res.json()

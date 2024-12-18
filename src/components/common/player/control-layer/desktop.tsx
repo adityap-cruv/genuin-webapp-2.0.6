@@ -1,7 +1,5 @@
 import { usePlayerControlStore } from '../player-control-store'
 import { Actions } from './actions'
-import { AnimatedMuteIcon } from './animated-mute-icon'
-import Analytics from '@services/analytics'
 import { PlayerProgressBar } from './player-progress-bar'
 import { memo, useCallback } from 'react'
 import { useShallow } from 'zustand/react/shallow'
@@ -9,6 +7,7 @@ import { WalletAmountBadge } from '../../wallet/wallet-amount-badge'
 import { cn } from '@/lib/utils'
 import { PlayIcon } from '@icons/player-controls/play-icon'
 import { PauseIcon } from '@icons/player-controls/pause-icon'
+import { MuteUnmuteButton } from './mute-unmute-button'
 
 type DesktopProps = {
   sparkCount: number
@@ -33,23 +32,16 @@ export const Desktop = memo(function Desktop({
   isInModal,
   clickableUrl,
 }: DesktopProps) {
-  const { toggleMuted, muted, setShouldPlay, shouldPlay } = usePlayerControlStore(
+  const { setShouldPlay, shouldPlay, showMutedLayer, muted, toggleMutedLayer, toggleMuted } = usePlayerControlStore(
     useShallow((state) => ({
-      toggleMuted: state.toggleMuted,
-      muted: state.muted,
       setShouldPlay: state.setShouldPlay,
       shouldPlay: state.shouldPlay,
+      muted: state.muted,
+      toggleMuted: state.toggleMuted,
+      showMutedLayer: state.showMutedLayer,
+      toggleMutedLayer: state.toggleMutedLayer,
     }))
   )
-
-  function handleToggleMuted(e: any) {
-    e.stopPropagation()
-    toggleMuted()
-    void Analytics.track({
-      eventName: 'Unmute',
-      properties: { video_id: videoId },
-    })
-  }
 
   function openClickableUrl(e: any) {
     e.stopPropagation()
@@ -65,24 +57,28 @@ export const Desktop = memo(function Desktop({
   )
   return (
     <div className="relative h-full w-full">
-      {(muted || !!clickableUrl) && (
-        <div
-          onClick={clickableUrl ? openClickableUrl : handleToggleMuted}
-          className={cn('absolute inset-0', clickableUrl && 'cursor-pointer')}>
-          <div className="relative left-6 top-6 flex w-fit gap-2">
-            {clickableUrl && (
-              <span onClick={handlePlayPause} className="rounded-lg bg-monochrome-white p-2">
-                {!shouldPlay ? <PlayIcon className="stroke-secondary" /> : <PauseIcon className="stroke-secondary" />}
-              </span>
-            )}
-            {muted && (
-              <span onClick={clickableUrl ? handleToggleMuted : undefined} className="h-fit w-fit cursor-pointer">
-                <AnimatedMuteIcon />
-              </span>
-            )}
-          </div>
+      <div
+        onClick={clickableUrl ? openClickableUrl : undefined}
+        className={cn('absolute inset-0', clickableUrl && 'cursor-pointer')}>
+        {muted && showMutedLayer && (
+          <div
+            className="absolute h-full w-full"
+            onClick={(e) => {
+              e.stopPropagation()
+              toggleMutedLayer()
+              toggleMuted()
+            }}
+          />
+        )}
+        <div className="relative left-6 top-6 flex w-fit gap-2">
+          {clickableUrl && (
+            <span onClick={handlePlayPause} className="rounded-lg bg-monochrome-white p-2">
+              {!shouldPlay ? <PlayIcon className="stroke-secondary" /> : <PauseIcon className="stroke-secondary" />}
+            </span>
+          )}
+          <MuteUnmuteButton videoId={videoId} />
         </div>
-      )}
+      </div>
       {isInModal && (
         <span className="absolute right-6 top-6 h-fit w-fit cursor-pointer">
           <WalletAmountBadge type="light" />
