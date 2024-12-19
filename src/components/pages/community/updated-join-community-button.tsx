@@ -79,7 +79,7 @@ export const UpdatedJoinCommunityButton = memo(function UpdatedJoinCommunityButt
         type: 'all',
       })
     }
-  }, [id, role])
+  }, [id, role, user])
 
   const joinCommunityDeepLinkHandler = useCallback(async () => {
     await joinCommunityDeepLink({
