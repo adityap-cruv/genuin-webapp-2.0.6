@@ -95,10 +95,10 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
             <Button
               className={
                 variant === 'light'
-                  ? 'bg-new-off-black text-monochrome-white hover:bg-new-dark-grey'
-                  : 'bg-new-off-white text-new-off-black hover:bg-new-off-black hover:text-new-off-white'
+                  ? 'h-8 bg-new-off-black text-monochrome-white hover:bg-new-dark-grey'
+                  : 'h-8 bg-new-off-white text-new-off-black hover:bg-new-off-black hover:text-new-off-white'
               }>
-              <p className="text-body-1-demi">Download Genuin</p>
+              <p className="text-[15px] text-body-1-demi">Download App</p>
             </Button>
           </Link>
         )}
@@ -120,7 +120,9 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
                   pathName === '/home' ||
                   pathName === '/popular' ||
                   pathName === '/latest' ||
-                  pathName.includes('/video')
+                  (pathName.includes('/group') && showClose) ||
+                  pathName.includes('/video') ||
+                  (pathName.includes('/community') && showClose)
                     ? 'white'
                     : ''
                 }
@@ -138,12 +140,13 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
                 pathName.includes('/video') ||
                 (pathName.includes('/community') && searchParams.toString().includes('feed=1')) ||
                 (pathName.includes('/community') && showClose) ||
+                (pathName.includes('/group') && showClose) ||
                 (pathName.includes('/loop') && showClose)) &&
               'stroke-monochrome-white'
             }`}
           />
         </SearchBar.mobile>
-        {embed && <UserTick />}
+        {embed && <UserTick variant={variant} />}
         {showClose && (
           <X
             onClick={() => {
@@ -184,7 +187,7 @@ function Menu({
       <SheetContent
         showDefaultClose={false}
         side="left"
-        className="z-40 w-full overflow-auto border-none shadow-none outline-none">
+        className="z-[60] w-full overflow-auto border-none shadow-none outline-none">
         <div className="mb-4 flex justify-between">
           <AppLogo.icon imageHeight={32} className={cn('fill-new-off-white')} />
           <SheetClose className="shadow-none outline-none">
@@ -232,7 +235,7 @@ function Menu({
             <p className={cn('whitespace-nowrap !text-title-3-demi text-primary')}>Log in</p>
           </div>
         )}
-        {!isClaimed && (
+        {!isClaimed && embed && (
           <div
             className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10"
             onClick={() => {
@@ -289,7 +292,7 @@ function MenuItem({ title, isActive, children, brandName }: ItemProps) {
   )
 }
 
-function UserTick() {
+function UserTick({ variant = 'light' }: { variant: 'light' | 'transparent' | 'dark' | null }) {
   const { data, status } = useSession()
   const searchParams = useSearchParams()
   const pathName = usePathname()
@@ -329,7 +332,11 @@ function UserTick() {
               imageUrl={data.user.image ?? ''}
               isAvatar={data.user.isAvatar}
             />
-            <BurgerIcon />
+            <BurgerIcon
+              className={
+                variant === 'transparent' || variant === 'dark' ? 'stroke-monochrome-white' : 'stroke-monochrome-black'
+              }
+            />
           </div>
         </PopoverTrigger>
         <PopoverContent
@@ -349,10 +356,10 @@ function UserTick() {
                 {data.user.usernameSet
                   ? '@' + data.user.nickname
                   : data.user.email
-                  ? data.user.email
-                  : formatPhoneNumberIntl(
-                      data.user.phoneNumber?.startsWith('+') ? data.user.phoneNumber : `+${data.user.phoneNumber}`
-                    )}
+                    ? data.user.email
+                    : formatPhoneNumberIntl(
+                        data.user.phoneNumber?.startsWith('+') ? data.user.phoneNumber : `+${data.user.phoneNumber}`
+                      )}
               </p>
               {!data.user.isBrandSystemUser && <p className="text-body-1-demi text-monochrome-6">Complete profile</p>}
             </div>

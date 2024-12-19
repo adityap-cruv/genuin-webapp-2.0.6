@@ -14,6 +14,8 @@ import { ReactQueryProvider } from '@components/providers/query-client-provider'
 import { RootHTML, getViewport } from '@components/layouts/root-layout'
 import { auth } from '../../../auth'
 import { type Session } from 'next-auth'
+import { IHeartDemoProvider } from '@/components/providers/iheart-demo-provider'
+import { IHEART_BRAND_URL } from '@/lib/constants'
 
 export default async function RootLayout(props: any) {
   const deviceType = cookies().get('device_type')?.value ?? ''
@@ -49,20 +51,24 @@ export default async function RootLayout(props: any) {
   return (
     <RootHTML brandColors={brandColors} favicon={favicon} subdomain={config?.subdomain}>
       <RedirectHandler config={config} shouldRedirect={Object.hasOwn(configParams ?? {}, 'subdomain')}>
-        <ThirdPartyScriptProvider isEmbed={!!config}>
-          <SessionProvider refetchOnWindowFocus={false} refetchInterval={3600}>
-            <ReactQueryProvider>
-              <GenuinOptionsProvider
-                browserType={browserType}
-                deviceType={deviceType}
-                os={os}
-                config={config}
-                user={userSession?.user ?? null}>
-                <UrlParamProvider>{props.children}</UrlParamProvider>
-              </GenuinOptionsProvider>
-            </ReactQueryProvider>
-          </SessionProvider>
-        </ThirdPartyScriptProvider>
+        <IHeartDemoProvider
+          shouldShowDemo={Number(config?.brand_id) === IHEART_BRAND_URL}
+          brandId={config?.brand_id ?? ''}>
+          <ThirdPartyScriptProvider isEmbed={!!config}>
+            <SessionProvider refetchOnWindowFocus={false} refetchInterval={3600}>
+              <ReactQueryProvider>
+                <GenuinOptionsProvider
+                  browserType={browserType}
+                  deviceType={deviceType}
+                  os={os}
+                  config={config}
+                  user={userSession?.user ?? null}>
+                  <UrlParamProvider>{props.children}</UrlParamProvider>
+                </GenuinOptionsProvider>
+              </ReactQueryProvider>
+            </SessionProvider>
+          </ThirdPartyScriptProvider>
+        </IHeartDemoProvider>
       </RedirectHandler>
     </RootHTML>
   )

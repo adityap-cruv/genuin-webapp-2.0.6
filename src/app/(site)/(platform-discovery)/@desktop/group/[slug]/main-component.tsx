@@ -213,7 +213,7 @@ export function MainComponent({ loopDetails }: Props) {
           <div className="my-3 w-1/2 rounded-xl border border-tertiary-200 p-4">
             <span className="flex gap-x-2" ref={detailsDivRef}>
               <span className="flex-1">
-                <p className="text-body-1-demi text-tertiary">Created by</p>
+                <p className="text-cap-1-demi text-tertiary">Created by</p>
                 <Link
                   href={{
                     pathname: loopDetails.owner.brand?.brand_slug
@@ -240,7 +240,7 @@ export function MainComponent({ loopDetails }: Props) {
                 </Link>
               </span>
               <span className="flex-1">
-                <p className="text-body-1-demi text-tertiary">Posted in</p>
+                <p className="text-cap-1-demi text-tertiary">Posted in</p>
                 <div className="my-2 flex items-center">
                   <Link href={{ pathname: PATH_NAME.community(loopDetails.community.slug) }}>
                     <div className="flex items-center">

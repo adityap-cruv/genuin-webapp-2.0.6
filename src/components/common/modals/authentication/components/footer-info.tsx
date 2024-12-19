@@ -11,6 +11,10 @@ import { getUrlToRedirectForSSO } from '../api/auth'
 import { Loader } from '@/components/ui/loader'
 import { useRouter } from 'next/navigation'
 import { useToast } from '@/components/ui/use-toast'
+import { EmailIcon } from '@icons/email-icon'
+import { KeypadIcon } from '@icons/keypad-icon'
+import { useAuthenticationModalStore } from '../store'
+import { useShallow } from 'zustand/react/shallow'
 
 const buttonStyle: CSSProperties = { fontSize: 14, lineHeight: '20px', paddingLeft: 10 }
 
@@ -21,6 +25,9 @@ function getUrlToRedirect(provider: string) {
 }
 
 export function FooterInfo({ className, ...restProps }: ComponentProps<'p'>) {
+  const { flowType, setFormData } = useAuthenticationModalStore(
+    useShallow((state) => ({ flowType: state.formData.flowType, setFormData: state.setFormData }))
+  )
   const { config } = useGenuinOptions()
   const [loading, setIsLoading] = useState<null | 'google' | 'apple' | 'brand'>(null)
   const router = useRouter()
@@ -126,8 +133,27 @@ export function FooterInfo({ className, ...restProps }: ComponentProps<'p'>) {
           )}
         </Button>
       )}
-      <p className={cn('text-center text-new-para-2-mobile', className)} {...restProps}>
-        By continuing, you're agree to
+      <Button
+        variant="custom"
+        className="w-full p-0  text-primary-400"
+        onClick={() => {
+          flowType === 'email' ? setFormData({ flowType: 'phone' }) : setFormData({ flowType: 'email' })
+        }}>
+        {flowType === 'email' ? (
+          <>
+            <KeypadIcon className="mr-1 h-4 w-4 fill-primary-400"></KeypadIcon>
+            <p className="text-body-1-med">Use phone number instead</p>
+          </>
+        ) : (
+          <>
+            <EmailIcon className="mr-1 h-4 w-4 stroke-primary-400"></EmailIcon>
+            <p className="text-body-1-med">Use email instead</p>
+          </>
+        )}
+      </Button>
+
+      <p className={cn('mt-2 text-center text-new-para-2-mobile', className)} {...restProps}>
+        By continuing, you agree to
         <Link href={PATH_NAME.terms} target="_blank" rel="noopener noreferrer">
           <span className="text-primary"> Terms of Service </span>
         </Link>

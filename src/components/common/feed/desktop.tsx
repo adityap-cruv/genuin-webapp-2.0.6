@@ -89,7 +89,7 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
     )
 
   return (
-    <div className={cn('flex h-full w-full', className)} {...restProps}>
+    <div style={{ height: sizeBox.height }} className={cn('flex h-full w-full', className)} {...restProps}>
       <Swiper
         onActiveIndexChange={handleActiveIndexChange}
         allowSlideNext={allowSlideNext}

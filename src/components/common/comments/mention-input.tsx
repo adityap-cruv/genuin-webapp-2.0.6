@@ -26,6 +26,7 @@ const MentionInput: React.FC<{
   const [isMentioning, setIsMentioning] = useState(false)
   const [mentionQuery, setMentionQuery] = useState('')
   const [caretPosition, setCaretPosition] = useState(0)
+  const [isPosting, setIsPosting] = useState(false)
   const [filteredMentions, setFilteredMentions] = useState<CommentMention[]>([])
   const [selectedMentions, setSelectedMentions] = useState<SelectedMention[]>([])
   const mentionListRef = useRef<any>(null)
@@ -38,6 +39,7 @@ const MentionInput: React.FC<{
   const postComment = async () => {
     if (!text.trim()) return
     try {
+      setIsPosting(true)
       await handleWalletBalance({ action: 'comments', videoId, type: 'POST' })
       const commentData = convertCommentTextToArray(text, selectedMentions)
       const newComment = {
@@ -78,6 +80,8 @@ const MentionInput: React.FC<{
       }
     } catch (error) {
       console.error('Failed to post comment', error)
+    } finally {
+      setIsPosting(false)
     }
   }
 
@@ -280,11 +284,11 @@ const MentionInput: React.FC<{
 
                   <button
                     onClick={postComment}
-                    disabled={text.trim().length === 0}
+                    disabled={text.trim().length === 0 || isPosting}
                     className={`absolute right-4 text-body-1-bold ${
-                      text.trim().length === 0 ? 'text-primary-600' : 'text-primary'
+                      text.trim().length === 0 || isPosting ? 'text-primary-600' : 'text-primary'
                     }`}>
-                    Post
+                    {isPosting ? 'Posting...' : 'Post'}
                   </button>
                 </div>
               </div>
@@ -309,7 +313,7 @@ const MentionInput: React.FC<{
               openGeneratedLink(generatedLink)
             })
           }}
-          className="sticky bottom-0 left-0 h-16 w-full border-t-2 border-t-monochrome-9 bg-monochrome-10 px-2 py-3 shadow-md">
+          className="absolute bottom-0 left-0 h-16 w-full border-t-2 border-t-monochrome-9 bg-monochrome-10 px-2 py-3 shadow-md">
           <div className="flex w-full flex-1 items-center gap-x-4">
             <div
               placeholder="Add a comment"
