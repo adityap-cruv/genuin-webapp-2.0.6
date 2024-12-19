@@ -112,7 +112,7 @@ export function Details({ communityDetails }: Props) {
                     toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                   })
                 }>
-                <ShareIcon className="h-6 w-6 fill-primary" />
+                <ShareIcon className="h-6 w-6 stroke-primary" strokeClassName='stroke-primary' />
               </Button>
               {/* <Button variant="outline" size="custom" className="border border-primary p-1">
                 <Image src={icMore} alt="share" className="h-6 w-6" />

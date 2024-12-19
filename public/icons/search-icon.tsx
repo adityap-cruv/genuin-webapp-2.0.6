@@ -5,8 +5,8 @@ type Props = ComponentProps<'svg'>
 export function SearchIcon({ ...props }: Props) {
   return (
     <svg
-      width="30"
-      height="30"
+      width="24"
+      height="24"
       {...props}
       viewBox="0 0 24 24"
       stroke="#111111"

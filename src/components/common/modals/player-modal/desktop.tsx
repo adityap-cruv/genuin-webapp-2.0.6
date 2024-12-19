@@ -121,7 +121,7 @@ export function Desktop({
                 setCurrentIndex(currentIndex - 1)
               }}
               className={cn(
-                'rounded-full bg-monochrome-white/10 p-2 hover:bg-monochrome-white/20',
+                'rounded-full bg-monochrome-black/10 p-2 hover:bg-monochrome-white/20',
                 currentIndex === 0 ? 'opacity-40' : undefined
               )}>
               <Image src={icUpArrow} alt="" />
@@ -132,7 +132,7 @@ export function Desktop({
                 setCurrentIndex(currentIndex + 1)
               }}
               className={cn(
-                'rounded-full bg-monochrome-white/10 p-2 hover:bg-monochrome-white/20',
+                'rounded-full bg-monochrome-black/10 p-2 hover:bg-monochrome-white/20',
                 currentIndex === videos?.length - 1 ? 'opacity-40' : undefined
               )}>
               <Image src={icDownArrow} alt="" />
@@ -216,7 +216,7 @@ export function Profile({
             <button
               onClick={hasPreviousVideo ? getPreviousVideo : undefined}
               className={cn(
-                'rounded-full bg-monochrome-white/10 p-2 ',
+                'rounded-full bg-monochrome-black/10 p-2 ',
                 !hasPreviousVideo ? 'opacity-40' : 'hover:bg-monochrome-white/20'
               )}>
               <Image src={icUpArrow} alt="" />
@@ -224,7 +224,7 @@ export function Profile({
             <button
               onClick={hasNextVideo ? getNextVideo : undefined}
               className={cn(
-                'rounded-full bg-monochrome-white/10 p-2 ',
+                'rounded-full bg-monochrome-black/10 p-2 ',
                 !hasNextVideo ? 'opacity-40' : 'hover:bg-monochrome-white/20'
               )}>
               <Image src={icDownArrow} alt="" />

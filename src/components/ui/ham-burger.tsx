@@ -2,14 +2,13 @@
 import { useState } from 'react'
 import { type VariantProps, cva } from 'class-variance-authority'
 import { cn } from '@lib/utils'
-import icHamburger from '@icons/player-controls/icon-hamburger.svg'
-import Image from 'next/image'
+import { BurgerIcon } from '@icons/burger-icon'
 
 const burgerVariants = cva('', {
   variants: {
     variant: {
-      light: 'stroke-white',
-      dark: 'stroke-black',
+      light: 'stroke-monochrome-white',
+      dark: 'stroke-monochrome-black',
     },
   },
 })
@@ -37,5 +36,14 @@ export function HamBurgerMenuIcon({
     setIsOpen((old) => !old)
   }
 
-  return <Image src={icHamburger} alt="menu" height={24} width={24} onClick={toggle} className={cn(line)} />
+  // return <Image src={icHamburger} alt="menu" height={24} width={24} onClick={toggle} className={cn(line)} />
+  return (
+    <BurgerIcon
+      onClick={toggle}
+      className={cn(line)}
+      height={24}
+      width={24}
+      strokeClassName={burgerVariants({ variant })}
+    />
+  )
 }

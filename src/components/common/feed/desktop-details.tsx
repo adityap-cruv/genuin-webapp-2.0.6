@@ -142,7 +142,7 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
                       toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                     })
                   }>
-                  <ShareIcon className="h-5 w-5 fill-primary hover:fill-primary-600" />
+                  <ShareIcon className="h-5 w-5 stroke-primary hover:stroke-primary-600" />
                 </Button>
               </span>
             </span>

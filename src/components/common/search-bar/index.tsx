@@ -7,6 +7,7 @@ import { useSearchBarStore } from './store'
 import 'swiper/css'
 import './hide-swiper.module.css'
 import { Sheet, SheetContent, SheetTrigger } from '@components/ui/sheet'
+import { cn } from '@lib/utils'
 
 export const SearchBar = {
   mobile: Mobile,
@@ -49,10 +50,16 @@ function Desktop() {
   )
 }
 
-function Mobile({ children }: { children: ReactNode }) {
+function Mobile({ children, variant="light" }: { children: ReactNode; variant: 'light' | 'dark' | 'transparent' | null }) {
   return (
     <Sheet modal={false}>
-      <SheetTrigger>{children}</SheetTrigger>
+      <SheetTrigger
+        className={cn(
+          'mr-[12px] flex h-[40px] w-[40px] items-center justify-center rounded-full krunal',
+          variant === 'light' ? 'bg-tertiary-200' : 'bg-monochrome-black/20'
+        )}>
+        {children}
+      </SheetTrigger>
       <SheetContent
         onInteractOutside={(e) => {
           e.preventDefault()

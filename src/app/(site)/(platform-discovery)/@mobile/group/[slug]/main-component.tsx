@@ -28,7 +28,8 @@ import { PrivateModal } from '@components/common/modals/private'
 import Analytics from '@services/analytics'
 import { joinAsCollaboratorDeepLink, subscribeDeepLink } from '@/lib/get-deeplink'
 import { SubscribedBellIcon } from '@icons/subscribed-bell-icon'
-import { BellIcon } from 'lucide-react'
+// import { BellIcon } from 'lucide-react'
+import { BellIconOff } from '@icons/bell-icon-off'
 import { ReadMore } from '@/components/common/read-more'
 import EmptyView from '@/components/common/empty-view'
 import { NOT_FOUND_ERROR_CODES } from '@/lib/constants'
@@ -228,7 +229,7 @@ export function MainComponent({ loopDetails }: Props) {
                 {isLoopSubscribed && (
                   <SubscribedBellIcon className="h-6 w-6 fill-primary stroke-primary"></SubscribedBellIcon>
                 )}
-                {!isLoopSubscribed && <BellIcon className="h-6 w-6  stroke-new-off-white"></BellIcon>}
+                {!isLoopSubscribed && <BellIconOff className="h-6 w-6  stroke-new-off-white"></BellIconOff>}
               </Button>
             )}
 
@@ -270,7 +271,7 @@ export function MainComponent({ loopDetails }: Props) {
                   toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                 })
               }}>
-              <ShareIcon className="h-6 w-6 fill-primary" />
+              <ShareIcon className="h-6 w-6 stroke-primary" />
             </Button>
           </div>
         </div>

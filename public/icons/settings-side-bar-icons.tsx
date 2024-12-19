@@ -68,11 +68,11 @@ export function AccountIcon({ isActive, className, ...props }: Props) {
 export function NotificationIcon({ variant, isActive, className, ...props }: Props) {
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="32"
-      height="32"
-      viewBox="0 0 32 32"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
       fill="none"
+      xmlns="http://www.w3.org/2000/svg"
       {...props}
       className={cn(
         variant === 'white' ? 'stroke-new-off-white' : isActive ? 'stroke-primary' : 'stroke-secondary',
@@ -81,32 +81,33 @@ export function NotificationIcon({ variant, isActive, className, ...props }: Pro
       <path
         fillRule="evenodd"
         clipRule="evenodd"
-        d="M15.9993 4C20.4176 4 23.9993 7.58166 23.9993 11.9999C23.9993 14.5508 23.9993 17.1122 23.9993 18.6667C23.9993 22.6667 26.666 24 26.666 24L5.33268 24C5.33268 24 7.99935 22.6667 7.99935 18.6667C7.99935 17.1122 7.99935 14.5508 7.99935 11.9999C7.99935 7.58166 11.5811 4 15.9993 4V4Z"
+        d="M12.1284 4C15.484 4 18.2044 6.72029 18.2044 10.076C18.2044 11.9639 18.2044 13.8496 18.2044 15C18.2044 18 20.2297 19 20.2297 19L4.02705 19C4.02705 19 6.05238 18 6.05238 15C6.05238 13.8496 6.05238 11.9639 6.05238 10.076C6.05238 6.72029 8.77269 4 12.1284 4V4Z"
         style={{
           stroke: `${variant === 'white' ? 'white' : isActive ? 'var(--primary)' : 'var(--secondary)'}`,
         }}
-        strokeWidth="2"
+        strokeWidth="1.5"
         strokeLinejoin="round"
       />
-      <mask
-        id="path-2-outside-1_16004_222099"
-        maskUnits="userSpaceOnUse"
-        x="10.666"
-        y="24"
-        width="10"
-        height="5"
-        fill="black">
-        <rect fill="white" x="10.666" y="24" width="10" height="5" />
-        <path
-          fillRule="evenodd"
-          clipRule="evenodd"
-          d="M13.3327 24C13.3327 25.4728 14.5266 26.6667 15.9993 26.6667C17.4721 26.6667 18.666 25.4728 18.666 24"
-        />
-      </mask>
       <path
-        d="M11.3327 24C11.3327 26.5773 13.422 28.6667 15.9993 28.6667V24.6667C15.6312 24.6667 15.3327 24.3682 15.3327 24H11.3327ZM15.9993 28.6667C18.5767 28.6667 20.666 26.5773 20.666 24H16.666C16.666 24.3682 16.3675 24.6667 15.9993 24.6667V28.6667Z"
-        className={cn(variant === 'white' ? 'stroke-new-off-white' : isActive ? 'fill-primary' : 'fill-secondary')}
-        mask="url(#path-2-outside-1_16004_222099)"
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M10.1053 18.5C10.1053 19.6046 11.0121 20.5 12.1306 20.5C13.2492 20.5 14.156 19.6046 14.156 18.5"
+        fill="white"
+      />
+      <path
+        d="M10.1053 18.5C10.1053 19.6046 11.0121 20.5 12.1306 20.5C13.2492 20.5 14.156 19.6046 14.156 18.5"
+        style={{
+          stroke: `${variant === 'white' ? 'white' : isActive ? 'var(--primary)' : 'var(--secondary)'}`,
+        }}
+        strokeWidth="1.5"
+      />
+      <circle
+        cx="12.1266"
+        cy="2.5"
+        r="1"
+        style={{
+          stroke: `${variant === 'white' ? 'white' : isActive ? 'var(--primary)' : 'var(--secondary)'}`,
+        }}
       />
     </svg>
   )

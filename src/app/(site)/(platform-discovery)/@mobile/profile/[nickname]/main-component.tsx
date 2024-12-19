@@ -96,7 +96,7 @@ export function MainComponent({ profileData }: CompProps) {
                     toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                   })
                 }>
-                <ShareIcon className="h-6 w-6 fill-primary" />
+                <ShareIcon className="h-6 w-6 stroke-primary" />
               </Button>
             </div>
           </div>

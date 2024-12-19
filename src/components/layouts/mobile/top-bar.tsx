@@ -9,7 +9,6 @@ import { usePathname, useSearchParams } from 'next/navigation'
 import { PopularIcon, HomeIcon, LatestIcon, ProfileIcon } from '@icons/side-bar-icons'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { PATH_NAME } from '@lib/utils/constants/path'
-import { X } from 'lucide-react'
 import { RecentCommunities } from './recent-communities'
 import { AppLogo } from '@components/ui/app-logo'
 import { type User, useGenuinOptions } from '@lib/stores/genuin-options'
@@ -23,6 +22,7 @@ import { MOBILE_DOWNLOAD_APP_LINK } from '@lib/constants'
 import { SearchBar } from '@components/common/search-bar'
 import { NotificationIcon } from '@icons/settings-side-bar-icons'
 import { SearchIcon } from '@icons/search-icon'
+import { CloseIcon } from '@icons/close-icon'
 import Analytics from '@services/analytics'
 import { CategoryView } from '@components/common/category-view'
 import dynamic from 'next/dynamic'
@@ -39,8 +39,7 @@ const DownloadAppDialog = dynamic(
   async () => await import('../download-app-dialog').then((comp) => comp.DownloadAppDialog)
 )
 
-
-const navVariant = cva('sticky top-0 flex z-40 h-[76px] w-full items-center justify-between  px-2', {
+const navVariant = cva('sticky top-0 flex z-40 h-[76px] w-full items-center justify-between px-4', {
   variants: {
     variant: {
       light: 'border-b-2 border-monochrome-9 bg-monochrome-white',
@@ -65,7 +64,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
     embed: state.embed,
     user: state.user,
     brandName: state.config?.name ? state.config?.name : 'Genuin',
-    notificationsCount: state.notificationCount,
+    notificationsCount: 50,
     isClaimed: state.config?.is_claimed,
     brandLogo: state.config?.logo,
   })) // If variant is transparent than we have removed show download button.
@@ -89,7 +88,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
           </Link>
         )}
       </span>
-      <span className="flex items-center gap-x-2">
+      <span className="flex items-center">
         {!embed && showDownloadButton && (
           <Link href={MOBILE_DOWNLOAD_APP_LINK + '?' + searchParams.toString()} target="_blank">
             <Button
@@ -103,16 +102,21 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
           </Link>
         )}
         {user && (
-          <Link href={PATH_NAME.notification()}>
+          <Link
+            href={PATH_NAME.notification()}
+            className={cn(
+              'mr-[12px] flex h-[40px] w-[40px] items-center justify-center rounded-full',
+              variant === 'light' ? 'bg-tertiary-200' : 'bg-monochrome-black/20'
+            )}>
             <div className="relative">
               {!notificationsCount ||
                 (notificationsCount > 0 && (
                   <div
-                    className="absolute right-0 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-primary text-monochrome-white"
+                    className="absolute right-[-2px] top-[-5px] flex h-4 w-4 items-center justify-center rounded-full bg-red text-monochrome-white"
                     style={{
                       fontSize: '8px',
                     }}>
-                    {notificationsCount}
+                    {notificationsCount > 9 ? '9+' : notificationsCount}
                   </div>
                 ))}
               <NotificationIcon
@@ -126,12 +130,11 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
                     ? 'white'
                     : ''
                 }
-                className="h-7"
               />
             </div>
           </Link>
         )}
-        <SearchBar.mobile>
+        <SearchBar.mobile variant={variant}>
           <SearchIcon
             className={`${
               (pathName.includes('/home') ||
@@ -148,15 +151,18 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
         </SearchBar.mobile>
         {embed && <UserTick variant={variant} />}
         {showClose && (
-          <X
-            onClick={() => {
-              onClose?.()
-            }}
+          <span
             className={cn(
-              'h-6 w-6',
-              variant === 'light' ? 'stroke-new-off-black' : 'stroke-new-off-white stroke-[3px]'
-            )}
-          />
+              'ml-[12px] flex h-[40px] w-[40px] items-center justify-center rounded-full',
+              variant === 'light' ? 'bg-tertiary-200' : 'bg-monochrome-black/20'
+            )}>
+            <CloseIcon
+              onClick={() => {
+                onClose?.()
+              }}
+              variant={variant}
+            />
+          </span>
         )}
       </span>
     </nav>
@@ -181,7 +187,11 @@ function Menu({
 
   return (
     <Sheet>
-      <SheetTrigger className="rounded-full bg-black/20 flex items-center justify-center h-[40px] w-[40px] mr-[12px]">
+      <SheetTrigger
+        className={cn(
+          'mr-[12px] flex h-[40px] w-[40px] items-center justify-center rounded-full',
+          hamBurgerVariant === 'light' ? 'bg-monochrome-black/20' : 'bg-tertiary-200'
+        )}>
         <HamBurgerMenuIcon toggleToClose={false} variant={hamBurgerVariant} />
       </SheetTrigger>
       <SheetContent
@@ -191,7 +201,7 @@ function Menu({
         <div className="mb-4 flex justify-between">
           <AppLogo.icon imageHeight={32} className={cn('fill-new-off-white')} />
           <SheetClose className="shadow-none outline-none">
-            <X strokeWidth="3px" className="h-6 w-6 stroke-new-off-black" />
+            <CloseIcon variant={hamBurgerVariant} />
           </SheetClose>
         </div>
         <Link href={{ pathname: PATH_NAME.home() }}>
@@ -325,9 +335,9 @@ function UserTick({ variant = 'light' }: { variant: 'light' | 'transparent' | 'd
     return (
       <Popover>
         <PopoverTrigger>
-          <div className="flex items-center gap-x-2 rounded-full border border-monochrome-9 p-1 pr-2">
+          <div className="flex items-center gap-x-2 rounded-full">
             <CustomAvatar
-              className="h-6 w-6"
+              className="h-[40px] w-[40px]"
               fallbackString={data.user.name ?? ''}
               imageUrl={data.user.image ?? ''}
               isAvatar={data.user.isAvatar}
@@ -351,10 +361,10 @@ function UserTick({ variant = 'light' }: { variant: 'light' | 'transparent' | 'd
                 {data.user.usernameSet
                   ? '@' + data.user.nickname
                   : data.user.email
-                    ? data.user.email
-                    : formatPhoneNumberIntl(
-                        data.user.phoneNumber?.startsWith('+') ? data.user.phoneNumber : `+${data.user.phoneNumber}`
-                      )}
+                  ? data.user.email
+                  : formatPhoneNumberIntl(
+                      data.user.phoneNumber?.startsWith('+') ? data.user.phoneNumber : `+${data.user.phoneNumber}`
+                    )}
               </p>
               {!data.user.isBrandSystemUser && <p className="text-body-1-demi text-monochrome-6">Complete profile</p>}
             </div>
