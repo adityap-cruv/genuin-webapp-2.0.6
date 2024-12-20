@@ -28,7 +28,6 @@ import { PrivateModal } from '@components/common/modals/private'
 import Analytics from '@services/analytics'
 import { joinAsCollaboratorDeepLink, subscribeDeepLink } from '@/lib/get-deeplink'
 import { SubscribedBellIcon } from '@icons/subscribed-bell-icon'
-// import { BellIcon } from 'lucide-react'
 import { BellIconOff } from '@icons/bell-icon-off'
 import { ReadMore } from '@/components/common/read-more'
 import EmptyView from '@/components/common/empty-view'
@@ -193,9 +192,12 @@ export function MainComponent({ loopDetails }: Props) {
 
           <div className="flex items-center gap-x-2">
             {loopDetails.is_view_allowed && !embed && (
-              <Button size="custom" onClick={handleSubscribeClick}>
-                {/* <p className="px-4 py-1 text-title-3-demi text-monochrome-white">Subscribe</p> */}
-                <SubscribedBellIcon className="h-6 w-6 stroke-new-off-white"></SubscribedBellIcon>
+              <Button
+                size="custom"
+                onClick={handleSubscribeClick}
+                variant="outline"
+                className="border border-primary p-[3px]">
+                <BellIconOff variant={'light'}></BellIconOff>
               </Button>
             )}
             {loopDetails.is_view_allowed && embed && (
@@ -203,7 +205,7 @@ export function MainComponent({ loopDetails }: Props) {
                 size="custom"
                 // className={`${isLoopSubscribed && 'border border-primary '}`}
                 className={`${
-                  isLoopSubscribed ? 'border border-primary p-0.5' : 'border border-primary bg-primary p-0.5'
+                  isLoopSubscribed ? 'border border-primary p-[3px]' : 'border border-primary bg-primary p-[3px]'
                 }`}
                 variant={isLoopSubscribed ? 'outline' : 'default'}
                 onClick={
@@ -227,9 +229,9 @@ export function MainComponent({ loopDetails }: Props) {
                   {isLoopSubscribed ? 'Subscribed' : 'Subscribe'}
                 </p> */}
                 {isLoopSubscribed && (
-                  <SubscribedBellIcon className="h-6 w-6 fill-primary stroke-primary"></SubscribedBellIcon>
+                  <SubscribedBellIcon className="fill-primary stroke-primary"></SubscribedBellIcon>
                 )}
-                {!isLoopSubscribed && <BellIconOff className="h-6 w-6  stroke-new-off-white"></BellIconOff>}
+                {!isLoopSubscribed && <BellIconOff className="stroke-new-off-white"></BellIconOff>}
               </Button>
             )}
 
@@ -262,7 +264,7 @@ export function MainComponent({ loopDetails }: Props) {
             <Button
               variant="outline"
               size="custom"
-              className="border border-primary p-0.5"
+              className="border border-primary p-[3px]"
               onClick={async () => {
                 const currentURL = new URL(loopDetails.share_url)
                 currentURL.searchParams.set('utm_source', 'app_web')
@@ -271,7 +273,7 @@ export function MainComponent({ loopDetails }: Props) {
                   toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                 })
               }}>
-              <ShareIcon className="h-6 w-6 stroke-primary" />
+              <ShareIcon className="stroke-primary" />
             </Button>
           </div>
         </div>

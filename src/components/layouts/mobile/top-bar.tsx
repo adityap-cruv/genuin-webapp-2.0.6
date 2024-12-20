@@ -175,7 +175,11 @@ function Menu({
         className="z-[60] w-full overflow-auto border-none shadow-none outline-none">
         <div className="mb-4 flex justify-between">
           <AppLogo.icon imageHeight={32} className={cn('fill-new-off-white')} />
-          <SheetClose className="shadow-none outline-none">
+          <SheetClose
+            className={cn(
+              'flex h-[40px] w-[40px] items-center justify-center rounded-full shadow-none outline-none',
+              variant === 'light' ? 'bg-tertiary-200' : 'bg-monochrome-black/20'
+            )}>
             <CloseIcon variant={variant === 'transparent' || variant === 'light' ? 'dark' : 'light'} />
           </SheetClose>
         </div>
