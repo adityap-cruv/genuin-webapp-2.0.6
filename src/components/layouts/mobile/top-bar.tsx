@@ -176,7 +176,7 @@ function Menu({
         <div className="mb-4 flex justify-between">
           <AppLogo.icon imageHeight={32} className={cn('fill-new-off-white')} />
           <SheetClose className="shadow-none outline-none">
-            <CloseIcon variant={variant} />
+            <CloseIcon variant={variant === 'transparent' || variant === 'light' ? 'dark' : 'light'} />
           </SheetClose>
         </div>
         <Link href={{ pathname: PATH_NAME.home() }}>
