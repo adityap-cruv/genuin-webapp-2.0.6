@@ -124,7 +124,7 @@ export function Modal({ children, showClose, ...props }: Props) {
             <X
               className="stroke-secondary"
               onClick={() => {
-                setFormData({ flowType: 'email' })
+                setFormData({ flowType: 'email', phoneNumber: '', email: '' })
                 closeModal()
               }}
             />
