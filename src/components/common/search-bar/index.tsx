@@ -55,7 +55,7 @@ function Mobile({ children, variant="light" }: { children: ReactNode; variant: '
     <Sheet modal={false}>
       <SheetTrigger
         className={cn(
-          'mr-[12px] flex h-[40px] w-[40px] items-center justify-center rounded-full krunal',
+          'flex h-[40px] w-[40px] items-center justify-center rounded-full krunal',
           variant === 'light' ? 'bg-tertiary-200' : 'bg-monochrome-black/20'
         )}>
         {children}

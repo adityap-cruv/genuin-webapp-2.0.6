@@ -74,7 +74,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
 
   return (
     <nav className={cn(navVariant({ variant }), className)}>
-      <span className="flex items-center ">
+      <span className="flex items-center gap-x-3">
         <Menu variant={variant} embed={embed} user={user} brandName={brandName} isClaimed={isClaimed} />
         {embed && brandLogo && (
           <Link href={{ pathname: PATH_NAME.home() }}>
@@ -82,7 +82,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
           </Link>
         )}
       </span>
-      <span className="flex items-center">
+      <span className="flex items-center gap-x-3">
         {!embed && showDownloadButton && (
           <Link href={MOBILE_DOWNLOAD_APP_LINK + '?' + searchParams.toString()} target="_blank">
             <Button
@@ -99,7 +99,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
           <Link
             href={PATH_NAME.notification()}
             className={cn(
-              'mr-[12px] flex h-[40px] w-[40px] items-center justify-center rounded-full',
+              'flex h-[40px] w-[40px] items-center justify-center rounded-full',
               variant === 'light' ? 'bg-tertiary-200' : 'bg-monochrome-black/20'
             )}>
             <div className="relative">
@@ -127,7 +127,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
         {showClose && (
           <span
             className={cn(
-              'ml-[12px] flex h-[40px] w-[40px] items-center justify-center rounded-full',
+              'flex h-[40px] w-[40px] items-center justify-center rounded-full',
               variant === 'light' ? 'bg-tertiary-200' : 'bg-monochrome-black/20'
             )}>
             <CloseIcon
@@ -164,7 +164,7 @@ function Menu({
     <Sheet>
       <SheetTrigger
         className={cn(
-          'mr-[12px] flex h-[40px] w-[40px] items-center justify-center rounded-full',
+          'flex h-[40px] w-[40px] items-center justify-center rounded-full',
           hamBurgerVariant === 'light' ? 'bg-monochrome-black/20' : 'bg-tertiary-200'
         )}>
         <HamBurgerMenuIcon toggleToClose={false} variant={hamBurgerVariant} />
