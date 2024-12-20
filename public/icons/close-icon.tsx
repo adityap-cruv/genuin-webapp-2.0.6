@@ -5,7 +5,7 @@ const closeVariant = cva('', {
   variants: {
     variant: {
       light: 'stroke-monochrome-white',
-      transparent: 'stroke-monochrome-white',
+      transparent: 'stroke-monochrome-black',
       dark: 'stroke-monochrome-black',
     },
   },
@@ -19,7 +19,7 @@ export function CloseIcon({ variant = 'light', ...props }: Readonly<Props>) {
   return (
     <svg {...props} width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path
-        d="M3 21L21 3"
+        d="M4 20L20 4"
         stroke="#111111"
         strokeWidth="1.5"
         strokeLinecap="round"
@@ -27,7 +27,7 @@ export function CloseIcon({ variant = 'light', ...props }: Readonly<Props>) {
         className={closeVariant({ variant })}
       />
       <path
-        d="M21 21L3 3"
+        d="M20 20L4 4"
         stroke="#111111"
         strokeWidth="1.5"
         strokeLinecap="round"

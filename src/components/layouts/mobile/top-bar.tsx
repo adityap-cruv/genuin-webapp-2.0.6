@@ -75,13 +75,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
   return (
     <nav className={cn(navVariant({ variant }), className)}>
       <span className="flex items-center ">
-        <Menu
-          hamBurgerVariant={variant === 'transparent' ? 'light' : 'dark'}
-          embed={embed}
-          user={user}
-          brandName={brandName}
-          isClaimed={isClaimed}
-        />
+        <Menu variant={variant} embed={embed} user={user} brandName={brandName} isClaimed={isClaimed} />
         {embed && brandLogo && (
           <Link href={{ pathname: PATH_NAME.home() }}>
             <CustomImage src={brandLogo} height={40} width={40} className="object-cover" alt="logo" />
@@ -120,34 +114,14 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
                   </div>
                 ))}
               <NotificationIcon
-                variant={
-                  pathName === '/home' ||
-                  pathName === '/popular' ||
-                  pathName === '/latest' ||
-                  (pathName.includes('/group') && showClose) ||
-                  pathName.includes('/video') ||
-                  (pathName.includes('/community') && showClose)
-                    ? 'white'
-                    : ''
-                }
+                variant={(variant === 'transparent' || variant === 'light') && !showClose ? '' : 'white'}
               />
             </div>
           </Link>
         )}
+        {/* add logic to use only variant here rather than conditions by path */}
         <SearchBar.mobile variant={variant}>
-          <SearchIcon
-            className={`${
-              (pathName.includes('/home') ||
-                pathName.includes('/popular') ||
-                pathName.includes('/latest') ||
-                pathName.includes('/video') ||
-                (pathName.includes('/community') && searchParams.toString().includes('feed=1')) ||
-                (pathName.includes('/community') && showClose) ||
-                (pathName.includes('/group') && showClose) ||
-                (pathName.includes('/loop') && showClose)) &&
-              'stroke-monochrome-white'
-            }`}
-          />
+          <SearchIcon variant={variant} />
         </SearchBar.mobile>
         {embed && <UserTick variant={variant} />}
         {showClose && (
@@ -160,7 +134,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
               onClick={() => {
                 onClose?.()
               }}
-              variant={variant}
+              variant={variant === 'transparent' ? 'light' : 'dark'}
             />
           </span>
         )}
@@ -170,13 +144,13 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
 }
 
 function Menu({
-  hamBurgerVariant = 'dark',
+  variant = 'light',
   brandName,
   user,
   embed,
   isClaimed,
 }: {
-  hamBurgerVariant: 'dark' | 'light'
+  variant: 'dark' | 'light' | 'transparent' | null
   brandName: string
   user?: User
   embed: boolean
@@ -184,6 +158,7 @@ function Menu({
 }) {
   const pathName = usePathname()
   const { status } = useSession()
+  const hamBurgerVariant = variant === 'transparent' ? 'light' : 'dark'
 
   return (
     <Sheet>
@@ -201,7 +176,7 @@ function Menu({
         <div className="mb-4 flex justify-between">
           <AppLogo.icon imageHeight={32} className={cn('fill-new-off-white')} />
           <SheetClose className="shadow-none outline-none">
-            <CloseIcon variant={hamBurgerVariant} />
+            <CloseIcon variant={variant} />
           </SheetClose>
         </div>
         <Link href={{ pathname: PATH_NAME.home() }}>
