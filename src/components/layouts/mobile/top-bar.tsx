@@ -83,18 +83,6 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
         )}
       </span>
       <span className="flex items-center gap-x-3">
-        {!embed && showDownloadButton && (
-          <Link href={MOBILE_DOWNLOAD_APP_LINK + '?' + searchParams.toString()} target="_blank">
-            <Button
-              className={
-                variant === 'light'
-                  ? 'h-8 bg-new-off-black text-monochrome-white hover:bg-new-dark-grey'
-                  : 'h-8 bg-new-off-white text-new-off-black hover:bg-new-off-black hover:text-new-off-white'
-              }>
-              <p className="text-[15px] text-body-1-demi">Download App</p>
-            </Button>
-          </Link>
-        )}
         {user && (
           <Link
             href={PATH_NAME.notification()}
@@ -123,6 +111,18 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
         <SearchBar.mobile variant={variant}>
           <SearchIcon variant={variant} />
         </SearchBar.mobile>
+        {!embed && showDownloadButton && (
+          <Link href={MOBILE_DOWNLOAD_APP_LINK + '?' + searchParams.toString()} target="_blank">
+            <Button
+              className={
+                variant === 'light'
+                  ? 'h-8 bg-new-off-black text-monochrome-white hover:bg-new-dark-grey'
+                  : 'h-8 bg-new-off-white text-new-off-black hover:bg-new-off-black hover:text-new-off-white'
+              }>
+              <p className="text-[15px] text-body-1-demi">Download App</p>
+            </Button>
+          </Link>
+        )}
         {embed && <UserTick variant={variant} />}
         {showClose && (
           <span
