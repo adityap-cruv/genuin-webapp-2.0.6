@@ -60,7 +60,7 @@ export function TopBar({
                 />
               </div>
             )}
-            <div className="flex items-center gap-x-2">
+            <div className="flex items-center gap-x-3">
               {showSearchBar && <SearchBar.desktop />}
               <WalletAmountBadge type="dark" />
               {!isEmbed ? (
