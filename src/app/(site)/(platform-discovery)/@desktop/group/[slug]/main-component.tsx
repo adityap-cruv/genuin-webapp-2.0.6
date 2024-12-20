@@ -29,7 +29,7 @@ import Analytics from '@services/analytics'
 import { useSearchParams } from 'next/navigation'
 import { joinAsCollaboratorDeepLink, subscribeDeepLink } from '@/lib/get-deeplink'
 import { SubscribedBellIcon } from '@icons/subscribed-bell-icon'
-import { BellIcon } from 'lucide-react'
+import { BellIconOff } from '@icons/bell-icon-off'
 import { ReadMore } from '@/components/common/read-more'
 import { NOT_FOUND_ERROR_CODES } from '@/lib/constants'
 import EmptyView from '@/components/common/empty-view'
@@ -134,19 +134,13 @@ export function MainComponent({ loopDetails }: Props) {
             {loopDetails.is_view_allowed && (
               <Button
                 size="custom"
-                // className={`${isLoopSubscribed && 'border border-primary '}`}
-                className={`${
-                  isLoopSubscribed ? 'border border-primary p-0.5' : 'border border-primary bg-primary p-0.5'
-                }`}
-                variant={isLoopSubscribed ? 'outline' : 'default'}
+                className="border border-primary p-[3px]"
+                variant='outline'
                 onClick={handleSubscribeClick}>
-                {/* <p className={`px-4 py-1 text-title-3-demi ${isLoopSubscribed && 'text-primary'}`}>
-                  {isLoopSubscribed ? 'Subscribed' : 'Subscribe'}
-                </p> */}
                 {isLoopSubscribed && (
-                  <SubscribedBellIcon className="h-6 w-6 fill-primary stroke-primary"></SubscribedBellIcon>
+                  <SubscribedBellIcon className="fill-primary stroke-primary"></SubscribedBellIcon>
                 )}
-                {!isLoopSubscribed && <BellIcon className="h-6 w-6  stroke-new-off-white"></BellIcon>}
+                {!isLoopSubscribed && <BellIconOff className="stroke-new-off-white"></BellIconOff>}
               </Button>
             )}
 
@@ -187,7 +181,7 @@ export function MainComponent({ loopDetails }: Props) {
             <Button
               variant="outline"
               size="custom"
-              className="border border-primary p-0.5 hover:border-primary-600"
+              className="border border-primary p-[3px]"
               onClick={async () => {
                 const currentURL = new URL(loopDetails.share_url)
                 currentURL.searchParams.set('utm_source', 'app_web')
@@ -196,7 +190,7 @@ export function MainComponent({ loopDetails }: Props) {
                   toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
                 })
               }}>
-              <ShareIcon className="h-6 w-6 fill-primary hover:fill-primary-600" />
+              <ShareIcon className="stroke-primary" />
             </Button>
           </div>
         </div>

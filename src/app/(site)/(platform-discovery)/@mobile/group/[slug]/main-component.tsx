@@ -203,11 +203,8 @@ export function MainComponent({ loopDetails }: Props) {
             {loopDetails.is_view_allowed && embed && (
               <Button
                 size="custom"
-                // className={`${isLoopSubscribed && 'border border-primary '}`}
-                className={`${
-                  isLoopSubscribed ? 'border border-primary p-[3px]' : 'border border-primary bg-primary p-[3px]'
-                }`}
-                variant={isLoopSubscribed ? 'outline' : 'default'}
+                className='border border-primary p-[3px]'
+                variant={'outline'}
                 onClick={
                   user
                     ? () => {
@@ -225,9 +222,6 @@ export function MainComponent({ loopDetails }: Props) {
                         })
                       }
                 }>
-                {/* <p className={`px-4 py-1 text-title-3-demi ${isLoopSubscribed && 'text-primary'}`}>
-                  {isLoopSubscribed ? 'Subscribed' : 'Subscribe'}
-                </p> */}
                 {isLoopSubscribed && (
                   <SubscribedBellIcon className="fill-primary stroke-primary"></SubscribedBellIcon>
                 )}

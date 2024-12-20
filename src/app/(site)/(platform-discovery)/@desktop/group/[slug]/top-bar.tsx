@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
 import { ShareIcon } from '@icons/share-icon'
-import { BellIcon } from '@icons/bell-icon'
+import { BellIconOff } from '@icons/bell-icon-off'
 import { SubscribedBellIcon } from '@icons/subscribed-bell-icon'
 
 type Props = {
@@ -74,16 +74,13 @@ function Desktop({
       <span className="my-2 flex items-center gap-x-3">
         <Button
           size="custom"
-          className={`${isLoopSubscribed ? 'border border-primary p-0.5' : 'border border-primary bg-primary p-0.5'}`}
-          variant={isLoopSubscribed ? 'outline' : 'default'}
+          className="border border-primary p-[3px]"
+          variant="outline"
           onClick={handleSubscribeClick}>
-          {/* <p className={`px-4 py-1 text-title-3-demi ${isLoopSubscribed && 'text-primary'}`}>
-            {isLoopSubscribed ? 'Subscribed' : 'Subscribe'}
-          </p> */}
           {isLoopSubscribed && (
-            <SubscribedBellIcon className="h-6 w-6 fill-primary stroke-primary"></SubscribedBellIcon>
+            <SubscribedBellIcon className="fill-primary stroke-primary"></SubscribedBellIcon>
           )}
-          {!isLoopSubscribed && <BellIcon className="h-6 w-6  stroke-new-off-white"></BellIcon>}
+          {!isLoopSubscribed && <BellIconOff className="stroke-new-off-white"></BellIconOff>}
         </Button>
 
         {/* Hidden by requirement. */}
@@ -97,14 +94,14 @@ function Desktop({
         <Button
           variant="outline"
           size="custom"
-          className="border border-primary p-0.5"
+          className="border border-primary p-[3px]"
           onClick={async () => {
             await shareFn({
               shareLink: shareUrl,
               toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
             })
           }}>
-          <ShareIcon className="h-6 w-6 fill-primary" />{' '}
+          <ShareIcon className="stroke-primary" />
         </Button>
       </span>
     </motion.div>
