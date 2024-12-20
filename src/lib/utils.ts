@@ -7,6 +7,7 @@ import { useGenuinOptions } from './stores/genuin-options'
 import { AuthenticationModal } from '@components/common/modals/authentication'
 import { type ReactNode } from 'react'
 import { PROTECTED_ROUTES } from './constants'
+import { type CommunityUserRoleType } from './schemas/roles'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -384,5 +385,23 @@ export function encodeVideoSourceUrl(videoSource: string) {
   } catch (error) {
     console.error('Invalid URL:', error)
     return videoSource
+  }
+}
+
+/*
+ * This function maps the role of the user in the community.
+ */
+export function mapCommunityUserRole(role?: number | null, isRequested?: boolean | null): CommunityUserRoleType {
+  if (isRequested) return 'REQUESTED'
+
+  switch (role) {
+    case 1:
+      return 'LEADER'
+    case 2:
+      return 'MEMBER'
+    case 3:
+      return 'MODERATOR'
+    default:
+      return 'UNJOINED'
   }
 }

@@ -2,7 +2,7 @@ import { validateProfileDetails } from '@lib/schemas/profile/profile'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import {
-  parseFeedResponse,
+  parseFeedResponseFromGoApi,
   parseProfileCommunityResponse,
   parseProfileLoopResponse,
   parseProfileVideoResponse,
@@ -154,7 +154,7 @@ export async function fetchProfileFeed(userId: string, pageParam?: { lastMessage
     .then((res) => {
       const resData = res.data.data
       pageSession = resData.page_session
-      return { feed: parseFeedResponse(resData.feeds), end: resData.end_of_feed }
+      return { feed: parseFeedResponseFromGoApi(resData.feeds), end: resData.end_of_feed }
     })
     .catch((e) => {
       // eslint-disable-next-line no-console

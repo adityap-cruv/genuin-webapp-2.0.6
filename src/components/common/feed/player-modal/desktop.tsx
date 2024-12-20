@@ -25,7 +25,7 @@ import { type VideoSizeBoxType } from '@lib/stores/genuin-options'
 import { usePlayerControlStore } from '../../player/player-control-store'
 import { DesktopDetails } from '../desktop-details'
 import Analytics from '@/services/analytics'
-import { type CommunityUserRoleType } from '@/components/pages/community/updated-join-community-button'
+import { type CommunityUserRoleType } from '@/lib/schemas/roles'
 
 type Props = {
   children?: React.ReactNode

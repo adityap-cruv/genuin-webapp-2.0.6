@@ -5,24 +5,13 @@ import noLoopsImage from '@images/noLoopImage.svg'
 import { PlayerModal } from '@/components/common/feed/player-modal'
 import { getLoopVideos } from '@lib/api/loop'
 import { memo, useState } from 'react'
-import { type VideoPlayerModalCommunityType, type VideoPlayerModalLoopType } from '@lib/schemas/player/video'
+import { type VideoPlayerModalLoopType } from '@lib/schemas/player/video'
 import { LoopCard, LoopCardShimmer } from '@components/common/loop-card'
 
 // TODO: remove this component from here and put at better location
 // TODO: improve player-modal opening logic. As not meeting standards.
 export const CommunityLoopTab = memo(Component)
-function Component({
-  handle,
-  id,
-  shareUrl,
-  slug,
-  brand,
-  isJoinRequested,
-  name,
-  profileImage,
-  type,
-  userRole,
-}: VideoPlayerModalCommunityType) {
+function Component({ slug }: { slug: string }) {
   const { isLoading, data } = getCommunityLoops(slug)
   const [modalController, setModalController] = useState<{
     open: boolean

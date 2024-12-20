@@ -4,12 +4,12 @@ import noLoopsImage from '@images/noLoopImage.svg'
 import { useState } from 'react'
 import { PlayerModal } from '@/components/common/feed/player-modal'
 import { getLoopVideos } from '@lib/api/loop'
-import { type VideoPlayerModalCommunityType, type VideoPlayerModalLoopType } from '@lib/schemas/player/video'
+import { type VideoPlayerModalLoopType } from '@lib/schemas/player/video'
 import { LoopCard, LoopCardShimmer } from '@components/common/loop-card'
 
 // TODO: remove this component from here and put at better location
-export function CommunityLoopTab({ community }: { community: VideoPlayerModalCommunityType }) {
-  const { data, isLoading } = getCommunityLoops(community.slug)
+export function CommunityLoopTab({ slug }: { slug: string }) {
+  const { data, isLoading } = getCommunityLoops(slug)
   const [modalController, setModalController] = useState<{ open: boolean; loop: VideoPlayerModalLoopType | null }>({
     open: false,
     loop: null,

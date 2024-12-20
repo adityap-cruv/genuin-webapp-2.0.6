@@ -1,12 +1,12 @@
 'use client'
 import { abbreviateNumber } from '@lib/utils'
 import { type User, useGenuinOptions } from '@lib/stores/genuin-options'
-import { Button } from '@components/ui/button'
+// import { Button } from '@components/ui/button'
 import Image from 'next/image'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { DecorativeList } from '@components/custom/decorative-list'
 import { Loader } from '@components/ui/loader'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { Shimmer } from '@components/ui/shimmer'
 import Link from 'next/link'
 import { getNextPage } from './hook'
@@ -25,25 +25,28 @@ import { LoopPrivacyInfo } from '@components/common/loop-privacy-info'
 import { PrivateModal } from '@components/common/modals/private'
 import { IcLoop } from '@icons/ic-loop'
 import { BrandCommunityTag } from '@components/common/brand-community-tag'
-import { ToggleCommunityJoinState } from '@components/common/toggle-community-join-state'
+// import { ToggleCommunityJoinState } from '@components/common/toggle-community-join-state'
 import { Play } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
 import { CustomImage } from '@/components/custom/custom-image'
+import { JoinCommunityButton } from '@/components/common/join-community-button'
 
 export function CommunityList({ userId, scrollYProgress }: { userId: string; scrollYProgress: MotionValue<number> }) {
   const { data, isLoading, fetchNextPage, isFetchingNextPage } = getCommunities(userId, 8)
   const communities = data?.pages.flatMap((item) => item.communities)
-  const [communityJoinStates, setCommunityJoinStates] = useState<Record<string, string>>({})
+  // const [communityJoinStates, setCommunityJoinStates] = useState<Record<string, string>>({})
   const user = useGenuinOptions().user
-  const { addCommunities, currentVideoId, reset, stateCommunities, replaceCommunities } = useCommunityListStore(
-    useShallow((state) => ({
-      reset: state.reset,
-      currentVideoId: state.currentVideoId,
-      addCommunities: state.addCommunities,
-      stateCommunities: state.communities,
-      replaceCommunities: state.replaceCommunities,
-    }))
-  )
+  const { addCommunities, currentVideoId, reset, stateCommunities, replaceCommunities, handleCommunityRoleChange } =
+    useCommunityListStore(
+      useShallow((state) => ({
+        reset: state.reset,
+        currentVideoId: state.currentVideoId,
+        addCommunities: state.addCommunities,
+        stateCommunities: state.communities,
+        replaceCommunities: state.replaceCommunities,
+        handleCommunityRoleChange: state.handleCommunityJoin,
+      }))
+    )
   const pathName = usePathname()
 
   useEffect(() => {
@@ -55,31 +58,31 @@ export function CommunityList({ userId, scrollYProgress }: { userId: string; scr
     }
   }, [pathName])
 
-  useEffect(() => {
-    if (communities) {
-      const initialStates: Record<string, string> = {}
-      let shouldUpdate = false
+  // useEffect(() => {
+  //   if (communities) {
+  //     const initialStates: Record<string, string> = {}
+  //     let shouldUpdate = false
 
-      communities.forEach((item) => {
-        const userRole = item.userRole ?? ''
-        if (communityJoinStates[item.id] !== userRole) {
-          initialStates[item.id] = userRole
-          shouldUpdate = true
-        } else {
-          initialStates[item.id] = communityJoinStates[item.id]
-        }
-      })
+  //     communities.forEach((item) => {
+  //       const userRole = item.userRole ?? ''
+  //       if (communityJoinStates[item.id] !== userRole) {
+  //         initialStates[item.id] = userRole
+  //         shouldUpdate = true
+  //       } else {
+  //         initialStates[item.id] = communityJoinStates[item.id]
+  //       }
+  //     })
 
-      if (shouldUpdate) {
-        setCommunityJoinStates(initialStates)
-      }
-    }
-  }, [communities?.length])
+  //     if (shouldUpdate) {
+  //       setCommunityJoinStates(initialStates)
+  //     }
+  //   }
+  // }, [communities?.length])
 
   useEffect(() => {
     const newCommunities = data?.pages[data.pages.length - 1].communities
     if (newCommunities) addCommunities(newCommunities)
-  }, [communities?.length])
+  }, [communities])
 
   useMotionValueEvent(scrollYProgress, 'change', (latest) => {
     if (Number(latest.toFixed(1)) > 0.8 && !isFetchingNextPage) {
@@ -146,7 +149,7 @@ export function CommunityList({ userId, scrollYProgress }: { userId: string; scr
                         brandName={item.brand?.name}
                       />
                     )}
-                    {pathName !== PATH_NAME.profile(user?.nickname) && item.isCommunityJoinRequested && (
+                    {/* {pathName !== PATH_NAME.profile(user?.nickname) && item.isCommunityJoinRequested && (
                       <Button size="custom" className="border border-primary" variant={'outline'}>
                         <p className={`px-4 py-1.5 text-body-1-demi text-monochrome-white text-primary`}>Requested</p>
                       </Button>
@@ -161,7 +164,18 @@ export function CommunityList({ userId, scrollYProgress }: { userId: string; scr
                         isCommunityPrivate={item.type === 2}
                         communityName={item.name ?? ''}
                       />
-                    )}
+                    )} */}
+                    <JoinCommunityButton
+                      buttonText="Join"
+                      handle={item.handle}
+                      id={item.id}
+                      role={item.userRole}
+                      type={item.type === 2 ? 'private' : 'public'}
+                      communityName={item.name ?? ''}
+                      onStatusChange={(newRole) => {
+                        handleCommunityRoleChange(item.id, newRole)
+                      }}
+                    />
                   </div>
                 </div>
               </div>

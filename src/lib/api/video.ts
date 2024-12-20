@@ -7,7 +7,6 @@ import { NOT_FOUND_ERROR_CODES } from '../constants'
 
 export async function getVideoDetails(slug: string): Promise<VideoPlayerModalType> {
   const metadata = await fetchVideoMetadata(slug)
-  console.log('Meta:', metadata)
   if (!metadata?.chat_id) {
     throw new Error(`Invalid metadata for slug: ${slug}`)
   }
@@ -20,7 +19,7 @@ export async function getVideoDetails(slug: string): Promise<VideoPlayerModalTyp
   if (!loopDetails || !videoDetails) {
     throw new Error('Failed to fetch loop details or video details.')
   }
-
+  // console.log('loopDetails', loopDetails, videoDetails)
   return {
     community: {
       handle: loopDetails.community.handle,
@@ -29,6 +28,8 @@ export async function getVideoDetails(slug: string): Promise<VideoPlayerModalTyp
       name: loopDetails.community.name,
       profileImage: loopDetails.community.dp,
       shareUrl: loopDetails.community.share_url ?? '',
+      // TODO: Right now only passing unjoined in due to lack of data.
+      userRole: 'UNJOINED',
       brand: loopDetails.community?.brand
         ? {
             brand_id: loopDetails.community.brand.brand_id,

@@ -28,7 +28,7 @@ import { BrandCommunityTag } from '@components/common/brand-community-tag'
 import { Play } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
 import { CustomImage } from '@/components/custom/custom-image'
-import { UpdatedJoinCommunityButton } from '@/components/pages/community/updated-join-community-button'
+import { JoinCommunityButton } from '@/components/common/join-community-button'
 
 export function CommunityList({ brandId }: { brandId: number }) {
   const { data, isLoading, fetchNextPage, isFetchingNextPage } = getCommunities(brandId, 8)
@@ -176,13 +176,13 @@ export function CommunityList({ brandId }: { brandId: number }) {
                       communityName={item.name ?? ''}
                     />
                   )} */}
-                  <UpdatedJoinCommunityButton
+                  <JoinCommunityButton
                     buttonText="Join"
                     handle={community.handle}
                     id={community.id}
                     type={community.type === 2 ? 'private' : 'public'}
                     communityName={community.name ?? ''}
-                    role={community.isCommunityJoinRequested ? 'REQUESTED' : community.userRole}
+                    role={community.userRole}
                     onStatusChange={(role) => {
                       handleCommunityJoin(community.id, role)
                     }}

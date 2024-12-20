@@ -3,7 +3,7 @@ import Analytics from '@/services/analytics'
 import { usePlayerControlStore } from '../common/player/player-control-store'
 import { type VideoPlayerModalType } from '@/lib/schemas/player/video'
 import { showInterruption } from '@/components/providers/interruption-provider'
-import { type CommunityUserRoleType } from '@/components/pages/community/updated-join-community-button'
+import { type CommunityUserRoleType } from '@/lib/schemas/roles'
 
 type FeedContextType = {
   currentIndex: number

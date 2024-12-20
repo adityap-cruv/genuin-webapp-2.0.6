@@ -21,9 +21,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@compo
 import { ReadMore } from '../read-more'
 import { Linkout } from '../linkout'
 import MentionInput from '../comments/mention-input'
-import { UpdatedJoinCommunityButton } from '@/components/pages/community/updated-join-community-button'
 import { useFeedListContext } from '../../providers/feed-provider'
-import { JoinCommunityButton } from '@/components/pages/community/join-community-button'
+import { JoinCommunityButton } from '../join-community-button'
 
 type DesktopDetailsProps = VideoPlayerModalType & {
   /**
@@ -34,6 +33,7 @@ type DesktopDetailsProps = VideoPlayerModalType & {
 }
 
 // TODO: improve this component.
+// TODO: Remove scrollDivRef dependency from CommentBox.
 export function DesktopDetails({ useUpdatedJoinCommunityButton, loop, community, owner, video }: DesktopDetailsProps) {
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
@@ -125,28 +125,16 @@ export function DesktopDetails({ useUpdatedJoinCommunityButton, loop, community,
                 )}
               </div>
               <div className="flex h-min flex-1 items-center justify-end gap-x-3">
-                {useUpdatedJoinCommunityButton ? (
-                  <UpdatedJoinCommunityButton
-                    handle={community.handle}
-                    buttonText="Join Community"
-                    id={community.id}
-                    type={community.type === 2 ? 'private' : 'public'}
-                    role={community.userRole}
-                    onStatusChange={(role) => {
-                      updateCommunityJoinStatus(community.id, role)
-                    }}
-                  />
-                ) : (
-                  <JoinCommunityButton
-                    buttonText="Join Community"
-                    handle={community.handle}
-                    id={community.id}
-                    isCommunityPrivate={community.type === 2}
-                    isJoinRequested={community.isJoinRequested ?? false}
-                    communityName={community.name ?? ''}
-                    userRole={community.userRole}
-                  />
-                )}
+                <JoinCommunityButton
+                  handle={community.handle}
+                  buttonText="Join Community"
+                  id={community.id}
+                  type={community.type === 2 ? 'private' : 'public'}
+                  role={community.userRole}
+                  onStatusChange={(role) => {
+                    updateCommunityJoinStatus(community.id, role)
+                  }}
+                />
                 <Button
                   title="Copy Link"
                   size="custom"

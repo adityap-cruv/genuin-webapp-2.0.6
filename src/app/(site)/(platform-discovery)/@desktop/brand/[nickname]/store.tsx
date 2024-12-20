@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { type ProfileLoopType, type ProfileCommunityType, type ProfileVideoType } from '@lib/schemas/profile/community'
-import { type CommunityUserRoleType } from '@/components/pages/community/updated-join-community-button'
 import { produce } from 'immer'
+import { type CommunityUserRoleType } from '@/lib/schemas/roles'
 
 type State = {
   communities: ProfileCommunityType[]
