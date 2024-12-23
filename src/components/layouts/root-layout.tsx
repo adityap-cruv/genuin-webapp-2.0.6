@@ -29,7 +29,10 @@ export function RootHTML({
         <meta rel="x-brand-id" content={subdomain} />
         {noIndex && <meta name="robots" content="noindex" />}
       </head>
-      <body style={{ ...brandColors, ...style }} className={cn('h-screen w-full text-secondary', className)} {...props}>
+      <body
+        style={{ ...brandColors, ...style }}
+        className={cn('h-full w-full text-secondary md:h-screen', className)}
+        {...props}>
         {children}
         <RedirectToHTTPS />
       </body>
