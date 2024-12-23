@@ -6,26 +6,30 @@ import { getFeaturedCommunity } from '@lib/api/community'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import Link from 'next/link'
-// import { JoinCommunityButton } from '@components/pages/community/join-community-button'
 import { CommunityCardShimmer } from './shimmer'
 import { type CommunityUserRoleType } from '@/lib/schemas/roles'
 import { useCallback, useState } from 'react'
 
 export function Communities() {
   const { isLoading, data: communities, isError } = getFeaturedCommunity()
+  // List of joined communities.
   const [joinedCommunities, setJoinedCommunities] = useState<string[]>([])
 
+  // Handle community role change.
   const handleCommunityRoleChange = useCallback(
     (communityId: string, role: CommunityUserRoleType) => {
+      // If user is a member of the community, add it to the list.
       if (role === 'MEMBER') {
         setJoinedCommunities((prev) => [...prev, communityId])
       } else {
+        // If join is reverted than remove it from the list.
         setJoinedCommunities((prev) => prev.filter((id) => id !== communityId))
       }
     },
     [communities]
   )
 
+  // In case of error, return.
   if (isError) {
     return
   }
