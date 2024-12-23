@@ -93,7 +93,7 @@ export function Mobile({
     )
 
   return (
-    <div style={{ ...videoSizeBox }} className="overflow-clip">
+    <div style={{ ...videoSizeBox }} className="relative overflow-clip">
       <Swiper
         modules={[Mousewheel]}
         mousewheel={true}
