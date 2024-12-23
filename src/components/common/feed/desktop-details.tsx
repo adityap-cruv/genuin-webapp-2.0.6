@@ -2,17 +2,13 @@ import { CustomAvatar } from '@components/custom/custom-avatar'
 import { type RefObject, useRef, useState, useEffect } from 'react'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
-import { Button } from '@components/ui/button'
 import { DecorativeList } from '@components/custom/decorative-list'
 import { Comments, NoComments } from '@components/common/comments'
 import { getVideosComments } from '@lib/api/loop'
 import { useMotionValueEvent, useScroll } from 'framer-motion'
-import { useAdaptiveShare } from '@hooks/use-adaptive-share'
-import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
-import { getCurrentShareUrl, getTimeAgo } from '@lib/utils'
+import { getTimeAgo } from '@lib/utils'
 import { FeedShimmer } from '../shimmers/feed-shimmer'
-import { ShareIcon } from '@icons/share-icon'
 import { type CommentListType } from '@lib/schemas/loop/comment'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import { LockIcon } from '@icons/LockIcon'
@@ -22,11 +18,10 @@ import { JoinCommunityButton } from '@components/pages/community/join-community-
 import { ReadMore } from '../read-more'
 import { Linkout } from '../linkout'
 import MentionInput from '../comments/mention-input'
+import ShareButton from '@components/common/actions/ShareButton'
 
 // TODO: improve this component.
 export function DesktopDetails({ loop, community, owner, video }: VideoPlayerModalType) {
-  const { shareFn } = useAdaptiveShare()
-  const { toast } = useToast()
   const scrollDivRef = useRef<HTMLDivElement>(null)
   // TODO: Here state Comment and setComments are bad they are causing multiple rerenders.
   const [comments, setComments] = useState<CommentListType>([])
@@ -131,19 +126,7 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
                   isJoinRequested={false}
                   userRole={community.userRole}
                 />
-                <Button
-                  title="Copy Link"
-                  size="custom"
-                  variant="outline"
-                  className="min-w-max border border-primary p-1 hover:border-primary-600 "
-                  onClick={async () =>
-                    await shareFn({
-                      shareLink: getCurrentShareUrl({ url: community.shareUrl }),
-                      toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
-                    })
-                  }>
-                  <ShareIcon className="h-5 w-5 stroke-primary hover:stroke-primary-600" />
-                </Button>
+                <ShareButton url={community.shareUrl} />
               </span>
             </span>
             <DecorativeList>

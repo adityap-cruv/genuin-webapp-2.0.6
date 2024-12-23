@@ -1,11 +1,9 @@
 import { Button } from '@components/ui/button'
 import { motion, useAnimationControls } from 'framer-motion'
 import { useEffect } from 'react'
-import { useAdaptiveShare } from '@hooks/use-adaptive-share'
-import { useToast } from '@components/ui/use-toast'
-import { ShareIcon } from '@icons/share-icon'
 import { BellIconOff } from '@icons/bell-icon-off'
 import { SubscribedBellIcon } from '@icons/subscribed-bell-icon'
+import ShareButton from '@components/common/actions/ShareButton'
 
 type Props = {
   /**
@@ -41,8 +39,6 @@ function Desktop({
   ...props
 }: Props) {
   const navAnimationControl = useAnimationControls()
-  const { shareFn } = useAdaptiveShare()
-  const { toast } = useToast()
 
   useEffect(() => {
     if (defaultOpen || isOpen) {
@@ -91,18 +87,7 @@ function Desktop({
                 </span>
               </Button> */}
 
-        <Button
-          variant="outline"
-          size="custom"
-          className="border border-primary p-[3px]"
-          onClick={async () => {
-            await shareFn({
-              shareLink: shareUrl,
-              toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
-            })
-          }}>
-          <ShareIcon className="stroke-primary" />
-        </Button>
+        <ShareButton url={shareUrl} />
       </span>
     </motion.div>
   )

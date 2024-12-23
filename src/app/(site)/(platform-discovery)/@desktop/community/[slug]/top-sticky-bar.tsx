@@ -1,12 +1,8 @@
 import { CustomAvatar } from '@components/custom/custom-avatar'
-import { Button } from '@components/ui/button'
 import { motion, useAnimationControls } from 'framer-motion'
 import { useEffect } from 'react'
-import { useToast } from '@components/ui/use-toast'
-import { useAdaptiveShare } from '@hooks/use-adaptive-share'
-import { getCurrentShareUrl } from '@lib/utils'
-import { ShareIcon } from '@icons/share-icon'
 import { JoinCommunityButton } from '@components/pages/community/join-community-button'
+import ShareButton from '@components/common/actions/ShareButton'
 
 type Props = {
   /**
@@ -41,8 +37,6 @@ export function TopStickyBar({
   ...props
 }: Props) {
   const navAnimationControl = useAnimationControls()
-  const { shareFn } = useAdaptiveShare()
-  const { toast } = useToast()
 
   useEffect(() => {
     if (defaultOpen || isOpen) {
@@ -86,18 +80,7 @@ export function TopStickyBar({
           userRole={role}
           isCommunityPrivate={isCommunityPrivate}
         />
-        <Button
-          variant="outline"
-          size="custom"
-          className="border border-primary p-0.5 hover:border-primary-600"
-          onClick={async () =>
-            await shareFn({
-              shareLink: getCurrentShareUrl({ url: shareUrl }),
-              toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
-            })
-          }>
-          <ShareIcon className="h-6 w-6 fill-primary hover:fill-primary-600" />
-        </Button>
+        <ShareButton url={shareUrl} />
       </span>
     </motion.div>
   )

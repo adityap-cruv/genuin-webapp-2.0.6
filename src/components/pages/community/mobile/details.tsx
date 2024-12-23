@@ -2,20 +2,17 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { Button } from '@components/ui/button'
 import type { CommunityDetailsType, MembersSchemaType } from '@lib/schemas/community'
-import { checkAndAppendHttps, getCurrentShareUrl, openGeneratedLink, openModal } from '@lib/utils'
+import { checkAndAppendHttps, openGeneratedLink, openModal } from '@lib/utils'
 import Image from 'next/image'
 import icLock from '@icons/icLock.svg'
 import Link from 'next/link'
 import icLink from '@icons/icLinkBlack.svg'
 import { PATH_NAME } from '@lib/utils/constants/path'
-import { useToast } from '@components/ui/use-toast'
-import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { TopBar } from '../../../layouts/mobile/top-bar'
 import { CommunityLoopTab } from './community-loop-tab'
 import { useState } from 'react'
 import { joinCommunity, leaveCommunity, requestCommunity } from '@lib/api/video'
-import { ShareIcon } from '@icons/share-icon'
 import { useSearchParams } from 'next/navigation'
 import { getCommunityMembers } from '@lib/api/community'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@components/ui/accordion'
@@ -30,6 +27,7 @@ import { TwitterIcon } from '@icons/twitter-icon'
 import { joinCommunityDeepLink } from '@/lib/get-deeplink'
 import { TopStickyBar } from './top-sticky-bar'
 import { ReadMore } from '@/components/common/read-more'
+import ShareButton from '@components/common/actions/ShareButton'
 
 let communityDetailsModule: CommunityDetailsType
 
@@ -41,8 +39,6 @@ const DETAIL_ELEMENT_ID = 'community-details'
 
 export function Details({ communityDetails }: Props) {
   communityDetailsModule = communityDetails
-  const { shareFn } = useAdaptiveShare()
-  const { toast } = useToast()
   const { isEmbed } = useGenuinOptions((state) => ({ isEmbed: state.embed, parentUrl: state.parentUrl }))
   const searchParams = Object.fromEntries(useSearchParams())
 
@@ -101,19 +97,7 @@ export function Details({ communityDetails }: Props) {
                   <p className="mx-2 text-body-1-bold text-monochrome-white">Join Community</p>
                 </Button>
               )}
-              <Button
-                variant="outline"
-                outlineColor="genuin-blue"
-                size="sm"
-                className="p-1"
-                onClick={async () =>
-                  await shareFn({
-                    shareLink: getCurrentShareUrl({ url: communityDetails.share_url }),
-                    toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
-                  })
-                }>
-                <ShareIcon className="h-6 w-6 stroke-primary" strokeClassName='stroke-primary' />
-              </Button>
+              <ShareButton url={communityDetails.share_url} />
               {/* <Button variant="outline" size="custom" className="border border-primary p-1">
                 <Image src={icMore} alt="share" className="h-6 w-6" />
               </Button> */}

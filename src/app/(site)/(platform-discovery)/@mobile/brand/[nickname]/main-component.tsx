@@ -1,15 +1,11 @@
 'use client'
-import { abbreviateNumber, checkAndAppendHttps, getCurrentShareUrl } from '@lib/utils'
-import { Button } from '@components/ui/button'
+import { abbreviateNumber, checkAndAppendHttps } from '@lib/utils'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { useEffect, useRef } from 'react'
 import { TopBar } from '@components/layouts/mobile/top-bar'
 import Link from 'next/link'
 import { useInView, useScroll } from 'framer-motion'
 import { TopStickyBar } from '../../../@desktop/profile/[nickname]/top-bar'
-import { useAdaptiveShare } from '@hooks/use-adaptive-share'
-import { useToast } from '@components/ui/use-toast'
-import { ShareIcon } from '@icons/share-icon'
 import { type BrandSchemaType, type ProfileDetailsType } from '@lib/schemas/profile/profile'
 import { CommunityList } from './community-list'
 import { TickIcon } from '@icons/tick-icon'
@@ -18,6 +14,7 @@ import { TikTokIcon } from '@icons/tiktok-icon'
 import { LinkedInIcon } from '@icons/linkedin-icon'
 import { TwitterIcon } from '@icons/twitter-icon'
 import Analytics from '@services/analytics'
+import ShareButton from '@components/common/actions/ShareButton'
 
 interface CompProps {
   profileData: ProfileDetailsType
@@ -25,8 +22,6 @@ interface CompProps {
 
 // TODO: separate this component.
 export function MainComponent({ profileData }: CompProps) {
-  const { shareFn } = useAdaptiveShare()
-  const { toast } = useToast()
   const detailsDivRef = useRef<HTMLDivElement>(null)
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
   const scrollDivRef = useRef<HTMLDivElement>(null)
@@ -80,19 +75,7 @@ export function MainComponent({ profileData }: CompProps) {
                 }>
                 <p className="text-body-1-bold text-blue">Edit Profile</p>
               </Button> */}
-              <Button
-                variant="outline"
-                size="custom"
-                outlineColor="genuin-blue"
-                className="p-1.5"
-                onClick={async () =>
-                  await shareFn({
-                    shareLink: getCurrentShareUrl({ url: profileData.share_url }),
-                    toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
-                  })
-                }>
-                <ShareIcon className="h-6 w-6 stroke-primary" />
-              </Button>
+              <ShareButton url={profileData.share_url} />
             </div>
           </div>
           <div ref={detailsDivRef} className="mt-2 flex items-center">

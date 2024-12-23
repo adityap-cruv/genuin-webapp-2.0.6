@@ -5,7 +5,6 @@ import { openGeneratedLink, openModal } from '@lib/utils'
 import Image from 'next/image'
 import icLock from '@icons/icLock.svg'
 import { useToast } from '@components/ui/use-toast'
-import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
 import { getLoopCohosts, subscribeLoop, getLoopDetails } from '@lib/api/loop'
 import Link from 'next/link'
@@ -17,7 +16,6 @@ import { useInView } from 'framer-motion'
 import { TopStickyBar } from '../../../@desktop/group/[slug]/top-bar'
 import { LoopVideos } from './loop-videos'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
-import { ShareIcon } from '@icons/share-icon'
 import { useSearchParams } from 'next/navigation'
 import Loading from './loading'
 import Error from '../../error'
@@ -32,6 +30,7 @@ import { BellIconOff } from '@icons/bell-icon-off'
 import { ReadMore } from '@/components/common/read-more'
 import EmptyView from '@/components/common/empty-view'
 import { NOT_FOUND_ERROR_CODES } from '@/lib/constants'
+import ShareButton from '@components/common/actions/ShareButton'
 
 let loopDetailsModule: LoopDetailsType
 
@@ -60,7 +59,6 @@ export function MainComponent({ loopDetails }: Props) {
   loopDetailsModule = loopDetails
   const detailsDivRef = useRef<HTMLDivElement>(null)
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
-  const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
   const [isLoopSubscribed, setIsLoopSubscribed] = useState(!!loopDetails.is_subscriber)
   const { embed, user } = useGenuinOptions()
@@ -255,20 +253,7 @@ export function MainComponent({ loopDetails }: Props) {
                 </span>
               </Button> */}
 
-            <Button
-              variant="outline"
-              size="custom"
-              className="border border-primary p-[3px]"
-              onClick={async () => {
-                const currentURL = new URL(loopDetails.share_url)
-                currentURL.searchParams.set('utm_source', 'app_web')
-                await shareFn({
-                  shareLink: currentURL.href,
-                  toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
-                })
-              }}>
-              <ShareIcon className="stroke-primary" />
-            </Button>
+            <ShareButton url={loopDetails.share_url} />
           </div>
         </div>
         <hr className="border-t border-tertiary-200" />

@@ -12,11 +12,9 @@ import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { ListItem } from '@components/common/list-item'
 import { LoopVideos } from './loop-videos'
-import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
 import { openModal } from '@lib/utils'
-import { ShareIcon } from '@icons/share-icon'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import Loading from './loading'
 import Error from '../../error'
@@ -33,6 +31,7 @@ import { BellIconOff } from '@icons/bell-icon-off'
 import { ReadMore } from '@/components/common/read-more'
 import { NOT_FOUND_ERROR_CODES } from '@/lib/constants'
 import EmptyView from '@/components/common/empty-view'
+import ShareButton from '@components/common/actions/ShareButton'
 
 interface Props {
   loopDetails: LoopDetailsType
@@ -56,7 +55,6 @@ export function LoopDetails({ slug }: { slug: string }) {
 
 // TODO: Improve this component.
 export function MainComponent({ loopDetails }: Props) {
-  const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
   const detailsDivRef = useRef<HTMLDivElement>(null)
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
@@ -178,20 +176,7 @@ export function MainComponent({ loopDetails }: Props) {
                 </span>
               </Button> */}
 
-            <Button
-              variant="outline"
-              size="custom"
-              className="border border-primary p-[3px]"
-              onClick={async () => {
-                const currentURL = new URL(loopDetails.share_url)
-                currentURL.searchParams.set('utm_source', 'app_web')
-                await shareFn({
-                  shareLink: currentURL.href,
-                  toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
-                })
-              }}>
-              <ShareIcon className="stroke-primary" />
-            </Button>
+            <ShareButton url={loopDetails.share_url} />
           </div>
         </div>
         <LoopPrivacyInfo
