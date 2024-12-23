@@ -52,22 +52,6 @@ export function Mobile({
   // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
   const videoSizeBox = customSizeBox || defaultSizeBox
 
-  // const { setCurrentIndex, currentIndex } = useFeedListStore(
-  //   useShallow((state) => ({
-  //     setCurrentIndex: state.setCurrentIndex,
-  //     currentIndex: state.currentIndex,
-  //   }))
-  // )
-
-  // useEffect(() => {
-  //   if (!videos) return
-  //   if (!isFetchingNextPage && videos.length - 3 <= currentIndex) {
-  //     // console.log('isFetchingNextPage NEXT PGE.')
-  //     fetchNextPage?.()
-  //   }
-  //   if ((currentIndex + 1) % 5 === 0) showInterruption()
-  // }, [currentIndex])
-
   if (isLoading || !videos) {
     return <FeedShimmer.mobile />
   }

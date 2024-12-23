@@ -112,7 +112,7 @@ type PlayerModalWrapperProps = {
 }
 
 function PlayerModalWrapper({ open = false, slug, close, unreadMessageCount }: PlayerModalWrapperProps) {
-  const { data, fetchNextPage, isError, isFetchingNextPage, isFetching } = getLoopVideos(slug)
+  const { data, fetchNextPage, isError, isFetchingNextPage, isFetching, hasNextPage } = getLoopVideos(slug)
   const videos = data?.pages.flatMap((item) => item.videos)
 
   return (
@@ -126,6 +126,7 @@ function PlayerModalWrapper({ open = false, slug, close, unreadMessageCount }: P
       videos={videos}
       close={close}
       unreadMessageCount={unreadMessageCount}
+      hasNextPage={hasNextPage}
     />
   )
 }

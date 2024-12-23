@@ -171,7 +171,7 @@ export function CommunityList({ brandId, scrollYProgress }: { brandId: number; s
 }
 
 function PlayerModalWrapper({ brandId, currentVideoId }: { brandId: number; currentVideoId: string }) {
-  const { data, isLoading, fetchNextPage } = getBrandFeed(brandId, currentVideoId)
+  const { data, isLoading, fetchNextPage, isFetchingNextPage, hasNextPage } = getBrandFeed(brandId, currentVideoId)
   const { close } = useCommunityListStore()
   const videos = data?.pages.flatMap((item) => item.feed)
 
@@ -183,8 +183,9 @@ function PlayerModalWrapper({ brandId, currentVideoId }: { brandId: number; curr
       startIndex={0}
       isLoading={isLoading}
       videos={videos}
-      isFetchingNextPage={false}
+      isFetchingNextPage={isFetchingNextPage}
       open={Boolean(currentVideoId)}
+      hasNextPage={hasNextPage}
     />
   )
 }

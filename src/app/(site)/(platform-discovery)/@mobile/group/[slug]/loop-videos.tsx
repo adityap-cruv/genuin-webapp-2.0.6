@@ -118,6 +118,7 @@ export function LoopVideos({ slug }: Props) {
         open={modalControl.open}
         startIndex={modalControl.startIndex}
         videos={videos}
+        hasNextPage={hasNextPage}
       />
     </div>
   )

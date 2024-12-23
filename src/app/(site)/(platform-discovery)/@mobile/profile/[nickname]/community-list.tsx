@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { DecorativeList } from '@components/custom/decorative-list'
 import { Loader } from '@components/ui/loader'
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { Shimmer } from '@components/ui/shimmer'
 import Link from 'next/link'
 import { getNextPage } from './hook'
@@ -165,19 +165,20 @@ export function CommunityList({ userId, scrollYProgress }: { userId: string; scr
 }
 
 function PlayerModalWrapper({ userId, currentVideoId }: { userId: string; currentVideoId: string }) {
-  const { data, isLoading, fetchNextPage } = getProfileFeed(userId, currentVideoId)
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = getProfileFeed(userId, currentVideoId)
   const { close } = useCommunityListStore()
-  const videos = data?.pages.flatMap((item) => item.feed)
+  const videos = useMemo(() => data?.pages.flatMap((item) => item.feed), [data])
 
   return (
     <PlayerModal.mobile
+      hasNextPage={hasNextPage}
       close={close}
       fetchNextVideos={fetchNextPage}
       isError={false}
       startIndex={0}
       isLoading={isLoading}
       videos={videos}
-      isFetchingNextPage={false}
+      isFetchingNextPage={isFetchingNextPage}
       open={Boolean(currentVideoId)}
     />
   )

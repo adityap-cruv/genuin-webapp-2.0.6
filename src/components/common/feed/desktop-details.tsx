@@ -24,17 +24,10 @@ import MentionInput from '../comments/mention-input'
 import { useFeedListContext } from '../../providers/feed-provider'
 import { JoinCommunityButton } from '../join-community-button'
 
-type DesktopDetailsProps = VideoPlayerModalType & {
-  /**
-   * This flag is used to determine if the updated join community button should be used or not.
-   * @default false
-   */
-  useUpdatedJoinCommunityButton?: boolean
-}
-
+type DesktopDetailsProps = VideoPlayerModalType
 // TODO: improve this component.
 // TODO: Remove scrollDivRef dependency from CommentBox.
-export function DesktopDetails({ useUpdatedJoinCommunityButton, loop, community, owner, video }: DesktopDetailsProps) {
+export function DesktopDetails({ loop, community, owner, video }: DesktopDetailsProps) {
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
   const scrollDivRef = useRef<HTMLDivElement>(null)

@@ -1,16 +1,14 @@
 'use client'
 import { CustomDialog, CustomDialogContent, CustomDialogTrigger } from '@components/custom/custom-dialog'
-// import { useEffect } from 'react'
-// import { useFeedModalStore } from './store'
 import { Feed } from '@components/common/feed'
 import { TopBar } from '@components/layouts/mobile/top-bar'
 import { FeedShimmer } from '@components/common/shimmers/feed-shimmer'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import { UnseenMessageRibbon } from '@components/common/unseen-message-ribbon'
-// import { useShallow } from 'zustand/react/shallow'
 
 type Props = {
   children?: React.ReactNode
+  hasNextPage?: boolean
   videos?: VideoPlayerModalType[]
   /**
    * Index to start playing video from.
@@ -38,29 +36,10 @@ export function Mobile({
   close,
   isLoading,
   isFetchingNextPage,
+  hasNextPage,
   fetchNextVideos,
   unreadMessageCount,
 }: Props) {
-  // const { currentIndex, setCurrentIndex, setStateVideos } = useFeedModalStore(
-  //   useShallow((state) => ({
-  //     currentIndex: state.currentIndex,
-  //     setCurrentIndex: state.setCurrentIndex,
-  //     setStateVideos: state.setVideos,
-  //   }))
-  // )
-
-  // useEffect(() => {
-  //   if (videos) setStateVideos(videos)
-  // }, [videos])
-
-  // useEffect(() => {
-  //   setCurrentIndex(startIndex)
-  // }, [startIndex])
-
-  // useEffect(() => {
-  //   if (videos && !isFetchingNextPage && currentIndex >= videos?.length - 2) fetchNextVideos()
-  // }, [currentIndex])
-
   function InnerContent() {
     if (isLoading || !videos) {
       return (
@@ -74,9 +53,11 @@ export function Mobile({
       <Feed.mobile
         isError={false}
         videos={videos}
-        isFetchingNextPage={false}
-        isLoading={false}
+        isFetchingNextPage={isFetchingNextPage}
+        isLoading={isLoading}
         startIndex={startIndex}
+        fetchNextPage={fetchNextVideos}
+        hasNextPage={hasNextPage}
       />
     )
   }

@@ -127,7 +127,7 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
         })}
         {showKsGestures && <KsGestures />}
       </Swiper>
-      <DesktopDetails {...videos[currentIndex]} useUpdatedJoinCommunityButton />
+      <DesktopDetails {...videos[currentIndex]} />
     </div>
   )
 }

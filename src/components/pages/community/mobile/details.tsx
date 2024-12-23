@@ -73,20 +73,6 @@ export function Details({ communityDetails }: Props) {
         <div className="px-4 py-2 pt-4">
           <div className="flex justify-end">
             <div className="flex items-center gap-x-2">
-              {/* {isEmbed && communityDetails.is_community_join_requested && (
-                <Button size="custom" className="border border-primary" variant={'outline'}>
-                  <p className={`px-4 py-1.5 text-body-1-demi text-monochrome-white text-primary`}>Requested</p>
-                </Button>
-              )} */}
-              {/* {isEmbed && !communityDetails.is_community_join_requested && (
-                <JoinButton
-                  handle={communityDetails.handle}
-                  id={communityDetails.community_id}
-                  communityName={communityDetails.name ?? ''}
-                  userRole={communityDetails.logged_in_user_role}
-                  isCommunityPrivate={communityDetails.type === 2}
-                />
-              )} */}
               <JoinCommunityButton
                 buttonText="Join Community"
                 handle={communityDetails.handle}
@@ -477,88 +463,3 @@ function Members() {
       </div>
     )
 }
-
-// export function JoinButton({
-//   userRole,
-//   handle,
-//   id,
-//   isCommunityPrivate,
-//   communityName,
-// }: {
-//   userRole?: 'LEADER' | 'MEMBER' | 'REQUESTED' | null
-//   handle: string
-//   id: string
-//   isCommunityPrivate: boolean
-//   communityName: string
-// }) {
-//   const [role, setRole] = useState(userRole)
-//   const user = useGenuinOptions().user
-//   const searchParams = Object.fromEntries(useSearchParams())
-
-//   async function toggleCommunityJoinState() {
-//     if (role !== 'MEMBER') {
-//       if (isCommunityPrivate) {
-//         await requestCommunity(id).then((res) => {
-//           if (res.code === 200) {
-//             setRole('REQUESTED')
-//           }
-//         })
-//       } else {
-//         await joinCommunity(
-//           false,
-//           [id],
-//           [
-//             {
-//               user_id: user?.id,
-//             },
-//           ]
-//         ).then((res) => {
-//           if (res.code === 200) {
-//             setRole('MEMBER')
-//           }
-//         })
-//       }
-//     } else {
-//       await leaveCommunity(id).then((res) => {
-//         if (res.code === 200) {
-//           setRole(null)
-//         }
-//       })
-//     }
-//   }
-
-//   if (userRole === 'LEADER') return
-
-//   return (
-//     <Button
-//       size="custom"
-//       className={`${role && 'rounded border border-primary '}`}
-//       variant={role ? 'outline' : 'default'}
-//       onClick={
-//         user
-//           ? async () => {
-//               await toggleCommunityJoinState()
-//             }
-//           : async () => {
-//               await joinCommunityDeepLink({ communityName, searchParams }).then((generatedLink) => {
-//                 openModal({
-//                   deepLink: generatedLink,
-//                   subtitle: (
-//                     <>
-//                       Get the app to join the <br />
-//                       <span className="font-bold">@{handle}</span> community.
-//                     </>
-//                   ),
-//                 })
-//               })
-//             }
-//       }>
-//       <p
-//         className={`whitespace-nowrap px-4 py-1.5 text-body-1-demi  ${
-//           role ? 'text-primary' : 'text-monochrome-white'
-//         }`}>
-//         {role ? (role === 'REQUESTED' ? 'Requested' : 'Joined') : 'Join Community'}
-//       </p>
-//     </Button>
-//   )
-// }
