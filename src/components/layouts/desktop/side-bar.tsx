@@ -167,11 +167,11 @@ type ItemProps = {
   title: string
   isActive?: boolean
   children: ReactNode
-  notificationCount?: number | null
+  notificationCount?: number
   brandName?: string
 }
 
-function Item({ title, isActive, children, notificationCount, brandName }: ItemProps) {
+function Item({ title, isActive, children, notificationCount = 0, brandName }: ItemProps) {
   return (
     <div
       onClick={() => {
@@ -185,14 +185,11 @@ function Item({ title, isActive, children, notificationCount, brandName }: ItemP
       className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 hover:bg-monochrome-6/10">
       <div className="relative">
         {children}
-        {!notificationCount ||
-          (notificationCount > 0 && (
-            <>
-              <div className="absolute right-0 top-0 flex h-4 w-4 items-center justify-center rounded-full bg-primary  text-cap-1-med text-monochrome-white">
-                {notificationCount}
-              </div>
-            </>
-          ))}
+        {notificationCount !== 0 && (
+          <div className="absolute right-0 top-0 flex h-4 w-4 items-center justify-center rounded-full bg-primary  text-cap-1-med text-monochrome-white">
+            {notificationCount}
+          </div>
+        )}
       </div>
       <p className={cn('hidden whitespace-nowrap !text-title-2-demi xl:block', isActive && 'text-primary')}>{title}</p>
     </div>

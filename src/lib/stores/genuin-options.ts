@@ -137,7 +137,7 @@ type StateType = {
   parentUrl: string
   config: ConfigType
   user?: User
-  notificationCount?: number | null
+  notificationCount?: number
   walletBalance?: number | null
   isLoading: boolean
 }

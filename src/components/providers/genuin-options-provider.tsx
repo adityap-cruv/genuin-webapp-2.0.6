@@ -64,10 +64,9 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
   const isSafari = browserType.toLowerCase().includes('safari')
 
   async function fetchNotificationCount() {
-    const { status, count } = await notificationsCount()
-    if (status) {
-      setInitialData({ notificationCount: count })
-    }
+    const response = await notificationsCount()
+    if (!response) return
+    if (response.status) setInitialData({ notificationCount: response.count })
   }
 
   async function fetchWalletBalance() {

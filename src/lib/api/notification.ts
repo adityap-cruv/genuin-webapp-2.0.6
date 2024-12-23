@@ -37,6 +37,12 @@ export function getNotifications(limit: number) {
   })
 }
 
+/**
+ * Marks all notifications as read or unread.
+ * In case of error it returns null.
+ * @param readAll
+ * @returns
+ */
 export async function readNotifications(readAll: boolean) {
   return await axiosInstance
     .put('/api/v3/notification_read', {
@@ -46,10 +52,14 @@ export async function readNotifications(readAll: boolean) {
       return res.data.data
     })
     .catch((e) => {
-      throw new Error('Somethig went wrong with notification_read api.')
+      return undefined
     })
 }
 
+/**
+ * Fetches the notification count. In case of error it returns null.
+ * @returns null or { status: boolean, count: number }
+ */
 export async function notificationsCount() {
   return await axiosInstance
     .get('/api/v3/notification_count')
@@ -57,6 +67,6 @@ export async function notificationsCount() {
       return { status: res.status === 200, count: res?.data?.data?.count }
     })
     .catch((e) => {
-      throw new Error('Somethig went wrong with notification_read api.')
+      return undefined
     })
 }
