@@ -1,5 +1,7 @@
+// TODO: scrap this file and move the parsing logic to the respective api files.
+
 /* eslint-disable @typescript-eslint/prefer-nullish-coalescing */
-import { type FeedResponseFromGoApi, type FeedResponseType } from '@lib/schemas/feed/response'
+import { type FeedResponseFromGoApi } from '@lib/schemas/feed/response'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import { type ProfileLoopType, type ProfileCommunityType, type ProfileVideoType } from '@lib/schemas/profile/community'
 import {
@@ -7,73 +9,7 @@ import {
   type ProfileCommunityResponseType,
   type ProfileVideoResponseType,
 } from '@lib/schemas/profile/community-response'
-import { tryJsonParse } from '@lib/utils'
-
-// TODO: this function is used by some apis like community-videos, brand-videos removed if we adopt the changes from go-api.
-export function parseFeedResponse(videos: FeedResponseType[]) {
-  return videos.map<VideoPlayerModalType>(({ video, community, loop, owner }) => {
-    return {
-      community: {
-        handle: community?.handle ?? '',
-        id: community?.uuid ?? '',
-        slug: community?.slug ?? '',
-        name: community?.name ?? '',
-        profileImage: community?.dp ?? '',
-        type: community?.type ?? null,
-        shareUrl: community?.share_url ?? '',
-        userRole: mapUserRole(community?.logged_in_user_role), // Mapping logged_in_user_role to userRole
-
-        brand: community?.brand
-          ? {
-              brand_id: community.brand.brand_id,
-              name: community.brand.name,
-              subdomain: community.brand.subdomain,
-              logo: community.brand.logo,
-              created_at: community.brand.created_at,
-              brand_web_logo: community.brand.brand_web_logo,
-              favicon: community.brand.favicon,
-              brand_system_user_id: community.brand.brand_system_user_id,
-              brand_slug: community.brand.brand_slug,
-            }
-          : null,
-      },
-      loop: {
-        id: loop.group_id,
-        slug: loop.slug,
-        name: loop.group_name,
-      },
-      owner: {
-        isAvatar: owner.is_avatar,
-        profileImage: owner.profile_image,
-        userName: owner.username,
-        name: owner.name,
-        brand: owner.brand
-          ? {
-              brand_id: owner.brand?.brand_id,
-              brand_slug: owner.brand?.brand_slug,
-            }
-          : null,
-      },
-      video: {
-        id: video.uuid,
-        commentCount: video.no_of_comments,
-        createdAt: video.conversation_at,
-        shareUrl: video.share_url,
-        slug: video.slug,
-        source: video.media_url_m3u8 ?? video.media_url,
-        sparkCount: video.no_of_sparks,
-        thumbnail: video.thumbnail_url ?? '',
-        attachedLink: video.attached_link,
-        isSparked: video.is_sparked,
-        descriptionArr: video.description_data ? tryJsonParse(video.description_data) : undefined,
-        descriptionText: video.description_text,
-        linkoutId: video.linkouts_id || null,
-        clickableUrl: video.clickable_url ? video.clickable_url : null,
-        thumbnailM: video.thumbnail_url_l ? video.thumbnail_url || '' : '',
-      },
-    }
-  })
-}
+import { mapCommunityUserRole, tryJsonParse } from '@lib/utils'
 
 /**
  * This api parses only feed response from go-api.
@@ -82,69 +18,55 @@ export function parseFeedResponse(videos: FeedResponseType[]) {
 export function parseFeedResponseFromGoApi(feeds: FeedResponseFromGoApi[]) {
   return feeds.map<VideoPlayerModalType>(({ video, community, loop, uuid, owner }) => ({
     community: {
-      handle: community?.handle || '', // Mapping community.handle
-      id: community?.uuid || '', // Mapping community.uuid
-      slug: community?.slug || '', // Mapping community.slug
-      name: community?.name || null, // Mapping community.name
-      profileImage: community.dp_s, // Mapping community.dp
-      type: community?.type || null, // Mapping community.type
-      shareUrl: community?.share_url || '', // Mapping community.share_url
-      userRole: mapUserRole(community?.logged_in_user_role), // Mapping logged_in_user_role to userRole
-      isJoinRequested: false, // Set default for isJoinRequested, modify if needed
+      handle: community?.handle || '',
+      id: community?.uuid || '',
+      slug: community?.slug || '',
+      name: community?.name || null,
+      profileImage: community.dp_s,
+      type: community?.type || null,
+      shareUrl: community?.share_url || '',
+      // is join requested is false because feed api does not give private community videos.
+      userRole: mapCommunityUserRole(community?.logged_in_user_role, false),
       ...(community.brand && {
         brand: {
-          brand_id: community.brand.brand_id, // Mapping brand.brand_id
-          name: community.brand.name, // Mapping brand.name
-          brand_slug: community.brand.brand_slug, // Mapping brand.brand_slug
+          brand_id: community.brand.brand_id,
+          name: community.brand.name,
+          brand_slug: community.brand.brand_slug,
           brand_web_logo: community.brand.brand_web_logo,
         },
       }),
     },
     loop: {
-      id: loop?.uuid || '', // Mapping loop.uuid
-      slug: loop?.slug || '', // Mapping loop.slug
-      name: loop?.group_name || null, // Mapping loop.group_name
+      id: loop?.uuid || '',
+      slug: loop?.slug || '',
+      name: loop?.group_name || null,
     },
     owner: {
-      isAvatar: owner.is_avatar, // Mapping owner.is_avatar
+      isAvatar: owner.is_avatar,
       profileImage: owner.profile_image_s ?? owner.profile_image_m ?? owner.profile_image,
-      userName: owner.username, // Mapping owner.username
-      name: owner.name, // Mapping owner.name
+      userName: owner.username,
+      name: owner.name,
       ...(owner.brand && { brand: { brand_id: Number(owner.brand.brand_id), brand_slug: owner.brand.brand_slug } }),
     },
     video: {
-      id: uuid, // Using video.uuid as the ID
-      commentCount: video.no_of_comments || 0, // Mapping no_of_comments
-      createdAt: video.conversation_at, // Mapping message_at to createdAt
-      shareUrl: video.share_url || '', // Mapping share_url
-      slug: video.slug || '', // Mapping slug
-      source: video.media_url_m3u8 ?? video.media_url, // Mapping media_url
-      sparkCount: video.no_of_sparks || 0, // Mapping no_of_sparks
-      thumbnail: video.thumbnail_url, // Mapping thumbnail_url
-      attachedLink: video.attached_link, // Mapping attached_link
-      isSparked: video.is_sparked || null, // Mapping is_sparked
-      descriptionArr: video.description_data ? tryJsonParse(video.description_data) : undefined, // Parsing descriptionArr
-      descriptionText: video.description_text || null, // Mapping description_text
-      linkoutId: video.linkouts_id || null, // Mapping linkouts_id
-      clickableUrl: video.clickable_url || null, // Mapping clickable_url
-      thumbnailM: video.thumbnail_url_l || video.thumbnail_url, // Mapping thumbnail_url_l
+      id: uuid,
+      commentCount: video.no_of_comments || 0,
+      createdAt: video.conversation_at,
+      shareUrl: video.share_url || '',
+      slug: video.slug || '',
+      source: video.media_url_m3u8 ?? video.media_url,
+      sparkCount: video.no_of_sparks || 0,
+      thumbnail: video.thumbnail_url,
+      attachedLink: video.attached_link,
+      isSparked: video.is_sparked || null,
+      descriptionArr: video.description_data ? tryJsonParse(video.description_data) : undefined,
+      descriptionText: video.description_text || null,
+      linkoutId: video.linkouts_id || null,
+      clickableUrl: video.clickable_url || null,
+      thumbnailM: video.thumbnail_url_l || video.thumbnail_url,
       linkouts: video.linkouts,
     },
   }))
-}
-
-// Helper function to map logged_in_user_role to enum values
-function mapUserRole(role?: number): 'LEADER' | 'MEMBER' | 'REQUESTED' | null {
-  switch (role) {
-    case 1:
-      return 'LEADER'
-    case 2:
-      return 'MEMBER'
-    case 3:
-      return 'REQUESTED'
-    default:
-      return null
-  }
 }
 
 export function parseProfileCommunityResponse(communities: ProfileCommunityResponseType[]) {
@@ -165,10 +87,7 @@ export function parseProfileCommunityResponse(communities: ProfileCommunityRespo
         : null,
       handle: item.handle,
       id: item.community_id,
-      // TODO: Addition from backend required.
-      isJoined: false,
-      userRole: item.logged_in_user_role ? (item.logged_in_user_role === 1 ? 'LEADER' : 'MEMBER') : undefined,
-      isCommunityJoinRequested: item.is_community_join_requested,
+      userRole: mapCommunityUserRole(item.logged_in_user_role, item.is_community_join_requested),
       slug: item.slug,
       name: item.name,
       profileImage: item.dp_m ?? item.dp,

@@ -27,13 +27,13 @@ import { BrandCommunityTag } from '@components/common/brand-community-tag'
 import { InstagramIcon } from '@icons/instagram-icon'
 import { LinkedInIcon } from '@icons/linkedin-icon'
 import { TwitterIcon } from '@icons/twitter-icon'
-import { JoinCommunityButton } from '@components/pages/community/join-community-button'
 import { CommunityLoopTab } from './community-loop-tab'
 import Loader from './loading'
 import { CustomImage } from '@/components/custom/custom-image'
 import { ReadMore } from '@/components/common/read-more'
 import { NOT_FOUND_ERROR_CODES } from '@/lib/constants'
 import EmptyView from '@/components/common/empty-view'
+import { JoinCommunityButton } from '@/components/common/join-community-button'
 
 export function CommunityDetails({ slug }: { slug: string }) {
   const { data, isLoading, error } = getCommunityDetails(slug)
@@ -94,12 +94,11 @@ function RootDetails({ communityDetails }: { communityDetails: CommunityDetailsT
           <div ref={detailsDivRef} className="my-3 flex items-center justify-end gap-x-2">
             <JoinCommunityButton
               buttonText="Join Community"
-              isJoinRequested={communityDetails.is_community_join_requested}
               handle={communityDetails.handle}
               communityName={communityDetails.name ?? ''}
               id={communityDetails.community_id}
-              userRole={communityDetails.logged_in_user_role}
-              isCommunityPrivate={communityDetails.type === 2}
+              role={communityDetails.logged_in_user_role}
+              type={communityDetails.type === 2 ? 'private' : 'public'}
             />
             <Button
               variant="outline"
@@ -202,15 +201,7 @@ function CommunityDetailsTabs({ communityDetails }: { communityDetails: Communit
       </TabsList>
       <hr className="border-t border-tertiary-200" />
       <TabsContent value="Loops" className="mr-2 h-full py-4">
-        <CommunityLoopTab
-          handle={communityDetails.handle}
-          id={communityDetails.community_id}
-          slug={communityDetails.slug}
-          name={communityDetails.name}
-          profileImage={communityDetails.dp}
-          shareUrl={communityDetails.share_url}
-          isJoinRequested={communityDetails.is_community_join_requested}
-        />
+        <CommunityLoopTab slug={communityDetails.slug} />
       </TabsContent>
       <TabsContent value="Members">
         <Members communityDetails={communityDetails} />

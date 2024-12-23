@@ -18,16 +18,20 @@ import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import { LockIcon } from '@icons/LockIcon'
 import { TickIcon } from '@icons/tick-icon'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@components/ui/tooltip'
-import { JoinCommunityButton } from '@components/pages/community/join-community-button'
 import { ReadMore } from '../read-more'
 import { Linkout } from '../linkout'
 import MentionInput from '../comments/mention-input'
+import { useFeedListContext } from '../../providers/feed-provider'
+import { JoinCommunityButton } from '../join-community-button'
 
+type DesktopDetailsProps = VideoPlayerModalType
 // TODO: improve this component.
-export function DesktopDetails({ loop, community, owner, video }: VideoPlayerModalType) {
+// TODO: Remove scrollDivRef dependency from CommentBox.
+export function DesktopDetails({ loop, community, owner, video }: DesktopDetailsProps) {
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
   const scrollDivRef = useRef<HTMLDivElement>(null)
+  const { updateCommunityJoinStatus } = useFeedListContext()
   // TODO: Here state Comment and setComments are bad they are causing multiple rerenders.
   const [comments, setComments] = useState<CommentListType>([])
 
@@ -69,7 +73,6 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
             className="border-b border-tertiary-200 p-4 pt-0"
           />
         )}
-
         <div className="border-b border-tertiary-200 p-4">
           <p className="text-title-3-bold">Posted in</p>
           <div className="pt-3">
@@ -114,14 +117,16 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
                   </TooltipProvider>
                 )}
               </div>
-              <span className="flex h-min flex-1 items-center justify-end gap-x-3">
+              <div className="flex h-min flex-1 items-center justify-end gap-x-3">
                 <JoinCommunityButton
                   handle={community.handle}
                   buttonText="Join Community"
                   id={community.id}
-                  isCommunityPrivate={community.type === 2}
-                  isJoinRequested={false}
-                  userRole={community.userRole}
+                  type={community.type === 2 ? 'private' : 'public'}
+                  role={community.userRole}
+                  onStatusChange={(role) => {
+                    updateCommunityJoinStatus(community.id, role)
+                  }}
                 />
                 <Button
                   title="Copy Link"
@@ -136,7 +141,7 @@ export function DesktopDetails({ loop, community, owner, video }: VideoPlayerMod
                   }>
                   <ShareIcon className="h-5 w-5 fill-primary hover:fill-primary-600" />
                 </Button>
-              </span>
+              </div>
             </span>
             <DecorativeList>
               <div className="h-2 w-full" />

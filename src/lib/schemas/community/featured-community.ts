@@ -23,6 +23,8 @@ const featuredCommunitySchema = z.object({
 
 const featuredCommunityListSchema = z.array(featuredCommunitySchema)
 
+export type FeaturedCommunityType = z.infer<typeof featuredCommunitySchema>
+
 export function parseFeaturedCommunityList(data: any) {
   try {
     return featuredCommunityListSchema.parse(data)

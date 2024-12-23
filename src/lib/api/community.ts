@@ -131,7 +131,11 @@ async function fetchFeaturedCommunity() {
 }
 
 export function getFeaturedCommunity() {
-  return useQuery({ queryKey: ['featured_community'], queryFn: async () => await fetchFeaturedCommunity() })
+  return useQuery({
+    queryKey: ['featured', 'community'],
+    queryFn: async () => await fetchFeaturedCommunity(),
+    refetchOnWindowFocus: false,
+  })
 }
 
 async function fetchFeaturedLoop() {

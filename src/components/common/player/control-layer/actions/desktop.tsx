@@ -1,22 +1,19 @@
-import { abbreviateNumber, checkAndAppendHttps, openModal } from '@lib/utils'
+import { checkAndAppendHttps, openModal } from '@lib/utils'
 import icShare from '@icons/player-controls/icShare.svg'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
 import icLinkout from '@icons/player-controls/icLinkout.svg'
-import icSpark from '@icons/player-controls/icBulb.svg'
-import icSparkTrue from '@icons/player-controls/icSparkTrue.svg'
 import icRepost from '@icons/player-controls/icRepost.svg'
 import Link from 'next/link'
 import Image from 'next/image'
 import Analytics from '@services/analytics'
-import { videoSpark } from '@lib/api/video'
-import { useState } from 'react'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { ActionItem } from './action-item'
 import { RepostModal } from '@components/common/modals/repost'
-import { repostDeepLink, sparkDeepLink } from '@/lib/get-deeplink'
+import { repostDeepLink } from '@/lib/get-deeplink'
 import { useWalletBalanceHandler } from '@/services/wallet-handler'
+import { Spark } from './spark'
 
 type DesktopActionsProps = {
   sparkCount: number
@@ -44,28 +41,12 @@ export function Desktop({
   const { handleWalletBalance } = useWalletBalanceHandler()
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
-  const [sparkData, setSparkData] = useState({
-    isSparked,
-    sparkCount,
-  })
   const { brandId, user } = useGenuinOptions((state) => ({
     brandId: state.brandId,
     user: state.user,
   }))
   const pathname = usePathname()
   const searchParams = Object.fromEntries(useSearchParams())
-
-  async function toggleVideoSpark() {
-    await videoSpark(videoId, 2, !sparkData.isSparked).then((res) => {
-      if (res.code === 200) {
-        setSparkData((prevData) => ({
-          ...prevData,
-          isSparked: !prevData.isSparked,
-          sparkCount: prevData.isSparked ? prevData.sparkCount - 1 : prevData.sparkCount + 1,
-        }))
-      }
-    })
-  }
 
   return (
     <>
@@ -116,44 +97,13 @@ export function Desktop({
           }}>
           <Image src={icRepost} alt="repost" height={32} width={32} />
         </ActionItem>
-        <ActionItem
-          title="Give spark!"
-          onClick={async () => {
-            if (!sparkData.isSparked) {
-              await handleWalletBalance({ action: 'spark', videoId, type: 'POST' })
-            }
-            const properties = {
-              content_category: 'loop',
-              content_id: videoId,
-              event_record_screen: 'feed',
-              event_target_screen: 'none',
-              user_id: user?.id,
-            }
-            if (pathname.includes('embed')) {
-              Object.assign(properties, {
-                brand_id: brandId,
-              })
-            }
-            void Analytics.track({
-              eventName: 'Spark',
-              properties,
-            })
-
-            if (pathname.includes('embed')) {
-              window.open(shareUrl, '_blank', 'noopener,noreferrer')
-            } else {
-              user
-                ? await toggleVideoSpark()
-                : await sparkDeepLink({ videoSlug, shareUrl, searchParams }).then((generatedLink) => {
-                    openModal({ deepLink: generatedLink, subtitle: 'Get the app to spark the video.' })
-                  })
-            }
-          }}>
-          <Image src={sparkData.isSparked ? icSparkTrue : icSpark} height={32} width={32} alt="spark" />
-          <p className="flex justify-center text-body-1-demi text-monochrome-white">
-            {abbreviateNumber(sparkData.sparkCount)}
-          </p>
-        </ActionItem>
+        <Spark
+          isSparked={isSparked}
+          sparkCount={sparkCount}
+          videoId={videoId}
+          shareUrl={shareUrl}
+          videoSlug={videoSlug}
+        />
         <ActionItem
           title="Share Video!"
           onClick={async () => {

@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { CommunityUserRoleSchema } from '../roles'
 
 const descriptionArrSchema = z.array(
   z
@@ -60,9 +61,8 @@ const communitySchema = z.object({
   id: z.string(),
   type: z.number().nullish(),
   shareUrl: z.string(),
-  userRole: z.enum(['LEADER', 'MEMBER', 'REQUESTED']).nullish(),
+  userRole: CommunityUserRoleSchema,
   brand: BrandSchema.optional(),
-  isJoinRequested: z.boolean().optional(),
 })
 
 const BrandUserSchema = z

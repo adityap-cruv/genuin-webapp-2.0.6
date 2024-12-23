@@ -1,7 +1,7 @@
 'use client'
-import { Desktop, SinglePlayer as InnerSinglePlayer } from './desktop'
+import { Desktop } from './desktop'
 import { Mobile } from './mobile'
 
 export const Feed = { desktop: Desktop, mobile: Mobile }
 
-export const SinglePlayer = InnerSinglePlayer
+// export const SinglePlayer = InnerSinglePlayer
