@@ -1,7 +1,6 @@
 'use client'
 import { abbreviateNumber } from '@lib/utils'
 import { type User, useGenuinOptions } from '@lib/stores/genuin-options'
-// import { Button } from '@components/ui/button'
 import Image from 'next/image'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { DecorativeList } from '@components/custom/decorative-list'
@@ -25,7 +24,6 @@ import { LoopPrivacyInfo } from '@components/common/loop-privacy-info'
 import { PrivateModal } from '@components/common/modals/private'
 import { IcLoop } from '@icons/ic-loop'
 import { BrandCommunityTag } from '@components/common/brand-community-tag'
-// import { ToggleCommunityJoinState } from '@components/common/toggle-community-join-state'
 import { CustomImage } from '@/components/custom/custom-image'
 import { Play } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
@@ -34,7 +32,6 @@ import { JoinCommunityButton } from '@/components/common/join-community-button'
 export function CommunityList({ brandId, scrollYProgress }: { brandId: number; scrollYProgress: MotionValue<number> }) {
   const { data, isLoading, fetchNextPage, isFetchingNextPage } = getCommunities(brandId, 8)
   const communities = data?.pages.flatMap((item) => item.communities)
-  // const [communityJoinStates, setCommunityJoinStates] = useState<Record<string, string>>({})
   const user = useGenuinOptions().user
   const { addCommunities, currentVideoId, reset, stateCommunities, replaceCommunities, handleCommunityRoleChange } =
     useCommunityListStore(
@@ -57,27 +54,6 @@ export function CommunityList({ brandId, scrollYProgress }: { brandId: number; s
       reset()
     }
   }, [pathName])
-
-  // useEffect(() => {
-  //   if (communities) {
-  //     const initialStates: Record<string, string> = {}
-  //     let shouldUpdate = false
-
-  //     communities.forEach((item) => {
-  //       const userRole = item.userRole ?? ''
-  //       if (communityJoinStates[item.id] !== userRole) {
-  //         initialStates[item.id] = userRole
-  //         shouldUpdate = true
-  //       } else {
-  //         initialStates[item.id] = communityJoinStates[item.id]
-  //       }
-  //     })
-
-  //     if (shouldUpdate) {
-  //       setCommunityJoinStates(initialStates)
-  //     }
-  //   }
-  // }, [data?.pages.length])
 
   useEffect(() => {
     const newCommunities = data?.pages[data.pages.length - 1].communities
@@ -150,22 +126,6 @@ export function CommunityList({ brandId, scrollYProgress }: { brandId: number; s
                         brandName={community.brand?.name}
                       />
                     )}
-                    {/* {pathName !== PATH_NAME.brand(user?.nickname) && item.isCommunityJoinRequested && (
-                      <Button size="custom" className="border border-primary" variant={'outline'}>
-                        <p className={`px-4 py-1.5 text-body-1-demi text-monochrome-white text-primary`}>Requested</p>
-                      </Button>
-                    )}
-                    {pathName !== PATH_NAME.brand(user?.nickname) && !item.isCommunityJoinRequested && (
-                      <ToggleCommunityJoinState
-                        communityJoinStates={communityJoinStates}
-                        setCommunityJoinStates={setCommunityJoinStates}
-                        handle={item.handle}
-                        id={item.id}
-                        userRole={item.userRole}
-                        isCommunityPrivate={item.type === 2}
-                        communityName={item.name ?? ''}
-                      />
-                    )} */}
                     <JoinCommunityButton
                       buttonText="Join"
                       handle={community.handle}

@@ -11,7 +11,6 @@ import { useMotionValueEvent, useScroll } from 'framer-motion'
 import React, { useEffect, useRef, useMemo } from 'react'
 import { useCommunityListStore } from './store'
 import { CustomAvatar } from '@components/custom/custom-avatar'
-// import { Button } from '@components/ui/button'
 import Link from 'next/link'
 import { abbreviateNumber } from '@lib/utils'
 import Image from 'next/image'
@@ -24,7 +23,6 @@ import { LoopPrivacyInfo } from '@components/common/loop-privacy-info'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@components/ui/tooltip'
 import { IcLoop } from '@icons/ic-loop'
 import { BrandCommunityTag } from '@components/common/brand-community-tag'
-// import { ToggleCommunityJoinState } from '@components/common/toggle-community-join-state'
 import { Play } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
 import { CustomImage } from '@/components/custom/custom-image'
@@ -55,27 +53,6 @@ export function CommunityList({ brandId }: { brandId: number }) {
       reset()
     }
   }, [pathName])
-
-  // useEffect(() => {
-  //   if (communities) {
-  //     const initialStates: Record<string, string> = {}
-  //     let shouldUpdate = false
-
-  //     communities.forEach((item) => {
-  //       const userRole = item.userRole ?? ''
-  //       if (communityJoinStates[item.id] !== userRole) {
-  //         initialStates[item.id] = userRole
-  //         shouldUpdate = true
-  //       } else {
-  //         initialStates[item.id] = communityJoinStates[item.id]
-  //       }
-  //     })
-
-  //     if (shouldUpdate) {
-  //       setCommunityJoinStates(initialStates)
-  //     }
-  //   }
-  // }, [data?.pages.length])
 
   useEffect(() => {
     const newCommunities = data?.pages[data.pages.length - 1].communities
@@ -160,22 +137,6 @@ export function CommunityList({ brandId }: { brandId: number }) {
                       </div>
                     )}
                   </div>
-                  {/* {pathName !== PATH_NAME.brand(user?.nickname) && community.isCommunityJoinRequested && (
-                    <Button size="custom" className="border border-primary" variant={'outline'}>
-                      <p className={`px-4 py-1.5 text-body-1-demi text-monochrome-white text-primary`}>Requested</p>
-                    </Button>
-                  )} */}
-                  {/* {pathName !== PATH_NAME.brand(user?.nickname) && !item.isCommunityJoinRequested && (
-                    <ToggleCommunityJoinState
-                      communityJoinStates={communityJoinStates}
-                      setCommunityJoinStates={setCommunityJoinStates}
-                      handle={item.handle}
-                      id={item.id}
-                      userRole={item.userRole}
-                      isCommunityPrivate={item.type === 2}
-                      communityName={item.name ?? ''}
-                    />
-                  )} */}
                   <JoinCommunityButton
                     buttonText="Join"
                     handle={community.handle}
@@ -225,14 +186,6 @@ function PlayerModalWrapper({ brandId, currentVideoId }: { brandId: number; curr
   )
   const { close, handleCommunityJoin } = useCommunityListStore()
   const videos = useMemo(() => data?.pages.flatMap((item) => item.feed), [data])
-  // const [activeIndex, setActiveIndex] = useState(0)
-
-  // useEffect(() => {
-  //   if (!videos) return
-  //   if (activeIndex === videos?.length - 2) {
-  //     void fetchNextPage()
-  //   }
-  // }, [activeIndex])
 
   return (
     <PlayerModal.desktop
@@ -247,19 +200,6 @@ function PlayerModalWrapper({ brandId, currentVideoId }: { brandId: number; curr
       startIndex={0}
       hasNextPage={hasNextPage}
       onCommunityJoin={handleCommunityJoin}
-      // video={videos?.[activeIndex]}
-      // hasNextVideo={(videos?.length ?? 0) - 1 !== activeIndex}
-      // hasPreviousVideo={activeIndex !== 0}
-      // getNextVideo={() => {
-      //   setActiveIndex(activeIndex + 1)
-      // }}
-      // getPreviousVideo={() => {
-      //   setActiveIndex(activeIndex - 1)
-      // }}
-      // close={close}
-      // open={Boolean(currentVideoId)}
-      // isLoading={isLoading}
-      // isInModal={true}
     />
   )
 }

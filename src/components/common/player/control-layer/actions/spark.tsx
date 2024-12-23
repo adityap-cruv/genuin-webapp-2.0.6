@@ -24,32 +24,34 @@ export function Spark({ isSparked = false, sparkCount, videoId, shareUrl, videoS
   const { user } = useGenuinOptions()
   const { updateSparkStatus } = useFeedListContext()
 
-  function toggleVideoSpark() {
-    void videoSpark(videoId, 2, !isSparked)
-      .then((res) => {
-        if (res.code === 200) {
-          updateSparkStatus(videoId, !isSparked)
-        }
-      })
-      .catch((e) => {
-        console.error('error in sparking ::', e)
-      })
-  }
-
   const handleSparkClick = useCallback(async () => {
     if (window.location.pathname.includes('embed')) {
       window.open(shareUrl, '_blank', 'noopener,noreferrer')
       return
     }
-    console.log('handleSparkClick')
-    user
-      ? toggleVideoSpark()
-      : await sparkDeepLink(videoSlug, shareUrl).then((generatedLink) => {
+
+    try {
+      // If there is no user then we will show the deep link modal.
+      if (user) {
+        // This call toggle spark status of particular video.
+        const response = await videoSpark(videoId, 2, !isSparked)
+        if (response.code === 200) {
+          updateSparkStatus(videoId, !isSparked)
+        }
+      } else {
+        // This call will generate the deep link for the video.
+        await sparkDeepLink(videoSlug, shareUrl).then((generatedLink) => {
           openModal({ deepLink: generatedLink, subtitle: 'Get the app to spark the video.' })
         })
+      }
 
-    if (!isSparked) {
-      void handleWalletBalance({ action: 'spark', videoId, type: 'POST' })
+      // If user is not logged in then we will not call the wallet balance api.
+      if (!isSparked && user) {
+        void handleWalletBalance({ action: 'spark', videoId, type: 'POST' })
+      }
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e)
     }
 
     const properties = {

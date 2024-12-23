@@ -11,7 +11,6 @@ import { useMotionValueEvent, useScroll } from 'framer-motion'
 import React, { useEffect, useRef, useMemo } from 'react'
 import { useCommunityListStore } from './store'
 import { CustomAvatar } from '@components/custom/custom-avatar'
-// import { Button } from '@components/ui/button'
 import Link from 'next/link'
 import { abbreviateNumber } from '@lib/utils'
 import Image from 'next/image'
@@ -24,7 +23,6 @@ import { LoopPrivacyInfo } from '@components/common/loop-privacy-info'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@components/ui/tooltip'
 import { IcLoop } from '@icons/ic-loop'
 import { BrandCommunityTag } from '@components/common/brand-community-tag'
-// import { ToggleCommunityJoinState } from '@components/common/toggle-community-join-state'
 import { Play } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
 import { CustomImage } from '@/components/custom/custom-image'
@@ -33,7 +31,6 @@ import { JoinCommunityButton } from '@/components/common/join-community-button'
 export function CommunityList({ userId }: { userId: string }) {
   const { data, isLoading, fetchNextPage, isFetchingNextPage } = getCommunities(userId, 8)
   const communities = useMemo(() => data?.pages.flatMap((item) => item.communities), [data])
-  // const [communityJoinStates, setCommunityJoinStates] = useState<Record<string, string>>({})
   const user = useGenuinOptions().user
   const { addCommunities, currentVideoId, reset, stateCommunities, replaceCommunities, handleCommunityJoin } =
     useCommunityListStore(
@@ -56,27 +53,6 @@ export function CommunityList({ userId }: { userId: string }) {
       reset()
     }
   }, [pathName])
-
-  // useEffect(() => {
-  //   if (communities) {
-  //     const initialStates: Record<string, string> = {}
-  //     let shouldUpdate = false
-
-  //     communities.forEach((item) => {
-  //       const userRole = item.userRole ?? ''
-  //       if (communityJoinStates[item.id] !== userRole) {
-  //         initialStates[item.id] = userRole
-  //         shouldUpdate = true
-  //       } else {
-  //         initialStates[item.id] = communityJoinStates[item.id]
-  //       }
-  //     })
-
-  //     if (shouldUpdate) {
-  //       setCommunityJoinStates(initialStates)
-  //     }
-  //   }
-  // }, [data?.pages.length])
 
   useEffect(() => {
     const newCommunities = data?.pages[data.pages.length - 1].communities
@@ -206,14 +182,6 @@ function PlayerModalWrapper({ userId, currentVideoId }: { userId: string; curren
   )
   const { close, handleCommunityJoin } = useCommunityListStore()
   const videos = useMemo(() => data?.pages.flatMap((item) => item.feed), [data])
-  // const [activeIndex] = useState(0)
-
-  // useEffect(() => {
-  //   if (!videos) return
-  //   if (activeIndex === videos?.length - 2) {
-  //     void fetchNextPage()
-  //   }
-  // }, [activeIndex])
 
   return (
     <PlayerModal.desktop
@@ -228,19 +196,6 @@ function PlayerModalWrapper({ userId, currentVideoId }: { userId: string; curren
       isInModal
       hasNextPage={hasNextPage}
       onCommunityJoin={handleCommunityJoin}
-      // video={videos?.[activeIndex]}
-      // hasNextVideo={(videos?.length ?? 0) - 1 !== activeIndex}
-      // hasPreviousVideo={activeIndex !== 0}
-      // getNextVideo={() => {
-      //   setActiveIndex(activeIndex + 1)
-      // }}
-      // getPreviousVideo={() => {
-      //   setActiveIndex(activeIndex - 1)
-      // }}
-      // close={close}
-      // open={Boolean(currentVideoId)}
-      // isLoading={isLoading}
-      // isInModal={true}
     />
   )
 }

@@ -390,8 +390,11 @@ export function encodeVideoSourceUrl(videoSource: string) {
 
 /*
  * This function maps the role of the user in the community.
+ * @param role - Role of the user in the community.
+ * @param isRequested - If the user has requested to join the community.
  */
 export function mapCommunityUserRole(role?: number | null, isRequested?: boolean | null): CommunityUserRoleType {
+  // If isRequested is true, return 'REQUESTED'.
   if (isRequested) return 'REQUESTED'
 
   switch (role) {
@@ -401,6 +404,7 @@ export function mapCommunityUserRole(role?: number | null, isRequested?: boolean
       return 'MEMBER'
     case 3:
       return 'MODERATOR'
+    // If role is null or anything other than above cases than return 'UNJOINED'.
     default:
       return 'UNJOINED'
   }

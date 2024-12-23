@@ -20,8 +20,7 @@ type Props = {
   onStatusChange?: (role: CommunityUserRoleType) => void
 }
 
-// TODO: Rename this component to JoinCommunityButton after the migration is done
-export const JoinCommunityButton = memo(function UpdatedJoinCommunityButton({
+export const JoinCommunityButton = memo(function JoinCommunityButton({
   role,
   handle,
   id,
@@ -37,6 +36,7 @@ export const JoinCommunityButton = memo(function UpdatedJoinCommunityButton({
   const searchParams = useSearchParams()
 
   const handleJoinCommunity = async () => {
+    // If community is private than we have to request to join the community
     if (type === 'private') {
       const response = await requestCommunity(id)
       if (response.code === 200) {
@@ -45,6 +45,7 @@ export const JoinCommunityButton = memo(function UpdatedJoinCommunityButton({
         throw new Error('Failed to request to join the community')
       }
     } else {
+      // This will join the user to the community.
       const response = await joinCommunity(false, [id], [{ user_id: user?.id }])
       if (response.code === 200) {
         onStatusChange?.('MEMBER')
@@ -54,6 +55,7 @@ export const JoinCommunityButton = memo(function UpdatedJoinCommunityButton({
     }
   }
 
+  // This will leave the community
   const handleLeaveCommunity = async () => {
     const response = await leaveCommunity(id)
     if (response.code === 200) {
@@ -64,6 +66,7 @@ export const JoinCommunityButton = memo(function UpdatedJoinCommunityButton({
   const toggleCommunityJoinState = useCallback(async () => {
     try {
       setIsLoading(true)
+      // If user is not a member of the community then join the community else leave the community
       if (role !== 'MEMBER') {
         await handleJoinCommunity()
       } else {
@@ -82,6 +85,7 @@ export const JoinCommunityButton = memo(function UpdatedJoinCommunityButton({
     }
   }, [id, role, user])
 
+  // In case of user not authenticated, and user clicks on join button, then we have to show the deep link modal.
   const joinCommunityDeepLinkHandler = useCallback(async () => {
     await joinCommunityDeepLink({
       communityName: communityName ?? '',
@@ -102,8 +106,10 @@ export const JoinCommunityButton = memo(function UpdatedJoinCommunityButton({
   // If user comes on his/her own profile or brand page, then don't show the join button.
   if (pathName === PATH_NAME.profile(user?.nickname) || pathName === PATH_NAME.brand(handle)) return null
 
+  // If user is leader or moderator of the community, then don't show the join button.
   if (role === 'LEADER' || role === 'MODERATOR') return
 
+  // If user has requested to join the community, then show the requested button.
   if (role === 'REQUESTED')
     return (
       <Button size="custom" className="border border-primary" variant="outline">
@@ -131,125 +137,3 @@ export const JoinCommunityButton = memo(function UpdatedJoinCommunityButton({
     </Button>
   )
 })
-
-// ----------------------------------------------------------------
-// Old code
-// ----------------------------------------------------------------
-// import { requestCommunity, joinCommunity, leaveCommunity } from '@lib/api/video'
-// import { useGenuinOptions } from '@lib/stores/genuin-options'
-// import { useEffect, useState } from 'react'
-// import { Button } from '@components/ui/button'
-// import { openModal } from '@lib/utils'
-// import { useQueryClient } from '@tanstack/react-query'
-// import { useSearchParams } from 'next/navigation'
-// import { joinCommunityDeepLink } from '@/lib/get-deeplink'
-// import { type CommunityUserRoleType } from '@/lib/schemas/roles'
-
-// type Props = {
-//   handle: string
-//   id: string
-//   isCommunityPrivate: boolean
-//   buttonText: string
-//   userRole?: CommunityUserRoleType
-//   onStatusChange?: (role?: CommunityUserRoleType) => void
-//   communityName?: string
-// }
-
-// // TODO: Remove this component after the migration(to UpdatedJoinCommunityButton) is done
-// export function JoinCommunityButton({
-//   userRole,
-//   handle,
-//   id,
-//   isCommunityPrivate,
-//   buttonText,
-//   communityName,
-//   onStatusChange,
-// }: Props) {
-//   const queryClient = useQueryClient()
-//   const [role, setRole] = useState(userRole)
-//   const user = useGenuinOptions().user
-//   const searchParams = useSearchParams()
-
-//   useEffect(() => {
-//     onStatusChange?.(userRole)
-//   }, [userRole])
-
-//   async function toggleCommunityJoinState() {
-//     try {
-//       if (role !== 'MEMBER') {
-//         if (isCommunityPrivate) {
-//           await requestCommunity(id).then((res) => {
-//             if (res.code === 200) {
-//               setRole('REQUESTED')
-//             }
-//           })
-//         } else {
-//           await joinCommunity(
-//             false,
-//             [id],
-//             [
-//               {
-//                 user_id: user?.id,
-//               },
-//             ]
-//           ).then((res) => {
-//             if (res.code === 200) {
-//               setRole('MEMBER')
-//             }
-//           })
-//         }
-//       } else {
-//         await leaveCommunity(id).then((res) => {
-//           if (res.code === 200) {
-//             setRole(undefined)
-//           }
-//         })
-//       }
-//     } finally {
-//       void queryClient.invalidateQueries({ queryKey: ['community', 'details'], type: 'all' })
-//     }
-//   }
-
-//   if (userRole === 'LEADER' || userRole === 'MODERATOR') return
-
-//   if (userRole === 'REQUESTED')
-//     return (
-//       <Button size="custom" className="border border-primary" variant={'outline'}>
-//         <p className={`px-4 py-1.5 text-body-1-demi text-monochrome-white text-primary`}>Requested</p>
-//       </Button>
-//     )
-
-//   return (
-//     <Button
-//       size="custom"
-//       className={`${role && 'rounded border border-primary '}`}
-//       variant={role ? 'outline' : 'default'}
-//       onClick={
-//         user
-//           ? toggleCommunityJoinState
-//           : async () => {
-//               await joinCommunityDeepLink({
-//                 communityName: communityName ?? '',
-//                 searchParams: Object.fromEntries(searchParams),
-//               }).then((generatedLink) => {
-//                 openModal({
-//                   deepLink: generatedLink,
-//                   subtitle: (
-//                     <>
-//                       Get the app to join the <br />
-//                       <span className="font-bold">@{handle}</span> community.
-//                     </>
-//                   ),
-//                 })
-//               })
-//             }
-//       }>
-//       <p
-//         className={`whitespace-nowrap px-4 py-1.5 text-body-1-demi  ${
-//           role ? 'text-primary' : 'text-monochrome-white'
-//         }`}>
-//         {role ? (role === 'REQUESTED' ? 'Requested' : 'Joined') : buttonText}
-//       </p>
-//     </Button>
-//   )
-// }
