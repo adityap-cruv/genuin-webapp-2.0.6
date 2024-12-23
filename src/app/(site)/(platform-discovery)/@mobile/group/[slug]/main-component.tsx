@@ -25,12 +25,11 @@ import { LoopPrivacyInfo } from '@components/common/loop-privacy-info'
 import { PrivateModal } from '@components/common/modals/private'
 import Analytics from '@services/analytics'
 import { joinAsCollaboratorDeepLink, subscribeDeepLink } from '@/lib/get-deeplink'
-import { SubscribedBellIcon } from '@icons/subscribed-bell-icon'
-import { BellIconOff } from '@icons/bell-icon-off'
 import { ReadMore } from '@/components/common/read-more'
 import EmptyView from '@/components/common/empty-view'
 import { NOT_FOUND_ERROR_CODES } from '@/lib/constants'
 import ShareButton from '@components/common/actions/ShareButton'
+import SubscriptionButton from '@components/common/actions/SubscriptionButton'
 
 let loopDetailsModule: LoopDetailsType
 
@@ -190,19 +189,10 @@ export function MainComponent({ loopDetails }: Props) {
 
           <div className="flex items-center gap-x-2">
             {loopDetails.is_view_allowed && !embed && (
-              <Button
-                size="custom"
-                onClick={handleSubscribeClick}
-                variant="outline"
-                className="border border-primary p-[3px]">
-                <BellIconOff variant={'light'}></BellIconOff>
-              </Button>
+              <SubscriptionButton onClick={handleSubscribeClick} isSubscribed={false} />
             )}
             {loopDetails.is_view_allowed && embed && (
-              <Button
-                size="custom"
-                className='border border-primary p-[3px]'
-                variant={'outline'}
+              <SubscriptionButton
                 onClick={
                   user
                     ? () => {
@@ -219,12 +209,9 @@ export function MainComponent({ loopDetails }: Props) {
                           ),
                         })
                       }
-                }>
-                {isLoopSubscribed && (
-                  <SubscribedBellIcon className="fill-primary stroke-primary"></SubscribedBellIcon>
-                )}
-                {!isLoopSubscribed && <BellIconOff className="stroke-new-off-white"></BellIconOff>}
-              </Button>
+                }
+                isSubscribed={isLoopSubscribed}
+              />
             )}
 
             {!loopDetails.is_view_allowed && (

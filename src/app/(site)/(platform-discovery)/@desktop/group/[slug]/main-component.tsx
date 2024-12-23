@@ -26,12 +26,11 @@ import { TickIcon } from '@icons/tick-icon'
 import Analytics from '@services/analytics'
 import { useSearchParams } from 'next/navigation'
 import { joinAsCollaboratorDeepLink, subscribeDeepLink } from '@/lib/get-deeplink'
-import { SubscribedBellIcon } from '@icons/subscribed-bell-icon'
-import { BellIconOff } from '@icons/bell-icon-off'
 import { ReadMore } from '@/components/common/read-more'
 import { NOT_FOUND_ERROR_CODES } from '@/lib/constants'
 import EmptyView from '@/components/common/empty-view'
 import ShareButton from '@components/common/actions/ShareButton'
+import SubscriptionButton from '@components/common/actions/SubscriptionButton'
 
 interface Props {
   loopDetails: LoopDetailsType
@@ -130,16 +129,7 @@ export function MainComponent({ loopDetails }: Props) {
           <p className="text-title-1-bold text-secondary">{loopDetails.group.group_name}</p>
           <div className="flex items-center gap-x-3">
             {loopDetails.is_view_allowed && (
-              <Button
-                size="custom"
-                className="border border-primary p-[3px]"
-                variant='outline'
-                onClick={handleSubscribeClick}>
-                {isLoopSubscribed && (
-                  <SubscribedBellIcon className="fill-primary stroke-primary"></SubscribedBellIcon>
-                )}
-                {!isLoopSubscribed && <BellIconOff className="stroke-new-off-white"></BellIconOff>}
-              </Button>
+              <SubscriptionButton onClick={handleSubscribeClick} isSubscribed={isLoopSubscribed} />
             )}
 
             {!loopDetails.is_view_allowed && (

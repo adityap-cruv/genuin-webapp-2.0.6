@@ -1,9 +1,7 @@
-import { Button } from '@components/ui/button'
 import { motion, useAnimationControls } from 'framer-motion'
 import { useEffect } from 'react'
-import { BellIconOff } from '@icons/bell-icon-off'
-import { SubscribedBellIcon } from '@icons/subscribed-bell-icon'
 import ShareButton from '@components/common/actions/ShareButton'
+import SubscriptionButton from '@components/common/actions/SubscriptionButton'
 
 type Props = {
   /**
@@ -34,8 +32,8 @@ function Desktop({
   shareUrl,
   communitySlug,
   chatId,
-  isLoopSubscribed,
-  handleSubscribeClick,
+  isLoopSubscribed = false,
+  handleSubscribeClick = () => {},
   ...props
 }: Props) {
   const navAnimationControl = useAnimationControls()
@@ -68,16 +66,7 @@ function Desktop({
         <p className="text-title-2-demi">{loopName}</p>
       </span>
       <span className="my-2 flex items-center gap-x-3">
-        <Button
-          size="custom"
-          className="border border-primary p-[3px]"
-          variant="outline"
-          onClick={handleSubscribeClick}>
-          {isLoopSubscribed && (
-            <SubscribedBellIcon className="fill-primary stroke-primary"></SubscribedBellIcon>
-          )}
-          {!isLoopSubscribed && <BellIconOff className="stroke-new-off-white"></BellIconOff>}
-        </Button>
+        <SubscriptionButton onClick={handleSubscribeClick} isSubscribed={isLoopSubscribed} />
 
         {/* Hidden by requirement. */}
         {/* <Button size="custom" variant="outline" className="border-primary px-4">
