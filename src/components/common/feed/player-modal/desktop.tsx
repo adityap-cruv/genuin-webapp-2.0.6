@@ -22,6 +22,9 @@ import { usePlayerControlStore } from '../../player/player-control-store'
 import { DesktopDetails } from '../desktop-details'
 import Analytics from '@/services/analytics'
 import { type CommunityUserRoleType } from '@/lib/schemas/roles'
+import { useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
+import { IHeartDemo } from '@/components/layouts/desktop/iheart-demo'
+import { useEffect } from 'react'
 
 type Props = {
   children?: React.ReactNode
@@ -62,10 +65,23 @@ export function Desktop({
   unreadMessageCount,
   onCommunityJoin,
 }: Props) {
+  const { setRenderIn: setIHeartDemoRenderIn } = useIHeartDemoStates()
+  const { mute } = usePlayerControlStore()
+
+  // This is to show the iheart demo in the modal.
+  useEffect(() => {
+    setIHeartDemoRenderIn(open ? 'modal' : 'root')
+    return () => {
+      setIHeartDemoRenderIn('root')
+      mute()
+    }
+  }, [open])
+
   return (
     <CustomDialog open={open}>
       <CustomDialogTrigger>{children}</CustomDialogTrigger>
       <CustomDialogContent
+        className="flex-col"
         onCloseAutoFocus={(e) => {
           e.preventDefault()
         }}
@@ -95,29 +111,38 @@ type ContentPropsType = { unreadMessageCount?: number; isInModal?: boolean; clos
 function Content({ unreadMessageCount, isInModal, close }: ContentPropsType) {
   const sizeBox = useGenuinOptions().sizeBoxes
   const { videos, updateCurrentIndex, currentIndex } = useFeedListContext()
+  const { shouldShowIHeartDemo, renderIn } = useIHeartDemoStates()
+
   return (
     <>
       <div
-        style={{ height: sizeBox.modal.height, width: sizeBox.modal.width }}
+        style={{ width: sizeBox.modal.width }}
         className="relative min-w-[800px] overflow-clip rounded-2xl bg-monochrome-white">
-        <CustomDialogClose
-          onClick={() => {
-            // alert('close')
-            close?.()
-          }}
-          className="absolute right-4 top-4 z-10 border-none outline-none">
-          <X className="h-6 w-6" />
-        </CustomDialogClose>
-        {/* Please done modify below condition to  unreadMessageCount && unreadMessageCount !== 0,
+        <div style={{ height: sizeBox.modal.height }} className="relative">
+          <CustomDialogClose
+            onClick={() => {
+              // alert('close')
+              close?.()
+            }}
+            className="absolute right-4 top-4 z-10 border-none outline-none">
+            <X className="h-6 w-6" />
+          </CustomDialogClose>
+          {/* Please done modify below condition to  unreadMessageCount && unreadMessageCount !== 0,
              it is creating the problem on showing the 0 on the UI */}
-        {unreadMessageCount !== undefined && unreadMessageCount !== 0 && (
-          <div
-            style={{ width: sizeBox.modal.player.width }}
-            className="absolute inset-0 z-10 flex h-fit w-full items-center justify-center">
-            <UnseenMessageRibbon messageCount={unreadMessageCount ?? 0} />
+          {unreadMessageCount !== undefined && unreadMessageCount !== 0 && (
+            <div
+              style={{ width: sizeBox.modal.player.width }}
+              className="absolute inset-0 z-10 flex h-fit w-full items-center justify-center">
+              <UnseenMessageRibbon messageCount={unreadMessageCount ?? 0} />
+            </div>
+          )}
+          <SinglePlayer videoData={{ ...videos[currentIndex] }} sizeBox={sizeBox.modal.player} isInModal={isInModal} />
+        </div>
+        {shouldShowIHeartDemo && renderIn === 'modal' && (
+          <div id="iframe-modal" style={{ height: '70px' }}>
+            <IHeartDemo />
           </div>
         )}
-        <SinglePlayer videoData={{ ...videos[currentIndex] }} sizeBox={sizeBox.modal.player} isInModal={isInModal} />
       </div>
       <div className="flex flex-col gap-y-4">
         <Button
