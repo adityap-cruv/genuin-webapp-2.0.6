@@ -10,7 +10,7 @@ import icLock from '@icons/icLock.svg'
 import { useInView } from 'framer-motion'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
 import Link from 'next/link'
-import { checkAndAppendHttps, getCurrentShareUrl } from '@lib/utils'
+import { checkAndAppendHttps, getCurrentShareUrl, mapCommunityUserRole } from '@lib/utils'
 import icLink from '@icons/icLinkBlack.svg'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@components/ui/accordion'
@@ -72,7 +72,7 @@ function RootDetails({ communityDetails }: { communityDetails: CommunityDetailsT
         communityName={communityDetails.name ?? ''}
         communityProfileImage={communityDetails.dp_m ?? communityDetails.dp ?? ''}
         communityHandle={communityDetails.handle}
-        role={communityDetails.logged_in_user_role}
+        role={mapCommunityUserRole(communityDetails.logged_in_user_role, communityDetails.is_community_join_requested)}
         communityId={communityDetails.community_id}
         shareUrl={communityDetails.share_url}
         isCommunityPrivate={communityDetails.type === 2}
@@ -97,7 +97,10 @@ function RootDetails({ communityDetails }: { communityDetails: CommunityDetailsT
               handle={communityDetails.handle}
               communityName={communityDetails.name ?? ''}
               id={communityDetails.community_id}
-              role={communityDetails.logged_in_user_role}
+              role={mapCommunityUserRole(
+                communityDetails.logged_in_user_role,
+                communityDetails.is_community_join_requested
+              )}
               type={communityDetails.type === 2 ? 'private' : 'public'}
             />
             <Button
