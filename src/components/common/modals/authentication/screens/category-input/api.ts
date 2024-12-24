@@ -2,19 +2,21 @@ import { z } from 'zod'
 import { axiosInstance } from '@lib/api/instance'
 import { useQuery } from '@tanstack/react-query'
 
-export const TopicSchema = z.object({
+const TopicSchema = z.object({
   topic_id: z.string(),
   topic: z.string(),
   is_selected: z.boolean(),
 })
+export type Topic = z.infer<typeof TopicSchema>
 
-export const CategorySchema = z.array(
+const CategorySchema = z.array(
   z.object({
     topics: z.array(TopicSchema),
     entity_id: z.string(),
     title: z.string(),
   })
 )
+export type Category = z.infer<typeof CategorySchema>
 
 function validateCategoryListResp(data: any) {
   try {

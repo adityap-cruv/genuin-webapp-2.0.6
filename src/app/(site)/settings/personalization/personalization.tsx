@@ -76,7 +76,7 @@ export function Personalization({
 
   function handleDialogClose() {
     // Recalculate `isAllSelected` when modal closes
-    const totalTopics = CategoryData?.reduce((count: number, category: any) => count + category.topics.length, 0) || 0
+    const totalTopics = CategoryData?.reduce((count: number, category: any) => count + category.topics.length, 0) ?? 0
 
     const allTopicsSelected = selectedItems.size === totalTopics
     setIsAllSelected(allTopicsSelected)

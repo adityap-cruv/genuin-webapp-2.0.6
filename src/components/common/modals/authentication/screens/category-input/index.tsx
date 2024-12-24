@@ -1,12 +1,11 @@
 import { Button } from '@components/ui/button'
 import { ModalShell } from '../../modal-shell'
-import { addTopics, CategorySchema, getCategoryList, TopicSchema } from './api'
+import { addTopics, type Category, getCategoryList, type Topic } from './api'
 import { useState } from 'react'
 import { cn } from '@lib/utils'
 import { Loader } from '@components/ui/loader'
 import { useSession } from 'next-auth/react'
 import { type ScreenProps } from '..'
-import { z } from 'zod'
 
 export function CategoryInput({ onNext }: ScreenProps) {
   const [selectedItems, setSelectedItem] = useState<Set<string>>(new Set())
@@ -15,11 +14,11 @@ export function CategoryInput({ onNext }: ScreenProps) {
   const { data, isLoading } = getCategoryList()
   const { update: updateSession, data: sessionData } = useSession()
 
-  const getAllTopicIds = (categories: z.infer<typeof CategorySchema>): string[] => {
+  const getAllTopicIds = (categories: Category): string[] => {
     const allTopicIds: string[] = []
 
     categories.forEach((category) => {
-      category.topics.forEach((topic: z.infer<typeof TopicSchema>) => {
+      category.topics.forEach((topic: Topic) => {
         allTopicIds.push(topic.topic_id)
       })
     })
@@ -31,7 +30,7 @@ export function CategoryInput({ onNext }: ScreenProps) {
     let topics = [...selectedItems.values()]
 
     if (type === 'all') {
-      topics = getAllTopicIds(data || [])
+      topics = getAllTopicIds(data ?? [])
       console.log(topics)
     }
 
@@ -98,8 +97,8 @@ export function CategoryInput({ onNext }: ScreenProps) {
         </div>
       )}
       <Button
-        onClick={() => {
-          handleSubmit()
+        onClick={async () => {
+          await handleSubmit()
         }}
         className="w-full"
         disabled={selectedItems.size < 3}>
@@ -110,8 +109,8 @@ export function CategoryInput({ onNext }: ScreenProps) {
         )}
       </Button>
       <Button
-        onClick={() => {
-          handleSubmit('all')
+        onClick={async () => {
+          await handleSubmit('all')
         }}
         variant={'outline'}
         className="h-9 w-full">
