@@ -2,7 +2,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { Button } from '@components/ui/button'
 import type { CommunityDetailsType, MembersSchemaType } from '@lib/schemas/community'
-import { checkAndAppendHttps, getCurrentShareUrl, openGeneratedLink } from '@lib/utils'
+import { checkAndAppendHttps, getCurrentShareUrl, mapCommunityUserRole, openGeneratedLink } from '@lib/utils'
 import Image from 'next/image'
 import icLock from '@icons/icLock.svg'
 import Link from 'next/link'
@@ -77,7 +77,10 @@ export function Details({ communityDetails }: Props) {
                 buttonText="Join Community"
                 handle={communityDetails.handle}
                 id={communityDetails.community_id}
-                role={communityDetails.logged_in_user_role}
+                role={mapCommunityUserRole(
+                  communityDetails.logged_in_user_role,
+                  communityDetails.is_community_join_requested
+                )}
                 type={communityDetails.type === 2 ? 'private' : 'public'}
                 communityName={communityDetails.name ?? ''}
               />
