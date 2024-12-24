@@ -119,9 +119,9 @@ function UserTick() {
     return (
       <Popover>
         <PopoverTrigger>
-          <div className="flex items-center gap-x-2 rounded-full border border-monochrome-9 p-1 pr-2">
+          <div className="flex rounded-full">
             <CustomAvatar
-              className="h-8 w-8"
+              className="h-[40px] w-[40px]"
               fallbackString={data.user.name ?? ''}
               imageUrl={data.user.image ?? ''}
               isAvatar={data.user.isAvatar}
@@ -129,7 +129,7 @@ function UserTick() {
           </div>
         </PopoverTrigger>
         <PopoverContent
-          sideOffset={-6}
+          sideOffset={0}
           className="rounded-2xl p-2 shadow-lg shadow-monochrome-3/40"
           side="bottom"
           align="end">

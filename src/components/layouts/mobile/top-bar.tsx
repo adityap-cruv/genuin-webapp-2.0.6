@@ -101,9 +101,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
                     {notificationsCount > 9 ? '9+' : notificationsCount}
                   </div>
                 ))}
-              <NotificationIcon
-                variant={(variant === 'transparent' || variant === 'light') && !showClose ? '' : 'white'}
-              />
+              <NotificationIcon variant={variant === 'light' && !showClose ? '' : 'white'} />
             </div>
           </Link>
         )}
@@ -178,7 +176,7 @@ function Menu({
           <SheetClose
             className={cn(
               'flex h-[40px] w-[40px] items-center justify-center rounded-full shadow-none outline-none',
-              variant === 'light' ? 'bg-tertiary-200' : 'bg-monochrome-black/20'
+              variant === 'light' || variant === 'transparent' ? 'bg-tertiary-200' : 'bg-monochrome-black/20'
             )}>
             <CloseIcon variant={variant === 'transparent' || variant === 'light' ? 'dark' : 'light'} />
           </SheetClose>
