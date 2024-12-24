@@ -2,7 +2,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { Button } from '@components/ui/button'
 import type { CommunityDetailsType, MembersSchemaType } from '@lib/schemas/community'
-import { checkAndAppendHttps, getCurrentShareUrl, openGeneratedLink, openModal } from '@lib/utils'
+import { checkAndAppendHttps, getCurrentShareUrl, openGeneratedLink } from '@lib/utils'
 import Image from 'next/image'
 import icLock from '@icons/icLock.svg'
 import Link from 'next/link'
@@ -13,8 +13,8 @@ import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { TopBar } from '../../../layouts/mobile/top-bar'
 import { CommunityLoopTab } from './community-loop-tab'
-import { useState } from 'react'
-import { joinCommunity, leaveCommunity, requestCommunity } from '@lib/api/video'
+// import { useState } from 'react'
+// import { joinCommunity, leaveCommunity, requestCommunity } from '@lib/api/video'
 import { ShareIcon } from '@icons/share-icon'
 import { useSearchParams } from 'next/navigation'
 import { getCommunityMembers } from '@lib/api/community'
@@ -30,6 +30,7 @@ import { TwitterIcon } from '@icons/twitter-icon'
 import { joinCommunityDeepLink } from '@/lib/get-deeplink'
 import { TopStickyBar } from './top-sticky-bar'
 import { ReadMore } from '@/components/common/read-more'
+import { JoinCommunityButton } from '@components/common/join-community-button'
 
 let communityDetailsModule: CommunityDetailsType
 
@@ -72,21 +73,14 @@ export function Details({ communityDetails }: Props) {
         <div className="px-4 py-2 pt-4">
           <div className="flex justify-end">
             <div className="flex items-center gap-x-2">
-              {isEmbed && communityDetails.is_community_join_requested && (
-                <Button size="custom" className="border border-primary" variant={'outline'}>
-                  <p className={`px-4 py-1.5 text-body-1-demi text-monochrome-white text-primary`}>Requested</p>
-                </Button>
-              )}
-              {isEmbed && !communityDetails.is_community_join_requested && (
-                <JoinButton
-                  handle={communityDetails.handle}
-                  id={communityDetails.community_id}
-                  communityName={communityDetails.name ?? ''}
-                  userRole={communityDetails.logged_in_user_role}
-                  isCommunityPrivate={communityDetails.type === 2}
-                />
-              )}
-
+              <JoinCommunityButton
+                buttonText="Join Community"
+                handle={communityDetails.handle}
+                id={communityDetails.community_id}
+                role={communityDetails.logged_in_user_role}
+                type={communityDetails.type === 2 ? 'private' : 'public'}
+                communityName={communityDetails.name ?? ''}
+              />
               {!isEmbed && (
                 <Button
                   variant="default"
@@ -211,16 +205,7 @@ function ProfileTabs() {
       </TabsList>
       <hr className="border-t border-tertiary-200" />
       <TabsContent value="Loops" className="mx-4 h-full">
-        <CommunityLoopTab
-          community={{
-            shareUrl: communityDetailsModule.share_url,
-            handle: communityDetailsModule.handle,
-            id: communityDetailsModule.community_id,
-            slug: communityDetailsModule.slug,
-            name: communityDetailsModule.name,
-            profileImage: communityDetailsModule.dp,
-          }}
-        />
+        <CommunityLoopTab slug={communityDetailsModule.slug} />
       </TabsContent>
       <TabsContent value="About" className="mx-4">
         <Guidelines />
@@ -477,89 +462,4 @@ function Members() {
         })}
       </div>
     )
-}
-
-export function JoinButton({
-  userRole,
-  handle,
-  id,
-  isCommunityPrivate,
-  communityName,
-}: {
-  userRole?: 'LEADER' | 'MEMBER' | 'REQUESTED' | null
-  handle: string
-  id: string
-  isCommunityPrivate: boolean
-  communityName: string
-}) {
-  const [role, setRole] = useState(userRole)
-  const user = useGenuinOptions().user
-  const searchParams = Object.fromEntries(useSearchParams())
-
-  async function toggleCommunityJoinState() {
-    if (role !== 'MEMBER') {
-      if (isCommunityPrivate) {
-        await requestCommunity(id).then((res) => {
-          if (res.code === 200) {
-            setRole('REQUESTED')
-          }
-        })
-      } else {
-        await joinCommunity(
-          false,
-          [id],
-          [
-            {
-              user_id: user?.id,
-            },
-          ]
-        ).then((res) => {
-          if (res.code === 200) {
-            setRole('MEMBER')
-          }
-        })
-      }
-    } else {
-      await leaveCommunity(id).then((res) => {
-        if (res.code === 200) {
-          setRole(null)
-        }
-      })
-    }
-  }
-
-  if (userRole === 'LEADER') return
-
-  return (
-    <Button
-      size="custom"
-      className={`${role && 'rounded border border-primary '}`}
-      variant={role ? 'outline' : 'default'}
-      onClick={
-        user
-          ? async () => {
-              await toggleCommunityJoinState()
-            }
-          : async () => {
-              await joinCommunityDeepLink({ communityName, searchParams }).then((generatedLink) => {
-                openModal({
-                  deepLink: generatedLink,
-                  subtitle: (
-                    <>
-                      Get the app to join the <br />
-                      <span className="font-bold">@{handle}</span> community.
-                    </>
-                  ),
-                })
-              })
-            }
-      }>
-      <p
-        className={`whitespace-nowrap px-4 py-1.5 text-body-1-demi  ${
-          role ? 'text-primary' : 'text-monochrome-white'
-        }`}>
-        {role ? (role === 'REQUESTED' ? 'Requested' : 'Joined') : 'Join Community'}
-      </p>
-    </Button>
-  )
 }

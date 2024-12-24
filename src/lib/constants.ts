@@ -72,3 +72,5 @@ export const NOT_FOUND_ERROR_MESSAGES = {
     showButton: true,
   },
 }
+
+export const IHEART_BRAND_URL = 1429

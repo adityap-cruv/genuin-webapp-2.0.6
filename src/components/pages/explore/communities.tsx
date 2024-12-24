@@ -1,16 +1,35 @@
 'use client'
+import { JoinCommunityButton } from '@/components/common/join-community-button'
 import { abbreviateNumber } from '@lib/utils'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { getFeaturedCommunity } from '@lib/api/community'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import Link from 'next/link'
-import { JoinCommunityButton } from '@components/pages/community/join-community-button'
 import { CommunityCardShimmer } from './shimmer'
+import { type CommunityUserRoleType } from '@/lib/schemas/roles'
+import { useCallback, useState } from 'react'
 
 export function Communities() {
-  const { isLoading, data, isError } = getFeaturedCommunity()
+  const { isLoading, data: communities, isError } = getFeaturedCommunity()
+  // List of joined communities.
+  const [joinedCommunities, setJoinedCommunities] = useState<string[]>([])
 
+  // Handle community role change.
+  const handleCommunityRoleChange = useCallback(
+    (communityId: string, role: CommunityUserRoleType) => {
+      // If user is a member of the community, add it to the list.
+      if (role === 'MEMBER') {
+        setJoinedCommunities((prev) => [...prev, communityId])
+      } else {
+        // If join is reverted than remove it from the list.
+        setJoinedCommunities((prev) => prev.filter((id) => id !== communityId))
+      }
+    },
+    [communities]
+  )
+
+  // In case of error, return.
   if (isError) {
     return
   }
@@ -23,17 +42,21 @@ export function Communities() {
           <CommunitiesShimmer />
         ) : (
           <div className="grid h-auto w-full min-w-fit grid-cols-1 gap-4 md:grid-cols-2 md:grid-rows-2">
-            {data?.map((item) => {
+            {communities?.map((community) => {
               return (
                 <CommunityItem
-                  key={item.community_id}
-                  id={item.community_id}
-                  memberCount={item.no_of_members}
-                  profileImage={item.dp_m ?? item.dp ?? ''}
-                  description={item.description ?? ''}
-                  name={item.name}
-                  slug={item.slug}
-                  handle={item.handle}
+                  key={community.community_id}
+                  id={community.community_id}
+                  memberCount={community.no_of_members}
+                  profileImage={community.dp_m ?? community.dp ?? ''}
+                  description={community.description ?? ''}
+                  name={community.name}
+                  slug={community.slug}
+                  handle={community.handle}
+                  role={joinedCommunities.includes(community.community_id) ? 'MEMBER' : 'UNJOINED'}
+                  onCommunityStatusChange={(role) => {
+                    handleCommunityRoleChange(community.community_id, role)
+                  }}
                 />
               )
             })}
@@ -46,15 +69,19 @@ export function Communities() {
           <CommunitiesShimmer />
         ) : (
           <Swiper direction="horizontal" loop spaceBetween={16} centeredSlides slidesPerView={1.2}>
-            {data?.map((item) => (
-              <SwiperSlide key={item.community_id}>
+            {communities?.map((community) => (
+              <SwiperSlide key={community.community_id}>
                 <CommunityItem
-                  id={item.community_id}
-                  memberCount={item.no_of_members}
-                  profileImage={item.dp ?? ''}
-                  description={item.description ?? ''}
-                  slug={item.slug}
-                  handle={item.handle}
+                  role={joinedCommunities.includes(community.community_id) ? 'MEMBER' : 'UNJOINED'}
+                  id={community.community_id}
+                  memberCount={community.no_of_members}
+                  profileImage={community.dp ?? ''}
+                  description={community.description ?? ''}
+                  slug={community.slug}
+                  handle={community.handle}
+                  onCommunityStatusChange={(role) => {
+                    handleCommunityRoleChange(community.community_id, role)
+                  }}
                 />
               </SwiperSlide>
             ))}
@@ -84,30 +111,46 @@ type CommunityItemProps = {
   description?: string
   slug: string
   handle: string
+  role: CommunityUserRoleType
+  onCommunityStatusChange: (role: CommunityUserRoleType) => void
 }
 
-function CommunityItem({ id, memberCount, handle, profileImage, description, name, slug }: CommunityItemProps) {
+function CommunityItem({
+  id,
+  memberCount,
+  handle,
+  profileImage,
+  description,
+  name,
+  slug,
+  role,
+  onCommunityStatusChange,
+}: CommunityItemProps) {
   return (
     <div className="min-w[320px] max-w-full rounded-lg border border-tertiary-300 p-4">
       <div className="flex items-center justify-between">
-        <span className="flex items-center gap-x-2">
+        <div className="flex items-center gap-x-2">
           <CustomAvatar fallbackString={name ?? ''} imageUrl={profileImage} isAvatar={false} className="h-12 w-12" />
-          <span>
+          <div>
             <Link href={PATH_NAME.community(slug)}>
               <p className="line-clamp-1 break-all text-body-1-bold">{name}</p>
             </Link>
             <p className="text-body-1-demi text-tertiary">{`${abbreviateNumber(memberCount)} ${
               memberCount === 1 ? 'member' : 'members'
             }`}</p>
-          </span>
-        </span>
+          </div>
+        </div>
+        {/** Handle this case here. */}
         <JoinCommunityButton
           buttonText="Join"
           handle={handle}
           id={id}
-          isCommunityPrivate={false}
-          isJoinRequested={false}
+          type="public"
+          role={role}
+          communityName={name ?? ''}
+          onStatusChange={onCommunityStatusChange}
         />
+        {/* <JoinCommunityButton buttonText="Join" handle={handle} id={id} isCommunityPrivate={false} /> */}
       </div>
       <p className="line-clamp-2 h-12 break-all pt-2 text-body-1-demi">{description}</p>
     </div>
