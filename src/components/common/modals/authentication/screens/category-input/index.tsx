@@ -1,11 +1,12 @@
 import { Button } from '@components/ui/button'
 import { ModalShell } from '../../modal-shell'
-import { addTopics, getCategoryList } from './api'
+import { addTopics, CategorySchema, getCategoryList, TopicSchema } from './api'
 import { useState } from 'react'
 import { cn } from '@lib/utils'
 import { Loader } from '@components/ui/loader'
 import { useSession } from 'next-auth/react'
 import { type ScreenProps } from '..'
+import { z } from 'zod'
 
 export function CategoryInput({ onNext }: ScreenProps) {
   const [selectedItems, setSelectedItem] = useState<Set<string>>(new Set())
@@ -14,9 +15,27 @@ export function CategoryInput({ onNext }: ScreenProps) {
   const { data, isLoading } = getCategoryList()
   const { update: updateSession, data: sessionData } = useSession()
 
-  async function handleSubmit() {
+  const getAllTopicIds = (categories: z.infer<typeof CategorySchema>): string[] => {
+    const allTopicIds: string[] = []
+
+    categories.forEach((category) => {
+      category.topics.forEach((topic: z.infer<typeof TopicSchema>) => {
+        allTopicIds.push(topic.topic_id)
+      })
+    })
+    return allTopicIds
+  }
+
+  async function handleSubmit(type?: string) {
     setPostingTopics(true)
-    const res = await addTopics([...selectedItems.values()])
+    let topics = [...selectedItems.values()]
+
+    if (type === 'all') {
+      topics = getAllTopicIds(data || [])
+      console.log(topics)
+    }
+
+    const res = await addTopics(topics)
     if (res) {
       await updateSession({ ...sessionData, user: { ...sessionData?.user, hasTopics: true } })
       if (sessionData?.user.usernameSet) {
@@ -78,11 +97,28 @@ export function CategoryInput({ onNext }: ScreenProps) {
           })}
         </div>
       )}
-      <Button onClick={handleSubmit} className="w-full" disabled={selectedItems.size < 3}>
+      <Button
+        onClick={() => {
+          handleSubmit()
+        }}
+        className="w-full"
+        disabled={selectedItems.size < 3}>
         {postingTopics ? (
           <Loader size="md" className="fill-monochrome-white" />
         ) : (
           <p className="text-title-3-demi">{selectedItems.size < 3 ? 'Choose 3+' : 'Continue'}</p>
+        )}
+      </Button>
+      <Button
+        onClick={() => {
+          handleSubmit('all')
+        }}
+        variant={'outline'}
+        className="h-9 w-full">
+        {postingTopics ? (
+          <Loader size="sm" className="fill-monochrome-white" />
+        ) : (
+          <p className="text-title-3-demi">Surprise Me</p>
         )}
       </Button>
       {error && (

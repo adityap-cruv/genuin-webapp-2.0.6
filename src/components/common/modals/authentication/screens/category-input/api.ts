@@ -2,13 +2,13 @@ import { z } from 'zod'
 import { axiosInstance } from '@lib/api/instance'
 import { useQuery } from '@tanstack/react-query'
 
-const TopicSchema = z.object({
+export const TopicSchema = z.object({
   topic_id: z.string(),
   topic: z.string(),
   is_selected: z.boolean(),
 })
 
-const CategorySchema = z.array(
+export const CategorySchema = z.array(
   z.object({
     topics: z.array(TopicSchema),
     entity_id: z.string(),
