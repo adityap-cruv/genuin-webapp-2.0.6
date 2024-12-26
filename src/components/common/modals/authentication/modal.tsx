@@ -103,7 +103,7 @@ export function Modal({ children, showClose, ...props }: Props) {
     'VERIFY_MAIL_OTP',
     'VERIFY_PHONE_OTP',
     'GUIDELINES',
-    'CATEGORY_SELECTION',
+    // 'CATEGORY_SELECTION', // Made it optional for Surprise Me
     'DELETE_CONFIRMATION',
     'DELETE_CONFIRMED',
   ])
