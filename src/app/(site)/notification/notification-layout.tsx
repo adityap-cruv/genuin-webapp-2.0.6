@@ -26,9 +26,9 @@ export function NotificationLayout() {
   }))
 
   async function fetchNotificationCount() {
-    const { status, count } = await notificationsCount()
-    if (status) {
-      setInitialData({ notificationCount: count })
+    const response = await notificationsCount()
+    if (response) {
+      if (response.status) setInitialData({ notificationCount: response.count })
     }
   }
 
