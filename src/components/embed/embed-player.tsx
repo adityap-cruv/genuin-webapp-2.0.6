@@ -50,6 +50,7 @@ export function EmbedPlayer({
       setTimeState: state.setTimeState,
     }))
   )
+  const [hasStarted, setHasStarted] = useState(false)
   const { videoCanPlay } = useEmbedConfig(useShallow((state) => ({ videoCanPlay: state.videoCanPlay })))
   const [isPlaying, setIsPlaying] = useState(false)
   const isActiveVideo = activeVideoIndex === index
@@ -68,6 +69,9 @@ export function EmbedPlayer({
   }
 
   useEffect(() => {
+    // Reset the analytics flag when the video source changes
+    setHasStarted(false)
+
     if (!videoRef.current) return
     if (playerRef.current) return
     const player = new OpenPlayerJS(videoRef.current, {
@@ -101,7 +105,10 @@ export function EmbedPlayer({
         if ((isActive || isFirstElement) && videoCanPlay) {
           const endTime = performance.now()
           void player.play().then((_) => {
-            triggerAnalyticsForVideoStart(videoData.video.id, endTime - startTime, index)
+            if (!hasStarted) {
+              triggerAnalyticsForVideoStart(videoData.video.id, endTime - startTime, index)
+              setHasStarted(true)
+            }
           })
         }
         playerRef.current = player
@@ -115,8 +122,11 @@ export function EmbedPlayer({
     if (index === activeVideoIndex && videoCanPlay) {
       const startTime = performance.now()
       void player.play().then(() => {
-        const endTime = performance.now()
-        triggerAnalyticsForVideoStart(videoData.video.id, endTime - startTime, index)
+        if (!hasStarted) {
+          const endTime = performance.now()
+          triggerAnalyticsForVideoStart(videoData.video.id, endTime - startTime, index)
+          setHasStarted(true)
+        }
       })
     } else {
       player.pause()

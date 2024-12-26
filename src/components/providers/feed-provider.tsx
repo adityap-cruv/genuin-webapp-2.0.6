@@ -45,6 +45,8 @@ export function FeedContextProvider({
   const [currentIndex, setCurrentIndex] = useState(startIndex)
   const [allowSlideNext, setAllowSlideNext] = useState(true)
   const [feedVideos, setFeedVideos] = useState<VideoPlayerModalType[]>(videos)
+  // Track the last videoId that was used for 'Video Inview' event
+  const [lastTrackedVideoId, setLastTrackedVideoId] = useState<string | null>(null)
 
   useEffect(() => {
     setFeedVideos((oldFeedVideos) => [...oldFeedVideos, ...videos.slice(oldFeedVideos.length)])
@@ -54,12 +56,13 @@ export function FeedContextProvider({
     (newIndex: number) => {
       const { duration, currentTime } = usePlayerControlStore.getState()
       const playerProgress = Math.round((currentTime / duration) * 100)
+      const videoId = videos[currentIndex].video.id
 
       setCurrentIndex((currentIndex) => {
         const eventName = newIndex < currentIndex ? 'Swipe Down' : 'Swipe Up'
         const properties = {
           content_category: 'loop',
-          content_id: videos[currentIndex].video.id,
+          content_id: videoId,
           event_record_screen: 'feed',
           event_target_screen: 'none',
           video_length: duration,
@@ -70,6 +73,12 @@ export function FeedContextProvider({
           eventName,
           properties,
         })
+
+        // Track 'Video Inview' only if the videoId changes
+        if (lastTrackedVideoId !== videoId) {
+          setLastTrackedVideoId(videoId)
+          void Analytics.track({ eventName: 'Video Inview', properties })
+        }
 
         void Analytics.track({ eventName: 'Video Impression', properties })
 
