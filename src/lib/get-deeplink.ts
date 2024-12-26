@@ -130,22 +130,16 @@ export async function repostDeepLink({
   })
 }
 
-// spark action
-export async function sparkDeepLink({
-  videoSlug,
-  shareUrl,
-  searchParams,
-}: {
-  videoSlug: string
-  shareUrl: string
-  searchParams: Record<string, any>
-}): Promise<string> {
+/*
+ * This function will generate deep link for spark action.
+ */
+export async function sparkDeepLink(videoSlug: string, shareUrl: string): Promise<string> {
   return await getDeepLink('spark', {
     contentType: 'video',
     pathName: PATH_NAME.video(videoSlug),
     community: getLoopAndCommunityShareString(shareUrl).communityShareString ?? '',
     loop: getLoopAndCommunityShareString(shareUrl).loopShareString ?? '',
     title: `spark ${videoSlug} video`,
-    searchParams,
+    searchParams: new URLSearchParams(window.location.search),
   })
 }

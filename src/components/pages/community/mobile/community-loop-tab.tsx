@@ -2,14 +2,14 @@ import { getCommunityLoops } from '@lib/api/community'
 import Image from 'next/image'
 import noLoopsImage from '@images/noLoopImage.svg'
 import { useState } from 'react'
-import { PlayerModal } from '@components/common/modals/player-modal'
+import { PlayerModal } from '@/components/common/feed/player-modal'
 import { getLoopVideos } from '@lib/api/loop'
-import { type VideoPlayerModalCommunityType, type VideoPlayerModalLoopType } from '@lib/schemas/player/video'
+import { type VideoPlayerModalLoopType } from '@lib/schemas/player/video'
 import { LoopCard, LoopCardShimmer } from '@components/common/loop-card'
 
 // TODO: remove this component from here and put at better location
-export function CommunityLoopTab({ community }: { community: VideoPlayerModalCommunityType }) {
-  const { data, isLoading } = getCommunityLoops(community.slug)
+export function CommunityLoopTab({ slug }: { slug: string }) {
+  const { data, isLoading } = getCommunityLoops(slug)
   const [modalController, setModalController] = useState<{ open: boolean; loop: VideoPlayerModalLoopType | null }>({
     open: false,
     loop: null,
@@ -46,7 +46,7 @@ export function CommunityLoopTab({ community }: { community: VideoPlayerModalCom
                 owner: { userName: item.owner.username },
                 thumbnail: item.thumbnail_url_m
                   ? item.thumbnail_url_m
-                  : (item.thumbnail_url_l ?? item.thumbnail_url ?? ''),
+                  : item.thumbnail_url_l ?? item.thumbnail_url ?? '',
                 createdAt: item.message_at,
               }))}
               loopSlug={item.slug}
@@ -112,7 +112,7 @@ type PlayerModalWrapperProps = {
 }
 
 function PlayerModalWrapper({ open = false, slug, close, unreadMessageCount }: PlayerModalWrapperProps) {
-  const { data, fetchNextPage, isError, isFetchingNextPage, isFetching } = getLoopVideos(slug)
+  const { data, fetchNextPage, isError, isFetchingNextPage, isFetching, hasNextPage } = getLoopVideos(slug)
   const videos = data?.pages.flatMap((item) => item.videos)
 
   return (
@@ -126,6 +126,7 @@ function PlayerModalWrapper({ open = false, slug, close, unreadMessageCount }: P
       videos={videos}
       close={close}
       unreadMessageCount={unreadMessageCount}
+      hasNextPage={hasNextPage}
     />
   )
 }

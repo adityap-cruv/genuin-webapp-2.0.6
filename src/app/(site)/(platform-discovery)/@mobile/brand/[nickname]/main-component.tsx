@@ -18,6 +18,8 @@ import { TikTokIcon } from '@icons/tiktok-icon'
 import { LinkedInIcon } from '@icons/linkedin-icon'
 import { TwitterIcon } from '@icons/twitter-icon'
 import Analytics from '@services/analytics'
+import { useGenuinOptions } from '@/lib/stores/genuin-options'
+import { LinkIcon } from 'lucide-react'
 
 interface CompProps {
   profileData: ProfileDetailsType
@@ -113,7 +115,7 @@ export function MainComponent({ profileData }: CompProps) {
               </div>
             )}
           </div>
-          <p className="my-1 line-clamp-2 text-body-1-demi">{profileData?.bio}</p>
+          <p className="my-1 text-body-1-demi">{profileData?.bio}</p>
           <Stats brandData={profileData.brand} />
           <Links profileData={profileData} />
         </div>
@@ -131,6 +133,7 @@ function Links({ profileData }: CompProps) {
     twitter: profileData.twitter_id ? profileData.twitter_url + profileData.twitter_id : undefined,
     tiktok: profileData.tiktok_id ? profileData.tiktok_url + profileData.tiktok_id : undefined,
   }
+  const brandId = useGenuinOptions().brandId
 
   return (
     <div className="mt-2 flex">
@@ -159,6 +162,14 @@ function Links({ profileData }: CompProps) {
         <div className="mr-2 flex h-8 w-8 items-center justify-center rounded-md bg-tertiary-200 p-1 px-2">
           <Link href={checkAndAppendHttps(links.tiktok)} target="_blank">
             <TikTokIcon className="h-5 w-5 fill-primary " />
+          </Link>
+        </div>
+      )}
+      {brandId && profileData.brand?.brand_id !== Number(brandId) && (
+        <div className="w-100 mr-2 flex h-8 items-center justify-center rounded-lg bg-tertiary-200 p-1">
+          <Link href={checkAndAppendHttps(profileData.brand?.brand_url ?? '')} target="_blank" className="flex">
+            <LinkIcon className="mr-1 h-5 w-5 stroke-primary" />
+            <span className="line-clamp-1  break-all text-body-1-med">{profileData.brand?.brand_url}</span>
           </Link>
         </div>
       )}

@@ -7,6 +7,7 @@ import { useGenuinOptions } from './stores/genuin-options'
 import { AuthenticationModal } from '@components/common/modals/authentication'
 import { type ReactNode } from 'react'
 import { PROTECTED_ROUTES } from './constants'
+import { type CommunityUserRoleType } from './schemas/roles'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -19,15 +20,17 @@ export function getLoopAndCommunityShareString(shareUrl: string) {
   return { loopShareString, communityShareString }
 }
 
+/**
+ * This function is used to open the modal for the user to download the app or if web is used in whitelabel or subdomain it will open authentication.
+ * @param param0
+ */
 export function openModal({
   title,
   subtitle,
-  action,
   deepLink,
 }: {
   title?: string | ReactNode
   subtitle?: string | ReactNode
-  action?: any
   deepLink?: string
 }) {
   const embed = useGenuinOptions.getState().embed
@@ -382,5 +385,27 @@ export function encodeVideoSourceUrl(videoSource: string) {
   } catch (error) {
     console.error('Invalid URL:', error)
     return videoSource
+  }
+}
+
+/*
+ * This function maps the role of the user in the community.
+ * @param role - Role of the user in the community.
+ * @param isRequested - If the user has requested to join the community.
+ */
+export function mapCommunityUserRole(role?: number | null, isRequested?: boolean | null): CommunityUserRoleType {
+  // If isRequested is true, return 'REQUESTED'.
+  if (isRequested) return 'REQUESTED'
+
+  switch (role) {
+    case 1:
+      return 'LEADER'
+    case 2:
+      return 'MEMBER'
+    case 3:
+      return 'MODERATOR'
+    // If role is null or anything other than above cases than return 'UNJOINED'.
+    default:
+      return 'UNJOINED'
   }
 }

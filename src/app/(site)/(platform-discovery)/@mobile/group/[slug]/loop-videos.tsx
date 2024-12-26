@@ -6,7 +6,7 @@ import { PATH_NAME } from '@lib/utils/constants/path'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { useState, useEffect, useId } from 'react'
 import icPlay from '@icons/player-controls/icPlay.svg'
-import { PlayerModal } from '@components/common/modals/player-modal'
+import { PlayerModal } from '@/components/common/feed/player-modal'
 import { useSearchParams } from 'next/navigation'
 import { Shimmer } from '@components/ui/shimmer'
 import { CustomImage } from '@/components/custom/custom-image'
@@ -118,6 +118,7 @@ export function LoopVideos({ slug }: Props) {
         open={modalControl.open}
         startIndex={modalControl.startIndex}
         videos={videos}
+        hasNextPage={hasNextPage}
       />
     </div>
   )

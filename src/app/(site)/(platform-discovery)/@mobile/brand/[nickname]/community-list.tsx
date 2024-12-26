@@ -1,12 +1,11 @@
 'use client'
 import { abbreviateNumber } from '@lib/utils'
 import { type User, useGenuinOptions } from '@lib/stores/genuin-options'
-import { Button } from '@components/ui/button'
 import Image from 'next/image'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { DecorativeList } from '@components/custom/decorative-list'
 import { Loader } from '@components/ui/loader'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { Shimmer } from '@components/ui/shimmer'
 import Link from 'next/link'
 import { getNextPage } from './hook'
@@ -16,7 +15,7 @@ import { useCommunityListStore } from './store'
 import { type ProfileCommunityType, type ProfileLoopType, type ProfileVideoType } from '@lib/schemas/profile/community'
 import { fetchProfileCommunityLoops, getCommunities, fetchProfileVideos, getBrandFeed } from '@lib/api/brand-profile'
 import icLock from '@icons/icLock.svg'
-import { PlayerModal } from '@components/common/modals/player-modal'
+import { PlayerModal } from '@/components/common/feed/player-modal'
 import icPlay from '@icons/player-controls/icPlay.svg'
 import { LockIcon } from '@icons/LockIcon'
 import { usePathname } from 'next/navigation'
@@ -25,25 +24,26 @@ import { LoopPrivacyInfo } from '@components/common/loop-privacy-info'
 import { PrivateModal } from '@components/common/modals/private'
 import { IcLoop } from '@icons/ic-loop'
 import { BrandCommunityTag } from '@components/common/brand-community-tag'
-import { ToggleCommunityJoinState } from '@components/common/toggle-community-join-state'
 import { CustomImage } from '@/components/custom/custom-image'
 import { Play } from 'lucide-react'
 import { useShallow } from 'zustand/react/shallow'
+import { JoinCommunityButton } from '@/components/common/join-community-button'
 
 export function CommunityList({ brandId, scrollYProgress }: { brandId: number; scrollYProgress: MotionValue<number> }) {
   const { data, isLoading, fetchNextPage, isFetchingNextPage } = getCommunities(brandId, 8)
   const communities = data?.pages.flatMap((item) => item.communities)
-  const [communityJoinStates, setCommunityJoinStates] = useState<Record<string, string>>({})
   const user = useGenuinOptions().user
-  const { addCommunities, currentVideoId, reset, stateCommunities, replaceCommunities } = useCommunityListStore(
-    useShallow((state) => ({
-      reset: state.reset,
-      currentVideoId: state.currentVideoId,
-      addCommunities: state.addCommunities,
-      stateCommunities: state.communities,
-      replaceCommunities: state.replaceCommunities,
-    }))
-  )
+  const { addCommunities, currentVideoId, reset, stateCommunities, replaceCommunities, handleCommunityRoleChange } =
+    useCommunityListStore(
+      useShallow((state) => ({
+        reset: state.reset,
+        currentVideoId: state.currentVideoId,
+        addCommunities: state.addCommunities,
+        stateCommunities: state.communities,
+        replaceCommunities: state.replaceCommunities,
+        handleCommunityRoleChange: state.handleCommunityJoin,
+      }))
+    )
   const pathName = usePathname()
 
   useEffect(() => {
@@ -56,30 +56,9 @@ export function CommunityList({ brandId, scrollYProgress }: { brandId: number; s
   }, [pathName])
 
   useEffect(() => {
-    if (communities) {
-      const initialStates: Record<string, string> = {}
-      let shouldUpdate = false
-
-      communities.forEach((item) => {
-        const userRole = item.userRole ?? ''
-        if (communityJoinStates[item.id] !== userRole) {
-          initialStates[item.id] = userRole
-          shouldUpdate = true
-        } else {
-          initialStates[item.id] = communityJoinStates[item.id]
-        }
-      })
-
-      if (shouldUpdate) {
-        setCommunityJoinStates(initialStates)
-      }
-    }
-  }, [data?.pages.length])
-
-  useEffect(() => {
     const newCommunities = data?.pages[data.pages.length - 1].communities
     if (newCommunities && newCommunities.length > 0) addCommunities(newCommunities)
-  }, [data?.pages.length])
+  }, [data])
 
   useMotionValueEvent(scrollYProgress, 'change', (latest) => {
     if (Number(latest.toFixed(1)) > 0.8 && !isFetchingNextPage) {
@@ -105,26 +84,26 @@ export function CommunityList({ brandId, scrollYProgress }: { brandId: number; s
 
     return (
       <div className="h-full w-full overflow-y-visible">
-        {stateCommunities.map((item, index) => {
+        {stateCommunities.map((community, index) => {
           return (
             <div key={index} className="mb-6">
               <div className="flex items-center">
                 <CustomAvatar
                   className="bg-slate-500 h-11 w-11 bg-red-40"
-                  fallbackString={item.name ?? ''}
-                  imageUrl={item.profileImage ?? ''}
+                  fallbackString={community.name ?? ''}
+                  imageUrl={community.profileImage ?? ''}
                   isAvatar={false}
                 />
                 <div className="flex w-full items-center justify-between">
                   <div className="mx-2">
-                    <Link href={{ pathname: PATH_NAME.community(item.slug) }}>
+                    <Link href={{ pathname: PATH_NAME.community(community.slug) }}>
                       <p
                         className="line-clamp-1 text-left"
                         style={{ fontWeight: 600, fontSize: '20px', lineHeight: '24px' }}>
-                        {item.name ?? `${item.handle}`}
+                        {community.name ?? `${community.handle}`}
                       </p>
                     </Link>
-                    {item.type === 2 && (
+                    {community.type === 2 && (
                       <PrivateModal>
                         <div className="flex items-center justify-start rounded-full">
                           <LockIcon className="h-4 w-4 stroke-tertiary" />
@@ -132,7 +111,7 @@ export function CommunityList({ brandId, scrollYProgress }: { brandId: number; s
                         </div>
                       </PrivateModal>
                     )}
-                    {item.type !== 2 && pathName === PATH_NAME.profile(user?.nickname) && (
+                    {community.type !== 2 && pathName === PATH_NAME.profile(user?.nickname) && (
                       <div className="mb-2 flex items-center justify-start gap-1 rounded-full">
                         <EarthIcon className="h-4 w-4 stroke-tertiary" />
                         <p className="text-cap-1-demi text-tertiary">Public</p>
@@ -140,34 +119,35 @@ export function CommunityList({ brandId, scrollYProgress }: { brandId: number; s
                     )}
                   </div>
                   <div className="flex items-center gap-2">
-                    {item.brand && (
+                    {community.brand && (
                       <BrandCommunityTag
-                        brandSlug={item.brand.brand_slug}
-                        brandLogo={item.brand?.logo}
-                        brandName={item.brand?.name}
+                        brandSlug={community.brand.brand_slug}
+                        brandLogo={community.brand?.logo}
+                        brandName={community.brand?.name}
                       />
                     )}
-                    {pathName !== PATH_NAME.brand(user?.nickname) && item.isCommunityJoinRequested && (
-                      <Button size="custom" className="border border-primary" variant={'outline'}>
-                        <p className={`px-4 py-1.5 text-body-1-demi text-monochrome-white text-primary`}>Requested</p>
-                      </Button>
-                    )}
-                    {pathName !== PATH_NAME.brand(user?.nickname) && !item.isCommunityJoinRequested && (
-                      <ToggleCommunityJoinState
-                        communityJoinStates={communityJoinStates}
-                        setCommunityJoinStates={setCommunityJoinStates}
-                        handle={item.handle}
-                        id={item.id}
-                        userRole={item.userRole}
-                        isCommunityPrivate={item.type === 2}
-                        communityName={item.name ?? ''}
-                      />
-                    )}
+                    <JoinCommunityButton
+                      buttonText="Join"
+                      handle={community.handle}
+                      id={community.id}
+                      role={community.userRole}
+                      type={community.type === 2 ? 'private' : 'public'}
+                      communityName={community.name ?? ''}
+                      onStatusChange={(newRole) => {
+                        handleCommunityRoleChange(community.id, newRole)
+                      }}
+                    />
                   </div>
                 </div>
               </div>
               <DecorativeList>
-                <Loops brandId={brandId} community={item} communityId={item.id} user={user} pathName={pathName} />
+                <Loops
+                  brandId={brandId}
+                  community={community}
+                  communityId={community.id}
+                  user={user}
+                  pathName={pathName}
+                />
               </DecorativeList>
             </div>
           )
@@ -191,7 +171,7 @@ export function CommunityList({ brandId, scrollYProgress }: { brandId: number; s
 }
 
 function PlayerModalWrapper({ brandId, currentVideoId }: { brandId: number; currentVideoId: string }) {
-  const { data, isLoading, fetchNextPage } = getBrandFeed(brandId, currentVideoId)
+  const { data, isLoading, fetchNextPage, isFetchingNextPage, hasNextPage } = getBrandFeed(brandId, currentVideoId)
   const { close } = useCommunityListStore()
   const videos = data?.pages.flatMap((item) => item.feed)
 
@@ -203,8 +183,9 @@ function PlayerModalWrapper({ brandId, currentVideoId }: { brandId: number; curr
       startIndex={0}
       isLoading={isLoading}
       videos={videos}
-      isFetchingNextPage={false}
+      isFetchingNextPage={isFetchingNextPage}
       open={Boolean(currentVideoId)}
+      hasNextPage={hasNextPage}
     />
   )
 }

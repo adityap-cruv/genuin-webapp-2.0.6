@@ -6,7 +6,9 @@ import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { getCurrentShareUrl } from '@lib/utils'
 import { ShareIcon } from '@icons/share-icon'
-import { JoinCommunityButton } from '@components/pages/community/join-community-button'
+// import { JoinCommunityButton } from '@components/pages/community/join-community-button'
+import { type CommunityUserRoleType } from '@/lib/schemas/roles'
+import { JoinCommunityButton } from '@/components/common/join-community-button'
 
 type Props = {
   /**
@@ -22,7 +24,7 @@ type Props = {
   communityHandle: string
   communityId: string
   shareUrl: string
-  role: any
+  role: CommunityUserRoleType
   isCommunityPrivate: boolean
   isJoinRequested: boolean
 }
@@ -80,11 +82,10 @@ export function TopStickyBar({
       <span className="flex items-center gap-x-2">
         <JoinCommunityButton
           buttonText="Join Community"
-          isJoinRequested={isJoinRequested}
           handle={communityHandle}
           id={communityId}
-          userRole={role}
-          isCommunityPrivate={isCommunityPrivate}
+          role={role}
+          type={isCommunityPrivate ? 'private' : 'public'}
         />
         <Button
           variant="outline"
