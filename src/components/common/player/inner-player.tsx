@@ -96,7 +96,7 @@ export const InnerPlayer = memo(function InnerPlayer({
         console.log(e, 'error')
       },
       hls: {
-        debug: true,
+        // debug: true,
         /**
          * Let the player decide the best quality level dynamically.
          */
@@ -133,11 +133,11 @@ export const InnerPlayer = memo(function InnerPlayer({
         /**
          * Ensure codec compatibility for adaptive VP9 playback.
          */
-        overrideCodec: (codec: string) => codec.includes('vp09'),
+        // overrideCodec: (codec: string) => codec.includes('vp09'),
         /**
          * Optimize bitrate switching by limiting to player size.
          */
-        capLevelToPlayerSize: true,
+        // capLevelToPlayerSize: true,
         /**
          * Handle live playback smoothly for low-latency streams.
          */
@@ -197,11 +197,10 @@ export const InnerPlayer = memo(function InnerPlayer({
       <video
         className="absolute h-full w-full bg-cover bg-center bg-no-repeat object-cover"
         style={{ backgroundImage: `url(${poster})` }}
-        crossOrigin="anonymous"
         poster={poster}
         ref={videoRef}
         muted={muted}
-        src={`http://192.168.0.199:3000/output_hls/master.m3u8`}
+        src={encodedVideoSourceUrl}
         playsInline
         onPlay={onPlay}
         onPlaying={(ev) => {
