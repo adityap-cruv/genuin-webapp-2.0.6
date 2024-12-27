@@ -63,7 +63,7 @@ export function Mobile({
       <div className="absolute bottom-0 z-10 h-24 w-full bg-gradient-to-b from-[#11111100] to-[#111111b3]" />
       {isExpanded && (
         <div
-          className="absolute bottom-0 z-10 h-3/5 w-full bg-gradient-to-b from-[#11111100] to-[#111111] transition-all"
+          className="absolute bottom-0 z-10 h-full w-full bg-gradient-to-b from-[#11111100] to-[#111111] transition-all"
           onClick={(e) => {
             e.stopPropagation()
             setIsExpanded(!isExpanded)
@@ -81,6 +81,11 @@ export function Mobile({
         />
         <div className="absolute left-0 top-0 h-full w-full">
           <ControlLayer.mobile
+            communityImage={videoDetails.community.profileImage ?? ''}
+            communityName={videoDetails.community.name ?? ''}
+            communitySlug={videoDetails.community.slug}
+            loopName={videoDetails.loop.name ?? ''}
+            loopSlug={videoDetails.loop.slug}
             isActive={isActive}
             linkoutId={videoDetails.video.linkoutId}
             commentCount={videoDetails.video.commentCount}

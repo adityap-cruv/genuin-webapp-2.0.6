@@ -5,11 +5,34 @@ import { CtaButton } from './cta-button'
 import Link from 'next/link'
 import React, { memo } from 'react'
 import { LinkIcon } from 'lucide-react'
-import { motion } from 'framer-motion'
 import { type LinkoutsType } from './schema'
 import { triggerLinkoutEvent, triggerLinkoutViewEvent } from './analytics'
 import { getLinkouts } from './api'
 import { Shimmer } from '@/components/ui/shimmer'
+// import { motion } from 'framer-motion'
+
+// const fakeData = [
+//   {
+//     style: 1,
+//     cta_text: 'Learn More',
+//     cta_link: 'https://example.com/cta',
+//     links: [
+//       {
+//         position: 1,
+//         link: 'https://example.com/link1',
+//         image: 'https://media.qa.begenuin.com/uploads/profile_images/brandProfileLogo_1722671619218.png',
+//         title: 'Example Link 1',
+//       },
+//       // {
+//       //   position: 2,
+//       //   // link: 'https://example.com/link2',
+//       //   // image: null,
+//       //   // image: 'https://media.qa.begenuin.com/uploads/profile_images/brandProfileLogo_1722671619218.png',
+//       //   // title: 'Example Link 2',
+//       // },
+//     ],
+//   },
+// ]
 
 export const Mobile = memo(function Mobile({
   linkouts,
@@ -29,7 +52,7 @@ export const Mobile = memo(function Mobile({
   }
 
   return (
-    <motion.div initial={{ y: 75 }} animate={{ y: 0, transition: { duration: 0.3 } }}>
+    <div className="pt-2">
       {isLoading ? (
         <Shimmer className="my-2 h-10 w-full" />
       ) : (
@@ -229,6 +252,6 @@ export const Mobile = memo(function Mobile({
           }
         })
       )}
-    </motion.div>
+    </div>
   )
 })

@@ -259,6 +259,7 @@ export function WithMentions({
 type DynamicProps = {
   text: any
   maxLines?: number
+  showViewMore?: boolean
   isExpanded?: boolean
   setIsExpanded?: (expanded: boolean) => void
 } & ComponentProps<'p'>
@@ -266,6 +267,7 @@ type DynamicProps = {
 export function Dynamic({
   text,
   maxLines = 1,
+  showViewMore = true,
   isExpanded: isExpandedExternal,
   setIsExpanded: setIsExpandedExternal,
   ...props
@@ -316,7 +318,7 @@ export function Dynamic({
 
       if (element?.scrollHeight <= element?.clientHeight || !text) {
         setIsOverflowing(false)
-        setIsExpanded(false)
+        // setIsExpanded(false)
       }
 
       if (element) {
@@ -333,7 +335,7 @@ export function Dynamic({
 
   const clampedStyle: React.CSSProperties = {
     display: '-webkit-box',
-    WebkitLineClamp: maxLines,
+    WebkitLineClamp: !isExpanded ? maxLines : undefined,
     WebkitBoxOrient: 'vertical',
     overflow: 'hidden',
     wordBreak: 'break-word',
@@ -343,8 +345,9 @@ export function Dynamic({
     <p
       {...props}
       className={cn(
+        'overflow-auto overflow-x-clip bg-red',
         {
-          'hide-scrollbar max-h-60 overflow-auto sm:max-h-full sm:overflow-clip': isMobile,
+          'max-h-60 overflow-auto sm:max-h-full sm:overflow-clip': isMobile,
           'swiper-no-swiping': isExpanded && isMobile,
         },
         props.className
@@ -355,10 +358,18 @@ export function Dynamic({
       <span
         ref={textRef}
         className="w-full"
+        onClick={
+          !showViewMore
+            ? (e) => {
+                e.stopPropagation()
+                setIsExpanded(!isExpanded)
+              }
+            : undefined
+        }
         style={!isExpanded ? clampedStyle : { wordBreak: 'break-word' }}
         dangerouslySetInnerHTML={{ __html: Array.isArray(text) ? convertUrlsToAnchorTags(text) : text }}
       />
-      {(isExpanded || isOverflowing) && (
+      {showViewMore && (isExpanded || isOverflowing) && (
         <span
           className="cursor-pointer pl-1 text-body-1-med text-tertiary"
           onClick={() => {
