@@ -129,6 +129,7 @@ export const Mobile = memo(function Mobile({ clickableUrl, ...props }: MobilePro
   )
 })
 
+// All the animations props are defined here. to use in <Details/> component.
 const Animations = {
   hidden: { translateY: 'calc(100% - 40px)' },
   visible: {
@@ -169,14 +170,19 @@ function Details({
 }: MobileProps) {
   const [showLinkouts, setShowLinkouts] = useState(false)
 
+  // This logic is to show linkouts after 10 second of video play.
   useEffect(() => {
     if (!linkoutId) return
-    let timeoutId: any
+    let timeoutId: NodeJS.Timeout | null = null
+
+    // If video is active, show linkouts after 10 seconds.
     if (isActive) {
       timeoutId = setTimeout(() => {
         setShowLinkouts(true)
-      }, 1000)
+      }, 10000)
     }
+
+    // Clear timeout if video is not active.
     return () => {
       if (timeoutId) {
         clearTimeout(timeoutId)
@@ -185,8 +191,6 @@ function Details({
       setShowLinkouts(false)
     }
   }, [isActive])
-
-  descriptionText = 'kdfldkf dlkfjldkfjs dkldkfldkj'
 
   return (
     <div className="absolute bottom-4 left-0 flex w-full justify-between px-2">

@@ -272,11 +272,11 @@ export function Dynamic({
   setIsExpanded: setIsExpandedExternal,
   ...props
 }: DynamicProps) {
-  const isMobile = useGenuinOptions()?.isMobile
+  // height is used to calculate the max height of the text container.
+  const { height } = useGenuinOptions((state) => ({ height: state.sizeBoxes.default.height }))
   const textRef = useRef(null)
   const [isExpandedInternal, setIsExpandedInternal] = useState(false)
   const [isOverflowing, setIsOverflowing] = useState(false)
-
   const isExpanded = isExpandedExternal ?? isExpandedInternal
   const setIsExpanded = setIsExpandedExternal ?? setIsExpandedInternal
 
@@ -333,31 +333,55 @@ export function Dynamic({
     }
   }, [text])
 
-  const clampedStyle: React.CSSProperties = {
-    display: '-webkit-box',
-    WebkitLineClamp: !isExpanded ? maxLines : undefined,
-    WebkitBoxOrient: 'vertical',
-    overflow: 'hidden',
-    wordBreak: 'break-word',
-  }
+  // This logic is to add line clamp effect to the text.
+  useEffect(() => {
+    if (!textRef.current) return
+    const textElement = textRef.current as HTMLParagraphElement
+
+    // If the text is expanded, remove the line clamp effect.
+    if (isExpanded) {
+      textElement.classList.remove('line-clamp-1')
+      return
+    }
+
+    // If the text is not expanded, add the line clamp effect after the animation completes through CSS.
+    let timeoutId: NodeJS.Timeout | null = setTimeout(() => {
+      textElement.classList.add('line-clamp-1')
+    }, 500)
+
+    // If timeout isn't cleared, clear it.
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+        timeoutId = null
+      }
+    }
+  }, [isExpanded])
 
   return (
     <p
       {...props}
       className={cn(
-        'overflow-auto overflow-x-clip bg-red',
+        'overflow-clip overflow-x-clip transition-[max-height] duration-500 sm:max-h-full sm:overflow-clip',
         {
-          'max-h-60 overflow-auto sm:max-h-full sm:overflow-clip': isMobile,
-          'swiper-no-swiping': isExpanded && isMobile,
+          'swiper-no-swiping overflow-auto': isExpanded,
         },
         props.className
       )}
+      style={{
+        // The max height of the text container is calculated based on the height of the video player.
+        maxHeight: isExpanded ? height * 0.3 : maxLines * 24,
+      }}
       onClick={(e) => {
         e.stopPropagation()
       }}>
       <span
         ref={textRef}
-        className="w-full"
+        className="w-full break-words"
+        style={{
+          // Line clamp depends on the maxLines prop.
+          WebkitLineClamp: !isExpanded ? maxLines : undefined,
+        }}
         onClick={
           !showViewMore
             ? (e) => {
@@ -366,7 +390,6 @@ export function Dynamic({
               }
             : undefined
         }
-        style={!isExpanded ? clampedStyle : { wordBreak: 'break-word' }}
         dangerouslySetInnerHTML={{ __html: Array.isArray(text) ? convertUrlsToAnchorTags(text) : text }}
       />
       {showViewMore && (isExpanded || isOverflowing) && (
