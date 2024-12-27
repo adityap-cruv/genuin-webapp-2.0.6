@@ -5,7 +5,7 @@ import { useGenuinOptions } from '@/lib/stores/genuin-options'
 import { useWalletBalanceHandler } from '@/services/wallet-handler'
 import { Input } from '@/components/ui/input'
 import { commentDeepLink } from '@/lib/get-deeplink'
-import { openGeneratedLink, openModal } from '@/lib/utils'
+import { openModal } from '@/lib/utils'
 import { CustomAvatar } from '@/components/custom/custom-avatar'
 import { type SelectedMention, type CommentMention } from '@/lib/schemas/player/comment'
 
