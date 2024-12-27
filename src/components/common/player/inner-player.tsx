@@ -133,11 +133,11 @@ export const InnerPlayer = memo(function InnerPlayer({
         /**
          * Ensure codec compatibility for adaptive VP9 playback.
          */
-        // overrideCodec: (codec: string) => codec.includes('vp09'),
+        overrideCodec: (codec: string) => codec.includes('vp09'),
         /**
          * Optimize bitrate switching by limiting to player size.
          */
-        // capLevelToPlayerSize: true,
+        capLevelToPlayerSize: true,
         /**
          * Handle live playback smoothly for low-latency streams.
          */
