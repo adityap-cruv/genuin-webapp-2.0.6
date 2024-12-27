@@ -7,6 +7,7 @@ export function ThirdPartyScriptProvider({ children }: { children: React.ReactNo
     storage: {
       type: 'localStorage',
     },
+    plugins: ['DeviceModeDestinations', 'ErrorReporting', 'StorageEncryption', 'StorageMigrator', 'XhrQueue'],
   })
   return <>{children}</>
 }
