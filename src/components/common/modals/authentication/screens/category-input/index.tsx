@@ -52,7 +52,7 @@ export function CategoryInput({ onNext }: ScreenProps) {
     <ModalShell className="max-h-[60vh] pb-0">
       {postingTopics ? (
         <div className="flex h-[50vh] w-full flex-col items-center justify-center text-center align-middle">
-          <Loader size="md" />
+          <Loader size="md" className="mb-2" />
           <p>Customizing your feed...</p>
         </div>
       ) : (
