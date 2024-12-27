@@ -69,34 +69,38 @@ export function CategoryInput({ onNext }: ScreenProps) {
             </div>
           ) : (
             <div className="h-full w-full overflow-x-clip overflow-y-scroll">
-              {data?.map((item) => (
-                <div className="border-b border-b-tertiary-200 py-4 first:pt-0" key={item.entity_id}>
-                  <p className="pb-2 text-title-3-demi">{item.title}</p>
-                  <div className="flex w-full max-w-full flex-wrap overflow-clip">
-                    {item.topics.map((topic) => (
-                      <p
-                        onClick={() =>
-                          setSelectedItem((state) => {
-                            const newState = new Set([...state.values()])
-                            if (newState.has(topic.topic_id)) {
-                              newState.delete(topic.topic_id)
-                            } else {
-                              newState.add(topic.topic_id)
-                            }
-                            return newState
-                          })
-                        }
-                        className={cn(
-                          'my-1 mr-2 line-clamp-1 w-fit cursor-pointer overflow-hidden break-all rounded-full border border-tertiary-200 px-3 py-1 text-body-1-demi leading-loose',
-                          selectedItems.has(topic.topic_id) && 'border-primary bg-primary-100'
-                        )}
-                        key={topic.topic_id}>
-                        {topic.topic}
-                      </p>
-                    ))}
+              {data?.map((item) => {
+                return (
+                  <div className="border-b border-b-tertiary-200 py-4 first:pt-0" key={item.entity_id}>
+                    <p className="pb-2 text-title-3-demi">{item.title}</p>
+                    <div className="flex w-full max-w-full flex-wrap overflow-clip">
+                      {item.topics.map((topic) => {
+                        return (
+                          <p
+                            onClick={() => {
+                              setSelectedItem((state) => {
+                                const newState = new Set([...state.values()])
+                                if (newState.has(topic.topic_id)) {
+                                  newState.delete(topic.topic_id)
+                                } else {
+                                  newState.add(topic.topic_id)
+                                }
+                                return newState
+                              })
+                            }}
+                            className={cn(
+                              'my-1 mr-2 line-clamp-1 w-fit cursor-pointer overflow-hidden break-all rounded-full border border-tertiary-200 px-3 py-1 text-body-1-demi leading-loose',
+                              selectedItems.has(topic.topic_id) && 'border-primary bg-primary-100'
+                            )}
+                            key={topic.topic_id}>
+                            {topic.topic}
+                          </p>
+                        )
+                      })}
+                    </div>
                   </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
           )}
           <Button
