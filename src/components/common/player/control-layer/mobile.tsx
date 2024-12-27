@@ -192,6 +192,24 @@ function Details({
     }
   }, [isActive])
 
+  descriptionArr = [
+    'This is a description of the video.  ',
+    'This is a description of the video.  ',
+    'This is a description of the video.  ',
+    'This is a description of the video.  ',
+    'This is a description of the video.  ',
+    'This is a description of the video.  ',
+    'This is a description of the video.  ',
+    'This is a description of the video.  ',
+    'This is a description of the video.  ',
+    'This is a description of the video.  ',
+    'This is a description of the video.  ',
+    'This is a description of the video.  ',
+    'This is a description of the video.  ',
+    'This is a description of the video.  ',
+    'This is a description of the video.  ',
+  ]
+
   return (
     <div className="absolute bottom-4 left-0 flex w-full justify-between px-2">
       <div className="relative z-10 flex w-[85%] flex-col justify-end">
