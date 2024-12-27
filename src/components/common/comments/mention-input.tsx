@@ -310,7 +310,7 @@ const MentionInput: React.FC<{
         <div
           onClick={async () => {
             await commentDeepLink({ videoSlug, communityId, loopId, searchParams }).then((generatedLink) => {
-              openGeneratedLink(generatedLink)
+              openModal({ deepLink: generatedLink, subtitle: <>Get the app to comment on this video.</> })
             })
           }}
           className="absolute bottom-0 left-0 h-16 w-full border-t-2 border-t-monochrome-9 bg-monochrome-10 px-2 py-3 shadow-md">
