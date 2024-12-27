@@ -346,13 +346,13 @@ export function Dynamic({
 
     // If the text is expanded, remove the line clamp effect.
     if (isExpanded) {
-      textElement.classList.remove('line-clamp-1')
+      textElement.classList.remove(`line-clamp-[${maxLines}]`)
       return
     }
 
     // If the text is not expanded, add the line clamp effect after the animation completes through CSS.
     let timeoutId: NodeJS.Timeout | null = setTimeout(() => {
-      textElement.classList.add('line-clamp-1')
+      textElement.classList.add(`line-clamp-[${maxLines}]`)
     }, 500)
 
     // If timeout isn't cleared, clear it.
@@ -376,9 +376,9 @@ export function Dynamic({
     <p
       {...props}
       className={cn(
-        'overflow-clip overflow-x-clip transition-[max-height] duration-500 sm:max-h-full sm:overflow-clip',
+        'overflow-clip transition-[max-height] duration-500 sm:max-h-full',
         {
-          'swiper-no-swiping overflow-auto': isExpanded && isMobile,
+          'swiper-no-swiping hide-scrollbar overflow-auto': isExpanded && isMobile,
         },
         props.className
       )}
@@ -393,7 +393,7 @@ export function Dynamic({
       <span
         ref={textRef}
         className="w-full break-words"
-        style={!isExpanded ? clampedStyle : { wordBreak: 'break-word' }}
+        style={shouldAnimate ? undefined : !isExpanded ? clampedStyle : { wordBreak: 'break-word' }}
         onClick={
           !showViewMore
             ? (e) => {

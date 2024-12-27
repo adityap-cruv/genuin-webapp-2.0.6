@@ -233,13 +233,14 @@ function Details({
               text={descriptionArr}
               className="w-full !break-words text-body-1-demi text-monochrome-white"
               maxLines={linkoutId ? 1 : 2}
+              shouldAnimate
               showViewMore={false}
               isExpanded={isExpanded}
               setIsExpanded={setIsExpanded}
             />
           </div>
         )}
-        <div className="hide-scrollbar flex w-[90%] gap-1 overflow-auto py-2">
+        <div className="hide-scrollbar flex w-full gap-1 overflow-auto py-2">
           <Link
             href={PATH_NAME.community(communitySlug)}
             className="flex items-center gap-1 rounded-full bg-monochrome-black/40 p-1 pr-2">
@@ -258,7 +259,7 @@ function Details({
           </Link>
         </div>
       </div>
-      <div className="z-10 flex items-end">
+      <div className="z-10 flex items-end justify-center">
         <Actions.mobile
           commentCount={commentCount}
           shareUrl={shareUrl}
