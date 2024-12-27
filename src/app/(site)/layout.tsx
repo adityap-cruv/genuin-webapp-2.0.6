@@ -54,7 +54,7 @@ export default async function RootLayout(props: any) {
         <IHeartDemoProvider
           shouldShowDemo={Number(config?.brand_id) === IHEART_BRAND_URL}
           brandId={config?.brand_id ?? ''}>
-          <ThirdPartyScriptProvider isEmbed={!!config}>
+          <ThirdPartyScriptProvider>
             <SessionProvider refetchOnWindowFocus={false} refetchInterval={3600}>
               <ReactQueryProvider>
                 <GenuinOptionsProvider
