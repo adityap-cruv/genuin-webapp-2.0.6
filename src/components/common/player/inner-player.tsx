@@ -128,16 +128,16 @@ export const InnerPlayer = memo(function InnerPlayer({
         /**
          * Optimize for quicker fragment loading and adaptation.
          */
-        fragLoadingTimeOut: 4000, // Timeout in milliseconds for loading fragments.
+        fragLoadingTimeOut: 10000, // Timeout in milliseconds for loading fragments.
         startFragPrefetch: true, // Prefetch the next fragment to minimize stutters.
         /**
          * Ensure codec compatibility for adaptive VP9 playback.
          */
-        // overrideCodec: (codec: string) => codec.includes('vp09'),
+        overrideCodec: (codec: string) => codec.includes('vp09'),
         /**
          * Optimize bitrate switching by limiting to player size.
          */
-        // capLevelToPlayerSize: true,
+        capLevelToPlayerSize: true,
         /**
          * Handle live playback smoothly for low-latency streams.
          */
@@ -146,8 +146,8 @@ export const InnerPlayer = memo(function InnerPlayer({
         /**
          * Fallback handling for errors during playback.
          */
-        recoverDecodingError: true, // Recover from decoding errors dynamically.
-        recoverFragLoadError: true, // Attempt to reload fragments on failure.
+        // recoverDecodingError: true, // Recover from decoding errors dynamically.
+        // recoverFragLoadError: true, // Attempt to reload fragments on failure.
       },
     })
 
