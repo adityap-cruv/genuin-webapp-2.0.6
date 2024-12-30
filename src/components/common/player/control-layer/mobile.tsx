@@ -12,13 +12,15 @@ import { TickIcon } from '@icons/tick-icon'
 import { type DescriptionArrType } from '@lib/schemas/player/video'
 import Analytics from '@services/analytics'
 import { PlayerProgressBar } from './player-progress-bar'
-import { memo, useEffect, useId, useState, useCallback } from 'react'
+import { memo, useEffect, useState, useCallback } from 'react'
 import { Linkout } from '../../linkout'
 import { useShallow } from 'zustand/react/shallow'
 import { type LinkoutsType } from '../../linkout/schema'
 import { WalletAmountBadge } from '../../wallet/wallet-amount-badge'
 import { PlayIcon } from '@icons/player-controls/play-icon'
 import { PauseIcon } from '@icons/player-controls/pause-icon'
+import { GroupIcon } from '@icons/group-icon'
+import { motion } from 'framer-motion'
 
 type MobileProps = {
   isActive: boolean
@@ -45,6 +47,11 @@ type MobileProps = {
   }
   clickableUrl: string | null
   linkouts?: LinkoutsType
+  communityName: string
+  communitySlug: string
+  communityImage: string
+  loopName: string
+  loopSlug: string
   isExpanded?: boolean
   setIsExpanded?: (showMore: boolean) => void
 }
@@ -122,7 +129,23 @@ export const Mobile = memo(function Mobile({ clickableUrl, ...props }: MobilePro
   )
 })
 
-// TODO: move Linkouts component to infinity view box component.
+// All the animations props are defined here. to use in <Details/> component.
+const Animations = {
+  hidden: { translateY: 'calc(100% - 40px)' },
+  visible: {
+    translateY: '0%',
+    transition: { duration: 0.5, ease: 'easeIn' },
+  },
+  fadeIn: {
+    opacity: 1,
+    transition: { duration: 0.5, ease: 'easeIn' },
+  },
+  fadeOut: {
+    opacity: 0,
+    transition: { duration: 0 },
+  },
+}
+
 function Details({
   shareUrl,
   sparkCount,
@@ -138,92 +161,105 @@ function Details({
   isSparked,
   linkouts,
   isExpanded,
+  communityImage,
+  communityName,
+  communitySlug,
+  loopName,
+  loopSlug,
   setIsExpanded,
 }: MobileProps) {
-  const [isVisible, setIsVisible] = useState(false)
-  const detailsId = useId()
+  const [showLinkouts, setShowLinkouts] = useState(false)
 
+  // This logic is to show linkouts after 10 second of video play.
   useEffect(() => {
     if (!linkoutId) return
-    let timeoutId: any
-    const detailsElement = document.getElementById(detailsId)
+    let timeoutId: NodeJS.Timeout | null = null
+
+    // If video is active, show linkouts after 10 seconds.
     if (isActive) {
       timeoutId = setTimeout(() => {
-        setIsVisible(true)
-        if (detailsElement) {
-          detailsElement.style.setProperty('transform', 'translate(0px, 50px)')
-        }
-      }, 5100)
+        setShowLinkouts(true)
+      }, 10000)
     }
+
+    // Clear timeout if video is not active.
     return () => {
       if (timeoutId) {
-        const element = document.getElementById(detailsId)
-        if (element) {
-          element.style.setProperty('transform', 'translate(0px, 0px)')
-        }
-        if (timeoutId) {
-          clearTimeout(timeoutId)
-          timeoutId = null
-        }
+        clearTimeout(timeoutId)
+        timeoutId = null
       }
-      setIsVisible(false)
+      setShowLinkouts(false)
     }
-  }, [isActive, linkouts])
+  }, [isActive])
 
   return (
-    <div className={cn('absolute bottom-16 left-0 flex w-full justify-between px-2 transition-all')}>
-      <div id={detailsId} className="relative z-10 flex w-[85%] flex-col justify-end">
-        <div
-          className="z-10 mb-2 flex items-center"
-          onClick={(e) => {
-            e.stopPropagation()
-          }}>
-          {owner.brand ? (
+    <div className="absolute bottom-4 left-0 flex w-full justify-between px-2">
+      <div className="relative z-10 flex w-[85%] flex-col justify-end">
+        <div className="overflow-clip">
+          <motion.div
+            initial={linkoutId ? (showLinkouts ? Animations.hidden : undefined) : undefined}
+            animate={linkoutId ? (showLinkouts ? Animations.visible : Animations.hidden) : undefined}>
             <div className="flex items-center">
               <Link
                 className="flex cursor-pointer items-center hover:opacity-60"
-                href={{ pathname: PATH_NAME.brand(owner.brand.brand_slug) }}>
+                href={{
+                  pathname: owner.brand ? PATH_NAME.brand(owner.brand.brand_slug) : PATH_NAME.profile(owner.userName),
+                }}>
                 <CustomAvatar
-                  className="bg-red-40"
+                  className="h-9 w-9 bg-red-40"
                   imageUrl={owner.profileImage}
                   fallbackString={owner.name ?? 'U'}
                   isAvatar={owner.isAvatar}
                 />
-                <p className="line-clamp-1 px-2 text-title-3-bold text-monochrome-white">@{owner.userName}</p>
+                <p className="line-clamp-1 break-all px-2 text-title-3-bold text-monochrome-white">@{owner.userName}</p>
               </Link>
-              <span className="flex items-center gap-0.5">
-                <TickIcon className="h-3 w-3 fill-primary" />
-                <p className="text-cap-2-demi text-primary">Brand</p>
-              </span>
+              {owner.brand && (
+                <div className="flex items-center gap-0.5">
+                  <TickIcon className="h-3 w-3 fill-primary" />
+                  <p className="text-cap-2-demi text-primary">Brand</p>
+                </div>
+              )}
             </div>
-          ) : (
-            <Link
-              className="flex cursor-pointer items-center hover:opacity-60"
-              href={{ pathname: PATH_NAME.profile(owner.userName) }}>
-              <CustomAvatar
-                className="bg-red-40"
-                imageUrl={owner.profileImage}
-                fallbackString={owner.name ?? 'U'}
-                isAvatar={owner.isAvatar}
-              />
-              <p className="line-clamp-1 px-2 text-title-3-bold text-monochrome-white">@{owner.userName}</p>
-            </Link>
-          )}
+            <motion.div
+              initial={linkoutId ? (showLinkouts ? Animations.hidden : undefined) : undefined}
+              animate={linkoutId ? (showLinkouts ? Animations.fadeIn : Animations.fadeOut) : undefined}>
+              {linkoutId && <Linkout.mobile linkouts={linkouts} linkoutId={linkoutId} videoId={videoId} />}
+            </motion.div>
+          </motion.div>
         </div>
         {descriptionArr?.[0] && (
-          <span className="z-10 py-2">
+          <div className="py-2">
             <ReadMore.dynamic
               text={descriptionArr}
               className="w-full !break-words text-body-1-demi text-monochrome-white"
+              maxLines={linkoutId ? 1 : 2}
+              shouldAnimate
+              showViewMore={false}
               isExpanded={isExpanded}
               setIsExpanded={setIsExpanded}
             />
-          </span>
+          </div>
         )}
-
-        {isVisible && linkoutId && <Linkout.mobile linkouts={linkouts} linkoutId={linkoutId} videoId={videoId} />}
+        <div className="hide-scrollbar flex w-full gap-1 overflow-auto py-2">
+          <Link
+            href={PATH_NAME.community(communitySlug)}
+            className="flex items-center gap-1 rounded-full bg-monochrome-black/40 p-1 pr-2">
+            <CustomAvatar className="h-6 w-6" imageUrl={communityImage ?? ''} fallbackString="U" isAvatar={false} />
+            <p className="whitespace-nowrap break-all text-cap-1-med leading-5 text-monochrome-white">
+              {communityName.length > 24 ? communityName.slice(0, 24) + '...' : communityName}
+            </p>
+          </Link>
+          <Link
+            href={PATH_NAME.loop(loopSlug)}
+            className="flex items-center gap-1 rounded-full bg-monochrome-black/40 p-1 pr-2">
+            <div className="rounded-full bg-monochrome-white/20 p-1">
+              <GroupIcon className="h-4 w-4" />
+            </div>
+            <p className="line-clamp-1 whitespace-nowrap text-cap-1-med leading-5 text-monochrome-white">{loopName}</p>
+          </Link>
+        </div>
       </div>
-      <div className="z-10 flex items-end">
+      <div className="z-10 flex items-end justify-center">
         <Actions.mobile
           commentCount={commentCount}
           shareUrl={shareUrl}

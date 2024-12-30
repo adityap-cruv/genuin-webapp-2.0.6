@@ -259,6 +259,8 @@ export function WithMentions({
 type DynamicProps = {
   text: any
   maxLines?: number
+  showViewMore?: boolean
+  shouldAnimate?: boolean
   isExpanded?: boolean
   setIsExpanded?: (expanded: boolean) => void
 } & ComponentProps<'p'>
@@ -266,15 +268,20 @@ type DynamicProps = {
 export function Dynamic({
   text,
   maxLines = 1,
+  showViewMore = true,
+  shouldAnimate = false,
   isExpanded: isExpandedExternal,
   setIsExpanded: setIsExpandedExternal,
   ...props
 }: DynamicProps) {
-  const isMobile = useGenuinOptions()?.isMobile
+  // height is used to calculate the max height of the text container.
+  const { height, isMobile } = useGenuinOptions((state) => ({
+    height: state.sizeBoxes.default.height,
+    isMobile: state.isMobile,
+  }))
   const textRef = useRef(null)
   const [isExpandedInternal, setIsExpandedInternal] = useState(false)
   const [isOverflowing, setIsOverflowing] = useState(false)
-
   const isExpanded = isExpandedExternal ?? isExpandedInternal
   const setIsExpanded = setIsExpandedExternal ?? setIsExpandedInternal
 
@@ -316,7 +323,7 @@ export function Dynamic({
 
       if (element?.scrollHeight <= element?.clientHeight || !text) {
         setIsOverflowing(false)
-        setIsExpanded(false)
+        // setIsExpanded(false)
       }
 
       if (element) {
@@ -331,6 +338,32 @@ export function Dynamic({
     }
   }, [text])
 
+  // This logic is to add line clamp effect to the text.
+  useEffect(() => {
+    if (!shouldAnimate) return
+    if (!textRef.current) return
+    const textElement = textRef.current as HTMLParagraphElement
+
+    // If the text is expanded, remove the line clamp effect.
+    if (isExpanded) {
+      textElement.classList.remove(`line-clamp-[${maxLines}]`)
+      return
+    }
+
+    // If the text is not expanded, add the line clamp effect after the animation completes through CSS.
+    let timeoutId: NodeJS.Timeout | null = setTimeout(() => {
+      textElement.classList.add(`line-clamp-[${maxLines}]`)
+    }, 500)
+
+    // If timeout isn't cleared, clear it.
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+        timeoutId = null
+      }
+    }
+  }, [isExpanded])
+
   const clampedStyle: React.CSSProperties = {
     display: '-webkit-box',
     WebkitLineClamp: maxLines,
@@ -343,22 +376,35 @@ export function Dynamic({
     <p
       {...props}
       className={cn(
+        'overflow-clip transition-[max-height] duration-500 sm:max-h-full',
         {
-          'hide-scrollbar max-h-60 overflow-auto sm:max-h-full sm:overflow-clip': isMobile,
-          'swiper-no-swiping': isExpanded && isMobile,
+          'swiper-no-swiping hide-scrollbar overflow-auto': isExpanded && isMobile,
         },
         props.className
       )}
+      style={{
+        // The max height of the text container is calculated based on the height of the video player.
+        // If mobile, the max height is 30% of the video player height.
+        maxHeight: isMobile ? (isExpanded ? height * 0.3 : maxLines * 24) : 'unset',
+      }}
       onClick={(e) => {
         e.stopPropagation()
       }}>
       <span
         ref={textRef}
-        className="w-full"
-        style={!isExpanded ? clampedStyle : { wordBreak: 'break-word' }}
+        className="w-full break-words"
+        style={shouldAnimate ? undefined : !isExpanded ? clampedStyle : { wordBreak: 'break-word' }}
+        onClick={
+          !showViewMore
+            ? (e) => {
+                e.stopPropagation()
+                setIsExpanded(!isExpanded)
+              }
+            : undefined
+        }
         dangerouslySetInnerHTML={{ __html: Array.isArray(text) ? convertUrlsToAnchorTags(text) : text }}
       />
-      {(isExpanded || isOverflowing) && (
+      {showViewMore && (isExpanded || isOverflowing) && (
         <span
           className="cursor-pointer pl-1 text-body-1-med text-tertiary"
           onClick={() => {

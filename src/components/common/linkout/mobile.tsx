@@ -5,7 +5,6 @@ import { CtaButton } from './cta-button'
 import Link from 'next/link'
 import React, { memo } from 'react'
 import { LinkIcon } from 'lucide-react'
-import { motion } from 'framer-motion'
 import { type LinkoutsType } from './schema'
 import { triggerLinkoutEvent, triggerLinkoutViewEvent } from './analytics'
 import { getLinkouts } from './api'
@@ -29,7 +28,7 @@ export const Mobile = memo(function Mobile({
   }
 
   return (
-    <motion.div initial={{ y: 75 }} animate={{ y: 0, transition: { duration: 0.3 } }}>
+    <div className="pt-2">
       {isLoading ? (
         <Shimmer className="my-2 h-10 w-full" />
       ) : (
@@ -229,6 +228,6 @@ export const Mobile = memo(function Mobile({
           }
         })
       )}
-    </motion.div>
+    </div>
   )
 })
