@@ -94,7 +94,7 @@ function SwiperRenderer({ videoSizeBox }: { videoSizeBox: VideoSizeBoxType }) {
     [gestureStep, showKsGestures, videos]
   )
   return (
-    <div style={{ ...videoSizeBox }} className="overflow-clip">
+    <div style={{ ...videoSizeBox }} className="relative overflow-clip">
       <Swiper
         modules={[Mousewheel]}
         mousewheel={true}
