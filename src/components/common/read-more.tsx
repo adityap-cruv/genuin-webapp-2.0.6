@@ -256,6 +256,22 @@ export function WithMentions({
   )
 }
 
+function applyLineClampStyles(element: HTMLElement, maxLines: number | null) {
+  if (maxLines === null) {
+    element.style.display = '' // Reset display
+    element.style.webkitLineClamp = '' // Reset line clamp
+    element.style.webkitBoxOrient = '' // Reset box-orient
+    element.style.overflow = '' // Reset overflow
+    element.style.textOverflow = '' // Reset text-overflow
+  } else {
+    element.style.display = '-webkit-box'
+    element.style.webkitLineClamp = `${maxLines}`
+    element.style.webkitBoxOrient = 'vertical'
+    element.style.overflow = 'hidden'
+    element.style.textOverflow = 'ellipsis'
+  }
+}
+
 type DynamicProps = {
   text: any
   maxLines?: number
@@ -346,13 +362,13 @@ export function Dynamic({
 
     // If the text is expanded, remove the line clamp effect.
     if (isExpanded) {
-      textElement.classList.remove(`line-clamp-[${maxLines}]`)
+      applyLineClampStyles(textElement, null)
       return
     }
 
     // If the text is not expanded, add the line clamp effect after the animation completes through CSS.
     let timeoutId: NodeJS.Timeout | null = setTimeout(() => {
-      textElement.classList.add(`line-clamp-[${maxLines}]`)
+      applyLineClampStyles(textElement, maxLines)
     }, 500)
 
     // If timeout isn't cleared, clear it.
@@ -385,7 +401,7 @@ export function Dynamic({
       style={{
         // The max height of the text container is calculated based on the height of the video player.
         // If mobile, the max height is 30% of the video player height.
-        maxHeight: isMobile ? (isExpanded ? height * 0.3 : maxLines * 24) : 'unset',
+        maxHeight: shouldAnimate ? (isMobile ? (isExpanded ? height * 0.3 : maxLines * 24) : 'unset') : undefined,
       }}
       onClick={(e) => {
         e.stopPropagation()
