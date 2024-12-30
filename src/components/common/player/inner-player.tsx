@@ -73,6 +73,7 @@ export const InnerPlayer = memo(function InnerPlayer({
       setTimeState: state.setTimeState,
     }))
   )
+  const [hasStarted, setHasStarted] = useState(false)
   let encodedVideoSourceUrl = videoSource
   // Create a URL object to easily access query parameters
   const videoUrl = new URL(videoSource)
@@ -84,6 +85,9 @@ export const InnerPlayer = memo(function InnerPlayer({
   }
 
   useEffect(() => {
+    // Reset the analytics flag when the video source changes
+    setHasStarted(false)
+
     if (!videoRef.current) return
     const player = new OpenPlayerJS(videoRef.current, {
       controls: {
@@ -159,8 +163,11 @@ export const InnerPlayer = memo(function InnerPlayer({
             .getMedia()
             .play()
             .then((_) => {
-              const endTime = performance.now()
-              triggerAnalyticsForVideoStart(id, endTime - startTime)
+              if (!hasStarted) {
+                const endTime = performance.now()
+                triggerAnalyticsForVideoStart(id, endTime - startTime)
+                setHasStarted(true)
+              }
             })
             .catch((e) => {
               // console.log('something went wrong..', e)
@@ -179,8 +186,11 @@ export const InnerPlayer = memo(function InnerPlayer({
       player
         .play()
         .then(() => {
-          const endTime = performance.now()
-          triggerAnalyticsForVideoStart(id, endTime - startTime)
+          if (!hasStarted) {
+            const endTime = performance.now()
+            triggerAnalyticsForVideoStart(id, endTime - startTime)
+            setHasStarted(true)
+          }
         })
         .catch((e) => {})
     } else {
