@@ -15,6 +15,8 @@ import { LinkedInIcon } from '@icons/linkedin-icon'
 import { TwitterIcon } from '@icons/twitter-icon'
 import Analytics from '@services/analytics'
 import ShareButton from '@components/common/actions/ShareButton'
+import { useGenuinOptions } from '@/lib/stores/genuin-options'
+import { LinkIcon } from '@icons/link-icon'
 
 interface CompProps {
   profileData: ProfileDetailsType
@@ -78,7 +80,7 @@ export function MainComponent({ profileData }: CompProps) {
               </div>
             )}
           </div>
-          <p className="my-1 line-clamp-2 break-all text-body-1-med">{profileData?.bio}</p>
+          <p className="my-1 text-body-1-med">{profileData?.bio}</p>
           <Stats brandData={profileData.brand} />
         </div>
         <CommunityList brandId={profileData?.brand?.brand_id ?? 0} />
@@ -95,9 +97,17 @@ function Links({ profileData }: CompProps) {
     twitter: profileData.twitter_id ? profileData.twitter_url + profileData.twitter_id : undefined,
     tiktok: profileData.tiktok_id ? profileData.tiktok_url + profileData.tiktok_id : undefined,
   }
+  const brandId = useGenuinOptions().brandId
 
   return (
     <div className="my-2 flex items-center">
+      {brandId && profileData.brand?.brand_id !== Number(brandId) && (
+        <div className="mr-2 flex h-8 w-8 items-center justify-center rounded-md bg-tertiary-200 p-1">
+          <Link href={checkAndAppendHttps(profileData.brand?.brand_url ?? '')} target="_blank">
+            <LinkIcon className="h-5 w-5 stroke-primary " />
+          </Link>
+        </div>
+      )}
       {links?.linkedin && (
         <div className="mr-2 flex h-8 w-8 items-center justify-center rounded-md bg-tertiary-200 p-1">
           <Link href={checkAndAppendHttps(links.linkedin)} target="_blank">

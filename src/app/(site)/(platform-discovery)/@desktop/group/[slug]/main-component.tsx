@@ -174,9 +174,9 @@ export function MainComponent({ loopDetails }: Props) {
           accessTypeId={loopDetails?.actions?.[0]?.access_type_id ?? 0}
         />
         <span className="w-1/2">
-          <ReadMore.default
-            text={loopDetails.group.group_description}
-            maxChars={150}
+          <ReadMore.dynamic
+            text={loopDetails.group.group_description ?? ''}
+            maxLines={2}
             className="my-1 w-1/2 break-words text-body-1-med text-secondary"
           />
           <div className="my-3 w-1/2 rounded-xl border border-tertiary-200 p-4">

@@ -16,6 +16,7 @@ import { type User } from 'next-auth'
 import { useSession, signIn } from 'next-auth/react'
 import { RepostModal } from '@components/common/modals/repost'
 import { replaceUrlWithoutReload } from '@/lib/utils'
+import { useIHeartDemoStates } from './iheart-demo-provider'
 
 const AuthenticationModal = dynamic(
   async () => await import('@components/common/modals/authentication').then((comp) => comp.AuthenticationModal.ui)
@@ -37,9 +38,11 @@ type Props = {
 if (process.env.NEXT_PUBLIC_CURRENT_ENV === 'prod') console.log = () => {}
 
 // TODO: separate this component into 2 comps with once has auth and second doesn't have auth.
+// TODO: This component is too big, consider splitting it into smaller components.
 export function GenuinOptionsProvider({ children, deviceType, os, browserType, config, user }: Props) {
   const router = useRouter()
   const { data, status } = useSession()
+  const { shouldShowIHeartDemo } = useIHeartDemoStates()
   const { setInitialData } = useGenuinOptions((state) => ({
     setInitialData: state.setData,
   }))
@@ -64,10 +67,9 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
   const isSafari = browserType.toLowerCase().includes('safari')
 
   async function fetchNotificationCount() {
-    const { status, count } = await notificationsCount()
-    if (status) {
-      setInitialData({ notificationCount: count })
-    }
+    const response = await notificationsCount()
+    if (!response) return
+    if (response.status) setInitialData({ notificationCount: response.count })
   }
 
   async function fetchWalletBalance() {
@@ -143,7 +145,7 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
       brandId: config?.brand_id,
       showNavbar: !hideNavbar,
       isMobile,
-      sizeBoxes: getSizeBoxes(isMobile, !hideNavbar),
+      sizeBoxes: getSizeBoxes(isMobile, !hideNavbar, shouldShowIHeartDemo),
       isIframe,
       deviceType,
       os,
@@ -155,7 +157,7 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
   }
 
   function handleResize() {
-    setInitialData({ sizeBoxes: getSizeBoxes(isMobile, !hideNavbar) })
+    setInitialData({ sizeBoxes: getSizeBoxes(isMobile, !hideNavbar, shouldShowIHeartDemo) })
   }
 
   function handleBlur() {

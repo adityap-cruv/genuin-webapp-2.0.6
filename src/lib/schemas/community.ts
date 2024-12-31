@@ -116,14 +116,7 @@ const CommunityDetailsSchema = z.object({
   description: z.string().nullish(),
   is_community_join_requested: z.boolean(),
   is_loop_creation_allowed: z.boolean().nullish(),
-  logged_in_user_role: z
-    .number()
-    .nullish()
-    .transform((item) => {
-      if (!item) return
-      if (item === 1) return 'LEADER'
-      if (item === 2) return 'MEMBER'
-    }),
+  logged_in_user_role: z.number(),
   color_code: z.string().nullish(),
   text_color_code: z.string().nullish(),
   welcome_loop_id: z.number().nullish(),

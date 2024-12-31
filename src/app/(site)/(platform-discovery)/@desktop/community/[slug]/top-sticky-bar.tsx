@@ -1,8 +1,9 @@
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { motion, useAnimationControls } from 'framer-motion'
 import { useEffect } from 'react'
-import { JoinCommunityButton } from '@components/pages/community/join-community-button'
 import ShareButton from '@components/common/actions/ShareButton'
+import { type CommunityUserRoleType } from '@/lib/schemas/roles'
+import { JoinCommunityButton } from '@/components/common/join-community-button'
 
 type Props = {
   /**
@@ -18,7 +19,7 @@ type Props = {
   communityHandle: string
   communityId: string
   shareUrl: string
-  role: any
+  role: CommunityUserRoleType
   isCommunityPrivate: boolean
   isJoinRequested: boolean
 }
@@ -74,11 +75,10 @@ export function TopStickyBar({
       <span className="flex items-center gap-x-2">
         <JoinCommunityButton
           buttonText="Join Community"
-          isJoinRequested={isJoinRequested}
           handle={communityHandle}
           id={communityId}
-          userRole={role}
-          isCommunityPrivate={isCommunityPrivate}
+          role={role}
+          type={isCommunityPrivate ? 'private' : 'public'}
         />
         <ShareButton url={shareUrl} />
       </span>

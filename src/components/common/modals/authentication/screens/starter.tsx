@@ -1,4 +1,3 @@
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { Form, FormControl, FormItem, FormField, FormMessage, useFormField } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
@@ -12,16 +11,13 @@ import { PhoneInput } from '@components/ui/phone-input'
 import { isValidPhoneNumber } from 'react-phone-number-input'
 import { Loader } from '@/components/ui/loader'
 import { useState, useEffect } from 'react'
-import { type FlowType, useAuthenticationModalStore } from '../store'
+import { useAuthenticationModalStore } from '../store'
 import { useShallow } from 'zustand/react/shallow'
 import { type ScreenProps } from '.'
 import { sendOtp } from '../api/auth'
 
-const TABS_TRIGGER_CLASS =
-  'rounded-lg border-none py-2 !text-title-3-med data-[state=active]:!text-title-3-demi text-secondary-300 data-[state=active]:bg-monochrome-white data-[state=active]:text-primary'
-
 export function Starter({ onBack, onNext }: ScreenProps) {
-  const { flowType, setFormData } = useAuthenticationModalStore(
+  const { flowType } = useAuthenticationModalStore(
     useShallow((state) => ({ flowType: state.formData.flowType, setFormData: state.setFormData }))
   )
 
@@ -35,27 +31,9 @@ export function Starter({ onBack, onNext }: ScreenProps) {
           We'll send you a code to log in or create an account.
         </p>
       </span>
-      <Tabs
-        className="w-full"
-        defaultValue={flowType}
-        onValueChange={(value) => {
-          setFormData({ flowType: value as FlowType })
-        }}>
-        <TabsList className="h-14 rounded-lg bg-tertiary-200 p-2">
-          <TabsTrigger className={TABS_TRIGGER_CLASS} value="email">
-            Email
-          </TabsTrigger>
-          <TabsTrigger className={TABS_TRIGGER_CLASS} value="phone">
-            Phone
-          </TabsTrigger>
-        </TabsList>
-        <TabsContent value="email">
-          <EmailForm onNext={onNext} />
-        </TabsContent>
-        <TabsContent value="phone">
-          <NumberForm onNext={onNext} />
-        </TabsContent>
-      </Tabs>
+      <div className="w-full">
+        {flowType === 'email' ? <EmailForm onNext={onNext} /> : <NumberForm onNext={onNext} />}
+      </div>
       <FooterInfo />
     </ModalShell>
   )

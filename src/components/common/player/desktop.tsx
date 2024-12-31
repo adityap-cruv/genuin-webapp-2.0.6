@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, type DetailedHTMLProps, type VideoHTMLAttributes } from 'react'
+import { useCallback, useEffect, type DetailedHTMLProps, type VideoHTMLAttributes } from 'react'
 import { usePlayerControlStore } from './player-control-store'
 import { useCommentStore } from '../comments/store'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
@@ -53,15 +53,18 @@ export function Desktop({ videoData, loop = false, isActive, isInModal, ...restP
     hasFocus ? setShouldPlay(activeComment === '') : setShouldPlay(false)
   }, [hasFocus])
 
+  const handleOnClick = useCallback(
+    (e: any) => {
+      if (!stateShouldPlay) {
+        setActiveComment('')
+      }
+      setShouldPlay(!stateShouldPlay)
+    },
+    [stateShouldPlay]
+  )
+
   return (
-    <div
-      className="relative h-full overflow-hidden"
-      onClick={(e) => {
-        if (!stateShouldPlay) {
-          setActiveComment('')
-        }
-        setShouldPlay(!stateShouldPlay)
-      }}>
+    <div className="relative h-full overflow-hidden" onClick={handleOnClick}>
       <InnerPlayer
         isActive={isActive}
         id={videoData.id}

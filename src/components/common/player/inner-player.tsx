@@ -73,6 +73,7 @@ export const InnerPlayer = memo(function InnerPlayer({
       setTimeState: state.setTimeState,
     }))
   )
+  const [hasStarted, setHasStarted] = useState(false)
   let encodedVideoSourceUrl = videoSource
   // Create a URL object to easily access query parameters
   const videoUrl = new URL(videoSource)
@@ -84,6 +85,9 @@ export const InnerPlayer = memo(function InnerPlayer({
   }
 
   useEffect(() => {
+    // Reset the analytics flag when the video source changes
+    setHasStarted(false)
+
     if (!videoRef.current) return
     const player = new OpenPlayerJS(videoRef.current, {
       controls: {
@@ -92,22 +96,62 @@ export const InnerPlayer = memo(function InnerPlayer({
       mode: 'responsive',
       forceNative: true,
       showLoaderOnInit: true,
-      onError: (e) => {},
+      onError: (e) => {
+        console.log(e, 'error')
+      },
       hls: {
+        // debug: true,
         /**
-         * "startLevel" option typically relates to the initial
-         * quality or bitrate level at which a video stream should
-         * begin playing when adaptive streaming is employed.
+         * Let the player decide the best quality level dynamically.
          */
         startLevel: -1,
         /**
-         * This will make sure that player will play on other thread rather than main thread.
+         * Use worker threads for decoding for better performance.
          */
         enableWorker: true,
         /**
-         * eme -> Encrypted Media Extensions (EME)
+         * Enable Encrypted Media Extensions (EME) if DRM is required.
          */
         emeEnabled: true,
+        /**
+         * Low latency mode for quicker playback start and adaptation.
+         */
+        lowLatencyMode: true,
+        // /**
+        //  * Buffer settings tuned for 1-second fragments.
+        //  */
+        // maxBufferLength: 6, // Buffer up to 6 seconds (can be adjusted based on use case).
+        // maxBufferSize: 20 * 1000 * 1000, // Maximum buffer size in bytes (e.g., 20MB).
+        // backBufferLength: 15, // Retain up to 15 seconds of back-buffer for seamless rewinding.
+        /**
+         * Adjust buffer settings for 2-second fragments.
+         */
+        maxBufferLength: 10, // Buffer up to 6 fragments (12 seconds).
+        maxBufferSize: 40 * 1000 * 1000, // Maximum buffer size in bytes (e.g., 40MB).
+        backBufferLength: 30, // Retain 30 seconds for seamless rewind.
+        /**
+         * Optimize for quicker fragment loading and adaptation.
+         */
+        fragLoadingTimeOut: 10000, // Timeout in milliseconds for loading fragments.
+        startFragPrefetch: true, // Prefetch the next fragment to minimize stutters.
+        /**
+         * Ensure codec compatibility for adaptive VP9 playback.
+         */
+        overrideCodec: (codec: string) => codec.includes('vp09'),
+        /**
+         * Optimize bitrate switching by limiting to player size.
+         */
+        capLevelToPlayerSize: true,
+        /**
+         * Handle live playback smoothly for low-latency streams.
+         */
+        liveSyncDuration: 2.5, // Keep live playback latency low.
+        liveMaxLatencyDuration: 6, // Maximum latency allowed for live streams.
+        /**
+         * Fallback handling for errors during playback.
+         */
+        // recoverDecodingError: true, // Recover from decoding errors dynamically.
+        // recoverFragLoadError: true, // Attempt to reload fragments on failure.
       },
     })
 
@@ -119,8 +163,11 @@ export const InnerPlayer = memo(function InnerPlayer({
             .getMedia()
             .play()
             .then((_) => {
-              const endTime = performance.now()
-              triggerAnalyticsForVideoStart(id, endTime - startTime)
+              if (!hasStarted) {
+                const endTime = performance.now()
+                triggerAnalyticsForVideoStart(id, endTime - startTime)
+                setHasStarted(true)
+              }
             })
             .catch((e) => {
               // console.log('something went wrong..', e)
@@ -139,8 +186,11 @@ export const InnerPlayer = memo(function InnerPlayer({
       player
         .play()
         .then(() => {
-          const endTime = performance.now()
-          triggerAnalyticsForVideoStart(id, endTime - startTime)
+          if (!hasStarted) {
+            const endTime = performance.now()
+            triggerAnalyticsForVideoStart(id, endTime - startTime)
+            setHasStarted(true)
+          }
         })
         .catch((e) => {})
     } else {

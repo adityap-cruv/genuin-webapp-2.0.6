@@ -32,20 +32,23 @@ const RecentCommunities = dynamic(
 
 // TODO: Improve active states on all items.
 export function SideBar() {
-  const { embed, user, brandName, notificationCount, isClaimed } = useGenuinOptions(
+  const { embed, user, brandName, notificationCount, isClaimed, sizeboxHeight } = useGenuinOptions(
     useShallow((state) => ({
       embed: state.embed,
       user: state.user,
       brandName: state.config?.name ? state.config?.name : 'Genuin',
       notificationCount: state.notificationCount,
       isClaimed: state.config?.is_claimed,
+      sizeboxHeight: state.sizeBoxes.default.height,
     }))
   )
   const pathName = usePathname()
   const { status } = useSession()
 
   return (
-    <nav className="flex h-full w-fit flex-col justify-between overflow-auto border border-monochrome-9 px-4 py-4 transition-[width] xl:mr-16 xl:w-full xl:max-w-[280px] xl:border-none xl:px-0">
+    <nav
+      style={{ height: sizeboxHeight }}
+      className="flex h-full w-fit flex-col justify-between overflow-auto border border-monochrome-9 px-4 py-4 transition-[width] xl:mr-16 xl:w-full xl:max-w-[280px] xl:border-none xl:px-0">
       <div>
         <Link href={{ pathname: PATH_NAME.home() }}>
           <Item brandName={brandName} title="Home" isActive={pathName === PATH_NAME.home()}>
@@ -167,11 +170,11 @@ type ItemProps = {
   title: string
   isActive?: boolean
   children: ReactNode
-  notificationCount?: number | null
+  notificationCount?: number
   brandName?: string
 }
 
-function Item({ title, isActive, children, notificationCount, brandName }: ItemProps) {
+function Item({ title, isActive, children, notificationCount = 0, brandName }: ItemProps) {
   return (
     <div
       onClick={() => {
@@ -185,14 +188,11 @@ function Item({ title, isActive, children, notificationCount, brandName }: ItemP
       className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 hover:bg-monochrome-6/10">
       <div className="relative">
         {children}
-        {!notificationCount ||
-          (notificationCount > 0 && (
-            <>
-              <div className="absolute right-0 top-0 flex h-4 w-4 items-center justify-center rounded-full bg-primary  text-cap-1-med text-monochrome-white">
-                {notificationCount}
-              </div>
-            </>
-          ))}
+        {notificationCount !== 0 && (
+          <div className="absolute right-0 top-0 flex h-4 w-4 items-center justify-center rounded-full bg-primary  text-cap-1-med text-monochrome-white">
+            {notificationCount}
+          </div>
+        )}
       </div>
       <p className={cn('hidden whitespace-nowrap !text-title-2-demi xl:block', isActive && 'text-primary')}>{title}</p>
     </div>
