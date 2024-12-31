@@ -2,8 +2,6 @@ import { abbreviateNumber, checkAndAppendHttps, openGeneratedLink } from '@lib/u
 import icShare from '@icons/player-controls/icon-share.svg'
 import icComment from '@icons/player-controls/icon-comment.svg'
 import icLinkout from '@icons/player-controls/icLinkout.svg'
-import icSpark from '@icons/player-controls/icon-bulb.svg'
-import icSparkTrue from '@icons/player-controls/icSparkTrue.svg'
 import icRepost from '@icons/player-controls/icon-remix.svg'
 import Link from 'next/link'
 import Image from 'next/image'

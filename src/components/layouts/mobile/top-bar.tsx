@@ -69,7 +69,6 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
     brandLogo: state.config?.logo,
   })) // If variant is transparent than we have removed show download button.
   const showDownloadButton = variant !== 'transparent'
-  const pathName = usePathname()
   const searchParams = useSearchParams()
 
   return (

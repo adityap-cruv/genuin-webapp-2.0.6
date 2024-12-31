@@ -1,5 +1,5 @@
 'use client'
-import { abbreviateNumber, checkAndAppendHttps, getCurrentShareUrl } from '@lib/utils'
+import { abbreviateNumber, checkAndAppendHttps } from '@lib/utils'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { Button } from '@components/ui/button'
 import { CustomAvatar } from '@components/custom/custom-avatar'

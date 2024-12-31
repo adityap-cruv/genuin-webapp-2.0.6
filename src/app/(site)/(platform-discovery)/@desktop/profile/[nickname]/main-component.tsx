@@ -1,5 +1,5 @@
 'use client'
-import { abbreviateNumber, checkAndAppendHttps, getCurrentShareUrl } from '@lib/utils'
+import { abbreviateNumber, checkAndAppendHttps } from '@lib/utils'
 import { Button } from '@components/ui/button'
 import { Toaster } from '@components/ui/toaster'
 import { CustomAvatar } from '@components/custom/custom-avatar'

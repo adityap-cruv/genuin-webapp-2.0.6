@@ -125,39 +125,40 @@ export function DesktopDetails({ loop, community, owner, video }: DesktopDetails
                 />
                 <ShareButton url={community.shareUrl} />
               </div>
-            <DecorativeList>
-              <div className="h-2 w-full" />
-              <Link href={PATH_NAME.loop(loop.slug)} title={loop.name ?? 'Genuin Loop'}>
-                <li className="relative flex h-full w-full items-center justify-between rounded-md border border-tertiary-200 bg-monochrome-white p-4 ">
-                  <p className="line-clamp-1 w-full break-all pr-2 text-body-1-demi">{loop?.name}</p>
-                  <p className="whitespace-nowrap text-cap-1-med text-primary hover:text-primary-600">View Group</p>
-                </li>
-              </Link>
-            </DecorativeList>
+              <DecorativeList>
+                <div className="h-2 w-full" />
+                <Link href={PATH_NAME.loop(loop.slug)} title={loop.name ?? 'Genuin Loop'}>
+                  <li className="relative flex h-full w-full items-center justify-between rounded-md border border-tertiary-200 bg-monochrome-white p-4 ">
+                    <p className="line-clamp-1 w-full break-all pr-2 text-body-1-demi">{loop?.name}</p>
+                    <p className="whitespace-nowrap text-cap-1-med text-primary hover:text-primary-600">View Group</p>
+                  </li>
+                </Link>
+              </DecorativeList>
+            </div>
+          </div>
+          {video.linkoutId && (
+            <div className="w-auto px-4">
+              <Linkout.desktop linkouts={video.linkouts} linkoutId={video.linkoutId} videoId={video.id} />
+            </div>
+          )}
+          <div className="sticky top-0 z-10">
+            <p className="border-b border-t border-tertiary-200 bg-monochrome-white px-4 py-3 text-title-3-demi">
+              Comments {video.commentCount !== 0 ? `(${video.commentCount})` : ''}
+            </p>
+          </div>
+          <div className="h-full px-4 pt-2">
+            <CommentBox videoId={video.id} parentRef={scrollDivRef} setComments={setComments} comments={comments} />
           </div>
         </div>
-        {video.linkoutId && (
-          <div className="w-auto px-4">
-            <Linkout.desktop linkouts={video.linkouts} linkoutId={video.linkoutId} videoId={video.id} />
-          </div>
-        )}
-        <div className="sticky top-0 z-10">
-          <p className="border-b border-t border-tertiary-200 bg-monochrome-white px-4 py-3 text-title-3-demi">
-            Comments {video.commentCount !== 0 ? `(${video.commentCount})` : ''}
-          </p>
-        </div>
-        <div className="h-full px-4 pt-2">
-          <CommentBox videoId={video.id} parentRef={scrollDivRef} setComments={setComments} comments={comments} />
-        </div>
+        <MentionInput
+          setComments={setComments}
+          videoId={video.id}
+          loopId={loop.id}
+          videoSlug={video.slug}
+          communityId={community.id}
+        />
+        <Toaster />
       </div>
-      <MentionInput
-        setComments={setComments}
-        videoId={video.id}
-        loopId={loop.id}
-        videoSlug={video.slug}
-        communityId={community.id}
-      />
-      <Toaster />
     </div>
   )
 }
