@@ -8,6 +8,8 @@ import ParagraphComponent from '../paragraph'
 import whiteLogo from '@icons/business/white-logo.svg'
 import { ContactUs } from '@components/common/modals/contact-us'
 import { Button } from '@components/ui/button'
+import { getYear } from '@lib/utils'
+
 
 export default function Footer() {
   return (
@@ -40,7 +42,7 @@ export default function Footer() {
           <div className={style.logoContainer}>
             {/* Image component for displaying the white logo */}
             <Image priority loading="eager" src={whiteLogo} alt="genuin" />
-            <ParagraphComponent text={'© 2023 Genuin Inc.'} sizeVariant={'medium'} colorVariant={'white'} />
+            <ParagraphComponent text={`© ${getYear()} Genuin Inc.`} sizeVariant={'medium'} colorVariant={'white'} />
           </div>
 
           {/* Footer menu container */}

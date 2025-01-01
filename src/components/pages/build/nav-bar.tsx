@@ -1,5 +1,5 @@
 'use client'
-import { cn } from '@lib/utils'
+import { cn, getYear } from '@lib/utils'
 import { Button } from '@components/ui/button'
 import { HamBurgerMenuIcon } from '@components/ui/ham-burger'
 import Link from 'next/link'
@@ -133,7 +133,7 @@ export function NavBar() {
                       <h3 className="text-new-h3-mobile font-semibold">Privacy Policy</h3>
                     </Link>
                   </div>
-                  <p className="text-new-para-1-mobile">© 2023 Genuin Inc.</p>
+                  <p className="text-new-para-1-mobile">© {getYear()} Genuin Inc.</p>
                 </div>
               </SheetContent>
             </Sheet>
