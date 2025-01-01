@@ -34,6 +34,7 @@ export const Analytics = {
     const defaultProperties = {
       embed_type: embedType,
       user_id: userId,
+      gen_user_id: userId,
       brand_id: brandId || undefined,
       channel,
       embed_id: embedId,
