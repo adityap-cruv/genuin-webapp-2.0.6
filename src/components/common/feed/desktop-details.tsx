@@ -71,8 +71,8 @@ export function DesktopDetails({ loop, community, owner, video }: DesktopDetails
         <div className="border-b border-tertiary-200 p-4">
           <p className="text-title-3-bold">Posted in</p>
           <div className="pt-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center justify-center">
+            <span className="flex items-center justify-between">
+              <div className="flex w-full items-center justify-center">
                 <span className="flex flex-1 items-center gap-x-3">
                   <CustomAvatar
                     imageUrl={community.profileImage ?? ''}
@@ -111,30 +111,30 @@ export function DesktopDetails({ loop, community, owner, video }: DesktopDetails
                     </Tooltip>
                   </TooltipProvider>
                 )}
+                <div className="flex h-min flex-1 items-center justify-end gap-x-3">
+                  <JoinCommunityButton
+                    handle={community.handle}
+                    buttonText="Join Community"
+                    id={community.id}
+                    type={community.type === 2 ? 'private' : 'public'}
+                    role={community.userRole}
+                    onStatusChange={(role) => {
+                      updateCommunityJoinStatus(community.id, role)
+                    }}
+                  />
+                  <ShareButton url={community.shareUrl} />
+                </div>
               </div>
-              <div className="flex h-min flex-1 items-center justify-end gap-x-3">
-                <JoinCommunityButton
-                  handle={community.handle}
-                  buttonText="Join Community"
-                  id={community.id}
-                  type={community.type === 2 ? 'private' : 'public'}
-                  role={community.userRole}
-                  onStatusChange={(role) => {
-                    updateCommunityJoinStatus(community.id, role)
-                  }}
-                />
-                <ShareButton url={community.shareUrl} />
-              </div>
-              <DecorativeList>
-                <div className="h-2 w-full" />
-                <Link href={PATH_NAME.loop(loop.slug)} title={loop.name ?? 'Genuin Loop'}>
-                  <li className="relative flex h-full w-full items-center justify-between rounded-md border border-tertiary-200 bg-monochrome-white p-4 ">
-                    <p className="line-clamp-1 w-full break-all pr-2 text-body-1-demi">{loop?.name}</p>
-                    <p className="whitespace-nowrap text-cap-1-med text-primary hover:text-primary-600">View Group</p>
-                  </li>
-                </Link>
-              </DecorativeList>
-            </div>
+            </span>
+            <DecorativeList>
+              <div className="h-2 w-full" />
+              <Link href={PATH_NAME.loop(loop.slug)} title={loop.name ?? 'Genuin Loop'}>
+                <li className="relative flex h-full w-full items-center justify-between rounded-md border border-tertiary-200 bg-monochrome-white p-4 ">
+                  <p className="line-clamp-1 w-full break-all pr-2 text-body-1-demi">{loop?.name}</p>
+                  <p className="whitespace-nowrap text-cap-1-med text-primary hover:text-primary-600">View Group</p>
+                </li>
+              </Link>
+            </DecorativeList>
           </div>
           {video.linkoutId && (
             <div className="w-auto px-4">
