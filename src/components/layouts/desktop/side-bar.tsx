@@ -32,7 +32,7 @@ const RecentCommunities = dynamic(
 
 // TODO: Improve active states on all items.
 export function SideBar() {
-  const { embed, user, brandName, notificationCount, isClaimed, sizeboxHeight } = useGenuinOptions(
+  const { embed, user, brandName, notificationCount, isClaimed, sizeboxHeight, webCTA } = useGenuinOptions(
     useShallow((state) => ({
       embed: state.embed,
       user: state.user,
@@ -40,6 +40,7 @@ export function SideBar() {
       notificationCount: state.notificationCount,
       isClaimed: state.config?.is_claimed,
       sizeboxHeight: state.sizeBoxes.default.height,
+      webCTA: state.config?.web_cta,
     }))
   )
   const pathName = usePathname()
@@ -117,7 +118,7 @@ export function SideBar() {
             <hr className="border-1 my-2 border-monochrome-black/10" />
           )}
           <DownloadAppDialog />
-          {isClaimed && status === 'unauthenticated' && embed && (
+          {isClaimed && status === 'unauthenticated' && webCTA !== 'app' && (
             <>
               <div
                 className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10"

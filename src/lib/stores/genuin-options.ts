@@ -70,6 +70,7 @@ export type ConfigType = {
   global_reward_point_configs: RewardPointConfig
   social_login: { google: boolean; apple: boolean; brand: boolean; brand_sso_id?: string | null }
   status?: number
+  web_cta: 'app' | 'login' | 'both'
 } | null
 
 export type User = {
@@ -140,6 +141,7 @@ type StateType = {
   notificationCount?: number
   walletBalance?: number | null
   isLoading: boolean
+  webCTA: 'app' | 'login' | 'both'
 }
 
 type ActionsType = {
@@ -147,7 +149,7 @@ type ActionsType = {
 }
 
 const initialState: StateType = {
-  embed: false,
+  embed: true,
   brandId: '',
   logoUrl: '',
   brandWebLogo: '',
@@ -168,6 +170,7 @@ const initialState: StateType = {
   notificationCount: -1,
   walletBalance: 0,
   isLoading: true,
+  webCTA: 'app',
 }
 
 export const useGenuinOptions = create(

@@ -63,7 +63,7 @@ export function MainComponent({ loopDetails }: Props) {
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
   const [isLoopSubscribed, setIsLoopSubscribed] = useState(!!loopDetails.is_subscriber)
-  const { embed, user } = useGenuinOptions()
+  const { embed, user, webCTA } = useGenuinOptions()
   const searchParams = Object.fromEntries(useSearchParams())
 
   function toggleLoopSubscription() {
@@ -210,16 +210,20 @@ export function MainComponent({ loopDetails }: Props) {
                     ? () => {
                         toggleLoopSubscription()
                       }
-                    : () => {
-                        openModal({
-                          title: 'Get the Genuin app',
-                          subtitle: (
-                            <>
-                              Get the app to subscribe to
-                              <span className="font-bold"> {loopDetails.group.group_name}</span> Group.
-                            </>
-                          ),
-                        })
+                    : async () => {
+                        if (webCTA === 'app') {
+                          await handleSubscribeClick()
+                        } else {
+                          openModal({
+                            title: 'Get the Genuin app',
+                            subtitle: (
+                              <>
+                                Get the app to subscribe to
+                                <span className="font-bold"> {loopDetails.group.group_name}</span> Group.
+                              </>
+                            ),
+                          })
+                        }
                       }
                 }>
                 {/* <p className={`px-4 py-1 text-title-3-demi ${isLoopSubscribed && 'text-primary'}`}>

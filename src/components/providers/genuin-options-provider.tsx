@@ -153,6 +153,8 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
       isSafari,
       parentUrl: from,
       config,
+      webCTA: config?.web_cta ?? 'app',
+      // webCTA: 'app',
     })
   }
 

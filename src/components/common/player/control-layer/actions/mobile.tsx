@@ -9,7 +9,6 @@ import Analytics from '@services/analytics'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { useSearchParams } from 'next/navigation'
 import { RepostModal } from '@components/common/modals/repost'
-import { AuthenticationModal } from '@components/common/modals/authentication'
 import { ActionItem } from './action-item'
 import { useCommentSheetStore } from '../../comment-sheet/store'
 import { repostDeepLink } from '@/lib/get-deeplink'
@@ -43,7 +42,7 @@ export function Mobile({
     closeComments: state.closeModal,
     commentsIsOpen: state.modalIsOpen,
   }))
-  const { embed, user } = useGenuinOptions((state) => ({ user: state.user, embed: state.embed }))
+  const { user } = useGenuinOptions((state) => ({ user: state.user, embed: state.embed }))
   const searchParams = Object.fromEntries(useSearchParams())
 
   return (
@@ -63,8 +62,8 @@ export function Mobile({
           title="Repost the video!"
           onClick={async () => {
             await handleWalletBalance({ action: 'repost', videoId, type: 'POST' })
-            if (embed) {
-              user ? RepostModal.open(videoId) : AuthenticationModal.open()
+            if (user) {
+              RepostModal.open(videoId)
             } else {
               await repostDeepLink({ videoSlug, shareUrl, searchParams }).then((generatedLink) => {
                 openGeneratedLink(generatedLink)

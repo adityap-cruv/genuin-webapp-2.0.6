@@ -147,6 +147,7 @@ export function CommunityList({ brandId }: { brandId: number }) {
                     onStatusChange={(role) => {
                       handleCommunityJoin(community.id, role)
                     }}
+                    isMobile={false}
                   />
                 </div>
               </div>

@@ -33,9 +33,9 @@ export function openModal({
   subtitle?: string | ReactNode
   deepLink?: string
 }) {
-  const embed = useGenuinOptions.getState().embed
+  const { embed, webCTA } = useGenuinOptions.getState()
 
-  if (embed) {
+  if (embed && webCTA !== 'app') {
     AuthenticationModal.open()
   } else {
     DownloadDialogModal.open({
