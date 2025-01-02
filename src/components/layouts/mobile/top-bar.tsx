@@ -20,7 +20,7 @@ import { LogoutIcon } from '@icons/logout'
 import { removeAllAuthToken } from '@lib/api/instance'
 import { MOBILE_DOWNLOAD_APP_LINK } from '@lib/constants'
 import { SearchBar } from '@components/common/search-bar'
-import { NotificationIcon } from '@icons/settings-side-bar-icons'
+import { BellIcon } from '@icons/bell-icon'
 import { SearchIcon } from '@icons/search-icon'
 import { CloseIcon } from '@icons/close-icon'
 import Analytics from '@services/analytics'
@@ -100,7 +100,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
                     {notificationsCount > 9 ? '9+' : notificationsCount}
                   </div>
                 ))}
-              <NotificationIcon variant={variant === 'light' && !showClose ? '' : 'white'} />
+              <BellIcon variant={variant === 'light' && !showClose ? 'dark' : 'light'} size="sm" />
             </div>
           </Link>
         )}

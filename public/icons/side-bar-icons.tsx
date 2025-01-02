@@ -2,27 +2,6 @@ import { cn } from '@lib/utils'
 import { type ComponentProps } from 'react'
 type Props = { isActive: boolean; className?: string } & ComponentProps<'svg'>
 
-export function NotificationIcon({ isActive, className, ...props }: Props) {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
-      <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        className={cn(isActive ? '' : 'fill-monochrome-black', className)}
-        d="M15.9998 4C20.4181 4 23.9998 7.58166 23.9998 11.9999C23.9998 14.5508 23.9998 17.1122 23.9998 18.6667C23.9998 22.6667 26.6665 24 26.6665 24L5.33317 24C5.33317 24 7.99984 22.6667 7.99984 18.6667C7.99984 17.1122 7.99984 14.5508 7.99984 11.9999C7.99984 7.58166 11.5816 4 15.9998 4V4Z"
-        stroke={isActive ? '#0645FF' : 'black'}
-        strokeWidth="2"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M13.3332 24C13.3332 25.4728 14.5271 26.6667 15.9998 26.6667C17.4726 26.6667 18.6665 25.4728 18.6665 24"
-        stroke={isActive ? '#0645FF' : 'black'}
-        strokeWidth="2"
-      />
-    </svg>
-  )
-}
-
 export function ProfileIcon({ isActive, className, ...props }: Props) {
   return (
     <svg

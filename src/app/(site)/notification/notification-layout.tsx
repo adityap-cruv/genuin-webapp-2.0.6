@@ -10,7 +10,7 @@ import { useMotionValueEvent, useScroll } from 'framer-motion'
 import { useEffect, useRef } from 'react'
 import { Loader } from '@components/ui/loader'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
-import { NotificationIcon } from '@icons/settings-side-bar-icons'
+import { BellIcon } from '@icons/bell-icon'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import icBack from '@icons/icBack.svg'
@@ -117,7 +117,7 @@ function Notifications({
       {notificationDetails?.length === 0 && (
         <div className="flex h-full w-full flex-col items-center justify-center py-2">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-tertiary-200">
-            <NotificationIcon className="fill-secondary" />
+            <BellIcon />
           </div>
           <p className="text-title-2-bold">Nothing here - yet</p>
           <p className="w-2/3 text-center text-body-1-demi">
