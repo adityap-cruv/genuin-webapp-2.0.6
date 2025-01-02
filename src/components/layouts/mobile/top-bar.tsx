@@ -327,7 +327,6 @@ function UserTick({ variant = 'light' }: { variant: 'light' | 'transparent' | 'd
           align="end">
           <div className="my-2 flex items-center gap-2">
             <CustomAvatar
-              className="h-12 w-12"
               fallbackString={data.user.name ?? ''}
               imageUrl={data.user.image ?? ''}
               isAvatar={data.user.isAvatar}
@@ -347,7 +346,7 @@ function UserTick({ variant = 'light' }: { variant: 'light' | 'transparent' | 'd
           </div>
           <hr className="border-b border-monochrome-9" />
           <div className="flex flex-col gap-4 p-4">
-            {!data.user.isBrandSystemUser && (
+            {data.user.isBrandSystemUser && (
               <Link
                 href={PATH_NAME.settings('')}
                 className="flex items-center gap-x-2"
@@ -356,7 +355,7 @@ function UserTick({ variant = 'light' }: { variant: 'light' | 'transparent' | 'd
                     localStorage.setItem('previous_path', pathName)
                   }
                 }}>
-                <SettingIcon className="fill-secondary" />
+                <SettingIcon />
                 <p className="text-body-1-demi">Settings</p>
               </Link>
             )}

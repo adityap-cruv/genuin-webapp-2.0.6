@@ -20,47 +20,22 @@ export function EditIcon({ isActive, className, ...props }: Props) {
 export function AccountIcon({ isActive, className, ...props }: Props) {
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
       width="32"
       height="32"
       viewBox="0 0 32 32"
       fill="none"
+      xmlns="http://www.w3.org/2000/svg"
       {...props}
-      className={cn(isActive ? 'stroke-primary' : 'stroke-secondary', className)}>
-      <g clipPath="url(#clip0_16004_222091)">
-        <path d="M-277.334 -137.334V-81.334H-341.334V109.333H305.333V-137.334H-277.334Z" strokeMiterlimit="10" />
-        <circle
-          cx="16"
-          cy="16"
-          r="12"
-          style={{
-            stroke: `${isActive ? 'var(--primary)' : 'var(--secondary)'}`,
-          }}
-          strokeWidth="2"
-        />
-        <circle
-          cx="16.1237"
-          cy="12.7487"
-          r="3.74872"
-          style={{
-            stroke: `${isActive ? 'var(--primary)' : 'var(--secondary)'}`,
-          }}
-          strokeWidth="2"
-        />
-        <path
-          d="M9 22.1272C11.1558 19.4993 17.2707 16.4682 22.9296 22.1272"
-          style={{
-            stroke: `${isActive ? 'var(--primary)' : 'var(--secondary)'}`,
-          }}
-          strokeWidth="2"
-          strokeLinecap="round"
-        />
-      </g>
-      <defs>
-        <clipPath id="clip0_16004_222091">
-          <rect width="32" height="32" fill="white" />
-        </clipPath>
-      </defs>
+      className={cn(isActive ? 'stroke-primary' : '', className)}>
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M16 28C22.6274 28 28 22.6274 28 16C28 9.37258 22.6274 4 16 4C9.37258 4 4 9.37258 4 16C4 22.6274 9.37258 28 16 28ZM16 30C23.732 30 30 23.732 30 16C30 8.26801 23.732 2 16 2C8.26801 2 2 8.26801 2 16C2 23.732 8.26801 30 16 30ZM16 16C17.6569 16 19 14.6569 19 13C19 11.3431 17.6569 10 16 10C14.3431 10 13 11.3431 13 13C13 14.6569 14.3431 16 16 16ZM16 18C18.7614 18 21 15.7614 21 13C21 10.2386 18.7614 8 16 8C13.2386 8 11 10.2386 11 13C11 15.7614 13.2386 18 16 18ZM9.60346 22.7974C10.5153 22.1073 12.4087 21.2786 14.7732 21.0566C17.1113 20.8371 19.8438 21.2176 22.4725 22.8496C22.9418 23.1409 23.5583 22.9967 23.8496 22.5275C24.1409 22.0582 23.9967 21.4417 23.5275 21.1504C20.4687 19.2515 17.2845 18.8121 14.5862 19.0654C11.9142 19.3162 9.65138 20.253 8.39654 21.2026C7.95615 21.5359 7.86932 22.1631 8.2026 22.6035C8.53588 23.0438 9.16306 23.1307 9.60346 22.7974Z"
+        fill="black"
+        style={{
+          fill: `${isActive ? 'var(--primary)' : 'var(--secondary)'}`,
+        }}
+      />
     </svg>
   )
 }
@@ -68,62 +43,68 @@ export function AccountIcon({ isActive, className, ...props }: Props) {
 export function PersonalizationIcon({ variant, isActive, className, ...props }: Props) {
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
       width="32"
       height="32"
       viewBox="0 0 32 32"
       fill="none"
+      xmlns="http://www.w3.org/2000/svg"
       {...props}
-      className={cn(isActive ? 'stroke-primary' : 'stroke-secondary', className)}>
+      className={cn(isActive ? 'stroke-primary' : '', className)}>
       <path
         d="M7.4092 9.84375H2.66602"
+        stroke="#111111"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
         style={{
           stroke: `${isActive ? 'var(--primary)' : 'var(--secondary)'}`,
         }}
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
       />
       <path
         d="M29.3344 9.84375H13.5254"
-        style={{
-          stroke: `${isActive ? 'var(--primary)' : 'var(--secondary)'}`,
-        }}
+        stroke="#111111"
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
+        style={{
+          stroke: `${isActive ? 'var(--primary)' : 'var(--secondary)'}`,
+        }}
       />
       <path
         d="M18.4762 22.3242H2.66602"
-        style={{
-          stroke: `${isActive ? 'var(--primary)' : 'var(--secondary)'}`,
-        }}
+        stroke="#111111"
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
+        style={{
+          stroke: `${isActive ? 'var(--primary)' : 'var(--secondary)'}`,
+        }}
       />
       <path
         d="M29.3345 22.3242H24.5938"
-        style={{
-          stroke: `${isActive ? 'var(--primary)' : 'var(--secondary)'}`,
-        }}
+        stroke="#111111"
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
+        style={{
+          stroke: `${isActive ? 'var(--primary)' : 'var(--secondary)'}`,
+        }}
       />
       <path
         d="M7.40625 9.66761C7.40625 10.4787 7.72846 11.2566 8.30199 11.8301C8.87552 12.4036 9.65339 12.7259 10.4645 12.7259C11.2756 12.7259 12.0535 12.4036 12.627 11.8301C13.2005 11.2566 13.5227 10.4787 13.5227 9.66761C13.5227 8.85652 13.2005 8.07864 12.627 7.50511C12.0535 6.93158 11.2756 6.60938 10.4645 6.60938C9.65339 6.60938 8.87552 6.93158 8.30199 7.50511C7.72846 8.07864 7.40625 8.85652 7.40625 9.66761Z"
+        stroke="#111111"
+        strokeWidth="2"
         style={{
           stroke: `${isActive ? 'var(--primary)' : 'var(--secondary)'}`,
         }}
-        strokeWidth="2"
       />
       <path
         d="M18.4746 22.3278C18.4746 23.1389 18.7968 23.9167 19.3703 24.4903C19.9439 25.0638 20.7218 25.386 21.5328 25.386C22.3439 25.386 23.1218 25.0638 23.6953 24.4903C24.2689 23.9167 24.5911 23.1389 24.5911 22.3278C24.5911 21.5167 24.2689 20.7388 23.6953 20.1653C23.1218 19.5917 22.3439 19.2695 21.5328 19.2695C20.7218 19.2695 19.9439 19.5917 19.3703 20.1653C18.7968 20.7388 18.4746 21.5167 18.4746 22.3278Z"
+        stroke="#111111"
+        strokeWidth="2"
         style={{
           stroke: `${isActive ? 'var(--primary)' : 'var(--secondary)'}`,
         }}
-        strokeWidth="2"
       />
     </svg>
   )
@@ -132,38 +113,50 @@ export function PersonalizationIcon({ variant, isActive, className, ...props }: 
 export function ContactUsIcon({ isActive, className, ...props }: Props) {
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
       width="32"
       height="32"
       viewBox="0 0 32 32"
       fill="none"
+      xmlns="http://www.w3.org/2000/svg"
       {...props}
-      className={cn(isActive ? 'stroke-primary' : 'stroke-secondary', className)}>
-      <g clipPath="url(#clip0_16004_222103)">
+      className={cn(isActive ? 'stroke-primary' : '', className)}>
+      <g clipPath="url(#clip0_5889_72123)">
         <path
-          d="M-277.334 -137.334V-81.334H-341.334V109.333H305.333V-137.334H-277.334Z"
+          d="M-277.333 -137.333V-81.3334H-341.333V109.333H305.333V-137.333H-277.333Z"
+          stroke="black"
+          strokeMiterlimit="10"
           style={{
             stroke: `${isActive ? 'var(--primary)' : 'var(--secondary)'}`,
           }}
-          strokeMiterlimit="10"
         />
         <path
           d="M12.0003 12.5655C11.9982 12.6159 12.0064 12.6662 12.0244 12.7132C12.0424 12.7603 12.0699 12.8032 12.1051 12.8393C12.1403 12.8754 12.1825 12.9039 12.2291 12.9231C12.2758 12.9422 12.3258 12.9517 12.3762 12.9508H13.663C13.8782 12.9508 14.0498 12.7745 14.0779 12.5608C14.2182 11.5377 14.9201 10.7921 16.171 10.7921C17.241 10.7921 18.2205 11.3271 18.2205 12.6139C18.2205 13.6043 17.6371 14.0597 16.7153 14.7522C15.6657 15.5149 14.8343 16.4055 14.8936 17.8514L14.8983 18.1898C14.8999 18.2922 14.9417 18.3898 15.0147 18.4615C15.0876 18.5333 15.1859 18.5735 15.2882 18.5735H16.5531C16.6566 18.5735 16.7557 18.5324 16.8289 18.4593C16.902 18.3862 16.9431 18.287 16.9431 18.1836V18.0198C16.9431 16.9 17.3689 16.574 18.5184 15.7021C19.4682 14.9799 20.4587 14.1783 20.4587 12.4953C20.4587 10.1386 18.4685 9 16.2895 9C14.3134 9 12.1485 9.92023 12.0003 12.5655ZM14.4288 21.5541C14.4288 22.3855 15.0917 23 16.0041 23C16.954 23 17.6075 22.3855 17.6075 21.5541C17.6075 20.6932 16.9524 20.088 16.0026 20.088C15.0917 20.088 14.4288 20.6932 14.4288 21.5541Z"
-          className={cn(isActive ? 'fill-primary' : 'fill-secondary')}
+          fill="black"
+          style={{
+            fill: `${isActive ? 'var(--primary)' : 'var(--secondary)'}`,
+          }}
         />
         <circle
           cx="16"
           cy="16"
-          r="12"
+          r="13"
+          stroke="black"
+          strokeWidth="2"
           style={{
             stroke: `${isActive ? 'var(--primary)' : 'var(--secondary)'}`,
           }}
-          strokeWidth="2"
         />
       </g>
       <defs>
-        <clipPath id="clip0_16004_222103">
-          <rect width="32" height="32" fill="white" />
+        <clipPath id="clip0_5889_72123">
+          <rect
+            width="32"
+            height="32"
+            fill="white"
+            style={{
+              fill: `${isActive ? 'var(--primary)' : 'var(--secondary)'}`,
+            }}
+          />
         </clipPath>
       </defs>
     </svg>
@@ -173,33 +166,41 @@ export function ContactUsIcon({ isActive, className, ...props }: Props) {
 export function LogOutIcon({ isActive, className, ...props }: Props) {
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
       width="32"
       height="32"
       viewBox="0 0 32 32"
       fill="none"
+      xmlns="http://www.w3.org/2000/svg"
       {...props}
       className={cn(isActive ? '' : '', className)}>
       <path
-        d="M3.60938 12.8125C4.0805 10.9395 5.50872 8.4576 7.78505 6.58325C10.0614 4.7089 12.9354 3.68758 15.9004 3.69932C18.2878 3.71227 20.622 4.39625 22.6296 5.6711C24.6371 6.94595 26.2347 8.75887 27.2352 10.8974C28.2357 13.0359 28.5977 15.4115 28.2787 17.7457C27.9597 20.0799 26.973 22.2761 25.4342 24.0769C23.8953 25.8777 21.868 27.2085 19.59 27.9133C17.3119 28.6182 14.8774 28.6679 12.5718 28.0566C10.2661 27.4454 8.18476 26.1985 6.57169 24.462C4.95862 22.7256 4.0805 21.2413 3.60938 19.3682"
+        d="M23.606 6.08325C21.3297 4.2089 18.4557 3.18758 15.4907 3.19932C13.1032 3.21227 10.769 3.89625 8.76147 5.1711C6.75395 6.44595 5.15635 8.25887 4.15582 10.3974C3.1553 12.5359 2.79332 14.9115 3.11231 17.2457C3.4313 19.5799 4.418 21.7761 5.95687 23.5769C7.49573 25.3777 9.52299 26.7085 11.801 27.4133C14.0791 28.1182 16.5136 28.1679 18.8193 27.5566C21.1249 26.9454 23.2063 25.6985 24.8193 23.962"
+        stroke="black"
+        strokeWidth="2"
+        strokeLinecap="round"
         style={{
           stroke: `${isActive ? 'var(--primary)' : 'var(--secondary)'}`,
         }}
-        strokeWidth="2"
       />
       <path
-        d="M3 16L22 16"
+        d="M9.3916 15.5L28.3916 15.5"
+        stroke="black"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
         style={{
           stroke: `${isActive ? 'var(--primary)' : 'var(--secondary)'}`,
         }}
-        strokeWidth="2"
       />
       <path
-        d="M16 10L22 16L16 22"
+        d="M22.3916 21.5L28.3916 15.5L22.3916 9.5"
+        stroke="black"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
         style={{
           stroke: `${isActive ? 'var(--primary)' : 'var(--secondary)'}`,
         }}
-        strokeWidth="2"
       />
     </svg>
   )
