@@ -1,8 +1,7 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
-import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { Button } from '@components/ui/button'
 import type { CommunityDetailsType, MembersSchemaType } from '@lib/schemas/community'
-import { checkAndAppendHttps, getCurrentShareUrl, mapCommunityUserRole, openGeneratedLink } from '@lib/utils'
+import { checkAndAppendHttps, getCurrentShareUrl, mapCommunityUserRole } from '@lib/utils'
 import Image from 'next/image'
 import icLock from '@icons/icLock.svg'
 import Link from 'next/link'
@@ -16,7 +15,6 @@ import { CommunityLoopTab } from './community-loop-tab'
 // import { useState } from 'react'
 // import { joinCommunity, leaveCommunity, requestCommunity } from '@lib/api/video'
 import { ShareIcon } from '@icons/share-icon'
-import { useSearchParams } from 'next/navigation'
 import { getCommunityMembers } from '@lib/api/community'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@components/ui/accordion'
 import { Shimmer } from '@components/ui/shimmer'
@@ -27,7 +25,6 @@ import { BrandCommunityTag } from '@components/common/brand-community-tag'
 import { InstagramIcon } from '@icons/instagram-icon'
 import { LinkedInIcon } from '@icons/linkedin-icon'
 import { TwitterIcon } from '@icons/twitter-icon'
-import { joinCommunityDeepLink } from '@/lib/get-deeplink'
 import { TopStickyBar } from './top-sticky-bar'
 import { ReadMore } from '@/components/common/read-more'
 import { JoinCommunityButton } from '@components/common/join-community-button'
@@ -44,8 +41,6 @@ export function Details({ communityDetails }: Props) {
   communityDetailsModule = communityDetails
   const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
-  const { isEmbed } = useGenuinOptions((state) => ({ isEmbed: state.embed, parentUrl: state.parentUrl }))
-  const searchParams = Object.fromEntries(useSearchParams())
 
   return (
     <>
@@ -84,20 +79,6 @@ export function Details({ communityDetails }: Props) {
                 type={communityDetails.type === 2 ? 'private' : 'public'}
                 communityName={communityDetails.name ?? ''}
               />
-              {!isEmbed && (
-                <Button
-                  variant="default"
-                  size="sm"
-                  onClick={async () => {
-                    await joinCommunityDeepLink({ communityName: communityDetails.name ?? '', searchParams }).then(
-                      (generatedLink) => {
-                        openGeneratedLink(generatedLink)
-                      }
-                    )
-                  }}>
-                  <p className="mx-2 text-body-1-bold text-monochrome-white">Join Community</p>
-                </Button>
-              )}
               <Button
                 variant="outline"
                 outlineColor="genuin-blue"
