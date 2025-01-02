@@ -9,7 +9,7 @@ export function RootFeed({ slug }: { slug: string }) {
   const videos = data?.pages.flatMap((item) => item.videos)
   return (
     <main className="relative h-full w-full">
-      <TopBar variant="transparent" />
+      <TopBar variant="transparent" className="absolute" />
       <Feed.mobile
         videos={videos}
         isError={isError}
