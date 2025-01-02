@@ -409,3 +409,7 @@ export function mapCommunityUserRole(role?: number | null, isRequested?: boolean
       return 'UNJOINED'
   }
 }
+
+export function getYear() {
+  return new Date().getFullYear()
+}

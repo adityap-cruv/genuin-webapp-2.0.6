@@ -3,7 +3,7 @@ import { HamBurgerMenuIcon } from '@components/ui/ham-burger'
 import { Button } from '@components/ui/button'
 import { Sheet, SheetClose, SheetContent, SheetTrigger } from '@components/ui/sheet'
 import { type ReactNode } from 'react'
-import { cn } from '@lib/utils'
+import { cn, getYear } from '@lib/utils'
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { PopularIcon, HomeIcon, LatestIcon, ProfileIcon } from '@icons/side-bar-icons'
@@ -244,7 +244,7 @@ function Menu({
               <p className="text-body-1-demi">Privacy Policy</p>
             </Link>
           </span>
-          <p className="text-body-1-demi"> &#169; 2023 Genuin Inc.</p>
+          <p className="text-body-1-demi"> &#169; {getYear()} Genuin Inc.</p>
         </div>
       </SheetContent>
     </Sheet>
