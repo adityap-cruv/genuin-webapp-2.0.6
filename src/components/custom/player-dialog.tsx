@@ -1,7 +1,7 @@
 'use client'
 import * as React from 'react'
 import * as DialogPrimitive from '@radix-ui/react-dialog'
-import { X } from 'lucide-react'
+import { CloseIcon } from '@icons/close-icon'
 
 import { cn } from '@lib/utils'
 
@@ -22,13 +22,12 @@ const DialogContent = React.forwardRef<
       className={cn('group fixed inset-0 z-20 w-full bg-monochrome-black/80', className)}
       {...props}>
       <DialogPrimitive.Close className="absolute right-3 top-3 z-20 transition-opacity disabled:pointer-events-none">
-        <X
-          className=" h-8 w-8"
-          strokeWidth={3}
-          color="#FFFFFF"
+        <CloseIcon
           onClick={() => {
             window.history.back()
           }}
+          variant={'light'}
+          size="lg"
         />
         <span className="sr-only">Close</span>
       </DialogPrimitive.Close>

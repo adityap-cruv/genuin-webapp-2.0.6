@@ -1,8 +1,6 @@
 import Link from 'next/link'
-import Image from 'next/image'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { usePlayerControlStore } from '../player-control-store'
-import icPlay from '@icons/player-controls/icPlay.svg'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { Actions } from './actions'
 import { ReadMore } from '@components/common/read-more'

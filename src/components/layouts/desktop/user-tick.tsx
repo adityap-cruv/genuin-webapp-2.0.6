@@ -11,7 +11,8 @@ import { formatPhoneNumberIntl } from 'react-phone-number-input'
 import { type User } from 'next-auth'
 import { PATH_NAME } from '@/lib/utils/constants/path'
 import Link from 'next/link'
-import { NotificationIcon, AccountIcon } from '@icons/settings-side-bar-icons'
+import { AccountIcon } from '@icons/settings-side-bar-icons'
+import { BellIcon } from '@icons/bell-icon'
 
 export function UserTick({ user }: { user: User | null }) {
   const pathName = usePathname()
@@ -56,10 +57,8 @@ export function UserTick({ user }: { user: User | null }) {
               {user.usernameSet
                 ? '@' + user.nickname
                 : user.email
-                  ? user.email
-                  : formatPhoneNumberIntl(
-                      user.phoneNumber?.startsWith('+') ? user.phoneNumber : `+${user.phoneNumber}`
-                    )}
+                ? user.email
+                : formatPhoneNumberIntl(user.phoneNumber?.startsWith('+') ? user.phoneNumber : `+${user.phoneNumber}`)}
             </p>
             {!user?.isBrandSystemUser && (
               <Link
@@ -95,7 +94,7 @@ export function UserTick({ user }: { user: User | null }) {
                       localStorage.setItem('previous_path', pathName)
                     }
                   }}>
-                  <NotificationIcon isActive={false} className="h-6 w-6" />
+                  <BellIcon size="sm" />
                   <p className="text-body-1-demi">Notification Settings</p>
                 </div>
               </Link>

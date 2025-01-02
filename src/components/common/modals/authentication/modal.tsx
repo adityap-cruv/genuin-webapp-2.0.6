@@ -25,7 +25,7 @@ import {
 import { useEffect } from 'react'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { useShallow } from 'zustand/react/shallow'
-import { X } from 'lucide-react'
+import { CloseIcon } from '@icons/close-icon'
 import { useSearchParams } from 'next/navigation'
 import { HowItWorks } from '../wallet/how-it-works'
 import { WithdrawDialog } from '../wallet/withdraw-cash'
@@ -97,7 +97,6 @@ export function Modal({ children, showClose, ...props }: Props) {
       birth: user.birth ?? undefined,
     })
   }, [user])
-
   const stepSet: Set<StepsType> = new Set<StepsType>([
     'LOGIN_OTP_INPUT',
     'VERIFY_MAIL_OTP',
@@ -106,6 +105,7 @@ export function Modal({ children, showClose, ...props }: Props) {
     'CATEGORY_SELECTION',
     'DELETE_CONFIRMATION',
     'DELETE_CONFIRMED',
+    'IMAGE_CROPPER',
   ])
 
   const shouldShowClose = !stepSet.has(step) && !(action === 'DELETE_ACCOUNT' && step === 'STARTER')
@@ -121,8 +121,7 @@ export function Modal({ children, showClose, ...props }: Props) {
         className="rounded-t-lg !py-10">
         {shouldShowClose && (
           <DialogClose className="absolute right-4 top-4 outline-none">
-            <X
-              className="stroke-secondary"
+            <CloseIcon
               onClick={() => {
                 setFormData({ flowType: 'email', phoneNumber: '', email: '' })
                 closeModal()
