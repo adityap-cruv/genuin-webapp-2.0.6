@@ -83,7 +83,7 @@ export const Mobile = memo(function Mobile({ clickableUrl, ...props }: MobilePro
 
   return (
     <div className="relative h-full w-full">
-      <div
+      {/* <div
         className={cn(
           'absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-monochrome-black/40 p-2 transition-all duration-300 ',
           !shouldPlay ? 'scale-125 opacity-100 ease-in' : 'scale-100 opacity-0 ease-out'
@@ -93,7 +93,7 @@ export const Mobile = memo(function Mobile({ clickableUrl, ...props }: MobilePro
           alt="volume-control"
           className={cn('pointer-events-none z-10 cursor-pointer rounded-full')}
         />
-      </div>
+      </div> */}
       {(muted || !!clickableUrl) && (
         <div
           onClick={clickableUrl ? openClickableUrl : handleToggleMuted}
