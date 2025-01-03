@@ -32,9 +32,10 @@ const RecentCommunities = dynamic(
 
 // TODO: Improve active states on all items.
 export function SideBar() {
-  const { user, brandName, notificationCount, isClaimed, sizeboxHeight, webCTA } = useGenuinOptions(
+  const { user, brandName, notificationCount, isClaimed, sizeboxHeight, webCTA, brandId } = useGenuinOptions(
     useShallow((state) => ({
       user: state.user,
+      brandId: state.config?.brand_id,
       brandName: state.config?.name ? state.config?.name : 'Genuin',
       notificationCount: state.notificationCount,
       isClaimed: state.config?.is_claimed,
@@ -92,7 +93,7 @@ export function SideBar() {
           </>
         )}
         {/* TODO: Genuin as a Brand. Check and discuss to change default true value */}
-        {true && (
+        {brandId === '99' && (
           <Popover>
             <PopoverTrigger className="w-full">
               <Item title="More">
@@ -151,7 +152,7 @@ export function SideBar() {
         <RecentCommunities />
       </div>
         {/* TODO: Genuin as a Brand. Check and discuss to change default true value */}
-        {true && (
+        {brandId !== '99'  && (
         <div className="hidden xl:block">
           <hr className="border-1 mb-4 mt-1 border-monochrome-black/10" />
           <div className="flex items-center">

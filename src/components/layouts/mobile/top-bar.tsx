@@ -61,13 +61,14 @@ type Props = {
 } & VariantProps<typeof navVariant>
 
 export function TopBar({ variant = 'light', className, showClose = false, onClose }: Props) {
-  const { user, brandName, notificationsCount, isClaimed, brandLogo, webCTA } = useGenuinOptions((state) => ({
+  const { user, brandName, notificationsCount, isClaimed, brandLogo, webCTA, brandId } = useGenuinOptions((state) => ({
     user: state.user,
     brandName: state.config?.name ? state.config?.name : 'Genuin',
     notificationsCount: state.notificationCount,
     isClaimed: state.config?.is_claimed,
     brandLogo: state.config?.logo,
     webCTA: state.webCTA,
+    brandId: state.config?.brand_id,
   })) // If variant is transparent than we have removed show download button.
   const showDownloadButton = variant !== 'transparent'
   const pathName = usePathname()
@@ -91,7 +92,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
       </span>
       <span className="flex items-center gap-x-2">
         {/* TODO: Genuin as a Brand. Check and discuss to change default true value */}
-        {true && showDownloadButton && (
+        {brandId === '99'  && showDownloadButton && (
           <Link href={MOBILE_DOWNLOAD_APP_LINK + '?' + searchParams.toString()} target="_blank">
             <Button
               className={
