@@ -12,9 +12,9 @@ const DELAY_FOR_INTERRUPTION = 60000
  * And Can only be used in component not outside of the component.
  */
 export function showInterruption() {
-  const { embed, user } = useGenuinOptions.getState()
+  const { user } = useGenuinOptions.getState()
   const isOpen = useAuthenticationModalStore.getState().isOpen
-  if (!embed || isOpen) return
+  if (isOpen) return
   if (!user) {
     AuthenticationModal.open(undefined, 'STARTER')
   } else if (!user.hasTopics) {
@@ -25,12 +25,12 @@ export function showInterruption() {
 }
 
 export function InterruptionProvider() {
-  const { user, embed } = useGenuinOptions()
+  const { user } = useGenuinOptions()
 
   function showInterruption() {
-    const { user, embed } = useGenuinOptions.getState()
+    const { user } = useGenuinOptions.getState()
     const isOpen = useAuthenticationModalStore.getState().isOpen
-    if (!embed || isOpen) return
+    if (isOpen) return
     if (!user) {
       AuthenticationModal.open(undefined)
     } else if (!user.hasTopics) {
@@ -42,7 +42,7 @@ export function InterruptionProvider() {
 
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-    if (!embed || AuthenticationModal.isOpen) return
+    if (AuthenticationModal.isOpen) return
 
     let timeout: NodeJS.Timeout
     timeout = setTimeout(showInterruption, DELAY_FOR_INTERRUPTION)

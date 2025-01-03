@@ -9,6 +9,7 @@ import Link from 'next/link'
 import { CommunityCardShimmer } from './shimmer'
 import { type CommunityUserRoleType } from '@/lib/schemas/roles'
 import { useCallback, useState } from 'react'
+import { useGenuinOptions } from '@/lib/stores/genuin-options'
 
 export function Communities() {
   const { isLoading, data: communities, isError } = getFeaturedCommunity()
@@ -126,6 +127,7 @@ function CommunityItem({
   role,
   onCommunityStatusChange,
 }: CommunityItemProps) {
+  const isMobile = useGenuinOptions().isMobile
   return (
     <div className="min-w[320px] max-w-full rounded-lg border border-tertiary-300 p-4">
       <div className="flex items-center justify-between">
@@ -149,6 +151,7 @@ function CommunityItem({
           role={role}
           communityName={name ?? ''}
           onStatusChange={onCommunityStatusChange}
+          isMobile={isMobile}
         />
         {/* <JoinCommunityButton buttonText="Join" handle={handle} id={id} isCommunityPrivate={false} /> */}
       </div>

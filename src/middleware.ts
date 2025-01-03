@@ -106,8 +106,8 @@ export async function middleware(request: NextRequest) {
   if (browserType) request.cookies.set('browser_type', browserType)
 
   if (host) {
-    const config = getConfig(host)
-    // const config = getConfig('rashmika.qa.begenuin.com')
+    // const config = getConfig(host)
+    const config = getConfig('ankpal.qa.begenuin.com')
     if (config) request.cookies.set('config_params', JSON.stringify(config))
     const urlObj = new URL(request.url)
     // eslint-disable-next-line no-prototype-builtins
@@ -134,9 +134,9 @@ export const config = {
 }
 
 export function getConfig(host: string): { domain?: string; subdomain?: string } | null {
-  if (['app', 'begenuin', 'localhost:4005', 'www', '192'].includes(host.split('.')[0])) return null
+  if (['localhost:4005', 'www', '192'].includes(host.split('.')[0])) return null
 
-  if (!host.includes('begenuin')) return { domain: host }
+  // if (!host.includes('begenuin')) return { domain: host }
   const subdomain =
     process.env.NEXT_PUBLIC_CURRENT_ENV === 'local' || process.env.NEXT_PUBLIC_CURRENT_ENV === 'qa'
       ? host.replace('.qa.begenuin.com', '')

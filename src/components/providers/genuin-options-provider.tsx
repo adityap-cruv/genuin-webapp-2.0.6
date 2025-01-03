@@ -139,7 +139,6 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
     if (config?.brand_id) setBrandIdInAxiosInstance(Number(config?.brand_id))
     const isIframe = window !== window.parent
     setInitialData({
-      embed: !!config,
       logoUrl: config?.logo,
       brandWebLogo: config?.brand_web_logo,
       brandId: config?.brand_id,
@@ -153,6 +152,8 @@ export function GenuinOptionsProvider({ children, deviceType, os, browserType, c
       isSafari,
       parentUrl: from,
       config,
+      webCTA: config?.web_cta ?? 'app',
+      // webCTA: 'app',
     })
   }
 

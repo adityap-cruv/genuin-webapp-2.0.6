@@ -61,13 +61,14 @@ type Props = {
 } & VariantProps<typeof navVariant>
 
 export function TopBar({ variant = 'light', className, showClose = false, onClose }: Props) {
-  const { embed, user, brandName, notificationsCount, isClaimed, brandLogo } = useGenuinOptions((state) => ({
-    embed: state.embed,
+  const { user, brandName, notificationsCount, isClaimed, brandLogo, webCTA, brandId } = useGenuinOptions((state) => ({
     user: state.user,
     brandName: state.config?.name ? state.config?.name : 'Genuin',
     notificationsCount: state.notificationCount,
     isClaimed: state.config?.is_claimed,
     brandLogo: state.config?.logo,
+    webCTA: state.webCTA,
+    brandId: state.config?.brand_id,
   })) // If variant is transparent than we have removed show download button.
   const showDownloadButton = variant !== 'transparent'
   const pathName = usePathname()
@@ -78,19 +79,20 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
       <span className="flex items-center ">
         <Menu
           hamBurgerVariant={variant === 'transparent' ? 'light' : 'dark'}
-          embed={embed}
           user={user}
           brandName={brandName}
           isClaimed={isClaimed}
+          webCTA={webCTA}
         />
-        {embed && brandLogo && (
+        {brandLogo && (
           <Link href={{ pathname: PATH_NAME.home() }}>
             <CustomImage src={brandLogo} height={40} width={40} className="object-cover" alt="logo" />
           </Link>
         )}
       </span>
       <span className="flex items-center gap-x-2">
-        {!embed && showDownloadButton && (
+        {/* TODO: Genuin as a Brand. Check and discuss to change default true value */}
+        {brandId === '99'  && showDownloadButton && (
           <Link href={MOBILE_DOWNLOAD_APP_LINK + '?' + searchParams.toString()} target="_blank">
             <Button
               className={
@@ -146,7 +148,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
             }`}
           />
         </SearchBar.mobile>
-        {embed && <UserTick variant={variant} />}
+        {webCTA !== 'app' && <UserTick variant={variant} />}
         {showClose && (
           <X
             onClick={() => {
@@ -167,14 +169,14 @@ function Menu({
   hamBurgerVariant = 'dark',
   brandName,
   user,
-  embed,
   isClaimed,
+  webCTA,
 }: {
   hamBurgerVariant: 'dark' | 'light'
   brandName: string
   user?: User
-  embed: boolean
   isClaimed?: boolean
+  webCTA: 'app' | 'login' | 'both'
 }) {
   const pathName = usePathname()
   const { status } = useSession()
@@ -221,21 +223,21 @@ function Menu({
             </Link>
           </>
         )}
-        {(!isClaimed || user?.ksCbRequestStatus !== 3) && embed && (
-          <hr className="border-1 my-2 border-monochrome-black/10" />
-        )}
         <DownloadAppDialog />
-        {isClaimed && status === 'unauthenticated' && embed && (
-          <div
-            className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10"
-            onClick={() => {
-              AuthenticationModal.open()
-            }}>
-            <LoginIcon className="stroke-primary" />
-            <p className={cn('whitespace-nowrap !text-title-3-demi text-primary')}>Log in</p>
-          </div>
+        {isClaimed && status === 'unauthenticated' && webCTA !== 'app' && (
+          <>
+            <div
+              className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10"
+              onClick={() => {
+                AuthenticationModal.open()
+              }}>
+              <LoginIcon className="stroke-primary" />
+              <p className={cn('whitespace-nowrap !text-title-3-demi text-primary')}>Log in</p>
+            </div>
+            <hr className="border-1 my-2 border-monochrome-black/10" />
+          </>
         )}
-        {!isClaimed && embed && (
+        {!isClaimed && (
           <div
             className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10"
             onClick={() => {
@@ -356,10 +358,10 @@ function UserTick({ variant = 'light' }: { variant: 'light' | 'transparent' | 'd
                 {data.user.usernameSet
                   ? '@' + data.user.nickname
                   : data.user.email
-                    ? data.user.email
-                    : formatPhoneNumberIntl(
-                        data.user.phoneNumber?.startsWith('+') ? data.user.phoneNumber : `+${data.user.phoneNumber}`
-                      )}
+                  ? data.user.email
+                  : formatPhoneNumberIntl(
+                      data.user.phoneNumber?.startsWith('+') ? data.user.phoneNumber : `+${data.user.phoneNumber}`
+                    )}
               </p>
               {!data.user.isBrandSystemUser && <p className="text-body-1-demi text-monochrome-6">Complete profile</p>}
             </div>
