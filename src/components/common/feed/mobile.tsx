@@ -42,7 +42,6 @@ export function Mobile({
 }: MobileProps) {
   const { defaultSizeBox } = useGenuinOptions((state) => ({
     defaultSizeBox: state.sizeBoxes.default,
-    embed: state.embed,
   }))
   // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
   const videoSizeBox = customSizeBox || defaultSizeBox

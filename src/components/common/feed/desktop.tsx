@@ -61,9 +61,7 @@ type SwiperRendererProps = { customSizeBox?: VideoSizeBoxType; startIndex: numbe
 const SHELLS = Array.from({ length: 100 })
 function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: SwiperRendererProps) {
   const { showKsGestures, gestureStep, updateGestureStep } = useLocalStorage()
-  const { defaultSizeBox } = useGenuinOptions(
-    useShallow((state) => ({ defaultSizeBox: state.sizeBoxes.default, embed: state.embed }))
-  )
+  const { defaultSizeBox } = useGenuinOptions(useShallow((state) => ({ defaultSizeBox: state.sizeBoxes.default })))
 
   // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
   const sizeBox = customSizeBox || defaultSizeBox

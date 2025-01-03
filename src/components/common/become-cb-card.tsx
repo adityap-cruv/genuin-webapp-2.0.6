@@ -10,10 +10,10 @@ import { cn } from '@/lib/utils'
 import { CustomImage } from '../custom/custom-image'
 
 export default function BecomeCbCard({ className }: { className: string }) {
-  const { embed, brandName } = useGenuinOptions(
+  const { webCTA, brandName } = useGenuinOptions(
     useShallow((state) => ({
-      embed: state.embed,
       user: state.user,
+      webCTA: state.webCTA,
       brandName: state.config?.name ? state.config?.name : 'Genuin',
     }))
   )
@@ -54,14 +54,14 @@ export default function BecomeCbCard({ className }: { className: string }) {
           // if (user?.isEmailVerified) {
           //   handleCommunityBuilderClick()
           // } else {
-          AuthenticationModal.open('KS_CB_REQUEST', embed ? 'KS_CB_SUBDOMAIN' : 'KS_CB_WEB')
+          AuthenticationModal.open('KS_CB_REQUEST', webCTA !== 'app' ? 'KS_CB_SUBDOMAIN' : 'KS_CB_WEB')
           // }
           // AuthenticationModal.open(undefined, 'WALLET_HOW_IT_WORKS')
         }}>
         <div className="z-20 w-3/5">
           <p className="w-64 overflow-hidden p-3 text-body-1-bold">
             Become a <span className="font-semibold italic">Creator &nbsp;</span>
-            {embed ? 'for' : 'on'} <br />
+            {'for'} <br />
             <span className="flex items-center gap-1 text-primary">
               <span className="line-clamp-1 inline-block overflow-hidden text-ellipsis whitespace-nowrap">
                 {brandName}

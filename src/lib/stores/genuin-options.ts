@@ -111,7 +111,6 @@ type StateType = {
    * Set true if you embed needs to be true.
    * @default false
    */
-  embed: boolean
   brandId: string
   logoUrl: string
   brandWebLogo: string
@@ -149,7 +148,6 @@ type ActionsType = {
 }
 
 const initialState: StateType = {
-  embed: true,
   brandId: '',
   logoUrl: '',
   brandWebLogo: '',

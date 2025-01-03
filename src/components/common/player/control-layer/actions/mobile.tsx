@@ -42,7 +42,7 @@ export function Mobile({
     closeComments: state.closeModal,
     commentsIsOpen: state.modalIsOpen,
   }))
-  const { user } = useGenuinOptions((state) => ({ user: state.user, embed: state.embed }))
+  const { user } = useGenuinOptions((state) => ({ user: state.user }))
   const searchParams = Object.fromEntries(useSearchParams())
 
   return (
