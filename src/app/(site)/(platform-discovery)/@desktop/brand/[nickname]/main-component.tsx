@@ -12,7 +12,6 @@ import { TopStickyBar } from './top-bar'
 import { ShareIcon } from '@icons/share-icon'
 import { type BrandSchemaType, type ProfileDetailsType } from '@lib/schemas/profile/profile'
 import { CommunityList } from './community-list'
-import { TickIcon } from '@icons/tick-icon'
 import { InstagramIcon } from '@icons/instagram-icon'
 import { TikTokIcon } from '@icons/tiktok-icon'
 import { LinkedInIcon } from '@icons/linkedin-icon'
@@ -20,6 +19,7 @@ import { TwitterIcon } from '@icons/twitter-icon'
 import Analytics from '@services/analytics'
 import { useGenuinOptions } from '@/lib/stores/genuin-options'
 import { LinkIcon } from '@icons/link-icon'
+import BrandBadgeIcon from '@/components/common/brand-badge-icon'
 
 interface CompProps {
   profileData: ProfileDetailsType
@@ -77,10 +77,14 @@ export function MainComponent({ profileData }: CompProps) {
               </>
             )}
             {profileData.brand && (
-              <div className="ml-2 flex items-center gap-1 rounded-full bg-primary-200 p-1 px-1.5">
-                <TickIcon className="h-4 w-4 fill-primary" />
-                <p className="text-cap-1-demi text-primary">Brand</p>
-              </div>
+              <BrandBadgeIcon
+                userLogoType={profileData.brand?.brand_user_logo}
+                className="ml-2 flex items-center gap-1 rounded-full bg-primary-200 p-1 px-1.5"
+              />
+              // <div className="ml-2 flex items-center gap-1 rounded-full bg-primary-200 p-1 px-1.5">
+              //   <TickIcon className="h-4 w-4 fill-primary" />
+              //   <p className="text-cap-1-demi text-primary">Brand</p>
+              // </div>
             )}
           </div>
           <p className="my-1 text-body-1-med">{profileData?.bio}</p>

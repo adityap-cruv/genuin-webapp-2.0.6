@@ -1,14 +1,31 @@
 import { type ComponentProps } from 'react'
+import { cva } from 'class-variance-authority'
+import cn from 'classnames'
 
-type Props = ComponentProps<'svg'>
+type Props = ComponentProps<'svg'> & {
+  variant?: 'light' | 'primary' | 'dark'
+}
 
-export function TickIcon({ ...props }: Props) {
+const tickIconClasses = cva('', {
+  variants: {
+    variant: {
+      light: 'fill-monochrome-white',
+      primary: 'fill-primary',
+      dark: 'fill-monochrome-black',
+    },
+  },
+  defaultVariants: {
+    variant: 'primary',
+  },
+})
+
+export function TickIcon({ variant = 'primary', className, ...props }: Props) {
   return (
     <svg
       width="12"
       height="12"
       viewBox="0 0 12 12"
-      className="fill-primary"
+      className={cn(tickIconClasses({ variant }), className)}
       {...props}
       fill="none"
       xmlns="http://www.w3.org/2000/svg">

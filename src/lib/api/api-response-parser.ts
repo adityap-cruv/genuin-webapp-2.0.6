@@ -46,7 +46,13 @@ export function parseFeedResponseFromGoApi(feeds: FeedResponseFromGoApi[]) {
       profileImage: owner.profile_image_s ?? owner.profile_image_m ?? owner.profile_image,
       userName: owner.username,
       name: owner.name,
-      ...(owner.brand && { brand: { brand_id: Number(owner.brand.brand_id), brand_slug: owner.brand.brand_slug } }),
+      ...(owner.brand && {
+        brand: {
+          brand_id: Number(owner.brand.brand_id),
+          brand_slug: owner.brand.brand_slug,
+          brand_user_logo: community.brand?.brand_user_logo || 1,
+        },
+      }),
     },
     video: {
       id: uuid,

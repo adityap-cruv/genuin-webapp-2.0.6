@@ -8,7 +8,6 @@ import { Actions } from './actions'
 import { ReadMore } from '@components/common/read-more'
 import { cn } from '@lib/utils'
 import { AnimatedMuteIcon } from './animated-mute-icon'
-import { TickIcon } from '@icons/tick-icon'
 import { type DescriptionArrType } from '@lib/schemas/player/video'
 import Analytics from '@services/analytics'
 import { PlayerProgressBar } from './player-progress-bar'
@@ -21,6 +20,7 @@ import { PlayIcon } from '@icons/player-controls/play-icon'
 import { PauseIcon } from '@icons/player-controls/pause-icon'
 import { GroupIcon } from '@icons/group-icon'
 import { motion } from 'framer-motion'
+import BrandBadgeIcon from '@components/common/brand-badge-icon'
 
 type MobileProps = {
   isActive: boolean
@@ -43,6 +43,7 @@ type MobileProps = {
     brand?: {
       brand_id: number
       brand_slug: string
+      brand_user_logo: number
     } | null
   }
   clickableUrl: string | null
@@ -211,14 +212,9 @@ function Details({
                   fallbackString={owner.name ?? 'U'}
                   isAvatar={owner.isAvatar}
                 />
-                <p className="line-clamp-1 break-all px-2 text-title-3-bold text-monochrome-white">@{owner.userName}</p>
+                <p className="line-clamp-1 break-all px-1 text-title-3-bold text-monochrome-white">@{owner.userName}</p>
               </Link>
-              {owner.brand && (
-                <div className="flex items-center gap-0.5">
-                  <TickIcon className="h-3 w-3 fill-primary" />
-                  <p className="text-cap-2-demi text-primary">Brand</p>
-                </div>
-              )}
+              {owner.brand && <BrandBadgeIcon userLogoType={owner.brand?.brand_user_logo} variant={'light'} />}
             </div>
             <motion.div
               initial={linkoutId ? (showLinkouts ? Animations.hidden : undefined) : undefined}
