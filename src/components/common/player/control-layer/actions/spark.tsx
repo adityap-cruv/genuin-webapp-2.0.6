@@ -21,7 +21,7 @@ type SparkComponentProps = {
 
 export function Spark({ isSparked = false, sparkCount, videoId, shareUrl, videoSlug }: SparkComponentProps) {
   const { handleWalletBalance } = useWalletBalanceHandler()
-  const { user, webCTA, isMobile } = useGenuinOptions()
+  const { user, isMobile } = useGenuinOptions()
   const { updateSparkStatus } = useFeedListContext()
 
   const handleSparkClick = useCallback(async () => {
