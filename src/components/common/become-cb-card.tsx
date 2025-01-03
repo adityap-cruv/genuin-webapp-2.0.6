@@ -10,10 +10,10 @@ import { cn } from '@/lib/utils'
 import { CustomImage } from '../custom/custom-image'
 
 export default function BecomeCbCard({ className }: { className: string }) {
-  const { webCTA, brandName } = useGenuinOptions(
+  const { brandId, brandName } = useGenuinOptions(
     useShallow((state) => ({
       user: state.user,
-      webCTA: state.webCTA,
+      brandId: state.brandId,
       brandName: state.config?.name ? state.config?.name : 'Genuin',
     }))
   )
@@ -54,7 +54,7 @@ export default function BecomeCbCard({ className }: { className: string }) {
           // if (user?.isEmailVerified) {
           //   handleCommunityBuilderClick()
           // } else {
-          AuthenticationModal.open('KS_CB_REQUEST', webCTA !== 'app' ? 'KS_CB_SUBDOMAIN' : 'KS_CB_WEB')
+          AuthenticationModal.open('KS_CB_REQUEST', brandId !== '99' ? 'KS_CB_SUBDOMAIN' : 'KS_CB_WEB')
           // }
           // AuthenticationModal.open(undefined, 'WALLET_HOW_IT_WORKS')
         }}>
