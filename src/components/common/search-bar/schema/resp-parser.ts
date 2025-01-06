@@ -24,6 +24,7 @@ export function parseCommunities(communities: CommunitiesResType) {
           subdomain: item.brand.subdomain,
           logo: item.brand.logo,
           created_at: item.brand.created_at,
+          brand_web_logo: item.brand.brand_web_logo,
           brand_user_logo: item.brand.brand_user_logo ?? 1,
           favicon: item.brand.favicon,
           brand_system_user_id: item.brand.brand_system_user_id,

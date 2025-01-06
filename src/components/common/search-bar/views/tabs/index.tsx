@@ -27,7 +27,7 @@ export type BrandType = {
   subdomain: string | null
   logo: string | null
   created_at: number
-  brand_web_logo?: number | null
+  brand_web_logo?: string | null
   favicon: string
   brand_system_user_id: string | null
   brand_slug: string
