@@ -109,7 +109,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
         <SearchBar.mobile variant={variant}>
           <SearchIcon variant={variant} />
         </SearchBar.mobile>
-        {!embed && showDownloadButton && (
+        {brandId?.toString() === '99' && showDownloadButton && (
           <Link href={MOBILE_DOWNLOAD_APP_LINK + '?' + searchParams.toString()} target="_blank">
             <Button
               className={
@@ -121,7 +121,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
             </Button>
           </Link>
         )}
-        {embed && <UserTick variant={variant} />}
+        {webCTA !== 'app' && <UserTick variant={variant} />}
         {showClose && (
           <span
             className={cn(
