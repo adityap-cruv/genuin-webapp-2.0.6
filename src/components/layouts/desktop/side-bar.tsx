@@ -93,7 +93,7 @@ export function SideBar() {
           </>
         )}
         {/* TODO: Genuin as a Brand. Check and discuss to change default true value */}
-        {brandId === '99' && (
+        {brandId?.toString() === '99' && (
           <Popover>
             <PopoverTrigger className="w-full">
               <Item title="More">
@@ -151,8 +151,8 @@ export function SideBar() {
         <CategoryViewDynamic className="hidden xl:block" />
         <RecentCommunities />
       </div>
-        {/* TODO: Genuin as a Brand. Check and discuss to change default true value */}
-        {brandId !== '99'  && (
+      {/* TODO: Genuin as a Brand. Check and discuss to change default true value */}
+      {brandId?.toString() !== '99' && (
         <div className="hidden xl:block">
           <hr className="border-1 mb-4 mt-1 border-monochrome-black/10" />
           <div className="flex items-center">

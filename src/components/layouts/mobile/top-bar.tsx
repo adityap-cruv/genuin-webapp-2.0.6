@@ -92,7 +92,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
       </span>
       <span className="flex items-center gap-x-2">
         {/* TODO: Genuin as a Brand. Check and discuss to change default true value */}
-        {brandId === '99'  && showDownloadButton && (
+        {brandId?.toString() === '99' && showDownloadButton && (
           <Link href={MOBILE_DOWNLOAD_APP_LINK + '?' + searchParams.toString()} target="_blank">
             <Button
               className={

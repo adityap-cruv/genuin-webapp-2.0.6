@@ -54,7 +54,7 @@ export default function BecomeCbCard({ className }: { className: string }) {
           // if (user?.isEmailVerified) {
           //   handleCommunityBuilderClick()
           // } else {
-          AuthenticationModal.open('KS_CB_REQUEST', brandId !== '99' ? 'KS_CB_SUBDOMAIN' : 'KS_CB_WEB')
+          AuthenticationModal.open('KS_CB_REQUEST', brandId.toString() !== '99' ? 'KS_CB_SUBDOMAIN' : 'KS_CB_WEB')
           // }
           // AuthenticationModal.open(undefined, 'WALLET_HOW_IT_WORKS')
         }}>
