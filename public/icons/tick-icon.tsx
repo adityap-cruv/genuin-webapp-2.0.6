@@ -11,7 +11,7 @@ const tickIconClasses = cva('', {
     variant: {
       light: 'fill-monochrome-white',
       primary: 'fill-primary',
-      dark: 'fill-monochrome-black',
+      dark: 'fill-primary', // map 'dark' to 'primary'
     },
   },
   defaultVariants: {

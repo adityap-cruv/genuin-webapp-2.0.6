@@ -6,6 +6,7 @@ import { useToast } from '@components/ui/use-toast'
 import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { getCurrentShareUrl } from '@lib/utils'
 import { ShareIcon } from '@icons/share-icon'
+import BrandBadgeIcon from '@/components/common/brand-badge-icon'
 
 type Props = {
   /**
@@ -21,6 +22,7 @@ type Props = {
   profileNickname: string
   isAvatar: boolean
   shareUrl: string
+  brandUserLogo?: number
 }
 
 export const TopStickyBar = {
@@ -36,6 +38,7 @@ function Desktop({
   profileNickname,
   isAvatar,
   shareUrl,
+  brandUserLogo,
   ...props
 }: Props) {
   const navAnimationControl = useAnimationControls()
@@ -73,6 +76,7 @@ function Desktop({
         ) : (
           <p className="text-title-2-demi">@{profileNickname}</p>
         )}
+        <BrandBadgeIcon userLogoType={brandUserLogo} className="flex items-center gap-1" variant="dark" />
       </span>
       <Button
         variant="outline"
@@ -100,6 +104,7 @@ function Mobile({
   profileName,
   profileNickname,
   isAvatar,
+  brandUserLogo,
   ...props
 }: Props) {
   const navAnimationControl = useAnimationControls()
@@ -135,6 +140,7 @@ function Mobile({
         ) : (
           <p className="text-title-2-demi">@{profileNickname}</p>
         )}
+        <BrandBadgeIcon userLogoType={brandUserLogo} className="ml-2 flex items-center gap-1" variant="dark" />
       </span>
     </motion.div>
   )

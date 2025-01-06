@@ -2,8 +2,9 @@ import React from 'react'
 import { GenuinIcon } from '@icons/genuin-icon'
 import { cva } from 'class-variance-authority'
 import type { VariantProps } from 'class-variance-authority'
+import cn from 'classnames'
 
-const badgeVariants = cva('h-4 w-4 fill-monochrome-white', {
+const badgeVariants = cva('', {
   variants: {
     size: {
       sm: 'h-2 w-2',
@@ -22,6 +23,19 @@ const badgeVariants = cva('h-4 w-4 fill-monochrome-white', {
   },
 })
 
+const spanVariants = cva('', {
+  variants: {
+    variant: {
+      light: 'bg-monochrome-white',
+      dark: 'bg-tertiary-300',
+      primary: 'bg-primary',
+    },
+  },
+  defaultVariants: {
+    variant: 'light',
+  },
+})
+
 interface GenuinBadgeProps extends VariantProps<typeof badgeVariants> {
   className?: string
 }
@@ -29,7 +43,7 @@ interface GenuinBadgeProps extends VariantProps<typeof badgeVariants> {
 const GenuinBadge: React.FC<GenuinBadgeProps> = ({ size, variant, className }) => {
   return (
     <div className={`flex items-center gap-1 ${className}`}>
-      <span className="rounded-full bg-monochrome-white px-1 py-1"></span>
+      <span className={cn('h-1 w-1 rounded-full', spanVariants({ variant }))}></span>
       <GenuinIcon.icon className={badgeVariants({ size, variant })} />
     </div>
   )

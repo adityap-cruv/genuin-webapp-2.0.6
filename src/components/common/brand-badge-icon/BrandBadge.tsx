@@ -12,7 +12,7 @@ const textClasses = cva('', {
     variant: {
       light: 'text-monochrome-white bg-monochrome-white/20',
       primary: 'text-primary',
-      dark: 'text-monochrome-black bg-monochrome-black/20',
+      dark: 'bg-tertiary-200',
     },
   },
   defaultVariants: {

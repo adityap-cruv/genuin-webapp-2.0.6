@@ -51,6 +51,7 @@ export function MainComponent({ profileData }: CompProps) {
         profileNickname={profileData?.nickname}
         isAvatar={profileData?.is_avatar}
         shareUrl={profileData.share_url}
+        brandUserLogo={profileData.brand?.brand_user_logo}
       />
       <div className="hide-scrollbar absolute inset-0 h-full w-full overflow-auto px-4">
         <div className="mt-4 flex items-center justify-between">
@@ -65,21 +66,22 @@ export function MainComponent({ profileData }: CompProps) {
           </div>
         </div>
         <div className="w-1/2" ref={divRef}>
-          <div className="flex items-center py-1" ref={detailsDivRef}>
+          <div className="flex items-center gap-x-2 py-1" ref={detailsDivRef}>
             {profileData?.name ? (
               <>
-                <p className="line-clamp-1 pr-2 text-title-1-bold">{profileData?.name}</p>
+                <p className="line-clamp-1 text-title-1-bold">{profileData?.name}</p>
                 <p className="line-clamp-1 text-body-1-med text-tertiary">@{profileData?.nickname}</p>
               </>
             ) : (
               <>
-                <p className="line-clamp-1 pr-2 text-title-1-bold text-tertiary">@{profileData?.nickname}</p>
+                <p className="line-clamp-1 text-title-1-bold text-tertiary">@{profileData?.nickname}</p>
               </>
             )}
             {profileData.brand && (
               <BrandBadgeIcon
                 userLogoType={profileData.brand?.brand_user_logo}
-                className="ml-2 flex items-center gap-1 rounded-full bg-primary-200 p-1 px-1.5"
+                className="flex items-center gap-1"
+                variant="dark"
               />
               // <div className="ml-2 flex items-center gap-1 rounded-full bg-primary-200 p-1 px-1.5">
               //   <TickIcon className="h-4 w-4 fill-primary" />
