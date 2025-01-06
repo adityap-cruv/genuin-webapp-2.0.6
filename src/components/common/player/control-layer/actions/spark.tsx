@@ -7,7 +7,7 @@ import { ActionItem } from './action-item'
 import Analytics from '@/services/analytics'
 import icSpark from '@icons/player-controls/icBulb.svg'
 import icSparkTrue from '@icons/player-controls/icSparkTrue.svg'
-import { abbreviateNumber, openModal } from '@/lib/utils'
+import { abbreviateNumber, openGeneratedLink, openModal } from '@/lib/utils'
 import { sparkDeepLink } from '@/lib/get-deeplink'
 import { useCallback } from 'react'
 
@@ -21,7 +21,7 @@ type SparkComponentProps = {
 
 export function Spark({ isSparked = false, sparkCount, videoId, shareUrl, videoSlug }: SparkComponentProps) {
   const { handleWalletBalance } = useWalletBalanceHandler()
-  const { user } = useGenuinOptions()
+  const { user, isMobile } = useGenuinOptions()
   const { updateSparkStatus } = useFeedListContext()
 
   const handleSparkClick = useCallback(async () => {
@@ -41,7 +41,11 @@ export function Spark({ isSparked = false, sparkCount, videoId, shareUrl, videoS
       } else {
         // This call will generate the deep link for the video.
         await sparkDeepLink(videoSlug, shareUrl).then((generatedLink) => {
-          openModal({ deepLink: generatedLink, subtitle: 'Get the app to spark the video.' })
+          if (!isMobile) {
+            openModal({ deepLink: generatedLink, subtitle: 'Get the app to spark the video.' })
+          } else {
+            openGeneratedLink(generatedLink)
+          }
         })
       }
 

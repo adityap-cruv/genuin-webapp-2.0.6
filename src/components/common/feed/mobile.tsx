@@ -1,15 +1,10 @@
-import { AnimatedInfinityView } from '@components/common/animated-infinity-view'
-// import { useFeedListStore } from './store'
 import { Player } from '../player'
-import { memo, useCallback, useEffect, useState } from 'react'
+import { useCallback } from 'react'
 import { useCommentSheetStore } from '../player/comment-sheet/store'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Mousewheel } from 'swiper/modules'
 import { useGenuinOptions, type VideoSizeBoxType } from '@lib/stores/genuin-options'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
-// import { showInterruption } from '@components/providers/interruption-provider'
-// import { useShallow } from 'zustand/react/shallow'
-import { AnimatePresence, motion } from 'framer-motion'
 import Analytics from '@/services/analytics'
 import { usePlayerControlStore } from '../player/player-control-store'
 import { FeedShimmer } from '../shimmers/feed-shimmer'
@@ -47,7 +42,6 @@ export function Mobile({
 }: MobileProps) {
   const { defaultSizeBox } = useGenuinOptions((state) => ({
     defaultSizeBox: state.sizeBoxes.default,
-    embed: state.embed,
   }))
   // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
   const videoSizeBox = customSizeBox || defaultSizeBox
@@ -124,65 +118,7 @@ function SwiperRenderer({ videoSizeBox }: { videoSizeBox: VideoSizeBoxType }) {
           </SwiperSlide>
         ))}
       </Swiper>
-      <InfinityViewBox videoDetails={videos[currentIndex]} />
       {showKsGestures && <KsGestures />}
     </div>
   )
 }
-
-const InfinityViewBox = memo(function InfinityViewBox({ videoDetails }: { videoDetails: VideoPlayerModalType }) {
-  const [isVisible, setIsVisible] = useState(true)
-
-  useEffect(() => {
-    if (!videoDetails) return
-    if (!videoDetails.video.linkoutId) {
-      if (!isVisible) setIsVisible(true)
-      return
-    }
-    let timeoutId: any
-    timeoutId = setTimeout(() => {
-      setIsVisible(false)
-    }, 5000)
-
-    return () => {
-      if (timeoutId) {
-        clearTimeout(timeoutId)
-        timeoutId = null
-      }
-      setIsVisible(true)
-    }
-  }, [videoDetails])
-
-  if (videoDetails)
-    return (
-      <AnimatePresence>
-        {isVisible && (
-          <motion.div
-            initial={{ opacity: 1 }}
-            exit={{ opacity: 0, transition: { duration: 0.3 } }}
-            className="absolute bottom-0 z-10 w-full">
-            <AnimatedInfinityView
-              community={{
-                name: videoDetails.community.name ?? '',
-                handle: videoDetails.community.handle,
-                profileImage: videoDetails.community.profileImage ?? '',
-                slug: videoDetails.community.slug,
-                type: videoDetails.community.type ?? null,
-                brand: videoDetails.community.brand
-                  ? {
-                      name: videoDetails.community.brand?.name ?? '',
-                      brand_system_user_id: videoDetails.community.brand?.brand_system_user_id ?? '',
-                      brand_slug: videoDetails.community.brand?.brand_slug ?? '',
-                    }
-                  : null,
-              }}
-              loop={{
-                name: videoDetails.loop.name ?? '',
-                slug: videoDetails.loop.slug,
-              }}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
-    )
-})

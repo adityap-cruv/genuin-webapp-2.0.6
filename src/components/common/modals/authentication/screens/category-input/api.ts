@@ -7,6 +7,7 @@ const TopicSchema = z.object({
   topic: z.string(),
   is_selected: z.boolean(),
 })
+export type Topic = z.infer<typeof TopicSchema>
 
 const CategorySchema = z.array(
   z.object({
@@ -15,6 +16,7 @@ const CategorySchema = z.array(
     title: z.string(),
   })
 )
+export type Category = z.infer<typeof CategorySchema>
 
 function validateCategoryListResp(data: any) {
   try {

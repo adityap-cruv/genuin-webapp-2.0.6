@@ -26,17 +26,22 @@ export function Personalization({
   const initialSelectedItemsRef = useRef<Set<string>>(new Set())
   const [dialogOpen, setDialogOpen] = useState(false)
   const queryClient = useQueryClient()
+  const [isAllSelected, setIsAllSelected] = useState(false)
 
   useEffect(() => {
     if (CategoryData) {
       const initialSelectedItems = new Set<string>()
+      let isSelected = true
       CategoryData.forEach((category: any) => {
         category.topics.forEach((topic: any) => {
           if (topic.is_selected) {
             initialSelectedItems.add(topic.topic_id)
+          } else {
+            isSelected = false
           }
         })
       })
+      setIsAllSelected(isSelected)
       setSelectedItem(initialSelectedItems)
       initialSelectedItemsRef.current = new Set(initialSelectedItems) // Store initial selected items
     }
@@ -67,6 +72,17 @@ export function Personalization({
         description: 'Something went wrong. Please try again after some time.',
       })
     }
+  }
+
+  function handleDialogClose() {
+    // Recalculate `isAllSelected` when modal closes
+    const totalTopics = CategoryData?.reduce((count: number, category: any) => count + category.topics.length, 0) ?? 0
+
+    const allTopicsSelected = selectedItems.size === totalTopics
+    setIsAllSelected(allTopicsSelected)
+
+    // Update initialSelectedItemsRef to store the updated state
+    initialSelectedItemsRef.current = new Set(selectedItems)
   }
 
   return (
@@ -107,7 +123,9 @@ export function Personalization({
                   }}>
                   <p className="text-body-1-demi">Interests</p>
                   <div className="flex items-center">
-                    <p className="text-body-1-demi text-tertiary">{selectedItems.size} selected</p>
+                    <p className="text-body-1-demi text-tertiary">
+                      {isAllSelected ? 'All selected' : selectedItems.size + ' selected'}
+                    </p>
                     <ChevronRight className="h-6 w-6 stroke-tertiary" />
                   </div>
                 </div>
@@ -136,7 +154,7 @@ export function Personalization({
                   initialSelectedItemsRef={initialSelectedItemsRef}
                   onClose={() => {
                     setDialogOpen(false)
-                    initialSelectedItemsRef.current = new Set(selectedItems)
+                    handleDialogClose()
                   }}
                   toast={toast}
                 />

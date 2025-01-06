@@ -86,6 +86,7 @@ export function TopStickyBar({
           id={communityId}
           role={role}
           type={isCommunityPrivate ? 'private' : 'public'}
+          isMobile={false}
         />
         <Button
           variant="outline"

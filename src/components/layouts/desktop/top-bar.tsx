@@ -29,8 +29,7 @@ export function TopBar({
   showUserTick?: boolean
   showSearchBar?: boolean
 }) {
-  const { config, embed: isEmbed, isLoading } = useGenuinOptions()
-
+  const { config, isLoading, webCTA } = useGenuinOptions()
   return (
     <>
       <div className="z-20 flex h-[76px] w-full justify-center border-b border-monochrome-9  bg-monochrome-white sm:flex">
@@ -63,14 +62,14 @@ export function TopBar({
             <div className="flex items-center gap-x-2">
               {showSearchBar && <SearchBar.desktop />}
               <WalletAmountBadge type="dark" />
-              {!isEmbed ? (
+              {webCTA === 'app' ? (
                 <>
                   <DownloadAppDialog>
                     <Button
                       variant="default"
                       size={'custom'}
                       className="h-8 bg-new-off-black px-4 py-3 hover:bg-new-dark-grey">
-                      <p className="text-[15px] text-new-para-2 font-semibold text-tertiary-100">Download App</p>
+                      <p className="text-[15px] text-new-para-2 font-semibold text-tertiary-100">Get app</p>
                     </Button>
                   </DownloadAppDialog>
                 </>
@@ -146,10 +145,10 @@ function UserTick() {
                 {data.user.usernameSet
                   ? '@' + data.user.nickname
                   : data.user.email
-                    ? data.user.email
-                    : formatPhoneNumberIntl(
-                        data.user.phoneNumber?.startsWith('+') ? data.user.phoneNumber : `+${data.user.phoneNumber}`
-                      )}
+                  ? data.user.email
+                  : formatPhoneNumberIntl(
+                      data.user.phoneNumber?.startsWith('+') ? data.user.phoneNumber : `+${data.user.phoneNumber}`
+                    )}
               </p>
               {!data.user?.isBrandSystemUser && (
                 <p

@@ -136,6 +136,7 @@ export function CommunityList({ brandId, scrollYProgress }: { brandId: number; s
                       onStatusChange={(newRole) => {
                         handleCommunityRoleChange(community.id, newRole)
                       }}
+                      isMobile={true}
                     />
                   </div>
                 </div>

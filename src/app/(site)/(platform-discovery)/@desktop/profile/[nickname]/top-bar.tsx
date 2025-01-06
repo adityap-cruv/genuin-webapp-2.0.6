@@ -47,8 +47,6 @@ function Desktop({
   const { toast } = useToast()
   const pathName = usePathname()
   const { user } = useGenuinOptions((state) => ({
-    isEmbed: state.embed,
-    parentUrl: state.parentUrl,
     user: state.user,
   }))
 
