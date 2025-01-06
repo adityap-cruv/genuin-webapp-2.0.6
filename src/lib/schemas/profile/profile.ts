@@ -8,7 +8,7 @@ const BrandSchema = z
     no_of_communities: z.number(),
     brand_slug: z.string(),
     brand_url: z.string(),
-    brand_user_logo: z.number().nullish(),
+    brand_user_logo: z.number().nullish().default(1),
   })
   .nullish()
 

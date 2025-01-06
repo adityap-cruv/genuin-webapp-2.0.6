@@ -55,7 +55,7 @@ export function MainComponent({ profileData }: CompProps) {
         profileNickname={profileData?.nickname}
         isAvatar={profileData?.is_avatar}
         shareUrl={profileData.share_url}
-        brandUserLogo={profileData.brand?.brand_user_logo}
+        brandUserLogo={profileData.brand?.brand_user_logo ?? 1}
       />
       <div
         ref={scrollDivRef}
@@ -111,7 +111,7 @@ export function MainComponent({ profileData }: CompProps) {
             )}
             {profileData.brand && (
               <BrandBadgeIcon
-                userLogoType={profileData.brand?.brand_user_logo}
+                userLogoType={profileData.brand?.brand_user_logo ?? 1}
                 className="flex items-center gap-1"
                 variant="dark"
               />

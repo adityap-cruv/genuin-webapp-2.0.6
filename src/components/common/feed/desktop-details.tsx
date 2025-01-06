@@ -52,7 +52,7 @@ export function DesktopDetails({ loop, community, owner, video }: DesktopDetails
                   <p className="line-clamp-1 break-all text-title-3-demi">@{owner.userName}</p>
                 </Link>
                 <BrandBadgeIcon
-                  userLogoType={owner.brand?.brand_user_logo}
+                  userLogoType={owner.brand?.brand_user_logo ?? 1}
                   className="flex items-center"
                   variant="dark"
                 />

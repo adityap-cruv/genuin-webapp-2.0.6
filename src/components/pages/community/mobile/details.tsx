@@ -321,7 +321,7 @@ function Leaders() {
           description={leader.bio ?? ''}
           image={leader.profile_image}
           isAvatar={leader.is_avatar}
-          brand={leader.brand}
+          brand={leader.brand ? { ...leader.brand, brand_user_logo: leader.brand.brand_user_logo ?? 1 } : undefined}
           isOwner={true}
         />
       </Link>
@@ -339,7 +339,7 @@ function Leaders() {
                 description={item.bio ?? ''}
                 image={item.profile_image_m ?? item.profile_image}
                 isAvatar={item.is_avatar}
-                brand={item.brand}
+                brand={item.brand ? { ...item.brand, brand_user_logo: item.brand.brand_user_logo ?? 1 } : undefined}
                 isOwner={false}
               />
             </Link>
@@ -435,7 +435,7 @@ function Members() {
                   description={member?.bio ?? ''}
                   image={member.profile_image}
                   isAvatar={member.is_avatar}
-                  brand={member.brand ?? null}
+                  brand={member.brand ? { ...member.brand, brand_user_logo: member.brand.brand_user_logo ?? 1 } : null}
                   isOwner={false}
                 />
               </Link>

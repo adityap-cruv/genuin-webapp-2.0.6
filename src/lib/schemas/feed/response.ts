@@ -128,6 +128,7 @@ type FeedCommunityInfo = {
     brand_slug: string
     brand_web_logo: string
     name: string
+    brand_user_logo: number
   }
 }
 

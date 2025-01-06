@@ -232,7 +232,7 @@ export function MainComponent({ loopDetails }: Props) {
                     </p>
                     {loopDetails.owner.brand && (
                       <BrandBadgeIcon
-                        userLogoType={loopDetails.owner.brand?.brand_user_logo}
+                        userLogoType={loopDetails.owner.brand?.brand_user_logo ?? 1}
                         className="flex items-center"
                         variant="dark"
                       />
@@ -352,7 +352,7 @@ function LoopCohosts({ slug }: { slug: string }) {
                   description={item.bio ?? ''}
                   image={item.profile_image_m ?? item.profile_image}
                   isAvatar={item.is_avatar}
-                  brand={item.brand ?? null}
+                  brand={item.brand ? { ...item.brand, brand_user_logo: item.brand.brand_user_logo ?? 1 } : null}
                   isOwner={false}
                 />
               )
@@ -368,7 +368,7 @@ function LoopCohosts({ slug }: { slug: string }) {
                   description={item.bio ?? ''}
                   image={item.profile_image_m ?? item.profile_image}
                   isAvatar={item.is_avatar}
-                  brand={item.brand ?? null}
+                  brand={item.brand ? { ...item.brand, brand_user_logo: item.brand.brand_user_logo ?? 1 } : null}
                   isOwner={false}
                 />
               </Link>
@@ -417,7 +417,7 @@ function LoopSubscribers({ slug }: { slug: string }) {
                 description={item.bio ?? ''}
                 image={item.profile_image_m ?? item.profile_image}
                 isAvatar={item.is_avatar}
-                brand={item.brand ?? null}
+                brand={item.brand ? { ...item.brand, brand_user_logo: item.brand.brand_user_logo ?? 1 } : null}
                 isOwner={false}
               />
             </Link>
