@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { NoResults } from './no-results'
 import { useSearchBarStore } from '../../store'
-import { TickIcon } from '@icons/tick-icon'
+import BrandBadgeIcon from '@/components/common/brand-badge-icon'
 
 export function People({ people }: { people?: PeopleType[] }) {
   const { close } = useSearchBarStore((state) => ({ close: state.close }))
@@ -28,10 +28,11 @@ export function People({ people }: { people?: PeopleType[] }) {
                 <div className="flex items-center gap-1">
                   <p className="text-body-1-bold">{`@${item.userName}`}</p>
                   {item.brand && (
-                    <div className="flex items-center gap-0.5">
-                      <TickIcon className="h-3 w-3 fill-primary" />
-                      <p className="text-cap-2-demi text-primary">Brand</p>
-                    </div>
+                    <BrandBadgeIcon
+                      userLogoType={item.brand?.brand_user_logo}
+                      className="flex items-center gap-1"
+                      variant="dark"
+                    />
                   )}
                 </div>
                 {item.name && <p className="text-body-1-demi">{item.name}</p>}

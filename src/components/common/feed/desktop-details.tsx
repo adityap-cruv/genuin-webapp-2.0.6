@@ -16,7 +16,7 @@ import { ShareIcon } from '@icons/share-icon'
 import { type CommentListType } from '@lib/schemas/loop/comment'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import { LockIcon } from '@icons/LockIcon'
-import { TickIcon } from '@icons/tick-icon'
+import BrandBadgeIcon from '@/components/common/brand-badge-icon'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@components/ui/tooltip'
 import { ReadMore } from '../read-more'
 import { Linkout } from '../linkout'
@@ -45,16 +45,17 @@ export function DesktopDetails({ loop, community, owner, video }: DesktopDetails
             imageUrl={owner.profileImage}
             className="h-9 w-9"
           />
-          <span className="flex items-center gap-x-1">
+          <span className="flex items-center gap-x-2">
             {owner.brand ? (
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-x-2">
                 <Link href={PATH_NAME.brand(owner.brand.brand_slug)} title={'@' + owner.userName}>
                   <p className="line-clamp-1 break-all text-title-3-demi">@{owner.userName}</p>
                 </Link>
-                <div className="flex items-center">
-                  <TickIcon className="h-3 w-3 fill-primary" />
-                  <p className="text-cap-2-demi text-primary">Brand</p>
-                </div>
+                <BrandBadgeIcon
+                  userLogoType={owner.brand?.brand_user_logo}
+                  className="flex items-center"
+                  variant="dark"
+                />
               </div>
             ) : (
               <Link href={PATH_NAME.profile(owner.userName)}>

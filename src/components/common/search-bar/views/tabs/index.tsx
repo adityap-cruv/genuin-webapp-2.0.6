@@ -27,7 +27,7 @@ export type BrandType = {
   subdomain: string | null
   logo: string | null
   created_at: number
-  brand_web_logo: string | null
+  brand_web_logo: number | null
   favicon: string
   brand_system_user_id: string | null
   brand_slug: string
@@ -50,6 +50,7 @@ export type PeopleType = {
     | {
         brand_id: number
         brand_slug: string
+        brand_user_logo: number
       }
     | null
     | undefined
