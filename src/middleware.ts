@@ -141,5 +141,6 @@ export function getConfig(host: string): { domain?: string; subdomain?: string }
     process.env.NEXT_PUBLIC_CURRENT_ENV === 'local' || process.env.NEXT_PUBLIC_CURRENT_ENV === 'qa'
       ? host.replace('.qa.begenuin.com', '')
       : host.replace('.begenuin.com', '')
+  if (subdomain === 'begenuin.com') return { subdomain: 'app' }
   return { subdomain }
 }
