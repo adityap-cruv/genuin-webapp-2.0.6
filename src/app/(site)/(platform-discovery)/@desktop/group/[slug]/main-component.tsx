@@ -231,11 +231,7 @@ export function MainComponent({ loopDetails }: Props) {
                       @{loopDetails.owner.username}
                     </p>
                     {loopDetails.owner.brand && (
-                      <BrandBadgeIcon
-                        userLogoType={loopDetails.owner.brand?.brand_user_logo ?? 1}
-                        className="flex items-center"
-                        variant="dark"
-                      />
+                      <BrandBadgeIcon userLogoType={loopDetails.owner.brand?.brand_user_logo ?? 1} variant="dark" />
                     )}
                   </div>
                 </Link>

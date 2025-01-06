@@ -76,7 +76,7 @@ function Desktop({
         ) : (
           <p className="text-title-2-demi">@{profileNickname}</p>
         )}
-        <BrandBadgeIcon userLogoType={brandUserLogo} className="flex items-center gap-1" variant="dark" />
+        <BrandBadgeIcon userLogoType={brandUserLogo} variant="dark" />
       </span>
       <Button
         variant="outline"
@@ -140,7 +140,7 @@ function Mobile({
         ) : (
           <p className="text-title-2-demi">@{profileNickname}</p>
         )}
-        <BrandBadgeIcon userLogoType={brandUserLogo} className="ml-2 flex items-center gap-1" variant="dark" />
+        <BrandBadgeIcon userLogoType={brandUserLogo} variant="dark" />
       </span>
     </motion.div>
   )

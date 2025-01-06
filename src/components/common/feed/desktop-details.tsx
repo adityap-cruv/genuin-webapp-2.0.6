@@ -51,11 +51,7 @@ export function DesktopDetails({ loop, community, owner, video }: DesktopDetails
                 <Link href={PATH_NAME.brand(owner.brand.brand_slug)} title={'@' + owner.userName}>
                   <p className="line-clamp-1 break-all text-title-3-demi">@{owner.userName}</p>
                 </Link>
-                <BrandBadgeIcon
-                  userLogoType={owner.brand?.brand_user_logo ?? 1}
-                  className="flex items-center"
-                  variant="dark"
-                />
+                <BrandBadgeIcon userLogoType={owner.brand?.brand_user_logo ?? 1} variant="dark" />
               </div>
             ) : (
               <Link href={PATH_NAME.profile(owner.userName)}>

@@ -29,7 +29,7 @@ const badgeVariants = cva('', {
 const spanVariants = cva('', {
   variants: {
     variant: {
-      light: 'bg-monochrome-white', // Light variant class
+      light: 'bg-tertiary-300', // Light variant class
       dark: 'bg-tertiary-300', // Dark variant class
       primary: 'bg-primary', // Primary variant class
     },

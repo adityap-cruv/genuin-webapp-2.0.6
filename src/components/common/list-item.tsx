@@ -33,9 +33,7 @@ export function ListItem({
       <div className="mx-2">
         <div className="flex items-center gap-2">
           <p className="line-clamp-1 text-body-1-demi">{subtitle}</p>
-          {brand && (
-            <BrandBadgeIcon userLogoType={brand?.brand_user_logo} className="flex items-center gap-1" variant="dark" />
-          )}
+          {brand && <BrandBadgeIcon userLogoType={brand?.brand_user_logo} variant="dark" />}
           {isOwner && (
             <p className="flex items-center gap-1 rounded-full bg-primary-200 p-1 pr-1.5 text-cap-1-demi text-primary">
               Owner

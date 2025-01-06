@@ -32,6 +32,7 @@ import { BellIcon } from 'lucide-react'
 import { ReadMore } from '@/components/common/read-more'
 import EmptyView from '@/components/common/empty-view'
 import { NOT_FOUND_ERROR_CODES } from '@/lib/constants'
+import BrandBadgeIcon from '@/components/common/brand-badge-icon'
 
 let loopDetailsModule: LoopDetailsType
 
@@ -147,9 +148,12 @@ export function MainComponent({ loopDetails }: Props) {
                         isAvatar={loopDetails.owner.is_avatar}
                       />
                     </div>
-                    <p className="ml-1 line-clamp-1 break-all text-cap-1-bold text-secondary">
+                    <p className="ml-1 line-clamp-1 break-all text-cap-1-bold text-secondary mr-1">
                       @{loopDetails.owner.username}
                     </p>
+                    {loopDetails.owner.brand && (
+                      <BrandBadgeIcon userLogoType={loopDetails.owner.brand?.brand_user_logo ?? 1} variant="dark" />
+                    )}
                   </div>
                 </Link>
               </div>

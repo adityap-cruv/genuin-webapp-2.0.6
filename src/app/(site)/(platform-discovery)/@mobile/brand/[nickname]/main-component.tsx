@@ -110,11 +110,7 @@ export function MainComponent({ profileData }: CompProps) {
               </>
             )}
             {profileData.brand && (
-              <BrandBadgeIcon
-                userLogoType={profileData.brand?.brand_user_logo ?? 1}
-                className="flex items-center gap-1"
-                variant="dark"
-              />
+              <BrandBadgeIcon userLogoType={profileData.brand?.brand_user_logo ?? 1} variant="dark" />
             )}
           </div>
           <p className="my-1 text-body-1-demi">{profileData?.bio}</p>

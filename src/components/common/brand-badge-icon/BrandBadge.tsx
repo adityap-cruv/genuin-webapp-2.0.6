@@ -27,7 +27,7 @@ const textClasses = cva('', {
 const BrandBadge: React.FC<BrandBadgeProps> = ({ variant = 'primary', className }) => {
   return (
     // Container div with flexbox properties and additional custom classes
-    <div className={`flex items-center gap-0.5 ${className}`}>
+    <div className={`flex items-center gap-1 ${className}`}>
       {/* Paragraph element with variant-specific and additional classes */}
       <p className={cn(textClasses({ variant }), 'rounded-full px-2 py-1 text-cap-1-demi')}>Brand</p>
     </div>

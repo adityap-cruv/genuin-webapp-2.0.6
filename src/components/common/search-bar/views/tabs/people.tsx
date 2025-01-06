@@ -27,13 +27,7 @@ export function People({ people }: { people?: PeopleType[] }) {
               <span className="flex flex-col gap-y-0.5">
                 <div className="flex items-center gap-1">
                   <p className="text-body-1-bold">{`@${item.userName}`}</p>
-                  {item.brand && (
-                    <BrandBadgeIcon
-                      userLogoType={item.brand?.brand_user_logo}
-                      className="flex items-center gap-1"
-                      variant="dark"
-                    />
-                  )}
+                  {item.brand && <BrandBadgeIcon userLogoType={item.brand?.brand_user_logo} variant="dark" />}
                 </div>
                 {item.name && <p className="text-body-1-demi">{item.name}</p>}
                 {item.bio && <p className="line-clamp-1 text-cap-1-demi text-tertiary">{item.bio}</p>}

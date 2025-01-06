@@ -29,7 +29,7 @@ const badgeClasses = cva('', {
 const VerifiedBadge: React.FC<VerifiedBadgeProps> = ({ className, variant, size }) => {
   return (
     // Container div with flexbox properties, size-specific classes, and additional custom classes
-    <div className={cn('flex items-center gap-0.5', badgeClasses({ size }), className)}>
+    <div className={cn('flex items-center gap-1', badgeClasses({ size }), className)}>
       {/* TickIcon component with variant-specific and size-specific classes */}
       <TickIcon variant={variant} className={badgeClasses({ size })} />
     </div>
