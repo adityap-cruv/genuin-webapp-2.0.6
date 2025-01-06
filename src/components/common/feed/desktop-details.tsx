@@ -2,17 +2,13 @@ import { CustomAvatar } from '@components/custom/custom-avatar'
 import { type RefObject, useRef, useState, useEffect } from 'react'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
-import { Button } from '@components/ui/button'
 import { DecorativeList } from '@components/custom/decorative-list'
 import { Comments, NoComments } from '@components/common/comments'
 import { getVideosComments } from '@lib/api/loop'
 import { useMotionValueEvent, useScroll } from 'framer-motion'
-import { useAdaptiveShare } from '@hooks/use-adaptive-share'
-import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
-import { getCurrentShareUrl, getTimeAgo } from '@lib/utils'
+import { getTimeAgo } from '@lib/utils'
 import { FeedShimmer } from '../shimmers/feed-shimmer'
-import { ShareIcon } from '@icons/share-icon'
 import { type CommentListType } from '@lib/schemas/loop/comment'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import { LockIcon } from '@icons/LockIcon'
@@ -21,6 +17,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@compo
 import { ReadMore } from '../read-more'
 import { Linkout } from '../linkout'
 import MentionInput from '../comments/mention-input'
+import ShareButton from '@components/common/actions/ShareButton'
 import { useFeedListContext } from '../../providers/feed-provider'
 import { JoinCommunityButton } from '../join-community-button'
 
@@ -28,8 +25,6 @@ type DesktopDetailsProps = VideoPlayerModalType
 // TODO: improve this component.
 // TODO: Remove scrollDivRef dependency from CommentBox.
 export function DesktopDetails({ loop, community, owner, video }: DesktopDetailsProps) {
-  const { shareFn } = useAdaptiveShare()
-  const { toast } = useToast()
   const scrollDivRef = useRef<HTMLDivElement>(null)
   const { updateCommunityJoinStatus } = useFeedListContext()
   // TODO: Here state Comment and setComments are bad they are causing multiple rerenders.
@@ -77,7 +72,7 @@ export function DesktopDetails({ loop, community, owner, video }: DesktopDetails
           <p className="text-title-3-bold">Posted in</p>
           <div className="pt-3">
             <span className="flex items-center justify-between">
-              <div className="flex items-center justify-center">
+              <div className="flex w-full items-center justify-center">
                 <span className="flex flex-1 items-center gap-x-3">
                   <CustomAvatar
                     imageUrl={community.profileImage ?? ''}
@@ -116,32 +111,20 @@ export function DesktopDetails({ loop, community, owner, video }: DesktopDetails
                     </Tooltip>
                   </TooltipProvider>
                 )}
-              </div>
-              <div className="flex h-min flex-1 items-center justify-end gap-x-3">
-                <JoinCommunityButton
-                  handle={community.handle}
-                  buttonText="Join Community"
-                  id={community.id}
-                  type={community.type === 2 ? 'private' : 'public'}
-                  role={community.userRole}
-                  onStatusChange={(role) => {
-                    updateCommunityJoinStatus(community.id, role)
-                  }}
-                  isMobile={false}
+                <div className="flex h-min flex-1 items-center justify-end gap-x-3">
+                  <JoinCommunityButton
+                    handle={community.handle}
+                    buttonText="Join Community"
+                    id={community.id}
+                    type={community.type === 2 ? 'private' : 'public'}
+                    role={community.userRole}
+                    onStatusChange={(role) => {
+                      updateCommunityJoinStatus(community.id, role)
+                    }}
+                    isMobile={false}
                 />
-                <Button
-                  title="Copy Link"
-                  size="custom"
-                  variant="outline"
-                  className="min-w-max border border-primary p-1 hover:border-primary-600 "
-                  onClick={async () =>
-                    await shareFn({
-                      shareLink: getCurrentShareUrl({ url: community.shareUrl }),
-                      toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
-                    })
-                  }>
-                  <ShareIcon className="h-5 w-5 fill-primary hover:fill-primary-600" />
-                </Button>
+                  <ShareButton url={community.shareUrl} />
+                </div>
               </div>
             </span>
             <DecorativeList>
@@ -154,29 +137,29 @@ export function DesktopDetails({ loop, community, owner, video }: DesktopDetails
               </Link>
             </DecorativeList>
           </div>
-        </div>
-        {video.linkoutId && (
-          <div className="w-auto px-4">
-            <Linkout.desktop linkouts={video.linkouts} linkoutId={video.linkoutId} videoId={video.id} />
+          {video.linkoutId && (
+            <div className="w-auto px-4">
+              <Linkout.desktop linkouts={video.linkouts} linkoutId={video.linkoutId} videoId={video.id} />
+            </div>
+          )}
+          <div className="sticky top-0 z-10">
+            <p className="border-b border-t border-tertiary-200 bg-monochrome-white px-4 py-3 text-title-3-demi">
+              Comments {video.commentCount !== 0 ? `(${video.commentCount})` : ''}
+            </p>
           </div>
-        )}
-        <div className="sticky top-0 z-10">
-          <p className="border-b border-t border-tertiary-200 bg-monochrome-white px-4 py-3 text-title-3-demi">
-            Comments {video.commentCount !== 0 ? `(${video.commentCount})` : ''}
-          </p>
+          <div className="h-full px-4 pt-2">
+            <CommentBox videoId={video.id} parentRef={scrollDivRef} setComments={setComments} comments={comments} />
+          </div>
         </div>
-        <div className="h-full px-4 pt-2">
-          <CommentBox videoId={video.id} parentRef={scrollDivRef} setComments={setComments} comments={comments} />
-        </div>
+        <MentionInput
+          setComments={setComments}
+          videoId={video.id}
+          loopId={loop.id}
+          videoSlug={video.slug}
+          communityId={community.id}
+        />
+        <Toaster />
       </div>
-      <MentionInput
-        setComments={setComments}
-        videoId={video.id}
-        loopId={loop.id}
-        videoSlug={video.slug}
-        communityId={community.id}
-      />
-      <Toaster />
     </div>
   )
 }

@@ -1,20 +1,45 @@
 import { type ComponentProps } from 'react'
 
-type Props = ComponentProps<'svg'> & { className?: string }
+type Props = ComponentProps<'svg'> & { className?: string; strokeClassName?: string }
 
-export function BurgerIcon({ className = 'stroke-monochrome-black', ...props }: Props) {
+export function BurgerIcon({
+  className = 'stroke-monochrome-black',
+  strokeClassName = 'stroke-monochrome-black',
+  ...props
+}: Props) {
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
-      {...props}
-      width="14"
-      height="12"
-      viewBox="0 0 14 12"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
       fill="none"
-      className={className}>
-      <path d="M1 1H13" strokeWidth="1.5" strokeLinecap="round" />
-      <path d="M1 6H13" strokeWidth="1.5" strokeLinecap="round" />
-      <path d="M1 11H13" strokeWidth="1.5" strokeLinecap="round" />
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      {...props}>
+      <path
+        d="M2 18.0031H22"
+        stroke="white"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className={strokeClassName}
+      />
+      <path
+        d="M2 12.0031H22"
+        stroke="white"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className={strokeClassName}
+      />
+      <path
+        d="M2 6.00305H22"
+        stroke="white"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className={strokeClassName}
+      />
     </svg>
   )
 }

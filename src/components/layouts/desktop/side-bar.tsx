@@ -9,7 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
 import dynamic from 'next/dynamic'
 import { GenuinIcon } from '@icons/genuin-icon'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
-import { NotificationIcon } from '@icons/settings-side-bar-icons'
+import { BellIcon } from '@icons/bell-icon'
 import Analytics from '@services/analytics'
 import { useShallow } from 'zustand/react/shallow'
 import { LoginIcon } from '@icons/login-icon'
@@ -79,7 +79,7 @@ export function SideBar() {
                 title="Notification"
                 isActive={pathName === PATH_NAME.notification()}
                 notificationCount={notificationCount}>
-                <NotificationIcon isActive={pathName === PATH_NAME.notification()} />
+                <BellIcon variant={pathName === PATH_NAME.notification() ? 'primary' : 'dark'} />
               </Item>
             </Link>
             <Link

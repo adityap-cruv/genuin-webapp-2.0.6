@@ -4,21 +4,17 @@ import { useEffect, useRef } from 'react'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { TopStickyBar } from './top-sticky-bar'
-import { Button } from '@components/ui/button'
 import Image from 'next/image'
 import icLock from '@icons/icLock.svg'
 import { useInView } from 'framer-motion'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
 import Link from 'next/link'
-import { checkAndAppendHttps, getCurrentShareUrl, mapCommunityUserRole } from '@lib/utils'
+import { checkAndAppendHttps, mapCommunityUserRole } from '@lib/utils'
 import icLink from '@icons/icLinkBlack.svg'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@components/ui/accordion'
-import { useAdaptiveShare } from '@hooks/use-adaptive-share'
-import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
 import { ListItem } from '@components/common/list-item'
-import { ShareIcon } from '@icons/share-icon'
 import { getCommunityDetails, getCommunityMembers } from '@lib/api/community'
 import { Shimmer } from '@components/ui/shimmer'
 import { LockIcon } from '@icons/LockIcon'
@@ -33,6 +29,7 @@ import { CustomImage } from '@/components/custom/custom-image'
 import { ReadMore } from '@/components/common/read-more'
 import { NOT_FOUND_ERROR_CODES } from '@/lib/constants'
 import EmptyView from '@/components/common/empty-view'
+import ShareButton from '@components/common/actions/ShareButton'
 import { JoinCommunityButton } from '@/components/common/join-community-button'
 
 export function CommunityDetails({ slug }: { slug: string }) {
@@ -52,8 +49,6 @@ function RootDetails({ communityDetails }: { communityDetails: CommunityDetailsT
   const addCommunity = useLocalStorage((state) => state.addCommunity)
   const detailsDivRef = useRef<HTMLDivElement>(null)
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
-  const { shareFn } = useAdaptiveShare()
-  const { toast } = useToast()
 
   useEffect(() => {
     addCommunity({
@@ -104,21 +99,7 @@ function RootDetails({ communityDetails }: { communityDetails: CommunityDetailsT
               type={communityDetails.type === 2 ? 'private' : 'public'}
               isMobile={false}
             />
-            <Button
-              variant="outline"
-              size="custom"
-              className="border border-primary p-0.5 hover:border-primary-600"
-              onClick={async () => {
-                await shareFn({
-                  shareLink: getCurrentShareUrl({ url: communityDetails.share_url }),
-                  toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
-                })
-              }}>
-              <ShareIcon className="h-6 w-6 fill-primary hover:fill-primary-600" />
-            </Button>
-            {/* <Button variant="outline" size="custom" className="border border-primary p-1">
-              <Image src={icMore} alt="share" className="h-6 w-6" />
-            </Button> */}
+            <ShareButton url={communityDetails.share_url} />
           </div>
         </div>
         <div>

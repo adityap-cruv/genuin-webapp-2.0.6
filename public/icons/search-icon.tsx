@@ -1,15 +1,30 @@
 import { type ComponentProps } from 'react'
+import { cva, type VariantProps } from 'class-variance-authority'
+import { cn } from '@lib/utils'
 
-type Props = ComponentProps<'svg'>
+const searchVariant = cva('', {
+  variants: {
+    variant: {
+      light: 'stroke-monochrome-black',
+      transparent: 'stroke-monochrome-white',
+      dark: 'stroke-monochrome-white',
+    },
+  },
+})
 
-export function SearchIcon({ ...props }: Props) {
+type Props = Readonly<
+  ComponentProps<'svg'> & VariantProps<typeof searchVariant> & { variant?: 'light' | 'transparent' | 'dark' | null }
+>
+
+export function SearchIcon({ variant = 'light', className, ...props }: Readonly<Props>) {
   return (
     <svg
-      width="30"
-      height="30"
+      width="24"
+      height="24"
       {...props}
       viewBox="0 0 24 24"
       stroke="#111111"
+      className={cn(searchVariant({ variant }), className)}
       fill="none"
       xmlns="http://www.w3.org/2000/svg">
       <path d="M14.4121 14.4121L20 20" strokeWidth="1.5" strokeLinecap="round" />

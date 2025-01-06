@@ -1,5 +1,5 @@
 import { CommentSheet, CommentSheetContent } from '@components/custom/comment-sheet'
-import { X } from 'lucide-react'
+import { CloseIcon } from '@icons/close-icon'
 import { useCommentSheetStore } from './store'
 import { Comments } from '@components/common/comments'
 import { useState } from 'react'
@@ -34,8 +34,7 @@ export function Sheet({ commentCount, videoId, videoDetails }: Props) {
         <div className="h-full w-full rounded-t-[18px] bg-background outline-none sm:rounded-t-none">
           <div className="flex h-12 w-full items-center justify-between border-b border-monochrome-9 px-3 ">
             <p className="text-title-3-demi">Comments{commentCount ? `(${commentCount})` : ''}</p>
-            <X
-              className="h-6 w-6 cursor-pointer stroke-secondary"
+            <CloseIcon
               onClick={() => {
                 close()
               }}

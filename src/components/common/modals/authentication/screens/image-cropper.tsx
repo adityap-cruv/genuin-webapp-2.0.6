@@ -6,9 +6,9 @@ import { useAuthenticationModalStore } from '../store'
 import { ModalShell } from '../modal-shell'
 import { v4 } from 'uuid'
 import { usePathname } from 'next/navigation'
-import { X } from 'lucide-react'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { uploadProfileImage } from '../api/auth'
+import { CloseIcon } from '@icons/close-icon'
 
 export function ImageCropper() {
   const cropperRef = createRef<any>()
@@ -79,9 +79,8 @@ export function ImageCropper() {
   return (
     <ModalShell className="relative">
       {pathname.includes('settings') && (
-        <div className="absolute -right-4 -top-8">
-          <X
-            className="hover:cursor-pointer"
+        <div className="absolute -right-0 -top-8">
+          <CloseIcon
             onClick={() => {
               setImage({ image: user?.image ?? undefined, isAvatar: false })
               close()
