@@ -63,7 +63,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
   const { user, brandName, notificationsCount, isClaimed, brandLogo, webCTA, brandId } = useGenuinOptions((state) => ({
     user: state.user,
     brandName: state.config?.name ? state.config?.name : 'Genuin',
-    notificationsCount: 50,
+    notificationsCount: state.notificationCount,
     isClaimed: state.config?.is_claimed,
     brandLogo: state.config?.logo,
     webCTA: state.webCTA,
@@ -347,7 +347,7 @@ function UserTick({ variant = 'light' }: { variant: 'light' | 'transparent' | 'd
           </div>
           <hr className="border-b border-monochrome-9" />
           <div className="flex flex-col gap-4 p-4">
-            {data.user.isBrandSystemUser && (
+            {!data.user.isBrandSystemUser && (
               <Link
                 href={PATH_NAME.settings('')}
                 className="flex items-center gap-x-2"
