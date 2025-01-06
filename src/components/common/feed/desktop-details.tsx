@@ -137,19 +137,19 @@ export function DesktopDetails({ loop, community, owner, video }: DesktopDetails
               </Link>
             </DecorativeList>
           </div>
-          {video.linkoutId && (
-            <div className="w-auto px-4">
-              <Linkout.desktop linkouts={video.linkouts} linkoutId={video.linkoutId} videoId={video.id} />
-            </div>
-          )}
-          <div className="sticky top-0 z-10">
-            <p className="border-b border-t border-tertiary-200 bg-monochrome-white px-4 py-3 text-title-3-demi">
-              Comments {video.commentCount !== 0 ? `(${video.commentCount})` : ''}
-            </p>
+        </div>
+        {video.linkoutId && (
+          <div className="w-auto px-4">
+            <Linkout.desktop linkouts={video.linkouts} linkoutId={video.linkoutId} videoId={video.id} />
           </div>
-          <div className="h-full px-4 pt-2">
-            <CommentBox videoId={video.id} parentRef={scrollDivRef} setComments={setComments} comments={comments} />
-          </div>
+        )}
+        <div className="sticky top-0 z-10">
+          <p className="border-b border-t border-tertiary-200 bg-monochrome-white px-4 py-3 text-title-3-demi">
+            Comments {video.commentCount !== 0 ? `(${video.commentCount})` : ''}
+          </p>
+        </div>
+        <div className="h-full px-4 pt-2">
+          <CommentBox videoId={video.id} parentRef={scrollDivRef} setComments={setComments} comments={comments} />
         </div>
       </div>
       <MentionInput
