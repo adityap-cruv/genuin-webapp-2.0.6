@@ -72,7 +72,7 @@ export function DesktopDetails({ loop, community, owner, video }: DesktopDetails
           <p className="text-title-3-bold">Posted in</p>
           <div className="pt-3">
             <span className="flex items-center justify-between">
-              <div className="flex w-full items-center justify-center">
+              <div className="flex items-center justify-center">
                 <span className="flex flex-1 items-center gap-x-3">
                   <CustomAvatar
                     imageUrl={community.profileImage ?? ''}
@@ -111,20 +111,20 @@ export function DesktopDetails({ loop, community, owner, video }: DesktopDetails
                     </Tooltip>
                   </TooltipProvider>
                 )}
-                <div className="flex h-min flex-1 items-center justify-end gap-x-3">
-                  <JoinCommunityButton
-                    handle={community.handle}
-                    buttonText="Join Community"
-                    id={community.id}
-                    type={community.type === 2 ? 'private' : 'public'}
-                    role={community.userRole}
-                    onStatusChange={(role) => {
-                      updateCommunityJoinStatus(community.id, role)
-                    }}
-                    isMobile={false}
+              </div>
+              <div className="flex h-min flex-1 items-center justify-end gap-x-3">
+                <JoinCommunityButton
+                  handle={community.handle}
+                  buttonText="Join Community"
+                  id={community.id}
+                  type={community.type === 2 ? 'private' : 'public'}
+                  role={community.userRole}
+                  onStatusChange={(role) => {
+                    updateCommunityJoinStatus(community.id, role)
+                  }}
+                  isMobile={false}
                 />
-                  <ShareButton url={community.shareUrl} />
-                </div>
+                <ShareButton url={community.shareUrl} />
               </div>
             </span>
             <DecorativeList>
@@ -151,15 +151,15 @@ export function DesktopDetails({ loop, community, owner, video }: DesktopDetails
             <CommentBox videoId={video.id} parentRef={scrollDivRef} setComments={setComments} comments={comments} />
           </div>
         </div>
-        <MentionInput
-          setComments={setComments}
-          videoId={video.id}
-          loopId={loop.id}
-          videoSlug={video.slug}
-          communityId={community.id}
-        />
-        <Toaster />
       </div>
+      <MentionInput
+        setComments={setComments}
+        videoId={video.id}
+        loopId={loop.id}
+        videoSlug={video.slug}
+        communityId={community.id}
+      />
+      <Toaster />
     </div>
   )
 }

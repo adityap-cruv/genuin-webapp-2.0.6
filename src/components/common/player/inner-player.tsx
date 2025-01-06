@@ -243,7 +243,7 @@ export const InnerPlayer = memo(function InnerPlayer({
       {playingState !== 'playing' && (
         <div
           className={cn(
-            'absolute left-1/2 top-1/2 flex h-[64px] w-[64px] -translate-x-1/2 -translate-y-1/2 justify-center rounded-full bg-monochrome-black/40 align-middle transition-all duration-100',
+            'absolute left-1/2 top-1/2 flex h-[64px] w-[64px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-monochrome-black/40 align-middle transition-all duration-100',
             playingState === 'paused' || playingState === 'loading'
               ? 'opacity-100 ease-in '
               : 'scale-100 opacity-0 ease-out'
