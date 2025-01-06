@@ -10,6 +10,7 @@ import { ShareIcon } from '@icons/share-icon'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { usePathname } from 'next/navigation'
+import BrandBadgeIcon from '@/components/common/brand-badge-icon'
 
 type Props = {
   /**
@@ -25,6 +26,7 @@ type Props = {
   profileNickname: string
   isAvatar: boolean
   shareUrl: string
+  brandUserLogo?: number
 }
 
 export const TopStickyBar = {
@@ -40,6 +42,7 @@ function Desktop({
   profileNickname,
   isAvatar,
   shareUrl,
+  brandUserLogo,
   ...props
 }: Props) {
   const navAnimationControl = useAnimationControls()
@@ -83,6 +86,7 @@ function Desktop({
         ) : (
           <p className="text-title-2-demi">@{profileNickname}</p>
         )}
+        <BrandBadgeIcon userLogoType={brandUserLogo} className="ml-2 flex items-center gap-1" variant="dark" />
       </span>
       <div className="flex gap-1">
         {pathName === PATH_NAME.profile(user?.nickname) && !user?.isBrandSystemUser && (
@@ -127,6 +131,7 @@ function Mobile({
   profileName,
   profileNickname,
   isAvatar,
+  brandUserLogo,
   ...props
 }: Props) {
   const navAnimationControl = useAnimationControls()
@@ -162,6 +167,7 @@ function Mobile({
         ) : (
           <p className="text-title-2-demi">@{profileNickname}</p>
         )}
+        <BrandBadgeIcon userLogoType={brandUserLogo} className="flex items-center gap-1" variant="dark" />
       </span>
     </motion.div>
   )
