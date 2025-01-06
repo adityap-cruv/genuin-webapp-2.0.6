@@ -1,7 +1,7 @@
 import { requestCommunity, joinCommunity, leaveCommunity } from '@lib/api/video'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { Button } from '@components/ui/button'
-import { cn, openModal } from '@lib/utils'
+import { cn, openGeneratedLink, openModal } from '@lib/utils'
 import { useQueryClient } from '@tanstack/react-query'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { joinCommunityDeepLink } from '@/lib/get-deeplink'
@@ -17,6 +17,7 @@ type Props = {
   buttonText: string
   role: CommunityUserRoleType
   communityName?: string
+  isMobile: boolean
   onStatusChange?: (role: CommunityUserRoleType) => void
 }
 
@@ -28,6 +29,7 @@ export const JoinCommunityButton = memo(function JoinCommunityButton({
   type,
   communityName,
   onStatusChange,
+  isMobile,
 }: Props) {
   const [isLoading, setIsLoading] = useState(false)
   const pathName = usePathname()
@@ -91,15 +93,19 @@ export const JoinCommunityButton = memo(function JoinCommunityButton({
       communityName: communityName ?? '',
       searchParams: Object.fromEntries(searchParams),
     }).then((generatedLink) => {
-      openModal({
-        deepLink: generatedLink,
-        subtitle: (
-          <>
-            Get the app to join the <br />
-            <span className="font-bold">@{handle}</span> community.
-          </>
-        ),
-      })
+      if (isMobile) {
+        openGeneratedLink(generatedLink)
+      } else {
+        openModal({
+          deepLink: generatedLink,
+          subtitle: (
+            <>
+              Get the app to join the <br />
+              <span className="font-bold">@{handle}</span> community.
+            </>
+          ),
+        })
+      }
     })
   }, [communityName, searchParams])
 

@@ -149,6 +149,7 @@ export function CommunityList({ userId }: { userId: string }) {
                     type={item.type === 2 ? 'private' : 'public'}
                     communityName={item.name ?? ''}
                     role={item.userRole}
+                    isMobile={false}
                   />
                 </div>
               </div>

@@ -128,6 +128,7 @@ export function DesktopDetails({ loop, community, owner, video }: DesktopDetails
                   onStatusChange={(role) => {
                     updateCommunityJoinStatus(community.id, role)
                   }}
+                  isMobile={false}
                 />
                 <Button
                   title="Copy Link"

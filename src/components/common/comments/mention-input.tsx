@@ -5,7 +5,7 @@ import { useGenuinOptions } from '@/lib/stores/genuin-options'
 import { useWalletBalanceHandler } from '@/services/wallet-handler'
 import { Input } from '@/components/ui/input'
 import { commentDeepLink } from '@/lib/get-deeplink'
-import { openModal } from '@/lib/utils'
+import { openGeneratedLink, openModal } from '@/lib/utils'
 import { CustomAvatar } from '@/components/custom/custom-avatar'
 import { type SelectedMention, type CommentMention } from '@/lib/schemas/player/comment'
 
@@ -17,9 +17,9 @@ const MentionInput: React.FC<{
   communityId: string
 }> = ({ setComments, videoId, loopId, videoSlug, communityId }) => {
   const { handleWalletBalance } = useWalletBalanceHandler()
-  const { user, embed } = useGenuinOptions((state) => ({
+  const { user, isMobile } = useGenuinOptions((state) => ({
     user: state.user,
-    embed: state.embed,
+    isMobile: state.isMobile,
   }))
   const searchParams = Object.fromEntries(useSearchParams())
   const [text, setText] = useState('')
@@ -260,69 +260,55 @@ const MentionInput: React.FC<{
         </div>
       )}
 
-      {embed ? (
-        <div className="absolute bottom-0 left-0 max-h-16 w-full border-t-2 border-t-tertiary-200 bg-tertiary-200 py-3 shadow-md">
-          <div className="flex w-full flex-1 items-center gap-x-4 px-4">
-            {user ? (
-              <div className="w-full">
-                <div className="relative flex w-full items-center">
-                  <Input
-                    ref={textareaRef}
-                    placeholder="Add a comment"
-                    value={text}
-                    maxLength={500}
-                    disabled={!user}
-                    className="w-full rounded-full border border-tertiary-200 bg-monochrome-white px-14 pl-4"
-                    onChange={handleInputChange}
-                    onClick={(e: React.MouseEvent<HTMLInputElement>) => {
-                      setCaretPosition(e.currentTarget.selectionStart ?? 0)
-                    }}
-                    onKeyUp={(e: React.KeyboardEvent<HTMLInputElement>) => {
-                      setCaretPosition(e.currentTarget.selectionStart ?? 0)
-                    }}
-                  />
+      <div className="absolute bottom-0 left-0 max-h-16 w-full border-t-2 border-t-tertiary-200 bg-tertiary-200 py-3 shadow-md">
+        <div className="flex w-full flex-1 items-center gap-x-4 px-4">
+          {user ? (
+            <div className="w-full">
+              <div className="relative flex w-full items-center">
+                <Input
+                  ref={textareaRef}
+                  placeholder="Add a comment"
+                  value={text}
+                  maxLength={500}
+                  disabled={!user}
+                  className="w-full rounded-full border border-tertiary-200 bg-monochrome-white px-14 pl-4"
+                  onChange={handleInputChange}
+                  onClick={(e: React.MouseEvent<HTMLInputElement>) => {
+                    setCaretPosition(e.currentTarget.selectionStart ?? 0)
+                  }}
+                  onKeyUp={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                    setCaretPosition(e.currentTarget.selectionStart ?? 0)
+                  }}
+                />
 
-                  <button
-                    onClick={postComment}
-                    disabled={text.trim().length === 0 || isPosting}
-                    className={`absolute right-4 text-body-1-bold ${
-                      text.trim().length === 0 || isPosting ? 'text-primary-600' : 'text-primary'
-                    }`}>
-                    {isPosting ? 'Posting...' : 'Post'}
-                  </button>
-                </div>
+                <button
+                  onClick={postComment}
+                  disabled={text.trim().length === 0 || isPosting}
+                  className={`absolute right-4 text-body-1-bold ${
+                    text.trim().length === 0 || isPosting ? 'text-primary-600' : 'text-primary'
+                  }`}>
+                  {isPosting ? 'Posting...' : 'Post'}
+                </button>
               </div>
-            ) : (
-              <div
-                onClick={async () => {
-                  await commentDeepLink({ videoSlug, communityId, loopId, searchParams }).then((generatedLink) => {
-                    openModal({ deepLink: generatedLink, subtitle: <>Get the app to comment on this video.</> })
-                  })
-                }}
-                placeholder="Add a comment"
-                className="h-full w-full rounded-full border-2 border-tertiary-200 bg-monochrome-white py-2 pl-6">
-                <p className="text-start text-title-3-demi text-tertiary">Add a Comment</p>
-              </div>
-            )}
-          </div>
-        </div>
-      ) : (
-        <div
-          onClick={async () => {
-            await commentDeepLink({ videoSlug, communityId, loopId, searchParams }).then((generatedLink) => {
-              openModal({ deepLink: generatedLink, subtitle: <>Get the app to comment on this video.</> })
-            })
-          }}
-          className="absolute bottom-0 left-0 h-16 w-full border-t-2 border-t-monochrome-9 bg-monochrome-10 px-2 py-3 shadow-md">
-          <div className="flex w-full flex-1 items-center gap-x-4">
-            <div
-              placeholder="Add a comment"
-              className="h-full w-full rounded-full border-2 border-monochrome-9 bg-monochrome-white py-2 pl-6">
-              <p className="text-start text-title-3-demi text-monochrome">Add a Comment</p>
             </div>
-          </div>
+          ) : (
+            <div
+              onClick={async () => {
+                await commentDeepLink({ videoSlug, communityId, loopId, searchParams }).then((generatedLink) => {
+                  if (!isMobile) {
+                    openModal({ deepLink: generatedLink, subtitle: <>Get the app to comment on this video.</> })
+                  } else {
+                    openGeneratedLink(generatedLink)
+                  }
+                })
+              }}
+              placeholder="Add a comment"
+              className="h-full w-full rounded-full border-2 border-tertiary-200 bg-monochrome-white py-2 pl-6">
+              <p className="text-start text-title-3-demi text-tertiary">Add a Comment</p>
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   )
 }

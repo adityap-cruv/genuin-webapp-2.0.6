@@ -32,14 +32,15 @@ const RecentCommunities = dynamic(
 
 // TODO: Improve active states on all items.
 export function SideBar() {
-  const { embed, user, brandName, notificationCount, isClaimed, sizeboxHeight } = useGenuinOptions(
+  const { user, brandName, notificationCount, isClaimed, sizeboxHeight, webCTA, brandId } = useGenuinOptions(
     useShallow((state) => ({
-      embed: state.embed,
       user: state.user,
+      brandId: state.config?.brand_id,
       brandName: state.config?.name ? state.config?.name : 'Genuin',
       notificationCount: state.notificationCount,
       isClaimed: state.config?.is_claimed,
       sizeboxHeight: state.sizeBoxes.default.height,
+      webCTA: state.config?.web_cta,
     }))
   )
   const pathName = usePathname()
@@ -91,7 +92,8 @@ export function SideBar() {
             </Link>
           </>
         )}
-        {!embed && (
+        {/* TODO: Genuin as a Brand. Check and discuss to change default true value */}
+        {brandId?.toString() === '99' && (
           <Popover>
             <PopoverTrigger className="w-full">
               <Item title="More">
@@ -113,11 +115,9 @@ export function SideBar() {
           </Popover>
         )}
         <span className="hidden xl:block">
-          {(!isClaimed || user?.ksCbRequestStatus !== 3) && embed && (
-            <hr className="border-1 my-2 border-monochrome-black/10" />
-          )}
+          {(!isClaimed || user?.ksCbRequestStatus !== 3) && <hr className="border-1 my-2 border-monochrome-black/10" />}
           <DownloadAppDialog />
-          {isClaimed && status === 'unauthenticated' && embed && (
+          {isClaimed && status === 'unauthenticated' && webCTA !== 'app' && (
             <>
               <div
                 className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10"
@@ -130,7 +130,7 @@ export function SideBar() {
               <hr className="border-1 my-2 border-monochrome-black/10" />
             </>
           )}
-          {!isClaimed && embed && (
+          {!isClaimed && (
             <>
               <div
                 className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10"
@@ -151,7 +151,8 @@ export function SideBar() {
         <CategoryViewDynamic className="hidden xl:block" />
         <RecentCommunities />
       </div>
-      {embed && (
+      {/* TODO: Genuin as a Brand. Check and discuss to change default true value */}
+      {brandId?.toString() !== '99' && (
         <div className="hidden xl:block">
           <hr className="border-1 mb-4 mt-1 border-monochrome-black/10" />
           <div className="flex items-center">

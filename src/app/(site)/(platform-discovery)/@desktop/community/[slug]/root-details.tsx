@@ -102,6 +102,7 @@ function RootDetails({ communityDetails }: { communityDetails: CommunityDetailsT
                 communityDetails.is_community_join_requested
               )}
               type={communityDetails.type === 2 ? 'private' : 'public'}
+              isMobile={false}
             />
             <Button
               variant="outline"

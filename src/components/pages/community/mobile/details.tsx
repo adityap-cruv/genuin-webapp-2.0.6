@@ -78,6 +78,7 @@ export function Details({ communityDetails }: Props) {
                 )}
                 type={communityDetails.type === 2 ? 'private' : 'public'}
                 communityName={communityDetails.name ?? ''}
+                isMobile={true}
               />
               <Button
                 variant="outline"
