@@ -83,10 +83,6 @@ export function MainComponent({ profileData }: CompProps) {
                 className="flex items-center gap-1"
                 variant="dark"
               />
-              // <div className="ml-2 flex items-center gap-1 rounded-full bg-primary-200 p-1 px-1.5">
-              //   <TickIcon className="h-4 w-4 fill-primary" />
-              //   <p className="text-cap-1-demi text-primary">Brand</p>
-              // </div>
             )}
           </div>
           <p className="my-1 text-body-1-med">{profileData?.bio}</p>
