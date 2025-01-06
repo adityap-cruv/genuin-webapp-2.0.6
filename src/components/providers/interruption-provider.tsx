@@ -27,12 +27,13 @@ export function showInterruption() {
 }
 
 export function InterruptionProvider() {
-  const { user } = useGenuinOptions()
+  const { user, brandId } = useGenuinOptions()
 
   function showInterruption() {
     const { user } = useGenuinOptions.getState()
     const isOpen = useAuthenticationModalStore.getState().isOpen
     if (isOpen) return
+    if (brandId.toString() === '99') return
     if (!user) {
       AuthenticationModal.open(undefined)
     } else if (!user.hasTopics) {
