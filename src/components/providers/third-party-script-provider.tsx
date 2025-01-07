@@ -9,10 +9,15 @@ export function ThirdPartyScriptProvider({ children }: { children: React.ReactNo
     const analytics = new RudderAnalytics()
     analytics.load(process.env.NEXT_PUBLIC_RUDDERSTACK_KEY, process.env.NEXT_PUBLIC_RUDDERSTACK_URL, {
       storage: {
-        type: 'memoryStorage',
-        cookie: {},
+        type: 'localStorage',
       },
-      plugins: ['DeviceModeDestinations', 'ErrorReporting', 'StorageEncryption', 'StorageMigrator', 'XhrQueue'],
+      plugins: ['DeviceModeDestinations', 'ErrorReporting'],
+      consentManagement: {
+        enabled: false,
+      },
+      integrations: {
+        All: false, // Disables all third-party integrations
+      },
     })
     analyticsRef.current = analytics
   }
