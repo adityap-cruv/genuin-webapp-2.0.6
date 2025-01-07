@@ -1,6 +1,7 @@
 import { motion, useAnimationControls } from 'framer-motion'
 import { useEffect } from 'react'
 import { CustomAvatar } from '@components/custom/custom-avatar'
+import BrandBadgeIcon from '@/components/common/brand-badge-icon'
 import ShareButton from '@components/common/actions/ShareButton'
 
 type Props = {
@@ -17,6 +18,7 @@ type Props = {
   profileNickname: string
   isAvatar: boolean
   shareUrl: string
+  brandUserLogo?: number
 }
 
 export const TopStickyBar = {
@@ -32,6 +34,7 @@ function Desktop({
   profileNickname,
   isAvatar,
   shareUrl,
+  brandUserLogo,
   ...props
 }: Props) {
   const navAnimationControl = useAnimationControls()
@@ -67,6 +70,7 @@ function Desktop({
         ) : (
           <p className="text-title-2-demi">@{profileNickname}</p>
         )}
+        <BrandBadgeIcon userLogoType={brandUserLogo} variant="dark" />
       </span>
       <ShareButton url={shareUrl} />
     </motion.div>
@@ -80,6 +84,7 @@ function Mobile({
   profileName,
   profileNickname,
   isAvatar,
+  brandUserLogo,
   ...props
 }: Props) {
   const navAnimationControl = useAnimationControls()
@@ -115,6 +120,7 @@ function Mobile({
         ) : (
           <p className="text-title-2-demi">@{profileNickname}</p>
         )}
+        <BrandBadgeIcon userLogoType={brandUserLogo} variant="dark" />
       </span>
     </motion.div>
   )

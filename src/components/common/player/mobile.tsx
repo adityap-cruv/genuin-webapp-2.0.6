@@ -89,7 +89,15 @@ export function Mobile({
             isActive={isActive}
             linkoutId={videoDetails.video.linkoutId}
             commentCount={videoDetails.video.commentCount}
-            owner={videoDetails.owner}
+            owner={{
+              ...videoDetails.owner,
+              brand: videoDetails.owner.brand
+                ? {
+                    ...videoDetails.owner.brand,
+                    brand_user_logo: videoDetails.owner.brand.brand_user_logo ?? 1,
+                  }
+                : null,
+            }}
             shareUrl={videoDetails.video.shareUrl}
             slug={videoDetails.video.slug}
             sparkCount={videoDetails.video.sparkCount}

@@ -14,7 +14,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@c
 import { Shimmer } from '@components/ui/shimmer'
 import { LockIcon } from '@icons/LockIcon'
 import { PrivateModal } from '@components/common/modals/private'
-import { TickIcon } from '@icons/tick-icon'
+import BrandBadgeIcon from '@/components/common/brand-badge-icon'
 import { BrandCommunityTag } from '@components/common/brand-community-tag'
 import { InstagramIcon } from '@icons/instagram-icon'
 import { LinkedInIcon } from '@icons/linkedin-icon'
@@ -303,7 +303,7 @@ function Leaders() {
           description={leader.bio ?? ''}
           image={leader.profile_image}
           isAvatar={leader.is_avatar}
-          brand={leader.brand}
+          brand={leader.brand ? { ...leader.brand, brand_user_logo: leader.brand.brand_user_logo ?? 1 } : undefined}
           isOwner={true}
         />
       </Link>
@@ -321,7 +321,7 @@ function Leaders() {
                 description={item.bio ?? ''}
                 image={item.profile_image_m ?? item.profile_image}
                 isAvatar={item.is_avatar}
-                brand={item.brand}
+                brand={item.brand ? { ...item.brand, brand_user_logo: item.brand.brand_user_logo ?? 1 } : undefined}
                 isOwner={false}
               />
             </Link>
@@ -349,6 +349,7 @@ function ListItem({
   brand?: {
     brand_id: number
     brand_slug: string
+    brand_user_logo: number
   } | null
 }) {
   return (
@@ -362,12 +363,7 @@ function ListItem({
       <div className="mx-2">
         <div className="flex items-center gap-2">
           <p className="line-clamp-1 text-body-1-bold ">{subtitle}</p>
-          {brand && (
-            <div className="flex items-center gap-0.5">
-              <TickIcon className="h-3 w-3 fill-primary" />
-              <p className="text-cap-2-demi text-primary">Brand</p>
-            </div>
-          )}
+          {brand && <BrandBadgeIcon userLogoType={brand?.brand_user_logo} variant="dark" />}
           {isOwner && (
             <p className="flex items-center gap-1 rounded-full bg-primary-200 p-1 pr-1.5 text-primary ">Owner</p>
           )}
@@ -419,7 +415,7 @@ function Members() {
                   description={member?.bio ?? ''}
                   image={member.profile_image}
                   isAvatar={member.is_avatar}
-                  brand={member.brand ?? null}
+                  brand={member.brand ? { ...member.brand, brand_user_logo: member.brand.brand_user_logo ?? 1 } : null}
                   isOwner={false}
                 />
               </Link>

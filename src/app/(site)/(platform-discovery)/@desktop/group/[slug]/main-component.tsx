@@ -22,7 +22,7 @@ import { Shimmer } from '@components/ui/shimmer'
 import { LockIcon } from '@icons/LockIcon'
 import { LoopPrivacyInfo } from '@components/common/loop-privacy-info'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@components/ui/tooltip'
-import { TickIcon } from '@icons/tick-icon'
+import BrandBadgeIcon from '@/components/common/brand-badge-icon'
 import Analytics from '@services/analytics'
 import { useSearchParams } from 'next/navigation'
 import { joinAsCollaboratorDeepLink, subscribeDeepLink } from '@/lib/get-deeplink'
@@ -200,10 +200,7 @@ export function MainComponent({ loopDetails }: Props) {
                       @{loopDetails.owner.username}
                     </p>
                     {loopDetails.owner.brand && (
-                      <div className="flex items-center">
-                        <TickIcon className="h-3 w-3 fill-primary" />
-                        <p className="text-cap-2-demi text-primary">Brand</p>
-                      </div>
+                      <BrandBadgeIcon userLogoType={loopDetails.owner.brand?.brand_user_logo ?? 1} variant="dark" />
                     )}
                   </div>
                 </Link>
@@ -320,7 +317,7 @@ function LoopCohosts({ slug }: { slug: string }) {
                   description={item.bio ?? ''}
                   image={item.profile_image_m ?? item.profile_image}
                   isAvatar={item.is_avatar}
-                  brand={item.brand ?? null}
+                  brand={item.brand ? { ...item.brand, brand_user_logo: item.brand.brand_user_logo ?? 1 } : null}
                   isOwner={false}
                 />
               )
@@ -336,7 +333,7 @@ function LoopCohosts({ slug }: { slug: string }) {
                   description={item.bio ?? ''}
                   image={item.profile_image_m ?? item.profile_image}
                   isAvatar={item.is_avatar}
-                  brand={item.brand ?? null}
+                  brand={item.brand ? { ...item.brand, brand_user_logo: item.brand.brand_user_logo ?? 1 } : null}
                   isOwner={false}
                 />
               </Link>
@@ -385,7 +382,7 @@ function LoopSubscribers({ slug }: { slug: string }) {
                 description={item.bio ?? ''}
                 image={item.profile_image_m ?? item.profile_image}
                 isAvatar={item.is_avatar}
-                brand={item.brand ?? null}
+                brand={item.brand ? { ...item.brand, brand_user_logo: item.brand.brand_user_logo ?? 1 } : null}
                 isOwner={false}
               />
             </Link>

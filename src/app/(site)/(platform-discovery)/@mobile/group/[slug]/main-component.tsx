@@ -28,6 +28,7 @@ import { joinAsCollaboratorDeepLink, subscribeDeepLink } from '@/lib/get-deeplin
 import { ReadMore } from '@/components/common/read-more'
 import EmptyView from '@/components/common/empty-view'
 import { NOT_FOUND_ERROR_CODES } from '@/lib/constants'
+import BrandBadgeIcon from '@/components/common/brand-badge-icon'
 import ShareButton from '@components/common/actions/ShareButton'
 import SubscriptionButton from '@components/common/actions/SubscriptionButton'
 
@@ -144,9 +145,12 @@ export function MainComponent({ loopDetails }: Props) {
                         isAvatar={loopDetails.owner.is_avatar}
                       />
                     </div>
-                    <p className="ml-1 line-clamp-1 break-all text-cap-1-bold text-secondary">
+                    <p className="ml-1 mr-1 line-clamp-1 break-all text-cap-1-bold text-secondary">
                       @{loopDetails.owner.username}
                     </p>
+                    {loopDetails.owner.brand && (
+                      <BrandBadgeIcon userLogoType={loopDetails.owner.brand?.brand_user_logo ?? 1} variant="dark" />
+                    )}
                   </div>
                 </Link>
               </div>
@@ -335,6 +339,7 @@ function LoopCollaborators({ slug }: { slug: string }) {
                 title={'+' + (item.phone ?? '')}
                 userName={item.name ?? ''}
                 isAvatar={item.is_avatar}
+                brandUserLogo={item.brand?.brand_user_logo}
               />
             )
           return (
@@ -345,6 +350,7 @@ function LoopCollaborators({ slug }: { slug: string }) {
                 title={'@' + item.nickname}
                 userName={item.name ?? ''}
                 isAvatar={item.is_avatar}
+                brandUserLogo={item.brand?.brand_user_logo}
               />
             </Link>
           )
@@ -431,14 +437,18 @@ interface CohostTileProps {
   subtitle: string
   userName: string
   isAvatar: boolean
+  brandUserLogo: number | null | undefined
 }
 
-function CohostTile({ image, title, subtitle, userName, isAvatar }: CohostTileProps) {
+function CohostTile({ image, title, subtitle, userName, isAvatar, brandUserLogo }: CohostTileProps) {
   return (
     <div className="flex items-center gap-x-1 rounded-lg p-2">
       <CustomAvatar className="h-12 w-12 bg-red-40" fallbackString={title} imageUrl={image} isAvatar={isAvatar} />
       <div className="mx-2">
-        <p className="line-clamp-1 text-body-1-bold">{title}</p>
+        <p className="line-clamp-1 inline-flex gap-x-2 text-body-1-bold items-center">
+          {title}
+          {brandUserLogo && <BrandBadgeIcon userLogoType={brandUserLogo ?? 1} variant="dark" />}
+        </p>
         {userName && <p className="line-clamp-1 text-body-1-demi">{userName}</p>}
         {subtitle && <p className="line-clamp-1 text-cap-1-demi text-tertiary">{subtitle}</p>}
       </div>
