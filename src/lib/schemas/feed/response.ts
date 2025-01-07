@@ -135,6 +135,7 @@ type FeedCommunityInfo = {
 type BrandInfo = {
   brand_id: string
   brand_slug: string
+  brand_user_logo: number
 }
 
 type FeedRepostInfo = {

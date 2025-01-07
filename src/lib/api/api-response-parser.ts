@@ -50,7 +50,7 @@ export function parseFeedResponseFromGoApi(feeds: FeedResponseFromGoApi[]) {
         brand: {
           brand_id: Number(owner.brand.brand_id),
           brand_slug: owner.brand.brand_slug,
-          brand_user_logo: community.brand?.brand_user_logo || 1,
+          brand_user_logo: owner.brand?.brand_user_logo || 1,
         },
       }),
     },
