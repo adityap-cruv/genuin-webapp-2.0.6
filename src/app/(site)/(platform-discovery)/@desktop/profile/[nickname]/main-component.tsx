@@ -1,8 +1,6 @@
 'use client'
-import { abbreviateNumber, checkAndAppendHttps, getCurrentShareUrl } from '@lib/utils'
+import { abbreviateNumber, checkAndAppendHttps } from '@lib/utils'
 import { Button } from '@components/ui/button'
-import { useAdaptiveShare } from '@hooks/use-adaptive-share'
-import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import React, { useRef } from 'react'
@@ -10,7 +8,6 @@ import Link from 'next/link'
 import { useInView } from 'framer-motion'
 import { TopStickyBar } from './top-bar'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
-import { ShareIcon } from '@icons/share-icon'
 import { type ProfileDetailsType } from '@lib/schemas/profile/profile'
 import { CommunityList } from './community-list'
 import { PATH_NAME } from '@lib/utils/constants/path'
@@ -19,6 +16,7 @@ import { InstagramIcon } from '@icons/instagram-icon'
 import { TwitterIcon } from '@icons/twitter-icon'
 import { TikTokIcon } from '@icons/tiktok-icon'
 import { LinkedInIcon } from '@icons/linkedin-icon'
+import ShareButton from '@components/common/actions/ShareButton'
 
 interface CompProps {
   profileData: ProfileDetailsType
@@ -83,8 +81,7 @@ function Links({ profileData }: CompProps) {
     twitter: profileData.twitter_id ? profileData.twitter_url + profileData.twitter_id : undefined,
     tiktok: profileData.tiktok_id ? profileData.tiktok_url + profileData.tiktok_id : undefined,
   }
-  const { shareFn } = useAdaptiveShare()
-  const { toast } = useToast()
+
   const pathName = usePathname()
   const { user } = useGenuinOptions((state) => ({
     user: state.user,
@@ -135,21 +132,7 @@ function Links({ profileData }: CompProps) {
           </Button>
         </Link>
       )}
-      <Button
-        variant="outline"
-        size="custom"
-        outlineColor="genuin-blue"
-        className="mx-1 hover:border-primary-600"
-        onClick={async () =>
-          await shareFn({
-            shareLink: getCurrentShareUrl({ url: profileData.share_url }),
-            toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
-          })
-        }>
-        <span className="flex items-center p-1">
-          <ShareIcon className="h-6 w-6 fill-primary hover:fill-primary-600" />{' '}
-        </span>
-      </Button>
+      <ShareButton url={profileData.share_url} />
     </div>
   )
 }

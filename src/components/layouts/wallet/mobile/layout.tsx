@@ -24,7 +24,7 @@ export function SettingsLayout() {
               localStorage.setItem('previous_path', pathName)
             }
           }}>
-          <SettingIcon className="fill-secondary" />
+          <SettingIcon />
           <p className="text-body-1-demi">Settings</p>
         </div>
       </SheetTrigger>

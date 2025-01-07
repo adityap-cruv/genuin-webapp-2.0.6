@@ -2,12 +2,13 @@
 import { useState } from 'react'
 import { type VariantProps, cva } from 'class-variance-authority'
 import { cn } from '@lib/utils'
+import { BurgerIcon } from '@icons/burger-icon'
 
 const burgerVariants = cva('', {
   variants: {
     variant: {
-      light: 'bg-monochrome-white',
-      dark: 'bg-monochrome-black',
+      light: 'stroke-monochrome-white',
+      dark: 'stroke-monochrome-black',
     },
   },
 })
@@ -26,7 +27,7 @@ export function HamBurgerMenuIcon({
 }: Props) {
   const [isOpen, setIsOpen] = useState(false)
   const line = cn(
-    `h-1 w-7 my-0.5 rounded-full transition ease transform duration-100 delay-0`,
+    `my-0.5 rounded-full transition ease transform duration-100 delay-0`,
     burgerVariants({ variant })
   )
 
@@ -35,11 +36,14 @@ export function HamBurgerMenuIcon({
     setIsOpen((old) => !old)
   }
 
+  // return <Image src={icHamburger} alt="menu" height={24} width={24} onClick={toggle} className={cn(line)} />
   return (
-    <div className="flex h-12 w-12 flex-col items-center justify-center rounded focus:outline-none " onClick={toggle}>
-      <span className={cn(line, isOpen && toggleToClose ? 'translate-y-2 rotate-45' : undefined)} />
-      <span className={cn(line, isOpen && toggleToClose ? 'opacity-0' : undefined)} />
-      <span className={cn(line, isOpen && toggleToClose ? '-translate-y-2 -rotate-45' : undefined)} />
-    </div>
+    <BurgerIcon
+      onClick={toggle}
+      className={cn(line)}
+      height={24}
+      width={24}
+      strokeClassName={burgerVariants({ variant })}
+    />
   )
 }

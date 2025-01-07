@@ -1,32 +1,27 @@
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
-import { Button } from '@components/ui/button'
 import type { CommunityDetailsType, MembersSchemaType } from '@lib/schemas/community'
-import { checkAndAppendHttps, getCurrentShareUrl, mapCommunityUserRole } from '@lib/utils'
+import { checkAndAppendHttps, mapCommunityUserRole } from '@lib/utils'
 import Image from 'next/image'
 import icLock from '@icons/icLock.svg'
 import Link from 'next/link'
 import icLink from '@icons/icLinkBlack.svg'
 import { PATH_NAME } from '@lib/utils/constants/path'
-import { useToast } from '@components/ui/use-toast'
-import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { TopBar } from '../../../layouts/mobile/top-bar'
 import { CommunityLoopTab } from './community-loop-tab'
-// import { useState } from 'react'
-// import { joinCommunity, leaveCommunity, requestCommunity } from '@lib/api/video'
-import { ShareIcon } from '@icons/share-icon'
 import { getCommunityMembers } from '@lib/api/community'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@components/ui/accordion'
 import { Shimmer } from '@components/ui/shimmer'
 import { LockIcon } from '@icons/LockIcon'
 import { PrivateModal } from '@components/common/modals/private'
-import { TickIcon } from '@icons/tick-icon'
+import BrandBadgeIcon from '@/components/common/brand-badge-icon'
 import { BrandCommunityTag } from '@components/common/brand-community-tag'
 import { InstagramIcon } from '@icons/instagram-icon'
 import { LinkedInIcon } from '@icons/linkedin-icon'
 import { TwitterIcon } from '@icons/twitter-icon'
 import { TopStickyBar } from './top-sticky-bar'
 import { ReadMore } from '@/components/common/read-more'
+import ShareButton from '@components/common/actions/ShareButton'
 import { JoinCommunityButton } from '@components/common/join-community-button'
 
 let communityDetailsModule: CommunityDetailsType
@@ -39,8 +34,6 @@ const DETAIL_ELEMENT_ID = 'community-details'
 
 export function Details({ communityDetails }: Props) {
   communityDetailsModule = communityDetails
-  const { shareFn } = useAdaptiveShare()
-  const { toast } = useToast()
 
   return (
     <>
@@ -80,19 +73,7 @@ export function Details({ communityDetails }: Props) {
                 communityName={communityDetails.name ?? ''}
                 isMobile={true}
               />
-              <Button
-                variant="outline"
-                outlineColor="genuin-blue"
-                size="sm"
-                className="p-1"
-                onClick={async () =>
-                  await shareFn({
-                    shareLink: getCurrentShareUrl({ url: communityDetails.share_url }),
-                    toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
-                  })
-                }>
-                <ShareIcon className="h-6 w-6 fill-primary" />
-              </Button>
+              <ShareButton url={communityDetails.share_url} />
               {/* <Button variant="outline" size="custom" className="border border-primary p-1">
                 <Image src={icMore} alt="share" className="h-6 w-6" />
               </Button> */}
@@ -322,7 +303,7 @@ function Leaders() {
           description={leader.bio ?? ''}
           image={leader.profile_image}
           isAvatar={leader.is_avatar}
-          brand={leader.brand}
+          brand={leader.brand ? { ...leader.brand, brand_user_logo: leader.brand.brand_user_logo ?? 1 } : undefined}
           isOwner={true}
         />
       </Link>
@@ -340,7 +321,7 @@ function Leaders() {
                 description={item.bio ?? ''}
                 image={item.profile_image_m ?? item.profile_image}
                 isAvatar={item.is_avatar}
-                brand={item.brand}
+                brand={item.brand ? { ...item.brand, brand_user_logo: item.brand.brand_user_logo ?? 1 } : undefined}
                 isOwner={false}
               />
             </Link>
@@ -368,6 +349,7 @@ function ListItem({
   brand?: {
     brand_id: number
     brand_slug: string
+    brand_user_logo: number
   } | null
 }) {
   return (
@@ -381,12 +363,7 @@ function ListItem({
       <div className="mx-2">
         <div className="flex items-center gap-2">
           <p className="line-clamp-1 text-body-1-bold ">{subtitle}</p>
-          {brand && (
-            <div className="flex items-center gap-0.5">
-              <TickIcon className="h-3 w-3 fill-primary" />
-              <p className="text-cap-2-demi text-primary">Brand</p>
-            </div>
-          )}
+          {brand && <BrandBadgeIcon userLogoType={brand?.brand_user_logo} variant="dark" />}
           {isOwner && (
             <p className="flex items-center gap-1 rounded-full bg-primary-200 p-1 pr-1.5 text-primary ">Owner</p>
           )}
@@ -438,7 +415,7 @@ function Members() {
                   description={member?.bio ?? ''}
                   image={member.profile_image}
                   isAvatar={member.is_avatar}
-                  brand={member.brand ?? null}
+                  brand={member.brand ? { ...member.brand, brand_user_logo: member.brand.brand_user_logo ?? 1 } : null}
                   isOwner={false}
                 />
               </Link>

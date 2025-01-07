@@ -12,11 +12,9 @@ import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { ListItem } from '@components/common/list-item'
 import { LoopVideos } from './loop-videos'
-import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
 import { openModal } from '@lib/utils'
-import { ShareIcon } from '@icons/share-icon'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import Loading from './loading'
 import Error from '../../error'
@@ -24,15 +22,15 @@ import { Shimmer } from '@components/ui/shimmer'
 import { LockIcon } from '@icons/LockIcon'
 import { LoopPrivacyInfo } from '@components/common/loop-privacy-info'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@components/ui/tooltip'
-import { TickIcon } from '@icons/tick-icon'
+import BrandBadgeIcon from '@/components/common/brand-badge-icon'
 import Analytics from '@services/analytics'
 import { useSearchParams } from 'next/navigation'
 import { joinAsCollaboratorDeepLink, subscribeDeepLink } from '@/lib/get-deeplink'
-import { SubscribedBellIcon } from '@icons/subscribed-bell-icon'
-import { BellIcon } from 'lucide-react'
 import { ReadMore } from '@/components/common/read-more'
 import { NOT_FOUND_ERROR_CODES } from '@/lib/constants'
 import EmptyView from '@/components/common/empty-view'
+import ShareButton from '@components/common/actions/ShareButton'
+import SubscriptionButton from '@components/common/actions/SubscriptionButton'
 
 interface Props {
   loopDetails: LoopDetailsType
@@ -56,7 +54,6 @@ export function LoopDetails({ slug }: { slug: string }) {
 
 // TODO: Improve this component.
 export function MainComponent({ loopDetails }: Props) {
-  const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
   const detailsDivRef = useRef<HTMLDivElement>(null)
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
@@ -132,22 +129,7 @@ export function MainComponent({ loopDetails }: Props) {
           <p className="text-title-1-bold text-secondary">{loopDetails.group.group_name}</p>
           <div className="flex items-center gap-x-3">
             {loopDetails.is_view_allowed && (
-              <Button
-                size="custom"
-                // className={`${isLoopSubscribed && 'border border-primary '}`}
-                className={`${
-                  isLoopSubscribed ? 'border border-primary p-0.5' : 'border border-primary bg-primary p-0.5'
-                }`}
-                variant={isLoopSubscribed ? 'outline' : 'default'}
-                onClick={handleSubscribeClick}>
-                {/* <p className={`px-4 py-1 text-title-3-demi ${isLoopSubscribed && 'text-primary'}`}>
-                  {isLoopSubscribed ? 'Subscribed' : 'Subscribe'}
-                </p> */}
-                {isLoopSubscribed && (
-                  <SubscribedBellIcon className="h-6 w-6 fill-primary stroke-primary"></SubscribedBellIcon>
-                )}
-                {!isLoopSubscribed && <BellIcon className="h-6 w-6  stroke-new-off-white"></BellIcon>}
-              </Button>
+              <SubscriptionButton onClick={handleSubscribeClick} isSubscribed={isLoopSubscribed} />
             )}
 
             {!loopDetails.is_view_allowed && (
@@ -184,20 +166,7 @@ export function MainComponent({ loopDetails }: Props) {
                 </span>
               </Button> */}
 
-            <Button
-              variant="outline"
-              size="custom"
-              className="border border-primary p-0.5 hover:border-primary-600"
-              onClick={async () => {
-                const currentURL = new URL(loopDetails.share_url)
-                currentURL.searchParams.set('utm_source', 'app_web')
-                await shareFn({
-                  shareLink: currentURL.href,
-                  toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
-                })
-              }}>
-              <ShareIcon className="h-6 w-6 fill-primary hover:fill-primary-600" />
-            </Button>
+            <ShareButton url={loopDetails.share_url} />
           </div>
         </div>
         <LoopPrivacyInfo
@@ -231,10 +200,7 @@ export function MainComponent({ loopDetails }: Props) {
                       @{loopDetails.owner.username}
                     </p>
                     {loopDetails.owner.brand && (
-                      <div className="flex items-center">
-                        <TickIcon className="h-3 w-3 fill-primary" />
-                        <p className="text-cap-2-demi text-primary">Brand</p>
-                      </div>
+                      <BrandBadgeIcon userLogoType={loopDetails.owner.brand?.brand_user_logo ?? 1} variant="dark" />
                     )}
                   </div>
                 </Link>
@@ -351,7 +317,7 @@ function LoopCohosts({ slug }: { slug: string }) {
                   description={item.bio ?? ''}
                   image={item.profile_image_m ?? item.profile_image}
                   isAvatar={item.is_avatar}
-                  brand={item.brand ?? null}
+                  brand={item.brand ? { ...item.brand, brand_user_logo: item.brand.brand_user_logo ?? 1 } : null}
                   isOwner={false}
                 />
               )
@@ -367,7 +333,7 @@ function LoopCohosts({ slug }: { slug: string }) {
                   description={item.bio ?? ''}
                   image={item.profile_image_m ?? item.profile_image}
                   isAvatar={item.is_avatar}
-                  brand={item.brand ?? null}
+                  brand={item.brand ? { ...item.brand, brand_user_logo: item.brand.brand_user_logo ?? 1 } : null}
                   isOwner={false}
                 />
               </Link>
@@ -416,7 +382,7 @@ function LoopSubscribers({ slug }: { slug: string }) {
                 description={item.bio ?? ''}
                 image={item.profile_image_m ?? item.profile_image}
                 isAvatar={item.is_avatar}
-                brand={item.brand ?? null}
+                brand={item.brand ? { ...item.brand, brand_user_logo: item.brand.brand_user_logo ?? 1 } : null}
                 isOwner={false}
               />
             </Link>

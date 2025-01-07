@@ -2,25 +2,22 @@ import { CustomAvatar } from '@components/custom/custom-avatar'
 import { type RefObject, useRef, useState, useEffect } from 'react'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
-import { Button } from '@components/ui/button'
 import { DecorativeList } from '@components/custom/decorative-list'
 import { Comments, NoComments } from '@components/common/comments'
 import { getVideosComments } from '@lib/api/loop'
 import { useMotionValueEvent, useScroll } from 'framer-motion'
-import { useAdaptiveShare } from '@hooks/use-adaptive-share'
-import { useToast } from '@components/ui/use-toast'
 import { Toaster } from '@components/ui/toaster'
-import { getCurrentShareUrl, getTimeAgo } from '@lib/utils'
+import { getTimeAgo } from '@lib/utils'
 import { FeedShimmer } from '../shimmers/feed-shimmer'
-import { ShareIcon } from '@icons/share-icon'
 import { type CommentListType } from '@lib/schemas/loop/comment'
 import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import { LockIcon } from '@icons/LockIcon'
-import { TickIcon } from '@icons/tick-icon'
+import BrandBadgeIcon from '@/components/common/brand-badge-icon'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@components/ui/tooltip'
 import { ReadMore } from '../read-more'
 import { Linkout } from '../linkout'
 import MentionInput from '../comments/mention-input'
+import ShareButton from '@components/common/actions/ShareButton'
 import { useFeedListContext } from '../../providers/feed-provider'
 import { JoinCommunityButton } from '../join-community-button'
 
@@ -28,8 +25,6 @@ type DesktopDetailsProps = VideoPlayerModalType
 // TODO: improve this component.
 // TODO: Remove scrollDivRef dependency from CommentBox.
 export function DesktopDetails({ loop, community, owner, video }: DesktopDetailsProps) {
-  const { shareFn } = useAdaptiveShare()
-  const { toast } = useToast()
   const scrollDivRef = useRef<HTMLDivElement>(null)
   const { updateCommunityJoinStatus } = useFeedListContext()
   // TODO: Here state Comment and setComments are bad they are causing multiple rerenders.
@@ -45,16 +40,13 @@ export function DesktopDetails({ loop, community, owner, video }: DesktopDetails
             imageUrl={owner.profileImage}
             className="h-9 w-9"
           />
-          <span className="flex items-center gap-x-1">
+          <span className="flex items-center gap-x-2">
             {owner.brand ? (
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-x-2">
                 <Link href={PATH_NAME.brand(owner.brand.brand_slug)} title={'@' + owner.userName}>
                   <p className="line-clamp-1 break-all text-title-3-demi">@{owner.userName}</p>
                 </Link>
-                <div className="flex items-center">
-                  <TickIcon className="h-3 w-3 fill-primary" />
-                  <p className="text-cap-2-demi text-primary">Brand</p>
-                </div>
+                <BrandBadgeIcon userLogoType={owner.brand?.brand_user_logo ?? 1} variant="dark" />
               </div>
             ) : (
               <Link href={PATH_NAME.profile(owner.userName)}>
@@ -129,19 +121,7 @@ export function DesktopDetails({ loop, community, owner, video }: DesktopDetails
                   }}
                   isMobile={false}
                 />
-                <Button
-                  title="Copy Link"
-                  size="custom"
-                  variant="outline"
-                  className="min-w-max border border-primary p-1 hover:border-primary-600 "
-                  onClick={async () =>
-                    await shareFn({
-                      shareLink: getCurrentShareUrl({ url: community.shareUrl }),
-                      toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
-                    })
-                  }>
-                  <ShareIcon className="h-5 w-5 fill-primary hover:fill-primary-600" />
-                </Button>
+                <ShareButton url={community.shareUrl} />
               </div>
             </span>
             <DecorativeList>

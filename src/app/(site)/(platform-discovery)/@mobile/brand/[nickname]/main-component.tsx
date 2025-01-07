@@ -1,23 +1,20 @@
 'use client'
-import { abbreviateNumber, checkAndAppendHttps, getCurrentShareUrl } from '@lib/utils'
-import { Button } from '@components/ui/button'
+import { abbreviateNumber, checkAndAppendHttps } from '@lib/utils'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { useEffect, useRef } from 'react'
 import { TopBar } from '@components/layouts/mobile/top-bar'
 import Link from 'next/link'
 import { useInView, useScroll } from 'framer-motion'
 import { TopStickyBar } from '../../../@desktop/profile/[nickname]/top-bar'
-import { useAdaptiveShare } from '@hooks/use-adaptive-share'
-import { useToast } from '@components/ui/use-toast'
-import { ShareIcon } from '@icons/share-icon'
 import { type BrandSchemaType, type ProfileDetailsType } from '@lib/schemas/profile/profile'
 import { CommunityList } from './community-list'
-import { TickIcon } from '@icons/tick-icon'
+import BrandBadgeIcon from '@/components/common/brand-badge-icon'
 import { InstagramIcon } from '@icons/instagram-icon'
 import { TikTokIcon } from '@icons/tiktok-icon'
 import { LinkedInIcon } from '@icons/linkedin-icon'
 import { TwitterIcon } from '@icons/twitter-icon'
 import Analytics from '@services/analytics'
+import ShareButton from '@components/common/actions/ShareButton'
 import { useGenuinOptions } from '@/lib/stores/genuin-options'
 import { LinkIcon } from 'lucide-react'
 
@@ -27,8 +24,6 @@ interface CompProps {
 
 // TODO: separate this component.
 export function MainComponent({ profileData }: CompProps) {
-  const { shareFn } = useAdaptiveShare()
-  const { toast } = useToast()
   const detailsDivRef = useRef<HTMLDivElement>(null)
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
   const scrollDivRef = useRef<HTMLDivElement>(null)
@@ -55,6 +50,7 @@ export function MainComponent({ profileData }: CompProps) {
         profileNickname={profileData?.nickname}
         isAvatar={profileData?.is_avatar}
         shareUrl={profileData.share_url}
+        brandUserLogo={profileData.brand?.brand_user_logo ?? 1}
       />
       <div
         ref={scrollDivRef}
@@ -82,37 +78,22 @@ export function MainComponent({ profileData }: CompProps) {
                 }>
                 <p className="text-body-1-bold text-blue">Edit Profile</p>
               </Button> */}
-              <Button
-                variant="outline"
-                size="custom"
-                outlineColor="genuin-blue"
-                className="p-1.5"
-                onClick={async () =>
-                  await shareFn({
-                    shareLink: getCurrentShareUrl({ url: profileData.share_url }),
-                    toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
-                  })
-                }>
-                <ShareIcon className="h-6 w-6 fill-primary" />
-              </Button>
+              <ShareButton url={profileData.share_url} />
             </div>
           </div>
-          <div ref={detailsDivRef} className="mt-2 flex items-center">
+          <div ref={detailsDivRef} className="mt-2 flex items-center gap-x-2">
             {profileData?.name ? (
               <>
-                <p className="line-clamp-1 pr-2 text-title-3-bold">{profileData?.name}</p>
+                <p className="line-clamp-1 text-title-3-bold">{profileData?.name}</p>
                 <p className="line-clamp-1 text-body-1-med text-tertiary">@{profileData.nickname}</p>
               </>
             ) : (
               <>
-                <p className="line-clamp-1 pr-2 text-title-3-bold text-tertiary">@{profileData.nickname}</p>
+                <p className="line-clamp-1 text-title-3-bold text-tertiary">@{profileData.nickname}</p>
               </>
             )}
             {profileData.brand && (
-              <div className="ml-2 flex items-center gap-1 rounded-full bg-primary-200 p-1 px-1.5">
-                <TickIcon className="h-4 w-4 fill-primary" />
-                <p className="text-cap-1-demi text-primary">Brand</p>
-              </div>
+              <BrandBadgeIcon userLogoType={profileData.brand?.brand_user_logo ?? 1} variant="dark" />
             )}
           </div>
           <p className="my-1 text-body-1-demi">{profileData?.bio}</p>
