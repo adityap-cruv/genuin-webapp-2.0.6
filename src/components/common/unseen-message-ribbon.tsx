@@ -1,7 +1,7 @@
 import { IcArrowDown } from '@icons/ic-arrow-down'
-import { X } from 'lucide-react'
 import { motion, useAnimationControls } from 'framer-motion'
 import { useEffect, useState } from 'react'
+import { CloseIcon } from '@icons/close-icon'
 
 export function UnseenMessageRibbon({ messageCount }: { messageCount: number }) {
   const [isOpen, setIsOpen] = useState(true)
@@ -27,11 +27,12 @@ export function UnseenMessageRibbon({ messageCount }: { messageCount: number }) 
       <p className="text-body-1-demi text-monochrome-white">{`${messageCount} Unseen ${
         messageCount === 1 ? 'post' : 'posts'
       } |`}</p>
-      <X
+      <CloseIcon
         onClick={() => {
           setIsOpen(false)
         }}
-        className="h-4 w-4 cursor-pointer stroke-monochrome-white"
+        variant={'light'}
+        size="sm"
       />
     </motion.div>
   )

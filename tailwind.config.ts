@@ -2,7 +2,7 @@ import { type Config } from 'tailwindcss'
 import * as defaultTheme from 'tailwindcss/defaultTheme'
 module.exports = {
   darkMode: ['class'],
-  content: ['./pages/**/*.{ts,tsx}', './components/**/*.{ts,tsx}', './app/**/*.{ts,tsx}', './src/**/*.{ts,tsx}'],
+  content: ['./pages/**/*.{ts,tsx}', './components/**/*.{ts,tsx}', './app/**/*.{ts,tsx}', './src/**/*.{ts,tsx}', './public/**/*.{ts,tsx}'],
   theme: {
     colors: {
       background: 'hsl(var(--background))',
@@ -292,6 +292,12 @@ module.exports = {
         'black-70': ['rgba(17, 17, 17, 0.00)', 'rgba(17, 17, 17, 0.70)'],
       },
       letterSpacing: {},
+    },
+  },
+  variants: {
+    extend: {
+      fill: ['hover', 'focus'], // Enables hover and focus variants for `fill`
+      stroke: ['hover', 'focus'], // Enables hover and focus variants for `stroke`
     },
   },
   plugins: [require('tailwindcss-animate')],

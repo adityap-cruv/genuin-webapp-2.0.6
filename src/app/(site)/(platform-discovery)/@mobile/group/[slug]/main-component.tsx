@@ -5,7 +5,6 @@ import { openGeneratedLink, openModal } from '@lib/utils'
 import Image from 'next/image'
 import icLock from '@icons/icLock.svg'
 import { useToast } from '@components/ui/use-toast'
-import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@components/ui/tabs'
 import { getLoopCohosts, subscribeLoop, getLoopDetails } from '@lib/api/loop'
 import Link from 'next/link'
@@ -17,7 +16,6 @@ import { useInView } from 'framer-motion'
 import { TopStickyBar } from '../../../@desktop/group/[slug]/top-bar'
 import { LoopVideos } from './loop-videos'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
-import { ShareIcon } from '@icons/share-icon'
 import { useSearchParams } from 'next/navigation'
 import Loading from './loading'
 import Error from '../../error'
@@ -27,12 +25,12 @@ import { LoopPrivacyInfo } from '@components/common/loop-privacy-info'
 import { PrivateModal } from '@components/common/modals/private'
 import Analytics from '@services/analytics'
 import { joinAsCollaboratorDeepLink, subscribeDeepLink } from '@/lib/get-deeplink'
-import { SubscribedBellIcon } from '@icons/subscribed-bell-icon'
-import { BellIcon } from 'lucide-react'
 import { ReadMore } from '@/components/common/read-more'
 import EmptyView from '@/components/common/empty-view'
 import { NOT_FOUND_ERROR_CODES } from '@/lib/constants'
 import BrandBadgeIcon from '@/components/common/brand-badge-icon'
+import ShareButton from '@components/common/actions/ShareButton'
+import SubscriptionButton from '@components/common/actions/SubscriptionButton'
 
 let loopDetailsModule: LoopDetailsType
 
@@ -61,7 +59,6 @@ export function MainComponent({ loopDetails }: Props) {
   loopDetailsModule = loopDetails
   const detailsDivRef = useRef<HTMLDivElement>(null)
   const detailsInView = useInView(detailsDivRef, { amount: 0.6 })
-  const { shareFn } = useAdaptiveShare()
   const { toast } = useToast()
   const [isLoopSubscribed, setIsLoopSubscribed] = useState(!!loopDetails.is_subscriber)
   const { user, webCTA } = useGenuinOptions()
@@ -196,13 +193,7 @@ export function MainComponent({ loopDetails }: Props) {
 
           <div className="flex items-center gap-x-2">
             {loopDetails.is_view_allowed && (
-              <Button
-                size="custom"
-                // className={`${isLoopSubscribed && 'border border-primary '}`}
-                className={`${
-                  isLoopSubscribed ? 'border border-primary p-0.5' : 'border border-primary bg-primary p-0.5'
-                }`}
-                variant={isLoopSubscribed ? 'outline' : 'default'}
+              <SubscriptionButton
                 onClick={
                   user
                     ? () => {
@@ -223,17 +214,10 @@ export function MainComponent({ loopDetails }: Props) {
                           })
                         }
                       }
-                }>
-                {/* <p className={`px-4 py-1 text-title-3-demi ${isLoopSubscribed && 'text-primary'}`}>
-                  {isLoopSubscribed ? 'Subscribed' : 'Subscribe'}
-                </p> */}
-                {isLoopSubscribed && (
-                  <SubscribedBellIcon className="h-6 w-6 fill-primary stroke-primary"></SubscribedBellIcon>
-                )}
-                {!isLoopSubscribed && <BellIcon className="h-6 w-6  stroke-new-off-white"></BellIcon>}
-              </Button>
+                }
+                isSubscribed={isLoopSubscribed}
+              />
             )}
-
             {!loopDetails.is_view_allowed && (
               <Button
                 size="custom"
@@ -260,20 +244,7 @@ export function MainComponent({ loopDetails }: Props) {
                 </span>
               </Button> */}
 
-            <Button
-              variant="outline"
-              size="custom"
-              className="border border-primary p-0.5"
-              onClick={async () => {
-                const currentURL = new URL(loopDetails.share_url)
-                currentURL.searchParams.set('utm_source', 'app_web')
-                await shareFn({
-                  shareLink: currentURL.href,
-                  toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
-                })
-              }}>
-              <ShareIcon className="h-6 w-6 fill-primary" />
-            </Button>
+            <ShareButton url={loopDetails.share_url} />
           </div>
         </div>
         <hr className="border-t border-tertiary-200" />

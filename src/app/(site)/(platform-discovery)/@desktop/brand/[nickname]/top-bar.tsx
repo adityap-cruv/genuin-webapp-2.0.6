@@ -1,12 +1,8 @@
-import { Button } from '@components/ui/button'
 import { motion, useAnimationControls } from 'framer-motion'
 import { useEffect } from 'react'
 import { CustomAvatar } from '@components/custom/custom-avatar'
-import { useToast } from '@components/ui/use-toast'
-import { useAdaptiveShare } from '@hooks/use-adaptive-share'
-import { getCurrentShareUrl } from '@lib/utils'
-import { ShareIcon } from '@icons/share-icon'
 import BrandBadgeIcon from '@/components/common/brand-badge-icon'
+import ShareButton from '@components/common/actions/ShareButton'
 
 type Props = {
   /**
@@ -42,8 +38,6 @@ function Desktop({
   ...props
 }: Props) {
   const navAnimationControl = useAnimationControls()
-  const { shareFn } = useAdaptiveShare()
-  const { toast } = useToast()
 
   useEffect(() => {
     if (defaultOpen || isOpen) {
@@ -78,21 +72,7 @@ function Desktop({
         )}
         <BrandBadgeIcon userLogoType={brandUserLogo} variant="dark" />
       </span>
-      <Button
-        variant="outline"
-        size="custom"
-        outlineColor="genuin-blue"
-        className="mx-1 hover:border-primary-600"
-        onClick={async () =>
-          await shareFn({
-            shareLink: getCurrentShareUrl({ url: shareUrl }),
-            toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
-          })
-        }>
-        <span className="flex items-center p-1">
-          <ShareIcon className="h-6 w-6 fill-primary hover:fill-primary-600" />{' '}
-        </span>
-      </Button>
+      <ShareButton url={shareUrl} />
     </motion.div>
   )
 }
