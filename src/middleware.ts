@@ -136,7 +136,7 @@ export const config = {
 export function getConfig(host: string): { domain?: string; subdomain?: string } | null {
   if (['localhost:4005', 'www', '192'].includes(host.split('.')[0])) return null
 
-  // if (!host.includes('begenuin')) return { domain: host }
+  if (!host.includes('begenuin')) return { domain: host }
   const subdomain =
     process.env.NEXT_PUBLIC_CURRENT_ENV === 'local' || process.env.NEXT_PUBLIC_CURRENT_ENV === 'qa'
       ? host.replace('.qa.begenuin.com', '')
