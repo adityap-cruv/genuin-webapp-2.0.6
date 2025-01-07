@@ -3,7 +3,7 @@ import { useRepostModalStore } from './state'
 import { Body } from './body'
 import { SearchInput } from './search-input'
 import { Loader } from '@components/ui/loader'
-import { X } from 'lucide-react'
+import { CloseIcon } from '@icons/close-icon'
 import { IcLoop } from '@icons/ic-loop'
 
 export function Modal() {
@@ -31,7 +31,7 @@ export function Modal() {
           onClick={(e) => {
             close()
           }}>
-          <X />
+          <CloseIcon />
         </DialogClose>
         <p className="flex justify-center pb-5 text-title-1-bold">Repost Post</p>
         {isLoading ? (

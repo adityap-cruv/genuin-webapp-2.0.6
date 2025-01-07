@@ -3,7 +3,7 @@ import { Switch } from '@components/ui/switch'
 import { NotificationsSettings } from '@lib/api/settings'
 import { useRouter } from 'next/navigation'
 import Analytics from '@services/analytics'
-import { ChevronLeft, ChevronRight, X } from 'lucide-react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Dialog, DialogClose, DialogContent, DialogTrigger } from '@/components/ui/dialog'
 import { CategoryInputSettings } from './category-input-settings'
@@ -11,6 +11,7 @@ import { useEffect, useRef, useState } from 'react'
 import { getCategoryList } from '@/components/common/modals/authentication/screens/category-input/api'
 import { useToast } from '@/components/ui/use-toast'
 import { useQueryClient } from '@tanstack/react-query'
+import { CloseIcon } from '@icons/close-icon'
 
 export function Personalization({
   settingsData,
@@ -139,8 +140,7 @@ export function Personalization({
                   setDialogOpen(false)
                 }}>
                 <DialogClose className="absolute right-4 top-4 outline-none">
-                  <X
-                    className="stroke-secondary"
+                  <CloseIcon
                     onClick={() => {
                       setSelectedItem(initialSelectedItemsRef.current)
                     }}
