@@ -10,6 +10,18 @@ export function ThirdPartyScriptProvider({ children }: { children: React.ReactNo
     analytics.load(process.env.NEXT_PUBLIC_RUDDERSTACK_KEY, process.env.NEXT_PUBLIC_RUDDERSTACK_URL, {
       storage: {
         type: 'localStorage',
+        cookie: {},
+        entries: {
+          userId: { type: 'localStorage' },
+          anonymousId: { type: 'localStorage' },
+          sessionInfo: { type: 'localStorage' },
+          userTraits: { type: 'localStorage' }, // Optional: For user traits
+          initialReferrer: { type: 'localStorage' }, // Optional: For referrer tracking
+          groupId: { type: 'localStorage' }, // Optional: For group tracking
+          groupTraits: { type: 'localStorage' }, // Optional: For group traits
+          initialReferringDomain: { type: 'localStorage' }, // Optional: For referrer tracking
+          authToken: { type: 'localStorage' }, // Optional: For auth token
+        },
       },
       plugins: ['DeviceModeDestinations', 'ErrorReporting'],
       consentManagement: {
@@ -17,6 +29,7 @@ export function ThirdPartyScriptProvider({ children }: { children: React.ReactNo
       },
       integrations: {
         All: false, // Disables all third-party integrations
+        'Google Analytics': false,
       },
     })
     analyticsRef.current = analytics
