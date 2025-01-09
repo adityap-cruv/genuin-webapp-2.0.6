@@ -50,7 +50,13 @@ function Desktop() {
   )
 }
 
-function Mobile({ children, variant="light" }: { children: ReactNode; variant: 'light' | 'dark' | 'transparent' | null }) {
+function Mobile({
+  children,
+  variant = 'light',
+}: {
+  children: ReactNode
+  variant: 'light' | 'dark' | 'transparent' | null
+}) {
   return (
     <Sheet modal={false}>
       <SheetTrigger

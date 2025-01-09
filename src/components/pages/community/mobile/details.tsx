@@ -81,30 +81,42 @@ export function Details({ communityDetails }: Props) {
           </div>
           <div id={DETAIL_ELEMENT_ID} className="flex items-center justify-between gap-2 pt-2">
             <div className="flex items-center">
-              <p className="my-1 mt-2 line-clamp-1 break-all text-title-3-bold ">{communityDetailsModule?.name}</p>
+              <p className="my-1 mt-2 line-clamp-2 break-all text-title-3-bold">{communityDetailsModule?.name}</p>
               {/* <p className="text-body-1-med text-tertiary">@{communityDetails.handle}</p> */}
-              {communityDetailsModule.type === 2 && (
-                <PrivateModal>
-                  <div className="flex items-center justify-center rounded-full bg-tertiary-200 p-1 px-1.5">
-                    <LockIcon className="h-4 w-4 stroke-tertiary" />
-                    <p className="text-cap-1-demi text-tertiary">Private</p>
-                  </div>
-                </PrivateModal>
-              )}
             </div>
-            {communityDetailsModule.brand && (
-              <BrandCommunityTag
-                brandSlug={communityDetailsModule.brand.brand_slug}
-                brandLogo={communityDetailsModule.brand?.logo}
-                brandName={communityDetailsModule.brand?.name}
-              />
-            )}
           </div>
           <ReadMore.default
             text={communityDetailsModule?.description}
             maxChars={150}
-            className="my-1  break-all text-body-1-demi"
+            className="my-1 break-all text-body-1-demi"
           />
+
+          <div className="my-1 flex items-center gap-x-2">
+            {communityDetailsModule.type === 2 && (
+              <>
+                <PrivateModal>
+                  <div className="flex items-center justify-center gap-x-1">
+                    <LockIcon className="h-4 w-4 stroke-tertiary" />
+                    <p className="text-cap-1-demi text-tertiary">Private</p>
+                  </div>
+                </PrivateModal>
+
+                <span className="text-cap-1-demi text-tertiary">•</span>
+              </>
+            )}
+
+            {communityDetailsModule.brand && (
+              <>
+                <span className="text-cap-1-demi text-tertiary">Posted in</span>
+                <BrandCommunityTag
+                  brandSlug={communityDetailsModule.brand.brand_slug}
+                  brandLogo={communityDetailsModule.brand?.logo}
+                  brandName={communityDetailsModule.brand?.name}
+                />
+              </>
+            )}
+          </div>
+
           <Stats />
         </div>
         {communityDetailsModule.type === 2 && !communityDetailsModule.logged_in_user_role ? (

@@ -119,7 +119,7 @@ export function MainComponent({ loopDetails }: Props) {
         style={{ height: 'calc(100% - 74px)' }}>
         <div className="w-full">
           <div ref={detailsDivRef}>
-            <p className="line-clamp-1 text-title-1-bold text-secondary">{loopDetails.group.group_name}</p>
+            <p className="text-title-1-bold text-secondary">{loopDetails.group.group_name}</p>
             <LoopPrivacyInfo
               actionId={loopDetails?.actions?.[0]?.action_id ?? 0}
               accessTypeId={loopDetails?.actions?.[0]?.access_type_id ?? 0}
@@ -445,7 +445,7 @@ function CohostTile({ image, title, subtitle, userName, isAvatar, brandUserLogo 
     <div className="flex items-center gap-x-1 rounded-lg p-2">
       <CustomAvatar className="h-12 w-12 bg-red-40" fallbackString={title} imageUrl={image} isAvatar={isAvatar} />
       <div className="mx-2">
-        <p className="line-clamp-1 inline-flex gap-x-2 text-body-1-bold items-center">
+        <p className="line-clamp-1 inline-flex items-center gap-x-2 text-body-1-bold">
           {title}
           {brandUserLogo && <BrandBadgeIcon userLogoType={brandUserLogo ?? 1} variant="dark" />}
         </p>
