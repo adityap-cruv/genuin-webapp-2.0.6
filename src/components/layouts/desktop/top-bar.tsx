@@ -61,20 +61,15 @@ export function TopBar({
             <div className="flex items-center gap-x-3">
               {showSearchBar && <SearchBar.desktop />}
               <WalletAmountBadge type="dark" />
-              {webCTA === 'app' ? (
-                <>
-                  <DownloadAppDialog>
-                    <Button
-                      variant="default"
-                      size={'custom'}
-                      className="h-8 bg-new-off-black px-4 py-3 hover:bg-new-dark-grey">
-                      <p className="text-[15px] text-new-para-2 font-semibold text-tertiary-100">Get app</p>
-                    </Button>
-                  </DownloadAppDialog>
-                </>
-              ) : (
-                showUserTick && <UserTick />
+
+              {(webCTA === 'app' || webCTA === 'both') && (
+                <DownloadAppDialog>
+                  <Button variant="outline" size={'custom'} className="h-8 px-4 py-3">
+                    <p className="text-[15px] text-new-para-2 font-semibold">Get App</p>
+                  </Button>
+                </DownloadAppDialog>
               )}
+              {webCTA !== 'app' && showUserTick && <UserTick />}
             </div>
           </nav>
         )}
