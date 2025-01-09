@@ -97,9 +97,7 @@ export function CommunityList({ brandId, scrollYProgress }: { brandId: number; s
                 <div className="flex w-full items-center justify-between">
                   <div className="mx-2">
                     <Link href={{ pathname: PATH_NAME.community(community.slug) }}>
-                      <p
-                        className="line-clamp-1 text-left"
-                        style={{ fontWeight: 600, fontSize: '20px', lineHeight: '24px' }}>
+                      <p className="line-clamp-1 break-all text-left text-body-1-bold">
                         {community.name ?? `${community.handle}`}
                       </p>
                     </Link>
@@ -117,15 +115,17 @@ export function CommunityList({ brandId, scrollYProgress }: { brandId: number; s
                         <p className="text-cap-1-demi text-tertiary">Public</p>
                       </div>
                     )}
+                    {community.brand && (
+                      <div className="inline-flex">
+                        <BrandCommunityTag
+                          brandSlug={community.brand.brand_slug}
+                          brandLogo={community.brand?.logo}
+                          brandName={community.brand?.name}
+                        />
+                      </div>
+                    )}
                   </div>
                   <div className="flex items-center gap-2">
-                    {community.brand && (
-                      <BrandCommunityTag
-                        brandSlug={community.brand.brand_slug}
-                        brandLogo={community.brand?.logo}
-                        brandName={community.brand?.name}
-                      />
-                    )}
                     <JoinCommunityButton
                       buttonText="Join"
                       handle={community.handle}
@@ -242,7 +242,7 @@ function Loops({
           {item.private ? (
             <div className="mb-2">
               <a href={PATH_NAME.loop(item.slug)}>
-                <p className="text-title-3-demi">{item.name}</p>
+                <p className="text-body-1-demi">{item.name}</p>
               </a>
               <div className="my-1 flex items-center gap-1">
                 <IcLoop className="h-4 w-4 fill-tertiary" />

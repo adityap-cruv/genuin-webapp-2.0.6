@@ -47,7 +47,7 @@ export function TopStickyBar({ communityName, communityProfileImage, elementIdTo
           isAvatar={false}
           className="h-8 w-8"
         />
-        <p className="text-title-2-demi">{communityName}</p>
+        <p className="line-clamp-1 break-all text-title-2-demi">{communityName}</p>
       </span>
     </motion.div>
   )

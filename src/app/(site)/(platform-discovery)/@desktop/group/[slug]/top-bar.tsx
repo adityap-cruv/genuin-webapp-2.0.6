@@ -110,7 +110,9 @@ function Mobile({ defaultOpen = true, isOpen = false, loopName, communitySlug, .
       className="sticky top-0 z-10 flex h-14 w-full items-center justify-between border-b border-monochrome-9 bg-monochrome-white px-6"
       {...props}>
       <span className="flex items-center gap-x-2">
-        <p className="text-title-2-demi">{loopName}</p>
+        <p className="line-clamp-1 break-all text-title-2-demi" title={loopName}>
+          {loopName}
+        </p>
       </span>
     </motion.div>
   )

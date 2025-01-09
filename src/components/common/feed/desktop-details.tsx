@@ -82,11 +82,11 @@ export function DesktopDetails({ loop, community, owner, video }: DesktopDetails
                     <Link
                       href={{ pathname: PATH_NAME.community(community.slug) }}
                       title={community.name ?? 'Genuin community'}>
-                      <p className="line-clamp-1 break-all text-title-3-bold">{community.name}</p>
+                      <p className="line-clamp-2 break-all text-title-3-bold">{community.name}</p>
                     </Link>
                     {community.brand && (
                       <p
-                        className="line-clamp-1 max-w-[30ch] break-all text-body-1-med text-tertiary"
+                        className="line-clamp-1 max-w-[30ch] break-all text-body-1-demi text-tertiary-400"
                         title={community.brand.name}>
                         on {community.brand?.name}
                       </p>
@@ -128,7 +128,7 @@ export function DesktopDetails({ loop, community, owner, video }: DesktopDetails
               <div className="h-2 w-full" />
               <Link href={PATH_NAME.loop(loop.slug)} title={loop.name ?? 'Genuin Loop'}>
                 <li className="relative flex h-full w-full items-center justify-between rounded-md border border-tertiary-200 bg-monochrome-white p-4 ">
-                  <p className="line-clamp-1 w-full break-all pr-2 text-body-1-demi">{loop?.name}</p>
+                  <p className="line-clamp-2 w-full break-words pr-2 text-body-1-demi">{loop?.name}</p>
                   <p className="whitespace-nowrap text-cap-1-med text-primary hover:text-primary-600">View Group</p>
                 </li>
               </Link>
