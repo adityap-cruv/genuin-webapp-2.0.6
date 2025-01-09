@@ -119,7 +119,7 @@ export function MainComponent({ loopDetails }: Props) {
         style={{ height: 'calc(100% - 74px)' }}>
         <div className="w-full">
           <div ref={detailsDivRef}>
-            <p className="text-title-1-bold text-secondary">{loopDetails.group.group_name}</p>
+            <p className="line-clamp-2 break-words text-title-1-bold text-secondary">{loopDetails.group.group_name}</p>
             <LoopPrivacyInfo
               actionId={loopDetails?.actions?.[0]?.action_id ?? 0}
               accessTypeId={loopDetails?.actions?.[0]?.access_type_id ?? 0}
