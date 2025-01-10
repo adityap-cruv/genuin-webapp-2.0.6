@@ -216,29 +216,37 @@ function Menu({
         <DownloadAppDialog />
         {isClaimed && status === 'unauthenticated' && webCTA !== 'app' && (
           <>
-            <div
-              className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10"
-              onClick={() => {
-                AuthenticationModal.open()
-              }}>
-              <LoginIcon className="stroke-primary" />
-              <p className={cn('whitespace-nowrap !text-title-3-demi text-primary')}>Log in</p>
-            </div>
+            <SheetClose>
+              <div
+                className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10"
+                onClick={() => {
+                  AuthenticationModal.open()
+                }}>
+                <LoginIcon className="stroke-primary" />
+                <p className={cn('whitespace-nowrap !text-title-3-demi text-primary')}>Log in</p>
+              </div>
+            </SheetClose>
             <hr className="border-1 my-2 border-monochrome-black/10" />
           </>
         )}
         {!isClaimed && (
-          <div
-            className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10"
-            onClick={() => {
-              AuthenticationModal.open(undefined, 'CLAIM_BRAND_PROFILE')
-            }}>
-            <VerifiedIcon className="stroke-primary" />
-            <p className={cn('whitespace-nowrap !text-title-3-demi text-primary')}>Claim Brand Profile</p>
-          </div>
+          <SheetClose>
+            <div
+              className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10"
+              onClick={() => {
+                AuthenticationModal.open(undefined, 'CLAIM_BRAND_PROFILE')
+              }}>
+              <VerifiedIcon className="stroke-primary" />
+              <p className={cn('whitespace-nowrap !text-title-3-demi text-primary')}>Claim Brand Profile</p>
+            </div>
+          </SheetClose>
         )}
         {(!isClaimed || user?.ksCbRequestStatus !== 3) && <hr className="border-1 my-2 border-monochrome-black/10" />}
-        {user?.ksCbRequestStatus !== 3 && <BecomeCbCard className="my-4 lg:hidden" />}
+        {user?.ksCbRequestStatus !== 3 && (
+          <SheetClose className="my-4 lg:hidden">
+            <BecomeCbCard />
+          </SheetClose>
+        )}
         <CategoryView className="lg:hidden" />
         <RecentCommunities />
         <div className="text-tertiary">
