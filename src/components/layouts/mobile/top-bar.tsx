@@ -361,7 +361,7 @@ function UserTick({ variant = 'light' }: { variant: 'light' | 'transparent' | 'd
               </Link>
             )}
             <div className="flex items-center gap-x-2">
-              <LogoutIcon className="stroke-secondary" />
+              <LogoutIcon className="h-5 w-5 stroke-secondary" />
               <p
                 className="text-body-1-demi"
                 onClick={() => {
