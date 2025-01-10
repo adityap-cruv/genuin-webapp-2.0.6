@@ -128,7 +128,7 @@ function RepostButton({ destinationId }: { destinationId: string }) {
         </div>
       ) : (
         <span className="flex gap-x-1 py-2 pl-2 pr-4">
-          <RepostIcon className={cn('h-5 w-5 fill-primary', status.repostStatus && 'fill-monochrome-white')} />
+          <RepostIcon className={cn('h-5 w-5 stroke-primary', status.repostStatus && 'stroke-monochrome-white')} />
           <p className={cn('text-primary', status.repostStatus && 'text-monochrome-white')}>
             {status.repostStatus ? 'Reposted' : 'Repost'}
           </p>
