@@ -2,12 +2,13 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { PATH_NAME } from '@lib/utils/constants/path'
-import { AccountIcon, ContactUsIcon, EditIcon, LogOutIcon, PersonalizationIcon } from '@icons/settings-side-bar-icons'
+import { AccountIcon, ContactUsIcon, EditIcon, PersonalizationIcon } from '@icons/settings-side-bar-icons'
 import { cn } from '@lib/utils'
 import { useEffect, type ReactNode } from 'react'
 import { AuthenticationModal } from '@components/common/modals/authentication'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import Analytics from '@/services/analytics'
+import { LogoutIcon } from '@icons/logout'
 
 export default function SettingsMenu({ isMobile }: { isMobile: boolean }) {
   const pathName = usePathname()
@@ -66,7 +67,7 @@ export default function SettingsMenu({ isMobile }: { isMobile: boolean }) {
               AuthenticationModal.open(undefined, 'LOGOUT')
             }}>
             <Item title="Log out">
-              <LogOutIcon isActive={false} />
+              <LogoutIcon className="stroke-secondary" />
             </Item>
           </div>
         </div>
