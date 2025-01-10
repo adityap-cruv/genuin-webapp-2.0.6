@@ -24,9 +24,9 @@ export function ThirdPartyScriptProvider({ children }: { children: React.ReactNo
         },
       },
       plugins: ['DeviceModeDestinations', 'ErrorReporting'],
-      consentManagement: {
-        enabled: false,
-      },
+      // consentManagement: {
+      //   enabled: false,
+      // },
       integrations: {
         All: false, // Disables all third-party integrations
         'Google Analytics': false,
