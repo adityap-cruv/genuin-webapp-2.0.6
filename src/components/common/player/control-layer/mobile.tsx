@@ -169,27 +169,48 @@ function Details({
 }: MobileProps) {
   const [showLinkouts, setShowLinkouts] = useState(false)
 
+  // // This logic is to show linkouts after 10 second of video play.
+  // useEffect(() => {
+  //   if (!linkoutId) return
+  //   let timeoutId: NodeJS.Timeout | null = null
+
+  //   // If video is active, show linkouts after 10 seconds.
+  //   if (isActive) {
+  //     timeoutId = setTimeout(() => {
+  //       setShowLinkouts(true)
+  //     }, 10000)
+  //   }
+
+  //   // Clear timeout if video is not active.
+  //   return () => {
+  //     if (timeoutId) {
+  //       clearTimeout(timeoutId)
+  //       timeoutId = null
+  //     }
+  //     setShowLinkouts(false)
+  //   }
+  // }, [isActive])
+
   // This logic is to show linkouts after 10 second of video play.
   useEffect(() => {
     if (!linkoutId) return
     let timeoutId: NodeJS.Timeout | null = null
-
     // If video is active, show linkouts after 10 seconds.
     if (isActive) {
       timeoutId = setTimeout(() => {
         setShowLinkouts(true)
       }, 10000)
+    } else {
+      setShowLinkouts(false)
     }
 
     // Clear timeout if video is not active.
     return () => {
       if (timeoutId) {
         clearTimeout(timeoutId)
-        timeoutId = null
       }
-      setShowLinkouts(false)
     }
-  }, [isActive])
+  }, [isActive, linkoutId])
 
   return (
     <div className="absolute bottom-4 left-0 flex w-full justify-between px-2">
