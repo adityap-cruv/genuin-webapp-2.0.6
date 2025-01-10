@@ -32,7 +32,17 @@ const RecentCommunities = dynamic(
 
 // TODO: Improve active states on all items.
 export function SideBar() {
-  const { user, brandName, notificationCount, isClaimed, sizeboxHeight, webCTA, brandId } = useGenuinOptions(
+  const {
+    user,
+    brandName,
+    notificationCount,
+    isClaimed,
+    sizeboxHeight,
+    webCTA,
+    brandId,
+    privacyPolicy,
+    termsAndCondition,
+  } = useGenuinOptions(
     useShallow((state) => ({
       user: state.user,
       brandId: state.config?.brand_id,
@@ -41,6 +51,8 @@ export function SideBar() {
       isClaimed: state.config?.is_claimed,
       sizeboxHeight: state.sizeBoxes.default.height,
       webCTA: state.config?.web_cta,
+      privacyPolicy: state.config?.privacy_policy,
+      termsAndCondition: state.config?.terms_and_condition,
     }))
   )
   const pathName = usePathname()
@@ -105,10 +117,10 @@ export function SideBar() {
               className=" rounded-2xl p-2 shadow-lg shadow-monochrome-3/40"
               side="bottom"
               align="start">
-              <Link href={{ pathname: PATH_NAME.terms }}>
+              <Link href={{ pathname: privacyPolicy ?? PATH_NAME.terms }}>
                 <p className="rounded-md p-2 text-title-2-demi hover:bg-monochrome-6/10">Terms and Conditions</p>
               </Link>
-              <Link href={{ pathname: PATH_NAME.privacy }}>
+              <Link href={{ pathname: termsAndCondition ?? PATH_NAME.privacy }}>
                 <p className="rounded-md p-2 text-title-2-demi hover:bg-monochrome-6/10">Privacy Policy</p>
               </Link>
             </PopoverContent>
