@@ -178,7 +178,7 @@ function UserTick() {
             )}
 
             <div className="flex items-center gap-2">
-              <LogoutIcon className="stroke-secondary" />
+              <LogoutIcon className="h-6 w-6 stroke-secondary" />
               <p
                 className="cursor-pointer text-body-1-demi"
                 onClick={() => {
