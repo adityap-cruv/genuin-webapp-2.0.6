@@ -16,7 +16,7 @@ export function showInterruption() {
   const { user, brandId } = useGenuinOptions.getState()
   const isOpen = useAuthenticationModalStore.getState().isOpen
   if (isOpen) return
-  if (brandId.toString() === '99') return
+  if (brandId?.toString() === '99') return
   if (!user) {
     AuthenticationModal.open(undefined, 'STARTER')
   } else if (!user.hasTopics) {
@@ -34,7 +34,7 @@ export function InterruptionProvider() {
     const { user, brandId } = useGenuinOptions.getState()
     const isOpen = useAuthenticationModalStore.getState().isOpen
     if (isOpen) return
-    if (brandId.toString() === '99') return
+    if (brandId?.toString() === '99') return
     if (!user) {
       AuthenticationModal.open(undefined)
     } else if (!user.hasTopics) {
