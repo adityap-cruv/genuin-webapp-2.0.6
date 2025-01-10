@@ -6,7 +6,7 @@ import { type ReactNode } from 'react'
 import { cn, getYear } from '@lib/utils'
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
-import { PopularIcon, HomeIcon, LatestIcon, ProfileIcon } from '@icons/side-bar-icons'
+import { PopularIcon, HomeIcon, LatestIcon, ProfileIcon, ExploreIcon } from '@icons/side-bar-icons'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { RecentCommunities } from './recent-communities'
@@ -194,6 +194,11 @@ function Menu({
         <Link href={{ pathname: PATH_NAME.latest() }}>
           <MenuItem brandName={brandName} title="Latest" isActive={pathName === PATH_NAME.latest()}>
             <LatestIcon isActive={pathName === PATH_NAME.latest()} />
+          </MenuItem>
+        </Link>
+        <Link href={{ pathname: PATH_NAME.explore() }}>
+          <MenuItem brandName={brandName} title="Explore" isActive={pathName === PATH_NAME.explore()}>
+            <ExploreIcon isActive={pathName === PATH_NAME.explore()} />
           </MenuItem>
         </Link>
         {user && (

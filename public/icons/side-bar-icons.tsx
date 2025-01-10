@@ -146,7 +146,7 @@ export function ExploreIcon({ isActive, className }: Props) {
       <path
         d="M16 29C23.1797 29 29 23.1797 29 16C29 8.8203 23.1797 3 16 3C8.8203 3 3 8.8203 3 16C3 23.1797 8.8203 29 16 29Z"
         stroke="#111111"
-        className={cn(isActive ? 'stroke-primary' : '', className)}
+        className={cn(isActive ? 'stroke-primary' : 'stroke-secondary', className)}
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -154,7 +154,7 @@ export function ExploreIcon({ isActive, className }: Props) {
       <path
         d="M22.6842 9.31588C22.5424 9.17416 22.3641 9.07473 22.1689 9.02876C21.9738 8.98278 21.7699 8.99207 21.5797 9.05559L12.1862 12.1863L9.05558 21.5797C8.99207 21.7698 8.98278 21.9739 9.02877 22.1689C9.07476 22.364 9.17419 22.5423 9.3159 22.6841C9.45762 22.8258 9.63603 22.9253 9.8311 22.9712C10.0262 23.0172 10.2302 23.008 10.4203 22.9444L19.8138 19.8138L22.9445 10.4203C23.0079 10.2302 23.0172 10.0262 22.9712 9.83111C22.9253 9.63603 22.8258 9.45762 22.6842 9.31588Z"
         stroke="#111111"
-        className={cn(isActive ? 'stroke-primary' : '', className)}
+        className={cn(isActive ? 'stroke-primary' : 'stroke-secondary', className)}
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -165,7 +165,7 @@ export function ExploreIcon({ isActive, className }: Props) {
         r="1"
         fill="black"
         stroke="#111111"
-        className={cn(isActive ? 'fill-primary stroke-primary' : '', className)}
+        className={cn(isActive ? 'fill-primary stroke-primary' : 'stroke-secondary', className)}
         strokeWidth="2"
       />
     </svg>
