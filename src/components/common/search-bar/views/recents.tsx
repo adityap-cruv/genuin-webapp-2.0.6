@@ -161,7 +161,7 @@ function ListItem({
         {title && <p className="line-clamp-1 break-all text-body-1-bold">{title}</p>}
         {subtitle && <p className="line-clamp-1 break-all text-cap-1-demi">{subtitle}</p>}
         <CloseIcon
-          className="absolute right-0 top-1/2 z-10 -translate-y-1/2"
+          className="absolute right-0 top-1/2 z-10 h-4 w-4 -translate-y-1/2"
           onClick={(e) => {
             e.stopPropagation()
             deletionHandler()
@@ -195,7 +195,7 @@ function TextItem({ subtitle = '', title = '', avatar: Avatar, deletionHandler }
         {title && <p className="line-clamp-1 break-all text-body-1-bold">{title}</p>}
         {subtitle && <p className="line-clamp-1 break-all text-cap-1-demi">{subtitle}</p>}
         <CloseIcon
-          className="absolute right-0 top-1/2 z-10 -translate-y-1/2 cursor-pointer"
+          className="absolute right-0 top-1/2 z-10 h-4 w-4 -translate-y-1/2 cursor-pointer"
           onClick={(e) => {
             e.stopPropagation()
             deletionHandler()
