@@ -64,20 +64,22 @@ export default function BecomeCbCard({ className, style, onClick, ...restProps }
         // AuthenticationModal.open(undefined, 'WALLET_HOW_IT_WORKS')
       }}
       {...restProps}>
-      <div className="z-20 w-3/5">
-        <p className="w-64 overflow-hidden p-3 text-start text-body-1-bold">
-          Become a <span className="font-semibold italic">Creator &nbsp;</span>
-          {'for'} <br />
-          <span className="flex items-center gap-1 text-primary">
-            <span className="line-clamp-1 inline-block overflow-hidden text-ellipsis whitespace-nowrap">
-              {brandName}
+      <div className="flex ">
+        <div className="z-20 w-3/5">
+          <p className="w-64 overflow-hidden p-3 text-start text-body-1-bold">
+            Become a <span className="font-semibold italic">Creator &nbsp;</span>
+            {'for'} <br />
+            <span className="flex items-center gap-1 text-primary">
+              <span className="line-clamp-1 inline-block overflow-hidden text-ellipsis whitespace-nowrap">
+                {brandName}
+              </span>
+              &nbsp;🚀
             </span>
-            &nbsp;🚀
-          </span>
-        </p>
-      </div>
-      <div className="z-10 flex w-2/5 items-end justify-center">
-        <CustomImage height={60} width={60} src={CommunityIcon} alt="community" />
+          </p>
+        </div>
+        <div className="z-10 flex w-2/5 items-end justify-center pb-1">
+          <CustomImage height={60} width={60} src={CommunityIcon} alt="community" />
+        </div>
       </div>
     </div>
   )
