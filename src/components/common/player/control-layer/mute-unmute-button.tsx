@@ -36,7 +36,7 @@ export const MuteUnmuteButton = ({ videoId }: { videoId: string }) => {
 
   return (
     <div onClick={handleClick} className="flex w-fit items-center overflow-hidden rounded-lg bg-monochrome-white p-2">
-      {muted ? <MuteIcon className="h-6 w-6" /> : <UnmuteIcon className="h-6 w-6" />}
+      {muted ? <MuteIcon className="h-6 w-6 fill-secondary" /> : <UnmuteIcon className="h-6 w-6 fill-secondary" />}
     </div>
   )
 }
