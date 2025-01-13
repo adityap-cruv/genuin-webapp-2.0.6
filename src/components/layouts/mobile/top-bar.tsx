@@ -369,12 +369,12 @@ function UserTick({ variant = 'light' }: { variant: 'light' | 'transparent' | 'd
                     localStorage.setItem('previous_path', pathName)
                   }
                 }}>
-                <SettingIcon />
+                <SettingIcon isActive />
                 <p className="text-body-1-demi">Settings</p>
               </Link>
             )}
             <div className="flex items-center gap-x-2">
-              <LogoutIcon className="h-5 w-5 stroke-secondary" />
+              <LogoutIcon className="h-6 w-6 stroke-secondary" />
               <p
                 className="text-body-1-demi"
                 onClick={() => {
