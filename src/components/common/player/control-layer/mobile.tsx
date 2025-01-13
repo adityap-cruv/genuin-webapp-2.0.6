@@ -104,7 +104,7 @@ export const Mobile = memo(function Mobile({ clickableUrl, ...props }: MobilePro
         <div
           onClick={clickableUrl ? openClickableUrl : handleToggleMuted}
           className={cn('absolute inset-0', clickableUrl && 'cursor-pointer')}>
-          <div className="relative left-6 top-20 flex w-fit gap-2">
+          <div className="item-center relative left-6 top-20 flex w-fit gap-2">
             {clickableUrl && (
               <span onClick={handlePlayPause} className="rounded-lg bg-monochrome-white p-2">
                 {!shouldPlay ? <PlayIcon className="stroke-secondary" /> : <PauseIcon className="stroke-secondary" />}
