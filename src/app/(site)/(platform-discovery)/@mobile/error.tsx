@@ -26,7 +26,7 @@ export default function Error() {
               Our team is working to resolve it as quickly as possible.
             </p>
           </span>
-          <Image src={imgPuppet} className="h-auto w-32" alt="" />
+          <Image src={imgPuppet} className="mb-2 h-auto w-32" alt="" />
           <Link href={PATH_NAME.home()}>
             <Button size="custom" className="rounded-lg bg-new-off-black px-4 py-3">
               <p className="text-new-para-2">Go to Home</p>
