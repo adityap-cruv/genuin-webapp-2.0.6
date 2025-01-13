@@ -69,6 +69,7 @@ const BrandUserSchema = z
   .object({
     brand_id: z.number(),
     brand_slug: z.string(),
+    brand_user_logo: z.number().nullish().default(1),
   })
   .nullish()
 

@@ -34,7 +34,7 @@ export function Body({ title, subtitle, deepLink }: DownloadDialogType) {
             </div>
           </>
         ) : (
-          <div className="mb-4">
+          <div className=" mb-4 flex flex-col items-center justify-center">
             <GenuinIcon.icon className="h-12 fill-blue" />
             <p style={{ fontSize: '40px' }} className="hidden whitespace-nowrap text-center font-bold sm:block">
               {title}

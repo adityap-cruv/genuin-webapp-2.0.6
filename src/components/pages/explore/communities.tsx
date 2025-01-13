@@ -135,7 +135,7 @@ function CommunityItem({
           <CustomAvatar fallbackString={name ?? ''} imageUrl={profileImage} isAvatar={false} className="h-12 w-12" />
           <div>
             <Link href={PATH_NAME.community(slug)}>
-              <p className="line-clamp-1 break-all text-body-1-bold">{name}</p>
+              <p className="line-clamp-2 break-words text-body-1-bold">{name}</p>
             </Link>
             <p className="text-body-1-demi text-tertiary">{`${abbreviateNumber(memberCount)} ${
               memberCount === 1 ? 'member' : 'members'

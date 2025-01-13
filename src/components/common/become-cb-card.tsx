@@ -6,10 +6,11 @@ import CommunityIcon from '@icons/ks-cb-flow/icCommunity.svg'
 // import { miniProfile } from '@/lib/api/auth'
 // import Analytics from '@/services/analytics'
 // import { useSession } from 'next-auth/react'
-import { cn } from '@/lib/utils'
 import { CustomImage } from '../custom/custom-image'
+import { type ComponentProps } from 'react'
+import { cn } from '@/lib/utils'
 
-export default function BecomeCbCard({ className }: { className: string }) {
+export default function BecomeCbCard({ className, style, onClick, ...restProps }: ComponentProps<'div'>) {
   const { brandId, brandName } = useGenuinOptions(
     useShallow((state) => ({
       user: state.user,
@@ -44,33 +45,39 @@ export default function BecomeCbCard({ className }: { className: string }) {
   // }
 
   return (
-    <div className={cn(className)}>
-      <div
-        className="max-w-64 relative flex max-h-16 rounded-lg border border-primary-200 bg-primary-200 text-title-3-demi text-monochrome-black hover:cursor-pointer"
-        style={{
-          background: 'linear-gradient(30deg, var(--primary-400) -80%, #FFFFFF 50%, var(--primary-400) 120%)',
-        }}
-        onClick={() => {
-          // if (user?.isEmailVerified) {
-          //   handleCommunityBuilderClick()
-          // } else {
-          AuthenticationModal.open('KS_CB_REQUEST', brandId.toString() !== '99' ? 'KS_CB_SUBDOMAIN' : 'KS_CB_WEB')
-          // }
-          // AuthenticationModal.open(undefined, 'WALLET_HOW_IT_WORKS')
-        }}>
+    <div
+      className={cn(
+        'max-w-64 relative flex max-h-16 rounded-lg border border-primary-200 bg-primary-200 text-title-3-demi text-monochrome-black hover:cursor-pointer',
+        className
+      )}
+      style={{
+        background: 'linear-gradient(30deg, var(--primary-400) -80%, #FFFFFF 50%, var(--primary-400) 120%)',
+        ...style,
+      }}
+      onClick={(event) => {
+        onClick?.(event)
+        // if (user?.isEmailVerified) {
+        //   handleCommunityBuilderClick()
+        // } else {
+        AuthenticationModal.open('KS_CB_REQUEST', brandId?.toString() !== '99' ? 'KS_CB_SUBDOMAIN' : 'KS_CB_WEB')
+        // }
+        // AuthenticationModal.open(undefined, 'WALLET_HOW_IT_WORKS')
+      }}
+      {...restProps}>
+      <div className="flex ">
         <div className="z-20 w-3/5">
-          <p className="w-64 overflow-hidden p-3 text-body-1-bold">
+          <p className="w-64 overflow-hidden p-3 text-start text-body-1-bold">
             Become a <span className="font-semibold italic">Creator &nbsp;</span>
             {'for'} <br />
             <span className="flex items-center gap-1 text-primary">
               <span className="line-clamp-1 inline-block overflow-hidden text-ellipsis whitespace-nowrap">
                 {brandName}
               </span>
-              <span>🚀</span>
+              &nbsp;🚀
             </span>
           </p>
         </div>
-        <div className="z-10 flex w-2/5 items-end justify-center">
+        <div className="z-10 flex w-2/5 items-end justify-center pb-1">
           <CustomImage height={60} width={60} src={CommunityIcon} alt="community" />
         </div>
       </div>

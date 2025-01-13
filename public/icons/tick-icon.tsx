@@ -1,14 +1,34 @@
 import { type ComponentProps } from 'react'
+import { cva } from 'class-variance-authority'
+import cn from 'classnames'
 
-type Props = ComponentProps<'svg'>
+// Define the properties for the TickIcon component
+type Props = ComponentProps<'svg'> & {
+  variant?: 'light' | 'primary' | 'dark' // Optional variant prop to determine the color scheme
+}
 
-export function TickIcon({ ...props }: Props) {
+// Define the class variance authority (cva) for the TickIcon component
+const tickIconClasses = cva('', {
+  variants: {
+    variant: {
+      light: 'fill-monochrome-white', // Light variant class
+      primary: 'fill-primary', // Primary variant class
+      dark: 'fill-primary', // Map 'dark' to 'primary' variant class
+    },
+  },
+  defaultVariants: {
+    variant: 'primary', // Default variant is 'primary'
+  },
+})
+
+// Define the TickIcon component
+export function TickIcon({ variant = 'primary', className, ...props }: Props) {
   return (
     <svg
       width="12"
       height="12"
       viewBox="0 0 12 12"
-      className="fill-primary"
+      className={cn(tickIconClasses({ variant }), className)} // Apply the variant and additional classes
       {...props}
       fill="none"
       xmlns="http://www.w3.org/2000/svg">

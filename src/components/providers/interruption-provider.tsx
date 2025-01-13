@@ -12,11 +12,10 @@ const DELAY_FOR_INTERRUPTION = 60000
  * And Can only be used in component not outside of the component.
  */
 export function showInterruption() {
-  console.log('Show Interruption 1')
   const { user, brandId } = useGenuinOptions.getState()
   const isOpen = useAuthenticationModalStore.getState().isOpen
   if (isOpen) return
-  if (brandId.toString() === '99') return
+  if (brandId?.toString() === '99') return
   if (!user) {
     AuthenticationModal.open(undefined, 'STARTER')
   } else if (!user.hasTopics) {
@@ -30,11 +29,10 @@ export function InterruptionProvider() {
   const { user } = useGenuinOptions()
 
   function showInterruption() {
-    console.log('Show Interruption')
     const { user, brandId } = useGenuinOptions.getState()
     const isOpen = useAuthenticationModalStore.getState().isOpen
     if (isOpen) return
-    if (brandId.toString() === '99') return
+    if (brandId?.toString() === '99') return
     if (!user) {
       AuthenticationModal.open(undefined)
     } else if (!user.hasTopics) {

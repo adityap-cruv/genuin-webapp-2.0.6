@@ -4,7 +4,6 @@ import { AuthenticationModal } from '@components/common/modals/authentication'
 import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { LogoutIcon } from '@icons/logout'
-import { BurgerIcon } from '@icons/burger-icon'
 import { signOut } from 'next-auth/react'
 import { removeAllAuthToken } from '@lib/api/instance'
 import { Button } from '@components/ui/button'
@@ -12,7 +11,8 @@ import { formatPhoneNumberIntl } from 'react-phone-number-input'
 import { type User } from 'next-auth'
 import { PATH_NAME } from '@/lib/utils/constants/path'
 import Link from 'next/link'
-import { NotificationIcon, AccountIcon } from '@icons/settings-side-bar-icons'
+import { AccountIcon } from '@icons/settings-side-bar-icons'
+import { BellIcon } from '@icons/bell-icon'
 
 export function UserTick({ user }: { user: User | null }) {
   const pathName = usePathname()
@@ -38,7 +38,6 @@ export function UserTick({ user }: { user: User | null }) {
             imageUrl={user.image ?? ''}
             isAvatar={user.isAvatar}
           />
-          <BurgerIcon />
         </div>
       </PopoverTrigger>
       <PopoverContent
@@ -58,10 +57,8 @@ export function UserTick({ user }: { user: User | null }) {
               {user.usernameSet
                 ? '@' + user.nickname
                 : user.email
-                  ? user.email
-                  : formatPhoneNumberIntl(
-                      user.phoneNumber?.startsWith('+') ? user.phoneNumber : `+${user.phoneNumber}`
-                    )}
+                ? user.email
+                : formatPhoneNumberIntl(user.phoneNumber?.startsWith('+') ? user.phoneNumber : `+${user.phoneNumber}`)}
             </p>
             {!user?.isBrandSystemUser && (
               <Link
@@ -97,7 +94,7 @@ export function UserTick({ user }: { user: User | null }) {
                       localStorage.setItem('previous_path', pathName)
                     }
                   }}>
-                  <NotificationIcon isActive={false} className="h-6 w-6" />
+                  <BellIcon size="sm" />
                   <p className="text-body-1-demi">Notification Settings</p>
                 </div>
               </Link>

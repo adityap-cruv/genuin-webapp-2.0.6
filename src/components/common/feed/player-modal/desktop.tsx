@@ -5,7 +5,6 @@ import {
   CustomDialogContent,
   CustomDialogTrigger,
 } from '@components/custom/custom-dialog'
-import { X } from 'lucide-react'
 import icUpArrow from '@icons/player-controls/icArrowUp.svg'
 import icDownArrow from '@icons/player-controls/icArrowDown.svg'
 import Image from 'next/image'
@@ -25,6 +24,7 @@ import { type CommunityUserRoleType } from '@/lib/schemas/roles'
 import { useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
 import { IHeartDemo } from '@/components/layouts/desktop/iheart-demo'
 import { useEffect } from 'react'
+import { CloseIcon } from '@icons/close-icon'
 
 type Props = {
   children?: React.ReactNode
@@ -121,11 +121,10 @@ function Content({ unreadMessageCount, isInModal, close }: ContentPropsType) {
         <div style={{ height: sizeBox.modal.height }} className="relative">
           <CustomDialogClose
             onClick={() => {
-              // alert('close')
               close?.()
             }}
             className="absolute right-4 top-4 z-10 border-none outline-none">
-            <X className="h-6 w-6" />
+            <CloseIcon />
           </CustomDialogClose>
           {/* Please done modify below condition to  unreadMessageCount && unreadMessageCount !== 0,
              it is creating the problem on showing the 0 on the UI */}

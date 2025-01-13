@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import * as DialogPrimitive from '@radix-ui/react-dialog'
-import { X } from 'lucide-react'
+import { CloseIcon } from '@icons/close-icon'
 
 import { cn } from '@lib/utils'
 
@@ -27,7 +27,7 @@ const DialogContent = React.forwardRef<React.ElementRef<typeof DialogPrimitive.C
         {...props}>
         {showDefaultClose && (
           <DialogPrimitive.Close className="absolute right-4 top-4 z-10 rounded-sm transition-opacity focus:outline-none disabled:pointer-events-none">
-            <X className="h-6 w-6" />
+            <CloseIcon />
             <span className="sr-only">Close</span>
           </DialogPrimitive.Close>
         )}

@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { deleteRecent, fetchRecents } from '../api'
-import { X } from 'lucide-react'
+import { CloseIcon } from '@icons/close-icon'
 import { useSearchBarStore } from '../store'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { PATH_NAME } from '@lib/utils/constants/path'
@@ -160,8 +160,8 @@ function ListItem({
       <span className="relative h-full w-full">
         {title && <p className="line-clamp-1 break-all text-body-1-bold">{title}</p>}
         {subtitle && <p className="line-clamp-1 break-all text-cap-1-demi">{subtitle}</p>}
-        <X
-          className="absolute right-0 top-1/2 z-10 -translate-y-1/2"
+        <CloseIcon
+          className="absolute right-0 top-1/2 z-10 h-4 w-4 -translate-y-1/2"
           onClick={(e) => {
             e.stopPropagation()
             deletionHandler()
@@ -194,8 +194,8 @@ function TextItem({ subtitle = '', title = '', avatar: Avatar, deletionHandler }
       <span className="relative h-full w-full">
         {title && <p className="line-clamp-1 break-all text-body-1-bold">{title}</p>}
         {subtitle && <p className="line-clamp-1 break-all text-cap-1-demi">{subtitle}</p>}
-        <X
-          className="absolute right-0 top-1/2 z-10 -translate-y-1/2 cursor-pointer"
+        <CloseIcon
+          className="absolute right-0 top-1/2 z-10 h-4 w-4 -translate-y-1/2 cursor-pointer"
           onClick={(e) => {
             e.stopPropagation()
             deletionHandler()

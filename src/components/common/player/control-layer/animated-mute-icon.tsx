@@ -22,7 +22,7 @@ export const AnimatedMuteIcon = () => {
 
   return (
     <div className="flex w-fit items-center overflow-hidden rounded-lg bg-monochrome-white py-2 pl-2">
-      <MuteIcon className="stroke-secondary" />
+      <MuteIcon className="fill-secondary" />
       <div className="h-full w-2" />
       <motion.div
         animate={muteAnimationController}

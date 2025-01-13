@@ -98,9 +98,7 @@ export function CommunityList({ brandId }: { brandId: number }) {
                   <div className="mx-2">
                     <div className="flex gap-1">
                       <Link href={{ pathname: PATH_NAME.community(community.slug) }}>
-                        <p
-                          className="line-clamp-1 text-left"
-                          style={{ fontWeight: 600, fontSize: '20px', lineHeight: '24px' }}>
+                        <p className="line-clamp-1 text-left text-title-3-bold">
                           {community.name ?? `${community.handle}`}
                         </p>
                       </Link>
@@ -257,7 +255,7 @@ function Loops({
           {item.private ? (
             <div className="mb-2">
               <a href={PATH_NAME.loop(item.slug)}>
-                <p className="text-title-3-demi">{item.name}</p>
+                <p className="text-body-1-demi">{item.name}</p>
               </a>
               <div className="my-1 flex items-center gap-1">
                 <IcLoop className="h-6 w-6 fill-tertiary" />

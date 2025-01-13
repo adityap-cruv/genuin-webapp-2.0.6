@@ -4,9 +4,10 @@ import Link from 'next/link'
 import { type ReactNode } from 'react'
 import { cn } from '@lib/utils'
 import { PATH_NAME } from '@lib/utils/constants/path'
-import { AccountIcon, ContactUsIcon, EditIcon, LogOutIcon, PersonalizationIcon } from '@icons/settings-side-bar-icons'
+import { AccountIcon, ContactUsIcon, EditIcon, PersonalizationIcon } from '@icons/settings-side-bar-icons'
 import { AuthenticationModal } from '@components/common/modals/authentication'
 import Analytics from '@services/analytics'
+import { LogoutIcon } from '@icons/logout'
 
 export function SideBar() {
   const pathName = usePathname()
@@ -45,7 +46,7 @@ export function SideBar() {
             })
           }}>
           <Item title="Log out">
-            <LogOutIcon isActive={false} />
+            <LogoutIcon className="stroke-secondary" />
           </Item>
         </div>
       </div>

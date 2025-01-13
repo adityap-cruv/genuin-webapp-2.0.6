@@ -3,13 +3,14 @@ import { Sheet, SheetClose, SheetContent, SheetTrigger } from '@components/ui/sh
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { PATH_NAME } from '@lib/utils/constants/path'
-import { AccountIcon, ContactUsIcon, EditIcon, LogOutIcon, PersonalizationIcon } from '@icons/settings-side-bar-icons'
+import { AccountIcon, ContactUsIcon, EditIcon, PersonalizationIcon } from '@icons/settings-side-bar-icons'
 import { cn } from '@lib/utils'
 import icBack from '@icons/icBack.svg'
 import { type ReactNode } from 'react'
 import Image from 'next/image'
 import { SettingIcon } from '@icons/settings'
 import { AuthenticationModal } from '@components/common/modals/authentication'
+import { LogoutIcon } from '@icons/logout'
 
 export function SettingsLayout() {
   const pathName = usePathname()
@@ -24,7 +25,7 @@ export function SettingsLayout() {
               localStorage.setItem('previous_path', pathName)
             }
           }}>
-          <SettingIcon className="fill-secondary" />
+          <SettingIcon />
           <p className="text-body-1-demi">Settings</p>
         </div>
       </SheetTrigger>
@@ -66,7 +67,7 @@ export function SettingsLayout() {
                 AuthenticationModal.open(undefined, 'LOGOUT')
               }}>
               <Item title="Log out">
-                <LogOutIcon isActive={false} />
+                <LogoutIcon className="stroke-secondary" />
               </Item>
             </div>
           </div>

@@ -73,15 +73,15 @@ export function LoopItem({ loop }: { loop: LoopResType }) {
       <Link href={{ pathname: PATH_NAME.loop(loop.slug) }}>
         <div className="relative w-full rounded-lg border border-tertiary-300 bg-monochrome-white">
           <div className="w-[60%] items-center p-[3%]">
-            <p className="line-clamp-1 break-all text-body-1-bold">{loop.group.group_name}</p>
+            <p className="line-clamp-2 break-all text-body-1-demi">{loop.group.group_name}</p>
             {loop.latest_messages.length === 0 ? (
-              <p className="line-clamp-1 break-all text-body-1-demi text-secondary-300">
+              <p className="line-clamp-1 break-all text-cap-1-bold text-secondary-300">
                 @{loop.group?.members[0]?.username} created ∙ {getTimeAgo(loop.latest_message_at)}
               </p>
             ) : (
               loop.latest_messages.length !== 0 &&
               loop.is_view_allowed && (
-                <p className="line-clamp-1 w-full break-all text-body-1-demi text-secondary-300">
+                <p className="line-clamp-1 w-full break-all text-cap-1-bold text-secondary-300">
                   @{loop.latest_messages[0].owner.username} posted ∙ {getTimeAgo(loop.latest_messages[0].message_at)}
                 </p>
               )

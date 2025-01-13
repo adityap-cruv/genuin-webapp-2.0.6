@@ -6,10 +6,9 @@ import { type ReactNode } from 'react'
 import { cn, getYear } from '@lib/utils'
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
-import { PopularIcon, HomeIcon, LatestIcon, ProfileIcon, EmbedIcon } from '@icons/side-bar-icons'
+import { PopularIcon, HomeIcon, LatestIcon, ProfileIcon, ExploreIcon, EmbedIcon } from '@icons/side-bar-icons'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { PATH_NAME } from '@lib/utils/constants/path'
-import { X } from 'lucide-react'
 import { RecentCommunities } from './recent-communities'
 import { AppLogo } from '@components/ui/app-logo'
 import { type User, useGenuinOptions } from '@lib/stores/genuin-options'
@@ -17,13 +16,13 @@ import { AuthenticationModal } from '@components/common/modals/authentication'
 import { useSession, signOut } from 'next-auth/react'
 import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
 import { CustomAvatar } from '@components/custom/custom-avatar'
-import { BurgerIcon } from '@icons/burger-icon'
 import { LogoutIcon } from '@icons/logout'
 import { removeAllAuthToken } from '@lib/api/instance'
 import { MOBILE_DOWNLOAD_APP_LINK } from '@lib/constants'
 import { SearchBar } from '@components/common/search-bar'
-import { NotificationIcon } from '@icons/settings-side-bar-icons'
+import { BellIcon } from '@icons/bell-icon'
 import { SearchIcon } from '@icons/search-icon'
+import { CloseIcon } from '@icons/close-icon'
 import Analytics from '@services/analytics'
 import { CategoryView } from '@components/common/category-view'
 import dynamic from 'next/dynamic'
@@ -41,7 +40,7 @@ const DownloadAppDialog = dynamic(
   async () => await import('../download-app-dialog').then((comp) => comp.DownloadAppDialog)
 )
 
-const navVariant = cva('sticky top-0 flex z-40 h-[76px] w-full items-center justify-between  px-2', {
+const navVariant = cva('sticky top-0 flex z-40 h-[76px] w-full items-center justify-between px-4', {
   variants: {
     variant: {
       light: 'border-b-2 border-monochrome-9 bg-monochrome-white',
@@ -72,27 +71,45 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
     brandId: state.config?.brand_id,
   })) // If variant is transparent than we have removed show download button.
   const showDownloadButton = variant !== 'transparent'
-  const pathName = usePathname()
   const searchParams = useSearchParams()
 
   return (
     <nav className={cn(navVariant({ variant }), className)}>
-      <span className="flex items-center ">
-        <Menu
-          hamBurgerVariant={variant === 'transparent' ? 'light' : 'dark'}
-          user={user}
-          brandName={brandName}
-          isClaimed={isClaimed}
-          webCTA={webCTA}
-        />
+      <span className="flex items-center gap-x-3">
+        <Menu variant={variant} webCTA={webCTA} user={user} brandName={brandName} isClaimed={isClaimed} />
         {brandLogo && (
           <Link href={{ pathname: PATH_NAME.home() }}>
             <CustomImage src={brandLogo} height={40} width={40} className="object-cover" alt="logo" />
           </Link>
         )}
       </span>
-      <span className="flex items-center gap-x-2">
-        {/* TODO: Genuin as a Brand. Check and discuss to change default true value */}
+      <span className="flex items-center gap-x-3">
+        {user && (
+          <Link
+            href={PATH_NAME.notification()}
+            className={cn(
+              'flex h-[40px] w-[40px] items-center justify-center rounded-full',
+              variant === 'light' ? 'bg-tertiary-200' : 'bg-monochrome-black/20'
+            )}>
+            <div className="relative">
+              {!notificationsCount ||
+                (notificationsCount > 0 && (
+                  <div
+                    className="absolute right-[-2px] top-[-5px] flex h-4 w-4 items-center justify-center rounded-full bg-red text-monochrome-white"
+                    style={{
+                      fontSize: '8px',
+                    }}>
+                    {notificationsCount > 9 ? '9+' : notificationsCount}
+                  </div>
+                ))}
+              <BellIcon variant={variant === 'light' && !showClose ? 'dark' : 'light'} size="sm" />
+            </div>
+          </Link>
+        )}
+        {/* add logic to use only variant here rather than conditions by path */}
+        <SearchBar.mobile variant={variant}>
+          <SearchIcon variant={variant} />
+        </SearchBar.mobile>
         {brandId?.toString() === '99' && showDownloadButton && (
           <Link href={MOBILE_DOWNLOAD_APP_LINK + '?' + searchParams.toString()} target="_blank">
             <Button
@@ -105,61 +122,20 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
             </Button>
           </Link>
         )}
-        {user && (
-          <Link href={PATH_NAME.notification()}>
-            <div className="relative">
-              {!notificationsCount ||
-                (notificationsCount > 0 && (
-                  <div
-                    className="absolute right-0 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-primary text-monochrome-white"
-                    style={{
-                      fontSize: '8px',
-                    }}>
-                    {notificationsCount}
-                  </div>
-                ))}
-              <NotificationIcon
-                variant={
-                  pathName === '/home' ||
-                  pathName === '/popular' ||
-                  pathName === '/latest' ||
-                  (pathName.includes('/group') && showClose) ||
-                  pathName.includes('/video') ||
-                  (pathName.includes('/community') && showClose)
-                    ? 'white'
-                    : ''
-                }
-                className="h-7"
-              />
-            </div>
-          </Link>
-        )}
-        <SearchBar.mobile>
-          <SearchIcon
-            className={`${
-              (pathName.includes('/home') ||
-                pathName.includes('/popular') ||
-                pathName.includes('/latest') ||
-                pathName.includes('/video') ||
-                (pathName.includes('/community') && searchParams.toString().includes('feed=1')) ||
-                (pathName.includes('/community') && showClose) ||
-                (pathName.includes('/group') && showClose) ||
-                (pathName.includes('/loop') && showClose)) &&
-              'stroke-monochrome-white'
-            }`}
-          />
-        </SearchBar.mobile>
         {webCTA !== 'app' && <UserTick variant={variant} />}
         {showClose && (
-          <X
-            onClick={() => {
-              onClose?.()
-            }}
+          <span
             className={cn(
-              'h-6 w-6',
-              variant === 'light' ? 'stroke-new-off-black' : 'stroke-new-off-white stroke-[3px]'
-            )}
-          />
+              'flex h-[40px] w-[40px] items-center justify-center rounded-full',
+              variant === 'light' ? 'bg-tertiary-200' : 'bg-monochrome-black/20'
+            )}>
+            <CloseIcon
+              onClick={() => {
+                onClose?.()
+              }}
+              variant={variant === 'transparent' ? 'light' : 'dark'}
+            />
+          </span>
         )}
       </span>
     </nav>
@@ -167,13 +143,13 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
 }
 
 function Menu({
-  hamBurgerVariant = 'dark',
+  variant = 'light',
   brandName,
   user,
   isClaimed,
   webCTA,
 }: {
-  hamBurgerVariant: 'dark' | 'light'
+  variant: 'dark' | 'light' | 'transparent' | null
   brandName: string
   user?: User
   isClaimed?: boolean
@@ -181,10 +157,15 @@ function Menu({
 }) {
   const pathName = usePathname()
   const { status } = useSession()
+  const hamBurgerVariant = variant === 'transparent' ? 'light' : 'dark'
 
   return (
     <Sheet>
-      <SheetTrigger>
+      <SheetTrigger
+        className={cn(
+          'flex h-[40px] w-[40px] items-center justify-center rounded-full',
+          hamBurgerVariant === 'light' ? 'bg-monochrome-black/20' : 'bg-tertiary-200'
+        )}>
         <HamBurgerMenuIcon toggleToClose={false} variant={hamBurgerVariant} />
       </SheetTrigger>
       <SheetContent
@@ -193,8 +174,12 @@ function Menu({
         className="z-[60] w-full overflow-auto border-none shadow-none outline-none">
         <div className="mb-4 flex justify-between">
           <AppLogo.icon imageHeight={32} className={cn('fill-new-off-white')} />
-          <SheetClose className="shadow-none outline-none">
-            <X strokeWidth="3px" className="h-6 w-6 stroke-new-off-black" />
+          <SheetClose
+            className={cn(
+              'flex h-[40px] w-[40px] items-center justify-center rounded-full shadow-none outline-none',
+              variant === 'light' || variant === 'transparent' ? 'bg-tertiary-200' : 'bg-monochrome-black/20'
+            )}>
+            <CloseIcon variant={variant === 'transparent' || variant === 'light' ? 'dark' : 'light'} />
           </SheetClose>
         </div>
         <Link href={{ pathname: PATH_NAME.home() }}>
@@ -215,6 +200,11 @@ function Menu({
         <Link href={{ pathname: PATH_NAME.latest() }}>
           <MenuItem brandName={brandName} title="Latest" isActive={pathName === PATH_NAME.latest()}>
             <LatestIcon isActive={pathName === PATH_NAME.latest()} />
+          </MenuItem>
+        </Link>
+        <Link href={{ pathname: PATH_NAME.explore() }}>
+          <MenuItem brandName={brandName} title="Explore" isActive={pathName === PATH_NAME.explore()}>
+            <ExploreIcon isActive={pathName === PATH_NAME.explore()} />
           </MenuItem>
         </Link>
         <Accordion type="single" collapsible>
@@ -239,6 +229,7 @@ function Menu({
             ))}
           </AccordionItem>
         </Accordion>
+
         {user && (
           <>
             <Link
@@ -254,29 +245,37 @@ function Menu({
         <DownloadAppDialog />
         {isClaimed && status === 'unauthenticated' && webCTA !== 'app' && (
           <>
-            <div
-              className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10"
-              onClick={() => {
-                AuthenticationModal.open()
-              }}>
-              <LoginIcon className="stroke-primary" />
-              <p className={cn('whitespace-nowrap !text-title-3-demi text-primary')}>Log in</p>
-            </div>
+            <SheetClose>
+              <div
+                className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10"
+                onClick={() => {
+                  AuthenticationModal.open()
+                }}>
+                <LoginIcon className="stroke-primary" />
+                <p className={cn('whitespace-nowrap !text-title-3-demi text-primary')}>Log in</p>
+              </div>
+            </SheetClose>
             <hr className="border-1 my-2 border-monochrome-black/10" />
           </>
         )}
         {!isClaimed && (
-          <div
-            className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10"
-            onClick={() => {
-              AuthenticationModal.open(undefined, 'CLAIM_BRAND_PROFILE')
-            }}>
-            <VerifiedIcon className="stroke-primary" />
-            <p className={cn('whitespace-nowrap !text-title-3-demi text-primary')}>Claim Brand Profile</p>
-          </div>
+          <SheetClose>
+            <div
+              className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10"
+              onClick={() => {
+                AuthenticationModal.open(undefined, 'CLAIM_BRAND_PROFILE')
+              }}>
+              <VerifiedIcon className="stroke-primary" />
+              <p className={cn('whitespace-nowrap !text-title-3-demi text-primary')}>Claim Brand Profile</p>
+            </div>
+          </SheetClose>
         )}
         {(!isClaimed || user?.ksCbRequestStatus !== 3) && <hr className="border-1 my-2 border-monochrome-black/10" />}
-        {user?.ksCbRequestStatus !== 3 && <BecomeCbCard className="my-4 lg:hidden" />}
+        {user?.ksCbRequestStatus !== 3 && (
+          <SheetClose className="my-4 lg:hidden">
+            <BecomeCbCard />
+          </SheetClose>
+        )}
         <CategoryView className="lg:hidden" />
         <RecentCommunities />
         <div className="text-tertiary">
@@ -355,17 +354,12 @@ function UserTick({ variant = 'light' }: { variant: 'light' | 'transparent' | 'd
     return (
       <Popover>
         <PopoverTrigger>
-          <div className="flex items-center gap-x-2 rounded-full border border-monochrome-9 p-1 pr-2">
+          <div className="flex items-center gap-x-2 rounded-full">
             <CustomAvatar
-              className="h-6 w-6"
+              className="h-[40px] w-[40px]"
               fallbackString={data.user.name ?? ''}
               imageUrl={data.user.image ?? ''}
               isAvatar={data.user.isAvatar}
-            />
-            <BurgerIcon
-              className={
-                variant === 'transparent' || variant === 'dark' ? 'stroke-monochrome-white' : 'stroke-monochrome-black'
-              }
             />
           </div>
         </PopoverTrigger>
@@ -376,7 +370,6 @@ function UserTick({ variant = 'light' }: { variant: 'light' | 'transparent' | 'd
           align="end">
           <div className="my-2 flex items-center gap-2">
             <CustomAvatar
-              className="h-12 w-12"
               fallbackString={data.user.name ?? ''}
               imageUrl={data.user.image ?? ''}
               isAvatar={data.user.isAvatar}
@@ -405,12 +398,12 @@ function UserTick({ variant = 'light' }: { variant: 'light' | 'transparent' | 'd
                     localStorage.setItem('previous_path', pathName)
                   }
                 }}>
-                <SettingIcon className="fill-secondary" />
+                <SettingIcon isActive />
                 <p className="text-body-1-demi">Settings</p>
               </Link>
             )}
             <div className="flex items-center gap-x-2">
-              <LogoutIcon className="stroke-secondary" />
+              <LogoutIcon className="h-6 w-6 stroke-secondary" />
               <p
                 className="text-body-1-demi"
                 onClick={() => {

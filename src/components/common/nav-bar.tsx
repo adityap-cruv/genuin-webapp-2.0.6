@@ -68,6 +68,7 @@ function BurgerMenu({ variant = 'dark' }: { variant?: 'light' | 'dark' }) {
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger>
         <HamBurgerMenuIcon variant={variant} />
+        {/* <HamburgerIcon /> */}
       </DropdownMenuTrigger>
       <DropdownMenuContent
         className="bg-monochrome-black/90 px-3"

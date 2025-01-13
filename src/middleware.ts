@@ -111,7 +111,7 @@ export async function middleware(request: NextRequest) {
     if (config) request.cookies.set('config_params', JSON.stringify(config))
     const urlObj = new URL(request.url)
     // eslint-disable-next-line no-prototype-builtins
-    if (config && STATIC_PATHNAMES.includes(urlObj.pathname)) {
+    if (config?.subdomain !== 'app' && STATIC_PATHNAMES.includes(urlObj.pathname)) {
       urlObj.pathname = '/home'
       return NextResponse.redirect(urlObj.href)
     }
@@ -136,10 +136,11 @@ export const config = {
 export function getConfig(host: string): { domain?: string; subdomain?: string } | null {
   if (['localhost:4005', 'www', '192'].includes(host.split('.')[0])) return null
 
-  // if (!host.includes('begenuin')) return { domain: host }
+  if (!host.includes('begenuin')) return { domain: host }
   const subdomain =
     process.env.NEXT_PUBLIC_CURRENT_ENV === 'local' || process.env.NEXT_PUBLIC_CURRENT_ENV === 'qa'
       ? host.replace('.qa.begenuin.com', '')
       : host.replace('.begenuin.com', '')
+  if (subdomain === 'begenuin.com') return { subdomain: 'app' }
   return { subdomain }
 }
