@@ -194,3 +194,22 @@ export function ExploreIcon({ isActive, className }: Props) {
     </svg>
   )
 }
+
+export function EmbedIcon({ isActive, className }: Props) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="32"
+      height="32"
+      viewBox="0 0 32 32"
+      fill="none"
+      className={cn(isActive ? 'fill-primary' : 'fill-secondary', className)}>
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M15.0665 26H12.7133L16.7527 6.25H19.1059L15.0665 26ZM9.68062 9.2125L4.60547 16.125L9.68062 23.0375H12.0338L6.95868 16.125L12.0338 9.2125H9.68062ZM22.3188 9.2125L27.3939 16.125L22.3188 23.0375H19.9656L25.0407 16.125L19.9656 9.2125H22.3188Z"
+        fill="black"
+      />
+    </svg>
+  )
+}

@@ -1,0 +1,70 @@
+'use client'
+
+import { useState } from 'react'
+import Image from 'next/image'
+import carousalEmbed2 from '@images/embed/carousel-2.png'
+import { type FeaturesSectionType } from '../../../../../types/embed/embed-home'
+
+const FeaturesSection = ({ featuresSection }: { featuresSection: FeaturesSectionType }) => {
+  const [selectedItem, setSelectedItem] = useState(featuresSection?.options[0])
+
+  if (!featuresSection || featuresSection?.options.length === 0) return null
+
+  return (
+    <>
+      <section className="hidden py-20 md:block">
+        <div className="flex flex-col gap-3 text-center opacity-40">
+          <p className="text-title-2-bold text-primary">{featuresSection.sectionTitle}</p>
+          <p className="text-title-1-bold-home-m">{featuresSection.title}</p>
+        </div>
+        <div className="flex items-center gap-20 pt-10">
+          <div className="flex w-1/4 flex-col gap-14 text-center opacity-40">
+            {featuresSection?.options.map((item) => (
+              <p
+                className={`cursor-pointer text-title-2-bold transition-all ${
+                  item === selectedItem
+                    ? 'rounded-full bg-primary py-5 text-title-2-bold text-monochrome-white'
+                    : 'hover:scale-105 hover:text-primary'
+                }`}
+                onClick={() => {
+                  setSelectedItem(item)
+                }}
+                key={item}>
+                {item}
+              </p>
+            ))}
+          </div>
+          <div className="w-3/4">
+            <Image src={carousalEmbed2} alt="imgPuppet" />
+          </div>
+        </div>
+      </section>
+
+      <section className="py-10 md:hidden">
+        <div className="flex flex-col items-center gap-3 text-center">
+          <p className="text-cap-1-bold-home text-primary opacity-40">{featuresSection.sectionTitle}</p>
+          <p className="text-new-h2-mobile opacity-40">{featuresSection.title}</p>
+          <div className="hide-scrollbar flex h-14 w-full items-center gap-8 overflow-hidden overflow-x-scroll text-center opacity-40">
+            {featuresSection?.options.map((item) => (
+              <p
+                className={`cursor-pointer whitespace-nowrap text-cap-1-bold-home transition-all ${
+                  item === selectedItem
+                    ? 'rounded-full bg-primary px-4 py-3 text-monochrome-white'
+                    : 'hover:scale-105 hover:text-primary'
+                }`}
+                onClick={() => {
+                  setSelectedItem(item)
+                }}
+                key={item}>
+                {item}
+              </p>
+            ))}
+          </div>
+          <Image src={carousalEmbed2} alt="imgPuppet" className="pt-3" />
+        </div>
+      </section>
+    </>
+  )
+}
+
+export default FeaturesSection

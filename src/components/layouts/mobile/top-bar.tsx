@@ -6,7 +6,7 @@ import { type ReactNode } from 'react'
 import { cn, getYear } from '@lib/utils'
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
-import { PopularIcon, HomeIcon, LatestIcon, ProfileIcon } from '@icons/side-bar-icons'
+import { PopularIcon, HomeIcon, LatestIcon, ProfileIcon, EmbedIcon } from '@icons/side-bar-icons'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { X } from 'lucide-react'
@@ -35,6 +35,7 @@ import { useState, useEffect } from 'react'
 import { Loader } from '@/components/ui/loader'
 import { SettingIcon } from '@icons/settings'
 import { CustomImage } from '@/components/custom/custom-image'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 
 const DownloadAppDialog = dynamic(
   async () => await import('../download-app-dialog').then((comp) => comp.DownloadAppDialog)
@@ -211,6 +212,33 @@ function Menu({
             <LatestIcon isActive={pathName === PATH_NAME.latest()} />
           </MenuItem>
         </Link>
+        <Link href={{ pathname: PATH_NAME.latest() }}>
+          <MenuItem brandName={brandName} title="Latest" isActive={pathName === PATH_NAME.latest()}>
+            <LatestIcon isActive={pathName === PATH_NAME.latest()} />
+          </MenuItem>
+        </Link>
+        <Accordion type="single" collapsible>
+          <AccordionItem value={'Embed'} className="border-none">
+            <AccordionTrigger className="p-0">
+              <MenuItem brandName={brandName} title="Embed" isActive={false}>
+                <EmbedIcon isActive={pathName === PATH_NAME.embed('home')} />
+              </MenuItem>
+            </AccordionTrigger>
+            {[
+              { label: 'Home', path: 'home' },
+              { label: 'Search', path: 'search' },
+              { label: 'PDP', path: 'pdp' },
+              { label: 'Post Sales', path: 'post_sales' },
+              { label: 'Blogs', path: 'blogs' },
+            ].map(({ label, path }: { label: string; path: string }) => (
+              <AccordionContent key={path} className="p-0">
+                <Link href={{ pathname: PATH_NAME.embed(path) }}>
+                  <p className={`p-1.5 pl-14 text-title-3-demi`}>{label}</p>
+                </Link>
+              </AccordionContent>
+            ))}
+          </AccordionItem>
+        </Accordion>
         {user && (
           <>
             <Link
