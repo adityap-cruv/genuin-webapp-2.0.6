@@ -12,7 +12,7 @@ import { CustomAvatar } from '@components/custom/custom-avatar'
 import { LogoutIcon } from '@icons/logout'
 import { removeAllAuthToken } from '@lib/api/instance'
 import { SearchBar } from '@components/common/search-bar'
-import { AccountIcon } from '@icons/settings-side-bar-icons'
+import { SettingIcon } from '@icons/settings'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { formatPhoneNumberIntl } from 'react-phone-number-input'
 import { WalletAmountBadge } from '@/components/common/wallet/wallet-amount-badge'
@@ -170,7 +170,7 @@ function UserTick() {
                         localStorage.setItem('previous_path', pathName)
                       }
                     }}>
-                    <AccountIcon isActive={false} className="h-6 w-6" />
+                    <SettingIcon isActive />
                     <p className="text-body-1-demi">Settings</p>
                   </div>
                 </Link>
