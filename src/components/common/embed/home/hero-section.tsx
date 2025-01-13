@@ -1,5 +1,4 @@
 import { Button } from '@/components/ui/button'
-import Image from 'next/image'
 import { PlayIcon } from '@icons/player-controls/play-icon'
 import { type HeroSectionType } from '../../../../../types/embed/embed-home'
 
