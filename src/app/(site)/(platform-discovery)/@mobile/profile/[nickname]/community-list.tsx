@@ -59,7 +59,7 @@ export function CommunityList({ userId, scrollYProgress }: { userId: string; scr
   useEffect(() => {
     const newCommunities = data?.pages[data.pages.length - 1].communities
     if (newCommunities) addCommunities(newCommunities)
-  }, [communities])
+  }, [data])
 
   useMotionValueEvent(scrollYProgress, 'change', (latest) => {
     if (Number(latest.toFixed(1)) > 0.8 && !isFetchingNextPage) {
