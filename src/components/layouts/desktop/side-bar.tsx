@@ -31,7 +31,7 @@ const RecentCommunities = dynamic(
 )
 
 // TODO: Improve active states on all items.
-export function SideBar() {
+export function SideBar({ isCollapsed }: { isCollapsed: boolean }) {
   const {
     user,
     brandName,
@@ -61,30 +61,48 @@ export function SideBar() {
   return (
     <nav
       style={{ height: sizeboxHeight }}
-      className="flex h-full w-fit flex-col justify-between overflow-auto border border-monochrome-9 px-4 py-4 transition-[width] xl:mr-16 xl:w-full xl:max-w-[280px] xl:border-none xl:px-0">
+      className={`flex h-full w-fit flex-col justify-between overflow-auto border border-monochrome-9 px-4 py-4 transition-[width] ${
+        isCollapsed ? 'mr-10' : 'xl:mr-16 xl:w-full xl:max-w-[280px] xl:border-none xl:px-0'
+      }`}>
       <div>
         <Link href={{ pathname: PATH_NAME.home() }}>
-          <Item brandName={brandName} title="Home" isActive={pathName === PATH_NAME.home()}>
+          <Item isCollapsed={isCollapsed} brandName={brandName} title="Home" isActive={pathName === PATH_NAME.home()}>
             <HomeIcon isActive={pathName === PATH_NAME.home()} />
           </Item>
         </Link>
         <Link href={{ pathname: PATH_NAME.popular() }}>
-          <Item brandName={brandName} title="Popular" isActive={pathName === PATH_NAME.popular()}>
+          <Item
+            isCollapsed={isCollapsed}
+            brandName={brandName}
+            title="Popular"
+            isActive={pathName === PATH_NAME.popular()}>
             <PopularIcon isActive={pathName === PATH_NAME.popular()} />
           </Item>
         </Link>
         <Link href={{ pathname: PATH_NAME.latest() }}>
-          <Item brandName={brandName} title="Latest" isActive={pathName === PATH_NAME.latest()}>
+          <Item
+            isCollapsed={isCollapsed}
+            brandName={brandName}
+            title="Latest"
+            isActive={pathName === PATH_NAME.latest()}>
             <LatestIcon isActive={pathName === PATH_NAME.latest()} />
           </Item>
         </Link>
         <Link href={{ pathname: PATH_NAME.explore() }}>
-          <Item brandName={brandName} title="Explore" isActive={pathName === PATH_NAME.explore()}>
+          <Item
+            isCollapsed={isCollapsed}
+            brandName={brandName}
+            title="Explore"
+            isActive={pathName === PATH_NAME.explore()}>
             <ExploreIcon isActive={pathName === PATH_NAME.explore()} />
           </Item>
         </Link>
         <Link href={{ pathname: PATH_NAME.embed('home') }}>
-          <Item brandName={brandName} title="Embed" isActive={pathName === PATH_NAME.embed('home')}>
+          <Item
+            isCollapsed={isCollapsed}
+            brandName={brandName}
+            title="Embed"
+            isActive={pathName === PATH_NAME.embed('home')}>
             <EmbedIcon isActive={pathName === PATH_NAME.embed('home')} />
           </Item>
         </Link>
@@ -92,6 +110,7 @@ export function SideBar() {
           <>
             <Link href={{ pathname: PATH_NAME.notification() }}>
               <Item
+                isCollapsed
                 brandName={brandName}
                 title="Notification"
                 isActive={pathName === PATH_NAME.notification()}
@@ -103,7 +122,11 @@ export function SideBar() {
               href={{
                 pathname: user.isBrandSystemUser ? PATH_NAME.brand(user.brandSlug) : PATH_NAME.profile(user.nickname),
               }}>
-              <Item brandName={brandName} title="Profile" isActive={pathName === PATH_NAME.profile(user.nickname)}>
+              <Item
+                isCollapsed
+                brandName={brandName}
+                title="Profile"
+                isActive={pathName === PATH_NAME.profile(user.nickname)}>
                 <ProfileIcon isActive={pathName === PATH_NAME.profile(user.nickname)} />
               </Item>
             </Link>
@@ -113,7 +136,7 @@ export function SideBar() {
         {brandId?.toString() === '99' && (
           <Popover>
             <PopoverTrigger className="w-full">
-              <Item title="More">
+              <Item isCollapsed={isCollapsed} title="More">
                 <MoreIcon isActive={false} />
               </Item>
             </PopoverTrigger>
@@ -131,45 +154,49 @@ export function SideBar() {
             </PopoverContent>
           </Popover>
         )}
-        <span className="hidden xl:block">
-          {(!isClaimed || user?.ksCbRequestStatus !== 3) && <hr className="border-1 my-2 border-monochrome-black/10" />}
-          <DownloadAppDialog />
-          {isClaimed && status === 'unauthenticated' && webCTA !== 'app' && (
-            <>
-              <div
-                className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10"
-                onClick={() => {
-                  AuthenticationModal.open()
-                }}>
-                <LoginIcon className="stroke-primary" />
-                <p className={cn('hidden whitespace-nowrap !text-title-3-demi text-primary xl:block')}>Log in</p>
-              </div>
+        {!isCollapsed && (
+          <span className="hidden xl:block">
+            {(!isClaimed || user?.ksCbRequestStatus !== 3) && (
               <hr className="border-1 my-2 border-monochrome-black/10" />
-            </>
-          )}
-          {!isClaimed && (
-            <>
-              <div
-                className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10"
-                onClick={() => {
-                  AuthenticationModal.open(undefined, 'CLAIM_BRAND_PROFILE')
-                }}>
-                <VerifiedIcon className="stroke-primary" />
-                <p className={cn('hidden whitespace-nowrap !text-title-3-demi text-primary xl:block')}>
-                  Claim Brand Profile
-                </p>
-              </div>
-              <hr className="border-1 my-2 border-monochrome-black/10" />
-            </>
-          )}
-        </span>{' '}
+            )}
+            <DownloadAppDialog />
+            {isClaimed && status === 'unauthenticated' && webCTA !== 'app' && (
+              <>
+                <div
+                  className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10"
+                  onClick={() => {
+                    AuthenticationModal.open()
+                  }}>
+                  <LoginIcon className="stroke-primary" />
+                  <p className={cn('hidden whitespace-nowrap !text-title-3-demi text-primary xl:block')}>Log in</p>
+                </div>
+                <hr className="border-1 my-2 border-monochrome-black/10" />
+              </>
+            )}
+            {!isClaimed && (
+              <>
+                <div
+                  className="flex w-full max-w-full shrink-0 items-center gap-x-3 rounded-md p-2 px-4 hover:bg-monochrome-6/10"
+                  onClick={() => {
+                    AuthenticationModal.open(undefined, 'CLAIM_BRAND_PROFILE')
+                  }}>
+                  <VerifiedIcon className="stroke-primary" />
+                  <p className={cn('hidden whitespace-nowrap !text-title-3-demi text-primary xl:block')}>
+                    Claim Brand Profile
+                  </p>
+                </div>
+                <hr className="border-1 my-2 border-monochrome-black/10" />
+              </>
+            )}
+          </span>
+        )}
         {/* {(!isClaimed || user?.ksCbRequestStatus !== 3) && <hr className="border-1 my-2 border-monochrome-black/10" />} */}
-        {user?.ksCbRequestStatus !== 3 && <BecomeCbCard className="my-4 hidden xl:block" />}
-        <CategoryViewDynamic className="hidden xl:block" />
-        <RecentCommunities />
+        {user?.ksCbRequestStatus !== 3 && !isCollapsed && <BecomeCbCard className="my-4 hidden xl:block" />}
+        {!isCollapsed && <CategoryViewDynamic className="hidden xl:block" />}
+        <RecentCommunities isCollapsed={isCollapsed} />
       </div>
       {/* TODO: Genuin as a Brand. Check and discuss to change default true value */}
-      {brandId?.toString() !== '99' && (
+      {!isCollapsed && brandId?.toString() !== '99' && (
         <div className="hidden xl:block">
           <hr className="border-1 mb-4 mt-1 border-monochrome-black/10" />
           <div className="flex items-center">
@@ -190,9 +217,10 @@ type ItemProps = {
   children: ReactNode
   notificationCount?: number
   brandName?: string
+  isCollapsed?: boolean
 }
 
-function Item({ title, isActive, children, notificationCount = 0, brandName }: ItemProps) {
+function Item({ title, isActive, children, notificationCount = 0, brandName, isCollapsed }: ItemProps) {
   return (
     <div
       onClick={() => {
@@ -212,7 +240,11 @@ function Item({ title, isActive, children, notificationCount = 0, brandName }: I
           </div>
         )}
       </div>
-      <p className={cn('hidden whitespace-nowrap !text-title-2-demi xl:block', isActive && 'text-primary')}>{title}</p>
+      {!isCollapsed && (
+        <p className={cn('hidden whitespace-nowrap !text-title-2-demi xl:block', isActive && 'text-primary')}>
+          {title}
+        </p>
+      )}
     </div>
   )
 }

@@ -38,10 +38,10 @@ const SearchSection = ({ searchTopSection }: { searchTopSection: SearchTopSectio
             </Button>
           </div>
         </div>
-        <div className="flex w-full gap-6 overflow-hidden overflow-x-scroll opacity-40">
+        <div className="hide-scrollbar flex w-full snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth opacity-40">
           {searchTopSection?.searchItemsTop.map((item, index) => (
             <SearchItem
-              className="w-[420px]"
+              className="max-w-[420px] flex-shrink-0 snap-start"
               caption={item.caption}
               title={item.title}
               key={index}
