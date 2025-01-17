@@ -31,7 +31,7 @@ const RecentCommunities = dynamic(
 )
 
 // TODO: Improve active states on all items.
-export function SideBar({ isCollapsed }: { isCollapsed: boolean }) {
+export function SideBar({ isCollapsed }: { isCollapsed?: boolean }) {
   const {
     user,
     brandName,

@@ -6,7 +6,7 @@ import { type ReactNode } from 'react'
 import { useLocalStorage } from '@lib/stores/local-storage'
 import { PATH_NAME } from '@lib/utils/constants/path'
 
-export function RecentCommunities({ isCollapsed }: { isCollapsed: boolean }) {
+export function RecentCommunities({ isCollapsed }: { isCollapsed?: boolean }) {
   const communities = useLocalStorage((state) => state.communities)
   const pathName = usePathname()
   if (communities.length > 0)
