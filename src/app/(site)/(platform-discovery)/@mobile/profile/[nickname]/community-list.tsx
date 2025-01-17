@@ -58,8 +58,10 @@ export function CommunityList({ userId, scrollYProgress }: { userId: string; scr
 
   useEffect(() => {
     const newCommunities = data?.pages[data.pages.length - 1].communities
-    if (newCommunities) addCommunities(newCommunities)
-  }, [communities])
+    if (newCommunities && newCommunities.length > 0) {
+      addCommunities(newCommunities)
+    }
+  }, [data])
 
   useMotionValueEvent(scrollYProgress, 'change', (latest) => {
     if (Number(latest.toFixed(1)) > 0.8 && !isFetchingNextPage) {
@@ -324,7 +326,7 @@ function LoopVideos({ userId, loop, communityId, pathName, user }: LoopVideosPro
                   open(video.id)
                 }}
                 key={video.id}
-                className="group/vidcard relative flex aspect-reel h-24 min-w-full flex-col items-center overflow-clip hover:cursor-pointer">
+                className="group/vidcard relative flex aspect-reel min-w-full flex-col items-center overflow-clip hover:cursor-pointer">
                 <CustomImage fill src={video.thumbnail ?? ''} alt="" className="object-cover" />
                 <div className="absolute bottom-1 left-1 m-1 flex items-center justify-center gap-0.5">
                   <Play className="h-3 w-3 stroke-monochrome-white" />
