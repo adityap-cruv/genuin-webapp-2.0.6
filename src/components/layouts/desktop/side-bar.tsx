@@ -118,7 +118,7 @@ export function SideBar() {
               side="bottom"
               align="start">
               <Link href={{ pathname: privacyPolicy ?? PATH_NAME.terms }}>
-                <p className="rounded-md p-2 text-title-2-demi hover:bg-monochrome-6/10">Terms and Conditions</p>
+                <p className="rounded-md p-2 text-title-2-demi hover:bg-monochrome-6/10">Terms of Use</p>
               </Link>
               <Link href={{ pathname: termsAndCondition ?? PATH_NAME.privacy }}>
                 <p className="rounded-md p-2 text-title-2-demi hover:bg-monochrome-6/10">Privacy Policy</p>
