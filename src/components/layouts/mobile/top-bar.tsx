@@ -197,11 +197,6 @@ function Menu({
             <LatestIcon isActive={pathName === PATH_NAME.latest()} />
           </MenuItem>
         </Link>
-        <Link href={{ pathname: PATH_NAME.latest() }}>
-          <MenuItem brandName={brandName} title="Latest" isActive={pathName === PATH_NAME.latest()}>
-            <LatestIcon isActive={pathName === PATH_NAME.latest()} />
-          </MenuItem>
-        </Link>
         <Link href={{ pathname: PATH_NAME.explore() }}>
           <MenuItem brandName={brandName} title="Explore" isActive={pathName === PATH_NAME.explore()}>
             <ExploreIcon isActive={pathName === PATH_NAME.explore()} />
