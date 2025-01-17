@@ -133,11 +133,11 @@ export function SideBar({ isCollapsed }: { isCollapsed?: boolean }) {
           </>
         )}
         {/* TODO: Genuin as a Brand. Check and discuss to change default true value */}
-        {brandId?.toString() === '99' && (
+        {!isCollapsed && (
           <Popover>
             <PopoverTrigger className="w-full">
-              <Item isCollapsed={isCollapsed} title="More">
-                <MoreIcon isActive={false} />
+              <Item title="More">
+                <MoreIcon className="fill-secondary" isActive={false} />
               </Item>
             </PopoverTrigger>
             <PopoverContent
@@ -146,7 +146,7 @@ export function SideBar({ isCollapsed }: { isCollapsed?: boolean }) {
               side="bottom"
               align="start">
               <Link href={{ pathname: privacyPolicy ?? PATH_NAME.terms }}>
-                <p className="rounded-md p-2 text-title-2-demi hover:bg-monochrome-6/10">Terms and Conditions</p>
+                <p className="rounded-md p-2 text-title-2-demi hover:bg-monochrome-6/10">Terms of Use</p>
               </Link>
               <Link href={{ pathname: termsAndCondition ?? PATH_NAME.privacy }}>
                 <p className="rounded-md p-2 text-title-2-demi hover:bg-monochrome-6/10">Privacy Policy</p>

@@ -13,7 +13,7 @@ export default async function Page() {
       <EmbedNav />
       <OrderDetailsSection orderDetailsSection={postSalesData?.orderDetailsSection} />
       <InvoiceSection invoiceSection={postSalesData?.invoiceSection} />
-      <CommunitiesSection />
+      <CommunitiesSection communitiesSection={postSalesData?.communitiesSection} />
       <EmbedFooter />
     </div>
   )

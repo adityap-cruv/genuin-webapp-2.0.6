@@ -19,7 +19,7 @@ const EmbedNav = () => {
   ]
 
   return (
-    <nav className="hidden justify-center gap-6 py-6 md:flex">
+    <nav className="hidden justify-center gap-7 py-6 md:flex">
       {NAV_OPTIONS.map(({ label, path }: { label: string; path: string }) => {
         const isActive = lastPart === path
         const linkClasses = isActive
