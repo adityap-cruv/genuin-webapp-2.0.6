@@ -60,7 +60,17 @@ type Props = {
 } & VariantProps<typeof navVariant>
 
 export function TopBar({ variant = 'light', className, showClose = false, onClose }: Props) {
-  const { user, brandName, notificationsCount, isClaimed, brandLogo, webCTA, brandId } = useGenuinOptions((state) => ({
+  const {
+    user,
+    brandName,
+    notificationsCount,
+    isClaimed,
+    brandLogo,
+    webCTA,
+    brandId,
+    privacyPolicy,
+    termsAndCondition,
+  } = useGenuinOptions((state) => ({
     user: state.user,
     brandName: state.config?.name ? state.config?.name : 'Genuin',
     notificationsCount: state.notificationCount,
@@ -68,6 +78,8 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
     brandLogo: state.config?.logo,
     webCTA: state.webCTA,
     brandId: state.config?.brand_id,
+    privacyPolicy: state.config?.privacy_policy,
+    termsAndCondition: state.config?.terms_and_condition,
   })) // If variant is transparent than we have removed show download button.
   const showDownloadButton = variant !== 'transparent'
   const searchParams = useSearchParams()
@@ -75,7 +87,15 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
   return (
     <nav className={cn(navVariant({ variant }), className)}>
       <span className="flex items-center gap-x-3">
-        <Menu variant={variant} webCTA={webCTA} user={user} brandName={brandName} isClaimed={isClaimed} />
+        <Menu
+          variant={variant}
+          webCTA={webCTA}
+          user={user}
+          brandName={brandName}
+          isClaimed={isClaimed}
+          privacyPolicy={privacyPolicy}
+          termsAndCondition={termsAndCondition}
+        />
         {brandLogo && (
           <Link href={{ pathname: PATH_NAME.home() }}>
             <CustomImage src={brandLogo} height={40} width={40} className="object-cover" alt="logo" />
@@ -147,12 +167,16 @@ function Menu({
   user,
   isClaimed,
   webCTA,
+  privacyPolicy,
+  termsAndCondition,
 }: {
   variant: 'dark' | 'light' | 'transparent' | null
   brandName: string
   user?: User
   isClaimed?: boolean
   webCTA: 'app' | 'login' | 'both'
+  privacyPolicy?: string
+  termsAndCondition?: string
 }) {
   const pathName = usePathname()
   const { status } = useSession()
@@ -251,10 +275,10 @@ function Menu({
         <RecentCommunities />
         <div className="text-tertiary">
           <span className="flex gap-x-2 pb-2">
-            <Link href={PATH_NAME.terms}>
+            <Link href={privacyPolicy ?? PATH_NAME.terms}>
               <p className="text-body-1-demi">Terms and Conditions</p>
             </Link>
-            <Link href={PATH_NAME.privacy}>
+            <Link href={termsAndCondition ?? PATH_NAME.privacy}>
               <p className="text-body-1-demi">Privacy Policy</p>
             </Link>
           </span>
