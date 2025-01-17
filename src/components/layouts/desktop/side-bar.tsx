@@ -116,10 +116,10 @@ export function SideBar() {
             className=" rounded-2xl p-2 shadow-lg shadow-monochrome-3/40"
             side="bottom"
             align="start">
-            <Link href={{ pathname: privacyPolicy ?? PATH_NAME.terms }}>
+            <Link href={{ pathname: termsAndCondition ?? PATH_NAME.terms }}>
               <p className="rounded-md p-2 text-title-2-demi hover:bg-monochrome-6/10">Terms and Conditions</p>
             </Link>
-            <Link href={{ pathname: termsAndCondition ?? PATH_NAME.privacy }}>
+            <Link href={{ pathname: privacyPolicy ?? PATH_NAME.privacy }}>
               <p className="rounded-md p-2 text-title-2-demi hover:bg-monochrome-6/10">Privacy Policy</p>
             </Link>
           </PopoverContent>
