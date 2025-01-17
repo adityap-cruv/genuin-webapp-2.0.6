@@ -276,7 +276,7 @@ function Menu({
         <div className="text-tertiary">
           <span className="flex gap-x-2 pb-2">
             <Link href={privacyPolicy ?? PATH_NAME.terms}>
-              <p className="text-body-1-demi">Terms and Conditions</p>
+              <p className="text-body-1-demi">Terms of Use</p>
             </Link>
             <Link href={termsAndCondition ?? PATH_NAME.privacy}>
               <p className="text-body-1-demi">Privacy Policy</p>
