@@ -3,15 +3,26 @@ import { type ComponentProps } from 'react'
 type Props = ComponentProps<'svg'>
 export function LogoutIcon({ ...props }: Props) {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" {...props} width="24" height="24" viewBox="0 0 24 24" fill="none">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="28"
+      height="27"
+      viewBox="0 0 28 27"
+      fill="none"
+      stroke="black"
+      {...props}>
       <path
-        d="M2.70679 9.60842C3.06013 8.20363 4.1313 6.34222 5.83854 4.93646C7.54578 3.53069 9.70128 2.76471 11.925 2.77351C13.7156 2.78322 15.4663 3.29621 16.9719 4.25235C18.4776 5.20848 19.6758 6.56818 20.4262 8.17208C21.1765 9.77598 21.448 11.5577 21.2088 13.3083C20.9695 15.059 20.2295 16.7061 19.0754 18.0567C17.9212 19.4073 16.4008 20.4054 14.6922 20.934C12.9837 21.4627 11.1578 21.4999 9.42858 21.0415C7.69933 20.583 6.13832 19.6479 4.92852 18.3455C3.71872 17.0432 3.06013 15.93 2.70679 14.5252"
-        // stroke="black"
-        strokeWidth="1.5"
-        strokeLinecap="round"
+        d="M21.606 4.08325C19.3297 2.2089 16.4557 1.18758 13.4907 1.19932C11.1032 1.21227 8.76898 1.89625 6.76147 3.1711C4.75395 4.44595 3.15635 6.25887 2.15582 8.39741C1.1553 10.5359 0.793322 12.9115 1.11231 15.2457C1.4313 17.5799 2.418 19.7761 3.95687 21.5769C5.49573 23.3777 7.52299 24.7085 9.80105 25.4133C12.0791 26.1182 14.5136 26.1679 16.8193 25.5566C19.1249 24.9454 21.2063 23.6985 22.8193 21.962"
+        stroke-width="2"
+        stroke-linecap="round"
       />
-      <path d="M2.25 12L16.5 12" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M12 7.5L16.5 12L12 16.5" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M7.3916 13.5L26.3916 13.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      <path
+        d="M20.3916 19.5L26.3916 13.5L20.3916 7.5"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
     </svg>
   )
 }

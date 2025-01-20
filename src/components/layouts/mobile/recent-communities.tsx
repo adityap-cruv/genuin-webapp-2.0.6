@@ -42,7 +42,9 @@ function CommunityItem({ children, title, isActive }: ItemProps) {
   return (
     <div className="flex w-full max-w-full items-center gap-x-2 rounded-md p-2 hover:bg-monochrome-6/10">
       {children}
-      <p className={cn('break-all text-title-2-bold font-semibold', isActive && 'text-primary')}>{title}</p>
+      <p className={cn('line-clamp-2 break-all text-title-2-bold font-semibold', isActive && 'text-primary')}>
+        {title}
+      </p>
     </div>
   )
 }

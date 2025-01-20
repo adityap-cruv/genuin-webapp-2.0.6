@@ -10,10 +10,9 @@ import { useSession, signOut } from 'next-auth/react'
 import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { LogoutIcon } from '@icons/logout'
-import { BurgerIcon } from '@icons/burger-icon'
 import { removeAllAuthToken } from '@lib/api/instance'
 import { SearchBar } from '@components/common/search-bar'
-import { AccountIcon } from '@icons/settings-side-bar-icons'
+import { SettingIcon } from '@icons/settings'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { formatPhoneNumberIntl } from 'react-phone-number-input'
 import { WalletAmountBadge } from '@/components/common/wallet/wallet-amount-badge'
@@ -59,23 +58,18 @@ export function TopBar({
                 />
               </div>
             )}
-            <div className="flex items-center gap-x-2">
+            <div className="flex items-center gap-x-3">
               {showSearchBar && <SearchBar.desktop />}
               <WalletAmountBadge type="dark" />
-              {webCTA === 'app' ? (
-                <>
-                  <DownloadAppDialog>
-                    <Button
-                      variant="default"
-                      size={'custom'}
-                      className="h-8 bg-new-off-black px-4 py-3 hover:bg-new-dark-grey">
-                      <p className="text-[15px] text-new-para-2 font-semibold text-tertiary-100">Get app</p>
-                    </Button>
-                  </DownloadAppDialog>
-                </>
-              ) : (
-                showUserTick && <UserTick />
+
+              {(webCTA === 'app' || webCTA === 'both') && (
+                <DownloadAppDialog>
+                  <Button variant="outline" size={'custom'} className="h-8 px-4 py-3">
+                    <p className="text-[15px] text-new-para-2 font-semibold">Get App</p>
+                  </Button>
+                </DownloadAppDialog>
               )}
+              {webCTA !== 'app' && showUserTick && <UserTick />}
             </div>
           </nav>
         )}
@@ -118,18 +112,17 @@ function UserTick() {
     return (
       <Popover>
         <PopoverTrigger>
-          <div className="flex items-center gap-x-2 rounded-full border border-monochrome-9 p-1 pr-2">
+          <div className="flex rounded-full">
             <CustomAvatar
-              className="h-8 w-8"
+              className="h-[40px] w-[40px]"
               fallbackString={data.user.name ?? ''}
               imageUrl={data.user.image ?? ''}
               isAvatar={data.user.isAvatar}
             />
-            <BurgerIcon />
           </div>
         </PopoverTrigger>
         <PopoverContent
-          sideOffset={-6}
+          sideOffset={0}
           className="rounded-2xl p-2 shadow-lg shadow-monochrome-3/40"
           side="bottom"
           align="end">
@@ -177,7 +170,7 @@ function UserTick() {
                         localStorage.setItem('previous_path', pathName)
                       }
                     }}>
-                    <AccountIcon isActive={false} className="h-6 w-6" />
+                    <SettingIcon isActive />
                     <p className="text-body-1-demi">Settings</p>
                   </div>
                 </Link>
@@ -185,7 +178,7 @@ function UserTick() {
             )}
 
             <div className="flex items-center gap-2">
-              <LogoutIcon className="stroke-secondary" />
+              <LogoutIcon className="h-6 w-6 stroke-secondary" />
               <p
                 className="cursor-pointer text-body-1-demi"
                 onClick={() => {

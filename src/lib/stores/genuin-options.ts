@@ -71,6 +71,8 @@ export type ConfigType = {
   social_login: { google: boolean; apple: boolean; brand: boolean; brand_sso_id?: string | null }
   status?: number
   web_cta: 'app' | 'login' | 'both'
+  privacy_policy?: string
+  terms_and_condition?: string
 } | null
 
 export type User = {

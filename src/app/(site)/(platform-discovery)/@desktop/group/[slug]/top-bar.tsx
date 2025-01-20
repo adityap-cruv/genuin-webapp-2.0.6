@@ -1,11 +1,7 @@
-import { Button } from '@components/ui/button'
 import { motion, useAnimationControls } from 'framer-motion'
 import { useEffect } from 'react'
-import { useAdaptiveShare } from '@hooks/use-adaptive-share'
-import { useToast } from '@components/ui/use-toast'
-import { ShareIcon } from '@icons/share-icon'
-import { BellIcon } from '@icons/bell-icon'
-import { SubscribedBellIcon } from '@icons/subscribed-bell-icon'
+import ShareButton from '@components/common/actions/ShareButton'
+import SubscriptionButton from '@components/common/actions/SubscriptionButton'
 
 type Props = {
   /**
@@ -36,13 +32,11 @@ function Desktop({
   shareUrl,
   communitySlug,
   chatId,
-  isLoopSubscribed,
-  handleSubscribeClick,
+  isLoopSubscribed = false,
+  handleSubscribeClick = () => {},
   ...props
 }: Props) {
   const navAnimationControl = useAnimationControls()
-  const { shareFn } = useAdaptiveShare()
-  const { toast } = useToast()
 
   useEffect(() => {
     if (defaultOpen || isOpen) {
@@ -72,19 +66,7 @@ function Desktop({
         <p className="text-title-2-demi">{loopName}</p>
       </span>
       <span className="my-2 flex items-center gap-x-3">
-        <Button
-          size="custom"
-          className={`${isLoopSubscribed ? 'border border-primary p-0.5' : 'border border-primary bg-primary p-0.5'}`}
-          variant={isLoopSubscribed ? 'outline' : 'default'}
-          onClick={handleSubscribeClick}>
-          {/* <p className={`px-4 py-1 text-title-3-demi ${isLoopSubscribed && 'text-primary'}`}>
-            {isLoopSubscribed ? 'Subscribed' : 'Subscribe'}
-          </p> */}
-          {isLoopSubscribed && (
-            <SubscribedBellIcon className="h-6 w-6 fill-primary stroke-primary"></SubscribedBellIcon>
-          )}
-          {!isLoopSubscribed && <BellIcon className="h-6 w-6  stroke-new-off-white"></BellIcon>}
-        </Button>
+        <SubscriptionButton onClick={handleSubscribeClick} isSubscribed={isLoopSubscribed} />
 
         {/* Hidden by requirement. */}
         {/* <Button size="custom" variant="outline" className="border-primary px-4">
@@ -94,18 +76,7 @@ function Desktop({
                 </span>
               </Button> */}
 
-        <Button
-          variant="outline"
-          size="custom"
-          className="border border-primary p-0.5"
-          onClick={async () => {
-            await shareFn({
-              shareLink: shareUrl,
-              toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
-            })
-          }}>
-          <ShareIcon className="h-6 w-6 fill-primary" />{' '}
-        </Button>
+        <ShareButton url={shareUrl} />
       </span>
     </motion.div>
   )
@@ -139,7 +110,9 @@ function Mobile({ defaultOpen = true, isOpen = false, loopName, communitySlug, .
       className="sticky top-0 z-10 flex h-14 w-full items-center justify-between border-b border-monochrome-9 bg-monochrome-white px-6"
       {...props}>
       <span className="flex items-center gap-x-2">
-        <p className="text-title-2-demi">{loopName}</p>
+        <p className="line-clamp-1 break-all text-title-2-demi" title={loopName}>
+          {loopName}
+        </p>
       </span>
     </motion.div>
   )

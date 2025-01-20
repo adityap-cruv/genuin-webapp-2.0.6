@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogClose } from '@components/ui/dialog'
 import { type DialogProps } from '@radix-ui/react-dialog'
 import { useDownloadDialogModalStore } from './store'
 import { Body } from './body'
-import { X } from 'lucide-react'
+import { CloseIcon } from '@icons/close-icon'
 
 type Props = DialogProps
 
@@ -24,8 +24,8 @@ export function Modal({ ...props }: Props) {
           e.preventDefault()
         }}
         className="rounded-t-lg !py-10">
-        <DialogClose className="absolute right-2 top-2">
-          <X
+        <DialogClose className="absolute right-3 top-3">
+          <CloseIcon
             onClick={() => {
               closeModal()
             }}

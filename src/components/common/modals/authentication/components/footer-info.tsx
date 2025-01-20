@@ -154,11 +154,11 @@ export function FooterInfo({ className, ...restProps }: ComponentProps<'p'>) {
 
       <p className={cn('mt-2 text-center text-new-para-2-mobile', className)} {...restProps}>
         By continuing, you agree to
-        <Link href={PATH_NAME.terms} target="_blank" rel="noopener noreferrer">
-          <span className="text-primary"> Terms of Service </span>
+        <Link href={config?.terms_and_condition ?? PATH_NAME.terms} target="_blank" rel="noopener noreferrer">
+          <span className="text-primary"> Terms of Use </span>
         </Link>
         and
-        <Link href={PATH_NAME.privacy} target="_blank" rel="noopener noreferrer">
+        <Link href={config?.privacy_policy ?? PATH_NAME.privacy} target="_blank" rel="noopener noreferrer">
           <span className="text-primary"> Privacy Policy</span>
         </Link>
       </p>

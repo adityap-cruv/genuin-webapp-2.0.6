@@ -1,14 +1,11 @@
 import Link from 'next/link'
-import Image from 'next/image'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { usePlayerControlStore } from '../player-control-store'
-import icPlay from '@icons/player-controls/icPlay.svg'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { Actions } from './actions'
 import { ReadMore } from '@components/common/read-more'
 import { cn } from '@lib/utils'
 import { AnimatedMuteIcon } from './animated-mute-icon'
-import { TickIcon } from '@icons/tick-icon'
 import { type DescriptionArrType } from '@lib/schemas/player/video'
 import Analytics from '@services/analytics'
 import { PlayerProgressBar } from './player-progress-bar'
@@ -21,6 +18,7 @@ import { PlayIcon } from '@icons/player-controls/play-icon'
 import { PauseIcon } from '@icons/player-controls/pause-icon'
 import { GroupIcon } from '@icons/group-icon'
 import { motion } from 'framer-motion'
+import BrandBadgeIcon from '@components/common/brand-badge-icon'
 
 type MobileProps = {
   isActive: boolean
@@ -43,6 +41,7 @@ type MobileProps = {
     brand?: {
       brand_id: number
       brand_slug: string
+      brand_user_logo: number
     } | null
   }
   clickableUrl: string | null
@@ -90,7 +89,7 @@ export const Mobile = memo(function Mobile({ clickableUrl, ...props }: MobilePro
 
   return (
     <div className="relative h-full w-full">
-      <div
+      {/* <div
         className={cn(
           'absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-monochrome-black/40 p-2 transition-all duration-300 ',
           !shouldPlay ? 'scale-125 opacity-100 ease-in' : 'scale-100 opacity-0 ease-out'
@@ -100,14 +99,14 @@ export const Mobile = memo(function Mobile({ clickableUrl, ...props }: MobilePro
           alt="volume-control"
           className={cn('pointer-events-none z-10 cursor-pointer rounded-full')}
         />
-      </div>
+      </div> */}
       {(muted || !!clickableUrl) && (
         <div
           onClick={clickableUrl ? openClickableUrl : handleToggleMuted}
           className={cn('absolute inset-0', clickableUrl && 'cursor-pointer')}>
-          <div className="relative left-6 top-20 flex w-fit gap-2">
+          <div className="item-center relative left-6 top-20 flex w-fit gap-2">
             {clickableUrl && (
-              <span onClick={handlePlayPause} className="rounded-lg bg-monochrome-white p-2">
+              <span onClick={handlePlayPause} className="flex items-center rounded-lg bg-monochrome-white p-2">
                 {!shouldPlay ? <PlayIcon className="stroke-secondary" /> : <PauseIcon className="stroke-secondary" />}
               </span>
             )}
@@ -170,27 +169,48 @@ function Details({
 }: MobileProps) {
   const [showLinkouts, setShowLinkouts] = useState(false)
 
+  // // This logic is to show linkouts after 10 second of video play.
+  // useEffect(() => {
+  //   if (!linkoutId) return
+  //   let timeoutId: NodeJS.Timeout | null = null
+
+  //   // If video is active, show linkouts after 10 seconds.
+  //   if (isActive) {
+  //     timeoutId = setTimeout(() => {
+  //       setShowLinkouts(true)
+  //     }, 10000)
+  //   }
+
+  //   // Clear timeout if video is not active.
+  //   return () => {
+  //     if (timeoutId) {
+  //       clearTimeout(timeoutId)
+  //       timeoutId = null
+  //     }
+  //     setShowLinkouts(false)
+  //   }
+  // }, [isActive])
+
   // This logic is to show linkouts after 10 second of video play.
   useEffect(() => {
     if (!linkoutId) return
     let timeoutId: NodeJS.Timeout | null = null
-
     // If video is active, show linkouts after 10 seconds.
     if (isActive) {
       timeoutId = setTimeout(() => {
         setShowLinkouts(true)
       }, 10000)
+    } else {
+      setShowLinkouts(false)
     }
 
     // Clear timeout if video is not active.
     return () => {
       if (timeoutId) {
         clearTimeout(timeoutId)
-        timeoutId = null
       }
-      setShowLinkouts(false)
     }
-  }, [isActive])
+  }, [isActive, linkoutId])
 
   return (
     <div className="absolute bottom-4 left-0 flex w-full justify-between px-2">
@@ -211,14 +231,9 @@ function Details({
                   fallbackString={owner.name ?? 'U'}
                   isAvatar={owner.isAvatar}
                 />
-                <p className="line-clamp-1 break-all px-2 text-title-3-bold text-monochrome-white">@{owner.userName}</p>
+                <p className="line-clamp-1 break-all px-1 text-title-3-bold text-monochrome-white">@{owner.userName}</p>
               </Link>
-              {owner.brand && (
-                <div className="flex items-center gap-0.5">
-                  <TickIcon className="h-3 w-3 fill-primary" />
-                  <p className="text-cap-2-demi text-primary">Brand</p>
-                </div>
-              )}
+              {owner.brand && <BrandBadgeIcon userLogoType={owner.brand?.brand_user_logo} variant={'light'} />}
             </div>
             <motion.div
               initial={linkoutId ? (showLinkouts ? Animations.hidden : undefined) : undefined}

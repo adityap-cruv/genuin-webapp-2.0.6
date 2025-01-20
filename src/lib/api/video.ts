@@ -54,6 +54,7 @@ export async function getVideoDetails(slug: string): Promise<VideoPlayerModalTyp
         ? {
             brand_id: videoDetails.owner.brand.brand_id,
             brand_slug: videoDetails.owner.brand.brand_slug,
+            brand_user_logo: videoDetails.owner.brand.brand_user_logo,
           }
         : null,
     },

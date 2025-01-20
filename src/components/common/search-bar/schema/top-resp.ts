@@ -75,6 +75,7 @@ const BrandUserSchema = z
   .object({
     brand_id: z.number(),
     brand_slug: z.string(),
+    brand_user_logo: z.number(),
   })
   .nullish()
 
@@ -102,6 +103,7 @@ const BrandTypeSchema = z
     logo: z.string().nullable(),
     created_at: z.number(),
     brand_web_logo: z.string().nullable(),
+    brand_user_logo: z.number().nullish().default(1),
     favicon: z.string(),
     brand_system_user_id: z.string().nullable(),
     brand_slug: z.string(),

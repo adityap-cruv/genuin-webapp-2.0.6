@@ -117,7 +117,7 @@ export const Mobile = memo(function Mobile({
             return (
               <div key={index} className="rounded-lg bg-monochrome-black/50 p-2">
                 <div
-                  className={'flex gap-2'}
+                  className="hide-scrollbar flex gap-2 overflow-auto"
                   style={{
                     width: `${linkoutItem.links.length * 25 > 100 ? 100 : linkoutItem.links.length * 25}%`,
                   }}>
@@ -137,19 +137,18 @@ export const Mobile = memo(function Mobile({
                             noOfLinks: linkoutItem.links.length,
                           })
                         }}>
-                        <div
-                          title={item.title ?? undefined}
-                          className="flex items-center justify-center rounded-lg border border-tertiary-200 bg-tertiary-100 p-2">
-                          {item.image && (
-                            <Image
-                              src={item.image}
-                              alt={item.title ?? 'linkout'}
-                              title={item.title ?? ''}
-                              height={56}
-                              width={56}
-                              className="object-fill"
-                            />
-                          )}
+                        <div className="rounded-lg border border-tertiary-200 bg-tertiary-100 p-1.5">
+                          <div title={item.title ?? undefined} className="relative h-16 w-16">
+                            {item.image && (
+                              <Image
+                                src={item.image}
+                                alt={item.title ?? 'linkout'}
+                                title={item.title ?? ''}
+                                fill
+                                className="rounded-lg object-fill"
+                              />
+                            )}
+                          </div>
                         </div>
                       </Link>
                     )

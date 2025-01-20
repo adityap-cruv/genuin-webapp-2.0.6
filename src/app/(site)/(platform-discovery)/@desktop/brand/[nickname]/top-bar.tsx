@@ -1,11 +1,8 @@
-import { Button } from '@components/ui/button'
 import { motion, useAnimationControls } from 'framer-motion'
 import { useEffect } from 'react'
 import { CustomAvatar } from '@components/custom/custom-avatar'
-import { useToast } from '@components/ui/use-toast'
-import { useAdaptiveShare } from '@hooks/use-adaptive-share'
-import { getCurrentShareUrl } from '@lib/utils'
-import { ShareIcon } from '@icons/share-icon'
+import BrandBadgeIcon from '@/components/common/brand-badge-icon'
+import ShareButton from '@components/common/actions/ShareButton'
 
 type Props = {
   /**
@@ -21,6 +18,7 @@ type Props = {
   profileNickname: string
   isAvatar: boolean
   shareUrl: string
+  brandUserLogo?: number
 }
 
 export const TopStickyBar = {
@@ -36,11 +34,10 @@ function Desktop({
   profileNickname,
   isAvatar,
   shareUrl,
+  brandUserLogo,
   ...props
 }: Props) {
   const navAnimationControl = useAnimationControls()
-  const { shareFn } = useAdaptiveShare()
-  const { toast } = useToast()
 
   useEffect(() => {
     if (defaultOpen || isOpen) {
@@ -73,22 +70,9 @@ function Desktop({
         ) : (
           <p className="text-title-2-demi">@{profileNickname}</p>
         )}
+        <BrandBadgeIcon userLogoType={brandUserLogo} variant="dark" />
       </span>
-      <Button
-        variant="outline"
-        size="custom"
-        outlineColor="genuin-blue"
-        className="mx-1 hover:border-primary-600"
-        onClick={async () =>
-          await shareFn({
-            shareLink: getCurrentShareUrl({ url: shareUrl }),
-            toast: () => toast({ title: 'Link Copied!', duration: 1000 }),
-          })
-        }>
-        <span className="flex items-center p-1">
-          <ShareIcon className="h-6 w-6 fill-primary hover:fill-primary-600" />{' '}
-        </span>
-      </Button>
+      <ShareButton url={shareUrl} />
     </motion.div>
   )
 }
@@ -100,6 +84,7 @@ function Mobile({
   profileName,
   profileNickname,
   isAvatar,
+  brandUserLogo,
   ...props
 }: Props) {
   const navAnimationControl = useAnimationControls()
@@ -135,6 +120,7 @@ function Mobile({
         ) : (
           <p className="text-title-2-demi">@{profileNickname}</p>
         )}
+        <BrandBadgeIcon userLogoType={brandUserLogo} variant="dark" />
       </span>
     </motion.div>
   )

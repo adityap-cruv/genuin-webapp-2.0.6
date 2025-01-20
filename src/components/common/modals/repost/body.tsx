@@ -54,7 +54,7 @@ function CommunityCard({ communityInfo }: { communityInfo: RepostCommunityType }
             className="h-10 w-10"
           />
           <span className="flex flex-col items-start justify-center">
-            <p className="line-clamp-1 break-all text-title-3-bold">{communityInfo.name}</p>
+            <p className="line-clamp-1 break-all text-body-1-bold">{communityInfo.name}</p>
             <span className="flex items-center justify-center gap-1">
               {communityInfo.type === 'PUBLIC' ? (
                 <EarthIcon className="h-4 w-4 stroke-tertiary" />
@@ -85,7 +85,7 @@ function CommunityCard({ communityInfo }: { communityInfo: RepostCommunityType }
               key={index}
               className="relative mb-4 flex w-full items-center justify-between rounded-lg border border-tertiary-200 bg-tertiary-100 px-4 py-3">
               <span>
-                <p className="line-clamp-1 break-all text-title-3-demi">{item.group.group_name}</p>
+                <p className="line-clamp-1 break-all text-body-1-demi">{item.group.group_name}</p>
                 <LoopPrivacyInfo accessTypeId={item.actions[0].access_type_id} actionId={item.actions[0].action_id} />
               </span>
               <RepostButton destinationId={item.chat_id} />
@@ -128,7 +128,7 @@ function RepostButton({ destinationId }: { destinationId: string }) {
         </div>
       ) : (
         <span className="flex gap-x-1 py-2 pl-2 pr-4">
-          <RepostIcon className={cn('h-5 w-5 fill-primary', status.repostStatus && 'fill-monochrome-white')} />
+          <RepostIcon className={cn('h-5 w-5 stroke-primary', status.repostStatus && 'stroke-monochrome-white')} />
           <p className={cn('text-primary', status.repostStatus && 'text-monochrome-white')}>
             {status.repostStatus ? 'Reposted' : 'Repost'}
           </p>
