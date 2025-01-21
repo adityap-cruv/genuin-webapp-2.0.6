@@ -8,7 +8,7 @@ import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import Analytics from '@/services/analytics'
 import { usePlayerControlStore } from '../player/player-control-store'
 import { FeedShimmer } from '../shimmers/feed-shimmer'
-import { KsGestures } from '../ks-gestures'
+// import { KsGestures } from '../ks-gestures'
 import { useLocalStorage } from '@/lib/stores/local-storage'
 import { type Swiper as SwiperType } from 'swiper/types'
 import { FeedContextProvider, useFeedListContext } from '@/components/providers/feed-provider'
@@ -118,7 +118,8 @@ function SwiperRenderer({ videoSizeBox }: { videoSizeBox: VideoSizeBoxType }) {
           </SwiperSlide>
         ))}
       </Swiper>
-      {showKsGestures && <KsGestures />}
+      {/* disabled ksGesture */}
+      {/* {showKsGestures && <KsGestures />} */}
     </div>
   )
 }

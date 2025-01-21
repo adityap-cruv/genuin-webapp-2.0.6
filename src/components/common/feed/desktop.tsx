@@ -11,7 +11,7 @@ import { FeedContextProvider, useFeedListContext } from '@components/providers/f
 import { FeedShimmer } from '../shimmers/feed-shimmer'
 import Analytics from '@/services/analytics'
 import { usePlayerControlStore } from '../player/player-control-store'
-import { KsGestures } from '../ks-gestures'
+// import { KsGestures } from '../ks-gestures'
 import { useLocalStorage } from '@/lib/stores/local-storage'
 import { Player } from '../player'
 
@@ -123,7 +123,8 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
             </SwiperSlide>
           )
         })}
-        {showKsGestures && <KsGestures />}
+        {/* disabled ksGesture */}
+        {/* {showKsGestures && <KsGestures />} */}
       </Swiper>
       <DesktopDetails {...videos[currentIndex]} />
     </div>
