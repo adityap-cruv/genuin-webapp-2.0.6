@@ -33,16 +33,20 @@ export function openModal({
   subtitle?: string | ReactNode
   deepLink?: string
 }) {
-  const { webCTA } = useGenuinOptions.getState()
+  const { webCTA, isMobile } = useGenuinOptions.getState()
 
   if (webCTA !== 'app') {
     AuthenticationModal.open()
   } else {
-    DownloadDialogModal.open({
-      title,
-      subtitle,
-      deepLink: deepLink ?? '',
-    })
+    if (!isMobile) {
+      DownloadDialogModal.open({
+        title,
+        subtitle,
+        deepLink: deepLink ?? '',
+      })
+    } else {
+      openGeneratedLink(deepLink)
+    }
   }
 }
 

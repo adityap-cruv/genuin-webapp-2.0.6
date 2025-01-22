@@ -1,4 +1,4 @@
-import { abbreviateNumber, checkAndAppendHttps, openGeneratedLink } from '@lib/utils'
+import { abbreviateNumber, checkAndAppendHttps, openModal } from '@lib/utils'
 import icShare from '@icons/player-controls/icon-share.svg'
 import icComment from '@icons/player-controls/icon-comment.svg'
 import icLinkout from '@icons/player-controls/icLinkout.svg'
@@ -66,7 +66,7 @@ export function Mobile({
               RepostModal.open(videoId)
             } else {
               await repostDeepLink({ videoSlug, shareUrl, searchParams }).then((generatedLink) => {
-                openGeneratedLink(generatedLink)
+                openModal({ deepLink: generatedLink, subtitle: 'Get the app to repost the video.' })
               })
             }
             // DownloadDialogModal.open({ title: 'Get the Genuin app', subtitle: 'Get the app to spark the video.' })
