@@ -1,4 +1,5 @@
 import { useGenuinOptions } from '@lib/stores/genuin-options'
+import { usePathname } from 'next/navigation'
 
 export function useAdaptiveShare() {
   const isMobile = useGenuinOptions().isMobile
@@ -14,10 +15,15 @@ export function useAdaptiveShare() {
     shareLink?: string
     toast?: any
   }): Promise<boolean> {
+    const pathname = usePathname()
     if (window) {
       const linkToCopy = shareLink ?? window.location.href
       if (isMobile) {
-        await window.navigator.share({ url: linkToCopy, title, text: description })
+        if (pathname.includes('embed')) {
+          window.open(shareLink, '_blank', 'noopener,noreferrer')
+        } else {
+          await window.navigator.share({ url: linkToCopy, title, text: description })
+        }
         return true
       } else {
         if (window.navigator.clipboard) {
