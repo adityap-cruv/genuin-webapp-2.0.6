@@ -31,7 +31,7 @@ type Props = {
   os: string
   browserType: string
   config?: ConfigType
-  user: User | null
+  user?: User | null
 }
 // it won't log any consoles in production.
 // eslint-disable-next-line no-console
