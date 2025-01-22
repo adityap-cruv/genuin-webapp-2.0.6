@@ -392,7 +392,7 @@ export function Dynamic({
     <p
       {...props}
       className={cn(
-        'overflow-clip transition-[max-height] duration-500 sm:max-h-full',
+        'transition-[max-height] duration-500 sm:max-h-full',
         {
           'swiper-no-swiping hide-scrollbar': isExpanded && isMobile,
         },
