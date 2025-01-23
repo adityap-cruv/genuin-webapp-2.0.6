@@ -13,9 +13,6 @@ import { EmbedConfigProvider } from '@/components/embed/embed-config-provider'
 import { GenuinOptionsProvider } from '@/components/providers/genuin-options-provider'
 
 export default async function Layout({ children }: { children: ReactNode }) {
-  const deviceType = cookies().get('device_type')?.value ?? ''
-  const os = cookies().get('os')?.value ?? ''
-  const browserType = cookies().get('browser_type')?.value ?? ''
   const configParamsStr = cookies().get('config_params')?.value ?? ''
   let configParams = null
   if (configParamsStr) configParams = JSON.parse(configParamsStr)
@@ -38,9 +35,7 @@ export default async function Layout({ children }: { children: ReactNode }) {
       <ThirdPartyScriptProvider>
         <SessionProvider>
           <ReactQueryProvider>
-            <GenuinOptionsProvider browserType={browserType} deviceType={deviceType} os={os} config={config}>
-              <EmbedConfigProvider config={config}>{children}</EmbedConfigProvider>
-            </GenuinOptionsProvider>
+            <EmbedConfigProvider config={config}>{children}</EmbedConfigProvider>
           </ReactQueryProvider>
         </SessionProvider>
       </ThirdPartyScriptProvider>

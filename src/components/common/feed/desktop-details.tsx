@@ -120,6 +120,7 @@ export function DesktopDetails({ loop, community, owner, video }: DesktopDetails
                     updateCommunityJoinStatus(community.id, role)
                   }}
                   isMobile={false}
+                  shareUrl={community.shareUrl}
                 />
                 <ShareButton url={community.shareUrl} />
               </div>

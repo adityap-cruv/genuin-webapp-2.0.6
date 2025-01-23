@@ -72,6 +72,7 @@ export function Details({ communityDetails }: Props) {
                 type={communityDetails.type === 2 ? 'private' : 'public'}
                 communityName={communityDetails.name ?? ''}
                 isMobile={true}
+                shareUrl={communityDetails.share_url}
               />
               <ShareButton url={communityDetails.share_url} />
               {/* <Button variant="outline" size="custom" className="border border-primary p-1">

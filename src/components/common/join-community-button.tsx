@@ -19,6 +19,7 @@ type Props = {
   communityName?: string
   isMobile: boolean
   onStatusChange?: (role: CommunityUserRoleType) => void
+  shareUrl?: string
 }
 
 export const JoinCommunityButton = memo(function JoinCommunityButton({
@@ -30,6 +31,7 @@ export const JoinCommunityButton = memo(function JoinCommunityButton({
   communityName,
   onStatusChange,
   isMobile,
+  shareUrl,
 }: Props) {
   const [isLoading, setIsLoading] = useState(false)
   const pathName = usePathname()
@@ -89,24 +91,30 @@ export const JoinCommunityButton = memo(function JoinCommunityButton({
 
   // In case of user not authenticated, and user clicks on join button, then we have to show the deep link modal.
   const joinCommunityDeepLinkHandler = useCallback(async () => {
-    await joinCommunityDeepLink({
-      communityName: communityName ?? '',
-      searchParams: Object.fromEntries(searchParams),
-    }).then((generatedLink) => {
-      if (isMobile) {
-        openGeneratedLink(generatedLink)
-      } else {
-        openModal({
-          deepLink: generatedLink,
-          subtitle: (
-            <>
-              Get the app to join the <br />
-              <span className="font-bold">@{handle}</span> community.
-            </>
-          ),
-        })
-      }
-    })
+    // TODO: Remove embed path condition once we rlease the standard wall on the web-SDK
+    const pathname = window.location.pathname
+    if (pathname.includes('embed')) {
+      window.open(shareUrl, '_blank', 'noopener,noreferrer')
+    } else {
+      await joinCommunityDeepLink({
+        communityName: communityName ?? '',
+        searchParams: Object.fromEntries(searchParams),
+      }).then((generatedLink) => {
+        if (isMobile) {
+          openGeneratedLink(generatedLink)
+        } else {
+          openModal({
+            deepLink: generatedLink,
+            subtitle: (
+              <>
+                Get the app to join the <br />
+                <span className="font-bold">@{handle}</span> community.
+              </>
+            ),
+          })
+        }
+      })
+    }
   }, [communityName, searchParams])
 
   // If user comes on his/her own profile or brand page, then don't show the join button.
