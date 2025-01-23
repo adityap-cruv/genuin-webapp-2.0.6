@@ -7,7 +7,7 @@ import { WalletAmountBadge } from '../../wallet/wallet-amount-badge'
 import { cn } from '@/lib/utils'
 import { PlayIcon } from '@icons/player-controls/play-icon'
 import { PauseIcon } from '@icons/player-controls/pause-icon'
-import { MuteUnmuteButton } from './mute-unmute-button'
+import { AnimatedMuteIcon } from './animated-mute-icon'
 
 type DesktopProps = {
   sparkCount: number
@@ -70,13 +70,15 @@ export const Desktop = memo(function Desktop({
             }}
           />
         )}
-        <div className="relative left-6 top-6 flex w-fit gap-2">
-          {clickableUrl && (
-            <span onClick={handlePlayPause} className="rounded-lg bg-monochrome-white p-2">
-              {!shouldPlay ? <PlayIcon className="stroke-secondary" /> : <PauseIcon className="stroke-secondary" />}
+        <div className="relative left-6 top-6 flex w-fit gap-3">
+          {
+            <span
+              onClick={handlePlayPause}
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-monochrome-black/40">
+              {!shouldPlay ? <PlayIcon variant="light" /> : <PauseIcon variant="light" />}
             </span>
-          )}
-          <MuteUnmuteButton videoId={videoId} />
+          }
+          <AnimatedMuteIcon videoId={videoId} />
         </div>
       </div>
       {isInModal && (

@@ -104,17 +104,17 @@ export const Mobile = memo(function Mobile({ clickableUrl, ...props }: MobilePro
         <div
           onClick={clickableUrl ? openClickableUrl : handleToggleMuted}
           className={cn('absolute inset-0', clickableUrl && 'cursor-pointer')}>
-          <div className="item-center relative left-6 top-20 flex w-fit gap-2">
+          <div className="item-center relative left-4 top-20 flex w-fit gap-2">
             {clickableUrl && (
-              <span onClick={handlePlayPause} className="flex items-center rounded-lg bg-monochrome-white p-2">
-                {!shouldPlay ? <PlayIcon className="stroke-secondary" /> : <PauseIcon className="stroke-secondary" />}
+              <span
+                onClick={handlePlayPause}
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-monochrome-black/40">
+                {!shouldPlay ? <PlayIcon variant="light" /> : <PauseIcon variant="light" />}
               </span>
             )}
-            {muted && (
-              <span onClick={clickableUrl ? handleToggleMuted : undefined} className="h-fit w-fit cursor-pointer">
-                <AnimatedMuteIcon />
-              </span>
-            )}
+            <span onClick={clickableUrl ? handleToggleMuted : undefined} className="h-fit w-fit cursor-pointer">
+              <AnimatedMuteIcon videoId={props.videoId} />
+            </span>
           </div>
         </div>
       )}
