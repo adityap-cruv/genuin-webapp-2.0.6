@@ -17,7 +17,11 @@ export function useAdaptiveShare() {
     if (window) {
       const linkToCopy = shareLink ?? window.location.href
       if (isMobile) {
-        await window.navigator.share({ url: linkToCopy, title, text: description })
+        if (window.location.href.includes('embed')) {
+          window.open(shareLink, '_blank', 'noopener,noreferrer')
+        } else {
+          await window.navigator.share({ url: linkToCopy, title, text: description })
+        }
         return true
       } else {
         if (window.navigator.clipboard) {

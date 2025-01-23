@@ -80,6 +80,7 @@ export function TopStickyBar({
           role={role}
           type={isCommunityPrivate ? 'private' : 'public'}
           isMobile={false}
+          shareUrl={shareUrl}
         />
         <ShareButton url={shareUrl} />
       </span>

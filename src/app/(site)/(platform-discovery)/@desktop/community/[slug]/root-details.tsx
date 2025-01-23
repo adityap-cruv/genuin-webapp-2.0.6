@@ -98,6 +98,7 @@ function RootDetails({ communityDetails }: { communityDetails: CommunityDetailsT
               )}
               type={communityDetails.type === 2 ? 'private' : 'public'}
               isMobile={false}
+              shareUrl={communityDetails.share_url}
             />
             <ShareButton url={communityDetails.share_url} />
           </div>

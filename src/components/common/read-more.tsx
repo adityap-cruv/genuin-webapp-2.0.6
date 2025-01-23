@@ -314,7 +314,7 @@ export function Dynamic({
             </a>`
         }
         if (typeof item === 'object' && item.member_id && item.text) {
-          return `<a 
+          return `<a
               href="${PATH_NAME.profile(item.text.slice(1))}"
               key="member-${index}"
               class="text-primary">
@@ -392,9 +392,9 @@ export function Dynamic({
     <p
       {...props}
       className={cn(
-        'overflow-clip transition-[max-height] duration-500 sm:max-h-full',
+        'transition-[max-height] duration-500 sm:max-h-full',
         {
-          'swiper-no-swiping hide-scrollbar overflow-auto': isExpanded && isMobile,
+          'swiper-no-swiping hide-scrollbar': isExpanded && isMobile,
         },
         props.className
       )}
