@@ -10,7 +10,6 @@ import { parseColors } from '@lib/utils'
 import { BrandNotFound } from '@components/common/brand-not-found'
 import { ThirdPartyScriptProvider } from '@components/providers/third-party-script-provider'
 import { EmbedConfigProvider } from '@/components/embed/embed-config-provider'
-import { GenuinOptionsProvider } from '@/components/providers/genuin-options-provider'
 
 export default async function Layout({ children }: { children: ReactNode }) {
   const configParamsStr = cookies().get('config_params')?.value ?? ''
