@@ -86,17 +86,17 @@ const SearchSection = ({ searchTopSection }: { searchTopSection: SearchTopSectio
             </div>
             <div>
               <Button className="rounded-full bg-monochrome-black px-3 py-2" disabled>
-                <p className="whitespace-nowrap text-body-1-bold">Sign In</p>
+                <p className="whitespace-nowrap text-cap-1-demi">Sign In</p>
               </Button>
             </div>
           </div>
-          <p className="text-title-3-bold">{searchTopSection?.searchResultText}</p>
+          <p className="text-title-3-med">{searchTopSection?.searchResultText}</p>
           <div className="flex gap-4">
             <Button className="rounded-full px-3 py-2" disabled>
-              <p className="text-body-1-bold">{searchTopSection?.button[0].text}</p>
+              <p className="text-cap-1-demi">{searchTopSection?.button[0].text}</p>
             </Button>
             <Button className="rounded-full px-3 py-2" disabled variant={'outline'}>
-              <p className="text-body-1-bold">{searchTopSection?.button[1].text}</p>
+              <p className="text-cap-1-demi">{searchTopSection?.button[1].text}</p>
             </Button>
           </div>
         </div>

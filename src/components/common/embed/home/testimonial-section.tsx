@@ -30,10 +30,10 @@ const TestimonialSection = ({ testimonialSection }: { testimonialSection: Testim
           <Image src={videoFrame} alt="imgPuppet" className="pb-10" />
           <p className="text-cap-1-bold-home text-primary opacity-40">{testimonialSection.sectionTitle}</p>
           <p className="text-center text-new-h2-mobile opacity-40">{testimonialSection.title}</p>
-          <p className="text-title-2-demi font-medium opacity-40">{testimonialSection.caption}</p>
-        </div>
-        <div className="mt-6 opacity-40">
-          <TestimonialTab />
+          <p className="text-center text-title-2-demi font-medium opacity-40">{testimonialSection.caption}</p>
+          <div className="mt-6 opacity-40">
+            <TestimonialTab />
+          </div>
         </div>
       </section>
     </>

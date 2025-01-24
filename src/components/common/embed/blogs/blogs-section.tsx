@@ -8,7 +8,7 @@ import { type BlogSectionType } from '../../../../../types/embed/embed-blog'
 const BlogsSection = ({ blogSection }: { blogSection: BlogSectionType }) => {
   return (
     <>
-      <section className="hidden py-20 md:block">
+      <section className="hidden pb-20 md:block">
         <div className="flex w-full gap-14">
           <div className="flex w-3/4 flex-col gap-6">
             <img src={blogSection?.image} alt="blog-image" className="h-auto w-full opacity-40" />

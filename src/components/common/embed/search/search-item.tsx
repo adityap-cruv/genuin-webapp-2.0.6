@@ -32,11 +32,11 @@ const SearchItem = ({
         <p className="line-clamp-1 text-body-1-med text-tertiary">{caption}</p>
         <div className="flex justify-between">
           <p className="flex items-center gap-1 text-body-1-demi text-secondary md:text-title-3-demi">
-            <PriceTagIcon className="stroke-primary" />
+            <PriceTagIcon className="h-4 stroke-primary" />
             <span>{price}</span>
           </p>
           <p className="flex items-center gap-1 text-body-1-demi text-secondary md:text-title-3-demi">
-            <WalletInHandIcon className="stroke-primary" />
+            <WalletInHandIcon className="h-4 stroke-primary" />
             <span>{time}</span>
           </p>
         </div>

@@ -37,7 +37,7 @@ const InvoiceSection = ({ invoiceSection }: { invoiceSection: InvoiceSectionType
         </div>
       </section>
 
-      <section className="py-10 md:hidden">
+      <section className="pb-10 md:hidden">
         <div className="flex w-full items-center gap-10">
           <div className="flex flex-col gap-6">
             <div className="flex h-full flex-col gap-28 rounded-xl bg-monochrome-white px-4 py-6 opacity-40 shadow-2xl">

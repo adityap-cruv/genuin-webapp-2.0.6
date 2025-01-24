@@ -229,8 +229,8 @@ function Menu({
         <Accordion type="single" collapsible>
           <AccordionItem value={'Embed'} className="border-none">
             <AccordionTrigger className="p-0">
-              <MenuItem brandName={brandName} title="Embed" isActive={false}>
-                <EmbedIcon isActive={pathName === PATH_NAME.embed('home')} />
+              <MenuItem brandName={brandName} title="Embed Page" isActive={pathName === PATH_NAME.embed('')}>
+                <EmbedIcon isActive={pathName === PATH_NAME.embed('')} />
               </MenuItem>
             </AccordionTrigger>
             {[
@@ -241,9 +241,12 @@ function Menu({
               { label: 'Blogs', path: 'blogs' },
             ].map(({ label, path }: { label: string; path: string }) => (
               <AccordionContent key={path} className="p-0">
-                <Link href={{ pathname: PATH_NAME.embed(path) }}>
-                  <p className={`p-1.5 pl-14 text-title-3-demi`}>{label}</p>
-                </Link>
+                <a href={PATH_NAME.embed(path)}>
+                  <p
+                    className={`p-1.5 pl-14 text-title-3-demi ${pathName === PATH_NAME.embed(path) && 'text-primary'}`}>
+                    {label}
+                  </p>
+                </a>
               </AccordionContent>
             ))}
           </AccordionItem>
