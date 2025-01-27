@@ -111,7 +111,7 @@ function AudioPlayer({ ...restProps }: AudioPlayerPropsType) {
       <section
         id={'playerjs-container'}
         className={cn(
-          'm-auto flex w-full items-center justify-between overflow-clip border-t border-new-off-black/40 2xl:container'
+          'm-auto flex w-full items-center justify-between overflow-clip border-new-off-black/40 2xl:container 2xl:px-0'
         )}
         style={{ height: '80px' }}></section>
     </>
