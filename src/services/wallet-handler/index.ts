@@ -12,7 +12,7 @@ export const handleWalletBalance = async ({
   videoId?: string
   type?: 'POST'
 }) => {
-  const { config, walletBalance, setData } = useGenuinOptions.getState()
+  const { config, walletBalance, setData, user } = useGenuinOptions.getState()
 
   const isWalletEnabled = config?.is_wallet_enabled ?? false
   const globalRewardPointConfigs = config?.global_reward_point_configs ?? {
@@ -22,7 +22,7 @@ export const handleWalletBalance = async ({
     repost: 0,
   }
 
-  if (!isWalletEnabled || !videoId) return
+  if (!isWalletEnabled || !videoId || !user) return
 
   if (!interactedVideos[videoId]) {
     interactedVideos[videoId] = {}
