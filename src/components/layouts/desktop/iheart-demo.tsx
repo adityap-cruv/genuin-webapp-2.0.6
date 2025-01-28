@@ -19,16 +19,19 @@ type AudioPlayerPropsType = ComponentProps<'audio'>
 function AudioPlayer({ ...restProps }: AudioPlayerPropsType) {
   const ihsPlayerRef = useRef<any>(null)
   const { audioStateRef } = useIHeartDemoStates()
-  const { muted, toggleMuted } = usePlayerControlStore()
+  const { muted, toggleMuted, setShouldPlay } = usePlayerControlStore()
   const [shouldPlay] = useState(audioStateRef.current.shouldPlay)
   const { shouldPlay: playerShouldPlay } = usePlayerControlStore()
   const [isReady, setIsReady] = useState(false)
+  const isProgrammatic = useRef({ play: false, pause: false })
 
   const play = useCallback(() => {
     if (!isReady) return
     const audioElement = ihsPlayerRef.current
     console.log('in play callback')
     if (!muted) toggleMuted()
+    isProgrammatic.current.play = true
+    isProgrammatic.current.pause = false
     audioElement.play()
   }, [muted, isReady])
 
@@ -37,12 +40,15 @@ function AudioPlayer({ ...restProps }: AudioPlayerPropsType) {
     if (!isReady) return
     const audioElement = ihsPlayerRef.current
     console.log('in pause callback')
+    isProgrammatic.current.play = false
+    isProgrammatic.current.pause = true
     audioElement.pause()
   }, [isReady])
 
   useEffect(() => {
     // console.log('playerShouldPlay:', playerShouldPlay)
     if (!isReady) return
+    // if (!isProgrammatic.current.play) return
     if (!playerShouldPlay) play()
   }, [playerShouldPlay])
 
@@ -51,8 +57,10 @@ function AudioPlayer({ ...restProps }: AudioPlayerPropsType) {
     console.log('muted:', muted)
     if (!isReady) return
     if (shouldPlay && muted) {
+      // if (!isProgrammatic.current.play) return
       play()
     } else {
+      // if (!isProgrammatic.current.pause) return
       pause()
     }
   }, [shouldPlay, muted])
@@ -84,12 +92,16 @@ function AudioPlayer({ ...restProps }: AudioPlayerPropsType) {
       // Listen for other player events (optional, for debugging)
       ihsPlayerRef.current.on('play', function () {
         console.log('Player is playing.')
-        // setShouldPlay(true)
+        isProgrammatic.current.play = false
+        isProgrammatic.current.pause = false
+        setShouldPlay(false)
       })
 
       ihsPlayerRef.current.on('pause', function () {
         console.log('Player is paused.')
-        // setShouldPlay(false)
+        isProgrammatic.current.play = false
+        isProgrammatic.current.pause = false
+        setShouldPlay(true)
       })
 
       ihsPlayerRef.current.on('error', function (error: any) {
