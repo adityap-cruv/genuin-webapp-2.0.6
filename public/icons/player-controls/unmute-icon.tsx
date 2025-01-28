@@ -6,8 +6,8 @@ import { cva, type VariantProps } from 'class-variance-authority'
 const unmuteVariant = cva('', {
   variants: {
     variant: {
-      light: 'fill-white', // Light variant style
-      dark: 'fill-black', // Dark variant style
+      light: 'fill-monochrome-white', // Light variant style
+      dark: 'fill-monochrome-black', // Dark variant style
     },
   },
 })
