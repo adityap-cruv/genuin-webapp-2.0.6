@@ -2,8 +2,9 @@
 import { usePlayerControlStore } from '@/components/common/player/player-control-store'
 import { useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
 import { cn } from '@/lib/utils'
-import { type ComponentProps, useEffect, useRef } from 'react'
+import { type ComponentProps, useEffect, useRef, useCallback } from 'react'
 import { useState } from 'react'
+import { Loader } from '@/components/ui/loader'
 
 export function IHeartDemo() {
   const { shouldShowIHeartDemo } = useIHeartDemoStates()
@@ -18,92 +19,84 @@ type AudioPlayerPropsType = ComponentProps<'audio'>
 function AudioPlayer({ ...restProps }: AudioPlayerPropsType) {
   const ihsPlayerRef = useRef<any>(null)
   const { audioStateRef } = useIHeartDemoStates()
-  const { muted } = usePlayerControlStore()
+  const { muted, toggleMuted } = usePlayerControlStore()
   const [shouldPlay] = useState(audioStateRef.current.shouldPlay)
-  const [isPlaying] = useState(false)
   const { shouldPlay: playerShouldPlay } = usePlayerControlStore()
+  const [isReady, setIsReady] = useState(false)
+
+  const play = useCallback(() => {
+    if (!isReady) return
+    const audioElement = ihsPlayerRef.current
+    console.log('in play callback')
+    if (!muted) toggleMuted()
+    audioElement.play()
+  }, [muted, isReady])
+
+  const pause = useCallback(() => {
+    console.log('in pause')
+    if (!isReady) return
+    const audioElement = ihsPlayerRef.current
+    console.log('in pause callback')
+    audioElement.pause()
+  }, [isReady])
 
   useEffect(() => {
-    console.log('playerShouldPlay:', playerShouldPlay)
-    if (!ihsPlayerRef.current?.play) return
-    if (!playerShouldPlay) ihsPlayerRef.current.play()
+    // console.log('playerShouldPlay:', playerShouldPlay)
+    if (!isReady) return
+    if (!playerShouldPlay) play()
   }, [playerShouldPlay])
 
   useEffect(() => {
     console.log('shouldPlay:', shouldPlay)
     console.log('muted:', muted)
-    if (ihsPlayerRef.current?.play) {
-      if (shouldPlay && muted) {
-        ihsPlayerRef.current.play()
-      } else {
-        ihsPlayerRef.current.pause()
-      }
+    if (!isReady) return
+    if (shouldPlay && muted) {
+      play()
+    } else {
+      pause()
     }
   }, [shouldPlay, muted])
 
   useEffect(() => {
-    console.log('isPlaying:', isPlaying)
-  }, [isPlaying])
-
-  useEffect(() => {
     console.log('DOM is fully loaded.')
-    if (document.getElementById('playerjs-iframe')) return
-    // Create the iframe element dynamically
-    const iframe = document.createElement('iframe')
-    iframe.id = 'playerjs-iframe'
-    iframe.src = 'https://www.iheart.com/live/z100-1469/?embed=true&pname=begeniun'
-    iframe.style.height = '100%'
-    iframe.style.width = '100%'
-    // iframe.src = 'https://z100.iheart.com/api/v4/player/live/1469/?sc=inferno&pname=WHTZ-FM&theme=light&ihrnetwork=true&embed=true'
-    iframe.setAttribute('allow', 'autoplay') // Allow autoplay if needed
-    iframe.setAttribute('allow-same-origin', 'true')
-    iframe.setAttribute('allow-scripts', 'true')
-    console.log('Iframe created with src:', iframe.src)
-
-    // Append the iframe to the container
-    const playerContainer = document.getElementById('playerjs-container')
-    if (playerContainer) {
-      playerContainer.appendChild(iframe)
-      console.log('Iframe appended to the player container.')
-    } else {
-      console.error('Player container not found.')
-    }
+    if (ihsPlayerRef.current) return
     const playerElement = document.getElementById('playerjs-iframe')
     if (playerElement) {
-      console.log('Player element found.')
-      playerElement.addEventListener('load', function (e) {
-        console.log('Iframe loaded.')
-        // Initialize the player on the dynamically created iframe
-        // playerjs.DEBUG = true; // Enable debug mode
-        // @ts-expect-error playerjs is not defined
-        // eslint-disable-next-line no-undef
-        ihsPlayerRef.current = new playerjs.Player(playerElement, { debug: true }) // Enable debug mode
-
-        console.log('Player initialized with debug mode enabled.')
-
-        // Listen for the 'ready' event
-        ihsPlayerRef.current.on('ready', function (e: any) {
-          console.log('Player is ready!') // Log a message to the console
-          ihsPlayerRef.current.ready(e)
-          ihsPlayerRef.current.isReady = true
-          // Listen for other player events (optional, for debugging)
-          ihsPlayerRef.current.on('play', function () {
-            console.log('Player is playing.')
-          })
-
-          ihsPlayerRef.current.on('pause', function () {
-            console.log('Player is paused.')
-          })
-
-          ihsPlayerRef.current.on('error', function (error: any) {
-            console.error('Player error:', error)
-          })
-        })
-      })
-    } else {
-      console.log('Player element not found.')
+      iframeClick()
     }
   }, [])
+
+  function iframeClick() {
+    if (ihsPlayerRef.current) return
+    const playerElement = document.getElementById('playerjs-iframe')
+    console.log('Iframe loaded.')
+    // @ts-expect-error playerjs is not defined
+    // eslint-disable-next-line no-undef
+    ihsPlayerRef.current = new playerjs.Player(playerElement, { debug: true }) // Enable debug mode
+
+    console.log('Player initialized with debug mode enabled.')
+
+    // Listen for the 'ready' event
+    ihsPlayerRef.current.on('ready', function (e: any) {
+      console.log('Player is ready!') // Log a message to the console
+      ihsPlayerRef.current.ready(e)
+      setIsReady(true)
+      // Listen for other player events (optional, for debugging)
+      ihsPlayerRef.current.on('play', function () {
+        console.log('Player is playing.')
+        // setShouldPlay(true)
+      })
+
+      ihsPlayerRef.current.on('pause', function () {
+        console.log('Player is paused.')
+        // setShouldPlay(false)
+      })
+
+      ihsPlayerRef.current.on('error', function (error: any) {
+        console.error('Player error:', error)
+      })
+    })
+  }
 
   return (
     <>
@@ -111,9 +104,27 @@ function AudioPlayer({ ...restProps }: AudioPlayerPropsType) {
       <section
         id={'playerjs-container'}
         className={cn(
-          'm-auto flex w-full items-center justify-between overflow-clip border-new-off-black/40 2xl:container 2xl:px-0'
+          'relative m-auto flex w-full items-center justify-between overflow-clip border-new-off-black/40 2xl:container 2xl:px-0'
         )}
-        style={{ height: '80px' }}></section>
+        style={{ height: '80px' }}>
+        {!isReady && (
+          <div className="text-black pointer-events-none absolute z-10 flex h-full w-full items-center justify-center bg-background">
+            <Loader size="lg" />
+          </div>
+        )}
+        <iframe
+          src="https://www.iheart.com/live/z100-1469/?embed=true&pname=begeniun"
+          height="100%"
+          width="100%"
+          id="playerjs-iframe"
+          allow="autoplay"
+          // sandbox="allow-scripts allow-same-origin"
+          className="relative z-0"
+          // onClick={() => {
+          //   iframeClick()
+          // }}
+        />
+      </section>
     </>
   )
 }
