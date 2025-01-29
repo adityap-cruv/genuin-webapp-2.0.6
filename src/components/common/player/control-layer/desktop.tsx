@@ -43,22 +43,38 @@ export const Desktop = memo(function Desktop({
     }))
   )
 
-  function openClickableUrl(e: any) {
-    e.stopPropagation()
-    if (clickableUrl) window.open(clickableUrl, '_blank')
-  }
-
-  const handlePlayPause = useCallback(
+  const handleVideoClick = useCallback(
     (e: any) => {
       e.stopPropagation()
-      setShouldPlay(!shouldPlay)
+
+      // Play the video first if it's paused
+      if (!shouldPlay) {
+        setShouldPlay(true)
+        return
+      }
+
+      // Then, handle the mute/unmute behavior
+      if (muted) {
+        toggleMuted()
+      } else {
+        setShouldPlay(!shouldPlay)
+      }
     },
-    [shouldPlay]
+    [muted, toggleMuted, shouldPlay, setShouldPlay]
   )
+
+  const openClickableUrl = useCallback(
+    (e: any) => {
+      e.stopPropagation()
+      if (clickableUrl) window.open(clickableUrl, '_blank')
+    },
+    [clickableUrl]
+  )
+
   return (
     <div className="relative h-full w-full">
       <div
-        onClick={clickableUrl ? openClickableUrl : undefined}
+        onClick={clickableUrl ? openClickableUrl : handleVideoClick}
         className={cn('absolute inset-0', clickableUrl && 'cursor-pointer')}>
         {muted && showMutedLayer && (
           <div
@@ -73,7 +89,10 @@ export const Desktop = memo(function Desktop({
         <div className="relative left-6 top-6 flex w-fit gap-3">
           {
             <span
-              onClick={handlePlayPause}
+              onClick={(e) => {
+                e.stopPropagation()
+                setShouldPlay(!shouldPlay)
+              }}
               className="flex h-10 w-10 items-center justify-center rounded-full bg-monochrome-black/40">
               {!shouldPlay ? <PlayIcon variant="light" /> : <PauseIcon variant="light" />}
             </span>

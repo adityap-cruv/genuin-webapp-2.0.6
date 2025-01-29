@@ -65,26 +65,46 @@ export const Mobile = memo(function Mobile({ clickableUrl, ...props }: MobilePro
     }))
   )
 
-  function handleToggleMuted(e: any) {
-    e.stopPropagation()
-    toggleMuted()
-    void Analytics.track({
-      eventName: 'Unmute',
-      properties: { video_id: props.videoId },
-    })
-  }
+  const handleScreenClick = useCallback(
+    (e: any) => {
+      e.stopPropagation()
 
-  function openClickableUrl(e: any) {
-    e.stopPropagation()
-    if (clickableUrl) window.open(clickableUrl, '_blank')
-  }
+      // First play the video if it's paused
+      if (!shouldPlay) {
+        setShouldPlay(true)
+        return
+      }
+
+      // Then unmute the video if it's muted
+      if (muted) {
+        toggleMuted()
+        void Analytics.track({
+          eventName: 'Unmute',
+          properties: { video_id: props.videoId },
+        })
+        return
+      }
+
+      // Finally toggle play/pause
+      setShouldPlay(!shouldPlay)
+    },
+    [shouldPlay, muted, setShouldPlay, toggleMuted]
+  )
+
+  const openClickableUrl = useCallback(
+    (e: any) => {
+      e.stopPropagation()
+      if (clickableUrl) window.open(clickableUrl, '_blank')
+    },
+    [clickableUrl]
+  )
 
   const handlePlayPause = useCallback(
     (e: any) => {
       e.stopPropagation()
       setShouldPlay(!shouldPlay)
     },
-    [shouldPlay]
+    [shouldPlay, setShouldPlay]
   )
 
   return (
@@ -100,24 +120,23 @@ export const Mobile = memo(function Mobile({ clickableUrl, ...props }: MobilePro
           className={cn('pointer-events-none z-10 cursor-pointer rounded-full')}
         />
       </div> */}
-      {(muted || !!clickableUrl) && (
-        <div
-          onClick={clickableUrl ? openClickableUrl : handleToggleMuted}
-          className={cn('absolute inset-0', clickableUrl && 'cursor-pointer')}>
-          <div className="item-center relative left-4 top-20 flex w-fit gap-2">
-            {clickableUrl && (
-              <span
-                onClick={handlePlayPause}
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-monochrome-black/40">
-                {!shouldPlay ? <PlayIcon variant="light" /> : <PauseIcon variant="light" />}
-              </span>
-            )}
-            <span onClick={clickableUrl ? handleToggleMuted : undefined} className="h-fit w-fit cursor-pointer">
-              <AnimatedMuteIcon videoId={props.videoId} />
+      <div
+        onClick={clickableUrl ? openClickableUrl : handleScreenClick}
+        className={cn('absolute inset-0', clickableUrl && 'cursor-pointer')}>
+        <div className="item-center relative left-4 top-20 flex w-fit gap-2">
+          {clickableUrl && (
+            <span
+              onClick={handlePlayPause}
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-monochrome-black/40">
+              {!shouldPlay ? <PlayIcon variant="light" /> : <PauseIcon variant="light" />}
             </span>
-          </div>
+          )}
+          <span onClick={clickableUrl ? handleScreenClick : undefined} className="h-fit w-fit cursor-pointer">
+            <AnimatedMuteIcon videoId={props.videoId} />
+          </span>
         </div>
-      )}
+      </div>
+
       <span className="absolute right-2 top-20 z-20 h-fit w-fit cursor-pointer">
         <WalletAmountBadge type="light" />
       </span>
