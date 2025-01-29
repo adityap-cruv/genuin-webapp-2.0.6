@@ -17,7 +17,8 @@ export function IHeartDemo() {
 type AudioPlayerPropsType = ComponentProps<'audio'>
 
 function AudioPlayer({ ...restProps }: AudioPlayerPropsType) {
-  const ihsPlayerRef = useRef<any>(null)
+  const ihrIframeRef = useRef<any>(null)
+  const ihrPlayerRef = useRef<any>(null)
   const { audioStateRef } = useIHeartDemoStates()
   const { muted, toggleMuted, setShouldPlay } = usePlayerControlStore()
   const [shouldPlay] = useState(audioStateRef.current.shouldPlay)
@@ -27,7 +28,7 @@ function AudioPlayer({ ...restProps }: AudioPlayerPropsType) {
 
   const play = useCallback(() => {
     if (!isReady) return
-    const audioElement = ihsPlayerRef.current
+    const audioElement = ihrPlayerRef.current
     console.log('in play callback')
     if (!muted) toggleMuted()
     isProgrammatic.current.play = true
@@ -38,7 +39,7 @@ function AudioPlayer({ ...restProps }: AudioPlayerPropsType) {
   const pause = useCallback(() => {
     console.log('in pause')
     if (!isReady) return
-    const audioElement = ihsPlayerRef.current
+    const audioElement = ihrPlayerRef.current
     console.log('in pause callback')
     isProgrammatic.current.play = false
     isProgrammatic.current.pause = true
@@ -67,44 +68,42 @@ function AudioPlayer({ ...restProps }: AudioPlayerPropsType) {
 
   useEffect(() => {
     console.log('DOM is fully loaded.')
-    if (ihsPlayerRef.current) return
-    const playerElement = document.getElementById('playerjs-iframe')
-    if (playerElement) {
+    if (ihrPlayerRef.current) return
+    if (ihrIframeRef.current) {
       iframeClick()
     }
   }, [])
 
   function iframeClick() {
-    if (ihsPlayerRef.current) return
-    const playerElement = document.getElementById('playerjs-iframe')
+    if (ihrPlayerRef.current) return
     console.log('Iframe loaded.')
     // @ts-expect-error playerjs is not defined
     // eslint-disable-next-line no-undef
-    ihsPlayerRef.current = new playerjs.Player(playerElement, { debug: true }) // Enable debug mode
+    ihrPlayerRef.current = new playerjs.Player(ihrIframeRef.current, { debug: true, autoplay: 1 }) // Enable debug mode
 
     console.log('Player initialized with debug mode enabled.')
 
     // Listen for the 'ready' event
-    ihsPlayerRef.current.on('ready', function (e: any) {
+    ihrPlayerRef.current.on('ready', function (e: any) {
       console.log('Player is ready!') // Log a message to the console
-      ihsPlayerRef.current.ready(e)
+      ihrPlayerRef.current.ready(e)
       setIsReady(true)
       // Listen for other player events (optional, for debugging)
-      ihsPlayerRef.current.on('play', function () {
+      ihrPlayerRef.current.on('play', function () {
         console.log('Player is playing.')
         isProgrammatic.current.play = false
         isProgrammatic.current.pause = false
-        setShouldPlay(false)
+        setShouldPlay(!!muted)
       })
 
-      ihsPlayerRef.current.on('pause', function () {
+      ihrPlayerRef.current.on('pause', function () {
         console.log('Player is paused.')
         isProgrammatic.current.play = false
         isProgrammatic.current.pause = false
         setShouldPlay(true)
       })
 
-      ihsPlayerRef.current.on('error', function (error: any) {
+      ihrPlayerRef.current.on('error', function (error: any) {
         console.error('Player error:', error)
       })
     })
@@ -125,16 +124,14 @@ function AudioPlayer({ ...restProps }: AudioPlayerPropsType) {
           </div>
         )}
         <iframe
-          src="https://www.iheart.com/live/z100-1469/?embed=true&pname=begeniun"
+          src="https://www.iheart.com/live/z100-1469/?embed=true&pname=begeniun&autoplay=1"
           height="100%"
           width="100%"
           id="playerjs-iframe"
+          ref={ihrIframeRef}
           allow="autoplay"
           // sandbox="allow-scripts allow-same-origin"
           className="relative z-0"
-          // onClick={() => {
-          //   iframeClick()
-          // }}
         />
       </section>
     </>
