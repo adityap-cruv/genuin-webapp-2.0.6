@@ -73,4 +73,4 @@ export const NOT_FOUND_ERROR_MESSAGES = {
   },
 }
 
-export const IHEART_BRAND_URL = 1429
+export const IHEART_BRAND_URL = [1429, 1729, 1775, 2236, 2249]
