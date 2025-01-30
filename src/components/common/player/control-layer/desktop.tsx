@@ -47,8 +47,9 @@ export const Desktop = memo(function Desktop({
     (e: any) => {
       e.stopPropagation()
 
-      // Play the video first if it's paused
-      if (!shouldPlay) {
+      // If the video is paused and muted, unmute and play it
+      if (!shouldPlay && muted) {
+        toggleMuted()
         setShouldPlay(true)
         return
       }
