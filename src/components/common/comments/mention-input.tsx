@@ -260,7 +260,7 @@ const MentionInput: React.FC<{
         </div>
       )}
 
-      <div className="absolute bottom-0 left-0 max-h-16 w-full border-t-2 border-t-tertiary-200 bg-tertiary-200 py-3 shadow-md">
+      <div className="absolute bottom-0 left-0 z-50 max-h-16 w-full border-t-2 border-t-tertiary-200 bg-tertiary-200 py-3 shadow-md">
         <div className="flex w-full flex-1 items-center gap-x-4 px-4">
           {user ? (
             <div className="w-full">
