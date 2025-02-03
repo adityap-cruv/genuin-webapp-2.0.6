@@ -86,6 +86,9 @@ export async function middleware(request: NextRequest) {
       } else if (Number(config?.brand_id) === 2219) {
         // hard coding for pharmeasy
         return NextResponse.rewrite(new URL('/.well-known/pharmeasy/assetlinks.json', request.url))
+      } else if (Number(config?.brand_id) === 1429) {
+        // hard coding for ankpal in QA
+        return NextResponse.rewrite(new URL('/.well-known/ankpal/assetlinks.json', request.url))
       } else {
         return NextResponse.next()
       }
