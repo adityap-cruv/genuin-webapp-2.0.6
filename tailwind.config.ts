@@ -2,7 +2,13 @@ import { type Config } from 'tailwindcss'
 import * as defaultTheme from 'tailwindcss/defaultTheme'
 module.exports = {
   darkMode: ['class'],
-  content: ['./pages/**/*.{ts,tsx}', './components/**/*.{ts,tsx}', './app/**/*.{ts,tsx}', './src/**/*.{ts,tsx}', './public/**/*.{ts,tsx}'],
+  content: [
+    './pages/**/*.{ts,tsx}',
+    './components/**/*.{ts,tsx}',
+    './app/**/*.{ts,tsx}',
+    './src/**/*.{ts,tsx}',
+    './public/**/*.{ts,tsx}',
+  ],
   theme: {
     colors: {
       background: 'hsl(var(--background))',

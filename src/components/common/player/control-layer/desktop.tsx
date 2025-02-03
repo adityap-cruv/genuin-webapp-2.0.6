@@ -87,14 +87,18 @@ export const Desktop = memo(function Desktop({
             }}
           />
         )}
-        <div className="relative left-6 top-6 flex w-fit gap-3">
+        <div
+          className="relative left-6 top-6 flex gap-3"
+          style={{
+            width: 'calc(100% - 48px)',
+          }}>
           {
             <span
               onClick={(e) => {
                 e.stopPropagation()
                 setShouldPlay(!shouldPlay)
               }}
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-monochrome-black/40">
+              className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-monochrome-black/40">
               {!shouldPlay ? <PlayIcon variant="light" /> : <PauseIcon variant="light" />}
             </span>
           }

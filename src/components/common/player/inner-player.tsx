@@ -71,11 +71,12 @@ export const InnerPlayer = memo(function InnerPlayer({
   const [playingState, setPlayingState] = useState<'paused' | 'playing' | 'loading'>('loading')
   const [isVisible, setIsVisible] = useState(false)
   const [buttonAction, setButtonAction] = useState<'mute' | 'unmute' | 'play' | 'pause' | ''>('')
-  const { shouldPlay, muted, setTimeState } = usePlayerControlStore(
+  const { shouldPlay, muted, setTimeState, volume } = usePlayerControlStore(
     useShallow((state) => ({
       shouldPlay: state.shouldPlay,
       muted: state.muted,
       setTimeState: state.setTimeState,
+      volume: state.volume,
     }))
   )
   const [hasStarted, setHasStarted] = useState(false)
@@ -88,6 +89,12 @@ export const InnerPlayer = memo(function InnerPlayer({
     const macrosUpdatedVideoSource = appendParamsToUrl(videoSource)
     encodedVideoSourceUrl = encodeVideoSourceUrl(macrosUpdatedVideoSource)
   }
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.volume = volume / 100
+    }
+  }, [volume])
 
   useEffect(() => {
     if (!hasMounted.current) {
