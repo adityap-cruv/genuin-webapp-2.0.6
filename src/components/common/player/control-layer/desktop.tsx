@@ -7,7 +7,7 @@ import { WalletAmountBadge } from '../../wallet/wallet-amount-badge'
 import { cn } from '@/lib/utils'
 import { PlayIcon } from '@icons/player-controls/play-icon'
 import { PauseIcon } from '@icons/player-controls/pause-icon'
-import { MuteUnmuteButton } from './mute-unmute-button'
+import { AnimatedMuteIcon } from './animated-mute-icon'
 
 type DesktopProps = {
   sparkCount: number
@@ -43,22 +43,39 @@ export const Desktop = memo(function Desktop({
     }))
   )
 
-  function openClickableUrl(e: any) {
-    e.stopPropagation()
-    if (clickableUrl) window.open(clickableUrl, '_blank')
-  }
-
-  const handlePlayPause = useCallback(
+  const handleVideoClick = useCallback(
     (e: any) => {
       e.stopPropagation()
-      setShouldPlay(!shouldPlay)
+
+      // If the video is paused and muted, unmute and play it
+      if (!shouldPlay && muted) {
+        toggleMuted()
+        setShouldPlay(true)
+        return
+      }
+
+      // Then, handle the mute/unmute behavior
+      if (muted) {
+        toggleMuted()
+      } else {
+        setShouldPlay(!shouldPlay)
+      }
     },
-    [shouldPlay]
+    [muted, toggleMuted, shouldPlay, setShouldPlay]
   )
+
+  const openClickableUrl = useCallback(
+    (e: any) => {
+      e.stopPropagation()
+      if (clickableUrl) window.open(clickableUrl, '_blank')
+    },
+    [clickableUrl]
+  )
+
   return (
     <div className="relative h-full w-full">
       <div
-        onClick={clickableUrl ? openClickableUrl : undefined}
+        onClick={clickableUrl ? openClickableUrl : handleVideoClick}
         className={cn('absolute inset-0', clickableUrl && 'cursor-pointer')}>
         {muted && showMutedLayer && (
           <div
@@ -70,13 +87,22 @@ export const Desktop = memo(function Desktop({
             }}
           />
         )}
-        <div className="relative left-6 top-6 flex w-fit gap-2">
-          {clickableUrl && (
-            <span onClick={handlePlayPause} className="rounded-lg bg-monochrome-white p-2">
-              {!shouldPlay ? <PlayIcon className="stroke-secondary" /> : <PauseIcon className="stroke-secondary" />}
+        <div
+          className="relative left-6 top-6 flex gap-3"
+          style={{
+            width: 'calc(100% - 48px)',
+          }}>
+          {
+            <span
+              onClick={(e) => {
+                e.stopPropagation()
+                setShouldPlay(!shouldPlay)
+              }}
+              className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-monochrome-black/40">
+              {!shouldPlay ? <PlayIcon variant="light" /> : <PauseIcon variant="light" />}
             </span>
-          )}
-          <MuteUnmuteButton videoId={videoId} />
+          }
+          <AnimatedMuteIcon videoId={videoId} />
         </div>
       </div>
       {isInModal && (

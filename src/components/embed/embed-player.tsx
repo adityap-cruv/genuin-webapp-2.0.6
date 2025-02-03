@@ -180,7 +180,7 @@ export function EmbedPlayer({
               properties: {},
             })
           }}>
-          <AnimatedMuteIcon />
+          <AnimatedMuteIcon videoId={videoData.video.id} />
         </div>
       )}
       {isActiveVideo && (
