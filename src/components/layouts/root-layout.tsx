@@ -9,6 +9,7 @@ type Props = ComponentProps<'body'> & {
   subdomain?: string
   children: ReactNode
   noIndex?: boolean
+  isIheartDemo?: boolean
 }
 
 export function RootHTML({
@@ -19,6 +20,7 @@ export function RootHTML({
   className,
   noIndex = false,
   style,
+  isIheartDemo = false,
   ...props
 }: Props) {
   return (
@@ -30,7 +32,11 @@ export function RootHTML({
         {noIndex && <meta name="robots" content="noindex" />}
       </head>
       <body
-        style={{ ...brandColors, ...style }}
+        style={{
+          ...brandColors,
+          ...style,
+          ...(isIheartDemo ? { fontFamily: "'Helvetica Neue',Helvetica,Arial,sans-serif" } : {}),
+        }}
         className={cn('h-full w-full text-secondary md:h-screen', className)}
         {...props}>
         {children}
