@@ -4,10 +4,12 @@ import { MuteIcon } from '@icons/player-controls/mute-icon'
 import { UnmuteIcon } from '@icons/player-controls/unmute-icon'
 import { usePlayerControlStore } from '../player-control-store'
 import { motion, useAnimationControls } from 'framer-motion'
+import { useGenuinOptions } from '@/lib/stores/genuin-options'
 
 export const AnimatedMuteIcon = ({ videoId }: { videoId: string }) => {
   const { muted, toggleMuted, setVolume, volume } = usePlayerControlStore()
   const muteAnimationController = useAnimationControls()
+  const isMobile = useGenuinOptions().isMobile
   const [showVolumeSlider, setShowVolumeSlider] = useState(false)
 
   useEffect(() => {
@@ -47,7 +49,7 @@ export const AnimatedMuteIcon = ({ videoId }: { videoId: string }) => {
     <div
       onClick={handleClick}
       className={`group flex h-10 items-center justify-start overflow-hidden rounded-full bg-monochrome-black/40 ${
-        showVolumeSlider ? 'w-full' : 'w-fit'
+        showVolumeSlider && !isMobile ? 'w-full' : 'w-fit'
       }`}
       onMouseEnter={() => {
         setShowVolumeSlider(true)
@@ -71,26 +73,28 @@ export const AnimatedMuteIcon = ({ videoId }: { videoId: string }) => {
       )}
 
       {/* Volume slider with smooth animation */}
-      <motion.div
-        initial={{ width: 0, opacity: 0 }}
-        animate={{
-          width: showVolumeSlider ? '100%' : '0',
-          opacity: showVolumeSlider ? 1 : 0,
-        }}
-        transition={{ duration: 0.3, ease: 'easeInOut' }}
-        className={`${showVolumeSlider && 'mr-4'} flex items-center overflow-hidden py-2`}>
-        <input
-          type="range"
-          min="0"
-          max="100"
-          value={volume}
-          onChange={handleVolumeChange}
-          onClick={(e) => {
-            e.stopPropagation()
+      {!isMobile && (
+        <motion.div
+          initial={{ width: 0, opacity: 0 }}
+          animate={{
+            width: showVolumeSlider ? '100%' : '0',
+            opacity: showVolumeSlider ? 1 : 0,
           }}
-          className="peer relative h-1 w-full cursor-pointer appearance-none rounded-full bg-secondary-300"
-        />
-      </motion.div>
+          transition={{ duration: 0.3, ease: 'easeInOut' }}
+          className={`${showVolumeSlider && 'mr-4'} flex items-center overflow-hidden py-2`}>
+          <input
+            type="range"
+            min="0"
+            max="100"
+            value={volume}
+            onChange={handleVolumeChange}
+            onClick={(e) => {
+              e.stopPropagation()
+            }}
+            className="peer relative h-1 w-full cursor-pointer appearance-none rounded-full bg-secondary-300"
+          />
+        </motion.div>
+      )}
 
       {/* Custom thumb styling */}
       {/* eslint-disable-next-line react/no-unknown-property */}
