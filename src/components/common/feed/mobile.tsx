@@ -120,7 +120,7 @@ function SwiperRenderer({ videoSizeBox }: { videoSizeBox: VideoSizeBoxType }) {
                       const { duration, currentTime } = usePlayerControlStore.getState()
                       Analytics.triggerAnalyticsForVideoComplete(item.video.id, duration, currentTime)
 
-                      if (!gestureOverlays.SWIPE.hasShown) {
+                      if (!gestureOverlays.SWIPE.hasShown && videos.length > 1) {
                         setGestureOverlay('SWIPE', true)
                       }
                     }}
