@@ -392,7 +392,7 @@ export function Dynamic({
     <p
       {...props}
       className={cn(
-        'transition-[max-height] duration-500 sm:max-h-full',
+        'whitespace-pre-wrap transition-[max-height] duration-500 sm:max-h-full',
         {
           'swiper-no-swiping hide-scrollbar': isExpanded && isMobile,
         },
