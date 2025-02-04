@@ -9,6 +9,7 @@ import { Loader } from '@/components/ui/loader'
 import { memo, useCallback, useState } from 'react'
 import { type CommunityUserRoleType } from '@/lib/schemas/roles'
 import { PATH_NAME } from '@/lib/utils/constants/path'
+import { AuthenticationModal } from './modals/authentication'
 
 type Props = {
   handle: string
@@ -36,7 +37,10 @@ export const JoinCommunityButton = memo(function JoinCommunityButton({
   const [isLoading, setIsLoading] = useState(false)
   const pathName = usePathname()
   const queryClient = useQueryClient()
-  const user = useGenuinOptions().user
+  const { user, webCTA } = useGenuinOptions((state) => ({
+    user: state.user,
+    webCTA: state.webCTA,
+  }))
   const searchParams = useSearchParams()
 
   const handleJoinCommunity = async () => {
@@ -100,18 +104,22 @@ export const JoinCommunityButton = memo(function JoinCommunityButton({
         communityName: communityName ?? '',
         searchParams: Object.fromEntries(searchParams),
       }).then((generatedLink) => {
-        if (isMobile) {
-          openGeneratedLink(generatedLink)
+        if (webCTA !== 'app') {
+          AuthenticationModal.open()
         } else {
-          openModal({
-            deepLink: generatedLink,
-            subtitle: (
-              <>
-                Get the app to join the <br />
-                <span className="font-bold">@{handle}</span> community.
-              </>
-            ),
-          })
+          if (!isMobile) {
+            openModal({
+              deepLink: generatedLink,
+              subtitle: (
+                <>
+                  Get the app to join the <br />
+                  <span className="font-bold">@{handle}</span> community.
+                </>
+              ),
+            })
+          } else {
+            openGeneratedLink(generatedLink)
+          }
         }
       })
     }
