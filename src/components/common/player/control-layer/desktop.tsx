@@ -88,9 +88,15 @@ export const Desktop = memo(function Desktop({
           />
         )}
         <div
-          className="relative left-6 top-6 flex gap-3"
           style={{
-            width: 'calc(100% - 48px)',
+            background: 'linear-gradient(0deg, rgba(0, 0, 0, 0.00) 0%, rgba(0, 0, 0, 0.50) 100%)',
+          }}
+          className="absolute top-0 h-12 w-full"
+        />
+        <div
+          className="relative left-4 top-4 flex gap-3"
+          style={{
+            width: 'calc(100% - 32px)',
           }}>
           {
             <span
@@ -98,7 +104,7 @@ export const Desktop = memo(function Desktop({
                 e.stopPropagation()
                 setShouldPlay(!shouldPlay)
               }}
-              className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-monochrome-black/40">
+              className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-monochrome-black/40">
               {!shouldPlay ? <PlayIcon variant="light" /> : <PauseIcon variant="light" />}
             </span>
           }
