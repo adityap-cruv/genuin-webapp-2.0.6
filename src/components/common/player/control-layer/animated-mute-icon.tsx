@@ -43,7 +43,20 @@ export const AnimatedMuteIcon = ({ videoId }: { videoId: string }) => {
     e.stopPropagation()
     const newVolume = Number(e.target.value)
     setVolume(newVolume)
+
+    // Update progress color dynamically
+    const progress = (newVolume / 100) * 100
+    e.target.style.background = `linear-gradient(to right, white ${progress}%, var(--monochrome-4) ${progress}%)`
   }
+
+  useEffect(() => {
+    // Ensure slider updates on re-renders
+    const slider = document.querySelector<HTMLInputElement>('.volume-slider')
+    if (slider) {
+      const progress = (volume / 100) * 100
+      slider.style.background = `linear-gradient(to right, white ${progress}%, var(--monochrome-4) ${progress}%)`
+    }
+  }, [volume])
 
   return (
     <div
@@ -91,7 +104,7 @@ export const AnimatedMuteIcon = ({ videoId }: { videoId: string }) => {
             onClick={(e) => {
               e.stopPropagation()
             }}
-            className="accent relative h-1.5 w-full cursor-pointer rounded-full bg-secondary-300"
+            className="volume-slider relative h-1.5 w-full cursor-pointer rounded-full"
           />
         </motion.div>
       )}
@@ -99,8 +112,30 @@ export const AnimatedMuteIcon = ({ videoId }: { videoId: string }) => {
       {/* Custom thumb and track progress styling */}
       {/* eslint-disable-next-line react/no-unknown-property */}
       <style jsx>{`
-        .accent {
-          accent-color: white;
+        input[type='range'] {
+          -webkit-appearance: none;
+          appearance: none;
+          width: 100%;
+          cursor: pointer;
+          outline: none;
+          border-radius: 15px;
+          height: 6px;
+          background: linear-gradient(
+            to right,
+            white ${(volume / 100) * 100}%,
+            var(--monochrome-4) ${(volume / 100) * 100}%
+          );
+        }
+
+        input[type='range']::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          appearance: none;
+          height: 15px;
+          width: 15px;
+          background-color: white;
+          border-radius: 50%;
+          border: none;
+          transition: 0.2s ease-in-out;
         }
       `}</style>
     </div>
