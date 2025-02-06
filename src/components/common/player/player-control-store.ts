@@ -17,6 +17,9 @@ type PlayerControlStoreType = {
   duration: number
   currentTime: number
   setTimeState: (currentTime: number, duration: number, videoId: string) => void
+  volume: number
+  setVolume: (volume: number) => void
+  prevVolume: number
 }
 
 export const usePlayerControlStore = create<PlayerControlStoreType>((set) => {
@@ -24,14 +27,24 @@ export const usePlayerControlStore = create<PlayerControlStoreType>((set) => {
     shouldPlay: true,
     muted: true,
     showMutedLayer: true,
+    volume: 0,
+    prevVolume: 100,
     toggleMutedLayer() {
       set((state) => ({ showMutedLayer: !state.showMutedLayer }))
     },
     mute() {
-      set({ muted: true })
+      set((state) => ({ muted: true, prevVolume: state.volume, volume: 0 }))
     },
     toggleMuted() {
-      set((state) => ({ muted: !state.muted }))
+      set((state) => {
+        const newMuted = !state.muted
+        const prevVolume = state.volume > 0 ? state.volume : state.prevVolume
+        return {
+          muted: newMuted,
+          volume: newMuted ? 0 : prevVolume > 0 ? prevVolume : 100,
+          prevVolume: state.volume > 0 ? state.volume : state.prevVolume,
+        }
+      })
     },
     play() {
       set({ shouldPlay: true })
@@ -52,6 +65,13 @@ export const usePlayerControlStore = create<PlayerControlStoreType>((set) => {
     isPlaying: false,
     setIsPlaying(isPlaying) {
       set({ isPlaying })
+    },
+    setVolume(volume) {
+      set((state) => ({
+        volume,
+        muted: volume === 0, // Auto-mute if volume is 0
+        prevVolume: volume > 0 ? volume : state.prevVolume, // Store last non-zero volume
+      }))
     },
     setTimeState(currentTime, duration, videoId) {
       const progressValue = Math.round((currentTime / duration) * 100)

@@ -1,0 +1,9 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.tabsapp",
+    "sha256_cert_fingerprints":
+    ["FA:C6:17:45:DC:09:03:78:6F:B9:ED:E6:2A:96:2B:39:9F:73:48:F0:BB:6F:89:9B:83:32:66:75:91:03:3B:9C","AC:5E:E1:55:4B:4E:A0:12:8F:CB:65:25:FE:58:FF:84:42:A5:BF:A1:DB:22:79:49:A5:CF:67:E3:27:28:BC:BB"]
+  }
+}]
