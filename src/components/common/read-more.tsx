@@ -394,7 +394,7 @@ export function Dynamic({
       className={cn(
         'whitespace-pre-wrap transition-[max-height] duration-500 sm:max-h-max',
         {
-          'swiper-no-swiping hide-scrollbar': isExpanded && isMobile,
+          'swiper-no-swiping hide-scrollbar overflow-auto': isExpanded && isMobile,
         },
         props.className
       )}
