@@ -32,14 +32,13 @@ export const Desktop = memo(function Desktop({
   isInModal,
   clickableUrl,
 }: DesktopProps) {
-  const { setShouldPlay, shouldPlay, showMutedLayer, muted, toggleMutedLayer, toggleMuted } = usePlayerControlStore(
+  const { setShouldPlay, shouldPlay, muted, toggleMuted, toggleButtonVisibility } = usePlayerControlStore(
     useShallow((state) => ({
       setShouldPlay: state.setShouldPlay,
       shouldPlay: state.shouldPlay,
       muted: state.muted,
       toggleMuted: state.toggleMuted,
-      showMutedLayer: state.showMutedLayer,
-      toggleMutedLayer: state.toggleMutedLayer,
+      toggleButtonVisibility: state.toggleButtonVisibility,
     }))
   )
 
@@ -51,14 +50,17 @@ export const Desktop = memo(function Desktop({
       if (!shouldPlay && muted) {
         toggleMuted()
         setShouldPlay(true)
+        toggleButtonVisibility('play')
         return
       }
 
       // Then, handle the mute/unmute behavior
       if (muted) {
         toggleMuted()
+        toggleButtonVisibility('unmute')
       } else {
         setShouldPlay(!shouldPlay)
+        toggleButtonVisibility(shouldPlay ? 'pause' : 'play')
       }
     },
     [muted, toggleMuted, shouldPlay, setShouldPlay]
@@ -77,7 +79,7 @@ export const Desktop = memo(function Desktop({
       <div
         onClick={clickableUrl ? openClickableUrl : handleVideoClick}
         className={cn('absolute inset-0', clickableUrl && 'cursor-pointer')}>
-        {muted && showMutedLayer && (
+        {/* {muted && showMutedLayer && (
           <div
             className="absolute h-full w-full"
             onClick={(e) => {
@@ -86,7 +88,7 @@ export const Desktop = memo(function Desktop({
               toggleMuted()
             }}
           />
-        )}
+        )} */}
         <div
           style={{
             background: 'linear-gradient(0deg, rgba(0, 0, 0, 0.00) 0%, rgba(0, 0, 0, 0.50) 100%)',
@@ -103,6 +105,7 @@ export const Desktop = memo(function Desktop({
               onClick={(e) => {
                 e.stopPropagation()
                 setShouldPlay(!shouldPlay)
+                toggleButtonVisibility(shouldPlay ? 'pause' : 'play')
               }}
               className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-monochrome-black/40">
               {!shouldPlay ? <PlayIcon variant="light" /> : <PauseIcon variant="light" />}
