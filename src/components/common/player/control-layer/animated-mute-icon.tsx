@@ -48,8 +48,8 @@ export const AnimatedMuteIcon = ({ videoId }: { videoId: string }) => {
   return (
     <div
       onClick={handleClick}
-      className={`group flex h-10 items-center justify-start overflow-hidden rounded-full bg-monochrome-black/40 ${
-        showVolumeSlider && !isMobile ? 'w-full' : 'w-fit'
+      className={`group flex h-12 items-center justify-start overflow-hidden rounded-full ${
+        showVolumeSlider && !isMobile ? 'w-full bg-monochrome-black/50' : 'w-fit bg-monochrome-black/40'
       }`}
       onMouseEnter={() => {
         setShowVolumeSlider(true)
@@ -57,7 +57,7 @@ export const AnimatedMuteIcon = ({ videoId }: { videoId: string }) => {
       onMouseLeave={() => {
         setShowVolumeSlider(false)
       }}>
-      <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center">
+      <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center">
         {volume > 0 ? <UnmuteIcon variant="light" /> : <MuteIcon variant="light" />}
       </div>
 
@@ -91,22 +91,16 @@ export const AnimatedMuteIcon = ({ videoId }: { videoId: string }) => {
             onClick={(e) => {
               e.stopPropagation()
             }}
-            className="peer relative h-1 w-full cursor-pointer appearance-none rounded-full bg-secondary-300"
+            className="accent relative h-1.5 w-full cursor-pointer rounded-full bg-secondary-300"
           />
         </motion.div>
       )}
 
-      {/* Custom thumb styling */}
+      {/* Custom thumb and track progress styling */}
       {/* eslint-disable-next-line react/no-unknown-property */}
       <style jsx>{`
-        input[type='range']::-webkit-slider-thumb {
-          -webkit-appearance: none;
-          appearance: none;
-          width: 12px;
-          height: 12px;
-          background: white;
-          border-radius: 50%;
-          margin-right: '16px';
+        .accent {
+          accent-color: white;
         }
       `}</style>
     </div>

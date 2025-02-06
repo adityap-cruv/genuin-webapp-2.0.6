@@ -302,7 +302,7 @@ export const InnerPlayer = memo(function InnerPlayer({
       )} */}
       <div
         className={cn(
-          'absolute left-1/2 top-1/2 z-10 flex h-[64px] w-[64px] -translate-x-1/2 -translate-y-1/2 transform items-center justify-center rounded-full bg-monochrome-black/40 align-middle backdrop-blur-sm transition-all duration-1000',
+          'absolute left-1/2 top-1/2 flex h-[64px] w-[64px] -translate-x-1/2 -translate-y-1/2 transform items-center justify-center rounded-full bg-monochrome-black/40 align-middle backdrop-blur-sm transition-all duration-1000',
           isVisible ? 'opacity-100' : 'opacity-0',
           playingState === 'loading' && 'opacity-100'
         )}>

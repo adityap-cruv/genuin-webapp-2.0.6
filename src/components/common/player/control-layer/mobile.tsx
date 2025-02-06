@@ -83,11 +83,9 @@ export const Mobile = memo(function Mobile({ clickableUrl, ...props }: MobilePro
           eventName: 'Unmute',
           properties: { video_id: props.videoId },
         })
-        return
+      } else {
+        setShouldPlay(!shouldPlay)
       }
-
-      // Finally toggle play/pause
-      setShouldPlay(!shouldPlay)
     },
     [shouldPlay, muted, setShouldPlay, toggleMuted]
   )
