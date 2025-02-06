@@ -81,7 +81,7 @@ export function Component({
   const hasUnreadMessages = unreadMessageCount > 0
 
   return (
-    <div className={cn('relative max-h-[210px] max-w-md', className)} {...props}>
+    <div className={cn('relative max-h-[210px]', className)} {...props}>
       <div className="relative">
         <Link className="relative h-full w-full" href={{ pathname: PATH_NAME.loop(loopSlug) }}>
           <div
