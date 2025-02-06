@@ -56,12 +56,13 @@ type MobileProps = {
 }
 
 export const Mobile = memo(function Mobile({ clickableUrl, ...props }: MobileProps) {
-  const { toggleMuted, muted, shouldPlay, setShouldPlay } = usePlayerControlStore(
+  const { toggleMuted, muted, shouldPlay, setShouldPlay, toggleButtonVisibility } = usePlayerControlStore(
     useShallow((state) => ({
       toggleMuted: state.toggleMuted,
       muted: state.muted,
       shouldPlay: state.shouldPlay,
       setShouldPlay: state.setShouldPlay,
+      toggleButtonVisibility: state.toggleButtonVisibility,
     }))
   )
 
@@ -73,6 +74,7 @@ export const Mobile = memo(function Mobile({ clickableUrl, ...props }: MobilePro
       if (!shouldPlay && muted) {
         toggleMuted()
         setShouldPlay(true)
+        toggleButtonVisibility('play')
         return
       }
 
@@ -83,8 +85,10 @@ export const Mobile = memo(function Mobile({ clickableUrl, ...props }: MobilePro
           eventName: 'Unmute',
           properties: { video_id: props.videoId },
         })
+        toggleButtonVisibility('unmute')
       } else {
         setShouldPlay(!shouldPlay)
+        toggleButtonVisibility(shouldPlay ? 'pause' : 'play')
       }
     },
     [shouldPlay, muted, setShouldPlay, toggleMuted]
@@ -102,6 +106,7 @@ export const Mobile = memo(function Mobile({ clickableUrl, ...props }: MobilePro
     (e: any) => {
       e.stopPropagation()
       setShouldPlay(!shouldPlay)
+      toggleButtonVisibility(shouldPlay ? 'pause' : 'play')
     },
     [shouldPlay, setShouldPlay]
   )
