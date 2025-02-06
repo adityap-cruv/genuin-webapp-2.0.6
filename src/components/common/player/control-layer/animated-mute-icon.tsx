@@ -91,7 +91,7 @@ export const AnimatedMuteIcon = ({ videoId }: { videoId: string }) => {
             onClick={(e) => {
               e.stopPropagation()
             }}
-            className="accent relative h-1.5 w-full cursor-pointer rounded-full bg-secondary-300"
+            className="accent relative h-1.5 w-full cursor-pointer rounded-full bg-[#707070]"
           />
         </motion.div>
       )}

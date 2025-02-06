@@ -91,7 +91,7 @@ export const Desktop = memo(function Desktop({
           style={{
             background: 'linear-gradient(0deg, rgba(0, 0, 0, 0.00) 0%, rgba(0, 0, 0, 0.50) 100%)',
           }}
-          className="absolute top-0 h-12 w-full"
+          className="absolute top-0 h-20 w-full"
         />
         <div
           className="relative left-4 top-4 flex gap-3"
