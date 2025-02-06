@@ -17,7 +17,7 @@ export function Loops() {
           <LoopsShimmer />
         </div>
       ) : (
-        <div className={cn('grid h-auto w-fit grid-cols-1 gap-4 md:grid-cols-2 md:grid-rows-2')}>
+        <div className={cn('grid h-auto w-full grid-cols-1 gap-4 md:grid-cols-2 md:grid-rows-2')}>
           {data?.map((item, index) => {
             return (
               <LoopCard
