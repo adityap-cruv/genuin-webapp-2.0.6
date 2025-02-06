@@ -20,6 +20,9 @@ type PlayerControlStoreType = {
   volume: number
   setVolume: (volume: number) => void
   prevVolume: number
+  toggleButtonVisibility: (action: 'mute' | 'unmute' | 'play' | 'pause' | '') => void
+  buttonAction: 'mute' | 'unmute' | 'play' | 'pause' | ''
+  isIconVisible: boolean
 }
 
 export const usePlayerControlStore = create<PlayerControlStoreType>((set) => {
@@ -102,6 +105,19 @@ export const usePlayerControlStore = create<PlayerControlStoreType>((set) => {
       }
 
       set({ currentTime, duration })
+    },
+
+    // For Action button
+    buttonAction: '',
+    isIconVisible: false,
+    toggleButtonVisibility(action: 'mute' | 'unmute' | 'play' | 'pause' | '') {
+      set({ isIconVisible: true }) // Show the element
+      set({ buttonAction: action }) // Set the button action (play, pause, etc.)
+
+      // Hide the element after 1 second
+      setTimeout(() => {
+        set({ isIconVisible: false })
+      }, 1000)
     },
   }
 })

@@ -67,18 +67,19 @@ export const InnerPlayer = memo(function InnerPlayer({
 }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<OpenPlayerJS | null>(null)
-  const hasMounted = useRef(false)
   const [playingState, setPlayingState] = useState<'paused' | 'playing' | 'loading'>('loading')
-  const [isVisible, setIsVisible] = useState(false)
-  const [buttonAction, setButtonAction] = useState<'mute' | 'unmute' | 'play' | 'pause' | ''>('')
-  const { shouldPlay, muted, setTimeState, volume } = usePlayerControlStore(
-    useShallow((state) => ({
-      shouldPlay: state.shouldPlay,
-      muted: state.muted,
-      setTimeState: state.setTimeState,
-      volume: state.volume,
-    }))
-  )
+  const { shouldPlay, muted, setTimeState, volume, isIconVisible, buttonAction, toggleButtonVisibility } =
+    usePlayerControlStore(
+      useShallow((state) => ({
+        shouldPlay: state.shouldPlay,
+        muted: state.muted,
+        setTimeState: state.setTimeState,
+        volume: state.volume,
+        isIconVisible: state.isIconVisible,
+        buttonAction: state.buttonAction,
+        toggleButtonVisibility: state.toggleButtonVisibility,
+      }))
+    )
   const [hasStarted, setHasStarted] = useState(false)
   let encodedVideoSourceUrl = videoSource
   // Create a URL object to easily access query parameters
@@ -97,26 +98,9 @@ export const InnerPlayer = memo(function InnerPlayer({
   }, [volume])
 
   useEffect(() => {
-    if (!hasMounted.current) {
-      hasMounted.current = true
-      return
-    }
-
-    setIsVisible(true)
-    setButtonAction(muted ? 'mute' : 'unmute')
-
-    const timeout = setTimeout(() => {
-      setIsVisible(false)
-    }, 1000)
-
-    return () => {
-      clearTimeout(timeout)
-    }
-  }, [muted])
-
-  useEffect(() => {
     // Reset the analytics flag when the video source changes
     setHasStarted(false)
+    toggleButtonVisibility('')
 
     if (!videoRef.current) return
     const player = new OpenPlayerJS(videoRef.current, {
@@ -221,22 +205,10 @@ export const InnerPlayer = memo(function InnerPlayer({
             triggerAnalyticsForVideoStart(id, endTime - startTime)
             setHasStarted(true)
           }
-          // For play/pause animation
-          setIsVisible(true)
-          setButtonAction('play')
-          setTimeout(() => {
-            setIsVisible(false)
-          }, 1000)
         })
         .catch((e) => {})
     } else {
       player.pause()
-      // For play/pause animation
-      setIsVisible(true)
-      setButtonAction('pause')
-      setTimeout(() => {
-        setIsVisible(false)
-      }, 1000)
     }
   }, [isActive, shouldPlay])
 
@@ -303,7 +275,7 @@ export const InnerPlayer = memo(function InnerPlayer({
       <div
         className={cn(
           'absolute left-1/2 top-1/2 flex h-[64px] w-[64px] -translate-x-1/2 -translate-y-1/2 transform items-center justify-center rounded-full bg-monochrome-black/40 align-middle backdrop-blur-sm transition-all duration-1000',
-          isVisible ? 'opacity-100' : 'opacity-0',
+          isIconVisible ? 'opacity-100' : 'opacity-0',
           playingState === 'loading' && 'opacity-100'
         )}>
         {playingState === 'loading' ? (
