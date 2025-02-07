@@ -111,6 +111,11 @@ export const usePlayerControlStore = create<PlayerControlStoreType>((set) => {
     buttonAction: '',
     isIconVisible: false,
     toggleButtonVisibility(action: 'mute' | 'unmute' | 'play' | 'pause' | '') {
+      if (!action) {
+        set({ buttonAction: action })
+        return
+      } // Do nothing if there is no action
+
       set({ isIconVisible: true }) // Show the element
       set({ buttonAction: action }) // Set the button action (play, pause, etc.)
 
