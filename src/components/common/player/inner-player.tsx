@@ -272,23 +272,27 @@ export const InnerPlayer = memo(function InnerPlayer({
           {playingState === 'loading' && <Loader size="md" />}
         </div>
       )} */}
-      <div
-        className={cn(
-          'absolute left-1/2 top-1/2 flex h-[64px] w-[64px] -translate-x-1/2 -translate-y-1/2 transform items-center justify-center rounded-full bg-monochrome-black/40 align-middle backdrop-blur-sm transition-all duration-1000',
-          isIconVisible ? 'opacity-100' : 'opacity-0',
-          playingState === 'loading' && 'opacity-100'
-        )}>
-        {playingState === 'loading' ? (
+
+      {playingState === 'loading' && (
+        <div className="absolute left-1/2 top-1/2 flex h-[64px] w-[64px] -translate-x-1/2 -translate-y-1/2 transform items-center justify-center rounded-full bg-monochrome-black/40 align-middle opacity-100 backdrop-blur-sm transition-all duration-100">
           <Loader size="md" />
-        ) : (
+        </div>
+      )}
+
+      {playingState !== 'loading' && buttonAction && (
+        <div
+          className={cn(
+            'absolute left-1/2 top-1/2 flex h-[64px] w-[64px] -translate-x-1/2 -translate-y-1/2 transform items-center justify-center rounded-full bg-monochrome-black/40 align-middle backdrop-blur-sm transition-all duration-1000',
+            isIconVisible ? 'opacity-100' : 'opacity-0'
+          )}>
           <>
             {buttonAction === 'play' && <PlayIcon variant="light" className="h-8 w-8" />}
             {buttonAction === 'pause' && <PauseIcon variant="light" className="h-8 w-8" />}
             {buttonAction === 'mute' && <MuteIcon variant="light" className="h-8 w-8" />}
             {buttonAction === 'unmute' && <UnmuteIcon variant="light" className="h-8 w-8" />}
           </>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   )
 })
