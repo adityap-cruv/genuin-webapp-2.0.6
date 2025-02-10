@@ -65,6 +65,7 @@ function RootDetails({ communityDetails }: { communityDetails: CommunityDetailsT
         defaultOpen={false}
         isOpen={!detailsInView}
         communityName={communityDetails.name ?? ''}
+        communitySlug={communityDetails.slug ?? ''}
         communityProfileImage={communityDetails.dp_m ?? communityDetails.dp ?? ''}
         communityHandle={communityDetails.handle}
         role={mapCommunityUserRole(communityDetails.logged_in_user_role, communityDetails.is_community_join_requested)}
@@ -92,6 +93,7 @@ function RootDetails({ communityDetails }: { communityDetails: CommunityDetailsT
               handle={communityDetails.handle}
               communityName={communityDetails.name ?? ''}
               id={communityDetails.community_id}
+              slug={communityDetails.slug}
               role={mapCommunityUserRole(
                 communityDetails.logged_in_user_role,
                 communityDetails.is_community_join_requested

@@ -76,15 +76,18 @@ export async function joinAsCollaboratorDeepLink({
 export async function joinCommunityDeepLink({
   communityName,
   searchParams,
+  slug,
 }: {
   communityName: string
   searchParams: Record<string, any>
+  slug: string
 }): Promise<string> {
   return await getDeepLink('join', {
     contentType: 'community',
     description: `Find your people. Find what you love. | Join ${communityName} to talk about it`,
     title: `join ${communityName}`,
     searchParams,
+    pathName: `/community/${slug}`,
   })
 }
 

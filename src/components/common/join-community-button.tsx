@@ -15,6 +15,7 @@ type Props = {
   handle: string
   type: 'public' | 'private'
   id: string
+  slug: string
   buttonText: string
   role: CommunityUserRoleType
   communityName?: string
@@ -27,6 +28,7 @@ export const JoinCommunityButton = memo(function JoinCommunityButton({
   role,
   handle,
   id,
+  slug,
   buttonText,
   type,
   communityName,
@@ -103,6 +105,7 @@ export const JoinCommunityButton = memo(function JoinCommunityButton({
       await joinCommunityDeepLink({
         communityName: communityName ?? '',
         searchParams: Object.fromEntries(searchParams),
+        slug: slug ?? '',
       }).then((generatedLink) => {
         if (webCTA !== 'app') {
           AuthenticationModal.open()
