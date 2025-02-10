@@ -13,6 +13,8 @@ import { FeedContextProvider, useFeedListContext } from '@/components/providers/
 import { KsGestureTypes } from '../ks-gestures-types'
 import { useGestureOverlay } from '@/hooks/use-gesture-overlay'
 import { useShallow } from 'zustand/react/shallow'
+import { useIHeartDemoStates } from '@/components/providers/iheart-demo-provider'
+import { IHeartDemo } from '../../layouts/desktop/iheart-demo'
 
 type MobileProps = {
   videos?: VideoPlayerModalType[] | null
@@ -75,6 +77,8 @@ function SwiperRenderer({ videoSizeBox }: { videoSizeBox: VideoSizeBoxType }) {
   const { gestureOverlays, setGestureOverlay } = useGestureOverlay(currentIndex)
   // # If comment sheet is open than element should not be scrolled..
   const commentIsOpen = useCommentSheetStore((state) => state.modalIsOpen)
+  const { renderIn, shouldShowIHeartDemo } = useIHeartDemoStates()
+  const showIHeartDemo = renderIn === 'root' && shouldShowIHeartDemo
   const { muted } = usePlayerControlStore(
     useShallow((state) => ({
       muted: state.muted,
@@ -92,48 +96,53 @@ function SwiperRenderer({ videoSizeBox }: { videoSizeBox: VideoSizeBoxType }) {
     [videos]
   )
   return (
-    <div style={{ ...videoSizeBox }} className="relative overflow-clip">
-      <Swiper
-        // PLAY_PAUSE gesture will end when the user takes action;
-        onClick={() => {
-          if (!muted) setGestureOverlay('PLAY_PAUSE', false)
-        }}
-        modules={[Mousewheel]}
-        mousewheel={true}
-        direction="vertical"
-        initialSlide={currentIndex}
-        onActiveIndexChange={handleActiveIndexChange}
-        allowSlideNext={!commentIsOpen}
-        allowSlidePrev={!commentIsOpen}
-        style={videoSizeBox}>
-        {videos.map((item, index) => (
-          <SwiperSlide key={index}>
-            {({ isActive, isPrev, isNext, isVisible }) => {
-              if (isActive || isPrev || isNext || isVisible)
-                return (
-                  <Player.mobile
-                    isActive={isActive}
-                    loop
-                    videoDetails={item}
-                    customSizeBox={videoSizeBox}
-                    onEnded={(event) => {
-                      const { duration, currentTime } = usePlayerControlStore.getState()
-                      Analytics.triggerAnalyticsForVideoComplete(item.video.id, duration, currentTime)
+    <>
+      <div style={{ ...videoSizeBox }} className="relative overflow-clip">
+        <Swiper
+          // PLAY_PAUSE gesture will end when the user takes action;
+          onClick={() => {
+            if (!muted) setGestureOverlay('PLAY_PAUSE', false)
+          }}
+          modules={[Mousewheel]}
+          mousewheel={true}
+          direction="vertical"
+          initialSlide={currentIndex}
+          onActiveIndexChange={handleActiveIndexChange}
+          allowSlideNext={!commentIsOpen}
+          allowSlidePrev={!commentIsOpen}
+          style={videoSizeBox}>
+          {videos.map((item, index) => (
+            <SwiperSlide key={index}>
+              {({ isActive, isPrev, isNext, isVisible }) => {
+                if (isActive || isPrev || isNext || isVisible)
+                  return (
+                    <>
+                      <Player.mobile
+                        isActive={isActive}
+                        loop
+                        videoDetails={item}
+                        customSizeBox={videoSizeBox}
+                        onEnded={(event) => {
+                          const { duration, currentTime } = usePlayerControlStore.getState()
+                          Analytics.triggerAnalyticsForVideoComplete(item.video.id, duration, currentTime)
 
-                      if (!gestureOverlays.SWIPE.hasShown && videos.length > 1) {
-                        setGestureOverlay('SWIPE', true)
-                      }
-                    }}
-                  />
-                )
-            }}
-          </SwiperSlide>
-        ))}
+                          if (!gestureOverlays.SWIPE.hasShown && videos.length > 1) {
+                            setGestureOverlay('SWIPE', true)
+                          }
+                        }}
+                      />
+                    </>
+                  )
+              }}
+            </SwiperSlide>
+          ))}
 
-        {/* Display gestures according to kind gestureStep */}
-        {gestureOverlays.SWIPE.isVisible && <KsGestureTypes gestureStep="SWIPE" />}
-        {gestureOverlays.PLAY_PAUSE.isVisible && !muted && <KsGestureTypes gestureStep="PLAY_PAUSE" />}
-      </Swiper>
-    </div>
+          {/* Display gestures according to kind gestureStep */}
+          {gestureOverlays.SWIPE.isVisible && <KsGestureTypes gestureStep="SWIPE" />}
+          {gestureOverlays.PLAY_PAUSE.isVisible && !muted && <KsGestureTypes gestureStep="PLAY_PAUSE" />}
+        </Swiper>
+      </div>
+      {showIHeartDemo && <IHeartDemo />}
+    </>
   )
 }
