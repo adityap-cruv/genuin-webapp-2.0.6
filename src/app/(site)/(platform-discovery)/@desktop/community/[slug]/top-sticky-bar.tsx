@@ -15,6 +15,7 @@ type Props = {
    */
   isOpen: boolean
   communityName: string
+  communitySlug: string
   communityProfileImage: string
   communityHandle: string
   communityId: string
@@ -28,6 +29,7 @@ export function TopStickyBar({
   defaultOpen = true,
   isOpen = false,
   communityName,
+  communitySlug,
   communityProfileImage,
   communityHandle,
   communityId,
@@ -77,6 +79,7 @@ export function TopStickyBar({
           buttonText="Join Community"
           handle={communityHandle}
           id={communityId}
+          slug={communitySlug}
           role={role}
           type={isCommunityPrivate ? 'private' : 'public'}
           isMobile={false}

@@ -114,6 +114,7 @@ export function DesktopDetails({ loop, community, owner, video }: DesktopDetails
                   handle={community.handle}
                   buttonText="Join Community"
                   id={community.id}
+                  slug={community.slug}
                   type={community.type === 2 ? 'private' : 'public'}
                   role={community.userRole}
                   onStatusChange={(role) => {

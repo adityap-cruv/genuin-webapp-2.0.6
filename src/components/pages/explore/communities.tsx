@@ -147,6 +147,7 @@ function CommunityItem({
           buttonText="Join"
           handle={handle}
           id={id}
+          slug={slug}
           type="public"
           role={role}
           communityName={name ?? ''}

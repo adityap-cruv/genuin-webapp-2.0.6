@@ -9,8 +9,9 @@ import Image from 'next/image'
 import imageAppStore from '@images/appStore.svg'
 import imagePlayStore from '@images/playStore.svg'
 import Link from 'next/link'
-import { MOBILE_DOWNLOAD_APP_LINK } from '@lib/constants'
+import { MOBILE_DOWNLOAD_APP_LINK, URL_TO_APP_STORE, URL_TO_PLAY_STORE } from '@lib/constants'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
+import { useShallow } from 'zustand/react/shallow'
 
 interface FormData {
   phone: string
@@ -28,9 +29,15 @@ type Props = {
 
 // TODO: improve it's api implementation
 export function DownloadAppDialog({ children }: Props) {
-  const isMobile = useGenuinOptions().isMobile
-  const URL_TO_APP_STORE = 'https://apps.apple.com/US/app/id1511177838?mt=8'
-  const URL_TO_PLAY_STORE = 'https://play.google.com/store/apps/details?id=com.begenuin.begenuin'
+  const { isMobile, links } = useGenuinOptions(
+    useShallow((state) => ({
+      isMobile: state.isMobile,
+      links: {
+        appStoreLink: state.config?.integrations.sdk.ios.appstore_link,
+        playStoreLink: state.config?.integrations.sdk.android.playstore_link,
+      },
+    }))
+  )
 
   return isMobile ? (
     <Link href={MOBILE_DOWNLOAD_APP_LINK}>{children}</Link>
@@ -59,10 +66,10 @@ export function DownloadAppDialog({ children }: Props) {
             </a>
           </p>
           <div className="mt-6 flex w-full items-center justify-center">
-            <Link href={URL_TO_APP_STORE} target="_blank" rel="noopener noreferrer">
+            <Link href={links.appStoreLink ?? URL_TO_APP_STORE} target="_blank" rel="noopener noreferrer">
               <Image className="mx-2" src={imageAppStore} alt="app store" />
             </Link>
-            <Link href={URL_TO_PLAY_STORE} target="_blank" rel="noopener noreferrer">
+            <Link href={links.playStoreLink ?? URL_TO_PLAY_STORE} target="_blank" rel="noopener noreferrer">
               <Image className="mx-2" src={imagePlayStore} alt="play store" />
             </Link>
           </div>

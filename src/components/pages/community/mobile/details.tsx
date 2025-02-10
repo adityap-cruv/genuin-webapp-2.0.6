@@ -65,6 +65,7 @@ export function Details({ communityDetails }: Props) {
                 buttonText="Join Community"
                 handle={communityDetails.handle}
                 id={communityDetails.community_id}
+                slug={communityDetails.slug}
                 role={mapCommunityUserRole(
                   communityDetails.logged_in_user_role,
                   communityDetails.is_community_join_requested
