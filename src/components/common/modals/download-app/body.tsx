@@ -32,7 +32,7 @@ export function Body({ title, subtitle, deepLink }: DownloadDialogType) {
           <>
             <p className="text-center text-new-h3">
               Download the
-              <br /> Genuin app
+              <br /> app
             </p>
 
             {subtitle && <p className="mt-4 line-clamp-2 max-w-none text-center text-title-2-demi">{subtitle}</p>}

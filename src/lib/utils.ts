@@ -1,5 +1,5 @@
 import { DownloadDialogModal } from '@components/common/modals/download-app'
-import axios from 'axios'
+import { axiosInstance } from '@/lib/api/instance'
 import { type ClassValue, clsx } from 'clsx'
 import { createCipheriv } from 'crypto'
 import { twMerge } from 'tailwind-merge'
@@ -235,7 +235,10 @@ export const generateDeepLink = async ({
     Object.assign(finalPayload, { description })
   }
   try {
-    const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/goservices/links/dynamic_link`, finalPayload)
+    const res = await axiosInstance.post(
+      `${process.env.NEXT_PUBLIC_API_URL}/goservices/links/dynamic_link`,
+      finalPayload
+    )
     return res?.data?.data?.shortLink
   } catch (e) {
     return process.env.NEXT_PUBLIC_HOST_URL
