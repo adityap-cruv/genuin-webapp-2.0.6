@@ -130,6 +130,7 @@ export function CommunityList({ brandId, scrollYProgress }: { brandId: number; s
                       buttonText="Join"
                       handle={community.handle}
                       id={community.id}
+                      slug={community.slug}
                       role={community.userRole}
                       type={community.type === 2 ? 'private' : 'public'}
                       communityName={community.name ?? ''}
