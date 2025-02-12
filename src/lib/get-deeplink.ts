@@ -146,3 +146,10 @@ export async function sparkDeepLink(videoSlug: string, shareUrl: string): Promis
     searchParams: new URLSearchParams(window.location.search),
   })
 }
+
+/*
+ * This function will generate deep link for Get App.
+ */
+export async function getAppLink(): Promise<string> {
+  return await getDeepLink('/', {})
+}

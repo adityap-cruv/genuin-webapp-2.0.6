@@ -3,7 +3,7 @@ import { HamBurgerMenuIcon } from '@components/ui/ham-burger'
 import { Button } from '@components/ui/button'
 import { Sheet, SheetClose, SheetContent, SheetTrigger } from '@components/ui/sheet'
 import { type ReactNode } from 'react'
-import { cn, getYear } from '@lib/utils'
+import { cn, getMobileGetAppUrl, getYear } from '@lib/utils'
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { PopularIcon, HomeIcon, LatestIcon, ProfileIcon, ExploreIcon } from '@icons/side-bar-icons'
@@ -18,7 +18,6 @@ import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
 import { CustomAvatar } from '@components/custom/custom-avatar'
 import { LogoutIcon } from '@icons/logout'
 import { removeAllAuthToken } from '@lib/api/instance'
-import { MOBILE_DOWNLOAD_APP_LINK } from '@lib/constants'
 import { SearchBar } from '@components/common/search-bar'
 import { BellIcon } from '@icons/bell-icon'
 import { SearchIcon } from '@icons/search-icon'
@@ -82,7 +81,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
     termsAndCondition: state.config?.terms_and_condition,
   })) // If variant is transparent than we have removed show download button.
   const showDownloadButton = variant !== 'transparent'
-  const searchParams = useSearchParams()
+  // const searchParams = useSearchParams()
 
   return (
     <nav className={cn(navVariant({ variant }), className)}>
@@ -131,11 +130,9 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
         </SearchBar.mobile>
 
         {!(brandId?.toString() === '99' && !showDownloadButton) && (webCTA === 'app' || webCTA === 'both') && (
-          <Link href={MOBILE_DOWNLOAD_APP_LINK + '?' + searchParams.toString()} target="_blank">
-            <Button className="h-8" variant="outline">
-              <p className="text-[15px] text-body-1-demi">Get App</p>
-            </Button>
-          </Link>
+          <Button className="h-8" variant="outline" onClick={getMobileGetAppUrl}>
+            <p className="text-[15px] text-body-1-demi">Get App</p>
+          </Button>
         )}
         {webCTA !== 'app' && <UserTick variant={variant} webCTA={webCTA} />}
         {showClose && (
