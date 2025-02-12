@@ -143,6 +143,7 @@ export function CommunityList({ userId }: { userId: string }) {
                     buttonText="Join"
                     handle={item.handle}
                     id={item.id}
+                    slug={item.slug}
                     onStatusChange={(role) => {
                       handleCommunityJoin(item.id, role)
                     }}

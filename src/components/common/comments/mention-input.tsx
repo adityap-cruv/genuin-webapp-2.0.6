@@ -5,7 +5,7 @@ import { useGenuinOptions } from '@/lib/stores/genuin-options'
 import { useWalletBalanceHandler } from '@/services/wallet-handler'
 import { Input } from '@/components/ui/input'
 import { commentDeepLink } from '@/lib/get-deeplink'
-import { openGeneratedLink, openModal } from '@/lib/utils'
+import { openModal } from '@/lib/utils'
 import { CustomAvatar } from '@/components/custom/custom-avatar'
 import { type SelectedMention, type CommentMention } from '@/lib/schemas/player/comment'
 
@@ -17,7 +17,7 @@ const MentionInput: React.FC<{
   communityId: string
 }> = ({ setComments, videoId, loopId, videoSlug, communityId }) => {
   const { handleWalletBalance } = useWalletBalanceHandler()
-  const { user, isMobile } = useGenuinOptions((state) => ({
+  const { user } = useGenuinOptions((state) => ({
     user: state.user,
     isMobile: state.isMobile,
   }))
@@ -260,7 +260,7 @@ const MentionInput: React.FC<{
         </div>
       )}
 
-      <div className="absolute bottom-0 left-0 max-h-16 w-full border-t-2 border-t-tertiary-200 bg-tertiary-200 py-3 shadow-md">
+      <div className="absolute bottom-0 left-0 z-50 max-h-16 w-full border-t-2 border-t-tertiary-200 bg-tertiary-200 py-3 shadow-md">
         <div className="flex w-full flex-1 items-center gap-x-4 px-4">
           {user ? (
             <div className="w-full">
@@ -295,11 +295,7 @@ const MentionInput: React.FC<{
             <div
               onClick={async () => {
                 await commentDeepLink({ videoSlug, communityId, loopId, searchParams }).then((generatedLink) => {
-                  if (!isMobile) {
-                    openModal({ deepLink: generatedLink, subtitle: <>Get the app to comment on this video.</> })
-                  } else {
-                    openGeneratedLink(generatedLink)
-                  }
+                  openModal({ deepLink: generatedLink, subtitle: <>Get the app to comment on this video.</> })
                 })
               }}
               placeholder="Add a comment"

@@ -1,4 +1,4 @@
-import { abbreviateNumber, checkAndAppendHttps, openGeneratedLink } from '@lib/utils'
+import { abbreviateNumber, checkAndAppendHttps, openModal } from '@lib/utils'
 import icShare from '@icons/player-controls/icon-share.svg'
 import icComment from '@icons/player-controls/icon-comment.svg'
 import icLinkout from '@icons/player-controls/icLinkout.svg'
@@ -14,6 +14,7 @@ import { useCommentSheetStore } from '../../comment-sheet/store'
 import { repostDeepLink } from '@/lib/get-deeplink'
 import { useWalletBalanceHandler } from '@/services/wallet-handler'
 import { Spark } from './spark'
+import { useAdaptiveShare } from '@hooks/use-adaptive-share'
 
 type MobileActionsProps = {
   attachedLink?: string | null
@@ -36,6 +37,7 @@ export function Mobile({
   description,
   isSparked,
 }: MobileActionsProps) {
+  const { shareFn } = useAdaptiveShare()
   const { handleWalletBalance } = useWalletBalanceHandler()
   const { openComments, closeComments, commentsIsOpen } = useCommentSheetStore((state) => ({
     openComments: state.openModal,
@@ -66,7 +68,7 @@ export function Mobile({
               RepostModal.open(videoId)
             } else {
               await repostDeepLink({ videoSlug, shareUrl, searchParams }).then((generatedLink) => {
-                openGeneratedLink(generatedLink)
+                openModal({ deepLink: generatedLink, subtitle: 'Get the app to repost the video.' })
               })
             }
             // DownloadDialogModal.open({ title: 'Get the Genuin app', subtitle: 'Get the app to spark the video.' })
@@ -113,18 +115,8 @@ export function Mobile({
               user_id: user?.id,
             },
           })
-          void window.navigator.share({
-            text: description ?? 'Share video.',
-            title: 'Share this video',
-            url: shareUrl,
-          })
+          await shareFn({ description: description ?? 'Share video.', title: 'Share this video', shareLink: shareUrl })
           e.stopPropagation()
-          // void window.navigator.share({
-          //   text: data.video?.description ?? '',
-          //   title: 'Share this video',
-          //   url: window.location.hostname + PATH_NAME.video(videoData.video.slug),
-          // })
-          // await shareFn({ description: shareDescription, title: shareTitle })
         }}>
         <Image src={icShare} alt="share" height={32} width={32} />
       </ActionItem>

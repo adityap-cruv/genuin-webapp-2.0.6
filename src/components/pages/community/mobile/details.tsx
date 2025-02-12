@@ -65,6 +65,7 @@ export function Details({ communityDetails }: Props) {
                 buttonText="Join Community"
                 handle={communityDetails.handle}
                 id={communityDetails.community_id}
+                slug={communityDetails.slug}
                 role={mapCommunityUserRole(
                   communityDetails.logged_in_user_role,
                   communityDetails.is_community_join_requested
@@ -72,6 +73,7 @@ export function Details({ communityDetails }: Props) {
                 type={communityDetails.type === 2 ? 'private' : 'public'}
                 communityName={communityDetails.name ?? ''}
                 isMobile={true}
+                shareUrl={communityDetails.share_url}
               />
               <ShareButton url={communityDetails.share_url} />
               {/* <Button variant="outline" size="custom" className="border border-primary p-1">

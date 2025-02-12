@@ -104,7 +104,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
         )}
       </span>
       <span className="flex items-center gap-x-3">
-        {user && (
+        {user && webCTA === 'login' && (
           <Link
             href={PATH_NAME.notification()}
             className={cn(
@@ -130,19 +130,15 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
         <SearchBar.mobile variant={variant}>
           <SearchIcon variant={variant} />
         </SearchBar.mobile>
-        {brandId?.toString() === '99' && showDownloadButton && (
+
+        {!(brandId?.toString() === '99' && !showDownloadButton) && (webCTA === 'app' || webCTA === 'both') && (
           <Link href={MOBILE_DOWNLOAD_APP_LINK + '?' + searchParams.toString()} target="_blank">
-            <Button
-              className={
-                variant === 'light'
-                  ? 'h-8 bg-new-off-black text-monochrome-white hover:bg-new-dark-grey'
-                  : 'h-8 bg-new-off-white text-new-off-black hover:bg-new-off-black hover:text-new-off-white'
-              }>
-              <p className="text-[15px] text-body-1-demi">Download App</p>
+            <Button className="h-8" variant="outline">
+              <p className="text-[15px] text-body-1-demi">Get App</p>
             </Button>
           </Link>
         )}
-        {webCTA !== 'app' && <UserTick variant={variant} />}
+        {webCTA !== 'app' && <UserTick variant={variant} webCTA={webCTA} />}
         {showClose && (
           <span
             className={cn(
@@ -343,7 +339,7 @@ function MenuItem({ title, isActive, children, brandName }: ItemProps) {
   )
 }
 
-function UserTick({ variant = 'light' }: { variant: 'light' | 'transparent' | 'dark' | null }) {
+function UserTick({ variant = 'light', webCTA }: { variant: 'light' | 'transparent' | 'dark' | null; webCTA: string }) {
   const { data, status } = useSession()
   const searchParams = useSearchParams()
   const pathName = usePathname()
@@ -363,7 +359,7 @@ function UserTick({ variant = 'light' }: { variant: 'light' | 'transparent' | 'd
     return (
       <Button
         disabled={status === 'loading' || loadingAuthData}
-        className="gap-2 px-4"
+        className="h-8 gap-2 px-4"
         onClick={() => {
           AuthenticationModal.open()
         }}>
@@ -422,6 +418,19 @@ function UserTick({ variant = 'light' }: { variant: 'light' | 'transparent' | 'd
                 }}>
                 <SettingIcon isActive />
                 <p className="text-body-1-demi">Settings</p>
+              </Link>
+            )}
+            {(webCTA === 'app' || webCTA === 'both') && (
+              <Link
+                href={PATH_NAME.notification()}
+                className="flex items-center gap-x-2"
+                onClick={() => {
+                  if (!pathName.includes('notifications')) {
+                    localStorage.setItem('previous_path', pathName)
+                  }
+                }}>
+                <BellIcon className="h-6 w-6 stroke-secondary" size="sm" />
+                <p className="text-body-1-demi">Notifications</p>
               </Link>
             )}
             <div className="flex items-center gap-x-2">

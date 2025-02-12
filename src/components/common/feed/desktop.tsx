@@ -11,9 +11,9 @@ import { FeedContextProvider, useFeedListContext } from '@components/providers/f
 import { FeedShimmer } from '../shimmers/feed-shimmer'
 import Analytics from '@/services/analytics'
 import { usePlayerControlStore } from '../player/player-control-store'
-import { KsGestures } from '../ks-gestures'
-import { useLocalStorage } from '@/lib/stores/local-storage'
 import { Player } from '../player'
+import { KsGestureTypes } from '../ks-gestures-types'
+import { useGestureOverlay } from '@/hooks/use-gesture-overlay'
 
 type DesktopProps = {
   isLoading: boolean
@@ -60,23 +60,26 @@ type SwiperRendererProps = { customSizeBox?: VideoSizeBoxType; startIndex: numbe
 
 const SHELLS = Array.from({ length: 100 })
 function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: SwiperRendererProps) {
-  const { showKsGestures, gestureStep, updateGestureStep } = useLocalStorage()
   const { defaultSizeBox } = useGenuinOptions(useShallow((state) => ({ defaultSizeBox: state.sizeBoxes.default })))
 
   // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
   const sizeBox = customSizeBox || defaultSizeBox
   const { allowSlideNext, currentIndex, updateCurrentIndex, videos } = useFeedListContext()
+  const { gestureOverlays, setGestureOverlay } = useGestureOverlay(currentIndex)
+  const { muted } = usePlayerControlStore(
+    useShallow((state) => ({
+      muted: state.muted,
+    }))
+  )
 
   const handleActiveIndexChange = useCallback(
     (swiper: SwiperType) => {
-      // Update the step if KS gestures are enabled.
-      if (showKsGestures) {
-        // If the gesture step is swipe, then update the step.
-        if (gestureStep === 'swipe') updateGestureStep()
-      }
+      // SWIPE gesture will end when the user takes action;
+      setGestureOverlay('SWIPE', false)
+
       updateCurrentIndex(swiper.activeIndex)
     },
-    [gestureStep, showKsGestures, updateCurrentIndex]
+    [updateCurrentIndex]
   )
 
   if (!videos || videos.length === 0)
@@ -89,6 +92,10 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
   return (
     <div style={{ height: sizeBox.height }} className={cn('flex h-full w-full', className)} {...restProps}>
       <Swiper
+        // PLAY_PAUSE gesture will end when the user takes action;
+        onClick={() => {
+          if (!muted) setGestureOverlay('PLAY_PAUSE', false)
+        }}
         onActiveIndexChange={handleActiveIndexChange}
         allowSlideNext={allowSlideNext}
         keyboard={true}
@@ -113,9 +120,13 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
                         }}
                         loop
                         key={index}
-                        onEnded={(event) => {
+                        onEnded={() => {
                           const { currentTime, duration } = usePlayerControlStore.getState()
                           Analytics.triggerAnalyticsForVideoComplete(videos[index].video.id, duration, currentTime)
+
+                          if (!gestureOverlays.SWIPE.hasShown && videos.length > 1) {
+                            setGestureOverlay('SWIPE', true)
+                          }
                         }}
                       />
                     )
@@ -123,7 +134,10 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
             </SwiperSlide>
           )
         })}
-        {showKsGestures && <KsGestures />}
+
+        {/* Display gestures according to kind gestureStep */}
+        {gestureOverlays.SWIPE.isVisible && <KsGestureTypes gestureStep="SWIPE" />}
+        {gestureOverlays.PLAY_PAUSE.isVisible && !muted && <KsGestureTypes gestureStep="PLAY_PAUSE" />}
       </Swiper>
       <DesktopDetails {...videos[currentIndex]} />
     </div>

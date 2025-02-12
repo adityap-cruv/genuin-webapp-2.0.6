@@ -138,6 +138,7 @@ export function CommunityList({ brandId }: { brandId: number }) {
                   <JoinCommunityButton
                     buttonText="Join"
                     handle={community.handle}
+                    slug={community.slug}
                     id={community.id}
                     type={community.type === 2 ? 'private' : 'public'}
                     communityName={community.name ?? ''}

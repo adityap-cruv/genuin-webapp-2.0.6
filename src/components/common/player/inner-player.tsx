@@ -10,12 +10,14 @@ import {
 } from 'react'
 import { usePlayerControlStore } from './player-control-store'
 import { cn, encodeVideoSourceUrl } from '@/lib/utils'
-import icPlay from '@icons/player-controls/icPlay.svg'
-import Image from 'next/image'
 import { useShallow } from 'zustand/react/shallow'
 import Analytics from '@/services/analytics'
 import { Loader } from '@/components/ui/loader'
 import { useUrlParams } from '@/lib/utils/ssai/urlParamResolver'
+import { PlayIcon } from '@icons/player-controls/play-icon'
+import { PauseIcon } from '@icons/player-controls/pause-icon'
+import { MuteIcon } from '@icons/player-controls/mute-icon'
+import { UnmuteIcon } from '@icons/player-controls/unmute-icon'
 
 type Props = DetailedHTMLProps<VideoHTMLAttributes<HTMLVideoElement>, HTMLVideoElement> & {
   videoSource: string
@@ -66,13 +68,18 @@ export const InnerPlayer = memo(function InnerPlayer({
   const videoRef = useRef<HTMLVideoElement>(null)
   const playerRef = useRef<OpenPlayerJS | null>(null)
   const [playingState, setPlayingState] = useState<'paused' | 'playing' | 'loading'>('loading')
-  const { shouldPlay, muted, setTimeState } = usePlayerControlStore(
-    useShallow((state) => ({
-      shouldPlay: state.shouldPlay,
-      muted: state.muted,
-      setTimeState: state.setTimeState,
-    }))
-  )
+  const { shouldPlay, muted, setTimeState, volume, isIconVisible, buttonAction, toggleButtonVisibility } =
+    usePlayerControlStore(
+      useShallow((state) => ({
+        shouldPlay: state.shouldPlay,
+        muted: state.muted,
+        setTimeState: state.setTimeState,
+        volume: state.volume,
+        isIconVisible: state.isIconVisible,
+        buttonAction: state.buttonAction,
+        toggleButtonVisibility: state.toggleButtonVisibility,
+      }))
+    )
   const [hasStarted, setHasStarted] = useState(false)
   let encodedVideoSourceUrl = videoSource
   // Create a URL object to easily access query parameters
@@ -85,8 +92,15 @@ export const InnerPlayer = memo(function InnerPlayer({
   }
 
   useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.volume = volume / 100
+    }
+  }, [volume])
+
+  useEffect(() => {
     // Reset the analytics flag when the video source changes
     setHasStarted(false)
+    toggleButtonVisibility('')
 
     if (!videoRef.current) return
     const player = new OpenPlayerJS(videoRef.current, {
@@ -240,7 +254,7 @@ export const InnerPlayer = memo(function InnerPlayer({
         }}
         {...props}
       />
-      {playingState !== 'playing' && (
+      {/* {playingState !== 'playing' && (
         <div
           className={cn(
             'absolute left-1/2 top-1/2 flex h-[64px] w-[64px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-monochrome-black/40 align-middle transition-all duration-100',
@@ -256,6 +270,27 @@ export const InnerPlayer = memo(function InnerPlayer({
             />
           )}
           {playingState === 'loading' && <Loader size="md" />}
+        </div>
+      )} */}
+
+      {playingState === 'loading' && (
+        <div className="absolute left-1/2 top-1/2 flex h-[64px] w-[64px] -translate-x-1/2 -translate-y-1/2 transform items-center justify-center rounded-full bg-monochrome-black/40 align-middle opacity-100 backdrop-blur-sm transition-all duration-100">
+          <Loader size="md" />
+        </div>
+      )}
+
+      {playingState !== 'loading' && buttonAction && (
+        <div
+          className={cn(
+            'absolute left-1/2 top-1/2 flex h-[64px] w-[64px] -translate-x-1/2 -translate-y-1/2 transform items-center justify-center rounded-full bg-monochrome-black/40 align-middle backdrop-blur-sm transition-all duration-1000',
+            isIconVisible ? 'opacity-100' : 'opacity-0'
+          )}>
+          <>
+            {buttonAction === 'play' && <PlayIcon variant="light" className="h-8 w-8" />}
+            {buttonAction === 'pause' && <PauseIcon variant="light" className="h-8 w-8" />}
+            {buttonAction === 'mute' && <MuteIcon variant="light" className="h-8 w-8" />}
+            {buttonAction === 'unmute' && <UnmuteIcon variant="light" className="h-8 w-8" />}
+          </>
         </div>
       )}
     </div>

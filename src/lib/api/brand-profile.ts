@@ -42,7 +42,7 @@ async function fetchCommunities(
   limit: number
 ) {
   return await axiosInstance
-    .get(process.env.NEXT_PUBLIC_API_URL + '/api/v3/brand/communities', {
+    .get(process.env.NEXT_PUBLIC_API_URL + '/goservices/profile/brand/communities', {
       params: {
         brand_id: brandId,
         // page_session: pageParam?.pageSession ?? undefined,
@@ -89,7 +89,7 @@ export async function fetchProfileCommunityLoops(
   lastLoopId: string
 ) {
   return await axiosInstance
-    .get('/api/v3/brand/loops', {
+    .get('/goservices/profile/brand/loops', {
       params: {
         brand_id: brandId,
         community_id: communityId,
@@ -115,7 +115,7 @@ export async function fetchProfileVideos(
   lastVideoId: string
 ) {
   return await axiosInstance
-    .get('/api/v3/brand/loop_videos', {
+    .get('/goservices/profile/brand/videos', {
       params: {
         brand_id: brandId,
         community_id: communityId,

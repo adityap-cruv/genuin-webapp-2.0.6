@@ -314,7 +314,7 @@ export function Dynamic({
             </a>`
         }
         if (typeof item === 'object' && item.member_id && item.text) {
-          return `<a 
+          return `<a
               href="${PATH_NAME.profile(item.text.slice(1))}"
               key="member-${index}"
               class="text-primary">
@@ -334,17 +334,23 @@ export function Dynamic({
   }
 
   useEffect(() => {
+    // Reset the state when text changes
+    setIsExpandedInternal(false)
+  }, [text])
+
+  useEffect(() => {
     const checkOverflow = () => {
       const element: any = textRef.current
-
-      if (element?.scrollHeight <= element?.clientHeight || !text) {
+      if (!element || !text) {
         setIsOverflowing(false)
-        // setIsExpanded(false)
+        return
       }
 
-      if (element) {
-        setIsOverflowing(element.scrollHeight > element.clientHeight)
-      }
+      // Delay the overflow check to ensure the element has been fully rendered
+      setTimeout(() => {
+        const isOverflowingNow = element.scrollHeight > element.clientHeight
+        setIsOverflowing(isOverflowingNow)
+      }, 50)
     }
 
     checkOverflow()
@@ -392,7 +398,7 @@ export function Dynamic({
     <p
       {...props}
       className={cn(
-        'overflow-clip transition-[max-height] duration-500 sm:max-h-full',
+        'whitespace-pre-wrap transition-[max-height] duration-500 sm:max-h-max',
         {
           'swiper-no-swiping hide-scrollbar overflow-auto': isExpanded && isMobile,
         },

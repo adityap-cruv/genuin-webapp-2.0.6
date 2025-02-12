@@ -1,44 +1,47 @@
 import { cn } from '@/lib/utils'
 import { type StaticImageData } from 'next/image'
-import { type ComponentProps, type ReactNode, useEffect } from 'react'
+import { type ComponentProps, type ReactNode } from 'react'
 import Image from 'next/image'
 import { useGenuinOptions } from '@/lib/stores/genuin-options'
-import { useLocalStorage } from '@/lib/stores/local-storage'
 import gifChevronUp from '@images/gifs/chevronUp.gif'
 import gifClickGesture from '@images/gifs/clickGesture.png'
 import gifTapGesture from '@images/gifs/tapGesture.png'
 import gifSwipeGesture from '@images/gifs/swipeGesture.png'
+import { useKsGestureStore } from '@/lib/stores/ks-gestures'
+import { usePlayerControlStore } from './player/player-control-store'
+import { useShallow } from 'zustand/react/shallow'
 
 /**
  * When user comes on website for the first time ksGestures will be shown.
  * To educate user about the gestures to use the <Feed />.
  * It will be shown only once. And local-storage will be used to store the state.
  */
-export function KsGestures() {
+export function KsGestureTypes({ gestureStep }: { gestureStep: 'PLAY_PAUSE' | 'SWIPE' }) {
   const { isMobile } = useGenuinOptions()
-  const { updateGestureStep, gestureStep } = useLocalStorage()
-
-  useEffect(() => {
-    let timeOutId: NodeJS.Timeout | null = setTimeout(() => {
-      updateGestureStep()
-    }, 5000)
-
-    return () => {
-      if (timeOutId) {
-        clearTimeout(timeOutId)
-        timeOutId = null
-      }
-    }
-  }, [gestureStep])
+  const { gestureOverlays, setGestureOverlay } = useKsGestureStore()
+  const { play, pause, shouldPlay } = usePlayerControlStore(
+    useShallow((state) => ({
+      play: state.play,
+      pause: state.pause,
+      shouldPlay: state.shouldPlay,
+    }))
+  )
 
   return (
     <div
-      onClick={updateGestureStep}
+      // PLAY_PAUSE gesture will end when the user takes action; this is typical for desktop and mobile devices.
+      onClick={() => {
+        if (gestureStep !== 'PLAY_PAUSE' || !gestureOverlays.SWIPE.hasShown) return
+
+        setGestureOverlay('PLAY_PAUSE', false)
+
+        shouldPlay ? pause() : play()
+      }}
       className={cn(
         'fixed inset-0 z-[1000] h-full w-full bg-monochrome-black/40 backdrop-blur-sm sm:absolute',
-        gestureStep !== 'play_pause' && 'pointer-events-none'
+        gestureStep !== 'PLAY_PAUSE' && 'pointer-events-none'
       )}>
-      {gestureStep === 'swipe' &&
+      {gestureStep === 'SWIPE' &&
         (isMobile ? (
           <GestureContent
             image={gifSwipeGesture}
@@ -61,14 +64,14 @@ export function KsGestures() {
             }
           />
         ))}
-      {gestureStep === 'play_pause' &&
+      {gestureStep === 'PLAY_PAUSE' &&
         (isMobile ? (
           <GestureContent
             image={gifTapGesture}
             text={
               <>
-                Tap to play or pause
-                <br /> the video
+                Tap to play or pause <br /> while the video is
+                <br /> unmuted
               </>
             }
           />
@@ -77,8 +80,8 @@ export function KsGestures() {
             image={gifClickGesture}
             text={
               <>
-                Click to play or pause <br />
-                the video
+                Click to play or pause <br /> while the video is
+                <br /> unmuted
               </>
             }
           />

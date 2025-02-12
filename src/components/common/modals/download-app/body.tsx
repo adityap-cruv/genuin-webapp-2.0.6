@@ -6,6 +6,8 @@ import imagePlayStore from '@images/playStore.svg'
 import { URL_TO_APP_STORE, URL_TO_PLAY_STORE } from '@lib/constants'
 import { QRCode } from 'react-qrcode-logo'
 import { GenuinIcon } from '@icons/genuin-icon'
+import { useGenuinOptions } from '@/lib/stores/genuin-options'
+import { useShallow } from 'zustand/react/shallow'
 
 type DownloadDialogType = {
   title?: React.ReactNode
@@ -14,6 +16,15 @@ type DownloadDialogType = {
 }
 
 export function Body({ title, subtitle, deepLink }: DownloadDialogType) {
+  const { links } = useGenuinOptions(
+    useShallow((state) => ({
+      links: {
+        appStoreLink: state.config?.integrations.sdk.ios.appstore_link,
+        playStoreLink: state.config?.integrations.sdk.android.playstore_link,
+      },
+    }))
+  )
+
   return (
     <ModalShell>
       <div className="flex w-full flex-col items-center justify-center px-4 pt-6">
@@ -21,7 +32,7 @@ export function Body({ title, subtitle, deepLink }: DownloadDialogType) {
           <>
             <p className="text-center text-new-h3">
               Download the
-              <br /> Genuin app
+              <br /> app
             </p>
 
             {subtitle && <p className="mt-4 line-clamp-2 max-w-none text-center text-title-2-demi">{subtitle}</p>}
@@ -43,10 +54,10 @@ export function Body({ title, subtitle, deepLink }: DownloadDialogType) {
           </div>
         )}
         <div className="flex gap-x-2">
-          <a href={URL_TO_APP_STORE} target="_blank" rel="noopener noreferrer">
+          <a href={links.appStoreLink ?? URL_TO_APP_STORE} target="_blank" rel="noopener noreferrer">
             <Image className="mx-2 h-10 w-auto" src={imageAppStore} alt="app store" />
           </a>
-          <a href={URL_TO_PLAY_STORE} target="_blank" rel="noopener noreferrer">
+          <a href={links.playStoreLink ?? URL_TO_PLAY_STORE} target="_blank" rel="noopener noreferrer">
             <Image className="mx-2 h-10 w-auto" src={imagePlayStore} alt="play store" />
           </a>
         </div>

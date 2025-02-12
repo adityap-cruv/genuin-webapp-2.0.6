@@ -9,32 +9,40 @@ import { Loader } from '@/components/ui/loader'
 import { memo, useCallback, useState } from 'react'
 import { type CommunityUserRoleType } from '@/lib/schemas/roles'
 import { PATH_NAME } from '@/lib/utils/constants/path'
+import { AuthenticationModal } from './modals/authentication'
 
 type Props = {
   handle: string
   type: 'public' | 'private'
   id: string
+  slug: string
   buttonText: string
   role: CommunityUserRoleType
   communityName?: string
   isMobile: boolean
   onStatusChange?: (role: CommunityUserRoleType) => void
+  shareUrl?: string
 }
 
 export const JoinCommunityButton = memo(function JoinCommunityButton({
   role,
   handle,
   id,
+  slug,
   buttonText,
   type,
   communityName,
   onStatusChange,
   isMobile,
+  shareUrl,
 }: Props) {
   const [isLoading, setIsLoading] = useState(false)
   const pathName = usePathname()
   const queryClient = useQueryClient()
-  const user = useGenuinOptions().user
+  const { user, webCTA } = useGenuinOptions((state) => ({
+    user: state.user,
+    webCTA: state.webCTA,
+  }))
   const searchParams = useSearchParams()
 
   const handleJoinCommunity = async () => {
@@ -89,24 +97,35 @@ export const JoinCommunityButton = memo(function JoinCommunityButton({
 
   // In case of user not authenticated, and user clicks on join button, then we have to show the deep link modal.
   const joinCommunityDeepLinkHandler = useCallback(async () => {
-    await joinCommunityDeepLink({
-      communityName: communityName ?? '',
-      searchParams: Object.fromEntries(searchParams),
-    }).then((generatedLink) => {
-      if (isMobile) {
-        openGeneratedLink(generatedLink)
-      } else {
-        openModal({
-          deepLink: generatedLink,
-          subtitle: (
-            <>
-              Get the app to join the <br />
-              <span className="font-bold">@{handle}</span> community.
-            </>
-          ),
-        })
-      }
-    })
+    // TODO: Remove embed path condition once we rlease the standard wall on the web-SDK
+    const pathname = window.location.pathname
+    if (pathname.includes('embed')) {
+      window.open(shareUrl, '_blank', 'noopener,noreferrer')
+    } else {
+      await joinCommunityDeepLink({
+        communityName: communityName ?? '',
+        searchParams: Object.fromEntries(searchParams),
+        slug: slug ?? '',
+      }).then((generatedLink) => {
+        if (webCTA !== 'app') {
+          AuthenticationModal.open()
+        } else {
+          if (!isMobile) {
+            openModal({
+              deepLink: generatedLink,
+              subtitle: (
+                <>
+                  Get the app to join the <br />
+                  <span className="font-bold">@{handle}</span> community.
+                </>
+              ),
+            })
+          } else {
+            openGeneratedLink(generatedLink)
+          }
+        }
+      })
+    }
   }, [communityName, searchParams])
 
   // If user comes on his/her own profile or brand page, then don't show the join button.

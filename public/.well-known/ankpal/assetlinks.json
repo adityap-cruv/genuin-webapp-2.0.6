@@ -1,0 +1,28 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.tabsapp",
+      "sha256_cert_fingerprints": [
+        "FA:C6:17:45:DC:09:03:78:6F:B9:ED:E6:2A:96:2B:39:9F:73:48:F0:BB:6F:89:9B:83:32:66:75:91:03:3B:9C",
+        "AC:5E:E1:55:4B:4E:A0:12:8F:CB:65:25:FE:58:FF:84:42:A5:BF:A1:DB:22:79:49:A5:CF:67:E3:27:28:BC:BB"
+      ]
+    }
+  },
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.begenuin.flutter.qa",
+      "sha256_cert_fingerprints": [
+        "96:FB:24:1C:8F:B4:EE:FF:11:5E:C0:50:40:93:76:AC:A9:9F:6D:F8:70:EF:7F:9B:81:5D:3B:9E:C1:D0:A8:99",
+        "A5:96:6D:7E:5C:41:A4:AA:6B:F4:46:01:80:7F:9A:D7:9E:EC:A8:0D:FD:3B:9D:46:B6:4C:9C:8F:42:43:49:FB"
+      ]
+    }
+  }
+]

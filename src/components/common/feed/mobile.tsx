@@ -8,10 +8,11 @@ import { type VideoPlayerModalType } from '@lib/schemas/player/video'
 import Analytics from '@/services/analytics'
 import { usePlayerControlStore } from '../player/player-control-store'
 import { FeedShimmer } from '../shimmers/feed-shimmer'
-import { KsGestures } from '../ks-gestures'
-import { useLocalStorage } from '@/lib/stores/local-storage'
 import { type Swiper as SwiperType } from 'swiper/types'
 import { FeedContextProvider, useFeedListContext } from '@/components/providers/feed-provider'
+import { KsGestureTypes } from '../ks-gestures-types'
+import { useGestureOverlay } from '@/hooks/use-gesture-overlay'
+import { useShallow } from 'zustand/react/shallow'
 
 type MobileProps = {
   videos?: VideoPlayerModalType[] | null
@@ -71,25 +72,32 @@ export function Mobile({
 
 function SwiperRenderer({ videoSizeBox }: { videoSizeBox: VideoSizeBoxType }) {
   const { videos, updateCurrentIndex, currentIndex } = useFeedListContext()
-  const { showKsGestures, gestureStep, updateGestureStep } = useLocalStorage()
+  const { gestureOverlays, setGestureOverlay } = useGestureOverlay(currentIndex)
   // # If comment sheet is open than element should not be scrolled..
   const commentIsOpen = useCommentSheetStore((state) => state.modalIsOpen)
+  const { muted } = usePlayerControlStore(
+    useShallow((state) => ({
+      muted: state.muted,
+    }))
+  )
 
   const handleActiveIndexChange = useCallback(
     (swiper: SwiperType) => {
       if (!videos) return
-      // Update the step if KS gestures are enabled.
-      if (showKsGestures) {
-        // If the gesture step is swipe, then update the step.
-        if (gestureStep === 'swipe') updateGestureStep()
-      }
+      // SWIPE gesture will end when the user takes action;
+      setGestureOverlay('SWIPE', false)
+
       updateCurrentIndex(swiper.activeIndex)
     },
-    [gestureStep, showKsGestures, videos]
+    [videos]
   )
   return (
     <div style={{ ...videoSizeBox }} className="relative overflow-clip">
       <Swiper
+        // PLAY_PAUSE gesture will end when the user takes action;
+        onClick={() => {
+          if (!muted) setGestureOverlay('PLAY_PAUSE', false)
+        }}
         modules={[Mousewheel]}
         mousewheel={true}
         direction="vertical"
@@ -111,14 +119,21 @@ function SwiperRenderer({ videoSizeBox }: { videoSizeBox: VideoSizeBoxType }) {
                     onEnded={(event) => {
                       const { duration, currentTime } = usePlayerControlStore.getState()
                       Analytics.triggerAnalyticsForVideoComplete(item.video.id, duration, currentTime)
+
+                      if (!gestureOverlays.SWIPE.hasShown && videos.length > 1) {
+                        setGestureOverlay('SWIPE', true)
+                      }
                     }}
                   />
                 )
             }}
           </SwiperSlide>
         ))}
+
+        {/* Display gestures according to kind gestureStep */}
+        {gestureOverlays.SWIPE.isVisible && <KsGestureTypes gestureStep="SWIPE" />}
+        {gestureOverlays.PLAY_PAUSE.isVisible && !muted && <KsGestureTypes gestureStep="PLAY_PAUSE" />}
       </Swiper>
-      {showKsGestures && <KsGestures />}
     </div>
   )
 }

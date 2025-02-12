@@ -132,6 +132,7 @@ export function CommunityList({ userId, scrollYProgress }: { userId: string; scr
                       buttonText="Join"
                       handle={item.handle}
                       id={item.id}
+                      slug={item.slug}
                       role={item.userRole}
                       type={item.type === 2 ? 'private' : 'public'}
                       communityName={item.name ?? ''}
