@@ -9,9 +9,10 @@ import Image from 'next/image'
 import imageAppStore from '@images/appStore.svg'
 import imagePlayStore from '@images/playStore.svg'
 import Link from 'next/link'
-import { MOBILE_DOWNLOAD_APP_LINK, URL_TO_APP_STORE, URL_TO_PLAY_STORE } from '@lib/constants'
+import { URL_TO_APP_STORE, URL_TO_PLAY_STORE } from '@lib/constants'
 import { useGenuinOptions } from '@lib/stores/genuin-options'
 import { useShallow } from 'zustand/react/shallow'
+import { getMobileGetAppUrl } from '@/lib/utils'
 
 interface FormData {
   phone: string
@@ -40,7 +41,7 @@ export function DownloadAppDialog({ children }: Props) {
   )
 
   return isMobile ? (
-    <Link href={MOBILE_DOWNLOAD_APP_LINK}>{children}</Link>
+    <div onClick={getMobileGetAppUrl}>{children}</div>
   ) : (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>

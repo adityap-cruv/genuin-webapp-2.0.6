@@ -7,12 +7,13 @@ import Image from 'next/image'
 import Link from 'next/link'
 import playStoreImage from '@images/playStore.svg'
 import appStoreImage from '@images/appStore.svg'
-import { MOBILE_DOWNLOAD_APP_LINK, URL_TO_APP_STORE, URL_TO_PLAY_STORE } from '@/lib/constants'
+import { URL_TO_APP_STORE, URL_TO_PLAY_STORE } from '@/lib/constants'
 import { Footer } from '../footer'
 import { AnimatedButton } from '../animated-component'
 import { ArrowRight } from 'lucide-react'
 import CreatorsPoster from '@images/home/creators_poster.webp'
 import { motion } from 'framer-motion'
+import { getMobileGetAppUrl } from '@/lib/utils'
 
 const listOfComps = [
   {
@@ -59,12 +60,10 @@ export function CreatorsPage() {
       genuinLogo={genuinLogo}
       initialComponent={<InitialComponent />}
       ctaForMobile={
-        <Link href={MOBILE_DOWNLOAD_APP_LINK}>
-          <AnimatedButton className="border bg-monochrome-white" shadowColor="#0645FF">
-            <p className="whitespace-nowrap">Get Genuin</p>
-            <ArrowRight />
-          </AnimatedButton>
-        </Link>
+        <AnimatedButton className="border bg-monochrome-white" shadowColor="#0645FF" onClick={getMobileGetAppUrl}>
+          <p className="whitespace-nowrap">Get Genuin</p>
+          <ArrowRight />
+        </AnimatedButton>
       }>
       {listOfComps.map((comp, index) => {
         return (
