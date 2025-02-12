@@ -23,6 +23,8 @@ type PlayerControlStoreType = {
   toggleButtonVisibility: (action: 'mute' | 'unmute' | 'play' | 'pause' | '') => void
   buttonAction: 'mute' | 'unmute' | 'play' | 'pause' | ''
   isIconVisible: boolean
+  isFullScreen: boolean
+  toggleFullScreen: () => void
 }
 
 export const usePlayerControlStore = create<PlayerControlStoreType>((set) => {
@@ -123,6 +125,12 @@ export const usePlayerControlStore = create<PlayerControlStoreType>((set) => {
       setTimeout(() => {
         set({ isIconVisible: false })
       }, 1000)
+    },
+
+    // For Full Screen
+    isFullScreen: false,
+    toggleFullScreen() {
+      set((state) => ({ isFullScreen: !state.isFullScreen }))
     },
   }
 })

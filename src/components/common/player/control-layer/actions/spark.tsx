@@ -68,9 +68,11 @@ export function Spark({ isSparked = false, sparkCount, videoId, shareUrl, videoS
   }, [user, isSparked, videoId])
 
   return (
-    <ActionItem title="Give spark!" onClick={handleSparkClick}>
-      <Image src={isSparked ? icSparkTrue : icSpark} height={32} width={32} alt="spark" />
+    <div>
+      <ActionItem title="Give spark!" onClick={handleSparkClick}>
+        <Image src={isSparked ? icSparkTrue : icSpark} height={32} width={32} alt="spark" />
+      </ActionItem>
       <p className="flex justify-center text-body-1-demi text-monochrome-white">{abbreviateNumber(sparkCount)}</p>
-    </ActionItem>
+    </div>
   )
 }

@@ -14,6 +14,7 @@ import { usePlayerControlStore } from '../player/player-control-store'
 import { Player } from '../player'
 import { KsGestureTypes } from '../ks-gestures-types'
 import { useGestureOverlay } from '@/hooks/use-gesture-overlay'
+import { Actions } from '../player/control-layer/actions'
 
 type DesktopProps = {
   isLoading: boolean
@@ -66,9 +67,10 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
   const sizeBox = customSizeBox || defaultSizeBox
   const { allowSlideNext, currentIndex, updateCurrentIndex, videos } = useFeedListContext()
   const { gestureOverlays, setGestureOverlay } = useGestureOverlay(currentIndex)
-  const { muted } = usePlayerControlStore(
+  const { muted, isFullScreen } = usePlayerControlStore(
     useShallow((state) => ({
       muted: state.muted,
+      isFullScreen: state.isFullScreen,
     }))
   )
 
@@ -90,7 +92,13 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
     )
 
   return (
-    <div style={{ height: sizeBox.height }} className={cn('flex h-full w-full', className)} {...restProps}>
+    <div
+      style={{
+        height: isFullScreen ? undefined : sizeBox.height,
+        backgroundColor: isFullScreen ? 'black' : 'transparent',
+      }}
+      className={cn('flex h-full w-full', className, { 'fixed inset-0 z-50': isFullScreen })}
+      {...restProps}>
       <Swiper
         // PLAY_PAUSE gesture will end when the user takes action;
         onClick={() => {
@@ -103,7 +111,11 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
         speed={500}
         modules={[Mousewheel, Keyboard]}
         mousewheel
-        style={{ width: sizeBox.width, height: sizeBox.height }}
+        style={{
+          width: isFullScreen ? undefined : sizeBox.width,
+          height: isFullScreen ? '100%' : sizeBox.height,
+          aspectRatio: isFullScreen ? '9 / 16' : undefined,
+        }}
         direction="vertical">
         {SHELLS.map((_, index) => {
           return (
@@ -139,7 +151,20 @@ function SwiperRenderer({ customSizeBox, startIndex, className, ...restProps }: 
         {gestureOverlays.SWIPE.isVisible && <KsGestureTypes gestureStep="SWIPE" />}
         {gestureOverlays.PLAY_PAUSE.isVisible && !muted && <KsGestureTypes gestureStep="PLAY_PAUSE" />}
       </Swiper>
-      <DesktopDetails {...videos[currentIndex]} />
+      {!isFullScreen && <DesktopDetails {...videos[currentIndex]} />}
+      {isFullScreen && (
+        <div>
+          <Actions.desktop
+            shareUrl={videos[currentIndex].video.shareUrl}
+            sparkCount={videos[currentIndex].video.sparkCount}
+            videoId={videos[currentIndex].video.id}
+            videoSlug={videos[currentIndex].video.slug}
+            attachedLink={videos[currentIndex].video.attachedLink}
+            description={videos[currentIndex].video.descriptionText}
+            isSparked={videos[currentIndex].video.isSparked}
+          />
+        </div>
+      )}
     </div>
   )
 }

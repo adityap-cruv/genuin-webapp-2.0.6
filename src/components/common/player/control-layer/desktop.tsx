@@ -8,6 +8,8 @@ import { cn } from '@/lib/utils'
 import { PlayIcon } from '@icons/player-controls/play-icon'
 import { PauseIcon } from '@icons/player-controls/pause-icon'
 import { AnimatedMuteIcon } from './animated-mute-icon'
+import { ExpandIcon } from '@icons/player-controls/expand-icon'
+import { CollapseIcon } from '@icons/player-controls/collapse-icon'
 
 type DesktopProps = {
   sparkCount: number
@@ -32,15 +34,18 @@ export const Desktop = memo(function Desktop({
   isInModal,
   clickableUrl,
 }: DesktopProps) {
-  const { setShouldPlay, shouldPlay, muted, toggleMuted, toggleButtonVisibility } = usePlayerControlStore(
-    useShallow((state) => ({
-      setShouldPlay: state.setShouldPlay,
-      shouldPlay: state.shouldPlay,
-      muted: state.muted,
-      toggleMuted: state.toggleMuted,
-      toggleButtonVisibility: state.toggleButtonVisibility,
-    }))
-  )
+  const { setShouldPlay, shouldPlay, muted, toggleMuted, toggleButtonVisibility, toggleFullScreen, isFullScreen } =
+    usePlayerControlStore(
+      useShallow((state) => ({
+        setShouldPlay: state.setShouldPlay,
+        shouldPlay: state.shouldPlay,
+        muted: state.muted,
+        toggleMuted: state.toggleMuted,
+        toggleButtonVisibility: state.toggleButtonVisibility,
+        toggleFullScreen: state.toggleFullScreen,
+        isFullScreen: state.isFullScreen,
+      }))
+    )
 
   const handleVideoClick = useCallback(
     (e: any) => {
@@ -79,16 +84,6 @@ export const Desktop = memo(function Desktop({
       <div
         onClick={clickableUrl ? openClickableUrl : handleVideoClick}
         className={cn('absolute inset-0', clickableUrl && 'cursor-pointer')}>
-        {/* {muted && showMutedLayer && (
-          <div
-            className="absolute h-full w-full"
-            onClick={(e) => {
-              e.stopPropagation()
-              toggleMutedLayer()
-              toggleMuted()
-            }}
-          />
-        )} */}
         <div
           style={{
             background: 'linear-gradient(0deg, rgba(0, 0, 0, 0.00) 0%, rgba(0, 0, 0, 0.50) 100%)',
@@ -96,22 +91,32 @@ export const Desktop = memo(function Desktop({
           className="absolute top-0 h-20 w-full"
         />
         <div
-          className="relative left-4 top-4 flex gap-3"
+          className="relative left-4 top-4 flex justify-between gap-3"
           style={{
             width: 'calc(100% - 32px)',
           }}>
-          {
+          <div className="flex w-full gap-3">
             <span
               onClick={(e) => {
                 e.stopPropagation()
                 setShouldPlay(!shouldPlay)
                 toggleButtonVisibility(shouldPlay ? 'pause' : 'play')
               }}
-              className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-monochrome-black/40">
+              className="flex h-12 w-12 flex-shrink-0 cursor-pointer items-center justify-center rounded-full bg-monochrome-black/40">
               {!shouldPlay ? <PlayIcon variant="light" /> : <PauseIcon variant="light" />}
             </span>
-          }
-          <AnimatedMuteIcon videoId={videoId} />
+
+            <AnimatedMuteIcon videoId={videoId} />
+          </div>
+
+          <span
+            onClick={(e) => {
+              e.stopPropagation()
+              toggleFullScreen()
+            }}
+            className="flex h-12 w-12 flex-shrink-0 cursor-pointer items-center justify-center rounded-full bg-monochrome-black/40">
+            {isFullScreen ? <CollapseIcon variant="light" /> : <ExpandIcon variant="light" />}
+          </span>
         </div>
       </div>
       {isInModal && (
@@ -119,17 +124,19 @@ export const Desktop = memo(function Desktop({
           <WalletAmountBadge type="light" />
         </span>
       )}
-      <div className="absolute bottom-0 right-0 pr-2">
-        <Actions.desktop
-          shareUrl={shareUrl}
-          sparkCount={sparkCount}
-          videoId={videoId}
-          videoSlug={videoSlug}
-          attachedLink={attachedLink}
-          description={description}
-          isSparked={isSparked}
-        />
-      </div>
+      {!isFullScreen && (
+        <div className="absolute bottom-0 right-0 pr-2">
+          <Actions.desktop
+            shareUrl={shareUrl}
+            sparkCount={sparkCount}
+            videoId={videoId}
+            videoSlug={videoSlug}
+            attachedLink={attachedLink}
+            description={description}
+            isSparked={isSparked}
+          />
+        </div>
+      )}
       <PlayerProgressBar />
     </div>
   )
