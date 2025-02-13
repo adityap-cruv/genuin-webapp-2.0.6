@@ -5,7 +5,6 @@ import imageAppStore from '@images/appStore.svg'
 import imagePlayStore from '@images/playStore.svg'
 import { URL_TO_APP_STORE, URL_TO_PLAY_STORE } from '@lib/constants'
 import { QRCode } from 'react-qrcode-logo'
-import { GenuinIcon } from '@icons/genuin-icon'
 import { useGenuinOptions } from '@/lib/stores/genuin-options'
 import { useShallow } from 'zustand/react/shallow'
 import { CustomImage } from '@/components/custom/custom-image'
@@ -48,11 +47,7 @@ export function Body({ title, subtitle, deepLink }: DownloadDialogType) {
           </>
         ) : (
           <div className="flex flex-col items-center justify-center gap-4">
-            {brandLogo ? (
-              <CustomImage src={brandLogo} height={48} width={48} className="object-cover" alt="logo" />
-            ) : (
-              <GenuinIcon.logo className='h-12' />
-            )}
+            {brandLogo && <CustomImage src={brandLogo} height={48} width={48} className="object-cover" alt="logo" />}
             <p style={{ fontSize: '40px' }} className="whitespace-nowrap text-center font-bold leading-none">
               {title}
             </p>
