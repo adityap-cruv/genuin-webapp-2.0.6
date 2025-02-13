@@ -13,11 +13,13 @@ export const Comments = {
 
 type Props = {
   videoId: string
+  slug: string
+  videoShareUrl: string
   comments: CommentListType
   setComments: (comments: CommentListType) => void
 }
 
-function WithApi({ videoId, comments, setComments }: Props) {
+function WithApi({ videoId, slug ,videoShareUrl, comments, setComments }: Props) {
   const { isLoading, data, isError, isFetchingNextPage, fetchNextPage } = getVideosComments(videoId)
 
   useEffect(() => {
@@ -38,7 +40,14 @@ function WithApi({ videoId, comments, setComments }: Props) {
   return (
     <div className="h-full">
       {comments && (
-        <CommentList comments={comments} isFetchingNextPage={isFetchingNextPage} fetchNextPage={fetchNextPage} />
+        <CommentList
+          videoId={videoId}
+          videoShareUrl={videoShareUrl}
+          slug={slug}
+          comments={comments}
+          isFetchingNextPage={isFetchingNextPage}
+          fetchNextPage={fetchNextPage}
+        />
       )}
     </div>
   )
@@ -51,15 +60,20 @@ type WithoutApiProps = {
   isFetchingNextPage: boolean
   fetchNextPage: () => void
   hasNextPage?: boolean
+  videoId: string
+  videoShareUrl: string
+  slug: string
 }
 
 type CommentListProps = {
   comments: CommentListType
   isFetchingNextPage: boolean
   fetchNextPage: any
+  videoShareUrl: string
+  slug: string
 }
 
-function CommentList({ comments, isFetchingNextPage, fetchNextPage }: CommentListProps) {
+function CommentList({ comments, slug, isFetchingNextPage, fetchNextPage, videoShareUrl }: CommentListProps) {
   const scrollDivRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ container: scrollDivRef, layoutEffect: false })
 
@@ -71,7 +85,7 @@ function CommentList({ comments, isFetchingNextPage, fetchNextPage }: CommentLis
   return (
     <div ref={scrollDivRef} className="h-full overflow-x-clip overflow-y-scroll px-2 pb-20 sm:px-4">
       {comments.map((comment, index) => {
-        return <CommentItem key={index} comment={comment} />
+        return <CommentItem key={index} comment={comment} slug={slug} videoShareUrl={videoShareUrl} />
       })}
       {isFetchingNextPage && (
         <div className="flex w-full justify-center">
@@ -83,12 +97,12 @@ function CommentList({ comments, isFetchingNextPage, fetchNextPage }: CommentLis
 }
 
 // without api component is only used in desktop-details.tsx.
-function WithoutApi({ comments }: WithoutApiProps) {
+function WithoutApi({ comments, slug, videoShareUrl }: WithoutApiProps) {
   // if (comments.length === 0) return <NoComments />
   return (
     <>
       {comments.map((item, index) => (
-        <CommentItem key={index} comment={item} />
+        <CommentItem key={index} comment={item} slug={slug} videoShareUrl={videoShareUrl} />
       ))}
     </>
   )
