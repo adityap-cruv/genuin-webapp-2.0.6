@@ -19,7 +19,7 @@ type Props = {
   setComments: (comments: CommentListType) => void
 }
 
-function WithApi({ videoId, slug ,videoShareUrl, comments, setComments }: Props) {
+function WithApi({ videoId, slug, videoShareUrl, comments, setComments }: Props) {
   const { isLoading, data, isError, isFetchingNextPage, fetchNextPage } = getVideosComments(videoId)
 
   useEffect(() => {
@@ -41,7 +41,6 @@ function WithApi({ videoId, slug ,videoShareUrl, comments, setComments }: Props)
     <div className="h-full">
       {comments && (
         <CommentList
-          videoId={videoId}
           videoShareUrl={videoShareUrl}
           slug={slug}
           comments={comments}
