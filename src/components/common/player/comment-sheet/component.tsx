@@ -41,7 +41,13 @@ export function Sheet({ commentCount, videoId, videoDetails }: Props) {
             />
           </div>
           <div style={{ height: 'calc(100% - 60px)' }}>
-            <Comments.withApi videoId={videoId} comments={comments} setComments={setComments} />
+            <Comments.withApi
+              videoId={videoId}
+              slug={videoDetails.video.slug}
+              videoShareUrl={videoDetails.video.shareUrl}
+              comments={comments}
+              setComments={setComments}
+            />
           </div>
         </div>
         <MentionInput

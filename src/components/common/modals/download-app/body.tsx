@@ -5,9 +5,9 @@ import imageAppStore from '@images/appStore.svg'
 import imagePlayStore from '@images/playStore.svg'
 import { URL_TO_APP_STORE, URL_TO_PLAY_STORE } from '@lib/constants'
 import { QRCode } from 'react-qrcode-logo'
-import { GenuinIcon } from '@icons/genuin-icon'
 import { useGenuinOptions } from '@/lib/stores/genuin-options'
 import { useShallow } from 'zustand/react/shallow'
+import { CustomImage } from '@/components/custom/custom-image'
 
 type DownloadDialogType = {
   title?: React.ReactNode
@@ -16,12 +16,13 @@ type DownloadDialogType = {
 }
 
 export function Body({ title, subtitle, deepLink }: DownloadDialogType) {
-  const { links } = useGenuinOptions(
+  const { links, brandLogo } = useGenuinOptions(
     useShallow((state) => ({
       links: {
         appStoreLink: state.config?.integrations.sdk.ios.appstore_link,
         playStoreLink: state.config?.integrations.sdk.android.playstore_link,
       },
+      brandLogo: state.config?.logo,
     }))
   )
 
@@ -45,9 +46,9 @@ export function Body({ title, subtitle, deepLink }: DownloadDialogType) {
             </div>
           </>
         ) : (
-          <div className=" mb-4 flex flex-col items-center justify-center">
-            <GenuinIcon.icon className="h-12 fill-blue" />
-            <p style={{ fontSize: '40px' }} className="hidden whitespace-nowrap text-center font-bold sm:block">
+          <div className="flex flex-col items-center justify-center gap-4">
+            {brandLogo && <CustomImage src={brandLogo} height={48} width={48} className="object-cover" alt="logo" />}
+            <p style={{ fontSize: '40px' }} className="whitespace-nowrap text-center font-bold leading-none">
               {title}
             </p>
             <p className="line-clamp-2 max-w-none text-center text-title-2-demi">{subtitle}</p>
