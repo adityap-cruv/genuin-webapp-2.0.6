@@ -23,4 +23,10 @@ Sentry.init({
 
   // Setting this option to true will print useful information to the console while you're setting up Sentry.
   debug: false,
+  beforeSendTransaction(event) {
+    if (event.transaction && event.transaction.startsWith('middleware')) {
+      return null // Ignore all middleware transactions
+    }
+    return event
+  },
 })
