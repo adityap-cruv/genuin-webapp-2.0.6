@@ -22,12 +22,7 @@ export async function showInterruption() {
   if (webCTA === 'app' || webCTA === 'both') {
     await getAppLink().then((generatedLink) => {
       DownloadDialogModal.open({
-        title: (
-          <>
-            Download <br />
-            the app
-          </>
-        ),
+        title: <>Download the app</>,
         deepLink: isMobile ? '' : generatedLink,
       })
     })
