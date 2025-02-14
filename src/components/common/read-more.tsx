@@ -334,25 +334,18 @@ export function Dynamic({
   }
 
   useEffect(() => {
-    // Reset the state when text changes
-    setIsExpandedInternal(false)
-  }, [text])
-
-  useEffect(() => {
     const checkOverflow = () => {
       const element: any = textRef.current
-      if (!element || !text) {
+
+      if (element?.scrollHeight <= element?.clientHeight || !text) {
         setIsOverflowing(false)
-        return
+        // setIsExpanded(false)
       }
 
-      // Delay the overflow check to ensure the element has been fully rendered
-      setTimeout(() => {
-        const isOverflowingNow = element.scrollHeight > element.clientHeight
-        setIsOverflowing(isOverflowingNow)
-      }, 50)
+      if (element) {
+        setIsOverflowing(element.scrollHeight > element.clientHeight)
+      }
     }
-
     checkOverflow()
     window.addEventListener('resize', checkOverflow)
     return () => {

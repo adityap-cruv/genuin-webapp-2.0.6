@@ -5,16 +5,24 @@ import dynamic from 'next/dynamic'
 import { type CommentType } from '@lib/schemas/loop/comment'
 import Link from 'next/link'
 import { PATH_NAME } from '@lib/utils/constants/path'
-import { getTimeAgo, tryJsonParse } from '@lib/utils'
+import { getTimeAgo, openModal, tryJsonParse } from '@lib/utils'
 import Image from 'next/image'
 import icSpark from '@icons/icSparkBlack.svg'
-import { DownloadDialogModal } from '../modals/download-app'
+import { videoDeepLink } from '@/lib/get-deeplink'
 
 const CommentPlayer = dynamic(async () => await import('./video-player').then((comp) => comp.CommentPlayer))
 const AudioPlayer = dynamic(async () => await import('./audio-player').then((comp) => comp.AudioPlayer))
 
 // TODO: pass data here only on need to know basis.
-export function CommentItem({ comment }: { comment: CommentType }) {
+export function CommentItem({
+  comment,
+  videoShareUrl,
+  slug
+}: {
+  comment: CommentType
+  videoShareUrl: string
+  slug: string
+}) {
   const UI = Comment[comment.type]
   return (
     <div className="flex w-full flex-col gap-y-2 py-2 last:pb-20">
@@ -37,8 +45,10 @@ export function CommentItem({ comment }: { comment: CommentType }) {
         <UI comment={comment} />
         <button
           className="flex items-center pt-2"
-          onClick={(e) => {
-            DownloadDialogModal.open({ title: 'Get the Genuin app', subtitle: 'Get app to spark this comment.' })
+          onClick={async () => {
+            await videoDeepLink(slug, videoShareUrl).then((generatedLink) => {
+              openModal({ deepLink: generatedLink, subtitle: <>Get the app to spark the comment.</> })
+            })
           }}>
           <Image src={icSpark} alt="" className="h-4 w-4" />
           <p className="text-cap-1-med">{comment.no_of_sparks}</p>

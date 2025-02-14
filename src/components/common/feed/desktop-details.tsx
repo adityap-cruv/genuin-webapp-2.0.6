@@ -148,7 +148,14 @@ export function DesktopDetails({ loop, community, owner, video }: DesktopDetails
           </p>
         </div>
         <div className="h-full px-4 pt-2">
-          <CommentBox videoId={video.id} parentRef={scrollDivRef} setComments={setComments} comments={comments} />
+          <CommentBox
+            videoId={video.id}
+            slug={video.slug}
+            videoShareUrl={video.shareUrl}
+            parentRef={scrollDivRef}
+            setComments={setComments}
+            comments={comments}
+          />
         </div>
       </div>
       <MentionInput
@@ -165,11 +172,15 @@ export function DesktopDetails({ loop, community, owner, video }: DesktopDetails
 
 function CommentBox({
   videoId,
+  slug,
+  videoShareUrl,
   parentRef,
   setComments,
   comments,
 }: {
   videoId: string
+  slug: string
+  videoShareUrl: string
   parentRef: RefObject<HTMLDivElement>
   setComments: any
   comments: any
@@ -208,6 +219,9 @@ function CommentBox({
           isError={isError}
           isFetchingNextPage={isFetchingNextPage}
           isLoading={isLoading}
+          videoId={videoId}
+          slug={slug}
+          videoShareUrl={videoShareUrl}
         />
       </div>
     )
