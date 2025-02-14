@@ -119,7 +119,7 @@ export function FeedContextProvider({
       fetchNextPage?.()
     }
     if ((currentIndex + 1) % 5 === 0) {
-      showInterruption()
+      void showInterruption()
     }
 
     if (videos.length - 1 === currentIndex) {
