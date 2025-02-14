@@ -31,10 +31,7 @@ export function Body({ title, subtitle, deepLink }: DownloadDialogType) {
       <div className="flex w-full flex-col items-center justify-center px-4 pt-6">
         {deepLink ? (
           <>
-            <p className="text-center text-new-h3">
-              Download the
-              <br /> app
-            </p>
+            <p className="text-center text-new-h3">Download the app</p>
 
             {subtitle && <p className="mt-4 line-clamp-2 max-w-none text-center text-title-2-demi">{subtitle}</p>}
 
