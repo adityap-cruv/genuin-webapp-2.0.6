@@ -15,7 +15,7 @@ export type SearchButton = {
 }
 
 export type SearchItem = {
-  image: string
+  image: string | null
   title: string
   caption: string
   price: string

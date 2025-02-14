@@ -40,7 +40,7 @@ export const EmbedPdp = [
         caption:
           'Dr Jane Cooper is the Senior Director & Head for Urology at Tortis Hospital, USA. He received advance training in knee surgeries from various world-renowned international institutes in Japan, Italy & Germany.',
         price: '$122.00',
-        image: 'https://media.begenuin.com/webapp_assets/embed_pages/food/pdp/pdp-image.png',
+        image: 'https://media.begenuin.com/webapp_assets/embed_pages/healthcare/pdp/pdp-image.png',
         category: [
           {
             label: 'Time',
@@ -62,6 +62,40 @@ export const EmbedPdp = [
           },
           {
             text: 'Book an Appointment',
+            variant: 'default',
+          },
+        ],
+      },
+    },
+
+    fintech: {
+      pdpSection: {
+        title: 'Premium Plan',
+        caption:
+          'Elevate your financial journey with tailored strategies and exclusive opportunities designed for discerning investors. Enjoy personalized guidance and priority support to maximize your wealth.',
+        price: '$50,001 - $250,000',
+        image: 'https://media.begenuin.com/webapp_assets/embed_pages/fintech/pdp/pdp-image.png',
+        category: [
+          {
+            label: 'Plan Size',
+            value: 'Medium',
+          },
+          {
+            label: 'Lock-in Period',
+            value: '5 years',
+          },
+          {
+            label: 'Return Rate',
+            value: '8% annually',
+          },
+        ],
+        button: [
+          {
+            text: 'Wishlist',
+            variant: 'outline',
+          },
+          {
+            text: 'Add to Cart',
             variant: 'default',
           },
         ],

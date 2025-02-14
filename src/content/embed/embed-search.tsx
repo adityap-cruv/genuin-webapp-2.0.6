@@ -102,7 +102,7 @@ export const EmbedSearch = [
         searchItemType: 2,
         searchItemsTop: [
           {
-            image: 'https://media.begenuin.com/webapp_assets/embed_pages/food/search/item1.png',
+            image: 'https://media.begenuin.com/webapp_assets/embed_pages/healthcare/search/item1.png',
             title: 'Dr. Serra Ali',
             caption: 'CHAIRMAN & HEAD PAEDIATRIC AND CONGENITAL HEART SURGERY',
             price: '100 Fees',
@@ -120,7 +120,7 @@ export const EmbedSearch = [
             ],
           },
           {
-            image: 'https://media.begenuin.com/webapp_assets/embed_pages/food/search/item1.png',
+            image: 'https://media.begenuin.com/webapp_assets/embed_pages/healthcare/search/item2.png',
             title: 'Jane Cooper',
             caption: 'EXECUTIVE CHAIRMAN FORTIS C DOC | FORTIS C-DOC',
             price: '110 Fees',
@@ -138,7 +138,7 @@ export const EmbedSearch = [
             ],
           },
           {
-            image: 'https://media.begenuin.com/webapp_assets/embed_pages/food/search/item1.png',
+            image: 'https://media.begenuin.com/webapp_assets/embed_pages/healthcare/search/item3.png',
             title: 'Dr. Sam B.Sen',
             caption: 'CHAIRMAN – LIVER TRANSPLANT & HEPATO - BILIARY SCIENCE ',
             price: '110 Fees',
@@ -158,7 +158,7 @@ export const EmbedSearch = [
         ],
         searchItemsBottom: [
           {
-            image: 'https://media.begenuin.com/webapp_assets/embed_pages/food/search/item1.png',
+            image: 'https://media.begenuin.com/webapp_assets/embed_pages/healthcare/search/item1.png',
             title: 'Dr. Jhon wheller',
             caption: 'SENIOR DIRECTOR ORTHOPAEDICS | TORTIS',
             price: '110 Fees',
@@ -176,7 +176,7 @@ export const EmbedSearch = [
             ],
           },
           {
-            image: 'https://media.begenuin.com/webapp_assets/embed_pages/food/search/item1.png',
+            image: 'https://media.begenuin.com/webapp_assets/embed_pages/healthcare/search/item1.png',
             title: 'Dr. Serra Ali',
             caption: 'CHAIRMAN & HEAD PAEDIATRIC AND CONGENITAL HEART SURGERY',
             price: '110 Fees',
@@ -194,7 +194,7 @@ export const EmbedSearch = [
             ],
           },
           {
-            image: 'https://media.begenuin.com/webapp_assets/embed_pages/food/search/item1.png',
+            image: 'https://media.begenuin.com/webapp_assets/embed_pages/healthcare/search/item3.png',
             title: 'Jerome Bell',
             caption: 'PRINCIPAL DIRECTOR & UNIT HEAD - PULMONOLOGY & SLEEP MEDICINE ',
             price: '110 Fees',
@@ -212,7 +212,7 @@ export const EmbedSearch = [
             ],
           },
           {
-            image: 'https://media.begenuin.com/webapp_assets/embed_pages/food/search/item1.png',
+            image: 'https://media.begenuin.com/webapp_assets/embed_pages/healthcare/search/item4.png',
             title: 'Esther Howard',
             caption: 'PRINCIPAL DIRECTOR & HOD - OPHTHALMOLOGY ',
             price: '110 Fees',
@@ -225,6 +225,157 @@ export const EmbedSearch = [
               },
               {
                 text: 'Book An Appointment',
+                variant: 'default',
+              },
+            ],
+          },
+        ],
+      },
+    },
+
+    fintech: {
+      searchTopSection: {
+        searchInputText: 'Enter a financial product or service ',
+        searchResultText: 'Search results for “Investment Accounts”',
+        button: [
+          {
+            text: 'Investments',
+            variant: 'default',
+          },
+          {
+            text: 'Loans',
+            variant: 'outline',
+          },
+        ],
+        searchItemType: 2,
+        searchItemsTop: [
+          {
+            image: null,
+            title: 'Investment Amount: $1,000 - $10,000',
+            caption: 'Ideal For: Beginners exploring low-risk options',
+            price: 'Return Rate:4% annually',
+            time: 'Lock-in Period: 1y',
+            highlightedText:
+              'Features: Portfolio diversification, Access to educational resources, 24/7 customer support',
+            button: [
+              {
+                text: 'View Plan',
+                variant: 'outline',
+              },
+              {
+                text: 'Start Your Investment',
+                variant: 'default',
+              },
+            ],
+          },
+          {
+            image: null,
+            title: 'Investment Amount: $1,000 - $50,000',
+            caption: 'Ideal For: Intermediate investors looking to grow wealth',
+            price: 'Return Rate:6% annually',
+            time: 'Lock-in Period: 3y',
+            highlightedText: 'Features: Managed portfolios, Quarterly performance reports, Tax optimization tools',
+            button: [
+              {
+                text: 'View Plan',
+                variant: 'outline',
+              },
+              {
+                text: 'Start Your Investment',
+                variant: 'default',
+              },
+            ],
+          },
+          {
+            image: null,
+            title: 'Investment Amount: $1,000 - $50,000',
+            caption: 'Ideal For: Intermediate investors looking to grow wealth',
+            price: 'Return Rate:6% annually',
+            time: 'Lock-in Period: 3y',
+            highlightedText: 'Features: Managed portfolios, Quarterly performance reports, Tax optimization tools',
+            button: [
+              {
+                text: 'View Plan',
+                variant: 'outline',
+              },
+              {
+                text: 'Start Your Investment',
+                variant: 'default',
+              },
+            ],
+          },
+        ],
+        searchItemsBottom: [
+          {
+            image: null,
+            title: 'Investment Amount: $1,000 - $10,000',
+            caption: 'Ideal For: Beginners exploring low-risk options',
+            price: 'Return Rate:4% annually',
+            time: 'Lock-in Period: 1y',
+            highlightedText:
+              'Features: Portfolio diversification, Access to educational resources, 24/7 customer support',
+            button: [
+              {
+                text: 'View Plan',
+                variant: 'outline',
+              },
+              {
+                text: 'Start Your Investment',
+                variant: 'default',
+              },
+            ],
+          },
+          {
+            image: null,
+            title: 'Investment Amount: $1,000 - $50,000',
+            caption: 'Ideal For: Intermediate investors looking to grow wealth',
+            price: 'Return Rate:6% annually',
+            time: 'Lock-in Period: 3y',
+            highlightedText: 'Features: Managed portfolios, Quarterly performance reports, Tax optimization tools',
+            button: [
+              {
+                text: 'View Plan',
+                variant: 'outline',
+              },
+              {
+                text: 'Start Your Investment',
+                variant: 'default',
+              },
+            ],
+          },
+          {
+            image: null,
+            title: 'Investment Amount: $1,000 - $10,000',
+            caption: 'Ideal For: Beginners exploring low-risk options',
+            price: 'Return Rate:4% annually',
+            time: 'Lock-in Period: 1y',
+            highlightedText:
+              'Features: Portfolio diversification, Access to educational resources, 24/7 customer support',
+            button: [
+              {
+                text: 'View Plan',
+                variant: 'outline',
+              },
+              {
+                text: 'Start Your Investment',
+                variant: 'default',
+              },
+            ],
+          },
+          {
+            image: null,
+            title: 'Investment Amount: $1,000 - $50,000',
+            caption: 'Ideal For: Intermediate investors looking to grow wealth',
+            price: 'Return Rate:6% annually',
+            time: 'Lock-in Period: 3y',
+            highlightedText: 'Features: Managed portfolios, Quarterly performance reports, Tax optimization tools',
+            button: [
+              {
+                text: 'View Plan',
+                variant: 'outline',
+              },
+              {
+                text: 'Start Your Investment',
                 variant: 'default',
               },
             ],

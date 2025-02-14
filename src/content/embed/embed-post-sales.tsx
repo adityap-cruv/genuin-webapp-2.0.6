@@ -48,7 +48,7 @@ export const EmbedPostSales = [
         indexTitle: 'Appointment booked!',
         title: 'Executive Health Checkup',
         captions: ['BLOOD UREA NITROGEN, SERUM (1079H-SRL)', 'CONSULTATION'],
-        image: 'https://media.begenuin.com/webapp_assets/embed_pages/food/post-sales/post-sales-image.png',
+        image: 'https://media.begenuin.com/webapp_assets/embed_pages/healthcare/post-sales/post-sales-image.png',
         subItems: [
           {
             label: '4.0',
@@ -76,6 +76,49 @@ export const EmbedPostSales = [
           ],
         },
         subtotal: '$200',
+      },
+
+      communitiesSection: {
+        sectionTitle: 'COMMUNITIES',
+        title: 'Connect and share your stories with others like you.',
+        carousalImage:
+          'https://fastly.picsum.photos/id/25/5000/3333.jpg?hmac=yCz9LeSs-i72Ru0YvvpsoECnCTxZjzGde805gWrAHkM',
+      },
+    },
+
+    fintech: {
+      orderDetailsSection: {
+        indexTitle: 'Order Complete!',
+        title: 'Premium Plan',
+        captions: ['High-net-worth individuals seeking premium services'],
+        image: 'https://media.begenuin.com/webapp_assets/embed_pages/fintech/post-sales/post-sales-image.png',
+        subItems: [
+          {
+            label: '4.0',
+            value: '100+ ratings',
+          },
+          {
+            label: '30 Min',
+            value: 'Delivery Time',
+          },
+          {
+            label: '$40 - $60',
+            value: 'Cost for two',
+          },
+        ],
+      },
+
+      invoiceSection: {
+        subTitle: 'Thank you! 🎉',
+        title: 'Your order is being prepared',
+        order: {
+          title: 'Plan Details',
+          items: [
+            ['Payment Summary', 'Investment Amount: $100,000', 'Total Investment: $100,500'],
+            ['', 'Fees & Charges: $500', 'Taxes: $0 (Tax-exempt plan)'],
+          ],
+        },
+        subtotal: '$500',
       },
 
       communitiesSection: {

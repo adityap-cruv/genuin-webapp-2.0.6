@@ -54,7 +54,7 @@ export const EmbedBlog = [
 
     healthcare: {
       blogSection: {
-        image: 'https://media.begenuin.com/webapp_assets/embed_pages/food/blogs/blog-img.png',
+        image: 'https://media.begenuin.com/webapp_assets/embed_pages/healthcare/blogs/blog-img.png',
         blogContent: [
           {
             title: 'Your Trusted Source for Health and Wellness Insights',
@@ -98,6 +98,58 @@ export const EmbedBlog = [
           },
           {
             blog: 'Managing Stress in a Busy World',
+            videos: '15 videos',
+          },
+        ],
+      },
+    },
+
+    fintech: {
+      blogSection: {
+        image: 'https://media.begenuin.com/webapp_assets/embed_pages/fintech/blogs/blog-img.png',
+        blogContent: [
+          {
+            title: ' The Future of Fintech: Trends to Watch in 2025',
+            description:
+              'As technology continues to evolve, fintech is at the forefront of innovation. From AI-driven financial services to blockchain’s transformative impact on security, the landscape is changing rapidly. In this post, we explore the top trends shaping the fintech industry in 2025 and what they mean for businesses and consumers alike.',
+          },
+          {
+            title: 'How Digital Wallets are Revolutionizing Personal Finance',
+            description:
+              'Gone are the days of fumbling with cash or physical cards. Digital wallets have emerged as a convenient, secure, and efficient way to manage money. We dive into the benefits of digital wallets, how they work, and tips for getting the most out of this technology. Sustainability is a growing priority for investors. Fintech platforms are making it easier than ever to align your investments with your values. Explore how technology is driving green finance and the tools available to support ethical investing.',
+          },
+          {
+            title: 'The Role of AI in Transforming Financial Services',
+            description:
+              'Artificial Intelligence is redefining financial services by enabling personalized experiences, fraud detection, and efficient operations. This blog highlights real-world applications of AI in fintech and how its enhancing user experiences across the board.',
+          },
+          {
+            title: 'Budgeting Made Easy: The Power of Personal Finance Apps',
+            description:
+              'Managing money doesn’t have to be stressful. With personal finance apps, you can set budgets, track expenses, and plan for financial goals—all from your smartphone. Learn about the best apps available and how to choose the right one for your needs.',
+          },
+          {
+            title: 'Demystifying Blockchain in Fintech',
+            description:
+              'Blockchain is more than just the technology behind cryptocurrencies. It’s revolutionizing security, transparency, and trust in financial transactions. In this post, we break down blockchain technology and its key use cases in the fintech space.',
+          },
+          {
+            title: 'Conclusion',
+            description:
+              'Fintech is not just an industry; its a revolution that’s reshaping the financial landscape for businesses and individuals alike. From digital wallets to AI-driven services and sustainable finance, these advancements are breaking down barriers and creating opportunities like never before. As the industry evolves, staying informed and adaptable will be key to leveraging the full potential of these innovations. Whether youre a consumer, investor, or business owner, fintech offers tools to enhance financial well-being and drive growth in an increasingly digital world.',
+          },
+        ],
+        popularBlogs: [
+          {
+            blog: 'The Rise of Embedded Finance',
+            videos: '15 videos',
+          },
+          {
+            blog: 'What It Means for Consumers',
+            videos: '15 videos',
+          },
+          {
+            blog: 'Simple recipe strawberry juice',
             videos: '15 videos',
           },
         ],

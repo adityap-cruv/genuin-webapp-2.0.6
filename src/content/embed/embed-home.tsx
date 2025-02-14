@@ -63,7 +63,7 @@ export const EmbedHome = [
             visibility: false,
           },
         ],
-        heroImage: 'https://media.begenuin.com/webapp_assets/embed_pages/food/home/hero_section.png',
+        heroImage: 'https://media.begenuin.com/webapp_assets/embed_pages/healthcare/home/hero-section.png',
       },
       featuresSection: {
         sectionTitle: 'FEATURES',
@@ -90,7 +90,59 @@ export const EmbedHome = [
         sectionTitle: 'DOWNLOAD APP',
         title: 'Get Started With Us Today!',
         caption: 'Discover food wherever and whenever and get your food delivered quickly.',
-        carousalImage: 'https://media.begenuin.com/webapp_assets/embed_pages/food/home/get-started.png',
+        carousalImage: 'https://media.begenuin.com/webapp_assets/embed_pages/healthcare/home/get-started.png',
+        button: [
+          {
+            text: 'Get Started',
+          },
+        ],
+      },
+    },
+
+    fintech: {
+      heroSection: {
+        title: 'Finance with Security And Flexibility',
+        caption:
+          'No-fee checking account with cash back rewards. Enjoy fee-free banking and earn cash back on your everyday purchases.',
+        button: [
+          {
+            text: 'Open Account',
+          },
+          {
+            text: 'Watch Video',
+            buttonColor: '#F2C94C',
+          },
+        ],
+        heroImage: 'https://media.begenuin.com/webapp_assets/embed_pages/fintech/home/hero-section.png',
+      },
+      featuresSection: {
+        sectionTitle: 'FEATURED',
+        title: 'All the features in one app',
+        options: ['Webinars', 'Case Studies', 'Vendor management', 'Government Registrations', 'Supply Chain Cloud'],
+        carousalImage:
+          'https://fastly.picsum.photos/id/25/5000/3333.jpg?hmac=yCz9LeSs-i72Ru0YvvpsoECnCTxZjzGde805gWrAHkM',
+      },
+      testimonialSection: {
+        sectionTitle: 'TESTIMONIAL',
+        title: 'What Our Customers Say About Us',
+        caption:
+          '“We have successfully sold digital product and have happy with the results & look forward to using it again this.”.',
+        carousalImage:
+          'https://fastly.picsum.photos/id/25/5000/3333.jpg?hmac=yCz9LeSs-i72Ru0YvvpsoECnCTxZjzGde805gWrAHkM',
+      },
+      communitiesSection: {
+        sectionTitle: 'COMMUNITIES',
+        title: 'Connect and share your stories with others like you.',
+        carousalImage:
+          'https://fastly.picsum.photos/id/25/5000/3333.jpg?hmac=yCz9LeSs-i72Ru0YvvpsoECnCTxZjzGde805gWrAHkM',
+      },
+      getStartedSection: {
+        visibility: true,
+        sectionTitle: 'DOWNLOAD APP',
+        title: 'Get Started With Us Today!',
+        caption:
+          'Personalize your settings, follow your progress, archive your highlights and notes automatically Glose is the ultimate reading ',
+        carousalImage: 'https://media.begenuin.com/webapp_assets/embed_pages/fintech/home/get-started.png',
         button: [
           {
             text: 'Get Started',
