@@ -8,6 +8,7 @@ export type Section = {
 export type Button = {
   text: string
   buttonColor?: string
+  visibility?: boolean
 }
 
 export type HeroSectionType =
@@ -39,6 +40,7 @@ export type CommunitiesSectionType =
 
 export type GetStartedSectionType =
   | (Section & {
+      visibility?: boolean
       caption: string
       carousalImage: string
       button: Button[]

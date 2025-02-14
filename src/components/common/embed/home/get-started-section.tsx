@@ -3,7 +3,7 @@ import React from 'react'
 import { type GetStartedSectionType } from '../../../../../types/embed/embed-home'
 
 const GetStartedSection = ({ getStartedSection }: { getStartedSection: GetStartedSectionType }) => {
-  if (!getStartedSection) return null
+  if (!getStartedSection || !getStartedSection.visibility) return null
   return (
     <>
       {/* Desktop */}

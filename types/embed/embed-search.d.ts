@@ -20,4 +20,6 @@ export type SearchItem = {
   caption: string
   price: string
   time: string
+  highlightedText?: string
+  button?: SearchButton[]
 }

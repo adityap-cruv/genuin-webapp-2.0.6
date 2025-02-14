@@ -23,12 +23,14 @@ const HeroSection = ({ heroSection }: { heroSection: HeroSectionType }) => {
               <Button className="rounded-full px-6 py-3">
                 <p className="text-cap-1-home">{heroSection.button[0].text}</p>
               </Button>
-              <div className="flex cursor-pointer items-center gap-2 rounded-full">
-                <div className=" rounded-full p-2" style={{ backgroundColor: heroSection.button[1].buttonColor }}>
-                  <PlayIcon className="fill-monochrome-black" />
+              {heroSection.button[1].visibility && (
+                <div className="flex cursor-pointer items-center gap-2 rounded-full">
+                  <div className=" rounded-full p-2" style={{ backgroundColor: heroSection.button[1].buttonColor }}>
+                    <PlayIcon className="fill-monochrome-black" />
+                  </div>
+                  <p className="text-cap-1-home text-monochrome-black">{heroSection.button[1].text}</p>
                 </div>
-                <p className="text-cap-1-home text-monochrome-black">{heroSection.button[1].text}</p>
-              </div>
+              )}
             </div>
           </div>
           <div className="w-1/2">
@@ -47,12 +49,14 @@ const HeroSection = ({ heroSection }: { heroSection: HeroSectionType }) => {
             <Button className="rounded-full px-6 py-3">
               <p className="text-cap-1-home">{heroSection.button[0].text}</p>
             </Button>
-            <div className="flex cursor-pointer items-center gap-2 rounded-full">
-              <div className=" rounded-full p-2" style={{ backgroundColor: heroSection.button[1].buttonColor }}>
-                <PlayIcon className="fill-monochrome-black" />
+            {heroSection.button[1].visibility && (
+              <div className="flex cursor-pointer items-center gap-2 rounded-full">
+                <div className=" rounded-full p-2" style={{ backgroundColor: heroSection.button[1].buttonColor }}>
+                  <PlayIcon className="fill-monochrome-black" />
+                </div>
+                <p className="text-cap-1-home text-monochrome-black">{heroSection.button[1].text}</p>
               </div>
-              <p className="text-cap-1-home text-monochrome-black">{heroSection.button[1].text}</p>
-            </div>
+            )}
           </div>
         </div>
       </section>

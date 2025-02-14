@@ -48,5 +48,55 @@ export const EmbedHome = [
         ],
       },
     },
+
+    healthcare: {
+      heroSection: {
+        title: 'Advancing Healthcare through Tech',
+        caption: 'Your trusted partner in healing, wellness, and compassionate healthcare.',
+        button: [
+          {
+            text: 'Book an Appointment',
+          },
+          {
+            text: 'Watch Video',
+            buttonColor: '#F2C94C',
+            visibility: false,
+          },
+        ],
+        heroImage: 'https://media.begenuin.com/webapp_assets/embed_pages/food/home/hero_section.png',
+      },
+      featuresSection: {
+        sectionTitle: 'FEATURES',
+        title: 'Features We Provide',
+        options: ['Diabetes', 'Skin Care', 'Thyroid', 'Vitamins', 'Lifestyle'],
+        carousalImage:
+          'https://fastly.picsum.photos/id/25/5000/3333.jpg?hmac=yCz9LeSs-i72Ru0YvvpsoECnCTxZjzGde805gWrAHkM',
+      },
+      testimonialSection: {
+        sectionTitle: 'WHAT THEY SAY',
+        title: 'What Our Customers Say About Us',
+        caption: `“As a busy professional, I appreciate the convenience and quality of care I receive at Vital Bloom. From telemedicine consultations to routine check-ups, they've become my trusted partner in health”.`,
+        carousalImage:
+          'https://fastly.picsum.photos/id/25/5000/3333.jpg?hmac=yCz9LeSs-i72Ru0YvvpsoECnCTxZjzGde805gWrAHkM',
+      },
+      communitiesSection: {
+        sectionTitle: 'COMMUNITIES',
+        title: 'Connect and share your stories with others like you.',
+        carousalImage:
+          'https://fastly.picsum.photos/id/25/5000/3333.jpg?hmac=yCz9LeSs-i72Ru0YvvpsoECnCTxZjzGde805gWrAHkM',
+      },
+      getStartedSection: {
+        visibility: false,
+        sectionTitle: 'DOWNLOAD APP',
+        title: 'Get Started With Us Today!',
+        caption: 'Discover food wherever and whenever and get your food delivered quickly.',
+        carousalImage: 'https://media.begenuin.com/webapp_assets/embed_pages/food/home/get-started.png',
+        button: [
+          {
+            text: 'Get Started',
+          },
+        ],
+      },
+    },
   },
 ]

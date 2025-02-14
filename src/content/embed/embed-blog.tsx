@@ -51,5 +51,57 @@ export const EmbedBlog = [
         ],
       },
     },
+
+    healthcare: {
+      blogSection: {
+        image: 'https://media.begenuin.com/webapp_assets/embed_pages/food/blogs/blog-img.png',
+        blogContent: [
+          {
+            title: 'Your Trusted Source for Health and Wellness Insights',
+            description:
+              'At our center, we understand that navigating the path to better health can be overwhelming. That’s why we are here to simplify it for you. As your trusted source for health and wellness insights, we aim to empower you with credible information, practical tips, and expert advice tailored to your unique needs.From understanding common health conditions to exploring the latest advancements in medicine, our platform is designed to help you make informed decisions about your well-being.',
+          },
+          {
+            title: 'Signs It’s Time to Visit Your Doctor',
+            description:
+              'Your body often gives subtle warnings when something isn’t quite right, and recognizing these signs can make all the difference. Persistent symptoms like unexplained fatigue, sudden weight loss, recurring pain, or prolonged fever shouldnt be ignored. Additionally, if you notice changes in your appetite, sleep patterns, or mood, it’s essential to consult your doctor. Early intervention can prevent minor issues from developing into serious conditions and provide peace of mind. ',
+          },
+          {
+            title: 'How to Boost Your Immune System Naturally',
+            description:
+              'Boosting your immune system naturally involves adopting a healthy lifestyle that supports your body’s defense mechanisms. Start by eating a nutrient-rich diet full of fruits, vegetables, whole grains, and lean proteins to provide essential vitamins and minerals, such as vitamin C, zinc, and antioxidants.',
+          },
+          {
+            title: ' Managing Stress in a Busy World',
+            description:
+              'In today’s fast-paced world, stress has become an almost inevitable part of daily life. However, managing it effectively is key to maintaining both physical and mental well-being. ',
+          },
+          {
+            title: 'Tips for a Healthy Lifestyle',
+            description:
+              'Adopting a healthy lifestyle doesn’t have to be overwhelming; it’s about making small, sustainable changes to your daily routine. Start by focusing on a balanced diet rich in whole grains, lean proteins, healthy fats, and fresh fruits and vegetables.',
+          },
+          {
+            title: 'Conclusion',
+            description:
+              'Taking charge of your health starts with staying informed and proactive. At [Your Healthcare Website Name], we are committed to providing reliable insights, expert advice, and the latest updates in medical advancements to empower your wellness journey. Whether youre seeking tips for a healthier lifestyle.',
+          },
+        ],
+        popularBlogs: [
+          {
+            blog: 'Tips for a Healthy Lifestyle',
+            videos: '15 videos',
+          },
+          {
+            blog: 'The Importance of Regular Health Checkups',
+            videos: '15 videos',
+          },
+          {
+            blog: 'Managing Stress in a Busy World',
+            videos: '15 videos',
+          },
+        ],
+      },
+    },
   },
 ]

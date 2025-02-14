@@ -48,6 +48,9 @@ const SearchSection = ({ searchTopSection }: { searchTopSection: SearchTopSectio
               image={item.image}
               price={item.price}
               time={item.time}
+              button={item.button}
+              highlightedText={item.highlightedText}
+              searchItemType={searchTopSection.searchItemType}
             />
           ))}
         </div>
@@ -64,6 +67,9 @@ const SearchSection = ({ searchTopSection }: { searchTopSection: SearchTopSectio
                 image={item.image}
                 price={item.price}
                 time={item.time}
+                button={item.button}
+                highlightedText={item.highlightedText}
+                searchItemType={searchTopSection.searchItemType}
               />
             ))}
           </div>
@@ -109,6 +115,9 @@ const SearchSection = ({ searchTopSection }: { searchTopSection: SearchTopSectio
               image={item.image}
               price={item.price}
               time={item.time}
+              button={item.button}
+              highlightedText={item.highlightedText}
+              searchItemType={searchTopSection.searchItemType}
             />
           ))}
         </div>
@@ -124,6 +133,9 @@ const SearchSection = ({ searchTopSection }: { searchTopSection: SearchTopSectio
               image={item.image}
               price={item.price}
               time={item.time}
+              button={item.button}
+              highlightedText={item.highlightedText}
+              searchItemType={searchTopSection.searchItemType}
             />
           ))}
         </div>

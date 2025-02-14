@@ -6,7 +6,7 @@ import carousalEmbed2 from '@images/embed/carousel-2.png'
 import { type FeaturesSectionType } from '../../../../../types/embed/embed-home'
 
 const FeaturesSection = ({ featuresSection }: { featuresSection: FeaturesSectionType }) => {
-  const [selectedItem, setSelectedItem] = useState(featuresSection?.options[0])
+  const [selectedItem, setSelectedItem] = useState(featuresSection?.options[1])
 
   if (!featuresSection || featuresSection?.options.length === 0) return null
 
