@@ -2,7 +2,7 @@
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { type ReactNode } from 'react'
-import { EmbedIcon, ExploreIcon, HomeIcon, LatestIcon, MoreIcon, PopularIcon, ProfileIcon } from '@icons/side-bar-icons'
+import { ExploreIcon, HomeIcon, LatestIcon, MoreIcon, PopularIcon, ProfileIcon } from '@icons/side-bar-icons'
 import { cn } from '@lib/utils'
 import { PATH_NAME } from '@lib/utils/constants/path'
 import { Popover, PopoverContent, PopoverTrigger } from '@components/ui/popover'
@@ -97,7 +97,7 @@ export function SideBar({ isCollapsed }: { isCollapsed?: boolean }) {
             <ExploreIcon isActive={pathName === PATH_NAME.explore()} />
           </Item>
         </Link>
-        <Link href={{ pathname: PATH_NAME.embed('home') }}>
+        {/* <Link href={{ pathname: PATH_NAME.embed('home') }}>
           <Item
             isCollapsed={isCollapsed}
             brandName={brandName}
@@ -105,7 +105,7 @@ export function SideBar({ isCollapsed }: { isCollapsed?: boolean }) {
             isActive={pathName === PATH_NAME.embed('home')}>
             <EmbedIcon isActive={pathName === PATH_NAME.embed('home')} />
           </Item>
-        </Link>
+        </Link> */}
         {user && (
           <>
             <Link href={{ pathname: PATH_NAME.notification() }}>

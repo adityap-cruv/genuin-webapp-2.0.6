@@ -6,8 +6,9 @@ import { twMerge } from 'tailwind-merge'
 import { useGenuinOptions } from './stores/genuin-options'
 import { AuthenticationModal } from '@components/common/modals/authentication'
 import { type ReactNode } from 'react'
-import { INDUSTRY, type IndustryName, PROTECTED_ROUTES } from './constants'
+import { INDUSTRY, type IndustryName, PROTECTED_ROUTES, MOBILE_DOWNLOAD_APP_LINK } from './constants'
 import { type CommunityUserRoleType } from './schemas/roles'
+import { getAppLink } from './get-deeplink'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -169,10 +170,9 @@ export function replaceUrlWithoutReload(url: URL) {
 // }
 
 export const openGeneratedLink = (link = '') => {
-  const element = document.createElement('a')
-  element.setAttribute('href', link)
-  element.target = '_blank'
-  element.click()
+  setTimeout(() => {
+    window.open(link, '_blank', 'noopener,noreferrer')
+  })
 }
 
 //  TODO: This function line can be reduced and validation can be automated.
@@ -430,4 +430,10 @@ export function getIndustryName(industryType: number | undefined): IndustryName 
   }
 
   return industryName
+}
+
+export async function getMobileGetAppUrl() {
+  await getAppLink().then((generatedLink) => {
+    openGeneratedLink(generatedLink ?? MOBILE_DOWNLOAD_APP_LINK)
+  })
 }

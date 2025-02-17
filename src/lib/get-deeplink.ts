@@ -146,3 +146,24 @@ export async function sparkDeepLink(videoSlug: string, shareUrl: string): Promis
     searchParams: new URLSearchParams(window.location.search),
   })
 }
+
+/*
+ * This function will generate deep link for Get App.
+ */
+export async function getAppLink(): Promise<string> {
+  return await getDeepLink('/', {})
+}
+
+/*
+ * This function will generate deep link for spark action.
+ */
+export async function videoDeepLink(videoSlug: string, shareUrl: string): Promise<string> {
+  return await getDeepLink('comment', {
+    contentType: 'video',
+    pathName: PATH_NAME.video(videoSlug),
+    community: getLoopAndCommunityShareString(shareUrl).communityShareString ?? '',
+    loop: getLoopAndCommunityShareString(shareUrl).loopShareString ?? '',
+    title: `spark ${videoSlug} comment`,
+    searchParams: new URLSearchParams(window.location.search),
+  })
+}
