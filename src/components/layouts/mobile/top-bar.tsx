@@ -59,28 +59,18 @@ type Props = {
 } & VariantProps<typeof navVariant>
 
 export function TopBar({ variant = 'light', className, showClose = false, onClose }: Props) {
-  const {
-    user,
-    brandName,
-    notificationsCount,
-    isClaimed,
-    brandLogo,
-    webCTA,
-    brandId,
-    privacyPolicy,
-    termsAndCondition,
-  } = useGenuinOptions((state) => ({
-    user: state.user,
-    brandName: state.config?.name ? state.config?.name : 'Genuin',
-    notificationsCount: state.notificationCount,
-    isClaimed: state.config?.is_claimed,
-    brandLogo: state.config?.logo,
-    webCTA: state.webCTA,
-    brandId: state.config?.brand_id,
-    privacyPolicy: state.config?.privacy_policy,
-    termsAndCondition: state.config?.terms_and_condition,
-  })) // If variant is transparent than we have removed show download button.
-  const showDownloadButton = variant !== 'transparent'
+  const { user, brandName, notificationsCount, isClaimed, brandLogo, webCTA, privacyPolicy, termsAndCondition } =
+    useGenuinOptions((state) => ({
+      user: state.user,
+      brandName: state.config?.name ? state.config?.name : 'Genuin',
+      notificationsCount: state.notificationCount,
+      isClaimed: state.config?.is_claimed,
+      brandLogo: state.config?.logo,
+      webCTA: state.webCTA,
+      privacyPolicy: state.config?.privacy_policy,
+      termsAndCondition: state.config?.terms_and_condition,
+    })) // If variant is transparent than we have removed show download button.
+  // const showDownloadButton = variant !== 'transparent'
   // const searchParams = useSearchParams()
 
   return (
@@ -129,7 +119,7 @@ export function TopBar({ variant = 'light', className, showClose = false, onClos
           <SearchIcon variant={variant} />
         </SearchBar.mobile>
 
-        {!(brandId?.toString() === '99' && !showDownloadButton) && (webCTA === 'app' || webCTA === 'both') && (
+        {(webCTA === 'app' || webCTA === 'both') && (
           <Button className="h-8" variant="outline" onClick={getMobileGetAppUrl}>
             <p className="text-[15px] text-body-1-demi">Get App</p>
           </Button>
